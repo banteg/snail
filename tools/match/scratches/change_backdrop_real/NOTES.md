@@ -9,6 +9,7 @@ Recovered `Backdrop` fields:
 - `pending_primary_texture_id +0x40` is the zero/non-zero gate.
 - `active_primary_texture_id +0x3c` and `active_secondary_texture_id +0x44`
   are updated when the pending primary texture changes.
-- `progress_fraction +0x6c8` resets before rebuilding distortion.
+- `zoom +0x6c8` resets before rebuilding distortion; symbol-preserving iOS
+  builds name its setter `cRBackdrop::SetZoom(float)`.
 - `active_flip +0x55` and `active_split_backdrop_pair +0x38` mirror the
   pending fields after every call.

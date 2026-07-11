@@ -1077,8 +1077,8 @@ steering_stored:
         }
     }
 
-    float backdrop_fraction = live_matrix.position.z / (float)game->runtime_row_count;
-    ((Backdrop*)((char*)g_app + 0x4ec10))->set_backdrop_progress_fraction(backdrop_fraction);
+    float backdrop_zoom = live_matrix.position.z / (float)game->runtime_row_count;
+    ((Backdrop*)((char*)g_app + 0x4ec10))->set_backdrop_zoom(backdrop_zoom);
 
     SubgoldyGameView* horizon_game = game;
     float interaction_limit = (float)horizon_game->completion_row_start - 30.0f;

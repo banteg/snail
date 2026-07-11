@@ -13,7 +13,7 @@ void Backdrop::change_backdrop_real()
             active_secondary_texture_id = pending_secondary_texture_id;
         }
 
-        progress_fraction = 0.0f;
+        zoom = 0.0f;
         set_backdrop_distort(pending_distort);
         backdrop_refresh_pending = 1;
     } else {

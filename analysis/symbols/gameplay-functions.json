@@ -636,7 +636,7 @@
     {
       "address": "0x410c30",
       "name": "set_backdrop_progress_fraction",
-      "description": "Stores one normalized progress fraction on the active backdrop controller. Windows `update_subgoldy` drives it from the current track-row payload ratio, and `initialize_backdrop` clears the same field at +0x6c8."
+      "description": "Stores the active backdrop zoom at +0x6c8. Windows `update_subgoldy` drives it from the normalized current track-row payload ratio, while symbol-preserving iOS builds name the corresponding authored member `cRBackdrop::SetZoom(float)`."
     },
     {
       "address": "0x410c40",

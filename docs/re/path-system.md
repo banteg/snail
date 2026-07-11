@@ -42,7 +42,8 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `advance_timer_counters` at `0x441b90`
 - `update_damage_gauge` at `0x440fd0`
 - `apply_damage_gauge_delta` at `0x4413f0`
-- `set_backdrop_progress_fraction` at `0x410c30`
+- `set_backdrop_progress_fraction` at `0x410c30` (authored
+  `cRBackdrop::SetZoom(float)`)
 - `set_matrix_rotation_identity` at `0x44d250`
 - `initialize_subgoldy` at `0x43a9c0`
 - `show_subgoldy_lives` at `0x43af10`

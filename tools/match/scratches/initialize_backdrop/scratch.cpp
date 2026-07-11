@@ -10,7 +10,7 @@ void Backdrop::initialize_backdrop(int last_mode)
     unknown_660 = 0;
     active_primary_texture_id = -1;
     backdrop_change_queued = 0;
-    progress_fraction = 0.0f;
+    zoom = 0.0f;
     unknown_6c4 = 5;
     unknown_6bc = 0.0f;
     unknown_6c0 = 0.003333333414f;

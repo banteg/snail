@@ -69,6 +69,16 @@
       "description": "Thiscall helper on a 0x2a0-byte GalaxyRouteSlot that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
     },
     {
+      "address": "0x410c30",
+      "name": "set_backdrop_progress_fraction",
+      "kind": "function",
+      "aliases": [
+        "set_backdrop_zoom",
+        "sub_410c30"
+      ],
+      "description": "Stable Windows harness identity for the authored cRBackdrop::SetZoom(float) member."
+    },
+    {
       "address": "0x42f6e0",
       "name": "initialize_object_constructor_thunk",
       "kind": "function",

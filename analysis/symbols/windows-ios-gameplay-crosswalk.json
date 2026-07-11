@@ -49,6 +49,14 @@
       "notes": "The Windows root constructs two 0x1f8-byte cRPlayer records and installs this exact function as their first callback; the method owns front-end dispatch plus the player camera, cursor, and overlay lanes."
     },
     {
+      "address": "0x410c30",
+      "windows_name": "set_backdrop_progress_fraction",
+      "ios_symbol": "cRBackdrop::SetZoom(float)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "Both are one-store cRBackdrop members. Windows writes the normalized live track position to the owned float at +0x6c8; the stable Windows harness name is retained while shared source uses the authored zoom vocabulary."
+    },
+    {
       "address": "0x415e20",
       "windows_name": "initialize_enemy_manager",
       "ios_symbol": "cREnemyManager::Init()",

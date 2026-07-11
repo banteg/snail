@@ -18,7 +18,7 @@ typedef char BackdropDistortCell_must_be_0x18[
 
 class Backdrop : public BodBase {
 public:
-    void set_backdrop_progress_fraction(float fraction); // @ 0x410c30
+    void set_backdrop_zoom(float zoom); // @ 0x410c30, iOS cRBackdrop::SetZoom(float)
     void set_backdrop_distort(float distort); // @ 0x410c40
     void change_backdrop(LandscapeScriptRecord* record, char flip); // @ 0x410d50
     void change_backdrop_real(); // @ 0x410dc0
@@ -71,7 +71,7 @@ public:
     float unknown_6bc; // +0x6bc
     float unknown_6c0; // +0x6c0
     int unknown_6c4; // +0x6c4
-    float progress_fraction; // +0x6c8
+    float zoom; // +0x6c8, normalized track progress on Windows
 };
 
 typedef char Backdrop_must_cover_0x6cc[(sizeof(Backdrop) == 0x6cc) ? 1 : -1];
