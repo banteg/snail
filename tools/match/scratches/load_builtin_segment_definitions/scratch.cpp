@@ -1,8 +1,8 @@
 // load_builtin_segment_definitions @ 0x448060 (thiscall, ret 0x4)
 
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 
-char* LevelDefinitionLoader::load_builtin_segment_definitions(
+char* SubTracks::load_builtin_segment_definitions(
     BuiltinSegmentDefinition** builtins)
 {
     LevelSegmentSlot* slots = segment_slots;

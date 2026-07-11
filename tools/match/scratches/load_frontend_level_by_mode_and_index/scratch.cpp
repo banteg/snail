@@ -1,6 +1,6 @@
 // load_frontend_level_by_mode_and_index @ 0x443650 (thiscall, ret 0x8)
 
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 
 int sprintf(char* buffer, char* format, ...);
 
@@ -11,7 +11,7 @@ extern char g_tutorial_level_path[]; // 0x4a4fc4
 extern char g_arcade000_level_path[]; // 0x4a4fb4
 extern char g_time_trial_extra_level_format[]; // 0x4a4fe8
 
-int* LevelDefinitionLoader::load_frontend_level_by_mode_and_index(
+int* SubTracks::load_frontend_level_by_mode_and_index(
     int mode,
     int level_index)
 {

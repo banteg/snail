@@ -1,12 +1,12 @@
-// Level definition loader storage. The tail layout is recovered from
+// Windows cRSubTracks owner. The tail layout is recovered from
 // load_level_definition_file and shared with frontend level selection users.
-#ifndef LEVEL_DEFINITION_LOADER_H
-#define LEVEL_DEFINITION_LOADER_H
+#ifndef SUB_TRACKS_H
+#define SUB_TRACKS_H
 
 #include "segment_catalog_types.h"
 #include "sprite.h"
 
-class LevelDefinitionLoader {
+class SubTracks {
 public:
     int* load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
     int* load_level_definition_file(char* path); // @ 0x447480
@@ -31,7 +31,7 @@ public:
     int parcel_quota;                    // +0x1a5974
 };
 
-typedef char LevelDefinitionLoader_must_be_0x1a5978[
-    (sizeof(LevelDefinitionLoader) == 0x1a5978) ? 1 : -1];
+typedef char SubTracks_must_be_0x1a5978[
+    (sizeof(SubTracks) == 0x1a5978) ? 1 : -1];
 
 #endif

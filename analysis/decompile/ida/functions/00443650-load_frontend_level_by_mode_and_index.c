@@ -2,7 +2,7 @@
 /* function: load_frontend_level_by_mode_and_index @ 0x443650 */
 /* selector: load_frontend_level_by_mode_and_index */
 
-// Formats the mode-specific level filename for postal, challenge, time-trial, or tutorial front-end launches and then loads that level definition file.
+// Formats the mode-specific level filename for postal, challenge, time-trial, or tutorial front-end launches and loads it through the owning SubTracks object. Symbol-preserving iOS builds name the corresponding member `cRSubTracks::Load(int, int)`.
 _DWORD *__thiscall sub_443650(char *this, int a2, int a3)
 {
   char Buffer[128]; // [esp+4h] [ebp-80h] BYREF
@@ -41,4 +41,3 @@ _DWORD *__thiscall sub_443650(char *this, int a2, int a3)
   }
   return load_level_definition_file(this, Buffer);
 }
-

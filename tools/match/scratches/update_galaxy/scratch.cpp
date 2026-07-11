@@ -4,7 +4,7 @@
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 #include "runtime_config.h"
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "vector3.h"
@@ -293,7 +293,7 @@ int GalaxyRoute::update_galaxy()
             play_or_deliver_widget->widget_flags = flags & ~0x20;
             destroy_galaxy();
             *(int*)((char*)level_progress_base + 0x44) = selected_index;
-            ((LevelDefinitionLoader*)((char*)level_progress_base + 0xa874))
+            ((SubTracks*)((char*)level_progress_base + 0xa874))
                 ->load_frontend_level_by_mode_and_index(
                     *(int*)((char*)level_progress_base + 0x40),
                     *(int*)((char*)level_progress_base + 0x44));
@@ -310,7 +310,7 @@ int GalaxyRoute::update_galaxy()
         replay_widget->widget_flags = flags & ~0x20;
         destroy_galaxy();
         *(int*)((char*)level_progress_base + 0x44) = selected_index;
-        ((LevelDefinitionLoader*)((char*)level_progress_base + 0xa874))
+        ((SubTracks*)((char*)level_progress_base + 0xa874))
             ->load_frontend_level_by_mode_and_index(
                 *(int*)((char*)level_progress_base + 0x40),
                 *(int*)((char*)level_progress_base + 0x44));

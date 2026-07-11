@@ -137,7 +137,7 @@ regressed, so neither should be kept as an assumed fix:
 
 ## Embedded level owner and candidate-bank consolidation (2026-07-10)
 
-`SubgameRuntime +0xa874` is now the exact embedded `LevelDefinitionLoader`,
+`SubgameRuntime +0xa874` is now the exact embedded `SubTracks`,
 not a loose segment-count field followed by anonymous storage. Its `0x1a5978`
 extent accounts for the 100 authored `LevelSegmentSlot` records, first/last
 segments, level display name, parcel count, texture set, and quota through

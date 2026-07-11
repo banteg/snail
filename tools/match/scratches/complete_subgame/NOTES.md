@@ -184,7 +184,7 @@ The two former `source_timer_*` dwords at `SubgameRuntime +0x125ffd8` and
 `+0x125ffdc` are the live normalized `Garbage:` and `Salt:` frequencies:
 
 - `load_level_definition_file` parses the authored percentage fields into the
-  embedded `LevelDefinitionLoader`;
+  embedded `SubTracks` owner;
 - `build_subgame_level` divides them by 100, or restores the same floats from
   a selected replay record;
 - `update_subgame` uses them in the garbage and salt random-spawn thresholds;

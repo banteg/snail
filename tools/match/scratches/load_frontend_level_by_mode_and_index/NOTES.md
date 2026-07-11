@@ -4,9 +4,9 @@ Initial shape:
 
 - Formats a level definition filename into a 128-byte stack buffer from the
   frontend mode and level index.
-- The receiver is the same `LevelDefinitionLoader` object that owns
-  `load_level_definition_file`; the old `FrontendLevelLoader` name was only a
-  partial-callsite artifact.
+- The receiver is the same `SubTracks` object that owns
+  `load_level_definition_file`; symbol-preserving iOS builds name the authored
+  class `cRSubTracks` and this method `Load(int, int)`.
 - Mode `0` is postal/arcade. Indexes `0..50` format as `Arcade%03i.txt`; index
   `51` uses `ArcadeExtra000.txt`.
 - Mode `1` loads `Challenge000.txt`; modes `2` and `3` load `Arcade000.txt`;
@@ -43,3 +43,9 @@ indexed/`plain` sprintf epilogues all failed to recover native's
 time-trial-extra. Best remains 81.36% with the direct switch + call shape.
 The jump-table masked mismatch is still the local `$L` vs image table pair
 while body block sizes differ.
+
+2026-07-11 cross-port owner promotion: the shared class is now `SubTracks`,
+backed by all four iOS member symbols (`Load`, both `Init` overloads, and
+`ImportSegment`). Renaming the owner and header preserves the focused 81.36%
+result; the remaining Windows gap is still only VC6 tail sharing and the
+resulting local jump-table label.

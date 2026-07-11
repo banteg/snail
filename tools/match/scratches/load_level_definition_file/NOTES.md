@@ -15,7 +15,7 @@ Initial relationship scratch.
 - 2026-06-18: Replaced the local segment row and slot layout with
   `include/segment_catalog_types.h`; focused Wibo score stayed 75.17%.
 - 2026-06-20: Promoted the full loader storage into
-  `include/level_definition_loader.h` after Binary Ninja and this scratch
+  `include/sub_tracks.h` after Binary Ninja and this scratch
   agreed on the `segment_slots`, `first_segment`, `last_segment`, display
   name, fringe color, speed, hazard-frequency, texture, and quota offsets.
   Focused matcher stayed 75.17% with the same 939/926 candidate/target

@@ -2,7 +2,7 @@
 /* function: copy_segment_definition_to_level_slot @ 0x447300 */
 /* selector: copy_segment_definition_to_level_slot */
 
-// Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a level segment slot, and copies the authored row metadata including velocity, path template, and ring-speed fields.
+// Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a level segment slot, and copies the authored row metadata including velocity, path template, and ring-speed fields. The symbol-preserving iOS counterpart is `cRSubTracks::ImportSegment(char*, cRSubSegment*)`; Windows staticizes the catalog lookup through the root owner.
 _DWORD *__stdcall copy_segment_definition_to_level_slot(char *ArgList, _DWORD *a2)
 {
   _DWORD *v2; // edi

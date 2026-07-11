@@ -2,7 +2,7 @@
 
 #include "challenge_setup_screen.h"
 #include "high_score_record.h"
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "timer_counters.h"

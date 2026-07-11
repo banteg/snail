@@ -196,7 +196,7 @@ aliases respectively and restore the 85 clean operands.
 - The built-in reset now targets the embedded
   `level_definition_scratch +0x1b01ec` rather than an oversized standalone
   slot-store cast. The exact constructor and startup enumeration prove this is
-  the second complete `0x1a5978` `LevelDefinitionLoader` in `SubgameRuntime`.
+  the second complete `0x1a5978` `SubTracks` in `SubgameRuntime`.
 - The shared header change renumbers the unchanged five- and eight-entry switch
   tables to `$L4812`/`$L4813`. COFF places them at the same object offsets
   `+0x62c`/`+0x640`; their bounded relocation sequences are unchanged. With
@@ -236,3 +236,11 @@ aliases respectively and restore the 85 clean operands.
 - `$L4797` is reassigned from the earlier bottom-HUD generation to the current
   startup table to keep aliases unambiguous. The exact method remains 396/396
   with all 85 operands clean.
+
+2026-07-11 SubTracks owner promotion:
+
+- Promoting the shared `cRSubTracks` owner changes VC6's compiler-local name
+  for the existing five-entry bottom-HUD table to `$L4814`.
+- Registering that alias against the bounded `0x14` target table re-audits
+  identical entry content and keeps the method exact at 396/396 with all 85
+  operands clean; no target or candidate instruction changes.

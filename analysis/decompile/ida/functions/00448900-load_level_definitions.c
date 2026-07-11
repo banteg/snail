@@ -19,7 +19,7 @@ int32_t __thiscall load_level_definitions(SegmentCatalog *catalog)
     v3 = v5;
     do
     {
-      load_level_definition_file((LevelDefinitionLoader *)((char *)g_game_base + 2246660), v3);
+      load_level_definition_file((SubTracks *)((char *)g_game_base + 2246660), v3);
       result = v4;
       ++v2;
       v3 += 128;
@@ -28,4 +28,3 @@ int32_t __thiscall load_level_definitions(SegmentCatalog *catalog)
   }
   return result;
 }
-

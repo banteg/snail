@@ -3,7 +3,7 @@
 #include "border_manager.h"
 #include "challenge_setup_screen.h"
 #include "frontend_widget_virtual_layout.h"
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"

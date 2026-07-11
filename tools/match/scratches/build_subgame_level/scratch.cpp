@@ -5,7 +5,7 @@
 #include "damage_gauge.h"
 #include "frontend_widget.h"
 #include "landscape_manager.h"
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
 #include "runtime_slot.h"
@@ -64,7 +64,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     ((SaltHazardPool*)(game + 0x3578c0))->initialize_salt_hazard_pool();
     g_voice_manager.reset_voice_manager();
 
-    ((LevelDefinitionLoader*)(game + 0xa874))->load_frontend_level_by_mode_and_index(
+    ((SubTracks*)(game + 0xa874))->load_frontend_level_by_mode_and_index(
         *(int*)(game + 0x40), level_index);
 
     if (*(unsigned char*)(game + 0xff25d0) != zero

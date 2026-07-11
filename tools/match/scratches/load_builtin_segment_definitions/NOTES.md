@@ -42,7 +42,7 @@ Status:
 ## 2026-07-11 receiver ownership correction
 
 - Construction and the adjacent level-file parser prove the receiver is a
-  complete `LevelDefinitionLoader`, not a standalone 103-slot store. The old
+  complete `SubTracks`, not a standalone 103-slot store. The old
   `LevelSegmentSlotStore` declaration was too large and crossed the exact
   `0x1a5978` owner boundary into the following BodBase sentinels.
 - `slots[102].row_base` is a deliberate overlapping access to the existing

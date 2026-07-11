@@ -47,7 +47,7 @@
 
 - The constructor builds two consecutive, identically shaped regions at
   `SubgameRuntime +0xa874` and `+0x1b01ec`. Each is exactly `0x1a5978`, the
-  independently reported size of `cRSubTracks`/`LevelDefinitionLoader`.
+  independently reported size of `cRSubTracks`/`SubTracks`.
 - Both regions construct 100 `0x4220` segment slots, the 256 authored-row
   arrays inside their `First:` and `Last:` slots, and their tail `Color4f`.
   The second extent ends exactly at the BodBase sentinel at `+0x355b64`.

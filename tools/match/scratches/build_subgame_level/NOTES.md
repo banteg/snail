@@ -89,7 +89,7 @@ mismatch).
   call-surface consolidation rather than a source-shape win.
 - 2026-06-20 shared subgame runtime header pass: local one-method or prefix
   views for `StarField`, `GolbPathBank`, `DamageGaugeController`,
-  `SubLazerPool`, `SaltHazardPool`, `LevelDefinitionLoader`,
+  `SubLazerPool`, `SaltHazardPool`, `SubTracks`,
   `TrackParcelPool`, `FrontendWidget`, `LandscapeManager`, `BodList`,
   `BodNode`, `MouseCursorState`, and
   `Player::initialize_subgoldy` were replaced by shared headers. The focused

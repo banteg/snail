@@ -218,6 +218,14 @@
       "confidence": "high"
     },
     {
+      "address": "0x443650",
+      "windows_name": "load_frontend_level_by_mode_and_index",
+      "ios_symbol": "cRSubTracks::Load(int, int)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Both dispatch the gameplay mode and level index into a local level path and then invoke the same owner's text-level parser."
+    },
+    {
       "address": "0x443730",
       "windows_name": "spawn_track_parcel",
       "ios_symbol": "cRSubGame::AddParcel(...)",
@@ -246,6 +254,28 @@
       "source_object": "SubGame.o",
       "confidence": "medium",
       "notes": "The specific CameraAI spelling comes from cross-port evidence; iOS confirms cRCameraman and cRSubGame ownership in the same object group."
+    },
+    {
+      "address": "0x447300",
+      "windows_name": "copy_segment_definition_to_level_slot",
+      "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
+      "source_object": "Subtrack.o",
+      "confidence": "high",
+      "notes": "The row-grid transpose and authored metadata copy agree; Windows exposes this operation as a stdcall helper using the root SegmentCatalog rather than retaining a SubTracks receiver."
+    },
+    {
+      "address": "0x447480",
+      "windows_name": "load_level_definition_file",
+      "ios_symbol": "cRSubTracks::Init(char*)",
+      "source_object": "Subtrack.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x448060",
+      "windows_name": "load_builtin_segment_definitions",
+      "ios_symbol": "cRSubTracks::Init(cRSubSegmentRaw**)",
+      "source_object": "Subtrack.o",
+      "confidence": "high"
     },
     {
       "address": "0x43a9c0",

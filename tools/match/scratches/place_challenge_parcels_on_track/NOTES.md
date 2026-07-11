@@ -50,7 +50,7 @@ the same kind-42/non-kind-42 tail used by the normal parcel placer.
 ## Shared ownership pass (2026-07-10)
 
 The computed count and quota now land in the embedded
-`LevelDefinitionLoader`, and both row scans walk SubgameRuntime's owned
+`SubTracks`, and both row scans walk SubgameRuntime's owned
 `runtime_rows[3200]` array. The reset cursor uses the same shared
 `ParcelBucket::candidate_count` lane proven by the exact zero-bank constructor.
 

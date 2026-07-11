@@ -17,7 +17,7 @@
 #include "high_score_bank.h"
 #include "high_score_record.h"
 #include "help_screen.h"
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "contact_target.h"
 #include "new_game_menu.h"
 #include "player.h"
@@ -134,11 +134,11 @@ public:
     char unknown_00a868[0xa874 - 0xa868];
     // Embedded level-definition owner. Its exact extent accounts for the
     // authored segment slots and all parsed level metadata through parcel_quota.
-    LevelDefinitionLoader level_definition; // +0xa874, ends at +0x1b01ec
+    SubTracks level_definition; // +0xa874, ends at +0x1b01ec
     // A second complete cRSubTracks-shaped owner. Startup reuses it while
     // enumerating every Levels/*.txt file, then reseeds its slot storage from
     // the built-in segment table; it is storage, not a borrowed loader view.
-    LevelDefinitionLoader level_definition_scratch; // +0x1b01ec, ends at +0x355b64
+    SubTracks level_definition_scratch; // +0x1b01ec, ends at +0x355b64
     // Ten consecutive constructed BodBase records close this entire 0x230-byte
     // interval. Five are proven live-list sentinels; the unused group roles
     // stay unnamed rather than borrowing names from ports with a different

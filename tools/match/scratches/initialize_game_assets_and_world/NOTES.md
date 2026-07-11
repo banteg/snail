@@ -151,7 +151,7 @@ mismatched operands to 74 clean / 17 mismatched operands.
 
 The built-in segment import now addresses
 `subgame.level_definition_scratch` directly. Construction proves that root
-`+0x224804` is a complete `0x1a5978` `LevelDefinitionLoader`, and startup first
+`+0x224804` is a complete `0x1a5978` `SubTracks`, and startup first
 uses the same owner to parse each `Levels/*.txt` entry before reseeding it from
 the built-in definitions. The broad initializer remains at 5.65%, with its
 existing 74 clean and 17 mismatched operands.

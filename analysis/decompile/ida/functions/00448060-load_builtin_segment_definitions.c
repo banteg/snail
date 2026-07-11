@@ -2,7 +2,7 @@
 /* function: load_builtin_segment_definitions @ 0x448060 */
 /* selector: load_builtin_segment_definitions */
 
-// Copies the shipped built-in segment definitions from the static table at `0x4a63d0` into the runtime segment catalog, including names like `Start`, `Finish`, and `Filler` plus their eight authored row strings and metadata lanes.
+// Copies the shipped built-in segment definitions from the static table at `0x4a63d0` into the secondary SubTracks owner, including names like `Start`, `Finish`, and `Filler` plus their eight authored row strings and metadata lanes. Symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`.
 _BYTE *__thiscall load_builtin_segment_definitions(int *this, int a2)
 {
   _BYTE *result; // eax

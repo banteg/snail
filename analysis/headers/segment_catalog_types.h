@@ -62,7 +62,7 @@ typedef struct LevelSegmentSlot {
     int32_t message_sample_id;
 } LevelSegmentSlot;
 
-typedef struct LevelDefinitionLoader {
+typedef struct SubTracks {
     int32_t segment_count;
     LevelSegmentSlot segment_slots[100];
     LevelSegmentSlot first_segment;
@@ -79,7 +79,7 @@ typedef struct LevelDefinitionLoader {
     int32_t parcel_count;
     int32_t track_texture_set;
     int32_t parcel_quota;
-} LevelDefinitionLoader;
+} SubTracks;
 
 typedef struct BuiltinSegmentDefinition {
     int32_t row_count;

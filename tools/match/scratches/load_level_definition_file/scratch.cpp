@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 #include "landscape_manager.h"
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "segment_catalog_types.h"
 
 extern char* g_game_base; // data_4df904
@@ -30,7 +30,7 @@ struct LevelDefinitionParseBuffers {
     char background_name[512];
 };
 
-int* LevelDefinitionLoader::load_level_definition_file(char* filename)
+int* SubTracks::load_level_definition_file(char* filename)
 {
     char* cursor;
     char* line_cursor;

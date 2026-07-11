@@ -427,11 +427,12 @@ The current high-confidence `Game` fields are:
 - `+0xa858`: `tutorial`
   - inline `TutorialController`
 - `+0xa874..+0x1b01ec`: `level_definition`
-  - complete `0x1a5978` active `cRSubTracks`/`LevelDefinitionLoader` owner
+  - complete `0x1a5978` active `SubTracks` owner, cross-port `cRSubTracks`
   - `+0x1b0138`: `level_length`
   - `+0x1b013c`: `level_random`
   - `+0x1b01e0`: `parcel_target_count`
 - `+0x1b01ec..+0x355b64`: `level_definition_scratch`
+  - second complete `SubTracks` owner used for startup enumeration and built-ins
   - second complete `0x1a5978` owner used for startup level enumeration and
     then reseeded from the built-in segment table
 - `+0x355b64..+0x355d94`: ten embedded `BodBase` group heads

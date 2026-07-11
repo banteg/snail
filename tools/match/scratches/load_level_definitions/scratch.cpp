@@ -1,6 +1,6 @@
 // load_level_definitions @ 0x448900 (thiscall, receiver unused)
 
-#include "level_definition_loader.h"
+#include "sub_tracks.h"
 #include "segment_catalog_types.h"
 #include "game_root.h"
 
