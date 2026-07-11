@@ -20,7 +20,7 @@ extern int dword_4a1d20[];
 extern int g_galaxy_route_point_table[];
 extern int g_galaxy_route_point_table_end[];
 
-int GalaxyRoute::load_galaxy_layout()
+int Galaxy::load_galaxy_layout()
 {
     float* first_point_cursor = (float*)dword_4a1d18;
 

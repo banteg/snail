@@ -35,7 +35,7 @@ int __stdcall draw_galaxy_line(
     Color4f* color); // @ 0x409b00
 void __stdcall play_sound_effect(int sample_id); // @ 0x44dde0
 
-int GalaxyRoute::update_galaxy()
+int Galaxy::update_galaxy()
 {
     Color4f route_zero_color;
     Color4f color;

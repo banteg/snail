@@ -1,7 +1,7 @@
 # update_galaxy @ 0x4092f0
 
 Relationship-first scratch for the Star Map update/render controller. It now
-uses the shared `GalaxyRoute` and route-record layouts recovered across
+uses the shared `Galaxy` and route-record layouts recovered across
 `load_galaxy_layout`, `initialize_galaxy`, `open_galaxy_route`, and
 `close_galaxy_route`.
 
@@ -79,3 +79,8 @@ Rejected probes:
 - Using owned slots for iteration and a documented controller-relative view
   only where native retains that base preserves the 61.11% baseline, 550/566
   instruction shape, and all 43 clean operands.
+
+2026-07-11 authored parent: Android/iOS retain this state machine as
+`cRGalaxy::AI()`. The primary 0x10fa8 `Galaxy` owner replaces the smaller
+semantic parent view without changing the honest 61.11%, 550/566 result or its
+43 clean operands.

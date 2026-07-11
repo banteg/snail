@@ -16,7 +16,7 @@ Semantics:
 - Mode `2` has a special horizontal clamp/centering path before the vertical
   bound expansion.
 - The callsites set `ecx` to the galaxy route object, so this is spelled as a
-  `GalaxyRoute` member even though the helper only uses stack arguments.
+  `Galaxy` member even though the helper only uses stack arguments.
 - The mode-2 centering path needs a scoped `width` local for the second
   adjustment. Without that, MSVC emits an equivalent shorter `fsubr mem`
   sequence instead of the native `fld width; fld max; fsub; fsubp` x87 shape.
@@ -24,3 +24,6 @@ Semantics:
 `open_galaxy_route` independently uses the same widget geometry fields plus the
 frame rect at `+0x4c..+0x58` and `layout_center_x +0x260`, so those offsets now
 live in `frontend_widget.h` rather than a scratch-local duplicate view.
+
+Android retains the exact 63/63 member as `cRGalaxy::BorderBound(...)`; the
+parent rename is codegen-neutral.

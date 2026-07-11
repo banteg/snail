@@ -241,8 +241,7 @@ public:
     ChallengeSetupScreen challenge_setup; // +0x125ffe0
     HelpScreen help_screen; // +0x1260008, embedded front-end controller
     ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
-    GalaxyRoute galaxy; // +0x1260020, exact embedded route controller through +0x1270fc4
-    char unknown_1270fc4[0x1270fc8 - 0x1270fc4];
+    Galaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8
     int subgame_rebuild_selector; // +0x1270fc8
     float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak
     float slug_voice_trigger_spacing_z; // +0x1270fd0

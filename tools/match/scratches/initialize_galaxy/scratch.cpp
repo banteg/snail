@@ -22,7 +22,7 @@ public:
     FrontendWidget* allocate_border();
 };
 
-FrontendWidget* GalaxyRoute::initialize_galaxy()
+FrontendWidget* Galaxy::initialize_galaxy()
 {
     ((StarField*)(g_game_base + 0x4f33c))->hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);

@@ -80,6 +80,65 @@
       "notes": "The exact Windows state machine consumes the root ExitPrompt and is distinct from cRCompletion::AI at 0x404cf0."
     },
     {
+      "address": "0x4088e0",
+      "windows_name": "load_galaxy_layout",
+      "android_symbol": "cRGalaxy::Init2()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both populate the Galaxy-owned route/star bank from the authored galaxy layout; the Windows body remains honestly partial."
+    },
+    {
+      "address": "0x408c10",
+      "windows_name": "destroy_galaxy",
+      "ios_symbol": "cRGalaxy::UnInit()",
+      "android_symbol": "cRGalaxy::UnInit()",
+      "source_object": "Galaxy.o",
+      "confidence": "high",
+      "notes": "The exact Windows member tears down the owned Star Map widget bank and clears active state."
+    },
+    {
+      "address": "0x408cf0",
+      "windows_name": "initialize_galaxy",
+      "ios_symbol": "cRGalaxy::Init()",
+      "android_symbol": "cRGalaxy::Init()",
+      "source_object": "Galaxy.o",
+      "confidence": "high",
+      "notes": "The exact Windows member initializes the same Star Map widget and selected-route state on the embedded Galaxy owner."
+    },
+    {
+      "address": "0x4092f0",
+      "windows_name": "update_galaxy",
+      "ios_symbol": "cRGalaxy::AI()",
+      "android_symbol": "cRGalaxy::AI()",
+      "source_object": "Galaxy.o",
+      "confidence": "high",
+      "notes": "Both drive route selection, open-card interaction, replay launch, and level handoff through the same owner."
+    },
+    {
+      "address": "0x409bf0",
+      "windows_name": "close_galaxy_route",
+      "ios_symbol": "cRGalaxy::BoxOff()",
+      "android_symbol": "cRGalaxy::BoxOff()",
+      "source_object": "Galaxy.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x409c50",
+      "windows_name": "open_galaxy_route",
+      "ios_symbol": "cRGalaxy::Open(int)",
+      "android_symbol": "cRGalaxy::Open(int)",
+      "source_object": "Galaxy.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x40a0c0",
+      "windows_name": "galaxy_border_bound",
+      "android_symbol": "cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The exact Windows helper computes the same widget bounds through the Galaxy member surface."
+    },
+    {
       "address": "0x40a2a0",
       "windows_name": "run_frame_update",
       "ios_symbol": "cRGame::AI()",

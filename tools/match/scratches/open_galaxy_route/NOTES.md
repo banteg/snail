@@ -21,10 +21,13 @@ Current local field evidence:
   geometry fields at `+0x4c..+0x58`, `+0x238..+0x260`, so these are promoted
   into `frontend_widget.h` instead of being accessed through raw casts.
 
-The `GalaxyRoute` layout is now promoted after agreement with
+The `Galaxy` layout is now promoted after agreement with
 `load_galaxy_layout`, `initialize_galaxy`, `update_galaxy`, and
 `close_galaxy_route`; this opener keeps the alternate widget names used by the
 route-card source through shared header aliases.
 
 The corrected 101-slot ownership and `0x29c` record body remain codegen-neutral:
 focused matching stays exact at 266/266 with all 41 operands clean.
+
+Android/iOS retain this member as `cRGalaxy::Open(int)`; the complete parent
+extent is 0x10fa8.

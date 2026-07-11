@@ -1,7 +1,7 @@
 # initialize_galaxy @ 0x408cf0
 
 First structural scratch for the galaxy/star-map screen initializer. This uses
-the shared `GalaxyRoute` layout while reusing established frontend-widget,
+the shared `Galaxy` layout while reusing established frontend-widget,
 color, star-field, backdrop, landscape-bank, and mouse cursor helpers.
 
 The scratch is intentionally relationship-first: several widget post-init lanes
@@ -34,5 +34,9 @@ Scoped-color proof:
   grow the frame to `0x20`, so that shape is not native.
 - Splitting the one long-lived `Color4f color` into short non-overlapping
   scopes lets VC6 reuse the same 0x10 stack slot while keeping the receiver
-  setup inside the Exit/Back and Play/Deliver arms. This matches the native
-  duplicated branch receivers and proves the initializer.
+setup inside the Exit/Back and Play/Deliver arms. This matches the native
+duplicated branch receivers and proves the initializer.
+
+2026-07-11 authored owner: this exact 338/338 member maps to
+`cRGalaxy::Init()`. `sizeof(Galaxy) == 0x10fa8` closes the embedded owner at
+`SubgameRuntime +0x1270fc8`; the final dword remains conservatively unnamed.

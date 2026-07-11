@@ -5,7 +5,7 @@ the two authored point tables, loads `Galaxy/_Galaxy.txt`, copies galaxy names
 and star counts into the route-name table, seeds placeholder level labels, and
 initializes the first route record.
 
-The loader now uses the shared `GalaxyRoute`, `GalaxyRouteSlot`,
+The loader now uses the shared `Galaxy`, `GalaxyRouteSlot`,
 `GalaxyRouteRecord`, and `GalaxyRouteNameRecord` views established with the
 constructor, route initializer, opener, updater, and closer.
 
@@ -38,7 +38,7 @@ masked call mismatches. Keep the current local order.
 
 2026-07-11 slot ownership correction:
 
-- Constructor iteration starts at `GalaxyRoute +0x10`, uses stride `0x2a0`,
+- Constructor iteration starts at `Galaxy +0x10`, uses stride `0x2a0`,
   and covers 101 slots exactly through `+0x10930`.
 - Each slot owns a four-byte prefix followed by a `0x29c` route record at
   `+0x04`; loader fields therefore remain at controller
@@ -46,3 +46,8 @@ masked call mismatches. Keep the current local order.
 - Replacing 100 overlapping `0x2a0` records plus hidden padding with the real
   101-slot array preserves 78.37%, the 62-instruction prefix, and all 40 clean
   operands.
+
+2026-07-11 authored parent: Android identifies this layout pass as
+`cRGalaxy::Init2()`. Promoting the parent from the semantic `GalaxyRoute` name
+to `Galaxy` and absorbing its native-ledger tail keeps the honest 78.37%,
+234/233 result with all 40 operands clean.

@@ -6,7 +6,7 @@
 
 extern char* g_game_base; // data_4df904
 
-void GalaxyRoute::destroy_galaxy()
+void Galaxy::destroy_galaxy()
 {
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(pre_route_borders[1]);
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(pre_route_borders[2]);

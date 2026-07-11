@@ -13,4 +13,9 @@ It kills nine frontend widgets through the global border manager at
 The six route border slots are the same local field family used by
 `close_galaxy_route`. The three earlier widgets are overlaid as
 `pre_route_borders` for this exact kill order and as named fields in the shared
-`GalaxyRoute` header for initializer/update callsites.
+`Galaxy` header for initializer/update callsites.
+
+2026-07-11 authored owner: this exact 49/49 member maps to
+`cRGalaxy::UnInit()`. The native 0x10fa8 ledger absorbs the former anonymous
+tail dword after the visible route/widget fields; no meaning is assigned to
+that unreferenced tail.

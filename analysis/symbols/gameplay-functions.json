@@ -510,22 +510,22 @@
     {
       "address": "0x4088e0",
       "name": "load_galaxy_layout",
-      "description": "Loads `Galaxy/_Galaxy.txt`, rescales the authored galaxy-point tables, and populates the runtime galaxy route records with star counts, authored positions, and placeholder level labels."
+      "description": "Loads `Galaxy/_Galaxy.txt`, rescales the authored galaxy-point tables, and populates the embedded `Galaxy` route/star records. Android preserves the corresponding authored member as `cRGalaxy::Init2()`."
     },
     {
       "address": "0x408c10",
       "name": "destroy_galaxy",
-      "description": "Tears down the active Star Map galaxy-screen widgets before replay launch, route handoff, or return to the owning front-end state. Cross-port Android symbols match this helper to `cRGalaxy::UnInit()`."
+      "description": "Exact Windows `Galaxy::destroy_galaxy`: tears down the active Star Map widgets before replay launch, route handoff, or return. Android preserves `cRGalaxy::UnInit()`."
     },
     {
       "address": "0x408cf0",
       "name": "initialize_galaxy",
-      "description": "Builds the Star Map galaxy screen, seeds its selected route from SnailMail.cfg, and wires the Deliver/Play, replay, and back controls. Cross-port Android and iOS symbols match this helper to `cRGalaxy::Init()`."
+      "description": "Exact Windows `Galaxy::initialize_galaxy`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve `cRGalaxy::Init()`."
     },
     {
       "address": "0x4092f0",
       "name": "update_galaxy",
-      "description": "Runs the Star Map galaxy-screen state machine, including route selection, replay launch, and Deliver/Play actions through the shared level-path handoff. Cross-port Android and iOS symbols match this helper to `cRGalaxy::AI()`."
+      "description": "Runs the embedded `Galaxy` Star Map state machine, including route selection, replay launch, and Deliver/Play handoff. Android and iOS preserve `cRGalaxy::AI()`."
     },
     {
       "address": "0x409b00",
@@ -539,16 +539,17 @@
     {
       "address": "0x409bf0",
       "name": "close_galaxy_route",
-      "description": "Closes the currently open Star Map route card, clears its active replay or play controls, and resets the open-route selection before another route is opened. Cross-port Android and iOS symbols match this helper to `cRGalaxy::BoxOff()`."
+      "description": "Exact Windows `Galaxy::close_galaxy_route`: closes the active Star Map route card and clears its replay/play controls. Android and iOS preserve `cRGalaxy::BoxOff()`."
     },
     {
       "address": "0x409c50",
       "name": "open_galaxy_route",
-      "description": "Opens one selected Star Map route card, loads its preview label and widget stack, and toggles the replay-only controls for locked or cleared routes. Cross-port Android and iOS symbols match this helper to `cRGalaxy::Open(int)`."
+      "description": "Exact Windows `Galaxy::open_galaxy_route`: opens a selected Star Map route card, loads its preview label and widget stack, and toggles replay controls. Android and iOS preserve `cRGalaxy::Open(int)`."
     },
     {
       "address": "0x40a0c0",
-      "name": "galaxy_border_bound"
+      "name": "galaxy_border_bound",
+      "description": "Exact Windows `Galaxy::galaxy_border_bound`, matching Android `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`."
     },
     {
       "address": "0x40a1b0",

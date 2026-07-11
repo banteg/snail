@@ -3,7 +3,7 @@
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 
-void GalaxyRoute::galaxy_border_bound(
+void Galaxy::galaxy_border_bound(
     float* min_x,
     float* max_x,
     float* min_y,

@@ -284,3 +284,12 @@ borrowed border, progress, and step occupy the final 0x10 bytes of
 `SubgameRuntime`, closing the owner exactly at the root high-score screen.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRGalaxy size ledger
+
+The `Size of cRGalaxy` entry now comes from `sizeof(Galaxy)`. The recovered
+route/star and widget fields previously ended at 0x10fa4; the native 0x10fa8
+ledger proves the following unresolved dword belongs to the same owner, which
+now closes exactly at `SubgameRuntime +0x1270fc8`. Constructor metrics remain
+unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
+relocation unresolved.

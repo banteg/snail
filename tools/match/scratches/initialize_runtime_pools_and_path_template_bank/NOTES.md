@@ -91,9 +91,9 @@
 - The typed local receiver retains the native `edi` owner and leaves this
   constructor exact at 227/227 with all 72 operands clean.
 
-## 2026-07-11 GalaxyRoute arrays
+## 2026-07-11 cRGalaxy arrays
 
-- `GalaxyRoute +0x10` owns 101 constructor-visited `0x2a0` slots, ending
+- `Galaxy +0x10` owns 101 constructor-visited `0x2a0` slots, ending
   exactly at `route_names +0x10930`; this replaces 100 overlapping record
   bodies plus a hidden `0x29c` tail.
 - Each slot has a four-byte prefix and a `0x29c` record body. Ten `0xa0` route

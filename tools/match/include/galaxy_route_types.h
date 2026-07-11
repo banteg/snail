@@ -85,7 +85,7 @@ public:
 typedef char GalaxyRouteNameRecord_must_be_0xa0[
     (sizeof(GalaxyRouteNameRecord) == 0xa0) ? 1 : -1];
 
-class GalaxyRoute {
+class Galaxy {
 public:
     int load_galaxy_layout(); // @ 0x4088e0
     FrontendWidget* initialize_galaxy(); // @ 0x408cf0
@@ -140,9 +140,10 @@ public:
         };
         FrontendWidget* borders[6]; // +0x10f8c
     };
+    int unknown_10fa4; // +0x10fa4, unresolved cRGalaxy tail
 };
 
-typedef char GalaxyRoute_must_be_0x10fa4[
-    (sizeof(GalaxyRoute) == 0x10fa4) ? 1 : -1];
+typedef char Galaxy_must_be_0x10fa8[
+    (sizeof(Galaxy) == 0x10fa8) ? 1 : -1];
 
 #endif

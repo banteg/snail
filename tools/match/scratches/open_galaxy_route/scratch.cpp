@@ -5,7 +5,7 @@
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
-FrontendWidget* GalaxyRoute::open_galaxy_route(int selected_level_index)
+FrontendWidget* Galaxy::open_galaxy_route(int selected_level_index)
 {
     route_state = 1;
     selected_index = selected_level_index;
