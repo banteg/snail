@@ -59,8 +59,8 @@ typedef struct HighScoreRecord {
     int32_t runtime_build_seed;
     int32_t replay_sample_count;
     ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT];
-    int32_t garbage_scalar_bits;
-    int32_t salt_scalar_bits;
+    float garbage_frequency;
+    float salt_frequency;
     int32_t unknown_1fab8;
     int32_t unknown_1fabc;
 } HighScoreRecord;

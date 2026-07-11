@@ -226,8 +226,14 @@ public:
     // exact aggregate extent reaches the following parcel pool.
     SegmentCatalog segment_catalog; // +0x10014cc, ends at +0x125e480
     TrackParcelPool parcel_pool; // +0x125e480
-    int source_timer_a; // +0x125ffd8
-    int source_timer_b; // +0x125ffdc
+    union {
+        float garbage_frequency; // +0x125ffd8, normalized Garbage: spawn control
+        int garbage_frequency_bits;
+    };
+    union {
+        float salt_frequency; // +0x125ffdc, normalized Salt: spawn control
+        int salt_frequency_bits;
+    };
     ChallengeSetupScreen challenge_setup; // +0x125ffe0
     HelpScreen help_screen; // +0x1260008, embedded front-end controller
     ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller

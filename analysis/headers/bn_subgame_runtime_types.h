@@ -59,8 +59,8 @@ typedef struct HighScoreRecord {
     int32_t runtime_build_seed;
     int32_t replay_sample_count;
     ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT];
-    int32_t garbage_scalar_bits;
-    int32_t salt_scalar_bits;
+    float garbage_frequency;
+    float salt_frequency;
     int32_t unknown_1fab8;
     int32_t unknown_1fabc;
 } HighScoreRecord;
@@ -145,8 +145,8 @@ typedef struct SubgameRuntime {
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
     uint8_t unknown_ff25e0[0x125ffd8 - 0xff25e0];
-    int32_t source_timer_a;
-    int32_t source_timer_b;
+    float garbage_frequency;
+    float salt_frequency;
 } SubgameRuntime;
 
 #endif

@@ -22,6 +22,8 @@ DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types
 SUBGAME_FIELD_UPDATES = (
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
+    ("0x125ffd8", "garbage_frequency", "float"),
+    ("0x125ffdc", "salt_frequency", "float"),
     ("0x1270fd4", "contact_targets", "ContactTargetRegistry"),
 )
 

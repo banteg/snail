@@ -22,8 +22,8 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
         current_high_score_record.score_tail = player.score_tail;
         current_high_score_record.challenge_difficulty_value = completion_bonus_y_source;
         current_high_score_record.replay_speed_scalar_bits = level_arg_tail;
-        current_high_score_record.garbage_scalar_bits = source_timer_a;
-        current_high_score_record.salt_scalar_bits = source_timer_b;
+        current_high_score_record.garbage_frequency_bits = garbage_frequency_bits;
+        current_high_score_record.salt_frequency_bits = salt_frequency_bits;
         current_high_score_record.active = 1;
         current_high_score_record.source_tail = player.startup_track_index;
         current_high_score_record.replay_mode_id = level_mode;

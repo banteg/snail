@@ -409,7 +409,7 @@ void SubgameRuntime::update_subgame()
                                 && (hazard_tile == 1 || hazard_tile == 21)
                                 && (*(unsigned int*)(game + 0x4c) & 2) != 0
                                 && random_float_below(1.0f, "G")
-                                    > (1.0f - *(float*)(game + 0x125ffd8)) * 0.2f
+                                    > (1.0f - garbage_frequency) * 0.2f
                                         + 0.8f
                                 && (attachment_count == 0
                                     || *((unsigned char*)&cell_slot->cell - 0x18) == 1
@@ -446,7 +446,7 @@ void SubgameRuntime::update_subgame()
                             && player.movement_state != 2
                             && (*(unsigned int*)(game + 0x4c) & 0x10000) != 0
                             && random_float_below(1.0f, "S")
-                                > (1.0f - *(float*)(game + 0x125ffdc)) * 0.02f
+                                > (1.0f - salt_frequency) * 0.02f
                                     + 0.98f
                             && cell_index >= *(int*)(game + 0x50)
                             && cell_index < *(int*)(game + 0x58)) {

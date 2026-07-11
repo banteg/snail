@@ -24,8 +24,8 @@ unsigned char HighScoreRecord::deserialize_compact_high_score_record(
     score_tail = compact->score_tail;
     challenge_speed_value = compact->challenge_speed_value;
     challenge_difficulty_value = compact->challenge_difficulty_value;
-    garbage_scalar_bits = compact->garbage_scalar_bits;
-    salt_scalar_bits = compact->salt_scalar_bits;
+    garbage_frequency_bits = compact->garbage_frequency_bits;
+    salt_frequency_bits = compact->salt_frequency_bits;
     source_tail = compact->source_tail;
     runtime_build_seed = compact->runtime_build_seed;
     unknown_1fab8 = compact->unknown_80;

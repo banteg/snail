@@ -61,12 +61,12 @@ struct CompactHighScoreRecord {
     int runtime_build_seed; // +0x70
     int replay_sample_count; // +0x74
     union {
-        int garbage_scalar_bits; // +0x78
-        float garbage_scalar; // +0x78
+        int garbage_frequency_bits; // +0x78
+        float garbage_frequency; // +0x78
     };
     union {
-        int salt_scalar_bits; // +0x7c
-        float salt_scalar; // +0x7c
+        int salt_frequency_bits; // +0x7c
+        float salt_frequency; // +0x7c
     };
     int unknown_80; // +0x80
     int unknown_84; // +0x84
@@ -131,12 +131,12 @@ public:
     int replay_sample_count; // +0x6c
     ReplayRunRecord run_records[HIGH_SCORE_RUN_RECORD_COUNT]; // +0x70
     union {
-        int garbage_scalar_bits; // +0x1fab0
-        float garbage_scalar; // +0x1fab0
+        int garbage_frequency_bits; // +0x1fab0
+        float garbage_frequency; // +0x1fab0
     };
     union {
-        int salt_scalar_bits; // +0x1fab4
-        float salt_scalar; // +0x1fab4
+        int salt_frequency_bits; // +0x1fab4
+        float salt_frequency; // +0x1fab4
     };
     int unknown_1fab8; // +0x1fab8
     int unknown_1fabc; // +0x1fabc

@@ -18,8 +18,8 @@ int HighScoreRecord::serialize_compact_high_score_record(CompactHighScoreRecord*
     compact->score_tail = score_tail;
     compact->challenge_speed_value = challenge_speed_value;
     compact->challenge_difficulty_value = challenge_difficulty_value;
-    compact->garbage_scalar_bits = garbage_scalar_bits;
-    compact->salt_scalar_bits = salt_scalar_bits;
+    compact->garbage_frequency_bits = garbage_frequency_bits;
+    compact->salt_frequency_bits = salt_frequency_bits;
     compact->source_tail = source_tail;
     compact->score = score;
     compact->checksum = (score * score) ^ HIGH_SCORE_CHECKSUM_MASK;

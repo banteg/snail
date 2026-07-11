@@ -521,6 +521,7 @@ Current practical read:
   - `populate_runtime_track_cells_from_segments` consumes those lanes so non-random courses sum first + middle + last block rows, while random courses pick middle segments from the shared math RNG until the `Length:` target is filled; the mode-1 random branch scales that target by challenge difficulty before subtracting the final `Last:` block row count into `game + 0x58`
   - current best read: the scalar at `game + 0x34` is the normalized challenge-difficulty lane, because `build_subgame_level` restores it from selected-record compact field `+0x50`, which matches the recovered `challenge_difficulty_value` offset in the compact high-score record
   - `build_subgame_level` seeds `game + 0x48` from the live course mode or from selected-record compact field `+0x48`, and `calc_subgame_rate` uses that lane as the base rate before completion and damage modifiers
+  - `game + 0x125ffd8/+0x125ffdc` are the normalized `Garbage:`/`Salt:` frequencies: course build seeds or replay-restores them, `update_subgame` consumes them as hazard spawn controls, and `complete_subgame` persists them back into the high-score/replay record
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - the same course-build path also seeds the row bounds consumed by `update_subgoldy`:
   - `game + 0x50` = first-block row count

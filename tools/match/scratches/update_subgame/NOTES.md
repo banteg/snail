@@ -4,6 +4,14 @@ Target: `update_subgame @ 0x438b90` (`thiscall`, 3748 bytes, 1033 instructions).
 
 This scratch reconstructs the outer gameplay state machine and the state-2 runtime update path rather than using a minimal placeholder. The source was shaped against both decompile exports and repeatedly measured with the VC6.5 `/O2 /G5 /W3` matcher toolchain.
 
+`SubgameRuntime::garbage_frequency` at `+0x125ffd8` and `salt_frequency` at
+`+0x125ffdc` are the normalized level-script spawn controls. The garbage lane
+drives the 0.8..1.0 random threshold and the salt lane drives the 0.98..1.0
+threshold; `build_subgame_level` seeds both and `complete_subgame` persists
+both into the replay/high-score record. Direct member access preserves the
+focused 78.22% result (`1033/1033`, `116` clean operands and the two existing
+jump-table label mismatches).
+
 ## Recovered control flow
 
 The front switch now models the principal native states:

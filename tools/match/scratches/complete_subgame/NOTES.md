@@ -177,3 +177,21 @@ Promoting `g_cheat_state` through all four consumers preserves the focused
 scores and operand audits for `complete_subgame`, `update_subgoldy`,
 `run_frame_update`, and `initialize_game_assets_and_world`. The three CheatState
 methods remain exact, and the shared extern lint is now clean.
+
+## 2026-07-11 hazard-frequency ownership
+
+The two former `source_timer_*` dwords at `SubgameRuntime +0x125ffd8` and
+`+0x125ffdc` are the live normalized `Garbage:` and `Salt:` frequencies:
+
+- `load_level_definition_file` parses the authored percentage fields into the
+  embedded `LevelDefinitionLoader`;
+- `build_subgame_level` divides them by 100, or restores the same floats from
+  a selected replay record;
+- `update_subgame` uses them in the garbage and salt random-spawn thresholds;
+- `complete_subgame` bit-copies them into the working `HighScoreRecord`, and
+  compact replay serialization preserves the same two lanes.
+
+The shared runtime and replay headers now use `garbage_frequency` and
+`salt_frequency`, with explicit integer-bit aliases only where the native
+snapshot uses integer moves. Focused matching remains the honest pinned
+75.28%; this is ownership recovery, not instruction shaping.

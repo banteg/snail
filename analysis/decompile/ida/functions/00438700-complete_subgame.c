@@ -2,7 +2,7 @@
 /* function: complete_subgame @ 0x438700 */
 /* selector: complete_subgame */
 
-// Snapshots the just-finished run into the subgame result bank, increments the per-run completion counter, and dispatches the delivery, galaxy, or cutscene handoff for the finished course. Cross-port Android and iOS symbols match this helper to `cRSubGame::Complete(bool)`.
+// Snapshots the just-finished run into the working high-score/replay record, including the normalized garbage and salt frequencies, increments the per-run completion counter, and dispatches the mode-specific high-score handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Complete(bool)`.
 void __thiscall sub_438700(int this, char a2)
 {
   int v3; // ecx
@@ -69,4 +69,3 @@ void __thiscall sub_438700(int this, char a2)
     }
   }
 }
-

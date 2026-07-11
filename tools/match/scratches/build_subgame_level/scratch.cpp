@@ -106,26 +106,26 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     if (*(unsigned char*)(game + 0xff25d0) != zero
         || *(unsigned char*)(game + 0xff25d1) != zero) {
-        *(float*)(game + 0x125ffd8) =
-            (*(HighScoreRecord**)(game + 0xff25d4))->garbage_scalar;
-        *(float*)(game + 0x125ffdc) =
-            (*(HighScoreRecord**)(game + 0xff25d4))->salt_scalar;
+        garbage_frequency =
+            (*(HighScoreRecord**)(game + 0xff25d4))->garbage_frequency;
+        salt_frequency =
+            (*(HighScoreRecord**)(game + 0xff25d4))->salt_frequency;
     } else {
         int level_mode = *(int*)(game + 0x40);
         if (level_mode == 2 || level_mode == 3 || level_mode == 0
             || level_mode == 4 || level_mode == 7) {
-            *(float*)(game + 0x125ffd8) =
-                *(float*)(game + 0x1b01d4) * 0.00999999978f;
-            *(float*)(game + 0x125ffdc) =
-                *(float*)(game + 0x1b01d8) * 0.00999999978f;
+            garbage_frequency =
+                level_definition.garbage_frequency * 0.00999999978f;
+            salt_frequency =
+                level_definition.salt_frequency * 0.00999999978f;
         } else if (level_mode == 1) {
             float normalized_garbage_difficulty =
                 (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
-            *(float*)(game + 0x125ffd8) =
+            garbage_frequency =
                 normalized_garbage_difficulty * 0.800000012f;
             float normalized_salt_difficulty =
                 (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
-            *(float*)(game + 0x125ffdc) =
+            salt_frequency =
                 normalized_salt_difficulty * 0.800000012f;
         }
     }

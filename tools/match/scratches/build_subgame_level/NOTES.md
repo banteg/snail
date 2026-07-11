@@ -40,6 +40,15 @@ early after the easier prefix. Its major phases are:
    slug voice manager, attach its node, update mode-zero HUD text, reset pointer
    positions, and calculate the subgame rate.
 
+The hazard-frequency tail is now typed end to end. `garbage_frequency` and
+`salt_frequency` at `SubgameRuntime +0x125ffd8/+0x125ffdc` are normalized from
+the embedded level definition's authored `Garbage:`/`Salt:` percentages, or
+restored from the selected `HighScoreRecord` for replay. `update_subgame`
+consumes the same floats as spawn controls and `complete_subgame` persists
+them back into the working record. The typed rewrite preserves the focused
+86.10% result (`560/555`, `105` clean operands and the existing table-label
+mismatch).
+
 ## Source-shape decisions that improved the match
 
 - A single `zero` local remains live from the music switch through later reset
