@@ -11,7 +11,7 @@
 #include "sprite.h"
 #include "star_field.h"
 #include "subgame_runtime.h"
-#include "time_trial_string_formatter.h"
+#include "time_trial.h"
 #include "timer_counters.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
@@ -561,12 +561,12 @@ after_authored_ring:
         track_render_cache.update_track_render_cache_rows();
 
         if (level_mode == 4) {
-            TimeTrialStringFormatter* formatter = (TimeTrialStringFormatter*)(game + 0xff25e0);
-            char* text = formatter->format_time_trial_string(&player.stopwatch);
+            TimeTrial* time_trial = (TimeTrial*)(game + 0xff25e0);
+            char* text = time_trial->format_time_trial_string(&player.stopwatch);
             rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb88) + 0x2cc, text);
             char* record = game + level_mode_arg * 0x1fac0;
             if (*(int*)(record + 0x944150) == one) {
-                text = formatter->format_time_trial_string(
+                text = time_trial->format_time_trial_string(
                     (TimerCounters*)(record + 0x944158));
                 rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb8c) + 0x2cc, text);
                 break;

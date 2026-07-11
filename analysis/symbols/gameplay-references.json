@@ -4009,7 +4009,7 @@
       "aliases": [
         "data_751478"
       ],
-      "description": "Shared Time Trial HUD string buffer written by format_time_trial_string and copied into subgame UI records."
+      "description": "Shared Time Trial HUD string buffer written by cRTimeTrial::TimeString and copied into subgame UI records. Symbol-preserving iOS builds name it gTimeTrialString."
     },
     {
       "address": "0x751498",

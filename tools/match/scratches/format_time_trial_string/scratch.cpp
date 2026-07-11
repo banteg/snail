@@ -1,4 +1,4 @@
-// format_time_trial_string @ 0x448960 (stdcall, ret 0x4)
+// cRTimeTrial::TimeString / format_time_trial_string @ 0x448960 (ret 0x4)
 
 typedef struct TimeTrialTimerCountersCView {
     float total_seconds;        // +0x00

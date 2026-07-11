@@ -49,6 +49,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall complete_subgame(SubgameRuntime* runtime, unsigned char completed);",
     ),
     (
+        "format_time_trial_string",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, TimerCounters* timer);",
+    ),
+    (
         "bind_subgame_owner",
         "SubgameRuntime* __thiscall bind_subgame_owner(SubgameOwnerLink* owner);",
     ),

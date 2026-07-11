@@ -29,6 +29,7 @@
 #include "slug_voice_manager.h"
 #include "smtracks.h"
 #include "sub_lazer_types.h"
+#include "time_trial.h"
 #include "times_up.h"
 #include "thanks_screen.h"
 #include "track_health_pickup.h"
@@ -39,8 +40,6 @@
 #include "track_row_cell_tile_views.h"
 #include "track_speedup.h"
 #include "tutorial.h"
-
-class TimeTrialStringFormatter;
 
 class SubgameRuntime {
 public:
@@ -58,7 +57,6 @@ public:
     Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
     TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
     TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
-    TimeTrialStringFormatter* time_trial_formatter(); // embedded service view at +0xff25e0
     void update_subgame(); // @ 0x438b90
     void destroy_subgame(); // @ 0x438850
     void spawn_track_health_pickup(
@@ -214,7 +212,7 @@ public:
         int replay_launch_return_state; // front-end state restored after replay
     };
     int replay_update_cursor; // +0xff25dc
-    char unknown_ff25e0[0xff2910 - 0xff25e0];
+    TimeTrial time_trial; // +0xff25e0, exact authored cRTimeTrial owner
     PathManager path_manager; // +0xff2910, empty authored cRPathManager owner
     char unknown_ff2911[0xff2914 - 0xff2911];
     // Startup constructs 126 records here. initialize_game_assets_and_world
@@ -280,11 +278,6 @@ inline TrackRowCellTileByteView* SubgameRuntime::runtime_cell_tile_views()
 inline TrackRowCellFringeLinkView* SubgameRuntime::runtime_cell_fringe_links()
 {
     return (TrackRowCellFringeLinkView*)&runtime_cells[0][0].fringe_front;
-}
-
-inline TimeTrialStringFormatter* SubgameRuntime::time_trial_formatter()
-{
-    return (TimeTrialStringFormatter*)((char*)this + 0xff25e0);
 }
 
 #endif

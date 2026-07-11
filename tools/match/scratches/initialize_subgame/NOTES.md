@@ -58,9 +58,14 @@ definition table push now resolves as `g_builtin_segment_definitions`; both
 mode-switch tables remain classified as real layout mismatches.
 
 2026-06-20 type cleanup: the member-style time-trial formatter receiver moved
-to `include/time_trial_string_formatter.h`, matching the same call shape used by
+to `include/time_trial.h`, matching the same call shape used by
 `update_challenge_setup_screen` and `update_subgame`. This removes a duplicate
 method-only type row; the focused matcher stayed at 63.25%.
+
+2026-07-11 TimeTrial ownership: the three HUD calls now target the embedded
+`time_trial` object directly. Its +0xff25e0 placement and 0x330 extent are fixed
+by the following PathManager and size ledger; focused matching remains exact at
+396/396 instructions.
 
 2026-06-20 literal cleanup: replaced the stale scratch-only aliases for the
 `"0"`, `"SnailMail.cfg"`, and `"Unknown game mode"` literals with direct string

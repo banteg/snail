@@ -75,6 +75,10 @@ typedef struct SubHighScore {
     SubSolution survival_pending_record;
 } SubHighScore;
 
+typedef struct TimeTrial {
+    uint8_t unknown_000[0x330];
+} TimeTrial;
+
 typedef union RuntimeRateOrLevelArg {
     float base_rate;
     int32_t level_arg_tail;
@@ -144,7 +148,8 @@ typedef struct SubgameRuntime {
     void* selected_level_record;
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
-    uint8_t unknown_ff25e0[0x125ffd8 - 0xff25e0];
+    TimeTrial time_trial;
+    uint8_t unknown_ff2910[0x125ffd8 - 0xff2910];
     float garbage_frequency;
     float salt_frequency;
 } SubgameRuntime;

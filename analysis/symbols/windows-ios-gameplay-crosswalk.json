@@ -1664,6 +1664,15 @@
       "source_object": null,
       "confidence": "high",
       "notes": "The exact Windows method is the inverse persistence bridge, writing the compact header and variable replay lanes from one cRSubSolution."
+    },
+    {
+      "address": "0x448960",
+      "windows_name": "format_time_trial_string",
+      "ios_symbol": "cRTimeTrial::TimeString(cRTime&)",
+      "android_symbol": "cRTimeTrial::TimeString(cRTime&)",
+      "source_object": "TimeTrial.o",
+      "confidence": "high",
+      "notes": "Windows callsites seed `this` with SubgameRuntime +0xff25e0, whose 0x330-byte extent is fixed by the following PathManager and the runtime size ledger. The exact body writes the shared gTimeTrialString buffer and does not read receiver fields."
     }
   ]
 }

@@ -9,7 +9,7 @@
 #include "landscape_manager.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
-#include "time_trial_string_formatter.h"
+#include "time_trial.h"
 #include "timer_counters.h"
 #include "transform_matrix.h"
 #include "subgame_runtime.h"
@@ -159,7 +159,7 @@ void SubgameRuntime::initialize_subgame()
     if (sub_high_score.current_result_record.replay_mode_id == level_mode) {
         if (level_mode == 4) {
             char* text =
-                time_trial_formatter()->format_time_trial_string(
+                time_trial.format_time_trial_string(
                     &sub_high_score.current_result_record.timer);
             rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
         } else {
@@ -170,7 +170,7 @@ void SubgameRuntime::initialize_subgame()
         if (level_mode == 4) {
             ((TimerCounters*)scratch)->zero_timer_counters();
             char* text =
-                time_trial_formatter()->format_time_trial_string(
+                time_trial.format_time_trial_string(
                     (TimerCounters*)scratch);
             rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
         } else {
@@ -202,7 +202,7 @@ void SubgameRuntime::initialize_subgame()
         break;
     case 4: {
         char* text =
-            time_trial_formatter()->format_time_trial_string(&active_level_timer);
+            time_trial.format_time_trial_string(&active_level_timer);
         rstrcpy_checked_ascii(bottom_score_widget->text_buffer, text);
         break;
     }

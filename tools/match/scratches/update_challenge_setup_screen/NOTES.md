@@ -51,10 +51,13 @@ Rejected probes:
 - A direct high-level `if/else` mode dispatch improved neither the sparse
   switch branch labels nor the physical case order.
 
-2026-06-20 type cleanup: `TimeTrialStringFormatter` now comes from the shared
-method-only header. This keeps the existing member-style `ecx = game+0xff25e0`
-source shape while removing the duplicate local type; the focused score stayed
-80.68%.
+2026-06-20 type cleanup: the Time Trial receiver moved to a shared header. This
+kept the member-style `ecx = game+0xff25e0` source shape while removing the
+duplicate local type; the focused score stayed 80.68%.
+
+2026-07-11 TimeTrial ownership: `game->time_trial` is now the exact 0x330-byte
+`cRTimeTrial` object between the selected-replay handoff and PathManager. Both
+TimeString calls remain codegen-neutral at the honest 80.68% baseline.
 
 2026-06-21 validation after the shared `SubgameRuntime` front-controller
 promotion: focused Wibo is still `80.68%`, `354/355`, prefix `8/355`, and the

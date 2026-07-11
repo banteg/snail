@@ -22,6 +22,7 @@ DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types
 SUBGAME_FIELD_UPDATES = (
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
+    ("0xff25e0", "time_trial", "TimeTrial"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
@@ -63,6 +64,10 @@ PROTO_UPDATES = (
     ("advance_blink_random", "double __thiscall advance_blink_random(SubgameRuntime* runtime)"),
     ("initialize_blink_random", "int32_t __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
     ("complete_subgame", "void __thiscall complete_subgame(SubgameRuntime* runtime, uint8_t completed)"),
+    (
+        "format_time_trial_string",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, TimerCounters* timer)",
+    ),
 )
 
 
@@ -114,7 +119,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            required_structs=("SubgameRuntime",),
+            required_structs=("SubgameRuntime", "TimeTrial"),
         ),
         *apply_struct_field_updates(
             REPO_ROOT,

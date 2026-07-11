@@ -6,7 +6,7 @@
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "timer_counters.h"
-#include "time_trial_string_formatter.h"
+#include "time_trial.h"
 
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
@@ -30,7 +30,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             level_name_widget->layout_frontend_widget();
             rstrcpy_checked_ascii(
                 game->bottom_score_widget->text_buffer,
-                game->time_trial_formatter()->format_time_trial_string(
+                game->time_trial.format_time_trial_string(
                     &game->sub_high_score
                          .time_trial_route_records[game->level_mode_arg]
                          .timer));
@@ -49,7 +49,7 @@ int ChallengeSetupScreen::update_challenge_setup_screen()
             level_name_widget->layout_frontend_widget();
             rstrcpy_checked_ascii(
                 game->bottom_score_widget->text_buffer,
-                game->time_trial_formatter()->format_time_trial_string(
+                game->time_trial.format_time_trial_string(
                     &game->sub_high_score
                          .time_trial_route_records[game->level_mode_arg]
                          .timer));

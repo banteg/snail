@@ -20,7 +20,7 @@ operands.
   declaration to the shared challenge setup header.
 - Modeled the dispatch as a sparse `switch` with `case 4` first; this recovers
   the native `sub/dec/sub` mode comparison chain and physical mode-4 fallthrough.
-- Reused the member-style `TimeTrialStringFormatter` call shape from
+- Reused the member-style `TimeTrial` call shape from
   `update_subgame`, preserving the native `ecx = game +0xff25e0` setup.
 - Loaded the selected Time Trial replay active flag separately from the later
   Replay-click record pointer store, matching the native pointer lifetime.

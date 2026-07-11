@@ -52,7 +52,9 @@ Several source-level details were important rather than cosmetic:
 - RNG calls are kept on the left side of comparisons where that produces the native operand ordering and clean call audits.
 - Completion-source assignments intentionally retain the matcher-confirmed X/Y source ordering.
 - Duplicating the challenge-setup `result == 1` build-zero path scores better than sharing the later case-7 label; the native places that build return before the challenge destroy path.
-- `format_time_trial_string` is called as if it had an unused receiver at `game + 0xff25e0`. The callee itself is still the `ret 4` formatter, but this source shape recovers the native `ecx` setup at the HUD callsites.
+- `format_time_trial_string` is the receiver-free body of
+  `cRTimeTrial::TimeString(cRTime&)`; callers bind the exact embedded owner at
+  `game + 0xff25e0`, recovering the native `ecx` setup at the HUD callsites.
 
 These choices recover the exact native prologue through the state range test:
 
@@ -88,10 +90,14 @@ Rejected continuation trials:
 - spelling the pause-state setup with raw offsets did not change the prologue mismatch;
 - materializing a time-trial `record` base local improved one address sequence but regressed the surrounding HUD/camera tail.
 
-2026-06-20 type cleanup: the shared `TimeTrialStringFormatter` header now owns
-the method-only formatter receiver used here and by the challenge setup/HUD
-callers. The broad `update_subgame` scratch stayed at 67.53%; no formatter
-fields are promoted because only the member-call source shape is proven.
+2026-06-20 type cleanup: the shared Time Trial header took over the formatter
+receiver used here and by the challenge setup/HUD callers. The broad
+`update_subgame` scratch stayed at 67.53%.
+
+2026-07-11 TimeTrial ownership: the receiver is now the complete embedded
+0x330-byte `TimeTrial`, with its far boundary proven by PathManager at
++0xff2910. The typed owner is codegen-neutral at the current 78.22% baseline;
+its internals remain opaque because TimeString does not read them.
 
 2026-06-21 receiver cleanup: the scratch now defines
 `SubgameRuntime::update_subgame` directly and uses the shared

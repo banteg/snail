@@ -301,3 +301,12 @@ four-byte count and 256 inline 0x18-byte `ContactTargetEntry` records occupy
 exactly 0x1804 bytes at `SubgameRuntime +0x1270fd4`, ending at `Completion`.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
+
+## 2026-07-11 cRTimeTrial size ledger
+
+The `Size of cRTimeTrial` entry now comes from `sizeof(TimeTrial)`. The exact
+0x330-byte owner begins at `SubgameRuntime +0xff25e0` and ends at the already
+proven one-byte `PathManager` at `+0xff2910`; TimeString callsites independently
+use the same start address as their receiver. Constructor metrics remain
+unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
+relocation unresolved.
