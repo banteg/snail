@@ -154,8 +154,8 @@ the active-list tail.
 
 ## 2026-07-10 embedded-player ownership pass
 
-- `SubgameRuntime::embedded_player()` now exposes the owned `player_storage`
-  at `+0x3bb764` without pretending it is heap allocated. The start row,
+- `SubgameRuntime::embedded_player()` now returns the address of the owned
+  `Player player` member at `+0x3bb764` without pretending it is heap allocated. The start row,
   completion row, Subgoldy initializer, and voice owner all point at that same
   embedded object.
 - The six pre-Player active-list insertions are now spelled as embedded Player

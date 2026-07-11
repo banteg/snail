@@ -1,10 +1,9 @@
 # display_score_stats @ 0x4403c0
 
-`display_score_stats` reports the six run score buckets on the score block
-view at `game+0x3bb764` before `complete_subgame` snapshots the final result.
-The bucket offsets mirror the producer fields used by `add_subgoldy_score`,
-but the callsites pass the run score block, not the `Player`; keep this on
-the shared `RunScoreStats` pointer view.
+`Player::display_score_stats` reports the six run score buckets on the
+`SubgameRuntime`-owned Player at `game+0x3bb764` before `complete_subgame`
+snapshots the final result. These are the same `Player::total_score` and
+`Player::score_buckets` fields produced by `add_subgoldy_score`.
 
 The six bucket indexes are shared through `score_stats.h`:
 garbage, slug, ring/special-effect, parcel collect, parcel deliver, and bonus.
@@ -22,12 +21,11 @@ instead of inventing a placeholder global.
 
 Match status: proof-grade.
 
-2026-06-16 type split: a probe promoted this as `Player::display_score_stats`
-because the score offsets match the player producer window. BN xrefs and
-callsite decompilation corrected that assumption: `complete_subgame` calls
-`display_score_stats(&game[0x3bb764])`, while `add_subgoldy_score` is the
-player-facing producer. The scratch now includes `score_stats.h` and keeps the
-same 90.28% match.
+2026-06-16 initially split the call receiver into a sparse `RunScoreStats`
+view because only the score-window offsets were known. The complete Player
+extent recovered on 2026-07-11 supersedes that split:
+`SubgameRuntime +0x3bb764` is the embedded `Player` through `+0x3bfac8`.
+The scratch now uses the real `Player` receiver and remains exact.
 
 Residual:
 

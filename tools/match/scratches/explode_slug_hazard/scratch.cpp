@@ -40,7 +40,7 @@ int SlugHazardRuntime::explode_slug_hazard()
         SubgameRuntime* game = owner_game;
         float forward =
             (float)next_math_random_value() * spread * 0.000030517578f
-            + game->slug_explosion_base_z;
+            + game->player.velocity.z;
         float speed = game->subgame_rate;
         Vector3 staged_velocity;
         staged_velocity.x = speed * side;

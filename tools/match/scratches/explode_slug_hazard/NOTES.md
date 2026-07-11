@@ -77,10 +77,10 @@ offset macros, or fake aliases.
 
 2026-07-11 owner closure:
 
-- The two sparse lanes are real `SubgameRuntime` ownership: `subgame_rate` is
-  the runtime clock at `+0x38`, while `slug_explosion_base_z +0x3bbb7c` is the
-  embedded `Player::velocity.z` lane exposed by the shared player-storage
-  overlay. `SlugHazardRuntime::owner_game` already borrows that runtime.
+- The two lanes have distinct real owners: `subgame_rate` is the
+  `SubgameRuntime` clock at `+0x38`, while runtime `+0x3bbb7c` is the embedded
+  `Player::velocity.z`. `SlugHazardRuntime::owner_game` borrows the runtime and
+  reaches the latter through `owner_game->player`.
 - Preserving the separate repeated rate reads and the late `game` local avoids
   the earlier broad-hoist lifetime regression, so the synthetic
   `SlugExplosionGameView` can be retired with no codegen loss. Focused Wibo

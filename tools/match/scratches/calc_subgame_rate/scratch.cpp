@@ -7,7 +7,7 @@ float sine(float angle);
 void SubgameRuntime::calc_subgame_rate()
 {
     if (subgame_state == 2) {
-        float completion_fraction = completion_progress_z / (float)completion_row_start;
+        float completion_fraction = player.position.z / (float)completion_row_start;
         if (completion_fraction < 0.0f)
             completion_fraction = 0.0f;
         else if (completion_fraction > 1.0f)
@@ -22,7 +22,8 @@ void SubgameRuntime::calc_subgame_rate()
             subgame_rate = completion_fraction * 0.200000003f + base_rate;
         }
 
-        if (bonus_rate_state == 2) {
+        int damage_state = player.damage_gauge.state;
+        if (damage_state == 2) {
             float bonus;
             if (mode == 1) {
                 bonus = 0.400000006f;
@@ -31,17 +32,22 @@ void SubgameRuntime::calc_subgame_rate()
                 if (mode == 4)
                     bonus = 0.400000006f;
             }
-            if (bonus_rate_phase >= 0.25 && bonus_rate_phase <= 0.75) {
+            if (player.damage_gauge.display_fill >= 0.25
+                && player.damage_gauge.display_fill <= 0.75) {
                 subgame_rate += bonus;
             } else {
-                float envelope = (1.0f - sine(bonus_rate_phase * 12.566371f + 1.57079637f))
+                float envelope =
+                    (1.0f
+                        - sine(
+                            player.damage_gauge.display_fill * 12.566371f
+                            + 1.57079637f))
                     * 0.5f;
                 subgame_rate += envelope * bonus;
             }
         }
 
-        if (nuke_rate_state == 1)
-            subgame_rate += nuke_rate_progress * 0.5f;
+        if (player.jetpack_gauge.state == 1)
+            subgame_rate += player.jetpack_gauge.warning_intensity_latch * 0.5f;
     } else {
         subgame_rate = base_rate;
     }

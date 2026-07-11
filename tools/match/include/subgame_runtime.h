@@ -18,14 +18,12 @@
 #include "high_score_record.h"
 #include "help_screen.h"
 #include "level_definition_loader.h"
-#include "cameraman_state.h"
 #include "contact_target.h"
 #include "new_game_menu.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "row_event_display.h"
 #include "salt_hazard_types.h"
-#include "score_stats.h"
 #include "slug_hazard_types.h"
 #include "sub_lazer_types.h"
 #include "times_up_controller.h"
@@ -50,7 +48,7 @@ public:
     int rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
-    Player* embedded_player(); // typed view of owned player_storage at +0x3bb764
+    Player* embedded_player(); // borrowed pointer to owned player at +0x3bb764
     Vector3* parcel_delivery_arc_basis(); // Player.presentation.live_matrix.basis_up
     Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
     TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
@@ -163,54 +161,10 @@ public:
     // only borrow handles into this storage while a built track is live.
     FringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc
     char unknown_3bb700[0x3bb764 - 0x3bb700];
-    union {
-        // VC6 rejects non-trivial class members in a union, so preserve the
-        // exact Player extent as storage and cast it at typed callsites.
-        char player_storage[sizeof(Player)]; // +0x3bb764, ends at +0x3bfac8
-        struct {
-            char score_stats; // Player +0x000, owner anchor used by parcels
-            char unknown_player_001[0x070 - 0x001];
-            union {
-                float completion_progress_z; // Player.position.z +0x070
-                float salt_fade_start_z;      // Player.position.z +0x070
-            };
-            char unknown_player_074[0x200 - 0x074];
-            CameramanState cameraman; // Player.cameraman +0x200
-            char unknown_player_2d8[0x2e4 - 0x2d8];
-            union {
-                int source_score; // Player.total_score +0x2e4
-                int completion_base_score; // completion result-screen spelling
-            };
-            union {
-                ScoreBucketBlock source_stats; // Player timer/stat overlay +0x2e8
-                TimerCounters source_timer;
-            };
-            int source_score_tail; // Player +0x300
-            int source_tail; // Player.startup_track_index +0x304
-            char unknown_player_308[0x380 - 0x308];
-            int parcel_sprite_owner; // Player.player_slot +0x380
-            char unknown_player_384[0x3c4 - 0x384];
-            int bonus_rate_state; // Player.damage_gauge +0x00
-            char unknown_player_3c8[0x3e4 - 0x3c8];
-            float bonus_rate_phase; // Player.damage_gauge +0x20
-            char unknown_player_3e8[0x418 - 0x3e8];
-            float slug_explosion_base_z; // Player.velocity.z +0x418
-            char unknown_player_41c[0x440 - 0x41c];
-            unsigned char time_trial_route_active; // Player.completion_handoff_active +0x440
-            char unknown_player_441[0x275c - 0x441];
-            int nuke_rate_state; // Player.jetpack_gauge +0x0c
-            char unknown_player_2760[0x295c - 0x2760];
-            float nuke_rate_progress; // Player +0x295c
-            char unknown_player_2960[0x2980 - 0x2960];
-            float subgame_kill_plane_z; // Player.interaction_max_z +0x2980
-            char unknown_player_2984[0x42e8 - 0x2984];
-            int override_camera_active; // Player.presentation +0x1964
-            TransformMatrix override_camera_matrix; // Player.presentation +0x1968
-            char unknown_player_432c[0x4334 - 0x432c];
-            unsigned char override_camera_snap; // Player.presentation +0x19b0
-            char unknown_player_4335[0x4364 - 0x4335];
-        };
-    };
+    // The complete cRSubGoldy actor is embedded here. Its score/timer block,
+    // gauges, cameraman, and presentation controller all share this owner;
+    // the former sparse SubgameRuntime aliases merely reached into this field.
+    Player player; // +0x3bb764, ends at +0x3bfac8
     // Fixed row-major runtime grid owned by SubgameRuntime. Gameplay actors
     // retain pointers into this slab only for the lifetime of the built track.
     TrackRowCell runtime_cells[3200][8]; // +0x3bfac8, ends at +0x5ccac8
@@ -271,7 +225,7 @@ typedef char SubgameRuntime_must_be_0x1272838[
 
 inline Player* SubgameRuntime::embedded_player()
 {
-    return (Player*)player_storage;
+    return &player;
 }
 
 inline Vector3* SubgameRuntime::parcel_delivery_arc_basis()

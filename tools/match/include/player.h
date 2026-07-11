@@ -188,6 +188,8 @@ public:
     int update_player_movement_flags();    // @ 0x43a1a0
     void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
+    int clear_subgoldy_score_buckets();    // @ 0x4403a0
+    int display_score_stats();             // @ 0x4403c0
     void handle_subgoldy_collisions();      // @ 0x444cf0
     void health_collect_particles(TrackHealthPickup* pickup); // @ 0x43a010
     int initialize_subgoldy(int player_slot); // @ 0x43a9c0
@@ -242,11 +244,11 @@ public:
     char unknown_2d9[0x2dc - 0x2d9];
     float cutscene_pitch_cycle;             // +0x2dc
     float cutscene_pitch_cycle_step;        // +0x2e0
-    // Player-side score producer window. The run score block at game+0x3bb764
-    // has matching inner offsets but is represented separately by RunScoreStats.
+    // Player-owned run score producer and completion snapshot window.
     int total_score;                        // +0x2e4
     TimerCounters stopwatch;                // +0x2e8
-    char unknown_300[0x304 - 0x300];
+    // Only confirmed consumer copies this value into HighScoreRecord::score_tail.
+    int score_tail;                         // +0x300
     // Click-start seeds this slot; update_subgoldy later reuses it as the
     // replay/ghost anchor cursor.
     int startup_track_index;                // +0x304

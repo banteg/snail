@@ -1,10 +1,10 @@
 // display_score_stats @ 0x4403c0 (thiscall)
-#include "score_stats.h"
+#include "player.h"
 
 int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in release
 typedef int (__cdecl *DebugReportOneArg)(char* format);
 
-int RunScoreStats::display_score_stats()
+int Player::display_score_stats()
 {
     int result = total_score;
     if (total_score != 0) {

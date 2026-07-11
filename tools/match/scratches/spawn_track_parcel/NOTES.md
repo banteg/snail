@@ -5,9 +5,9 @@ Exact match.
 - Spawns one runtime parcel from the exact `allocate_track_parcel_slot` pool.
 - The function is a `SubgameRuntime` method with two stack arguments. Callers
   pass a `Player*` hint as the second argument, but native ignores it and binds
-  the runtime's owned `embedded_player()` at `subgame+0x3bb764`.
+  the runtime's owned `Player player` at `subgame+0x3bb764`.
 - The parcel starts in state `1`, copies the requested world position to both
-  parcel and sprite positions, assigns the score-stats owner pointer, and
+  parcel and sprite positions, assigns the Player owner pointer, and
   initializes the parcel sprite as white, visible, unrotated, and unit-scale.
 - `bob_phase` starts at `0.5` for even integer z rows and `0.0` for odd rows;
   `bob_phase_step` is the native `0x3c520d21` float.

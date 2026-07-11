@@ -61,7 +61,7 @@ void SubLazerSlot::update_sub_lazer_projectile()
         live_position->y = velocity.y + live_position->y;
         float* live_z = &live_position->z;
         *live_z = velocity.z + *live_z;
-        if (position.y >= 0.0f && position.z >= owner_game->subgame_kill_plane_z) {
+        if (position.y >= 0.0f && position.z >= owner_game->player.interaction_max_z) {
             TrackRowCell* grid =
                 ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_grid_cell_at_world_position(live_position);
             TrackAttachmentRuntimeRow* cell =

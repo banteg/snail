@@ -49,7 +49,7 @@ void CompletionResultScreen::initialize_completion_screen(
     int bonus = bonus_score;
     delivered_count = new_delivered_count;
     perfect_delivery = new_perfect_delivery;
-    total_score = game->subgame.completion_base_score + new_delivered_count * 100 + bonus;
+    total_score = game->subgame.player.total_score + new_delivered_count * 100 + bonus;
 
     title_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
     Color4f color;

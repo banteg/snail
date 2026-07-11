@@ -103,11 +103,11 @@ runtime track cell. This unifies the previously flattened aliases for
 `position.z +0x70`, `movement_state +0x120`, `cameraman +0x200`, score/timer
 lanes `+0x2e4/+0x2e8`, `player_slot +0x380`, `velocity.z +0x418`,
 `control_source +0x43c`, and `interaction_max_z +0x2980`. The shared runtime
-header now exposes a typed-size `player_storage` union owner while retaining
-the proven contextual aliases, and this scratch routes all player gates and
-spawn arguments through it. Focused codegen remains `67.53%`, `1046/1033`,
-with the same `108 ok / 2 jump-table mismatch` audit; exact
-`calc_subgame_rate` and `update_subgame_camera` remain exact.
+now embeds `Player player` directly; the temporary `player_storage` union and
+all contextual aliases have been retired. This scratch routes all player gates
+and spawn arguments through that member while preserving the current 78.22%,
+1033/1033 result, 116 clean operands, and the same two jump-table mismatches.
+Exact `calc_subgame_rate` and `update_subgame_camera` remain exact.
 
 A named `Player*` kept across the pause/fade bridge measured `70.53%` and
 reduced the candidate to `1037` instructions, but it displaced the native

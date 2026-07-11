@@ -2,7 +2,8 @@
 
 complete_subgame @ 0x438700 = cRSubGame::Complete(bool). Semantics:
 
-- display_score_stats on the score block (game+0x3B 73 64 region)
+- `Player::display_score_stats` on the runtime's embedded Player
+  (`game+0x3bb764`)
 - marks the per-run completion bit (|= 8) in the 6-byte-stride run table
   at game+0xFD2A04-ish indexed by the run counter at game+0xFF25DC,
   increments both counters
@@ -22,7 +23,7 @@ above is what the Zig bridge lanes need for verification.
 Promoted to a matcher scratch on 2026-06-13. Current result: 75.28%,
 90/88 instructions, 7/88 prefix. The current scratch covers:
 
-- `display_score_stats` on the score block at `game+0x3bb764`
+- `Player::display_score_stats` on the embedded Player at `game+0x3bb764`
 - 6-byte run-record completion bit at `game+0xfd2b84 + cursor*6`, now
   modeled as bit 3 (`0x08`, completed) in the first byte of the record
 - completion counter and replay cursor increments
@@ -106,12 +107,10 @@ Rejected experiments:
   as `g_high_score_bank`, clearing the masked operand audit without changing the
   normalized score. The remaining residual is still the byte-OR and snapshot
   scheduling shape below.
-- 2026-06-16 score-view split: the display call now uses the shared
-  `RunScoreStats` pointer view at `game+0x3bb764`. Do not embed the full view
-  directly as a `SubgameRuntime` member: its fields overlap the following
-  runtime fields (`source_score` at `+0x3bba48`, etc.), so the shared runtime
-  keeps a one-byte owner anchor and the scratch casts `&score_stats` for the
-  call. This preserves the 75.28% pinned match.
+- 2026-06-16 score-view split was a temporary sparse-layout interpretation.
+  The later complete-extent proof below supersedes it: the apparent overlap is
+  the single embedded `Player`, not a separate `RunScoreStats` object plus
+  runtime aliases.
 - 2026-06-18 shared-record pass: `tools/match/include/high_score_record.h`
   now models the full 0x1fac0 high-score/replay record starting at
   `game+0xfd2b10`, including the 6-byte replay run table and aligned replay
@@ -149,3 +148,19 @@ was reverted. Moving the completion-bit operation behind an inline record
 method stayed at `75.28%` but worsened the localized address shape and was also
 reverted. The direct-memory byte `or` remains an honest compiler-context
 residual rather than a reason to introduce an alias or volatile fakematch.
+
+## 2026-07-11 Player owner closure
+
+The exact `0x4364`-byte `Player` begins at `SubgameRuntime +0x3bb764` and ends
+at the first runtime track cell. `complete_subgame` therefore snapshots
+`player.total_score`, the six-dword `player.stopwatch`, `player.score_tail`,
+`player.startup_track_index`, and `player.completion_handoff_active`; none are
+independent SubgameRuntime fields. BN has only one reference to
+`Player +0x300`, the dword copy into `HighScoreRecord::score_tail`, so that
+name remains deliberately narrow.
+
+Removing `RunScoreStats` and the sparse runtime overlay preserves the honest
+75.28%, 90/88-instruction result with eight clean operands. An explicit local
+for `player.score_tail` was codegen-neutral and was not retained. The two known
+residual clusters remain the contextual replay-byte OR and snapshot scheduling;
+ownership no longer depends on either mismatch.

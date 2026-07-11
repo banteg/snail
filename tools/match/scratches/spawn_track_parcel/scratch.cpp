@@ -8,9 +8,9 @@ TrackParcelRuntime* SubgameRuntime::spawn_track_parcel(Vector3* world_position, 
     if (parcel != 0) {
         parcel->state = 1;
         parcel->position = *world_position;
-        parcel->owner_player = embedded_player();
+        parcel->owner_player = &player;
 
-        Sprite* sprite = g_sprite_manager.allocate_sprite(parcel_sprite_owner, 0x79, -1, -1);
+        Sprite* sprite = g_sprite_manager.allocate_sprite(player.player_slot, 0x79, -1, -1);
         parcel->sprite = sprite;
         sprite->flags |= 0x800;
         parcel->sprite->progress = 0.0f;

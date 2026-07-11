@@ -48,7 +48,7 @@ void SaltHazardSlot::update_salt_hazard()
     }
     case 1: {
         float alpha =
-            1.0f - (position.z - owner_game->salt_fade_start_z) * 0.021739131f;
+            1.0f - (position.z - owner_game->player.position.z) * 0.021739131f;
         fade_alpha() = alpha;
         if (alpha < 0.0f) {
             alpha = 0.0f;
@@ -57,7 +57,7 @@ void SaltHazardSlot::update_salt_hazard()
         }
         fade_alpha() = alpha;
         color.set_color_alpha(0x3f666666);
-        if (position.z < owner_game->subgame_kill_plane_z)
+        if (position.z < owner_game->player.interaction_max_z)
             state = 2;
         return;
     }

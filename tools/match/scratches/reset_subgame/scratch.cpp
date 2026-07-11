@@ -1,6 +1,5 @@
 // reset_subgame @ 0x437b10 (thiscall, ret)
 
-#include "score_stats.h"
 #include "subgame_runtime.h"
 #include "timer_counters.h"
 
@@ -67,7 +66,7 @@ void SubgameRuntime::reset_subgame()
     } else {
         if (self[4834290] == 2) {
             self[978578] = 0;
-            ((RunScoreStats*)(self + 978393))->clear_subgoldy_score_buckets();
+            ((Player*)(self + 978393))->clear_subgoldy_score_buckets();
         }
         ((TimerCounters*)(self + 978579))->zero_timer_counters();
         self[978585] = 0;

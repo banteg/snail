@@ -17,15 +17,15 @@ void SubgameRuntime::update_subgame_camera()
         target.position.y = 3.0f;
         *(float*)(g_game_base + 0x284) = 110.0f;
     } else {
-        cameraman.update_cameraman();
-        if (override_camera_active != 0) {
-            camera_snap_requested = override_camera_snap;
-            target = override_camera_matrix;
+        player.cameraman.update_cameraman();
+        if (player.presentation.cutscene_ai.state != 0) {
+            camera_snap_requested = player.presentation.cutscene_ai.force_camera_update;
+            target = player.presentation.cutscene_ai.live_matrix;
             *(float*)(g_game_base + 0x284) = 110.0f;
         } else {
-            target = cameraman.live_matrix;
-            camera_snap_requested = cameraman.unresolved_cc;
-            *(float*)(g_game_base + 0x284) = cameraman.fov_degrees;
+            target = player.cameraman.live_matrix;
+            camera_snap_requested = player.cameraman.unresolved_cc;
+            *(float*)(g_game_base + 0x284) = player.cameraman.fov_degrees;
         }
     }
 

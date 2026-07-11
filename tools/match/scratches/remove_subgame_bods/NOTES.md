@@ -59,7 +59,7 @@ Rejected probes:
 - Player, presentation, jetpack channel, three weapon channels, and invincible
   shell removals are now expressed as embedded subobjects. Their intrusive BOD
   nodes are returned to the shared free list, but their backing storage remains
-  owned by `SubgameRuntime::player_storage`.
+  owned by `SubgameRuntime::player`.
 - `Player +0xa0` is an embedded `ClickStartController`, with its `state` lane at
   `Player +0x120`. The initializer now uses that typed view. A typed spelling of
   the final teardown branch regressed to `59.18%`, so the scratch retains the
