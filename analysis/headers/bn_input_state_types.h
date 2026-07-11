@@ -21,9 +21,16 @@ typedef struct InputState {
     int32_t current_buttons;
 } InputState;
 
-typedef struct GameInputOwner {
+typedef struct GameInput {
     uint8_t unknown_00[0x38];
     InputState input;
-} GameInputOwner;
+} GameInput;
+
+typedef struct MouseScreenRect {
+    int32_t left;
+    int32_t top;
+    int32_t right;
+    int32_t bottom;
+} MouseScreenRect;
 
 #endif

@@ -3,8 +3,8 @@
 /* selector: is_mouse_captured */
 
 // Returns the capture-active byte at the head of the shared mouse-pointer state block stored at Game + 0x290.
-char __thiscall sub_44C3B0(void *this)
+uint8_t __thiscall is_mouse_captured(MouseCursorState *mouse)
 {
-  return *(_BYTE *)this;
+  return mouse->captured;
 }
 

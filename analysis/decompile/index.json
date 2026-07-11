@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 11,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 678,
-  "ida_exported": 677,
+  "bn_exported": 679,
+  "ida_exported": 678,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,23 +15,51 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_frontend_sprite_button",
-      "address": "0x401a70"
+      "name": "update_game_input",
+      "address": "0x40aab0"
     },
     {
-      "name": "initialize_frontend_widget",
-      "address": "0x401d30"
+      "name": "update_frontend_state_machine",
+      "address": "0x4107d0"
     },
     {
-      "name": "layout_frontend_widget",
-      "address": "0x4024a0"
+      "name": "initialize_mouse_authored_scale_from_clip_rect",
+      "address": "0x44bbb0"
     },
     {
-      "name": "border_mouse_test",
-      "address": "0x404580"
+      "name": "update_mouse_authored_scale",
+      "address": "0x44bbd0"
+    },
+    {
+      "name": "resolve_uncaptured_cursor_sensitivity_scale",
+      "address": "0x44bc20"
+    },
+    {
+      "name": "update_mouse",
+      "address": "0x44bc50"
+    },
+    {
+      "name": "set_hide_system_cursor_flag",
+      "address": "0x44c050"
+    },
+    {
+      "name": "click_mouse_screen",
+      "address": "0x44c060"
+    },
+    {
+      "name": "convert_mouse_screen_xy",
+      "address": "0x44c100"
+    },
+    {
+      "name": "release_mouse_input",
+      "address": "0x44c2c0"
+    },
+    {
+      "name": "initialize_mouse_input",
+      "address": "0x44c310"
     }
   ],
-  "health_check_count": 33,
+  "health_check_count": 39,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

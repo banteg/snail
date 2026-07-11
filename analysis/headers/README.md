@@ -111,7 +111,13 @@ make `complete_subgame` and the three `add_*_high_score` helpers readable.
 
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
-`GameInputOwner.input` field proven by `update_game_input`.
+`GameInput.input` field proven by the exact Windows bridge and iOS
+`cRGameInput::AI()` provenance. The root frame lane also places the two owned
+records at `GameRoot +0x44` and their borrowed player backlinks at `+0x168`.
+The same input lane separates the mouse platform globals from IDA's stale BSS
+aggregate, including the two-slot live/screen coordinates, `MouseScreenRect`,
+authored-coordinate scales, cursor-hide flag, and DirectInput interface/device
+owners.
 
 The overlay lane depends on the presentation types and adds the complete
 `0x14c`-byte `Overlay` plus its owned `0xc8`-byte `RenderCamera`; the segment

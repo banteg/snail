@@ -3,19 +3,16 @@
 /* selector: release_mouse_cursor */
 
 // Leaves captured-mouse mode for the shared Game + 0x290 pointer state by restoring the saved authored cursor coordinates into the live lanes and clearing the capture byte.
-int __thiscall sub_44C400(_DWORD *this)
+void __thiscall release_mouse_cursor(MouseCursorState *mouse)
 {
-  int result; // eax
-  int v2; // edx
+  float saved_y; // edx
 
-  if ( *(_BYTE *)this == 1 )
+  if ( mouse->captured == 1 )
   {
-    result = *(this + 3);
-    v2 = *(this + 4);
-    *(this + 1) = result;
-    *(this + 2) = v2;
+    saved_y = mouse->saved_y;
+    mouse->live_x = mouse->saved_x;
+    mouse->live_y = saved_y;
   }
-  *(_BYTE *)this = 0;
-  return result;
+  mouse->captured = 0;
 }
 

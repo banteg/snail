@@ -2,27 +2,24 @@
 /* function: update_game_input @ 0x40aab0 */
 /* selector: update_game_input */
 
-void *__thiscall update_game_input(GameInputOwner *owner)
+void __thiscall update_game_input(GameInput *game_input)
 {
-  void *result; // eax
   InputState *p_input; // esi
 
-  result = g_game_base;
   if ( *((_BYTE *)g_game_base + 1312) )
   {
-    p_input = &owner->input;
+    p_input = &game_input->input;
     copy_active_input_controller_state(
-      owner->input.controller_slot,
-      &owner->input.current_buttons,
-      &owner->input.axis_x,
-      &owner->input.axis_y,
-      &owner->input.authored_x,
-      &owner->input.authored_y,
-      &owner->input.pointer_value,
-      &owner->input.pointer_x,
-      &owner->input.pointer_y);
-    return (void *)update_input(p_input);
+      game_input->input.controller_slot,
+      &game_input->input.current_buttons,
+      &game_input->input.axis_x,
+      &game_input->input.axis_y,
+      &game_input->input.authored_x,
+      &game_input->input.authored_y,
+      &game_input->input.pointer_value,
+      &game_input->input.pointer_x,
+      &game_input->input.pointer_y);
+    update_input(p_input);
   }
-  return result;
 }
 

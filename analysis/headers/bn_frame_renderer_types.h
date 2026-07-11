@@ -44,6 +44,28 @@ typedef struct FrontendFade {
     int32_t hold_state;
 } FrontendFade;
 
+typedef struct InputState {
+    int32_t controller_slot;
+    int32_t pressed_buttons;
+    int32_t released_buttons;
+    int32_t previous_buttons;
+    int32_t inverse_current_buttons;
+    float axis_x;
+    float axis_y;
+    int32_t unknown_1c;
+    float pointer_x;
+    float pointer_y;
+    float authored_x;
+    float authored_y;
+    float pointer_value;
+    int32_t current_buttons;
+} InputState;
+
+typedef struct GameInput {
+    uint8_t unknown_00[0x38];
+    InputState input;
+} GameInput;
+
 typedef struct MouseCursorState {
     uint8_t captured;
     uint8_t unknown_01[0x3];
@@ -60,14 +82,6 @@ typedef struct FrontendOverlayColorLerp {
     FrameColor4f target;
     FrameColor4f current;
 } FrontendOverlayColorLerp;
-
-typedef struct GamePlayer {
-    void* vtable;
-    uint8_t unknown_004[0x16c - 0x004];
-    MouseCursorState mouse_cursor;
-    FrontendOverlayColorLerp frontend_overlay;
-    uint8_t unknown_1a8[0x1f8 - 0x1a8];
-} GamePlayer;
 
 typedef struct FrameBodBase FrameBodBase;
 
@@ -102,6 +116,28 @@ typedef struct FrameRenderCamera {
     uint32_t render_mask;
 } FrameRenderCamera;
 
+typedef struct GamePlayer {
+    void* vtable;
+    uint8_t unknown_004[0x38 - 0x004];
+    FrameTransformMatrix transform;
+    uint8_t unknown_078[0x08];
+    char player_name[0x14];
+    int32_t frontend_state;
+    int32_t saved_frontend_state;
+    uint8_t unknown_09c[0x04];
+    FrameRenderCamera camera;
+    GameInput* game_input;
+    MouseCursorState mouse_cursor;
+    FrontendOverlayColorLerp frontend_overlay;
+    uint8_t unknown_1a8[0x40];
+    uint8_t redispatch_requested;
+    uint8_t high_score_entry_pending;
+    uint8_t unknown_1ea[0x02];
+    int32_t selected_high_score_rank;
+    int32_t selected_high_score_mode;
+    uint8_t unknown_1f4[0x04];
+} GamePlayer;
+
 typedef struct FrameRenderCameraSlot {
     int32_t unknown_00;
     int32_t sort_key;
@@ -134,7 +170,7 @@ typedef struct GameRoot {
     int32_t frontend_quit_requested;
     int32_t fixed_update_count;
     int32_t player_count;
-    uint8_t unknown_000044[0x124 - 0x44];
+    GameInput game_inputs[2];
     GamePlayer players[2];
     uint8_t unknown_000514[0x518 - 0x514];
     float fixed_update_accumulator;

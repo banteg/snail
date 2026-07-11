@@ -3,9 +3,9 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: release_mouse_cursor @ 0x44c400 */
 
-0044c403        if (*arg1 == 1)
-0044c408        int32_t edx_1 = *(arg1 + 0x10)
-0044c40b        *(arg1 + 4) = *(arg1 + 0xc)
-0044c40e        *(arg1 + 8) = edx_1
-0044c411        *arg1 = 0
+0044c403        if (mouse->captured == 1)
+0044c408        float saved_y = mouse->saved_y
+0044c40b        mouse->live_x = mouse->saved_x
+0044c40e        mouse->live_y = saved_y
+0044c411        mouse->captured = 0
 0044c414        return

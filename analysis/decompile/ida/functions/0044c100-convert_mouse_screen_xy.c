@@ -2,63 +2,63 @@
 /* function: convert_mouse_screen_xy @ 0x44c100 */
 /* selector: convert_mouse_screen_xy */
 
-int __cdecl convert_mouse_screen_xy(int a1, float *a2, float *a3)
+BOOL __cdecl convert_mouse_screen_xy(int sensitivity_slot, float *x, float *y)
 {
-  int result; // eax
+  BOOL result; // eax
   double v4; // st7
   double v5; // st7
   int Point; // [esp+0h] [ebp-8h] BYREF
   int Point_4; // [esp+4h] [ebp-4h]
 
-  if ( !unk_4DFAF4 && is_mouse_captured((char *)MEMORY[0x4DF904] + 656) )
+  if ( !g_fullscreen_active && is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
   {
     result = ((int (__stdcall *)(int *))GetCursorPos)(&Point);
     if ( result )
     {
-      *a2 = (float)Point;
-      *a3 = (float)Point_4;
-      return (int)a3;
+      *x = (float)Point;
+      *y = (float)Point_4;
+      return (BOOL)y;
     }
     else
     {
-      *a2 = 0.0;
-      *a3 = 0.0;
+      *x = 0.0;
+      *y = 0.0;
     }
     return result;
   }
-  if ( is_mouse_captured((char *)MEMORY[0x4DF904] + 656) )
+  if ( is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
   {
     if ( ((int (__stdcall *)(int *))GetCursorPos)(&Point) )
     {
-      *a2 = ((double)Point - unk_4DF85C * 0.5) * g_mouse_screen_to_authored_x_scale + *a2;
-      *a3 = ((double)Point_4 - unk_4B7760 * 0.5) * g_mouse_screen_to_authored_y_scale + *a3;
+      *x = ((double)Point - g_authored_view_width * 0.5) * g_mouse_screen_to_authored_x_scale + *x;
+      *y = ((double)Point_4 - g_authored_view_height * 0.5) * g_mouse_screen_to_authored_y_scale + *y;
     }
     else
     {
-      *a2 = 0.0;
-      *a3 = 0.0;
+      *x = 0.0;
+      *y = 0.0;
     }
     result = ((int (*)(void))GetActiveWindow)();
-    if ( result == MEMORY[0x4DFAF0] )
-      return ((int (__stdcall *)(_DWORD, _DWORD))SetCursorPos)((__int64)(unk_4DF85C * 0.5), (__int64)(unk_4B7760 * 0.5));
+    if ( result == g_main_window )
+      return SetCursorPos((__int64)(g_authored_view_width * 0.5), (__int64)(g_authored_view_height * 0.5));
   }
   else
   {
     if ( ((int (__stdcall *)(int *))GetCursorPos)(&Point) )
     {
-      v4 = resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[a1]);
-      *a2 = v4 * ((double)Point - unk_4DF85C * 0.5) * g_mouse_screen_to_authored_x_scale + *a2;
-      v5 = resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[a1]);
-      *a3 = v5 * ((double)Point_4 - unk_4B7760 * 0.5) * g_mouse_screen_to_authored_y_scale + *a3;
+      v4 = resolve_uncaptured_cursor_sensitivity_scale(g_steering_sensitivity[sensitivity_slot]);
+      *x = v4 * ((double)Point - g_authored_view_width * 0.5) * g_mouse_screen_to_authored_x_scale + *x;
+      v5 = resolve_uncaptured_cursor_sensitivity_scale(g_steering_sensitivity[sensitivity_slot]);
+      *y = v5 * ((double)Point_4 - g_authored_view_height * 0.5) * g_mouse_screen_to_authored_y_scale + *y;
     }
     else
     {
-      *a2 = 0.0;
-      *a3 = 0.0;
+      *x = 0.0;
+      *y = 0.0;
     }
     result = ((int (*)(void))GetActiveWindow)();
-    if ( result == MEMORY[0x4DFAF0] )
-      return ((int (__stdcall *)(_DWORD, _DWORD))SetCursorPos)((__int64)(unk_4DF85C * 0.5), (__int64)(unk_4B7760 * 0.5));
+    if ( result == g_main_window )
+      return SetCursorPos((__int64)(g_authored_view_width * 0.5), (__int64)(g_authored_view_height * 0.5));
   }
   return result;
 }

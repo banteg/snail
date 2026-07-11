@@ -13,11 +13,36 @@ import idc
 
 
 TRUSTED_NAMES = [
+    (0x408000, "initialize_game_player"),
+    (0x4107D0, "update_frontend_state_machine"),
+    (0x44C3B0, "is_mouse_captured"),
+    (0x44C3C0, "capture_mouse_cursor"),
+    (0x44C400, "release_mouse_cursor"),
     (0x4E5510, "g_sprite_depth_nodes"),
     (0x4F7050, "g_sprite_depth_buckets"),
 ]
 
 TRUSTED_FUNCTION_DECLARATIONS = [
+    (
+        "initialize_game_player",
+        "GamePlayer *__thiscall initialize_game_player(GamePlayer *player);",
+    ),
+    (
+        "update_frontend_state_machine",
+        "int __thiscall update_frontend_state_machine(GamePlayer *player);",
+    ),
+    (
+        "is_mouse_captured",
+        "uint8_t __thiscall is_mouse_captured(MouseCursorState *mouse);",
+    ),
+    (
+        "capture_mouse_cursor",
+        "void __thiscall capture_mouse_cursor(MouseCursorState *mouse);",
+    ),
+    (
+        "release_mouse_cursor",
+        "void __thiscall release_mouse_cursor(MouseCursorState *mouse);",
+    ),
     (
         "run_frame_update",
         "int __thiscall run_frame_update(GameRoot *game);",

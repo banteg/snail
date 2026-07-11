@@ -3,9 +3,9 @@
 /* selector: initialize_mouse_authored_scale_from_clip_rect */
 
 // Caches the current clipped screen rectangle and initializes the shared mouse screen-to-authored scaling for the default 640x480 authored coordinate space.
-int initialize_mouse_authored_scale_from_clip_rect()
+int __cdecl initialize_mouse_authored_scale_from_clip_rect()
 {
-  ((void (__stdcall *)(int *))GetClipCursor)(&dword_777B2C[151]);
+  ((void (__stdcall *)(MouseScreenRect *))GetClipCursor)(&g_mouse_clip_rect);
   return update_mouse_authored_scale(640.0, 480.0);
 }
 

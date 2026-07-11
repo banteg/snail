@@ -4,8 +4,10 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_data_var_updates,
     apply_proto_updates,
     apply_struct_field_updates,
+    apply_symbol_updates,
     emit_summary,
     types_declare,
 )
@@ -14,6 +16,44 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_input_state_types.h"
 TARGET = "active"
+
+MOUSE_DATA_SYMBOL_UPDATES = (
+    ("0x777d58", "g_mouse_live_x"),
+    ("0x777d60", "g_mouse_live_y"),
+    ("0x777d68", "g_mouse_screen_to_authored_y_scale"),
+    ("0x777d6c", "g_mouse_screen_to_authored_x_scale"),
+    ("0x777d70", "g_hide_system_cursor_flag"),
+    ("0x777d74", "g_mouse_screen_y"),
+    ("0x777d7c", "g_mouse_screen_x"),
+    ("0x777d88", "g_mouse_clip_rect"),
+    ("0x777d98", "g_mouse_input"),
+    ("0x777d9c", "g_mouse_device"),
+)
+
+MOUSE_DATA_VAR_UPDATES = (
+    ("0x777d58", "float[2]"),
+    ("0x777d60", "float[2]"),
+    ("0x777d68", "float"),
+    ("0x777d6c", "float"),
+    ("0x777d70", "uint8_t"),
+    ("0x777d74", "int32_t[2]"),
+    ("0x777d7c", "int32_t[2]"),
+    ("0x777d88", "MouseScreenRect"),
+    ("0x777d98", "void*"),
+    ("0x777d9c", "void*"),
+)
+
+MOUSE_FUNCTION_SYMBOL_UPDATES = (
+    ("0x44bbb0", "initialize_mouse_authored_scale_from_clip_rect"),
+    ("0x44bbd0", "update_mouse_authored_scale"),
+    ("0x44bc20", "resolve_uncaptured_cursor_sensitivity_scale"),
+    ("0x44bc50", "update_mouse"),
+    ("0x44c050", "set_hide_system_cursor_flag"),
+    ("0x44c060", "click_mouse_screen"),
+    ("0x44c100", "convert_mouse_screen_xy"),
+    ("0x44c2c0", "release_mouse_input"),
+    ("0x44c310", "initialize_mouse_input"),
+)
 
 INPUT_STATE_FIELDS = (
     ("0x00", "controller_slot", "int32_t"),
@@ -32,18 +72,27 @@ INPUT_STATE_FIELDS = (
     ("0x34", "current_buttons", "int32_t"),
 )
 
-GAME_INPUT_OWNER_FIELDS = (
+GAME_INPUT_FIELDS = (
     ("0x38", "input", "InputState"),
 )
 
 PROTO_UPDATES = (
     ("initialize_input", "int32_t __thiscall initialize_input(InputState* state)"),
-    ("update_input", "int32_t __thiscall update_input(InputState* state)"),
-    ("update_game_input", "void* __thiscall update_game_input(GameInputOwner* owner)"),
+    ("update_input", "void __thiscall update_input(InputState* state)"),
+    ("update_game_input", "void __thiscall update_game_input(GameInput* game_input)"),
     (
         "copy_active_input_controller_state",
         "float* __cdecl copy_active_input_controller_state(int32_t controller_slot, int32_t* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)",
     ),
+    ("0x44bbb0", "int32_t __cdecl initialize_mouse_authored_scale_from_clip_rect()"),
+    ("0x44bbd0", "int32_t __cdecl update_mouse_authored_scale(float authored_width, float authored_height)"),
+    ("0x44bc20", "float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale)"),
+    ("0x44bc50", "int32_t __cdecl update_mouse(int32_t window_handle)"),
+    ("0x44c050", "char __cdecl set_hide_system_cursor_flag(char hidden)"),
+    ("0x44c060", "void* __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)"),
+    ("0x44c100", "BOOL __cdecl convert_mouse_screen_xy(int32_t arg1, float* arg2, float* arg3)"),
+    ("0x44c2c0", "int32_t __cdecl release_mouse_input()"),
+    ("0x44c310", "int32_t __cdecl initialize_mouse_input(int32_t window_handle)"),
 )
 
 
@@ -59,8 +108,25 @@ def main() -> int:
         *apply_struct_field_updates(
             REPO_ROOT,
             target=TARGET,
-            struct_name="GameInputOwner",
-            updates=GAME_INPUT_OWNER_FIELDS,
+            struct_name="GameInput",
+            updates=GAME_INPUT_FIELDS,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=MOUSE_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=MOUSE_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=MOUSE_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]

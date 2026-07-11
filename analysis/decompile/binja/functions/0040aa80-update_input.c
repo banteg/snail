@@ -11,4 +11,4 @@
 0040aa9a        state->inverse_current_buttons = esi_3
 0040aa9f        state->current_buttons = 0
 0040aaa6        state->released_buttons = esi_3 & edx_1
-0040aaab        return current_buttons
+0040aaab        return

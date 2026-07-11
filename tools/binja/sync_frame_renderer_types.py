@@ -21,6 +21,8 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frame_renderer_types.h"
 REQUIRED_STRUCTS = (
     "SpriteDepthNode",
     "FrontendFade",
+    "InputState",
+    "GameInput",
     "MouseCursorState",
     "FrontendOverlayColorLerp",
     "GamePlayer",
@@ -39,12 +41,40 @@ SYMBOL_UPDATES = (
     ("0x4f7050", "g_sprite_depth_buckets"),
 )
 
+FUNCTION_SYMBOL_UPDATES = (
+    ("0x408000", "initialize_game_player"),
+    ("0x4107d0", "update_frontend_state_machine"),
+    ("0x44c3b0", "is_mouse_captured"),
+    ("0x44c3c0", "capture_mouse_cursor"),
+    ("0x44c400", "release_mouse_cursor"),
+)
+
 DATA_VAR_UPDATES = (
     ("0x4e5510", "SpriteDepthNode[3000]"),
     ("0x4f7050", "SpriteDepthNode*[256]"),
 )
 
 PROTO_UPDATES = (
+    (
+        "0x408000",
+        "GamePlayer* __thiscall initialize_game_player(GamePlayer* player)",
+    ),
+    (
+        "0x4107d0",
+        "int32_t __thiscall update_frontend_state_machine(GamePlayer* player)",
+    ),
+    (
+        "0x44c3b0",
+        "uint8_t __thiscall is_mouse_captured(MouseCursorState* mouse)",
+    ),
+    (
+        "0x44c3c0",
+        "void __thiscall capture_mouse_cursor(MouseCursorState* mouse)",
+    ),
+    (
+        "0x44c400",
+        "void __thiscall release_mouse_cursor(MouseCursorState* mouse)",
+    ),
     (
         "run_frame_update",
         "int32_t __thiscall run_frame_update(GameRoot* game)",
@@ -72,8 +102,18 @@ FRONTEND_OVERLAY_FIELD_UPDATES = (
 
 GAME_PLAYER_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x38", "transform", "FrameTransformMatrix"),
+    ("0x80", "player_name", "char[0x14]"),
+    ("0x94", "frontend_state", "int32_t"),
+    ("0x98", "saved_frontend_state", "int32_t"),
+    ("0xa0", "camera", "FrameRenderCamera"),
+    ("0x168", "game_input", "GameInput*"),
     ("0x16c", "mouse_cursor", "MouseCursorState"),
     ("0x184", "frontend_overlay", "FrontendOverlayColorLerp"),
+    ("0x1e8", "redispatch_requested", "uint8_t"),
+    ("0x1e9", "high_score_entry_pending", "uint8_t"),
+    ("0x1ec", "selected_high_score_rank", "int32_t"),
+    ("0x1f0", "selected_high_score_mode", "int32_t"),
 )
 
 GAME_ROOT_FIELD_UPDATES = (
@@ -81,6 +121,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x38", "frontend_quit_requested", "int32_t"),
     ("0x3c", "fixed_update_count", "int32_t"),
     ("0x40", "player_count", "int32_t"),
+    ("0x44", "game_inputs", "GameInput[2]"),
     ("0x124", "players", "GamePlayer[2]"),
     ("0x518", "fixed_update_accumulator", "float"),
     ("0x51c", "frame_counter", "int32_t"),
@@ -166,6 +207,14 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=DATA_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FUNCTION_SYMBOL_UPDATES,
+            kind="function",
         )
     )
     operations.extend(

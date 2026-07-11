@@ -3,6 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: is_mouse_captured @ 0x44c3b0 */
 
-0044c3b0        int32_t result
-0044c3b0        result.b = *arg1
-0044c3b2        return result
+0044c3b2        return mouse->captured

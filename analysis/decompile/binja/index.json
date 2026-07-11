@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 678,
-  "function_count": 678,
+  "selected_count": 679,
+  "function_count": 679,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -387,6 +387,11 @@
       "address": "0x407b60",
       "name": "construct_game_runtime",
       "artifact": "analysis/decompile/binja/functions/00407b60-construct_game_runtime.c"
+    },
+    {
+      "address": "0x408000",
+      "name": "initialize_game_player",
+      "artifact": "analysis/decompile/binja/functions/00408000-initialize_game_player.c"
     },
     {
       "address": "0x408060",

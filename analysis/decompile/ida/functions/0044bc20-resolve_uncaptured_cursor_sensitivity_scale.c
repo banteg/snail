@@ -3,11 +3,11 @@
 /* selector: resolve_uncaptured_cursor_sensitivity_scale */
 
 // Returns the cursor-delta sensitivity scale for uncaptured pointer mode: 1.0 while the cursor is captured, otherwise arg * 1.8 + 0.7.
-double __cdecl sub_44BC20(float a1)
+float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale)
 {
-  if ( is_mouse_captured((char *)MEMORY[0x4DF904] + 656) )
+  if ( is_mouse_captured((MouseCursorState *)((char *)g_game_base + 656)) )
     return 1.0;
   else
-    return a1 * 1.8 + 0.69999999;
+    return scale * 1.8 + 0.69999999;
 }
 

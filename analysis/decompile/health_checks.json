@@ -237,6 +237,221 @@
       ]
     },
     {
+      "name": "bn_game_input_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0040aab0-update_game_input.c",
+      "required_substrings": [
+        "game_input->input.controller_slot",
+        "game_input->input.current_buttons",
+        "game_input->input.authored_x",
+        "game_input->input.authored_y",
+        "update_input(&game_input->input)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "GameInputOwner",
+        "return update_input",
+        "return game_base",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_game_input_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0040aab0-update_game_input.c",
+      "required_substrings": [
+        "void __thiscall update_game_input(GameInput *game_input)",
+        "game_input->input.controller_slot",
+        "game_input->input.current_buttons",
+        "game_input->input.authored_x",
+        "game_input->input.authored_y"
+      ],
+      "forbidden_substrings": [
+        "GameInputOwner",
+        "void *result",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_player_game_input_mouse_tail",
+      "artifact": "analysis/decompile/binja/functions/004107d0-update_frontend_state_machine.c",
+      "required_substrings": [
+        "player->game_input",
+        "game_input->input.authored_x",
+        "game_input->input.authored_y",
+        "player->mouse_cursor.saved_x",
+        "player->mouse_cursor.saved_y",
+        "player->camera.transform",
+        "player->transform"
+      ],
+      "forbidden_substrings": [
+        "*(arg1 + 0x168)",
+        "*(arg1 + 0x178)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_player_game_input_mouse_tail",
+      "artifact": "analysis/decompile/ida/functions/004107d0-update_frontend_state_machine.c",
+      "required_substrings": [
+        "update_frontend_state_machine(GamePlayer *player)",
+        "player->game_input",
+        "game_input->input.authored_x",
+        "game_input->input.authored_y",
+        "player->mouse_cursor.saved_x",
+        "player->mouse_cursor.saved_y",
+        "player->camera.transform",
+        "player->transform"
+      ],
+      "forbidden_substrings": [
+        "this + 360",
+        "this + 376",
+        "sub_4107D0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_mouse_inactive_owner_and_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0044c400-release_mouse_cursor.c",
+      "required_substrings": [
+        "mouse->captured",
+        "mouse->saved_x",
+        "mouse->saved_y",
+        "mouse->live_x",
+        "mouse->live_y",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "*arg1",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_mouse_inactive_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0044c400-release_mouse_cursor.c",
+      "required_substrings": [
+        "void __thiscall release_mouse_cursor(MouseCursorState *mouse)",
+        "mouse->captured",
+        "mouse->saved_x",
+        "mouse->saved_y",
+        "mouse->live_x",
+        "mouse->live_y"
+      ],
+      "forbidden_substrings": [
+        "sub_44C400",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_mouse_coordinate_globals",
+      "artifact": "analysis/decompile/binja/functions/0044c060-click_mouse_screen.c",
+      "required_substrings": [
+        "g_mouse_screen_x[slot]",
+        "g_mouse_screen_y[slot]",
+        "g_mouse_live_x[slot]",
+        "g_mouse_live_y[slot]"
+      ],
+      "forbidden_substrings": [
+        "g_joystick_count",
+        "data_777d",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_mouse_coordinate_globals",
+      "artifact": "analysis/decompile/ida/functions/0044c060-click_mouse_screen.c",
+      "required_substrings": [
+        "g_mouse_screen_x[slot]",
+        "g_mouse_screen_y[slot]",
+        "g_mouse_live_x[slot]",
+        "g_mouse_live_y[slot]"
+      ],
+      "forbidden_substrings": [
+        "g_joystick_count",
+        "dword_777B2C",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_mouse_clip_rect_globals",
+      "artifact": "analysis/decompile/binja/functions/0044bbd0-update_mouse_authored_scale.c",
+      "required_substrings": [
+        "g_mouse_clip_rect.left",
+        "g_mouse_clip_rect.top",
+        "g_mouse_clip_rect.right",
+        "g_mouse_clip_rect.bottom",
+        "g_mouse_screen_to_authored_x_scale",
+        "g_mouse_screen_to_authored_y_scale"
+      ],
+      "forbidden_substrings": [
+        "g_joystick_count",
+        "data_777d",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_mouse_clip_rect_globals",
+      "artifact": "analysis/decompile/ida/functions/0044bbd0-update_mouse_authored_scale.c",
+      "required_substrings": [
+        "g_mouse_clip_rect.left",
+        "g_mouse_clip_rect.top",
+        "g_mouse_clip_rect.right",
+        "g_mouse_clip_rect.bottom",
+        "g_mouse_screen_to_authored_x_scale",
+        "g_mouse_screen_to_authored_y_scale"
+      ],
+      "forbidden_substrings": [
+        "g_joystick_count",
+        "dword_777B2C",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_mouse_device_globals",
+      "artifact": "analysis/decompile/binja/functions/0044c310-initialize_mouse_input.c",
+      "required_substrings": [
+        "g_mouse_live_x[0]",
+        "g_mouse_live_y[0]",
+        "g_hide_system_cursor_flag",
+        "&g_mouse_input",
+        "&g_mouse_device"
+      ],
+      "forbidden_substrings": [
+        "g_joystick_count",
+        "data_777d",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_mouse_device_globals",
+      "artifact": "analysis/decompile/ida/functions/0044c310-initialize_mouse_input.c",
+      "required_substrings": [
+        "g_mouse_live_x[0]",
+        "g_mouse_live_y[0]",
+        "g_hide_system_cursor_flag",
+        "&g_mouse_input",
+        "&g_mouse_device"
+      ],
+      "forbidden_substrings": [
+        "g_joystick_count",
+        "dword_777B2C",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frame_renderer_workspace_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/0040a490-render_game_frame.c",
       "required_substrings": [
