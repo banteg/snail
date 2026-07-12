@@ -15,59 +15,19 @@ extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
 #define BOD_NEXT_LINK_FLAGS(next_link) (*(DWORD*)((char*)(next_link) - 8))
-#define BOD_NEXT_LINK_PREV(next_link) (*(BodNode**)((char*)(next_link) - 4))
 #define BOD_NODE_FROM_NEXT_LINK(next_link) ((BodNode*)((char*)(next_link) - 0x0c))
 
-#define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr)             \
-    do {                                                          \
-        BodNode** next_link = (next_link_expr);                   \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);          \
-        DWORD flags = BOD_NEXT_LINK_FLAGS(next_link);             \
-        if ((flags & 0x200) == 0) {                               \
-            report_errorf("List remove");                        \
-        } else if ((flags & 0x40) != 0) {                         \
-            report_errorf("List remove NEXTBOD");                \
-        } else {                                                  \
-            BodNode* next = *next_link;                           \
-            if (next != 0)                                       \
-                next->list_prev = BOD_NEXT_LINK_PREV(next_link);  \
-            BodNode* prev = BOD_NEXT_LINK_PREV(next_link);        \
-            if (prev != 0)                                       \
-                prev->list_next = *next_link;                    \
-            else                                                  \
-                list->first = *next_link;                        \
-            *next_link = list->free_top;                         \
-            list->free_top = BOD_NODE_FROM_NEXT_LINK(next_link);  \
-            DWORD updated = BOD_NEXT_LINK_FLAGS(next_link);       \
-            updated &= ~0x200u;                                   \
-            BOD_NEXT_LINK_FLAGS(next_link) = updated;             \
-        }                                                         \
+#define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr)            \
+    do {                                                         \
+        BodNode** next_link = (next_link_expr);                  \
+        BodList* list = (BodList*)(g_game_base + 0x5a8);         \
+        list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_link));    \
     } while (0)
 
-#define REMOVE_INLINE_BOD_NODE(node_expr)                         \
-    do {                                                          \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);          \
-        BodNode* node = (node_expr);                              \
-        DWORD flags = node->list_flags;                           \
-        if ((flags & 0x200) == 0) {                               \
-            report_errorf("List remove");                        \
-        } else if ((flags & 0x40) != 0) {                         \
-            report_errorf("List remove NEXTBOD");                \
-        } else {                                                  \
-            BodNode* next = node->list_next;                      \
-            if (next != 0)                                       \
-                next->list_prev = node->list_prev;                \
-            BodNode* prev = node->list_prev;                      \
-            if (prev != 0)                                       \
-                prev->list_next = node->list_next;                \
-            else                                                  \
-                list->first = node->list_next;                    \
-            node->list_next = list->free_top;                     \
-            list->free_top = node;                                \
-            DWORD updated = node->list_flags;                     \
-            updated &= ~0x200u;                                   \
-            node->list_flags = updated;                           \
-        }                                                         \
+#define REMOVE_INLINE_BOD_NODE(node_expr)                        \
+    do {                                                         \
+        BodList* list = (BodList*)(g_game_base + 0x5a8);         \
+        list->remove_bod((node_expr));                           \
     } while (0)
 
 #define REMOVE_INLINE_BOD_NODE_IF_LINKED(node_expr)               \

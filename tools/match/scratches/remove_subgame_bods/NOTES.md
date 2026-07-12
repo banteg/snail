@@ -11,7 +11,9 @@ Initial scratch reconstructs the full cleanup pass:
 - three helper-driven `BodList::recycle_bod_to_free_list` calls;
 - the Golb shot cleanup loop and final game-sprite purge.
 
-This scratch intentionally uses the proven inline intrusive-list removal shape from `destroy_subgame` and `remove_track_render_cache_bods` rather than introducing a new helper abstraction.
+The inline teardown sites now route through the proven `BodList::remove_bod`
+owner method; the three native out-of-line sites continue to call
+`recycle_bod_to_free_list`.
 
 2026-06-19 focused result: 59.90%, 501 target instructions vs 494 candidate
 instructions, 6-instruction prefix, 58 masked operands ok, 0 unresolved, 2
@@ -81,3 +83,20 @@ frontier and two speedup/jetpack string-order mismatches remain unchanged.
 the primary `JetPack` owner at `+0x355e64`; only its inherited BOD membership
 and sprite are released, while the parent and two embedded cRVapour objects
 remain owned by `SubgameRuntime`. The 59.98% frontier is unchanged.
+
+## 2026-07-12 shared list-owner recovery
+
+The repeated row, pickup, hazard, ring, player, and presentation teardown
+blocks do not own their unlink algorithm. Each embedded record remains stored
+inside `SubgameRuntime`; its containing `BodNode` is merely lent to the global
+`BodList`, whose inline `remove_bod` method owns active-list unlinking and the
+free-stack push. Replacing both hand-expanded macros with that shared method
+also preserves the required early exits after either list diagnostic.
+
+Focused Wibo rises from 59.98% (496/501, 59 clean operands) to **67.67%**
+(495/501, 63 clean operands). The two existing speedup/JetPack string-order
+mismatches remain alignment fallout from their combined register allocation;
+the source strings and owner paths themselves are correct. Hoisting the row
+lane counter and expanding the shared method again are codegen-neutral or
+regressive, so the remaining receiver/counter register rotation is left
+visible rather than forced.
