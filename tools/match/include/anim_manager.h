@@ -14,7 +14,7 @@ public:
     float progress;         // +0x04
     float progress_step;    // +0x08
     ObjectAnimation* active_animation; // +0x0c
-    unsigned char completed; // +0x10
+    bool completed;          // +0x10
     char unknown_11[0x14 - 0x11];
     int queued_animations[10]; // +0x14
     int queue_count;       // +0x3c

@@ -17,7 +17,7 @@ Recovered relationships:
 This first pass is intended as a struct map; Wibo score decides whether later
 source-shape work is worthwhile.
 
-Focused Wibo result after the layout and clamp fixes: 47.91%, 129/134
+Focused Wibo result after the state/queue source-shape recovery: 61.65%, 132/134
 candidate/target instructions, with 13 masked operands OK and no unresolved or
 mismatched operands. The first residual is still source-shape register ownership:
 native zeroes `edx` before saving `ebx`, while the current source lets VC6 use
@@ -44,7 +44,13 @@ until a source shape recovers native's `edx` zero lane without extra saves.
 - Mobile uses different presentation-record internals (`0x74` slots and a
   different visual-root animation offset), so those port-specific offsets are
   provenance, not a reason to reshape the Windows record.
-- A plausible switch-shaped state dispatch retest compiled to 46.74%, below
-  the honest 47.91% baseline and with fewer target instructions. The retained
-  nested source continues to express the shared behavior without register
-  forcing.
+- A switch without an explicit zero-state edge regressed to 46.74%. Spelling
+  the proven state machine with `case 0: return` and a `case 1` update recovers
+  Windows' two-stage `state - 0`, then `state - 1` dispatch and lifts the honest
+  match to 57.79%; other states still fall through to the inert queue gate.
+- Decrementing the owned `queue_count` field and comparing the compaction index
+  against that field, instead of an optimizer-owned count local, recovers the
+  native count-up loop and three missing instructions. Together with the
+  boolean completion field this reaches 61.65%, 132/134 without barriers or
+  fake data flow. A long-lived queue pointer still regresses to a `rep movsd`
+  copy and remains rejected.
