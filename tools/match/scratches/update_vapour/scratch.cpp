@@ -3,6 +3,15 @@
 #include "object_render_types.h"
 #include "vapour.h"
 
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
+    return result;
+}
+
 void Vapour::update_vapour()
 {
     int count = point_count;
@@ -17,101 +26,48 @@ void Vapour::update_vapour()
     owner->vertex_count = (count << 2) - 4;
 
     if (z_floor != 0) {
-        int clamp_index = 0;
-        if (point_count > 0) {
-            int point_offset = 0;
-            do {
-                float* floor = z_floor;
-                TransformMatrix* point =
-                    (TransformMatrix*)((char*)points + point_offset);
-                if (point->position.z < *floor)
-                    point->position.z = *floor;
-                ++clamp_index;
-                point_offset += 0x40;
-            } while (clamp_index < point_count);
+        for (int clamp_index = 0; clamp_index < point_count; ++clamp_index) {
+            float* p_z = &points[clamp_index].position.z;
+            if (*p_z < *z_floor)
+                *p_z = *z_floor;
         }
     }
 
-    int segment = 0;
-    if (point_count - 1 <= 0) {
-        int result = point_count * 2 - 2;
-        *owner->group_primitive_counts = result;
-        return;
-    }
+    float uv_mid = 0.5f;
+    for (int segment = 0; segment < point_count - 1; ++segment) {
+        owner->vertices[segment * 4] =
+            points[segment].basis_right * half_width + points[segment].position;
+        owner->vertices[segment * 4 + 1] =
+            points[segment].basis_right * -half_width + points[segment].position;
+        owner->vertices[segment * 4 + 2] =
+            points[segment].basis_right * -half_width + points[segment + 1].position;
+        owner->vertices[segment * 4 + 3] =
+            points[segment].basis_right * half_width + points[segment + 1].position;
 
-    do {
-        int point_offset = segment << 6;
-        TransformMatrix* point = (TransformMatrix*)((char*)points + point_offset);
-        int vertex_offset = segment * 0x30;
-        VapourQuadVertices* vertices =
-            (VapourQuadVertices*)((char*)owner->vertices + vertex_offset);
-
-        float width = half_width;
-        float corner_a_dx = width * point->basis_right.x;
-        float corner_a_dy = width * point->basis_right.y;
-        float corner_a_x = corner_a_dx + point->position.x;
-        float corner_a_y = corner_a_dy + point->position.y;
-        float corner_a_z = width * point->basis_right.z + point->position.z;
-        vertices->corner_a.x = corner_a_x;
-        vertices->corner_a.y = corner_a_y;
-        vertices->corner_a.z = corner_a_z;
-
-        float neg_width = -half_width;
-        float corner_b_dx = neg_width * point->basis_right.x;
-        float corner_b_dy = neg_width * point->basis_right.y;
-        float corner_b_x = corner_b_dx + point->position.x;
-        float corner_b_y = corner_b_dy + point->position.y;
-        float corner_b_z = neg_width * point->basis_right.z + point->position.z;
-        vertices->corner_b.x = corner_b_x;
-        vertices->corner_b.y = corner_b_y;
-        vertices->corner_b.z = corner_b_z;
-
-        float neg_width_next = -half_width;
-        float corner_c_dx = neg_width_next * point->basis_right.x;
-        float corner_c_dy = neg_width_next * point->basis_right.y;
-        float corner_c_x = corner_c_dx + point[1].position.x;
-        float corner_c_y = corner_c_dy + point[1].position.y;
-        float corner_c_z = neg_width_next * point->basis_right.z + point[1].position.z;
-        vertices->corner_c.x = corner_c_x;
-        vertices->corner_c.y = corner_c_y;
-        vertices->corner_c.z = corner_c_z;
-
-        float width_next = half_width;
-        float corner_d_dx = width_next * point->basis_right.x;
-        float corner_d_dy = width_next * point->basis_right.y;
-        float corner_d_x = corner_d_dx + point[1].position.x;
-        float corner_d_y = corner_d_dy + point[1].position.y;
-        float corner_d_z = width_next * point->basis_right.z + point[1].position.z;
-        vertices->corner_d.x = corner_d_x;
-        vertices->corner_d.y = corner_d_y;
-        vertices->corner_d.z = corner_d_z;
-
-        int* attributes = (int*)((char*)owner->facequads + vertex_offset);
         int current_count = point_count;
         if (current_count == 2) {
-            attributes[5] = 0;
-            attributes[7] = 0;
-            attributes[9] = 0x3f800000;
-            attributes[11] = 0x3f800000;
+            owner->facequads[segment].uv[0].v = 0.0f;
+            owner->facequads[segment].uv[1].v = 0.0f;
+            owner->facequads[segment].uv[2].v = 1.0f;
+            owner->facequads[segment].uv[3].v = 1.0f;
         } else if (segment == 0) {
-            ((int*)owner->facequads)[5] = 0;
-            ((int*)owner->facequads)[7] = 0;
-            ((int*)owner->facequads)[9] = 0x3f000000;
-            ((int*)owner->facequads)[11] = 0x3f000000;
+            owner->facequads[0].uv[0].v = 0.0f;
+            owner->facequads[0].uv[1].v = 0.0f;
+            owner->facequads[0].uv[2].v = uv_mid;
+            owner->facequads[0].uv[3].v = uv_mid;
+        } else if (segment == current_count - 2) {
+            owner->facequads[segment].uv[0].v = uv_mid;
+            owner->facequads[segment].uv[1].v = uv_mid;
+            owner->facequads[segment].uv[2].v = 1.0f;
+            owner->facequads[segment].uv[3].v = 1.0f;
         } else {
-            attributes[5] = 0x3f000000;
-            attributes[7] = 0x3f000000;
-            if (segment == current_count - 2) {
-                attributes[9] = 0x3f000000;
-                attributes[11] = 0x3f000000;
-            } else {
-                attributes[9] = 0x3f800000;
-                attributes[11] = 0x3f800000;
-            }
+            owner->facequads[segment].uv[0].v = uv_mid;
+            owner->facequads[segment].uv[1].v = uv_mid;
+            owner->facequads[segment].uv[2].v = uv_mid;
+            owner->facequads[segment].uv[3].v = uv_mid;
         }
 
-        ++segment;
-    } while (segment < point_count - 1);
+    }
 
     int result = point_count * 2 - 2;
     *owner->group_primitive_counts = result;

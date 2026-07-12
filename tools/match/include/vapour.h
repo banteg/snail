@@ -6,13 +6,6 @@
 
 class Object;
 
-struct VapourQuadVertices {
-    Vector3 corner_a; // +0x00
-    Vector3 corner_b; // +0x0c
-    Vector3 corner_c; // +0x18
-    Vector3 corner_d; // +0x24
-};
-
 class Vapour {
 public:
     virtual void update_vapour(); // @ 0x4425f0, cRVapour::AI

@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**520/709** mapped gameplay functions matched, **709/709** mapped gameplay functions have a scratch, **77957/325736** bytes (**23.93%**) are proof-grade, and overall fuzzy is **59.89%**.
+**522/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **76535/325720** bytes (**23.50%**) are proof-grade, and overall fuzzy is **60.31%**.
 
-## Proof Grade (520)
+## Proof Grade (522)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -38,6 +38,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_cheat | 0x404750 | 124 | 52/52 | 100.00% | 52/52 | 7 ok |  |
 | ✅ | match_cheat_text | 0x4047d0 | 85 | 42/42 | 100.00% | 42/42 | 2 ok |  |
 | ✅ | flush_row_event_display | 0x404830 | 233 | 67/67 | 100.00% | 67/67 | 19 ok |  |
+| ✅ | update_row_event_display | 0x404cf0 | 836 | 213/213 | 100.00% | 213/213 | 38 ok |  |
 | ✅ | register_parcel_delivery | 0x405040 | 114 | 36/36 | 100.00% | 36/36 | 10 ok |  |
 | ✅ | file_exists | 0x405140 | 37 | 14/14 | 100.00% | 14/14 | 3 ok |  |
 | ✅ | get_stream_length_preserve_position | 0x405170 | 51 | 24/24 | 100.00% | 24/24 | 4 ok |  |
@@ -93,11 +94,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_landscape_script_record | 0x408840 | 18 | 7/7 | 100.00% | 7/7 | 1 ok |  |
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
+| ✅ | initialize_galaxy_route_name_record | 0x408880 | 18 | 7/7 | 100.00% | 7/7 | 1 ok |  |
 | ✅ | abort_startup_with_3d_error | 0x4088a0 | 27 | 7/7 | 100.00% | 7/7 | 4 ok |  |
 | ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
 | ✅ | destroy_galaxy | 0x408c10 | 218 | 49/49 | 100.00% | 49/49 | 18 ok |  |
 | ✅ | initialize_galaxy | 0x408cf0 | 1523 | 338/338 | 100.00% | 338/338 | 74 ok |  |
-| ✅ | draw_galaxy_line | 0x409b00 | 227 | 67/67 | 100.00% | 67/67 | 4 ok |  |
+| ✅ | draw_galaxy_line | 0x409b00 | 206 | 67/67 | 100.00% | 67/67 | 4 ok |  |
+| ✅ | update_galaxy_route_record | 0x409bd0 | 19 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | close_galaxy_route | 0x409bf0 | 88 | 18/18 | 100.00% | 18/18 | 6 ok |  |
 | ✅ | open_galaxy_route | 0x409c50 | 1128 | 266/266 | 100.00% | 266/266 | 41 ok |  |
 | ✅ | galaxy_border_bound | 0x40a0c0 | 225 | 63/63 | 100.00% | 63/63 | 2 ok |  |
@@ -182,7 +185,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | raise_backdrop_quad_edge_pair | 0x41a170 | 66 | 19/19 | 100.00% | 19/19 | 4 ok |  |
 | ✅ | initialize_backdrop_slice_quad | 0x41a1c0 | 196 | 61/61 | 100.00% | 61/61 | 7 ok |  |
 | ✅ | initialize_backdrop_corner_quad | 0x41a290 | 207 | 55/55 | 100.00% | 55/55 | 10 ok |  |
-| ✅ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 63 ok |  |
 | ✅ | reset_spring_float | 0x41aa30 | 17 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | initialize_options_menu | 0x41ace0 | 506 | 127/127 | 100.00% | 127/127 | 32 ok |  |
 | ✅ | destroy_options_menu | 0x41aee0 | 127 | 32/32 | 100.00% | 32/32 | 13 ok |  |
@@ -272,7 +274,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
 | ✅ | set_subgame_features | 0x435df0 | 76 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | normalize_segment_glyph_for_track_flags | 0x437270 | 570 | 160/160 | 100.00% | 160/160 | 2 ok |  |
-| ✅ | initialize_subgame | 0x4374b0 | 1632 | 396/396 | 100.00% | 396/396 | 85 ok |  |
 | ✅ | reset_subgame | 0x437b10 | 291 | 75/75 | 100.00% | 75/75 | 2 ok |  |
 | ✅ | update_progress_bar | 0x437c40 | 413 | 110/110 | 100.00% | 110/110 | 19 ok |  |
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 | 13 ok |  |
@@ -344,6 +345,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_vapour | 0x442500 | 62 | 19/19 | 100.00% | 19/19 | 3 ok |  |
 | ✅ | reset_vapour | 0x442540 | 31 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | add_vapour_point | 0x442560 | 141 | 47/47 | 100.00% | 47/47 | - |  |
+| ✅ | update_vapour | 0x4425f0 | 726 | 227/227 | 100.00% | 227/227 | - |  |
 | ✅ | update_row_model | 0x443070 | 186 | 60/60 | 100.00% | 60/60 | 6 ok |  |
 | ✅ | update_track_parcels | 0x443130 | 34 | 16/16 | 100.00% | 16/16 | - |  |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |
@@ -529,13 +531,19 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (20)
+## Audit Needed (2)
+
+| | function | address | bytes | insns | match | prefix | masked | build |
+|---|---|---|---|---|---|---|---|---|
+| ⚠ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 1 mismatch, 62 ok |  |
+| ⚠ | initialize_subgame | 0x4374b0 | 1632 | 396/396 | 100.00% | 396/396 | 1 mismatch, 84 ok |  |
+
+## Near Match (95-99.99%) (18)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 98.31% | 23/177 | 20 ok |  |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
-| 🚧 | update_row_event_display | 0x404cf0 | 836 | 213/213 | 99.53% | 102/213 | 37 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
@@ -547,14 +555,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 95.81% | 16/167 | 6 ok |  |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 98.38% | 29/247 | 25 ok |  |
 | 🚧 | update_star_positions | 0x434800 | 860 | 106/106 | 98.11% | 44/106 | 11 ok |  |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 97.54% | 16/122 | 7 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 97.83% | 18/92 | - |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (58)
+## High Progress (80-94.99%) (59)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -590,11 +597,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
-| 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 87.29% | 44/144 | 9 ok |  |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 120/122 | 88.43% | 6/122 | 7 ok |  |
+| 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 144/144 | 84.72% | 7/144 | 9 ok |  |
 | 🚧 | update_track_health_pickup | 0x43ecc0 | 390 | 129/128 | 87.94% | 6/128 | 21 ok |  |
 | 🚧 | update_track_jetpack_pickup | 0x43efb0 | 384 | 128/127 | 87.84% | 6/127 | 20 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
-| 🚧 | explode_slug_hazard | 0x43f680 | 556 | 147/147 | 81.63% | 0/147 | 32 ok |  |
+| 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 81.91% | 0/147 | 32 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 81.11% | 5/218 | 23 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
@@ -617,7 +625,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (58)
+## Mid Progress (50-79.99%) (60)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -673,24 +681,26 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 290/312 | 63.79% | 8/312 | 1 mismatch, 34 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 171/171 | 73.68% | 22/171 | 29 ok |  |
+| 🚧 | update_anim_manager | 0x4447d0 | 399 | 132/134 | 61.65% | 2/134 | 13 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
+| 🚧 | update_cutscene | 0x4466d0 | 1888 | 481/505 | 68.97% | 0/505 | 1 mismatch, 55 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 249/269 | 66.02% | 4/269 | 58 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 267/274 | 72.46% | 4/274 | 1 mismatch, 48 ok |  |
 | 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 70 ok |  |
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 
-## Early Progress (>0-49.99%) (53)
+## Early Progress (>0-49.99%) (50)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 686/712 | 40.34% | 0/712 | 2 mismatch, 46 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 415/439 | 45.43% | 3/439 | 26 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 358/5411 | 5.65% | 0/5411 | 18 mismatch, 73 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 358/5411 | 5.65% | 0/5411 | 17 mismatch, 74 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 436/600 | 43.24% | 1/600 | 14 mismatch, 57 ok |  |
-| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 304/521 | 38.30% | 0/521 | 5 mismatch, 1 unresolved, 41 ok |  |
+| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 400/521 | 41.91% | 0/521 | 4 mismatch, 47 ok |  |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.74% | 0/721 | 40 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 662/745 | 30.56% | 0/745 | 2 mismatch, 40 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 637/718 | 37.64% | 0/718 | 43 ok |  |
@@ -725,11 +735,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1190/1245 | 28.25% | 0/1245 | 1 mismatch, 57 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
-| 🚧 | update_vapour | 0x4425f0 | 726 | 180/227 | 28.50% | 0/227 | - |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 29.83% | 0/639 | 3 mismatch, 40 ok |  |
-| 🚧 | update_anim_manager | 0x4447d0 | 399 | 129/134 | 47.91% | 2/134 | 13 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 15 ok |  |
-| 🚧 | update_cutscene | 0x4466d0 | 1888 | 480/505 | 46.29% | 0/505 | 2 mismatch, 34 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 553/571 | 49.29% | 5/571 | 11 mismatch, 64 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 95/126 | 44.34% | 3/126 | 1 mismatch, 9 ok |  |

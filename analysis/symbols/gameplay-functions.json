@@ -2372,7 +2372,7 @@
     {
       "address": "0x4425f0",
       "name": "update_vapour",
-      "description": "Void Windows `cRVapour::AI()`: clamps retained transform samples, expands each segment into the borrowed output cRObject's vertex and facequad buffers, writes UV/alpha words, and publishes the primitive count through `Object::group_primitive_counts`. Android preserves the same direct-return void contract and real cRObject ownership."
+      "description": "Exact void Windows `cRVapour::AI()`: clamps retained transform samples, expands each segment into four borrowed `cRObject` vertices, maps facequad V coordinates from 0 through 0.5 to 1 across the strip, and publishes `2 * point_count - 2` through `Object::group_primitive_counts`. Android preserves the same direct-return void contract and real cRObject ownership."
     },
     {
       "address": "0x4428d0",
