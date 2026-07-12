@@ -65,3 +65,16 @@ native loop tail still lose the retained cursor ownership. `while (value != 0
 guarded `do/while`, and an explicit break after the reload all regress to
 28.26%-34.04% with a zero-instruction prefix. Keep the primed `while (1)` loop
 until a form preserves `eax`/`cl` and also emits the bottom zero test.
+
+2026-07-12 ownership pass:
+
+- `ArchiveEntryExtensionClass` now lives in shared `archive_index.h`, so the
+  classifier and archive rebuild agree on UNKNOWN/TGA/WAV/MP3 ownership instead
+  of duplicating magic integer returns; both focused objects are codegen-neutral
+  at 70.33% and 66.38%, respectively;
+- a direct two-entry label form modeled native's initial NUL test and loop-back
+  to the dot test, but VC6 changed the cursor owner to `ecx`/`al`, duplicated the
+  dot test, and regressed to 34.04%, so it was rejected;
+- the retained 45/46 object is missing only native's bottom `test cl, cl`; adding
+  a fake spill or branch dependency to force that instruction would not recover
+  new behavior or ownership.

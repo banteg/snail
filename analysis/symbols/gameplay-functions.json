@@ -184,7 +184,7 @@
     {
       "address": "0x4050c0",
       "name": "classify_archive_entry_extension",
-      "description": "Copies one archive entry's filename stem before the first dot into the caller buffer and returns the rebuild classifier id: `1` for `TGA`, `2` for `WAV`, `3` for `MP3`, otherwise `0`."
+      "description": "Copies one archive entry's filename stem before the first dot into the caller buffer and returns the shared ArchiveEntryExtensionClass: TGA, WAV, MP3, or UNKNOWN."
     },
     {
       "address": "0x405140",

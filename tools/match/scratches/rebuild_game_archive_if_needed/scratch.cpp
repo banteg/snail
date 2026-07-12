@@ -13,7 +13,7 @@ int printf(char* format, ...);
 char __cdecl file_exists(char* path);
 void* __cdecl load_file_bytes_allocating(char* file_name, int* out_size);
 void __cdecl toggle_archive_high_bit_in_place(void* bytes, int byte_count);
-int __cdecl classify_archive_entry_extension(u8* path, u8* stem_out);
+ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(u8* path, u8* stem_out);
 int __cdecl save_file_bytes_with_optional_archive_scramble(char* file_name, void* bytes, int byte_count, char should_scramble);
 void __cdecl delete_file_path(char* path);
 
@@ -77,7 +77,8 @@ void __cdecl rebuild_game_archive_if_needed(void)
         do {
             entry_path = rebuilt + source_byte_count[-2];
 
-            if (classify_archive_entry_extension((u8*)entry_path, stem) != 1) {
+            if (classify_archive_entry_extension((u8*)entry_path, stem) !=
+                ARCHIVE_ENTRY_EXTENSION_TGA) {
                 char* payload_end;
                 memcpy(payload_cursor, (char*)dam_words + source_byte_count[-1], *source_byte_count);
                 *(int*)output_record_cursor = payload_cursor - rebuilt;

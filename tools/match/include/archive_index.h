@@ -12,6 +12,13 @@ typedef struct ArchiveIndex {
     ArchiveEntry entries[1]; // +0x04
 } ArchiveIndex;
 
+typedef enum ArchiveEntryExtensionClass {
+    ARCHIVE_ENTRY_EXTENSION_UNKNOWN = 0,
+    ARCHIVE_ENTRY_EXTENSION_TGA = 1,
+    ARCHIVE_ENTRY_EXTENSION_WAV = 2,
+    ARCHIVE_ENTRY_EXTENSION_MP3 = 3,
+} ArchiveEntryExtensionClass;
+
 typedef char ArchiveEntry_must_be_0x0c[(sizeof(ArchiveEntry) == 0x0c) ? 1 : -1];
 
 typedef struct File File;

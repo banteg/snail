@@ -1,13 +1,9 @@
 // classify_archive_entry_extension @ 0x4050c0 (cdecl)
 
-enum ArchiveEntryExtensionClass {
-    ARCHIVE_ENTRY_EXTENSION_UNKNOWN = 0,
-    ARCHIVE_ENTRY_EXTENSION_TGA = 1,
-    ARCHIVE_ENTRY_EXTENSION_WAV = 2,
-    ARCHIVE_ENTRY_EXTENSION_MP3 = 3,
-};
+#include "archive_index.h"
 
-int __cdecl classify_archive_entry_extension(unsigned char* path, unsigned char* stem_out)
+ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(
+    unsigned char* path, unsigned char* stem_out)
 {
     unsigned char value;
     value = *path;
