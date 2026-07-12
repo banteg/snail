@@ -116,7 +116,7 @@ PROTO_UPDATES = (
     ),
     (
         "load_x_mesh",
-        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, uint8_t options_flags)",
+        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, int32_t options_flags)",
     ),
     (
         "load_or_reuse_cached_x_mesh",
@@ -125,6 +125,14 @@ PROTO_UPDATES = (
     (
         "load_x_animation_clip",
         "void __thiscall load_x_animation_clip(DirectXLoader* loader, char* mesh_name, Object* object)",
+    ),
+    (
+        "initialize_duplicate_vertices",
+        "void* __thiscall initialize_duplicate_vertices(DuplicateVertices* duplicate_vertices, int32_t count)",
+    ),
+    (
+        "clean_duplicate_vertices",
+        "int32_t __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int32_t unused)",
     ),
     (
         "create_object_vertex_buffer_resource",

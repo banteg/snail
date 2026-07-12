@@ -8,7 +8,7 @@ struct DuplicateVertexRecord {
     unsigned short live_flag; // +0x08
 };
 
-class DuplicateVertexBuffer {
+class DuplicateVertices {
 public:
     void* initialize_duplicate_vertices(int count); // @ 0x419f50
     int clean_duplicate_vertices(int unused); // @ 0x419f80
@@ -16,5 +16,10 @@ public:
     int active_count; // +0x00
     DuplicateVertexRecord* records; // +0x04
 };
+
+typedef char DuplicateVertexRecord_must_be_0xa[
+    (sizeof(DuplicateVertexRecord) == 0xa) ? 1 : -1];
+typedef char DuplicateVertices_must_be_0x8[
+    (sizeof(DuplicateVertices) == 0x8) ? 1 : -1];
 
 #endif

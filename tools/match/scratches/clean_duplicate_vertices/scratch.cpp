@@ -2,7 +2,7 @@
 
 #include "duplicate_vertices.h"
 
-int DuplicateVertexBuffer::clean_duplicate_vertices(int unused)
+int DuplicateVertices::clean_duplicate_vertices(int unused)
 {
     int result = active_count;
 

@@ -109,9 +109,12 @@ allocation. None are retained.
 ## 2026-07-12 DirectX loader ABI and owner closure
 
 - Every native caller supplies the root-owned loader in `ecx` and an owned
-  `Object*`, and none consumes `eax`. The cross-port method is
-  `cRDirectX::LoadX(char*, cRObject*, unsigned char)`, so the stale free
-  `__stdcall`/integer-result prototype is retired in favor of a void thiscall.
+  `Object*`, and none consumes `eax`. The iOS symbol is exactly
+  `cRDirectX::Load(char*, cRObject*, int)`, so the stale free
+  `__stdcall`/integer-result prototype is retired in favor of a void thiscall
+  with the authored 32-bit option formal. Windows tests only its low byte, but
+  narrowing the declaration to `unsigned char` would discard cross-port ABI
+  evidence; restoring `int` is codegen-neutral at this call boundary.
 - `DirectXLoader` is now explicit in the shared BN/IDA object-analysis slice:
   animation bytes at `+0x00`, cache count at `+0x04`, 128 exact `0xbc` cached
   Bod/Object slots at `+0x08`, and the duplicate-vertex workspace at `+0x5e08`,

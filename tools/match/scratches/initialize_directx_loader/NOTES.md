@@ -8,6 +8,6 @@ bank.
 
 The exact containing layout is `0x5e10` bytes: `animation_bytes +0x00`,
 `cached_x_mesh_count +0x04`, `CachedXMeshSlot[128] +0x08` with `0xbc` stride,
-and `DuplicateVertexBuffer +0x5e08`. Its sole startup caller discards `eax`;
+and authored `cRDuplicateVertices +0x5e08`. Its sole startup caller discards `eax`;
 changing the former helper-pointer result to `void` preserves the proof-grade
 `13/13` match with three clean masked operands.

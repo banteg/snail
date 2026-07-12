@@ -8,7 +8,7 @@
   to the slot `BodBase`, then load the X mesh through the loader's thiscall
   helper.
 - The slot bank ends at loader `+0x5e08`, exactly where the independently
-  proven `DuplicateVertexBuffer` begins; together they close the loader's
+  proven `DuplicateVertices` owner begins; together they close the loader's
   `0x5e10`-byte extent through the next root owner.
 
 2026-07-12 analysis promotion: `DirectXLoader`, `CachedXMeshSlot`, and the

@@ -17,7 +17,7 @@ int free_tracked_memory(void* pointer); // @ 0x431bf0
 int report_errorf(char* format, ...); // @ 0x431cc0
 int report_warningf(char* format, ...); // @ 0x431d10
 
-void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char options_flags)
+void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_flags)
 {
     char* file_text = get_archive_data_base();
     char mesh_file_path[0x100];

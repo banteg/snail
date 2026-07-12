@@ -2,7 +2,7 @@
 
 Starter semantic scratch for the X animation clip loader.
 
-- `this` is the DirectX/X-loader state used by `initialize_directx_loader`: `animation_bytes` at `+0x00` and `DuplicateVertexBuffer` at `+0x5e08`.
+- `this` is the DirectX/X-loader state used by `initialize_directx_loader`: `animation_bytes` at `+0x00` and the authored `cRDuplicateVertices` owner at `+0x5e08`.
 - The per-frame keyframe record is 0x80 bytes. It embeds `BodBase` at `+0x00`, so the loaded frame object pointer is `+0x24`; the parsed frame number is at `+0x7c`, matching `request_object_animation`.
 - The Windows missing-script path really reloads the aligned keyframe-array
   pointer and ORs bit zero before passing the low animation-flag word. The
@@ -52,7 +52,7 @@ Starter semantic scratch for the X animation clip loader.
   portable contract or a generic compiler barrier.
 - Focused Wibo improves from 69.47% (224/228, prefix 3) to 94.74% (228/228,
   prefix 68), with 50 clean masked operands. The only substantive residual is
-  native storing literal zero into `DuplicateVertexBuffer::active_count` while
+  native storing literal zero into `DuplicateVertices::active_count` while
   VC6 reuses the already-zero loop register; every later diff is the resulting
   four-byte branch displacement. No volatile reads, dummy aliases, or
   byte-shaped control flow are retained.
@@ -60,7 +60,7 @@ Starter semantic scratch for the X animation clip loader.
 ## 2026-07-12 duplicate-buffer reset ownership
 
 The duplicate-vertex workspace reset precedes the keyframe loop counter's
-lifetime. Moving `DuplicateVertexBuffer::active_count = 0` before the local
+lifetime. Moving `DuplicateVertices::active_count = 0` before the local
 counter declaration makes VC6 preserve the reset as an immediate owner write
 instead of borrowing the counter's zero register. This matches native exactly
 and closes the helper at **100.00%**, 228/228 instructions, with all 50 masked

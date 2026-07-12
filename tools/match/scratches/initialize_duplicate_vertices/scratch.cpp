@@ -5,7 +5,7 @@
 void* allocate_tracked_memory(int size, char* label);
 extern char g_duplicate_vertices_alloc_label[]; // "Duplicate vertices"
 
-void* DuplicateVertexBuffer::initialize_duplicate_vertices(int count)
+void* DuplicateVertices::initialize_duplicate_vertices(int count)
 {
     active_count = 0;
     void* result = allocate_tracked_memory(count * 10, g_duplicate_vertices_alloc_label);

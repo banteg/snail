@@ -36,7 +36,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_x_mesh",
-        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, uint8_t options_flags);",
+        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, int options_flags);",
     ),
     (
         "load_or_reuse_cached_x_mesh",
@@ -45,6 +45,14 @@ TRUSTED_DECLARATIONS = [
     (
         "load_x_animation_clip",
         "void __thiscall load_x_animation_clip(DirectXLoader* loader, char* mesh_name, Object* object);",
+    ),
+    (
+        "initialize_duplicate_vertices",
+        "void* __thiscall initialize_duplicate_vertices(DuplicateVertices* duplicate_vertices, int count);",
+    ),
+    (
+        "clean_duplicate_vertices",
+        "int __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int unused);",
     ),
     (
         "load_object_definition",

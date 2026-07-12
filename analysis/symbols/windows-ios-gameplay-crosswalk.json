@@ -54,6 +54,30 @@
       "notes": "The exact Windows helper increments the delivered count, awards the parcel score, and advances the same Completion state machine."
     },
     {
+      "address": "0x405640",
+      "windows_name": "load_x_mesh",
+      "ios_symbol": "cRDirectX::Load(char*, cRObject*, int)",
+      "source_object": "DirectX.o",
+      "confidence": "high",
+      "notes": "The Windows thiscall uses the root-owned DirectXLoader and an owned Object. Its option tests consume the low byte of the authored 32-bit formal without changing the cross-port contract."
+    },
+    {
+      "address": "0x405c90",
+      "windows_name": "initialize_directx_loader",
+      "ios_symbol": "cRDirectX::Init()",
+      "source_object": "DirectX.o",
+      "confidence": "high",
+      "notes": "The exact Windows member initializes the 0x5e10-byte root-owned DirectX loader, including its fixed mesh cache and embedded duplicate-vertex workspace."
+    },
+    {
+      "address": "0x405cc0",
+      "windows_name": "load_or_reuse_cached_x_mesh",
+      "ios_symbol": "cRDirectX::ModelAdd(char*)",
+      "source_object": "DirectX.o",
+      "confidence": "high",
+      "notes": "The exact Windows member searches or appends one entry in the DirectXLoader-owned fixed X-mesh cache and returns its slot index."
+    },
+    {
       "address": "0x405d60",
       "windows_name": "load_x_animation_clip",
       "ios_symbol": "cRDirectX::LoadAnim(char*, cRObject*)",
@@ -1992,6 +2016,14 @@
       "source_object": "LoadingBar.o",
       "confidence": "high",
       "notes": "The exact Windows AI member advances and renders the global loading bar through the same owner exported as gLoadingBar on mobile."
+    },
+    {
+      "address": "0x419f50",
+      "windows_name": "initialize_duplicate_vertices",
+      "ios_symbol": "cRDuplicateVertices::Init(int)",
+      "source_object": "ObjectProc.o",
+      "confidence": "high",
+      "notes": "The exact Windows initializer operates on the 8-byte DuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records."
     },
     {
       "address": "0x41ace0",

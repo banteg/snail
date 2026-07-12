@@ -213,10 +213,10 @@ typedef struct DuplicateVertexRecord {
     uint16_t live_flag;
 } DuplicateVertexRecord;
 
-typedef struct DuplicateVertexBuffer {
+typedef struct DuplicateVertices {
     int32_t active_count;
     DuplicateVertexRecord* records;
-} DuplicateVertexBuffer;
+} DuplicateVertices;
 
 typedef struct CachedXMeshSlot {
     uint8_t _pad_00[0x24];
@@ -229,7 +229,7 @@ typedef struct DirectXLoader {
     char* animation_bytes;
     int32_t cached_x_mesh_count;
     CachedXMeshSlot cached_x_mesh_slots[0x80];
-    DuplicateVertexBuffer duplicate_vertices;
+    DuplicateVertices duplicate_vertices;
 } DirectXLoader;
 
 void* __thiscall noop_this_constructor(void* self);
@@ -241,10 +241,14 @@ int32_t __cdecl load_object_definition(char* path, Object* object);
 
 void __thiscall initialize_directx_loader(DirectXLoader* loader);
 void __thiscall load_x_mesh(
-    DirectXLoader* loader, char* mesh_path, Object* object, uint8_t options_flags);
+    DirectXLoader* loader, char* mesh_path, Object* object, int32_t options_flags);
 int32_t __thiscall load_or_reuse_cached_x_mesh(DirectXLoader* loader, char* mesh_name);
 void __thiscall load_x_animation_clip(
     DirectXLoader* loader, char* mesh_name, Object* object);
+void* __thiscall initialize_duplicate_vertices(
+    DuplicateVertices* duplicate_vertices, int32_t count);
+int32_t __thiscall clean_duplicate_vertices(
+    DuplicateVertices* duplicate_vertices, int32_t unused);
 
 void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
