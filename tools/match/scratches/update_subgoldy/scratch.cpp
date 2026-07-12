@@ -13,6 +13,7 @@
 #include "audio_system.h"
 #include "backdrop.h"
 #include "cheat_state.h"
+#include "click_start.h"
 #include "damage_guage.h"
 #include "sub_solution.h"
 #include "progress_bar.h"
@@ -185,9 +186,8 @@ struct SubgoldyPlayerView {
     TransformMatrix live_matrix; // +0x38 (position at +0x68)
     char unknown_78[0x84 - 0x78];
     unsigned char resurrect_active; // +0x84
-    char unknown_85[0x120 - 0x85];
-    int movement_state; // +0x120
-    char unknown_124[0x14c - 0x124];
+    char unknown_85[0xa0 - 0x85];
+    ClickStart click_start; // +0xa0, authored cRClickStart
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[3];
     SubgoldyNukeView nuke; // +0x150, compact cRNuke prefix
@@ -334,7 +334,7 @@ void SubgoldyPlayerView::update_subgoldy()
     if (*((unsigned char*)replay_game + 0xff25d0)
         && *(int*)((char*)replay_game + 0xff25dc)
                < (*(SubSolution**)((char*)replay_game + 0xff25d4))->replay_sample_count
-        && movement_state != 2) {
+        && click_start.state != 2) {
         p_position = &live_matrix.position;
         live_matrix.position.x = convert_math_type16_to_32(
             (*(SubSolution**)((char*)replay_game + 0xff25d4))
@@ -400,7 +400,7 @@ steering_stored:
                 steer_target = -3.7f;
             else if (steer_target > 3.7f)
                 steer_target = 3.7f;
-            if (movement_state != 2) {
+            if (click_start.state != 2) {
                 float pull = game->subgame_rate * 0.2f;
                 float steer_delta = steer_target - live_matrix.position.x;
                 live_matrix.position.x = pull * steer_delta + live_matrix.position.x;
@@ -519,7 +519,7 @@ steering_stored:
                        + velocity.z;
         if (velocity.z > 1.0f)
             velocity.z = 1.0f;
-        if (movement_state == 2)
+        if (click_start.state == 2)
             velocity.z = 0.0f;
     }
 
@@ -1100,7 +1100,7 @@ steering_stored:
     float window_floor = commentary_game->subgame_rate * 0.17f;
     if ((commentary_game->subgame_rate * 0.5f - window_floor) * 0.1f + window_floor
             <= velocity.z
-        || window_floor >= velocity.z || attachment_exit_pending || movement_state == 2) {
+        || window_floor >= velocity.z || attachment_exit_pending || click_start.state == 2) {
         slow_commentary_timer = 0.0f;
     } else {
         float advanced = slow_commentary_step + slow_commentary_timer;
@@ -1126,7 +1126,7 @@ steering_stored:
     SubgoldyGameView* emitter_game = game;
     if ((emitter_game->runtime_flags & 0x400000) != 0 && !completion_handoff_active
         && !control_override_active
-        && (movement_state == 0 || movement_state == 4)) {
+        && (click_start.state == 0 || click_start.state == 4)) {
         if (movement_fire_progress > 0.0f) {
             float advanced = movement_fire_progress_step + movement_fire_progress;
             movement_fire_progress = advanced;

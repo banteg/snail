@@ -60,7 +60,7 @@ Rejected probes:
   shell removals are now expressed as embedded subobjects. Their intrusive BOD
   nodes are returned to the shared free list, but their backing storage remains
   owned by `SubgameRuntime::player`.
-- `Player +0xa0` is an embedded `ClickStartController`, with its `state` lane at
+- `Player +0xa0` is the exact embedded `ClickStart` (`cRClickStart`), with its `state` lane at
   `Player +0x120`. The initializer now uses that typed view. A typed spelling of
   the final teardown branch regressed to `59.18%`, so the scratch retains the
   native-shape raw loads there and records the ownership in `player.h`.

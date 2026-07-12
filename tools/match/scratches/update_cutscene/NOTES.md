@@ -55,9 +55,10 @@ Focused Wibo remains `46.29%`; the switch table is a real layout mismatch.
 
 2026-06-20 offset audit: `0x42fec4` is now named
 `g_player_intro_cutscene_latch_offset` (`g_player_block + 0x148`). Native clears
-the byte on the intro close-in camera leg; no consumer has been recovered yet, so
-the Player field stays conservatively named `intro_cutscene_latch`. Masked audit
-is now `34 ok / 0 unresolved / 2 mismatch`.
+the byte on the intro close-in camera leg. Cross-port `cRClickStart` ownership
+now proves this is `Player::click_start.hide_prompt` at child `+0xa8`; clearing
+it lets the prompt be revealed. The stable global reference name remains
+unchanged. Masked audit is `34 ok / 0 unresolved / 2 mismatch`.
 
 2026-07-11 owner closure: the mode read now comes from
 `GameRoot::subgame.level_mode`; removing `CompletionGameView` is codegen-neutral

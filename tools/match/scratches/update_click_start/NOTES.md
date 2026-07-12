@@ -7,7 +7,7 @@ masked operands all resolved. No fakematching.
 
 Recovered relationships:
 
-- `ClickStartController` is a `RenderableBod` owner with state at `+0x80`,
+- `ClickStart` is the exact authored `cRClickStart` RenderableBod owner with state at `+0x80`,
   prompt widget at `+0x84`, teardown progress/step at `+0x88/+0x8c`, owner
   player at `+0x98`, and prompt-hide latch at `+0xa8`;
 - state `2` accepts either the app replay-launch scratch at `game+0x1066be8`
@@ -30,3 +30,13 @@ Residual mismatch:
 is codegen-neutral at 27.18%, 149/138 instructions, prefix 1/138, and 13 clean
 masked operands. The separate replay-start block remains raw here pending a
 source-shape pass; this change does not claim new ownership for it.
+
+2026-07-12 authored-owner closure: Android and iOS map this body to
+`cRClickStart::AI()`. Android independently preserves the prompt hide lane,
+state-2 replay/input handoff, parent startup-index write, pointer recenter,
+SFX 8, state-3 random seed and teardown setup, and state-4 BOD removal. Its
+RenderableBod base is 0x0c bytes smaller, while every tail field keeps the same
+relative order. The exact Windows type/parent substitution is codegen-neutral
+at the honest 27.18%, 149/138 instructions, with 13 clean masks. Removing the
+explicit range guard or replacing early returns with breaks was neutral or
+worse and still produced a compare tree, so no jump-table fakematch was kept.

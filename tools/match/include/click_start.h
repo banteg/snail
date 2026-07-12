@@ -1,4 +1,4 @@
-// Click-to-start runtime owner, partial.
+// Authored cRClickStart, exact 0xac-byte click-to-start runtime owner.
 #ifndef CLICK_START_H
 #define CLICK_START_H
 
@@ -6,17 +6,13 @@
 #include "bod_types.h"
 #include "frontend_widget.h"
 
-class ClickStartPlayer {
-public:
-    char unknown_000[0x304];
-    int startup_track_index; // +0x304, click-start view; update_subgoldy uses the same slot as a replay/ghost anchor
-};
+class Player;
 
-class ClickStartController : public RenderableBod {
+class ClickStart : public RenderableBod {
 public:
-    ClickStartController* initialize_click_start_controller_runtime(); // @ 0x408670
-    void initialize_click_start(ClickStartPlayer* player); // @ 0x442170
-    void update_click_start();                             // @ 0x442290
+    ClickStart* initialize_click_start_controller_runtime(); // @ 0x408670, constructor
+    void initialize_click_start(Player* player); // @ 0x442170, cRClickStart::Init
+    void update_click_start();                   // @ 0x442290, cRClickStart::AI
 
     char unknown_78[0x80 - 0x78];
     int state;                  // +0x80
@@ -24,9 +20,11 @@ public:
     float teardown_progress;    // +0x88
     float teardown_progress_step; // +0x8c
     char unknown_90[0x98 - 0x90];
-    ClickStartPlayer* player;   // +0x98
+    Player* player;             // +0x98, borrowed containing cRSubGoldy
     char unknown_9c[0xa8 - 0x9c];
     unsigned char hide_prompt;  // +0xa8
 };
+
+typedef char ClickStart_must_be_0xac[(sizeof(ClickStart) == 0xac) ? 1 : -1];
 
 #endif

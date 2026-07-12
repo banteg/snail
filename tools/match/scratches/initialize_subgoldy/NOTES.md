@@ -134,8 +134,8 @@ Latest focused result:
   `follow_active` lane, are now expressed through shared `Player` fields in the
   scratch instead of raw offsets. Focused Wibo is byte-shape neutral at the
   retained `95.86%`, `276/279`, `27 ok / 0` result.
-- `Player +0xa0` is now exposed as the embedded `ClickStartController`; using
-  that owner view at its initializer is also codegen-neutral.
+- `Player +0xa0` is now the exact 0xac-byte embedded `ClickStart`; calling its
+  authored `cRClickStart::Init(cRSubGoldy*)` member directly is codegen-neutral.
 - A fully typed `Vector3` spelling of the cached-camera/live-position block was
   rejected: it regressed to `92.97%` and changed the native constant/register
   schedule. At that stage, the honest residual was the three-instruction

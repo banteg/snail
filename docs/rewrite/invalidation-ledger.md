@@ -262,3 +262,9 @@ Template:
 - invalidated claim: the 0x214-byte child at `Player +0x2750` is only a neutral jetpack-gauge composite, and its final call is semantically `SubgameRuntime::spawn_track_speedup`
 - replacement evidence: Android maps the exact Windows field/method family to `cRSubHover::{Init,On,End,AI,JetInit,JetUnInit,Jets}`; iOS independently retains `AI` and `Jets`. The final Windows call passes `SubHover*`, `Vector3*`, and `float`, matching Android's separate literal no-op `cRSubHover::Hover(tVector&, float)` at the same time that Windows uses the shared one-instruction address for `cRSubGame::AddSpeedUp`
 - port consequence: type the native child as exact `SubHover`, keep the stable Windows target name `spawn_track_speedup` with `sub_hover_hover` as a folded alias, and do not model the Hover call through a fake derived caller or confuse this owner with the separate `cRJetPack` pickup singleton
+
+## 2026-07-12 - Nested ClickStart state
+
+- invalidated claim: Player +0x120 is best kept as a flat `movement_state`, Player +0x148 is an unresolved intro latch, and the block from +0xa0 can remain an opaque controller view
+- replacement evidence: the exact Windows constructor establishes a 0xac-byte RenderableBod child at Player +0xa0, ending at +0x14c. Android and iOS identify it as `cRClickStart`; Android preserves the full `Init(cRSubGoldy*)` and `AI()` field family with a uniformly 0x0c-smaller base, proving Windows child state +0x80 / Player +0x120, parent +0x98, and `hide_prompt` +0xa8 / Player +0x148
+- port consequence: embed exact native `ClickStart` in Player, route all native +0x120 gates through `click_start.state`, identify +0x148 as `click_start.hide_prompt`, and keep the higher-level Zig launch-envelope interpretation distinct from the recovered native owner

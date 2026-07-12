@@ -1,12 +1,12 @@
 // initialize_click_start @ 0x442170 (thiscall, ret 0x4)
 
-#include "click_start.h"
+#include "player.h"
 
 extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-void ClickStartController::initialize_click_start(ClickStartPlayer* new_player)
+void ClickStart::initialize_click_start(Player* new_player)
 {
     prompt = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
     Color4f color;

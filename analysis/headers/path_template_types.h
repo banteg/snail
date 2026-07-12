@@ -695,6 +695,21 @@ typedef struct FireWork {
     uint8_t _empty;
 } FireWork;
 
+/* Authored cRClickStart, exact 0xac-byte RenderableBod child. */
+typedef struct ClickStart {
+    RenderableBod bod;
+    uint8_t _pad_78[0x8];
+    int32_t state;
+    FrontendWidget* prompt;
+    float teardown_progress;
+    float teardown_progress_step;
+    uint8_t _pad_90[0x8];
+    Player* player;
+    uint8_t _pad_9c[0xc];
+    uint8_t hide_prompt;
+    uint8_t _pad_a9[0x3];
+} ClickStart;
+
 typedef struct TipMessageDefinition {
     uint32_t flags;
     float layout_y;
@@ -893,9 +908,7 @@ typedef struct Player {
     uint8_t _pad_94[0x4];
     Sprite* ghost_sprite_a;
     Sprite* ghost_sprite_b;
-    uint8_t _pad_a0[0x80];
-    int32_t movement_state;
-    uint8_t unresolved_pre_row_event[0x28];
+    ClickStart click_start;
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
     Nuke nuke;

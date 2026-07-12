@@ -604,7 +604,7 @@
       "aliases": [
         "data_42fec4"
       ],
-      "description": "Relocatable Player byte at player+0x148 cleared by update_cutscene when the intro camera handoff enters its close-in leg; the consumer is not recovered yet."
+      "description": "Stable relocatable reference to `Player::click_start.hide_prompt` at Player +0x148, cleared by update_cutscene when the intro camera handoff enters its close-in leg so cRClickStart can reveal the prompt."
     },
     {
       "address": "0x430060",
@@ -1868,7 +1868,7 @@
         "off_497348",
         "data_497348"
       ],
-      "description": "Click-start controller callback table installed by initialize_click_start_controller_runtime; first entry is `update_click_start`."
+      "description": "Authored cRClickStart callback table installed by its exact Windows constructor; first entry is `update_click_start` (`cRClickStart::AI`)."
     },
     {
       "address": "0x49734c",

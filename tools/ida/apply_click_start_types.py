@@ -10,12 +10,16 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_click_start_controller_runtime",
+        "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);",
+    ),
+    (
         "initialize_click_start",
-        "void __thiscall initialize_click_start(ClickStartController* controller, ClickStartPlayer* player);",
+        "void __thiscall initialize_click_start(ClickStart* click_start, Player* player);",
     ),
     (
         "update_click_start",
-        "void __thiscall update_click_start(ClickStartController* controller);",
+        "void __thiscall update_click_start(ClickStart* click_start);",
     ),
 ]
 

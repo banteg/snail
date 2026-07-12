@@ -465,7 +465,7 @@
     {
       "address": "0x408670",
       "name": "initialize_click_start_controller_runtime",
-      "description": "Constructs the renderable click-start controller and installs the callback table whose first entry is `update_click_start`. This is the runtime slot constructor; `initialize_click_start` later seeds the gameplay prompt state."
+      "description": "Exact Windows constructor for the 0xac-byte authored `ClickStart` (`cRClickStart`) child: constructs its RenderableBod base and installs the callback table whose first entry is `update_click_start`."
     },
     {
       "address": "0x408690",
@@ -1925,7 +1925,7 @@
     {
       "address": "0x438b90",
       "name": "update_subgame",
-      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live Player movement_state at +0x120 equals 2. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
+      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
     },
     {
       "address": "0x439a40",
@@ -2345,12 +2345,12 @@
     {
       "address": "0x442170",
       "name": "initialize_click_start",
-      "description": "Initializes the `Click to Start` prompt owner for the subgame intro and hides that prompt immediately when the app-side replay-launch active bit is already set, so persistent replay starts skip the normal click gate."
+      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, seeds the prompt and state, and applies the replay-launch hide gate."
     },
     {
       "address": "0x442290",
       "name": "update_click_start",
-      "description": "Advances the subgame `Click to Start` startup owner and its selected-replay handoff: state `2` branches between replay-driven startup and player confirm, recenters the authored mouse-pointer widgets, plays SFX `8` on the start transition, and then advances the prompt teardown lane."
+      "description": "Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff, writes the parent startup index, recenters both pointers, plays SFX 8, and tears down the embedded RenderableBod child."
     },
     {
       "address": "0x442500",

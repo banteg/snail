@@ -30,16 +30,13 @@ typedef struct TransformMatrix {
 
 typedef struct FrontendWidget FrontendWidget;
 
-typedef struct ClickStartPlayer {
-    uint8_t _pad_000[0x304];
-    int32_t startup_track_index;
-} ClickStartPlayer;
+typedef struct Player Player;
 
-typedef struct ClickStartController {
+typedef struct ClickStart {
     void* vtable;
     int32_t list_flags;
-    struct ClickStartController* list_prev;
-    struct ClickStartController* list_next;
+    struct ClickStart* list_prev;
+    struct ClickStart* list_next;
     Vec3 position;
     float render_arg_1c;
     float render_arg_20;
@@ -52,9 +49,17 @@ typedef struct ClickStartController {
     float teardown_progress;
     float teardown_progress_step;
     uint8_t _pad_90[0x8];
-    ClickStartPlayer* player;
+    Player* player;
     uint8_t _pad_9c[0xc];
     uint8_t hide_prompt;
-} ClickStartController;
+    uint8_t _pad_a9[0x3];
+} ClickStart;
+
+struct Player {
+    uint8_t _pad_000[0xa0];
+    ClickStart click_start;
+    uint8_t _pad_14c[0x304 - 0x14c];
+    int32_t startup_track_index;
+};
 
 #endif

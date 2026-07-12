@@ -1,6 +1,6 @@
 // update_click_start @ 0x442290 (thiscall, ret)
 
-#include "click_start.h"
+#include "player.h"
 #include "audio_system.h"
 #include "game_root.h"
 #include "input_state.h"
@@ -11,7 +11,7 @@ int report_errorf(char* format, ...);
 void set_math_random_seed(int seed);
 void* set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
 
-void ClickStartController::update_click_start()
+void ClickStart::update_click_start()
 {
     if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate != 0)
         return;

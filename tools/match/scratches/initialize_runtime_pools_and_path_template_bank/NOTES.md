@@ -228,3 +228,10 @@
 - The four-byte count plus 256 0x18-byte `ContactTargetEntry` records closes
   the native 0x1804 owner exactly at `Completion +0x12727d8`.
 - The typed pass remains exact at 227/227 with all 72 operands clean.
+
+## 2026-07-12 cRClickStart constructor ownership
+
+- The constructor call at `SubgameRuntime::player +0xa0` now uses the exact
+  `ClickStart` receiver instead of a neutral RuntimeSlot.
+- Cross-port vtable and Init/AI symbols identify this as cRClickStart; focused
+  Windows remains exact at 227/227 instructions with 72 clean operands.

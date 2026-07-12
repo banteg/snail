@@ -25,6 +25,13 @@ typedef struct TransformMatrix {
     Vec4 position;
 } TransformMatrix;
 
+/* Exact cRClickStart extent with the state lane needed by replay consumers. */
+typedef struct ClickStart {
+    uint8_t _pad_00[0x80];
+    int32_t state;
+    uint8_t _pad_84[0xac - 0x84];
+} ClickStart;
+
 typedef struct SelectedLevelReplaySample {
     int16_t lateral_x;
     int16_t delta_z;

@@ -16,11 +16,12 @@ REQUIRED_HEADER_STRUCTS = (
     "SelectedLevelReplaySample",
     "TransformMatrix",
     "Vec4",
+    "ClickStart",
 )
 
 PLAYER_FIELD_UPDATES = (
     ("0x38", "live_matrix", "TransformMatrix"),
-    ("0x120", "movement_state", "int32_t"),
+    ("0xa0", "click_start", "ClickStart"),
     ("0x2d8", "control_override_active", "uint8_t"),
     ("0x370", "heading_roll", "float"),
     ("0x384", "follow_state", "FollowState"),

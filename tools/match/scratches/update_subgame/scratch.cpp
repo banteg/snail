@@ -207,7 +207,7 @@ void SubgameRuntime::update_subgame()
 
         int two = 2;
         if (player.completion_handoff_active == zero
-            && player.movement_state != two)
+            && player.click_start.state != two)
             player.stopwatch.advance_timer_counters(1.0f);
 
         if (level_mode == 7)
@@ -232,7 +232,7 @@ void SubgameRuntime::update_subgame()
             *(unsigned char*)(game + 9) = one;
             subgame_state = three;
             g_sprite_manager.set_sprite_manager_paused((char)one);
-            if (player.movement_state == two)
+            if (player.click_start.state == two)
                 ((BorderInit*)*(void**)(game + 0x3bb888))->hide_border_init();
             return;
         }
@@ -242,7 +242,7 @@ void SubgameRuntime::update_subgame()
             *(float*)(game + 0x0c) = fade;
             if (fade > 1.0f)
                 *(float*)(game + 0x0c) = 0.0f;
-            if (player.movement_state == two)
+            if (player.click_start.state == two)
                 ((BorderInit*)*(void**)(game + 0x3bb888))->unhide_border_init();
         }
 
@@ -418,7 +418,7 @@ void SubgameRuntime::update_subgame()
                                     || *((unsigned char*)&cell_slot->cell + 0x90) == 32)
                                 && cell_index >= *(int*)(game + 0x50)
                                 && cell_index < *(int*)(game + 0x58)
-                                && player.movement_state != 2
+                                && player.click_start.state != 2
                                 && (level_mode != 4
                                     || random_float_below(1.0f, "G2")
                                         <= *(float*)(game + 0x48) * 0.3f + 0.7f)
@@ -438,7 +438,7 @@ void SubgameRuntime::update_subgame()
                             }
                         } else if ((cell_slot->cell.lane_and_flags & 8) == 0
                             && (hazard_tile == 1 || hazard_tile == 15)
-                            && player.movement_state != 2
+                            && player.click_start.state != 2
                             && (*(unsigned int*)(game + 0x4c) & 0x10000) != 0
                             && random_float_below(1.0f, "S")
                                 > (1.0f - salt_frequency) * 0.02f

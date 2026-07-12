@@ -16,11 +16,14 @@ The current high-confidence `Player` fields are:
 - `+0x90`: `resurrect_progress_step`
 - `+0x98`: `ghost_sprite_a`
 - `+0x9c`: `ghost_sprite_b`
-- `+0x120`: `movement_state`
-  - state `2` is the suspended-drive state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
+- `+0xa0`: exact 0xac-byte `click_start` child (`cRClickStart`)
+  - child `+0x80` / Player `+0x120`: `state`
+  - state `2` is the suspended-drive/start-gate state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
   - the current Zig port maps this shape to the post-attachment launch envelope (`LaunchState.active`) rather than treating it as a standalone hazard flag
-- `+0x124..+0x14b`: `unresolved_pre_row_event`
-  - kept as an explicit unresolved gap in the shared header; no safe controller-level name yet
+  - child `+0x84`: prompt widget
+  - child `+0x88/+0x8c`: teardown progress and step
+  - child `+0x98`: borrowed containing `Player*`
+  - child `+0xa8` / Player `+0x148`: `hide_prompt`, cleared by the intro cutscene handoff
 - `+0x14c`: `row_event_cutscene_started`
 - `+0x150`: `nuke`
   - inline `NukeController`
@@ -679,7 +682,7 @@ Current practical read:
   - when that persistent byte is `0`, the same pause branch falls through to completion state `2`; `update_completion_screen` state `2` then calls `complete_subgame(game, 1)`, skips the app `+0x30d` score-entry branch because transient selected-record runs keep `selected_level_record_active != 0`, destroys subgame, and on `level_mode == 4` reinitializes subgame directly instead of using frontend state `0x1c`
   - `update_subgame` seeds `game + 0x1270fc8 = 2` on the route-map best-trial launch path, and `initialize_subgame` later uses that nonzero continuation selector plus `level_mode == 4` to rebuild the galaxy owner through `initialize_galaxy` / `reset_subgame`
   - transient route-map replay pause abandon therefore uses the non-clear rebuild lane (`0x1b` / opcode `27`-shaped semantics), not the respawn-only clear-replay lane (`0x1c` / opcode `28`)
-  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `replay_update_cursor < record->replay_sample_count`, and `movement_state != 2`:
+  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `replay_update_cursor < record->replay_sample_count`, and `click_start.state != 2`:
     - `record->replay_samples[replay_update_cursor].lateral_x` becomes live replay `x`
     - `record->replay_samples[replay_update_cursor].flags & 0x4` feeds `track_state_latch`
     - that same `flags` byte bit `0x8` writes `app + 0x1b8 = 0x1a`, `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and calls `begin_frontend_fade_in(app + 0x24)`

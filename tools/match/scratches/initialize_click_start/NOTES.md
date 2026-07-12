@@ -14,9 +14,16 @@ Recovered relationships:
   embedded transform at `+0x38`;
 - active-list flags reuse the shared BOD semantics: `0x200` linked,
   `0x40` iterator guard;
-- `Player+0x304` is kept as a local click-start view for now because
-  `update_subgoldy` also uses it as a replay/ghost anchor cursor.
+- the borrowed parent at owner `+0x98` is the real `Player*`; Android and iOS
+  expose the authored signature `cRClickStart::Init(cRSubGoldy*)` and perform
+  the same parent `startup_track_index` clear;
+- the complete Windows child is exactly 0xac bytes at `Player +0xa0`, ending
+  immediately before `Player::row_event_cutscene_started` at `+0x14c`.
 
 Source-shape note: the active-list insertion wants the same native-looking
 pointer reload idiom as nearby BOD owners, including the temporary
 `current->list_prev` readback before assigning the list head.
+
+2026-07-12 authored-owner closure: `ClickStartController` and the synthetic
+`ClickStartPlayer` prefix are retired in favor of exact `ClickStart` and its
+borrowed `Player*`. Focused Wibo remains exact at 79/79 instructions.

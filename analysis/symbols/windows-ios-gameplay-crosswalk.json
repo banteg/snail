@@ -541,6 +541,24 @@
       "confidence": "high"
     },
     {
+      "address": "0x442170",
+      "windows_name": "initialize_click_start",
+      "ios_symbol": "cRClickStart::Init(cRSubGoldy*)",
+      "android_symbol": "cRClickStart::Init(cRSubGoldy*)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All ports allocate the Click to Start border, store the borrowed Goldy parent, link the RenderableBod child, seed state, clear the parent's startup index, and apply the replay-launch hide gate. Android's RenderableBod base is 0x0c bytes smaller; every tail field shifts by exactly that amount."
+    },
+    {
+      "address": "0x442290",
+      "windows_name": "update_click_start",
+      "ios_symbol": "cRClickStart::AI()",
+      "android_symbol": "cRClickStart::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The cross-port AI bodies share the prompt hide gate, state 2 input/replay handoff, parent startup-index write, pointer recenter and SFX 8, state 3 seed/teardown setup, and state 4 RenderableBod removal."
+    },
+    {
       "address": "0x443070",
       "windows_name": "update_row_model",
       "ios_symbol": "cRRowModel::AI()",

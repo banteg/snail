@@ -130,7 +130,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
 
     RuntimeSlot* subgoldy = SLOT(0x3bb764);
     subgoldy->initialize_renderable_bod();
-    ((RuntimeSlot*)((char*)subgoldy + 0xa0))->initialize_click_start_controller_runtime();
+    ((ClickStart*)((char*)subgoldy + 0xa0))->initialize_click_start_controller_runtime();
     ((RuntimeSlot*)((char*)subgoldy + 0x200))->noop_runtime_slot_constructor();
     ((RuntimeSlot*)((char*)subgoldy + 0x384))->noop_runtime_slot_constructor();
     initialize_array_with_constructor(

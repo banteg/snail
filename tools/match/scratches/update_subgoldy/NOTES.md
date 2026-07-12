@@ -21,7 +21,7 @@ scratch additionally pins:
   `resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[steering_mode_selector])`
   is called for its side effect each tick; selector 1 maps `steering_x`
   absolutely; steer target = `(320 - offset) * 0.0125` clamped ±3.7;
-  `x += rate*0.2 * (target - x)` unless movement_state == 2. Under control
+  `x += rate*0.2 * (target - x)` unless `click_start.state == 2`. Under control
   override the offset is pulled by `-2 * presentation.live_basis_up.x`.
 - **Lateral quantization EVERY tick**: `position.x =
   convert_math_type16_to_32(convert_math_type32_to_16(x, 16.0), 16.0)` —
@@ -60,7 +60,7 @@ scratch additionally pins:
   through flt_643190, anchored by player+0x304;
   `set_subgoldy_ghost_z(float)` each tick.
 - **Movement-fire emitters**: require runtime_flags & 0x400000, no
-  handoff/override, movement_state 0 or 4; fire cooldown via +0x2730
+  handoff/override, `click_start.state` 0 or 4; fire cooldown via +0x2730
   progress (+0.3 bias on flags_a fire); replay flags bits 1/2 replay the
   fire actions; app+0x1066bf4 < 10 (the 9-tick startup hold) re-arms the
   cooldown.
@@ -83,10 +83,10 @@ basis_up.x +0x48, cutscene state +0x1964), authored cRSquidge +0x4344
 (y output/velocity/phase +0x00/+0x04/+0x08, z output/velocity/phase
 +0x0c/+0x10/+0x14), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
 slide threshold +0x2738, track_z offset/anchor +0x273c/+0x2740, handoff
-cycle +0x2744/8, jetpack gauge +0x2750 (state +0xc, wobble x/y/alpha
+cycle +0x2744/8, authored cRSubHover +0x2750 (state +0xc, wobble x/y/alpha
 +0x14/18/1c), camera target +0x2964, steering selector +0x2970,
 interaction_max_z +0x2980, movement_mode_selector +0x40c (0/2 = early
-out), movement_state +0x120, resurrect_active +0x84, row event id +0x1e8
+out), cRClickStart +0xa0 with state +0x120, resurrect_active +0x84, row event id +0x1e8
 + tip def +0x1ec, ghost anchor +0x304, wall stall +0x328/c, exit voice
 timer +0x330/4, lane lean +0x350..+0x35c, timer pair +0x360/+0x368/+0x36c,
 nuke progress +0x374/8, handoff timer +0x444/8 + gates +0x44c/d/e.
@@ -95,6 +95,12 @@ The scratch-local `SubgoldySquidgeView` is intentionally a narrow consumer
 view of the shared exact `Squidge` owner. Cross-port symbols and Android bodies
 identify the four helpers as `cRSquidge::{Init,StartY,StartZ,AI}`; the old
 Windows `initialize_score_stats` name is only a stable harness identifier.
+
+2026-07-12 nested ClickStart ownership: the former flat movement-state lane is
+the state at `+0x80` inside the exact 0xac-byte `ClickStart` child embedded at
+Player +0xa0. Replacing the scratch-local flat field with the shared owner and
+all reads with `click_start.state` is codegen-neutral at 72.51%, 2067/2087
+instructions; no register-shaped adapter was retained.
 
 Game side: level_mode at +0x40 (NOT +0x150), level_mode_arg +0x44,
 runtime_flags +0x4c, first_block_row_count +0x50, runtime_row_count
