@@ -46,3 +46,28 @@ raises focused Wibo from 67.81% to 68.67%, with 114/119 instructions, prefix
 28/119, and one clean operand. Direct ternaries with both comparison
 polarities and additional scalar temporaries were rejected: they reduce the
 score and still fail to recover native's six `fld`/`fcompp` min/max schedules.
+
+## 2026-07-12 extended min/max comparison recovery
+
+The native bounds tests load both `float` operands into x87, compare them in
+extended precision with `fcompp`, and use strict keep-the-existing-bound
+branches. Expressing that source shape directly raises focused Wibo from
+68.67% to 84.52%, with 120 candidate instructions versus 119 target,
+28/119 exact prefix instructions, and one clean masked operand.
+
+This is also a semantic correction. For each maximum component the native
+shape is “keep max while `vertex < max`, otherwise take vertex”; for each
+minimum it is “keep min while `min < vertex`, otherwise take vertex.” The
+unordered x87 status therefore takes the vertex path, so a NaN vertex
+propagates into the derived bounds instead of retaining the prior sentinel or
+component.
+
+The remaining residual starts in initialization scheduling: native clears
+`bounding_radius` before spilling the processed-vertex counter and finishing
+the aggregate minimum-vector store, while VC6 schedules the candidate's radius
+clear after the initial vertex-count comparison. That also leaves candidate
+vertex setup as three instructions (`vertices` load, offset copy, add) versus
+native's two-instruction load/add. The six compare/select bodies and the
+derived-radius update otherwise have the recovered field ownership and native
+extended-comparison behavior; no volatile qualifiers or synthetic locals were
+added to force the final schedule.
