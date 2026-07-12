@@ -114,3 +114,14 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
   (`550/566`) to `63.76%` (`535/566`) while preserving the six-instruction
   prefix and improving the clean masked operands from 43 to 47 with no
   unresolved or mismatched operands.
+
+## 2026-07-12 line-helper owner recovery
+
+- Both native callsites load the enclosing `Galaxy*` into `ecx` before calling
+  `0x409b00`. The exact helper does not consume that register, which allowed a
+  false standalone stdcall spelling to match its body while losing the
+  authored owner at every caller.
+- Promoting it to `Galaxy::draw_galaxy_line` keeps the helper exact at 67/67
+  and raises this updater from `63.76%` (`535/566`) to `63.83%` (`537/566`).
+  The six-instruction prefix and 47 clean / 0 unresolved / 0 mismatched
+  operands are preserved.

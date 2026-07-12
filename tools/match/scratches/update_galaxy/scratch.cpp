@@ -26,15 +26,6 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int layer,
     int blend); // @ 0x44a9b0
-int __stdcall draw_galaxy_line(
-    int texture_id,
-    float x0,
-    float y0,
-    float x1,
-    float y1,
-    float width,
-    Color4f* color); // @ 0x409b00
-
 int Galaxy::update_galaxy()
 {
     Color4f route_zero_color;

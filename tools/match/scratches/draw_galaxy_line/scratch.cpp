@@ -1,9 +1,10 @@
-// draw_galaxy_line @ 0x409b00 (stdcall, ret 0x1c)
+// draw_galaxy_line @ 0x409b00 (thiscall, ret 0x1c)
 
 #include "font_system.h"
+#include "galaxy_route_types.h"
 #include "vector3.h"
 
-int __stdcall draw_galaxy_line(
+int Galaxy::draw_galaxy_line(
     int texture_id,
     float x0,
     float y0,

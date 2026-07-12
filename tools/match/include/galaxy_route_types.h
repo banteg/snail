@@ -95,6 +95,14 @@ public:
     int update_galaxy(); // @ 0x4092f0
     void close_galaxy_route(); // @ 0x409bf0
     FrontendWidget* open_galaxy_route(int selected_level_index); // @ 0x409c50
+    int draw_galaxy_line(
+        int texture_id,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
+        float width,
+        Color4f* color); // @ 0x409b00
     void galaxy_border_bound(
         float* min_x,
         float* max_x,
