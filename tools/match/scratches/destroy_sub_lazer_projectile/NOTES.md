@@ -10,18 +10,17 @@ cell's own active BOD, and is called by both `cRSubLoc::AI()` and
 contract; the stable harness name remains historical.
 
 Current match: 91.19% (`130/131` candidate/target instructions), 87-instruction
-exact prefix, `14` masked operands ok, no unresolved and `3` known global-base
-mismatches.
+exact prefix, and all `17` masked operands clean.
 
 Recovered behavior:
 
 - the receiver is the full `SubLoc` runtime-grid object, not a
   `SubLazerSlot`; the first `0x10` bytes are the shared `BodNode` prefix;
-- tile ids `0x1d` and `0x1e` may clear the row-color BOD record at
-  `game+0x6410e0 + row*0xf4`, gated by the row record's dirty bit `0x08`;
-  this is the shared `TrackAttachmentRuntimeRow` record viewed from the outer
-  game base, so the scratch keeps the native outer cursor and typed offset
-  accesses instead of folding `0x6410e0` into the row pointer;
+- tile ids `0x1d` and `0x1e` may unlink
+  `SubRow::attachment_body +0xb0` at `game+0x6410e0 + row*0xf4`, gated by the
+  row record's dirty bit `0x08`; this is distinct from the moving
+  `SubRow::row_model +0x04`. The scratch keeps the native outer cursor and
+  typed offset accesses instead of folding `0x6410e0` into the row pointer;
 - the cell's own BOD node is removed when active;
 - the four `SubLoc::fringe_*` pointers are scanned and any active fringe
   BOD is unlinked back into the shared free list.
@@ -107,3 +106,17 @@ IDA infers a stale `_DWORD*` return from the last fringe expression, but the
 known callers (`wall2_emitter_maybe_fire_sub_lazer` and `remove_subgame_bods`)
 ignore the result and the shared header's `void destroy_sub_lazer_projectile()`
 remains the source-plausible shape.
+
+## 2026-07-12 attachment-body correction
+
+The first 87 instructions were previously normalized as a clean prefix despite
+three masked relocation mismatches. Their exact addresses distinguish two
+owned BODs inside each 0xf4-byte SubRow: the dirty flag is at row `+0x00`, but
+the removable node begins at `attachment_body +0xb0` (`GameRoot +0x641190`),
+not `row_model +0x04`. Switching the scratch to the real attachment body clears
+all three mismatches without changing the honest 91.19%, 130/131 result.
+
+The analysis headers now retain `SubLoc` as the authored alias for the Windows
+0x54-byte `TrackRowCell` layout, and the repeatable BN/IDA syncs apply that
+receiver plus the proven void/thiscall contract to `Remove` and `AI`, alongside
+the exact constructor and `Yi` signatures.

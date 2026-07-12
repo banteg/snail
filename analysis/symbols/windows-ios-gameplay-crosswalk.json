@@ -370,7 +370,7 @@
       "android_symbol": "cRSubLoc::Remove()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android begins with Yi, handles attachment-row entry tiles, removes the cell BOD, and is called by both SubLoc::AI and SubGame::RemoveBods."
+      "notes": "Android begins with Yi, handles attachment-row entry tiles, removes the cell BOD, and is called by both SubLoc::AI and SubGame::RemoveBods. Windows removes the embedded SubRow::attachment_body at row +0xb0, not the RowModel at +0x04."
     },
     {
       "address": "0x439d50",

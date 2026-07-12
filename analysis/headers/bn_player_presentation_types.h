@@ -335,6 +335,9 @@ typedef struct TrackRowCell {
     FringeObject* fringe_back;
 } TrackRowCell;
 
+/* Authored cross-port name retained as an alias for the Windows 0x54 layout. */
+typedef TrackRowCell SubLoc;
+
 typedef struct TrackAttachmentRuntimeRow {
     uint32_t flags;
     RenderableBod primary_body;

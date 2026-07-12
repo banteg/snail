@@ -28,6 +28,22 @@ TRUSTED_DATA_DECLARATIONS = [
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_bod",
+        "SubLoc* __thiscall initialize_bod(SubLoc* cell);",
+    ),
+    (
+        "destroy_sub_lazer_projectile",
+        "void __thiscall destroy_sub_lazer_projectile(SubLoc* cell);",
+    ),
+    (
+        "wall2_emitter_maybe_fire_sub_lazer",
+        "void __thiscall wall2_emitter_maybe_fire_sub_lazer(SubLoc* cell);",
+    ),
+    (
+        "get_track_cell_row_index",
+        "int32_t __thiscall get_track_cell_row_index(SubLoc* cell);",
+    ),
+    (
         "find_segment_path_index_by_name",
         "int32_t __thiscall find_segment_path_index_by_name(PathManager *manager, char *name);",
     ),

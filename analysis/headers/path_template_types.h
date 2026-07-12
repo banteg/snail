@@ -80,6 +80,7 @@ typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
 typedef struct Sprite Sprite;
 typedef struct TrackRowCell TrackRowCell;
+typedef struct TrackRowCell SubLoc;
 typedef struct TransformMatrix TransformMatrix;
 
 /* Two authored cRBanner actors are embedded at Game/SubgameRuntime +0x359080. */

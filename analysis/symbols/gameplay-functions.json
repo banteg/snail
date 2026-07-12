@@ -1964,7 +1964,7 @@
     {
       "address": "0x439bc0",
       "name": "destroy_sub_lazer_projectile",
-      "description": "Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing the attachment-row model for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the stable Windows harness name is historical."
+      "description": "Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing `SubRow::attachment_body` for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the stable Windows harness name is historical."
     },
     {
       "address": "0x439d50",

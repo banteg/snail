@@ -66,8 +66,8 @@ void SubLoc::destroy_sub_lazer_projectile()
     if (tile == 0x1d || tile == 0x1e) {
         char* row_record = g_game_base + row_index * sizeof(TrackAttachmentRuntimeRow);
         if ((OUTER_RUNTIME_ROW(row_record)->flags & 0x08) != 0) {
-            if ((OUTER_RUNTIME_ROW(row_record)->row_model.list_flags & 0x200) != 0)
-                REMOVE_BOD_NODE(&OUTER_RUNTIME_ROW(row_record)->row_model, unlink_mask);
+            if ((OUTER_RUNTIME_ROW(row_record)->attachment_body.list_flags & 0x200) != 0)
+                REMOVE_BOD_NODE(&OUTER_RUNTIME_ROW(row_record)->attachment_body, unlink_mask);
         }
     }
 

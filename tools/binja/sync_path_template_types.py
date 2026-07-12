@@ -12,6 +12,7 @@ from _narrow_sync import (
     apply_struct_field_updates,
     apply_symbol_updates,
     emit_summary,
+    run_bn,
     types_declare_if_missing,
 )
 
@@ -361,7 +362,60 @@ TIP_DATA_VAR_UPDATES = (
     ("0x4ac5c8", "TipData"),
 )
 
+
+def ensure_sub_loc_alias(*, target: str) -> dict[str, object]:
+    try:
+        current = run_bn(
+            REPO_ROOT,
+            "types",
+            "show",
+            "SubLoc",
+            "--target",
+            target,
+            "--format",
+            "json",
+        )
+    except RuntimeError:
+        current = None
+
+    if isinstance(current, dict) and current.get("name") == "SubLoc":
+        return {
+            "op": "types_declare",
+            "status": "skipped",
+            "reason": "SubLoc alias already present",
+            "declaration": "typedef struct TrackRowCell SubLoc;",
+        }
+
+    return {
+        "op": "types_declare",
+        "declaration": "typedef struct TrackRowCell SubLoc;",
+        "result": run_bn(
+            REPO_ROOT,
+            "types",
+            "declare",
+            "--target",
+            target,
+            "typedef struct TrackRowCell SubLoc;",
+        ),
+    }
+
 PROTO_UPDATES = (
+    (
+        "initialize_bod",
+        "SubLoc* __thiscall initialize_bod(SubLoc* cell)",
+    ),
+    (
+        "destroy_sub_lazer_projectile",
+        "void __thiscall destroy_sub_lazer_projectile(SubLoc* cell)",
+    ),
+    (
+        "wall2_emitter_maybe_fire_sub_lazer",
+        "void __thiscall wall2_emitter_maybe_fire_sub_lazer(SubLoc* cell)",
+    ),
+    (
+        "get_track_cell_row_index",
+        "int32_t __thiscall get_track_cell_row_index(SubLoc* cell)",
+    ),
     (
         "find_segment_path_index_by_name",
         "int32_t __thiscall find_segment_path_index_by_name(PathManager* manager, char* name)",
@@ -675,6 +729,8 @@ def parse_args() -> argparse.Namespace:
         help="Path to the narrow Binary Ninja type-import header.",
     )
     return parser.parse_args()
+
+
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -690,6 +746,7 @@ def main() -> int:
             required_structs=REQUIRED_HEADER_STRUCTS,
         )
     )
+    operations.append(ensure_sub_loc_alias(target=args.target))
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,
