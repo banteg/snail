@@ -5,6 +5,7 @@
 #include "frontend_widget.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
+#include "sound_effect_manager.h"
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
@@ -12,7 +13,6 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 char read_pressed_text_input_key_code();
-void play_sound_effect(int sound_id);
 int sprintf(char* buffer, const char* format, ...);
 float* layout_and_queue_wrapped_font_text(
     char* text,
@@ -183,7 +183,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     if (((*(unsigned int*)(self + 0x1a0) & 2) == 0)
         && ((*(unsigned int*)(self + 0x1a0) & 4) != 0)) {
         if ((*(unsigned int*)(self + 0x1a0) & 0x40000) == 0)
-            play_sound_effect(9);
+            g_sound_effect_manager.play_sound_effect(9);
         *(unsigned int*)(self + 0x1a0) |= 2;
     }
 
@@ -197,7 +197,7 @@ void FrontendWidget::update_frontend_widget_interaction()
                 else
                     ((BorderManager*)(g_game_base + 0xb4c))
                         ->queue_frontend_widget_flag_after_delay(this, 0x80);
-                play_sound_effect(8);
+                g_sound_effect_manager.play_sound_effect(8);
                 ((TooltipState*)(self + 0x28c))->reset_tooltip();
             } else if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0) {
                 *(unsigned int*)(self + 0x1a0) |= 0x20;
@@ -205,7 +205,7 @@ void FrontendWidget::update_frontend_widget_interaction()
                 ((BorderManager*)(g_game_base + 0xb4c))
                     ->queue_frontend_widget_flag_after_delay(this, 0x20);
                 if ((*(unsigned int*)(self + 0x1a0) & 0x800000) == 0)
-                    play_sound_effect(8);
+                    g_sound_effect_manager.play_sound_effect(8);
                 if ((((TooltipState*)(self + 0x28c))->reset_tooltip(), (*(unsigned int*)(self + 0x290) & 0x20) == 0))
                     ((TooltipState*)(self + 0x28c))->reset_tooltip();
             }

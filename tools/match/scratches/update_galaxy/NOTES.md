@@ -56,9 +56,9 @@ selected-level/replay launch handoff back to the subgame state machine.
 
 ## Match state
 
-Retained result: 61.11%, 566 target instructions, 550 candidate instructions,
-6-instruction prefix, and 43 clean / 0 unresolved / 0 mismatched masked
-operands.
+Pre-audio-owner result: 61.11%, 566 target instructions, 550 candidate
+instructions, 6-instruction prefix, and 43 clean / 0 unresolved / 0 mismatched
+masked operands.
 
 The first residual is stack-color slot assignment:
 
@@ -102,3 +102,15 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
   preserves this scratch's honest 61.11%, 550/566 result with all 43 operands
   clean. The exact opener remains 266/266 and the exact initializer remains
   338/338.
+
+## 2026-07-12 global sound-manager ABI recovery
+
+- The route-open, route-switch, and route-close feedback calls use the global
+  `g_sound_effect_manager` receiver, agreeing with exact neighboring callers
+  and the iOS `cRSound`/`gRSound` owner. The function body at `0x44dde0` does
+  not consume `ecx`, but native callsites still materialize that authored
+  receiver; a free stdcall spelling was therefore semantically incomplete.
+- Correcting the three calls lifts the focused result from `61.11%`
+  (`550/566`) to `63.76%` (`535/566`) while preserving the six-instruction
+  prefix and improving the clean masked operands from 43 to 47 with no
+  unresolved or mismatched operands.

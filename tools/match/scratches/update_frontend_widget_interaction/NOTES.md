@@ -71,3 +71,11 @@ a false free three-argument helper. This removes seven candidate instructions,
 raises the focused match from `52.85%` to `55.29%` (`572/647`), and improves
 the masked audit from `65 ok / 4 mismatch` to `70 ok / 3 mismatch` while
 retaining the 42-instruction prefix.
+
+2026-07-12 sound-manager ABI recovery: the three UI feedback calls use the
+global `g_sound_effect_manager` receiver, agreeing with the exact
+`register_parcel_delivery` callsites and iOS `cRSound`/`gRSound` ownership.
+Replacing the false free cdecl declaration preserves `572/647` instructions,
+raises the focused result from `55.29%` to `55.62%`, and improves the masked
+audit from `70 ok / 3 mismatch` to `71 ok / 2 mismatch`. Both remaining
+mismatches are now earlier intrusive-list teardown scheduling, not audio ABI.

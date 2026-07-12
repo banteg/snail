@@ -5,6 +5,7 @@
 #include "game_root.h"
 #include "galaxy_route_types.h"
 #include "runtime_config.h"
+#include "sound_effect_manager.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "vector3.h"
@@ -33,7 +34,6 @@ int __stdcall draw_galaxy_line(
     float y1,
     float width,
     Color4f* color); // @ 0x409b00
-void __stdcall play_sound_effect(int sample_id); // @ 0x44dde0
 
 int Galaxy::update_galaxy()
 {
@@ -331,10 +331,10 @@ int Galaxy::update_galaxy()
                     if (state == 1) {
                         close_galaxy_route();
                         open_galaxy_route(hovered_route_index);
-                        play_sound_effect(8);
+                        g_sound_effect_manager.play_sound_effect(8);
                     } else if (state == 0) {
                         open_galaxy_route(hovered_route_index);
-                        play_sound_effect(8);
+                        g_sound_effect_manager.play_sound_effect(8);
                     }
                 }
                 return 0;
@@ -345,7 +345,7 @@ int Galaxy::update_galaxy()
                 && state == 1
                 && g_runtime_config.highest_galaxy_route_index > 1) {
                 close_galaxy_route();
-                play_sound_effect(8);
+                g_sound_effect_manager.play_sound_effect(8);
                 return 0;
             }
         }
