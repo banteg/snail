@@ -17,7 +17,7 @@ int free_tracked_memory(void* pointer); // @ 0x431bf0
 int report_errorf(char* format, ...); // @ 0x431cc0
 int report_warningf(char* format, ...); // @ 0x431d10
 
-int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char options_flags)
+void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char options_flags)
 {
     char* file_text = get_archive_data_base();
     char mesh_file_path[0x100];
@@ -37,8 +37,10 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
     file_text[byte_count - 2] = 0;
 
     char* frame_cursor = find_case_insensitive_substring("Frame ", file_text);
-    if (frame_cursor == 0)
-        return report_errorf("No 'Frame ' Data in %s", mesh_file_path);
+    if (frame_cursor == 0) {
+        report_errorf("No 'Frame ' Data in %s", mesh_file_path);
+        return;
+    }
     char* frame_start = frame_cursor;
 
     char* duplicate_cursor = find_case_insensitive_substring("Mesh ", frame_cursor);
@@ -141,16 +143,20 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
     free_tracked_memory(vertex_remap);
 
     char* material_cursor = find_case_insensitive_substring("MeshMaterialList", frame_start);
-    if (material_cursor == 0)
-        return report_errorf("No MeshMaterialList { in %s", mesh_file_path);
+    if (material_cursor == 0) {
+        report_errorf("No MeshMaterialList { in %s", mesh_file_path);
+        return;
+    }
 
     material_cursor = find_case_insensitive_substring("{", material_cursor);
     int material_count = parse_next_signed_int(&material_cursor);
     int material_face_count = parse_next_signed_int(&material_cursor);
-    if (material_face_count != facequad_count)
-        return report_errorf(
+    if (material_face_count != facequad_count) {
+        report_errorf(
             "No MeshMaterialList face number is not equal to Mesh face number in %s",
             mesh_file_path);
+        return;
+    }
 
     TextureRef** materials = (TextureRef**)allocate_tracked_memory(
         material_count << 2, "Direct X Materiallist");
@@ -200,5 +206,5 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
             materials[(short)parse_next_signed_int(&material_cursor)];
     }
 
-    return free_tracked_memory(materials);
+    free_tracked_memory(materials);
 }

@@ -19,8 +19,9 @@ Notable shape details:
 - The third parameter is an option flag; bit `2` suppresses missing texture
   warnings and sets material texture flag byte 1 bit `0x80`.
 - The decompile allocates `"Mesh vertex remap"` but only frees it in this path.
-- The native return value is incidental: errors return `report_errorf`, while
-  the success path returns after freeing the material list.
+- The native exit register is incidental: error paths leave `report_errorf`
+  and the success path leaves `free_tracked_memory` in `eax`; the void ABI
+  closure below proves neither is an authored result.
 - Keeping separate early/later material cursors is important. Reusing one
   cursor collapses a native stack slot and drops the scratch to 21.92%.
 
@@ -104,3 +105,18 @@ guard loses the native index ownership; storing the parsed material index as a
 standalone `short` changes the final assignment schedule; and an explicit
 pointer to the face flag byte regresses the broader face-loop register
 allocation. None are retained.
+
+## 2026-07-12 DirectX loader ABI and owner closure
+
+- Every native caller supplies the root-owned loader in `ecx` and an owned
+  `Object*`, and none consumes `eax`. The cross-port method is
+  `cRDirectX::LoadX(char*, cRObject*, unsigned char)`, so the stale free
+  `__stdcall`/integer-result prototype is retired in favor of a void thiscall.
+- `DirectXLoader` is now explicit in the shared BN/IDA object-analysis slice:
+  animation bytes at `+0x00`, cache count at `+0x04`, 128 exact `0xbc` cached
+  Bod/Object slots at `+0x08`, and the duplicate-vertex workspace at `+0x5e08`,
+  closing the owner at `0x5e10`.
+- The void correction preserves focused Wibo at `96.75%`, `494/492`, prefix
+  `238`, with all 94 masked operands clean. Exact `initialize_directx_loader`,
+  `load_or_reuse_cached_x_mesh`, and `load_x_animation_clip` also remain exact,
+  proving the corrected family contract without match-only control flow.

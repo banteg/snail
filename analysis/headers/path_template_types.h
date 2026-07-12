@@ -1118,7 +1118,6 @@ void __thiscall compute_kind42_attachment_transform(
     TransformMatrix* transform,
     float* out_angle
 );
-int32_t __stdcall load_x_mesh(char* mesh_path, Object* object, uint8_t options_flags);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);

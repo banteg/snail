@@ -31,6 +31,22 @@ TRUSTED_DECLARATIONS = [
         "Object* __thiscall add_object_to_list(ObjectList* object_list);",
     ),
     (
+        "initialize_directx_loader",
+        "void __thiscall initialize_directx_loader(DirectXLoader* loader);",
+    ),
+    (
+        "load_x_mesh",
+        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, uint8_t options_flags);",
+    ),
+    (
+        "load_or_reuse_cached_x_mesh",
+        "int __thiscall load_or_reuse_cached_x_mesh(DirectXLoader* loader, char* mesh_name);",
+    ),
+    (
+        "load_x_animation_clip",
+        "void __thiscall load_x_animation_clip(DirectXLoader* loader, char* mesh_name, Object* object);",
+    ),
+    (
         "load_object_definition",
         "int __cdecl load_object_definition(char* path, Object* object);",
     ),

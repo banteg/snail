@@ -127,10 +127,6 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall compute_kind42_attachment_transform(Path* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle);",
     ),
     (
-        "load_x_mesh",
-        "int32_t __stdcall load_x_mesh(char* mesh_path, Object* object, uint8_t options_flags);",
-    ),
-    (
         "request_object_vertices",
         "void __thiscall request_object_vertices(Object* object, int32_t vertex_count);",
     ),

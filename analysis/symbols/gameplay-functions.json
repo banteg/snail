@@ -235,12 +235,12 @@
     {
       "address": "0x405640",
       "name": "load_x_mesh",
-      "description": "Loads one DirectX X mesh into an owned Object: preserves raw and signed-16-bit working counts while allocating vertices and facequads, writes scalar UV and index lanes through the Object-owned face array, then walks a guarded local TextureRef slot table to assign each face material."
+      "description": "Void Windows `cRDirectX::LoadX(char*, cRObject*, unsigned char)` member: loads one X mesh into an owned Object, preserves raw and signed-16-bit working counts, writes scalar UV and index lanes through the Object-owned face array, then assigns each face material from a guarded local TextureRef table."
     },
     {
       "address": "0x405c90",
       "name": "initialize_directx_loader",
-      "description": "Initializes the root-owned 0x5e10-byte DirectX/X-file loader: clears its cached-mesh count, loads XAnimation.txt, and allocates the duplicate-vertex workspace after the fixed 128-slot mesh cache."
+      "description": "Void Windows `cRDirectX::Init()` member: initializes the root-owned 0x5e10-byte X-file loader, clears its cached-mesh count, loads XAnimation.txt, and allocates the duplicate-vertex workspace after the fixed 128-slot mesh cache."
     },
     {
       "address": "0x405cc0",
