@@ -92,6 +92,8 @@ REQUIRED_HEADER_STRUCTS = (
     "BodBase",
     "Banner",
     "BannerPool",
+    "Vapour",
+    "JetPack",
     "RenderableBod",
     "FringeObject",
     "TrackRowCell",
@@ -218,6 +220,7 @@ GAME_FIELD_UPDATES = (
     ("0xa854", "track_state_latch", "uint8_t"),
     ("0xa858", "tutorial", "Tutorial"),
     ("0xa874", "level_segment_count", "int32_t"),
+    ("0x355e64", "jetpack_pickup", "JetPack"),
     ("0x356b00", "sub_lazers", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
     ("0x359080", "banners", "BannerPool"),
@@ -235,6 +238,21 @@ GAME_FIELD_UPDATES = (
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x12727d8", "completion", "Completion"),
     ("0x1272828", "times_up", "TimesUp"),
+)
+
+VAPOUR_FIELD_UPDATES = (
+    ("0x24", "owner", "Object*"),
+    ("0x80", "point_count", "int32_t"),
+    ("0x84", "capacity", "int32_t"),
+    ("0x88", "half_width", "float"),
+    ("0x8c", "z_floor", "float*"),
+    ("0x90", "points", "TransformMatrix*"),
+)
+
+JETPACK_FIELD_UPDATES = (
+    ("0x44", "owner_game", "SubgameRuntime*"),
+    ("0x74", "vapour_a", "Vapour"),
+    ("0x108", "vapour_b", "Vapour"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -555,6 +573,24 @@ PROTO_UPDATES = (
         "void __thiscall update_banner(Banner* banner)",
     ),
     (
+        "initialize_track_jetpack_pickup_runtime",
+        "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack)",
+    ),
+    (
+        "update_track_jetpack_pickup",
+        "void __thiscall update_track_jetpack_pickup(JetPack* jetpack)",
+    ),
+    (
+        "initialize_vapour",
+        "void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width)",
+    ),
+    ("reset_vapour", "void __thiscall reset_vapour(Vapour* vapour, float* z_floor)"),
+    (
+        "add_vapour_point",
+        "void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point)",
+    ),
+    ("update_vapour", "void __thiscall update_vapour(Vapour* vapour)"),
+    (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
     ),
@@ -636,6 +672,22 @@ def main() -> int:
             target=args.target,
             struct_name="Game",
             updates=GAME_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="Vapour",
+            updates=VAPOUR_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="JetPack",
+            updates=JETPACK_FIELD_UPDATES,
         )
     )
     operations.extend(

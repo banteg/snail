@@ -82,8 +82,8 @@ Residuals:
   facing rotation. This keeps the local `Sprite*` shape called out above and
   improves the scratch from 28.63% to 30.93%, 446/582 instructions, with the
   same single masked-operand mismatch.
-- 2026-06-17 VapourTrail consolidation: the kind-1 vapour path now uses the
-  shared `vapour_trail.h` method surface. `initialize_vapour` and
+- 2026-06-17 Vapour consolidation: the kind-1 vapour path now uses the
+  shared `vapour.h` method surface. `initialize_vapour` and
   `reset_vapour` pin flags `+0x04`, owner `+0x24`, point count/capacity,
   half-width bits at `+0x88`, optional z-floor/clamp pointer slot at `+0x8c`,
   and points `+0x90`; `create_golb` remains unchanged at 30.96%, 445/582
@@ -108,7 +108,7 @@ Residuals:
   Focused Wibo stays `31.71%`, `446/582`, with `33 ok` masked operands.
 - 2026-06-21 helper surface pass: replacing the stale free
   `add_vapour_point(vapour, matrix)` call with the recovered
-  `VapourTrail::add_vapour_point` member call improves focused Wibo to
+  `Vapour::add_vapour_point` member call improves focused Wibo to
   `31.94%`, `445/582`, with `33 ok` masked operands. This matches the native
   kind-1 vapour call surface (`ecx = self + 0x80`, one matrix argument) and
   removes the extra caller stack cleanup from the old free-function spelling.
@@ -131,7 +131,7 @@ Residuals:
   live-matrix forward-z lane at `player+0x60` is
   positive it points at `player+0x4184`, the z component of the first
   `player+0x417c` attachment anchor; otherwise it is null. This value is later
-  passed to `VapourTrail::reset_vapour` as its z-floor/clamp pointer. The
+  passed to `Vapour::reset_vapour` as its z-floor/clamp pointer. The
   scratch no longer mistakes selector values `1` and `2` for raw pointers.
   Narrowing the owner lifetime, using the owned `GolbShot::velocity` fields,
   and preserving the typed player owner through sprite allocation improves the

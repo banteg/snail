@@ -205,7 +205,7 @@
 
 - The constructor now targets the owned `JetPack jetpack_pickup` at
   `SubgameRuntime +0x355e64` directly rather than a generic runtime-slot cast.
-- Its two complete 0x94-byte `VapourTrail` children at `+0x74/+0x108` close the
+- Its two complete 0x94-byte `Vapour` children at `+0x74/+0x108` close the
   exact 0x19c owner at `SubHealth +0x356000`.
 - Parent table `0x497318` links to `cRJetPack::AI()`; both child tables at
   `0x49731c` link to `cRVapour::AI()`. This function remains exact at 227/227

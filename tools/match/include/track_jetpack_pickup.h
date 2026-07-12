@@ -8,7 +8,7 @@
 #include "bod_list.h"
 #include "bod_types.h"
 #include "sub_loc_fwd.h"
-#include "vapour_trail.h"
+#include "vapour.h"
 #include "vector3.h"
 
 class Player;
@@ -31,11 +31,9 @@ public:
     TrackRowCell* source_cell; // +0x68
     float bob_phase; // +0x6c
     float bob_phase_step; // +0x70
-    VapourTrail vapour_a; // +0x74, embedded cRVapour
-    VapourTrail vapour_b; // +0x108, embedded cRVapour
+    Vapour vapour_a; // +0x74, embedded cRVapour
+    Vapour vapour_b; // +0x108, embedded cRVapour
 };
-
-typedef JetPack TrackJetpackPickup;
 
 typedef char JetPack_must_be_0x19c[
     (sizeof(JetPack) == 0x19c) ? 1 : -1];

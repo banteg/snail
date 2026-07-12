@@ -15,4 +15,4 @@ The complete boundary is now closed:
 Both child constructors install the authored cRVapour table at `0x49731c`;
 the parent installs table `0x497318`, whose entry is
 `update_track_jetpack_pickup`. The 0x19c extent exactly matches the native
-`Size of cRJetPack` ledger. `TrackJetpackPickup` is a compatibility alias.
+`Size of cRJetPack` ledger. The primary shared owner is now `JetPack`.

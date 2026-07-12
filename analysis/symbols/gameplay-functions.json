@@ -2357,22 +2357,22 @@
     {
       "address": "0x442500",
       "name": "initialize_vapour",
-      "description": "Initializes one vapour trail controller from its source object and authored spacing scalar. Cross-port iOS symbols match this helper to `cRVapour::Init(cRObject*, float)` in `SubGame.o`."
+      "description": "Exact void Windows `cRVapour::Init(cRObject*, float)`: stores the authored half-width, derives point capacity from the retained output `Object::facequad_count`, allocates the transform history, and resets the exact 0x94-byte Vapour owner. Android preserves the void contract and the same retained `cRObject*`; the explicit object argument is unused on both ports."
     },
     {
       "address": "0x442540",
       "name": "reset_vapour",
-      "description": "Resets a vapour trail controller around the supplied progress pointer. Cross-port iOS symbols match this helper to `cRVapour::ReSet(float*)` in `SubGame.o`."
+      "description": "Exact void Windows `cRVapour::ReSet(float*)`: clears the point count and visible flag and retains an optional borrowed z-floor clamp. Android returns directly after the same stores, proving that Windows' final flags value is incidental."
     },
     {
       "address": "0x442560",
       "name": "add_vapour_point",
-      "description": "Appends one transformed point into the vapour trail. Cross-port iOS symbols match this helper to `cRVapour::Add(tMatrix&)` in `SubGame.o`."
+      "description": "Exact void Windows `cRVapour::Add(tMatrix&)`: appends one transform to the owned history or shifts the full fixed-capacity window before replacing its tail. Android and iOS preserve the owner and method contract."
     },
     {
       "address": "0x4425f0",
       "name": "update_vapour",
-      "description": "Runs one vapour trail controller's per-frame update. Cross-port iOS symbols match this helper to `cRVapour::AI()` in `SubGame.o`."
+      "description": "Void Windows `cRVapour::AI()`: clamps retained transform samples, expands each segment into the borrowed output cRObject's vertex and facequad buffers, writes UV/alpha words, and publishes the primitive count through `Object::group_primitive_counts`. Android preserves the same direct-return void contract and real cRObject ownership."
     },
     {
       "address": "0x4428d0",

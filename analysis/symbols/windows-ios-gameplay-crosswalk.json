@@ -1189,20 +1189,25 @@
       "address": "0x442500",
       "windows_name": "initialize_vapour",
       "ios_symbol": "cRVapour::Init(cRObject*, float)",
+      "android_symbol": "cRVapour::Init(cRObject*, float)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Windows and Android both ignore the explicit cRObject argument, read the retained output object at Vapour +0x24, store the half-width, allocate capacity + 1 transform slots, and tail-dispatch ReSet. Android establishes no semantic result, proving the void contract."
     },
     {
       "address": "0x442540",
       "windows_name": "reset_vapour",
       "ios_symbol": "cRVapour::ReSet(float*)",
+      "android_symbol": "cRVapour::ReSet(float*)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android returns directly after clearing count, storing the borrowed float pointer, and clearing visibility; its unchanged receiver register proves the final Windows flags value is incidental."
     },
     {
       "address": "0x442560",
       "windows_name": "add_vapour_point",
       "ios_symbol": "cRVapour::Add(tMatrix&)",
+      "android_symbol": "cRVapour::Add(tMatrix&)",
       "source_object": "SubGame.o",
       "confidence": "high"
     },
@@ -1210,8 +1215,10 @@
       "address": "0x4425f0",
       "windows_name": "update_vapour",
       "ios_symbol": "cRVapour::AI()",
+      "android_symbol": "cRVapour::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android clears or sets the same visibility bit, clamps the transform history, emits the quad strip through the retained cRObject, and returns without establishing a result. Windows' arithmetic residue in EAX is therefore incidental."
     },
     {
       "address": "0x442e40",

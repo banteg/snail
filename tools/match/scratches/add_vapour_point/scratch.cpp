@@ -1,10 +1,10 @@
 // add_vapour_point @ 0x442560 (thiscall, ret 0x4)
 
-#include "vapour_trail.h"
+#include "vapour.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 
-void VapourTrail::add_vapour_point(const TransformMatrix* point)
+void Vapour::add_vapour_point(const TransformMatrix* point)
 {
     int* result = (int*)this;
     if (result[32] < result[33]) {

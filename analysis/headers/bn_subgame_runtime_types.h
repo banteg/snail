@@ -6,7 +6,52 @@ typedef short int16_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 
+typedef struct Object Object;
 typedef struct Player Player;
+typedef struct Sprite Sprite;
+typedef struct SubgameRuntime SubgameRuntime;
+typedef struct TrackRowCell TrackRowCell;
+typedef struct TransformMatrix TransformMatrix;
+
+/* Exact 0x94-byte Windows cRVapour owner. */
+typedef struct Vapour {
+    void* vtable;
+    int32_t flags;
+    uint8_t unknown_08[0x24 - 0x08];
+    Object* owner;
+    uint8_t unknown_28[0x80 - 0x28];
+    int32_t point_count;
+    int32_t capacity;
+    union {
+        int32_t half_width_bits;
+        float half_width;
+    };
+    float* z_floor;
+    TransformMatrix* points;
+} Vapour;
+
+/* Exact 0x19c-byte Windows cRJetPack singleton. */
+typedef struct JetPack {
+    void* vtable;
+    uint32_t list_flags;
+    struct JetPack* list_prev;
+    struct JetPack* list_next;
+    float world_position_x;
+    float world_position_y;
+    float world_position_z;
+    uint8_t unknown_1c[0x38 - 0x1c];
+    int32_t state;
+    Player* owner;
+    uint8_t unknown_40[0x44 - 0x40];
+    SubgameRuntime* owner_game;
+    uint8_t unknown_48[0x64 - 0x48];
+    Sprite* sprite;
+    TrackRowCell* source_cell;
+    float bob_phase;
+    float bob_phase_step;
+    Vapour vapour_a;
+    Vapour vapour_b;
+} JetPack;
 
 /* Flattened exact Windows cRBanner layout; inherited BodBase occupies +0x00. */
 typedef struct Banner {
@@ -158,7 +203,9 @@ typedef struct SubgameRuntime {
     float track_skirt_r;
     float track_skirt_g;
     float track_skirt_b;
-    uint8_t unknown_1b014c[0x359080 - 0x1b014c];
+    uint8_t unknown_1b014c[0x355e64 - 0x1b014c];
+    JetPack jetpack_pickup;
+    uint8_t unknown_356000[0x359080 - 0x356000];
     BannerPool banners;
     uint8_t unknown_359140[0x3bb700 - 0x359140];
     int32_t blink_random_index;

@@ -11,19 +11,19 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "initialize_vapour",
-        "int32_t __thiscall initialize_vapour(VapourTrail* trail, int32_t unused, int32_t half_width_bits);",
+        "void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width);",
     ),
     (
         "reset_vapour",
-        "int32_t __thiscall reset_vapour(VapourTrail* trail, int32_t z_floor);",
+        "void __thiscall reset_vapour(Vapour* vapour, float* z_floor);",
     ),
     (
         "add_vapour_point",
-        "void __thiscall add_vapour_point(VapourTrail* trail, const TransformMatrix* point);",
+        "void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);",
     ),
     (
         "update_vapour",
-        "int32_t __thiscall update_vapour(VapourTrail* trail);",
+        "void __thiscall update_vapour(Vapour* vapour);",
     ),
 ]
 

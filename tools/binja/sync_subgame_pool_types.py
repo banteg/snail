@@ -19,7 +19,8 @@ TARGET = "active"
 
 REQUIRED_HEADER_STRUCTS = (
     "TrackSpeedupRuntime",
-    "TrackJetpackPickup",
+    "Vapour",
+    "JetPack",
     "TrackHealthPickup",
     "SlugHazardRuntime",
     "RingOrSpecialEffectParticle",
@@ -29,7 +30,7 @@ REQUIRED_HEADER_STRUCTS = (
 
 SUBGAME_FIELD_UPDATES = (
     ("0x355db0", "speedup_pickup", "TrackSpeedupRuntime"),
-    ("0x355e64", "jetpack_pickup", "TrackJetpackPickup"),
+    ("0x355e64", "jetpack_pickup", "JetPack"),
     ("0x356000", "health_pickups", "TrackHealthPickup[0x8]"),
     ("0x3563a0", "slug_hazards", "SlugHazardRuntime[0x8]"),
     ("0x35b78c", "ring_effects", "RingOrSpecialEffectPool"),
@@ -44,8 +45,19 @@ TRACK_SPEEDUP_FIELD_UPDATES = (
     ("0x8c", "owner_game", "SubgameRuntime*"),
 )
 
-TRACK_JETPACK_PICKUP_FIELD_UPDATES = (
+VAPOUR_FIELD_UPDATES = (
+    ("0x24", "owner", "Object*"),
+    ("0x80", "point_count", "int32_t"),
+    ("0x84", "capacity", "int32_t"),
+    ("0x88", "half_width", "float"),
+    ("0x8c", "z_floor", "float*"),
+    ("0x90", "points", "TransformMatrix*"),
+)
+
+JETPACK_FIELD_UPDATES = (
     ("0x44", "owner_game", "SubgameRuntime*"),
+    ("0x74", "vapour_a", "Vapour"),
+    ("0x108", "vapour_b", "Vapour"),
 )
 
 TRACK_HEALTH_PICKUP_FIELD_UPDATES = (
@@ -75,6 +87,24 @@ PROTO_UPDATES = (
         "TrackHealthPickup* __thiscall initialize_track_health_pickup_runtime(TrackHealthPickup* pickup)",
     ),
     ("update_track_health_pickup", "void __thiscall update_track_health_pickup(TrackHealthPickup* pickup)"),
+    (
+        "initialize_track_jetpack_pickup_runtime",
+        "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack)",
+    ),
+    (
+        "update_track_jetpack_pickup",
+        "void __thiscall update_track_jetpack_pickup(JetPack* jetpack)",
+    ),
+    (
+        "initialize_vapour",
+        "void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width)",
+    ),
+    ("reset_vapour", "void __thiscall reset_vapour(Vapour* vapour, float* z_floor)"),
+    (
+        "add_vapour_point",
+        "void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point)",
+    ),
+    ("update_vapour", "void __thiscall update_vapour(Vapour* vapour)"),
     (
         "emit_ring_star_shower",
         "void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle* particle, Player* owner)",
@@ -109,8 +139,14 @@ def main() -> int:
         *apply_struct_field_updates(
             REPO_ROOT,
             target=TARGET,
-            struct_name="TrackJetpackPickup",
-            updates=TRACK_JETPACK_PICKUP_FIELD_UPDATES,
+            struct_name="Vapour",
+            updates=VAPOUR_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
+            struct_name="JetPack",
+            updates=JETPACK_FIELD_UPDATES,
         ),
         *apply_struct_field_updates(
             REPO_ROOT,

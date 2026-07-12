@@ -6,7 +6,7 @@
 #include "golb.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
-#include "vapour_trail.h"
+#include "vapour.h"
 #include "vector3.h"
 
 typedef unsigned int DWORD;
@@ -260,11 +260,11 @@ after_movement_flag_source:
                 words[33] |= 0x200;
             }
 
-            ((VapourTrail*)(self + 0x80))->reset_vapour((float*)spawn_selector);
+            ((Vapour*)(self + 0x80))->reset_vapour((float*)spawn_selector);
             ((Color4f*)(self + 0xa8))->store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->emitter_index = emitter_index;
-            ((VapourTrail*)(self + 0x80))->add_vapour_point((TransformMatrix*)(self + 0x1c4));
-            ((VapourTrail*)node)->update_vapour();
+            ((Vapour*)(self + 0x80))->add_vapour_point((TransformMatrix*)(self + 0x1c4));
+            ((Vapour*)node)->update_vapour();
         }
     } else {
         lifetime = 0.0f;

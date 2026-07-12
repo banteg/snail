@@ -1,15 +1,16 @@
 // update_vapour @ 0x4425f0 (thiscall, ret)
 
-#include "vapour_trail.h"
+#include "object_render_types.h"
+#include "vapour.h"
 
-int VapourTrail::update_vapour()
+void Vapour::update_vapour()
 {
     int count = point_count;
     if (count < 2) {
         int result = flags;
         result &= ~0x20;
         flags = result;
-        return result;
+        return;
     }
 
     flags |= 0x20;
@@ -34,8 +35,8 @@ int VapourTrail::update_vapour()
     int segment = 0;
     if (point_count - 1 <= 0) {
         int result = point_count * 2 - 2;
-        *owner->index_count_out = result;
-        return result;
+        *owner->group_primitive_counts = result;
+        return;
     }
 
     do {
@@ -85,7 +86,7 @@ int VapourTrail::update_vapour()
         vertices->corner_d.y = corner_d_y;
         vertices->corner_d.z = corner_d_z;
 
-        int* attributes = (int*)((char*)owner->vertex_attributes + vertex_offset);
+        int* attributes = (int*)((char*)owner->facequads + vertex_offset);
         int current_count = point_count;
         if (current_count == 2) {
             attributes[5] = 0;
@@ -93,10 +94,10 @@ int VapourTrail::update_vapour()
             attributes[9] = 0x3f800000;
             attributes[11] = 0x3f800000;
         } else if (segment == 0) {
-            owner->vertex_attributes[5] = 0;
-            owner->vertex_attributes[7] = 0;
-            owner->vertex_attributes[9] = 0x3f000000;
-            owner->vertex_attributes[11] = 0x3f000000;
+            ((int*)owner->facequads)[5] = 0;
+            ((int*)owner->facequads)[7] = 0;
+            ((int*)owner->facequads)[9] = 0x3f000000;
+            ((int*)owner->facequads)[11] = 0x3f000000;
         } else {
             attributes[5] = 0x3f000000;
             attributes[7] = 0x3f000000;
@@ -113,6 +114,5 @@ int VapourTrail::update_vapour()
     } while (segment < point_count - 1);
 
     int result = point_count * 2 - 2;
-    *owner->index_count_out = result;
-    return result;
+    *owner->group_primitive_counts = result;
 }

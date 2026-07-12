@@ -135,7 +135,7 @@ useful cross-confirmations are:
 - `TrackSpeedupRuntime` has a full `world_position` vector at `+0x68..+0x70`
   and `state` at `+0x80`; `update_track_speedup` only needed the z lane, but
   collision consumes x/y/z.
-- `TrackHealthPickup`, `TrackJetpackPickup`, `Parcel`,
+- `TrackHealthPickup`, `JetPack`, `Parcel`,
   `GarbageHazardSlot`, and `RingOrSpecialEffectParent` all line up with their
   shared headers at the collision callsites. Ring/special-effect centers now
   come through inherited `RenderableBod::transform.position`.

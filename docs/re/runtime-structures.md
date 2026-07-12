@@ -471,7 +471,9 @@ The current high-confidence `Game` fields are:
   - `+0x355cb4`: tile 29/30 special track bodies
   - the other five constructed group roles remain unknown on Windows
 - `+0x355e64`: `jetpack_pickup`
-  - one-slot `TrackPickupRuntime`
+  - exact `0x19c`-byte `cRJetPack` singleton
+  - two complete embedded `0x94`-byte `cRVapour` children at `+0x74` and
+    `+0x108`; each retains the real output `cRObject*` at child `+0x24`
 - `+0x356000`: `health_pickups`
   - `8`-slot `TrackPickupRuntime` array
 - `+0x3563a0`: `slug_hazards`
@@ -895,7 +897,9 @@ Current practical read:
 
 ## Track Pickup Runtime
 
-The health and jetpack pickup spawners now line up on one shared runtime slot shape.
+The health and jetpack pickup spawners share the same leading pickup fields,
+but their complete owners differ: health ends after that compact prefix while
+the `0x19c`-byte `JetPack` continues with two embedded `Vapour` renderers.
 
 High-confidence current fields:
 

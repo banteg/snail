@@ -10,8 +10,10 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
+typedef struct Object Object;
 typedef struct Player Player;
 typedef struct SubgameRuntime SubgameRuntime;
+typedef struct TransformMatrix TransformMatrix;
 
 typedef struct Vec3 {
     float x;
@@ -25,6 +27,23 @@ typedef struct Color4f {
     float b;
     float a;
 } Color4f;
+
+/* Exact 0x94-byte Windows cRVapour owner. */
+typedef struct Vapour {
+    void* vtable;
+    int32_t flags;
+    uint8_t unknown_08[0x24 - 0x08];
+    Object* owner;
+    uint8_t unknown_28[0x80 - 0x28];
+    int32_t point_count;
+    int32_t capacity;
+    union {
+        int32_t half_width_bits;
+        float half_width;
+    };
+    float* z_floor;
+    TransformMatrix* points;
+} Vapour;
 
 typedef struct TrackSpeedupRuntime {
     void* vtable;
@@ -54,11 +73,11 @@ typedef struct TrackSpeedupRuntime {
     uint8_t unknown_b0[0x04];
 } TrackSpeedupRuntime;
 
-typedef struct TrackJetpackPickup {
+typedef struct JetPack {
     void* vtable;
     uint32_t list_flags;
-    struct TrackJetpackPickup* list_prev;
-    struct TrackJetpackPickup* list_next;
+    struct JetPack* list_prev;
+    struct JetPack* list_next;
     Vec3 world_position;
     uint8_t unknown_1c[0x1c];
     int32_t state;
@@ -70,11 +89,9 @@ typedef struct TrackJetpackPickup {
     struct TrackRowCell* source_cell;
     float bob_phase;
     float bob_phase_step;
-    uint8_t body_a[0x78];
-    uint8_t unknown_ec[0x1c];
-    uint8_t body_b[0x78];
-    uint8_t unknown_180[0x1c];
-} TrackJetpackPickup;
+    Vapour vapour_a;
+    Vapour vapour_b;
+} JetPack;
 
 typedef struct TrackHealthPickup {
     void* vtable;
@@ -185,5 +202,11 @@ typedef struct RingOrSpecialEffectPool {
 
 void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle* particle, Player* owner);
 void __thiscall update_ring_or_special_effect_particle(RingOrSpecialEffectParticle* particle);
+void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width);
+void __thiscall reset_vapour(Vapour* vapour, float* z_floor);
+void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);
+void __thiscall update_vapour(Vapour* vapour);
+JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);
+void __thiscall update_track_jetpack_pickup(JetPack* jetpack);
 
 #endif

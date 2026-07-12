@@ -7,7 +7,7 @@
 #include "score_buckets.h"
 #include "subgame_runtime.h"
 #include "transform_matrix.h"
-#include "vapour_trail.h"
+#include "vapour.h"
 #include "vector3.h"
 
 typedef Vector3 Vec3;
@@ -148,7 +148,7 @@ void GolbShot::update_golb_ai()
         break;
     }
     case 1:
-        ((VapourTrail*)vapour)->add_vapour_point(&source_matrix);
+        ((Vapour*)vapour)->add_vapour_point(&source_matrix);
         break;
     case 0: {
         Vec3* body_position = (Vec3*)((char*)owner_body + 72);

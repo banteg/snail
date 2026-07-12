@@ -28,6 +28,9 @@ struct SubSegment;
 struct PlayerControlSource;
 struct Snail;
 struct Game;
+struct Object;
+struct SubgameRuntime;
+typedef struct TransformMatrix TransformMatrix;
 typedef struct Sprite Sprite;
 typedef struct FrontendWidget FrontendWidget;
 
@@ -74,6 +77,41 @@ typedef struct Banner {
 typedef struct BannerPool {
     Banner slots[2];
 } BannerPool;
+
+/* Exact 0x94-byte Windows cRVapour owner. */
+typedef struct Vapour {
+    void* vtable;
+    int32_t flags;
+    uint8_t _pad_08[0x24 - 0x08];
+    struct Object* owner;
+    uint8_t _pad_28[0x80 - 0x28];
+    int32_t point_count;
+    int32_t capacity;
+    union {
+        int32_t half_width_bits;
+        float half_width;
+    };
+    float* z_floor;
+    TransformMatrix* points;
+} Vapour;
+
+/* Exact 0x19c-byte Windows cRJetPack singleton. */
+typedef struct JetPack {
+    BodNode bod;
+    Vec3 world_position;
+    uint8_t _pad_1c[0x38 - 0x1c];
+    int32_t state;
+    struct Player* owner;
+    uint8_t _pad_40[0x44 - 0x40];
+    struct SubgameRuntime* owner_game;
+    uint8_t _pad_48[0x64 - 0x48];
+    Sprite* sprite;
+    struct TrackRowCell* source_cell;
+    float bob_phase;
+    float bob_phase_step;
+    Vapour vapour_a;
+    Vapour vapour_b;
+} JetPack;
 
 typedef struct FringeObject {
     BodNode bod;
@@ -219,7 +257,9 @@ typedef struct Game {
     int32_t level_segment_count;
     uint8_t _pad_a878[0x69da9];
     uint8_t pause_gate;
-    uint8_t _pad_74622[0x359080 - 0x74622];
+    uint8_t _pad_74622[0x355e64 - 0x74622];
+    JetPack jetpack_pickup;
+    uint8_t _pad_356000[0x359080 - 0x356000];
     BannerPool banners;
     uint8_t _pad_359140[0xff25d0 - 0x359140];
     uint8_t selected_level_record_active;

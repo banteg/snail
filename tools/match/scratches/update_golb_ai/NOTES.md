@@ -97,8 +97,8 @@ Accepted source-shape changes after the collision-lane baseline:
   call at both track-cell probes, matching the existing helper scratch and
   recovered callsites.
 - The kind-1 vapour trail emission calls
-  `VapourTrail::add_vapour_point(&source_matrix)`, matching the already
-  promoted `VapourTrail` thiscall helper.
+  `Vapour::add_vapour_point(&source_matrix)`, matching the already promoted
+  authored `Vapour` thiscall helper.
 - The homing y/z retained-velocity and final rescale lanes stay on the live
   movement pointer, while the post-homing output copy remains one semantic
   `Vec3` assignment.

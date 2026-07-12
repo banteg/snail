@@ -1,15 +1,16 @@
 // initialize_vapour @ 0x442500 (thiscall, ret 0x8)
 
-#include "vapour_trail.h"
+#include "object_render_types.h"
+#include "vapour.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-int VapourTrail::initialize_vapour(int, int new_half_width_bits)
+void Vapour::initialize_vapour(Object*, float new_half_width)
 {
-    VapourTrailOwner* owner_ptr = owner;
-    half_width_bits = new_half_width_bits;
-    int point_capacity = owner_ptr->max_points + 1;
+    Object* owner_ptr = owner;
+    half_width = new_half_width;
+    int point_capacity = owner_ptr->facequad_count + 1;
     capacity = point_capacity;
     points = (TransformMatrix*)allocate_tracked_memory(point_capacity << 6, "Vapour Trail");
-    return reset_vapour(0);
+    reset_vapour(0);
 }

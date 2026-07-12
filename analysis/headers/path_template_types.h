@@ -73,10 +73,14 @@ typedef struct Player Player;
 typedef struct Game Game;
 typedef struct Object Object;
 typedef struct SubSegment SubSegment;
+typedef struct SubgameRuntime SubgameRuntime;
 typedef struct Snail Snail;
 typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
+typedef struct Sprite Sprite;
+typedef struct TrackRowCell TrackRowCell;
+typedef struct TransformMatrix TransformMatrix;
 
 /* Two authored cRBanner actors are embedded at Game/SubgameRuntime +0x359080. */
 typedef struct Banner {
@@ -91,6 +95,41 @@ typedef struct Banner {
 typedef struct BannerPool {
     Banner slots[2];
 } BannerPool;
+
+/* Exact 0x94-byte Windows cRVapour owner. */
+typedef struct Vapour {
+    void* vtable;
+    int32_t flags;
+    uint8_t _pad_08[0x24 - 0x08];
+    Object* owner;
+    uint8_t _pad_28[0x80 - 0x28];
+    int32_t point_count;
+    int32_t capacity;
+    union {
+        int32_t half_width_bits;
+        float half_width;
+    };
+    float* z_floor;
+    TransformMatrix* points;
+} Vapour;
+
+/* Exact 0x19c-byte Windows cRJetPack singleton. */
+typedef struct JetPack {
+    BodNode bod;
+    Vec3 world_position;
+    uint8_t _pad_1c[0x38 - 0x1c];
+    int32_t state;
+    Player* owner;
+    uint8_t _pad_40[0x44 - 0x40];
+    SubgameRuntime* owner_game;
+    uint8_t _pad_48[0x64 - 0x48];
+    Sprite* sprite;
+    TrackRowCell* source_cell;
+    float bob_phase;
+    float bob_phase_step;
+    Vapour vapour_a;
+    Vapour vapour_b;
+} JetPack;
 
 typedef struct Sprite {
     uint8_t _pad_00[0x04];
@@ -887,7 +926,9 @@ typedef struct Game {
     int32_t level_segment_count;
     uint8_t _pad_a878[0x74621 - 0xa878];
     uint8_t pause_gate;
-    uint8_t _pad_74622[0x359080 - 0x74622];
+    uint8_t _pad_74622[0x355e64 - 0x74622];
+    JetPack jetpack_pickup;
+    uint8_t _pad_356000[0x359080 - 0x356000];
     BannerPool banners;
     uint8_t _pad_359140[0xff25d0 - 0x359140];
     uint8_t selected_level_record_active;
@@ -1090,6 +1131,12 @@ void __thiscall start_squidge_z(Squidge* squidge, float value);
 void __thiscall update_squidge(Squidge* squidge);
 void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count);
 void __thiscall update_banner(Banner* banner);
+JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);
+void __thiscall update_track_jetpack_pickup(JetPack* jetpack);
+void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width);
+void __thiscall reset_vapour(Vapour* vapour, float* z_floor);
+void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);
+void __thiscall update_vapour(Vapour* vapour);
 void __thiscall initialize_invincible_shell(Invincible* invincible);
 void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);

@@ -4,6 +4,8 @@
 typedef unsigned char uint8_t;
 typedef int int32_t;
 
+typedef struct Object Object;
+
 typedef struct Vec3 {
     float x;
     float y;
@@ -28,30 +30,21 @@ typedef struct VapourQuadVertices {
     Vec3 corner_d;
 } VapourQuadVertices;
 
-typedef struct VapourTrailOwner {
-    uint8_t _pad_00[0x2c];
-    int32_t vertex_count;
-    uint8_t _pad_30[0x8];
-    VapourQuadVertices* vertices;
-    uint8_t _pad_3c[0x18];
-    int32_t max_points;
-    uint8_t _pad_58[0x4];
-    int32_t* vertex_attributes;
-    uint8_t _pad_60[0x74];
-    int32_t* index_count_out;
-} VapourTrailOwner;
-
-typedef struct VapourTrail {
+/* Exact 0x94-byte Windows cRVapour owner. */
+typedef struct Vapour {
     void* vtable;
     int32_t flags;
     uint8_t _pad_08[0x1c];
-    VapourTrailOwner* owner;
+    Object* owner;
     uint8_t _pad_28[0x58];
     int32_t point_count;
     int32_t capacity;
-    float half_width;
-    int32_t z_floor;
+    union {
+        int32_t half_width_bits;
+        float half_width;
+    };
+    float* z_floor;
     TransformMatrix* points;
-} VapourTrail;
+} Vapour;
 
 #endif

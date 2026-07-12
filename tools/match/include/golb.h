@@ -92,14 +92,14 @@ public:
         struct {
             RenderableBod primary_body;  // +0x000
             char unknown_078[0x080 - 0x078];
-            // Kind-1 also treats this subobject as the VapourTrail body prefix.
+            // Kind-1 also treats this subobject as the Vapour body prefix.
             RenderableBod secondary_body; // +0x080
             char unknown_0f8[0x118 - 0x0f8];
             RenderableBod tertiary_body; // +0x118
         };
         struct {
             char unknown_000[0x080];
-            char vapour[0x150 - 0x080]; // +0x080, VapourTrail object view
+            char vapour[0x150 - 0x080]; // +0x080, Vapour object view
             TransformMatrix live_matrix; // +0x150
         };
     };

@@ -44,7 +44,7 @@ singleton.
 2026-06-16 pool-overlay/list-splice pass: the spawner now mirrors the health
 pickup scratch's shifted slot-base shape, keeping `esi` based at
 `subgame + slot_index * 0x19c` while using the shared
-`SubgameRuntime::jetpack_pickup` member and promoted `TrackJetpackPickup`
+`SubgameRuntime::jetpack_pickup` member and promoted `JetPack`
 fields. The active-list splice was
 also reordered to put the empty-list case first, matching native fallthrough
 and the health pickup shape. Focused Wibo improves from `52.86%` (`136/144`,
@@ -105,7 +105,7 @@ form regressed to `83.85%`.
 ## 2026-07-11 authored owner and void contract
 
 - The singleton is now primarily `JetPack`, matching Android/iOS `cRJetPack`;
-  `TrackJetpackPickup` remains a compatibility alias.
+  the primary shared owner is `JetPack`.
 - Android `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)` initializes the same
   singleton and reaches its epilogue without establishing a result. Windows
   callers also ignore EAX, whose occupied and success paths contain

@@ -20,6 +20,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
 DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types.h"
 
 SUBGAME_FIELD_UPDATES = (
+    ("0x355e64", "jetpack_pickup", "JetPack"),
     ("0x359080", "banners", "BannerPool"),
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
@@ -55,6 +56,24 @@ PROTO_UPDATES = (
         "update_banner",
         "void __thiscall update_banner(Banner* banner)",
     ),
+    (
+        "initialize_track_jetpack_pickup_runtime",
+        "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack)",
+    ),
+    (
+        "update_track_jetpack_pickup",
+        "void __thiscall update_track_jetpack_pickup(JetPack* jetpack)",
+    ),
+    (
+        "initialize_vapour",
+        "void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width)",
+    ),
+    ("reset_vapour", "void __thiscall reset_vapour(Vapour* vapour, float* z_floor)"),
+    (
+        "add_vapour_point",
+        "void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point)",
+    ),
+    ("update_vapour", "void __thiscall update_vapour(Vapour* vapour)"),
     (
         "initialize_enemy_manager",
         "void __thiscall initialize_enemy_manager(EnemyManager* manager)",
@@ -149,6 +168,8 @@ def main() -> int:
                 "SubgameRuntime",
                 "TimeTrial",
                 "GUI",
+                "Vapour",
+                "JetPack",
                 "Banner",
                 "BannerPool",
             ),

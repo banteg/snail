@@ -19,7 +19,7 @@ fully clean.
 - Recovered the two track-cell lookups as `Game` member calls, matching their
   game-owned `thiscall` shape without changing a shared header.
 - Recovered vapour emission as the existing
-  `VapourTrail::add_vapour_point` member call.
+  `Vapour::add_vapour_point` member call.
 - Kept homing y/z retained-velocity loads and final rescale stores on the
   already-live `movement` pointer while leaving the native-looking x accesses
   direct.

@@ -395,6 +395,30 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_banner(Banner* banner);",
     ),
     (
+        "initialize_track_jetpack_pickup_runtime",
+        "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);",
+    ),
+    (
+        "update_track_jetpack_pickup",
+        "void __thiscall update_track_jetpack_pickup(JetPack* jetpack);",
+    ),
+    (
+        "initialize_vapour",
+        "void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width);",
+    ),
+    (
+        "reset_vapour",
+        "void __thiscall reset_vapour(Vapour* vapour, float* z_floor);",
+    ),
+    (
+        "add_vapour_point",
+        "void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);",
+    ),
+    (
+        "update_vapour",
+        "void __thiscall update_vapour(Vapour* vapour);",
+    ),
+    (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player);",
     ),
