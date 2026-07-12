@@ -18,8 +18,8 @@ Behavior:
 The extra `rank != -1` gate is source-shaped from native even though this local
 rank search only produces non-negative ranks.
 
-Honest match status: 64.63%, 80/84 candidate/target instructions, no exact
-prefix, and five clean masked operands.
+Honest match status: 89.41%, 86/84 candidate/target instructions, 36/84 exact
+prefix, and six clean masked operands.
 
 Residual:
 
@@ -110,3 +110,20 @@ Residual:
 - Android and iOS preserve `cRSubHighScore::AddSurvival()`. Windows receives
   the working `SubSolution*` explicitly, then value-copies it into both the
   owner's result/pending storage and the ordered survival array.
+
+2026-07-12 owned down-shift cursor recovery:
+
+- A real `SubSolution*` cursor now starts at the spare eleventh survival slot,
+  borrows the preceding owned record as its source, and walks backward while
+  the insertion rank is shifted down. This is the source-level ownership that
+  native's EBP cursor and `rep movsd` sequence were expressing; the direct
+  two-index spelling hid it from VC6.
+- The cursor lifetime naturally makes VC6 preserve the `SubHighScore*` owner
+  across the shift loop. It recovers the native stack slot, EBP/EBX ownership,
+  both initial value copies, score scan, and first 36 instructions without the
+  former volatile self-reload or any other register barrier.
+- Focused matching rises from the honest 64.63% baseline (`80/84`, prefix 0,
+  five clean masks) to 89.41% (`86/84`, prefix 36, six clean masks). The
+  remaining two instructions save and reload the destination handle across
+  `rep movsd`; native instead addresses its rank field through the decremented
+  cursor. That allocator choice remains visible rather than fakematched.

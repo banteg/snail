@@ -7,16 +7,18 @@ extern GameRoot* g_game; // data_4df904
 
 int SubHighScore::add_survival_high_score(SubSolution* record)
 {
+    int shift_rank;
+    SubHighScore* bank = this;
     int rank = 0;
 
     record->high_score_mode_tag = 1;
     record->route_or_rank_index = 0;
     record->replay_cursor = 0;
-    current_result_record = *record;
-    survival_pending_record = *record;
+    bank->current_result_record = *record;
+    bank->survival_pending_record = *record;
 
     int score = record->score;
-    int* score_cursor = &survival_records[0].score;
+    int* score_cursor = &bank->survival_records[0].score;
     while (rank < SUB_HIGH_SCORE_TOP_TEN_COUNT) {
         if (score > *score_cursor)
             goto insert_record;
@@ -26,19 +28,22 @@ int SubHighScore::add_survival_high_score(SubSolution* record)
     return rank;
 
 insert_record:
-    int shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
+    shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
     if (rank >= shift_rank)
         return rank;
 
+    SubSolution* shift_cursor = &bank->survival_records[shift_rank];
     do {
-        survival_records[shift_rank] = survival_records[shift_rank - 1];
-        survival_records[shift_rank].route_or_rank_index = shift_rank;
+        SubSolution* destination = shift_cursor;
+        SubSolution* source = --shift_cursor;
+        *destination = *source;
+        destination->route_or_rank_index = shift_rank;
         --shift_rank;
     } while (shift_rank > rank);
 
-    survival_records[rank] = *record;
-    survival_records[rank].high_score_mode_tag = 1;
-    survival_records[rank].route_or_rank_index = rank;
+    bank->survival_records[rank] = *record;
+    bank->survival_records[rank].high_score_mode_tag = 1;
+    bank->survival_records[rank].route_or_rank_index = rank;
 
     g_game->players[0].frontend_state = 20;
     g_game->players[0].high_score_entry_pending = 1;
@@ -46,9 +51,9 @@ insert_record:
     int result = rank;
     if (rank != -1) {
         record->high_score_mode_tag = 1;
-        survival_records[rank].high_score_mode_tag = 1;
+        bank->survival_records[rank].high_score_mode_tag = 1;
         ((GameRoot*)g_game)->subgame.sub_high_score.active_record_bank =
-            survival_records;
+            bank->survival_records;
         g_game->players[0].high_score_entry_rank = rank;
         GameRoot* game = g_game;
         game->players[0].high_score_entry_bank = 1;
