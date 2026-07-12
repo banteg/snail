@@ -61,3 +61,28 @@ rewrite regressed to 32.00%, so the register-ownership residual is left visible.
   expressed as four `Vector3::x` lanes on the owned vertex array.
 - The consolidation is codegen-neutral at 44.34%, 95/126, prefix 3/126, with
   9 clean masked operands and the one documented cursor-alignment mismatch.
+
+2026-07-12 native cursor and contract recovery:
+
+- The sole native caller discards `eax` and immediately initializes font-wave
+  state. The empty-font path leaves the incoming font id in `eax`, while the
+  populated path leaves the loop count, proving this routine is `void`; the
+  old scratch return value was an invented contract and has been removed.
+- `g_font3d_bods` is a fixed 128-entry `BodBase` array at `0x7754e8`, occupying
+  exactly `0x1c00` bytes and ending at `g_font3d_scales`. The old
+  `data_77550c` view is its first `BodBase::object` lane at `+0x24`, not a
+  separate object-pointer array. Both arrays now have shared declarations.
+- Native owns four independent loop cursors: `ebx` is the selected
+  `FontSheet` byte offset, `ebp` walks `g_font3d_scales`, `esi` walks the
+  `BodBase::object` lanes in `0x38`-byte steps, and `edi` walks the sheet's
+  `v0` lane. Repeating the borrowed `bod->object` access, instead of caching
+  private object/quad/vertex views, lets the compiler recover that ownership
+  naturally.
+- Correcting the void contract, keeping the scale cursor inside the non-empty
+  path, and ordering the independent index/scale advances raises the focused
+  result from 44.34% to 96.83% with identical 126-instruction streams, prefix
+  37/126, and 19 clean masked operands with no unresolved or mismatched names.
+- The remaining differences are two legal instruction-scheduling choices: an
+  object reload and x87 constant load move across independent stores, and the
+  `v0`/BOD cursor increments swap order. They are left visible rather than
+  forced with volatile aliases or dummy dependencies.

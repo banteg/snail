@@ -4,50 +4,54 @@
 #include "font_system.h"
 #include "object_render_types.h"
 
-extern BodBase g_font3d_bods[];    // data_7754e8
-extern float g_font3d_scales[];    // data_7770e8
-
-int initialize_font3d_objects(short font_id)
+void initialize_font3d_objects(short font_id)
 {
     int font = font_id;
-    FontSheet* sheet = &g_font_sheets[font];
     int index = 0;
 
-    if (sheet->slot_count > 0) {
+    if (g_font_sheets[font].slot_count > 0) {
+        float* scale_out = g_font3d_scales;
         do {
-            float scale = sheet->glyph_width[index] / sheet->line_marker_y;
             BodBase* bod = &g_font3d_bods[index];
+            float scale = g_font_sheets[font].glyph_width[index]
+                / g_font_sheets[font].line_marker_y;
             bod->set_bod_object(g_object_list.add_object_to_list());
 
-            Object* object = (Object*)bod->object;
-            load_object_definition("Objects/Font3D", (Object*)bod->object);
+            load_object_definition("Objects/Font3D", bod->object);
             bod->render_arg_1c = 0;
             bod->render_arg_20 = 0.0f;
 
-            ObjectFaceQuad* quad = object->facequads;
-            TextureRef** textures = &sheet->texture_ref_a;
-            quad->texture_ref = textures[sheet->texture_page[index]];
-            quad->uv[0].u = sheet->u0[index];
-            quad->uv[0].v = 1.0f - sheet->line_step;
-            quad->uv[1].u = sheet->v0[index];
-            quad->uv[1].v = 1.0f - sheet->line_step;
-            quad->uv[2].u = sheet->v0[index];
-            quad->uv[2].v = 1.0f - sheet->line_marker_fraction;
-            quad->uv[3].u = sheet->u0[index];
-            quad->uv[3].v = 1.0f - sheet->line_marker_fraction;
+            int texture_page = g_font_sheets[font].texture_page[index];
+            bod->object->facequads[0].texture_ref =
+                (&g_font_sheets[font].texture_ref_a)[texture_page];
+            bod->object->facequads[0].uv[0].u =
+                g_font_sheets[font].u0[index];
+            bod->object->facequads[0].uv[0].v =
+                1.0f - g_font_sheets[font].line_step;
+            bod->object->facequads[0].uv[1].u =
+                g_font_sheets[font].v0[index];
+            bod->object->facequads[0].uv[1].v =
+                1.0f - g_font_sheets[font].line_step;
+            bod->object->facequads[0].uv[2].u =
+                g_font_sheets[font].v0[index];
+            bod->object->facequads[0].uv[2].v =
+                1.0f - g_font_sheets[font].line_marker_fraction;
+            bod->object->facequads[0].uv[3].u =
+                g_font_sheets[font].u0[index];
+            bod->object->facequads[0].uv[3].v =
+                1.0f - g_font_sheets[font].line_marker_fraction;
 
-            Vector3* vertices = object->vertices;
-            vertices[0].x = scale * vertices[0].x;
-            vertices[1].x = scale * vertices[1].x;
-            vertices[2].x = scale * vertices[2].x;
-            vertices[3].x = scale * vertices[3].x;
+            bod->object->vertices[0].x = scale * bod->object->vertices[0].x;
+            bod->object->vertices[1].x = scale * bod->object->vertices[1].x;
+            bod->object->vertices[2].x = scale * bod->object->vertices[2].x;
+            bod->object->vertices[3].x = scale * bod->object->vertices[3].x;
 
-            object->blend_mode = 1;
-            object->flags |= 0x10;
-            g_font3d_scales[index] = scale;
+            bod->object->blend_mode = 1;
+            bod->object->flags |= 0x10;
+            *scale_out = scale;
             ++index;
-        } while (index < sheet->slot_count);
+            ++scale_out;
+        } while (index < g_font_sheets[font].slot_count);
     }
 
-    return index;
 }

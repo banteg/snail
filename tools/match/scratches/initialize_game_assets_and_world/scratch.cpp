@@ -27,7 +27,7 @@ int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
 void sub_449C00(); // stripped no-arg debug callsite before path templates
 void initialize_font_wave_state(); // @ 0x449c70
-int initialize_font3d_objects(short font_id); // @ 0x44ae10
+void initialize_font3d_objects(short font_id); // @ 0x44ae10
 void register_font_texture_sheet_wrapper(char* font_path, int font_id, float width_scale, float height_scale); // @ 0x432d20
 void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
 void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a2f0

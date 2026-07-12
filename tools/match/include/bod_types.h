@@ -37,4 +37,6 @@ public:
 
 typedef char RenderableBod_must_be_0x78[(sizeof(RenderableBod) == 0x78) ? 1 : -1];
 
+extern BodBase g_font3d_bods[128]; // data_7754e8
+
 #endif

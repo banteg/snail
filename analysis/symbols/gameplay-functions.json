@@ -2948,7 +2948,7 @@
     {
       "address": "0x44ae10",
       "name": "initialize_font3d_objects",
-      "description": "Builds the per-font `Objects/Font3D` bod instances, applies the atlas UV layout for each glyph slot, and scales each object to the registered font metrics."
+      "description": "Void materializer for the registered font atlas: borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the glyph UVs and x scale, and records the matching scale in g_font3d_scales."
     },
     {
       "address": "0x44afc0",

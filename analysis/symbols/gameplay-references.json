@@ -4377,6 +4377,16 @@
       "description": "Subgame runtime feature flag preset assigned by set_subgame_features for level mode 4."
     },
     {
+      "address": "0x7754e8",
+      "name": "g_font3d_bods",
+      "kind": "global",
+      "aliases": [
+        "data_7754e8"
+      ],
+      "size": "0x1c00",
+      "description": "Fixed 128-entry BodBase array for materialized 3D font glyphs. Its Object* lanes begin at +0x24 and are borrowed by intro-screen text layout; the array ends exactly at g_font3d_scales."
+    },
+    {
       "address": "0x7772e8",
       "name": "g_font_wave_phase_a",
       "kind": "global",
