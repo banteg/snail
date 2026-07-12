@@ -1,18 +1,19 @@
-# Pinned — 72.43%, 91 candidate / 94 target insns (register/materialization residuals remain)
+# Pinned — 78.92%, 91 candidate / 94 target insns (register/materialization residuals remain)
 
 Semantics complete and they REFINE the harvested hit-flash plan:
 
-- gate: `(game[0x4300b4] & 0x80) == 0 || force` — the sign bit, with
-  force bypassing
+- gate: `(Player::movement_flags & 0x80) == 0 || force` — the sign bit, with
+  force bypassing (`Player +0x338`, relocatable `Game +0x4300b4`)
 - state 2 blocks unforced positive deltas; unforced negative deltas are
-  also blocked while `game[0x42ff60] == 1` (a previously unknown global)
+  also blocked while `Player::trampoline_bounce_active == 1`
+  (`Player +0x1e4`, relocatable `Game +0x42ff60`)
 - retrigger-gated side effects (timer at +0x24 zero, delta > 0):
-  change_snail_skin(slot 1, 0.2s) on the global `cRSnailSkin` child at
-  game+0x430938, voice 0 (damage) mode 1 seeding the timer on success;
+  change_snail_skin(slot 1, 0.2s) on the owned `Player::presentation.snail_skin`
+  child at `Game +0x434038`, voice 0 (damage) mode 1 seeding the timer on success;
   on FAILURE voice 9 (ouch) mode 0 (also seeding on success) and — only
-  in this failure branch, gated on game[0x42ffd4] clear — the anim pair
-  dispatch_cutscene_animation(6, immediate) then (1, queued) on the
-  dispatcher at game+0x432680
+  in this failure branch, gated on `Player::control_override_active` clear —
+  the anim pair dispatch_cutscene_animation(6, immediate) then (1, queued) on
+  `Player::presentation` at `Game +0x432700`
 - fill at +0x1c accumulates the delta, clamped to [0, 1]
 - collision callers feed -0.5 health, +0.04 garbage, +0.15 salt,
   +1.0 slug, +0.02 sub-lazer with force = 0
@@ -68,7 +69,22 @@ both ownership and the force argument omitted by the old decompiler prototype.
 The shared owner now keeps the shipped `Guage` spelling. Focused Wibo remains
 an honest 72.43%, 91/94 instructions, with 18 clean masked operands.
 
-2026-07-11 skin-owner consolidation: the global at game+0x430938 is now typed
+2026-07-11 skin-owner consolidation: the global at game+0x434038 is now typed
 as the exact 0x20-byte `cRSnailSkin` child rather than a local transition API.
 Android's `cRSnailSkin::Change(int, float)` independently confirms this call;
 the shared type substitution is codegen-neutral at the same honest 72.43%.
+
+2026-07-12 Player-owner consolidation: the four former raw relocatable views
+are all fields of the embedded `cRSubGoldy`: `movement_flags` at +0x338,
+`trampoline_bounce_active` at +0x1e4, `control_override_active` at +0x2d8,
+and the authored `cRSnail` presentation at +0x2984. The skin receiver is the
+presentation's owned `cRSnailSkin` at +0x1938, hence `Player +0x42bc` and the
+correct relocatable address `Game +0x434038` (the earlier +0x430938 comment
+was a typo). The scratch now reaches every gate and side effect through the
+shared `GameRoot -> SubgameRuntime -> Player` layout and removes the fake
+`DamageSnailView`. That ownership substitution alone was codegen-neutral at
+72.43%, so it is not presented as a score claim. Reorienting the same voice
+fallback as `if (!play damage) { play ouch; animate; } else { seed timer; }`
+then recovers the native failure-first layout without changing behavior.
+Focused Wibo improves to 78.92%, 91/94 instructions, with all 20 masked
+operands clean.

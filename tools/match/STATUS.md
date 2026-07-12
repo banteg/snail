@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**524/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77309/325720** bytes (**23.73%**) are proof-grade, and overall fuzzy is **60.46%**.
+**524/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77309/325720** bytes (**23.73%**) are proof-grade, and overall fuzzy is **60.47%**.
 
 ## Proof Grade (524)
 
@@ -678,7 +678,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 218/347 | 53.45% | 28/347 | 9 mismatch, 34 ok |  |
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 2 mismatch, 47 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 496/501 | 59.98% | 6/501 | 2 mismatch, 59 ok |  |
-| 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 72.43% | 0/94 | 18 ok |  |
+| 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
 | 🚧 | initialize_cutscene | 0x4428d0 | 1385 | 329/339 | 73.95% | 1/339 | 42 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 290/312 | 63.79% | 8/312 | 1 mismatch, 34 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 171/171 | 73.68% | 22/171 | 29 ok |  |

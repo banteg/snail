@@ -2262,7 +2262,7 @@
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by the sign bit of `Game+0x4300b4`; state-2 ignores unforced positive deltas and also ignores unforced negative deltas while `Game+0x42ff60 == 1`. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
+      "description": "Applies one signed delta to `Player::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `Player::movement_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `Player::trampoline_bounce_active == 1`. Its fallback path changes `Player::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `Player::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
     },
     {
       "address": "0x441540",

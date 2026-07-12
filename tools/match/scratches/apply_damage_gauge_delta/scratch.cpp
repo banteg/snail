@@ -1,43 +1,35 @@
 // apply_damage_gauge_delta @ 0x4413f0 (thiscall, ret 0x8)
-// Hit-flash side-effect chain + gauge fill clamp. Gate: sign bit of
-// game+0x4300b4 (unforced only); state 2 blocks unforced positive deltas
-// and blocks unforced negative ones while game+0x42ff60 == 1.
+// Hit-flash side-effect chain + gauge fill clamp. Gate: sign bit of the
+// owning Player's movement flags (unforced only); state 2 blocks unforced
+// positive deltas and negative ones during a trampoline bounce.
 
 #include "damage_guage.h"
-#include "snail_skin.h"
+#include "game_root.h"
 #include "voice_manager.h"
 
-extern char* g_game_base; // data_4df904
-extern char g_damage_gate_byte[];          // 0x4300b4, sign bit blocks unforced
-extern char g_negative_delta_block_byte[]; // 0x42ff60
-extern char g_damage_gauge_anim_suppress_offset[]; // 0x430054
-extern char g_snail_skin_transition[];     // 0x430938
-extern char g_player_presentation_offset[]; // 0x432700
-
-struct DamageSnailView {
-    void dispatch_cutscene_animation(int animation, int immediate, int initial_frame);
-};
+extern GameRoot* g_game; // data_4df904
 
 void DamageGuage::apply_damage_gauge_delta(float delta, char force)
 {
-    if (((*(unsigned char*)(g_damage_gate_byte + (int)g_game_base) & 0x80) == 0 || force)
+    if (((g_game->subgame.embedded_player()->movement_flags & 0x80) == 0 || force)
         && (state != 2
             || (delta <= 0.0f
-                && (delta >= 0.0f || *(g_negative_delta_block_byte + (int)g_game_base) != 1)))) {
+                && (delta >= 0.0f
+                    || g_game->subgame.embedded_player()->trampoline_bounce_active != 1)))) {
         if (hit_flash_progress == 0.0f && delta > 0.0f) {
-            ((SnailSkin*)(g_snail_skin_transition + (int)g_game_base))
-                ->change_snail_skin(1, 0.2f);
-            if (g_voice_manager.play_voice_manager(0, 1, -1)) {
-                hit_flash_progress = hit_flash_step;
-            } else {
+            g_game->subgame.embedded_player()->presentation.snail_skin
+                .change_snail_skin(1, 0.2f);
+            if (!g_voice_manager.play_voice_manager(0, 1, -1)) {
                 if (g_voice_manager.play_voice_manager(9, 0, -1))
                     hit_flash_progress = hit_flash_step;
-                if (!*(g_damage_gauge_anim_suppress_offset + (int)g_game_base)) {
-                    ((DamageSnailView*)(g_player_presentation_offset + (int)g_game_base))
-                        ->dispatch_cutscene_animation(6, 1, -1);
-                    ((DamageSnailView*)(g_player_presentation_offset + (int)g_game_base))
-                        ->dispatch_cutscene_animation(1, 0, -1);
+                if (!g_game->subgame.embedded_player()->control_override_active) {
+                    g_game->subgame.embedded_player()->presentation
+                        .dispatch_cutscene_animation(6, 1, -1);
+                    g_game->subgame.embedded_player()->presentation
+                        .dispatch_cutscene_animation(1, 0, -1);
                 }
+            } else {
+                hit_flash_progress = hit_flash_step;
             }
         }
         float updated = delta + fill;

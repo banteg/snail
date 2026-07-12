@@ -607,6 +607,15 @@
       "description": "Stable relocatable reference to `Player::click_start.hide_prompt` at Player +0x148, cleared by update_cutscene when the intro camera handoff enters its close-in leg so cRClickStart can reveal the prompt."
     },
     {
+      "address": "0x42ff60",
+      "name": "g_player_trampoline_bounce_active_offset",
+      "kind": "offset",
+      "aliases": [
+        "data_42ff60"
+      ],
+      "description": "Stable relocatable reference to `Player::trampoline_bounce_active` at Player +0x1e4; while set, cRDamageGuage blocks unforced negative deltas in state 2."
+    },
+    {
       "address": "0x430060",
       "name": "g_completion_display_token_offset",
       "kind": "offset",
@@ -680,7 +689,7 @@
       "aliases": [
         "data_430054"
       ],
-      "description": "Relocatable player presentation byte checked by apply_damage_gauge_delta before dispatching fallback damage animations after voice playback fails."
+      "description": "Stable relocatable reference to `Player::control_override_active` at Player +0x2d8, checked by apply_damage_gauge_delta before dispatching fallback damage animations after voice playback fails."
     },
     {
       "address": "0x4300b4",
@@ -689,7 +698,7 @@
       "aliases": [
         "loc_4300b4"
       ],
-      "description": "Relocatable gameplay flags byte whose sign bit gates invincible-shell activity and blocks unforced damage-gauge deltas."
+      "description": "Stable relocatable reference to the low byte of `Player::movement_flags` at Player +0x338; bit 0x80 gates invincible-shell activity and blocks unforced damage-gauge deltas."
     },
     {
       "address": "0x4303f0",
@@ -743,7 +752,7 @@
       "aliases": [
         "loc_432700"
       ],
-      "description": "Relocatable player presentation/render-owner offset used by cutscene AI, snail skin, and jetpack presentation helpers."
+      "description": "Stable relocatable reference to the authored `Player::presentation` (`cRSnail`) owner at Player +0x2984, used by cutscene AI, snail skin, and jetpack presentation helpers."
     },
     {
       "address": "0x432738",
