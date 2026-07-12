@@ -13,7 +13,7 @@ The authored route-point table at `0x4a1c50` is named as
 `g_galaxy_route_point_table` with the one-past sentinel
 `g_galaxy_route_point_table_end` at `0x4a1ca0`.
 
-Current retained result: 84.26%, 237 candidate instructions for 233 target
+Current retained result: 88.27%, 236 candidate instructions for 233 target
 instructions, 62-instruction common prefix, and 39 clean / 0 unresolved / 0
 mismatched masked operands. The source keeps literals as literals so the matcher
 verifies the real `_Galaxy.txt` path, markers, errors, and missing-level string.
@@ -66,3 +66,31 @@ to `Galaxy` and absorbing its native-ledger tail keeps the honest 78.37%,
 - The retained `level_progress_base` backlink now explicitly borrows the
   root-owned `SubgameRuntime`; it is not a separately allocated progress
   table. Naming that owner is codegen-neutral.
+
+2026-07-12 contract and cross-port split recovery:
+
+- The sole Windows caller discards the result. The successful path reaches its
+  epilogue without establishing `eax`, while the two error paths merely leave
+  `report_errorf`'s incidental value. The authored contract is therefore
+  `void`; removing the invented `dword_4a1d18[0]` return eliminates one
+  candidate instruction.
+- iOS `cRGalaxy::Open(int)` at `0x687c8` and Android
+  `cRGalaxy::Open(int)` at `0x500b4` retain the same universe-point rescaling,
+  `_Galaxy.txt`/`_GalaxyPro.txt` parsing, `Galaxy%i:` and `StarNumber=` keys,
+  missing-level labels, route/star bank, and enclosing-subgame backlink. The
+  mobile `cRGalaxy::Init2()` bodies initialize widgets instead; the previous
+  Init2 provenance was stale.
+- Windows split the mobile Open responsibilities: this startup member owns the
+  parser/bootstrap, while exact `open_galaxy_route` owns the interactive card
+  behavior retained on mobile as `cRGalaxy::BoxOn(int)`.
+- Explicit parser error tails, native `record_count`-before-`star_index`
+  advancement, and the point/index/group/widget-cursor update order improve the
+  scratch from 84.26% (237/233) to 88.27% (236/233), preserving the
+  62-instruction prefix and all 39 clean operands.
+- A guarded inner `do/while` reached 234 candidate instructions but regressed
+  register/dataflow agreement to 84.37%; a function-lifetime outer `do/while`
+  duplicated the parser header and fell to 72.46%. Neither is retained.
+- Binary Ninja previewed the void prototype correctly, removing all synthetic
+  returns, but the live session rejected both persisted prototype spellings on
+  readback and rolled them back. The checked-in source/header correction is
+  retained; the database artifact remains honestly unsynchronized.

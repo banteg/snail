@@ -33,5 +33,14 @@ The corrected 101-slot ownership, `0x29c` record body, and typed enclosing
 subgame backlink remain codegen-neutral: focused matching stays exact at
 266/266 with all 41 operands clean.
 
-Android/iOS retain this member as `cRGalaxy::Open(int)`; the complete parent
-extent is 0x10fa8.
+Android/iOS retain this member as `cRGalaxy::BoxOn(int)`; their bodies perform
+the same selected-card text, widget stacking, replay-control gate, bounds pass,
+and reposition loop. Mobile `cRGalaxy::Open(int)` instead contains the authored
+galaxy-file bootstrap recovered at Windows `load_galaxy_layout`.
+
+The authored BoxOn contract is `void`. Every Windows callsite discards the
+result except exact `initialize_galaxy`, which only tail-forwarded the same
+incidental widget pointer; its caller also discards it. Promoting both members
+to void is codegen-neutral: this function remains exact at 266/266 with 41
+clean operands, and `initialize_galaxy` remains exact at 338/338 with 74 clean
+operands. The complete Galaxy parent extent remains 0x10fa8.

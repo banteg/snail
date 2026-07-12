@@ -89,12 +89,12 @@ typedef char GalaxyRouteNameRecord_must_be_0xa0[
 
 class Galaxy {
 public:
-    int load_galaxy_layout(); // @ 0x4088e0
-    FrontendWidget* initialize_galaxy(); // @ 0x408cf0
+    void load_galaxy_layout(); // @ 0x4088e0, bootstrap portion of cRGalaxy::Open
+    void initialize_galaxy(); // @ 0x408cf0, cRGalaxy::Init
     void destroy_galaxy(); // @ 0x408c10
     int update_galaxy(); // @ 0x4092f0
     void close_galaxy_route(); // @ 0x409bf0
-    FrontendWidget* open_galaxy_route(int selected_level_index); // @ 0x409c50
+    void open_galaxy_route(int selected_level_index); // @ 0x409c50, cRGalaxy::BoxOn
     int draw_galaxy_line(
         int texture_id,
         float x0,

@@ -4,15 +4,14 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.00% | **77.94%** |
+| Match | 0.00% | **88.27%** |
 | Target instructions | 233 | 233 |
-| Candidate instructions | 0 | **234** |
-| Common prefix | 0 / 233 | **38 / 233** |
-| Masked operands | none | **33 clean, 7 unresolved, 0 mismatched** |
+| Candidate instructions | 0 | **236** |
+| Common prefix | 0 / 233 | **62 / 233** |
+| Masked operands | none | **39 clean, 0 unresolved, 0 mismatched** |
 
-The retained scratch is one instruction longer than the target. All masked
-operands are clean or unresolved symbol labels for the real point tables and
-star-position tables; there are no mismatched calls, strings, or data operands.
+The retained scratch is three instructions longer than the target. Every
+masked call, string, and data operand is resolved and clean.
 
 ## Covered behavior
 
@@ -25,13 +24,16 @@ star-position tables; there are no mismatched calls, strings, or data operands.
 - Writes `"LEVEL %i MISSING"` placeholders into both route text buffers.
 - Initializes the first route record to the first authored point and clears its
   text buffers.
+- Uses the recovered void contract and the parser/bootstrap portion of mobile
+  `cRGalaxy::Open(int)`; Windows split the interactive card behavior into exact
+  `open_galaxy_route`, corresponding to mobile `cRGalaxy::BoxOn(int)`.
 
 ## Remaining residuals
 
-- Native keeps the inner star counter in `ebx` and the star-group offset in a
-  stack slot. This scratch currently gives those roles to different storage,
-  which shifts the inner-loop register scheduling.
 - Native compares the stored star count from memory after clobbering `eax` with
   the white color constant; VC6 keeps the parse result live in this scratch.
-- The final success block is semantically correct but laid out after the error
-  returns instead of as the direct fall-through after the outer loop compare.
+- Native reloads the route-point cursor into `ebp` before the outer backedge;
+  VC6 currently compares it in `eax` and moves it into `ebp` only on continue.
+- One parser error tail remains before the successful epilogue instead of both
+  cold tails following it. Explicit labels recover the correct string/call
+  identities without forcing the remaining block placement.

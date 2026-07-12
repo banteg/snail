@@ -23,7 +23,7 @@ public:
     FrontendWidget* allocate_border();
 };
 
-FrontendWidget* Galaxy::initialize_galaxy()
+void Galaxy::initialize_galaxy()
 {
     ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
@@ -235,5 +235,5 @@ FrontendWidget* Galaxy::initialize_galaxy()
         replay_widget->idle_padding = 8.0f;
     }
 
-    return open_galaxy_route(selected_index);
+    open_galaxy_route(selected_index);
 }

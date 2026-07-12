@@ -6,7 +6,7 @@
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
-FrontendWidget* Galaxy::open_galaxy_route(int selected_level_index)
+void Galaxy::open_galaxy_route(int selected_level_index)
 {
     route_state = 1;
     selected_index = selected_level_index;
@@ -97,6 +97,6 @@ FrontendWidget* Galaxy::open_galaxy_route(int selected_level_index)
         FrontendWidget* result = bounds_frame_widget;
         continue_widget->layout_center_x =
             result->frame_width * 0.5f + result->frame_x - 320.0f;
-        return result;
+        return;
     }
 }

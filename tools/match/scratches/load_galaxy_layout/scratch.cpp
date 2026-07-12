@@ -20,7 +20,7 @@ extern int dword_4a1d20[];
 extern int g_galaxy_route_point_table[];
 extern int g_galaxy_route_point_table_end[];
 
-int Galaxy::load_galaxy_layout()
+void Galaxy::load_galaxy_layout()
 {
     float* first_point_cursor = (float*)dword_4a1d18;
 
@@ -61,15 +61,13 @@ int Galaxy::load_galaxy_layout()
         char marker[64];
         sprintf(marker, "Galaxy%i:", galaxy_index);
 
-        char* cursor = find_case_insensitive_substring(marker, file_text);
-        if (cursor == (char*)0) {
-            return report_errorf("Cannot find Galaxy %i in _Galaxy.txt");
-        }
+        char* cursor;
+        if ((cursor = find_case_insensitive_substring(marker, file_text)) == (char*)0)
+            goto missing_galaxy;
 
         cursor = find_case_insensitive_substring(":", cursor) + 1;
-        if (*cursor != '"') {
-            return report_errorf("missing \" in _Galaxy.txt");
-        }
+        if (*cursor != '"')
+            goto missing_quote;
 
         cursor += 1;
         char* name_cursor = (char*)(route_name_cursor - 33);
@@ -105,24 +103,33 @@ int Galaxy::load_galaxy_layout()
             rstrcpy_checked_ascii(
                 route_slots[record_count].record.description_text,
                 missing_label);
-            ++star_index;
             ++record_count;
+            ++star_index;
         }
 
         star_index = 0;
 
         current_galaxy_point += 2;
-        route_name_cursor += 40;
         ++galaxy_index;
         star_group_offset += 10;
-        if ((int)current_galaxy_point >= (int)g_galaxy_route_point_table_end) {
-            route_slots[0].record.route_name_index = 0;
-            route_slots[0].record.map_x_bits = dword_4a1d14;
-            route_slots[0].record.map_y_bits = dword_4a1d18[0];
-            route_slots[0].record.map_z_bits = 0;
-            route_slots[0].record.detail_text[0] = 0;
-            route_slots[0].record.description_text[0] = 0;
-            return dword_4a1d18[0];
-        }
+        route_name_cursor += 40;
+        if ((int)current_galaxy_point < (int)g_galaxy_route_point_table_end)
+            continue;
+
+        route_slots[0].record.route_name_index = 0;
+        route_slots[0].record.map_x_bits = dword_4a1d14;
+        route_slots[0].record.map_y_bits = dword_4a1d18[0];
+        route_slots[0].record.map_z_bits = 0;
+        route_slots[0].record.detail_text[0] = 0;
+        route_slots[0].record.description_text[0] = 0;
+        return;
     }
+
+missing_galaxy:
+    report_errorf("Cannot find Galaxy %i in _Galaxy.txt");
+    return;
+
+missing_quote:
+    report_errorf("missing \" in _Galaxy.txt");
+    return;
 }

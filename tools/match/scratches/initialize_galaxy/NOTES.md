@@ -44,3 +44,9 @@ duplicated branch receivers and proves the initializer.
 2026-07-11 authored owner: this exact 338/338 member maps to
 `cRGalaxy::Init()`. `sizeof(Galaxy) == 0x10fa8` closes the embedded owner at
 `SubgameRuntime +0x1270fc8`; the final dword remains conservatively unnamed.
+
+2026-07-12 void contract: every caller consumes initialization side effects and
+discards the tail-forwarded route-card pointer. Mobile `cRGalaxy::Init()` and
+its final `BoxOn` handoff likewise establish no semantic return. Promoting both
+Windows members to void is codegen-neutral and keeps this initializer exact at
+338/338 instructions with 74 clean operands.

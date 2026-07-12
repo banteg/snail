@@ -115,10 +115,11 @@
     {
       "address": "0x4088e0",
       "windows_name": "load_galaxy_layout",
-      "android_symbol": "cRGalaxy::Init2()",
-      "source_object": null,
+      "ios_symbol": "cRGalaxy::Open(int)",
+      "android_symbol": "cRGalaxy::Open(int)",
+      "source_object": "Galaxy.o",
       "confidence": "high",
-      "notes": "Both populate the Galaxy-owned route/star bank from the authored galaxy layout; the Windows body remains honestly partial."
+      "notes": "Both mobile Open bodies contain the same authored galaxy-file parser, point rescaling, route/star-bank population, placeholder labels, and SubgameRuntime backlink. Windows splits that bootstrap into this no-argument void startup member and keeps the interactive card opener separately at 0x409c50."
     },
     {
       "address": "0x408c10",
@@ -158,10 +159,11 @@
     {
       "address": "0x409c50",
       "windows_name": "open_galaxy_route",
-      "ios_symbol": "cRGalaxy::Open(int)",
-      "android_symbol": "cRGalaxy::Open(int)",
+      "ios_symbol": "cRGalaxy::BoxOn(int)",
+      "android_symbol": "cRGalaxy::BoxOn(int)",
       "source_object": "Galaxy.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All ports open and reposition the selected route card, populate its title/detail widgets, and gate the replay control. The authored contract is void; decompilers expose only an incidental final widget-helper value."
     },
     {
       "address": "0x40a0c0",
