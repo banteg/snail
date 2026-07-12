@@ -343,3 +343,13 @@ aliases respectively and restore the 85 clean operands.
   `$L5148` retains the established eight-entry startup sequence through
   `+0x65c`. Registering these bounded content aliases restores all 85 clean
   operands without changing any of the exact 396 instructions.
+
+2026-07-13 subgame row-window header refresh:
+
+- Naming `SubgameRuntime +0x20/+0x24` as the rolling runtime-row scan window
+  advances the unchanged mode-table labels once more: `$L5148` is now the
+  five-entry bottom-HUD table at object `+0x62c`, and `$L5149` is the
+  eight-entry startup table at `+0x640`.
+- The method remains instruction-exact at 396/396. Reassigning the current
+  `$L5148` generation and registering `$L5149` restores all 85 clean operands;
+  the aliases remain bounded by the curated `0x14`/`0x20` table sizes.

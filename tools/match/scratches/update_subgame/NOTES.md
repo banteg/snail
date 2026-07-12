@@ -216,3 +216,24 @@ mobile symbols, and the native 0x1c size ledger prove the owner at `+0xa858`;
 the local one-method `TutorialRuntime` shell is retired. Focused output remains
 78.22%, 1033/1033, with 116 clean operands and the same two real table-shape
 mismatches.
+
+2026-07-13 runtime-row window and child-owner pass:
+
+- `SubgameRuntime +0x20/+0x24` is the rolling runtime-row scan window, now
+  named `runtime_row_scan_begin` / `runtime_row_scan_end`. `scan_reset` seeds
+  the begin at zero and the end from either `runtime_row_count` or the player
+  interaction Z window; subsequent ticks advance begin to the prior end, and
+  every path caps the exclusive end at `completion_row_start + 20`.
+- The state-one challenge callback now uses the embedded `gui`; authored and
+  procedural salt spawns use the embedded `salt_hazards`; time-trial HUD
+  formatting uses the embedded `time_trial`; and score rendering uses the
+  borrowed `top_score_widget` / `bottom_score_widget` handles plus the owned
+  `active_level_score`. The scratch-local `BorderInit` shell is removed.
+- The pause bridge now reaches the prompt through
+  `player.click_start.prompt`, and the state-2 gates name the existing
+  `resume_requested`, `subgame_pause_gate`, `pause_fade`, `pause_fade_step`,
+  `runtime_flags`, row-count, and mirror-front fields directly.
+- These are ownership and layout clarifications, not register shaping.
+  Focused Wibo remains 78.22% with the exact 1033/1033 instruction count,
+  116 clean masked operands, and only the two already-documented state-table
+  layout mismatches.

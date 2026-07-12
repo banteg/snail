@@ -18,13 +18,6 @@
 #include "segment_cache.h"
 #include "vector3.h"
 
-class BorderInit {
-public:
-    void hide_border_init();
-    void unhide_border_init();
-    void border_add_text_number(int value);
-};
-
 class RuntimeCellView {
 public:
     virtual void update_runtime_cell();
@@ -128,8 +121,8 @@ void SubgameRuntime::update_subgame()
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {
         random_float_below(1.0f, 0);
-        *(int*)(game + 0x28) = g_runtime_config.completion_bonus_y_source;
-        *(int*)(game + 0x2c) = g_runtime_config.completion_bonus_x_source;
+        completion_bonus_x_source = g_runtime_config.completion_bonus_y_source;
+        completion_bonus_y_source = g_runtime_config.completion_bonus_x_source;
 
         int result;
         switch (level_mode) {
@@ -167,7 +160,7 @@ void SubgameRuntime::update_subgame()
             return;
 
         case 1:
-            result = ((GUI*)(game + 0x125ffe0))->update_challenge_setup_screen();
+            result = gui.update_challenge_setup_screen();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 build_subgame_level(0);
@@ -215,15 +208,15 @@ void SubgameRuntime::update_subgame()
 
         slug_voice_manager.update_slug_voice_manager();
 
-        if (*(unsigned char*)(game + 8) == one) {
-            *(unsigned char*)(game + 9) = zero;
-            *(unsigned char*)(game + 8) = zero;
+        if (resume_requested == one) {
+            subgame_pause_gate = (unsigned char)zero;
+            resume_requested = (unsigned char)zero;
             g_sprite_manager.set_sprite_manager_paused(0);
         }
 
         char* app = g_game_base;
         if (!((selected_level_record_active != zero
-                && *(float*)(game + 0x0c) == 0.0f
+                && pause_fade == 0.0f
                 && (player.control_source->control_flags_a & 0x4000) != 0)
             || *(unsigned char*)(app + 0x4f2e0) != zero)) {
 
@@ -233,43 +226,43 @@ void SubgameRuntime::update_subgame()
             subgame_state = three;
             g_sprite_manager.set_sprite_manager_paused((char)one);
             if (player.click_start.state == two)
-                ((BorderInit*)*(void**)(game + 0x3bb888))->hide_border_init();
+                player.click_start.prompt->hide_border_init();
             return;
         }
 
-        if (*(float*)(game + 0x0c) > 0.0f) {
-            float fade = *(float*)(game + 0x10) + *(float*)(game + 0x0c);
-            *(float*)(game + 0x0c) = fade;
+        if (pause_fade > 0.0f) {
+            float fade = pause_fade_step + pause_fade;
+            pause_fade = fade;
             if (fade > 1.0f)
-                *(float*)(game + 0x0c) = 0.0f;
+                pause_fade = 0.0f;
             if (player.click_start.state == two)
-                ((BorderInit*)*(void**)(game + 0x3bb888))->unhide_border_init();
+                player.click_start.prompt->unhide_border_init();
         }
 
-        if (*(unsigned char*)game != zero) {
-            *(int*)(game + 0x20) = zero;
+        if (scan_reset != zero) {
+            runtime_row_scan_begin = zero;
             if (level_mode == two)
-                *(int*)(game + 0x24) = *(int*)(game + 0x54);
+                runtime_row_scan_end = runtime_row_count;
             else
-                *(int*)(game + 0x24) = (int)player.interaction_max_z + 46;
+                runtime_row_scan_end = (int)player.interaction_max_z + 46;
         } else {
-            int old_end = *(int*)(game + 0x24);
-            *(int*)(game + 0x20) = old_end;
+            int old_end = runtime_row_scan_end;
+            runtime_row_scan_begin = old_end;
             if (level_mode == two) {
-                *(int*)(game + 0x24) = *(int*)(game + 0x54);
+                runtime_row_scan_end = runtime_row_count;
             } else {
                 int new_end = (int)player.interaction_max_z + 46;
                 if (new_end > old_end)
-                    *(int*)(game + 0x24) = new_end;
+                    runtime_row_scan_end = new_end;
             }
         }
 
-        int scan_limit = *(int*)(game + 0x58) + 20;
-        if (*(int*)(game + 0x24) > scan_limit)
-            *(int*)(game + 0x24) = scan_limit;
+        int scan_limit = completion_row_start + 20;
+        if (runtime_row_scan_end > scan_limit)
+            runtime_row_scan_end = scan_limit;
 
-        cell_index = *(int*)(game + 0x20);
-        while (cell_index < *(int*)(game + 0x24)) {
+        cell_index = runtime_row_scan_begin;
+        while (cell_index < runtime_row_scan_end) {
             if ((((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->flags & 2) != zero) {
                 BodNode* row_node = &((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->primary_bod;
                 if ((row_node->list_flags & 0x200) != zero) {
@@ -293,14 +286,14 @@ void SubgameRuntime::update_subgame()
             }
 
             if ((((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->flags & 0x10) != zero
-                && (*(unsigned int*)(game + 0x4c) & 0x800000) != zero)
+                && (runtime_flags & 0x800000) != zero)
                 spawn_track_parcel(
                     &((ActiveRuntimeRow*)(game + 0x5ccac8 + cell_index * 0xf4))->parcel_position,
                     &player);
 
             attachment_count = zero;
             while (attachment_count < 8) {
-                if (cell_index >= zero && cell_index < *(int*)(game + 0x54)) {
+                if (cell_index >= zero && cell_index < runtime_row_count) {
                     RuntimeCellSlotBase* cell_slot =
                         (RuntimeCellSlotBase*)(game
                             + sizeof(TrackRowCell) * (attachment_count + 8 * cell_index));
@@ -381,19 +374,19 @@ void SubgameRuntime::update_subgame()
                         } while (fringe_count != zero);
 
                         if (cell_slot->cell.tile_id == 23
-                            && (*(unsigned int*)(game + 0x4c) & 0x800) != zero
-                            && cell_index >= *(int*)(game + 0x50)
-                            && cell_index < *(int*)(game + 0x58))
+                            && (runtime_flags & 0x800) != zero
+                            && cell_index >= first_block_row_count
+                            && cell_index < completion_row_start)
                             spawn_track_health_pickup(&cell_slot->cell, &player);
 
                         if (cell_slot->cell.tile_id == 24
-                            && cell_index >= *(int*)(game + 0x50)
-                            && cell_index < *(int*)(game + 0x58))
+                            && cell_index >= first_block_row_count
+                            && cell_index < completion_row_start)
                             spawn_track_speedup(&cell_slot->cell, &player);
 
                         if (cell_slot->cell.tile_id == 25
-                            && cell_index >= *(int*)(game + 0x50)
-                            && cell_index < *(int*)(game + 0x58))
+                            && cell_index >= first_block_row_count
+                            && cell_index < completion_row_start)
                             spawn_track_jetpack_pickup(&cell_slot->cell, &player);
 
                         unsigned char hazard_tile = cell_slot->cell.tile_id;
@@ -402,7 +395,7 @@ void SubgameRuntime::update_subgame()
                                 &cell_slot->cell, &player);
                         } else if ((cell_slot->cell.lane_and_flags & 0x10) == 0
                                 && (hazard_tile == 1 || hazard_tile == 21)
-                                && (*(unsigned int*)(game + 0x4c) & 2) != 0
+                                && (runtime_flags & 2) != 0
                                 && random_float_below(1.0f, "G")
                                     > (1.0f - garbage_frequency) * 0.2f
                                         + 0.8f
@@ -416,43 +409,43 @@ void SubgameRuntime::update_subgame()
                                     || *((unsigned char*)&cell_slot->cell + 0x90) == 20
                                     || *((unsigned char*)&cell_slot->cell + 0x90) == 21
                                     || *((unsigned char*)&cell_slot->cell + 0x90) == 32)
-                                && cell_index >= *(int*)(game + 0x50)
-                                && cell_index < *(int*)(game + 0x58)
+                                && cell_index >= first_block_row_count
+                                && cell_index < completion_row_start
                                 && player.click_start.state != 2
                                 && (level_mode != 4
                                     || random_float_below(1.0f, "G2")
-                                        <= *(float*)(game + 0x48) * 0.3f + 0.7f)
+                                        <= base_subgame_rate * 0.3f + 0.7f)
                                 && (level_mode != 0
                                     || random_float_below(1.0f, "G3")
-                                        <= *(float*)(game + 0x48) * 0.6f + 0.4f)) {
+                                        <= base_subgame_rate * 0.6f + 0.4f)) {
                             spawn_track_garbage_hazard(
                                 &cell_slot->cell, &player);
                         }
 
                         hazard_tile = cell_slot->cell.tile_id;
                         if (hazard_tile == 34) {
-                            if (cell_index >= *(int*)(game + 0x50)
-                                && cell_index < *(int*)(game + 0x58)) {
-                                ((SaltManager*)(game + 0x3578c0))->spawn_salt_hazard(
+                            if (cell_index >= first_block_row_count
+                                && cell_index < completion_row_start) {
+                                salt_hazards.spawn_salt_hazard(
                                     &cell_slot->cell.anchor_position);
                             }
                         } else if ((cell_slot->cell.lane_and_flags & 8) == 0
                             && (hazard_tile == 1 || hazard_tile == 15)
                             && player.click_start.state != 2
-                            && (*(unsigned int*)(game + 0x4c) & 0x10000) != 0
+                            && (runtime_flags & 0x10000) != 0
                             && random_float_below(1.0f, "S")
                                 > (1.0f - salt_frequency) * 0.02f
                                     + 0.98f
-                            && cell_index >= *(int*)(game + 0x50)
-                            && cell_index < *(int*)(game + 0x58)) {
-                            ((SaltManager*)(game + 0x3578c0))->spawn_salt_hazard(
+                            && cell_index >= first_block_row_count
+                            && cell_index < completion_row_start) {
+                            salt_hazards.spawn_salt_hazard(
                                 &cell_slot->cell.anchor_position);
                         }
 
-                        if ((*(unsigned int*)(game + 0x4c) & 0x80) != 0
+                        if ((runtime_flags & 0x80) != 0
                             && cell_slot->cell.tile_id == 18
-                            && cell_index >= *(int*)(game + 0x50)
-                            && cell_index < *(int*)(game + 0x58)) {
+                            && cell_index >= first_block_row_count
+                            && cell_index < completion_row_start) {
                             spawn_slug_hazard(&cell_slot->cell, &player);
                         }
 
@@ -491,7 +484,7 @@ after_authored_ring:
                                     || cell_slot->cell.tile_id == 6 || cell_slot->cell.tile_id == 7)
                                 && player.last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.anchor_position.z
-                                && cell_index < *(int*)(game + 0x58)) {
+                                && cell_index < completion_row_start) {
                                 if ((ring_flags & 0x2000) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         (TrackRowCell*)((char*)&cell_slot->cell + 0xfc0),
@@ -516,7 +509,7 @@ after_authored_ring:
                                             + 20 * (3 * cell_index + 74772) + 24924]);
                                     player.last_ring_spawn_z =
                                         ((TrackRowCell*)((char*)&cell_slot->cell + 0xfc0))->anchor_position.z;
-                                } else if ((*(unsigned int*)(game + 0x4c) & 8) != 0
+                                } else if ((runtime_flags & 8) != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
                                         || level_mode == 7)
                                     && cell_slot->cell.tile_id != 5 && cell_slot->cell.tile_id != 6
@@ -534,7 +527,7 @@ after_authored_ring:
                                     || cell_slot->cell.tile_id == 10)
                                 && player.last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.anchor_position.z
-                                && cell_index < *(int*)(game + 0x58)) {
+                                && cell_index < completion_row_start) {
                                 if ((ring_flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 2, &player,
@@ -555,35 +548,32 @@ after_authored_ring:
                 ++attachment_count;
             }
             ++cell_index;
-            *(unsigned char*)game = zero;
+            scan_reset = (unsigned char)zero;
         }
 
         segment_cache.update_track_render_cache_rows();
 
         if (level_mode == 4) {
-            TimeTrial* time_trial = (TimeTrial*)(game + 0xff25e0);
-            char* text = time_trial->format_time_trial_string(&player.stopwatch);
-            rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb88) + 0x2cc, text);
+            char* text = time_trial.format_time_trial_string(&player.stopwatch);
+            rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
             char* record = game + level_mode_arg * 0x1fac0;
             if (*(int*)(record + 0x944150) == one) {
-                text = time_trial->format_time_trial_string(
+                text = time_trial.format_time_trial_string(
                     (Time*)(record + 0x944158));
-                rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb8c) + 0x2cc, text);
+                rstrcpy_checked_ascii(bottom_score_widget->text_buffer, text);
                 break;
             }
-            ((BorderInit*)*(void**)(game + 0x35bb8c))->hide_border_init();
+            bottom_score_widget->hide_border_init();
             update_subgame_camera();
             return;
         }
 
-        *(unsigned char*)(*(char**)(game + 0x35bb88) + 0x2cc) = zero;
-        ((BorderInit*)*(void**)(game + 0x35bb88))->border_add_text_number(
-            player.total_score);
-        if (player.total_score > *(int*)(game + 0x355d94)) {
-            *(int*)(game + 0x355d94) = player.total_score;
-            *(unsigned char*)(*(char**)(game + 0x35bb8c) + 0x2cc) = zero;
-            ((BorderInit*)*(void**)(game + 0x35bb8c))->border_add_text_number(
-                *(int*)(game + 0x355d94));
+        top_score_widget->text_buffer[0] = (char)zero;
+        top_score_widget->border_add_text_number(player.total_score);
+        if (player.total_score > active_level_score) {
+            active_level_score = player.total_score;
+            bottom_score_widget->text_buffer[0] = (char)zero;
+            bottom_score_widget->border_add_text_number(active_level_score);
             update_subgame_camera();
             return;
         }
