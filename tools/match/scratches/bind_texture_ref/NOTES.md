@@ -5,7 +5,7 @@
 - `TextureRef::slot_index` indexes `g_d3d_texture_slots` (`data_5031c8`);
   successful and failed SetTexture attempts both increment
   `g_texture_bind_call_count`.
-- `TextureRef::flags & 0x1000` selects texture-stage-state value `1`; otherwise
+- `TEXTURE_REF_WRAP_ADDRESSING` (`TextureRef::flags & 0x1000`) selects texture-stage-state value `1`; otherwise
   both stage states are reset to `3`.
 
 2026-07-11 device/type closure: the scratch-local texture device is the shared

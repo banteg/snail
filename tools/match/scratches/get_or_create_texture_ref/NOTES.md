@@ -9,7 +9,7 @@ Recovered relationships:
   `0xa4` bytes.
 - `TextureRef::name` is the 0x80-byte path/name at `+0x0c`; the next field is
   `slot_index +0x8c`, not part of the name buffer.
-- `flags & 0x800` disables case-insensitive path reuse; native tests this as
+- `TEXTURE_REF_DISABLE_PATH_REUSE` (`flags & 0x800`) disables case-insensitive path reuse; native tests this as
   `test ah, 0x8`, so the recovered argument is a full flags word rather than a
   source-level `short`.
 - The reuse scan walks a raw `TextureRef::name` cursor by the 0xa4 entry stride

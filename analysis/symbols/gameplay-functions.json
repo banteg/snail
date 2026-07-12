@@ -751,7 +751,7 @@
     {
       "address": "0x412a70",
       "name": "load_registered_texture_ref",
-      "description": "Loads one registered texture reference from the archive or filesystem, installs its Direct3D texture slot, derives color-key and texture-stage behavior from the TGA bits-per-pixel header field, and records the loaded dimensions. Its forwarded legacy second argument is unused."
+      "description": "Loads one TextureRef from the archive or filesystem, optionally retains its source bytes, installs the indexed Direct3D texture slot, derives color-key and alpha-stage behavior from the TGA bits-per-pixel field, accounts estimated VRAM, and publishes the loaded dimensions. Its forwarded legacy second argument is unused."
     },
     {
       "address": "0x412d00",

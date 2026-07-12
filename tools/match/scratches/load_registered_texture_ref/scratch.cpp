@@ -1,4 +1,4 @@
-// load_registered_texture_ref @ 0x412a70 (cdecl)
+// load_registered_texture_ref @ 0x412a70 (cdecl, exact)
 
 #include "texture_registry.h"
 #include "tga_image_view.h"
@@ -27,16 +27,17 @@ extern "C" int __stdcall D3DXCreateTextureFromFileExA(Direct3DDevice8* device, c
 extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
 
-#define TEXTURE_FIELD(offset) ((char*)&g_texture_refs.entries[0] + texture_offset + (offset))
+#define TEXTURE_ENTRY \
+    ((TextureRef*)((char*)&g_texture_refs.entries[0] + texture_offset))
 
 void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
 {
     int texture_offset = texture_index * sizeof(TextureRef);
-    if ((*(unsigned int*)TEXTURE_FIELD(0) & 0x8000) != 0) {
+    if ((TEXTURE_ENTRY->flags & TEXTURE_REF_SKIP_RUNTIME_LOAD) != 0) {
         return;
     }
 
-    char* path = TEXTURE_FIELD(0x0c);
+    char* path = TEXTURE_ENTRY->name;
     if (archive_or_file_exists(path, 0) == 0) {
         report_warningf("Texture File Missing using Debug.tga (%s)", path);
         D3DXCreateTextureFromFileA(
@@ -44,10 +45,10 @@ void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
         return;
     }
 
-    if ((*(unsigned int*)TEXTURE_FIELD(0) & 0x20) != 0) {
-        *(void**)TEXTURE_FIELD(0x98) = load_file_bytes(path, 0);
+    if ((TEXTURE_ENTRY->flags & TEXTURE_REF_RETAIN_SOURCE_BYTES) != 0) {
+        TEXTURE_ENTRY->texture_ref = load_file_bytes(path, 0);
     } else {
-        *(void**)TEXTURE_FIELD(0x98) = 0;
+        TEXTURE_ENTRY->texture_ref = 0;
     }
 
     TgaImageView tga_header;
@@ -61,12 +62,14 @@ void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
         char* archive_base = get_archive_data_base();
         int byte_count;
         load_file_bytes_from_archive_or_fs(path, archive_base, &byte_count);
-        texture_result = D3DXCreateTextureFromFileInMemoryEx(g_d3d_device, archive_base,
-            byte_count, 0, 0, *(int*)TEXTURE_FIELD(0xa0), 0, 21, 1, 3, 3, color_key, 0, 0,
+        Direct3DDevice8* device = g_d3d_device;
+        texture_result = D3DXCreateTextureFromFileInMemoryEx(device, archive_base,
+            byte_count, 0, 0, TEXTURE_ENTRY->mip_levels, 0, 21, 1, 3, 3, color_key, 0, 0,
             &g_d3d_texture_slots[texture_index]);
     } else {
-        texture_result = D3DXCreateTextureFromFileExA(g_d3d_device, path, 0, 0,
-            *(int*)TEXTURE_FIELD(0xa0), 0, 21, 1, 3, 3, color_key, 0, 0,
+        Direct3DDevice8* device = g_d3d_device;
+        texture_result = D3DXCreateTextureFromFileExA(device, path, 0, 0,
+            TEXTURE_ENTRY->mip_levels, 0, 21, 1, 3, 3, color_key, 0, 0,
             &g_d3d_texture_slots[texture_index]);
     }
 
@@ -82,7 +85,7 @@ void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
     g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 17, 3);
 
     if (tga_header.bits_per_pixel == 0x20) {
-        *(unsigned int*)TEXTURE_FIELD(0) |= 0x10000;
+        TEXTURE_ENTRY->flags |= TEXTURE_REF_HAS_ALPHA;
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 1, 4);
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 2, 2);
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 3, 0);
@@ -91,9 +94,11 @@ void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
         g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 6, 0);
     }
 
-    int width = tga_header.width;
     int height = tga_header.height;
-    *(int*)TEXTURE_FIELD(4) = width;
-    *(int*)TEXTURE_FIELD(8) = height;
+    int width = tga_header.width;
     g_estimated_texture_vram_bytes += width * height * sizeof(unsigned int);
+    TEXTURE_ENTRY->loaded_width = width;
+    TEXTURE_ENTRY->loaded_height = height;
 }
+
+#undef TEXTURE_ENTRY

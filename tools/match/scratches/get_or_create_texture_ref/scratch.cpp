@@ -16,7 +16,7 @@ TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int ar
         report_errorf("Too many Texture References - Increase TextureList.Init(MAX) in g0.cpp");
     }
 
-    if ((flags & 0x800) == 0 && 0 < count) {
+    if ((flags & TEXTURE_REF_DISABLE_PATH_REUSE) == 0 && 0 < count) {
         char* cursor = entries[0].name;
         while (i < count) {
             if (strings_equal_case_insensitive(cursor, texture_path) != 0)

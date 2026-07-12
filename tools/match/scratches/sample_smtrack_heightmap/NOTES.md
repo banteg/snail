@@ -4,7 +4,8 @@ First tracked scratch for the SMTrack replacement-heightmap sampler.
 
 Recovered behavior:
 
-- the fourth argument is a `TextureRef*`; textures retained with flag `0x20`
+- the fourth argument is a `TextureRef*`; textures retained with
+  `TEXTURE_REF_RETAIN_SOURCE_BYTES` (`0x20`)
   keep their source TGA bytes at `TextureRef::texture_ref +0x98`;
 - source is the borrowed SMTrack `Object`; specialized fields `+0x1c`, `+0x24`,
   and `+0x28` derive the sampled row count, while inherited

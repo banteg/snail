@@ -39,6 +39,14 @@ struct ColorBGRA8 {
     unsigned char a; // +0x03
 };
 
+enum TextureRefFlags {
+    TEXTURE_REF_RETAIN_SOURCE_BYTES = 0x20,
+    TEXTURE_REF_DISABLE_PATH_REUSE = 0x800,
+    TEXTURE_REF_WRAP_ADDRESSING = 0x1000,
+    TEXTURE_REF_SKIP_RUNTIME_LOAD = 0x8000,
+    TEXTURE_REF_HAS_ALPHA = 0x10000,
+};
+
 struct TextureRef {
     unsigned int flags; // +0x00
     int loaded_width; // +0x04, filled by load_registered_texture_ref
@@ -47,7 +55,7 @@ struct TextureRef {
     int slot_index;         // +0x8c, texture-list slot id
     int frame_count;        // +0x90
     float frame_progress_step; // +0x94
-    void* texture_ref;      // +0x98
+    void* texture_ref;      // +0x98, caller payload or retained source bytes
     char unknown_9c[0xa0 - 0x9c];
     int mip_levels;         // +0xa0, initialized to 1 by get_or_create_texture_ref
 };

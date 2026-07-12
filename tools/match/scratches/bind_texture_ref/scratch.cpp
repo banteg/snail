@@ -24,7 +24,7 @@ void bind_texture_ref(TextureRef* texture)
         return;
     }
 
-    if ((texture->flags & 0x1000) != 0) {
+    if ((texture->flags & TEXTURE_REF_WRAP_ADDRESSING) != 0) {
         device = g_d3d_device;
         device->vtbl->SetTextureStageState(device, 0, 0x0d, 1);
         device = g_d3d_device;
