@@ -15,34 +15,34 @@ int Backdrop::update_backdrop()
         backdrop_change_queued = 0;
     }
 
-    float* column = (float*)distort_cells;
+    BackdropDistortCell* column = distort_cells;
     int column_count = 8;
     do {
-        float* cell = column;
+        BackdropDistortCell* cell = column;
         int row_count = 8;
         do {
-            phase = cell[1];
-            phase += cell[0];
+            phase = cell->phase_step;
+            phase += cell->phase;
             phase_bits = *(int*)&phase;
-            *(int*)cell = phase_bits;
+            *(int*)&cell->phase = phase_bits;
             phase = *(float*)&phase_bits;
             if (phase > 6.28318548f) {
-                cell[0] = phase - 6.28318548f;
+                cell->phase = phase - 6.28318548f;
             }
 
-            cell[4] = sine(cell[0]) * cell[2];
-            cell[5] = cosine(cell[0]) * cell[3];
-            cell += 0x30;
+            cell->current_x_offset = sine(cell->phase) * cell->x_offset;
+            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;
+            cell += 8;
             row_count--;
         } while (row_count != 0);
 
-        column += 6;
+        ++column;
         column_count--;
     } while (column_count != 0);
 
     int result = active_primary_texture_id;
     if (result != -1) {
-        result = backdrop_refresh_pending;
+        result = backdrop_render_enabled;
         result--;
         if (result == 0) {
             if (active_split_backdrop_pair != 0) {

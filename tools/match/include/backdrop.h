@@ -47,8 +47,13 @@ public:
     unsigned char pending_flip; // +0x54
     unsigned char active_flip; // +0x55
     char unknown_056[0x58 - 0x56];
-    BackdropDistortCell distort_cells[64]; // +0x58
-    int backdrop_refresh_pending; // +0x658
+    union {
+        BackdropDistortCell distort_cells[64]; // +0x58, flat traversal view
+        BackdropDistortCell distort_grid[8][8]; // +0x58, [row][column]
+    };
+    // Persistent 0/1 draw gate. update_backdrop decrements only a local copy
+    // to test the authored `== 1` state; this field is not a countdown.
+    int backdrop_render_enabled; // +0x658
     int unknown_65c; // +0x65c
     // cRClickStart::AI state 2 is the sole Windows reference and raises this
     // byte to one. The exact Backdrop owner is proven; no reader yet proves a

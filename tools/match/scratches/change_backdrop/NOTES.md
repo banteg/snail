@@ -13,8 +13,8 @@ Recovered record fields:
 - `distort` at `+0x120` is copied into `Backdrop::pending_distort`.
 
 The helper only updates pending backdrop fields when `backdrop_texture_id` is
-non-zero; otherwise it clears `backdrop_refresh_pending` and leaves the pending
-distort/flip fields unchanged.
+non-zero; otherwise it clears the persistent `backdrop_render_enabled` draw
+gate and leaves the pending distort/flip fields unchanged.
 
 2026-06-20 exact update: the scratch now re-reads
 `record->backdrop_texture_id` in both branch guards instead of preserving an

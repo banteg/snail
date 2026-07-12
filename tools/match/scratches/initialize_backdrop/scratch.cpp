@@ -19,10 +19,10 @@ void Backdrop::initialize_backdrop(int last_mode)
 
     unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
     if ((render_flags & 1) != 0) {
-        backdrop_refresh_pending = 1;
+        backdrop_render_enabled = 1;
         unknown_664 = 1.0f;
     } else {
-        backdrop_refresh_pending = 0;
+        backdrop_render_enabled = 0;
         unknown_664 = 0.0f;
     }
 

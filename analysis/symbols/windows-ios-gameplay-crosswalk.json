@@ -214,6 +214,33 @@
       "notes": "Both are one-store cRBackdrop members. Windows writes the normalized live track position to the owned float at +0x6c8; the stable Windows harness name is retained while shared source uses the authored zoom vocabulary."
     },
     {
+      "address": "0x410c40",
+      "windows_name": "set_backdrop_distort",
+      "ios_symbol": "cRBackdrop::SetDistort(float)",
+      "android_symbol": "cRBackdrop::SetDistort(float)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "All ports seed the owned backdrop distortion grid from one amplitude; Windows uses a fixed 8x8 BackdropDistortCell matrix while mobile sizes the equivalent grid from its active subdivision count."
+    },
+    {
+      "address": "0x411040",
+      "windows_name": "render_backdrop",
+      "ios_symbol": "cRBackdrop::Render()",
+      "android_symbol": "cRBackdrop::Render()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "The authored cRBackdrop render owner is stable across ports. Windows queues a fixed 7x7 warped quad mesh from the 8x8 distortion grid; mobile updates a platform VBO from the same phase/offset state before drawing it."
+    },
+    {
+      "address": "0x4112f0",
+      "windows_name": "update_backdrop",
+      "ios_symbol": "cRBackdrop::AI()",
+      "android_symbol": "cRBackdrop::AI()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "All ports consume staged backdrop changes and advance the distortion cells. Windows additionally dispatches split or single rendering from AI when the persistent +0x658 draw gate equals one; mobile calls cRBackdrop::Render() separately from the game render loop."
+    },
+    {
       "address": "0x415e20",
       "windows_name": "initialize_enemy_manager",
       "ios_symbol": "cREnemyManager::Init()",

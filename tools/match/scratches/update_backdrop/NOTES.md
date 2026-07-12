@@ -14,8 +14,15 @@ Recovered layout:
 - `backdrop_change_queued +0x4c` is consumed here by calling
   `change_backdrop_real()` and then clearing the byte.
 - rendering runs only when `active_primary_texture_id != -1` and
-  `backdrop_refresh_pending == 1`; `active_split_backdrop_pair` selects
+  `backdrop_render_enabled == 1`; `active_split_backdrop_pair` selects
   `draw_split_backdrop()` vs `render_backdrop()`.
+- The 64 cells are also exposed as the owned row-major
+  `BackdropDistortCell distort_grid[8][8]`. This updater traverses that matrix
+  column-first (`+0x18` outer, `+0xc0` inner), while `set_backdrop_distort`
+  seeds it row-first and `render_backdrop` samples it by `row + 8 * column`.
+- `backdrop_render_enabled +0x658` is a persistent draw gate, not a refresh
+  countdown: every writer stores only zero or one, and this function decrements
+  a local copy solely to spell the native `value == 1` test.
 
 Open source-shape issue: the bit-shadowed phase local recovers the native
 8-byte frame and stack compare without using `volatile`, but VC6 still spills
@@ -29,3 +36,12 @@ were neutral at 72.18% because VC6 scalar-replaced the temporary back onto the
 x87 stack. A direct bit-shadowed cell store improves the focused score to
 88.24% with one additional clean masked operand; the remaining gap is the
 float-store scheduling above, not the frame shape.
+
+2026-07-12 authored owner closure: iOS preserves `cRBackdrop::AI()` at
+`0x41994` and `cRBackdrop::Render()` at `0x41350`; Android preserves them at
+`0x323c0` and `0x319cc`. Mobile advances the distortion owner in `AI()` and
+calls `Render()` separately from the game loop. Windows keeps the same
+`cRBackdrop` owner but folds the split/single render dispatch into
+`update_backdrop`. Replacing the raw float cursors with typed
+`BackdropDistortCell*` traversal is codegen-neutral at 88.24% and makes the
+shared grid ownership explicit.

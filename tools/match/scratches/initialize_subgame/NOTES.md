@@ -320,3 +320,14 @@ aliases respectively and restore the 85 clean operands.
   match the curated target tables, so `$L5001` is reassigned from its previous
   bottom-HUD generation to the current startup table and `$L5000` becomes the
   current bottom-HUD alias. The exact method body is unchanged.
+
+2026-07-12 backdrop-grid header refresh:
+
+- Exposing the fixed backdrop distortion cells as an owned 8x8 grid advances
+  the unchanged mode tables to `$L5009`/`$L5010`, still at object
+  `+0x62c`/`+0x640`.
+- `$L5009` retains the five relocations to `+0x419`, `+0x42d`, `+0x46b`,
+  `+0x46b`, and `+0x441`; `$L5010` retains the established eight-entry startup
+  sequence. Both aliases remain bounded by the curated `0x14`/`0x20` table
+  sizes, so the audit compares their contents rather than trusting local-label
+  identity. The exact 396-instruction method body is unchanged.

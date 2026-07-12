@@ -15,9 +15,9 @@ void Backdrop::change_backdrop_real()
 
         zoom = 0.0f;
         set_backdrop_distort(pending_distort);
-        backdrop_refresh_pending = 1;
+        backdrop_render_enabled = 1;
     } else {
-        backdrop_refresh_pending = 0;
+        backdrop_render_enabled = 0;
     }
 
     active_flip = pending_flip;
