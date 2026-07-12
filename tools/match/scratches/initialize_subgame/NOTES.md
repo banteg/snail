@@ -278,3 +278,12 @@ aliases respectively and restore the 85 clean operands.
   `+0x46b`, `+0x46b`, and `+0x441`, exactly matching the bounded target table.
   Registering that content-proven alias restores all 85 operands without any
   source-body change.
+
+2026-07-12 frontend ownership refresh:
+
+- The shared `FrontendWidget` input-lane recovery advances the unchanged
+  bottom-HUD and startup tables to `$L4996`/`$L4997`, still at object
+  `+0x62c`/`+0x640`.
+- Their bounded five- and eight-entry relocation sequences match the curated
+  target tables. Registering the refreshed aliases restores exact 396/396
+  proof with all 85 operands clean; no source-body instruction changed.

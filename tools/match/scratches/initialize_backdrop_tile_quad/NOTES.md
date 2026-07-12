@@ -82,3 +82,10 @@ vtable advances the same bounded tables to `$L1140`/`$L1141`. COFF still places
 the four-entry orientation table at object `+0x52c` and the seven-entry
 edge-selector table at `+0x53c`. Their contents match the tracked `0x10`/`0x1c`
 target ranges exactly, restoring 367/367 proof with 63 clean operands.
+
+2026-07-12 frontend ownership refresh: the recovered `FrontendWidget` input
+lanes advance the same bounded orientation and edge-selector tables to
+`$L1151`/`$L1152`. COFF still places them at object `+0x52c`/`+0x53c`, and the
+matcher verifies their four and seven relocation destinations against the
+curated target contents. Registering the refreshed aliases restores 367/367
+proof with all 63 operands clean; no source-body instruction changed.
