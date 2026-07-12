@@ -1228,12 +1228,12 @@
     {
       "address": "0x4246a0",
       "name": "build_track_fringe_mesh",
-      "description": "Builds the generated side/fringe strip mesh for one attachment path template; iOS Path.o names this `cRPath::BuildFringe(char*, float)`."
+      "description": "Windows `cRPath::BuildFringe(char*, float)`: owns a generated fringe Object through the Path's second BodBase, extrudes both strip edges with authored Vector3 operations, emits two textured facequads per segment, and clamps X only for exact side sentinels -1 or +1. Android and iOS preserve the authored method name."
     },
     {
       "address": "0x424ad0",
       "name": "build_track_fringe_supertramp_mesh",
-      "description": "Builds the generated SuperTramp fringe strip mesh for one attachment path template; iOS Path.o names this `cRPath::BuildFringeSuperTramp(char*)`."
+      "description": "Windows `cRPath::BuildFringeSuperTramp(char*)`: owns a generated fringe Object through the Path's second BodBase, emits the two extruded side strips, extrapolates two terminal cap vertices, and appends the final cap facequad. Android and iOS preserve the authored method name."
     },
     {
       "address": "0x425050",

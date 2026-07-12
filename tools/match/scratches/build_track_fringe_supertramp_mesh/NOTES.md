@@ -20,15 +20,32 @@ Important type notes:
 
 Current focused result:
 
-- match: 17.13%
-- target/candidate instructions: 421 / 303
+- match: 22.19%
+- target/candidate instructions: 421 / 363
 - prefix: 0 / 421
-- masked operands: 17 clean, 0 unresolved, 0 mismatched
+- masked operands: 19 clean, 0 unresolved, 0 mismatched
 
 Remaining gap:
 
-The scratch is behaviorally useful but still early progress. The target keeps a
-larger stack frame, uses `esi` for `this`, keeps the generated object in `ebx`,
-and centers the row loop cursor at the row's second vertex Z component. The
-terminal cap also spills intermediate x87 values into the larger frame. The
-current source leaves those compiler-shape differences visible.
+The scratch remains early progress, but the native vector-expression family is
+now recovered. The target uses a `0x5c` frame versus the candidate's `0x60`,
+keeps `this` in `esi`, the generated object in `ebx`, and centers the row loop
+cursor at the row's second vertex Z component. The remaining gap is dominated
+by those register/lifetime choices plus terminal-cap and face-store scheduling.
+
+## 2026-07-12 shared fringe source recovery
+
+Android's named `cRPath::BuildFringeSuperTramp` confirms that this builder uses
+the same two vector edge extrusions as `BuildFringe`, then extrapolates its two
+cap vertices with the same subtract/scale/add operator chain. The scratch now:
+
+- reads sampled vertices directly from the owned `Path::strip_mesh`;
+- materializes the proved local-result subtraction and by-value vector
+  scale/add operations for both row edges and both terminal cap vertices;
+- reuses the row cursor for face emission; and
+- writes UV corner `3` before corners `0..2`, matching the Android store family.
+
+This raises the focused candidate from `303` to `363` instructions and the
+match from `17.13%` to `22.19%`, with `19` clean masked operands. The modest
+fuzzy increase understates the recovery: sixty previously absent instructions
+now come from real vector temporaries rather than padding or compiler barriers.
