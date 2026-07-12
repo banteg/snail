@@ -121,3 +121,18 @@ instruction-identical to the target and raises the focused match from `81.11%`
 to `85.25%`, still `216/218` instructions with all `23` masked operands clean.
 The remaining residual begins in state `1`: commutative velocity integration
 order and the lifetime of the two by-value `Vector3` attachment arguments.
+
+## 2026-07-12 swept-vector operator recovery
+
+The second containment argument is the semantic scaled velocity vector, not
+three unrelated scalar constructor arguments. Spelling it through the existing
+`Vector3::operator*` as `velocity * 1.05f` recovers native's stack reservation,
+component spill, and copy schedule for both the primary and secondary path
+tests. Focused Wibo rises from 85.25% to **92.63%**, with the honest 216/218
+instruction count and all 23 masked operands clean.
+
+The remaining differences are three commutative x87 add orders and native's
+two-instruction partial tail merge after a successful primary containment
+test. Reversing the source operands is codegen-neutral, and spelling separate
+primary/secondary hit tails still lets VC6 fully merge the suffix, so neither
+probe is retained. No volatile, label, or dummy-state nudge is used.

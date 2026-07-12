@@ -44,13 +44,13 @@ void SubLazer::update_sub_lazer_projectile()
                 if ((cell->flags & 0x40) == 0
                     || !cell->primary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(
                         Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
-                        Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
+                        velocity * 1.05f,
                         cell->primary_attachment_cell)) {
                     if ((cell->flags & 0x80) == 0)
                         return;
                     if (!cell->secondary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(
                             Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
-                            Vector3(velocity.x * 1.05f, velocity.y * 1.05f, velocity.z * 1.05f),
+                            velocity * 1.05f,
                             cell->secondary_attachment_cell))
                         return;
                 }

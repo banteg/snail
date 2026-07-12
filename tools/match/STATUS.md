@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**533/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **84935/325720** bytes (**26.08%**) are proof-grade, and overall fuzzy is **61.81%**.
+**533/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **84935/325720** bytes (**26.08%**) are proof-grade, and overall fuzzy is **61.83%**.
 
 ## Proof Grade (533)
 
@@ -610,7 +610,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 144/144 | 84.72% | 7/144 | 9 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
-| 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 85.25% | 9/218 | 23 ok |  |
+| 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 216/218 | 92.63% | 9/218 | 23 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 5/125 | 31 ok |  |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
