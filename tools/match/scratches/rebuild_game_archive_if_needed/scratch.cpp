@@ -1,13 +1,9 @@
-// rebuild_game_archive_if_needed @ 0x405370 (cdecl)
+// rebuild_game_archive_if_needed @ 0x405370 (cdecl, C mode)
+
+#include "archive_index.h"
+#include "tga_image_view.h"
 
 typedef unsigned char u8;
-typedef unsigned short u16;
-
-typedef struct ArchiveEntryWriteCursor {
-    int data_offset;
-    int byte_count;
-    int next_path_offset;
-} ArchiveEntryWriteCursor;
 
 void* __cdecl malloc(unsigned int size);
 void __cdecl free(void* pointer);
@@ -34,11 +30,13 @@ void __cdecl rebuild_game_archive_if_needed(void)
 {
     int png_channels;
     u8* png_pixels;
-    ArchiveEntryWriteCursor* output_entry;
+    char* output_record_cursor;
     char* rebuilt;
-    int png_width;
-    unsigned int* dam_words;
     int png_height;
+    unsigned int* dam_words;
+    ArchiveIndex* source_index;
+    ArchiveEntry* source_entries;
+    int png_width;
     int x;
     int source_to_output_delta;
     int entry_index;
@@ -63,16 +61,18 @@ void __cdecl rebuild_game_archive_if_needed(void)
     dam_words = (unsigned int*)load_file_bytes_allocating("SnailMail.dam", &dam_size);
     toggle_archive_high_bit_in_place(dam_words, dam_size);
 
-    memcpy(rebuilt_words, dam_words, dam_words[2]);
+    source_index = (ArchiveIndex*)dam_words;
+    source_entries = source_index->entries;
+    memcpy(rebuilt_words, dam_words, source_entries[0].data_offset);
 
     png_pixels = 0;
     payload_cursor = rebuilt + rebuilt_words[2];
     entry_index = 0;
 
-    if ((int)dam_words[0] > 0) {
-        output_entry = (ArchiveEntryWriteCursor*)(rebuilt + 8);
-        source_byte_count = dam_words + 3;
+    if (source_index->count > 0) {
+        source_byte_count = (unsigned int*)&source_entries[0].byte_count;
         source_to_output_delta = rebuilt - (char*)dam_words;
+        output_record_cursor = rebuilt + 8;
 
         do {
             entry_path = rebuilt + source_byte_count[-2];
@@ -80,7 +80,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
             if (classify_archive_entry_extension((u8*)entry_path, stem) != 1) {
                 char* payload_end;
                 memcpy(payload_cursor, (char*)dam_words + source_byte_count[-1], *source_byte_count);
-                output_entry->data_offset = payload_cursor - rebuilt;
+                *(int*)output_record_cursor = payload_cursor - rebuilt;
                 payload_end = payload_cursor + *source_byte_count;
                 *(int*)((char*)source_byte_count + source_to_output_delta) = *source_byte_count;
                 {
@@ -94,6 +94,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
                 int y;
                 int converted_size;
                 char* payload_end;
+                TgaImageView* tga = (TgaImageView*)payload_cursor;
 
                 save_file_bytes_with_optional_archive_scramble(
                     "0.png",
@@ -109,21 +110,21 @@ void __cdecl rebuild_game_archive_if_needed(void)
                     (u8*)&palette_rgb,
                     0);
 
-                output_entry->data_offset = payload_cursor - rebuilt;
-                payload_cursor[0] = 0;
-                payload_cursor[1] = 0;
-                payload_cursor[2] = 2;
-                payload_cursor[3] = 0;
-                payload_cursor[4] = 0;
-                payload_cursor[5] = 0;
-                payload_cursor[6] = 0;
-                payload_cursor[7] = 0;
-                *(u16*)(payload_cursor + 8) = 0;
-                *(u16*)(payload_cursor + 10) = 0;
-                *(u16*)(payload_cursor + 12) = png_width;
-                *(u16*)(payload_cursor + 14) = (u16)png_height;
-                payload_cursor[16] = (u8)(png_channels << 3);
-                payload_cursor[17] = 8;
+                *(int*)output_record_cursor = payload_cursor - rebuilt;
+                tga->color_map_spec[4] = 0;
+                tga->color_map_spec[3] = 0;
+                tga->color_map_spec[2] = 0;
+                tga->color_map_spec[1] = 0;
+                tga->color_map_spec[0] = 0;
+                tga->color_map_type = 0;
+                tga->id_length = 0;
+                tga->height = (unsigned short)png_height;
+                tga->descriptor = 8;
+                tga->image_type = 2;
+                tga->bits_per_pixel = (u8)(png_channels << 3);
+                tga->width = (unsigned short)png_width;
+                tga->x_origin = 0;
+                tga->y_origin = 0;
 
                 x = 0;
                 if (png_width > 0) {
@@ -131,13 +132,13 @@ void __cdecl rebuild_game_archive_if_needed(void)
                         y = 0;
                         if (png_height > 0) {
                             do {
-                                int source_index = (y * png_width + x) * png_channels;
-                                int dest_index = ((png_height - y - 1) * png_width + x) * png_channels;
-                                payload_cursor[dest_index + 20] = png_pixels[source_index];
-                                payload_cursor[dest_index + 19] = png_pixels[source_index + 1];
-                                payload_cursor[dest_index + 18] = png_pixels[source_index + 2];
+                                int source_pixel_offset = (y * png_width + x) * png_channels;
+                                int dest_pixel_offset = ((png_height - y - 1) * png_width + x) * png_channels;
+                                tga->pixels[dest_pixel_offset + 2] = png_pixels[source_pixel_offset];
+                                tga->pixels[dest_pixel_offset + 1] = png_pixels[source_pixel_offset + 1];
+                                tga->pixels[dest_pixel_offset] = png_pixels[source_pixel_offset + 2];
                                 if (png_channels == 4) {
-                                    payload_cursor[dest_index + 21] = png_pixels[source_index + 3];
+                                    tga->pixels[dest_pixel_offset + 3] = png_pixels[source_pixel_offset + 3];
                                 }
                                 ++y;
                             } while (y < png_height);
@@ -146,7 +147,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
                     } while (x < png_width);
                 }
 
-                converted_size = png_width * png_height * png_channels + 20;
+                converted_size = png_width * png_height * png_channels + sizeof(TgaImageView);
                 *(int*)((char*)source_byte_count + source_to_output_delta) = converted_size;
                 payload_end = payload_cursor + converted_size;
                 {
@@ -159,10 +160,10 @@ void __cdecl rebuild_game_archive_if_needed(void)
                 printf("extracting %s\n", entry_path);
             }
 
-            output_entry += 1;
+            output_record_cursor += sizeof(ArchiveEntry);
             source_byte_count += 3;
             ++entry_index;
-        } while (entry_index < (int)dam_words[0]);
+        } while (entry_index < source_index->count);
     }
 
     save_file_bytes_with_optional_archive_scramble("SnailMail.dat", rebuilt_words, payload_cursor - rebuilt, 1);

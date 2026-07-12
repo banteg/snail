@@ -228,7 +228,7 @@
     {
       "address": "0x405370",
       "name": "rebuild_game_archive_if_needed",
-      "description": "When `SnailMail.dat` is missing but `SnailMail.dam` exists, decodes the legacy archive, repacks TGA entries through the image loader, copies other entries unchanged, writes the rebuilt `SnailMail.dat`, and deletes the old `.dam` plus temporary `0.png`."
+      "description": "When `SnailMail.dat` is missing but `SnailMail.dam` exists, decodes the legacy ArchiveIndex and its 12-byte entries, repacks TGA entries through the PNG loader into typed TGA headers plus inline pixels, copies other payloads unchanged, writes the rebuilt `SnailMail.dat`, and deletes the old `.dam` plus temporary `0.png`."
     },
     {
       "address": "0x405640",

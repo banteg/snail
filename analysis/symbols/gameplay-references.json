@@ -79,6 +79,15 @@
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetZoom(float) member."
     },
     {
+      "address": "0x42f0a0",
+      "name": "load_png_image",
+      "kind": "function",
+      "aliases": [
+        "sub_42f0a0"
+      ],
+      "description": "Seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It returns an allocated pixel buffer plus width, height, channel count, and a three-byte palette sample; the live ESI and EDI values at the callsite belong to the caller and are not hidden parameters."
+    },
+    {
       "address": "0x42f6e0",
       "name": "initialize_object_constructor_thunk",
       "kind": "function",

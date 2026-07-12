@@ -4,47 +4,54 @@
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.00% | **50.54%** |
+| Match | 0.00% | **66.38%** |
 | Target instructions | 232 | 232 |
-| Candidate instructions | 0 | **227** |
-| Common prefix | 0 / 232 | **0 / 232** |
-| Masked operands | none | **19 clean, 0 unresolved, 1 mismatched** |
+| Candidate instructions | 0 | **232** |
+| Common prefix | 0 / 232 | **5 / 232** |
+| Masked operands | none | **22 clean, 0 unresolved, 0 mismatched** |
 
-The retained scratch is five instructions shorter than the target. The one
-masked mismatch is in the TGA conversion region where the remaining block layout
-aligns the native temporary-save call against the scratch PNG-loader call.
+The retained scratch now has the exact target instruction count and an entirely
+clean reference audit. The first textual mismatch is a shifted early-exit label;
+the substantive residual begins in archive cursor allocation after the header
+copy.
 
 First mismatch:
 
 ```text
-target[0]    sub esp, 0x234
-candidate[0] sub esp, 0x230
+target[5]    jne L2c4
+candidate[5] jne L2c0
 ```
 
-The frame delta comes from VC6 folding the output data-offset cursor into the
-source byte-count cursor plus the archive base delta. The native keeps that
-cursor as an independent local at `rebuilt + 8`.
+The frame is now the native `0x234`. VC6 still folds the output data-offset
+cursor into the source byte-count cursor plus a second base delta, whereas the
+native keeps and advances that output cursor as an independent local at
+`rebuilt + 8`.
 
 ## Accepted source-shape changes
 
 - Recovered the `.dat`/`.dam` existence gates and the 40,000,000-byte rebuild
   allocation.
-- Modeled the DAM image as raw words so the loop cursor points at each record's
-  byte-count field, matching native `[-2]` path offset and `[-1]` data offset
-  accesses.
+- Recovered the decoded blob's `ArchiveIndex` owner and `ArchiveEntry` array,
+  while preserving the native hot-loop cursor at each entry's byte-count field.
+- Recovered the distinct serialized output-record cursor and the base delta that
+  maps source byte-count fields to their rebuilt counterparts.
 - Preserved the native signed `(cursor & 0x80000003)` remainder expression for
   payload advancement.
 - Recovered the temporary `0.png` TGA-class conversion path, including the
-  20-byte output header, bottom-up BGR(A) pixel copy, converted byte-count
-  update, extract printf, final DAT save, DAM/PNG deletes, and free.
+  named `TgaImageView` header, inline bottom-up BGR(A) pixel copy, converted
+  byte-count update, extract printf, final DAT save, DAM/PNG deletes, and free.
+- Curated `load_png_image @ 0x42f0a0` as the ordinary seven-argument `cdecl`
+  proven by its body, rejecting Binary Ninja's spurious register parameters.
 
 ## Rejected trials
 
-- A structured `ArchiveEntryRecord*` source cursor was clearer but stayed around
-  45.92% and did not recover the native record-field addressing.
+- Driving the hot loop directly with `ArchiveEntry*` regressed to 51.61%; the
+  retained typed array base plus byte-count cursor preserves both ownership and
+  native field addressing.
 - A shared alignment helper emitted real calls and held the match to 34.84%.
-- Keeping the output cursor as an `int*` or a small write-cursor struct did not
-  prevent VC6 from folding it into the source cursor plus delta in the retained
-  raw-word version.
+- Keeping the output cursor as `int*`, `char*`, or a typed `ArchiveEntry*` does
+  not stop VC6 from folding it; the clear serialized byte cursor is retained.
+- Directly updating `output_cursor[1]` removes the native base-delta owner and
+  regresses to 49.45%.
 - No inline assembly, stack padding, dummy symbols, fake aliases, or
   normalizer-specific tricks were retained.

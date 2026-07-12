@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.93%**.
+**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.96%**.
 
 ## Proof Grade (525)
 
@@ -638,7 +638,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 579/647 | 52.85% | 42/647 | 4 mismatch, 65 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
-| 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
+| 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | initialize_main_loop_display_state | 0x406d70 | 79 | 11/23 | 64.71% | 7/23 | 9 ok |  |
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 338/325 | 63.65% | 1/325 | 6 mismatch, 125 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 78.37% | 62/233 | 40 ok |  |
