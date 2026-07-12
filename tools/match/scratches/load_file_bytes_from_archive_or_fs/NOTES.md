@@ -10,22 +10,41 @@ byte count through `out_size`, handles the `buffer == (char*)-1` data-offset
 sentinel, and otherwise reads/decrypts into either the supplied buffer or a
 tracked allocation.
 
-Focused matcher result: 65.71%, 211 candidate instructions versus 206 target
-instructions, 10-instruction prefix, and 31 clean masked operands.
+Earlier focused matcher result: 65.71%, 211 candidate instructions versus 206
+target instructions, 10-instruction prefix, and 31 clean masked operands.
 
-Known residuals:
+Known residuals after the current ownership pass:
 
-- native keeps the archive path cursor in `edx` and current archive byte in
-  `cl`, while this C++ scratch keeps them in `ecx`/`dl`;
 - native lays out the filesystem-open failure path between the archive scan and
-  archive-found body, then places filesystem success after the archive return
-  paths; this source spells the same topology but VC6 still chooses different
-  label identities;
-- native coalesces `ftell` and `_getcwd` stack cleanup into later calls, while
-  this C++ scratch emits local cleanup for those call sites.
+  archive-found body; this source has the same control-flow topology, but VC6
+  still places the fallback after the archive return paths;
+- lowercase folding remains the equivalent `add al, 0xe0` instead of native
+  `sub al, 0x20`;
+- native coalesces `_getcwd` stack cleanup into the following report call,
+  while this scratch cleans that call locally.
 
 2026-07-09 sibling-transfer campaign: fixed-size `while (*archive_cursor)`
 compare still regresses this helper to 61.39%. Goto-scan loop packaging is
 codegen-neutral at 65.71%. Inlining the found-entry body like the fixed-size
 scratch (no `goto found`) collapses to 33.84%. Keep the goto-split archive vs
 filesystem topology.
+
+2026-07-12 archive-entry and stream-position ownership:
+
+- The inline archive scan now reads the current archive byte directly through
+  its advancing path cursor. Combined with the recovered read-path lifetimes,
+  this restores native's `edx` cursor and `cl` byte lanes; the older isolated
+  direct-cursor regression no longer applies.
+- Both archive read paths own the current `ftell(g_archive_file)` position
+  before constructing the relative `fseek`. The allocation path computes the
+  entry byte count before allocating and defers the data offset until after
+  `ftell`; the caller-buffer path defers its byte count until after `fseek`.
+- Raw `3 * index` byte arithmetic is replaced by the recovered 12-byte
+  `ArchiveEntry` contract. `byte_count` owns the optional size result,
+  allocation size, and read/decode length; `data_offset` owns the sentinel
+  return, archive seek target, and XOR seed.
+- These changes raise focused Wibo from 65.71% to 79.23% (208/206
+  instructions, 10/206 prefix, 31 clean masks, no unresolved operands or
+  mismatches). The archive-found body now normalizes identically; the remaining
+  diff is the filesystem-fallback layout and the two compiler encodings noted
+  above.

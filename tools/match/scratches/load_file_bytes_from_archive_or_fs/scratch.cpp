@@ -29,8 +29,6 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
     File* file;
     int byte_count;
     char* result;
-    int entry_offset;
-    int count_offset;
     char* allocated;
 
     g_loading_bar.update_loading_screen();
@@ -45,9 +43,8 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
             do {
                 char* archive_cursor = *entry_path;
                 char* request_cursor = requested_path;
-                char archive_char = *archive_cursor;
 
-                while (archive_char != 0) {
+                while (*archive_cursor != 0) {
                     char request_char = *request_cursor;
                     if (request_char == 0) {
                         break;
@@ -57,11 +54,10 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
                         request_char = request_char - 32;
                     }
 
-                    if (archive_char != request_char) {
+                    if (*archive_cursor != request_char) {
                         break;
                     }
 
-                    archive_char = archive_cursor[1];
                     ++request_cursor;
                     ++archive_cursor;
                 }
@@ -87,49 +83,43 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
 
 found_archive_entry:
     if (out_size != 0) {
-        *out_size =
-            *(int*)((char*)g_archive_index_records + ((entry_index * 3 + 3) << 2));
+        *out_size = g_archive_index_records->entries[entry_index].byte_count;
     }
 
     if (buffer == (char*)-1) {
-        return (char*)*(int*)((char*)g_archive_index_records
-            + (entry_index * sizeof(ArchiveEntry)) + 8);
+        return (char*)g_archive_index_records->entries[entry_index].data_offset;
     }
 
     if (buffer == 0) {
-        count_offset = (entry_index * 3 + 3) << 2;
-        entry_offset = entry_index * sizeof(ArchiveEntry);
         allocated = (char*)allocate_tracked_memory(
-            *(int*)((char*)g_archive_index_records + count_offset),
+            g_archive_index_records->entries[entry_index].byte_count,
             requested_path);
+        int current_offset = ftell(g_archive_file);
         fseek(g_archive_file,
-            *(int*)((char*)g_archive_index_records + entry_offset + 8)
-                - ftell(g_archive_file),
+            g_archive_index_records->entries[entry_index].data_offset - current_offset,
             1);
         fread(allocated,
             1,
-            *(int*)((char*)g_archive_index_records + count_offset),
+            g_archive_index_records->entries[entry_index].byte_count,
             g_archive_file);
         xor_archive_bytes_in_place(
-            *(int*)((char*)g_archive_index_records + entry_offset + 8),
+            g_archive_index_records->entries[entry_index].data_offset,
             allocated,
-            *(int*)((char*)g_archive_index_records + count_offset));
+            g_archive_index_records->entries[entry_index].byte_count);
         return allocated;
     } else {
-        entry_offset = entry_index * sizeof(ArchiveEntry);
-        count_offset = (entry_index * 3 + 3) << 2;
+        int current_offset = ftell(g_archive_file);
         fseek(g_archive_file,
-            *(int*)((char*)g_archive_index_records + entry_offset + 8)
-                - ftell(g_archive_file),
+            g_archive_index_records->entries[entry_index].data_offset - current_offset,
             1);
         fread(buffer,
             1,
-            *(int*)((char*)g_archive_index_records + count_offset),
+            g_archive_index_records->entries[entry_index].byte_count,
             g_archive_file);
         xor_archive_bytes_in_place(
-            *(int*)((char*)g_archive_index_records + entry_offset + 8),
+            g_archive_index_records->entries[entry_index].data_offset,
             buffer,
-            *(int*)((char*)g_archive_index_records + count_offset));
+            g_archive_index_records->entries[entry_index].byte_count);
         return buffer;
     }
 

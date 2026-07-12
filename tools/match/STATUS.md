@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.84%**.
+**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.86%**.
 
 ## Proof Grade (525)
 
@@ -667,7 +667,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 141/141 | 71.63% | 0/141 | 3 mismatch, 10 ok |  |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 54/53 | 74.77% | 14/53 | 1 ok |  |
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 211/206 | 65.71% | 10/206 | 31 ok |  |
+| 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 31 ok |  |
 | 🚧 | parse_next_float32 | 0x431f20 | 173 | 65/64 | 63.57% | 1/64 | 9 ok |  |
 | 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 139/134 | 57.14% | 4/134 | 26 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 56.41% | 7/58 | 4 ok |  |

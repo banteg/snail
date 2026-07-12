@@ -1529,7 +1529,8 @@
     },
     {
       "address": "0x4312d0",
-      "name": "load_file_bytes_from_archive_or_fs"
+      "name": "load_file_bytes_from_archive_or_fs",
+      "description": "Loads variable-size bytes through the shared ArchiveIndex or filesystem fallback: case-folds the requested path, uses ArchiveEntry data_offset and byte_count to seek/read/XOR into a caller buffer or tracked allocation, and reports the selected size when requested."
     },
     {
       "address": "0x431520",
