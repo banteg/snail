@@ -20,14 +20,8 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_track_render_cache_types.
 OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 OBJECT_REQUIRED_STRUCTS = ("Vec3", "Color4f", "ObjectRenderVertex", "Object")
 SEGMENT_CACHE_REQUIRED_STRUCTS = (
-    "TrackRenderGrid",
     "TrackRenderCacheSlot",
     "SegmentCache",
-)
-
-TRACK_RENDER_GRID_FIELDS = (
-    ("0x54", "runtime_row_count", "int32_t"),
-    ("0x3bfac8", "runtime_cells", "TrackRowCell[0xc80][8]"),
 )
 
 TRACK_RENDER_CACHE_SLOT_FIELDS = (
@@ -41,7 +35,7 @@ SEGMENT_CACHE_FIELDS = (
     ("0x18", "max_index_counts", "int32_t[5]"),
     ("0x2c", "shared_vertex_buffers", "ObjectRenderVertex*[5]"),
     ("0x40", "shared_index_buffers", "uint16_t*[5]"),
-    ("0x54", "owner_subgame", "TrackRenderGrid*"),
+    ("0x54", "owner_subgame", "SubgameRuntime*"),
     ("0x58", "slots", "TrackRenderCacheSlot[0x8f][5]"),
     ("0xa7ec", "build_cache_row_base", "float"),
     ("0xa7f0", "next_cache_row_z", "float"),
@@ -96,9 +90,6 @@ def main() -> int:
             required_structs=SEGMENT_CACHE_REQUIRED_STRUCTS,
         ),
     ]
-    operations.extend(
-        apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="TrackRenderGrid", updates=TRACK_RENDER_GRID_FIELDS)
-    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT, target=args.target, struct_name="TrackRenderCacheSlot", updates=TRACK_RENDER_CACHE_SLOT_FIELDS

@@ -499,13 +499,6 @@ typedef struct ObjectRenderVertex {
     float v;
 } ObjectRenderVertex;
 
-typedef struct TrackRenderGrid {
-    uint8_t _pad_00[0x54];
-    int32_t runtime_row_count;
-    uint8_t _pad_58[0x3bfa70];
-    TrackRowCell runtime_cells[0xc80][8];
-} TrackRenderGrid;
-
 typedef struct TrackRenderCacheSlot {
     BodBase bod;
     float cache_row_base;
@@ -517,7 +510,7 @@ typedef struct SegmentCache {
     int32_t max_index_counts[5];
     ObjectRenderVertex* shared_vertex_buffers[5];
     uint16_t* shared_index_buffers[5];
-    TrackRenderGrid* owner_subgame;
+    SubgameRuntime* owner_subgame;
     TrackRenderCacheSlot slots[0x8f][5];
     float build_cache_row_base;
     float next_cache_row_z;
@@ -925,7 +918,7 @@ typedef struct Game {
     int32_t first_block_row_count;
     int32_t runtime_row_count;
     int32_t completion_row_start;
-    uint8_t _pad_5c[0xa7f8];
+    SegmentCache segment_cache;
     uint8_t track_state_latch;
     uint8_t _pad_a855[0x3];
     Tutorial tutorial;

@@ -353,13 +353,13 @@ Those passes reuse runtime flags and helper families, so not every runtime bit s
 
 The checked-in render-cache owner slice now also exposes:
 
-- `TrackRenderCacheManager.max_vertex_counts[5]`
-- `TrackRenderCacheManager.max_index_counts[5]`
-- `TrackRenderCacheManager.shared_vertex_buffers[5]`
-- `TrackRenderCacheManager.shared_index_buffers[5]`
-- `SubgameRuntime.track_render_cache` at `+0x5c`
-- `TrackRenderCacheManager.owner_subgame`, a borrowed backlink
-- `TrackRenderCacheManager.slots[143][5]`, owned `BodBase` cache nodes
+- `SegmentCache.max_vertex_counts[5]`
+- `SegmentCache.max_index_counts[5]`
+- `SegmentCache.shared_vertex_buffers[5]`
+- `SegmentCache.shared_index_buffers[5]`
+- `SubgameRuntime.segment_cache` at `+0x5c`
+- `SegmentCache.owner_subgame`, a borrowed backlink to the enclosing runtime
+- `SegmentCache.slots[143][5]`, owned `BodBase` cache nodes
 - `TrackRenderCacheSlot.cache_row_base` at `+0x38`
 - the generic render-object texture-group tail at `+0xc0..+0xd4`
 

@@ -292,3 +292,10 @@ tables to `$L6050`/`$L6051`. COFF retains their bounded five- and four-entry
 contents at object `+0x838`/`+0x84c`; `$L6051` is reassigned to the current
 track table. The body remains honestly partial at 86.10% with all 106 operands
 clean.
+
+## 2026-07-13 SegmentCache backlink refresh
+
+Retiring the synthetic `TrackRenderGrid` header view advances the unchanged
+tables to `$L6040`/`$L6041`. COFF retains their bounded five- and four-entry
+contents at object `+0x838`/`+0x84c`; registering the current aliases restores
+all 106 operands. The body remains honestly partial at 86.10%.

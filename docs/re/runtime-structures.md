@@ -1130,9 +1130,12 @@ the follow helpers and the render-cache builders:
 
 The checked-in header also now mirrors the narrow render-cache owner slice:
 
-- `TrackRenderCacheManager`
+- `SegmentCache`, the authored `cRSegmentCache` embedded at
+  `SubgameRuntime +0x5c`
 - `TrackRenderCacheSlot`
-- `TrackRenderGrid`
+- the borrowed `SegmentCache.owner_subgame` backlink to that enclosing
+  `SubgameRuntime`
+- `SubgameRuntime.runtime_row_count` and its owned runtime-cell slab
 - the generic render-object texture-group tail at `+0xc0..+0xd4`
 
 High-confidence `PathTemplateStripMesh` fields:

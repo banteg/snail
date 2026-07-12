@@ -387,3 +387,11 @@ aliases respectively and restore the 85 clean operands.
 - COFF still places the bounded bottom-HUD and startup tables at object
   `+0x62c`/`+0x640`. `$L5356` is reassigned to the current startup table, and
   the instruction-exact 396/396 body retains all 85 clean operands.
+
+2026-07-13 SegmentCache backlink refresh:
+
+- Retiring the synthetic `TrackRenderGrid` header view advances the same
+  compiler-local tables to `$L5345`/`$L5346` without changing code.
+- COFF still places their bounded five- and eight-entry relocation sequences
+  at object `+0x62c`/`+0x640`. `$L5346` is reassigned to the current startup
+  table; the instruction-exact 396/396 body retains all 85 clean operands.

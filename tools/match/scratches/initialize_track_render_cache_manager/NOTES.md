@@ -3,7 +3,8 @@
 Initial shape:
 
 - Seeds five render-cache capacity pairs.
-- Stores the live track-render grid pointer at `game+0x74618`.
+- Stores the borrowed enclosing `SubgameRuntime*` at manager `+0x54`; the
+  runtime begins at `game+0x74618`.
 - Initializes the 143 x 5 cache BOD slots by allocating an `Object` for each
   slot, attaching it through `set_bod_object`, clearing the object geometry
   counters, and allocating per-object D3D/index/texture-group resources.
@@ -14,10 +15,10 @@ Initial shape:
 
 Layout correction:
 
-- The existing header had `track_render_grid` at `+0x28`. The native
+- The old header had its runtime backlink at `+0x28`. The native
   constructor proves the fixed layout is `unknown_00`, capacity arrays at
   `+0x04/+0x18`, shared vertex/index buffers at `+0x2c/+0x40`, and
-  `track_render_grid` at `+0x54`, with cache slots still starting at `+0x58`.
+  `owner_subgame` at `+0x54`, with cache slots still starting at `+0x58`.
 - The slot initialization loop uses a manager-relative cursor view: native
   computes `manager + slot_index * 0x3c`, then accesses the BOD at `+0x58` and
   the attached object pointer at `+0x7c`.

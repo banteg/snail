@@ -1,8 +1,6 @@
 typedef unsigned char uint8_t;
 
-typedef struct TrackRenderGrid {
-    uint8_t _pad_00[0x58];
-} TrackRenderGrid;
+typedef struct SubgameRuntime SubgameRuntime;
 
 typedef struct TrackRenderCacheSlot {
     uint8_t _pad_00[0x3c];

@@ -7,7 +7,6 @@
 #include "bod_types.h"
 #include "sprite.h"
 
-struct TrackRenderGrid;
 class SubgameRuntime;
 struct ObjectRenderVertex;
 struct Object;
@@ -58,10 +57,7 @@ public:
     int max_index_counts[5];  // +0x18
     ObjectRenderVertex* shared_vertex_buffers[5]; // +0x2c, owned tracked allocations
     unsigned short* shared_index_buffers[5]; // +0x40, owned tracked allocations
-    union {
-        SubgameRuntime* owner_subgame; // +0x54, borrowed enclosing runtime
-        TrackRenderGrid* track_render_grid; // codegen view of the same runtime
-    };
+    SubgameRuntime* owner_subgame; // +0x54, borrowed enclosing runtime
     TrackRenderCacheSlot slots[0x8f][5]; // +0x58
     float build_cache_row_base; // +0xa7ec
     float next_cache_row_z; // +0xa7f0

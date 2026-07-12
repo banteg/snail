@@ -19,7 +19,7 @@ source-level behavior:
 
 - constructs the local packed white color, packs the supplied skirt color into
   manager `+0x00`, and performs the initial no-op AI call;
-- scans `track_render_grid->cell_count`, using `% 24` and `/ 24` to select a
+- scans `owner_subgame->runtime_row_count`, using `% 24` and `/ 24` to select a
   row within a cache group and a cache-row index;
 - clears five vertex and index counters and writes the row-base value into the
   five `TrackRenderCacheSlot::unknown_38` fields at each 24-row boundary;
@@ -32,7 +32,7 @@ source-level behavior:
   updates grouped vertex, primitive, and vertex counts; and
 - performs the final Floor/Slide/Warn/Ramp/Fringe maximum-count/name pass.
 
-The active row slab is addressed from `TrackRenderGrid + 0x3bfac8`, with the
+The active row slab is addressed from `SubgameRuntime + 0x3bfac8`, with the
 anchor at `+0x10`, render object at `+0x24`, cache flags at `+0x40`, and the
 four fringe pointers at `+0x44..+0x50`.
 
@@ -127,3 +127,12 @@ so the generic object is the real borrowed geometry contract.
 `SegmentCache` name is fixed by the Windows runtime size ledger and its exact
 SubgameRuntime boundaries. The 475/475 stream remains at the honest 99.79%
 baseline with 20 clean operands.
+
+2026-07-13 backlink ownership cleanup: `SegmentCache +0x54` is now uniformly
+typed as the borrowed enclosing `SubgameRuntime*`. The former
+`TrackRenderGrid` was not a distinct allocation or owner: it was a sparse
+duplicate view of the same runtime pointer, carrying only `runtime_row_count`
+and `runtime_cells`. Removing that synthetic type from the scratch, shared
+analysis header, narrow Binary Ninja header, and sync script preserves the
+honest 99.79%, 475/475 instruction result with 20 clean operands. The sole
+remaining equivalent SIB base/index encoding is intentionally left visible.
