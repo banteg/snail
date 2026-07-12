@@ -118,7 +118,7 @@ void SubgameRuntime::initialize_subgame()
             0.0f,
             4);
         lives_icon_widget->hide_border_init();
-        lives_icon_widget->warning_field = 0;
+        lives_icon_widget->sprite_shadow_offset = 0.0f;
 
         lives_text_widget =
             ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
@@ -147,7 +147,7 @@ void SubgameRuntime::initialize_subgame()
                 ((Color4f*)scratch)->set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 0.0f,
                 4);
-            (*icon_slot)->warning_field = 0;
+            (*icon_slot)->sprite_shadow_offset = 0.0f;
             (*icon_slot)->hide_border_init();
             ++icon_index;
             ++icon_slot;

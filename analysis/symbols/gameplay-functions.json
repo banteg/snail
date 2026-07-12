@@ -30,12 +30,12 @@
     {
       "address": "0x401a70",
       "name": "initialize_frontend_sprite_button",
-      "description": "Constructs one sprite-backed front-end child control, including arrow-button animation ids, authored anchor, and immediate-vs-delayed click behavior."
+      "description": "Constructs one sprite-backed cRBorder child control, including its frame texture, optional shadow offset, authored anchor, texture/layer pair, and immediate-vs-delayed click behavior."
     },
     {
       "address": "0x401d30",
       "name": "initialize_frontend_widget",
-      "description": "Constructs one shell-font front-end widget, seeds its border style, text scale, alignment, colors, and optional slider-child controls, then links it into the active widget list."
+      "description": "Constructs one shell-font cRBorder widget, seeds its border style, text scale, alignment, six color blocks, and optional slider-child controls, then links it into the active widget list."
     },
     {
       "address": "0x4024a0",

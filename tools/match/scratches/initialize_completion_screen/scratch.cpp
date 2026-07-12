@@ -71,7 +71,7 @@ void Completion::initialize_completion_screen(
     bonus_icon_widget->initialize_frontend_sprite_button(0x400800, 122,
         100.0f, 146.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);
-    bonus_icon_widget->warning_field = 0;
+    bonus_icon_widget->sprite_shadow_offset = 0.0f;
 
     bonus_summary_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
     mode = ((GameRoot*)g_game_base)->subgame.level_mode;

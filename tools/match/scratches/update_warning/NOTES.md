@@ -1,18 +1,17 @@
 # Source-shaped — 98.08%, 52/52 insns (one zero-test residual remains)
 
-The warning actor decoded: state 1 pins the target overlay alpha to
+The warning actor decoded: state 1 pins the target text alpha to
 0.99900001f (bits 1065336439, `0x3f7fbe77`) while the phase fills; state 2 fades alpha
 as 1 - 2*phase for the first half then holds zero, and on phase wrap
 returns to state 1 replaying sound 50. The target's +0x208 alpha is the
-warning overlay consumed by the HUD. Closes the checklist's "real
+alpha lane of the border's hot text color consumed by the HUD. Closes the checklist's "real
 warning actor" question: it is exactly this 16-byte actor.
 
 2026-06-13 pin audit: focused matcher verified 57.69%, 52/52 insns. The
 semantics, alpha constants, phase wrap, and sound replay were already matched.
 
 2026-06-16 type consolidation: this now uses the shared `Warning` and
-`FrontendWidget` views. The former generic target alpha is
-`FrontendWidget::warning_overlay_alpha` at +0x208 on the warning border.
+`FrontendWidget` views. The target alpha is at +0x208 on the warning border.
 Reordering the source to test state 2 before state 1 matches native's dominant
 fallthrough shape and raises focused Wibo to 78.85%, 52/52 insns, with 7 masked
 operands OK and no unresolved or mismatched operands.
@@ -76,3 +75,9 @@ and sound-loop roles while using a wider mobile layout. The Windows class is
 now the exact 0x10-byte `Warning` owner rather than a generic actor label.
 Focused Wibo remains an honest 98.08%, 52/52 instructions, with seven clean
 masked operands and the same source-shape `sub`/`cmp` residual.
+
+2026-07-12 cRBorder layout closure: the six contiguous `Color4f` blocks run
+from +0x1ac through +0x20b, so +0x208 is `hot_text_color.a`, not a standalone
+warning-overlay field. The source now writes that owned color lane directly;
+focused Wibo remains 98.08%, 52/52 instructions, with the same honest
+`sub`/`cmp` residual.

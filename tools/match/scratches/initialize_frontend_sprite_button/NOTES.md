@@ -46,3 +46,11 @@ root `+0x440fc`. The typed owner preserves the exact `157/157` result and all
 `teardown_progress_step`. The updater advances that pair while flag `0x400` is
 set and recycles the widget after the progress exceeds one. Typing the fields
 preserves this initializer's exact 157/157 result.
+
+2026-07-12 cRBorder layout closure: the exact stores prove
+`border_texture_id +0x48`, `sprite_shadow_offset +0x178`, `texture_id +0x270`,
+and `texture_layer +0x274`; the draw path consumes the 4.0f shadow offset as an
+optional second sprite draw. These names are now present in the exact
+0x724-byte shared/live Binary Ninja type. The scratch deliberately keeps the
+alias-sensitive raw stores that preserve VC6's exact `ebp` lifetime and remains
+100.00%, 157/157 instructions, with ten clean masked operands.

@@ -329,5 +329,17 @@ aliases respectively and restore the 85 clean operands.
 - `$L5009` retains the five relocations to `+0x419`, `+0x42d`, `+0x46b`,
   `+0x46b`, and `+0x441`; `$L5010` retains the established eight-entry startup
   sequence. Both aliases remain bounded by the curated `0x14`/`0x20` table
-  sizes, so the audit compares their contents rather than trusting local-label
-  identity. The exact 396-instruction method body is unchanged.
+ sizes, so the audit compares their contents rather than trusting local-label
+ identity. The exact 396-instruction method body is unchanged.
+
+2026-07-12 cRBorder layout refresh:
+
+- Closing the shared `FrontendWidget` declaration at its exact 0x724-byte
+  boundary first renumbers the unchanged mode tables to `$L5138`/`$L5139`;
+  preserving the proven `current_padding`/`active_padding` source alias makes
+  the final checked-in generation `$L5147`/`$L5148`.
+- COFF still places them at object `+0x62c`/`+0x640`. `$L5147` retains the
+  five relocations to `+0x419`, `+0x42d`, `+0x46b`, `+0x46b`, and `+0x441`;
+  `$L5148` retains the established eight-entry startup sequence through
+  `+0x65c`. Registering these bounded content aliases restores all 85 clean
+  operands without changing any of the exact 396 instructions.

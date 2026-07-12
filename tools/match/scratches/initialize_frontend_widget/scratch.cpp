@@ -9,11 +9,6 @@ extern char g_blank_text[]; // data_4dfb08
 int report_errorf(char* format, ...);
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
-static __inline void copy_color(Color4f* out, Color4f* in)
-{
-    *out = *in;
-}
-
 int FrontendWidget::initialize_frontend_widget(
     int flags,
     char* text,
@@ -25,7 +20,7 @@ int FrontendWidget::initialize_frontend_widget(
     float anchor_x)
 {
     char* self = (char*)this;
-    FrontendWidget* head = (FrontendWidget*)(g_game_base + 0xb4c);
+    FrontendWidget* head;
     Color4f tmp0;
     Color4f tmp1;
     Color4f tmp2;
@@ -43,13 +38,13 @@ int FrontendWidget::initialize_frontend_widget(
     Color4f tmp14;
     Color4f tmp15;
 
-    *(int*)(self + 0x7c) = widget_type;
-    *(int*)(self + 0x48) = 5;
-    *(unsigned char*)(self + 0x5c) = 0;
-    *(int*)(self + 0x178) = 0;
-    *(float*)(self + 0x22c) = 0.0f;
-    *(float*)(self + 0x230) = 20.0f;
-    *(unsigned char*)(self + 0x234) = 0;
+    this->widget_type = widget_type;
+    border_texture_id = 5;
+    texture_hit_test_enabled = 0;
+    render_inset_delta = 0.0f;
+    render_inset_base = 20.0f;
+    render_inset_dynamic = 0;
+    head = (FrontendWidget*)(g_game_base + 0xb4c);
 
     if ((list_flags & 0x200) != 0) {
         report_errorf("List ADDafter");
@@ -62,98 +57,96 @@ int FrontendWidget::initialize_frontend_widget(
         list_flags |= 0x200;
     }
 
-    *(int*)(self + 0x290) = 0;
-    *(FrontendWidget**)(self + 0x298) = this;
-    *(FrontendWidget**)(self + 0x2a4) = 0;
-    *(FrontendWidget**)(self + 0x2c4) = this;
-    *(int*)(self + 0x1a0) = flags | 0x40001;
+    tooltip.state = 0;
+    tooltip.owner_widget = this;
+    tooltip.tooltip_widget = 0;
+    tooltip.owner_widget_38 = this;
+    widget_flags = flags | 0x40001;
 
-    ((Color4f*)(self + 0x1fc))->set_color_white();
-    ((Color4f*)(self + 0x1cc))->set_color_white();
+    hot_text_color.set_color_white();
+    hot_fill_color.set_color_white();
 
     switch (widget_type) {
     case 20:
-        *(int*)(self + 0x6ec) = 0;
-        *(float*)(self + 0x6f0) = 1.3f;
-        *(float*)(self + 0x214) = 9.0f;
-        *(float*)(self + 0x218) = 13.0f;
-        *(float*)(self + 0x26c) = 26.0f;
-        copy_color((Color4f*)(self + 0x1ec), tmp0.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1fc), tmp1.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f));
-        copy_color((Color4f*)(self + 0x1bc), tmp2.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1cc), tmp3.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f));
-        break;
-    case 21:
-        *(int*)(self + 0x6ec) = 0;
-        *(float*)(self + 0x6f0) = 1.0f;
-        *(float*)(self + 0x214) = 9.0f;
-        *(float*)(self + 0x218) = 13.0f;
-        *(float*)(self + 0x26c) = 26.0f;
-        copy_color((Color4f*)(self + 0x1ec), tmp4.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1fc), tmp5.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f));
-        copy_color((Color4f*)(self + 0x1bc), tmp6.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1cc), tmp7.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f));
+        font_id = 0;
+        font_scale = 1.3f;
+        idle_padding = 9.0f;
+        hot_padding = 13.0f;
+        stack_gap = 26.0f;
+        idle_text_color = *tmp0.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tmp1.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tmp2.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tmp3.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     case 22:
-        *(float*)(self + 0x230) = 20.0f;
-        *(int*)(self + 0x6ec) = 0;
-        *(float*)(self + 0x6f0) = 0.64999998f;
-        *(float*)(self + 0x214) = 1.0f;
-        *(float*)(self + 0x218) = 3.0f;
-        *(float*)(self + 0x26c) = 2.0f;
-        *(unsigned char*)(self + 0x234) = 1;
-        copy_color((Color4f*)(self + 0x1ec), tmp8.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1fc), tmp9.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f));
-        copy_color((Color4f*)(self + 0x1bc), tmp10.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1cc), tmp11.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f));
+        render_inset_base = 20.0f;
+        font_id = 0;
+        font_scale = 0.64999998f;
+        idle_padding = 1.0f;
+        hot_padding = 3.0f;
+        stack_gap = 2.0f;
+        render_inset_dynamic = 1;
+        idle_text_color = *tmp4.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tmp5.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tmp6.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tmp7.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     case 23:
-        *(int*)(self + 0x6ec) = 0;
-        *(float*)(self + 0x6f0) = 1.14f;
-        *(float*)(self + 0x214) = 6.0f;
-        *(float*)(self + 0x218) = 7.0f;
-        *(float*)(self + 0x26c) = 2.0f;
-        *(float*)(self + 0x230) = 20.0f;
-        copy_color((Color4f*)(self + 0x1ec), tmp12.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1fc), tmp13.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f));
-        copy_color((Color4f*)(self + 0x1bc), tmp14.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f));
-        copy_color((Color4f*)(self + 0x1cc), tmp15.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f));
+        font_id = 0;
+        font_scale = 1.14f;
+        idle_padding = 6.0f;
+        hot_padding = 7.0f;
+        stack_gap = 2.0f;
+        render_inset_base = 20.0f;
+        idle_text_color = *tmp8.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tmp9.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tmp10.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tmp11.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
+        break;
+    case 21:
+        font_id = 0;
+        font_scale = 1.0f;
+        idle_padding = 9.0f;
+        hot_padding = 13.0f;
+        stack_gap = 26.0f;
+        idle_text_color = *tmp12.set_color_rgba(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tmp13.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tmp14.set_color_rgba(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tmp15.set_color_rgba(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     default:
         report_errorf("Unknown Border Style Requested");
         break;
     }
 
-    *(float*)(self + 0x17c) = 0.5f;
-    *(float*)(self + 0x180) = 0.5f;
+    slider_position_target = 0.5f;
+    slider_position_current = 0.5f;
     *(int*)(self + 0x38) = 1;
     unhide_border_init();
     rstrcpy_checked_ascii(self + 0x2cc, text);
-    *(float*)(self + 0x6f8) = y;
-    *(float*)(self + 0x6f4) = x;
-    *(float*)(self + 0x20c) = 1.0f;
+    layout_anchor_x = x;
+    layout_anchor_y = y;
+    hover_blend_target = 1.0f;
 
     if ((*(unsigned char*)(self + 0x1a0) & 2) != 0)
         highlight_border();
     else
         unhighlight_border();
 
-    *(float*)(self + 0x210) = *(float*)(self + 0x20c);
-    *(float*)(self + 0x21c) = *(float*)(self + 0x214);
-    *(float*)(self + 0x220) = *(float*)(self + 0x214);
-    *(float*)(self + 0x224) = 0.0f;
-    *(float*)(self + 0x228) = 0.0f;
-    *(int*)(self + 0x25c) = alignment;
-    *(float*)(self + 0x260) = anchor_x;
-    mouse_history_warmup_frames = 1;
-    *(float*)(self + 0x260) =
+    hover_blend_current = hover_blend_target;
+    current_padding = target_padding = idle_padding;
+    text_effect_target = 0.0f;
+    text_effect_current = 0.0f;
+    text_alignment = alignment;
+    this->anchor_x = anchor_x;
+    this->anchor_x =
         anchor_x + ((BorderManager*)(g_game_base + 0xb4c))->justify_centre;
+    mouse_history_warmup_frames = 1;
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
+        slider_more_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
         float slider_y = y + 40.0f;
-        FrontendWidget* more = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        *(FrontendWidget**)(self + 0x71c) = more;
-        more->initialize_frontend_sprite_button(
+        slider_more_widget->initialize_frontend_sprite_button(
             (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
             42,
             ((BorderManager*)(g_game_base + 0xb4c))->justify_centre + 458.0f,
@@ -161,11 +154,10 @@ int FrontendWidget::initialize_frontend_widget(
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
-        more->border_sprite_extend(44, 43, 45, 1);
+        slider_more_widget->border_sprite_extend(44, 43, 45, 1);
 
-        FrontendWidget* less = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        *(FrontendWidget**)(self + 0x718) = less;
-        less->initialize_frontend_sprite_button(
+        slider_less_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        slider_less_widget->initialize_frontend_sprite_button(
             (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
             38,
             ((BorderManager*)(g_game_base + 0xb4c))->justify_centre + 118.0f,
@@ -173,16 +165,15 @@ int FrontendWidget::initialize_frontend_widget(
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
-        less->border_sprite_extend(40, 39, 41, 0);
+        slider_less_widget->border_sprite_extend(40, 39, 41, 0);
 
-        FrontendWidget* value = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-        *(FrontendWidget**)(self + 0x720) = value;
-        value->initialize_frontend_widget(
+        slider_value_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        slider_value_widget->initialize_frontend_widget(
             0x400000,
             (char*)"00%",
             21,
             0.0f,
-            *(float*)(self + 0x6f8) + 40.0f,
+            layout_anchor_y + 40.0f,
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);

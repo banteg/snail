@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**535/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85839/325720** bytes (**26.35%**) are proof-grade, and overall fuzzy is **62.26%**.
+**535/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85839/325720** bytes (**26.35%**) are proof-grade, and overall fuzzy is **62.48%**.
 
 ## Proof Grade (535)
 
@@ -544,10 +544,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (22)
+## Near Match (95-99.99%) (23)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
+| 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 429/429 | 99.30% | 55/429 | 1 mismatch, 49 ok |  |
 | 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 98.31% | 23/177 | 20 ok |  |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 494/492 | 96.75% | 238/492 | 94 ok |  |
@@ -636,11 +637,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (50)
+## Mid Progress (50-79.99%) (49)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 433/429 | 62.41% | 0/429 | 1 mismatch, 32 ok |  |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 644/647 | 68.32% | 1/647 | 93 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |

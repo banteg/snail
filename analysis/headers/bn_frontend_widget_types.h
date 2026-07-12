@@ -34,11 +34,13 @@ typedef struct FrontendWidgetTooltip {
 } FrontendWidgetTooltip;
 
 typedef struct FrontendWidget {
-    uint8_t _pad_00[0x4];
+    uint32_t list_kind;
     uint32_t list_flags;
     FrontendWidget* list_prev;
     FrontendWidget* list_next;
-    uint8_t _pad_10[0x3c];
+    uint8_t _pad_10[0x34];
+    float hide_blend;
+    int32_t border_texture_id;
     float authored_left;
     float authored_top;
     float authored_width;
@@ -49,7 +51,8 @@ typedef struct FrontendWidget {
     int32_t texture_hit_test_sprite;
     uint8_t _pad_68[0x14];
     int32_t widget_type;
-    uint8_t _pad_80[0xfc];
+    uint8_t _pad_80[0xf8];
+    float sprite_shadow_offset;
     float slider_position_target;
     float slider_position_current;
     float slider_hit_left;
@@ -90,12 +93,12 @@ typedef struct FrontendWidget {
     float border_edge;
     int32_t text_alignment;
     float anchor_x;
-    float aux_progress;
-    float aux_step;
+    float teardown_progress;
+    float teardown_progress_step;
     float stack_gap;
-    int32_t texture_id_270;
-    uint8_t _pad_274[0x4];
-    int32_t mouse_settle_frames;
+    int32_t texture_id;
+    int32_t texture_layer;
+    int32_t mouse_history_warmup_frames;
     float previous_mouse_x;
     float previous_mouse_y;
     uint8_t _pad_284[0x8];

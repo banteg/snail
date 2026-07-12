@@ -3,12 +3,12 @@
 Exact match: 100.00%, 32/32 instructions.
 
 This allocates the warning border, initializes sprite `0x5e` with frontend
-sprite-button flag word `0x400802`, clears the warning field, hides the border,
-and resets the progress state.
+sprite-button flag word `0x400802`, disables the sprite shadow draw, hides the
+border, and resets the progress state.
 
 2026-06-16 type consolidation: the warning border now uses the shared
-`FrontendWidget` view from `frontend_widget.h`; `warning_field` is the
-confirmed +0x178 widget slot. This scratch remains exact.
+`FrontendWidget` view from `frontend_widget.h`; +0x178 is a confirmed widget
+slot. This scratch remains exact.
 
 2026-06-16 warning actor consolidation: the 16-byte controller now uses the
 shared `Warning` view from `warning.h`; the phase fields are
@@ -22,3 +22,8 @@ roles but places two extra presentation lanes before its border pointer, so
 the shared `Warning` type preserves the exact 0x10-byte Windows layout without
 claiming cross-port byte identity. Focused Wibo remains exact at 32/32
 instructions with six clean masked operands.
+
+2026-07-12 cRBorder layout closure: the exact sprite initializer writes 4.0f
+to +0x178 and the draw path uses it as the optional second-sprite offset, so
+the field is now `sprite_shadow_offset`, not warning state. Warning setup clears
+that presentation effect. Focused Wibo remains exact at 32/32 instructions.

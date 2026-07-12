@@ -4,15 +4,12 @@ Starter scratch for the shell-font front-end widget constructor.
 
 Models list insertion, tooltip owner reset, border style presets 20-23, text
 copy/layout anchors, highlight state, slider child creation, and the final
-layout call. It uses the shared frontend widget header for the list prefix and
-call surface, with raw offsets still used where the constructor's local
-scheduling is not yet source-shaped.
+layout call. It uses the shared exact cRBorder/`FrontendWidget` view for the
+owned fields and call surface, with raw offsets retained only where the
+constructor's local scheduling is not yet source-shaped.
 
 Expected residuals:
-- stack-local color ordering is still decompiler-shaped;
-- color lane names and a few padding fields need cross-checking against
-  `draw_frontend_widget` and `update_frontend_widget_interaction`;
-- slider child calls are semantic but not scheduled to match.
+- stack-local color ordering is still decompiler-shaped.
 
 2026-06-20 frontend type pass: `initialize_frontend_widget` and
 `layout_frontend_widget` are modeled as returning the same word result, not a
@@ -62,3 +59,43 @@ root cursor against `previous_mouse_x/+0x27c` and
 `previous_mouse_y/+0x280`. Correcting the shared field is codegen-neutral at
 the same 62.41% headline result but removes a false overlap with the teardown
 progress lane.
+
+2026-07-12 cRBorder layout closure: allocation and the exact sprite
+initializer close the Windows object at 0x724 bytes, now verified by the live
+Binary Ninja `FrontendWidget` type. The constructor/draw/update family owns
+`border_texture_id +0x48`, `background_texture_id +0x60`, hit-test sprite
+`+0x64`, style `+0x7c`, sprite shadow offset `+0x178`, six contiguous `Color4f`
+blocks at `+0x1ac..+0x20b`, sprite texture/layer `+0x270/+0x274`, and the three
+slider children at `+0x718..+0x720`. In particular, warning AI writes
+`hot_text_color.a +0x208`; it does not own a separate overlay field.
+
+Promoting those fields into the shared source and repeatable Binary Ninja
+header was initially codegen-neutral at 62.41%, 433/429 candidate/target
+instructions, 32 clean masked operands, and one bounded switch-table mismatch.
+The exact sprite initializer remains 157/157.
+
+2026-07-12 constructor source-shape recovery: focused Wibo rises from 62.41%
+to 99.30%, with identical 429/429 instruction counts, prefix 55/429, 49 clean
+masked operands, and one honest jump-table mismatch. The accepted changes all
+recover durable ownership or evaluation order visible in native code:
+
+- the text constructor does not clear `sprite_shadow_offset`; that extra store
+  was removed rather than treating sprite-button setup as shared state;
+- the active-list head is acquired after the initial cRBorder field stores,
+  reproducing the native prologue through the switch dispatch;
+- the native style-body order is `20, 22, 23, 21`, with direct `Color4f`
+  assignments rather than an aliasing copy helper;
+- `current_padding = target_padding = idle_padding` restores the native x87
+  chained stores;
+- the authored x/y writes use native evaluation order, and slider children are
+  assigned and called through their owned `+0x718/+0x71c/+0x720` slots instead
+  of synthetic local child pointers;
+- the adjusted anchor is evaluated before the mouse-history seed, and the
+  first child is allocated before computing its shared y coordinate.
+
+The only instruction differences are three compiler temporary stack slots:
+target uses `+0xa4`, `+0x114`, and `+0x24` where the readable candidate cycles
+them as `+0x24`, `+0xa4`, and `+0x114`. The first short displacement also moves
+three case-label offsets by three bytes, so candidate `$L1214` is deliberately
+not accepted as the curated jump table. Declaration-order and temp-name probes
+were codegen-neutral or regressed; no volatile or fake alias was retained.
