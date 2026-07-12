@@ -375,3 +375,22 @@ The collision kinds that arm the ring effect now call the exact 0x7c-byte
 `Nuke` embedded at Player +0x150. Android `cRSubGoldy::Collision()` calls
 `cRNuke::Init()` through the same relationship and preserves every owner field
 offset. Focused Wibo remains 52.85%, 659/673, with all 86 operands clean.
+
+## Player tail cross-tool closure (2026-07-13)
+
+The live Binary Ninja `Player` type was eight bytes short and still carried
+the pre-ownership tail: `Player +0x4338` was mislabeled as
+`visible_life_stock`, `Squidge` and the commentary timers were consequently
+shifted, and the enclosing-runtime backlink remained `Game*`. The canonical
+BN and IDA-facing headers now agree with the exact 0x4364-byte matching owner:
+
+- `score_tail +0x300`, `last_ring_spawn_z +0x37c`, and
+  `boost_one_tick +0x41c` replace proven opaque lanes;
+- `game +0x408` is the borrowed enclosing `SubgameRuntime*`;
+- `parcels_collected +0x4338` precedes `visible_life_stock +0x4340`; and
+- `Squidge +0x4344` plus the commentary timers at `+0x435c/+0x4360` close the
+  real tail.
+
+This corrects the analysis owner used by collision, completion, parcel HUD,
+and subgoldy update paths without reshaping the matcher scratch. The 52.85%,
+659/673 instruction result with 86 clean operands remains the honest baseline.

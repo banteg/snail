@@ -650,7 +650,7 @@ typedef struct Player {
     float cutscene_pitch_cycle_step;
     int32_t total_score;
     Time stopwatch;
-    uint8_t _pad_300[0x4];
+    int32_t score_tail;
     int32_t startup_track_index;
     int32_t movement_flag_selector;
     uint8_t _pad_30c[0x4];
@@ -670,7 +670,7 @@ typedef struct Player {
     float heading_roll;
     float nuke_effect_progress;
     float nuke_effect_progress_step;
-    uint8_t _pad_37c[0x4];
+    float last_ring_spawn_z;
     int32_t player_slot;
     FollowState follow_state;
     DamageGuage damage_gauge;
@@ -678,10 +678,10 @@ typedef struct Player {
     uint8_t _pad_3f1[0x3];
     Warning warning;
     int32_t lives;
-    struct Game* game;
+    struct SubgameRuntime* game;
     int32_t movement_mode_selector;
     Vec3 velocity;
-    uint8_t _pad_41c[0x1];
+    uint8_t boost_one_tick;
     uint8_t attachment_exit_pending;
     uint8_t _pad_41e[0x6];
     float attachment_exit_anchor_z;
@@ -714,6 +714,8 @@ typedef struct Player {
     uint8_t _pad_2974[0xc];
     float interaction_max_z;
     Snail presentation;
+    int32_t parcels_collected;
+    uint8_t _pad_433c[0x4];
     int32_t visible_life_stock;
     Squidge squidge;
     float slow_commentary_timer;
