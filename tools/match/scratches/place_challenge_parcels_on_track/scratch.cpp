@@ -9,7 +9,6 @@ double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
 
 extern char g_zero_parcel_bucket_count_lane_end; // 0x643390
-extern int g_challenge_parcel_rows[]; // 0x6447e8
 
 int SubgameRuntime::place_challenge_parcels_on_track()
 {

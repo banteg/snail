@@ -714,14 +714,14 @@ Current practical read:
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
   - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate, but its one recovered gameplay read is now narrower: when it is `1` and the control source carries the `0x4000` accept/fire flag, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
-  - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and the `track_parcels` array
+  - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and `ParcelManager::slots`
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
     - when `movement_flags & 0x80` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
     - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
-- the embedded `track_parcels` slots are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
+- the embedded `ParcelManager::slots` are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
 - native `replay_update_cursor` is the per-update cursor advanced by `update_subgoldy`
 - the same cursor also drives selected replay-sample reads and the Time Trial terminal threshold
 - native `runtime_track_index` at `+0xff25e4` is separate and still names the rendered/current row index
@@ -878,11 +878,11 @@ High-confidence current fields:
 
 - `+0x10`: `world_position`
 - `+0x38`: `state`
-- `+0x3c`: `game`
+- `+0x3c`: `owner_subgame`
 - `+0x54`: `sprite`
 - `+0x5c`: `bob_phase`
 - `+0x60`: `bob_phase_step`
-- `+0x64`: `owner`
+- `+0x64`: `owner_player`
 - `+0x68`: `progress`
 - `+0x6c`: `progress_step`
 - `+0x70`: `target_distance`
@@ -897,7 +897,7 @@ Current practical read:
 
 - `initialize_runtime_pools_and_path_template_bank` seeds the `50`-slot array with `initialize_track_parcel_runtime`
 - `build_subgame_level` clears the live array for the current run through `initialize_track_parcel_slots`
-- `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->track_parcels`, seeds the spawn position, installs the sprite, and stores the parcel-owner pointer
+- `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->parcel_manager`, seeds the spawn position, installs the sprite, and stores the borrowed player pointer
 - `update_track_parcel` runs the parcel's bobbing, homing, and final delivery arc, then calls `register_parcel_delivery(&parcel->game->row_event_display)` before killing the sprite and clearing the slot state
 - `place_parcels_on_track` and `place_challenge_parcels_on_track` decide how many authored parcel rows stay live and feed the HUD-facing `parcel_target_count`
   - the challenge path first builds the full candidate list, then keeps `target_count`

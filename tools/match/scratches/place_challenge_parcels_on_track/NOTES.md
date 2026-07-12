@@ -61,3 +61,14 @@ evaluation, this raises the focused result from 44.70% to 73.68%, reduces the
 candidate from 178 to the exact 171 instructions, restores the native stack
 frame, and confirms that `projection_payload` is borrowed as both the local
 input vector and projected output vector.
+
+## Global row-bank ownership (2026-07-13)
+
+The challenge candidate index bank is now declared once in
+`parcel_bucket.h` as `g_challenge_parcel_rows[4096]`. Its `0x4000`-byte extent
+is fixed by the reference manifest and ends exactly where the parcel-set bucket
+bank begins at `0x6487e8`. The helper fills at most the runtime's 3200 row
+indices, so this is global placement scratch capacity rather than
+`SubgameRuntime`-owned state. The typed bound is codegen-neutral: focused
+matching remains honestly at 73.68%, 171/171 instructions, with all 29 masked
+operands clean.

@@ -5,6 +5,12 @@
 
 #include "vector3.h"
 
+enum {
+    PARCEL_BUCKET_CAPACITY = 0x800,
+    PARCEL_CANDIDATE_CAPACITY = 0x20,
+    CHALLENGE_PARCEL_ROW_CAPACITY = 0x1000,
+};
+
 class ParcelCandidate {
 public:
     void noop_runtime_slot_constructor(); // sub_408600
@@ -22,7 +28,7 @@ void __stdcall initialize_array_with_constructor(
     ParcelCandidateConstructor constructor);
 
 struct ParcelBucket {
-    ParcelCandidate candidates[0x20]; // +0x000
+    ParcelCandidate candidates[PARCEL_CANDIDATE_CAPACITY]; // +0x000
     int candidate_count;              // +0x200
     int set_id;                       // +0x204
     int segment_index;                // +0x208
@@ -31,7 +37,8 @@ struct ParcelBucket {
 typedef char ParcelBucket_must_be_0x20c[
     (sizeof(ParcelBucket) == 0x20c) ? 1 : -1];
 
-extern ParcelBucket g_parcel_set_buckets[0x800];  // data_6487e8
-extern ParcelBucket g_zero_parcel_buckets[0x800]; // data_53d190
+extern ParcelBucket g_parcel_set_buckets[PARCEL_BUCKET_CAPACITY];  // data_6487e8
+extern ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY]; // data_53d190
+extern int g_challenge_parcel_rows[CHALLENGE_PARCEL_ROW_CAPACITY]; // data_6447e8
 
 #endif

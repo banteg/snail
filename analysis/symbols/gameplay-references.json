@@ -4026,7 +4026,7 @@
         "data_6447e8"
       ],
       "size": "0x4000",
-      "description": "Challenge-mode row-index scratch array filled by place_challenge_parcels_on_track before random parcel selection."
+      "description": "Fixed 4096-entry challenge-mode row-index scratch array filled by place_challenge_parcels_on_track before random parcel selection."
     },
     {
       "address": "0x6487e8",
