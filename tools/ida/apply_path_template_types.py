@@ -15,9 +15,14 @@ import idc
 TRUSTED_NAMES = [
     (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x4AC5C8, "g_default_tip_message"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
     (0x49735C, "g_presentation_animation_channel_noop_vtable"),
+]
+
+TRUSTED_DATA_DECLARATIONS = [
+    (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
 ]
 
 
@@ -263,20 +268,32 @@ TRUSTED_DECLARATIONS = [
         "ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);",
     ),
     (
-        "enqueue_tip_message",
-        "TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button);",
+        "kill_tip_widgets",
+        "void __thiscall kill_tip_widgets(Tip* tip);",
     ),
     (
         "initialize_tip",
-        "void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button);",
+        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button);",
     ),
     (
         "update_tip",
-        "void* __fastcall update_tip(TipSlot* slot);",
+        "void __thiscall update_tip(Tip* tip);",
+    ),
+    (
+        "initialize_tip_manager",
+        "void __thiscall initialize_tip_manager(TipManager* manager);",
+    ),
+    (
+        "uninit_tips",
+        "void __thiscall uninit_tips(TipManager* manager);",
+    ),
+    (
+        "enqueue_tip_message",
+        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button);",
     ),
     (
         "update_tip_manager",
-        "void __fastcall update_tip_manager(TipManager* manager);",
+        "void __thiscall update_tip_manager(TipManager* manager);",
     ),
     (
         "initialize_tutorial",
@@ -720,6 +737,11 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
+    unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=;)", "", declaration, count=1)
+    return _normalize_type_text(unnamed) or ""
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
@@ -727,6 +749,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
     unchanged = 0
     renamed = 0
     names_unchanged = 0
+    data_applied = 0
+    data_unchanged = 0
     missing = []
     failed = []
 
@@ -738,6 +762,34 @@ def _sync_types(header_path: pathlib.Path) -> int:
             failed.append({"address": hex(address), "selector": name, "reason": "rename_failed"})
             continue
         renamed += 1
+
+    for address, selector, declaration in TRUSTED_DATA_DECLARATIONS:
+        expected_observed = _data_declaration_to_observed_type(selector, declaration)
+        normalized_current = _normalize_type_text(idc.get_type(address))
+        if normalized_current == expected_observed:
+            data_unchanged += 1
+            continue
+        if not idc.SetType(address, declaration):
+            failed.append(
+                {
+                    "address": hex(address),
+                    "declaration": declaration,
+                    "reason": "data_type_failed",
+                }
+            )
+            continue
+        observed = idc.get_type(address)
+        if _normalize_type_text(observed) != expected_observed:
+            failed.append(
+                {
+                    "address": hex(address),
+                    "declaration": declaration,
+                    "observed": observed,
+                    "reason": "data_verification_failed",
+                }
+            )
+            continue
+        data_applied += 1
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address, name = _resolve_function(selector)
@@ -798,6 +850,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
+                "data_applied": data_applied,
+                "data_unchanged": data_unchanged,
                 "lvar_view": lvar_view,
                 "missing": missing,
                 "failed": failed,

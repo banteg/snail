@@ -756,6 +756,54 @@
       "notes": "Both enumerate authored level filenames through the same SMTracks owner and hand each name to the SubTracks text parser; neither returns a semantic value."
     },
     {
+      "address": "0x448a40",
+      "windows_name": "initialize_tip",
+      "ios_symbol": "cRTip::Init(cRTipData*, bool)",
+      "source_object": "Tips.o",
+      "confidence": "high",
+      "notes": "The 0x20-byte Tip and 0x14-byte TipData field order agrees across ports. Windows reads the hide-disable-button formal as a full 32-bit stack argument, while iOS v1.5 names it bool and v1.9 names it signed char, so the Windows declaration intentionally retains int32_t."
+    },
+    {
+      "address": "0x448c40",
+      "windows_name": "update_tip",
+      "ios_symbol": "cRTip::AI()",
+      "source_object": "Tips.o",
+      "confidence": "high",
+      "notes": "The exact Windows member drives the same Tip-owned widgets, authored TipData flags, dismiss progress, and frontend-owner restoration path."
+    },
+    {
+      "address": "0x448cf0",
+      "windows_name": "initialize_tip_manager",
+      "ios_symbol": "cRTipManager::Init()",
+      "source_object": "Tips.o",
+      "confidence": "high",
+      "notes": "Both initialize the manager's three inline 0x20-byte Tips. Their array begins at Windows +0x38 and iOS +0x2c because the port-specific BodBase prefixes differ."
+    },
+    {
+      "address": "0x448d10",
+      "windows_name": "uninit_tips",
+      "ios_symbol": "cRTipManager::UnInitTips()",
+      "source_object": "Tips.o",
+      "confidence": "high",
+      "notes": "Both walk the three inline Tips and tear down any active Tip-owned widgets."
+    },
+    {
+      "address": "0x448d30",
+      "windows_name": "enqueue_tip_message",
+      "ios_symbol": "cRTipManager::TipNew(cRTipData*, bool)",
+      "source_object": "Tips.o",
+      "confidence": "high",
+      "notes": "The exact Windows member selects the first inactive inline Tip, initializes it from TipData, and returns that Tip. As with cRTip::Init, Windows retains the observed 32-bit hide-disable-button formal while later iOS changes the mobile spelling from bool to signed char."
+    },
+    {
+      "address": "0x448d80",
+      "windows_name": "update_tip_manager",
+      "ios_symbol": "cRTipManager::AI()",
+      "source_object": "Tips.o",
+      "confidence": "high",
+      "notes": "Both walk the same three inline Tips and call AI only for active entries."
+    },
+    {
       "address": "0x448da0",
       "windows_name": "initialize_tutorial",
       "ios_symbol": "cRTutorial::Init()",

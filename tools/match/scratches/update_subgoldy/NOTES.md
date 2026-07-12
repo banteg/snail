@@ -223,7 +223,7 @@ source-shape issue is solved.
   floats is rejected for this caller shape: it fell to 71.14%, `2057/2087`,
   and `288 ok / 1`.
 - 2026-06-20 shared call-surface cleanup: `VoiceManager`,
-  `SoundEffectManager`, `TipManager`/`TipMessageDefinition`, and `Backdrop`
+  `SoundEffectManager`, `TipManager`/`TipData`, and `Backdrop`
   now come from their shared headers instead of compact local stubs. This is
   codegen neutral at the current baseline (`72.51%`, `2067/2087`, same
   `290 ok / 1` jump-table audit). Type report impact: `TipManager` is removed

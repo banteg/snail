@@ -481,33 +481,35 @@ typedef struct ClickStart {
     uint8_t _pad_a9[0x3];
 } ClickStart;
 
-typedef struct TipMessageDefinition {
+typedef struct TipData {
     uint32_t flags;
     float layout_y;
     float text_scale;
     float dismiss_seconds;
     char* text;
-} TipMessageDefinition;
+} TipData;
+typedef TipData TipMessageDefinition;
 
-typedef struct TipSlot {
+typedef struct Tip {
     int32_t active;
     int32_t previous_outer_owner;
-    TipMessageDefinition* definition;
+    TipData* definition;
     void* widget_main;
     void* widget_ok;
     void* widget_disable;
     float dismiss_progress;
     float dismiss_step;
-} TipSlot;
+} Tip;
+typedef Tip TipSlot;
 
 typedef struct TipManager {
     BodBase bod;
-    TipSlot slots[3];
+    Tip tips[3];
 } TipManager;
 
 typedef struct PlayerRowEventState {
     int32_t id;
-    TipMessageDefinition tip_definition;
+    TipData tip_definition;
 } PlayerRowEventState;
 
 typedef struct PresentationWobbleController {

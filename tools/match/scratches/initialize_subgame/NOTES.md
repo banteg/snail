@@ -287,3 +287,14 @@ aliases respectively and restore the 85 clean operands.
 - Their bounded five- and eight-entry relocation sequences match the curated
   target tables. Registering the refreshed aliases restores exact 396/396
   proof with all 85 operands clean; no source-body instruction changed.
+
+2026-07-12 tip ownership refresh:
+
+- Promoting the shared `TipData` and `Tip` authored names advances the same two
+  compiler-local tables to `$L4998`/`$L4999` without changing the 396-instruction
+  body.
+- COFF still places the tables at object `+0x62c` and `+0x640`. The first has
+  five relocations to `+0x419`, `+0x42d`, `+0x46b`, `+0x46b`, and `+0x441`;
+  the second retains the same eight-entry startup sequence as the bounded
+  target table. Registering these content-proven aliases restores all 85 clean
+  operands; the local label spellings themselves are not trusted.

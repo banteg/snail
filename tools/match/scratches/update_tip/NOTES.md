@@ -37,8 +37,8 @@ Keep pinned unless a new source idiom explains the button pointer ownership.
 `frontend_widget.h`. The matcher remained at 73.08% until the clicked-tip body
 was duplicated.
 
-2026-06-16 type consolidation: the local `TipSlot` and
-`TipMessageDefinition` views were replaced by shared `tip_manager.h`. The
+2026-06-16 type consolidation: the local tip-slot and tip-definition views were
+replaced by shared `tip_manager.h`. The
 matcher still reported 73.08%, 51 target instructions versus 53 candidate
 instructions, preserving the same button-pointer residual.
 
@@ -54,3 +54,8 @@ body exactly matches native. Focused Wibo reports 100.00%, 51/51 instructions,
 `GameRoot::subgame.subgame_pause_gate`, replacing the synthetic root-wide pause
 view. Focused Wibo remains exact at 51/51 instructions with nine clean masked
 operands.
+
+2026-07-12 authored-owner promotion: symbol-preserving iOS builds name this
+exact behavior `cRTip::AI()`. The scratch is now a real `Tip` member rather
+than a free fastcall-shaped helper, while preserving the exact 51/51 Windows
+body and all nine masked operands.

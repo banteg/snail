@@ -4,11 +4,11 @@
 
 void TipManager::initialize_tip_manager()
 {
-    TipSlot* slot = slots;
+    Tip* tip = tips;
     int count = 3;
     do {
-        slot->active = 0;
-        ++slot;
+        tip->active = 0;
+        ++tip;
         --count;
     } while (count != 0);
 }

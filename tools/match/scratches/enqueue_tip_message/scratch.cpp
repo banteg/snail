@@ -4,28 +4,28 @@
 
 int report_errorf(char* format, ...);
 
-TipSlot* TipManager::enqueue_tip_message(
-    TipMessageDefinition* definition,
+Tip* TipManager::enqueue_tip_message(
+    TipData* definition,
     int hide_disable_button)
 {
     int index = 0;
-    TipSlot* slot;
-    slot = slots;
+    Tip* tip;
+    tip = tips;
 
     while (1) {
-        if (slot->active == 0) {
+        if (tip->active == 0) {
             break;
         }
 
         ++index;
-        ++slot;
+        ++tip;
         if (index >= 3) {
             report_errorf("Run out of Tips");
             return 0;
         }
     }
 
-    TipSlot* result = &slots[index];
+    Tip* result = &tips[index];
     result->initialize_tip(definition, hide_disable_button);
     return result;
 }

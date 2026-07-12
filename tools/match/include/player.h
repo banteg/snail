@@ -76,7 +76,7 @@ typedef char PlayerControlSource_must_cover_0x2c[
 
 struct PlayerRowEventState {
     int id;                         // +0x00
-    TipMessageDefinition definition; // +0x04
+    TipData definition; // +0x04, authored cRTipData
 };
 typedef char PlayerRowEventState_must_be_0x18[
     (sizeof(PlayerRowEventState) == 0x18) ? 1 : -1];

@@ -4,13 +4,13 @@
 
 void TipManager::uninit_tips()
 {
-    TipSlot* slot = slots;
+    Tip* tip = tips;
     int count = 3;
     do {
-        if (slot->active == 1) {
-            slot->kill_tip_widgets();
+        if (tip->active == 1) {
+            tip->kill_tip_widgets();
         }
-        ++slot;
+        ++tip;
         --count;
     } while (count != 0);
 }

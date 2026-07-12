@@ -6,9 +6,9 @@
 #include "tip_manager.h"
 
 extern GameRoot* g_game; // data_4df904
-extern TipMessageDefinition g_default_tip_message; // data_4ac5c8
+extern TipData g_default_tip_message; // data_4ac5c8 / iOS gTips
 
-void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable_button)
+void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
 {
     active = 1;
     if (definition_ != 0)
@@ -31,7 +31,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
         alignment >> 1,
         definition->layout_y);
 
-    TipMessageDefinition* live_definition = definition;
+    TipData* live_definition = definition;
     int live_flags = live_definition->flags;
     if ((live_flags & 2) != 0) {
         dismiss_progress = 0.0f;
@@ -81,7 +81,7 @@ void TipSlot::initialize_tip(TipMessageDefinition* definition_, int hide_disable
         widget_disable = 0;
     }
 
-    TipMessageDefinition* final_definition = definition;
+    TipData* final_definition = definition;
     previous_outer_owner = g_game->players[0].frontend_state;
     if ((final_definition->flags & 1) != 0)
         g_game->players[0].frontend_state = 0x16;

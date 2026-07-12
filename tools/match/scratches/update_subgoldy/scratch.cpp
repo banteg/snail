@@ -193,7 +193,7 @@ struct SubgoldyPlayerView {
     unsigned char trampoline_bounce_active; // +0x1e4
     char unknown_1e5[3];
     int row_event_id;            // +0x1e8
-    TipMessageDefinition row_event_tip; // +0x1ec
+    TipData row_event_tip; // +0x1ec, authored cRTipData
     char unknown_200[0x2d8 - 0x200];
     unsigned char control_override_active; // +0x2d8
     char unknown_2d9[0x2e8 - 0x2d9];

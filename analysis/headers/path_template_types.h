@@ -774,33 +774,35 @@ typedef struct ClickStart {
     uint8_t _pad_a9[0x3];
 } ClickStart;
 
-typedef struct TipMessageDefinition {
+typedef struct TipData {
     uint32_t flags;
     float layout_y;
     float text_scale;
     float dismiss_seconds;
     char* text;
-} TipMessageDefinition;
+} TipData;
+typedef TipData TipMessageDefinition;
 
-typedef struct TipSlot {
+typedef struct Tip {
     int32_t active;
     int32_t previous_outer_owner;
-    TipMessageDefinition* definition;
+    TipData* definition;
     void* widget_main;
     void* widget_ok;
     void* widget_disable;
     float dismiss_progress;
     float dismiss_step;
-} TipSlot;
+} Tip;
+typedef Tip TipSlot;
 
 typedef struct TipManager {
     BodBase bod;
-    TipSlot slots[3];
+    Tip tips[3];
 } TipManager;
 
 typedef struct PlayerRowEventState {
     int32_t id;
-    TipMessageDefinition tip_definition;
+    TipData tip_definition;
 } PlayerRowEventState;
 
 typedef struct Tutorial {
@@ -1148,10 +1150,13 @@ void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
-TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button);
-void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button);
-void* __fastcall update_tip(TipSlot* slot);
-void __fastcall update_tip_manager(TipManager* manager);
+void __thiscall kill_tip_widgets(Tip* tip);
+void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button);
+void __thiscall update_tip(Tip* tip);
+void __thiscall initialize_tip_manager(TipManager* manager);
+void __thiscall uninit_tips(TipManager* manager);
+Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button);
+void __thiscall update_tip_manager(TipManager* manager);
 void __thiscall initialize_tutorial(Tutorial* tutorial);
 void __thiscall uninit_tutorial(Tutorial* tutorial);
 TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial);

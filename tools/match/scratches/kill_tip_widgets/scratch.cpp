@@ -5,7 +5,7 @@
 
 extern char* g_game_base; // data_4df904
 
-void TipSlot::kill_tip_widgets()
+void Tip::kill_tip_widgets()
 {
     ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_main);
     if (widget_ok != 0) {

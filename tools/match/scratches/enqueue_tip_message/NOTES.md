@@ -17,6 +17,12 @@ Rejected source-shaped probes:
 
 Keep the current `while (1)` form as the tip-slot allocator idiom.
 
-2026-06-16 type consolidation: `TipManager`, `TipSlot`, and
-`TipMessageDefinition` now come from shared `tip_manager.h`. The allocator keeps
+2026-06-16 type consolidation: the manager, tip, and definition layouts now
+come from shared `tip_manager.h`. The allocator keeps
 the exact 26/26-instruction match.
+
+2026-07-12 authored-owner promotion: symbol-preserving iOS builds identify the
+member as `cRTipManager::TipNew(cRTipData*, bool)` in v1.5 and use a signed-char
+second formal in v1.9. Both return the selected `cRTip*`. Windows independently
+loads that gate as a 32-bit argument, so this exact member returns `Tip*`, takes
+`TipData*`, and retains `int hide_disable_button`.

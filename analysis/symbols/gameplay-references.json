@@ -959,7 +959,8 @@
         "$L4825",
         "$L4824",
         "$L4834",
-        "$L4996"
+        "$L4996",
+        "$L4998"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -984,7 +985,8 @@
         "$L4813",
         "$L4819",
         "$L4835",
-        "$L4997"
+        "$L4997",
+        "$L4999"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -2525,9 +2527,11 @@
       "address": "0x4ac5c8",
       "name": "g_default_tip_message",
       "kind": "global",
-      "aliases": [],
+      "aliases": [
+        "gTips"
+      ],
       "size": "0x14",
-      "description": "Default TipMessageDefinition used by initialize_tip when the caller passes a null definition; the nearby 0x4ac5f4 string is the Disable button label used by the same initializer."
+      "description": "Default authored TipData (`gTips` in symbol-preserving iOS builds) used by cRTip::Init when the caller passes a null definition; the nearby 0x4ac5f4 string is the Disable button label used by the same initializer."
     },
     {
       "address": "0x4b2f40",

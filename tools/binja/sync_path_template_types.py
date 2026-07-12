@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_data_var_updates,
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
@@ -19,6 +20,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types
 
 PRESENTATION_SYMBOL_UPDATES = (
     ("0x4086d0", "initialize_player_presentation_controller"),
+    ("0x4ac5c8", "g_default_tip_message"),
     ("0x497354", "g_player_presentation_noop_vtable"),
     ("0x497358", "g_invincible_shell_update_vtable"),
     ("0x49735c", "g_presentation_animation_channel_noop_vtable"),
@@ -118,6 +120,9 @@ REQUIRED_HEADER_STRUCTS = (
     "Player",
     "JetParticleSlot",
     "SubHover",
+    "TipData",
+    "Tip",
+    "TipManager",
     "Tutorial",
     "Completion",
     "TimesUp",
@@ -349,7 +354,11 @@ SUB_HOVER_FIELD_UPDATES = (
 
 TIP_MANAGER_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
-    ("0x38", "slots", "TipSlot[0x3]"),
+    ("0x38", "tips", "Tip[0x3]"),
+)
+
+TIP_DATA_VAR_UPDATES = (
+    ("0x4ac5c8", "TipData"),
 )
 
 PROTO_UPDATES = (
@@ -611,15 +620,30 @@ PROTO_UPDATES = (
         "TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial)",
     ),
     (
-        "enqueue_tip_message",
-        "TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_disable_button)",
+        "kill_tip_widgets",
+        "void __thiscall kill_tip_widgets(Tip* tip)",
     ),
     (
         "initialize_tip",
-        "void __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_disable_button)",
+        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button)",
     ),
-    ("update_tip", "void* __fastcall update_tip(TipSlot* slot)"),
-    ("update_tip_manager", "void __fastcall update_tip_manager(TipManager* manager)"),
+    ("update_tip", "void __thiscall update_tip(Tip* tip)"),
+    (
+        "initialize_tip_manager",
+        "void __thiscall initialize_tip_manager(TipManager* manager)",
+    ),
+    (
+        "uninit_tips",
+        "void __thiscall uninit_tips(TipManager* manager)",
+    ),
+    (
+        "enqueue_tip_message",
+        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button)",
+    ),
+    (
+        "update_tip_manager",
+        "void __thiscall update_tip_manager(TipManager* manager)",
+    ),
     (
         "initialize_invincible_shell",
         "void __thiscall initialize_invincible_shell(Invincible* invincible)",
@@ -815,6 +839,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=PRESENTATION_SYMBOL_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_data_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=TIP_DATA_VAR_UPDATES,
         )
     )
     operations.extend(

@@ -4,7 +4,7 @@ Initial source-shaped scratch for the tip slot initializer.
 
 Recovered relationships:
 
-- `TipSlot::active`, `definition`, `widget_main`, `widget_ok`,
+- `Tip::active`, `definition`, `widget_main`, `widget_ok`,
   `widget_disable`, `dismiss_progress`, `dismiss_step`, and
   `previous_outer_owner` use the shared `tip_manager.h` layout.
 - null definitions fall back to the default tip definition at `data_4ac5c8`.
@@ -52,3 +52,11 @@ Direct member reads retain instruction-count parity and 25 clean masks at an
 honest 83.12%, 154/154, prefix 16/154. The saved/replacement outer state is now
 `GameRoot::players[0].frontend_state`; both that field and the border-manager
 ownership are independently constructor- and exact-caller-backed.
+
+2026-07-12 cross-port ownership pass: symbol-preserving iOS builds identify
+this member as `cRTip::Init(cRTipData*, bool)` in v1.5 and
+`cRTip::Init(cRTipData*, signed char)` in v1.9. The ARM bodies independently
+confirm the 0x20-byte Tip layout and 0x14-byte TipData field order used here,
+including the `gTips` null-definition fallback. Windows reads the second formal
+with a 32-bit stack load and compare, so the native Windows declaration keeps
+`int hide_disable_button` instead of importing either mobile-width spelling.

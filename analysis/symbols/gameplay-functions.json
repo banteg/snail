@@ -2703,34 +2703,37 @@
     {
       "address": "0x4489e0",
       "name": "kill_tip_widgets",
-      "description": "Kills the live border widgets owned by one gameplay tip slot, including the main tip body and any optional OK or Disable buttons, then clears the tip's active flag."
+      "description": "Tip-owned helper that kills the live border widgets for one cRTip, including the main body and any optional OK or Disable buttons, then clears Tip::active."
     },
     {
       "address": "0x448a40",
       "name": "initialize_tip",
-      "description": "Builds one gameplay tip slot, including the main border widget, optional OK or Disable buttons, and the timed auto-dismiss rate for transient tips."
+      "description": "Implements `cRTip::Init(cRTipData*, ...)`: builds one Tip-owned main border widget, optional OK or Disable buttons, and the timed auto-dismiss rate for transient tips. The Windows hide-disable-button formal is a 32-bit int even though mobile ports spell it bool or signed char."
     },
     {
       "address": "0x448c40",
       "name": "update_tip",
-      "description": "Runs one gameplay tip slot, handling hide or show state, button-click consumption, timed expiry, and the final teardown or UI-state restore path."
+      "description": "Exact `cRTip::AI()` member: runs one Tip, handling hide or show state, button-click consumption, timed expiry, and the final teardown or frontend-state restore path."
     },
     {
       "address": "0x448cf0",
-      "name": "initialize_tip_manager"
+      "name": "initialize_tip_manager",
+      "description": "Exact `cRTipManager::Init()` member that clears the three inline Tips at TipManager +0x38."
     },
     {
       "address": "0x448d10",
-      "name": "uninit_tips"
+      "name": "uninit_tips",
+      "description": "Exact `cRTipManager::UnInitTips()` member that tears down widgets for each active inline Tip."
     },
     {
       "address": "0x448d30",
       "name": "enqueue_tip_message",
-      "description": "Allocates one of the three small gameplay tip-message slots, seeds it with the requested text payload, and warns if all slots are already occupied."
+      "description": "Exact `cRTipManager::TipNew(cRTipData*, ...)` member: selects one of the three inline Tips, initializes it from authored TipData, returns the selected Tip, and warns if all three are active."
     },
     {
       "address": "0x448d80",
-      "name": "update_tip_manager"
+      "name": "update_tip_manager",
+      "description": "Exact `cRTipManager::AI()` member that advances each active inline Tip."
     },
     {
       "address": "0x448da0",
