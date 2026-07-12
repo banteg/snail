@@ -92,3 +92,10 @@ cursor alongside the active `list_next` cursor and folds `~0x200` into a byte
 clear, while native keeps the continuous cursor plus `0x200`/`~0x200` in full
 registers. Manual mask locals, flat-loop rewrites, and a second hand expansion
 either regress or lose the shared early-exit contract, so none are retained.
+
+## 2026-07-13 root list owner
+
+The borrowed unlink target now names `GameRoot::active_bod_list` directly.
+The cache remains the owner of its 715 embedded BOD records; the root list owns
+only their live/free linkage. Focused matching remains honestly partial at
+70.59%, 61/58 instructions, with all five operands clean.

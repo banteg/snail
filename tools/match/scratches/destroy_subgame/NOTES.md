@@ -69,3 +69,13 @@ Tutorial-mode teardown likewise reaches the primary embedded `Tutorial`.
 Android/iOS retain the exact three-instruction thunk as
 `cRTutorial::UnInit()`; the complete 0x1c owner ends at `SubTracks` with no
 wrapper padding. The teardown remains exact.
+
+## 2026-07-13 root teardown owners
+
+The inlined unlink blocks now borrow `GameRoot::active_bod_list`, HUD handles
+return through `GameRoot::border_manager`, and the persistent-replay exit state
+lands in `players[0].saved_frontend_state`. The mode-3 teardown write remains
+spelled through root `+0x74658`: changing it to `this->level_mode` removes a
+native game-base reload and regresses the object, proving the root alias is
+part of the original source shape. The retained form stays exact at 246/246
+with all 41 operands clean.

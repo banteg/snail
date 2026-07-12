@@ -21,7 +21,7 @@ Residuals:
   result->next_active` and test `result` for the end of the chain.
 - 2026-06-16 garbage-pool consolidation: the shared header records the
   `GarbageHazardPool` slice at `+0x359140`, while this scratch consumes
-  `GarbageHazardListAnchor` for the shared BOD anchor at `data_4df904+0x5a8`.
+  the shared BOD anchor at `data_4df904+0x5a8`.
   This records the cross-function evidence from destroy, collision, and spawn:
   active garbage head at `+0x359140`, 50 slots at `+0x359144`, total pool view
   size `0x264c`. Focused Wibo remains exact.
@@ -39,3 +39,11 @@ matching Android's retained `cRSubGarbage::Kill()` symbol. The active-chain
 head at `SubgameRuntime +0x359140` is borrowed wrapper state immediately before
 the 50 owned records; it is not part of the authored `cRSubGarbage` allocation
 whose native ledger is exactly `50 * 0xc4 == 0x2648`.
+
+## 2026-07-13 root list owner
+
+The exact unlink now reaches `GameRoot::active_bod_list` directly. The body
+remains 62/62 with all six operands clean, proving the removed
+`GarbageHazardListAnchor` typedef was not a garbage-pool owner. The pool owns
+its 50 `SubGarbage` records and active chain; their inherited BOD nodes merely
+borrow membership in the one root active/free list.

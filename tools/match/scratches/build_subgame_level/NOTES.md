@@ -284,3 +284,11 @@ The shared byte-latch correction advances the unchanged local tables to
 object `+0x838`/`+0x84c`; `$L6052` is reassigned to the state table and
 `$L6053` names the track table. The partial body remains at 86.10% with all
 106 operands clean.
+
+## 2026-07-13 root BOD-list owner refresh
+
+Removing the duplicate pool-specific list-anchor typedefs advances the same
+tables to `$L6050`/`$L6051`. COFF retains their bounded five- and four-entry
+contents at object `+0x838`/`+0x84c`; `$L6051` is reassigned to the current
+track table. The body remains honestly partial at 86.10% with all 106 operands
+clean.

@@ -379,3 +379,11 @@ aliases respectively and restore the 85 clean operands.
   `+0x640`; `$L5357` is therefore reassigned to the former and `$L5358` names
   the latter. The method remains instruction-exact at 396/396 with all 85
   operands clean.
+
+2026-07-13 root BOD-list owner refresh:
+
+- Retiring the duplicate sub-lazer and garbage list-anchor typedefs advances
+  the unchanged mode tables to `$L5355`/`$L5356`.
+- COFF still places the bounded bottom-HUD and startup tables at object
+  `+0x62c`/`+0x640`. `$L5356` is reassigned to the current startup table, and
+  the instruction-exact 396/396 body retains all 85 clean operands.

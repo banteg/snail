@@ -4,6 +4,7 @@
 // game+0x359140.
 
 #include "garbage_hazard_slot.h"
+#include "game_root.h"
 
 extern char* g_game_base; // data_4df904
 
@@ -13,7 +14,7 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
 {
     state = 0;
 
-    GarbageHazardListAnchor* anchor = (GarbageHazardListAnchor*)(g_game_base + 0x5a8);
+    BodList* anchor = &((GameRoot*)g_game_base)->active_bod_list;
     int flags = list_flags;
     if ((flags & 0x200) == 0) {
         report_errorf("List remove");

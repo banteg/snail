@@ -3,6 +3,7 @@
 #include "active_landscape_entry.h"
 #include "bod_list.h"
 #include "border_manager.h"
+#include "game_root.h"
 #include "subgame_runtime.h"
 #include "warning.h"
 
@@ -20,7 +21,7 @@ int report_errorf(char* format, ...);
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr, linked_flag_expr) \
     do {                                                          \
         BodNode** next_link = (next_link_expr);                   \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);          \
+        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
         DWORD flags = BOD_NEXT_LINK_FLAGS(next_link);             \
         if ((flags & (linked_flag_expr)) == 0) {                  \
             report_errorf("List remove");                        \
@@ -45,7 +46,7 @@ int report_errorf(char* format, ...);
 
 #define REMOVE_INLINE_BOD_NODE(node_expr, linked_flag_expr)       \
     do {                                                          \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);          \
+        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
         BodNode* node = (node_expr);                              \
         DWORD flags = node->list_flags;                           \
         if ((flags & (linked_flag_expr)) == 0) {                  \
@@ -115,12 +116,12 @@ void SubgameRuntime::destroy_subgame()
         REMOVE_INLINE_BOD_NODE(&barrier, linked_flag);
     }
 
-    BorderManager* borders = (BorderManager*)(g_game_base + 0xb4c);
+    BorderManager* borders = &((GameRoot*)g_game_base)->border_manager;
     borders->kill_border(top_score_widget);
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(bottom_score_widget);
+    ((GameRoot*)g_game_base)->border_manager.kill_border(bottom_score_widget);
 
     if (selected_level_record_persistent != 0) {
-        *(DWORD*)(g_game_base + 0x1bc) = 0x12;
+        ((GameRoot*)g_game_base)->players[0].saved_frontend_state = 0x12;
         selected_level_record_persistent = 0;
     }
 
@@ -128,11 +129,11 @@ void SubgameRuntime::destroy_subgame()
         *(DWORD*)(g_game_base + 0x74658) = 2;
 
     if (level_mode == 0) {
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(lives_icon_widget);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(lives_text_widget);
+        ((GameRoot*)g_game_base)->border_manager.kill_border(lives_icon_widget);
+        ((GameRoot*)g_game_base)->border_manager.kill_border(lives_text_widget);
 
         FrontendWidget** widget = life_stock_widgets;
         for (int n = 0; n < 9; ++n)
-            ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget[n]);
+            ((GameRoot*)g_game_base)->border_manager.kill_border(widget[n]);
     }
 }

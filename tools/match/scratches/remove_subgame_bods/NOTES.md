@@ -116,3 +116,13 @@ visible rather than forced.
 - These owner substitutions are codegen-neutral: focused Wibo remains 67.67%
   with 495/501 instructions, 63 clean operands, and the same two documented
   string-order mismatches.
+
+## 2026-07-13 root active-list closure
+
+Every unlink/recycle site now borrows `GameRoot::active_bod_list` directly.
+The same substitution is exact in `destroy_subgame`, `cRSubLoc::Remove()`,
+`cRSubGarbage::Kill()`, `cRSubLazer::Kill()`, and fringe refresh, so the
+pool-specific list-anchor aliases are retired. Embedded runtime pools retain
+object storage; only inherited `BodNode` membership moves through the root
+active/free list. This source cleanup is codegen-neutral at 67.67%, 495/501,
+with the same 63 clean operands and two honest string-order mismatches.

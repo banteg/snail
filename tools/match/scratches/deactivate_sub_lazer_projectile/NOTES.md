@@ -32,7 +32,7 @@ masked operands 4 ok / 0 mismatch. Keep pinned; remaining diff is
 register/anchor materialization, not a semantic gap.
 
 2026-06-16 BOD-list consolidation: this now uses the shared `BodNode` prefix
-and `BodList` anchor through `sub_lazer_types.h`. Focused Wibo remains 62.79%,
+and `BodList` anchor. Focused Wibo remains 62.79%,
 43/43 insns, with four masked operands OK. The typed consolidation confirms
 the helper is a specialized spelling of the common live/free-list teardown, not
 a distinct sub-lazer-only list layout.
@@ -44,8 +44,8 @@ keeps the game base in `ecx` and folds anchor field accesses to
 `+0x5ac/+0x5b0`.
 
 2026-06-19 proof: replacing the scratch-local `Game` shell with the normal
-raw `char* g_game_base` view and computing
-`(SubLazerListAnchor*)(g_game_base + 0x5a8)` before reading `list_flags`
+raw `char* g_game_base` view and computing the root BOD-list address before
+reading `list_flags`
 recovers the native anchor lifetime and operand shape. The accepted ordering
 emits the native `mov eax, [data_4df904]`, saves `esi`, materializes
 `game+0x5a8` into `ecx`, then reads `this->list_flags` into `eax`; the unlink
@@ -54,3 +54,8 @@ tail now uses `[ecx+0x4]`/`[ecx+0x8]` and the scratch is exact.
 2026-07-11 authored owner: Android preserves this lifecycle method as
 `cRSubLazer::Kill()`. The exact Windows scratch now defines it on `SubLazer`;
 it remains 43/43 instructions with five clean operands.
+
+2026-07-13 root list owner: the address is now expressed as
+`GameRoot::active_bod_list`. The exact 43-instruction object is unchanged,
+proving the former `SubLazerListAnchor` was only a duplicate view of the one
+root intrusive list, not storage owned by the projectile pool.

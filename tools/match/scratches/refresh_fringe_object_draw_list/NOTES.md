@@ -22,3 +22,10 @@ directly here. Android's `cRFringe::AI()` is a four-byte no-op, so the class
 identity is shared while the renderer-specific offscreen recycling behavior is
 Windows-only. The shared class promotion remains exact at 63/63 with eight
 clean operands.
+
+## 2026-07-13 root owners
+
+The color refresh now reaches the embedded `GameRoot::subgame`, and teardown
+borrows `GameRoot::active_bod_list`. The exact 63/63 object is unchanged,
+confirming that `Fringe` owns its body and color while root/subgame owners
+supply the shared list lifecycle and track-skirt color policy.

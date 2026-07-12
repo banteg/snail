@@ -1,6 +1,7 @@
 // remove_sub_loc @ 0x439bc0 (thiscall, ret)
 
 #include "fringe_object.h"
+#include "game_root.h"
 #include "track_attachment_types.h"
 
 typedef unsigned int DWORD;
@@ -13,7 +14,7 @@ int report_errorf(char* format, ...);
 
 #define REMOVE_BOD_NODE(node_expr, unlink_mask_expr)              \
     do {                                                          \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);          \
+        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
         BodNode* node = (node_expr);                              \
         DWORD flags = node->list_flags;                           \
         if ((flags & 0x200) == 0) {                               \
@@ -39,7 +40,7 @@ int report_errorf(char* format, ...);
     do {                                                          \
         BodNode* node = (node_expr);                              \
         DWORD flags = node->list_flags;                           \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);          \
+        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
         if ((flags & 0x40) != 0) {                                \
             report_errorf("List remove NEXTBOD");                \
         } else {                                                  \

@@ -55,8 +55,6 @@ typedef SubGarbage GarbageHazardSlot;
 typedef char SubGarbage_must_be_0xc4[
     (sizeof(SubGarbage) == 0xc4) ? 1 : -1];
 
-typedef BodList GarbageHazardListAnchor;
-
 class SubGarbagePool {
 public:
     SubGarbage* active_head; // +0x00, game +0x359140, borrowed chain head

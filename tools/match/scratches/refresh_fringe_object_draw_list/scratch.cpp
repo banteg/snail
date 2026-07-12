@@ -2,6 +2,7 @@
 
 #include "fringe_object.h"
 #include "bod_list.h"
+#include "game_root.h"
 #include "subgame_runtime.h"
 
 int report_errorf(char* format, ...);
@@ -12,14 +13,14 @@ void Fringe::refresh_fringe_object_draw_list()
 {
     Color4f color;
     Color4f* resolved =
-        ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(&color);
+        ((GameRoot*)g_game_base)->subgame.get_track_skirt_color(&color);
 
     float current_z = position.z;
     this->color = *resolved;
 
     if (current_z < *(float*)(g_game_base + 0x4326fc)) {
         unsigned int flags = list_flags;
-        BodList* list = (BodList*)(g_game_base + 0x5a8);
+        BodList* list = &((GameRoot*)g_game_base)->active_bod_list;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");
             return;

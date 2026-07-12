@@ -48,9 +48,6 @@ typedef SubLazer SubLazerSlot;
 
 typedef char SubLazer_must_be_0xb0[(sizeof(SubLazer) == 0xb0) ? 1 : -1];
 
-// The sub-lazer live/free anchor is the same list shape used by other BOD pools.
-typedef BodList SubLazerListAnchor;
-
 class SubLazerManager {
 public:
     int* initialize_sub_lazer_pool(); // @ 0x441650

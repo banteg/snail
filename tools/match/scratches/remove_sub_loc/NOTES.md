@@ -125,3 +125,10 @@ the exact constructor and `Yi` signatures.
 constructor table, and both native callers prove this tears down one SubLoc,
 not a SubLazer projectile. The stable harness name is now `remove_sub_loc`;
 the rename is codegen-neutral at the honest 91.19% baseline.
+
+## 2026-07-13 root list owner
+
+Both unlink spellings now borrow `GameRoot::active_bod_list` directly rather
+than reconstructing a `BodList*` from `g_game_base + 0x5a8`. Focused output is
+unchanged at 91.19%, 130/131 instructions, with the 87-instruction prefix and
+all 17 operands clean. The final fringe reload remains an honest CSE residual.
