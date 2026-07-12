@@ -29,3 +29,13 @@ mismatch count, but regresses the instruction stream to 56.83% by losing the
 native face-loop and local-slot shape; a pointer variant that reuses the reloaded
 count drops further to 53.57%. Keep the offset loop until a form preserves the
 opening face traversal as well as the cleanup region.
+
+2026-07-12 workspace-owner clarification: the pointer returned by
+`get_archive_data_base` and the pointer reloaded after `add_object_edge` calls
+are the same borrowed `build_edges` view of the shared workspace. The source
+now refreshes that one variable instead of inventing a second
+`scratch_edges` owner. This is codegen-neutral at 71.63% and preserves all 141
+instructions; the remaining `0x8` candidate frame versus native's one-dword
+frame comes from the cleanup loop spilling both index and byte offset. Pointer,
+register-hint, and cross-phase-index reuse probes did not recover that native
+allocation and were not retained.

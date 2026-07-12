@@ -48,3 +48,9 @@ Exact source-shape recovery:
 IDirect3DDevice8 type as the camera, object, sprite, loading, and texture paths.
 The indexed draw and index/stream binding slots remain exact; focused matching
 stays 219/219 with all 31 operands clean.
+
+2026-07-12 vector callsite consolidation: the independently proved
+float-returning `Vector3::dot_vector` declaration replaces the scratch-local
+`ToonVector3` duplicate. Both per-edge delta values, both face-normal operands,
+and both dot calls now use the shared `Vector3` owner directly. Focused matching
+remains proof-grade at 219/219 with all 31 operands clean.

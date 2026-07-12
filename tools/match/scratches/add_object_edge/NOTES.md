@@ -44,3 +44,24 @@ pointers, and a structured `goto` were tested and rejected because they
 regressed the native block, frame, or register shape. The remaining gap is
 primarily local/register allocation and temporary lifetime rather than a known
 ownership ambiguity.
+
+2026-07-12 vector lifetime and dot-contract pass: native reserves a distinct
+function-lifetime `direction` value instead of reusing its lane for the
+merge-only right-hand normal. Keeping that normalized direction separate from
+the raw `end - start` delta recovers the native `0x38` stack frame and makes the
+record contract explicit: `length` owns the pre-normalization magnitude, while
+`direction` owns the normalized vector copied into the edge.
+
+The merge path also confirms that member `Vector3::dot_vector` returns a
+`float` source value. Native compares ST0 directly with the 32-bit
+`0.0020000001f` constant; the old shared `double` declaration forced a qword
+constant at this callsite. Correcting the shared return type keeps the exact
+dot helper and toon renderer exact and raises this scratch to 73.36%, 231/227
+instructions, prefix 1/227, with 29 clean operands and no unresolved or
+mismatched operands.
+
+The found-edge pointer remains only a search sentinel; indexed-only search
+state regressed to 72.05%, and a direct native-shaped merge `goto` moved the
+merge block ahead of the add path and regressed to 57.02%. The honest residual
+is register/block allocation plus candidate's four extra instructions, not an
+unresolved edge-record owner or field.

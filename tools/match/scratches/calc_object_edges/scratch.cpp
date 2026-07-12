@@ -37,25 +37,25 @@ void Object::calc_object_edges()
         } while (face_index < facequad_count);
     }
 
+    build_edges = g_object_edge_build_edges;
     int edge_count = g_object_edge_build_count;
-    ObjectToonEdge* scratch_edges = g_object_edge_build_edges;
     if ((flags & 0x8000) != 0) {
         int index = 0;
         int edge_offset = 0;
         if (edge_count > 0) {
             do {
-                ObjectToonEdge* edge = (ObjectToonEdge*)((char*)scratch_edges + edge_offset);
+                ObjectToonEdge* edge = (ObjectToonEdge*)((char*)build_edges + edge_offset);
                 if ((edge->flags & 1) != 0) {
                     int shift_index = index;
                     if (index < edge_count - 1) {
                         int shift_offset = edge_offset;
                         do {
                             ++shift_index;
-                            memcpy((char*)scratch_edges + shift_offset,
-                                (char*)scratch_edges + shift_offset + sizeof(ObjectToonEdge),
+                            memcpy((char*)build_edges + shift_offset,
+                                (char*)build_edges + shift_offset + sizeof(ObjectToonEdge),
                                 sizeof(ObjectToonEdge));
                             edge_count = g_object_edge_build_count;
-                            scratch_edges = g_object_edge_build_edges;
+                            build_edges = g_object_edge_build_edges;
                             shift_offset += sizeof(ObjectToonEdge);
                         } while (shift_index < g_object_edge_build_count - 1);
                     }

@@ -5,14 +5,6 @@
 #include "transform_matrix.h"
 #include "vector3.h"
 
-struct ToonVector3 {
-    float x;
-    float y;
-    float z;
-
-    float dot_vector(ToonVector3* rhs); // @ 0x44cb70
-};
-
 extern int g_render_triangle_count; // data_4f7450
 extern int g_draw_primitive_call_count; // data_503170
 extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
@@ -77,16 +69,14 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
                     ((ObjectToonEdge*)((char*)object->edges + edge_offset))->normal_b];
                 Vector3* vertex = &object->vertices[
                     ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a];
-                ToonVector3 vertex_delta;
+                Vector3 vertex_delta;
                 vertex_delta.x = view_vector.x - vertex->x;
                 vertex_delta.y = view_vector.y - vertex->y;
                 vertex_delta.z = view_vector.z - vertex->z;
-                ToonVector3 delta = vertex_delta;
+                Vector3 delta = vertex_delta;
 
-                float side_b =
-                    ((ToonVector3*)&delta)->dot_vector((ToonVector3*)normal_b);
-                if (((ToonVector3*)&delta)->dot_vector((ToonVector3*)normal_a) *
-                        side_b <
+                float side_b = delta.dot_vector(normal_b);
+                if (delta.dot_vector(normal_a) * side_b <
                     0.00999999978f) {
                     indices[0] =
                         ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a;

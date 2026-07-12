@@ -6,6 +6,7 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 
 void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
 {
+    Vector3 direction;
     if (facequad_normals[normal_index].vector_magnitude() < 0.89999998f) {
         return;
     }
@@ -45,10 +46,11 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
 
         Vector3* start = &vertices[vertex_a];
         Vector3* end = &vertices[vertex_b];
-        Vector3 direction;
-        direction.x = end->x - start->x;
-        direction.y = end->y - start->y;
-        direction.z = end->z - start->z;
+        Vector3 edge_delta;
+        edge_delta.x = end->x - start->x;
+        edge_delta.y = end->y - start->y;
+        edge_delta.z = end->z - start->z;
+        direction = edge_delta;
         g_object_edge_build_edges[g_object_edge_build_count].length =
             direction.normalize_vector();
         g_object_edge_build_edges[g_object_edge_build_count].direction = direction;
