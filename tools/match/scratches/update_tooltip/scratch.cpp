@@ -6,9 +6,8 @@
 extern char* g_game_base; // data_4df904
 int report_errorf(char* format, ...);
 
-void TooltipState::update_tooltip()
+void FrontendWidgetTooltip::update_tooltip()
 {
-    int result;
     Color4f color;
     Color4f color_above;
     Color4f color_below;
@@ -19,25 +18,19 @@ void TooltipState::update_tooltip()
     FrontendWidget* border;
     float right_edge;
 
-    result = state;
-    --result;
-    if (result != 0) {
-        --result;
-        if (result != 0) {
-            --result;
-            if (result != 0)
-                return;
-
-            FrontendWidget* owner = owner_widget;
-            if ((owner->widget_flags & 0x20000) == 0) {
-                FrontendWidget* border = tooltip_widget;
-                state = 1;
-                ((BorderManager*)(g_game_base + 0xb4c))->kill_border(border);
-                tooltip_widget = 0;
-            }
-            return;
+    switch (state) {
+    case 3: {
+        FrontendWidget* owner = owner_widget;
+        if ((owner->widget_flags & 0x20000) == 0) {
+            FrontendWidget* border = tooltip_widget;
+            state = 1;
+            ((BorderManager*)(g_game_base + 0xb4c))->kill_border(border);
+            tooltip_widget = 0;
         }
+        return;
+    }
 
+    case 2: {
         FrontendWidget* owner = owner_widget;
         if ((owner->widget_flags & 0x20000) != 0) {
             progress = delay_step + delay_progress;
@@ -117,11 +110,17 @@ void TooltipState::update_tooltip()
         return;
     }
 
-    result = (int)owner_widget;
-    if ((owner_widget->widget_flags & 0x20000) != 0) {
-        delay_progress = 0.0f;
-        state = 2;
+    case 1: {
+        FrontendWidget* owner = owner_widget;
+        if ((owner->widget_flags & 0x20000) != 0) {
+            delay_progress = 0.0f;
+            state = 2;
+        }
+
+        return;
     }
 
-    return;
+    default:
+        return;
+    }
 }

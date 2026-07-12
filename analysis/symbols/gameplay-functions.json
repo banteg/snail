@@ -109,11 +109,13 @@
     },
     {
       "address": "0x403be0",
-      "name": "reset_tooltip"
+      "name": "reset_tooltip",
+      "description": "Resets the embedded authored cRToolTip controller to its idle state and releases any live BorderManager-owned tooltip widget handle."
     },
     {
       "address": "0x403c20",
-      "name": "update_tooltip"
+      "name": "update_tooltip",
+      "description": "Exact authored cRToolTip state-machine update over the FrontendWidget-owned 0x40-byte controller: arms the hover delay, allocates and lays out the manager-owned tooltip widget, and releases it when hover ends."
     },
     {
       "address": "0x403f60",

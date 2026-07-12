@@ -21,7 +21,7 @@ replaced with `include/twinkle_manager.h`, validated by exact
 OK, and the same five masked call mismatches.
 
 2026-06-20 frontend type pass: this scratch now uses the shared
-`TooltipState` subobject declaration and the exact `int` return ABI for the
+`FrontendWidgetTooltip` subobject declaration and the exact `int` return ABI for the
 highlight/layout helpers. The focused matcher remains unchanged at `46.85%`,
 `544/647` candidate/target instructions, `15/647` prefix, and the same
 `55 ok / 5 mismatch` masked audit.
@@ -113,7 +113,7 @@ source. Keeping only the first teardown manually expanded regressed to
 - Primary input (`input +0x3d & 0x40`) belongs to widget flag `0x10` and is
   gated while the BorderManager delayed lane is active. Secondary input
   (`& 0x80`) is a separate widget-flag `0x40` path. Splitting those paths also
-  recovers the `TooltipState::mode_flags & 0x20` reset gate.
+  recovers the `FrontendWidgetTooltip::mode_flags & 0x20` reset gate.
 
 Together these corrections lift the focused result from `64.35%` (`646/647`)
 to `68.32%` (`644/647`) and improve the masked audit from

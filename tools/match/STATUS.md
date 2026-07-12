@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**530/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **82257/325720** bytes (**25.25%**) are proof-grade, and overall fuzzy is **61.67%**.
+**531/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **83078/325720** bytes (**25.51%**) are proof-grade, and overall fuzzy is **61.69%**.
 
-## Proof Grade (530)
+## Proof Grade (531)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -27,6 +27,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_input_ok | 0x4034d0 | 137 | 32/32 | 100.00% | 32/32 | - |  |
 | ✅ | initialize_input_ok | 0x403560 | 67 | 23/23 | 100.00% | 23/23 | 5 ok |  |
 | ✅ | reset_tooltip | 0x403be0 | 51 | 16/16 | 100.00% | 16/16 | 2 ok |  |
+| ✅ | update_tooltip | 0x403c20 | 821 | 218/218 | 100.00% | 218/218 | 23 ok |  |
 | ✅ | queue_frontend_widget_flag_after_delay | 0x403f60 | 93 | 22/22 | 100.00% | 22/22 | 2 ok |  |
 | ✅ | update_border_manager | 0x403fc0 | 111 | 28/28 | 100.00% | 28/28 | 2 ok |  |
 | ✅ | update_twinkle_manager | 0x404030 | 53 | 23/23 | 100.00% | 23/23 | 1 ok |  |
@@ -567,11 +568,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (58)
+## High Progress (80-94.99%) (57)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 89.70% | 5/218 | 23 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 1 unresolved, 119 ok | msvc6.5 /O2 /G5 /W3 /GX |

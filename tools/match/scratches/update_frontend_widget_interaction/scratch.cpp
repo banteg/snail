@@ -53,13 +53,13 @@ void FrontendWidget::update_frontend_widget_interaction()
     unsigned int flags = *(unsigned int*)(self + 0x1a0);
     if (flags == 0) {
         ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
-        ((TooltipState*)(self + 0x28c))->reset_tooltip();
+        ((FrontendWidgetTooltip*)(self + 0x28c))->reset_tooltip();
         return;
     }
     if ((flags & 0x200) != 0) {
         *(unsigned int*)(self + 0x1a0) = flags & ~0x200u;
         ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
-        ((TooltipState*)(self + 0x28c))->reset_tooltip();
+        ((FrontendWidgetTooltip*)(self + 0x28c))->reset_tooltip();
         *(int*)(self + 0x1a0) = 0;
         return;
     }
@@ -68,7 +68,7 @@ void FrontendWidget::update_frontend_widget_interaction()
         teardown_progress = teardown_progress_step + teardown_progress;
         if (teardown_progress > 1.0f) {
             ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
-            ((TooltipState*)(self + 0x28c))->reset_tooltip();
+            ((FrontendWidgetTooltip*)(self + 0x28c))->reset_tooltip();
             *(int*)(self + 0x1a0) = 0;
             return;
         }
@@ -97,7 +97,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     if ((*(unsigned int*)(self + 0x1a0) & 0x80000) != 0
         && ((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured()
         && read_pressed_text_input_key_code() == shortcut_key_code) {
-        ((TooltipState*)(self + 0x28c))->reset_tooltip();
+        ((FrontendWidgetTooltip*)(self + 0x28c))->reset_tooltip();
         if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0)
             *(unsigned int*)(self + 0x1a0) |= 0x20;
         else
@@ -192,7 +192,7 @@ update_after_input:
     }
 
     ((TwinkleManager*)(self + 0x80))->update_twinkle_manager();
-    ((TooltipState*)(self + 0x28c))->update_tooltip();
+    ((FrontendWidgetTooltip*)(self + 0x28c))->update_tooltip();
     char render_hot_text = (char)((*(unsigned int*)(self + 0x1a0) >> 8) & 1);
     layout_frontend_widget();
 

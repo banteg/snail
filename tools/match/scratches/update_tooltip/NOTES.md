@@ -22,7 +22,7 @@ Offsets are aligned with `include/frontend_widget.h`: `active_padding +0x220`,
 The return value is leftover register state in native code, so the scratch is
 written as a `void` updater.
 
-2026-06-20 frontend type pass: `TooltipState` is now shared through
+2026-06-20 frontend type pass: `FrontendWidgetTooltip` is now shared through
 `include/tooltip_state.h` as the 0x40 subobject embedded at
 `FrontendWidget+0x28c`. The shared tooltip layout covers `mode_flags`, owner
 pointers, delay counters, and the allocated tooltip widget pointer. Focused
@@ -50,3 +50,16 @@ case order (`state 3`, then `state 2`, then `state 1`) requires scoped case
 bodies in C++ and regresses to 75.97% by disturbing the layout body. Keep the
 nested source shape; the remaining leading `dec`/`test` split is not fixed by
 surface dispatch syntax.
+
+2026-07-12 authored state-machine closure:
+
+- Expressing the three states as the natural `switch (state)` recovers VC6's
+  native `dec`/branch dispatch and removes the one extra candidate `test`.
+  This is the authored control-flow shape, not a synthetic register constraint.
+- The iOS `Border.o` symbol set names this exact embedded controller
+  `cRToolTip`. The shared C++ owner is now `FrontendWidgetTooltip`, matching the
+  Binary Ninja and C analysis types: the enclosing widget owns the 0x40-byte
+  controller, its two widget backlinks are borrowed, and its live tooltip
+  handle refers to a `BorderManager`-owned widget that the controller releases.
+- Focused matching is proof-grade at 100.00%, 218/218 instructions, a 218/218
+  prefix, and 23 clean masked operands.

@@ -812,6 +812,10 @@ Conservative current read:
 
 ### Frontend Widget Tooltip
 
+The iOS `Border.o` symbol set identifies this embedded owner as authored
+`cRToolTip`; the shared Windows analysis spelling is `FrontendWidgetTooltip`.
+Each `FrontendWidget` owns the exact `0x40`-byte subobject at `+0x28c`.
+
 High-confidence current fields:
 
 - `+0x04`: `state`
@@ -825,6 +829,7 @@ High-confidence current fields:
 Current practical read:
 
 - `reset_tooltip` and `update_tooltip` now decompile directly against `FrontendWidgetTooltip*`
+- `owner_widget` and `owner_widget_38` are borrowed backlinks; `tooltip_widget` is the live handle to a `BorderManager`-owned widget whose lifetime this controller releases
 - `state == 2` owns the `delay_progress += delay_step` leg before tooltip creation
 - `state == 3` owns the live tooltip widget and kills it when the owner loses the active hover flag
 

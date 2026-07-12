@@ -88,7 +88,7 @@ public:
     float previous_mouse_x; // +0x27c
     float previous_mouse_y; // +0x280
     char unknown_284[0x28c - 0x284];
-    TooltipState tooltip; // +0x28c
+    FrontendWidgetTooltip tooltip; // +0x28c, authored cRToolTip owner
     char text_buffer[0x420]; // +0x2cc
     int font_id; // +0x6ec
     float font_scale; // +0x6f0

@@ -5,7 +5,7 @@
 
 extern char* g_game_base; // data_4df904
 
-int TooltipState::reset_tooltip()
+int FrontendWidgetTooltip::reset_tooltip()
 {
     int result = state;
     result -= 2;
