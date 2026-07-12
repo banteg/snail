@@ -74,8 +74,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     }
 
     replay_update_cursor = 0;
-    if (*(int*)(base + 0x1270fc8) == 3) {
-        *(int*)(base + 0x1270fc8) = 1;
+    if (subgame_rebuild_selector == 3) {
+        subgame_rebuild_selector = 1;
         player.total_score = 0;
         player.clear_subgoldy_score_buckets();
         player.visible_life_stock = 3;
@@ -91,35 +91,37 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     int segment_cursor = 0;
     mode = level_mode;
     if (mode == 0 || mode == 7 || mode == 4 || mode == 1) {
-        first_block_row_count = *(int*)(base + 0x1a7cfc);
-        int authored_length = *(int*)(base + 0x1b0138);
+        first_block_row_count = level_definition.first_segment.row_count;
+        int authored_length = level_definition.random_length;
         runtime_row_count = authored_length;
         if (mode == 1) {
             runtime_row_count =
                 (int)((challenge_difficulty_scalar * 0.64999998f + 0.34999999f)
                     * (float)authored_length);
         }
-        if (*(unsigned char*)(base + 0x1b013c) == 0) {
-            runtime_row_count = *(int*)(base + 0x1a7cfc) + *(int*)(base + 0x1abf1c);
+        if (level_definition.random_enabled == 0) {
+            runtime_row_count = level_definition.first_segment.row_count
+                + level_definition.last_segment.row_count;
             for (int i = 0; i < level_definition.segment_count; ++i)
-                runtime_row_count += *(int*)(base + 0xa87c + 0x4220 * i);
+                runtime_row_count += level_definition.segment_slots[i].row_count;
             segment_cursor = 0;
         }
-        completion_row_start = runtime_row_count - *(int*)(base + 0x1abf1c);
+        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
         if (runtime_row_count >= 3100) {
             report_errorf(
                 "Track (%s) too long, Maximum Length %i",
-                base + 0x1b0150,
+                level_definition.level_display_name,
                 3100);
         }
     } else if (mode == 3) {
-        first_block_row_count = *(int*)(base + 0x1a7cfc);
-        runtime_row_count = *(int*)(base + 0x1a7cfc) + *(int*)(base + 0x1abf1c);
+        first_block_row_count = level_definition.first_segment.row_count;
+        runtime_row_count = level_definition.first_segment.row_count
+            + level_definition.last_segment.row_count;
         for (int i = 0; i < 16; ++i)
             runtime_row_count += *(int*)(base + 0xa87c);
         segment_cursor = 0;
-        completion_row_start = runtime_row_count - *(int*)(base + 0x1abf1c);
-        completion_row_start = runtime_row_count - *(int*)(base + 0x1abf1c);
+        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
+        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
     }
 
     track_mirror_enabled = false;
@@ -127,7 +129,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     int trampoline_counter = 0;
     char first_or_last_row = 0;
     int row_event_owner = 0;
-    *(unsigned char*)(base + 0x3bbb24) = 0;
+    player.follow_flag_3c = 0;
 
     char* cell_payload_cursor = base + 0x3bfb0c;
     int* row_cursor = (int*)(base + 0x5ccb5c);
@@ -170,9 +172,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         row_cursor += 61;
     }
 
-    if (*(unsigned char*)(base + 0x1b013c) == 1) {
+    if (level_definition.random_enabled == 1) {
         for (int i = 0; i < level_definition.segment_count; ++i)
-            *(unsigned char*)(base + 0xa880 + 0x4220 * i) = 0;
+            level_definition.segment_slots[i].visited = 0;
     }
 
     if (runtime_row_count <= 0)
@@ -185,16 +187,16 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             active_segment = base + 0x1a7cf8;
             first_or_last_row = 1;
             segment_row = 0;
-            *(int*)active_segment = build_row;
-        } else if (build_row == completion_row_start && *(unsigned char*)(base + 0x1b013c) == 0) {
+            ((SubSegment*)active_segment)->row_base = build_row;
+        } else if (build_row == completion_row_start && level_definition.random_enabled == 0) {
             active_segment = base + 0x1abf18;
             first_or_last_row = 1;
             segment_row = 0;
-            *(int*)active_segment = build_row;
-        } else if (segment_row >= *(int*)(active_segment + 4)) {
+            ((SubSegment*)active_segment)->row_base = build_row;
+        } else if (segment_row >= ((SubSegment*)active_segment)->row_count) {
             first_or_last_row = 0;
             base_subgame_rate = 1.0f;
-            if (*(unsigned char*)(base + 0x1b013c) == 1) {
+            if (level_definition.random_enabled == 1) {
                 float segment_pick_range;
                 if (level_mode == 1) {
                     segment_pick_range =
@@ -209,7 +211,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     picked = (int)((float)picked * base_subgame_rate);
                     active_segment = base + 0xa878 + 0x4220 * picked;
                 }
-                *(unsigned char*)(active_segment + 8) = 1;
+                ((SubSegment*)active_segment)->visited = 1;
             } else {
                 int picked = segment_cursor;
                 ++segment_cursor;
@@ -217,8 +219,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 switch_track_mirror();
             }
             segment_row = 0;
-            *(int*)active_segment = build_row;
-            if (*(int*)(active_segment + 4) < 0)
+            ((SubSegment*)active_segment)->row_base = build_row;
+            if (((SubSegment*)active_segment)->row_count < 0)
                 report_errorf("Negative Segment Length");
         }
 
@@ -228,10 +230,14 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 if (build_row == completion_row_start)
                     segment_row = 0;
             } else if (level_mode == 3) {
+                // level_definition_scratch.segment_slots[1]
                 active_segment = base + 0x1b4410;
             }
 
-            int segment_end = *(int*)(active_segment + 4) - segment_row + build_row;
+            int segment_end =
+                ((SubSegment*)active_segment)->row_count - segment_row + build_row;
+            // The three raw addresses preserve native shape for scratch slots
+            // 1, 3, and 4 of level_definition_scratch.
             if (segment_end > completion_row_start
                 && active_segment != base + 0x1b4410
                 && active_segment != base + 0x1bc850
@@ -241,7 +247,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     || level_mode == 1
                     || level_mode == 7
                     || (level_mode == 3 && active_segment != base + 0x1abf18))) {
-                int extra_rows = *(int*)(active_segment + 4) - completion_row_start - segment_row + build_row;
+                int extra_rows = ((SubSegment*)active_segment)->row_count
+                    - completion_row_start - segment_row + build_row;
                 completion_row_start += extra_rows;
                 runtime_row_count += extra_rows;
             }
@@ -576,7 +583,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 debug_report_stub(
                     "TrackError:%c in Segment %s\n",
                     normalize_segment_glyph_for_track_flags(glyph, build_row, 1),
-                    *(char**)(active_segment + 0x10));
+                    ((SubSegment*)active_segment)->source_name);
                 break;
             }
 

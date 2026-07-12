@@ -276,3 +276,11 @@ the existing table-shape mismatch.
   the established bounded five- and four-entry contents. Registering those
   content-proven aliases restores all 106 operands without altering the
   partial function body.
+
+## 2026-07-13 SubSegment visited-latch refresh
+
+The shared byte-latch correction advances the unchanged local tables to
+`$L6052`/`$L6053`. COFF retains the bounded five- and four-entry tables at
+object `+0x838`/`+0x84c`; `$L6052` is reassigned to the state table and
+`$L6053` names the track table. The partial body remains at 86.10% with all
+106 operands clean.

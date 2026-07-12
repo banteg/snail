@@ -61,7 +61,8 @@ typedef char SMTracks_must_be_0x25cfb4[
 struct SubSegment {
     int row_base;                  // +0x00
     int row_count;                 // +0x04
-    int visited;                   // +0x08
+    unsigned char visited;         // +0x08, random-segment selection latch
+    char unknown_09[0x0c - 0x09];
     int path_index;                // +0x0c
     char* source_name;             // +0x10
     char glyph_rows[8][0x100];     // +0x14

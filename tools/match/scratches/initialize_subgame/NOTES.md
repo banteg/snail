@@ -370,3 +370,12 @@ aliases respectively and restore the 85 clean operands.
   and the eight-entry startup table at `+0x640`. The method remains
   instruction-exact at 396/396; registering those content-proven aliases
   restores all 85 operands.
+
+2026-07-13 SubSegment visited-latch refresh:
+
+- Correcting `SubSegment +0x08` from an integer to a byte latch plus padding
+  advances the unchanged mode tables to `$L5357`/`$L5358`.
+- COFF still places the bottom-HUD and startup tables at object `+0x62c` and
+  `+0x640`; `$L5357` is therefore reassigned to the former and `$L5358` names
+  the latter. The method remains instruction-exact at 396/396 with all 85
+  operands clean.

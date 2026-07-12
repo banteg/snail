@@ -967,7 +967,8 @@
         "$L5147",
         "$L5148",
         "$L5346",
-        "$L5356"
+        "$L5356",
+        "$L5357"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -1000,7 +1001,7 @@
         "$L5139",
         "$L5149",
         "$L5347",
-        "$L5357"
+        "$L5358"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -1013,7 +1014,8 @@
         "$L5016",
         "$L5037",
         "$L5054",
-        "$L6051"
+        "$L6051",
+        "$L6052"
       ],
       "size": "0x14",
       "description": "Compiler-emitted switch jump table for the first build_subgame_level state dispatch."
@@ -1027,7 +1029,7 @@
         "$L5018",
         "$L5038",
         "$L5055",
-        "$L6052"
+        "$L6053"
       ],
       "size": "0x10",
       "description": "Compiler-emitted switch jump table for the later build_subgame_level track dispatch."

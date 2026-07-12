@@ -198,6 +198,25 @@ arithmetic here is source-shape preservation, not an unresolved owner.
   jump-table layout mismatch. This slice removes fake setup owners without
   perturbing the still-incomplete glyph-builder source shape.
 
+## 2026-07-13 segment-session ownership pass
+
+- `SubSegment +0x08` is a byte-sized random-selection `visited` latch, not an
+  integer. Native code clears exactly one byte for every eligible segment and
+  sets exactly one byte after a random pick; the shared matcher and analysis
+  layouts now preserve the following three padding bytes explicitly.
+- Setup and selection now read the owned `SubTracks` First/Last row counts,
+  random length/enable state, level display name, and segment-row counts
+  directly. The rebuild gate and player follow latch likewise use their shared
+  `SubgameRuntime`/`Player` owners. These substitutions preserve the honest
+  28.25%, 1190/1245 frontier and its 57 clean operands plus the known glyph
+  table-layout mismatch.
+- The mode-3 raw addresses `+0x1b4410`, `+0x1bc850`, and `+0x1c0a70` are
+  `level_definition_scratch.segment_slots[1]`, `[3]`, and `[4]`. A fully typed
+  active-segment pointer spelling moved the score to 28.17%, so the byte-shaped
+  address formation stays visible. Recasting the authored-row copy repeated
+  the previously measured 26.40% regression and was also reverted; neither
+  residual is hidden with dummy source or masked proof.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else

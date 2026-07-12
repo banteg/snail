@@ -51,7 +51,8 @@ typedef struct SMTracks {
 typedef struct SubSegment {
     int32_t row_base;
     int32_t row_count;
-    int32_t visited;
+    uint8_t visited;
+    uint8_t unknown_09[0x0c - 0x09];
     int32_t path_index;
     char* source_name;
     char glyph_rows[8][0x100];
