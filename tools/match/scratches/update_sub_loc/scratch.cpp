@@ -14,7 +14,11 @@ extern GameRoot* g_game; // data_4df904 (this TU caches the base, reloading afte
 
 inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
 {
-    return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+    Vector3 result;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
+    return result;
 }
 
 void SubLoc::update_sub_loc()

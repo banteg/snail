@@ -1,4 +1,4 @@
-# High progress — 82.67%, 188/187 insns
+# High progress — 83.20%, 188/187 insns
 
 This is the per-cell `SubLoc` update, matching the iOS
 `cRSubLoc::AI()` owner, not a pooled `FringeObject` method. The receiver's
@@ -96,3 +96,16 @@ now `update_sub_loc`; this is an ownership clarification and leaves the honest
   is not projectile teardown, and `0x4417d0` is `cRSubLazer::AI()`, not Salt.
   Projectile kill/update remain at `0x441740`/`0x4417d0`; the exact Salt AI is
   `0x441c10`.
+
+2026-07-12 packed-field and vector-idiom pass: `lane_and_flags` is now an
+unsigned packed field, agreeing with the analysis-side `uint32_t` layout and
+recovering native `shr` for the authored lane nibble without changing any of
+the ten dependent scratch scores. The local `Vector3::operator-` now follows
+the explicit-result implementation already recovered independently in the
+other vector-heavy game methods, rather than this scratch's lone
+constructor-return spelling. Focused Wibo improves from 82.67% to 83.20%,
+still 188/187 instructions with a 26-instruction prefix, while the clean mask
+count rises from 34 to 35. The remaining mismatch is confined to temporary
+allocation and scheduling inside the Wall2 spawn/direction block; constructor,
+component-assignment, in-place-target, and declaration-order variants were
+neutral or regressive and are not retained.

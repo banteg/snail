@@ -306,7 +306,7 @@ struct SubLoc {
     unsigned char tile_id;              // +0x3c
     unsigned char tile_flags_3d;        // +0x3d
     char unknown_3e[0x40 - 0x3e];
-    int lane_and_flags;                 // +0x40, low 3 bits are lane; 0x18 warning footprint
+    unsigned int lane_and_flags;        // +0x40, unsigned packed lane/variant/lifecycle flags
     Fringe* fringe_front;               // +0x44, borrowed from FringeManager
     Fringe* fringe_right;               // +0x48
     Fringe* fringe_left;                // +0x4c
