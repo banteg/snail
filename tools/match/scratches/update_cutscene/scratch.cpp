@@ -18,15 +18,24 @@ inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
     return result;
 }
 
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
+    return result;
+}
+
 void CutScene::update_cutscene()
 {
     int current_state = state;
     force_camera_update = 0;
 
-    TransformMatrix look_at_matrix;
-    TransformMatrix completion_matrix;
-    TransformMatrix source_matrix;
+    TransformMatrix camera_matrix_a;
+    TransformMatrix camera_matrix_b;
     Vector3 target_delta;
+    Vector3 completion_delta;
 
     switch (current_state) {
     case 1:
@@ -56,15 +65,17 @@ void CutScene::update_cutscene()
         g_game->subgame.embedded_player()->click_start.hide_prompt = 0;
         camera_mode = 1;
 
-        set_matrix_identity(&look_at_matrix);
-        look_at_matrix.position = presentation->snail_hotspots_world[18];
+        set_matrix_identity(&camera_matrix_a);
+        camera_matrix_a.position = presentation->snail_hotspots_world[18];
         float swing = sine(progress * 3.1415927f);
-        look_at_matrix.position.x = swing + swing + look_at_matrix.position.x;
-        look_at_matrix.look_at_point(&presentation->live_matrix.position);
+        camera_matrix_a.position.x = swing + swing + camera_matrix_a.position.x;
+        camera_matrix_a.look_at_point(&presentation->live_matrix.position);
 
-        source_matrix = presentation->owner_player->cameraman.live_matrix;
-        float alpha = sine(progress * 1.5707964f);
-        live_matrix.linear_interpolate_matrix(&look_at_matrix, &source_matrix, alpha);
+        camera_matrix_b = presentation->owner_player->cameraman.live_matrix;
+        live_matrix.linear_interpolate_matrix(
+            &camera_matrix_a,
+            &camera_matrix_b,
+            sine(progress * 1.5707964f));
 
         target_delta = live_matrix.position - presentation->live_matrix.position;
         float distance = target_delta.normalize_vector();
@@ -101,17 +112,19 @@ void CutScene::update_cutscene()
 
     case 11: {
         camera_mode = -1;
-        set_matrix_identity(&look_at_matrix);
-        look_at_matrix.position = presentation->snail_hotspots_world[18];
+        set_matrix_identity(&camera_matrix_b);
+        camera_matrix_b.position = presentation->snail_hotspots_world[18];
         float swing = sine(progress * 3.1415927f);
-        look_at_matrix.position.x = swing + swing + look_at_matrix.position.x;
-        if (look_at_matrix.position.y < 0.0f)
-            look_at_matrix.position.y = 0.0f;
-        look_at_matrix.look_at_point(&presentation->live_matrix.position);
+        camera_matrix_b.position.x = swing + swing + camera_matrix_b.position.x;
+        if (camera_matrix_b.position.y < 0.0f)
+            camera_matrix_b.position.y = 0.0f;
+        camera_matrix_b.look_at_point(&presentation->live_matrix.position);
 
-        source_matrix = presentation->owner_player->cameraman.live_matrix;
-        float alpha = sine(progress * 1.5707964f);
-        live_matrix.linear_interpolate_matrix(&source_matrix, &look_at_matrix, alpha);
+        camera_matrix_a = presentation->owner_player->cameraman.live_matrix;
+        live_matrix.linear_interpolate_matrix(
+            &camera_matrix_a,
+            &camera_matrix_b,
+            sine(progress * 1.5707964f));
 
         progress = progress + progress_step;
         if (progress > 1.0f) {
@@ -157,16 +170,16 @@ void CutScene::update_cutscene()
         force_camera_update = 1;
 
         GameRoot* game = (GameRoot*)g_game_base;
-        if (game->subgame.level_mode != 0) {
-            if (game->subgame.level_mode == 1) {
-                int delivered_count = player->parcels_collected;
-                game->subgame.completion.initialize_completion_screen(delivered_count, 1);
-            }
-        } else {
+        if (game->subgame.level_mode == 0) {
             int delivered_count = player->parcels_collected;
+            unsigned char perfect_delivery =
+                delivered_count == *(int*)(g_game_base + 0x2247f8);
             game->subgame.completion.initialize_completion_screen(
                 delivered_count,
-                delivered_count == *(int*)(g_game_base + 0x2247f8));
+                perfect_delivery);
+        } else if (game->subgame.level_mode == 1) {
+            int delivered_count = player->parcels_collected;
+            game->subgame.completion.initialize_completion_screen(delivered_count, 1);
         }
         g_sound_effect_manager.play_sound_effect(46);
         // fall through
@@ -174,26 +187,26 @@ void CutScene::update_cutscene()
 
     case 6: {
         camera_mode = -1;
-        set_matrix_identity(&completion_matrix);
+        set_matrix_identity(&camera_matrix_b);
 
-        Vector3 skid_stop;
-        Vector3 intro_talk;
-        skid_stop = presentation->snail_hotspots_world[12];
-        intro_talk = presentation->snail_hotspots_world[18];
-        float blend_x = (intro_talk.x - skid_stop.x) * progress + skid_stop.x;
-        float blend_y = (intro_talk.y - skid_stop.y) * progress + skid_stop.y;
-        float blend_z = (intro_talk.z - skid_stop.z) * progress + skid_stop.z;
-        completion_matrix.position.x = blend_x;
-        completion_matrix.position.y = blend_y;
-        completion_matrix.position.z = blend_z;
+        camera_matrix_a.position = presentation->snail_hotspots_world[12];
+        completion_delta = presentation->snail_hotspots_world[18];
+        completion_delta.x -= camera_matrix_a.position.x;
+        completion_delta.y -= camera_matrix_a.position.y;
+        completion_delta.z -= camera_matrix_a.position.z;
+        camera_matrix_b.position =
+            completion_delta * progress
+            + camera_matrix_a.position;
 
         float skid_arc = sine(progress * 3.1415927f);
-        completion_matrix.position.x = completion_matrix.position.x - skid_arc * 0.5f;
-        completion_matrix.look_at_point(&presentation->live_matrix.position);
+        camera_matrix_b.position.x = camera_matrix_b.position.x - skid_arc * 0.5f;
+        camera_matrix_b.look_at_point(&presentation->live_matrix.position);
 
-        source_matrix = presentation->owner_player->cameraman.live_matrix;
-        float alpha = sine(progress * 1.5707964f);
-        live_matrix.linear_interpolate_matrix(&source_matrix, &completion_matrix, alpha);
+        camera_matrix_a = presentation->owner_player->cameraman.live_matrix;
+        live_matrix.linear_interpolate_matrix(
+            &camera_matrix_a,
+            &camera_matrix_b,
+            sine(progress * 1.5707964f));
 
         progress = progress + progress_step;
         if (progress > 1.0f) {

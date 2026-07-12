@@ -101,3 +101,36 @@ to a nonexistent CutScene tail.
   The sole masked mismatch remains the compiler-emitted jump-table identity.
   Chained completion-vector algebra regressed, while a named perfect-delivery
   boolean was codegen-neutral; neither probe was retained.
+
+2026-07-12 camera-temporary lifetime recovery:
+
+- Native reuses exactly two `TransformMatrix` locals across the three camera
+  interpolation legs. State 8 builds the look-at matrix in `camera_matrix_a`
+  and copies the cameraman source into `camera_matrix_b`; states 11 and 6 use
+  the opposite roles. In state 6, `camera_matrix_a.position` first caches the
+  skid-stop hotspot, then the entire matrix is overwritten by the cameraman
+  source after the completion camera has been built.
+- The interpolation weights are direct `sine(progress * 1.5707964f)` call
+  arguments. Removing the three named `alpha` lifetimes recovers the native
+  store/reload and caller-cleanup shape around each interpolation call.
+- Completion enters mode 0 before testing mode 1, matching the native branch
+  order. The mode-0 perfect-delivery value remains a named boolean because it
+  captures the recovered meaning, although this candidate still forwards the
+  comparison byte directly rather than reproducing native's two-instruction
+  stack spill.
+- State 6 first copies hotspot 18 into a named `completion_delta`, subtracts
+  the cached hotspot 12 components, and then evaluates
+  `completion_delta * progress + camera_matrix_a.position`. This source shape
+  restores seven native staging instructions and makes the vector ownership
+  explicit without padding or volatile tricks.
+- Focused Wibo improves from 72.53% (496/505 instructions, prefix 10, 57 clean
+  masked operands, one jump-table mismatch) to 93.25% (503/505, prefix 0, the
+  same 57 clean operands and sole jump-table mismatch). The lost prefix is
+  entirely the first-instruction frame-size difference: native reserves
+  `0xe8`, while this candidate reserves `0xa8`.
+- The remaining gap is honest compiler allocation: native places the
+  completion-vector staging at the high `0xe8`-frame slots and spills the
+  perfect-delivery byte through a temporary. The candidate otherwise has only
+  minor register/stack-slot allocation differences plus the known switch-table
+  identity mismatch. No artificial local, padding, or volatile qualifier was
+  added to force those residuals.
