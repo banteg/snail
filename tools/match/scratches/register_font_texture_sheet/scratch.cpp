@@ -10,7 +10,7 @@ int sample_tga_pixel_rgb(TgaImageView* image, int x, int y);
 int register_font_texture_sheet(
     char* texture_path,
     int font_kind,
-    int width_scale_bits,
+    float width_scale,
     float height_scale)
 {
     int split_x = 0;
@@ -34,20 +34,20 @@ int register_font_texture_sheet(
         texture_path_1[i] = '1';
         split_x = 0x3c0;
         ++i;
-        texture_path_0[i] = '.';
         texture_path_1[i] = '.';
+        texture_path_0[i] = '.';
         ++i;
-        texture_path_0[i] = 't';
         texture_path_1[i] = 't';
+        texture_path_0[i] = 't';
         ++i;
-        texture_path_0[i] = 'g';
         texture_path_1[i] = 'g';
+        texture_path_0[i] = 'g';
         ++i;
-        texture_path_0[i] = 'a';
         texture_path_1[i] = 'a';
+        texture_path_0[i] = 'a';
         ++i;
-        texture_path_0[i] = 0;
         texture_path_1[i] = 0;
+        texture_path_0[i] = 0;
     }
 
     int x = 0;
@@ -58,15 +58,17 @@ int register_font_texture_sheet(
     while (x < image->width) {
         int pixel = sample_tga_pixel_rgb(image, x, 0);
         if (pixel == 0xffffff) {
+            float glyph_run_width = (float)run_width;
             int glyph_left = x - run_width;
+            run_width = 0;
             g_font_sheets[g_registered_font_count].glyph_width[slot] =
-                (float)run_width;
+                glyph_run_width;
 
             float centered_left = (float)glyph_left + 0.5f;
             float centered_last = (float)last_x + 0.5f;
-            g_font_sheets[g_registered_font_count].v0[slot] =
-                centered_left / (float)image->width;
             g_font_sheets[g_registered_font_count].u0[slot] =
+                centered_left / (float)image->width;
+            g_font_sheets[g_registered_font_count].v0[slot] =
                 centered_last / (float)image->width;
             g_font_sheets[g_registered_font_count].texture_page[slot] = 0;
 
@@ -103,14 +105,8 @@ int register_font_texture_sheet(
 
     int line_marker_y = 1;
     if (image->height > 1) {
-        while (1) {
+        for (; line_marker_y < image->height; ++line_marker_y) {
             if (sample_tga_pixel_rgb(image, 0, line_marker_y) == 0xffffff) {
-                g_font_sheets[g_registered_font_count].line_marker_y =
-                    (float)line_marker_y;
-                break;
-            }
-            ++line_marker_y;
-            if (line_marker_y >= image->height) {
                 g_font_sheets[g_registered_font_count].line_marker_y =
                     (float)line_marker_y;
                 break;
@@ -129,27 +125,26 @@ int register_font_texture_sheet(
     if (image->width == 0x800) {
         TextureRef* texture_0 = g_texture_refs.get_or_create_texture_ref(texture_path_0, 0, 0);
         g_font_sheets[g_registered_font_count].texture_ref_a = texture_0;
-        texture_0->flags |= 0x420;
+        texture_0->flags |=
+            TEXTURE_REF_REGISTERED | TEXTURE_REF_RETAIN_SOURCE_BYTES;
 
         TextureRef* texture_1 = g_texture_refs.get_or_create_texture_ref(texture_path_1, 0, 0);
         g_font_sheets[g_registered_font_count].texture_ref_b = texture_1;
-        texture_1->flags |= 0x420;
+        texture_1->flags |=
+            TEXTURE_REF_REGISTERED | TEXTURE_REF_RETAIN_SOURCE_BYTES;
     } else {
         TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
         g_font_sheets[g_registered_font_count].texture_ref_a = texture;
-        texture->flags |= 0x400;
+        texture->flags |= TEXTURE_REF_REGISTERED;
     }
 
     g_font_sheets[g_registered_font_count].spacing_scale = 1.0f;
-    *(int*)&g_font_sheets[g_registered_font_count].width_scale =
-        width_scale_bits;
+    g_font_sheets[g_registered_font_count].width_scale = width_scale;
     g_font_sheets[g_registered_font_count].height_scale = height_scale;
     g_font_sheets[g_registered_font_count].line_marker_y =
         height_scale * g_font_sheets[g_registered_font_count].line_marker_y;
 
     free_tracked_memory(image);
 
-    int result = g_registered_font_count;
-    g_registered_font_count = result + 1;
-    return result;
+    return g_registered_font_count++;
 }

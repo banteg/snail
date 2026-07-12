@@ -15,8 +15,8 @@ Recovered relationships:
 - The reuse scan walks a raw `TextureRef::name` cursor by the 0xa4 entry stride
   and returns `&entries[i]`; it is not an entry-pointer loop.
 - Newly allocated entries initialize `slot_index`, clear then seed `flags` with
-  `0x400`, copy caller `arg3` into `texture_ref +0x98`, set `unknown_a0` to 1,
-  then increment `count`.
+  `TEXTURE_REF_REGISTERED` (`0x400`), copy caller `arg3` into
+  `texture_ref +0x98`, set `mip_levels +0xa0` to 1, then increment `count`.
 
 This scratch exists primarily to correct and consolidate texture-list structure
 evidence used by sprite texture registration and runtime sprite allocation.
@@ -62,3 +62,7 @@ Rejected/no-op variants:
   target ret. Removing the obsolete extent override uses the manifest next
   symbol at `0x44e900`, yielding `100.00%`, `79/79`, and the same four clean
   masked operands.
+- 2026-07-12 flag ownership pass: the unconditional `0x400` seed is shared as
+  `TEXTURE_REF_REGISTERED`. Font-atlas registration independently reasserts
+  that baseline flag, while split atlases combine it with
+  `TEXTURE_REF_RETAIN_SOURCE_BYTES`; the allocator remains exact at 79/79.

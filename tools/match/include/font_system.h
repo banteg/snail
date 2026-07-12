@@ -72,6 +72,8 @@ extern float g_font_wave_phase_a;         // data_7772e8
 int report_errorf(const char* format, ...);
 int font_slot_index_for_char(char value); // @ 0x449d20
 float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
+int register_font_texture_sheet(char* texture_path, int font_kind,
+    float width_scale, float height_scale); // @ 0x449f50
 float sine(float angle); // @ 0x44c9d0
 float cosine(float angle); // @ 0x44c980
 int draw_textured_quad_immediate(

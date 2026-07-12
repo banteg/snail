@@ -30,7 +30,7 @@ TextureRef* TextureRefList::get_or_create_texture_ref(char* texture_path, int ar
     current = count;
     entries[current].slot_index = current;
     entries[count].flags = 0;
-    entries[count].flags = 0x400;
+    entries[count].flags = TEXTURE_REF_REGISTERED;
     entries[count].texture_ref = (void*)arg3;
     entries[count].mip_levels = 1;
 

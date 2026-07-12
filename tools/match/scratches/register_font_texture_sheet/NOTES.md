@@ -11,10 +11,11 @@ Recovered relationships:
   `tools/match/include/tga_image_view.h`.
 - Width `0x800` is a two-page atlas. Native rewrites the source basename into
   `...0.tga` and `...1.tga`, uses split x `0x3c0`, and marks both texture refs
-  with `0x420`.
-- Non-split atlases store only `texture_ref_a` and mark it with `0x400`.
-- `width_scale_bits` is stack-compatible raw float bits from the one known
-  caller; the stored field is `FontSheet::width_scale`.
+  with `TEXTURE_REF_REGISTERED | TEXTURE_REF_RETAIN_SOURCE_BYTES` (`0x420`).
+- Non-split atlases store only `texture_ref_a` and reassert
+  `TEXTURE_REF_REGISTERED` (`0x400`).
+- Both scale parameters are floats. The third argument is stored directly in
+  `FontSheet::width_scale`; the exact forwarding wrapper confirms the ABI.
 - `font_kind` is later read by `draw_font_text_instance` as a positive shadow
   pixel offset.
 
@@ -29,14 +30,28 @@ No masked operands were unresolved or mismatched in the initial run.
 the long-lived `FontSheet* sheet` pointer and writing
 `g_font_sheets[g_registered_font_count]` fields directly. This matches native's
 habit of reloading the registered-font index and recomputing the sheet base at
-each write site instead of carrying a sheet pointer through the scan. The
-initial non-split coordinate stores are also reversed relative to the earlier
-source (`v0` gets the centered left edge, `u0` gets the centered current-x edge);
-that removes the atlas-coordinate masked mismatch while leaving the split-atlas
-override stores in their previous order. Rejected neighbors: a count snapshot,
-late `FontSheet*` declarations, `register`/uninitialized `split_x`, swapping all
-`u0`/`v0` writes, and pointer/direct hybrids were either much lower or kept the
-same operand debt. The remaining masked mismatch is the adjacent
-`slot_count`/`font_kind` tail: both stores are present, but VC6 keeps the slot
-count in `ebx` while native reloads it into `ecx` before writing
-`FontSheet +0x000`.
+each write site instead of carrying a sheet pointer through the scan. That pass
+temporarily reversed the initial `u0`/`v0` stores based on the then-incomplete
+run-width model; the later native dataflow audit below corrects them. Rejected
+neighbors included a count snapshot, late `FontSheet*` declarations,
+`register`/uninitialized `split_x`, and pointer/direct hybrids.
+
+2026-07-12 delimiter-state and atlas ownership pass:
+
+- Each row-0 white marker publishes the completed glyph run and resets
+  `run_width` to zero. The missing reset was a real semantic bug: without it,
+  VC6 correctly collapsed the counter to `x - 1`.
+- The initial coordinates are `u0 = centered glyph-left / width` and
+  `v0 = centered current-x / width`, consistent with both split-page branches.
+  This clears the stale atlas-coordinate operand mismatch.
+- The column-0 scan publishes `line_marker_y` only when it actually finds a
+  white marker. Reaching the image height exits without inventing a marker.
+- Split suffix bytes are written to page 1 then page 0 in the native order,
+  both scale arguments retain float ownership, and the registrar returns the
+  post-incremented registered-font index.
+- Focused Wibo improves from 72.46% (267/274, 48 clean operands) to 75.41%
+  (275/274, 51 clean operands). The only masked mismatch remains the adjacent
+  `slot_count`/`font_kind` tail: native keeps split x in `ebx` and the glyph
+  slot on the stack, while VC6 assigns those two owners oppositely in the
+  candidate, adding one four-byte local. No forced spill or dummy dependency is
+  used to hide that residual.
