@@ -12,6 +12,47 @@ typedef struct Sprite Sprite;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct TrackRowCell TrackRowCell;
 typedef struct TransformMatrix TransformMatrix;
+typedef struct BodNode BodNode;
+
+typedef struct Vec3 {
+    float x;
+    float y;
+    float z;
+} Vec3;
+
+/* Exact 0x8c-byte Windows cRParcel, flattened across its BodBase prefix. */
+typedef struct Parcel {
+    void* vtable;
+    uint32_t list_flags;
+    BodNode* list_prev;
+    BodNode* list_next;
+    Vec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    Object* object;
+    float color_r;
+    float color_g;
+    float color_b;
+    float color_a;
+    int32_t state;
+    SubgameRuntime* owner_subgame;
+    uint8_t unknown_40[0x54 - 0x40];
+    Sprite* sprite;
+    uint8_t unknown_58[0x5c - 0x58];
+    float bob_phase;
+    float bob_phase_step;
+    Player* owner_player;
+    float progress;
+    float progress_step;
+    float target_distance;
+    Vec3 travel_dir;
+    Vec3 delivery_offset;
+} Parcel;
+
+/* Exact 0x1b58-byte Windows cRParcelManager embedded in SubgameRuntime. */
+typedef struct ParcelManager {
+    Parcel slots[50];
+} ParcelManager;
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
@@ -240,7 +281,8 @@ typedef struct SubgameRuntime {
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
     TimeTrial time_trial;
-    uint8_t unknown_ff2910[0x125ffd8 - 0xff2910];
+    uint8_t unknown_ff2910[0x125e480 - 0xff2910];
+    ParcelManager parcel_manager;
     float garbage_frequency;
     float salt_frequency;
     GUI gui;

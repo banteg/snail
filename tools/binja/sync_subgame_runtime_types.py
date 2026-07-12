@@ -25,6 +25,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
     ("0xff25e0", "time_trial", "TimeTrial"),
+    ("0x125e480", "parcel_manager", "ParcelManager"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x125ffe0", "gui", "GUI"),
@@ -97,6 +98,30 @@ PROTO_UPDATES = (
     ("advance_blink_random", "double __thiscall advance_blink_random(SubgameRuntime* runtime)"),
     ("initialize_blink_random", "int32_t __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
     ("complete_subgame", "void __thiscall complete_subgame(SubgameRuntime* runtime, uint8_t completed)"),
+    (
+        "initialize_track_parcel_runtime",
+        "Parcel* __thiscall initialize_track_parcel_runtime(Parcel* parcel)",
+    ),
+    (
+        "update_track_parcels",
+        "void __thiscall update_track_parcels(ParcelManager* manager)",
+    ),
+    (
+        "initialize_track_parcel_slots",
+        "void __thiscall initialize_track_parcel_slots(ParcelManager* manager)",
+    ),
+    (
+        "allocate_track_parcel_slot",
+        "Parcel* __thiscall allocate_track_parcel_slot(ParcelManager* manager)",
+    ),
+    (
+        "update_track_parcel",
+        "void __thiscall update_track_parcel(Parcel* parcel)",
+    ),
+    (
+        "spawn_track_parcel",
+        "Parcel* __thiscall spawn_track_parcel(SubgameRuntime* runtime, Vec3* world_position, Player* source_player)",
+    ),
     (
         "initialize_challenge_setup_screen",
         "int32_t __thiscall initialize_challenge_setup_screen(GUI* gui)",
@@ -172,6 +197,8 @@ def main() -> int:
                 "JetPack",
                 "Banner",
                 "BannerPool",
+                "Parcel",
+                "ParcelManager",
             ),
         ),
         *apply_struct_field_updates(

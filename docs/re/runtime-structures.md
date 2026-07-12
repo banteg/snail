@@ -502,8 +502,11 @@ The current high-confidence `Game` fields are:
     `Import()` and `OpenLevels()` members matching the two Windows loaders
   - the aggregate ends exactly at the parcel pool, so the count does not alias
     entry 0 and there is no terminal padding word
-- `+0x125e480`: `track_parcels`
-  - `50`-slot `TrackParcelRuntime` array
+- `+0x125e480`: `parcel_manager`
+  - exact `0x1b58`-byte `cRParcelManager` owner with 50 inline `0x8c`-byte
+    `Parcel` records
+  - each `Parcel` owns its inherited `BodBase` and borrows the enclosing
+    `SubgameRuntime`, embedded `Player`, and SpriteManager sprite handle
 - `+0x1260020`: `galaxy`
   - exact `0x10fa8`-byte `Galaxy` controller ending at `+0x1270fc8`
   - 101 `0x2a0` slots at controller `+0x10`; each slot owns a four-byte tick

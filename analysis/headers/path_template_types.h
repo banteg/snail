@@ -140,6 +140,27 @@ typedef struct Sprite {
     uint8_t _pad_54[0xb4 - 0x54];
 } Sprite;
 
+typedef struct Parcel {
+    BodBase bod;
+    int32_t state;
+    SubgameRuntime* owner_subgame;
+    uint8_t _pad_40[0x54 - 0x40];
+    Sprite* sprite;
+    uint8_t _pad_58[0x5c - 0x58];
+    float bob_phase;
+    float bob_phase_step;
+    Player* owner_player;
+    float progress;
+    float progress_step;
+    float target_distance;
+    Vec3 travel_dir;
+    Vec3 delivery_offset;
+} Parcel;
+
+typedef struct ParcelManager {
+    Parcel slots[50];
+} ParcelManager;
+
 typedef struct FrontendWidgetTextBuffer {
     uint8_t raw[0x420];
 } FrontendWidgetTextBuffer;
@@ -940,7 +961,9 @@ typedef struct Game {
     int32_t runtime_track_index;
     uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
     PathPair path_pairs[63];
-    uint8_t _pad_ff7bc4[0x12727d8 - 0xff7bc4];
+    uint8_t _pad_ff7bc4[0x125e480 - 0xff7bc4];
+    ParcelManager parcel_manager;
+    uint8_t _pad_125ffd8[0x12727d8 - 0x125ffd8];
     Completion completion;
     TimesUp times_up;
 } Game;
@@ -1480,6 +1503,22 @@ int32_t __thiscall append_track_cache_object(
 void __thiscall update_track_render_cache_rows(SegmentCache* manager);
 
 void __thiscall remove_track_render_cache_bods(SegmentCache* manager);
+
+Parcel* __thiscall initialize_track_parcel_runtime(Parcel* parcel);
+
+void __thiscall update_track_parcels(ParcelManager* manager);
+
+void __thiscall initialize_track_parcel_slots(ParcelManager* manager);
+
+Parcel* __thiscall allocate_track_parcel_slot(ParcelManager* manager);
+
+void __thiscall update_track_parcel(Parcel* parcel);
+
+Parcel* __thiscall spawn_track_parcel(
+    SubgameRuntime* runtime,
+    Vec3* world_position,
+    Player* source_player
+);
 
 int32_t __fastcall is_sub_loc_floor(TrackRowCell* cell);
 

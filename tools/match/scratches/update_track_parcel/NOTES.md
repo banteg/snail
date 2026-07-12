@@ -35,3 +35,13 @@ the direct state 0..7 switch recover native's prologue and substantially more
 of the vector-copy shape. The sole audit mismatch is real: BN proves
 `0x44362c` is the target's eight-entry state jump table, but the candidate's
 table entries differ because the residual control-flow tails still differ.
+
+## 2026-07-13 cross-tool owner closure
+
+The Binary Ninja and IDA subgame-runtime lanes now carry the same exact
+`Parcel` and `ParcelManager` owners as the matching headers. The legacy
+`TrackParcelRuntime[50]` field has been removed from the path-template sync:
+`SubgameRuntime +0x125e480` owns one `0x1b58`-byte manager, the manager owns 50
+inline `0x8c` records, and each record only borrows its enclosing runtime,
+embedded player, and sprite handle. This is a type/prototype correction; the
+honest 63.79%, 290/312 instruction scratch is unchanged.

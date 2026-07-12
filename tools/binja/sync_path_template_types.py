@@ -242,7 +242,6 @@ GAME_FIELD_UPDATES = (
     ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e4", "runtime_track_index", "int32_t"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
-    ("0x125e480", "parcel_pool", "TrackParcelRuntime[0x32]"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x12727d8", "completion", "Completion"),
     ("0x1272828", "times_up", "TimesUp"),

@@ -85,6 +85,30 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall complete_subgame(SubgameRuntime* runtime, unsigned char completed);",
     ),
     (
+        "initialize_track_parcel_runtime",
+        "Parcel* __thiscall initialize_track_parcel_runtime(Parcel* parcel);",
+    ),
+    (
+        "update_track_parcels",
+        "void __thiscall update_track_parcels(ParcelManager* manager);",
+    ),
+    (
+        "initialize_track_parcel_slots",
+        "void __thiscall initialize_track_parcel_slots(ParcelManager* manager);",
+    ),
+    (
+        "allocate_track_parcel_slot",
+        "Parcel* __thiscall allocate_track_parcel_slot(ParcelManager* manager);",
+    ),
+    (
+        "update_track_parcel",
+        "void __thiscall update_track_parcel(Parcel* parcel);",
+    ),
+    (
+        "spawn_track_parcel",
+        "Parcel* __thiscall spawn_track_parcel(SubgameRuntime* runtime, Vec3* world_position, Player* source_player);",
+    ),
+    (
         "initialize_challenge_setup_screen",
         "int __thiscall initialize_challenge_setup_screen(GUI* gui);",
     ),
@@ -204,6 +228,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "EnemyManager": _named_struct_size("EnemyManager"),
+                    "Parcel": _named_struct_size("Parcel"),
+                    "ParcelManager": _named_struct_size("ParcelManager"),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,
