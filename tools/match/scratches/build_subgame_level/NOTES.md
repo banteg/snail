@@ -257,3 +257,22 @@ lifecycle point. Windows and Android AI ignore the receiver, so the owner is an
 empty one-byte C++ class followed by alignment, not a fabricated state word.
 Focused Wibo remains 86.10%, 560/555 instructions, with 105 clean operands and
 the existing table-shape mismatch.
+
+## 2026-07-13 shared level-build ownership
+
+- The level reset now uses the shared `GameRoot`, `SubgameRuntime`, `Player`,
+  and `SubTracks` owners for the star field, landscape/backdrop state, replay
+  inputs, gauges and hazards, score/lives widgets, player setup, and terminal
+  subgame state. These substitutions preserve the 86.10%, 560/555 instruction
+  frontier and expose ownership without manufacturing a match.
+- `SubgameRuntime +0xa854` is the byte-sized `track_state_latch` handed between
+  row-event and movement-emitter paths. `SubTracks::selected_speed` also has a
+  bitwise view for the native `-1.0f` sentinel comparison.
+- The typed Banner-member rewrite was rejected because it changed the native
+  register topology. The remaining raw Banner setup stays visible as a real
+  source-shape residual even though the surrounding pool owner is known.
+- The shared-header refresh advances the unchanged local tables to `$L6051`
+  and `$L6052`. COFF still places them at object `+0x838` and `+0x84c`, with
+  the established bounded five- and four-entry contents. Registering those
+  content-proven aliases restores all 106 operands without altering the
+  partial function body.

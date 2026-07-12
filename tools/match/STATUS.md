@@ -606,7 +606,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 50/50 | 84.00% | 5/50 | - |  |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
-| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 86.10% | 244/555 | 1 mismatch, 105 ok |  |
+| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 86.10% | 244/555 | 106 ok |  |
 | 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
 | 🚧 | update_sub_loc | 0x439d50 | 702 | 188/187 | 83.20% | 26/187 | 35 ok |  |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |

@@ -361,3 +361,12 @@ aliases respectively and restore the 85 clean operands.
 - COFF still places the five-entry bottom-HUD table at object `+0x62c` and the
   eight-entry startup table at `+0x640`. The method remains instruction-exact
   at 396/396; registering those bounded aliases restores all 85 operands.
+
+2026-07-13 level-build owner header refresh:
+
+- Naming the shared `track_state_latch` and `selected_speed` sentinel view
+  advances the unchanged mode tables to `$L5356`/`$L5357`.
+- COFF still places the bounded five-entry bottom-HUD table at object `+0x62c`
+  and the eight-entry startup table at `+0x640`. The method remains
+  instruction-exact at 396/396; registering those content-proven aliases
+  restores all 85 operands.

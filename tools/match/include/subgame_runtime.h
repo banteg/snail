@@ -130,7 +130,8 @@ public:
     // Owns 143 rows x five render-family BOD slots and their shared staging
     // buffers. Its owner_subgame field is a borrowed backlink to this object.
     SegmentCache segment_cache; // +0x5c, ends at +0xa854
-    char unknown_00a854[0xa858 - 0xa854];
+    unsigned char track_state_latch; // +0xa854, row-event / movement-emitter handoff
+    char unknown_00a855[0xa858 - 0xa855];
     Tutorial tutorial; // +0xa858, authored cRTutorial owner through +0xa874
     // Embedded level-definition owner. Its exact extent accounts for the
     // authored segment slots and all parsed level metadata through parcel_quota.

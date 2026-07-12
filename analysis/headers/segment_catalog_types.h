@@ -72,7 +72,10 @@ typedef struct SubTracks {
     uint8_t unknown_1a58c9[0x1a58cc - 0x1a58c9];
     Color4f fringe_color;
     char level_display_name[0x80];
-    float selected_speed;
+    union {
+        float selected_speed;
+        int32_t selected_speed_bits;
+    };
     float garbage_frequency;
     float salt_frequency;
     int32_t landscape_script_index;

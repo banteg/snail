@@ -22,7 +22,10 @@ public:
     char unknown_1a58c9[0x1a58cc - 0x1a58c9];
     Color4f fringe_color;                // +0x1a58cc
     char level_display_name[0x80];       // +0x1a58dc
-    float selected_speed;                // +0x1a595c
+    union {
+        float selected_speed;            // +0x1a595c
+        int selected_speed_bits;         // sentinel comparison view
+    };
     float garbage_frequency;             // +0x1a5960
     float salt_frequency;                // +0x1a5964
     int landscape_script_index;          // +0x1a5968

@@ -4,6 +4,7 @@
 #include "bod_list.h"
 #include "damage_guage.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "landscape_manager.h"
 #include "sub_tracks.h"
 #include "mouse_cursor_state.h"
@@ -32,8 +33,8 @@ void SubgameRuntime::build_subgame_level(int level_index)
 {
     char* game = (char*)this;
 
-    ((StarManager*)(g_game_base + 0x4f33c))->unhide_star_field();
-    if (*(int*)(game + 0x40) == 7)
+    ((GameRoot*)g_game_base)->star_manager.unhide_star_field();
+    if (level_mode == 7)
         hide_gameplay_scores();
     else
         unhide_gameplay_scores();
@@ -58,67 +59,57 @@ void SubgameRuntime::build_subgame_level(int level_index)
     next_slug_voice_trigger_z = 50.0f;
     slug_voice_trigger_spacing_z = 100.0f;
     enemy_manager.initialize_enemy_manager();
-    ((DamageGuage*)(game + 0x3bbb28))->initialize_damage_gauge();
-    ((ProgressBar*)(game + 0x3bbb54))->noop_runtime_ai();
-    ((SubLazerManager*)(game + 0x356b00))->initialize_sub_lazer_pool();
-    ((SaltManager*)(game + 0x3578c0))->initialize_salt_hazard_pool();
+    player.damage_gauge.initialize_damage_gauge();
+    player.progress_bar.noop_runtime_ai();
+    sub_lazers.initialize_sub_lazer_pool();
+    salt_hazards.initialize_salt_hazard_pool();
     g_voice_manager.reset_voice_manager();
 
-    ((SubTracks*)(game + 0xa874))->load_frontend_level_by_mode_and_index(
-        *(int*)(game + 0x40), level_index);
+    level_definition.load_frontend_level_by_mode_and_index(level_mode, level_index);
 
-    if (*(unsigned char*)(game + 0xff25d0) != zero
-        || *(unsigned char*)(game + 0xff25d1) != zero) {
-        *(float*)(game + 0x30) =
-            (*(SubSolution**)(game + 0xff25d4))->replay_speed_scalar;
-        *(int*)(game + 0x40) =
-            (*(SubSolution**)(game + 0xff25d4))->replay_mode_id;
-        *(int*)(game + 0x2c) =
-            (*(SubSolution**)(game + 0xff25d4))->challenge_difficulty_value;
-        *(int*)(game + 0x28) =
-            (*(SubSolution**)(game + 0xff25d4))->challenge_speed_value;
-        *(float*)(game + 0x34) =
-            (float)(*(SubSolution**)(game + 0xff25d4))->challenge_difficulty_value
-            * 0.00999999978f;
+    if (selected_level_record_active != zero
+        || selected_level_record_persistent != zero) {
+        base_rate = selected_level_record->replay_speed_scalar;
+        level_mode = selected_level_record->replay_mode_id;
+        completion_bonus_y_source = selected_level_record->challenge_difficulty_value;
+        completion_bonus_x_source = selected_level_record->challenge_speed_value;
+        challenge_difficulty_scalar =
+            (float)selected_level_record->challenge_difficulty_value * 0.00999999978f;
     } else {
-        int level_mode = *(int*)(game + 0x40);
-        if (level_mode == 3) {
-            *(float*)(game + 0x30) = g_runtime_config.default_challenge_speed_slider;
-        } else if (level_mode == 0 || level_mode == 4 || level_mode == 7) {
-            if (*(int*)(game + 0x1b01d0) == (int)0xbf800000) {
-                *(float*)(game + 0x30) = calc_slider_to_rate(0.0f);
+        int mode = level_mode;
+        if (mode == 3) {
+            base_rate = g_runtime_config.default_challenge_speed_slider;
+        } else if (mode == 0 || mode == 4 || mode == 7) {
+            if (level_definition.selected_speed_bits == (int)0xbf800000) {
+                base_rate = calc_slider_to_rate(0.0f);
             } else {
                 float normalized_speed =
-                    *(float*)(game + 0x1b01d0) * 0.00999999978f;
-                *(float*)(game + 0x30) =
-                    normalized_speed * 0.900000036f + 0.200000003f;
+                    level_definition.selected_speed * 0.00999999978f;
+                base_rate = normalized_speed * 0.900000036f + 0.200000003f;
             }
-        } else if (level_mode == 1) {
-            *(float*)(game + 0x30) = calc_slider_to_rate(
+        } else if (mode == 1) {
+            base_rate = calc_slider_to_rate(
                 (float)g_runtime_config.completion_bonus_x_source * 0.00999999978f);
-            *(float*)(game + 0x34) =
+            challenge_difficulty_scalar =
                 (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
-        } else if (level_mode == 2) {
-            *(float*)(game + 0x30) = calc_slider_to_rate(
+        } else if (mode == 2) {
+            base_rate = calc_slider_to_rate(
                 g_runtime_config.default_challenge_speed_slider);
         }
     }
 
-    if (*(unsigned char*)(game + 0xff25d0) != zero
-        || *(unsigned char*)(game + 0xff25d1) != zero) {
-        garbage_frequency =
-            (*(SubSolution**)(game + 0xff25d4))->garbage_frequency;
-        salt_frequency =
-            (*(SubSolution**)(game + 0xff25d4))->salt_frequency;
+    if (selected_level_record_active != zero
+        || selected_level_record_persistent != zero) {
+        garbage_frequency = selected_level_record->garbage_frequency;
+        salt_frequency = selected_level_record->salt_frequency;
     } else {
-        int level_mode = *(int*)(game + 0x40);
-        if (level_mode == 2 || level_mode == 3 || level_mode == 0
-            || level_mode == 4 || level_mode == 7) {
+        int mode = level_mode;
+        if (mode == 2 || mode == 3 || mode == 0 || mode == 4 || mode == 7) {
             garbage_frequency =
                 level_definition.garbage_frequency * 0.00999999978f;
             salt_frequency =
                 level_definition.salt_frequency * 0.00999999978f;
-        } else if (level_mode == 1) {
+        } else if (mode == 1) {
             float normalized_garbage_difficulty =
                 (float)g_runtime_config.completion_bonus_y_source * 0.00999999978f;
             garbage_frequency =
@@ -132,49 +123,47 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     parcel_manager.initialize_track_parcel_slots();
     if (*(unsigned char*)(g_game_base + 0x4f2e0) == 1) {
-        (*(FrontendWidget**)(game + 0x35bb88))->hide_border_init();
-        (*(FrontendWidget**)(game + 0x35bb8c))->hide_border_init();
+        top_score_widget->hide_border_init();
+        bottom_score_widget->hide_border_init();
     }
 
     rebuild_track_runtime_from_segments(level_index);
 
-    if (*(int*)(game + 0x1b01e4) == 5) {
+    if (level_definition.track_texture_set == 5) {
         int landscape_index;
         switch ((unsigned int)random_float_below(4.0f, 0)) {
         case 0:
             landscape_index =
-                ((LandscapeManager*)(g_game_base + 0x106c218))
-                    ->load_landscape_script_by_name("SpaceBluesWhorl.txt");
+                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                    .load_landscape_script_by_name("SpaceBluesWhorl.txt");
             break;
         case 1:
             landscape_index =
-                ((LandscapeManager*)(g_game_base + 0x106c218))
-                    ->load_landscape_script_by_name("SpaceGreenWarp.txt");
+                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                    .load_landscape_script_by_name("SpaceGreenWarp.txt");
             break;
         case 2:
             landscape_index =
-                ((LandscapeManager*)(g_game_base + 0x106c218))
-                    ->load_landscape_script_by_name("SpacePurple.txt");
+                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                    .load_landscape_script_by_name("SpacePurple.txt");
             break;
         case 3:
             landscape_index =
-                ((LandscapeManager*)(g_game_base + 0x106c218))
-                    ->load_landscape_script_by_name("SpaceRed.txt");
+                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                    .load_landscape_script_by_name("SpaceRed.txt");
             break;
         default:
             landscape_index = *(volatile int*)&level_index;
             break;
         }
 
-        ((LandscapeManager*)(game + 0xff7c00))
-            ->activate_landscape_entry(landscape_index);
+        landscape_manager.activate_landscape_entry(landscape_index);
         if (random_float_below(1.0f, 0) > 0.5f)
-            *(unsigned char*)(g_game_base + 0x4ec64) = 1;
+            ((GameRoot*)g_game_base)->backdrop.pending_flip = 1;
         else
-            *(unsigned char*)(g_game_base + 0x4ec64) = (unsigned char)zero;
+            ((GameRoot*)g_game_base)->backdrop.pending_flip = (unsigned char)zero;
     } else {
-        ((LandscapeManager*)(game + 0xff7c00))
-            ->activate_landscape_entry(*(int*)(game + 0x1b01dc));
+        landscape_manager.activate_landscape_entry(level_definition.landscape_script_index);
     }
 
     BodNode* track_bod_list = &track_body_list_head;
@@ -226,17 +215,17 @@ void SubgameRuntime::build_subgame_level(int level_index)
     *(unsigned int*)(game + 0x3590e4) = completion_flags;
     *(int*)(game + 0x359114) = row_alpha;
 
-    *(unsigned char*)(game + 0xa854) = (unsigned char)zero;
-    *(int*)(game + 0xff25dc) = zero;
-    *(int*)(game + 0x1272828) = zero;
-    *(int*)(game + 0x3c) = 2;
+    track_state_latch = (unsigned char)zero;
+    replay_update_cursor = zero;
+    times_up.state = zero;
+    subgame_state = 2;
 
     int one = 1;
-    *(int*)(g_game_base + 0x56c) = one;
-    ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
-    *(int*)(game + 0x3bbb70) = one;
-    *(int*)(game + 0x3be0d4) = zero;
-    embedded_player()->initialize_subgoldy(one);
+    ((GameRoot*)g_game_base)->render_skip_count = one;
+    ((GameRoot*)g_game_base)->players[0].mouse_cursor.release_mouse_cursor();
+    player.movement_mode_selector = one;
+    player.steering_mode_selector = zero;
+    player.initialize_subgoldy(one);
 
     BodNode* node =
         (BodNode*)&embedded_player()->presentation.jetpack_channel;
@@ -398,17 +387,17 @@ void SubgameRuntime::build_subgame_level(int level_index)
     }
     barrier.owner_player = embedded_player();
 
-    if (*(int*)(game + 0x40) == zero) {
-        sprintf((char*)(*(FrontendWidget**)(game + 0x35bb94)) + 0x2cc,
-            "0/%i", *(int*)(game + 0x1b01e0));
-        (*(FrontendWidget**)(game + 0x35bb90))->unhide_border_init();
-        (*(FrontendWidget**)(game + 0x35bb94))->unhide_border_init();
+    if (level_mode == zero) {
+        sprintf(lives_text_widget->text_buffer,
+            "0/%i", level_definition.parcel_count);
+        lives_icon_widget->unhide_border_init();
+        lives_text_widget->unhide_border_init();
     }
 
     set_input_controller_pointer_authored_xy(0, 320.0f, 240.0f);
     set_input_controller_pointer_authored_xy(1, 320.0f, 240.0f);
-    *(float*)(game + 0x3bdea0) = 320.0f;
-    *(float*)(game + 0x3bdea4) = 320.0f;
-    *(unsigned char*)game = 1;
+    player.track_z_offset = 320.0f;
+    player.track_z_anchor = 320.0f;
+    scan_reset = 1;
     calc_subgame_rate();
 }
