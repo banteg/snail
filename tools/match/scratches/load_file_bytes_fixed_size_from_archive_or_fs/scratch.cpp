@@ -66,26 +66,26 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
 
                     if (buffer == 0) {
                         char* allocated = (char*)allocate_tracked_memory(byte_count, file_name);
-                        int entry_offset = entry_index * sizeof(ArchiveEntry);
+                        int current_offset = ftell(g_archive_file);
                         fseek(g_archive_file,
-                            *(int*)((char*)g_archive_index_records + entry_offset + 8)
-                                - ftell(g_archive_file),
+                            g_archive_index_records->entries[entry_index].data_offset
+                                - current_offset,
                             1);
                         fread(allocated, 1, byte_count, g_archive_file);
                         xor_archive_bytes_in_place(
-                            *(int*)((char*)g_archive_index_records + entry_offset + 8),
+                            g_archive_index_records->entries[entry_index].data_offset,
                             allocated,
                             byte_count);
                         return allocated;
                     } else {
-                        int entry_offset = entry_index * sizeof(ArchiveEntry);
+                        int current_offset = ftell(g_archive_file);
                         fseek(g_archive_file,
-                            *(int*)((char*)g_archive_index_records + entry_offset + 8)
-                                - ftell(g_archive_file),
+                            g_archive_index_records->entries[entry_index].data_offset
+                                - current_offset,
                             1);
                         fread(buffer, 1, byte_count, g_archive_file);
                         xor_archive_bytes_in_place(
-                            *(int*)((char*)g_archive_index_records + entry_offset + 8),
+                            g_archive_index_records->entries[entry_index].data_offset,
                             buffer,
                             byte_count);
                         return buffer;

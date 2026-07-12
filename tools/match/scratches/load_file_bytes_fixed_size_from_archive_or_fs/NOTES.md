@@ -15,8 +15,8 @@ instructions, 9-instruction prefix, and 32 clean masked operands.
 
 Known residuals:
 
-- native coalesces the `ftell` and `_getcwd` stack cleanup into later CRT and
-  report calls, while this C++ scratch emits local `add esp` cleanup;
+- native coalesces `_getcwd` stack cleanup into the following report call,
+  while this C++ scratch emits one local `add esp` cleanup;
 - the native loop exits as `jl scan; jmp filesystem_fallback`, while this
   scratch emits the equivalent inverted test plus explicit jump.
 
@@ -35,3 +35,18 @@ that scratch's broader control-flow shape separate.
 2026-07-09 shape campaign: goto-scan loop form is codegen-neutral at 85.26%.
 Typed `ArchiveEntry*` cursor regresses to 53.26% with three masked mismatches.
 Retain the `char**` entry-path walk.
+
+2026-07-12 archive data-offset and stream-position ownership:
+
+- The sentinel, seek target, and XOR seed are all the selected 12-byte
+  `ArchiveEntry::data_offset`; raw base-plus-offset expressions are replaced by
+  that typed owner without caching an entry pointer or disturbing the proven
+  `char**` scan cursor.
+- Both archive read branches save `ftell(g_archive_file)` before constructing
+  the relative `fseek`. This recovers native's stream-position lifetime and
+  prevents VC6 from pre-pushing `SEEK_CUR` while evaluating the nested call.
+- Focused Wibo improves from 85.26% to 92.84% (189/188 instructions, 9/188
+  prefix, 32 clean masks, no unresolved operands or mismatches). Both archive
+  buffer paths now normalize identically; the remaining extra instruction is
+  the `_getcwd` cleanup noted above, alongside the established ASCII-fold and
+  loop-layout encodings.

@@ -1521,7 +1521,7 @@
     {
       "address": "0x431030",
       "name": "load_file_bytes_fixed_size_from_archive_or_fs",
-      "description": "Loads exactly the caller-supplied byte count from a named archive entry or filesystem path, reusing the caller buffer when provided and otherwise allocating a tracked buffer before applying the archive XOR decode."
+      "description": "Loads exactly the caller-supplied byte count from a named archive entry or filesystem path, using ArchiveEntry data_offset for the sentinel, seek target, and XOR seed while reusing a caller buffer or allocating tracked storage."
     },
     {
       "address": "0x431250",
