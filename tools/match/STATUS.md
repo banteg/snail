@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**522/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **76535/325720** bytes (**23.50%**) are proof-grade, and overall fuzzy is **60.31%**.
+**524/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77309/325720** bytes (**23.73%**) are proof-grade, and overall fuzzy is **60.34%**.
 
-## Proof Grade (522)
+## Proof Grade (524)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -305,7 +305,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_slug_hazard | 0x43dc80 | 642 | 160/160 | 100.00% | 160/160 | 18 ok |  |
 | ✅ | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 100.00% | 153/153 | 10 ok |  |
 | ✅ | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 100.00% | 65/65 | 9 ok |  |
+| ✅ | update_track_health_pickup | 0x43ecc0 | 390 | 128/128 | 100.00% | 128/128 | 21 ok |  |
 | ✅ | update_track_speedup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  |
+| ✅ | update_track_jetpack_pickup | 0x43efb0 | 384 | 127/127 | 100.00% | 127/127 | 20 ok |  |
 | ✅ | destroy_garbage_hazard | 0x43f130 | 205 | 62/62 | 100.00% | 62/62 | 6 ok |  |
 | ✅ | update_slug_voice_ai | 0x43f520 | 56 | 14/14 | 100.00% | 14/14 | 1 ok |  |
 | ✅ | play_slug_voice | 0x43f560 | 95 | 22/22 | 100.00% | 22/22 | 3 ok |  |
@@ -561,7 +563,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 97.83% | 18/92 | - |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (59)
+## High Progress (80-94.99%) (57)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -597,10 +599,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 120/122 | 88.43% | 6/122 | 7 ok |  |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 120/122 | 90.08% | 6/122 | 7 ok |  |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 144/144 | 84.72% | 7/144 | 9 ok |  |
-| 🚧 | update_track_health_pickup | 0x43ecc0 | 390 | 129/128 | 87.94% | 6/128 | 21 ok |  |
-| 🚧 | update_track_jetpack_pickup | 0x43efb0 | 384 | 128/127 | 87.84% | 6/127 | 20 ok |  |
 | 🚧 | update_garbage_hazard | 0x43f200 | 777 | 217/217 | 93.55% | 13/217 | 22 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 81.91% | 0/147 | 32 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |

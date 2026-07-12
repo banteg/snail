@@ -114,3 +114,16 @@ form regressed to `83.85%`.
   from 87.29% (147/144) to an honest 84.72% with exact 144/144 instruction
   count and all nine audited references clean. The fake result is not retained
   merely for register-allocation score.
+
+## 2026-07-12 grid and active-list ownership
+
+- The four former raw byte probes are exact `SubLoc` neighbors:
+  `cell[-1].tile_id`, `cell[2].tile_id`, `cell[-2].tile_id`, and
+  `cell[1].tile_id`. Their 0x54-byte stride explains every native displacement
+  and removes the last anonymous grid access from this allocator.
+- Android calls `cLinkedList<cRBod>::Add`; the Windows splice is now expressed
+  through the same owned inline `BodList::add_bod` used by the health allocator.
+
+Both changes are codegen-neutral at the honest 84.72%, `144/144` baseline with
+nine clean references. The residual is limited to the void full-pool epilogue
+and VC6's lane-14 constant/register schedule, not ownership.

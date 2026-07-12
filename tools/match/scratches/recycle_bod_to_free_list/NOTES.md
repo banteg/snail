@@ -8,7 +8,7 @@ neighbor `prev`/`next` links, updates the list head when removing the first
 node, pushes the node onto `free_top`, clears `0x200`, and returns the recycled
 node pointer.
 
-The exact source shape is the shared typed intrusive-list implementation with
-explicit `next` and `prev` locals. Use this as the small source-of-truth anchor
-for the repeated inline list removal/free-stack blocks in runtime pickup,
-projectile, salt, garbage, fringe, and subgame teardown functions.
+The exact scratch is now the emitted wrapper around the owned inline
+`BodList::remove_bod` implementation. The same method inlines exactly in the
+speedup, health, and JetPack AI state paths, making this 36-instruction helper
+the source-of-truth anchor for repeated runtime removal/free-stack blocks.

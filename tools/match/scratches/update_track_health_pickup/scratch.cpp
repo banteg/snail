@@ -13,10 +13,6 @@ float sine(float radians);
 void SubHealth::update_track_health_pickup()
 {
     int zero = 0;
-    unsigned int flags;
-    BodList* head;
-    SubHealth* next;
-    SubHealth* prev;
 
     if (owner_game->subgame_pause_gate != zero) {
         return;
@@ -36,72 +32,15 @@ void SubHealth::update_track_health_pickup()
     return;
 
 state_two:
-    flags = list_flags;
     state = zero;
-    head = (BodList*)(g_game_base + 0x5a8);
-    if ((flags & 0x200) == 0) goto state_two_not_linked;
-    if ((flags & 0x40) != 0) goto state_two_nextbod;
-
-    next = (SubHealth*)list_next;
-    if (next != (SubHealth*)zero) {
-        next->list_prev = list_prev;
-    }
-
-    prev = (SubHealth*)list_prev;
-    if (prev != (SubHealth*)zero) {
-        prev->list_next = list_next;
-    } else {
-        head->first = (BodNode*)list_next;
-    }
-
-    list_next = (SubHealth*)head->free_top;
-    head->free_top = (BodNode*)this;
-    list_flags &= ~0x200;
-    sprite->kill_sprite();
-    return;
-
-state_two_nextbod:
-    report_errorf("List remove NEXTBOD");
-    sprite->kill_sprite();
-    return;
-
-state_two_not_linked:
-    report_errorf("List remove");
+    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
     sprite->kill_sprite();
     return;
 
 state_one:
     if (world_position.z < owner->interaction_max_z) {
-        flags = list_flags;
         state = zero;
-        head = (BodList*)(g_game_base + 0x5a8);
-        Sprite* pickup_sprite = sprite;
-        if ((flags & 0x200) == 0) {
-            report_errorf("List remove");
-            pickup_sprite->kill_sprite();
-            return;
-        }
-        if ((flags & 0x40) != 0) {
-            report_errorf("List remove NEXTBOD");
-            pickup_sprite->kill_sprite();
-            return;
-        }
-
-        next = (SubHealth*)list_next;
-        if (next != (SubHealth*)zero) {
-            next->list_prev = list_prev;
-        }
-
-        prev = (SubHealth*)list_prev;
-        if (prev != (SubHealth*)zero) {
-            prev->list_next = list_next;
-        } else {
-            head->first = (BodNode*)list_next;
-        }
-
-        list_next = (SubHealth*)head->free_top;
-        head->free_top = (BodNode*)this;
-        list_flags &= ~0x200;
+        ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
         sprite->kill_sprite();
         return;
     }

@@ -22,9 +22,8 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
             break;
         ++slot_index;
         scan += 103;
-        if (slot_index < 1)
-            continue;
-        return;
+        if (slot_index >= 1)
+            return;
     }
 
     DWORD* slot_base = game_words + 103 * slot_index;
@@ -40,33 +39,16 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     *live_position = staged_position;
 
     int lane = cell->lane_and_flags & 7;
-    if (lane == 3 && *((unsigned char*)cell - 24) == 14
-        && *((unsigned char*)cell + 228) == 14) {
+    if (lane == 3 && cell[-1].tile_id == 14
+        && cell[2].tile_id == 14) {
         live_position->x = live_position->x + 0.5f;
-    } else if (lane == 4 && *((unsigned char*)cell - 108) == 14
-        && *((unsigned char*)cell + 144) == 14) {
+    } else if (lane == 4 && cell[-2].tile_id == 14
+        && cell[1].tile_id == 14) {
         live_position->x = live_position->x - 0.5f;
     }
 
     BodNode* node = (BodNode*)&slot->jetpack_pickup;
-    if ((node->list_flags & 0x200) != 0) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= 0x200;
-    }
+    ((BodList*)(g_game_base + 0x5a8))->add_bod(node);
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 124, -1, -1);

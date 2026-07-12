@@ -12,10 +12,6 @@ int report_errorf(char* format, ...);
 void SubSpeedUp::update_track_speedup()
 {
     int zero = 0;
-    unsigned int flags;
-    BodList* head;
-    SubSpeedUp* next;
-    SubSpeedUp* prev;
 
     if (owner_game->subgame_pause_gate != zero) {
         return;
@@ -35,35 +31,8 @@ void SubSpeedUp::update_track_speedup()
     return;
 
 state_two:
-    flags = list_flags;
     state = zero;
-    head = (BodList*)(g_game_base + 0x5a8);
-    if ((flags & 0x200) == 0) {
-        report_errorf("List remove");
-        sprite->kill_sprite();
-        return;
-    }
-    if ((flags & 0x40) != 0) {
-        report_errorf("List remove NEXTBOD");
-        sprite->kill_sprite();
-        return;
-    }
-
-    next = (SubSpeedUp*)list_next;
-    if (next != (SubSpeedUp*)zero) {
-        next->list_prev = list_prev;
-    }
-
-    prev = (SubSpeedUp*)list_prev;
-    if (prev != (SubSpeedUp*)zero) {
-        prev->list_next = list_next;
-    } else {
-        head->first = (BodNode*)list_next;
-    }
-
-    list_next = head->free_top;
-    head->free_top = (BodNode*)this;
-    list_flags &= ~0x200;
+    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
     sprite->kill_sprite();
     return;
 
@@ -72,34 +41,7 @@ state_one:
         return;
     }
 
-    flags = list_flags;
     state = zero;
-    head = (BodList*)(g_game_base + 0x5a8);
-    if ((flags & 0x200) == 0) {
-        report_errorf("List remove");
-        sprite->kill_sprite();
-        return;
-    }
-    if ((flags & 0x40) != 0) {
-        report_errorf("List remove NEXTBOD");
-        sprite->kill_sprite();
-        return;
-    }
-
-    next = (SubSpeedUp*)list_next;
-    if (next != (SubSpeedUp*)zero) {
-        next->list_prev = list_prev;
-    }
-
-    prev = (SubSpeedUp*)list_prev;
-    if (prev != (SubSpeedUp*)zero) {
-        prev->list_next = list_next;
-    } else {
-        head->first = (BodNode*)list_next;
-    }
-
-    list_next = head->free_top;
-    head->free_top = (BodNode*)this;
-    list_flags &= ~0x200;
+    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
     sprite->kill_sprite();
 }

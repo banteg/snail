@@ -15,10 +15,6 @@ float sine(float radians);
 void JetPack::update_track_jetpack_pickup()
 {
     int zero = 0;
-    unsigned int flags;
-    BodList* anchor;
-    JetPack* next;
-    JetPack* prev;
 
     if (owner_game->subgame_pause_gate != zero)
         return;
@@ -37,70 +33,15 @@ void JetPack::update_track_jetpack_pickup()
     return;
 
 state_two:
-    flags = list_flags;
     state = zero;
-    anchor = (BodList*)(g_game_base + 0x5a8);
-    if ((flags & 0x200) == 0) goto state_two_not_linked;
-    if ((flags & 0x40) != 0) goto state_two_nextbod;
-
-    next = (JetPack*)list_next;
-    if (next != (JetPack*)zero)
-        next->list_prev = list_prev;
-
-    prev = (JetPack*)list_prev;
-    if (prev != (JetPack*)zero) {
-        prev->list_next = list_next;
-    } else {
-        anchor->first = list_next;
-    }
-
-    list_next = (JetPack*)anchor->free_top;
-    anchor->free_top = this;
-    list_flags &= ~0x200;
-    sprite->kill_sprite();
-    return;
-
-state_two_nextbod:
-    report_errorf("List remove NEXTBOD");
-    sprite->kill_sprite();
-    return;
-
-state_two_not_linked:
-    report_errorf("List remove");
+    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
     sprite->kill_sprite();
     return;
 
 state_one:
     if (world_position.z < owner->interaction_max_z) {
-        flags = list_flags;
         state = zero;
-        anchor = (BodList*)(g_game_base + 0x5a8);
-        Sprite* pickup_sprite = sprite;
-        if ((flags & 0x200) == 0) {
-            report_errorf("List remove");
-            pickup_sprite->kill_sprite();
-            return;
-        }
-        if ((flags & 0x40) != 0) {
-            report_errorf("List remove NEXTBOD");
-            pickup_sprite->kill_sprite();
-            return;
-        }
-
-        next = (JetPack*)list_next;
-        if (next != (JetPack*)zero)
-            next->list_prev = list_prev;
-
-        prev = (JetPack*)list_prev;
-        if (prev != (JetPack*)zero) {
-            prev->list_next = list_next;
-        } else {
-            anchor->first = list_next;
-        }
-
-        list_next = (JetPack*)anchor->free_top;
-        anchor->free_top = this;
-        list_flags &= ~0x200;
+        ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
         sprite->kill_sprite();
         return;
     }

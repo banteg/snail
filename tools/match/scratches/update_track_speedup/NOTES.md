@@ -14,9 +14,9 @@ Recovered behavior:
 - state `1` performs the same teardown once `world_position.z` falls behind
   `owner->interaction_max_z`.
 
-The local source shape intentionally keeps the state-1 and state-2 unlink
-blocks duplicated. VC6 otherwise merges the error tails and loses the exact
-native layout.
+Both teardown arms now call the recovered inline `BodList::remove_bod`, matching
+Android's `cLinkedList<cRBod>::Remove` ownership. VC6 independently inlines the
+method at both callsites and retains the exact native duplicated blocks.
 
 2026-06-16 vtable correction: this is the speedup singleton updater, not the
 jetpack pickup updater. The proof is `initialize_track_speedup_runtime`, which
@@ -48,3 +48,7 @@ the primary `SubSpeedUp` type; `TrackSpeedupRuntime` is a compatibility alias.
 The constructor-installed table at `0x497314` points directly here, while
 Android and iOS retain `cRSubSpeedUp::AI()`. The body remains exact at 103/103
 instructions with all 15 masked operands clean.
+
+2026-07-12 shared-list consolidation: replacing both hand-expanded unlink
+bodies with the owned inline `BodList::remove_bod` keeps the function exact at
+`103/103`, proving the same abstraction across speedup, health, and JetPack AI.

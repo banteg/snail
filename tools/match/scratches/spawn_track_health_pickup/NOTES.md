@@ -4,7 +4,7 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `88.43%`, `120/122` candidate/target instructions, with `7` masked operands
+- `90.08%`, `120/122` candidate/target instructions, with `7` masked operands
   clean and no unresolved or mismatched references.
 - The scratch now uses the primary `SubHealth` field names for slot
   initialization and sprite ownership. The key source-shape fix is staging the
@@ -171,3 +171,11 @@ that holds 97.54%. Treat as pinned register-ownership residual.
   88.43% (120/122); all seven audited references remain clean. The lost shape
   is VC6's return/epilogue allocation, not missing behavior, and the fake
   pointer contract is not retained merely for score.
+
+## 2026-07-12 shared list insertion recovery
+
+Android calls `cLinkedList<cRBod>::Add` for the inherited pickup BOD. Moving the
+already recovered empty/non-empty splice onto the owned inline `BodList` method
+improves the honest void reconstruction from 88.43% to 90.08% while preserving
+all seven audited references. The remaining differences are the occupied-pool
+void epilogue and independent setup-tail scheduling, not list ownership.

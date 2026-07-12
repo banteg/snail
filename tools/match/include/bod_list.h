@@ -4,6 +4,8 @@
 
 #include "contact_target.h"
 
+int report_errorf(char* format, ...);
+
 struct BodNode : public ContactTargetObject {
     BodNode* list_prev;      // +0x08
     BodNode* list_next;      // +0x0c
@@ -13,6 +15,52 @@ typedef char BodNode_must_be_0x10[(sizeof(BodNode) == 0x10) ? 1 : -1];
 class BodList {
 public:
     int recycle_bod_to_free_list(BodNode* node); // @ 0x447290
+
+    // Inlined cLinkedList<cRBod>::Add used by pickup allocators.
+    void add_bod(BodNode* node)
+    {
+        if ((node->list_flags & 0x200) != 0) {
+            report_errorf("List ADD");
+        } else {
+            if (first == 0) {
+                first = node;
+                node->list_prev = 0;
+                first->list_next = 0;
+            } else {
+                first->list_prev = node;
+                first->list_prev->list_next = first;
+                first = first->list_prev;
+                first->list_prev = 0;
+            }
+            node->list_flags |= 0x200;
+        }
+    }
+
+    // Inlined cLinkedList<cRBod>::Remove; 0x447290 is its exact emitted copy.
+    int remove_bod(BodNode* node)
+    {
+        int result = (int)node;
+        unsigned int flags = node->list_flags;
+        if ((flags & 0x200) == 0)
+            return report_errorf("List remove");
+        if ((flags & 0x40) != 0)
+            return report_errorf("List remove NEXTBOD");
+
+        BodNode* next = node->list_next;
+        if (next != 0)
+            next->list_prev = node->list_prev;
+
+        BodNode* prev = node->list_prev;
+        if (prev != 0)
+            prev->list_next = node->list_next;
+        else
+            first = node->list_next;
+
+        node->list_next = free_top;
+        free_top = node;
+        node->list_flags &= ~0x200;
+        return result;
+    }
 
     int unknown_00;
     BodNode* first;    // +0x04

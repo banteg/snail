@@ -2123,7 +2123,7 @@
     {
       "address": "0x43ecc0",
       "name": "update_track_health_pickup",
-      "description": "Runs one live `SubHealth` through bobbing and teardown states. The exact Windows constructor table at 0x497320 points directly here, while Android and iOS retain the authored member as `cRSubHealth::AI()`."
+      "description": "Exact `cRSubHealth::AI()`: runs one live `SubHealth` through bobbing and teardown states, inlining the shared `cLinkedList<cRBod>::Remove` operation in both removal arms. The Windows constructor table at 0x497320 points directly here, while Android and iOS retain the authored member."
     },
     {
       "address": "0x43ee50",
@@ -2133,7 +2133,7 @@
     {
       "address": "0x43efb0",
       "name": "update_track_jetpack_pickup",
-      "description": "Runs the owned `JetPack` singleton through bobbing and teardown states. The exact Windows constructor table at 0x497318 points directly here, while Android and iOS retain the authored member as `cRJetPack::AI()`."
+      "description": "Exact `cRJetPack::AI()`: runs the owned JetPack singleton through bobbing and teardown states, inlining the shared `cLinkedList<cRBod>::Remove` operation in both removal arms. The Windows constructor table at 0x497318 points directly here, while Android and iOS retain the authored member."
     },
     {
       "address": "0x43f130",
@@ -2658,7 +2658,7 @@
     {
       "address": "0x447290",
       "name": "recycle_bod_to_free_list",
-      "description": "Unlinks one active BOD from its current list membership and moves it back onto the shared free-list head, erroring if the source node is not currently marked as live-list owned."
+      "description": "Exact emitted `cLinkedList<cRBod>::Remove` helper: unlinks one active BOD, moves it onto the shared free-list head, and diagnoses invalid ownership or active-iteration removal. The same owned `BodList` body is inlined by pickup AI teardown paths."
     },
     {
       "address": "0x447300",

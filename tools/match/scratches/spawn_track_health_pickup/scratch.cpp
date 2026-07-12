@@ -40,25 +40,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     *live_position = staged_position;
 
     BodNode* node = (BodNode*)&slot->health_pickups[0];
-    if ((node->list_flags & 0x200) != 0) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            node = *first_ref;
-            node->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= 0x200;
-    }
+    ((BodList*)(g_game_base + 0x5a8))->add_bod(node);
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 57, -1, -1);

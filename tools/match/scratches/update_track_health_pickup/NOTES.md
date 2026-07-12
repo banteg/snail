@@ -1,8 +1,7 @@
 # update_track_health_pickup @ 0x43ecc0
 
-Current match: `87.94%`, `129/128` candidate/target instructions, prefix
-`6/128`, with `21` clean masked operands and no unresolved or mismatched
-operands.
+Current match: **100.00%**, `128/128` candidate/target instructions, full
+`128/128` prefix, with `21` clean masked operands.
 
 Recovered behavior:
 
@@ -18,13 +17,9 @@ Recovered behavior:
   `(sine(phase * tau) + 1.0f) * 0.30000001f + world_y` to
   `sprite->position.y`.
 
-The unlink source shape intentionally mirrors exact `update_track_speedup`
-with duplicated state-1/state-2 blocks. The remaining diff is source-shape and
-layout: native branches the state-1 non-removal path to a final bob tail, while
-the current switch spelling places the bob tail before the state-1 duplicated
-unlink block. The emitted x87 wrap condition now matches the native strict
-`> 1.0f` test (`test ah, 0x41`), but the moved bob tail also shifts the final
-sprite pointer register and epilogue scheduling.
+The emitted x87 wrap condition matches the native strict `> 1.0f` test
+(`test ah, 0x41`). Earlier hand-expanded unlink spellings left a block-layout
+residual; the shared-list recovery below closes it.
 
 Rejected source-shaped probes:
 
@@ -127,3 +122,11 @@ The receiver and intrusive-list neighbors now use the primary `SubHealth`
 type. The exact Windows constructor table at `0x497320` points directly to this
 helper; Android and iOS retain `cRSubHealth::AI()`. Focused Wibo remains the
 honest 87.94%, 129/128 instructions, with all 21 masked operands clean.
+
+## 2026-07-12 shared list removal recovery
+
+Android spells both teardown paths as `cLinkedList<cRBod>::Remove`, followed by
+`cRSprite::Kill`. Recovering that operation once on the owned `BodList` lets
+VC6 inline the body independently at the state-1 and state-2 callsites, exactly
+explaining the duplicated Windows error/unlink blocks without a synthetic
+saved `Sprite*`. Focused Windows matching is now exact at `128/128`.

@@ -4,7 +4,7 @@
 #include "player.h"
 #include "sprite.h"
 
-void report_errorf(char* format, ...);
+int report_errorf(char* format, ...);
 
 extern char* g_snail_hotspot_texture_names[]; // data_4a4aa0
 extern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table

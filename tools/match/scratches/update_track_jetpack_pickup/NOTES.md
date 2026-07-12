@@ -1,7 +1,7 @@
 # update_track_jetpack_pickup @ 0x43efb0
 
-Current match: `87.84%`, `128/127` candidate/target instructions, masked
-operands `20 ok / 0 mismatch`.
+Current match: **100.00%**, `127/127` candidate/target instructions, full
+`127/127` prefix, and `20` clean masked operands.
 
 2026-06-16 vtable correction: this is the jetpack pickup parent updater, not
 the sub-lazer projectile updater. `initialize_track_jetpack_pickup_runtime`
@@ -18,8 +18,8 @@ Layout facts now shared with `track_jetpack_pickup.h`:
 - embedded renderable bodies at `+0x74` and `+0x108`, initialized by the
   constructor but not directly advanced by this updater
 
-The remaining diff is block layout/register allocation in the duplicated
-remove paths and bob tail, not a known semantic gap.
+The shared-list recovery below closes the former duplicated-remove
+block-layout residual.
 
 2026-06-16 pickup/Sprite slice: the scratch-local `FreeAnchor` duplicate was
 removed in favor of the shared `BodList` view from `bod_list.h` via
@@ -59,3 +59,12 @@ ownership information and was removed. Focused code generation is unchanged.
 the primary `JetPack` type. The exact constructor table at `0x497318` points
 directly here, while Android and iOS retain `cRJetPack::AI()`. Focused Wibo
 remains 87.84%, 128/127 instructions, with all 20 masked operands clean.
+
+## 2026-07-12 shared list removal recovery
+
+Android spells both teardown paths as `cLinkedList<cRBod>::Remove`, followed by
+`cRSprite::Kill`. Recovering that operation on the owned `BodList` lets VC6
+inline the body separately at both callsites and reproduces the Windows
+diagnostic, neighbor-patch, free-stack, and flag-clear blocks exactly. The
+synthetic state-one `Sprite*` snapshot is gone; focused matching is now exact
+at `127/127`.
