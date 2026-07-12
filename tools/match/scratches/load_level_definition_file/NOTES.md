@@ -77,3 +77,28 @@ Residuals:
   `SubgameRuntime::landscape_manager`, not a standalone root-relative loader
   view. Naming both owners is codegen-neutral and removes the last raw
   `g_game_base` arithmetic from this parser.
+
+2026-07-12 parser cursor and source-order recovery:
+
+- The exact native `0x710` frame owns two reusable borrowed text cursors at
+  `esp+0x10` and `esp+0x14`, followed by the parsed integer at `esp+0x18` and
+  the `Segments End:` cursor at `esp+0x1c`. The five local buffers then begin
+  at `esp+0x20` with the already-recovered `512, 128, 128, 512, 512` extents.
+- The scratch had modeled the first cursor correctly but split the second
+  cursor between `line_cursor` and a scoped `option_cursor`. Native reuses that
+  one `esp+0x14` slot for copying the line options and parsing `Angle=`,
+  `Message=`, `Duration=`, and `Sample=`. Unifying the lifetime restores the
+  target's stack-backed line-copy loop and keeps all of those lookups on the
+  proven secondary cursor.
+- Native's missing-value blocks are authored as the first arm for `Fringe:`,
+  `Track:`, the nested `Speed:` lookup, `Garbage:`, and `Salt:`. Retaining those
+  natural negative tests aligns the fallback-first control flow. The Galaxy
+  text close-brace sentinel is now a borrowed pointer into the shared file
+  buffer rather than an integerized address, and the segment loop increments
+  the owning `segment_count` before advancing its borrowed line cursor, in the
+  order explicit in the target.
+- Together these ownership and source-order corrections raise the focused
+  match from 75.17% to 82.27%: 941/926 candidate/target instructions, prefix
+  20/926, with 178 clean masked operands and no unresolved or mismatched
+  references. The redundant `cursor = 0` after a failed `Name:` lookup was
+  also removed; the lookup result already owns that state.

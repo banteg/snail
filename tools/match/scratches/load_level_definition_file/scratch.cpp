@@ -56,7 +56,6 @@ void SubTracks::load_level_definition_file(char* filename)
     cursor = find_case_insensitive_substring("Name:'", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("Cannot find Name:' in %s", level_path);
-        cursor = 0;
     }
 
     cursor = find_case_insensitive_substring("'", cursor) + 1;
@@ -108,12 +107,12 @@ void SubTracks::load_level_definition_file(char* filename)
                                 + galaxy_route_offset,
                             "TEXT ERROR } MISSING");
                     } else {
-                        unsigned int text_end = (unsigned int)(close_brace - 2);
+                        char* text_end = close_brace - 2;
                         char* text_out =
                             g_game->subgame.galaxy.route_slots[0].record.description_text
                                 + galaxy_route_offset;
                         char* text_cursor = cursor;
-                        while ((unsigned int)cursor < text_end) {
+                        while (cursor < text_end) {
                             if (*text_cursor < 32) {
                                 *text_out++ = '>';
                                 text_cursor = cursor;
@@ -182,7 +181,10 @@ void SubTracks::load_level_definition_file(char* filename)
         .load_landscape_script_by_name(background_name);
 
     cursor = find_case_insensitive_substring("Fringe:", LEVEL_FILE_BUFFER);
-    if (cursor != 0) {
+    if (cursor == 0) {
+        report_errorf("No Fringe: in %s using white", level_path);
+        fringe_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
+    } else {
         cursor = find_case_insensitive_substring(":", cursor) + 1;
         parsed_int = parse_next_signed_int(&cursor);
         fringe_color.r = (float)parsed_int * 0.0039215689f;
@@ -190,13 +192,13 @@ void SubTracks::load_level_definition_file(char* filename)
         fringe_color.g = (float)parsed_int * 0.0039215689f;
         parsed_int = parse_next_signed_int(&cursor);
         fringe_color.b = (float)parsed_int * 0.0039215689f;
-    } else {
-        report_errorf("No Fringe: in %s using white", level_path);
-        fringe_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     cursor = find_case_insensitive_substring("Track:", LEVEL_FILE_BUFFER);
-    if (cursor != 0) {
+    if (cursor == 0) {
+        report_errorf("No Track: in %s using Track0.tga", level_path);
+        track_texture_set = 0;
+    } else {
         cursor = find_case_insensitive_substring(":", cursor) + 1;
         ch = *cursor;
         if (ch == '0') {
@@ -211,9 +213,6 @@ void SubTracks::load_level_definition_file(char* filename)
             track_texture_set = 5;
         } else {
         }
-    } else {
-        report_errorf("No Track: in %s using Track0.tga", level_path);
-        track_texture_set = 0;
     }
 
     cursor = find_case_insensitive_substring("Parcels:", LEVEL_FILE_BUFFER);
@@ -239,26 +238,26 @@ void SubTracks::load_level_definition_file(char* filename)
         selected_speed = -1.0f;
     } else {
         cursor = find_case_insensitive_substring("Speed:", LEVEL_FILE_BUFFER);
-        if (cursor != 0) {
-            cursor = find_case_insensitive_substring(":", cursor) + 1;
-            selected_speed = parse_next_float32(&cursor);
-        } else {
+        if (cursor == 0) {
             report_errorf("Cannot find Speed: in Segment %s\n", level_path);
             selected_speed = 100.0f;
+        } else {
+            cursor = find_case_insensitive_substring(":", cursor) + 1;
+            selected_speed = parse_next_float32(&cursor);
         }
     }
 
     cursor = find_case_insensitive_substring("Garbage:", LEVEL_FILE_BUFFER);
-    if (cursor != 0)
-        garbage_frequency = parse_next_float32(&cursor);
-    else
+    if (cursor == 0)
         garbage_frequency = -1.0f;
+    else
+        garbage_frequency = parse_next_float32(&cursor);
 
     cursor = find_case_insensitive_substring("Salt:", LEVEL_FILE_BUFFER);
-    if (cursor != 0)
-        salt_frequency = parse_next_float32(&cursor);
-    else
+    if (cursor == 0)
         salt_frequency = -1.0f;
+    else
+        salt_frequency = parse_next_float32(&cursor);
 
     segment_count = 0;
     cursor = find_case_insensitive_substring("Segments Begin:", LEVEL_FILE_BUFFER);
@@ -305,10 +304,10 @@ void SubTracks::load_level_definition_file(char* filename)
             }
             *options_out = 0;
 
-            char* option_cursor = find_case_insensitive_substring("Angle=", line_options);
-            if (option_cursor != 0) {
-                option_cursor = find_case_insensitive_substring("=", option_cursor);
-                parsed_int = parse_next_signed_int(&option_cursor);
+            line_cursor = find_case_insensitive_substring("Angle=", line_options);
+            if (line_cursor != 0) {
+                line_cursor = find_case_insensitive_substring("=", line_cursor);
+                parsed_int = parse_next_signed_int(&line_cursor);
                 segment_slots[segment_count].angle_radians.value =
                     (float)parsed_int * 0.017453292f;
             } else {
@@ -316,16 +315,16 @@ void SubTracks::load_level_definition_file(char* filename)
             }
 
             segment_slots[segment_count].message_text[0] = 0;
-            option_cursor = find_case_insensitive_substring("Message=", line_options);
-            if (option_cursor != 0) {
-                option_cursor = find_case_insensitive_substring("=", option_cursor) + 1;
-                if (*option_cursor != '"') {
+            line_cursor = find_case_insensitive_substring("Message=", line_options);
+            if (line_cursor != 0) {
+                line_cursor = find_case_insensitive_substring("=", line_cursor) + 1;
+                if (*line_cursor != '"') {
                     report_errorf("Need \" after Message=");
                     return;
                 }
-                char* message_start = option_cursor + 1;
-                option_cursor = message_start;
-                char* message_end = option_cursor;
+                char* message_start = line_cursor + 1;
+                line_cursor = message_start;
+                char* message_end = line_cursor;
                 if (*message_end != '"') {
                     do {
                         message_end++;
@@ -336,28 +335,28 @@ void SubTracks::load_level_definition_file(char* filename)
                 while ((unsigned int)message_start < (unsigned int)message_end) {
                     *message_out++ = *message_start;
                     message_start++;
-                    option_cursor = message_start;
+                    line_cursor = message_start;
                 }
                 *message_out = 0;
 
-                option_cursor = find_case_insensitive_substring("Duration=", line_options);
+                line_cursor = find_case_insensitive_substring("Duration=", line_options);
                 segment_slots[segment_count].message_duration.value = 4.0f;
-                if (option_cursor != 0) {
-                    option_cursor = find_case_insensitive_substring("=", option_cursor) + 1;
+                if (line_cursor != 0) {
+                    line_cursor = find_case_insensitive_substring("=", line_cursor) + 1;
                     segment_slots[segment_count].message_duration.value =
-                        parse_next_float32(&option_cursor);
+                        parse_next_float32(&line_cursor);
                 }
 
-                option_cursor = find_case_insensitive_substring("Sample=", line_options);
+                line_cursor = find_case_insensitive_substring("Sample=", line_options);
                 segment_slots[segment_count].message_sample_id = -1;
-                if (option_cursor != 0) {
-                    option_cursor = find_case_insensitive_substring("=", option_cursor) + 2;
+                if (line_cursor != 0) {
+                    line_cursor = find_case_insensitive_substring("=", line_cursor) + 2;
                     char* sample_out = sample_name;
-                    ch = *option_cursor;
-                    while (*option_cursor != '"') {
+                    ch = *line_cursor;
+                    while (*line_cursor != '"') {
                         *sample_out++ = ch;
-                        option_cursor++;
-                        ch = *option_cursor;
+                        line_cursor++;
+                        ch = *line_cursor;
                     }
                     *sample_out = 0;
                     segment_slots[segment_count].message_sample_id =
@@ -367,8 +366,8 @@ void SubTracks::load_level_definition_file(char* filename)
                 }
             }
 
-            cursor = advance_to_next_crlf_line(cursor);
             segment_count++;
+            cursor = advance_to_next_crlf_line(cursor);
             if (cursor == 0) {
                 report_errorf("Unexpected end of file in %s", filename);
                 return;
