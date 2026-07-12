@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.67%**.
+**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.73%**.
 
 ## Proof Grade (525)
 
@@ -566,12 +566,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 97.83% | 18/92 | - |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (56)
+## High Progress (80-94.99%) (57)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | update_tooltip | 0x403c20 | 821 | 219/218 | 89.70% | 5/218 | 23 ok |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 493/492 | 80.20% | 46/492 | 93 ok |  |
+| 🚧 | load_x_animation_clip | 0x405d60 | 754 | 228/228 | 94.74% | 68/228 | 50 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 1 unresolved, 119 ok | msvc6.5 /O2 /G5 /W3 /GX |
@@ -627,7 +628,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (59)
+## Mid Progress (50-79.99%) (58)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -636,7 +637,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 268/278 | 64.10% | 0/278 | 34 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 227/232 | 50.54% | 0/232 | 1 mismatch, 19 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | load_x_animation_clip | 0x405d60 | 754 | 224/228 | 69.47% | 3/228 | 45 ok |  |
 | 🚧 | initialize_main_loop_display_state | 0x406d70 | 79 | 11/23 | 64.71% | 7/23 | 9 ok |  |
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 338/325 | 63.65% | 1/325 | 6 mismatch, 125 ok |  |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 78.37% | 62/233 | 40 ok |  |

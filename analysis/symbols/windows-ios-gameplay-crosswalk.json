@@ -54,6 +54,15 @@
       "notes": "The exact Windows helper increments the delivered count, awards the parcel score, and advances the same Completion state machine."
     },
     {
+      "address": "0x405d60",
+      "windows_name": "load_x_animation_clip",
+      "ios_symbol": "cRDirectX::LoadAnim(char*, cRObject*)",
+      "android_symbol": "cRDirectX::LoadAnim(char*, cRObject*)",
+      "source_object": "DirectX.o",
+      "confidence": "high",
+      "notes": "Windows and Android preserve the same path/duration parse-cursor ownership, keyframe-array construction, destination Object load, and RequestAnim handoff. Android assigns a clean missing-script flag value of 1; Windows instead ORs bit zero into the register reloaded from its keyframe-array pointer, exposing an older uninitialized-local bug."
+    },
+    {
       "address": "0x406060",
       "windows_name": "destroy_completion_screen",
       "android_symbol": "cRExit::UnInit()",

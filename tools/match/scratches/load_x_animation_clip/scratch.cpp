@@ -27,11 +27,13 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     float progress_step;
     int keyframe_count;
     XAnimationKeyframe* keyframes;
+    unsigned short mode_flags;
     char animation_tag[0x80];
     char path_pattern[0x100];
 
     sprintf(path_pattern, "%s", mesh_name);
-    cursor = find_case_insensitive_substring("-", path_pattern) + 1;
+    cursor = path_pattern;
+    cursor = find_case_insensitive_substring("-", cursor) + 1;
     cursor = find_case_insensitive_substring("-", cursor) + 1;
     *cursor++ = '*';
     *cursor++ = '.';
@@ -46,9 +48,9 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     keyframes = (XAnimationKeyframe*)allocate_tracked_memory(
         keyframe_count << 7, "Anim Key frame bods");
 
+    int i = 0;
     duplicate_vertices.active_count = 0;
     if (keyframe_count > 0) {
-        int i = 0;
         char* mesh_path = g_x_animation_clip_enumeration_names;
         XAnimationKeyframe* keyframe = keyframes;
         do {
@@ -73,7 +75,6 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
 
     sprintf(animation_tag, "Anim:%s", mesh_name);
     char* animation_block = find_case_insensitive_substring(animation_tag, animation_bytes);
-    unsigned short mode_flags;
     if (animation_block != 0) {
         char* animation_end = find_case_insensitive_substring("AnimEnd:", animation_block);
         if (animation_end == 0) {
@@ -84,9 +85,9 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
         saved_end_char = *animation_end;
         *animation_end = 0;
 
-        char* duration_tag = find_case_insensitive_substring("Duration:", animation_block);
-        if (duration_tag != 0) {
-            cursor = find_case_insensitive_substring(":", duration_tag) + 1;
+        cursor = find_case_insensitive_substring("Duration:", animation_block);
+        if (cursor != 0) {
+            cursor = find_case_insensitive_substring(":", cursor) + 1;
             progress_step = 1.0f / (parse_next_float32(&cursor) * 60.0f);
         } else {
             progress_step = 0.0166666675f;
@@ -107,7 +108,7 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     } else {
         report_errorf("Did not find Anim:%s in _Animation.txt. Using defaults", mesh_name);
         progress_step = 0.0166666675f;
-        mode_flags = 1;
+        mode_flags |= 1;
     }
 
     if (keyframe_count == 1)

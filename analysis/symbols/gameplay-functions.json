@@ -248,7 +248,7 @@
     {
       "address": "0x405d60",
       "name": "load_x_animation_clip",
-      "description": "Enumerates one mesh's X-animation keyframes into shared 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses animation duration/mode metadata, and asks the destination Object to retain the generated animation graph."
+      "description": "Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses duration/mode metadata, and asks the destination Object to retain the generated animation graph."
     },
     {
       "address": "0x406060",
