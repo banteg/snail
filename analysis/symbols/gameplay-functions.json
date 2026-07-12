@@ -1493,7 +1493,7 @@
     {
       "address": "0x430a70",
       "name": "request_object_animation",
-      "description": "Ensures one render object has generated animation-frame storage; iOS RObject.o names this `cRObject::RequestAnim(int, cRBodPos*, float, int)`."
+      "description": "Windows `cRObject::RequestAnim(int, cRBodPos*, float, int)`: validates borrowed keyframe Objects, allocates and retains the ObjectAnimation/frame graph, interpolates each vertex as a scaled next-minus-current delta, and regenerates per-frame facequad normals."
     },
     {
       "address": "0x430d90",

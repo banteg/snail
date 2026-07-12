@@ -7,6 +7,24 @@ void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 int report_errorf(char* format, ...); // @ 0x431cc0
 extern "C" double __cdecl floor(double value);
 
+inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
+    return result;
+}
+
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
+    return result;
+}
+
 ObjectAnimation* Object::request_object_animation(
     int keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, unsigned short flags)
@@ -55,34 +73,23 @@ ObjectAnimation* Object::request_object_animation(
                 (float)(*last_frame_number * frame) / generated_frame_count_float;
             int frame_time = (int)floor(frame_time_float);
             if (frame_time >= next_time && current_keyframe < keyframe_count - 1) {
-                current_time = keyframes[current_keyframe + 1].frame_number;
-                next_time = keyframes[current_keyframe + 2].frame_number;
                 ++current_keyframe;
+                current_time = keyframes[current_keyframe].frame_number;
+                next_time = keyframes[current_keyframe + 1].frame_number;
             }
 
-            float tween =
-                (frame_time_float - (float)current_time) / (float)(next_time - current_time);
+            float keyframe_span = (float)(next_time - current_time);
+            float tween = (frame_time_float - (float)current_time) / keyframe_span;
 
             for (int vertex_index = 0; vertex_index < vertex_count; ++vertex_index) {
                 if (keyframe_count == 1) {
                     animation->frames[frame]->vertices[vertex_index] =
                         keyframes[current_keyframe].object->vertices[vertex_index];
                 } else {
-                    Vector3* a = &keyframes[current_keyframe].object->vertices[vertex_index];
                     Vector3* b = &keyframes[current_keyframe + 1].object->vertices[vertex_index];
+                    Vector3* a = &keyframes[current_keyframe].object->vertices[vertex_index];
                     Vector3* out = &animation->frames[frame]->vertices[vertex_index];
-                    Vector3 delta;
-                    delta.x = b->x - a->x;
-                    delta.y = b->y - a->y;
-                    delta.z = b->z - a->z;
-                    Vector3 scaled;
-                    scaled.x = delta.x * tween;
-                    scaled.y = delta.y * tween;
-                    scaled.z = delta.z * tween;
-                    Vector3 tweened;
-                    tweened.x = scaled.x + a->x;
-                    tweened.y = scaled.y + a->y;
-                    tweened.z = scaled.z + a->z;
+                    Vector3 tweened = (*b - *a) * tween + *a;
                     *out = tweened;
                 }
             }

@@ -73,3 +73,27 @@ shape removes the unexplained four-byte candidate local and recovers the native
 `report_errorf`'s value, as seen at the native epilogue. Focused Wibo rises from
 57.88% to 78.79%, with an exact 231/231 instruction count, a 46-instruction
 prefix, and 17 clean masked operands.
+
+## 2026-07-12 cross-port tween lifetime
+
+- Android's authored `cRObject::RequestAnim(int, cRBodPos*, float, int)` body
+  independently preserves the caller-owned keyframe array and computes each
+  generated vertex as the current vertex plus a scaled next-minus-current
+  delta. Its 0x74-byte `cRBodPos` and 0x18-byte animation record are later-port
+  layouts, not replacements for the proven Windows 0x80/0x14 owners.
+- Advancing `current_keyframe` before rebinding the current/next frame numbers
+  matches Android's lifetime and improves the corresponding Windows update
+  block without changing its semantics.
+- Naming the integer frame interval as a float `keyframe_span` recovers native
+  x87's separate `fild` plus `fdivp` sequence. The prior compound cast let VC6
+  select the shorter `fidiv` form.
+- Scratch-local by-value `Vector3` subtraction/addition operators let the source
+  state the recovered tween directly as `(*b - *a) * tween + *a`. The native
+  three 12-byte temporaries are compiler products of that expression, not
+  hand-authored component staging.
+- Focused Wibo rises from 78.79% (231/231) to 88.12% (232/231), retaining the
+  46-instruction prefix and all 17 clean masked operands. The residual is honest:
+  VC6 rotates the three reused argument-stack homes, biases its keyframe cursor
+  to the next Object link rather than the current link, and reloads
+  `Object::animation` once at return. No volatile barriers or dummy data flow
+  are retained.
