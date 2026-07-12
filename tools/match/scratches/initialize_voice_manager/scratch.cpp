@@ -28,71 +28,70 @@ void VoiceManager::initialize_voice_manager()
     char* file_text = get_archive_data_base();
     load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", file_text, (int*)zero);
 
+    char* cursor;
     for (int set_index = zero; set_index < 16; ++set_index) {
         rstrcpy_checked_ascii(set_tag, "Set:");
 
-        char* set_name;
         switch (set_index) {
         case 0:
-            set_name = "Damage";
+            strcat(set_tag, "Damage");
             break;
         case 1:
-            set_name = "Dying";
+            strcat(set_tag, "Dying");
             break;
         case 2:
-            set_name = "Enemies";
+            strcat(set_tag, "Enemies");
             break;
         case 3:
-            set_name = "Fall";
+            strcat(set_tag, "Fall");
             break;
         case 4:
-            set_name = "Misc";
+            strcat(set_tag, "Misc");
             break;
         case 5:
-            set_name = "PowerUp";
+            strcat(set_tag, "PowerUp");
             break;
         case 6:
-            set_name = "Slow";
+            strcat(set_tag, "Slow");
             break;
         case 7:
-            set_name = "Start";
+            strcat(set_tag, "Start");
             break;
         case 8:
-            set_name = "Victory";
+            strcat(set_tag, "Victory");
             break;
         case 9:
-            set_name = "Ouch";
+            strcat(set_tag, "Ouch");
             break;
         case 10:
-            set_name = "Package";
+            strcat(set_tag, "Package");
             break;
         case 11:
-            set_name = "Slugged";
+            strcat(set_tag, "Slugged");
             break;
         case 12:
-            set_name = "WormTunnel";
+            strcat(set_tag, "WormTunnel");
             break;
         case 13:
-            set_name = g_tutorial_text;
+            strcat(set_tag, g_tutorial_text);
             break;
         case 14:
-            set_name = "Postal";
+            strcat(set_tag, "Postal");
             break;
-        default:
-            set_name = "SuperTramp";
+        case 15:
+            strcat(set_tag, "SuperTramp");
             break;
         }
-        strcat(set_tag, set_name);
 
-        char* cursor = find_case_insensitive_substring(set_tag, file_text);
+        cursor = find_case_insensitive_substring(set_tag, file_text);
         if (cursor == 0) {
             report_errorf("Cannot find %s in _Voice.txt", set_tag);
             return;
         }
 
-        char* open_brace = find_case_insensitive_substring("{", cursor);
-        char* close_brace = find_case_insensitive_substring("}", open_brace);
-        cursor = advance_to_next_crlf_line(open_brace);
+        cursor = find_case_insensitive_substring("{", cursor);
+        char* close_brace = find_case_insensitive_substring("}", cursor);
+        cursor = advance_to_next_crlf_line(cursor);
 
         int entry_count = 0;
         char* count_cursor = cursor;
@@ -129,7 +128,7 @@ void VoiceManager::initialize_voice_manager()
 
     }
 
-    char* cursor = find_case_insensitive_substring("NormalizeMusic:", file_text);
+    cursor = find_case_insensitive_substring("NormalizeMusic:", file_text);
     cursor = find_case_insensitive_substring(":", cursor);
     float music_scale = (float)parse_next_signed_int(&cursor) * 0.0099999998f;
 

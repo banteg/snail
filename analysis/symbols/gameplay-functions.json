@@ -2760,19 +2760,23 @@
     },
     {
       "address": "0x448ec0",
-      "name": "reset_voice_manager"
+      "name": "reset_voice_manager",
+      "description": "Exact `cRVoiceManager::ReSet()` member: clears global voice progress and all 16 inline VoiceSet cooldowns."
     },
     {
       "address": "0x448ee0",
-      "name": "initialize_voice_manager"
+      "name": "initialize_voice_manager",
+      "description": "Recovered `cRVoiceManager::Init()` member: parses the authored 16-set Voice/_Voice.txt bank, registers each sample, applies normalization and frequency settings, and resets cooldown state."
     },
     {
       "address": "0x4492a0",
-      "name": "update_voice_manager"
+      "name": "update_voice_manager",
+      "description": "Exact `cRVoiceManager::AI()` member: advances all 16 inline VoiceSets and the manager's global voice-frequency timer."
     },
     {
       "address": "0x4492d0",
-      "name": "play_voice_manager"
+      "name": "play_voice_manager",
+      "description": "Exact `cRVoiceManager::Play(int, int, int)` member: applies current-voice and frequency gating, optionally stops the active sample, and dispatches through the selected inline VoiceSet."
     },
     {
       "address": "0x449360",

@@ -1,4 +1,4 @@
-// Voice playback manager views, partial.
+// Windows layouts for the authored cRVoiceSet/cRVoiceManager owners (Voice.o).
 #ifndef VOICE_MANAGER_H
 #define VOICE_MANAGER_H
 

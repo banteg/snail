@@ -831,6 +831,38 @@
       "notes": "The exact Windows member samples the live Goldy position through its borrowed SubgameRuntime pointer."
     },
     {
+      "address": "0x448ec0",
+      "windows_name": "reset_voice_manager",
+      "ios_symbol": "cRVoiceManager::ReSet()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Both clear global voice progress and the cooldown fields of the 16 inline VoiceSets. The Windows member is exact."
+    },
+    {
+      "address": "0x448ee0",
+      "windows_name": "initialize_voice_manager",
+      "ios_symbol": "cRVoiceManager::Init()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Both parse the same 16 named VoiceSets at a 0x18-byte stride, register their authored samples, read normalization and frequency settings, and return void."
+    },
+    {
+      "address": "0x4492a0",
+      "windows_name": "update_voice_manager",
+      "ios_symbol": "cRVoiceManager::AI()",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Both update all 16 inline VoiceSets and advance the manager-wide voice timer. The Windows member is exact."
+    },
+    {
+      "address": "0x4492d0",
+      "windows_name": "play_voice_manager",
+      "ios_symbol": "cRVoiceManager::Play(int, int, int)",
+      "source_object": "Voice.o",
+      "confidence": "high",
+      "notes": "Both gate playback by the current voice and global frequency, optionally stop the active sample, and dispatch through the selected inline VoiceSet. The Windows member is exact; its recovered mode formal remains unsigned because that spelling preserves the observed Windows comparison."
+    },
+    {
       "address": "0x43a9c0",
       "windows_name": "initialize_subgoldy",
       "ios_symbol": "cRSubGoldy::Init(int)",
