@@ -6,6 +6,9 @@
 #include "sprite.h"
 #include "tooltip_state.h"
 
+// Semantic cRBorder view over BorderRecord storage. Its first 0x10 bytes are
+// the exact BodNode intrusive-list prefix; later front-end fields deliberately
+// overlay generic BodBase lanes whose gameplay names do not apply here.
 class FrontendWidget {
 public:
     void draw_frontend_widget(); // @ 0x401130
@@ -27,10 +30,10 @@ public:
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
         Color4f* color, float z, int layer);
 
-    unsigned int list_kind; // +0x00
-    unsigned int list_flags; // +0x04
-    FrontendWidget* list_prev; // +0x08
-    FrontendWidget* list_next; // +0x0c
+    unsigned int list_kind; // +0x00, BodNode::list_kind view
+    unsigned int list_flags; // +0x04, BodNode::list_flags view
+    FrontendWidget* list_prev; // +0x08, BodNode::list_prev view
+    FrontendWidget* list_next; // +0x0c, BodNode::list_next view
     int widget_type; // +0x10
     char unknown_014[0x44 - 0x014];
     float hide_blend; // +0x44

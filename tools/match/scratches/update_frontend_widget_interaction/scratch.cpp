@@ -3,6 +3,7 @@
 #include "border_manager.h"
 #include "font_system.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
 #include "sound_effect_manager.h"
@@ -11,7 +12,6 @@
 
 extern char* g_game_base; // data_4df904
 
-int report_errorf(char* format, ...);
 char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);
 float* layout_and_queue_wrapped_font_text(
@@ -33,41 +33,6 @@ float* layout_and_queue_wrapped_font_text(
     char measure_only,
     char pulse_alpha);
 
-static void unlink_frontend_widget(FrontendWidget* widget)
-{
-    char* self = (char*)widget;
-    char* free_anchor = g_game_base + 0x5a8;
-    unsigned int list_flags = *(unsigned int*)(self + 0x04);
-
-    if ((list_flags & 0x200) == 0) {
-        report_errorf("List remove");
-        ((TooltipState*)(self + 0x28c))->reset_tooltip();
-        *(int*)(self + 0x1a0) = 0;
-        return;
-    }
-    if ((list_flags & 0x40) != 0) {
-        report_errorf("List remove NEXTBOD");
-        ((TooltipState*)(self + 0x28c))->reset_tooltip();
-        *(int*)(self + 0x1a0) = 0;
-        return;
-    }
-
-    FrontendWidget* next = *(FrontendWidget**)(self + 0x0c);
-    FrontendWidget* prev = *(FrontendWidget**)(self + 0x08);
-    if (next != 0)
-        *(FrontendWidget**)((char*)next + 0x08) = prev;
-    if (prev != 0)
-        *(FrontendWidget**)((char*)prev + 0x0c) = next;
-    else
-        *(FrontendWidget**)(free_anchor + 4) = next;
-
-    *(FrontendWidget**)(self + 0x0c) = *(FrontendWidget**)(free_anchor + 8);
-    *(FrontendWidget**)(free_anchor + 8) = widget;
-    *(unsigned int*)(self + 0x04) &= ~0x200u;
-    ((TooltipState*)(self + 0x28c))->reset_tooltip();
-    *(int*)(self + 0x1a0) = 0;
-}
-
 void FrontendWidget::update_frontend_widget_interaction()
 {
     char* self = (char*)this;
@@ -87,44 +52,24 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     unsigned int flags = *(unsigned int*)(self + 0x1a0);
     if (flags == 0) {
-        char* free_anchor = g_game_base + 0x5a8;
-        unsigned int list_flags = *(unsigned int*)(self + 0x04);
-        if ((list_flags & 0x200) == 0) {
-            report_errorf("List remove");
-            ((TooltipState*)(self + 0x28c))->reset_tooltip();
-            return;
-        }
-        if ((list_flags & 0x40) != 0) {
-            report_errorf("List remove NEXTBOD");
-            ((TooltipState*)(self + 0x28c))->reset_tooltip();
-            return;
-        }
-
-        FrontendWidget* next = *(FrontendWidget**)(self + 0x0c);
-        FrontendWidget* prev = *(FrontendWidget**)(self + 0x08);
-        if (next != 0)
-            *(FrontendWidget**)((char*)next + 0x08) = prev;
-        if (prev != 0)
-            *(FrontendWidget**)((char*)prev + 0x0c) = next;
-        else
-            *(FrontendWidget**)(free_anchor + 4) = next;
-
-        *(FrontendWidget**)(self + 0x0c) = *(FrontendWidget**)(free_anchor + 8);
-        *(FrontendWidget**)(free_anchor + 8) = this;
-        *(unsigned int*)(self + 0x04) &= ~0x200u;
+        ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
         ((TooltipState*)(self + 0x28c))->reset_tooltip();
         return;
     }
     if ((flags & 0x200) != 0) {
         *(unsigned int*)(self + 0x1a0) = flags & ~0x200u;
-        unlink_frontend_widget(this);
+        ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
+        ((TooltipState*)(self + 0x28c))->reset_tooltip();
+        *(int*)(self + 0x1a0) = 0;
         return;
     }
 
     if ((flags & 0x400) != 0) {
         *(float*)(self + 0x6f0) = *(float*)(self + 0x6ec) + *(float*)(self + 0x6f0);
         if (*(float*)(self + 0x6f0) > 1.0f) {
-            unlink_frontend_widget(this);
+            ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
+            ((TooltipState*)(self + 0x28c))->reset_tooltip();
+            *(int*)(self + 0x1a0) = 0;
             return;
         }
         goto update_after_input;

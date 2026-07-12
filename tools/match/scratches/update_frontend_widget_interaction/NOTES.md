@@ -79,3 +79,18 @@ Replacing the false free cdecl declaration preserves `572/647` instructions,
 raises the focused result from `55.29%` to `55.62%`, and improves the masked
 audit from `70 ok / 3 mismatch` to `71 ok / 2 mismatch`. Both remaining
 mismatches are now earlier intrusive-list teardown scheduling, not audio ABI.
+
+2026-07-12 intrusive-list owner recovery: all three widget teardown paths now
+inline the proved `GameRoot::active_bod_list.remove_bod((BodNode*)this)` owner.
+The zero-flags path, explicit-kill `0x200` path, and expired-transition `0x400`
+path are three native copies of the same `cLinkedList<cRBod>::Remove` template,
+not a scratch-local widget-unlink helper. The cast is an exact shared-prefix
+view: `FrontendWidget`/`cRBorder` storage begins with the 0x10-byte `BodNode`.
+
+This lifts the focused result from `55.62%` (`572/647`) to `64.35%`
+(`646/647`) and improves the masked audit from `71 ok / 2 mismatch` to
+`83 ok / 1 mismatch`. The prefix falls from 42 to 1 because VC6 keeps a zero
+in `edi` across the three template expansions and consequently saves an extra
+`ebx`; the retained code is still the substantially closer and better-owned
+source. Keeping only the first teardown manually expanded regressed to
+`58.08%`, `634/647`, and `73 ok / 2 mismatch`, so that probe was rejected.
