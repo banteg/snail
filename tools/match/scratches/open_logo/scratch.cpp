@@ -15,15 +15,15 @@ int sprintf(char* buffer, char* format, ...);
 
 int IntroScreenRuntime::open_logo()
 {
-    BodBase* slot = &logo_renderables[0];
+    IntroLogoRenderable* slot = &logo_renderables[0];
     int logo_count = INTRO_SCREEN_LOGO_RENDERABLE_COUNT;
     do {
         slot->set_bod_object(g_object_list.add_object_to_list());
-        Object* object = *(Object**)((char*)slot + 0x24);
+        Object* object = slot->object;
         load_object_definition("Objects/Font3D", object);
-        object = *(Object**)((char*)slot + 0x24);
+        object = slot->object;
         object->flags |= 4;
-        slot = (BodBase*)((char*)slot + 0x90);
+        ++slot;
         --logo_count;
     } while (logo_count != 0);
 
@@ -39,7 +39,7 @@ int IntroScreenRuntime::open_logo()
             char texture_path[0x80];
             sprintf(texture_path, "Intro/%s", name);
             TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
-            texture->flags |= 0x400;
+            texture->flags |= TEXTURE_REF_REGISTERED;
             result = texture_count;
             ++index;
             name += 0x80;

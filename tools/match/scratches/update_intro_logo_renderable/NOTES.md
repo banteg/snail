@@ -35,3 +35,12 @@ rounding, and named z temporaries did not reproduce the store/reload honestly;
 the scratch therefore records the clean scalar source at 81.93% rather than a
 false proof-grade result. The lost masked operand is only a branch-alignment
 consequence, not unresolved ownership.
+
+2026-07-12 shared-vector closure: expressing the integration through the now
+shared `Vector3::operator+=` provides the real statement boundary that the
+earlier scratch-local helper probes were missing. VC6 materializes all three
+position lanes before the fade comparison without any volatile view or dummy
+dependency. The updater is now exact at 100.00%, 42/42 instructions, prefix
+42/42, with seven clean masked operands and no unresolved or mismatched names.
+The backing render flag write also uses the shared `Object::flags` owner rather
+than a private one-field object view.

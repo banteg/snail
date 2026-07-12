@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**526/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **78355/325720** bytes (**24.06%**) are proof-grade, and overall fuzzy is **61.36%**.
+**527/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **78503/325720** bytes (**24.10%**) are proof-grade, and overall fuzzy is **61.36%**.
 
-## Proof Grade (526)
+## Proof Grade (527)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -176,6 +176,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_loading_screen | 0x418e80 | 656 | 204/204 | 100.00% | 204/204 | 26 ok |  |
 | ✅ | destroy_intro_screen | 0x419920 | 184 | 61/61 | 100.00% | 61/61 | 7 ok |  |
 | ✅ | update_intro_screen | 0x4199e0 | 161 | 51/51 | 100.00% | 51/51 | 11 ok |  |
+| ✅ | update_intro_logo_renderable | 0x419a90 | 148 | 42/42 | 100.00% | 42/42 | 7 ok |  |
 | ✅ | destroy_main_menu | 0x419b30 | 26 | 5/5 | 100.00% | 5/5 | 4 ok |  |
 | ✅ | initialize_main_menu | 0x419b50 | 682 | 172/172 | 100.00% | 172/172 | 48 ok |  |
 | ✅ | update_main_menu | 0x419e00 | 326 | 68/68 | 100.00% | 68/68 | 16 ok |  |
@@ -569,7 +570,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (59)
+## High Progress (80-94.99%) (58)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -591,7 +592,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | open_logo | 0x419110 | 195 | 60/60 | 90.00% | 4/60 | 13 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 524/521 | 88.23% | 88/521 | 66 ok |  |
-| 🚧 | update_intro_logo_renderable | 0x419a90 | 148 | 41/42 | 81.93% | 8/42 | 6 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 85.19% | 18/27 | 2 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
 | 🚧 | request_object_animation | 0x430a70 | 793 | 232/231 | 88.12% | 46/231 | 17 ok |  |

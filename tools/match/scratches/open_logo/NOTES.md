@@ -58,3 +58,14 @@ at root `+0x74618`. `open_logo` is therefore a method on that shared owner and
 the standalone `logo_runtime.h` view is retired. Focused Wibo remains 90.00%,
 `60/60`, with all 13 masked operands clean; only the object-field cursor versus
 BOD-base cursor register shape remains.
+
+## 2026-07-12 typed donor-bank cleanup
+
+The retained cursor is now an `IntroLogoRenderable*`, advances with `++slot`,
+and reads `slot->object` directly. The old `BodBase*` plus raw `+0x24` and
+`+0x90` arithmetic is no longer needed once the full donor-bank owner is
+available. Texture registration likewise uses `TEXTURE_REF_REGISTERED`.
+These ownership cleanups are codegen-neutral at 90.00%, 60/60, prefix 4/60,
+with all 13 masked operands clean. Native still biases its cursor to the
+`object` member lane; the typed source keeps the record base and leaves that
+honest four-instruction representation residual visible.
