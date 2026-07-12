@@ -694,7 +694,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 686/712 | 40.34% | 0/712 | 2 mismatch, 46 ok |  |
+| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 688/712 | 40.43% | 0/712 | 1 mismatch, 48 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 297/446 | 17.77% | 0/446 | 8 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 415/439 | 45.43% | 3/439 | 26 ok |  |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 358/5411 | 5.65% | 0/5411 | 17 mismatch, 74 ok |  |

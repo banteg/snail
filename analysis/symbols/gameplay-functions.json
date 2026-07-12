@@ -25,7 +25,7 @@
     {
       "address": "0x401130",
       "name": "draw_frontend_widget",
-      "description": "Renders one shell-font front-end widget, including nine-slice border styles, slider-track strips, optional glow overlay, icon sprites, and the final text draw."
+      "description": "Authored `cRBorder::Draw()` renderer for one front-end widget: emits slider strips, sprite/icon quads, the nine-slice border body, shadow, and the BorderManager-owned delayed glow."
     },
     {
       "address": "0x401a70",

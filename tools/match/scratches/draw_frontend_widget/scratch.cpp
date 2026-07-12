@@ -211,6 +211,7 @@ void FrontendWidget::draw_frontend_widget()
 
     if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active != 0
         && this == ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget) {
+        glow_color.noop_this_constructor();
         white.set_color_white();
         glow_color.store_color4f(
             white.r,
