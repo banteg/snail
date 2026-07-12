@@ -64,3 +64,23 @@ pre-scan guard is codegen-neutral: VC6 still folds the first owner read into
 sequence. The retained source remains the best known float-specific shape; the
 first mismatch is still cursor-owner register allocation, not a missing
 semantic pre-scan branch.
+
+## 2026-07-12 exact parser source recovery
+
+The float parser uses the same authored pre-scan shape as the already-exact
+signed-integer parser: a `while (**cursor != '-')` loop whose classifier byte
+comes from the scoped current pointer. Expressing the decimal body as a real
+`digit-or-dot` loop condition then preserves native's range checks and shared
+dot body instead of duplicating the decimal-point arm.
+
+Within the digit arm, accumulating the parsed digit before advancing the
+caller-owned cursor recovers native's `eax` digit temporary while the current
+text pointer remains live in `edx`. Together these source changes raise the
+focused result from 63.57% (65/64 instructions, prefix 1) to **100.00%**,
+64/64 instructions, with all nine masked operands clean.
+
+The earlier decompiler-shaped `if` plus `do/while` pre-scan had allowed VC6 to
+fold away the distinct leading-minus test. A combined rejection expression
+for non-digits and non-dots also duplicated the dot body; neither form is
+retained. The exact source has no volatile locals, dummy branches, or other
+code-generation coercions.

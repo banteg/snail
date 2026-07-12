@@ -2,19 +2,16 @@
 
 float __cdecl parse_next_float32(char** cursor)
 {
-    if (**cursor != '-') {
-        char* current;
-        do {
-            current = *cursor;
-            char value = **cursor;
-            if (value == '+')
-                break;
-            if (value == '.')
-                break;
-            if (value >= '0' && value <= '9')
-                break;
-            *cursor = current + 1;
-        } while (current[1] != '-');
+    while (**cursor != '-') {
+        char* current = *cursor;
+        char value = *current;
+        if (value == '+')
+            break;
+        if (value == '.')
+            break;
+        if (value >= '0' && value <= '9')
+            break;
+        *cursor = current + 1;
     }
 
     float sign;
@@ -27,17 +24,16 @@ float __cdecl parse_next_float32(char** cursor)
 
     float value = 0.0f;
     float decimal_scale = 0.0f;
-    while (1) {
+    while ((**cursor >= '0' && **cursor <= '9') || **cursor == '.') {
         char* current = *cursor;
         char digit = **cursor;
         if (digit == '.') {
             decimal_scale = 1.0f;
             *cursor = current + 1;
         } else {
-            if (digit < '0' || digit > '9')
-                break;
+            int digit_value = digit - '0';
+            value = (float)digit_value + value * 10.0f;
             *cursor = current + 1;
-            value = (float)(digit - '0') + value * 10.0f;
             decimal_scale *= 0.1f;
         }
     }

@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**533/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **84935/325720** bytes (**26.08%**) are proof-grade, and overall fuzzy is **61.83%**.
+**534/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85108/325720** bytes (**26.13%**) are proof-grade, and overall fuzzy is **61.85%**.
 
-## Proof Grade (533)
+## Proof Grade (534)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -251,6 +251,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | append_c_string | 0x431e50 | 42 | 19/19 | 100.00% | 19/19 | - |  |
 | ✅ | parse_next_space_delimited_token | 0x431e80 | 60 | 27/27 | 100.00% | 27/27 | - |  |
 | ✅ | parse_next_int32 | 0x431ec0 | 89 | 39/39 | 100.00% | 39/39 | - |  |
+| ✅ | parse_next_float32 | 0x431f20 | 173 | 64/64 | 100.00% | 64/64 | 9 ok |  |
 | ✅ | set_input_controller_slot0_button_axes | 0x431fd0 | 30 | 7/7 | 100.00% | 7/7 | 3 ok |  |
 | ✅ | update_input_controller_slot_button_axes | 0x431ff0 | 247 | 61/61 | 100.00% | 61/61 | 25 ok |  |
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
@@ -631,7 +632,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (54)
+## Mid Progress (50-79.99%) (53)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -666,7 +667,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 171 | 54/53 | 74.77% | 14/53 | 1 ok |  |
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 31 ok |  |
-| 🚧 | parse_next_float32 | 0x431f20 | 173 | 65/64 | 63.57% | 1/64 | 9 ok |  |
 | 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 139/134 | 57.14% | 4/134 | 26 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
