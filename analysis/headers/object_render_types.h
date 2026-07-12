@@ -213,7 +213,7 @@ void __thiscall build_all_objects(ObjectList* object_list);
 Object* __thiscall add_object_to_list(ObjectList* object_list);
 int32_t __cdecl load_object_definition(char* path, Object* object);
 
-ObjectAnimation* __thiscall request_object_animation(
+void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int32_t flags);
 void __cdecl build_object_texture_group_buffers(Object* object);

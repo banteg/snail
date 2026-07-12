@@ -25,14 +25,15 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
     return result;
 }
 
-ObjectAnimation* Object::request_object_animation(
+void Object::request_object_animation(
     int keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int flags)
 {
     for (int i = 0; i < keyframe_count; ++i) {
         if (keyframes[i].object->vertex_count != vertex_count) {
-            return (ObjectAnimation*)report_errorf(
+            report_errorf(
                 "Anim tween Vertices don't match Frame %i", keyframes[i].frame_number);
+            return;
         }
     }
 
@@ -109,5 +110,4 @@ ObjectAnimation* Object::request_object_animation(
     }
 
     animation->progress = 0.0f;
-    return animation;
 }

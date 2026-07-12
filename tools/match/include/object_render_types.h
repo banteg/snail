@@ -125,7 +125,7 @@ struct Object {
     void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
     void* request_object_edges(int edge_count); // @ 0x430570
     void calc_object_edges(); // @ 0x4308b0
-    ObjectAnimation* request_object_animation(
+    void request_object_animation(
         int keyframe_count, XAnimationKeyframe* keyframes,
         float progress_step, int flags); // @ 0x430a70
 

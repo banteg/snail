@@ -25,7 +25,7 @@ public:
     void* initialize_directx_loader(); // @ 0x405c90
     int load_x_mesh(char* mesh_path, Object* object, unsigned char options_flags); // @ 0x405640
     int load_or_reuse_cached_x_mesh(char* mesh_name); // @ 0x405cc0
-    ObjectAnimation* load_x_animation_clip(char* mesh_name, Object* object); // @ 0x405d60
+    void load_x_animation_clip(char* mesh_name, Object* object); // @ 0x405d60
 
     char* animation_bytes; // +0x00
     int cached_x_mesh_count; // +0x04

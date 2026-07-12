@@ -20,7 +20,7 @@ int report_errorf(char* format, ...); // @ 0x431cc0
 
 extern char g_x_animation_clip_enumeration_names[]; // data_4b2f50
 
-ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
+void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
 {
     char* cursor;
     char saved_end_char;
@@ -78,8 +78,8 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     if (animation_block != 0) {
         char* animation_end = find_case_insensitive_substring("AnimEnd:", animation_block);
         if (animation_end == 0) {
-            return (ObjectAnimation*)report_errorf(
-                "Cannot find AnimEnd: for %s \n", mesh_name);
+            report_errorf("Cannot find AnimEnd: for %s \n", mesh_name);
+            return;
         }
 
         saved_end_char = *animation_end;
@@ -114,6 +114,5 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     if (keyframe_count == 1)
         progress_step = 1.0f;
 
-    return object->request_object_animation(
-        keyframe_count, keyframes, progress_step, mode_flags);
+    object->request_object_animation(keyframe_count, keyframes, progress_step, mode_flags);
 }

@@ -120,3 +120,16 @@ the final retained-animation return: candidate VC6 stores `progress = 0` and
 then reloads `Object::animation`, while native keeps the already-loaded owner
 pointer in `eax` across its epilogue pops. Explicit result aliases regress and
 are not retained.
+
+## 2026-07-12 void mutator ABI closure
+
+- The native function has one caller, `cRDirectX::LoadAnim`, and the loader's
+  32 startup callsites all discard its exit register. The retained
+  `ObjectAnimation*` is already owned by `Object::animation`; no caller receives
+  or borrows it through the method result.
+- Modeling both authored methods as `void` explains the former tail residual:
+  native may keep the loaded animation pointer incidentally in `eax`, store
+  `progress = 0`, and return without reloading it as a promised result.
+- The void member compiles proof-grade at **100.00%**, `231/231`, with all 17
+  masked operands clean. The exact animation loader remains `228/228`, proving
+  the ABI correction across the whole handoff rather than only this callee.

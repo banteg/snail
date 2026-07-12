@@ -44,7 +44,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "request_object_animation",
-        "ObjectAnimation* __thiscall request_object_animation(Object* object, int keyframe_count, XAnimationKeyframe* keyframes, float progress_step, int flags);",
+        "void __thiscall request_object_animation(Object* object, int keyframe_count, XAnimationKeyframe* keyframes, float progress_step, int flags);",
     ),
     (
         "build_object_texture_group_buffers",

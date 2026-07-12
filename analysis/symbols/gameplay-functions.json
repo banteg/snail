@@ -250,7 +250,7 @@
     {
       "address": "0x405d60",
       "name": "load_x_animation_clip",
-      "description": "Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses duration/mode metadata, and asks the destination Object to retain the generated animation graph."
+      "description": "Void Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses duration/mode metadata, and asks the destination Object to retain the generated animation graph."
     },
     {
       "address": "0x406060",
@@ -1495,7 +1495,7 @@
     {
       "address": "0x430a70",
       "name": "request_object_animation",
-      "description": "Windows `cRObject::RequestAnim(int, cRBodPos*, float, int)`: validates borrowed keyframe Objects, allocates and retains the ObjectAnimation/frame graph, interpolates each vertex as a scaled next-minus-current delta, and regenerates per-frame facequad normals."
+      "description": "Void Windows `cRObject::RequestAnim(int, cRBodPos*, float, int)`: validates borrowed keyframe Objects, allocates and retains the ObjectAnimation/frame graph, interpolates each vertex as a scaled next-minus-current delta, and regenerates per-frame facequad normals."
     },
     {
       "address": "0x430d90",

@@ -25,11 +25,12 @@ Starter semantic scratch for the X animation clip loader.
   animation builder all share one record instead of maintaining flattened and
   inherited duplicates. This is codegen-neutral in the loader, the 57.88%
   animation builder, and exact `set_bod_object`.
-- 2026-07-10 error-return contract: the missing-`AnimEnd:` path returns
-  `report_errorf`'s incidental value directly, as native does, instead of
-  manufacturing a null result after the call. Focused Wibo rises from 69.32%
-  to 69.47% (224/228 insns, 3/228 prefix, 45 clean masks). The missing-script
-  default was still represented as a defined `mode_flags = 1` at this point.
+- 2026-07-10 error-path exit shape: the missing-`AnimEnd:` path leaves
+  `report_errorf`'s incidental value in `eax`, as native does, instead of
+  manufacturing a null value after the call. In the then pointer-shaped
+  baseline this raised focused Wibo from 69.32% to 69.47% (224/228 insns,
+  3/228 prefix, 45 clean masks). The void ABI closure below explains that
+  residue without treating it as a returned animation pointer.
 
 ## 2026-07-12 parser-state and lifetime recovery
 
@@ -71,3 +72,13 @@ The animation mode is an authored `int`, matching the Android/iOS
 `cRObject::RequestAnim(..., int)` interface. The callee narrows it only when it
 stores `ObjectAnimation::flags`. Keeping `mode_flags` as an `int` preserves this
 helper's exact code while avoiding a synthetic zero-extension at the handoff.
+
+## 2026-07-12 void loader ABI closure
+
+The pointer-shaped decompiler result was incidental. `cRDirectX::LoadAnim` is
+called 32 times by startup and none consumes `eax`; its sole final callee,
+`cRObject::RequestAnim`, retains the generated graph on the destination Object.
+Changing both methods to `void` preserves this loader's proof-grade
+`228/228` match and makes the callee exact at `231/231`. The missing-`AnimEnd:`
+path likewise reports the error and returns without promising the diagnostic
+integer as an animation pointer.
