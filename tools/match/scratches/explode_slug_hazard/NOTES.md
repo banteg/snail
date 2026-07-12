@@ -1,4 +1,4 @@
-# Structure-first scratch - 81.63%, 147/147 insns
+# Structure-first scratch - 97.61%, 146/147 insns
 
 `explode_slug_hazard` is recovered as the 70-particle slug goo burst spawned
 by `kill_slug_hazard`. Each iteration allocates sprite texture `129`, sets
@@ -16,7 +16,7 @@ Source-shape wins from the first pass:
 - staging `velocity` and `position` as `Vector3` aggregates improves the frame
   from `0x14` to `0x38` and recovers most of the native vector stack staging.
 
-Known residuals:
+Historical residuals before the returned-vector pass:
 
 - target frame is still `0x40` versus candidate `0x38`;
 - flag update uses `ebx` where native uses `edx`;
@@ -96,3 +96,19 @@ artificial `int` return to `void` removes the candidate-only final
 is 146/147 instructions with all 32 masked operands clean. The remaining gap is
 the documented 0x40-versus-0x38 frame and local x87/register scheduling; no
 dummy local or padding fakematch is introduced.
+
+## 2026-07-12 raw/scaled velocity recovery
+
+The side, up, and forward draws are one semantic `Vector3 random_velocity`,
+and the emitted sprite receives a separate `staged_velocity` scaled by the
+live subgame rate. This two-vector source shape recovers the native raw X/Y
+slots, scaled X/Y/Z result slots, and exact `0x40` frame. Focused Wibo improves
+from 81.91% to 97.61%, with 146/147 instructions, prefix 79, and all 32 masked
+operands clean.
+
+The remaining one-instruction gap is x87 scheduling: native loads the owner
+between saving and converting the up RNG draw, then uses an explicit `fxch`
+before scaling forward Z; VC6 legally commutes the same multiplies in the
+candidate. A named integer RNG seed regresses to 95.89% by emitting `fimul`,
+and moving the owner lifetime earlier shortens the prefix, so neither probe is
+retained. No volatile or fake alias is used to force the `fxch`.

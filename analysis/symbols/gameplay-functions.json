@@ -2173,7 +2173,7 @@
     {
       "address": "0x43f680",
       "name": "explode_slug_hazard",
-      "description": "Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`. Correcting the artificial integer return to void improves the honest Windows reconstruction to 81.91%."
+      "description": "Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live SubgameRuntime rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`."
     },
     {
       "address": "0x43f8b0",

@@ -34,17 +34,20 @@ void Slug::explode_slug_hazard()
         gravity_step *= -0.0099999998f;
         sprite->gravity_step = gravity_step * 2.2f;
 
-        float side = ((float)next_math_random_value() - 16384.0f) * spread * 0.000061035156f;
-        float up = (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;
+        Vector3 random_velocity;
+        random_velocity.x =
+            ((float)next_math_random_value() - 16384.0f) * spread * 0.000061035156f;
+        random_velocity.y =
+            (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;
         SubgameRuntime* game = owner_game;
-        float forward =
+        random_velocity.z =
             (float)next_math_random_value() * spread * 0.000030517578f
             + game->player.velocity.z;
         float speed = game->subgame_rate;
         Vector3 staged_velocity;
-        staged_velocity.x = speed * side;
-        staged_velocity.y = up * speed;
-        staged_velocity.z = forward * speed;
+        staged_velocity.x = speed * random_velocity.x;
+        staged_velocity.y = random_velocity.y * speed;
+        staged_velocity.z = random_velocity.z * speed;
         sprite->velocity = staged_velocity;
 
         Vector3* velocity = &sprite->velocity;
