@@ -112,7 +112,8 @@ typedef struct FrontendWidget {
 
 typedef struct SubSolution SubSolution;
 
-/* Authored cRHighScore. Windows embeds the exact 0xd0-byte owner in GameRoot. */
+/* Authored cRHighScore. Windows proves storage through +0xf4; the final class
+   boundary before the following TipManager remains open by 0x14 bytes. */
 typedef struct HighScore {
     int32_t field_00;
     int32_t mode;
@@ -126,9 +127,11 @@ typedef struct HighScore {
     FrontendWidget* bank_toggle_button;
     FrontendWidget* cancel_name_button;
     FrontendWidget* submit_name_button;
-    uint8_t _pad_2c[0x7c - 0x2c];
-    FrontendWidget* name_row_widgets[20];
-    FrontendWidget* replay_row_widgets[1];
+    FrontendWidget* row_background_widgets[10];
+    FrontendWidget* rank_row_widgets[10];
+    FrontendWidget* name_row_widgets[10];
+    FrontendWidget* score_row_widgets[10];
+    FrontendWidget* replay_row_widgets[10];
 } HighScore;
 
 /* Exact 0x48-byte Windows cRIntro owner; mobile has one additional widget. */

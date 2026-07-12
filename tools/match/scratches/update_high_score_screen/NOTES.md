@@ -27,10 +27,24 @@ Recovered relationships:
   editable row; Cancel calls `cRSubHighScore::MiniDelete(int)` and exits.
 - The ownership rewrite is codegen-neutral at the current 67.65% baseline.
 
-Residual mismatch: the native name-submit branch reloads the selected row widget
-between string copies and keeps only one stack local, while this scratch still
-saves an extra callee register and materializes the active bank pointer earlier.
-
 2026-07-11 cRHighScore ownership: Android and iOS name this lifecycle method
-`cRHighScore::AI()`. The shared 0xd0-byte `HighScore` owner replaces the
-provisional screen-shell name without changing the honest 67.65% baseline.
+`cRHighScore::AI()`; the shared `HighScore` owner replaces the provisional
+screen shell without changing the honest 67.65% baseline.
+
+2026-07-12 exact source and row-bank closure:
+
+- Re-reading the selected name widget for each destination matches native's
+  actual borrowed-handle lifetime; no widget, root, or persistent record is
+  retained across the three string copies.
+- The replay loop similarly reloads `g_game_base` after callbacks instead of
+  keeping a root pointer live across teardown. The Back and replay-launch paths
+  use separate root loads for the front-end state and redispatch byte, matching
+  their independently owned fields.
+- The bank toggle is the native two-case switch. Together these source changes
+  raise the function from 67.65% (`203/205`, prefix 0, 29 clean operands) to
+  proof-grade 100.00% (`205/205`, prefix 205, 40 clean operands).
+- Initializer indexing proves five ten-handle banks at `+0x2c`, `+0x54`,
+  `+0x7c`, `+0xa4`, and `+0xcc`. The former `name_row_widgets[20]` plus
+  `replay_row_widgets[1]` view hid three banks and incorrectly truncated the
+  known controller storage at `+0xd0`; replay slot nine proves it through
+  `+0xf4`. The final `0x14` bytes before TipManager remain explicitly unknown.

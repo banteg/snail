@@ -17,16 +17,18 @@ int HighScore::update_high_score_screen()
             destroy_high_score_screen();
             g_sprite_manager.kill_game_sprites();
 
-            GameRoot* game = (GameRoot*)g_game_base;
             int rank = selected_rank;
-            FrontendWidget* name_widget = name_row_widgets[rank];
-            SubSolution* record =
-                (SubSolution*)((char*)game->subgame.sub_high_score.active_record_bank
-                    + rank * SUB_SOLUTION_STRIDE);
-            rstrcpy_checked_ascii(record->player_name, name_widget->text_buffer);
-            rstrcpy_checked_ascii(game->players[0].player_name, name_widget->text_buffer);
             rstrcpy_checked_ascii(
-                g_runtime_config.last_entered_player_name, name_widget->text_buffer);
+                ((SubSolution*)((char*)((GameRoot*)g_game_base)
+                    ->subgame.sub_high_score.active_record_bank
+                    + rank * SUB_SOLUTION_STRIDE))->player_name,
+                name_row_widgets[rank]->text_buffer);
+            rstrcpy_checked_ascii(
+                ((GameRoot*)g_game_base)->players[0].player_name,
+                name_row_widgets[selected_rank]->text_buffer);
+            rstrcpy_checked_ascii(
+                g_runtime_config.last_entered_player_name,
+                name_row_widgets[selected_rank]->text_buffer);
             return exit_high_score_screen();
         }
 
@@ -60,11 +62,14 @@ int HighScore::update_high_score_screen()
 
             destroy_high_score_screen();
 
-            int bank = selected_bank;
-            if (bank == 0)
+            switch (selected_bank) {
+            case 0:
                 selected_bank = 1;
-            else if (bank == 1)
+                break;
+            case 1:
                 selected_bank = 0;
+                break;
+            }
 
             g_runtime_config.high_score_selected_bank = selected_bank;
             return initialize_high_score_screen(selected_bank, -1);
@@ -78,11 +83,9 @@ int HighScore::update_high_score_screen()
 
             int current_mode = mode;
             if (current_mode == 1) {
-                GameRoot* game = (GameRoot*)g_game_base;
-                game->players[0].frontend_state = 10;
-                game->players[0].redispatch_requested = 1;
-                destroy_high_score_screen();
-                return 0;
+                ((GameRoot*)g_game_base)->players[0].frontend_state = 10;
+                ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
+                return destroy_high_score_screen();
             }
 
             if (current_mode == 0)
@@ -91,15 +94,16 @@ int HighScore::update_high_score_screen()
             return destroy_high_score_screen();
         }
 
-        GameRoot* game = (GameRoot*)g_game_base;
         int i = 0;
-        result = game->subgame.sub_high_score.active_record_count;
+        result = ((GameRoot*)g_game_base)
+            ->subgame.sub_high_score.active_record_count;
         if (result > 0) {
             int record_offset = 0;
             FrontendWidget** replay_widget = replay_row_widgets;
             do {
                 SubSolution* record =
-                    (SubSolution*)((char*)game->subgame.sub_high_score.active_record_bank
+                    (SubSolution*)((char*)((GameRoot*)g_game_base)
+                        ->subgame.sub_high_score.active_record_bank
                         + record_offset);
                 if (record->active == 1) {
                     FrontendWidget* widget = *replay_widget;
@@ -109,12 +113,11 @@ int HighScore::update_high_score_screen()
                             widget_flags &= ~0x20;
                             widget->widget_flags = widget_flags;
 
-                            GameRoot* launch_game = (GameRoot*)g_game_base;
-                            launch_game->players[0].frontend_state = 10;
-                            launch_game->players[0].redispatch_requested = 1;
+                            ((GameRoot*)g_game_base)->players[0].frontend_state = 10;
+                            ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
                             destroy_high_score_screen();
 
-                            launch_game = (GameRoot*)g_game_base;
+                            GameRoot* launch_game = (GameRoot*)g_game_base;
                             launch_game->subgame.replay_launch_record =
                                 (SubSolution*)
                                     ((char*)launch_game->subgame.sub_high_score.active_record_bank
@@ -133,7 +136,8 @@ int HighScore::update_high_score_screen()
                 ++i;
                 record_offset += SUB_SOLUTION_STRIDE;
                 ++replay_widget;
-                result = game->subgame.sub_high_score.active_record_count;
+                result = ((GameRoot*)g_game_base)
+                    ->subgame.sub_high_score.active_record_count;
             } while (i < result);
         }
     }

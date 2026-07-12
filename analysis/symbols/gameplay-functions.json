@@ -911,7 +911,7 @@
     {
       "address": "0x416910",
       "name": "initialize_high_score_screen",
-      "description": "Builds the postal or challenge high-score screen, optionally enables inline name entry for a pending rank, and lays out the per-row replay or submit controls. Cross-port Android and iOS symbols match this helper to `cRHighScore::Init(int, int)`."
+      "description": "Builds the postal or challenge high-score screen, optionally enables inline name entry for a pending rank, and lays out five owned ten-handle row banks for backgrounds, ranks, names, scores, and replay actions. Cross-port Android and iOS symbols match this helper to `cRHighScore::Init(int, int)`."
     },
     {
       "address": "0x417220",
@@ -921,7 +921,7 @@
     {
       "address": "0x417260",
       "name": "update_high_score_screen",
-      "description": "Runs the high-score screen state machine, including replay launch, bank toggling, inline name submission, and back or exit actions. Cross-port Android and iOS symbols match this helper to `cRHighScore::AI()`."
+      "description": "Proof-grade Windows `cRHighScore::AI()` at 205/205 instructions. Runs replay launch, bank toggling, inline name submission, and back or exit actions while borrowing row-widget handles and records from the separate persistent cRSubHighScore bank. Cross-port Android and iOS preserve the same authored owner."
     },
     {
       "address": "0x417540",

@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**534/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85108/325720** bytes (**26.13%**) are proof-grade, and overall fuzzy is **62.11%**.
+**535/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85839/325720** bytes (**26.35%**) are proof-grade, and overall fuzzy is **62.19%**.
 
-## Proof Grade (534)
+## Proof Grade (535)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -162,6 +162,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | destroy_help_screen | 0x4168c0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | ✅ | update_help_screen | 0x4168d0 | 54 | 12/12 | 100.00% | 12/12 | 3 ok |  |
 | ✅ | destroy_high_score_screen | 0x417220 | 52 | 11/11 | 100.00% | 11/11 | 5 ok |  |
+| ✅ | update_high_score_screen | 0x417260 | 731 | 205/205 | 100.00% | 205/205 | 40 ok |  |
 | ✅ | initialize_high_score_tables | 0x417540 | 155 | 58/58 | 100.00% | 58/58 | 4 ok |  |
 | ✅ | load_high_scores_from_file | 0x4175e0 | 184 | 71/71 | 100.00% | 71/71 | 4 ok |  |
 | ✅ | add_arcade_high_score | 0x4176a0 | 222 | 70/70 | 100.00% | 70/70 | 4 ok |  |
@@ -634,7 +635,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (52)
+## Mid Progress (50-79.99%) (51)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -651,7 +652,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 134/139 | 60.81% | 41/139 | 4 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 645/694 | 73.34% | 9/694 | 68 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
-| 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 80/84 | 64.63% | 0/84 | 5 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |

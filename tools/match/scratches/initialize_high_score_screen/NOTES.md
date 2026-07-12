@@ -31,8 +31,11 @@ Expected residuals:
 
 - Android and iOS preserve `cRHighScore::Init(int, int)`, `AI()`, and the
   surrounding `UnInit()`/`Exit()` lifecycle on this same controller.
-- Windows embeds the owner at `GameRoot +0x12e6e50`; its last replay widget at
-  `+0xcc` closes the exact `0xd0` extent at root `+0x12e6f20`.
+- Windows embeds the owner at `GameRoot +0x12e6e50`. The ten-row initializer
+  proves five consecutive widget banks: backgrounds at `+0x2c`, ranks at
+  `+0x54`, names at `+0x7c`, scores at `+0xa4`, and replay actions at `+0xcc`.
+  The last replay handle at `+0xf0` proves storage through `+0xf4`; the
+  following `0x14` root bytes remain unassigned before TipManager at `+0x108`.
 - The shared type is therefore `HighScore`, distinct from the embedded
   0x947648-byte persistent `SubHighScore` bank. The ownership rename is
   codegen-neutral and does not hide the initializer's existing residuals.

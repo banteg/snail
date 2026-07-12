@@ -1,5 +1,6 @@
-// Authored cRHighScore front-end owner. Windows embeds this exact 0xd0-byte
-// controller in GameRoot; cRSubHighScore is the separate persistent data bank.
+// Authored cRHighScore front-end owner. Windows proves controller storage
+// through +0xf4; the following 0x14 root bytes remain unassigned before the
+// exact TipManager boundary. cRSubHighScore is the separate persistent bank.
 #ifndef HIGH_SCORE_H
 #define HIGH_SCORE_H
 
@@ -28,12 +29,15 @@ public:
     FrontendWidget* bank_toggle_button; // +0x20
     FrontendWidget* cancel_name_button; // +0x24, Cancel/Escape
     FrontendWidget* submit_name_button; // +0x28, Submit/Enter
-    char unknown_2c[0x7c - 0x2c];
-    FrontendWidget* name_row_widgets[20]; // +0x7c
-    FrontendWidget* replay_row_widgets[1]; // +0xcc, active_record_count entries
+    FrontendWidget* row_background_widgets[10]; // +0x2c, full-row hit/tint strips
+    FrontendWidget* rank_row_widgets[10]; // +0x54, displayed 1..10 ranks
+    FrontendWidget* name_row_widgets[10]; // +0x7c, editable player names
+    FrontendWidget* score_row_widgets[10]; // +0xa4, score/time values
+    FrontendWidget* replay_row_widgets[10]; // +0xcc, replay actions
 };
 
-typedef char HighScore_must_be_0xd0[(sizeof(HighScore) == 0xd0) ? 1 : -1];
+typedef char HighScore_known_extent_must_be_0xf4[
+    (sizeof(HighScore) == 0xf4) ? 1 : -1];
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5b0
 

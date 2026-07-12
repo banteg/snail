@@ -97,7 +97,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
             float replay_anchor = selected_bank == 0 ? 125.0f : 170.0f;
 
             init_score_text_widget(
-                &name_row_widgets[i - 20],
+                &row_background_widgets[i],
                 highlight | 0x20000000,
                 row_fill,
                 22,
@@ -107,7 +107,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 -228.0f);
 
             init_score_text_widget(
-                &name_row_widgets[i - 10],
+                &rank_row_widgets[i],
                 highlight | 0x20400000,
                 g_blank_text,
                 22,
@@ -115,8 +115,8 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 1,
                 -222.0f);
-            name_row_widgets[i - 10]->border_add_text_number(i + 1);
-            name_row_widgets[i - 10]->layout_frontend_widget();
+            rank_row_widgets[i]->border_add_text_number(i + 1);
+            rank_row_widgets[i]->layout_frontend_widget();
 
             init_score_text_widget(
                 &name_row_widgets[i],
@@ -135,7 +135,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
             name_row_widgets[i]->layout_frontend_widget();
 
             init_score_text_widget(
-                &name_row_widgets[i + 10],
+                &score_row_widgets[i],
                 highlight | 0x20400000,
                 g_blank_text,
                 22,
@@ -143,8 +143,8 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 3,
                 score_anchor);
-            name_row_widgets[i + 10]->border_add_text_number(record->score);
-            name_row_widgets[i + 10]->layout_frontend_widget();
+            score_row_widgets[i]->border_add_text_number(record->score);
+            score_row_widgets[i]->layout_frontend_widget();
 
             replay_row_widgets[i] =
                 ((HighScoreBorderManager*)(g_game_base + 0xb4c))->allocate_border();
@@ -161,7 +161,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 replay_row_widgets[i]->hide_border_init();
 
             if ((i & 1) != 0) {
-                *(Color4f*)((char*)name_row_widgets[i - 20] + 0x1bc) =
+                *(Color4f*)((char*)row_background_widgets[i] + 0x1bc) =
                     *alt_row_color.set_color_rgba(0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
                 *(Color4f*)((char*)replay_row_widgets[i] + 0x1bc) =
                     *alt_row_color.set_color_rgba(0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
