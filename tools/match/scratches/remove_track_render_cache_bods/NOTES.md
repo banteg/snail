@@ -72,3 +72,23 @@ register lifetime around the two full-dword masks.
 authored `SegmentCache` rather than a provisional manager wrapper. Focused
 matching stays honestly partial at 56.41%, 59/58 instructions, prefix 7/58,
 with four clean operands.
+
+## 2026-07-12 active-list owner boundary
+
+The cache grid owns its 143 x 5 embedded `BodBase` records, but it does not own
+their active/free linkage. For every live slot this helper borrows the global
+`BodList` and invokes its shared inline `remove_bod` operation on the containing
+node. That operation unlinks the node and returns it to the list's free stack;
+it does not destroy the cache slot or its retained render object.
+
+Using the shared owner method also fixes a semantic error in the previous
+hand-expanded scratch. A failed `0x200` ownership check reports `"List remove"`
+and leaves the inline removal path immediately; it must not fall through into
+the `0x40` iteration check or unlink body. This source shape raises focused
+Wibo from 56.41% (59/58) to **70.59%** (61/58), with five clean masked operands.
+
+The remaining residual is honest VC6 loop allocation: candidate keeps a row-end
+cursor alongside the active `list_next` cursor and folds `~0x200` into a byte
+clear, while native keeps the continuous cursor plus `0x200`/`~0x200` in full
+registers. Manual mask locals, flat-loop rewrites, and a second hand expansion
+either regress or lose the shared early-exit contract, so none are retained.
