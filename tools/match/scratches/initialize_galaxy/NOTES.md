@@ -21,6 +21,10 @@ Recovered ownership:
 - `data_4a2128` is the main-menu music path passed to `cache_music_file`.
 - `data_4df9bc` is reused as the selected galaxy route/backdrop selector for
   route modes 0 and 2.
+- `Galaxy::level_progress_base` is a borrowed backlink to the enclosing
+  `SubgameRuntime`. The initializer reads `level_mode`, `level_mode_arg`, and
+  `subgame_rebuild_selector` directly through that owner; it does not consult
+  a separate progress allocation.
 - `data_4a20f4` and `data_4a20ec` are the Exit and Back widget labels.
 - The bounds frame writes an integer left edge at widget `+0x48`, followed by
   raw float-bit bounds at `+0x4c`, `+0x50`, `+0x54`, and `+0x58`; the shared

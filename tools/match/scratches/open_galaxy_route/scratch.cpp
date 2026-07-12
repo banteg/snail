@@ -2,6 +2,7 @@
 
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
+#include "subgame_runtime.h"
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
@@ -37,7 +38,9 @@ FrontendWidget* Galaxy::open_galaxy_route(int selected_level_index)
             title_widget->layout_width * 0.5f + title_widget->layout_x - 320.0f;
         back_widget->stack_widget_below(description_widget);
 
-        if (*(int*)(level_progress_base + selected_index * 0x1fac0 + 0x944150) == 1 && route_mode == 2) {
+        if (level_progress_base->sub_high_score
+                    .time_trial_route_records[selected_index].active == 1
+            && route_mode == 2) {
             continue_widget->unhide_border_init();
             continue_widget->layout_center_x =
                 title_widget->layout_width * 0.5f + title_widget->layout_x - 320.0f;

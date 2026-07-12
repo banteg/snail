@@ -2,9 +2,9 @@
 
 #include "font_system.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "galaxy_route_types.h"
 #include "runtime_config.h"
-#include "sub_tracks.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "vector3.h"
@@ -41,7 +41,7 @@ int Galaxy::update_galaxy()
     Color4f color;
     color.noop_this_constructor();
 
-    ((SubgameRuntime*)level_progress_base)->hide_gameplay_scores();
+    level_progress_base->hide_gameplay_scores();
 
     int tick_index = 0;
     if (g_runtime_config.highest_galaxy_route_index >= 0) {
@@ -55,8 +55,9 @@ int Galaxy::update_galaxy()
 
     if (route_state == 1 && (bounds_frame_widget->widget_flags & 0x1000) == 0) {
         color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
-        GalaxyRouteRecord* selected_record =
-            &route_slots[selected_index].record;
+        GalaxyRouteIndexedSlotView* selected_record =
+            (GalaxyRouteIndexedSlotView*)(
+                (char*)this + selected_index * sizeof(GalaxyRouteSlot));
         FrontendWidget* card = bounds_frame_widget;
 
         float card_x;
@@ -202,9 +203,9 @@ int Galaxy::update_galaxy()
 
     int hovered_route_index = -1;
     int probe_index = 1;
-    char* mouse_state = *(char**)(g_game_base + 0x28c);
-    float mouse_x = *(float*)(mouse_state + 0x60);
-    float mouse_y = *(float*)(mouse_state + 0x64);
+    GameInput* mouse_state = ((GameRoot*)g_game_base)->players[0].game_input;
+    float mouse_x = mouse_state->input.authored_x;
+    float mouse_y = mouse_state->input.authored_y;
 
     hover_state = 0;
     if (route_state == 1) {
@@ -276,9 +277,10 @@ int Galaxy::update_galaxy()
     if ((flags & 0x20) != 0) {
         exit_or_back_widget->widget_flags = flags & ~0x20;
         if (route_mode == 1) {
-            *(int*)(g_game_base + 0x4f3b4) = *(int*)(g_game_base + 0x1b8);
-            *(int*)(g_game_base + 0x4f3ac) = 11;
-            *(int*)(g_game_base + 0x1b8) = 8;
+            ((GameRoot*)g_game_base)->exit_controller.previous_frontend_state =
+                ((GameRoot*)g_game_base)->players[0].frontend_state;
+            ((GameRoot*)g_game_base)->exit_controller.state = 11;
+            ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
             return 0;
         }
 
@@ -292,13 +294,13 @@ int Galaxy::update_galaxy()
         if ((flags & 0x20) != 0) {
             play_or_deliver_widget->widget_flags = flags & ~0x20;
             destroy_galaxy();
-            *(int*)((char*)level_progress_base + 0x44) = selected_index;
-            ((SubTracks*)((char*)level_progress_base + 0xa874))
-                ->load_frontend_level_by_mode_and_index(
-                    *(int*)((char*)level_progress_base + 0x40),
-                    *(int*)((char*)level_progress_base + 0x44));
-            if (*(int*)((char*)level_progress_base + 0x40) == 0
-                && *(int*)((char*)level_progress_base + 0x1270fc8) == 1) {
+            level_progress_base->level_mode_arg = selected_index;
+            level_progress_base->level_definition
+                .load_frontend_level_by_mode_and_index(
+                    level_progress_base->level_mode,
+                    level_progress_base->level_mode_arg);
+            if (level_progress_base->level_mode == 0
+                && level_progress_base->subgame_rebuild_selector == 1) {
                 return 2;
             }
             return 1;
@@ -309,21 +311,21 @@ int Galaxy::update_galaxy()
     if ((flags & 0x20) != 0) {
         replay_widget->widget_flags = flags & ~0x20;
         destroy_galaxy();
-        *(int*)((char*)level_progress_base + 0x44) = selected_index;
-        ((SubTracks*)((char*)level_progress_base + 0xa874))
-            ->load_frontend_level_by_mode_and_index(
-                *(int*)((char*)level_progress_base + 0x40),
-                *(int*)((char*)level_progress_base + 0x44));
-        *(unsigned char*)((char*)level_progress_base + 0xff25d0) = 1;
-        *(int*)((char*)level_progress_base + 0xff25d4) =
-            selected_index * 0x1fac0 + (int)level_progress_base + 0x944150;
+        level_progress_base->level_mode_arg = selected_index;
+        level_progress_base->level_definition.load_frontend_level_by_mode_and_index(
+            level_progress_base->level_mode,
+            level_progress_base->level_mode_arg);
+        level_progress_base->selected_level_record_active = 1;
+        level_progress_base->selected_level_record =
+            &level_progress_base->sub_high_score
+                 .time_trial_route_records[selected_index];
         return 1;
     }
 
-    if (*(int*)(g_game_base + 0x24) == 0 && route_mode != 1) {
+    if (((GameRoot*)g_game_base)->fade.state == 0 && route_mode != 1) {
         int current_hover_state = hover_state;
         if (current_hover_state != 1) {
-            unsigned int mouse_flags = *(unsigned int*)(mouse_state + 0x3c);
+            unsigned int mouse_flags = mouse_state->input.pressed_buttons;
             if (current_hover_state == 2 && (mouse_flags & 0x4000) != 0) {
                 if (hovered_route_index != selected_index) {
                     if (state == 1) {

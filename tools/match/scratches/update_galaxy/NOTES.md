@@ -25,9 +25,14 @@ selected-level/replay launch handoff back to the subgame state machine.
 - Consumes Back/Exit, Play/Deliver, Replay, route switch, and close-card clicks,
   including the mode-1 return through the saved frontend state fields at
   `g_game_base + 0x4f3ac/+0x4f3b4`.
-- Replay launch writes `level_progress_base +0xff25d0` and points
-  `+0xff25d4` at the selected high-score/replay record:
-  `level_progress_base + 0x944150 + selected_index * 0x1fac0`.
+- `level_progress_base` is a borrowed backlink to the enclosing
+  `SubgameRuntime`. Play/Deliver writes its `level_mode_arg` and calls the
+  embedded `level_definition`; no separate progress object owns those fields.
+- Replay launch sets `SubgameRuntime::selected_level_record_active` and lends
+  `selected_level_record` a pointer into the enclosing owner's persistent
+  `sub_high_score.time_trial_route_records[selected_index]` bank. The native
+  address identity is exact: `0x68b4c8 + 0x2b8c88 == 0x944150`, with
+  `sizeof(SubSolution) == 0x1fac0`.
 
 ## Layout notes
 
@@ -45,6 +50,9 @@ selected-level/replay launch handoff back to the subgame state machine.
 - The native function constructs one no-op `Color4f` at entry with the shared
   `0x44db50` thunk. Modeling the second stack color and the route-zero branch
   recovers the native `0x3c` frame.
+- Mouse coordinates and click flags belong to
+  `GameRoot::players[0].game_input`, while the mode-1 exit handoff and fade
+  gate belong to `GameRoot::exit_controller`, `players[0]`, and `fade`.
 
 ## Match state
 
@@ -84,3 +92,13 @@ Rejected probes:
 `cRGalaxy::AI()`. The primary 0x10fa8 `Galaxy` owner replaces the smaller
 semantic parent view without changing the honest 61.11%, 550/566 result or its
 43 clean operands.
+
+## 2026-07-12 enclosing-subgame backlink closure
+
+- `load_galaxy_layout` stores `&GameRoot::subgame` at `Galaxy +0x10f70`.
+  `initialize_galaxy`, `open_galaxy_route`, and this updater independently use
+  that same value as a `SubgameRuntime*`.
+- The typed backlink recovers the launch/replay ownership described above and
+  preserves this scratch's honest 61.11%, 550/566 result with all 43 operands
+  clean. The exact opener remains 266/266 and the exact initializer remains
+  338/338.

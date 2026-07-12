@@ -44,7 +44,7 @@ int Galaxy::load_galaxy_layout()
         galaxy_point_cursor += 2;
     } while ((int)galaxy_point_cursor < (int)g_galaxy_route_point_table_end);
 
-    level_progress_base = (char*)&g_game->subgame;
+    level_progress_base = &g_game->subgame;
 
     char* file_text = load_file_bytes_from_archive_or_fs(
         "Galaxy/_Galaxy.txt",

@@ -4,6 +4,8 @@
 
 #include "frontend_widget.h"
 
+class SubgameRuntime;
+
 class GalaxyRouteRecord {
 public:
     int route_name_index; // +0x00
@@ -109,7 +111,7 @@ public:
     // a 0x29c-byte authored/display record.
     GalaxyRouteSlot route_slots[101]; // +0x10, ends at +0x10930
     GalaxyRouteNameRecord route_names[10]; // +0x10930
-    char* level_progress_base; // +0x10f70, embedded subgame/progress base
+    SubgameRuntime* level_progress_base; // +0x10f70, borrowed enclosing subgame
     union {
         struct {
             FrontendWidget* exit_or_back_widget; // +0x10f74

@@ -12,8 +12,11 @@ Current local field evidence:
   Known record fields are `route_name_index +0x00`, `map_x/map_y +0x08/+0x0c`,
   detail text `+0x1c`, and description text `+0x9c`.
 - `+0x10930` is a `0xa0`-stride route-name string table.
-- `+0x10f70` is a progress/state table base used with selected-route stride
-  `0x1fac0` and native offset `0x944150`.
+- `+0x10f70` is a borrowed backlink to the enclosing `SubgameRuntime`, not an
+  independently owned progress table. Its native `+0x944150` route-record
+  base resolves exactly to `SubgameRuntime::sub_high_score +0x2b8c88`, the
+  owned `time_trial_route_records[]` bank; its `0x1fac0` stride is
+  `sizeof(SubSolution)`.
 - `+0x10f80` caches the selected record index.
 - `+0x10f8c..+0x10fa0` are the frame/title/detail/description/back/continue
   widget pointers also used by `close_galaxy_route`.
@@ -26,8 +29,9 @@ The `Galaxy` layout is now promoted after agreement with
 `close_galaxy_route`; this opener keeps the alternate widget names used by the
 route-card source through shared header aliases.
 
-The corrected 101-slot ownership and `0x29c` record body remain codegen-neutral:
-focused matching stays exact at 266/266 with all 41 operands clean.
+The corrected 101-slot ownership, `0x29c` record body, and typed enclosing
+subgame backlink remain codegen-neutral: focused matching stays exact at
+266/266 with all 41 operands clean.
 
 Android/iOS retain this member as `cRGalaxy::Open(int)`; the complete parent
 extent is 0x10fa8.

@@ -8,6 +8,7 @@
 #include "mouse_cursor_state.h"
 #include "runtime_config.h"
 #include "star_manager.h"
+#include "subgame_runtime.h"
 
 extern char* g_game_base; // data_4df904
 extern char g_blank_text[]; // data_4dfb08
@@ -40,21 +41,21 @@ FrontendWidget* Galaxy::initialize_galaxy()
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
     *(int*)(g_game_base + 0x56c) = 2;
 
-    char* progress = level_progress_base;
-    if (*(int*)(progress + 0x40) == 0) {
-        int selected_mode = *(int*)(progress + 0x1270fc8);
+    SubgameRuntime* progress = level_progress_base;
+    if (progress->level_mode == 0) {
+        int selected_mode = progress->subgame_rebuild_selector;
         if (selected_mode == 3 || selected_mode == 2) {
             route_state = 0;
             route_mode = 0;
             selected_index = g_runtime_config.landscape_backdrop_variant_selector;
         }
-        if (*(int*)(progress + 0x1270fc8) == 1) {
+        if (progress->subgame_rebuild_selector == 1) {
             route_state = 1;
             route_mode = 1;
-            selected_index = *(int*)(progress + 0x44);
+            selected_index = progress->level_mode_arg;
         }
     }
-    if (*(int*)(progress + 0x40) == 4) {
+    if (progress->level_mode == 4) {
         route_state = 0;
         route_mode = 2;
         selected_index = g_runtime_config.landscape_backdrop_variant_selector;
@@ -189,7 +190,7 @@ FrontendWidget* Galaxy::initialize_galaxy()
     }
 
     play_or_deliver_widget = ((GalaxyBorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    if (*(int*)(level_progress_base + 0x40) == 0) {
+    if (level_progress_base->level_mode == 0) {
         Color4f color;
         play_or_deliver_widget->initialize_frontend_widget(
             0x60000014,
