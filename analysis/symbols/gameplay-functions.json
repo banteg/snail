@@ -527,7 +527,7 @@
     {
       "address": "0x4092f0",
       "name": "update_galaxy",
-      "description": "Runs the embedded `Galaxy` Star Map state machine, including route selection, replay launch, and Deliver/Play handoff. Android and iOS preserve `cRGalaxy::AI()`."
+      "description": "Runs the embedded `Galaxy` Star Map state machine, including route selection, replay launch, Deliver/Play handoff, and the route/icon render pass. Android and iOS split the same ownership between `cRGalaxy::AI()` and `cRGalaxy::Render()`; their trivial `AIControl()` exposes the result state that Windows returns directly."
     },
     {
       "address": "0x409b00",

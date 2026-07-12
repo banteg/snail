@@ -56,26 +56,20 @@ selected-level/replay launch handoff back to the subgame state machine.
 
 ## Match state
 
-Pre-audio-owner result: 61.11%, 566 target instructions, 550 candidate
-instructions, 6-instruction prefix, and 43 clean / 0 unresolved / 0 mismatched
+Current result: 68.72%, 566 target instructions, 569 candidate instructions,
+a 79-instruction exact prefix, and 52 clean / 0 unresolved / 0 mismatched
 masked operands.
 
-The first residual is stack-color slot assignment:
-
-```asm
-target:    lea ecx, [esp+0x3c]
-candidate: lea ecx, [esp+0x2c]
-```
-
-Both functions allocate `0x3c`, but VC6 places the main color and the secondary
-route-zero color in the opposite order from native. Swapping declaration order
-or swapping source uses did not change the emitted layout.
+The first residual is now the route-icon loop exit target (`jl L28f` versus
+`jl L28d`). The loop has the native behavior and instruction count through its
+route-name color copy, but VC6 assigns the scaled route base and copied color
+lanes to different registers, shortening the candidate block by two bytes.
 
 Rejected probes:
 
-- Reading click flags directly from `*(g_game_base + 0x28c)` at the tail made
-  that local look more native locally, but regressed the frame to `0x38` and
-  dropped the score to 57.94%.
+- At the then-current source shape, reloading click flags directly from
+  `*(g_game_base + 0x28c)` at the tail regressed the frame to `0x38`; the live
+  typed `GameInput*` remains the better whole-function spelling.
 - A free `update_galaxy_route_record(void*)` helper produced a cdecl call and
   missed the native `mov ecx, ebx; call` route-record tick shape.
 
@@ -125,3 +119,35 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
   and raises this updater from `63.76%` (`535/566`) to `63.83%` (`537/566`).
   The six-instruction prefix and 47 clean / 0 unresolved / 0 mismatched
   operands are preserved.
+
+## 2026-07-12 mobile phase split and render ownership
+
+- Android keeps `cRGalaxy::AI()` at `0x4f6e8`, `cRGalaxy::Render()` at
+  `0x4e308`, and the one-field `cRGalaxy::AIControl()` getter at `0x4da0c`.
+  Its game loop calls `AI()` and `Render()` separately. iOS preserves the same
+  three symbols at `0x69c60`, `0x6a6c4`, and `0x68674` respectively.
+- Windows `update_galaxy` combines the mobile `AI()` slot tick, hit testing,
+  and input/handoff phases with the complete `Render()` icon/line pass. It
+  returns the handoff result directly, so mobile `AIControl()` is a caller-side
+  state getter rather than a missing Windows rendering or update method.
+- Each icon iteration first copies
+  `route_names[record->route_name_index].color` into the working color and then
+  overwrites it with the white icon tint. Restoring that apparently redundant
+  authored copy closes the route-slot-to-route-name ownership edge and recovers
+  twelve missing candidate instructions.
+- The selected-card connector is two source branches with one line call in
+  each branch, and the unreachable route-zero icon passes
+  `set_color_rgba(...)` directly as the quad color argument. Those source
+  expressions reproduce the native argument scheduling without padding.
+- The hit-test subtraction materializes a by-value `Vector3` result and copies
+  it into the address-taken normalized probe. A scratch-local two-component
+  `GalaxyScreenPoint` captures the native x/y subtraction while preserving the
+  route record's z; the same temp-to-local shape is already exact in
+  `look_at_point` and is visible in the Android Galaxy AI decompile.
+- Keeping the secondary route-zero color inside the fused render phase lets
+  VC6 reuse that dead storage for the later vector temporary while the primary
+  color remains function-scoped. This recovers the native `0x3c` frame and
+  moves the exact prefix from 6 to 79 instructions.
+- Together these changes raise the honest focused result from 63.83%
+  (537/566, 47 clean operands) to 68.72% (569/566, 52 clean operands), with no
+  unresolved or mismatched masked operands.

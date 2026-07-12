@@ -146,7 +146,7 @@
       "android_symbol": "cRGalaxy::AI()",
       "source_object": "Galaxy.o",
       "confidence": "high",
-      "notes": "Both drive route selection, open-card interaction, replay launch, and level handoff through the same owner."
+      "notes": "Windows folds the mobile cRGalaxy::Render() route/icon pass into cRGalaxy::AI(); Android and iOS call those methods separately. Mobile cRGalaxy::AIControl() is only the result-state getter used by cRSubGame, while Windows returns that result directly from update_galaxy."
     },
     {
       "address": "0x409bf0",

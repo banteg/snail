@@ -12,6 +12,21 @@
 
 extern char* g_game_base; // data_4df904
 
+// Cursor-space operand for the authored by-value route-position subtraction.
+struct GalaxyScreenPoint {
+    float x;
+    float y;
+};
+
+inline Vector3 operator-(const Vector3& lhs, const GalaxyScreenPoint& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z;
+    return result;
+}
+
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
     float x,
@@ -28,184 +43,130 @@ int queue_axis_aligned_textured_quad_uv(
     int blend); // @ 0x44a9b0
 int Galaxy::update_galaxy()
 {
-    Color4f route_zero_color;
     Color4f color;
-    color.noop_this_constructor();
+    // Windows folds the mobile cRGalaxy::Render() phase into this update.
+    {
+        Color4f route_zero_color;
+        color.noop_this_constructor();
 
-    level_progress_base->hide_gameplay_scores();
+        level_progress_base->hide_gameplay_scores();
 
-    int tick_index = 0;
-    if (g_runtime_config.highest_galaxy_route_index >= 0) {
-        GalaxyRouteSlot* tick_record = route_slots;
-        do {
-            tick_record->update_galaxy_route_record();
-            ++tick_index;
-            ++tick_record;
-        } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
-    }
-
-    if (route_state == 1 && (bounds_frame_widget->widget_flags & 0x1000) == 0) {
-        color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
-        GalaxyRouteIndexedSlotView* selected_record =
-            (GalaxyRouteIndexedSlotView*)(
-                (char*)this + selected_index * sizeof(GalaxyRouteSlot));
-        FrontendWidget* card = bounds_frame_widget;
-
-        float card_x;
-        float route_x;
-        if (card->frame_x <= selected_record->map_x) {
-            card_x = card->frame_width + card->frame_x + 6.0f;
-            route_x = selected_record->map_x - 16.0f;
-        } else {
-            card_x = card->frame_x - 6.0f;
-            route_x = selected_record->map_x + 16.0f;
+        int tick_index = 0;
+        if (g_runtime_config.highest_galaxy_route_index >= 0) {
+            GalaxyRouteSlot* tick_record = route_slots;
+            do {
+                tick_record->update_galaxy_route_record();
+                ++tick_index;
+                ++tick_record;
+            } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
         }
-        draw_galaxy_line(
-            153,
-            route_x,
-            selected_record->map_y,
-            card_x,
-            selected_record->map_y,
-            4.0f,
-            &color);
-    }
 
-    int route_index = 1;
-    if (g_runtime_config.highest_galaxy_route_index >= 1) {
-        do {
-            int record_offset = route_index * sizeof(GalaxyRouteSlot);
-            GalaxyRouteIndexedSlotView* record =
-                (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);
-            color.r = 1.0f;
-            color.g = 1.0f;
-            color.b = 1.0f;
-            color.a = 0.99000001f;
+        if (route_state == 1 && (bounds_frame_widget->widget_flags & 0x1000) == 0) {
+            color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
+            GalaxyRouteIndexedSlotView* selected_record =
+                (GalaxyRouteIndexedSlotView*)((char*)this +
+                                              selected_index * sizeof(GalaxyRouteSlot));
+            FrontendWidget* card = bounds_frame_widget;
 
-            Color4f* icon_color;
-            float icon_x;
-            float icon_y;
-            if (route_index) {
-                if (route_mode == 1 && route_index > selected_index)
-                    goto skip_route_icon;
-                icon_color = &color;
-                icon_y = record->map_y - 16.0f;
-                icon_x = record->map_x;
+            if (card->frame_x > selected_record->map_x) {
+                draw_galaxy_line(153, selected_record->map_x + 16.0f, selected_record->map_y,
+                                 card->frame_x - 6.0f, selected_record->map_y, 4.0f, &color);
             } else {
-                icon_color = route_zero_color.set_color_rgba(1.0f, 0.0f, 0.0f, 0.99000001f);
-                icon_y = *(float*)((char*)this + 0x20) - 16.0f;
-                icon_x = *(float*)((char*)this + 0x1c);
+                draw_galaxy_line(153, selected_record->map_x - 16.0f, selected_record->map_y,
+                                 card->frame_width + card->frame_x + 6.0f, selected_record->map_y,
+                                 4.0f, &color);
             }
+        }
 
-            {
-                queue_axis_aligned_textured_quad_uv(
-                    151,
-                    icon_x - 16.0f,
-                    icon_y,
-                    32.0f,
-                    32.0f,
-                    0x1000000,
-                    icon_color,
-                    0.0f,
-                    0.0f,
-                    1.0f,
-                    1.0f,
-                    15,
-                    0);
-            }
+        int route_index = 1;
+        if (g_runtime_config.highest_galaxy_route_index >= 1) {
+            do {
+                int record_offset = route_index * sizeof(GalaxyRouteSlot);
+                GalaxyRouteIndexedSlotView* record =
+                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);
+                color = route_names[record->route_name_index].color;
+                color.r = 1.0f;
+                color.g = 1.0f;
+                color.b = 1.0f;
+                color.a = 0.99000001f;
 
-        skip_route_icon:
-            if (record->route_tint_alpha > 0.0f) {
-                color.a = record->route_tint_alpha;
-                queue_axis_aligned_textured_quad_uv(
-                    150,
-                    record->map_x - 32.0f,
-                    record->map_y - 32.0f,
-                    64.0f,
-                    64.0f,
-                    0x1000000,
-                    &color,
-                    0.0f,
-                    0.0f,
-                    1.0f,
-                    1.0f,
-                    15,
-                    0);
-            }
-
-            ++route_index;
-        } while (route_index <= g_runtime_config.highest_galaxy_route_index);
-    }
-
-    color.set_color_white();
-    color.a = 0.200000003f;
-    int line_index = 1;
-    if (g_runtime_config.highest_galaxy_route_index > 1) {
-        GalaxyRouteSlot* next_record = &route_slots[2];
-        do {
-            if (line_index < selected_index) {
-                color.a = 0.800000012f;
-                draw_galaxy_line(
-                    154,
-                    next_record[-1].record.map_x,
-                    next_record[-1].record.map_y,
-                    next_record->record.map_x,
-                    next_record->record.map_y,
-                    4.0f,
-                    &color);
-            } else {
-                if (route_mode != 1) {
-                    color.a = 0.200000003f;
-                    draw_galaxy_line(
-                        154,
-                        next_record[-1].record.map_x,
-                        next_record[-1].record.map_y,
-                        next_record->record.map_x,
-                        next_record->record.map_y,
-                        4.0f,
-                        &color);
+                if (!route_index) {
+                    queue_axis_aligned_textured_quad_uv(
+                        151, *(float*)((char*)this + 0x1c) - 16.0f,
+                        *(float*)((char*)this + 0x20) - 16.0f, 32.0f, 32.0f, 0x1000000,
+                        route_zero_color.set_color_rgba(1.0f, 0.0f, 0.0f, 0.99000001f), 0.0f, 0.0f,
+                        1.0f, 1.0f, 15, 0);
+                } else {
+                    if (route_mode == 1 && route_index > selected_index)
+                        goto skip_route_icon;
+                    queue_axis_aligned_textured_quad_uv(
+                        151, record->map_x - 16.0f, record->map_y - 16.0f, 32.0f, 32.0f, 0x1000000,
+                        &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
                 }
-            }
-            ++line_index;
-            ++next_record;
-        } while (line_index < g_runtime_config.highest_galaxy_route_index);
-    }
 
-    color.set_color_white();
-    int galaxy_index = 0;
-    GalaxyRouteNameRecord* route_name = route_names;
-    do {
-        queue_axis_aligned_textured_quad_uv(
-            galaxy_index + 139,
-            route_name->map_x - 128.0f,
-            route_name->map_y - 128.0f,
-            256.0f,
-            256.0f,
-            0x1000000,
-            &color,
-            0.0f,
-            0.0f,
-            1.0f,
-            1.0f,
-            15,
-            0);
-        ++galaxy_index;
-        ++route_name;
-    } while (galaxy_index < 10);
+            skip_route_icon:
+                if (record->route_tint_alpha > 0.0f) {
+                    color.a = record->route_tint_alpha;
+                    queue_axis_aligned_textured_quad_uv(
+                        150, record->map_x - 32.0f, record->map_y - 32.0f, 64.0f, 64.0f, 0x1000000,
+                        &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
+                }
+
+                ++route_index;
+            } while (route_index <= g_runtime_config.highest_galaxy_route_index);
+        }
+
+        color.set_color_white();
+        color.a = 0.200000003f;
+        int line_index = 1;
+        if (g_runtime_config.highest_galaxy_route_index > 1) {
+            GalaxyRouteSlot* next_record = &route_slots[2];
+            do {
+                if (line_index < selected_index) {
+                    color.a = 0.800000012f;
+                    draw_galaxy_line(154, next_record[-1].record.map_x,
+                                     next_record[-1].record.map_y, next_record->record.map_x,
+                                     next_record->record.map_y, 4.0f, &color);
+                } else {
+                    if (route_mode != 1) {
+                        color.a = 0.200000003f;
+                        draw_galaxy_line(154, next_record[-1].record.map_x,
+                                         next_record[-1].record.map_y, next_record->record.map_x,
+                                         next_record->record.map_y, 4.0f, &color);
+                    }
+                }
+                ++line_index;
+                ++next_record;
+            } while (line_index < g_runtime_config.highest_galaxy_route_index);
+        }
+
+        color.set_color_white();
+        int galaxy_index = 0;
+        GalaxyRouteNameRecord* route_name = route_names;
+        do {
+            queue_axis_aligned_textured_quad_uv(galaxy_index + 139, route_name->map_x - 128.0f,
+                                                route_name->map_y - 128.0f, 256.0f, 256.0f,
+                                                0x1000000, &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
+            ++galaxy_index;
+            ++route_name;
+        } while (galaxy_index < 10);
+    }
 
     int hovered_route_index = -1;
     int probe_index = 1;
     GameInput* mouse_state = ((GameRoot*)g_game_base)->players[0].game_input;
-    float mouse_x = mouse_state->input.authored_x;
-    float mouse_y = mouse_state->input.authored_y;
+    GalaxyScreenPoint mouse_position;
+    mouse_position.x = mouse_state->input.authored_x;
+    mouse_position.y = mouse_state->input.authored_y;
 
     hover_state = 0;
     if (route_state == 1) {
         FrontendWidget* card = bounds_frame_widget;
-        float edge = *(float*)((char*)card + 0x220);
-        if (card->frame_x - edge < mouse_x
-            && card->frame_width + edge + card->frame_x > mouse_x
-            && card->frame_y - edge < mouse_y
-            && card->frame_height + card->frame_y + edge > mouse_y) {
+        float edge = card->active_padding;
+        if (card->frame_x - edge < mouse_position.x &&
+            card->frame_width + edge + card->frame_x > mouse_position.x &&
+            card->frame_y - edge < mouse_position.y &&
+            card->frame_height + card->frame_y + edge > mouse_position.y) {
             hover_state = 1;
             if (g_runtime_config.highest_galaxy_route_index >= 1) {
                 do {
@@ -224,12 +185,9 @@ int Galaxy::update_galaxy()
         route_slots[selected_index].record.highlight_target = 1.0f;
     } else if (hover_state == 0) {
         if (route_state == 1) {
-            GalaxyRouteRecord* selected_record =
-                &route_slots[selected_index].record;
+            GalaxyRouteRecord* selected_record = &route_slots[selected_index].record;
             Vector3 selected_probe;
-            selected_probe.x = selected_record->map_x - mouse_x;
-            selected_probe.y = selected_record->map_y - mouse_y;
-            selected_probe.z = selected_record->map_z;
+            selected_probe = *(Vector3*)&selected_record->map_x - mouse_position;
             if (selected_probe.normalize_vector() < 17.0f && hover_state == 0) {
                 hovered_route_index = selected_index;
                 hover_state = 2;
@@ -241,9 +199,7 @@ int Galaxy::update_galaxy()
             GalaxyRouteSlot* probe_slot = &route_slots[1];
             do {
                 Vector3 probe;
-                probe.x = probe_slot->record.map_x - mouse_x;
-                probe.y = probe_slot->record.map_y - mouse_y;
-                probe.z = probe_slot->record.map_z;
+                probe = *(Vector3*)&probe_slot->record.map_x - mouse_position;
                 if (probe.normalize_vector() < 17.0f && hover_state == 0) {
                     hover_state = 2;
                     hovered_route_index = probe_index;
