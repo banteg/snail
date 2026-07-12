@@ -7,7 +7,16 @@
 #include "player.h"
 #include "voice_manager.h"
 
-extern char g_player_intro_cutscene_latch_offset[]; // 0x42fec4 = g_player_block + 0x148
+extern GameRoot* g_game; // data_4df904
+
+inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
+    return result;
+}
 
 void CutScene::update_cutscene()
 {
@@ -15,10 +24,9 @@ void CutScene::update_cutscene()
     force_camera_update = 0;
 
     TransformMatrix look_at_matrix;
+    TransformMatrix completion_matrix;
     TransformMatrix source_matrix;
     Vector3 target_delta;
-    Vector3 skid_stop;
-    Vector3 intro_talk;
 
     switch (current_state) {
     case 1:
@@ -45,7 +53,7 @@ void CutScene::update_cutscene()
         return;
 
     case 8: {
-        *(g_player_intro_cutscene_latch_offset + (int)g_game_base) = 0;
+        g_game->subgame.embedded_player()->click_start.hide_prompt = 0;
         camera_mode = 1;
 
         set_matrix_identity(&look_at_matrix);
@@ -54,19 +62,15 @@ void CutScene::update_cutscene()
         look_at_matrix.position.x = swing + swing + look_at_matrix.position.x;
         look_at_matrix.look_at_point(&presentation->live_matrix.position);
 
-        source_matrix = *(TransformMatrix*)((char*)presentation->owner_player + 0x200);
+        source_matrix = presentation->owner_player->cameraman.live_matrix;
         float alpha = sine(progress * 1.5707964f);
         live_matrix.linear_interpolate_matrix(&look_at_matrix, &source_matrix, alpha);
 
-        target_delta.x = live_matrix.position.x - presentation->live_matrix.position.x;
-        target_delta.y = live_matrix.position.y - presentation->live_matrix.position.y;
-        target_delta.z = live_matrix.position.z - presentation->live_matrix.position.z;
+        target_delta = live_matrix.position - presentation->live_matrix.position;
         float distance = target_delta.normalize_vector();
         if (distance < 1.5f) {
             float push = 1.5f - distance;
-            live_matrix.position.x = target_delta.x * push + live_matrix.position.x;
-            live_matrix.position.y = target_delta.y * push + live_matrix.position.y;
-            live_matrix.position.z = push * target_delta.z + live_matrix.position.z;
+            live_matrix.position += target_delta * push;
         }
 
         progress = progress + progress_step;
@@ -79,7 +83,7 @@ void CutScene::update_cutscene()
     }
 
     case 9:
-        live_matrix = *(TransformMatrix*)((char*)presentation->owner_player + 0x200);
+        live_matrix = presentation->owner_player->cameraman.live_matrix;
         state = 0;
         return;
 
@@ -105,7 +109,7 @@ void CutScene::update_cutscene()
             look_at_matrix.position.y = 0.0f;
         look_at_matrix.look_at_point(&presentation->live_matrix.position);
 
-        source_matrix = *(TransformMatrix*)((char*)presentation->owner_player + 0x200);
+        source_matrix = presentation->owner_player->cameraman.live_matrix;
         float alpha = sine(progress * 1.5707964f);
         live_matrix.linear_interpolate_matrix(&source_matrix, &look_at_matrix, alpha);
 
@@ -152,12 +156,14 @@ void CutScene::update_cutscene()
             presentation->invincible_shell.cutscene_roll_step;
         force_camera_update = 1;
 
-        int delivered_count = player->parcels_collected;
         GameRoot* game = (GameRoot*)g_game_base;
         if (game->subgame.level_mode != 0) {
-            if (game->subgame.level_mode == 1)
+            if (game->subgame.level_mode == 1) {
+                int delivered_count = player->parcels_collected;
                 game->subgame.completion.initialize_completion_screen(delivered_count, 1);
+            }
         } else {
+            int delivered_count = player->parcels_collected;
             game->subgame.completion.initialize_completion_screen(
                 delivered_count,
                 delivered_count == *(int*)(g_game_base + 0x2247f8));
@@ -168,24 +174,26 @@ void CutScene::update_cutscene()
 
     case 6: {
         camera_mode = -1;
-        set_matrix_identity(&look_at_matrix);
+        set_matrix_identity(&completion_matrix);
 
+        Vector3 skid_stop;
+        Vector3 intro_talk;
         skid_stop = presentation->snail_hotspots_world[12];
         intro_talk = presentation->snail_hotspots_world[18];
         float blend_x = (intro_talk.x - skid_stop.x) * progress + skid_stop.x;
         float blend_y = (intro_talk.y - skid_stop.y) * progress + skid_stop.y;
         float blend_z = (intro_talk.z - skid_stop.z) * progress + skid_stop.z;
-        look_at_matrix.position.x = blend_x;
-        look_at_matrix.position.y = blend_y;
-        look_at_matrix.position.z = blend_z;
+        completion_matrix.position.x = blend_x;
+        completion_matrix.position.y = blend_y;
+        completion_matrix.position.z = blend_z;
 
         float skid_arc = sine(progress * 3.1415927f);
-        look_at_matrix.position.x = look_at_matrix.position.x - skid_arc * 0.5f;
-        look_at_matrix.look_at_point(&presentation->live_matrix.position);
+        completion_matrix.position.x = completion_matrix.position.x - skid_arc * 0.5f;
+        completion_matrix.look_at_point(&presentation->live_matrix.position);
 
-        source_matrix = *(TransformMatrix*)((char*)presentation->owner_player + 0x200);
+        source_matrix = presentation->owner_player->cameraman.live_matrix;
         float alpha = sine(progress * 1.5707964f);
-        live_matrix.linear_interpolate_matrix(&source_matrix, &look_at_matrix, alpha);
+        live_matrix.linear_interpolate_matrix(&source_matrix, &completion_matrix, alpha);
 
         progress = progress + progress_step;
         if (progress > 1.0f) {

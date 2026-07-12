@@ -20,14 +20,15 @@ Recovered relationships:
   `presentation +0x192c/+0x1930` (`cutscene_roll_progress/step`), not the
   regular wobble phase fields at `+0x15bc/+0x15c0`.
 
-Kept local for now:
+Closed ownership:
 
-- `Player +0x200` is copied as the blend source matrix in states `6`, `8`, and
-  `11`. The scratch uses a local accessor until another writer/consumer confirms
-  the member name.
-- `g_game_base +0x2247f8` is the target-count comparison used for perfect
-  delivery. It still needs a second callsite before promotion into a shared
-  owner.
+- `Player +0x200` is the exact `Cameraman::live_matrix` at the head of the
+  embedded 0xd8-byte `Player::cameraman` owner. States `6`, `8`, and `11` use it
+  as their camera blend source.
+- `g_game_base +0x2247f8` is
+  `SubgameRuntime::level_definition.parcel_count`, the same total consumed by
+  parcel placement and the collision HUD path. State `5` compares it with
+  `Player::parcels_collected` for the perfect-delivery flag.
 
 Focused match:
 
@@ -79,3 +80,24 @@ places `cRCutScene::AI` in `SubGame.o`. The shared type is now the exact 0x5c
 `CutScene`; the old analysis headers incorrectly padded it to 0x64 and thereby
 misattributed the following `Player::parcels_collected` word at `Player+0x4338`
 to a nonexistent CutScene tail.
+
+2026-07-12 camera/parcel ownership and source-shape pass:
+
+- The intro latch is now expressed through
+  `GameRoot::subgame.embedded_player()->click_start.hide_prompt`, and all four
+  raw `Player +0x200` matrix copies now use
+  `Player::cameraman.live_matrix`. Both are codegen-neutral owner recovery.
+- A real `Vector3 operator-` spelling plus the existing scaled-vector operators
+  recovers the native intro pushback temporary. Keeping a distinct completion
+  camera matrix recovers the exact native `0xe8` stack frame rather than the
+  prior `0xa8` candidate frame.
+- Limiting `Player::parcels_collected` to the two completion-mode branches
+  recovers the native mode-first load schedule. The scratch retains the direct
+  `g_game_base +0x2247f8` spelling because the fully typed member expression
+  changes register lifetime and regresses the focused result; the owner itself
+  is no longer unresolved.
+- Focused Wibo improves from 68.97% (481/505 instructions, prefix 0, 55 clean
+  masked operands) to 72.53% (496/505, prefix 10, 57 clean masked operands).
+  The sole masked mismatch remains the compiler-emitted jump-table identity.
+  Chained completion-vector algebra regressed, while a named perfect-delivery
+  boolean was codegen-neutral; neither probe was retained.

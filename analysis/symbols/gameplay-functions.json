@@ -2588,7 +2588,7 @@
     {
       "address": "0x4466d0",
       "name": "update_cutscene",
-      "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, consuming live snail hotspots for intro/completion/death camera anchors, including the `CameraSkidStop -> CameraIntroTalk` blend and completion-screen handoff."
+      "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `Player::cameraman.live_matrix`, clears `Player::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `SubgameRuntime::level_definition.parcel_count` before the completion-screen handoff."
     },
     {
       "address": "0x446e30",
