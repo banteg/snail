@@ -1069,6 +1069,15 @@
       "notes": "The Windows cRSalt constructor table at 0x497340 points directly to this exact helper."
     },
     {
+      "address": "0x441d40",
+      "windows_name": "update_banner",
+      "ios_symbol": "cRBanner::AI()",
+      "android_symbol": "cRBanner::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows owner is one of two 0x60-byte Banner actors embedded at SubgameRuntime +0x359080. Android preserves the visibility mode, borrowed Player pointer, phase, and phase-step tail at the same offsets relative to its smaller platform BodBase."
+    },
+    {
       "address": "0x441dd0",
       "windows_name": "firework_shoot",
       "ios_symbol": "cRFireWork::Shoot(tVector, int, int, int)",

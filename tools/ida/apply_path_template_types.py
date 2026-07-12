@@ -391,6 +391,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count);",
     ),
     (
+        "update_banner",
+        "void __thiscall update_banner(Banner* banner);",
+    ),
+    (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player);",
     ),

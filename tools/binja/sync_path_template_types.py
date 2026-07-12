@@ -90,6 +90,8 @@ REQUIRED_HEADER_STRUCTS = (
     "SnailVisual",
     "BodNode",
     "BodBase",
+    "Banner",
+    "BannerPool",
     "RenderableBod",
     "FringeObject",
     "TrackRowCell",
@@ -218,6 +220,7 @@ GAME_FIELD_UPDATES = (
     ("0xa874", "level_segment_count", "int32_t"),
     ("0x356b00", "sub_lazers", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
+    ("0x359080", "banners", "BannerPool"),
     ("0x3bba4c", "stopwatch", "Time"),
     ("0x3bbb58", "warning", "Warning"),
     ("0x432700", "presentation", "Snail"),
@@ -546,6 +549,10 @@ PROTO_UPDATES = (
     (
         "firework_shoot",
         "void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count)",
+    ),
+    (
+        "update_banner",
+        "void __thiscall update_banner(Banner* banner)",
     ),
     (
         "handle_subgoldy_collisions",

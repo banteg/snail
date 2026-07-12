@@ -2316,7 +2316,8 @@
     },
     {
       "address": "0x441d40",
-      "name": "update_banner"
+      "name": "update_banner",
+      "description": "Exact Windows `cRBanner::AI()`: updates one of the two fixed Banner actors embedded at `SubgameRuntime +0x359080`, toggles its inherited BOD visibility flag from the borrowed Player row position, wraps its phase, and writes the sinusoidal bob into `BodBase::position.y`. Android preserves the same four-field class tail after its smaller platform BodBase, while iOS preserves the authored owner in `SubGame.o`."
     },
     {
       "address": "0x441dd0",

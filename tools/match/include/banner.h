@@ -9,6 +9,7 @@ class Banner : public BodBase {
 public:
     void update_banner(); // @ 0x441d40, cRBanner::AI
 
+    // Android preserves this same tail immediately after its platform BodBase.
     int visibility_mode; // +0x38, 0 start row; 1 completion row
     char unknown_3c[0x54 - 0x3c];
     Player* owner_player; // +0x54, borrowed row-position source

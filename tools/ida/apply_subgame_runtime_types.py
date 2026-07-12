@@ -19,6 +19,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall advance_timer_counters(Time* time, float delta_ticks);",
     ),
     (
+        "update_banner",
+        "void __thiscall update_banner(Banner* banner);",
+    ),
+    (
         "initialize_enemy_manager",
         # Keep this ICF-shared one-store ABI coarse in IDA so the unrelated
         # tracked-allocation callsite is not assigned the registry owner.

@@ -20,6 +20,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
 DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types.h"
 
 SUBGAME_FIELD_UPDATES = (
+    ("0x359080", "banners", "BannerPool"),
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[24]"),
     ("0xff25e0", "time_trial", "TimeTrial"),
@@ -49,6 +50,10 @@ PROTO_UPDATES = (
     (
         "advance_timer_counters",
         "void __thiscall advance_timer_counters(Time* time, float delta_ticks)",
+    ),
+    (
+        "update_banner",
+        "void __thiscall update_banner(Banner* banner)",
     ),
     (
         "initialize_enemy_manager",
@@ -140,7 +145,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            required_structs=("SubgameRuntime", "TimeTrial", "GUI"),
+            required_structs=(
+                "SubgameRuntime",
+                "TimeTrial",
+                "GUI",
+                "Banner",
+                "BannerPool",
+            ),
         ),
         *apply_struct_field_updates(
             REPO_ROOT,

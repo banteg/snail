@@ -78,6 +78,20 @@ typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
 
+/* Two authored cRBanner actors are embedded at Game/SubgameRuntime +0x359080. */
+typedef struct Banner {
+    BodBase bod;
+    int32_t visibility_mode;
+    uint8_t _pad_3c[0x54 - 0x3c];
+    Player* owner_player;
+    float phase;
+    float phase_step;
+} Banner;
+
+typedef struct BannerPool {
+    Banner slots[2];
+} BannerPool;
+
 typedef struct Sprite {
     uint8_t _pad_00[0x04];
     uint32_t flags;
@@ -871,9 +885,11 @@ typedef struct Game {
     uint8_t _pad_a855[0x3];
     Tutorial tutorial;
     int32_t level_segment_count;
-    uint8_t _pad_a878[0x69da9];
+    uint8_t _pad_a878[0x74621 - 0xa878];
     uint8_t pause_gate;
-    uint8_t _pad_74622[0xf7dfae];
+    uint8_t _pad_74622[0x359080 - 0x74622];
+    BannerPool banners;
+    uint8_t _pad_359140[0xff25d0 - 0x359140];
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];
@@ -1073,6 +1089,7 @@ void __thiscall start_squidge_y(Squidge* squidge, float value);
 void __thiscall start_squidge_z(Squidge* squidge, float value);
 void __thiscall update_squidge(Squidge* squidge);
 void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count);
+void __thiscall update_banner(Banner* banner);
 void __thiscall initialize_invincible_shell(Invincible* invincible);
 void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);

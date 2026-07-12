@@ -26,6 +26,12 @@ The actor now uses the shared `Banner : BodBase` owner view. Two fixed banner
 objects are embedded in `SubgameRuntime::banners`; active-list linkage does not
 own their storage, and `destroy_subgame` only recycles those links.
 
+Cross-port ownership is independently preserved. iOS exports
+`cRBanner::AI()` from `SubGame.o`. Android uses a smaller 0x2c-byte BodBase but
+retains the identical four-field tail immediately after it: visibility mode,
+borrowed `Player*`, phase, and phase step. Its AI applies the same two row gates,
+bit `0x20` visibility toggle, phase wrap, and sinusoidal y bob.
+
 Source-shape note: do not stage the sine argument in an `angle` local. Native
 keeps no stack local in the prologue and uses `push ecx; fstp [esp]` directly
 before calling `sine`.

@@ -6,6 +6,35 @@ typedef short int16_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 
+typedef struct Player Player;
+
+/* Flattened exact Windows cRBanner layout; inherited BodBase occupies +0x00. */
+typedef struct Banner {
+    void* vtable;
+    uint32_t list_flags;
+    void* list_prev;
+    void* list_next;
+    float position_x;
+    float position_y;
+    float position_z;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    float color_r;
+    float color_g;
+    float color_b;
+    float color_a;
+    int32_t visibility_mode;
+    uint8_t unknown_3c[0x54 - 0x3c];
+    Player* owner_player;
+    float phase;
+    float phase_step;
+} Banner;
+
+typedef struct BannerPool {
+    Banner slots[2];
+} BannerPool;
+
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
 #define SUB_SOLUTION_RUN_RECORD_COUNT 21600
@@ -129,7 +158,9 @@ typedef struct SubgameRuntime {
     float track_skirt_r;
     float track_skirt_g;
     float track_skirt_b;
-    uint8_t unknown_1b014c[0x3bb700 - 0x1b014c];
+    uint8_t unknown_1b014c[0x359080 - 0x1b014c];
+    BannerPool banners;
+    uint8_t unknown_359140[0x3bb700 - 0x359140];
     int32_t blink_random_index;
     float blink_random_samples[24];
     uint8_t score_stats_anchor;
