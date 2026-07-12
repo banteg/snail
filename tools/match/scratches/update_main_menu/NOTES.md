@@ -15,5 +15,5 @@ First scratch for main-menu dispatch. Focused Wibo result:
 - Root `+0x30c` is `GamePlayer::redispatch_requested`, while `+0x30d` is the
   high-score-entry/completion-pending byte checked after `complete_subgame`.
 - 2026-07-11 owner closure promotes the contiguous root block to
-  `NewGameMenu`, `MainMenu`, `StarManager`, `Options`, and
+  `Intro`, `MainMenu`, `StarManager`, `Options`, and
   `Exit`; this remains exact 68/68.

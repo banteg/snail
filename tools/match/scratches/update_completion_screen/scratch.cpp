@@ -123,7 +123,7 @@ int Exit::update_completion_screen()
         break;
 
     case 8:
-        ((GameRoot*)g_game_base)->new_game_menu.update_new_game_menu();
+        ((GameRoot*)g_game_base)->intro.update_new_game_menu();
         button = yes_button;
         flags = button->widget_flags;
         if ((flags & 0x20) != 0) {

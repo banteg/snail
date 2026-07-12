@@ -131,7 +131,8 @@ typedef struct HighScore {
     FrontendWidget* replay_row_widgets[1];
 } HighScore;
 
-typedef struct NewGameMenu {
+/* Exact 0x48-byte Windows cRIntro owner; mobile has one additional widget. */
+typedef struct Intro {
     int32_t replay_attract_bank_cursor;
     uint8_t hide_for_replay_latch;
     uint8_t _pad_05[0x08 - 0x05];
@@ -146,7 +147,8 @@ typedef struct NewGameMenu {
     FrontendWidget* tutorial_button;
     FrontendWidget* help_button;
     FrontendWidget* back_button;
-} NewGameMenu;
+} Intro;
+typedef Intro NewGameMenu;
 
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14

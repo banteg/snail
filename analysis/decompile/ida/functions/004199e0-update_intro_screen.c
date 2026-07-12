@@ -2,7 +2,7 @@
 /* function: update_intro_screen @ 0x4199e0 */
 /* selector: update_intro_screen */
 
-// Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input. Cross-port Android and iOS symbols match this helper to `cRIntro::AI()`.
+// Exact Windows cRLogo::AI(): advances the normalized intro or credits crawl, tears down its LogoLetters once scrolling completes, and exits early on skip input.
 void __thiscall sub_4199E0(int this)
 {
   int v2; // eax
@@ -38,4 +38,3 @@ void __thiscall sub_4199E0(int this)
     *(float *)(this + 4) = 1.0 / v4;
   }
 }
-

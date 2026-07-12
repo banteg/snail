@@ -2,7 +2,7 @@
 /* function: initialize_intro_screen @ 0x4191e0 */
 /* selector: initialize_intro_screen */
 
-// Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into centered text and image renderables on the tilted crawl plane, and derives the shared scroll delta from Duration. Cross-port Android and iOS symbols match this helper to `cRIntro::Init()`.
+// Windows cRLogo::Init(char*): loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into LogoLetters on the tilted crawl plane, derives the shared scroll delta from Duration, and releases the script buffer.
 int __thiscall sub_4191E0(_DWORD *this, char *FileName)
 {
   int v2; // ebx
@@ -351,4 +351,3 @@ int __thiscall sub_4191E0(_DWORD *this, char *FileName)
   }
   return free_tracked_memory((int)v5);
 }
-

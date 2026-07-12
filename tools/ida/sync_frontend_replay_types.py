@@ -15,7 +15,7 @@ IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_frontend_replay_types.py"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply recovered front-end replay menu structs and trusted prototypes to an IDA database."
+        description="Apply recovered cRIntro and front-end replay structs and trusted prototypes to an IDA database."
     )
     parser.add_argument(
         "--ida-bin",

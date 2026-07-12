@@ -259,6 +259,17 @@ aliases respectively and restore the 85 clean operands.
   Registering the content alias restores 396/396 with all 85 operands clean;
   the caller instructions are unchanged.
 
+2026-07-12 cRIntro header refresh:
+
+- Promoting the root menu controller from the synthetic `NewGameMenu` name to
+  the symbol-proven `Intro` owner advances the same compiler-local tables to
+  `$L5001`/`$L5002` without changing the 396-instruction function.
+- COFF places `$L5001` at object `+0x62c` with five relocations through
+  `+0x63c`, and `$L5002` at `+0x640` with eight relocations through `+0x65c`.
+  Those bounded destination sequences are unchanged from the curated
+  bottom-HUD and startup tables, so both aliases remain content-audited rather
+  than accepted by label identity.
+
 2026-07-11 SubSegment owner refresh:
 
 - Promoting the Windows destination to `SubSegment` and correcting all three

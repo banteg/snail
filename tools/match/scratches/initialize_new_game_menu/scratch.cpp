@@ -23,7 +23,7 @@ public:
     FrontendWidget* allocate_border();
 };
 
-void NewGameMenu::initialize_new_game_menu()
+void Intro::initialize_new_game_menu()
 {
     Color4f color;
 

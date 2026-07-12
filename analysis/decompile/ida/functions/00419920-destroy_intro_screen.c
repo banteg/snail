@@ -2,7 +2,7 @@
 /* function: destroy_intro_screen @ 0x419920 */
 /* selector: destroy_intro_screen */
 
-// Unlinks each intro or credits crawl renderable from the active body lists and returns it to the shared free list before the text screen exits. Cross-port Android symbols match this helper to `cRIntro::UnInit()`.
+// Windows cRLogo::UnInit(): unlinks each active LogoLetter from the BOD lists and returns it to the shared free list before the crawl exits.
 int __thiscall sub_419920(int *this)
 {
   int result; // eax
@@ -61,4 +61,3 @@ int __thiscall sub_419920(int *this)
   }
   return result;
 }
-

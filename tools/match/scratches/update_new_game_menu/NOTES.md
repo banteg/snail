@@ -1,9 +1,10 @@
 # update_new_game_menu
 
-First structured scratch for `update_new_game_menu` @ `0x417eb0`.
+Authored `cRIntro::AI()` owner method retained under the stable Windows harness
+name `update_new_game_menu` @ `0x417eb0`.
 
-Match status: 63.06%, 273 target instructions, 263 candidate instructions, 31
-masked operands all resolved. Prefix is 41/273. No byte-shaped source.
+Current match: 100.00%, 273/273 instructions, prefix 273/273, with all 62
+masked operands resolved and clean.
 
 Recovered relationships:
 
@@ -22,13 +23,11 @@ Recovered relationships:
   the high-score browser path.
 
 Source-shape note: `destroy_main_menu` itself still matches as a no-arg helper,
-but this caller is spelled as a `NewGameMenu` member call because native sets
+but this caller is spelled as an `Intro` member call because native sets
 `ecx = this` before the call.
 
-Residual mismatch: the native replay-attract loop is jump-threaded around the
-`0/1/3` bank cases, while this scratch is a straightforward `if/else` loop.
-The button dispatch is structurally close; remaining differences are mostly
-`g_game_base` reload scheduling.
+The earlier residual came from spelling the replay-attract cases as an
+`if/else` chain and retaining one root pointer across each button dispatch.
 
 2026-07-10 owner closure: the three replay bases are now typed as
 `SubHighScore::postal_records`, `survival_records`, and
@@ -36,3 +35,26 @@ The button dispatch is structurally close; remaining differences are mostly
 the same embedded `SubgameRuntime`. Removing the synthetic cross-root game view
 changes VC6 reload scheduling slightly, so the honest focused score moves from
 63.94% to 63.06%.
+
+2026-07-12 authored-owner correction: the symbol-bearing ARM body is
+`cRIntro::AI()`. It checks the same widget activation bits, dispatches the same
+mode/help/back states, and drives the same owner-local random replay-attract
+loop; its additional Pro-Challenge branch is port-specific.
+
+## 2026-07-12 exact source-shape recovery
+
+- Direct `g_game` writes preserve native's independent global reloads across
+  each early-return button branch; a retained local root pointer was the source
+  of the old scheduling residual.
+- A real `switch` on `replay_attract_bank_cursor` produces native's `0/1/3`
+  subtract-and-decrement dispatch and case layout. Preincrementing the cursor
+  in its wrap test recovers the native store-before-compare sequence.
+- The replay search is a `do` loop while the selected record is null and the
+  attempt count is below 1000. Expressing the post-loop path as
+  `if (attempts < 1000)` for the launch, followed by the shared miss timer
+  reset, naturally produces native's shared failure tail.
+
+Together these ordinary control-flow and ownership forms raise the method from
+63.06% (263/273, prefix 41) to exact 100.00% (273/273, prefix 273), with 62
+clean operands. No padding, volatile barriers, dummy dependencies, inline
+assembly, or register-forcing constructs are used.

@@ -2173,6 +2173,22 @@
       "confidence": "high"
     },
     {
+      "address": "0x417bc0",
+      "windows_name": "initialize_new_game_menu",
+      "ios_symbol": "cRIntro::Init()",
+      "source_object": "Intro.o",
+      "confidence": "high",
+      "notes": "Both build the mode-selection front end with Tutorial, Postal Adventure or Postal Mode, Time Trial, Challenge Mode, Help, and Back after the same fade, menu music, Menubg backdrop, and centered border setup. The mobile port also exposes a Pro-Challenge button, so its widget tail is one pointer larger than the exact 0x48-byte Windows owner."
+    },
+    {
+      "address": "0x417eb0",
+      "windows_name": "update_new_game_menu",
+      "ios_symbol": "cRIntro::AI()",
+      "source_object": "Intro.o",
+      "confidence": "high",
+      "notes": "Both dispatch the same mode/help/back widgets and run the owner-local random replay-attract controller through the shared front-end and subgame handoff. Windows omits the mobile-only Pro-Challenge branch."
+    },
+    {
       "address": "0x418b50",
       "windows_name": "initialize_loading_screen",
       "ios_symbol": "cRLoadingBar::Init()",

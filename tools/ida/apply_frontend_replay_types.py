@@ -19,11 +19,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_new_game_menu",
-        "void __thiscall initialize_new_game_menu(NewGameMenu* menu);",
+        "void __thiscall initialize_new_game_menu(Intro* intro);",
     ),
     (
         "update_new_game_menu",
-        "void __thiscall update_new_game_menu(NewGameMenu* menu);",
+        "void __thiscall update_new_game_menu(Intro* intro);",
     ),
 ]
 

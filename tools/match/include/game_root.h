@@ -107,7 +107,7 @@ public:
     Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
     // Contiguous front-end owner block. The exact component extents prove
     // every boundary through the exit prompt without padding.
-    NewGameMenu new_game_menu; // +0x4f2dc
+    Intro intro; // +0x4f2dc, exact Windows cRIntro owner
     MainMenu main_menu; // +0x4f324
     StarManager star_manager; // +0x4f33c, exact authored cRStarManager owner
     Options options; // +0x4f388, exact authored cROptions owner

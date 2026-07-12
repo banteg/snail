@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**532/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **83871/325720** bytes (**25.75%**) are proof-grade, and overall fuzzy is **61.69%**.
+**533/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **84935/325720** bytes (**26.08%**) are proof-grade, and overall fuzzy is **61.81%**.
 
-## Proof Grade (532)
+## Proof Grade (533)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -169,6 +169,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_high_score_entry | 0x417a70 | 120 | 40/40 | 100.00% | 40/40 | 3 ok |  |
 | ✅ | exit_high_score_screen | 0x417b50 | 104 | 23/23 | 100.00% | 23/23 | 6 ok |  |
 | ✅ | initialize_new_game_menu | 0x417bc0 | 739 | 182/182 | 100.00% | 182/182 | 48 ok |  |
+| ✅ | update_new_game_menu | 0x417eb0 | 1064 | 273/273 | 100.00% | 273/273 | 62 ok |  |
 | ✅ | reset_landscape_manager | 0x4182e0 | 11 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | load_landscape_script_by_name | 0x4182f0 | 1404 | 386/386 | 100.00% | 386/386 | 63 ok |  |
 | ✅ | activate_landscape_entry | 0x418870 | 442 | 123/123 | 100.00% | 123/123 | 20 ok |  |
@@ -630,7 +631,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (55)
+## Mid Progress (50-79.99%) (54)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -649,7 +650,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 80/84 | 64.63% | 0/84 | 5 ok |  |
-| 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 263/273 | 63.06% | 41/273 | 31 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |

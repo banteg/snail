@@ -2,7 +2,7 @@
 /* function: initialize_new_game_menu @ 0x417bc0 */
 /* selector: initialize_new_game_menu */
 
-// Builds the New Game submenu, including Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back, after reloading the shared menu backdrop and shell-font scene. The menu-local replay-attract controller at `data_4df904 + 0x4f2dc` survives this init; direct button handlers later use frontend state `10`, with Postal Mode also seeding the ordinary rebuild selector `+0x12e55e0 = 2`.
+// Exact Windows cRIntro::Init(): builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte Intro at data_4df904 + 0x4f2dc retains its replay-attract controller across initialization.
 char __thiscall sub_417BC0(int *this)
 {
   int v2; // eax
@@ -53,4 +53,3 @@ char __thiscall sub_417BC0(int *this)
   }
   return v9;
 }
-

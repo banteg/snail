@@ -50,10 +50,10 @@ int GamePlayer::update_frontend_state_machine()
         case 1:
             frontend_state = 0;
             mouse_cursor.capture_mouse_cursor();
-            g_game->new_game_menu.replay_attract_bank_cursor = 0;
+            g_game->intro.replay_attract_bank_cursor = 0;
         {
             GameRoot* owner = g_game;
-            owner->new_game_menu.initialize_new_game_menu();
+            owner->intro.initialize_new_game_menu();
             break;
         }
         case 2:
@@ -61,10 +61,10 @@ int GamePlayer::update_frontend_state_machine()
             mouse_cursor.capture_mouse_cursor();
         {
             GameRoot* owner = g_game;
-            owner->new_game_menu.initialize_new_game_menu();
+            owner->intro.initialize_new_game_menu();
         }
         case 0:
-            g_game->new_game_menu.update_new_game_menu();
+            g_game->intro.update_new_game_menu();
             break;
         case 3:
             frontend_state = 5;

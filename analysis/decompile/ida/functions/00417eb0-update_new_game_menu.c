@@ -2,7 +2,7 @@
 /* function: update_new_game_menu @ 0x417eb0 */
 /* selector: update_new_game_menu */
 
-// Runs the New Game menu controller, dispatching Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine. It also advances the menu-owned random replay-attract lane: rotates cursor `0..4`, probes replay banks `0/1/3` only, gives up after `1000` attempts, seeds app replay scratch `+0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0` plus return state `2`, sets the menu hide latch, and resets the secondary timer lane to `1/3600` after either launch or miss.
+// Exact Windows cRIntro::AI(): dispatches Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, then drives the Intro-owned replay-attract lane. It rotates cursor 0..4, probes replay banks 0/1/3, gives up after 1000 attempts, and seeds the replay-launch handoff with return state 2.
 void __thiscall update_new_game_menu(NewGameMenu *menu)
 {
   uint8_t hide_for_replay_latch; // al
@@ -196,4 +196,3 @@ LABEL_32:
     }
   }
 }
-
