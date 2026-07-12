@@ -79,6 +79,25 @@ names. The remaining delta is dominated by three compiler instructions and
 stack-slot choices for the image dimensions, loop bound, and temporary vectors;
 those are left visible rather than forced with dummy locals or aliasing tricks.
 
+## 2026-07-12 glyph countdown lifetime recovery
+
+- Native proves the parsed character count is positive, snapshots it into a
+  separate stack countdown, and enters the glyph construction loop without a
+  second zero test. Keeping the line-scan count distinct from the destructive
+  render countdown recovers that authored lifetime and removes the candidate's
+  redundant entry branch.
+- Focused probes confirmed that folding the two lifetimes back together, or
+  spelling the loop as a direct `do/while`, perturbs the wider allocator and
+  stack frame. The distinct countdown is the smallest semantic source shape
+  supported by the target; no volatile barrier, padding local, or dummy data
+  dependency is used.
+
+Focused Wibo now reports **88.31%**, `523/521` candidate/target instructions,
+prefix 88/521, and 66 clean masked operands with no unresolved or mismatched
+names. The two remaining candidate instructions are honest allocator residuals:
+early cleanup of the two image-dimension parser arguments and a final reload of
+the owned file buffer after the velocity-copy loop consumes `esi`.
+
 ## 2026-07-12 authored cRLogo correction
 
 - The symbol-bearing iOS body identifies this exact filename-taking lifecycle

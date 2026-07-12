@@ -171,7 +171,8 @@ void Logo::initialize_intro_screen(char* file_name)
                 x *= 0.80000001f;
                 Vector3 initial_position(0.0f, -4.0f, 0.0f);
                 char* glyph = line;
-                while (count != 0) {
+                int glyphs_remaining = count;
+                do {
                     add_intro_renderable_to_active_list(
                         &letters[renderable_count]);
                     letters[renderable_count].set_bod_object(
@@ -198,8 +199,8 @@ void Logo::initialize_intro_screen(char* file_name)
                         * 0.80000001f;
                     ++glyph;
                     ++renderable_count;
-                    --count;
-                }
+                    --glyphs_remaining;
+                } while (glyphs_remaining != 0);
             }
         }
 

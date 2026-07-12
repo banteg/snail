@@ -595,7 +595,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | open_logo | 0x419110 | 195 | 60/60 | 90.00% | 4/60 | 13 ok |  |
-| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 524/521 | 88.23% | 88/521 | 66 ok |  |
+| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 85.19% | 18/27 | 2 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 120/119 | 84.52% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
