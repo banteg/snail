@@ -44,6 +44,21 @@ Status:
   layouts now own `rows[256]`, matching the Windows `SubSegment` row capacity
   and removing the synthetic `unknown_4050` field. This layout correction is
   codegen-neutral at the honest 49.29% parser baseline.
+- 2026-07-12: Recovered the parser's actual stack-local ownership from the
+  native frame: the reusable parse cursor is at `esp+0x10`, `path_name[64]`
+  occupies `esp+0x30..+0x6f`, and `option_text[512]` begins exactly at
+  `esp+0x70`. Reusing one `option_match` cursor for every metadata lookup and
+  retaining that proven 64-byte path buffer recovers the exact `0x114e0`
+  frame instead of the earlier accidental fit from a 60-byte buffer.
+- Expressing the authored row and glyph writes through the containing
+  `entries[segment_index]` array also recovers the native outer-loop strength
+  reductions: `0x127 == 0x4088 / 0x38` for row ordinals and
+  `0x811 == 0x4088 / 8` for glyph ordinals, alongside the direct `0x4088`
+  entry stride. The combined ownership model raises the retained match from
+  49.29% to 62.24%: 573/571 candidate/target instructions, prefix 5/571, with
+  80 clean masked operands and 5 shifted mismatches. Isolated cursor, buffer,
+  or container-indexing experiments regressed; their combination is what
+  restores the native frame and all three related induction variables.
 
 - The live Binary Ninja database still carried an older count-at-tail catalog
   layout, an empty `SubSegment`, and the wrong returning parser prototypes even
@@ -75,28 +90,26 @@ Call-shape notes:
 
 Residuals:
 
-- Native keeps the catalog owner in `esi` and walks row storage as
-  `entry_base + row*0x38` with field accesses at `+0x88c`; this scratch uses a
-  direct `AuthoredSegmentRow*`, so row-field offsets compile as `+0x00..+0x34`.
-- The flag/string tail is semantically ordered, but the candidate block is
-  shorter and alignment drifts after `Path=`, causing the remaining masked
-  string mismatches.
-- Directly spelling every access as `entries[segment_index]` is a plausible
-  member-indexing form, but VC6 expands the frame to `0x114e4`, drops the
-  prefix to zero, and regresses from 45.05% to 42.61%. Retain the meaningful
-  per-entry pointer; native's parallel induction variables need a different
-  source-shape lead.
-- Expanding `path_name` from 60 to the decompiler's apparent 64-byte span makes
-  VC6 allocate a `0x114e4` frame and regresses to 42.87%. The native frame is
-  `0x114e0`; its apparent final four bytes belong to adjacent compiler locals,
-  so the retained 60-byte authored buffer is the stronger layout fit.
+- Native keeps the complete catalog owner as its row anchor and addresses row
+  fields at `owner + flattened_row*0x38 + 0x88c`; VC6 still materializes the
+  typed candidate row at its final address and uses `+0x00..+0x34`. The
+  containing-array spelling is nevertheless retained because it explains and
+  reproduces the native `0x127` outer row induction without flattening casts.
+- The candidate chooses different long-lived registers for the catalog,
+  segment index, current entry, and data cursor. That changes the initial
+  file-load schedule and shifts the diagnostic tail even though the strings
+  and branches remain semantically ordered; the five masked mismatches are
+  consequently shifted calls/strings rather than unresolved ownership.
+- Directly spelling every header access as `entries[segment_index]` discards
+  the meaningful per-entry pointer, changes the frame to `0x114dc`, and
+  regresses to 38.60%. The native source shape combines an entry-relative
+  header/count cursor with containing-owner row and glyph indexing.
 - Removing the typed row pointer and repeating
   `entry->rows[row_index].field` expands the frame, drops the prefix to zero,
   and falls to 33.63%. Keep the real `AuthoredSegmentRow*` lifetime; native's
   larger displacements arise from a containing-owner anchor, not absent row
   ownership.
-- Deriving only the row pointer from `entries[segment_index]` recovers native's
-  early `esi = this` ownership, but needs an extra stack slot, expands the
-  frame, and regresses to 43.62%. Flattening the outer/inner row ordinal with
-  casts would merely manufacture native displacements, so retain the honest
-  entry-relative row pointer until a real container model explains the anchor.
+- Flattening the outer/inner row ordinal with casts would merely manufacture
+  native displacements. The retained source gets the same induction from the
+  real `SegmentCatalogEntry[150]` container and leaves the remaining row-anchor
+  register choice visible rather than fakematching it.

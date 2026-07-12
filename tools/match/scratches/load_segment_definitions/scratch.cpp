@@ -20,7 +20,7 @@ float parse_next_float32(char** cursor);
 
 void SMTracks::load_segment_definitions()
 {
-    char path_name[60];
+    char path_name[64];
     char option_text[512];
     char mesh_name[128];
     char file_path[512];
@@ -108,14 +108,15 @@ void SMTracks::load_segment_definitions()
         short row_index = 0;
         entry->row_count = 0;
         while (data_cursor[0] != '@' || data_cursor[1] != '@' || data_cursor[2] != '@') {
-            AuthoredSegmentRow* row = &entry->rows[row_index];
+            AuthoredSegmentRow* row = &entries[segment_index].rows[row_index];
             char* glyph_cursor = data_cursor + 1;
             row->flags = 0;
 
             int lane = 0;
             do {
                 char glyph = *glyph_cursor++;
-                entry->glyph_columns[entry->row_count][lane] = glyph;
+                entries[segment_index]
+                    .glyph_columns[entry->row_count][lane] = glyph;
                 ++lane;
             } while (lane < 8);
 
@@ -141,15 +142,16 @@ void SMTracks::load_segment_definitions()
             }
             *option_out = 0;
 
-            char* model_cursor = find_case_insensitive_substring("3DModel=", option_text);
-            if (model_cursor != 0) {
-                model_cursor = find_case_insensitive_substring("=", model_cursor) + 1;
+            char* option_match =
+                find_case_insensitive_substring("3DModel=", option_text);
+            if (option_match != 0) {
+                option_match = find_case_insensitive_substring("=", option_match) + 1;
                 char* mesh_out = mesh_name;
-                char mesh_char = *model_cursor;
+                char mesh_char = *option_match;
                 while (mesh_char != '.') {
                     *mesh_out++ = mesh_char;
-                    ++model_cursor;
-                    mesh_char = *model_cursor;
+                    ++option_match;
+                    mesh_char = *option_match;
                 }
                 row->flags |= 2;
                 *mesh_out++ = '.';
@@ -159,43 +161,42 @@ void SMTracks::load_segment_definitions()
                     ((GameRoot*)g_game_base)->directx_loader
                         .load_or_reuse_cached_x_mesh(mesh_name);
 
-                model_cursor = find_case_insensitive_substring("(", model_cursor);
-                row->object_position.x = parse_next_float32(&model_cursor);
-                row->object_position.y = parse_next_float32(&model_cursor);
-                row->object_position.z = parse_next_float32(&model_cursor);
+                option_match = find_case_insensitive_substring("(", option_match);
+                row->object_position.x = parse_next_float32(&option_match);
+                row->object_position.y = parse_next_float32(&option_match);
+                row->object_position.z = parse_next_float32(&option_match);
 
-                char* velocity_cursor =
-                    find_case_insensitive_substring("Velocity=", option_text);
-                if (velocity_cursor != 0) {
-                    velocity_cursor = find_case_insensitive_substring("=", velocity_cursor) + 1;
+                option_match = find_case_insensitive_substring("Velocity=", option_text);
+                if (option_match != 0) {
+                    option_match = find_case_insensitive_substring("=", option_match) + 1;
                     row->flags |= 8;
-                    velocity_cursor = find_case_insensitive_substring("(", velocity_cursor);
-                    row->object_velocity.x = parse_next_float32(&velocity_cursor);
-                    row->object_velocity.y = parse_next_float32(&velocity_cursor);
-                    row->object_velocity.z = parse_next_float32(&velocity_cursor);
+                    option_match = find_case_insensitive_substring("(", option_match);
+                    row->object_velocity.x = parse_next_float32(&option_match);
+                    row->object_velocity.y = parse_next_float32(&option_match);
+                    row->object_velocity.z = parse_next_float32(&option_match);
                 }
             }
 
-            char* parcel_cursor = find_case_insensitive_substring("Parcel=", option_text);
-            if (parcel_cursor != 0) {
+            option_match = find_case_insensitive_substring("Parcel=", option_text);
+            if (option_match != 0) {
                 row->flags |= 1;
-                parcel_cursor = find_case_insensitive_substring("=", parcel_cursor) + 1;
-                row->parcel_set_id = parse_next_signed_int(&parcel_cursor);
-                parcel_cursor = find_case_insensitive_substring("(", parcel_cursor) + 1;
-                row->local_position.x = parse_next_float32(&parcel_cursor);
-                row->local_position.y = parse_next_float32(&parcel_cursor);
-                row->local_position.z = parse_next_float32(&parcel_cursor);
+                option_match = find_case_insensitive_substring("=", option_match) + 1;
+                row->parcel_set_id = parse_next_signed_int(&option_match);
+                option_match = find_case_insensitive_substring("(", option_match) + 1;
+                row->local_position.x = parse_next_float32(&option_match);
+                row->local_position.y = parse_next_float32(&option_match);
+                row->local_position.z = parse_next_float32(&option_match);
             }
 
-            char* path_cursor = find_case_insensitive_substring("Path=", option_text);
-            if (path_cursor != 0) {
-                path_cursor = find_case_insensitive_substring("=", path_cursor) + 1;
+            option_match = find_case_insensitive_substring("Path=", option_text);
+            if (option_match != 0) {
+                option_match = find_case_insensitive_substring("=", option_match) + 1;
                 char* path_out = path_name;
-                char path_char = *path_cursor;
+                char path_char = *option_match;
                 while (path_char >= 32) {
                     *path_out++ = path_char;
-                    ++path_cursor;
-                    path_char = *path_cursor;
+                    ++option_match;
+                    path_char = *option_match;
                 }
                 *path_out = 0;
                 row->path_template_index =
@@ -207,30 +208,35 @@ void SMTracks::load_segment_definitions()
                     row->flags |= 8;
             }
 
-            if (find_case_insensitive_substring("NoFall", option_text) != 0)
+            option_match = find_case_insensitive_substring("NoFall", option_text);
+            if (option_match != 0)
                 row->flags |= 0x100;
-            if (find_case_insensitive_substring("Ring=None", option_text) != 0)
+            option_match = find_case_insensitive_substring("Ring=None", option_text);
+            if (option_match != 0)
                 row->flags |= 0x200;
-            if (find_case_insensitive_substring("Ring=Normal", option_text) != 0)
+            option_match = find_case_insensitive_substring("Ring=Normal", option_text);
+            if (option_match != 0)
                 row->flags |= 0x400;
-            if (find_case_insensitive_substring("Ring=PowerUp", option_text) != 0)
+            option_match = find_case_insensitive_substring("Ring=PowerUp", option_text);
+            if (option_match != 0)
                 row->flags |= 0x2000;
-            if (find_case_insensitive_substring("Ring=Explode", option_text) != 0)
+            option_match = find_case_insensitive_substring("Ring=Explode", option_text);
+            if (option_match != 0)
                 row->flags |= 0x800;
-            if (find_case_insensitive_substring("Ring=Slow", option_text) != 0)
+            option_match = find_case_insensitive_substring("Ring=Slow", option_text);
+            if (option_match != 0)
                 row->flags |= 0x1000;
 
-            char* ring_speed_cursor =
-                find_case_insensitive_substring("RingSpeed=", option_text);
-            if (ring_speed_cursor != 0) {
-                ring_speed_cursor =
-                    find_case_insensitive_substring("=", ring_speed_cursor) + 1;
-                row->ring_speed.value = parse_next_float32(&ring_speed_cursor);
+            option_match = find_case_insensitive_substring("RingSpeed=", option_text);
+            if (option_match != 0) {
+                option_match = find_case_insensitive_substring("=", option_match) + 1;
+                row->ring_speed.value = parse_next_float32(&option_match);
             } else {
                 row->ring_speed.bits = 0;
             }
 
-            if (find_case_insensitive_substring("JetPack=Off", option_text) != 0)
+            option_match = find_case_insensitive_substring("JetPack=Off", option_text);
+            if (option_match != 0)
                 row->flags |= 0x8000;
 
             data_cursor = advance_to_next_crlf_line(option_cursor);
