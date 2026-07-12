@@ -162,3 +162,10 @@ recasting `g_game_base +0x5a8`. This matches the exact salt-removal owner and
 preserves 98.21%, 336/336 instructions, and 37 clean operands. The remaining
 list-tail register choice is therefore compiler scheduling, not evidence for a
 ring-local list owner.
+
+2026-07-12 shared remover recovery: the three duplicated teardown bodies now
+call the proved inline `GameRoot::active_bod_list.remove_bod` method. This is
+codegen-neutral at `98.21%`, `336/336` instructions, with all `37` masked
+operands clean, while making the common list ownership explicit. The only
+removal residual is one root-anchor register choice; the larger residual is
+still the state-3 camera-target `Vector3` staging at target instruction 193.

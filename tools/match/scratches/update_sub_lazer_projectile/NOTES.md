@@ -1,6 +1,6 @@
 # update_sub_lazer_projectile @ 0x4417d0
 
-Current best is `81.11%`, `216/218` candidate/target instructions, masked
+Current best is `85.25%`, `216/218` candidate/target instructions, masked
 operands `23 ok / 0 mismatch`. The scratch was originally pinned at `48.39%`
 with `17 ok / 0 mismatch`.
 
@@ -21,7 +21,8 @@ The old salt interpretation made `+0x98/+0x9c` look like off-stride overlap
 because the salt pool stride is `0x98`; that was a naming/type error, not a
 confirmed native salt bug.
 
-State `2` inlines the full live-list removal. State `1` accumulates bob
+State `2` returns the projectile through the shared active-BOD list owner.
+State `1` accumulates bob
 progress, integrates `position += velocity`, bounds-checks against the
 game kill plane, tests track attachment containment, and deactivates on hit
 or exit. The remaining diff is zero/register scheduling around the attachment
@@ -113,3 +114,10 @@ with `23` clean masked operands.
 and the Windows constructor table at `0x49733c` points directly here. The
 scratch now defines the method on `SubLazer`; matching remains 81.11%, 216/218,
 with 23 clean operands and no call-target debt.
+
+2026-07-12 shared list-removal recovery: state `2` now calls the proved inline
+`BodList::remove_bod` owner through `g_game_base + 0x5a8`. That region becomes
+instruction-identical to the target and raises the focused match from `81.11%`
+to `85.25%`, still `216/218` instructions with all `23` masked operands clean.
+The remaining residual begins in state `1`: commutative velocity integration
+order and the lifetime of the two by-value `Vector3` attachment arguments.

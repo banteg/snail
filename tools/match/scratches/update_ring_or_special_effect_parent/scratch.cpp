@@ -52,24 +52,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
         if (transform.position.z < owner_player->interaction_max_z) {
             state = 0;
-            GameRoot* game = g_game;
-            SubRingListAnchor* list = &game->active_bod_list;
-
-            if ((list_flags & 0x200) == 0) {
-                report_errorf("List remove");
-            } else if ((list_flags & 0x40) != 0) {
-                report_errorf("List remove NEXTBOD");
-            } else {
-                if (list_next != 0)
-                    ((SubRing*)list_next)->list_prev = list_prev;
-                if (list_prev != 0)
-                    ((SubRing*)list_prev)->list_next = list_next;
-                else
-                    list->first = list_next;
-                list_next = list->free_top;
-                list->free_top = this;
-                list_flags &= ~0x200u;
-            }
+            g_game->active_bod_list.remove_bod(this);
 
             SubRingStar* particle =
                 particles;
@@ -107,24 +90,7 @@ void SubRing::update_ring_or_special_effect_parent()
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
             state = 0;
-            GameRoot* game = g_game;
-            SubRingListAnchor* list = &game->active_bod_list;
-
-            if ((list_flags & 0x200) == 0) {
-                report_errorf("List remove");
-            } else if ((list_flags & 0x40) != 0) {
-                report_errorf("List remove NEXTBOD");
-            } else {
-                if (list_next != 0)
-                    ((SubRing*)list_next)->list_prev = list_prev;
-                if (list_prev != 0)
-                    ((SubRing*)list_prev)->list_next = list_next;
-                else
-                    list->first = list_next;
-                list_next = list->free_top;
-                list->free_top = this;
-                list_flags &= ~0x200u;
-            }
+            g_game->active_bod_list.remove_bod(this);
 
             SubRingStar* particle =
                 particles;
@@ -184,24 +150,7 @@ void SubRing::update_ring_or_special_effect_parent()
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
             state = 0;
-            GameRoot* game = g_game;
-            SubRingListAnchor* list = &game->active_bod_list;
-
-            if ((list_flags & 0x200) == 0) {
-                report_errorf("List remove");
-            } else if ((list_flags & 0x40) != 0) {
-                report_errorf("List remove NEXTBOD");
-            } else {
-                if (list_next != 0)
-                    ((SubRing*)list_next)->list_prev = list_prev;
-                if (list_prev != 0)
-                    ((SubRing*)list_prev)->list_next = list_next;
-                else
-                    list->first = list_next;
-                list_next = list->free_top;
-                list->free_top = this;
-                list_flags &= ~0x200u;
-            }
+            g_game->active_bod_list.remove_bod(this);
 
             SubRingStar* particle =
                 particles;

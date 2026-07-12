@@ -2292,7 +2292,7 @@
     {
       "address": "0x4417d0",
       "name": "update_sub_lazer_projectile",
-      "description": "Windows `cRSubLazer::AI()`: integrates one active SubLazer, tests track attachment intersection, and dispatches Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and cross-port iOS preserves the authored owner."
+      "description": "Windows `cRSubLazer::AI()`: returns state-2 projectiles through GameRoot's shared active BOD list, integrates one active SubLazer, tests track attachment intersection, and dispatches Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and cross-port iOS preserves the authored owner."
     },
     {
       "address": "0x441ad0",

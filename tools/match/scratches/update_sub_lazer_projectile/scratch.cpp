@@ -18,34 +18,8 @@ void SubLazer::update_sub_lazer_projectile()
         return;
     switch (state) {
     case 2: {
-        SubLazerListAnchor* anchor = (SubLazerListAnchor*)(g_game_base + 0x5a8);
-        int flags = list_flags;
-        BodNode* next;
-        BodNode* prev;
-        if ((flags & 0x200) == 0) {
-            report_errorf("List remove");
-            state = 0;
-        } else {
-            if ((flags & 0x40) != 0) {
-                report_errorf("List remove NEXTBOD");
-                state = 0;
-            } else {
-                next = list_next;
-                if (next)
-                    next->list_prev = list_prev;
-                prev = list_prev;
-                if (prev)
-                    prev->list_next = list_next;
-                else
-                    anchor->first = list_next;
-                list_next = anchor->free_top;
-                anchor->free_top = this;
-                int updated = list_flags;
-                state = 0;
-                updated &= ~0x200;
-                list_flags = updated;
-            }
-        }
+        ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
+        state = 0;
         return;
     }
     case 1: {
