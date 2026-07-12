@@ -43,6 +43,14 @@ SUBGAME_PLAYER_FIELD_UPDATES = (
 
 PROTO_UPDATES = (
     (
+        "zero_timer_counters",
+        "void __thiscall zero_timer_counters(Time* time)",
+    ),
+    (
+        "advance_timer_counters",
+        "void __thiscall advance_timer_counters(Time* time, float delta_ticks)",
+    ),
+    (
         "initialize_enemy_manager",
         "void __thiscall initialize_enemy_manager(EnemyManager* manager)",
     ),
@@ -79,7 +87,7 @@ PROTO_UPDATES = (
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, TimerCounters* timer)",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, Time* timer)",
     ),
 )
 

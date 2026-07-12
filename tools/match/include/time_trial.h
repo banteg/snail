@@ -4,12 +4,12 @@
 #ifndef TIME_TRIAL_H
 #define TIME_TRIAL_H
 
-#include "timer_counters.h"
+#include "game_time.h"
 
 class TimeTrial {
 public:
     char* format_time_trial_string(
-        TimerCounters* timer); // @ 0x448960, cRTimeTrial::TimeString(cRTime&)
+        Time* timer); // @ 0x448960, cRTimeTrial::TimeString(cRTime&)
 
     // TimeString does not read receiver fields. The owner extent and placement
     // are independently fixed by the adjacent PathManager and size ledger.

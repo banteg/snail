@@ -12,7 +12,7 @@
 #include "star_manager.h"
 #include "subgame_runtime.h"
 #include "time_trial.h"
-#include "timer_counters.h"
+#include "game_time.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "segment_cache.h"
@@ -208,7 +208,7 @@ void SubgameRuntime::update_subgame()
         int two = 2;
         if (player.completion_handoff_active == zero
             && player.click_start.state != two)
-            player.stopwatch.advance_timer_counters(1.0f);
+            player.stopwatch.Add(1.0f);
 
         if (level_mode == 7)
             tutorial.update_tutorial();
@@ -567,7 +567,7 @@ after_authored_ring:
             char* record = game + level_mode_arg * 0x1fac0;
             if (*(int*)(record + 0x944150) == one) {
                 text = time_trial->format_time_trial_string(
-                    (TimerCounters*)(record + 0x944158));
+                    (Time*)(record + 0x944158));
                 rstrcpy_checked_ascii((char*)*(char**)(game + 0x35bb8c) + 0x2cc, text);
                 break;
             }

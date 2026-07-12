@@ -10,7 +10,7 @@
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "time_trial.h"
-#include "timer_counters.h"
+#include "game_time.h"
 #include "transform_matrix.h"
 #include "subgame_runtime.h"
 
@@ -65,19 +65,19 @@ void SubgameRuntime::initialize_subgame()
         level_record = &sub_high_score.postal_records[0];
         sub_high_score.active_record_bank = level_record;
         active_level_score = level_record->score;
-        memcpy(&active_level_timer, &level_record->timer, sizeof(TimerCounters));
+        memcpy(&active_level_timer, &level_record->timer, sizeof(Time));
         break;
     case 1:
         level_record = &sub_high_score.survival_records[0];
         sub_high_score.active_record_bank = level_record;
         active_level_score = level_record->score;
-        memcpy(&active_level_timer, &level_record->timer, sizeof(TimerCounters));
+        memcpy(&active_level_timer, &level_record->timer, sizeof(Time));
         break;
     case 4:
         level_record = &sub_high_score.time_trial_route_records[0];
         sub_high_score.active_record_bank = level_record;
         active_level_score = level_record->score;
-        memcpy(&active_level_timer, &level_record->timer, sizeof(TimerCounters));
+        memcpy(&active_level_timer, &level_record->timer, sizeof(Time));
         break;
     }
 
@@ -168,10 +168,10 @@ void SubgameRuntime::initialize_subgame()
         }
     } else {
         if (level_mode == 4) {
-            ((TimerCounters*)scratch)->zero_timer_counters();
+            ((Time*)scratch)->Zero();
             char* text =
                 time_trial.format_time_trial_string(
-                    (TimerCounters*)scratch);
+                    (Time*)scratch);
             rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
         } else {
             top_score_widget->border_add_text_number(0);

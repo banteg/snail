@@ -4,7 +4,7 @@
 #include "sprite.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
-#include "timer_counters.h"
+#include "game_time.h"
 #include "track_attachment_types.h"
 #include "texture_set_selector.h"
 
@@ -91,7 +91,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         *(int*)(base + 0x3bfaa4) = 3;
     }
 
-    ((TimerCounters*)(base + 0x3bba4c))->zero_timer_counters();
+    ((Time*)(base + 0x3bba4c))->Zero();
     *(int*)(base + 0x3bba64) = 0;
     *(int*)(base + 0x3bba6c) = 0;
     set_math_random_seed(runtime_build_seed);

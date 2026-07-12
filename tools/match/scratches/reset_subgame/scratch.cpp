@@ -1,7 +1,7 @@
 // reset_subgame @ 0x437b10 (thiscall, ret)
 
 #include "subgame_runtime.h"
-#include "timer_counters.h"
+#include "game_time.h"
 
 typedef unsigned int DWORD;
 
@@ -68,7 +68,7 @@ void SubgameRuntime::reset_subgame()
             self[978578] = 0;
             ((Player*)(self + 978393))->clear_subgoldy_score_buckets();
         }
-        ((TimerCounters*)(self + 978579))->zero_timer_counters();
+        ((Time*)(self + 978579))->Zero();
         self[978585] = 0;
         self[978586] = 0;
     }

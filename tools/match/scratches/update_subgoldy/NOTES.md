@@ -179,10 +179,10 @@ source-shape issue is solved.
   view with shared `tip_manager.h` preserved the headline score and instruction
   count but changed the masked audit from 291 ok / 0 mismatch to 290 ok / 1
   jump-table mismatch. Keep this scratch's compact local tip view for now.
-- 2026-06-16 timer-counter probe: replacing the local compact
-  `TimerCounters` call view with shared `timer_counters.h` and offset-preserving
-  padding produced the same masked-audit regression. Keep the compact local
-  timer view until the follow-switch layout issue is fixed.
+- 2026-06-16 timer-counter probe: replacing the local compact timer call view
+  with the then-shared header and offset-preserving padding produced the same
+  masked-audit regression. The later offset-preserving player view admits the
+  shared authored `Time` value at +0x2e8 without reopening that layout change.
 - 2026-06-16 voice-manager probe: replacing the local compact
   `VoiceManager` call view with shared `voice_manager.h` preserved the headline
   score but produced the same 290 ok / 1 jump-table masked-audit regression.

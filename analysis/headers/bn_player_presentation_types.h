@@ -99,14 +99,14 @@ typedef struct RenderableBod {
     TransformMatrix transform;
 } RenderableBod;
 
-typedef struct Stopwatch {
+typedef struct Time {
     float total_seconds;
     int32_t minutes;
-    int32_t frames_into_second;
+    int32_t seconds;
     int32_t display_hundredths;
     int32_t display_thousandths;
     float second_fraction;
-} Stopwatch;
+} Time;
 
 typedef struct SelectedLevelReplaySample {
     int16_t lateral_x;
@@ -571,7 +571,7 @@ typedef struct Player {
     float cutscene_pitch_cycle;
     float cutscene_pitch_cycle_step;
     int32_t total_score;
-    Stopwatch stopwatch;
+    Time stopwatch;
     uint8_t _pad_300[0x4];
     int32_t startup_track_index;
     int32_t movement_flag_selector;

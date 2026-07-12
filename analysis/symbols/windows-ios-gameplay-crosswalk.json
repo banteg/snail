@@ -1100,6 +1100,24 @@
       "confidence": "high"
     },
     {
+      "address": "0x441b70",
+      "windows_name": "zero_timer_counters",
+      "ios_symbol": "cRTime::Zero()",
+      "android_symbol": "cRTime::Zero()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper clears the same six-field 0x18-byte value. Mobile returns directly after the stores, proving the void contract; Windows only uses EAX as its shared zero source."
+    },
+    {
+      "address": "0x441b90",
+      "windows_name": "advance_timer_counters",
+      "ios_symbol": "cRTime::Add(float)",
+      "android_symbol": "cRTime::Add(float)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Windows and Android share the 0x18-byte cRTime layout and the same add, rollover, and display-field updates. Android's direct return confirms that the final Windows EAX conversion result is incidental rather than an int return contract."
+    },
+    {
       "address": "0x43e470",
       "windows_name": "initialize_ring_or_special_effect_particles",
       "ios_symbol": "cRSubRing::Init(int)",

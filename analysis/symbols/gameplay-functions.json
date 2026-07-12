@@ -2301,12 +2301,13 @@
     },
     {
       "address": "0x441b70",
-      "name": "zero_timer_counters"
+      "name": "zero_timer_counters",
+      "description": "Exact void `cRTime::Zero()`: clears all six fields of the authored 0x18-byte time value shared by player, level, and high-score state. iOS and Android preserve the owner and method name."
     },
     {
       "address": "0x441b90",
       "name": "advance_timer_counters",
-      "description": "Accumulates one generic timer record from a 60 Hz-scaled delta, rolls the frame counter at 60, and refreshes the derived hundredths and thousandths fields from the fractional remainder."
+      "description": "Exact void `cRTime::Add(float)`: accumulates a 60 Hz-scaled delta, rolls seconds into minutes at 60, and refreshes the derived hundredths and thousandths fields. The final Windows EAX value is incidental, not a semantic return."
     },
     {
       "address": "0x441c10",
@@ -2685,7 +2686,7 @@
     {
       "address": "0x448960",
       "name": "format_time_trial_string",
-      "description": "Implements `cRTimeTrial::TimeString(cRTime&)`: formats one TimerCounters/cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at SubgameRuntime +0xff25e0, although the body does not read receiver fields."
+      "description": "Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored Time/cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at SubgameRuntime +0xff25e0, although the body does not read receiver fields."
     },
     {
       "address": "0x4489e0",

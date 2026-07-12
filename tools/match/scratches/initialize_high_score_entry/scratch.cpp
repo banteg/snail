@@ -14,7 +14,7 @@ void SubSolution::initialize_high_score_entry(
     runtime_build_seed = runtime_build_seed_value;
     replay_sample_count = 0;
     score = 0;
-    timer.zero_timer_counters();
+    timer.Zero();
     replay_level_index = replay_level_index_value;
     replay_speed_scalar_bits = replay_speed_scalar_bits_value;
     rstrcpy_checked_ascii(player_name, ((GameRoot*)g_game_base)->players[0].player_name);

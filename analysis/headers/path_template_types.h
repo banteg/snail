@@ -224,18 +224,19 @@ typedef struct TimesUp {
 } TimesUp;
 
 /*
- * Stopwatch tick counter. Native advance_timer_counters @ 0x441b90 increments
- * total_seconds and second_fraction by `delta_ticks * (1/60)`, rolling frames
- * into minutes and publishing hundredths / thousandths for the HUD.
+ * Authored cRTime value. Native cRTime::Zero @ 0x441b70 clears all six fields;
+ * cRTime::Add(float) @ 0x441b90 increments total_seconds and second_fraction by
+ * `delta_ticks * (1/60)`, rolling seconds into minutes and publishing
+ * hundredths / thousandths for the HUD.
  */
-typedef struct Stopwatch {
+typedef struct Time {
     float total_seconds;
     int32_t minutes;
-    int32_t frames_into_second;
+    int32_t seconds;
     int32_t display_hundredths;
     int32_t display_thousandths;
     float second_fraction;
-} Stopwatch;
+} Time;
 
 /*
  * Voice manager bank. Holds 16 `cRVoiceSet` playlists (Damage, Dying, Enemies,
@@ -928,7 +929,7 @@ typedef struct Player {
     float cutscene_pitch_cycle;
     float cutscene_pitch_cycle_step;
     int32_t total_score;
-    Stopwatch stopwatch;
+    Time stopwatch;
     uint8_t _pad_300[0x4];
     int32_t startup_track_index;
     int32_t movement_flag_selector;

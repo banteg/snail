@@ -21,7 +21,7 @@
 #include "snail_skin.h"
 #include "squidge.h"
 #include "sub_loc_fwd.h"
-#include "timer_counters.h"
+#include "game_time.h"
 #include "tip_manager.h"
 #include "transform_matrix.h"
 #include "vector3.h"
@@ -211,7 +211,7 @@ public:
     float cutscene_pitch_cycle_step;        // +0x2e0
     // Player-owned run score producer and completion snapshot window.
     int total_score;                        // +0x2e4
-    TimerCounters stopwatch;                // +0x2e8
+    Time stopwatch;                         // +0x2e8, authored cRTime value
     // Only confirmed consumer copies this value into SubSolution::score_tail.
     int score_tail;                         // +0x300
     // Click-start seeds this slot; update_subgoldy later reuses it as the

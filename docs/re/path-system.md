@@ -47,7 +47,7 @@ Ownership note:
   `SubgameRuntime +0xff2910` (`GameRoot +0x1066f28`), followed by three bytes
   of alignment and the path-template pair bank at `+0xff2914`
 - `update_jetpack_gauge` at `0x43a390`
-- `advance_timer_counters` at `0x441b90`
+- `advance_timer_counters` at `0x441b90` (authored `cRTime::Add(float)`)
 - `update_damage_gauge` at `0x440fd0`
 - `apply_damage_gauge_delta` at `0x4413f0`
 - `set_backdrop_progress_fraction` at `0x410c30` (authored

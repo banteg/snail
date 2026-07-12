@@ -1078,6 +1078,24 @@
       "description": "Compiler-emitted score-kind switch jump table used by add_subgoldy_score."
     },
     {
+      "address": "0x441b70",
+      "name": "zero_timer_counters",
+      "kind": "function",
+      "aliases": [
+        "?Zero@Time@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTime::Zero entry; the decorated alias preserves the authored method owner in candidate relocations."
+    },
+    {
+      "address": "0x441b90",
+      "name": "advance_timer_counters",
+      "kind": "function",
+      "aliases": [
+        "?Add@Time@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRTime::Add(float) entry; the decorated alias preserves the authored method owner in candidate relocations."
+    },
+    {
       "address": "0x44362c",
       "name": "update_track_parcel_state_jump_table",
       "kind": "jump_table",

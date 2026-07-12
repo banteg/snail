@@ -5,7 +5,7 @@
 #define SUB_SOLUTION_H
 
 #include "score_buckets.h"
-#include "timer_counters.h"
+#include "game_time.h"
 
 const int SUB_SOLUTION_STRIDE = 0x1fac0;
 const int SUB_SOLUTION_PLAYER_NAME_SIZE = 0x14;
@@ -36,7 +36,7 @@ struct SubSolutionHeader {
     union {
         char score_payload[0x18]; // +0x08
         ScoreBucketBlock stats; // +0x08
-        TimerCounters timer; // +0x08
+        Time timer; // +0x08, authored cRTime value
     };
     int score_tail; // +0x20
     int source_tail; // +0x24
@@ -109,7 +109,7 @@ public:
     union {
         float total_seconds; // +0x08, time-trial ordering key
         ScoreBucketBlock stats; // +0x08
-        TimerCounters timer; // +0x08
+        Time timer; // +0x08, authored cRTime value
     };
     int score_tail; // +0x20
     int source_tail; // +0x24

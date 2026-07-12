@@ -154,7 +154,7 @@ public:
     BodBase unknown_bod_355d24; // +0x355d24
     BodBase unknown_bod_355d5c; // +0x355d5c
     int active_level_score; // +0x355d94, copied from the selected bank record
-    TimerCounters active_level_timer; // +0x355d98, embedded display snapshot
+    Time active_level_timer; // +0x355d98, embedded cRTime display snapshot
     SubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
     JetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
     SubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots

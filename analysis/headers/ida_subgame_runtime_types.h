@@ -16,19 +16,19 @@ typedef struct ScoreBucketBlock {
     int32_t values[6];
 } ScoreBucketBlock;
 
-typedef struct TimerCounters {
+typedef struct Time {
     float total_seconds;
     int32_t minutes;
-    int32_t frames_into_second;
+    int32_t seconds;
     int32_t display_hundredths;
     int32_t display_thousandths;
     float second_fraction;
-} TimerCounters;
+} Time;
 
 typedef union ScoreOrTime {
     float total_seconds;
     ScoreBucketBlock stats;
-    TimerCounters timer;
+    Time timer;
 } ScoreOrTime;
 
 typedef struct ReplayRunRecord {

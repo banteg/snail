@@ -1,8 +1,8 @@
 # format_time_trial_string
 
 `format_time_trial_string` @ 0x448960 formats the shared Time Trial HUD buffer
-at 0x751478 from the exact `TimerCounters` layout used by
-`advance_timer_counters`.
+at 0x751478 from the exact authored `cRTime` layout used by
+`cRTime::Add(float)` / `advance_timer_counters`.
 
 iOS and Android preserve the authored signature as
 `cRTimeTrial::TimeString(cRTime&)` in `TimeTrial.o`. Windows callsites seed
@@ -20,16 +20,16 @@ Behavior:
 
 Focused match: 100%, 36/36 instructions, with twelve clean masked operands.
 
-This scratch compiles as C (`/TC`) with a local C-compatible `TimerCounters`
+This scratch compiles as C (`/TC`) with a local C-compatible `Time`
 layout shell. C-mode MSVC 6.5 coalesces cdecl stack cleanup across the two
 adjacent non-zero-branch `sprintf` calls, producing the native `add esp, 0x28`
 after the second call.
 
 2026-06-20 local C-view naming: the local timer shell is now
-`TimeTrialTimerCountersCView`. The shared `timer_counters.h` class remains the
-right C++ owner, but this `/TC` scratch deliberately keeps a C-compatible view.
+`TimeTrialTimeCView`. The shared `game_time.h` class is the right C++ owner,
+but this `/TC` scratch deliberately keeps a C-compatible view.
 The focused match stays exact at `100.00%`, `36/36`, with `12 ok` masked
-operands, and the type report no longer advertises `TimerCounters` as a
+operands, and the type report no longer advertises the local view as a
 promotable local duplicate.
 
 2026-07-11 ownership pass:
@@ -38,3 +38,9 @@ promotable local duplicate.
   `TimeTrial` owner. The exact formatter scratch deliberately remains `/TC` so
   VC6 retains the native coalesced `sprintf` cleanup; C++ callers now address
   the real owner directly without changing their codegen.
+
+2026-07-12 cRTime ownership pass:
+
+- Cross-port symbols recover the parameter owner as `cRTime`, so the local C
+  shell and the shared C++ class now use `Time` vocabulary. This remains a
+  naming-only change to the exact 0x18-byte layout.

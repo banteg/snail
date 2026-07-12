@@ -203,7 +203,7 @@ struct SubgoldyPlayerView {
     char unknown_200[0x2d8 - 0x200];
     unsigned char control_override_active; // +0x2d8
     char unknown_2d9[0x2e8 - 0x2d9];
-    TimerCounters timer_counters; // +0x2e8
+    Time stopwatch; // +0x2e8, authored cRTime value
     char unknown_300[0x304 - 0x300];
     int ghost_anchor_cursor; // +0x304
     char unknown_308[0x328 - 0x308];
@@ -852,7 +852,7 @@ steering_stored:
                 float remaining =
                     (1.0f - (live_matrix.position.z - completion_start) / velocity.z)
                     * 0.016666668f;
-                timer_counters.advance_timer_counters(remaining);
+                stopwatch.Add(remaining);
             }
             SubgoldyGameView* handoff_game = game;
             completion_handoff_timer = 0.0f;

@@ -11,6 +11,14 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "zero_timer_counters",
+        "void __thiscall zero_timer_counters(Time* time);",
+    ),
+    (
+        "advance_timer_counters",
+        "void __thiscall advance_timer_counters(Time* time, float delta_ticks);",
+    ),
+    (
         "initialize_enemy_manager",
         # Keep this ICF-shared one-store ABI coarse in IDA so the unrelated
         # tracked-allocation callsite is not assigned the registry owner.
@@ -62,7 +70,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, TimerCounters* timer);",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, Time* timer);",
     ),
     (
         "bind_subgame_owner",

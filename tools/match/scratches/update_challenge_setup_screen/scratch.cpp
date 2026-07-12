@@ -5,7 +5,7 @@
 #include "sub_tracks.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
-#include "timer_counters.h"
+#include "game_time.h"
 #include "time_trial.h"
 
 

@@ -427,7 +427,7 @@ Recovered block in `populate_runtime_track_cells_from_segments`:
 - `0x435f5b`: `*(arg1 + 0x3bba48) = 0`
 - `0x435f61`: `sub_4403a0(arg1 + 0x3bb764)`
 - `0x435f66`: `*(arg1 + 0x3bfaa4) = 3`
-- `0x435f72`: `zero_timer_counters()`
+- `0x435f72`: `cRTime::Zero()` / `zero_timer_counters()`
 
 Practical conclusion:
 
