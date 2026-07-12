@@ -1,23 +1,11 @@
 // update_anim_manager @ 0x4447d0 (thiscall, ret)
 
 #include "object_animation_types.h"
+#include "object_render_types.h"
 #include "anim_manager.h"
 #include "presentation_animation_channel.h"
 
 extern char* g_game_base; // data_4df904
-
-struct AnimationRecord {
-    char unknown_00[0x24];
-    PresentationAnimationVisualRoot* visual_root; // +0x24
-    char unknown_28[0x80 - 0x28];
-};
-
-struct ModelInstance {
-    char unknown_00[0x04];
-    unsigned int flags; // +0x04
-    char unknown_08[0x24 - 0x08];
-    PresentationAnimationVisualRoot* visual_root; // +0x24
-};
 
 void AnimManager::update_anim_manager()
 {
@@ -79,17 +67,16 @@ void AnimManager::update_anim_manager()
         if (next_animation == -1) {
             progress = 0.0f;
             progress_step = 0.0f;
-            ((ModelInstance*)target_model)->flags &= ~0x20u;
+            target_model->list_flags &= ~0x20u;
         } else {
-            ((ModelInstance*)target_model)->flags |= 0x20u;
-            AnimationRecord* record =
-                (AnimationRecord*)(animation_slot_base_minus_24
-                    + next_animation * sizeof(AnimationRecord));
+            target_model->list_flags |= 0x20u;
+            Object** slot_object =
+                &animation_slots[queued_animations[0]].body.object;
+            ObjectAnimation* animation = (*slot_object)->animation;
             progress = 0.0f;
-            PresentationAnimationVisualRoot* root = record->visual_root;
-            active_animation = root->active_animation;
+            active_animation = animation;
             progress_step = active_animation->progress_step;
-            ((ModelInstance*)target_model)->visual_root = root;
+            target_model->object = *slot_object;
         }
 
         --queue_count;

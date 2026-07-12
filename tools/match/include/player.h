@@ -122,7 +122,7 @@ public:
     void* vtable;                          // +0x00, noop presentation callback
     unsigned int visual_flags;              // +0x04
     char unknown_08[0x24 - 0x08];
-    PresentationAnimationVisualRoot* visual_root; // +0x24
+    Object* object;                            // +0x24, borrowed animated cRObject
     char unknown_28[0x38 - 0x28];
     TransformMatrix live_matrix;            // +0x38
     char unknown_78[0x80 - 0x78];
@@ -130,8 +130,7 @@ public:
     TransformMatrix cached_cutscene_matrix; // +0xc0
     Player* owner_player;                   // +0x100, non-owning backlink to containing Player
     AnimManager anim_manager;               // +0x104
-    char unknown_14c[0x170 - 0x14c];
-    char cutscene_animation_slot_table[0x64c - 0x170]; // +0x170, 0x80-byte records
+    PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
     PresentationAnimationChannel weapon_channels[3]; // +0x64c
     PresentationAnimationChannel jetpack_channel;     // +0x11e0
     float wobble_roll_phase;            // +0x15bc

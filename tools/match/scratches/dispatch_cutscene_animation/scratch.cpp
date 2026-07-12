@@ -1,6 +1,7 @@
 // dispatch_cutscene_animation @ 0x444600 (thiscall, ret 0xc)
 
 #include "object_animation_types.h"
+#include "object_render_types.h"
 #include "player.h"
 
 int Snail::dispatch_cutscene_animation(
@@ -9,9 +10,8 @@ int Snail::dispatch_cutscene_animation(
     int initial_frame)
 {
     if (immediate != 0) {
-        PresentationAnimationSlot* slot =
-            (PresentationAnimationSlot*)(cutscene_animation_slot_table + animation_id * 0x80);
-        anim_manager.active_animation = slot->visual_root->active_animation;
+        Object** slot_object = &cutscene_animation_slots[animation_id].body.object;
+        anim_manager.active_animation = (*slot_object)->animation;
         if (initial_frame != -1)
             anim_manager.active_animation->flags = (unsigned short)initial_frame;
 
@@ -36,12 +36,12 @@ int Snail::dispatch_cutscene_animation(
             anim_manager.progress_step = step;
         }
 
-        PresentationAnimationVisualRoot* root = slot->visual_root;
+        Object* root = *slot_object;
         anim_manager.queue_count = 0;
-        visual_root = root;
-        int flags = *(int*)((char*)anim_manager.target_model + 4);
+        object = root;
+        int flags = anim_manager.target_model->list_flags;
         flags |= 0x20;
-        *(int*)((char*)anim_manager.target_model + 4) = flags;
+        anim_manager.target_model->list_flags = flags;
         return flags;
     }
 

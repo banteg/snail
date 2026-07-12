@@ -78,7 +78,8 @@ scratch additionally pins:
 
 damage_gauge at +0x3c4 (state is the FIRST field; skin_hold_ticks +0x18),
 empty progress_bar +0x3f0, warning +0x3f4, nuke +0x150, presentation +0x2984
-(visual_root* +0x24 with lateral/squidge floats at +0x80/84/88, live
+(`Object* +0x24`; the lateral/squidge writes are its
+`ObjectDistort::{z_wave,y_squash,xyz_scale}` at +0x80/84/88, live
 basis_up.x +0x48, cutscene state +0x1964), authored cRSquidge +0x4344
 (y output/velocity/phase +0x00/+0x04/+0x08, z output/velocity/phase
 +0x0c/+0x10/+0x14), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
@@ -101,6 +102,12 @@ the state at `+0x80` inside the exact 0xac-byte `ClickStart` child embedded at
 Player +0xa0. Replacing the scratch-local flat field with the shared owner and
 all reads with `click_start.state` is codegen-neutral at 72.51%, 2067/2087
 instructions; no register-shaped adapter was retained.
+
+2026-07-12 presentation-object ownership: the scratch-local `VisualRoot` shell
+is retired. The Snail's `+0x24` link is the shared animated `Object*`; the
+three apparent presentation scalars at object `+0x80/+0x84/+0x88` are exactly
+the shared `ObjectDistort` lanes. Focused matching remains 72.51%, 2067/2087,
+with all existing operand evidence unchanged.
 
 Game side: level_mode at +0x40 (NOT +0x150), level_mode_arg +0x44,
 runtime_flags +0x4c, first_block_row_count +0x50, runtime_row_count

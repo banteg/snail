@@ -15,6 +15,7 @@
 #include "cheat_state.h"
 #include "click_start.h"
 #include "damage_guage.h"
+#include "object_render_types.h"
 #include "sub_solution.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
@@ -120,13 +121,6 @@ struct SubgoldyPlayerControlSourceView {
     float steering_x; // +0x28
 };
 
-struct VisualRoot {
-    char unknown_00[0x80];
-    float follow_lateral_response; // +0x80
-    float squidge_primary;         // +0x84
-    float squidge_secondary;       // +0x88
-};
-
 struct SubgoldyCutSceneStateView {
     char unknown_00[0x0c];
     int state; // +0x0c (presentation +0x1964)
@@ -135,7 +129,7 @@ struct SubgoldyCutSceneStateView {
 
 struct Presentation {
     char unknown_00[0x24];
-    VisualRoot* visual_root; // +0x24
+    Object* object; // +0x24, borrowed animated cRObject
     char unknown_28[0x48 - 0x28];
     float live_basis_up_x; // +0x48
     char unknown_4c[0x104 - 0x4c];
@@ -303,19 +297,19 @@ void SubgoldyPlayerView::update_subgoldy()
         int segment_count = template_record->segment_count;
         if (sample >= segment_count)
             sample = segment_count - 1;
-        presentation.visual_root->follow_lateral_response =
+        presentation.object->distort.z_wave =
             (template_record->primary_samples[sample].lateral_source * -3.0f
-             - presentation.visual_root->follow_lateral_response) * 0.1f
-            + presentation.visual_root->follow_lateral_response;
+             - presentation.object->distort.z_wave) * 0.1f
+            + presentation.object->distort.z_wave;
     } else {
-        presentation.visual_root->follow_lateral_response =
-            (0.0f - presentation.visual_root->follow_lateral_response) * 0.1f
-            + presentation.visual_root->follow_lateral_response;
+        presentation.object->distort.z_wave =
+            (0.0f - presentation.object->distort.z_wave) * 0.1f
+            + presentation.object->distort.z_wave;
     }
 
     squidge.update_squidge();
-    presentation.visual_root->squidge_primary = squidge.y_output;
-    presentation.visual_root->squidge_secondary = squidge.z_output;
+    presentation.object->distort.y_squash = squidge.y_output;
+    presentation.object->distort.xyz_scale = squidge.z_output;
     if (!game->level_mode)
         show_subgoldy_lives();
 

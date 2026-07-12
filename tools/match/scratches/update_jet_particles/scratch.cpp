@@ -1,6 +1,7 @@
 // update_jet_particles @ 0x43a690 (fastcall)
 
 #include "sub_hover.h"
+#include "object_render_types.h"
 #include "player.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
@@ -14,9 +15,8 @@ void SubHover::update_jet_particles()
     }
 
     if (game->embedded_player()->presentation.jetpack_channel.anim_manager.active_animation
-        != ((PresentationAnimationSlot*)game->embedded_player()
-                    ->presentation.jetpack_channel.animation_slot_table)
-               ->visual_root->active_animation) {
+        != game->embedded_player()->presentation.jetpack_channel.animation_slots[0]
+               .body.object->animation) {
         return;
     }
 

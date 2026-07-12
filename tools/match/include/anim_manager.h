@@ -4,6 +4,8 @@
 #define ANIM_MANAGER_H
 
 struct ObjectAnimation;
+class BodBase;
+struct PresentationAnimationSlot;
 
 class AnimManager {
 public:
@@ -18,10 +20,8 @@ public:
     char unknown_11[0x14 - 0x11];
     int queued_animations[10]; // +0x14
     int queue_count;       // +0x3c
-    void* target_model;    // +0x40
-    // Biased base immediately after this owner; the first 0x80-byte animation
-    // slot begins at +0x24 from this pointer.
-    char* animation_slot_base_minus_24; // +0x44
+    BodBase* target_model; // +0x40, borrowed Snail/channel renderable owner
+    PresentationAnimationSlot* animation_slots; // +0x44, borrowed inline slot bank
 };
 
 typedef char AnimManager_must_be_0x48[

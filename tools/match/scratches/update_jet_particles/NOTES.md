@@ -69,7 +69,8 @@ Focused Wibo status:
 - `JetGameView`, `JetPlayerView`, and `JetActiveRuntimeView` are retired. The
   animation gate is
   `Player.presentation.jetpack_channel.anim_manager.active_animation` versus
-  slot 0's visual-root animation; puff ownership is `Player::player_slot`, and
+  slot 0's `RenderableBod::object->animation`; puff ownership is
+  `Player::player_slot`, and
   its motion source is `Player::velocity`.
 - The target still has a `0x50` frame versus candidate `0x44`. Honest aggregate
   position and trail-velocity probes regressed, so the residual remains the

@@ -7,17 +7,19 @@ Recovered behavior:
 
 - non-immediate calls append `animation_id` to
   `AnimManager::queued_animations` and increment `queue_count`;
-- immediate calls select an inline `0x80`-byte animation slot at channel
-  `+0x174 + animation_id * 0x80`;
-- the slot's visual root supplies the active `ObjectAnimation*` at `+0xbc`;
+- immediate calls select an owned `0x80`-byte `RenderableBod` slot at channel
+  `+0x150 + animation_id * 0x80`; its `Object*` link is at slot `+0x24`
+  (channel `+0x174` for slot zero);
+- the linked `Object::animation +0xbc` supplies the active `ObjectAnimation*`;
 - `initial_frame != -1` overwrites the active animation's low flag word;
 - object-animation flag `8` starts from the reverse end by storing
   `progress_step = -abs(active_animation->progress_step)` and
   `progress = 1 + step`;
 - otherwise it starts from `progress = 0` and
   `progress_step = abs(active_animation->progress_step)`; and
-- immediate activation clears the queue, stores the selected visual root at
-  channel `+0x24`, and ORs bit `0x20` into the target model flags.
+- immediate activation clears the queue, stores the selected `Object*` at
+  channel `BodBase::object +0x24`, and ORs bit `0x20` into the target model's
+  inherited list flags.
 
 Focused Wibo result: 94.55%, 55/55 candidate/target instructions, 48/55 exact
 prefix, and three clean masked operands. The immediate path is exact; remaining
@@ -38,6 +40,12 @@ recovers the native reload before `progress = 0.0f`, matching the paired
 declaration-order changes, direct queue subscripts, and raw queue stores are
 codegen-neutral; the queued branch still keeps `queue_count` in `eax` and
 `animation_id` in `edx`, opposite native.
+
+2026-07-12 object/slot ownership: the synthetic field-first slot view is
+retired. `PresentationAnimationChannel` owns five complete renderable slots at
+`+0x150`, while the source retains an `Object**` to each inherited `+0x24`
+link so VC6 preserves the exact immediate-path address shape. Focused matching
+remains 94.55%, 55/55, prefix 48, with three clean operands.
 
 2026-06-21 queued-argument barrier: matching the paired dispatch helper, reading
 the queued `animation_id` through a narrow volatile pointer recovers the native

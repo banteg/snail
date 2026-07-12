@@ -2,22 +2,17 @@
 #define PRESENTATION_ANIMATION_CHANNEL_H
 
 #include "anim_manager.h"
+#include "bod_types.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 
-struct PresentationAnimationVisualRoot {
-    char unknown_000[0x10];
-    unsigned int flags; // +0x10, |= 8 marks the selected material dirty
-    char unknown_014[0x18 - 0x14];
-    int material_index; // +0x18, selected by cRSnailSkin::AI
-    char unknown_01c[0xbc - 0x1c];
-    ObjectAnimation* active_animation; // +0xbc
+struct PresentationAnimationSlot {
+    RenderableBod body; // +0x00; body.object owns the animated Object link at +0x24
+    char unknown_078[0x80 - 0x78];
 };
 
-struct PresentationAnimationSlot {
-    PresentationAnimationVisualRoot* visual_root; // +0x00
-    char unknown_004[0x80 - 0x04];
-};
+typedef char PresentationAnimationSlot_must_be_0x80[
+    (sizeof(PresentationAnimationSlot) == 0x80) ? 1 : -1];
 
 class PresentationAnimationChannel {
 public:
@@ -27,14 +22,13 @@ public:
     // remains embedded in the authored Snail owner.
     void* vtable; // +0x00, shared no-op animation-channel callback
     char unknown_004[0x24 - 0x04];
-    PresentationAnimationVisualRoot* visual_root; // +0x24
+    Object* object; // +0x24, borrowed animated cRObject
     char unknown_028[0x38 - 0x28];
     TransformMatrix live_matrix; // +0x38
     char unknown_078[0x104 - 0x78];
     int selected_state; // +0x104
     AnimManager anim_manager; // +0x108
-    char unknown_150[0x174 - 0x150];
-    char animation_slot_table[0x25c]; // +0x174, 0x80-byte records
+    PresentationAnimationSlot animation_slots[5]; // +0x150, owned renderable slots
     Vector3 release_step; // +0x3d0, additive offset when release flag is active
 };
 

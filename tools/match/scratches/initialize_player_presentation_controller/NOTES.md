@@ -29,5 +29,11 @@ The former `initialize_enemy_manager_runtime` name was stale: the sole caller
 passes `Player +0x2984`, while the actual Windows `cREnemyManager` is the
 separate `0x1804` contact-target registry at `SubgameRuntime +0x1270fd4`.
 
+Each 0x80-byte animation slot is a complete `RenderableBod` plus eight tail
+bytes. Its inherited `object +0x24` is the animated `Object*`; the AnimManager
+stores the actual slot base, not a pointer biased 0x24 before it. The five-slot
+channel extents (`+0x150..+0x3d0`) and ten-slot Snail extent
+(`+0x14c..+0x64c`) close exactly against the next owned fields.
+
 Focused Wibo remains proof-grade at 100.00%, 79/79 instructions, full prefix,
 and 27 clean masked operands.

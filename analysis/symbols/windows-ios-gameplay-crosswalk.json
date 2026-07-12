@@ -819,7 +819,7 @@
       "android_symbol": "cRAnimManager::AI()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android independently reads the same cRAnimManager offsets through +0x44 and preserves the state, flag, clamp, queue, target, and next-animation flow. Presentation-record stride and nested animation offsets differ by port."
+      "notes": "Android independently reads the same cRAnimManager offsets through +0x44 and preserves the state, flag, clamp, queue, borrowed cRBod target, cRBod slot, cRObject, and next-animation flow. Windows slots are 0x80-byte RenderableBod owners; record stride and Object::animation offset differ by port."
     },
     {
       "address": "0x444960",
@@ -1236,7 +1236,7 @@
       "android_symbol": "cRSnail::SetAnimation(int, bool, int)",
       "source_object": null,
       "confidence": "high",
-      "notes": "The immediate and queued animation paths operate on cRSnail's root animation manager and visual slot table; the Windows harness name remains stable."
+      "notes": "The immediate and queued paths operate on cRSnail's root AnimManager and ten owned cRBod animation slots; each slot lends its cRObject and nested ObjectAnimation. The Windows harness name remains stable."
     },
     {
       "address": "0x445860",
@@ -1312,7 +1312,7 @@
       "android_symbol": "cRSnailSkin::AI()",
       "source_object": null,
       "confidence": "high",
-      "notes": "The exact Windows and Android bodies follow the cRSnail backlink, dirty the snail visual, select its material from slot_ids, and advance the same active/progress/progress_step lanes."
+      "notes": "The exact Windows and Android bodies follow the cRSnail backlink into its linked cRObject, dirty that object, select its material override from the three-slot bank, and advance the same active/progress/progress_step lanes."
     },
     {
       "address": "0x445fd0",

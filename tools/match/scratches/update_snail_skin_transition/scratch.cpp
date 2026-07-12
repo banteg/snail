@@ -1,10 +1,11 @@
 // update_snail_skin_transition @ 0x445f80 (thiscall, ret)
+#include "object_render_types.h"
 #include "player.h"
 
 void SnailSkin::update_snail_skin_transition()
 {
-    owner_snail->visual_root->flags |= 8;
-    owner_snail->visual_root->material_index = slot_ids[selected_slot];
+    owner_snail->object->flags |= 8;
+    owner_snail->object->override_texture_ref = material_overrides[selected_slot];
     switch (active) {
     case 1:
         progress = progress_step + progress;

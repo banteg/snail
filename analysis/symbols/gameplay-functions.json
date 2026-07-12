@@ -2447,11 +2447,12 @@
     {
       "address": "0x444600",
       "name": "dispatch_cutscene_animation",
-      "description": "Stable Windows name for `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root animation manager and visual-slot table."
+      "description": "Stable Windows name for `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation."
     },
     {
       "address": "0x4446e0",
-      "name": "set_weapon_animation"
+      "name": "set_weapon_animation",
+      "description": "cRWeapon animation dispatcher over one PresentationAnimationChannel: queues an id or immediately selects one of five owned 0x80-byte RenderableBod slots, follows its Object::animation link, and installs the borrowed Object on the channel."
     },
     {
       "address": "0x4447c0",
@@ -2461,7 +2462,7 @@
     {
       "address": "0x4447d0",
       "name": "update_anim_manager",
-      "description": "Windows `cRAnimManager::AI()`: advances one authored 0x48-byte queued presentation-animation owner, applies loop, bounce, or clamp flags, and starts the next queued entry when the current one finishes. Android independently preserves the field map through +0x44."
+      "description": "Exact Windows `cRAnimManager::AI()`: advances the authored 0x48-byte queue owner, applies loop, bounce, or clamp flags, then installs the next owned RenderableBod slot's Object and ObjectAnimation on its borrowed Snail or animation-channel target. Android independently preserves the same ownership chain with port-specific slot layout."
     },
     {
       "address": "0x444960",
@@ -2558,7 +2559,7 @@
     {
       "address": "0x445f80",
       "name": "update_snail_skin_transition",
-      "description": "Exact Windows `SnailSkin::update_snail_skin_transition`, authored as `cRSnailSkin::AI`: follows the borrowed Snail backlink, marks its visual material dirty, applies the selected material index, and advances the timed reset state."
+      "description": "Exact Windows `SnailSkin::update_snail_skin_transition`, authored as `cRSnailSkin::AI`: follows the borrowed Snail backlink, marks its linked Object dirty, installs the selected TextureRef override, and advances the timed reset state."
     },
     {
       "address": "0x445fd0",

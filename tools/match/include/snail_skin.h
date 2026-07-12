@@ -3,6 +3,7 @@
 #define SNAIL_SKIN_H
 
 class Snail;
+struct TextureRef;
 
 class SnailSkin {
 public:
@@ -11,7 +12,7 @@ public:
     void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0, Change
 
     int selected_slot;             // +0x00
-    int slot_ids[3];               // +0x04 (0=default, 1=damage-red, 2=invincible)
+    TextureRef* material_overrides[3]; // +0x04 (default, damage-red, invincible)
     Snail* owner_snail;            // +0x10, non-owning parent backlink
     int active;                    // +0x14
     float progress;                // +0x18

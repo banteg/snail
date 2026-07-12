@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**524/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77309/325720** bytes (**23.73%**) are proof-grade, and overall fuzzy is **60.63%**.
+**525/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **77708/325720** bytes (**23.86%**) are proof-grade, and overall fuzzy is **60.67%**.
 
-## Proof Grade (524)
+## Proof Grade (525)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -356,6 +356,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_parcel_set_bucket_pool | 0x443870 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 | - |  |
+| ✅ | update_anim_manager | 0x4447d0 | 399 | 134/134 | 100.00% | 134/134 | 13 ok |  |
 | ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | 8/8 | - |  |
 | ✅ | start_squidge_y | 0x444980 | 23 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | start_squidge_z | 0x4449a0 | 23 | 6/6 | 100.00% | 6/6 | 1 ok |  |
@@ -626,7 +627,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (60)
+## Mid Progress (50-79.99%) (59)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -682,7 +683,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 290/312 | 63.79% | 8/312 | 1 mismatch, 34 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 171/171 | 73.68% | 22/171 | 29 ok |  |
-| 🚧 | update_anim_manager | 0x4447d0 | 399 | 132/134 | 61.65% | 2/134 | 13 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 496/505 | 72.53% | 10/505 | 1 mismatch, 57 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 939/926 | 75.17% | 20/926 | 165 ok |  |

@@ -5,9 +5,10 @@ Snail-root counterpart to `set_weapon_animation`.
 
 This scratch uses the same queue/start source shape over the controller root:
 
-- `visual_root` at `Snail +0x24`
+- animated `Object*` at `Snail +0x24`
 - `anim_manager` at `+0x104`
-- animation slots begin at `+0x170`, with `0x80`-byte records
+- ten owned renderable animation slots begin at `+0x14c`; slot zero's inherited
+  `Object*` link is at `+0x170`, and records have 0x80-byte stride
 
 Callers use this for base, lookback, skid-stop, damage, shell, fall, and talk
 cutscene/presentation animation ids.
@@ -65,3 +66,9 @@ Every native caller ignores the result, and a `void` declaration is codegen-
 neutral in both helpers and representative callers. Return ownership therefore
 remains unproven; the existing `int` ABI is retained conservatively rather than
 being inferred away from incidental callsite use.
+
+2026-07-12 object/slot ownership: the Snail constructor independently builds
+the ten complete `RenderableBod` slots at `+0x14c`. The immediate path now
+follows each slot's inherited `object +0x24` into `Object::animation +0xbc`
+and installs that same borrowed `Object*` on the Snail. This is codegen-neutral
+at 94.55%, 55/55, with the same 48-instruction exact prefix.
