@@ -24,7 +24,7 @@ public:
     unsigned char entering_name; // +0x10
     char unknown_11[0x14 - 0x11];
     int selected_rank; // +0x14
-    char unknown_18[0x1c - 0x18];
+    FrontendWidget* title_widget; // +0x18, heading or name-entry prompt
     FrontendWidget* back_button; // +0x1c
     FrontendWidget* bank_toggle_button; // +0x20
     FrontendWidget* cancel_name_button; // +0x24, Cancel/Escape

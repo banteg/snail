@@ -39,3 +39,29 @@ Expected residuals:
 - The shared type is therefore `HighScore`, distinct from the embedded
   0x947648-byte persistent `SubHighScore` bank. The ownership rename is
   codegen-neutral and does not hide the initializer's existing residuals.
+
+2026-07-12 title and per-bank source recovery:
+
+- Native stores the heading at `HighScore +0x18`; `+0x1c` is only the footer
+  Back button. Promoting `title_widget` removes the former false overwrite and
+  closes the controller prefix through the five footer handles.
+- The ten-row body is genuinely duplicated by selected bank. Postal rows use
+  the wider fill, score anchor `160`, replay anchor `125`, and always hide the
+  Replay action. Challenge rows use score anchor `125`, replay anchor `170`,
+  and hide Replay only while a name is being entered. The prior consolidated
+  helper both obscured that ownership and inverted the visibility condition.
+- The native loop advances the persistent-record byte offset to
+  `10 * 0x1fac0`, reloads the borrowed active-bank pointer after widget
+  callbacks, and keeps five parallel ten-handle banks through one advancing
+  name-row cursor. The footer reuses the row `y` lifetime, while unsupported
+  bank values intentionally fall through the original non-returning switch.
+- Restoring that source shape raises the focused match from 43.24%
+  (`436/600`, prefix 1, 57 clean masks and 14 mismatches) to 98.00%
+  (`600/600`, prefix 80, 137 clean masks and no relocation mismatches).
+  The only residuals are twelve `Color4f` temporary stack-slot permutations;
+  no artificial padding, volatile aliases, or other fakematching is used.
+- `bn_high_score_screen_types.h` and its narrow sync helper apply the exact
+  0xf4-byte owner plus all four lifecycle prototypes without replacing the
+  independently recovered `FrontendWidget` or high-score bank types. The live
+  Binary Ninja replay verified `title_widget` at `+0x18`, Back at `+0x1c`, the
+  four footer prototypes, and all five row banks through `+0xf4`.

@@ -10,6 +10,14 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_high_score_screen",
+        "int __thiscall initialize_high_score_screen(HighScore* high_score, int selected_bank, int selected_rank);",
+    ),
+    (
+        "destroy_high_score_screen",
+        "int __thiscall destroy_high_score_screen(HighScore* high_score);",
+    ),
+    (
         "update_high_score_screen",
         "int __thiscall update_high_score_screen(HighScore* high_score);",
     ),

@@ -127,7 +127,7 @@ typedef struct HighScore {
     uint8_t entering_name;
     uint8_t _pad_11[0x14 - 0x11];
     int32_t selected_rank;
-    uint8_t _pad_18[0x1c - 0x18];
+    FrontendWidget* title_widget;
     FrontendWidget* back_button;
     FrontendWidget* bank_toggle_button;
     FrontendWidget* cancel_name_button;
