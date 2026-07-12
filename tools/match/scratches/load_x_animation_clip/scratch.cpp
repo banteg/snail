@@ -48,8 +48,8 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     keyframes = (XAnimationKeyframe*)allocate_tracked_memory(
         keyframe_count << 7, "Anim Key frame bods");
 
-    int i = 0;
     duplicate_vertices.active_count = 0;
+    int i = 0;
     if (keyframe_count > 0) {
         char* mesh_path = g_x_animation_clip_enumeration_names;
         XAnimationKeyframe* keyframe = keyframes;
