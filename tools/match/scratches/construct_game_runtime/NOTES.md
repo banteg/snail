@@ -179,17 +179,22 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   deliberately unnamed because the large startup function has not yet mapped
   every authored world object back to an array slot.
 
-## 2026-07-11 intro screen and renderable-bank ownership
+## 2026-07-11 logo renderable-bank ownership
 
-- Root `+0x4f400..+0x74618` is the complete `IntroScreenRuntime`. Its `0x18`
-  state header is followed by 1024 `IntroLogoRenderable` records and the 32
-  logo records consumed by `open_logo`; both banks use the constructor's
+- Root `+0x4f400..+0x74618` is the complete `Logo`. Its `0x18` state header is
+  followed by 1024 `LogoLetter` records and the 32 image-donor records consumed
+  by `open_logo`; both banks use the constructor's
   exact `0x90` stride.
 - The preceding `BodBase +0x4f3c8` remains a separate root-owned record with an
   unknown concrete role. It is typed without folding it into the intro owner.
 - The constructor now addresses both arrays through the shared owner. Its
   focused metrics remain `88.89%`, `299/268`, with 119 clean operands and the
   single compiler-local EH-handler relocation unresolved.
+
+2026-07-12 symbol provenance identifies this owner as Windows cRLogo. The
+no-argument mobile cRIntro lifecycle is a separate border-heavy screen and does
+not own these banks. Renaming the owner and its two arrays is codegen-neutral at
+the same 88.89% constructor baseline.
 
 ## 2026-07-11 subgame constructor ownership
 

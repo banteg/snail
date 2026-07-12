@@ -16,5 +16,6 @@ through `eax` before saving `esi`.
 iOS `RShell.o` names the public contract `RShellMemoryFree(void*)`. Windows
 retains the same caller-owned pointer interface while adding guard validation
 and tracked-stack removal. Exact and near-exact callers now declare the helper
-`void`; the broad `initialize_intro_screen` relationship scratch still returns
-its incidental `eax` and is left for a dedicated `cRIntro::Init` ABI audit.
+`void`; the broad filename-taking `cRLogo::Init(char*)` scratch now does as well.
+Its two Windows callers discard EAX, and the symbol-bearing ARM body likewise
+ends with `RShellMemoryFree` followed directly by its epilogue.

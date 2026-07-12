@@ -267,7 +267,7 @@ char GameRoot::initialize_game_assets_and_world()
     ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
     subgame.galaxy.load_galaxy_layout();
     subgame.player.cameraman.initialize_cameraman();
-    intro_screen.open_logo();
+    logo.open_logo();
     initialize_sound_bank(&g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     options.apply_audio_config_volumes();

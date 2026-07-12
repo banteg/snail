@@ -2,11 +2,11 @@
 
 #include "intro_screen_runtime.h"
 
-extern void* g_intro_logo_renderable_vtable; // off_497310 / data_497310
+extern void* g_logo_letter_vtable; // off_497310 / data_497310
 
-IntroLogoRenderable* IntroLogoRenderable::initialize_intro_logo_renderable()
+LogoLetter* LogoLetter::initialize_intro_logo_renderable()
 {
     initialize_renderable_bod();
-    vtable = &g_intro_logo_renderable_vtable;
+    vtable = &g_logo_letter_vtable;
     return this;
 }

@@ -7,7 +7,7 @@ extern char* g_game_base; // data_4df904
 
 char read_pressed_text_input_key_code();
 
-void IntroScreenRuntime::update_intro_screen()
+void Logo::update_intro_screen()
 {
     char* game = g_game_base;
     if (*(int*)(game + 0x24) == 0) {

@@ -22,15 +22,15 @@ char* load_file_bytes(char* file_name, int* out_size);
 char* find_case_insensitive_substring(char* needle, char* haystack);
 float parse_next_float32(char** cursor);
 int sprintf(char* buffer, const char* format, ...);
-int free_tracked_memory(void* ptr);
+void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-class IntroLogoRenderableVirtualView {
+class LogoLetterVirtualView {
 public:
     virtual void update_intro_logo_renderable() = 0;
 };
 
-static __forceinline void add_intro_renderable_to_active_list(IntroLogoRenderable* bod)
+static __forceinline void add_intro_renderable_to_active_list(LogoLetter* bod)
 {
     char* node = (char*)bod;
     if ((*(unsigned int*)(node + 4) & 0x200) != 0) {
@@ -41,11 +41,11 @@ static __forceinline void add_intro_renderable_to_active_list(IntroLogoRenderabl
     char* head = g_game_base + 0x5ac;
     char* first = *(char**)head;
     if (first == 0) {
-        *(IntroLogoRenderable**)head = bod;
+        *(LogoLetter**)head = bod;
         *(int*)(node + 8) = 0;
         *(int*)(*(int*)head + 12) = 0;
     } else {
-        *(IntroLogoRenderable**)(first + 8) = bod;
+        *(LogoLetter**)(first + 8) = bod;
         *(char**)(*(char**)(*(char**)head + 8) + 12) = *(char**)head;
         first = *(char**)(*(char**)head + 8);
         *(char**)head = first;
@@ -54,7 +54,7 @@ static __forceinline void add_intro_renderable_to_active_list(IntroLogoRenderabl
     *(unsigned int*)(node + 4) |= 0x200;
 }
 
-int IntroScreenRuntime::initialize_intro_screen(char* file_name)
+void Logo::initialize_intro_screen(char* file_name)
 {
     cache_music_file((char*)"music/introtext.ogg", 0, g_blank_text);
     int script_index =
@@ -90,7 +90,7 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
         find_case_insensitive_substring((char*)"Text Start:", file_bytes);
     cursor = find_case_insensitive_substring((char*)":", cursor) + 1;
     char* text_end = find_case_insensitive_substring((char*)"Text End:", file_bytes);
-    IntroLogoRenderable* logo = logo_renderables;
+    LogoLetter* image_donor = image_donors;
 
     while (cursor < text_end) {
         char* line = cursor;
@@ -114,46 +114,46 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
             float image_height = parse_next_float32(&cursor);
             sprintf(path, "Intro/%s", image_name);
 
-            add_intro_renderable_to_active_list(&renderables[renderable_count]);
-            Object* logo_object = logo->object;
-            renderables[renderable_count].set_bod_object(logo_object);
-            renderables[renderable_count].object->facequads[0].texture_ref =
+            add_intro_renderable_to_active_list(&letters[renderable_count]);
+            Object* logo_object = image_donor->object;
+            letters[renderable_count].set_bod_object(logo_object);
+            letters[renderable_count].object->facequads[0].texture_ref =
                 g_texture_refs.get_or_create_texture_ref(path, 0, 0);
-            set_matrix_identity(&renderables[renderable_count].transform);
-            renderables[renderable_count].transform.position =
+            set_matrix_identity(&letters[renderable_count].transform);
+            letters[renderable_count].transform.position =
                 Vector3(0.0f, -4.0f, 0.0f);
-            renderables[renderable_count].transform.position.z +=
+            letters[renderable_count].transform.position.z +=
                 crawl_y - image_height * 0.5f;
-            renderables[renderable_count].color.set_color_white();
-            renderables[renderable_count].color.a = 0.99900001f;
-            renderables[renderable_count].glyph = 0xff;
+            letters[renderable_count].color.set_color_white();
+            letters[renderable_count].color.a = 0.99900001f;
+            letters[renderable_count].glyph = 0xff;
 
-            renderables[renderable_count].object->vertices[0].x =
+            letters[renderable_count].object->vertices[0].x =
                 image_width * 0.5f;
-            renderables[renderable_count].object->vertices[0].z =
+            letters[renderable_count].object->vertices[0].z =
                 image_height * 0.5f;
-            renderables[renderable_count].object->vertices[1].x =
+            letters[renderable_count].object->vertices[1].x =
                 image_width * -0.5f;
-            renderables[renderable_count].object->vertices[1].z =
+            letters[renderable_count].object->vertices[1].z =
                 image_height * 0.5f;
-            renderables[renderable_count].object->vertices[2].x =
+            letters[renderable_count].object->vertices[2].x =
                 image_width * -0.5f;
-            renderables[renderable_count].object->vertices[2].z =
+            letters[renderable_count].object->vertices[2].z =
                 image_height * -0.5f;
-            renderables[renderable_count].object->vertices[3].x =
+            letters[renderable_count].object->vertices[3].x =
                 image_width * 0.5f;
-            renderables[renderable_count].object->vertices[3].z =
+            letters[renderable_count].object->vertices[3].z =
                 image_height * -0.5f;
 
-            Vector3* velocity = &renderables[renderable_count].velocity;
+            Vector3* velocity = &letters[renderable_count].velocity;
             velocity->z = 0.0f;
             velocity->y = 0.0f;
             velocity->x = 0.0f;
-            IntroLogoRenderable* renderable = &renderables[renderable_count];
-            ((IntroLogoRenderableVirtualView*)renderable)
+            LogoLetter* renderable = &letters[renderable_count];
+            ((LogoLetterVirtualView*)renderable)
                 ->update_intro_logo_renderable();
 
-            ++logo;
+            ++image_donor;
             ++renderable_count;
             crawl_y -= image_height;
 
@@ -173,25 +173,25 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
                 char* glyph = line;
                 while (count != 0) {
                     add_intro_renderable_to_active_list(
-                        &renderables[renderable_count]);
-                    renderables[renderable_count].set_bod_object(
+                        &letters[renderable_count]);
+                    letters[renderable_count].set_bod_object(
                         g_font3d_bods[font_slot_index_for_char(*glyph)].object);
                     set_matrix_identity(
-                        &renderables[renderable_count].transform);
-                    renderables[renderable_count].transform.position =
+                        &letters[renderable_count].transform);
+                    letters[renderable_count].transform.position =
                         initial_position;
-                    renderables[renderable_count].transform.position.x += x;
-                    renderables[renderable_count].transform.position.z += crawl_y;
-                    renderables[renderable_count].color.set_color_white();
-                    renderables[renderable_count].color.a = 0.99900001f;
-                    Vector3* velocity = &renderables[renderable_count].velocity;
+                    letters[renderable_count].transform.position.x += x;
+                    letters[renderable_count].transform.position.z += crawl_y;
+                    letters[renderable_count].color.set_color_white();
+                    letters[renderable_count].color.a = 0.99900001f;
+                    Vector3* velocity = &letters[renderable_count].velocity;
                     velocity->z = 0.0f;
                     velocity->y = 0.0f;
                     velocity->x = 0.0f;
-                    renderables[renderable_count].glyph = *glyph;
-                    IntroLogoRenderable* renderable =
-                        &renderables[renderable_count];
-                    ((IntroLogoRenderableVirtualView*)renderable)
+                    letters[renderable_count].glyph = *glyph;
+                    LogoLetter* renderable =
+                        &letters[renderable_count];
+                    ((LogoLetterVirtualView*)renderable)
                         ->update_intro_logo_renderable();
 
                     x -= g_font3d_scales[font_slot_index_for_char(*glyph)]
@@ -216,10 +216,10 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
 
     float step = (1.0f / (duration * 60.0f)) * (3.0f - crawl_y);
     Vector3 velocity(0.0f, 0.0f, step);
-    IntroLogoRenderable* renderable = renderables;
+    LogoLetter* renderable = letters;
     for (int i = 0; i < renderable_count; ++i, ++renderable) {
         renderable->velocity = velocity;
     }
 
-    return free_tracked_memory(file_bytes);
+    free_tracked_memory(file_bytes);
 }

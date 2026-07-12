@@ -44,3 +44,9 @@ dependency. The updater is now exact at 100.00%, 42/42 instructions, prefix
 42/42, with seven clean masked operands and no unresolved or mismatched names.
 The backing render flag write also uses the shared `Object::flags` owner rather
 than a private one-field object view.
+
+2026-07-12 authored-owner correction: the individual glyph/image record is the
+Windows `LogoLetter`, and symbol-preserving iOS names the corresponding updater
+`cRLogoLetter::AI()`. Mobile `cRLogoRow::AI()` shares the same integration and
+fade body for row records. The owner promotion preserves the exact 42/42
+Windows result and all seven clean operands.

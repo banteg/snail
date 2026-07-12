@@ -3,7 +3,7 @@
 #include "intro_screen_runtime.h"
 #include "object_render_types.h"
 
-void IntroLogoRenderable::update_intro_logo_renderable()
+void LogoLetter::update_intro_logo_renderable()
 {
     transform.position += velocity;
     Vector3* position = &transform.position;

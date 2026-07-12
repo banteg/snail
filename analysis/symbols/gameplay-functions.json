@@ -397,7 +397,7 @@
     {
       "address": "0x408490",
       "name": "initialize_intro_logo_renderable",
-      "description": "Constructs one 0x90-byte intro/logo renderable by running the shared renderable-BOD constructor and installing the callback table whose first entry is `update_intro_logo_renderable`. `construct_game_runtime` seeds both the 1024-entry intro/credits text bank and the 32-entry logo row bank with this constructor."
+      "description": "Constructs one 0x90-byte Windows LogoLetter by running the shared renderable-BOD constructor and installing the callback table whose first entry is `update_intro_logo_renderable`. `construct_game_runtime` seeds both the cRLogo owner's 1024-entry crawl bank and 32-entry image-donor bank with this constructor."
     },
     {
       "address": "0x4084b0",
@@ -1020,22 +1020,22 @@
     {
       "address": "0x419110",
       "name": "open_logo",
-      "description": "Initializes the 32-logo-renderable tail of the root-owned IntroScreenRuntime and preloads every Intro/*.tga texture. The logo bank starts at intro receiver `+0x24018`, after the 1024-entry crawl bank."
+      "description": "Implements `cRLogo::Open()`: initializes the 32-image-donor tail of the root-owned Logo and preloads every Intro/*.tga texture. The donor bank starts at Logo +0x24018 after the 1024-entry LogoLetter crawl bank."
     },
     {
       "address": "0x4191e0",
       "name": "initialize_intro_screen",
-      "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into the root-owned 1024-entry renderable bank on the tilted crawl plane, borrows sequential preloaded logo objects for image records, and derives each renderable's velocity from Duration. Cross-port Android and iOS symbols match this helper to `cRIntro::Init()`."
+      "description": "Void Windows `cRLogo::Init(char*)`: loads SpaceRed plus INTROTEXT.OGG, parses an intro or credits script into the root-owned 1024-entry LogoLetter bank, borrows sequential preloaded image objects, derives each velocity from Duration, and releases the script through void `RShellMemoryFree`."
     },
     {
       "address": "0x419920",
       "name": "destroy_intro_screen",
-      "description": "Unlinks each intro or credits crawl renderable from the active body lists and returns it to the shared free list before the text screen exits. Cross-port Android symbols match this helper to `cRIntro::UnInit()`."
+      "description": "Windows `cRLogo::UnInit()`: unlinks each active LogoLetter from the BOD lists and returns it to the shared free list before the crawl exits. Windows retains an incidental count result while all callers discard it."
     },
     {
       "address": "0x4199e0",
       "name": "update_intro_screen",
-      "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input. Cross-port Android and iOS symbols match this helper to `cRIntro::AI()`."
+      "description": "Exact Windows `cRLogo::AI()`: advances the normalized intro or credits crawl, tears down its LogoLetters once scrolling completes, and exits early on skip input."
     },
     {
       "address": "0x419a90",
@@ -1043,7 +1043,7 @@
       "aliases": [
         "update_logo_row"
       ],
-      "description": "Advances one intro/credits or logo renderable by applying its velocity to the shared BOD position, fades alpha as it passes the z-window, marks the backing object dirty, and toggles the visible bit. The old `update_logo_row` name was too narrow: `initialize_intro_screen` uses the same 0x90-byte bank for intro text and image renderables, while `open_logo` uses the 32-slot logo bank."
+      "description": "Exact Windows `cRLogoLetter::AI()`: advances one LogoLetter by applying its velocity to the shared BOD position, fades alpha across the z-window, marks the backing object dirty, and toggles visibility. The stable harness alias `update_logo_row` predates the recovered authored owner."
     },
     {
       "address": "0x419b30",

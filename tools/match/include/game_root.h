@@ -113,7 +113,7 @@ public:
     Options options; // +0x4f388, exact authored cROptions owner
     Exit exit_controller; // +0x4f3ac, exact authored cRExit owner
     BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
-    IntroScreenRuntime intro_screen; // +0x4f400, owns both 0x90-byte slot banks
+    Logo logo; // +0x4f400, exact cRLogo owner with both 0x90-byte banks
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
     HighScore high_score; // +0x12e6e50, exact authored cRHighScore owner
     char unknown_12e6f20[0x12e6f58 - 0x12e6f20];

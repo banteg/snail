@@ -19,12 +19,12 @@ Expected residuals:
 
 ## 2026-07-11 full intro runtime ownership and field correction
 
-- `IntroScreenRuntime` is now the exact `0x25218`-byte root owner at
+- `Logo` is now the exact `0x25218`-byte root owner at
   `GameRoot +0x4f400`: a `0x18`-byte state header, 1024 `0x90`-byte crawl
-  renderables, and 32 `0x90`-byte logo renderables. The second bank begins at
+  LogoLetters, and 32 `0x90`-byte image donors. The second bank begins at
   receiver `+0x24018`, and the complete object ends exactly at
   `SubgameRuntime +0x74618`.
-- `IntroLogoRenderable` is shared across its exact constructor, pinned updater,
+- `LogoLetter` is shared across its exact constructor, pinned updater,
   intro initializer, teardown, constructor loop, and logo loader. It owns the
   inherited `RenderableBod` through `+0x77`, velocity at `+0x80`, and the
   glyph/image marker at `+0x8c`.
@@ -56,7 +56,7 @@ authored image/glyph setup and stack-local scheduling, not unknown slot offsets.
   `BodBase` array.
 - Image records do not index `logo_renderables` by the total crawl-renderable
   count. Native seeds a separate cursor at the first logo-bank Object lane and
-  advances it by one `0x90`-byte `IntroLogoRenderable` only after an image.
+  advances it by one `0x90`-byte `LogoLetter` only after an image.
   Glyph records leave that donor cursor untouched.
 - Image and glyph setup are separately authored in native code. Expanding the
   old shared helper recovers their different ordering: images bind their
@@ -78,3 +78,20 @@ prefix 88/521, and 66 clean masked operands with no unresolved or mismatched
 names. The remaining delta is dominated by three compiler instructions and
 stack-slot choices for the image dimensions, loop bound, and temporary vectors;
 those are left visible rather than forced with dummy locals or aliasing tricks.
+
+## 2026-07-12 authored cRLogo correction
+
+- The symbol-bearing iOS body identifies this exact filename-taking lifecycle
+  method as `cRLogo::Init(char*)`, not `cRIntro::Init()`. It independently
+  performs the same IntroText music, SpaceRed backdrop, star unhide, Text
+  Start/Text End parse, glyph/image construction, Duration pass, and final
+  `RShellMemoryFree`. The no-argument `cRIntro::Init()` body instead constructs
+  an unrelated border-heavy intro screen.
+- The root owner is therefore promoted to `Logo`, with 0x90-byte `LogoLetter`
+  entries and a compatibility alias for the earlier synthetic type name. The
+  Windows layout remains locally proven; mobile uses different BOD prefixes,
+  row counts, and field offsets.
+- `RShellMemoryFree(void*)` is void, and both Windows callsites discard EAX.
+  `initialize_intro_screen` now has the real void member contract and ends with
+  a plain free call. Focused Wibo remains honestly unchanged at 88.23%,
+  524/521, with 66 clean operands.

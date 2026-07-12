@@ -27,3 +27,10 @@ Rejected same-family probes:
 - `destroy_sub_lazer_projectile` was rechecked at `91.19%`; its documented
   residual is the fringe-loop active-flag reload/register-allocation tradeoff,
   so this goto-tail insight should not be transplanted there.
+
+2026-07-12 authored-owner correction: iOS v1.9 preserves this lifecycle edge
+as `cRLogo::UnInit()`, and the v1.5 `cRLogo::AI()` body inlines the same
+active-letter list teardown. Windows factors it into this exact 61/61 helper.
+Its count-shaped EAX value is retained in the Windows declaration because the
+mobile symbol does not encode return type; every known Windows caller discards
+it.

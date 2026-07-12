@@ -164,14 +164,14 @@ __forceinline GameRootAllocation::GameRootAllocation()
         root->root_bod_4f3c8.initialize_bod_base();
 
         initialize_array_with_constructor(
-            (RuntimeSlot*)&root->intro_screen.renderables[0],
-            sizeof(IntroLogoRenderable),
-            INTRO_SCREEN_RENDERABLE_COUNT,
+            (RuntimeSlot*)&root->logo.letters[0],
+            sizeof(LogoLetter),
+            LOGO_LETTER_CAPACITY,
             &RuntimeSlot::initialize_intro_logo_renderable);
         initialize_array_with_constructor(
-            (RuntimeSlot*)&root->intro_screen.logo_renderables[0],
-            sizeof(IntroLogoRenderable),
-            INTRO_SCREEN_LOGO_RENDERABLE_COUNT,
+            (RuntimeSlot*)&root->logo.image_donors[0],
+            sizeof(LogoLetter),
+            LOGO_IMAGE_DONOR_CAPACITY,
             &RuntimeSlot::initialize_intro_logo_renderable);
 
         root->subgame.initialize_runtime_pools_and_path_template_bank();

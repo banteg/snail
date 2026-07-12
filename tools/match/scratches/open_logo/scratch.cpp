@@ -13,10 +13,10 @@ void enumerate_matching_archive_or_fs_entries(
     char* out_names); // @ 0x431740
 int sprintf(char* buffer, char* format, ...);
 
-int IntroScreenRuntime::open_logo()
+int Logo::open_logo()
 {
-    IntroLogoRenderable* slot = &logo_renderables[0];
-    int logo_count = INTRO_SCREEN_LOGO_RENDERABLE_COUNT;
+    LogoLetter* slot = &image_donors[0];
+    int logo_count = LOGO_IMAGE_DONOR_CAPACITY;
     do {
         slot->set_bod_object(g_object_list.add_object_to_list());
         Object* object = slot->object;

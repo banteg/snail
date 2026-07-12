@@ -5,7 +5,7 @@ matching `Intro/*.tga`.
 
 Recovered layout:
 
-- `this + 0x24018`: first `IntroLogoRenderable`;
+- `this + 0x24018`: first image-donor `LogoLetter`;
 - logo renderable stride: `0x90`;
 - each slot is a `RenderableBod` followed by 0x18 bytes of intro-logo runtime
   state, matching the existing intro logo update scratch;
@@ -48,11 +48,11 @@ two-register source shape.
 Every object-field primary cursor still falls to 69.35% with the three-register
 frame. Keep the BOD-slot source at 90.00%.
 
-## 2026-07-11 intro owner closure
+## 2026-07-11 owner closure
 
 The constructor, exact intro update/teardown helpers, and corrected initializer
 now close the reusable owner that the earlier method-only view could not:
-`IntroScreenRuntime` begins at root `+0x4f400`, owns 1024 crawl renderables at
+The owner begins at root `+0x4f400`, owns 1024 crawl renderables at
 `+0x18`, then the 32 logo renderables used here at `+0x24018`, and ends exactly
 at root `+0x74618`. `open_logo` is therefore a method on that shared owner and
 the standalone `logo_runtime.h` view is retired. Focused Wibo remains 90.00%,
@@ -61,7 +61,7 @@ BOD-base cursor register shape remains.
 
 ## 2026-07-12 typed donor-bank cleanup
 
-The retained cursor is now an `IntroLogoRenderable*`, advances with `++slot`,
+The retained cursor is now a `LogoLetter*`, advances with `++slot`,
 and reads `slot->object` directly. The old `BodBase*` plus raw `+0x24` and
 `+0x90` arithmetic is no longer needed once the full donor-bank owner is
 available. Texture registration likewise uses `TEXTURE_REF_REGISTERED`.
@@ -69,3 +69,11 @@ These ownership cleanups are codegen-neutral at 90.00%, 60/60, prefix 4/60,
 with all 13 masked operands clean. Native still biases its cursor to the
 `object` member lane; the typed source keeps the record base and leaves that
 honest four-instruction representation residual visible.
+
+## 2026-07-12 cRLogo ownership
+
+Symbol-preserving iOS builds name this lifecycle edge `cRLogo::Open()`. The
+mobile port initializes 100 cRLogoRows, while Windows initializes 32 fixed
+0x90-byte image donors, so only the owner and role are shared across ports; the
+Windows bank size and layout remain target-local facts. Focused Wibo remains
+90.00%, 60/60, with all 13 operands clean.

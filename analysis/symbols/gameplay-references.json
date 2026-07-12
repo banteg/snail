@@ -1763,13 +1763,14 @@
     },
     {
       "address": "0x497310",
-      "name": "g_intro_logo_renderable_vtable",
+      "name": "g_logo_letter_vtable",
       "kind": "vtable",
       "aliases": [
+        "g_intro_logo_renderable_vtable",
         "off_497310",
         "data_497310"
       ],
-      "description": "Intro/credits and logo renderable callback table installed by initialize_intro_logo_renderable; first entry is `update_intro_logo_renderable`."
+      "description": "Windows LogoLetter callback table installed by initialize_intro_logo_renderable; first entry is the exact `cRLogoLetter::AI()` body retained as `update_intro_logo_renderable`."
     },
     {
       "address": "0x497314",

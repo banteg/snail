@@ -2199,6 +2199,46 @@
       "notes": "The exact Windows AI member advances and renders the global loading bar through the same owner exported as gLoadingBar on mobile."
     },
     {
+      "address": "0x419110",
+      "windows_name": "open_logo",
+      "ios_symbol": "cRLogo::Open()",
+      "source_object": "Logo.o",
+      "confidence": "high",
+      "notes": "Both initialize the cRLogo-owned row or image-object bank before any text script is opened. Windows keeps 32 fixed 0x90-byte image donors; iOS v1.5 initializes 100 port-specific cRLogoRows."
+    },
+    {
+      "address": "0x4191e0",
+      "windows_name": "initialize_intro_screen",
+      "ios_symbol": "cRLogo::Init(char*)",
+      "source_object": "Logo.o",
+      "confidence": "high",
+      "notes": "The symbol-bearing ARM body independently performs the same fade, IntroText music, SpaceRed backdrop, star unhide, script load, Text Start/Text End parse, glyph and image construction, Duration velocity assignment, and final RShellMemoryFree. The no-argument cRIntro::Init is a distinct border-heavy screen and was the previous incorrect mapping."
+    },
+    {
+      "address": "0x419920",
+      "windows_name": "destroy_intro_screen",
+      "ios_symbol": "cRLogo::UnInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "iOS v1.9 preserves the authored UnInit symbol; the v1.5 cRLogo::AI body inlines the same active-letter list teardown visible in the exact Windows helper."
+    },
+    {
+      "address": "0x4199e0",
+      "windows_name": "update_intro_screen",
+      "ios_symbol": "cRLogo::AI()",
+      "source_object": "Logo.o",
+      "confidence": "high",
+      "notes": "Both handle skip input, fade completion, normalized crawl progress, and cRLogo-owned letter teardown. The Windows body factors UnInit into destroy_intro_screen."
+    },
+    {
+      "address": "0x419a90",
+      "windows_name": "update_intro_logo_renderable",
+      "ios_symbol": "cRLogoLetter::AI()",
+      "source_object": "Logo.o",
+      "confidence": "high",
+      "notes": "The exact Windows 0x90-byte record and the port-specific cRLogoLetter both integrate velocity, fade alpha across the same z window, dirty the borrowed object, and toggle visibility. Mobile cRLogoRow::AI retains the same update body for its row records."
+    },
+    {
       "address": "0x419f50",
       "windows_name": "initialize_duplicate_vertices",
       "ios_symbol": "cRDuplicateVertices::Init(int)",

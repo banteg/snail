@@ -7,7 +7,7 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-int IntroScreenRuntime::destroy_intro_screen()
+int Logo::destroy_intro_screen()
 {
     g_runtime_config.render_flags = saved_render_flags;
 
@@ -20,7 +20,7 @@ int IntroScreenRuntime::destroy_intro_screen()
     int result = renderable_count;
     int index = 0;
     if (result > 0) {
-        BodNode** next_ref = &renderables[0].list_next;
+        BodNode** next_ref = &letters[0].list_next;
         do {
             unsigned int* flags_ref = (unsigned int*)((char*)next_ref - 8);
             unsigned int flags = *flags_ref;
@@ -57,7 +57,7 @@ int IntroScreenRuntime::destroy_intro_screen()
 next_renderable:
             result = renderable_count;
             ++index;
-            next_ref = (BodNode**)((char*)next_ref + sizeof(IntroLogoRenderable));
+            next_ref = (BodNode**)((char*)next_ref + sizeof(LogoLetter));
         } while (index < result);
     }
     return result;

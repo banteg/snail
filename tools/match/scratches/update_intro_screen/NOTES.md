@@ -17,3 +17,9 @@ target: 51 insns, candidate: 51 insns
 prefix: 51/51 target insns
 masked operands: 11 ok, 0 unresolved, 0 mismatch
 ```
+
+2026-07-12 authored-owner correction: the symbol-bearing ARM body is
+`cRLogo::AI()`, with the same skip input, fade state, normalized crawl, and
+active-letter teardown. The old cRIntro association was false; cRIntro::AI is
+a separate border-driven screen. Promoting the receiver to `Logo` preserves the
+exact 51/51 Windows body and all 11 clean operands.
