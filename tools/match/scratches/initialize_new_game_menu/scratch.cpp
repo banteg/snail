@@ -1,7 +1,7 @@
 // initialize_new_game_menu @ 0x417bc0 (thiscall)
 
 #include "backdrop.h"
-#include "border_runtime.h"
+#include "border_manager.h"
 #include "game_root.h"
 #include "landscape_manager.h"
 
@@ -37,7 +37,7 @@ void NewGameMenu::initialize_new_game_menu()
             &((LandscapeManager*)(g_game_base + 0x106c218))
                 ->scripts[script_index],
             0);
-    ((BorderRuntime*)(g_game_base + 0xb4c))
+    ((BorderManager*)(g_game_base + 0xb4c))
         ->set_border_justify_centre(0x41c80000);
     ((GameRoot*)g_game_base)->render_skip_countdown = 2;
 

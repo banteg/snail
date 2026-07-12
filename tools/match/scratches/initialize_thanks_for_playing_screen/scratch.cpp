@@ -2,7 +2,6 @@
 
 #include "backdrop.h"
 #include "border_manager.h"
-#include "border_runtime.h"
 #include "frontend_widget.h"
 #include "landscape_manager.h"
 #include "sprite.h"
@@ -33,7 +32,7 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
             &((LandscapeManager*)(g_game_base + 0x106c218))
                 ->scripts[script_index],
             0);
-    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
     message_widget = ((ThanksBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     message_widget->initialize_frontend_widget(

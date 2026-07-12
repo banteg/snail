@@ -1,7 +1,7 @@
 // initialize_help_screen @ 0x416800 (thiscall)
 
 #include "backdrop.h"
-#include "border_runtime.h"
+#include "border_manager.h"
 #include "help.h"
 #include "landscape_manager.h"
 
@@ -31,7 +31,7 @@ void Help::initialize_help_screen()
             &((LandscapeManager*)(g_game_base + 0x106c218))
                 ->scripts[script_index],
             0);
-    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
     back_button = ((HelpBorderManager*)(g_game_base + 0xb4c))->allocate_border();
     back_button->initialize_frontend_widget(

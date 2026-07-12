@@ -1,5 +1,6 @@
 // draw_frontend_widget @ 0x401130 (thiscall)
 
+#include "border_manager.h"
 #include "font_system.h"
 #include "frontend_widget.h"
 #include "runtime_config.h"
@@ -90,9 +91,11 @@ void FrontendWidget::draw_frontend_widget()
 
     if (*(unsigned char*)(self + 0x5c) != 0) {
         float wobble = 0.0f;
-        if (*(unsigned char*)(g_game_base + 0x440ec) != 0
-            && this == *(FrontendWidget**)(g_game_base + 0x440f8)) {
-            wobble = sine(*(float*)(g_game_base + 0x440f0) * 3.1415927f) * 3.0f;
+        if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active != 0
+            && this == ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget) {
+            wobble = sine(
+                ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_progress
+                * 3.1415927f) * 3.0f;
             if (*(unsigned char*)(self + 0x5d) == 0)
                 wobble = wobble * -1.0f;
         }
@@ -206,11 +209,18 @@ void FrontendWidget::draw_frontend_widget()
     queue_axis_aligned_textured_quad_uv(texture, x, bottom, width, edge, 0x1000000, color, u0, u1, u1, 1.0f, glow_layer, 0);
     queue_axis_aligned_textured_quad_uv(texture, right, bottom, edge, edge, 0x1000000, color, u1, u1, 1.0f, 1.0f, glow_layer, 0);
 
-    if (*(unsigned char*)(g_game_base + 0x440ec) != 0
-        && this == *(FrontendWidget**)(g_game_base + 0x440f8)) {
+    if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active != 0
+        && this == ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget) {
         white.set_color_white();
-        glow_color.store_color4f(white.r, white.g, white.b, 1.0f - *(float*)(g_game_base + 0x440f0));
-        float glow_edge = (*(float*)(g_game_base + 0x440f0) * 0.69999999f + 1.0f) * edge;
+        glow_color.store_color4f(
+            white.r,
+            white.g,
+            white.b,
+            1.0f - ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_progress);
+        float glow_edge =
+            (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_progress
+                * 0.69999999f
+             + 1.0f) * edge;
         queue_axis_aligned_textured_quad_uv(99, x - glow_edge, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, 0.0f, 0.0f, u0, u0, 3, 0);
         queue_axis_aligned_textured_quad_uv(99, x, y - glow_edge, width, glow_edge, 0x1000000, &glow_color, u0, 0.0f, u1, u0, 3, 0);
         queue_axis_aligned_textured_quad_uv(99, right, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, u1, 0.0f, 1.0f, u0, 3, 0);

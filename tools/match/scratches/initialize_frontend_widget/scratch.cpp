@@ -146,7 +146,8 @@ int FrontendWidget::initialize_frontend_widget(
     *(int*)(self + 0x25c) = alignment;
     *(float*)(self + 0x260) = anchor_x;
     *(int*)(self + 0x264) = 1;
-    *(float*)(self + 0x260) = anchor_x + *(float*)(g_game_base + 0x440fc);
+    *(float*)(self + 0x260) =
+        anchor_x + ((BorderManager*)(g_game_base + 0xb4c))->justify_centre;
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
         float slider_y = y + 40.0f;
@@ -155,7 +156,7 @@ int FrontendWidget::initialize_frontend_widget(
         more->initialize_frontend_sprite_button(
             (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
             42,
-            *(float*)(g_game_base + 0x440fc) + 458.0f,
+            ((BorderManager*)(g_game_base + 0xb4c))->justify_centre + 458.0f,
             slider_y,
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
@@ -167,7 +168,7 @@ int FrontendWidget::initialize_frontend_widget(
         less->initialize_frontend_sprite_button(
             (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
             38,
-            *(float*)(g_game_base + 0x440fc) + 118.0f,
+            ((BorderManager*)(g_game_base + 0xb4c))->justify_centre + 118.0f,
             slider_y,
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,

@@ -1,6 +1,6 @@
 // update_intro_screen @ 0x4199e0 (thiscall)
 
-#include "border_delay_lane.h"
+#include "frontend_fade.h"
 #include "intro_screen_runtime.h"
 
 extern char* g_game_base; // data_4df904

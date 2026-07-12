@@ -48,3 +48,9 @@ named `initialize_frontend_widget_type_jump_table` with candidate alias
 `$L1110`. The focused matcher remains `62.18%`; masked audit is now `32 ok / 0
 unresolved / 1 mismatch`, classifying the style-preset switch as table-layout
 debt rather than an unknown relocation.
+
+2026-07-12 border-tail ownership pass: the main anchor and both slider-child
+anchors read the final `BorderManager::justify_centre` float at manager
+`+0x435b0`, agreeing with the exact sprite initializer and exact raw-bit
+mutator. This is codegen-neutral at the current `62.41%`, `433/429` result
+with `32 ok / 1 mismatch`.

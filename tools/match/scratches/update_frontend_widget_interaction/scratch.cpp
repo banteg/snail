@@ -33,8 +33,6 @@ float* layout_and_queue_wrapped_font_text(
     char measure_only,
     char pulse_alpha);
 
-void queue_frontend_widget_flag_after_delay(void* manager, FrontendWidget* widget, int flag);
-
 static void unlink_frontend_widget(FrontendWidget* widget)
 {
     char* self = (char*)widget;
@@ -158,7 +156,8 @@ void FrontendWidget::update_frontend_widget_interaction()
         if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0)
             *(unsigned int*)(self + 0x1a0) |= 0x20;
         else
-            queue_frontend_widget_flag_after_delay(g_game_base + 0xb4c, this, 0x20);
+            ((BorderManager*)(g_game_base + 0xb4c))
+                ->queue_frontend_widget_flag_after_delay(this, 0x20);
     }
 
     if (((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured() == 0
@@ -190,18 +189,21 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x10) != 0) {
         char* input = *(char**)(g_game_base + 0x28c);
-        if (*(unsigned char*)(g_game_base + 0x440ec) != 0 || (input[0x3d] & 0x40) == 0) {
+        if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active != 0
+            || (input[0x3d] & 0x40) == 0) {
             if (((*(unsigned int*)(self + 0x1a0) & 0x40) != 0) && input[0x3d] < 0) {
                 if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0)
                     *(unsigned int*)(self + 0x1a0) |= 0x80;
                 else
-                    queue_frontend_widget_flag_after_delay(g_game_base + 0xb4c, this, 0x80);
+                    ((BorderManager*)(g_game_base + 0xb4c))
+                        ->queue_frontend_widget_flag_after_delay(this, 0x80);
                 play_sound_effect(8);
                 ((TooltipState*)(self + 0x28c))->reset_tooltip();
             } else if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0) {
                 *(unsigned int*)(self + 0x1a0) |= 0x20;
             } else {
-                queue_frontend_widget_flag_after_delay(g_game_base + 0xb4c, this, 0x20);
+                ((BorderManager*)(g_game_base + 0xb4c))
+                    ->queue_frontend_widget_flag_after_delay(this, 0x20);
                 if ((*(unsigned int*)(self + 0x1a0) & 0x800000) == 0)
                     play_sound_effect(8);
                 if ((((TooltipState*)(self + 0x28c))->reset_tooltip(), (*(unsigned int*)(self + 0x290) & 0x20) == 0))

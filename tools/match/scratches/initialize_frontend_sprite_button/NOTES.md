@@ -35,3 +35,8 @@ instructions, `157/157` prefix, and `10 ok` masked operands:
 Rejected source-order sweeps that moved unrelated pre-`unhide_border_init`
 stores could reach `99.36%`, but the exact alias explains the remaining `ebp`
 lifetime without disturbing the native initializer order.
+
+2026-07-12 border-tail ownership pass: the anchor adjustment reads the final
+`BorderManager::justify_centre` float at manager `+0x435b0` instead of raw
+root `+0x440fc`. The typed owner preserves the exact `157/157` result and all
+10 clean operands.

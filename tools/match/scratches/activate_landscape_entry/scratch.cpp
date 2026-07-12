@@ -3,7 +3,7 @@
 
 #include "landscape_manager.h"
 #include "backdrop.h"
-#include "border_runtime.h"
+#include "border_manager.h"
 #include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
@@ -73,7 +73,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
     ((Backdrop*)(g_game_base + 0x4ec10))->change_backdrop(
         &scripts[script_index],
         flip);
-    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
 
     Color4f* source = &scripts[script_index].fog_color;
     Color4f* destination = (Color4f*)(g_game_base + 0x14);

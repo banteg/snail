@@ -1,5 +1,6 @@
 // initialize_frontend_sprite_button @ 0x401a70 (thiscall, ret 0x1c)
 
+#include "border_manager.h"
 #include "frontend_widget.h"
 
 extern char* g_game_base; // data_4df904
@@ -77,7 +78,8 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(int*)(self + 0x228) = 0;
     *(int*)(self + 0x25c) = 0;
     *(float*)(self + 0x260) = anchor_x;
-    float adjusted_anchor_x = anchor_x + *(float*)(g_game_base + 0x440fc);
+    float adjusted_anchor_x =
+        anchor_x + ((BorderManager*)(g_game_base + 0xb4c))->justify_centre;
     *(float*)(self + 0x238) = x;
     *(float*)(self + 0x23c) = y;
     *(float*)(self + 0x260) = adjusted_anchor_x;

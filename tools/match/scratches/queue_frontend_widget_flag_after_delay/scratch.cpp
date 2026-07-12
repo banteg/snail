@@ -1,10 +1,11 @@
 // queue_frontend_widget_flag_after_delay @ 0x403f60 (thiscall, ret 0x8)
 
-#include "border_delay_lane.h"
+#include "border_manager.h"
+#include "frontend_fade.h"
 
 extern char* g_game_base; // data_4df904
 
-char BorderDelayLane::queue_frontend_widget_flag_after_delay(
+char BorderManager::queue_frontend_widget_flag_after_delay(
     FrontendWidget* widget, int queued_flags)
 {
     char result = delayed_widget_active;

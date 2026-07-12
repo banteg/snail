@@ -1,6 +1,6 @@
 // update_frontend_transition_overlay @ 0x40abf0 (thiscall, ret)
 
-#include "border_delay_lane.h"
+#include "frontend_fade.h"
 #include "font_system.h"
 
 void FrontendFade::update_frontend_transition_overlay()

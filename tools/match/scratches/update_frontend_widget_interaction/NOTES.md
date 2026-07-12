@@ -62,3 +62,12 @@ an extra saved `ebx`; a macro-based teardown expansion similarly regressed to
 `cRBorder::MouseTest()` owner recovered by the adjacent scratch. This is an ABI
 clarification only: the focused result remains `52.85%`, `579/647`
 candidate/target instructions, prefix `42/647`, and `65 ok / 4 mismatch`.
+
+2026-07-12 border-manager tail and ABI recovery: the global interaction gate
+at root `+0x440ec` is `BorderManager::delayed_widget_active`, not unowned root
+padding. More importantly, all three delayed-click sites now call the proven
+`BorderManager::queue_frontend_widget_flag_after_delay` `thiscall` instead of
+a false free three-argument helper. This removes seven candidate instructions,
+raises the focused match from `52.85%` to `55.29%` (`572/647`), and improves
+the masked audit from `65 ok / 4 mismatch` to `70 ok / 3 mismatch` while
+retaining the 42-instruction prefix.

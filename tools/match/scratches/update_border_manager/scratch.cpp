@@ -1,10 +1,11 @@
 // update_border_manager @ 0x403fc0 (thiscall)
 
-#include "border_delay_lane.h"
+#include "border_manager.h"
+#include "frontend_fade.h"
 
 extern char* g_game_base; // data_4df904
 
-void BorderDelayLane::update_border_manager()
+void BorderManager::update_border_manager()
 {
     if (delayed_widget_active != 0) {
         float progress = delayed_widget_progress_step + delayed_widget_progress;

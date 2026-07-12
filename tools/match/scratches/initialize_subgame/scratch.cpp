@@ -2,7 +2,6 @@
 
 #include "backdrop.h"
 #include "border_manager.h"
-#include "border_runtime.h"
 #include "gui.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
@@ -54,7 +53,7 @@ void SubgameRuntime::initialize_subgame()
                 &((LandscapeManager*)(g_game_base + 0x106c218))
                     ->scripts[script_index],
                 0);
-        ((BorderRuntime*)(g_game_base + 0xb4c))
+        ((BorderManager*)(g_game_base + 0xb4c))
             ->set_border_justify_centre(0x41c80000);
     }
 

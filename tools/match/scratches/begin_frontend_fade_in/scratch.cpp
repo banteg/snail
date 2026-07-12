@@ -1,6 +1,6 @@
 // begin_frontend_fade_in @ 0x40abe0 (thiscall, ret)
 
-#include "border_delay_lane.h"
+#include "frontend_fade.h"
 
 void FrontendFade::begin_frontend_fade_in()
 {

@@ -28,3 +28,9 @@ Expected residuals:
   `height -= 6.0f` order. The remaining constructor call mismatch is tied to
   stack-slot/register ownership in the incomplete tail, not a reason to remove
   the explicit local constructors.
+
+2026-07-12 border-tail ownership pass: the transition gate, target widget, and
+progress at root `+0x440ec/+0x440f8/+0x440f0` are now typed as the embedded
+`BorderManager` delayed-widget lane at manager
+`+0x435a0/+0x435ac/+0x435a4`. The typed owner is codegen-neutral and preserves
+`40.34%`, `686/712`, and `46 ok / 2 mismatch`.

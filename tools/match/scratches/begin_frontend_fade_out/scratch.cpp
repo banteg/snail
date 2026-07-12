@@ -1,6 +1,6 @@
 // begin_frontend_fade_out @ 0x40abc0 (thiscall, ret 0x4)
 
-#include "border_delay_lane.h"
+#include "frontend_fade.h"
 
 int FrontendFade::begin_frontend_fade_out(int hold_state_)
 {

@@ -8,3 +8,8 @@ the frontend fade bit or the shared fade state at `g_game_base + 0x24` has
 reached state `4`.
 
 Focused match: 100%, 28/28 instructions, with two clean masked operands.
+
+2026-07-12 ownership closure: the former sparse delayed-lane view is absorbed
+into `BorderManager`. This exact member and its exact arming helper jointly
+prove the post-pool tail through `+0x435af`; the following center-justify
+scalar closes the manager at `+0x435b4`.

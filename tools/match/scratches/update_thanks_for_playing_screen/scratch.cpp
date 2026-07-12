@@ -1,7 +1,7 @@
 // update_thanks_for_playing_screen @ 0x4340f0 (thiscall)
 
 #include "audio_system.h"
-#include "border_delay_lane.h"
+#include "frontend_fade.h"
 #include "thanks_screen.h"
 
 extern char* g_game_base; // data_4df904

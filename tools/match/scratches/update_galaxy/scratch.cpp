@@ -270,7 +270,7 @@ int Galaxy::update_galaxy()
         }
     }
 
-    if (*(unsigned char*)(g_game_base + 0x440ec) != 0)
+    if (((GameRoot*)g_game_base)->border_manager.delayed_widget_active != 0)
         return 0;
 
     unsigned int flags = exit_or_back_widget->widget_flags;

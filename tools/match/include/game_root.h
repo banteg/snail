@@ -99,8 +99,9 @@ public:
     Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport slot 2
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
     char unknown_000a60[0xb4c - 0xa60];
-    BorderManager border_manager; // +0xb4c, owned frontend border pool
-    char unknown_0440e8[0x44100 - 0x440e8];
+    // Exact cRBorder manager: the 150-record pool is followed by its delayed
+    // transition lane and center-justify scalar, ending at the root BOD bank.
+    BorderManager border_manager; // +0xb4c, ends exactly at +0x44100
     BodBase root_bods[GAME_ROOT_BOD_COUNT]; // +0x44100, fixed cRBod array
     DirectXLoader directx_loader; // +0x48e00, owns 128 cached X-mesh slots
     Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer

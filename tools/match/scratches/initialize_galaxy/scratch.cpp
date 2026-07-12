@@ -1,7 +1,7 @@
 // initialize_galaxy @ 0x408cf0 (thiscall)
 
 #include "backdrop.h"
-#include "border_runtime.h"
+#include "border_manager.h"
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
@@ -37,7 +37,7 @@ FrontendWidget* Galaxy::initialize_galaxy()
                 ->scripts[landscape_index],
             0);
 
-    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
     ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
     *(int*)(g_game_base + 0x56c) = 2;
 

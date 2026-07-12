@@ -2,7 +2,7 @@
 
 #include "backdrop.h"
 #include "bod_types.h"
-#include "border_runtime.h"
+#include "border_manager.h"
 #include "font_system.h"
 #include "intro_screen_runtime.h"
 #include "landscape_manager.h"
@@ -65,7 +65,7 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
             &((LandscapeManager*)(g_game_base + 0x106c218))
                 ->scripts[script_index],
             0);
-    ((BorderRuntime*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
     ((StarManager*)(g_game_base + 0x4f33c))->unhide_star_field();
 
     char* file_bytes = load_file_bytes(file_name, 0);

@@ -45,13 +45,30 @@ public:
     int hide_all_borders(); // @ 0x4033f0
     int unhide_all_borders(); // @ 0x403400
     int kill_border(FrontendWidget* border);
+    char queue_frontend_widget_flag_after_delay(
+        FrontendWidget* widget, int queued_flags); // @ 0x403f60
+    void update_border_manager(); // @ 0x403fc0
+    int set_border_justify_centre(int justify_centre_bits); // @ 0x404730
 
     BorderBatchState batch_state; // +0x38
     char unknown_039[0x684 - 0x039];
     BorderRecord borders[150]; // +0x684
+    // One transition lane follows the fixed border pool. While active it
+    // gates front-end input and drives the target widget's wobble/glow until
+    // the queued flags are applied.
+    int delayed_widget_flags; // +0x4359c
+    unsigned char delayed_widget_active; // +0x435a0
+    char unknown_435a1[0x435a4 - 0x435a1];
+    float delayed_widget_progress; // +0x435a4
+    float delayed_widget_progress_step; // +0x435a8
+    FrontendWidget* delayed_widget; // +0x435ac, borrowed border handle
+    union {
+        int justify_centre_bits; // +0x435b0, mutator preserves raw float bits
+        float justify_centre; // +0x435b0, added to authored widget anchors
+    };
 };
 
-typedef char BorderManager_must_be_0x4359c[
-    (sizeof(BorderManager) == 0x4359c) ? 1 : -1];
+typedef char BorderManager_must_be_0x435b4[
+    (sizeof(BorderManager) == 0x435b4) ? 1 : -1];
 
 #endif
