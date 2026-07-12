@@ -67,11 +67,14 @@ semantic pre-scan branch.
 
 ## 2026-07-12 exact parser source recovery
 
-The float parser uses the same authored pre-scan shape as the already-exact
-signed-integer parser: a `while (**cursor != '-')` loop whose classifier byte
-comes from the scoped current pointer. Expressing the decimal body as a real
-`digit-or-dot` loop condition then preserves native's range checks and shared
-dot body instead of duplicating the decimal-point arm.
+The preserved iOS and Android symbol is `Rstrfloat(char**)`, and the Android
+body confirms the same sign/dot/digit scan, decimal accumulator, scale, and
+caller-owned cursor contract. The Windows parser uses the same authored
+pre-scan shape as the already-exact signed-integer parser: a
+`while (**cursor != '-')` loop whose classifier byte comes from the scoped
+current pointer. Expressing the decimal body as a real `digit-or-dot` loop
+condition then preserves native's range checks and shared dot body instead of
+duplicating the decimal-point arm.
 
 Within the digit arm, accumulating the parsed digit before advancing the
 caller-owned cursor recovers native's `eax` digit temporary while the current

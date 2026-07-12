@@ -99,3 +99,16 @@ match native's null-return-before-success layout. Focused Wibo improves to
 same four clean masked operands. A scoped searched-byte/needle-byte tail local
 regressed to 73.33% by losing the pre-save haystack-byte load and spilling the
 searched byte, so keep the direct indexed reads.
+
+## 2026-07-12 authored RString provenance
+
+iOS names this `Rstrfind(char*, char*)` in `RString.o`; Android preserves both
+that symbol and a comparable body. Across all three builds the first argument
+is the pattern, the second is the searched string, compared bytes pass through
+`RstrASC`, and success returns a cursor into the second argument.
+
+The direct Android/IDA-style post-increment inner loop was retested against the
+Windows compiler and regressed to 39.39% by adding a stack temporary and
+changing saved-register ownership. The retained 85.25% Windows source remains
+the best honest representation; cross-port provenance clarifies ownership and
+argument roles without being used as a fakematch.

@@ -2020,6 +2020,24 @@
       "confidence": "high"
     },
     {
+      "address": "0x431dc0",
+      "windows_name": "strings_equal_case_insensitive",
+      "ios_symbol": "Rstrcmp(char*, char*)",
+      "android_symbol": "Rstrcmp(char*, char*)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "The Android body has the same ASCII fold and right-terminator success contract as Windows, including the prefix-friendly case where the right argument ends first."
+    },
+    {
+      "address": "0x431f20",
+      "windows_name": "parse_next_float32",
+      "ios_symbol": "Rstrfloat(char**)",
+      "android_symbol": "Rstrfloat(char**)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "All ports scan to a sign, dot, or digit, advance the caller-owned cursor, accumulate decimal digits and scale, and return a float; the recovered Windows source is instruction-exact."
+    },
+    {
       "address": "0x44c3b0",
       "windows_name": "is_mouse_captured",
       "ios_symbol": "cRMouse::IsActive()",
@@ -2157,6 +2175,51 @@
       "ios_symbol": "cRSpriteManager::GetTextureRef(int)",
       "source_object": "RSprite.o",
       "confidence": "high"
+    },
+    {
+      "address": "0x44e5a0",
+      "windows_name": "ascii_upper_if_lowercase",
+      "ios_symbol": "RstrASC(char)",
+      "android_symbol": "RstrASC(char)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper and mobile bodies fold only lowercase ASCII a through z by subtracting 32."
+    },
+    {
+      "address": "0x44e5b0",
+      "windows_name": "rstrcpy_checked_ascii",
+      "ios_symbol": "Rstrcpy(char*, char const*)",
+      "android_symbol": "Rstrcpy(char*, char const*)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "The exact Windows copy preserves the mobile NUL-terminated behavior and adds a Windows-only Dodgy Rstrcpy diagnostic for high-bit bytes."
+    },
+    {
+      "address": "0x44e600",
+      "windows_name": "find_case_insensitive_substring",
+      "ios_symbol": "Rstrfind(char*, char*)",
+      "android_symbol": "Rstrfind(char*, char*)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "The ARM and x86 bodies both treat the first argument as the pattern, scan the second argument, fold compared bytes through RstrASC, and return a cursor into the searched string."
+    },
+    {
+      "address": "0x44e690",
+      "windows_name": "advance_to_next_crlf_line",
+      "ios_symbol": "Rstrnewline(char*)",
+      "android_symbol": "Rstrnewline(char*)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "The exact Windows and mobile helpers return the byte after the next CRLF pair only when a non-NUL byte follows it."
+    },
+    {
+      "address": "0x44e710",
+      "windows_name": "parse_next_signed_int",
+      "ios_symbol": "Rstrint(char**)",
+      "android_symbol": "Rstrint(char**)",
+      "source_object": "RString.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper and mobile body scan to the next numeric token, consume an optional minus, accumulate decimal digits, and update the caller-owned cursor."
     },
     {
       "address": "0x44e900",

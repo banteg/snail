@@ -1641,7 +1641,7 @@
     {
       "address": "0x431dc0",
       "name": "strings_equal_case_insensitive",
-      "description": "Compares two strings case-insensitively and returns true when the right-hand string terminates after matching, making it a prefix-friendly tag/path comparator."
+      "description": "Windows `Rstrcmp(char*, char*)`: compares two strings case-insensitively and returns true when the right-hand string terminates after matching, preserving the prefix-friendly termination contract also present in Android and iOS `RString.o`."
     },
     {
       "address": "0x431e30",
@@ -1666,7 +1666,7 @@
     {
       "address": "0x431f20",
       "name": "parse_next_float32",
-      "description": "Parses the next signed decimal float from the caller-owned text cursor, consuming digits and one decimal point before returning the float32 value."
+      "description": "Exact Windows `Rstrfloat(char**)`: advances the caller-owned cursor to a signed decimal token, consumes digits and one decimal point, and returns the parsed float32 value."
     },
     {
       "address": "0x431fd0",
@@ -3412,22 +3412,23 @@
     },
     {
       "address": "0x44e5a0",
-      "name": "ascii_upper_if_lowercase"
+      "name": "ascii_upper_if_lowercase",
+      "description": "Exact Windows `RstrASC(char)`: folds one lowercase ASCII byte to uppercase and leaves all other byte values unchanged."
     },
     {
       "address": "0x44e5b0",
       "name": "rstrcpy_checked_ascii",
-      "description": "Copies a null-terminated resource string to a destination buffer while reporting high-bit bytes through the engine's `Dodgy Rstrcpy` diagnostic. This helper is hot across path, text, and script setup code."
+      "description": "Exact Windows `Rstrcpy(char*, char const*)`: copies a null-terminated resource string while the Windows build additionally reports high-bit bytes through its `Dodgy Rstrcpy` diagnostic. This helper is hot across path, text, and script setup code."
     },
     {
       "address": "0x44e600",
       "name": "find_case_insensitive_substring",
-      "description": "Parser-side metadata matcher used for case-insensitive, prefix-friendly tag probes."
+      "description": "Windows `Rstrfind(char*, char*)`: scans the second argument for the first ASCII-case-insensitive match of the first argument and returns that searched-string cursor. Used for prefix-friendly parser metadata and tag probes."
     },
     {
       "address": "0x44e690",
       "name": "advance_to_next_crlf_line",
-      "description": "Resource-loader text helper that returns the first byte after the next CRLF pair, or null when there is no following non-empty line."
+      "description": "Exact Windows `Rstrnewline(char*)`: returns the first byte after the next CRLF pair, or null when there is no following non-empty line."
     },
     {
       "address": "0x44e6c0",
@@ -3437,7 +3438,7 @@
     {
       "address": "0x44e710",
       "name": "parse_next_signed_int",
-      "description": "Advances a text cursor to the next numeric token, parses an optional sign and decimal digits, and leaves the cursor after the consumed integer. Shared by shipped asset and level-script parsers."
+      "description": "Exact Windows `Rstrint(char**)`: advances a caller-owned text cursor to the next numeric token, parses an optional sign and decimal digits, and leaves the cursor after the consumed integer. Shared by shipped asset and level-script parsers."
     },
     {
       "address": "0x44e780",

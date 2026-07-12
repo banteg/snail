@@ -83,3 +83,15 @@ All raw-first source shapes still fall into the bad 31-43% codegen family with
 extra instructions or different fold arithmetic. `register` annotations are
 neutral at 84.00%. Keep the current folded-byte-first source despite the
 remaining `dl`/`bl` raw-lane ownership mismatch.
+
+## 2026-07-12 authored RString provenance
+
+iOS preserves this global as `Rstrcmp(char*, char*)` in `RString.o`, and the
+Android body independently confirms the same ASCII-only fold and asymmetric
+termination rule: matching succeeds when the right argument reaches NUL, even
+if the left argument continues. This rules out both CRT `stricmp` ownership and
+the later strict path comparator at `0x44e6c0`.
+
+The provenance does not explain Windows' remaining raw/fold byte-register
+allocation, so focused matching stays honestly pinned at 84.00%, 50/50
+instructions. No source change is made to chase that compiler-only residual.
