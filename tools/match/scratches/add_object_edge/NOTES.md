@@ -65,3 +65,10 @@ state regressed to 72.05%, and a direct native-shaped merge `goto` moved the
 merge block ahead of the add path and regressed to 57.02%. The honest residual
 is register/block allocation plus candidate's four extra instructions, not an
 unresolved edge-record owner or field.
+
+The iOS ARMv6 symbol `cRObject::AddEdge(int, int, int)` and all six Windows
+calls from `calc_object_edges` prove the receiver and three integer formals.
+No caller consumes a result. BN's old fourth `float*` argument was a stack
+recovery error, not a hidden vector input; the shared analysis slice now uses
+the source-shaped void Object method while leaving the 73.36% block-layout
+residual visible.

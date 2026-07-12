@@ -71,3 +71,13 @@ native's two-instruction load/add. The six compare/select bodies and the
 derived-radius update otherwise have the recovered field ownership and native
 extended-comparison behavior; no volatile qualifiers or synthetic locals were
 added to force the final schedule.
+
+## 2026-07-12 analysis ABI sync
+
+The Windows build loop calls this as an `Object` member and immediately
+continues to the next object without consuming EAX. The empty path leaves
+`vertex_count` in EAX while the populated path leaves the processed count, so
+the register cannot carry one stable authored result. The repeatable BN/IDA
+slice now records the proved `void __thiscall` owner instead of the stale
+free/fastcall integer transcription; focused matching remains honestly partial
+at 84.52%.

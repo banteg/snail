@@ -55,6 +55,26 @@ TRUSTED_DECLARATIONS = [
         "int __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int unused);",
     ),
     (
+        "calc_object_bounding_box",
+        "void __thiscall calc_object_bounding_box(Object* object);",
+    ),
+    (
+        "calc_object_facequad_normals",
+        "void __thiscall calc_object_facequad_normals(Object* object);",
+    ),
+    (
+        "calc_object_texture_groups",
+        "void __thiscall calc_object_texture_groups(Object* object);",
+    ),
+    (
+        "add_object_edge",
+        "void __thiscall add_object_edge(Object* object, int vertex_a, int vertex_b, int normal_index);",
+    ),
+    (
+        "calc_object_edges",
+        "void __thiscall calc_object_edges(Object* object);",
+    ),
+    (
         "load_object_definition",
         "int __cdecl load_object_definition(char* path, Object* object);",
     ),

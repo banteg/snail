@@ -39,3 +39,10 @@ instructions; the remaining `0x8` candidate frame versus native's one-dword
 frame comes from the cleanup loop spilling both index and byte offset. Pointer,
 register-hint, and cross-phase-index reuse probes did not recover that native
 allocation and were not retained.
+
+The local ARMv6 symbol table retains this method as `cRObject::CalcEdges()` in
+`RObject.o`, and the sole Windows build-loop caller discards EAX. The checked-in
+analysis headers and BN/IDA sync now correct the old `void __fastcall(char*)`
+transcription to a void Object thiscall. This clarifies ownership for the six
+`AddEdge` calls without claiming the remaining cleanup-loop frame mismatch is
+solved.

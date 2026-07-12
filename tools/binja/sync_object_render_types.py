@@ -135,6 +135,26 @@ PROTO_UPDATES = (
         "int32_t __thiscall clean_duplicate_vertices(DuplicateVertices* duplicate_vertices, int32_t unused)",
     ),
     (
+        "calc_object_bounding_box",
+        "void __thiscall calc_object_bounding_box(Object* object)",
+    ),
+    (
+        "calc_object_facequad_normals",
+        "void __thiscall calc_object_facequad_normals(Object* object)",
+    ),
+    (
+        "calc_object_texture_groups",
+        "void __thiscall calc_object_texture_groups(Object* object)",
+    ),
+    (
+        "add_object_edge",
+        "void __thiscall add_object_edge(Object* object, int32_t vertex_a, int32_t vertex_b, int32_t normal_index)",
+    ),
+    (
+        "calc_object_edges",
+        "void __thiscall calc_object_edges(Object* object)",
+    ),
+    (
         "create_object_vertex_buffer_resource",
         "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf)",
     ),

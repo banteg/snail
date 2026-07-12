@@ -85,3 +85,13 @@ still emits `[ecx+eax+0x0c]`. Spelling the same load as
 `*(TextureRef**)&quads[offset + 0x0c]` is also neutral. Keep the direct
 byte-offset member reload; the tested C spellings that preserve native's
 `mov eax, [esi+0x5c]` all leave the equivalent base/index encoding residual.
+
+## 2026-07-12 authored owner and void ABI
+
+The local symbol-bearing ARMv6 build retains
+`cRObject::CalcTextureGroups()` in `RObject.o`. Its shared epilogue is reached
+with `r0` still holding `this` on one path and an allocation result on another,
+so the register is demonstrably incidental rather than one stable return
+contract. Windows likewise has one build-loop caller which ignores EAX. The
+repeatable BN/IDA type slice now records `void __thiscall(Object*)`; the focused
+scratch remains at the honest 98.18% SIB-encoding residual.

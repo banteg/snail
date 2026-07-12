@@ -50,3 +50,10 @@ than the strength-reduced tally cursor for `ebp` in the final phase, and emits
 equivalent base/index ordering for repeated `facequads + face_offset` SIB
 operands. Explicit cursor, declaration-order, operand-order, and wider pointer
 lifetime probes did not recover that tie and were not retained.
+
+The iOS ARMv6 binary retains this owner as
+`cRObject::CalcFaceQuadNormals()` in `RObject.o`; both Windows callers discard
+EAX and consume the rebuilt normal arrays through the same `Object`. The
+analysis headers and repeatable BN/IDA sync now use the source-shaped void
+thiscall instead of a synthetic integer fastcall. This is an ownership/ABI
+correction only and does not hide the 90.03% stack-allocation residual.

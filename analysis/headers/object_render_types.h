@@ -250,6 +250,13 @@ void* __thiscall initialize_duplicate_vertices(
 int32_t __thiscall clean_duplicate_vertices(
     DuplicateVertices* duplicate_vertices, int32_t unused);
 
+void __thiscall calc_object_bounding_box(Object* object);
+void __thiscall calc_object_facequad_normals(Object* object);
+void __thiscall calc_object_texture_groups(Object* object);
+void __thiscall add_object_edge(
+    Object* object, int32_t vertex_a, int32_t vertex_b, int32_t normal_index);
+void __thiscall calc_object_edges(Object* object);
+
 void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int32_t flags);
