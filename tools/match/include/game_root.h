@@ -22,6 +22,7 @@
 #include "star_manager.h"
 #include "subgame_runtime.h"
 #include "tip_manager.h"
+#include "track_fringe_bod_catalog.h"
 #include "vector3.h"
 
 enum {
@@ -124,9 +125,18 @@ public:
     char initialize_game_assets_and_world(); // @ 0x40acf0
     void initialize_game_last();     // @ 0x410720
     void render_game_frame();        // @ 0x40a490, iOS cRGame::Render()
+    TrackFringeBodCatalog* track_fringe_bod_catalog();
 };
 
 typedef char GameRoot_must_be_0x12e6ff4[
     (sizeof(GameRoot) == 0x12e6ff4) ? 1 : -1];
+
+inline TrackFringeBodCatalog* GameRoot::track_fringe_bod_catalog()
+{
+    // The asset constructor proves entries 58..345 of the root BOD bank are
+    // the complete 8x4x3x3 track-fringe catalog.
+    return (TrackFringeBodCatalog*)
+        &root_bods[TRACK_FRINGE_BOD_CATALOG_ROOT_BOD_INDEX];
+}
 
 #endif

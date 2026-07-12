@@ -5,11 +5,13 @@
 #include "fringe_object.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
+#include "track_fringe_bod_catalog.h"
 
 extern char* g_game_base; // data_4df904
 
-#define FRINGE_BOD(base, family, edge_a, edge_b) \
-    (*(void**)(g_game_base + (base) + (((((family) * 12) + (edge_a)) * 3 + (edge_b)) * 0x38)))
+#define FRINGE_BOD(direction, family, edge_a, edge_b) \
+    (((TrackFringeBodCatalog*)(g_game_base + TRACK_FRINGE_BOD_CATALOG_GAME_OFFSET)) \
+            ->entries[family][direction][edge_a][edge_b].object)
 
 struct Vec3Bits {
     int x;
@@ -28,9 +30,8 @@ int SubgameRuntime::build_track_fringe_objects()
     int edge_a = 0;
     int row = 0;
     if (runtime_row_count > 0) {
-        TrackAttachmentRuntimeRow* row_record =
-            (TrackAttachmentRuntimeRow*)((char*)this + 0x5ccac8);
-        TrackRowCell* cell = (TrackRowCell*)((char*)this + 0x3bfac8);
+        TrackAttachmentRuntimeRow* row_record = runtime_rows;
+        TrackRowCell* cell = &runtime_cells[0][0];
         TrackAttachmentRuntimeRow* row_record_head = row_record;
 
         do {
@@ -77,7 +78,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_front = object;
-                        object->set_bod_object(FRINGE_BOD(0x44dd4, family, edge_a, edge_b));
+                        object->set_bod_object(
+                            FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
                         cell->fringe_front->list_flags |= 0x20;
                         cell->fringe_front->position = cell->anchor_position;
                         Color4f color0;
@@ -101,7 +103,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_right = object;
-                        object->set_bod_object(FRINGE_BOD(0x44fcc, family, edge_a, edge_b));
+                        object->set_bod_object(
+                            FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
                         cell->fringe_right->list_flags |= 0x20;
                         cell->fringe_right->position = cell->anchor_position;
                         Color4f color1;
@@ -125,7 +128,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_left = object;
-                        object->set_bod_object(FRINGE_BOD(0x451c4, family, edge_a, edge_b));
+                        object->set_bod_object(
+                            FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
                         cell->fringe_left->list_flags |= 0x20;
                         cell->fringe_left->position = cell->anchor_position;
                         Color4f color2;
@@ -149,7 +153,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             ((SubgameRuntime*)(g_game_base + 0x74618))
                                 ->fringe_manager.allocate_fringe_object();
                         cell->fringe_back = object;
-                        object->set_bod_object(FRINGE_BOD(0x453bc, family, edge_a, edge_b));
+                        object->set_bod_object(
+                            FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
                         cell->fringe_back->list_flags |= 0x20;
                         cell->fringe_back->position = cell->anchor_position;
                         Color4f color3;

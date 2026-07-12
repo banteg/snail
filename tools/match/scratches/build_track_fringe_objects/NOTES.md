@@ -149,3 +149,20 @@ that swap with volatile locals, register tricks, or raw-offset aliases.
 - The constructor loop now addresses `fringe_manager.objects` with
   `sizeof(Fringe)` and 7000 explicitly while staying exact at 227/227. This
   builder remains at its pinned 60.39%, 492/495, with 48 clean operands.
+
+## 2026-07-13 root fringe-BOD catalog ownership
+
+- The world asset constructor builds four nested dimensions at root
+  `+0x44db0`: 8 fringe families, 4 directions, and two 3-way edge variants.
+  All `8 * 4 * 3 * 3 = 288` records are complete `BodBase` values.
+- Each direction advances by nine BODs (`9 * 0x38 = 0x1f8`), proving why the
+  former object-field bases were `+0x44dd4`, `+0x44fcc`, `+0x451c4`, and
+  `+0x453bc`. The full catalog is exactly 0x3f00 bytes at root-BOD indices
+  58..345; six root BODs follow before `DirectXLoader`.
+- `build_track_fringe_objects` now selects
+  `TrackFringeBodCatalog::entries[family][direction][edge_a][edge_b].object`.
+  The allocated `Fringe` borrows that render object, while each SubLoc fringe
+  field separately borrows the allocated Fringe from `FringeManager`.
+- Runtime row/cell cursors now start from the owned `runtime_rows` and
+  `runtime_cells` arrays. These ownership substitutions preserve the honest
+  60.39%, 492/495-instruction result with all 48 operands clean.

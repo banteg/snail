@@ -175,9 +175,10 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   `0x38`-byte `BodBase` records from root `+0x44100`. The product is exactly
   `0x4d00`, so the array ends at the now-proven `DirectXLoader +0x48e00`
   boundary with no padding or overlap.
-- `GameRoot::root_bods[0x160]` now owns that interval. Individual indices stay
-  deliberately unnamed because the large startup function has not yet mapped
-  every authored world object back to an array slot.
+- `GameRoot::root_bods[0x160]` owns that interval. The world asset pass now
+  proves indices 58..345 are the contiguous 8x4x3x3
+  `TrackFringeBodCatalog`; the prefix and final six records stay deliberately
+  unnamed until their authored world-object roles are mapped.
 
 ## 2026-07-11 logo renderable-bank ownership
 
