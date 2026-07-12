@@ -40,3 +40,9 @@ lifetime without disturbing the native initializer order.
 `BorderManager::justify_centre` float at manager `+0x435b0` instead of raw
 root `+0x440fc`. The typed owner preserves the exact `157/157` result and all
 10 clean operands.
+
+2026-07-12 widget-transition lane: the two exact zero stores at
+`FrontendWidget +0x264/+0x268` initialize `teardown_progress` and
+`teardown_progress_step`. The updater advances that pair while flag `0x400` is
+set and recycles the widget after the progress exceeds one. Typing the fields
+preserves this initializer's exact 157/157 result.

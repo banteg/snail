@@ -145,7 +145,7 @@ int FrontendWidget::initialize_frontend_widget(
     *(float*)(self + 0x228) = 0.0f;
     *(int*)(self + 0x25c) = alignment;
     *(float*)(self + 0x260) = anchor_x;
-    *(int*)(self + 0x264) = 1;
+    mouse_history_warmup_frames = 1;
     *(float*)(self + 0x260) =
         anchor_x + ((BorderManager*)(g_game_base + 0xb4c))->justify_centre;
 

@@ -65,8 +65,8 @@ void FrontendWidget::update_frontend_widget_interaction()
     }
 
     if ((flags & 0x400) != 0) {
-        *(float*)(self + 0x6f0) = *(float*)(self + 0x6ec) + *(float*)(self + 0x6f0);
-        if (*(float*)(self + 0x6f0) > 1.0f) {
+        teardown_progress = teardown_progress_step + teardown_progress;
+        if (teardown_progress > 1.0f) {
             ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
             ((TooltipState*)(self + 0x28c))->reset_tooltip();
             *(int*)(self + 0x1a0) = 0;
@@ -88,15 +88,15 @@ void FrontendWidget::update_frontend_widget_interaction()
         *(float*)(self + 0x20c) = 1.0f;
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x2000000) != 0
-        && *(int*)(self + 0x264) == 0
-        && (*(float*)(g_game_base + 0x29c) != *(float*)(self + 0x6e4)
-            || *(float*)(g_game_base + 0x2a0) != *(float*)(self + 0x6e8))) {
+        && mouse_history_warmup_frames == 0
+        && (*(float*)(g_game_base + 0x29c) != previous_mouse_x
+            || *(float*)(g_game_base + 0x2a0) != previous_mouse_y)) {
         *(unsigned int*)(self + 0x1a0) |= 0x4000000;
     }
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x80000) != 0
         && ((MouseCursorState*)(g_game_base + 0x290))->is_mouse_captured()
-        && read_pressed_text_input_key_code() == *(char*)(self + 0x194)) {
+        && read_pressed_text_input_key_code() == shortcut_key_code) {
         ((TooltipState*)(self + 0x28c))->reset_tooltip();
         if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0)
             *(unsigned int*)(self + 0x1a0) |= 0x20;
@@ -133,27 +133,33 @@ void FrontendWidget::update_frontend_widget_interaction()
     }
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x10) != 0) {
-        char* input = *(char**)(g_game_base + 0x28c);
-        if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active != 0
-            || (input[0x3d] & 0x40) == 0) {
-            if (((*(unsigned int*)(self + 0x1a0) & 0x40) != 0) && input[0x3d] < 0) {
-                if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0)
-                    *(unsigned int*)(self + 0x1a0) |= 0x80;
-                else
-                    ((BorderManager*)(g_game_base + 0xb4c))
-                        ->queue_frontend_widget_flag_after_delay(this, 0x80);
-                g_sound_effect_manager.play_sound_effect(8);
-                ((TooltipState*)(self + 0x28c))->reset_tooltip();
-            } else if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0) {
+        unsigned char* input = *(unsigned char**)(g_game_base + 0x28c);
+        if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active == 0
+            && (input[0x3d] & 0x40) != 0) {
+            if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0) {
                 *(unsigned int*)(self + 0x1a0) |= 0x20;
             } else {
                 ((BorderManager*)(g_game_base + 0xb4c))
                     ->queue_frontend_widget_flag_after_delay(this, 0x20);
-                if ((*(unsigned int*)(self + 0x1a0) & 0x800000) == 0)
-                    g_sound_effect_manager.play_sound_effect(8);
-                if ((((TooltipState*)(self + 0x28c))->reset_tooltip(), (*(unsigned int*)(self + 0x290) & 0x20) == 0))
-                    ((TooltipState*)(self + 0x28c))->reset_tooltip();
             }
+            if ((*(unsigned int*)(self + 0x1a0) & 0x800000) == 0)
+                g_sound_effect_manager.play_sound_effect(8);
+            if ((tooltip.mode_flags & 0x20) == 0)
+                tooltip.reset_tooltip();
+        }
+    }
+
+    {
+        unsigned char* input = *(unsigned char**)(g_game_base + 0x28c);
+        if ((*(unsigned int*)(self + 0x1a0) & 0x40) != 0
+            && (input[0x3d] & 0x80) != 0) {
+            if ((*(unsigned int*)(self + 0x1a0) & 0x1000000) != 0)
+                *(unsigned int*)(self + 0x1a0) |= 0x80;
+            else
+                ((BorderManager*)(g_game_base + 0xb4c))
+                    ->queue_frontend_widget_flag_after_delay(this, 0x80);
+            g_sound_effect_manager.play_sound_effect(8);
+            tooltip.reset_tooltip();
         }
     }
 
@@ -228,10 +234,10 @@ update_after_input:
                     *(float*)(self + 0x6f0),
                     *(float*)(self + 0x6f4),
                     *(float*)(self + 0x6f8),
-                    (float*)(self + 0x240),
-                    (float*)(self + 0x244),
-                    (float*)(self + 0x248),
-                    (float*)(self + 0x24c),
+                    &layout_x,
+                    &layout_y,
+                    &layout_width,
+                    &layout_height,
                     *(float*)(self + 0x228),
                     g_runtime_config.render_flags & 1,
                     *(int*)(self + 0x25c),
@@ -245,10 +251,10 @@ update_after_input:
         draw_frontend_widget();
     }
 
-    if (*(int*)(self + 0x264) != 0)
-        --*(int*)(self + 0x264);
-    *(float*)(self + 0x6e4) = *(float*)(g_game_base + 0x29c);
-    *(float*)(self + 0x6e8) = *(float*)(g_game_base + 0x2a0);
+    if (mouse_history_warmup_frames != 0)
+        --mouse_history_warmup_frames;
+    previous_mouse_x = *(float*)(g_game_base + 0x29c);
+    previous_mouse_y = *(float*)(g_game_base + 0x2a0);
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
         FrontendWidget* more = *(FrontendWidget**)(self + 0x71c);

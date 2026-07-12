@@ -94,3 +94,28 @@ in `edi` across the three template expansions and consequently saves an extra
 `ebx`; the retained code is still the substantially closer and better-owned
 source. Keeping only the first teardown manually expanded regressed to
 `58.08%`, `634/647`, and `73 ok / 2 mismatch`, so that probe was rejected.
+
+2026-07-12 widget-lane and input-state recovery:
+
+- `+0x264/+0x268` are the teardown progress/step pair consumed under widget
+  flag `0x400`; they are not font fields. The exact sprite initializer clears
+  both lanes.
+- `+0x278` is a one-frame mouse-history warmup counter initialized by the text
+  widget constructor. `+0x27c/+0x280` retain the previous root cursor sample.
+  These fields replace the false `+0x264` counter and false
+  `+0x6e4/+0x6e8` history aliases.
+- The wrapped-text update writes `layout_x/+0x238`, `layout_y/+0x23c`,
+  `layout_width/+0x248`, and `layout_height/+0x24c`, agreeing with the adjacent
+  `layout_frontend_widget` member. `+0x240/+0x244` are the later derived hit
+  coordinates, not text-layout outputs.
+- `shortcut_key_code +0x194` is an integer; the signed-byte key result is
+  promoted before comparison, matching the native `movsx` plus dword compare.
+- Primary input (`input +0x3d & 0x40`) belongs to widget flag `0x10` and is
+  gated while the BorderManager delayed lane is active. Secondary input
+  (`& 0x80`) is a separate widget-flag `0x40` path. Splitting those paths also
+  recovers the `TooltipState::mode_flags & 0x20` reset gate.
+
+Together these corrections lift the focused result from `64.35%` (`646/647`)
+to `68.32%` (`644/647`) and improve the masked audit from
+`83 ok / 1 mismatch` to `93 ok / 0 mismatch`. The one-instruction prefix still
+reflects the documented extra saved `ebx`; no fake register coercion was kept.

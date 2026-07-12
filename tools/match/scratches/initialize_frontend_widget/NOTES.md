@@ -54,3 +54,11 @@ anchors read the final `BorderManager::justify_centre` float at manager
 `+0x435b0`, agreeing with the exact sprite initializer and exact raw-bit
 mutator. This is codegen-neutral at the current `62.41%`, `433/429` result
 with `32 ok / 1 mismatch`.
+
+2026-07-12 mouse-history ownership: the constructor's native one store is at
+`FrontendWidget +0x278`, not `+0x264`. It seeds
+`mouse_history_warmup_frames`; the updater decrements it before comparing the
+root cursor against `previous_mouse_x/+0x27c` and
+`previous_mouse_y/+0x280`. Correcting the shared field is codegen-neutral at
+the same 62.41% headline result but removes a false overlap with the teardown
+progress lane.

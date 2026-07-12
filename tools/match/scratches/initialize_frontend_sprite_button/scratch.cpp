@@ -92,7 +92,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(int*)(self + 0x270) = sprite;
     layout_anchor_y = y;
     *(int*)(self + 0x274) = layer;
-    *(int*)(self + 0x264) = 0;
-    *(int*)(self + 0x268) = 0;
+    teardown_progress = 0.0f;
+    teardown_progress_step = 0.0f;
     layout_frontend_widget();
 }

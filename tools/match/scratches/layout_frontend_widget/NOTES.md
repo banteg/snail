@@ -44,3 +44,8 @@
   retained branch shape), while placing it between the X store and flags reload
   is codegen-neutral at 97.18%. The current volatile-width ordering remains the
   best whole-function tradeoff despite the local diff.
+- 2026-07-12 caller agreement: `update_frontend_widget_interaction` now passes
+  this same `+0x238/+0x23c/+0x248/+0x24c` layout block to the wrapped-text
+  helper. The later `+0x240/+0x244` pair remains the derived/clamped hit-test
+  position owned by this member, closing the previously conflicting caller
+  view.

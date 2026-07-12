@@ -80,9 +80,14 @@ public:
     char unknown_258[0x25c - 0x258];
     int layout_mode; // +0x25c
     float layout_center_x; // +0x260
-    char unknown_264[0x26c - 0x264];
+    float teardown_progress; // +0x264, advanced while widget flag 0x400 is set
+    float teardown_progress_step; // +0x268
     float stack_gap; // +0x26c
-    char unknown_270[0x28c - 0x270];
+    char unknown_270[0x278 - 0x270];
+    int mouse_history_warmup_frames; // +0x278, suppresses initial movement edge
+    float previous_mouse_x; // +0x27c
+    float previous_mouse_y; // +0x280
+    char unknown_284[0x28c - 0x284];
     TooltipState tooltip; // +0x28c
     char text_buffer[0x420]; // +0x2cc
     int font_id; // +0x6ec
