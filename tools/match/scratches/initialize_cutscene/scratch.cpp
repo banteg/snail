@@ -57,9 +57,10 @@ void Snail::initialize_cutscene()
         &scratch_matrix,
         &cached_cutscene_matrix,
         0.699999988f);
+    float up_y = live_matrix.basis_up.y;
     live_matrix.position = scratch_matrix.position;
 
-    if (live_matrix.basis_up.y > 0.0f) {
+    if (up_y > 0.0f) {
         float yaw = (live_matrix.position.x - cached_cutscene_matrix.position.x)
             * 0.800000012f;
         live_matrix.rotate_matrix_world_y(yaw);
@@ -89,9 +90,10 @@ void Snail::initialize_cutscene()
     live_matrix.position +=
         (live_matrix.basis_up * lift_sine) * 0.0299999993f;
 
+    float shell_roll_progress = invincible_shell.cutscene_roll_progress;
     cached_cutscene_matrix = live_matrix;
 
-    if (invincible_shell.cutscene_roll_progress > 0.0f) {
+    if (shell_roll_progress > 0.0f) {
         float shell_yaw = invincible_shell.cutscene_roll_progress * -2.09439516f;
         live_matrix.rotate_matrix_world_y(shell_yaw);
         invincible_shell.cutscene_roll_progress =

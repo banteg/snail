@@ -65,3 +65,19 @@ incidental exit register.
   comparison overlaps the following position copy, and the cached-matrix copy
   overlaps the invincible-roll comparison. No artificial local or reordered
   control flow is retained to force those schedules.
+
+2026-07-12 value-snapshot closure:
+
+- Native snapshots `live_matrix.basis_up.y` before restoring the interpolated
+  matrix position from `scratch_matrix`. A named `up_y` captures that value
+  lifetime and lets VC6 overlap the comparison with the independent three-word
+  position copy exactly.
+- Native likewise snapshots `invincible_shell.cutscene_roll_progress` before
+  caching `live_matrix`. The snapshot is used only for the positive gate; the
+  yaw expression reloads the owned field. That distinction reproduces the
+  native pop-and-reload x87 lifetime while the matrix copy fills the comparison
+  latency.
+- These are semantic value lifetimes, not padding or volatile scheduling aids.
+  Focused Wibo closes from 98.82% (339/339, prefix 110, 43 clean operands) to
+  exact 100.00% (339/339, full prefix, 44 clean operands), completing the
+  per-frame `Snail::AIGoldy` presentation/cutscene setup path.
