@@ -11,10 +11,10 @@ void __cdecl sample_smtrack_heightmap(
     char cubic)
 {
     TgaImageView* image = (TgaImageView*)replacement->texture_ref;
-    float sample_count_float = (float)*(int*)((char*)source + 0x1c);
+    float sample_count_float = (float)source->heightmap_sample_count;
     int row_count =
-        (int)(sample_count_float * *(float*)((char*)source + 0x28) /
-            *(float*)((char*)source + 0x24));
+        (int)(sample_count_float * source->heightmap_sample_scale /
+            source->heightmap_sample_divisor);
     float row_count_float = (float)row_count;
     int image_width = image->width;
     int image_height = image->height;
@@ -34,12 +34,12 @@ void __cdecl sample_smtrack_heightmap(
             pixel_index += row_index;
             int bytes_per_pixel = image->bits_per_pixel >> 3;
             unsigned char* pixel = image->pixels + pixel_index * bytes_per_pixel;
-            int red = pixel[2];
-            int green = pixel[1];
-            int blue = pixel[0];
-            float value = (float)red;
-            value += (float)green;
-            value += (float)blue;
+            float red = (float)pixel[2];
+            float green = (float)pixel[1];
+            float blue = (float)pixel[0];
+            float value = red;
+            value += green;
+            value += blue;
             value *= 0.00392156886f;
             value *= 0.333333343f;
 

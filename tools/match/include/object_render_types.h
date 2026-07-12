@@ -135,7 +135,10 @@ struct Object {
     unsigned int flags; // +0x10
     int blend_mode; // +0x14
     TextureRef* override_texture_ref; // +0x18
-    char unknown_1c[0x2c - 0x1c];
+    int heightmap_sample_count; // +0x1c, SMTrack grid columns minus one
+    char unknown_20[0x24 - 0x20];
+    float heightmap_sample_divisor; // +0x24, SMTrack row-aspect divisor
+    float heightmap_sample_scale; // +0x28, SMTrack row-aspect numerator
     int vertex_count; // +0x2c
     char unknown_30[0x38 - 0x30];
     Vector3* vertices; // +0x38, active base/generated-frame view

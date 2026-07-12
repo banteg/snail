@@ -1094,7 +1094,7 @@
     {
       "address": "0x41a360",
       "name": "sample_smtrack_heightmap",
-      "description": "Samples retained TGA bytes from a replacement `TextureRef` into the active SMTrack object's vertex-y grid by averaging RGB channels, applying the optional cubic curve, and scaling the result."
+      "description": "Samples retained TGA bytes from a replacement `TextureRef` into the active SMTrack object's vertex-y grid, using the object's sample-count/aspect metadata, independently converting and averaging RGB channels, applying the optional cubic curve, and scaling the result."
     },
     {
       "address": "0x41a4d0",

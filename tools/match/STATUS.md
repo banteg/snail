@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**526/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **78355/325720** bytes (**24.06%**) are proof-grade, and overall fuzzy is **61.01%**.
+**526/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **78355/325720** bytes (**24.06%**) are proof-grade, and overall fuzzy is **61.02%**.
 
 ## Proof Grade (526)
 
@@ -652,7 +652,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_high_score_screen | 0x417260 | 731 | 203/205 | 67.65% | 0/205 | 29 ok |  |
 | 🚧 | add_survival_high_score | 0x417780 | 289 | 80/84 | 64.63% | 0/84 | 5 ok |  |
 | 🚧 | update_new_game_menu | 0x417eb0 | 1064 | 263/273 | 63.06% | 41/273 | 31 ok |  |
-| 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 111/109 | 59.09% | 0/109 | 12 ok |  |
+| 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 198/197 | 52.15% | 3/197 | 23 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 672/726 | 69.38% | 122/726 | 53 ok |  |

@@ -30,3 +30,20 @@ ownership needs a different source shape.
 replacement, and output records with shared `TgaImageView`, `TextureRef`,
 `Object`, and `Vector3` types preserves the honest 59.09% baseline, 111/109
 instruction shape, and all 12 clean operands.
+
+2026-07-12 grid-field and RGB ownership pass:
+
+- `Object +0x1c/+0x24/+0x28` are now shared as the SMTrack heightmap sample
+  count, row-aspect divisor, and row-aspect numerator. The sampler is their
+  only covered reader; it derives the inclusive row count before borrowing
+  `Object::vertices` as its output cursor.
+- Declaring the red, green, and blue samples as floats recovers the native
+  three independent byte-to-float conversions and `faddp` chain. This is a
+  real source-type correction, improving the focused result from 59.09% to
+  60.36%, with 113/109 instructions and all 12 operands still clean.
+- Direct payload indexing, alternate pixel-index expressions, declaration
+  ordering, `register`, and pre/post-increment cursor spellings either
+  preserved the same allocation or regressed it. The honest residual remains
+  VC6 register scheduling: native reserves `ebp` for the borrowed vertex
+  cursor while the candidate spills that cursor and uses `ebp` for the texel
+  offset.
