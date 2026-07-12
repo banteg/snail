@@ -37,7 +37,7 @@ public:
     float duration_seconds;         // +0x10
     int renderable_count;           // +0x14
     IntroLogoRenderable renderables[INTRO_SCREEN_RENDERABLE_COUNT]; // +0x18
-    IntroLogoRenderable logo_renderables[INTRO_SCREEN_LOGO_RENDERABLE_COUNT]; // +0x24018
+    IntroLogoRenderable logo_renderables[INTRO_SCREEN_LOGO_RENDERABLE_COUNT]; // +0x24018, sequential image-object donors
 };
 
 typedef char IntroScreenRuntime_must_be_0x25218[

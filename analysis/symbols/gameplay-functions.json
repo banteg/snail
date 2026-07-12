@@ -1023,7 +1023,7 @@
     {
       "address": "0x4191e0",
       "name": "initialize_intro_screen",
-      "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into the root-owned 1024-entry renderable bank on the tilted crawl plane, and derives each renderable's velocity from Duration. Cross-port Android and iOS symbols match this helper to `cRIntro::Init()`."
+      "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into the root-owned 1024-entry renderable bank on the tilted crawl plane, borrows sequential preloaded logo objects for image records, and derives each renderable's velocity from Duration. Cross-port Android and iOS symbols match this helper to `cRIntro::Init()`."
     },
     {
       "address": "0x419920",

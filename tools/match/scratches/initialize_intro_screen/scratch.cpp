@@ -7,6 +7,7 @@
 #include "intro_screen_runtime.h"
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
+#include "object_render_types.h"
 #include "runtime_config.h"
 #include "sprite.h"
 #include "star_manager.h"
@@ -14,8 +15,6 @@
 
 extern char* g_game_base; // data_4df904
 extern TextureRefList g_texture_refs; // data_4b7790
-extern float g_font_glyph_widths[]; // data_7770e8
-extern void* g_font3d_glyph_objects[]; // data_77550c
 extern char g_blank_text[]; // data_4dfb08
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
@@ -41,44 +40,18 @@ static __forceinline void add_intro_renderable_to_active_list(IntroLogoRenderabl
 
     char* head = g_game_base + 0x5ac;
     char* first = *(char**)head;
-    if (first != 0) {
+    if (first == 0) {
+        *(IntroLogoRenderable**)head = bod;
+        *(int*)(node + 8) = 0;
+        *(int*)(*(int*)head + 12) = 0;
+    } else {
         *(IntroLogoRenderable**)(first + 8) = bod;
         *(char**)(*(char**)(*(char**)head + 8) + 12) = *(char**)head;
         first = *(char**)(*(char**)head + 8);
         *(char**)head = first;
         *(int*)(first + 8) = 0;
-    } else {
-        *(IntroLogoRenderable**)head = bod;
-        *(int*)(node + 8) = 0;
-        *(int*)(*(int*)head + 12) = 0;
     }
     *(unsigned int*)(node + 4) |= 0x200;
-}
-
-static __forceinline void initialize_intro_slot(
-    IntroScreenRuntime* owner,
-    int slot,
-    void* object,
-    float x,
-    float z,
-    char glyph)
-{
-    IntroLogoRenderable* renderable = &owner->renderables[slot];
-    add_intro_renderable_to_active_list(renderable);
-    renderable->set_bod_object(object);
-    set_matrix_identity(&renderable->transform);
-    renderable->transform.position.x = 0.0f;
-    renderable->transform.position.y = -4.0f;
-    renderable->transform.position.z = 0.0f;
-    renderable->transform.position.x += x;
-    renderable->transform.position.z += z;
-    renderable->color.set_color_white();
-    renderable->color.a = 0.99900001f;
-    renderable->velocity.x = 0.0f;
-    renderable->velocity.y = 0.0f;
-    renderable->velocity.z = 0.0f;
-    renderable->glyph = glyph;
-    ((IntroLogoRenderableVirtualView*)renderable)->update_intro_logo_renderable();
 }
 
 int IntroScreenRuntime::initialize_intro_screen(char* file_name)
@@ -110,15 +83,19 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
     progress_step = 1.0f / 600.0f;
     ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
     state = 0;
-    this->renderable_count = 0;
 
     float crawl_y = 0.2f;
-    char* text_start = find_case_insensitive_substring((char*)"Text Start:", file_bytes);
-    char* cursor = find_case_insensitive_substring((char*)":", text_start) + 1;
+    this->renderable_count = 0;
+    char* cursor =
+        find_case_insensitive_substring((char*)"Text Start:", file_bytes);
+    cursor = find_case_insensitive_substring((char*)":", cursor) + 1;
     char* text_end = find_case_insensitive_substring((char*)"Text End:", file_bytes);
+    IntroLogoRenderable* logo = logo_renderables;
 
     while (cursor < text_end) {
         char* line = cursor;
+        float width = 0.0f;
+        int count = 0;
         if (*cursor == '*') {
             char image_name[128];
             char path[128];
@@ -137,40 +114,54 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
             float image_height = parse_next_float32(&cursor);
             sprintf(path, "Intro/%s", image_name);
 
-            initialize_intro_slot(
-                this,
-                renderable_count,
-                logo_renderables[renderable_count].object,
-                0.0f,
-                crawl_y - image_height * 0.5f,
-                (char)0xff);
+            add_intro_renderable_to_active_list(&renderables[renderable_count]);
+            Object* logo_object = logo->object;
+            renderables[renderable_count].set_bod_object(logo_object);
+            renderables[renderable_count].object->facequads[0].texture_ref =
+                g_texture_refs.get_or_create_texture_ref(path, 0, 0);
+            set_matrix_identity(&renderables[renderable_count].transform);
+            renderables[renderable_count].transform.position =
+                Vector3(0.0f, -4.0f, 0.0f);
+            renderables[renderable_count].transform.position.z +=
+                crawl_y - image_height * 0.5f;
+            renderables[renderable_count].color.set_color_white();
+            renderables[renderable_count].color.a = 0.99900001f;
+            renderables[renderable_count].glyph = 0xff;
 
+            renderables[renderable_count].object->vertices[0].x =
+                image_width * 0.5f;
+            renderables[renderable_count].object->vertices[0].z =
+                image_height * 0.5f;
+            renderables[renderable_count].object->vertices[1].x =
+                image_width * -0.5f;
+            renderables[renderable_count].object->vertices[1].z =
+                image_height * 0.5f;
+            renderables[renderable_count].object->vertices[2].x =
+                image_width * -0.5f;
+            renderables[renderable_count].object->vertices[2].z =
+                image_height * -0.5f;
+            renderables[renderable_count].object->vertices[3].x =
+                image_width * 0.5f;
+            renderables[renderable_count].object->vertices[3].z =
+                image_height * -0.5f;
+
+            Vector3* velocity = &renderables[renderable_count].velocity;
+            velocity->z = 0.0f;
+            velocity->y = 0.0f;
+            velocity->x = 0.0f;
             IntroLogoRenderable* renderable = &renderables[renderable_count];
-            TextureRef* texture = g_texture_refs.get_or_create_texture_ref(path, 0, 0);
-            char* render_object = (char*)renderable->object;
-            *(TextureRef**)(*(int*)(render_object + 0x5c) + 0x0c) = texture;
-            float* verts = *(float**)(render_object + 0x38);
-            if (verts != 0) {
-                float half_w = image_width * 0.5f;
-                float half_h = image_height * 0.5f;
-                verts[0] = half_w;
-                verts[2] = half_h;
-                verts[3] = -half_w;
-                verts[5] = half_h;
-                verts[8] = -half_w;
-                verts[9] = -half_h;
-                verts[11] = half_w;
-            }
+            ((IntroLogoRenderableVirtualView*)renderable)
+                ->update_intro_logo_renderable();
+
+            ++logo;
             ++renderable_count;
             crawl_y -= image_height;
 
             while (*cursor != 0 && *cursor != 13)
                 ++cursor;
         } else if (*cursor != 0) {
-            float width = 0.0f;
-            int count = 0;
             while (*cursor != 0 && *cursor != 13) {
-                width += g_font_glyph_widths[font_slot_index_for_char(*cursor)];
+                width += g_font3d_scales[font_slot_index_for_char(*cursor)];
                 ++count;
                 ++cursor;
             }
@@ -178,17 +169,33 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
             if (0 < count) {
                 float x = width * 0.5f;
                 x *= 0.80000001f;
+                Vector3 initial_position(0.0f, -4.0f, 0.0f);
                 char* glyph = line;
                 while (count != 0) {
-                    int slot = font_slot_index_for_char(*glyph);
-                    initialize_intro_slot(
-                        this,
-                        renderable_count,
-                        g_font3d_glyph_objects[slot * 14],
-                        x,
-                        crawl_y,
-                        *glyph);
-                    x -= g_font_glyph_widths[slot] * 0.80000001f;
+                    add_intro_renderable_to_active_list(
+                        &renderables[renderable_count]);
+                    renderables[renderable_count].set_bod_object(
+                        g_font3d_bods[font_slot_index_for_char(*glyph)].object);
+                    set_matrix_identity(
+                        &renderables[renderable_count].transform);
+                    renderables[renderable_count].transform.position =
+                        initial_position;
+                    renderables[renderable_count].transform.position.x += x;
+                    renderables[renderable_count].transform.position.z += crawl_y;
+                    renderables[renderable_count].color.set_color_white();
+                    renderables[renderable_count].color.a = 0.99900001f;
+                    Vector3* velocity = &renderables[renderable_count].velocity;
+                    velocity->z = 0.0f;
+                    velocity->y = 0.0f;
+                    velocity->x = 0.0f;
+                    renderables[renderable_count].glyph = *glyph;
+                    IntroLogoRenderable* renderable =
+                        &renderables[renderable_count];
+                    ((IntroLogoRenderableVirtualView*)renderable)
+                        ->update_intro_logo_renderable();
+
+                    x -= g_font3d_scales[font_slot_index_for_char(*glyph)]
+                        * 0.80000001f;
                     ++glyph;
                     ++renderable_count;
                     --count;
@@ -208,11 +215,10 @@ int IntroScreenRuntime::initialize_intro_screen(char* file_name)
     duration_seconds = duration;
 
     float step = (1.0f / (duration * 60.0f)) * (3.0f - crawl_y);
-    for (int i = 0; i < renderable_count; ++i) {
-        IntroLogoRenderable* renderable = &renderables[i];
-        renderable->velocity.x = 0.0f;
-        renderable->velocity.y = 0.0f;
-        renderable->velocity.z = step;
+    Vector3 velocity(0.0f, 0.0f, step);
+    IntroLogoRenderable* renderable = renderables;
+    for (int i = 0; i < renderable_count; ++i, ++renderable) {
+        renderable->velocity = velocity;
     }
 
     return free_tracked_memory(file_bytes);

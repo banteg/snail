@@ -47,3 +47,34 @@ with 47 clean masked operands and four alignment-driven mismatches. The prior
 starter was 38.30%, `304/521`, with 41 clean operands, one unresolved operand,
 and five mismatches. Remaining debt is dominated by native's separately
 authored image/glyph setup and stack-local scheduling, not unknown slot offsets.
+
+## 2026-07-12 font3d consumer and image-record recovery
+
+- The two raw font globals were false views. `0x7770e8` is the shared
+  `g_font3d_scales[128]` cache, and `0x77550c + slot*0x38` is
+  `g_font3d_bods[slot].object`, the borrowed Object lane inside the fixed
+  `BodBase` array.
+- Image records do not index `logo_renderables` by the total crawl-renderable
+  count. Native seeds a separate cursor at the first logo-bank Object lane and
+  advances it by one `0x90`-byte `IntroLogoRenderable` only after an image.
+  Glyph records leave that donor cursor untouched.
+- Image and glyph setup are separately authored in native code. Expanding the
+  old shared helper recovers their different ordering: images bind their
+  texture before matrix setup and resize geometry before the velocity/update
+  callback, while glyphs perform their second font-slot lookup only after the
+  callback to advance the horizontal cursor.
+- Typed `Object::vertices` access exposed a concrete source bug in the starter:
+  it omitted vertex 2 x and wrote the final three values into the wrong float
+  lanes. The recovered quad sets x/z for all four corners to `+/-width/2` and
+  `+/-height/2`, matching all eight native stores without a nullable vertex
+  branch that native does not have.
+- The final scroll pass assigns a single `Vector3(0, 0, step)` value across the
+  active bank, and the list insertion is expressed with native's empty-head
+  fallthrough. Both are ownership/control-flow facts rather than scheduling
+  shims.
+
+Focused Wibo now reports **88.23%**, `524/521` candidate/target instructions,
+prefix 88/521, and 66 clean masked operands with no unresolved or mismatched
+names. The remaining delta is dominated by three compiler instructions and
+stack-slot choices for the image dimensions, loop bound, and temporary vectors;
+those are left visible rather than forced with dummy locals or aliasing tricks.
