@@ -230,6 +230,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "EnemyManager": _named_struct_size("EnemyManager"),
                     "Parcel": _named_struct_size("Parcel"),
                     "ParcelManager": _named_struct_size("ParcelManager"),
+                    "Completion": _named_struct_size("Completion"),
+                    "TimesUp": _named_struct_size("TimesUp"),
                 },
                 "parse_errors": parse_errors,
                 "applied": applied,

@@ -150,7 +150,7 @@ The port still waits too long before entering the completion screen. Windows app
   - `player + 0x44e`
 - Trigger:
   - normal level completion
-  - completion with the fast-forward condition if you can reproduce the `row_event_display + 0x18` gate
+  - completion with the fast-forward condition if you can reproduce the `Completion +0x18` gate
 
 ### Questions to answer
 

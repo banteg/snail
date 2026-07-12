@@ -328,18 +328,6 @@ TRUSTED_DECLARATIONS = [
         "TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial);",
     ),
     (
-        "flush_row_event_display",
-        "void __thiscall flush_row_event_display(Completion* completion);",
-    ),
-    (
-        "register_parcel_delivery",
-        "void __thiscall register_parcel_delivery(Completion* completion);",
-    ),
-    (
-        "update_row_event_display",
-        "void __thiscall update_row_event_display(Completion* completion);",
-    ),
-    (
         "initialize_frontend_widget",
         "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x);",
     ),

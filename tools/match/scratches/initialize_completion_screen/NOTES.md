@@ -52,3 +52,15 @@ all 34 operands clean.
   operands). Natural declaration-order, switch, shared-color, and temporary
   variants were rejected because they regressed the result or only exchanged
   registers; the residual stays visible.
+
+2026-07-13 cross-tool owner routing:
+
+- Binary Ninja and IDA now carry `Completion` and the adjacent `TimesUp`
+  directly in their canonical `SubgameRuntime` headers. The `0x50`-byte
+  completion owner at `+0x12727d8` ends exactly where the `0x10`-byte times-up
+  owner begins at `+0x1272828`.
+- The path-template sync no longer owns those root fields, and its redundant
+  IDA Completion prototypes have been removed in favor of the dedicated
+  completion-screen lane. BN lifecycle prototypes now live with the
+  SubgameRuntime owner. This is codegen-neutral ownership cleanup; the honest
+  89.89%, 276/278 initializer result remains unchanged.

@@ -126,8 +126,6 @@ REQUIRED_HEADER_STRUCTS = (
     "Tip",
     "TipManager",
     "Tutorial",
-    "Completion",
-    "TimesUp",
 )
 
 PLAYER_FIELD_UPDATES = (
@@ -243,8 +241,6 @@ GAME_FIELD_UPDATES = (
     ("0xff25e4", "runtime_track_index", "int32_t"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
-    ("0x12727d8", "completion", "Completion"),
-    ("0x1272828", "times_up", "TimesUp"),
 )
 
 VAPOUR_FIELD_UPDATES = (

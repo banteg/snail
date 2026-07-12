@@ -9,6 +9,7 @@ typedef unsigned char uint8_t;
 typedef struct Object Object;
 typedef struct Player Player;
 typedef struct Sprite Sprite;
+typedef struct FrontendWidget FrontendWidget;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct TrackRowCell TrackRowCell;
 typedef struct TransformMatrix TransformMatrix;
@@ -53,6 +54,39 @@ typedef struct Parcel {
 typedef struct ParcelManager {
     Parcel slots[50];
 } ParcelManager;
+
+/* Exact 0x50-byte Windows cRCompletion embedded in SubgameRuntime. */
+typedef struct Completion {
+    FrontendWidget* widget_a;
+    FrontendWidget* delivered_count_widget;
+    FrontendWidget* bonus_widget;
+    FrontendWidget* widget_d;
+    FrontendWidget* continue_widget;
+    int32_t state;
+    uint8_t gate_18;
+    uint8_t unknown_19[0x1c - 0x19];
+    int32_t parcel_target_count;
+    int32_t bonus_enabled;
+    int32_t staged_parcel_count;
+    int32_t delivered_parcel_count;
+    float progress;
+    float progress_step;
+    float widget_world_x;
+    float widget_world_y;
+    float widget_world_z;
+    float bonus_blink_progress;
+    float bonus_blink_step;
+    int32_t bonus_score;
+    int32_t display_token;
+} Completion;
+
+/* Exact 0x10-byte Windows cRTimesUp tail owner. */
+typedef struct TimesUp {
+    int32_t state;
+    FrontendWidget* border;
+    float progress;
+    float progress_step;
+} TimesUp;
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
@@ -286,6 +320,9 @@ typedef struct SubgameRuntime {
     float garbage_frequency;
     float salt_frequency;
     GUI gui;
+    uint8_t unknown_1260008[0x12727d8 - 0x1260008];
+    Completion completion;
+    TimesUp times_up;
 } SubgameRuntime;
 
 #endif

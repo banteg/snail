@@ -30,6 +30,8 @@ SUBGAME_FIELD_UPDATES = (
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x125ffe0", "gui", "GUI"),
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
+    ("0x12727d8", "completion", "Completion"),
+    ("0x1272828", "times_up", "TimesUp"),
 )
 
 # These richer nested types are supplied by later ownership slices. Preserve
@@ -123,6 +125,34 @@ PROTO_UPDATES = (
         "Parcel* __thiscall spawn_track_parcel(SubgameRuntime* runtime, Vec3* world_position, Player* source_player)",
     ),
     (
+        "initialize_completion_screen",
+        "void __thiscall initialize_completion_screen(Completion* completion, int32_t delivered_count, uint8_t perfect_delivery)",
+    ),
+    (
+        "flush_row_event_display",
+        "void __thiscall flush_row_event_display(Completion* completion)",
+    ),
+    (
+        "update_row_event_display",
+        "void __thiscall update_row_event_display(Completion* completion)",
+    ),
+    (
+        "register_parcel_delivery",
+        "void __thiscall register_parcel_delivery(Completion* completion)",
+    ),
+    (
+        "update_times_up",
+        "void __thiscall update_times_up(TimesUp* times_up)",
+    ),
+    (
+        "uninit_times_up",
+        "void __thiscall uninit_times_up(TimesUp* times_up)",
+    ),
+    (
+        "show_times_up_message",
+        "void __thiscall show_times_up_message(TimesUp* times_up)",
+    ),
+    (
         "initialize_challenge_setup_screen",
         "int32_t __thiscall initialize_challenge_setup_screen(GUI* gui)",
     ),
@@ -199,6 +229,8 @@ def main() -> int:
                 "BannerPool",
                 "Parcel",
                 "ParcelManager",
+                "Completion",
+                "TimesUp",
             ),
         ),
         *apply_struct_field_updates(

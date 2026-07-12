@@ -516,8 +516,11 @@ The current high-confidence `Game` fields are:
     to record `description_text`
   - ten `0xa0` route-name records at controller `+0x10930`, ending exactly at
     the progress-base field at `+0x10f70`
-- `+0x12727d8`: `row_event_display`
-  - inline `RowEventDisplayController`
+- `+0x12727d8`: `completion`
+  - exact `0x50`-byte authored `cRCompletion` owner shared by parcel delivery
+    and the final result screen
+- `+0x1272828`: `times_up`
+  - exact adjacent `0x10`-byte authored `cRTimesUp` tail owner
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`
@@ -600,7 +603,7 @@ Current practical read:
   - cutscene state `6` initializes the completion screen almost immediately, on the first handoff tick after arming
   - while active, it clamps the forward presentation offsets (`track_z_offset` / `track_z_anchor`) to the fixed completion lane and advances the timer every tick
   - after `2.0` seconds, `completion_handoff_voice_gate` gates a one-shot voice event `8`
-  - after `5.0` seconds, the same block begins the frontend fade, flushes `row_event_display` if needed, and routes through `complete_subgame`
+  - after `5.0` seconds, the same block begins the frontend fade, flushes `completion` if needed, and routes through `complete_subgame`
   - when `level_mode == 0` and `level_mode_arg == *(data_4df904 + 0x12d4644) - 1`, that completion block calls `complete_subgame(game, 1)`, writes `app + 0x1bc = 0x1d`, and sets `app + 0x1b8 = 0x1a`
   - the other completion exits write `game + 0x1270fc8 = 1`, then:
     - force `app + 0x1b8 = 0x1a` and `app + 0x1bc = 2` when `level_mode == 7`
@@ -708,11 +711,11 @@ Current practical read:
   - app dword `+0x12e55e0` is therefore not a persistent-bit source:
     - current best read is the same rebuild selector seen at `game + 0x1270fc8`, with selector `1` owning the postal post-completion reopen and selector `2` owning the ordinary rebuild/start lane
     - state `0x1c` only clears that selector during the rebuild-clear-replay bridge
-- `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
-  - `initialize_subgoldy` clears `row_event_display.state`
+- `game + 0x12727d8` is the authored `Completion` controller, not a loose flag cluster:
+  - `initialize_subgoldy` clears `completion.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
-  - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate, but its one recovered gameplay read is now narrower: when it is `1` and the control source carries the `0x4000` accept/fire flag, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
+  - the old `game + 0x12727f0` byte is `Completion +0x18` and remains a conservative controller gate: when it is `1` and the control source carries the `0x4000` accept/fire flag, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and `ParcelManager::slots`
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
@@ -838,7 +841,8 @@ Current practical read:
 
 ## Row Event Display Controller
 
-The inline controller at `game + 0x12727d8` is now typed as `RowEventDisplayController`.
+The inline controller at `game + 0x12727d8` is the exact `Completion` /
+cross-port `cRCompletion` owner.
 
 High-confidence current fields:
 
@@ -898,7 +902,7 @@ Current practical read:
 - `initialize_runtime_pools_and_path_template_bank` seeds the `50`-slot array with `initialize_track_parcel_runtime`
 - `build_subgame_level` clears the live array for the current run through `initialize_track_parcel_slots`
 - `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->parcel_manager`, seeds the spawn position, installs the sprite, and stores the borrowed player pointer
-- `update_track_parcel` runs the parcel's bobbing, homing, and final delivery arc, then calls `register_parcel_delivery(&parcel->game->row_event_display)` before killing the sprite and clearing the slot state
+- `update_track_parcel` runs the parcel's bobbing, homing, and final delivery arc, then calls `register_parcel_delivery(&parcel->owner_subgame->completion)` before killing the sprite and clearing the slot state
 - `place_parcels_on_track` and `place_challenge_parcels_on_track` decide how many authored parcel rows stay live and feed the HUD-facing `parcel_target_count`
   - the challenge path first builds the full candidate list, then keeps `target_count`
     entries with one random draw per kept parcel; it is not an `N - target`
