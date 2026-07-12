@@ -37,6 +37,21 @@ Status:
   mismatches are shifted call/string alignments across the still-different row
   anchor; no local-label or convenience aliases were added.
 
+- 2026-07-12: The final apparent `0x38` bytes of each catalog entry are not an
+  unknown tail. Rows begin at `+0x888`, use the proven `0x38` authored-row
+  stride, and the next entry begins at `+0x4088`, so exactly 256 rows fill the
+  record: `0x888 + 256 * 0x38 == 0x4088`. The shared matcher and analysis
+  layouts now own `rows[256]`, matching the Windows `SubSegment` row capacity
+  and removing the synthetic `unknown_4050` field. This layout correction is
+  codegen-neutral at the honest 49.29% parser baseline.
+
+- The live Binary Ninja database still carried an older count-at-tail catalog
+  layout, an empty `SubSegment`, and the wrong returning parser prototypes even
+  though all of those type names existed. `sync_segment_catalog_types.py` now
+  reapplies the checked-in header instead of treating a present name as proof
+  that its layout is current; its normal readback verifies both the layouts and
+  the six owner-aware prototypes.
+
 Corrections propagated to the reader:
 
 - `copy_segment_definition_to_level_slot` searches the `+0x44` filename, not

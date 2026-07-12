@@ -2688,7 +2688,7 @@
     {
       "address": "0x448160",
       "name": "load_segment_definitions",
-      "description": "Implements the void `cRSMTracks::Import()` member: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte SMTracks owner, stores the internal `Name:'...'` display label separately from the enumerated filename, and recovers per-row parcel, model, velocity, path, ring, ring-speed, and jetpack-off metadata."
+      "description": "Implements the void `cRSMTracks::Import()` member: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte SMTracks owner, stores the internal `Name:'...'` display label separately from the enumerated filename, and fills each 0x4088-byte entry's complete 256-row authored metadata bank with parcel, model, velocity, path, ring, ring-speed, and jetpack-off data."
     },
     {
       "address": "0x448900",

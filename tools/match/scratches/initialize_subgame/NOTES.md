@@ -309,3 +309,14 @@ aliases respectively and restore the 85 clean operands.
   the second retains the same eight-entry startup sequence as the bounded
   target table. Registering these content-proven aliases restores all 85 clean
   operands; the local label spellings themselves are not trusted.
+
+2026-07-12 segment-row capacity refresh:
+
+- Replacing the synthetic final `SegmentCatalogEntry` tail with the proven
+  256th authored row renumbers the unchanged mode tables to `$L5000`/`$L5001`.
+- COFF places `$L5000` at object `+0x62c` with five relocations to `+0x419`,
+  `+0x42d`, `+0x46b`, `+0x46b`, and `+0x441`; `$L5001` remains at `+0x640`
+  with the established eight-entry startup sequence. The bounded contents
+  match the curated target tables, so `$L5001` is reassigned from its previous
+  bottom-HUD generation to the current startup table and `$L5000` becomes the
+  current bottom-HUD alias. The exact method body is unchanged.

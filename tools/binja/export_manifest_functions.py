@@ -130,6 +130,11 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
+def _normalize_decompile_text(decompile_text: str) -> str:
+    """Keep tracked text artifacts free of Binary Ninja's trailing spaces."""
+    return "\n".join(line.rstrip() for line in decompile_text.splitlines()).rstrip()
+
+
 def _write_artifact(
     out_dir: Path,
     *,
@@ -145,7 +150,7 @@ def _write_artifact(
             f"/* database: {target_metadata.get('filename', 'unknown')} */\n"
             f"/* manifest: {manifest_path} */\n"
             f"/* function: {function.name} @ {function.address_hex} */\n\n"
-            f"{decompile_text.rstrip()}\n"
+            f"{_normalize_decompile_text(decompile_text)}\n"
         ),
         encoding="utf-8",
     )

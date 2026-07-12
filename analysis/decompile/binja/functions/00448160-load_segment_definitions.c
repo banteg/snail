@@ -3,35 +3,35 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: load_segment_definitions @ 0x448160 */
 
-00448165        int32_t* ecx = chkstk(0x114e0)
-00448189        *ecx = 0
-0044818b        void arg_14e0
-0044818b        enumerate_matching_archive_or_fs_entries("Segments", "*.txt", ecx, &arg_14e0)
-00448190        int32_t eax = *ecx
+00448165        int32_t* out_count = chkstk(0x114e0)
+00448189        *out_count = 0
+0044818b        EnumeratedEntryName names[0x200]
+0044818b        enumerate_matching_archive_or_fs_entries("Segments", "*.txt", out_count, &names)
+00448190        int32_t eax = *out_count
 0044819a        if (eax s>= 0x96)
 004481a1        report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX")
-004481b3        return 0
+004481b3        return
 004481b4        int32_t ebp = 0
 004481b8        int32_t arg_10 = 0
 004481bc        if (eax s<= 0)
-004488f0        return eax
-004481c2        void* edi_1 = &arg_14e0
+004481bc        return
+004481c2        EnumeratedEntryName (* edi_1)[0x200] = &names
 004481cf        int32_t arg_18 = 0
 004481d3        int32_t arg_14 = 0
-004481d7        void* arg_8 = &arg_14e0
-004481db        int32_t* arg_4 = &ecx[0x22]
-004481f3        int32_t __saved_edi
+004481d7        EnumeratedEntryName (* arg_8)[0x200] = &names
+004481db        int32_t* arg_4 = &out_count[0x22]
 004481f3        while (true)
-004481f3        char arg_4e0[0x1000]
-004481f3        char (* var_14_1)[0x1000] = &arg_4e0
-004481f4        void* var_18_1 = edi_1
-004481fb        void arg_2e0
-004481fb        sprintf(&arg_2e0, "Segments/%s")
-00448211        load_file_bytes_from_archive_or_fs(&arg_2e0, &arg_4e0, nullptr)
-00448223        char* eax_1 = find_case_insensitive_substring("ID:", &arg_4e0)
+004481f3        void buffer
+004481f3        void* var_14_1 = &buffer
+004481f4        EnumeratedEntryName (* var_18_1)[0x200] = edi_1
+004481fb        void path
+004481fb        sprintf(&path, "Segments/%s")
+00448211        load_file_bytes_from_archive_or_fs(&path, &buffer, nullptr)
+00448223        char* eax_1 = find_case_insensitive_substring("ID:", &buffer)
+0044822d        int32_t __saved_edi
 0044822d        if (eax_1 == 0)
 0044880e        report_errorf("Cannot find ID: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
-00448820        return 0
+00448820        return
 00448233        char i = eax_1[3]
 00448236        char* eax_2 = &eax_1[3]
 00448239        int32_t edx_1 = 0
@@ -42,13 +42,13 @@
 00448250        i = *eax_2
 00448255        if (i s< 0x30)
 00448255        break
-0044825b        void* var_14_2 = edi_1
+0044825b        EnumeratedEntryName (* var_14_2)[0x200] = edi_1
 00448265        arg_4[-1] = edx_1
 00448268        sprintf(&arg_4[-0x11], "%s")
-0044827a        char* eax_4 = find_case_insensitive_substring("Name:'", &arg_4e0)
+0044827a        char* eax_4 = find_case_insensitive_substring("Name:'", &buffer)
 00448284        if (eax_4 == 0)
 00448831        report_errorf("Cannot find Name: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
-00448843        return 0
+00448843        return
 00448290        char* eax_5 = find_case_insensitive_substring("'", eax_4)
 00448295        char i_1 = eax_5[1]
 0044829b        void* eax_6 = &eax_5[1]
@@ -58,50 +58,51 @@
 004482a9        i_1 = *(eax_6 + 1)
 004482ac        eax_6 += 1
 004482b0        do while (i_1 != 0x27)
-004482bf        char* eax_7 = find_case_insensitive_substring("Data:", &arg_4e0)
+004482bf        char* eax_7 = find_case_insensitive_substring("Data:", &buffer)
 004482c9        if (eax_7 == 0)
 00448854        report_errorf("Cannot find Data: in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
-00448866        return 0
+00448866        return
 004482d0        char* eax_8 = advance_to_next_crlf_line(eax_7)
+004482da        void* var_14_31
 004482da        if (eax_8 == 0)
-004488de        return report_errorf("Unexpected end of file in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
+00448871        var_14_31 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
 004482e6        char* edi_2 = advance_to_next_crlf_line(eax_8)
 004482ed        void* eax_46
 004482ed        if (edi_2 == 0)
 00448877        eax_46 = &(&__saved_edi)[ebp * 0x20 + 0x53c]
 004488d8        label_4488d8:
-004488de        return report_errorf("Unexpected end of file in Segment %s\n", eax_46)
+004488d8        var_14_31 = eax_46
 004482f6        if (*edi_2 != 0x40)
-004482f6        break
+00448890        report_errorf("Data line must start with '@' in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
+004488a2        return
 00448300        int32_t arg_1c = 0
 00448304        *arg_4 = 0
 00448315        while (true)
 00448315        if (*edi_2 == 0x40 && edi_2[1] == 0x40 && edi_2[2] == 0x40)
 004487be        ebp += 1
 004487bf        arg_18 += 0x127
-004487d3        int32_t eax_44 = *ecx
 004487dd        arg_10 = ebp
 004487e1        arg_14 += 0x811
 004487e5        arg_4 = &arg_4[0x1022]
-004487e9        arg_8 += 0x80
-004487ed        if (ebp s>= eax_44)
-004487fd        return eax_44
+004487e9        arg_8 = &(*arg_8)[1]
+004487ed        if (ebp s>= *out_count)
+004487fd        return
 004481e1        edi_1 = arg_8
 004481e1        break
 00448324        int32_t ebp_1 = sx.d(arg_1c.w) + arg_18
 00448334        char* edi_3 = &edi_2[1]
-00448335        void* esi_4 = &ecx[ebp_1 * 0xe]
+00448335        void* esi_4 = &out_count[ebp_1 * 0xe]
 00448338        int32_t i_2 = 0
 0044833a        *(esi_4 + 0x88c) = 0
 0044834c        char ebx_2 = *edi_3
 0044834e        edi_3 = &edi_3[1]
 0044834f        int32_t edx_8 = i_2 + ((*arg_4 + arg_14) << 3)
 00448352        i_2 += 1
-00448356        *(edx_8 + ecx + 0x8c) = ebx_2
+00448356        *(edx_8 + out_count + 0x8c) = ebx_2
 0044835d        do while (i_2 s< 8)
 00448362        if (*edi_3 != 0x40)
 004488b7        report_errorf("Data line must end with '@' in Segment %s\n", &(&__saved_edi)[arg_10 * 0x20 + 0x53c])
-004488c9        return 0
+004488c9        return
 0044836f        char* edi_4 = &edi_3[1]
 00448370        *arg_4 += 1
 00448375        if (*edi_4 == 0x2a)
@@ -110,35 +111,35 @@
 0044837f        *(esi_4 + 0x88c) = eax_13
 00448385        char i_3 = *edi_4
 00448387        void arg_60
-00448387        char* ecx_6 = &arg_60
+00448387        char* ecx_5 = &arg_60
 0044838d        while (i_3 != 0xd)
-0044838f        *ecx_6 = i_3
+0044838f        *ecx_5 = i_3
 00448391        i_3 = edi_4[1]
-00448394        ecx_6 = &ecx_6[1]
+00448394        ecx_5 = &ecx_5[1]
 00448395        edi_4 = &edi_4[1]
-004483a6        *ecx_6 = 0
+004483a6        *ecx_5 = 0
 004483a8        char* __return_addr_1 = find_case_insensitive_substring("3DModel=", &arg_60)
 004483b2        __return_addr = __return_addr_1
 004483b6        if (__return_addr_1 != 0)
 004483ca        char* __return_addr_2 = &find_case_insensitive_substring("=", __return_addr_1)[1]
 004483cb        __return_addr = __return_addr_2
-004483cf        void arg_260
-004483cf        char* ecx_7 = &arg_260
+004483cf        char mesh_name[0x80]
+004483cf        char (* ecx_6)[0x80] = &mesh_name
 004483d6        char i_4 = *__return_addr_2
 004483db        while (i_4 != 0x2e)
-004483dd        *ecx_7 = i_4
-004483df        ecx_7 = &ecx_7[1]
+004483dd        *ecx_6 = i_4
+004483df        ecx_6 = &(*ecx_6)[1]
 004483e0        __return_addr_2 = &__return_addr_2[1]
 004483e1        __return_addr = __return_addr_2
 004483e5        i_4 = *__return_addr_2
 004483ec        int32_t eax_15 = *(esi_4 + 0x88c)
-004483f2        *ecx_7 = 0x2e
+004483f2        *ecx_6 = 0x2e
 004483f6        eax_15.b |= 2
 004483f8        *(esi_4 + 0x88c) = eax_15
-004483fe        void* game_base_1 = g_game_base
-00448404        ecx_7[1] = 0x78
-00448407        ecx_7[2] = 0
-0044841d        *(esi_4 + 0x8a0) = load_or_reuse_cached_x_mesh(game_base_1 + 0x48e00, &arg_260)
+004483fe        char* game_base_1 = g_game_base
+00448404        (*ecx_6)[1] = 0x78
+00448407        (*ecx_6)[2] = 0
+0044841d        *(esi_4 + 0x8a0) = load_or_reuse_cached_x_mesh(&game_base_1[0x48e00], &mesh_name)
 00448436        __return_addr = find_case_insensitive_substring("(", __return_addr)
 00448440        *(esi_4 + 0x8a4) = fconvert.s(parse_next_float32(&__return_addr))
 00448450        *(esi_4 + 0x8a8) = fconvert.s(parse_next_float32(&__return_addr))
@@ -171,24 +172,23 @@
 0044858c        if (__return_addr_5 != 0)
 0044859c        char* __return_addr_6 = &find_case_insensitive_substring("=", __return_addr_5)[1]
 0044859d        __return_addr = __return_addr_6
-004485a1        void arg_20
-004485a1        char* edx_16 = &arg_20
+004485a1        char name[0x40]
+004485a1        char (* edx_16)[0x40] = &name
 004485a5        char i_5 = *__return_addr_6
 004485aa        while (i_5 s>= 0x20)
 004485ac        *edx_16 = i_5
-004485ae        edx_16 = &edx_16[1]
+004485ae        edx_16 = &(*edx_16)[1]
 004485af        __return_addr_6 = &__return_addr_6[1]
 004485b0        __return_addr = __return_addr_6
 004485b4        i_5 = *__return_addr_6
-004485bb        g_game_base
 004485cc        *edx_16 = 0
-004485ce        int32_t eax_28 = find_segment_path_index_by_name(&arg_20)
+004485ce        int32_t eax_28 = find_segment_path_index_by_name(&g_game_base[0x1066f28], &name)
 004485d6        *(esi_4 + 0x8bc) = eax_28
 004485dc        if (eax_28 != 0xffffffff)
 004485f7        int32_t eax_29 = *(esi_4 + 0x88c)
 004485fd        eax_29.b |= 8
 004485ff        *(esi_4 + 0x88c) = eax_29
-004485ed        report_errorf("Unknown path %s in %s", &arg_20, arg_8)
+004485ed        report_errorf("Unknown path %s in %s", &name, arg_8)
 0044860f        char* __return_addr_7 = find_case_insensitive_substring("NoFall", &arg_60)
 00448619        __return_addr = __return_addr_7
 0044861d        if (__return_addr_7 != 0)
@@ -228,9 +228,9 @@
 00448705        char* __return_addr_13 = find_case_insensitive_substring("RingSpeed=", &arg_60)
 0044870f        __return_addr = __return_addr_13
 00448713        if (__return_addr_13 == 0)
-00448757        ecx[(ebp_1 + 0x28) * 0xe] = 0
+00448757        out_count[(ebp_1 + 0x28) * 0xe] = 0
 00448726        __return_addr = &find_case_insensitive_substring("=", __return_addr_13)[1]
-00448742        ecx[(ebp_1 + 0x28) * 0xe] = fconvert.s(parse_next_float32(&__return_addr))
+00448742        out_count[(ebp_1 + 0x28) * 0xe] = fconvert.s(parse_next_float32(&__return_addr))
 00448764        char* __return_addr_14 = find_case_insensitive_substring("JetPack=Off", &arg_60)
 0044876e        __return_addr = __return_addr_14
 00448772        if (__return_addr_14 != 0)
@@ -243,5 +243,7 @@
 004488d1        goto label_4488d8
 0044879a        ebp = arg_10
 0044879f        arg_1c += 1
-00448890        report_errorf("Data line must start with '@' in Segment %s\n", &(&__saved_edi)[ebp * 0x20 + 0x53c])
-004488a2        return 0
+0044833a        continue
+004488de        report_errorf("Unexpected end of file in Segment %s\n", var_14_31)
+004488e3        break
+004488f0        return

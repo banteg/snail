@@ -35,8 +35,7 @@ struct SegmentCatalogEntry {
     int id;                        // +0x80
     int row_count;                 // +0x84
     char glyph_columns[0x100][8];  // +0x88, column-major source grid
-    AuthoredSegmentRow rows[255];  // +0x888
-    char unknown_4050[0x4088 - 0x4050];
+    AuthoredSegmentRow rows[256];  // +0x888, fills the entry through +0x4088
 };
 
 typedef char SegmentCatalogEntry_must_be_0x4088[

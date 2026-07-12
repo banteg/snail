@@ -5,22 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, emit_summary, types_declare_if_missing
+from _narrow_sync import apply_proto_updates, emit_summary, types_declare
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/segment_catalog_types.h"
 TARGET = "active"
-
-REQUIRED_HEADER_STRUCTS = (
-    "AuthoredFloatBits",
-    "AuthoredSegmentRow",
-    "SegmentCatalogEntry",
-    "SMTracks",
-    "SubSegment",
-    "SubTracks",
-    "SubSegmentRaw",
-)
 
 PROTO_UPDATES = (
     (
@@ -52,11 +42,10 @@ PROTO_UPDATES = (
 
 def main() -> int:
     operations: list[dict[str, object]] = [
-        types_declare_if_missing(
+        types_declare(
             REPO_ROOT,
             target=TARGET,
             header_path=HEADER_PATH,
-            required_structs=REQUIRED_HEADER_STRUCTS,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]

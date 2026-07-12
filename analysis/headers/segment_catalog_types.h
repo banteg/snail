@@ -39,8 +39,7 @@ typedef struct SegmentCatalogEntry {
     int32_t id;
     int32_t row_count;
     char glyph_columns[0x100][8];
-    AuthoredSegmentRow rows[255];
-    uint8_t unknown_4050[0x4088 - 0x4050];
+    AuthoredSegmentRow rows[256];
 } SegmentCatalogEntry;
 
 typedef struct SMTracks {
