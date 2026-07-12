@@ -1548,7 +1548,7 @@
     {
       "address": "0x431740",
       "name": "enumerate_matching_archive_or_fs_entries",
-      "description": "Enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into the fixed output table, and returns the match count through the out parameter."
+      "description": "Enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail."
     },
     {
       "address": "0x431980",
