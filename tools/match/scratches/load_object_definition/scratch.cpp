@@ -20,16 +20,18 @@ int load_object_definition(char* path, Object* object)
     char texture_path[0x80];
     char texture_name[0x80];
     int byte_count;
-    int vertex_count;
 
     char* file_text = get_archive_data_base();
     sprintf(object_file_path, "%s/_Object.txt", path);
-    load_file_bytes_from_archive_or_fs(object_file_path, file_text, &byte_count);
+    load_file_bytes_from_archive_or_fs(
+        object_file_path, file_text, &byte_count);
     file_text[byte_count - 2] = '\0';
+    int facequad_count = 0;
     texture_name[0] = '\0';
 
     char* cursor = file_text;
-    vertex_count = 0;
+    char* line_cursor;
+    int vertex_count = 0;
 
     if (*cursor != '\0') {
         do {
@@ -38,18 +40,18 @@ int load_object_definition(char* path, Object* object)
                     if (strings_equal_case_insensitive(cursor, "[VERTEX START]")) {
                         skip_to_next_line(&cursor);
 
-                        char* count_cursor = cursor;
+                        line_cursor = cursor;
                         if (!strings_equal_case_insensitive(cursor, "[VERTEX END]")) {
                             do {
                                 ++vertex_count;
-                                skip_to_next_line(&count_cursor);
-                            } while (!strings_equal_case_insensitive(count_cursor, "[VERTEX END]"));
+                                skip_to_next_line(&line_cursor);
+                            } while (!strings_equal_case_insensitive(line_cursor, "[VERTEX END]"));
                         }
 
                         object->request_object_vertices(vertex_count);
 
                         while (!strings_equal_case_insensitive(cursor, "[VERTEX END]")) {
-                            char* line_cursor = cursor;
+                            line_cursor = cursor;
                             int index = parse_next_int32(&line_cursor);
                             float x = parse_next_float32(&line_cursor);
                             float y = parse_next_float32(&line_cursor);
@@ -57,27 +59,25 @@ int load_object_definition(char* path, Object* object)
 
                             skip_to_next_line(&cursor);
 
-                            Vector3* vertex = &object->vertices[index];
-                            vertex->x = x;
-                            vertex->y = y;
-                            vertex->z = z;
+                            object->vertices[index].x = x;
+                            object->vertices[index].y = y;
+                            object->vertices[index].z = z;
                         }
                     } else if (strings_equal_case_insensitive(cursor, "[FACEQUAD START]")) {
-                        int facequad_count = 0;
                         skip_to_next_line(&cursor);
 
-                        char* count_cursor = cursor;
+                        line_cursor = cursor;
                         if (!strings_equal_case_insensitive(cursor, "[FACEQUAD END]")) {
                             do {
                                 ++facequad_count;
-                                skip_to_next_line(&count_cursor);
-                            } while (!strings_equal_case_insensitive(count_cursor, "[FACEQUAD END]"));
+                                skip_to_next_line(&line_cursor);
+                            } while (!strings_equal_case_insensitive(line_cursor, "[FACEQUAD END]"));
                         }
 
                         object->request_object_facequads(facequad_count);
 
                         while (!strings_equal_case_insensitive(cursor, "[FACEQUAD END]")) {
-                            char* line_cursor = cursor;
+                            line_cursor = cursor;
                             int face_index = parse_next_int32(&line_cursor);
                             int vertex_0 = parse_next_int32(&line_cursor);
                             int vertex_1 = parse_next_int32(&line_cursor);
@@ -98,24 +98,29 @@ int load_object_definition(char* path, Object* object)
                             append_c_string((unsigned char*)texture_path, (unsigned char*)"/");
                             append_c_string((unsigned char*)texture_path, (unsigned char*)texture_name);
 
-                            ObjectFaceQuad* quad = &object->facequads[face_index];
-                            quad->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+                            object->facequads[face_index].texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(
+                                    texture_path, 0, 0);
 
                             skip_to_next_line(&cursor);
 
-                            *(unsigned short*)quad = 0;
-                            quad->vertex_0 = (unsigned short)vertex_0;
-                            quad->vertex_1 = (unsigned short)vertex_1;
-                            quad->vertex_2 = (unsigned short)vertex_2;
-                            quad->vertex_3 = (unsigned short)vertex_3;
-                            quad->uv[0].u = u0;
-                            quad->uv[0].v = v0;
-                            quad->uv[1].u = u1;
-                            quad->uv[1].v = v1;
-                            quad->uv[2].u = u2;
-                            quad->uv[2].v = v2;
-                            quad->uv[3].u = u3;
-                            quad->uv[3].v = v3;
+                            object->facequads[face_index].header_word = 0;
+                            object->facequads[face_index].vertex_0 =
+                                (unsigned short)vertex_0;
+                            object->facequads[face_index].vertex_1 =
+                                (unsigned short)vertex_1;
+                            object->facequads[face_index].vertex_2 =
+                                (unsigned short)vertex_2;
+                            object->facequads[face_index].vertex_3 =
+                                (unsigned short)vertex_3;
+                            object->facequads[face_index].uv[0].u = u0;
+                            object->facequads[face_index].uv[0].v = v0;
+                            object->facequads[face_index].uv[1].u = u1;
+                            object->facequads[face_index].uv[1].v = v1;
+                            object->facequads[face_index].uv[2].u = u2;
+                            object->facequads[face_index].uv[2].v = v2;
+                            object->facequads[face_index].uv[3].u = u3;
+                            object->facequads[face_index].uv[3].v = v3;
                         }
                     }
                 }

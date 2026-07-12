@@ -12,6 +12,9 @@ Recovered structure:
   `Object::vertices`.
 - `[FACEQUAD START]` is counted first, then `request_object_facequads`
   allocates indexed facequad records.
+- Both section counters are initialized once before the parser loop. Repeated
+  section markers therefore continue the running counts rather than resetting
+  a block-local count.
 - Each facequad line has the face index, four vertex indices, eight UV floats,
   and a texture token. The loader appends `.tga`, builds `path/token.tga`,
   resolves it through `g_texture_refs.get_or_create_texture_ref`, and clears
@@ -19,20 +22,20 @@ Recovered structure:
 - Lines starting with `*` are comments skipped by a hand-written newline scan,
   matching the native special case rather than the general line skipper helper.
 
-Focused matcher result: 44.80%, 300 candidate instructions versus 325 target
-instructions. The masked audit reports 36 ok and 5 mismatches; those mismatches
-are alignment fallout between the current vertex and facequad block layout, not
-unresolved symbols.
+Focused matcher result: 51.33%, 314 candidate instructions versus 325 target
+instructions, with a 27-instruction exact prefix. The masked audit reports 33
+ok, zero unresolved, and 14 alignment-dependent mismatches.
 
 Known residuals:
 
-- Candidate frame is `0x240` versus native `0x23c`, shifting every stack local
-  by four bytes and leaving a zero-instruction prefix.
-- Native keeps the object receiver in `edi` across the main parser. The current
-  source still reloads the object argument in object-allocation and facequad
-  store regions.
+- Native and candidate now both use a `0x23c` frame, including the observed
+  `byte_count`, texture-name, texture-path, and object-path slots.
+- Native spills the facequad and vertex running counts in the opposite order
+  from the candidate (`+0x24/+0x20` versus `+0x20/+0x24`). This ends the exact
+  prefix but does not change their ownership or lifetime.
 - Native stores vertex and facequad floats through x87 load/store scheduling;
-  the current source often emits compact integer moves from stack locals.
+  the remaining differences are primarily local-slot allocation, independent
+  register selection, and block placement.
 
 Measured probes:
 
@@ -68,5 +71,21 @@ alignment-dependent masked mismatches.
 
 A whole-`Vector3` parsed-vertex temporary was rejected: it regressed focused
 Wibo to 33.44% and enlarged the frame to `0x248`. The retained three-float
-staging plus borrowed destination pointer is both clearer about the destination
-slot and preserves the native `0x23c` frame.
+staging plus direct access to the object-owned destination array is clearer
+about the destination slot and preserves the native `0x23c` frame.
+
+2026-07-12 array/cursor ownership pass: disassembly shows that native never
+caches either destination element. It reloads `Object::vertices` for each
+coordinate store and `Object::facequads` for the texture, header/index, and UV
+stores, so the scratch now expresses those accesses directly instead of
+inventing borrowed element aliases. The first face word is also written through
+the recovered `header_word` field rather than an untyped cast.
+
+The same audit recovered one function-lifetime secondary cursor shared by the
+vertex counter, vertex parser, facequad counter, and facequad parser. Together
+with the function-lifetime `byte_count`, that reuse produces the native
+`0x23c` frame and exact buffer offsets. The retained 51.33% result is lower than
+the semantic similarity of the two listings because the swapped count spill
+slots and block layout disrupt sequence alignment; no dummy locals, volatile
+qualifiers, or synthetic pointer aliases were introduced to conceal that
+residual.
