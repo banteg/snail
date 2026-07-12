@@ -700,10 +700,10 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_bod",
+      "selector": "initialize_sub_loc",
       "address": "0x4088c0",
-      "name": "initialize_bod",
-      "artifact": "analysis/decompile/ida/functions/004088c0-initialize_bod.c",
+      "name": "initialize_sub_loc",
+      "artifact": "analysis/decompile/ida/functions/004088c0-initialize_sub_loc.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2590,31 +2590,31 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "is_slide_cache_tile_family",
+      "selector": "is_sub_loc_floor",
       "address": "0x439a40",
-      "name": "is_slide_cache_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439a40-is_slide_cache_tile_family.c",
+      "name": "is_sub_loc_floor",
+      "artifact": "analysis/decompile/ida/functions/00439a40-is_sub_loc_floor.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "is_ramp_cache_tile_family",
+      "selector": "is_sub_loc_ramp",
       "address": "0x439a70",
-      "name": "is_ramp_cache_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439a70-is_ramp_cache_tile_family.c",
+      "name": "is_sub_loc_ramp",
+      "artifact": "analysis/decompile/ida/functions/00439a70-is_sub_loc_ramp.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "is_open_neighbor_tile_family",
+      "selector": "is_sub_loc_empty",
       "address": "0x439ab0",
-      "name": "is_open_neighbor_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439ab0-is_open_neighbor_tile_family.c",
+      "name": "is_sub_loc_empty",
+      "artifact": "analysis/decompile/ida/functions/00439ab0-is_sub_loc_empty.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "is_floor_cache_tile_family",
+      "selector": "is_sub_loc_slide",
       "address": "0x439ad0",
-      "name": "is_floor_cache_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439ad0-is_floor_cache_tile_family.c",
+      "name": "is_sub_loc_slide",
+      "artifact": "analysis/decompile/ida/functions/00439ad0-is_sub_loc_slide.c",
       "removed_stale_artifacts": []
     },
     {

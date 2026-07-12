@@ -1478,10 +1478,12 @@ void __thiscall update_track_render_cache_rows(SegmentCache* manager);
 
 void __thiscall remove_track_render_cache_bods(SegmentCache* manager);
 
-int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_floor(TrackRowCell* cell);
 
-int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_slide(TrackRowCell* cell);
 
-int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_ramp(TrackRowCell* cell);
+
+int32_t __fastcall is_sub_loc_empty(TrackRowCell* cell);
 
 #endif

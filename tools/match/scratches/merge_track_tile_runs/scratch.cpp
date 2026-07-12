@@ -6,8 +6,8 @@
 
 extern char* g_game_base; // data_4df904
 
-unsigned char __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
-unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
 
 #define IS_SLIDE_RUN_TILE(tile) \
     ((tile) == 1 || (tile) == 0x15 || (tile) == 0x1b || (tile) == 0x21 \
@@ -55,7 +55,7 @@ void SubgameRuntime::merge_track_tile_runs()
             do {
                 unsigned char tile = cell->tile_id;
 
-                if (is_slide_cache_tile_family(cell) != 0
+                if (is_sub_loc_floor(cell) != 0
                     && (cell->lane_and_flags & 0x8000) == 0
                     && (cell->lane_and_flags & 0x40) == 0) {
                     int run_length = 0;
@@ -76,13 +76,13 @@ void SubgameRuntime::merge_track_tile_runs()
                                 *(void**)(g_game_base + run_length * 0x38 + 0x4477c));
                         CLEAR_MERGED_CONTINUATIONS(cell, run_length);
                     }
-                } else if (is_floor_cache_tile_family(cell) != 0
+                } else if (is_sub_loc_slide(cell) != 0
                            && (cell->lane_and_flags & 0x8000) == 0
                            && (cell->lane_and_flags & 0x40) == 0) {
                     int run_length = 0;
                     TrackRowCell* cursor = cell;
                     int lane_cursor = lane;
-                    while (lane_cursor < 8 && is_floor_cache_tile_family(cursor) != 0
+                    while (lane_cursor < 8 && is_sub_loc_slide(cursor) != 0
                            && (cursor->lane_and_flags & 0x8000) == 0
                            && (cursor->lane_and_flags & 0x4000) != 0
                            && (cursor->lane_and_flags & 0x60) == 0) {

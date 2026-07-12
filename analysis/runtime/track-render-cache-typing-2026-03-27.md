@@ -48,9 +48,10 @@ so the tracked BN exports also improved for:
 - [`add_track_cache_vertex`](../decompile/binja/functions/00433830-add_track_cache_vertex.c)
 - [`append_track_cache_object`](../decompile/binja/functions/00433960-append_track_cache_object.c)
 - [`remove_track_render_cache_bods`](../decompile/binja/functions/00433f20-remove_track_render_cache_bods.c)
-- [`is_slide_cache_tile_family`](../decompile/binja/functions/00439a40-is_slide_cache_tile_family.c)
-- [`is_floor_cache_tile_family`](../decompile/binja/functions/00439ad0-is_floor_cache_tile_family.c)
-- [`is_ramp_cache_tile_family`](../decompile/binja/functions/00439a70-is_ramp_cache_tile_family.c)
+- [`is_sub_loc_floor`](../decompile/binja/functions/00439a40-is_sub_loc_floor.c)
+- [`is_sub_loc_slide`](../decompile/binja/functions/00439ad0-is_sub_loc_slide.c)
+- [`is_sub_loc_ramp`](../decompile/binja/functions/00439a70-is_sub_loc_ramp.c)
+- [`is_sub_loc_empty`](../decompile/binja/functions/00439ab0-is_sub_loc_empty.c)
 
 The BN view now reads the teardown path through the embedded
 `slots[row][family].bod` list node and renders the build path through

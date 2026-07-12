@@ -6,7 +6,7 @@
 
 extern char* g_game_base; // data_4df904
 
-unsigned char __fastcall is_open_neighbor_tile_family(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_empty(TrackRowCell* cell);
 
 void SubgameRuntime::promote_track_tiles_to_fringe_variants()
 {
@@ -18,7 +18,7 @@ void SubgameRuntime::promote_track_tiles_to_fringe_variants()
             int lane_count = 8;
             do {
                 cell->lane_and_flags &= ~0x20u;
-                if (is_open_neighbor_tile_family(cell + 8) != 0) {
+                if (is_sub_loc_empty(cell + 8) != 0) {
                     char* game = g_game_base;
                     int offset = 0;
                     do {

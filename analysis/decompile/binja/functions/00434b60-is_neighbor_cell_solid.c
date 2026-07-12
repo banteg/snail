@@ -11,7 +11,7 @@
 00434b9e        int32_t eax_2 = (ecx_2 + (result << 3) + arg3) * 0x15
 00434ba3        int32_t ecx_5
 00434ba3        ecx_5.b = *(arg1 + (eax_2 << 2) + 0x3bfb04)
-00434bcf        if (is_open_neighbor_tile_family(arg1 + (eax_2 << 2) + 0x3bfac8).b == 0 && ecx_5 != 0 && ecx_5 != 0x23 && ecx_5 != 0x1c && ecx_5 != 0x16)
+00434bcf        if (is_sub_loc_empty(arg1 + (eax_2 << 2) + 0x3bfac8).b == 0 && ecx_5 != 0 && ecx_5 != 0x23 && ecx_5 != 0x1c && ecx_5 != 0x16)
 00434bd2        result.b = 1
 00434bd5        return result
 00434bd9        result.b = 0

@@ -286,16 +286,16 @@ enum {
 // its cRSubLoc::Yi() accessor performs the same lane/slab row-index recovery
 // as the exact Windows helper below. The Windows layout is 0x54 bytes.
 struct SubLoc {
-    SubLoc* initialize_bod(); // @ 0x4088c0, historical Windows method name
+    SubLoc* initialize_sub_loc(); // @ 0x4088c0, cRSubLoc constructor wrapper
 
     BodNode bod;                       // +0x00, active/free BOD prefix
 
     void remove_sub_loc(); // @ 0x439bc0, cRSubLoc::Remove
     void update_sub_loc(); // @ 0x439d50, cRSubLoc::AI
-    unsigned char is_slide_cache_tile_family(); // @ 0x439a40, cRSubLoc::IsFloor
-    unsigned char is_ramp_cache_tile_family(); // @ 0x439a70, cRSubLoc::IsRamp
-    unsigned char is_open_neighbor_tile_family(); // @ 0x439ab0, cRSubLoc::IsEmpty
-    unsigned char is_floor_cache_tile_family(); // @ 0x439ad0, cRSubLoc::IsSlide
+    unsigned char is_sub_loc_floor(); // @ 0x439a40, cRSubLoc::IsFloor
+    unsigned char is_sub_loc_ramp(); // @ 0x439a70, cRSubLoc::IsRamp
+    unsigned char is_sub_loc_empty(); // @ 0x439ab0, cRSubLoc::IsEmpty
+    unsigned char is_sub_loc_slide(); // @ 0x439ad0, cRSubLoc::IsSlide
 
     Vector3 anchor_position;            // +0x10 (z at +0x18)
     float render_arg_1c;                // +0x1c, inline BodBase texture-u argument

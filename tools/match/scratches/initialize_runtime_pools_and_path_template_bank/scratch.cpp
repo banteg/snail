@@ -144,7 +144,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     SubLoc* loc = &runtime_cells[0][0];
     int loc_count = 0x6400;
     do {
-        loc->initialize_bod();
+        loc->initialize_sub_loc();
         ++loc;
         --loc_count;
     } while (loc_count);

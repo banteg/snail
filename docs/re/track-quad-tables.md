@@ -42,7 +42,7 @@ assigns a fixed object (game dword index × 4 = byte offset):
 ## Pass 1: select_track_tile_edge_variants @ 0x435a80
 
 For tiles not in {0, 35, 28, 29, 30, 14}: build an open-neighbor mask
-(left=8, right=4, behind=1, ahead=2 — using `is_open_neighbor_tile_family`
+(left=8, right=4, behind=1, ahead=2 — using `is_sub_loc_empty`
 on the 4 neighbors, with grid borders counting as open). On exact corner
 masks, set cell flag 0x8000 and install a corner quad:
 

@@ -138,7 +138,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
   v14 = 25600;
   do
   {
-    initialize_bod(v13);
+    initialize_sub_loc(v13);
     v13 += 21;
     --v14;
   }

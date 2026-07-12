@@ -23,7 +23,7 @@ int32_t __thiscall promote_track_tiles_to_fringe_variants(Game *game)
       do
       {
         *((_DWORD *)v2 + 7) &= ~0x20u;
-        if ( is_open_neighbor_tile_family(v2 + 636) )
+        if ( is_sub_loc_empty(v2 + 636) )
         {
           v4 = (char *)MEMORY[0x4DF904];
           for ( i = 0; i < 448; i += 56 )

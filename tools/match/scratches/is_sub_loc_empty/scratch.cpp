@@ -1,8 +1,8 @@
-// is_open_neighbor_tile_family @ 0x439ab0 (fastcall, ret)
+// is_sub_loc_empty @ 0x439ab0 (fastcall, ret)
 
 #include "track_attachment.h"
 
-unsigned char SubLoc::is_open_neighbor_tile_family()
+unsigned char SubLoc::is_sub_loc_empty()
 {
     unsigned char tile_id = this->tile_id;
     unsigned char result;

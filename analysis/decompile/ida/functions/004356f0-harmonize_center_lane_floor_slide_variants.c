@@ -43,8 +43,8 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(Game *game)
         if ( (v6 & 0x20) == 0 )
         {
           if ( (v7[3931560] & 0x20) == 0
-            && (unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v7 + 3930824)) == 1
-            && ((unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v7 + 3931496)) == 1 || v7[3931556] == 30) )
+            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v7 + 3930824)) == 1
+            && ((unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v7 + 3931496)) == 1 || v7[3931556] == 30) )
           {
             v8 = (char *)MEMORY[0x4DF904];
             if ( *((_DWORD *)v7 + 982715) == *((_DWORD *)MEMORY[0x4DF904] + 70125) )
@@ -65,8 +65,8 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(Game *game)
           }
           if ( (v7[3930888] & 0x20) == 0
             && (v7[3931560] & 0x20) == 0
-            && (unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v7 + 3930824)) == 1
-            && (unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v7 + 3931496)) == 1 )
+            && (unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v7 + 3930824)) == 1
+            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v7 + 3931496)) == 1 )
           {
             v10 = (char *)MEMORY[0x4DF904];
             if ( *((_DWORD *)v7 + 982715) == *((_DWORD *)MEMORY[0x4DF904] + 70349) )
@@ -93,8 +93,8 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(Game *game)
         if ( (v12[3930888] & 0x20) == 0 )
         {
           if ( (v12[3930216] & 0x20) == 0
-            && (unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v12 + 3930824)) == 1
-            && ((unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v12 + 3930152)) == 1 || v12[3930212] == 32) )
+            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v12 + 3930824)) == 1
+            && ((unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v12 + 3930152)) == 1 || v12[3930212] == 32) )
           {
             v13 = (char *)MEMORY[0x4DF904];
             if ( *((_DWORD *)v12 + 982715) == *((_DWORD *)MEMORY[0x4DF904] + 70125) )
@@ -115,8 +115,8 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(Game *game)
           }
           if ( (v12[3930888] & 0x20) == 0
             && (v12[3930216] & 0x20) == 0
-            && (unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v12 + 3930824)) == 1
-            && (unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v12 + 3930152)) == 1 )
+            && (unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v12 + 3930824)) == 1
+            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v12 + 3930152)) == 1 )
           {
             v15 = (char *)MEMORY[0x4DF904];
             if ( *((_DWORD *)v12 + 982715) == *((_DWORD *)MEMORY[0x4DF904] + 70349) )

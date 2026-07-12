@@ -35,13 +35,13 @@ int32_t __thiscall select_track_tile_edge_variants(Game *game)
         v6 = *v3;
         if ( *v3 && v6 != 35 && v6 != 28 && v6 != 29 && v6 != 30 && v6 != 14 )
         {
-          if ( !i || is_open_neighbor_tile_family(v3 - 144) )
+          if ( !i || is_sub_loc_empty(v3 - 144) )
             v3[1] |= 8u;
-          if ( i == 7 || is_open_neighbor_tile_family(v3 + 24) )
+          if ( i == 7 || is_sub_loc_empty(v3 + 24) )
             v3[1] |= 4u;
-          if ( !v2 || is_open_neighbor_tile_family(v3 - 732) )
+          if ( !v2 || is_sub_loc_empty(v3 - 732) )
             v3[1] |= 1u;
-          if ( v2 >= game->runtime_row_count - 1 || is_open_neighbor_tile_family(v3 + 612) )
+          if ( v2 >= game->runtime_row_count - 1 || is_sub_loc_empty(v3 + 612) )
             v3[1] |= 2u;
           switch ( v3[1] )
           {
@@ -52,7 +52,7 @@ int32_t __thiscall select_track_tile_edge_variants(Game *game)
               {
                 set_bod_object((_DWORD *)v3 - 15, *((_DWORD *)MEMORY[0x4DF904] + 69789));
               }
-              else if ( v9 != 22 && v9 != 14 && !(unsigned __int8)is_ramp_cache_tile_family((TrackRowCell *)(v3 - 60)) )
+              else if ( v9 != 22 && v9 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(v3 - 60)) )
               {
                 set_bod_object((_DWORD *)v3 - 15, *((_DWORD *)MEMORY[0x4DF904] + 69901));
               }
@@ -65,7 +65,7 @@ int32_t __thiscall select_track_tile_edge_variants(Game *game)
                 v8 = *((_DWORD *)MEMORY[0x4DF904] + 69817);
                 goto LABEL_67;
               }
-              if ( v11 != 22 && v11 != 14 && !(unsigned __int8)is_ramp_cache_tile_family((TrackRowCell *)(v3 - 60)) )
+              if ( v11 != 22 && v11 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(v3 - 60)) )
                 set_bod_object((_DWORD *)v3 - 15, *((_DWORD *)MEMORY[0x4DF904] + 69929));
               break;
             case 9u:
@@ -77,7 +77,7 @@ int32_t __thiscall select_track_tile_edge_variants(Game *game)
 LABEL_67:
                 set_bod_object((_DWORD *)v3 - 15, v8);
               }
-              else if ( v7 != 22 && v7 != 14 && !(unsigned __int8)is_ramp_cache_tile_family((TrackRowCell *)(v3 - 60)) )
+              else if ( v7 != 22 && v7 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(v3 - 60)) )
               {
                 set_bod_object((_DWORD *)v3 - 15, *((_DWORD *)MEMORY[0x4DF904] + 69887));
               }
@@ -89,7 +89,7 @@ LABEL_67:
               {
                 set_bod_object((_DWORD *)v3 - 15, *((_DWORD *)MEMORY[0x4DF904] + 69803));
               }
-              else if ( v10 != 22 && v10 != 14 && !(unsigned __int8)is_ramp_cache_tile_family((TrackRowCell *)(v3 - 60)) )
+              else if ( v10 != 22 && v10 != 14 && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(v3 - 60)) )
               {
                 set_bod_object((_DWORD *)v3 - 15, *((_DWORD *)MEMORY[0x4DF904] + 69915));
               }

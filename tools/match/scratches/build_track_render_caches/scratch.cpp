@@ -9,9 +9,9 @@
 #include "track_attachment_types.h"
 #include "segment_cache.h"
 
-unsigned char __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
-unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
-unsigned char __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_ramp(TrackRowCell* cell);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 
@@ -115,7 +115,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         (*(Object**)((char*)track_render_grid + cell_offset +
                             0x3bfaec))->facequads[0].texture_ref;
                     *(int*)((char*)track_render_grid + cell_offset + 0x3bfb08) &= ~0x4000;
-                } else if (is_slide_cache_tile_family(
+                } else if (is_sub_loc_floor(
                     (TrackRowCell*)((char*)track_render_grid + cell_offset + 0x3bfac8))
                     && ((*(int*)((char*)track_render_grid + cell_offset + 0x3bfb08)
                         & 0x4000) == 0x4000)) {
@@ -158,7 +158,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                                 0x3bfaec))->facequads[0].texture_ref;
                     }
                     *(int*)((char*)track_render_grid + cell_offset + 0x3bfb08) &= ~0x4000;
-                } else if (is_floor_cache_tile_family(
+                } else if (is_sub_loc_slide(
                     (TrackRowCell*)((char*)track_render_grid + cell_offset + 0x3bfac8))
                     && ((*(int*)((char*)track_render_grid + cell_offset + 0x3bfb08)
                         & 0x4000) == 0x4000)) {
@@ -201,7 +201,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                                 0x3bfaec))->facequads[0].texture_ref;
                     }
                     *(int*)((char*)track_render_grid + cell_offset + 0x3bfb08) &= ~0x4000;
-                } else if (is_ramp_cache_tile_family(
+                } else if (is_sub_loc_ramp(
                     (TrackRowCell*)((char*)track_render_grid + cell_offset + 0x3bfac8))
                     && ((*(int*)((char*)track_render_grid + cell_offset + 0x3bfb08)
                         & 0x4000) == 0x4000)) {

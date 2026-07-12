@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: is_floor_cache_tile_family @ 0x439ad0 */
+/* function: is_sub_loc_slide @ 0x439ad0 */
 
 00439ad0        int32_t result
 00439ad0        result.b = cell->tile_id

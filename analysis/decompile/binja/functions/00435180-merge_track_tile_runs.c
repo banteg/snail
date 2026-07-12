@@ -27,13 +27,13 @@
 004351dd        int32_t i_2 = 0
 004351df        int32_t i_6 = 0
 004351ee        while (true)
-004351ee        char eax_3 = is_slide_cache_tile_family(ebx_1 - 0x40)
+004351ee        char eax_3 = is_sub_loc_floor(ebx_1 - 0x40)
 004351f5        int16_t eax_4
 004351f5        if (eax_3 != 0)
 004351fb        eax_4 = ((ebx_1 - 0x3bfb08)->__offset(0x3bfb08).d).w
 00435208        if (eax_3 == 0 || (eax_4:1.b & 0x80) != 0 || (eax_4.b & 0x40) != 0)
 004352c9        int16_t eax_10
-004352c9        if (is_floor_cache_tile_family(ebx_1 - 0x40).b == 0)
+004352c9        if (is_sub_loc_slide(ebx_1 - 0x40).b == 0)
 004353e2        label_4353e2:
 004353e2        eax_10.b = (ebx_1 + 0xf8)->:0x3bfb04.b
 004353e5        void* __offset(Game, 0x3bfb04) edx_5 = ebx_1 - 4
@@ -86,7 +86,7 @@
 004352e2        int32_t esi_1 = 0
 004352e7        if (i_2 s< 8)
 004352ed        void* __offset(Game, 0x3bfb08) edi_4 = ebx_1
-004352f9        if (is_floor_cache_tile_family(edi_4 - 0x40) == 0)
+004352f9        if (is_sub_loc_slide(edi_4 - 0x40) == 0)
 004352f9        break
 004352fb        int16_t eax_12 = ((edi_4 - 0x3bfb08)->__offset(0x3bfb08).d).w
 00435300        if ((eax_12:1.b & 0x80) != 0)

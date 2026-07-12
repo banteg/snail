@@ -326,15 +326,15 @@
     },
     {
       "address": "0x439a40",
-      "windows_name": "is_slide_cache_tile_family",
+      "windows_name": "is_sub_loc_floor",
       "ios_symbol": "cRSubLoc::IsFloor()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android body accepts the identical tile set 1/20/21/33/34/27; the Windows harness name reflects cache use rather than the authored method."
+      "notes": "Android body accepts the identical tile set 1/20/21/33/34/27; the Windows harness now follows the authored owner and method."
     },
     {
       "address": "0x439a70",
-      "windows_name": "is_ramp_cache_tile_family",
+      "windows_name": "is_sub_loc_ramp",
       "ios_symbol": "cRSubLoc::IsRamp()",
       "source_object": null,
       "confidence": "high",
@@ -342,7 +342,7 @@
     },
     {
       "address": "0x439ab0",
-      "windows_name": "is_open_neighbor_tile_family",
+      "windows_name": "is_sub_loc_empty",
       "ios_symbol": "cRSubLoc::IsEmpty()",
       "source_object": null,
       "confidence": "high",
@@ -350,11 +350,11 @@
     },
     {
       "address": "0x439ad0",
-      "windows_name": "is_floor_cache_tile_family",
+      "windows_name": "is_sub_loc_slide",
       "android_symbol": "cRSubLoc::IsSlide()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android body accepts the identical tile set 15/23/24/25/26/16/18/19; the retained Windows cache name is opposite the authored IsFloor helper."
+      "notes": "Android body accepts the identical tile set 15/23/24/25/26/16/18/19; the authored name corrects the former Windows cache label that was opposite IsFloor."
     },
     {
       "address": "0x439b00",

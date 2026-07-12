@@ -77,11 +77,11 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
       while ( 1 )
       {
         v9 = v7 - 16;
-        if ( !(unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v7 - 16))
+        if ( !(unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v7 - 16))
           || (BYTE1(*v7) & 0x80u) != 0
           || (*v7 & 0x40) != 0 )
         {
-          if ( !(unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v7 - 16))
+          if ( !(unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v7 - 16))
             || (BYTE1(*v7) & 0x80u) != 0
             || (*v7 & 0x40) != 0 )
           {
@@ -152,7 +152,7 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
             v19 = v7;
             do
             {
-              if ( !(unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)(v19 - 16)) )
+              if ( !(unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v19 - 16)) )
                 break;
               v20 = *v19;
               if ( (BYTE1(*v19) & 0x80u) != 0 )

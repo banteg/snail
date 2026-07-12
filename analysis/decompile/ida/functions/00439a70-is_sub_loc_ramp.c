@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: is_ramp_cache_tile_family @ 0x439a70 */
-/* selector: is_ramp_cache_tile_family */
+/* function: is_sub_loc_ramp @ 0x439a70 */
+/* selector: is_sub_loc_ramp */
 
-int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell *cell)
+int32_t __fastcall is_sub_loc_ramp(TrackRowCell *cell)
 {
   uint8_t tile_id; // al
   int32_t result; // eax

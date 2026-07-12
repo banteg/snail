@@ -362,7 +362,7 @@ LABEL_101:
                 || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 19
                 || player->damage_gauge.state == 2
                 && (v37 = get_track_grid_cell_at_world_position(player->game, p_position),
-                    (unsigned __int8)is_slide_cache_tile_family(v37)) )
+                    (unsigned __int8)is_sub_loc_floor(v37)) )
               {
                 v38 = player->game->subgame_rate * player->game->subgame_rate * 0.0040000002;
                 player->velocity.z = v38 + v38 + player->velocity.z;
@@ -450,7 +450,7 @@ LABEL_101:
               {
                 if ( player->live_matrix.position.y < 0.49000001
                   && player->live_matrix.position.y > -0.16333334
-                  && !is_open_neighbor_tile_family(v41)
+                  && !is_sub_loc_empty(v41)
                   && v41->tile_id != 22 )
                 {
                   set_matrix_rotation_identity(&player->live_matrix);

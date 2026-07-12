@@ -19,7 +19,7 @@
 00435749        eax_1.b = game_1->_pad_00[(edx_3 << 2) + 0x3bfb08]
 00435752        void* esi = &game_1->_pad_00[edx_3 << 2]
 00435755        if ((eax_1.b & 0x20) == 0)
-00435762        if ((*(esi + 0x3bfda8) & 0x20) == 0 && is_slide_cache_tile_family(esi + 0x3bfac8) == 1 && (is_floor_cache_tile_family(esi + 0x3bfd68) == 1 || *(esi + 0x3bfda4) == 0x1e))
+00435762        if ((*(esi + 0x3bfda8) & 0x20) == 0 && is_sub_loc_floor(esi + 0x3bfac8) == 1 && (is_sub_loc_slide(esi + 0x3bfd68) == 1 || *(esi + 0x3bfda4) == 0x1e))
 00435795        void* eax_4 = data_4df904
 004357a6        if (*(esi + 0x3bfaec) == *(eax_4 + 0x447b4))
 004357b1        set_bod_object(esi + 0x3bfac8, *(eax_4 + 0x44b34))
@@ -32,7 +32,7 @@
 004357f3        *(esi + 0x3bfb08) |= 0x40
 004357f9        eax_4 = data_4df904
 004357fe        j += 0x38
-0043581d        if ((*(esi + 0x3bfb08) & 0x20) == 0 && (*(esi + 0x3bfda8) & 0x20) == 0 && is_floor_cache_tile_family(esi + 0x3bfac8) == 1 && is_slide_cache_tile_family(esi + 0x3bfd68) == 1)
+0043581d        if ((*(esi + 0x3bfb08) & 0x20) == 0 && (*(esi + 0x3bfda8) & 0x20) == 0 && is_sub_loc_slide(esi + 0x3bfac8) == 1 && is_sub_loc_floor(esi + 0x3bfd68) == 1)
 0043584b        void* eax_11 = data_4df904
 0043585c        if (*(esi + 0x3bfaec) == *(eax_11 + 0x44b34))
 00435867        set_bod_object(esi + 0x3bfac8, *(eax_11 + 0x447b4))
@@ -48,7 +48,7 @@
 004358c7        if (edx_2 == 5)
 004358dc        void* esi_1 = &game_1->_pad_00[(ecx_2 + (i << 3)) * 0x54]
 004358e6        if ((*(esi_1 + 0x3bfb08) & 0x20) == 0)
-004358f3        if ((*(esi_1 + 0x3bf868) & 0x20) == 0 && is_slide_cache_tile_family(esi_1 + 0x3bfac8) == 1 && (is_floor_cache_tile_family(esi_1 + 0x3bf828) == 1 || *(esi_1 + 0x3bf864) == 0x20))
+004358f3        if ((*(esi_1 + 0x3bf868) & 0x20) == 0 && is_sub_loc_floor(esi_1 + 0x3bfac8) == 1 && (is_sub_loc_slide(esi_1 + 0x3bf828) == 1 || *(esi_1 + 0x3bf864) == 0x20))
 00435926        void* eax_21 = data_4df904
 00435937        if (*(esi_1 + 0x3bfaec) == *(eax_21 + 0x447b4))
 00435942        set_bod_object(esi_1 + 0x3bfac8, *(eax_21 + 0x44b34))
@@ -61,7 +61,7 @@
 00435984        *(esi_1 + 0x3bfb08) |= 0x40
 0043598a        eax_21 = data_4df904
 0043598f        j_2 += 0x38
-004359ae        if ((*(esi_1 + 0x3bfb08) & 0x20) == 0 && (*(esi_1 + 0x3bf868) & 0x20) == 0 && is_floor_cache_tile_family(esi_1 + 0x3bfac8) == 1 && is_slide_cache_tile_family(esi_1 + 0x3bf828) == 1)
+004359ae        if ((*(esi_1 + 0x3bfb08) & 0x20) == 0 && (*(esi_1 + 0x3bf868) & 0x20) == 0 && is_sub_loc_slide(esi_1 + 0x3bfac8) == 1 && is_sub_loc_floor(esi_1 + 0x3bf828) == 1)
 004359d8        void* eax_28 = data_4df904
 004359e9        if (*(esi_1 + 0x3bfaec) == *(eax_28 + 0x44b34))
 004359f4        set_bod_object(esi_1 + 0x3bfac8, *(eax_28 + 0x447b4))

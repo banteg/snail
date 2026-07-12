@@ -149,7 +149,7 @@ int32_t __thiscall build_track_render_caches(TrackRenderCacheManager *manager, C
         object = (_DWORD **)manager->slots[cache_row][2].bod.object;
         goto LABEL_28;
       }
-      if ( (unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v12 + 3930824)) )
+      if ( (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v12 + 3930824)) )
       {
         v15 = manager->owner_subgame;
         v16 = *(_DWORD *)&v15->runtime_cells[0][0]._pad_3e[saved_cell_offset + 2];
@@ -178,7 +178,7 @@ LABEL_24:
           goto LABEL_28;
         }
       }
-      if ( (unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
+      if ( (unsigned __int8)is_sub_loc_slide((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
                                                                       + saved_cell_offset)) )
       {
         v17 = &manager->owner_subgame->_pad_00[saved_cell_offset];
@@ -213,7 +213,7 @@ LABEL_28:
           goto LABEL_29;
         }
       }
-      if ( (unsigned __int8)is_ramp_cache_tile_family((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
+      if ( (unsigned __int8)is_sub_loc_ramp((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
                                                                      + saved_cell_offset)) )
       {
         v19 = &manager->owner_subgame->_pad_00[saved_cell_offset];

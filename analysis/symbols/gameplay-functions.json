@@ -506,8 +506,8 @@
     },
     {
       "address": "0x4088c0",
-      "name": "initialize_bod",
-      "description": "Exact Windows `SubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete SubLoc grid; the stable harness name is historical."
+      "name": "initialize_sub_loc",
+      "description": "Exact Windows `SubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete SubLoc grid."
     },
     {
       "address": "0x4088e0",
@@ -1938,23 +1938,23 @@
     },
     {
       "address": "0x439a40",
-      "name": "is_slide_cache_tile_family",
-      "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsFloor()`: accepts tile ids 1, 20, 21, 33, 34, and 27. The retained Windows harness name describes its render-cache use."
+      "name": "is_sub_loc_floor",
+      "description": "Exact Windows counterpart of cross-port `cRSubLoc::IsFloor()`: accepts tile ids 1, 20, 21, 33, 34, and 27."
     },
     {
       "address": "0x439a70",
-      "name": "is_ramp_cache_tile_family",
+      "name": "is_sub_loc_ramp",
       "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13."
     },
     {
       "address": "0x439ab0",
-      "name": "is_open_neighbor_tile_family",
-      "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsEmpty()`: accepts tile ids 0, 28, 35, 14, and 29. The retained Windows name describes its neighbor-test use."
+      "name": "is_sub_loc_empty",
+      "description": "Exact Windows counterpart of cross-port `cRSubLoc::IsEmpty()`: accepts tile ids 0, 28, 35, 14, and 29."
     },
     {
       "address": "0x439ad0",
-      "name": "is_floor_cache_tile_family",
-      "description": "Exact SubLoc predicate matching Android `cRSubLoc::IsSlide()`: accepts tile ids 15, 23, 24, 25, 26, 16, 18, and 19. The historical Windows cache-family name is opposite the authored IsFloor helper at 0x439a40."
+      "name": "is_sub_loc_slide",
+      "description": "Exact Windows counterpart of Android `cRSubLoc::IsSlide()`: accepts tile ids 15, 23, 24, 25, 26, 16, 18, and 19. This retires the historical cache-family labels that had Floor and Slide reversed."
     },
     {
       "address": "0x439b00",

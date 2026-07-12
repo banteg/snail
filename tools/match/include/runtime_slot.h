@@ -22,7 +22,7 @@ public:
     RuntimeSlot* initialize_track_ring_or_special_effect_runtime();
     RuntimeSlot* initialize_fringe_object();
     RuntimeSlot* initialize_golb_shot();
-    RuntimeSlot* initialize_bod();
+    RuntimeSlot* initialize_sub_loc();
     RuntimeSlot* initialize_track_row_runtime();
     RuntimeSlot* initialize_path_template_record_pair();
     RuntimeSlot* initialize_active_landscape_entry();

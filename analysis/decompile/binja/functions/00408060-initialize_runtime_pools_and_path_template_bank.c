@@ -79,7 +79,7 @@
 004082d4        char** edi_6 = arg1 + 0x3bfac8
 004082da        int32_t i_13 = 0x6400
 004082ea        int32_t i_5
-004082e1        initialize_bod(edi_6)
+004082e1        initialize_sub_loc(edi_6)
 004082e1        top_2 -= 1
 004082e6        edi_6 = &edi_6[0x15]
 004082e9        i_5 = i_13

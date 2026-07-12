@@ -78,8 +78,8 @@ struct SubgoldyTrackRowCellView {
     unsigned char tile_flags_3d; // +0x3d
 
     int get_track_cell_row_index();
-    unsigned char is_open_neighbor_tile_family();
-    unsigned char is_slide_cache_tile_family();
+    unsigned char is_sub_loc_empty();
+    unsigned char is_sub_loc_floor();
 };
 
 struct SubgoldyPlayerView;
@@ -576,7 +576,7 @@ steering_stored:
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 19
                 || damage_gauge.state == 2
                        && (slide_cell = game->get_track_grid_cell_at_world_position(p_position),
-                           slide_cell->is_slide_cache_tile_family())) {
+                           slide_cell->is_sub_loc_floor())) {
                 float rate = game->subgame_rate;
                 float quantum = rate * rate * 0.0040000002f;
                 velocity.z = quantum + quantum + velocity.z;
@@ -649,7 +649,7 @@ steering_stored:
             if (!follow_state.active) {
                 if (live_matrix.position.y < 0.49000001f
                     && live_matrix.position.y > -0.16333334f
-                    && !landing_cell->is_open_neighbor_tile_family()
+                    && !landing_cell->is_sub_loc_empty()
                     && landing_cell->tile_id != 22) {
                     live_matrix.set_matrix_rotation_identity();
                     trampoline_bounce_active = 0;

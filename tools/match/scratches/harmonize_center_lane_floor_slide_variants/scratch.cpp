@@ -6,8 +6,8 @@
 
 extern char* g_game_base; // data_4df904
 
-unsigned char __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
-unsigned char __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
 
 void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
 {
@@ -26,8 +26,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                     TrackRowCell* next = cell + 8;
                     if ((cell->lane_and_flags & 0x20) == 0) {
                         if ((next->lane_and_flags & 0x20) == 0
-                            && is_floor_cache_tile_family(cell) == 1
-                            && (is_slide_cache_tile_family(next) == 1
+                            && is_sub_loc_slide(cell) == 1
+                            && (is_sub_loc_floor(next) == 1
                                 || next->tile_id == 0x1e)) {
                             char* game = g_game_base;
                             if (((BodBase*)cell)->object == *(void**)(game + 0x447b4)) {
@@ -51,8 +51,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
 
                     if ((cell->lane_and_flags & 0x20) == 0) {
                         if ((next->lane_and_flags & 0x20) == 0
-                            && is_slide_cache_tile_family(cell) == 1
-                            && is_floor_cache_tile_family(next) == 1) {
+                            && is_sub_loc_floor(cell) == 1
+                            && is_sub_loc_slide(next) == 1) {
                             char* game = g_game_base;
                             if (((BodBase*)cell)->object == *(void**)(game + 0x44b34)) {
                                 ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x447b4));
@@ -81,8 +81,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                     TrackRowCell* previous = cell - 8;
                     if ((cell->lane_and_flags & 0x20) == 0) {
                         if ((previous->lane_and_flags & 0x20) == 0
-                            && is_floor_cache_tile_family(cell) == 1
-                            && (is_slide_cache_tile_family(previous) == 1
+                            && is_sub_loc_slide(cell) == 1
+                            && (is_sub_loc_floor(previous) == 1
                                 || previous->tile_id == 0x20)) {
                             char* game = g_game_base;
                             if (((BodBase*)cell)->object == *(void**)(game + 0x447b4)) {
@@ -106,8 +106,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
 
                     if ((cell->lane_and_flags & 0x20) == 0) {
                         if ((previous->lane_and_flags & 0x20) == 0
-                            && is_slide_cache_tile_family(cell) == 1
-                            && is_floor_cache_tile_family(previous) == 1) {
+                            && is_sub_loc_floor(cell) == 1
+                            && is_sub_loc_slide(previous) == 1) {
                             char* game = g_game_base;
                             if (((BodBase*)cell)->object == *(void**)(game + 0x44b34)) {
                                 ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x447b4));

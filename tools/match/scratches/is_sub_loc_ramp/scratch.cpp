@@ -1,8 +1,8 @@
-// is_ramp_cache_tile_family @ 0x439a70 (fastcall, ret)
+// is_sub_loc_ramp @ 0x439a70 (fastcall, ret)
 
 #include "track_attachment.h"
 
-unsigned char SubLoc::is_ramp_cache_tile_family()
+unsigned char SubLoc::is_sub_loc_ramp()
 {
     unsigned char tile_id = this->tile_id;
     unsigned char result;

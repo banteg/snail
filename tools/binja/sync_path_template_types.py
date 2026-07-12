@@ -401,8 +401,8 @@ def ensure_sub_loc_alias(*, target: str) -> dict[str, object]:
 
 PROTO_UPDATES = (
     (
-        "initialize_bod",
-        "SubLoc* __thiscall initialize_bod(SubLoc* cell)",
+        "initialize_sub_loc",
+        "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell)",
     ),
     (
         "remove_sub_loc",

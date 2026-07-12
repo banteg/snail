@@ -17,7 +17,7 @@ bool SubgameRuntime::is_neighbor_cell_solid(SubLoc* cell, int dx, int dz)
             SubLoc* neighbor = (SubLoc*)cell_base;
             int tile = tile_id;
             neighbor = (SubLoc*)((char*)neighbor + 0x3bfac8);
-            if (!neighbor->is_open_neighbor_tile_family()
+            if (!neighbor->is_sub_loc_empty()
                 && tile != 0
                 && tile != 35
                 && tile != 28

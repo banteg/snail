@@ -28,8 +28,8 @@ TRUSTED_DATA_DECLARATIONS = [
 
 TRUSTED_DECLARATIONS = [
     (
-        "initialize_bod",
-        "SubLoc* __thiscall initialize_bod(SubLoc* cell);",
+        "initialize_sub_loc",
+        "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell);",
     ),
     (
         "remove_sub_loc",
@@ -200,16 +200,20 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall remove_track_render_cache_bods(SegmentCache* manager);",
     ),
     (
-        "is_slide_cache_tile_family",
-        "int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell);",
+        "is_sub_loc_floor",
+        "int32_t __fastcall is_sub_loc_floor(TrackRowCell* cell);",
     ),
     (
-        "is_floor_cache_tile_family",
-        "int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell);",
+        "is_sub_loc_slide",
+        "int32_t __fastcall is_sub_loc_slide(TrackRowCell* cell);",
     ),
     (
-        "is_ramp_cache_tile_family",
-        "int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);",
+        "is_sub_loc_ramp",
+        "int32_t __fastcall is_sub_loc_ramp(TrackRowCell* cell);",
+    ),
+    (
+        "is_sub_loc_empty",
+        "int32_t __fastcall is_sub_loc_empty(TrackRowCell* cell);",
     ),
     (
         "set_color_alpha",

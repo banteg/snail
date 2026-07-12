@@ -1,7 +1,7 @@
-# initialize_bod @ 0x4088c0
+# initialize_sub_loc @ 0x4088c0
 
-The stable Windows harness name is historical. This exact helper is the
-`SubLoc` constructor wrapper: it runs the shared `cRBod` base constructor,
+This exact helper is the `SubLoc` constructor wrapper: it runs the shared
+`cRBod` base constructor,
 installs the cell-specific vtable at `0x497368`, increments the counter later
 reported as `LocCount`, and returns the receiver.
 
@@ -17,7 +17,6 @@ Ownership is fixed by three independent Windows facts:
 - `construct_game_runtime` reports the incremented global as
   `LocCount=%i Memory=%i`, with memory computed as `count * 0x54`.
 
-The scratch therefore defines the historical `initialize_bod` method directly
-on `SubLoc`; the receiver ownership is real even though the stable Windows
-method name is generic. It remains exact at 10/10 instructions with four clean
-masked operands.
+The scratch defines `initialize_sub_loc` directly on `SubLoc`; the old generic
+`initialize_bod` label is retired. It remains exact at 10/10 instructions with
+four clean masked operands.

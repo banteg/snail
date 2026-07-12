@@ -25,7 +25,7 @@ bool __thiscall sub_434B60(_DWORD *this, _DWORD *a2, int a3, int a4)
       v9 = *((unsigned __int8 *)this + 4 * v8 + 3930884);
       v10 = this + v8;
       v11 = v9;
-      if ( !is_open_neighbor_tile_family((_BYTE *)v10 + 3930824) && v11 && v11 != 35 && v11 != 28 && v11 != 22 )
+      if ( !is_sub_loc_empty((_BYTE *)v10 + 3930824) && v11 && v11 != 35 && v11 != 28 && v11 != 22 )
         return true;
     }
   }

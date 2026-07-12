@@ -72,7 +72,7 @@
 004333ab        void* eax_23
 004333ab        void* ecx_21
 004333ab        if ((ecx_13.b & 0x20) == 0 || (ecx_13 & 0x4000) != 0x4000)
-00433410        char eax_24 = is_slide_cache_tile_family(eax_18 + 0x3bfac8)
+00433410        char eax_24 = is_sub_loc_floor(eax_18 + 0x3bfac8)
 00433417        void* eax_25
 00433417        int32_t ebp_2
 00433417        if (eax_24 != 0)
@@ -94,7 +94,7 @@
 0043348d        ecx_21 = *(*(&manager->owner_subgame->runtime_cells[0][0].object + edi_1) + 0x5c)
 00433499        eax_23 = (&manager->slots[0][1].bod.object)[esi_1 * 0x4b]
 004334a0        goto label_4335d0
-004334af        char eax_30 = is_floor_cache_tile_family(&manager->owner_subgame->runtime_cells + edi_1)
+004334af        char eax_30 = is_sub_loc_slide(&manager->owner_subgame->runtime_cells + edi_1)
 004334b6        int32_t ebp_3
 004334b6        if (eax_30 != 0)
 004334bf        eax_25 = manager->owner_subgame + edi_1
@@ -105,7 +105,7 @@
 004334e6        if ((ebp_3.b & 0x40) != 0x40)
 004334e6        goto label_43347e
 004334e6        goto label_43351b
-00433550        if (is_ramp_cache_tile_family(&manager->owner_subgame->runtime_cells + edi_1) != 0)
+00433550        if (is_sub_loc_ramp(&manager->owner_subgame->runtime_cells + edi_1) != 0)
 00433559        void* eax_38 = manager->owner_subgame + edi_1
 0043356d        if ((*(eax_38 + 0x3bfb08) & 0x4000) == 0x4000)
 004335a5        append_track_cache_object(manager, row_index, *(eax_38 + 0x3bfaec), eax_38 + 0x3bfad8, manager->shared_vertex_buffers[3], &vertex_count_3, manager->shared_index_buffers[3], &index_count_3, manager->max_vertex_counts[3], manager->max_index_counts[3], color_1, 0)

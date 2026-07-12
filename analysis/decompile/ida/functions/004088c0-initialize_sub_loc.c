@@ -1,6 +1,6 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_bod @ 0x4088c0 */
-/* selector: initialize_bod */
+/* function: initialize_sub_loc @ 0x4088c0 */
+/* selector: initialize_sub_loc */
 
 // Constructs one `cRBod` record by clearing its shared list links, installing the body update selector, and incrementing the global Bod-count ledger used by `construct_game_runtime`.
 _DWORD *__thiscall sub_4088C0(_DWORD *this)

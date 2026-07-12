@@ -1,6 +1,6 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: is_open_neighbor_tile_family @ 0x439ab0 */
-/* selector: is_open_neighbor_tile_family */
+/* function: is_sub_loc_empty @ 0x439ab0 */
+/* selector: is_sub_loc_empty */
 
 bool __thiscall sub_439AB0(_BYTE *this)
 {

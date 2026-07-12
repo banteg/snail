@@ -10,7 +10,7 @@
 0043561a        int32_t j_1 = 8
 004356c4        int32_t j
 0043562b        (esi_1 - 0x3bfaec)->__offset(0x3bfb08).d &= 0xffffffdf
-00435635        if (is_open_neighbor_tile_family(esi_1 + 0x27c) != 0)
+00435635        if (is_sub_loc_empty(esi_1 + 0x27c) != 0)
 0043563b        int32_t eax_2 = data_4df904
 00435640        int32_t k = 0
 0043567e        while (k s< 0x1c0)

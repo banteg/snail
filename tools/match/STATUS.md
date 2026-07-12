@@ -98,7 +98,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |
 | ✅ | initialize_galaxy_route_name_record | 0x408880 | 18 | 7/7 | 100.00% | 7/7 | 1 ok |  |
 | ✅ | abort_startup_with_3d_error | 0x4088a0 | 27 | 7/7 | 100.00% | 7/7 | 4 ok |  |
-| ✅ | initialize_bod | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
+| ✅ | initialize_sub_loc | 0x4088c0 | 29 | 10/10 | 100.00% | 10/10 | 4 ok |  |
 | ✅ | destroy_galaxy | 0x408c10 | 218 | 49/49 | 100.00% | 49/49 | 18 ok |  |
 | ✅ | initialize_galaxy | 0x408cf0 | 1523 | 338/338 | 100.00% | 338/338 | 74 ok |  |
 | ✅ | draw_galaxy_line | 0x409b00 | 206 | 67/67 | 100.00% | 67/67 | 4 ok |  |
@@ -288,10 +288,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | rebuild_track_runtime_from_segments | 0x437de0 | 145 | 44/44 | 100.00% | 44/44 | 13 ok |  |
 | ✅ | calc_slider_to_rate | 0x437e80 | 45 | 11/11 | 100.00% | 11/11 | 4 ok |  |
 | ✅ | destroy_subgame | 0x438850 | 830 | 246/246 | 100.00% | 246/246 | 41 ok |  |
-| ✅ | is_slide_cache_tile_family | 0x439a40 | 33 | 17/17 | 100.00% | 17/17 | - |  |
-| ✅ | is_ramp_cache_tile_family | 0x439a70 | 57 | 29/29 | 100.00% | 29/29 | - |  |
-| ✅ | is_open_neighbor_tile_family | 0x439ab0 | 29 | 15/15 | 100.00% | 15/15 | - |  |
-| ✅ | is_floor_cache_tile_family | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  |
+| ✅ | is_sub_loc_floor | 0x439a40 | 33 | 17/17 | 100.00% | 17/17 | - |  |
+| ✅ | is_sub_loc_ramp | 0x439a70 | 57 | 29/29 | 100.00% | 29/29 | - |  |
+| ✅ | is_sub_loc_empty | 0x439ab0 | 29 | 15/15 | 100.00% | 15/15 | - |  |
+| ✅ | is_sub_loc_slide | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  |
 | ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | ✅ | health_collect_particles | 0x43a010 | 386 | 104/104 | 100.00% | 104/104 | 13 ok |  |
 | ✅ | update_player_movement_flags | 0x43a1a0 | 344 | 50/50 | 100.00% | 50/50 | 2 ok |  |

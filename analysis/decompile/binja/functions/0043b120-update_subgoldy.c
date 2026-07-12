@@ -432,7 +432,7 @@
 0043bb81        if (player_1->damage_gauge.state == 2)
 0043bb83        struct Game* game_17 = player_1->game
 0043bb89        y = y_8
-0043bb98        if (is_slide_cache_tile_family(get_track_grid_cell_at_world_position(game_17, y)).b != 0)
+0043bb98        if (is_sub_loc_floor(get_track_grid_cell_at_world_position(game_17, y)).b != 0)
 0043bb98        goto label_43bb9a
 0043bbf6        if (player_1->jetpack_gauge.state == 1)
 0043bbfe        unimplemented  {fld st0, dword [edx+0x38]}
@@ -575,7 +575,7 @@
 0043bef4        bool c3_21 = unimplemented  {fcomp st0, dword [0x4975c4]} f== temp32_1
 0043bef4        unimplemented  {fcomp st0, dword [0x4975c4]}
 0043befa        cell_1.w = (c0_21 ? 1 : 0) << 8 | (c2_21 ? 1 : 0) << 0xa | (c3_21 ? 1 : 0) << 0xe | (top_82 & 7) << 0xb
-0043beff        if ((cell_1:1.b & 0x41) == 0 && is_open_neighbor_tile_family(cell).b == 0 && cell->tile_id != 0x16)
+0043beff        if ((cell_1:1.b & 0x41) == 0 && is_sub_loc_empty(cell).b == 0 && cell->tile_id != 0x16)
 0043bf15        set_matrix_rotation_identity(&player_1->live_matrix)
 0043bf1a        player_1->_pad_1e4[0] = 0
 0043bf21        unimplemented  {fld st0, dword [ebp+0x414]}

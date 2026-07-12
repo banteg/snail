@@ -2,7 +2,7 @@
 
 Startup failure helper at 0x4088a0. It shows the 3D accelerator/DirectX error
 dialog and exits the process. The apparent Binary Ninja tailcall into
-`initialize_bod` is just fallthrough into the next function after the noreturn
+`initialize_sub_loc` is just fallthrough into the next function after the noreturn
 CRT `exit` call.
 
 Exact match: 100.00%, 7/7 instructions, with four masked operands resolved.

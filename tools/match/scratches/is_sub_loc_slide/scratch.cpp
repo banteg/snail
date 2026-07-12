@@ -1,8 +1,8 @@
-// is_floor_cache_tile_family @ 0x439ad0 (fastcall, ret)
+// is_sub_loc_slide @ 0x439ad0 (fastcall, ret)
 
 #include "track_attachment.h"
 
-unsigned char SubLoc::is_floor_cache_tile_family()
+unsigned char SubLoc::is_sub_loc_slide()
 {
     unsigned char tile_id = this->tile_id;
     unsigned char result;
