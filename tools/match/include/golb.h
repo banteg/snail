@@ -5,10 +5,10 @@
 #define GOLB_H
 
 #include "bod_types.h"
-#include "player.h"
 #include "sprite.h"
 #include "vector3.h"
 
+class Player;
 class SubgameRuntime;
 class GolbShot;
 

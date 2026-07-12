@@ -23,3 +23,11 @@ one-shot and two-shot families while keeping the shared spawn loop readable.
 look worse than the evidence: this helper proves the projectile slot stride and
 `state +0x244`, but `this` is the player-side emitter bank. Focused Wibo stays
 exact at 39/39 instructions.
+
+2026-07-13 owner closure supersedes that provisional local view. The exact
+constructor pass initializes 12 complete `GolbShot` records at this address,
+and `remove_subgame_bods` later tears down the same 12 records with
+`GolbShot::kill_golb`. Their `12 * 0x2e8` extent closes exactly at the next
+named Player field at `+0x2730`. The method now belongs to `Player` and scans
+its owned `golb_shots` bank directly while remaining exact at 39/39 with its
+single operand clean.

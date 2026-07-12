@@ -12,6 +12,7 @@
 #include "cut_scene.h"
 #include "damage_guage.h"
 #include "firework.h"
+#include "golb.h"
 #include "invincible.h"
 #include "sub_hover.h"
 #include "nuke.h"
@@ -156,6 +157,7 @@ class Player {
 public:
     void begin_post_follow_carryover();   // @ 0x43af60
     int update_player_movement_flags();    // @ 0x43a1a0
+    void update_movement_flag_emitters(Player* player); // @ 0x43a300
     void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
     int clear_subgoldy_score_buckets();    // @ 0x4403a0
@@ -291,7 +293,8 @@ public:
     unsigned char attachment_exit_gate_a;  // +0x44c
     unsigned char attachment_exit_gate_b;  // +0x44d
     unsigned char completion_handoff_voice_gate; // +0x44e
-    char unknown_44f[0x2730 - 0x44f];
+    char unknown_44f[0x450 - 0x44f];
+    GolbShot golb_shots[12];               // +0x450, owned projectile bank through +0x2730
     float movement_fire_progress;           // +0x2730
     float movement_fire_progress_step;      // +0x2734
     float slide_extension_threshold_z;      // +0x2738

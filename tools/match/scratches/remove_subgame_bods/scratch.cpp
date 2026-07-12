@@ -61,54 +61,54 @@ void SubgameRuntime::remove_subgame_bods()
 
     segment_cache.remove_track_render_cache_bods();
 
-    BodNode** health_next = (BodNode**)(game + 0x35600c);
+    BodNode** health_next = &health_pickups[0].list_next;
     int health_count = 8;
     do {
         if ((BOD_NEXT_LINK_FLAGS(health_next) & 0x200) != 0)
             REMOVE_BOD_NODE_FROM_NEXT_LINK(health_next);
-        *(int*)((char*)health_next + 0x2c) = 0;
+        ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state = 0;
         health_next = (BodNode**)((char*)health_next + 0x74);
         --health_count;
     } while (health_count != 0);
 
-    BodNode* speedup = (BodNode*)(game + 0x355db0);
+    BodNode* speedup = &speedup_pickup;
     if ((speedup->list_flags & 0x200) != 0)
         REMOVE_INLINE_BOD_NODE(speedup);
-    *(int*)(game + 0x355e30) = 0;
+    speedup_pickup.state = 0;
 
-    BodNode* jetpack = (BodNode*)(game + 0x355e64);
+    BodNode* jetpack = &jetpack_pickup;
     if ((jetpack->list_flags & 0x200) != 0)
         REMOVE_INLINE_BOD_NODE(jetpack);
-    *(int*)(game + 0x355e9c) = 0;
+    jetpack_pickup.state = 0;
 
-    BodNode** garbage_next = (BodNode**)(game + 0x359150);
+    BodNode** garbage_next = &garbage_hazards.slots[0].list_next;
     int garbage_count = 50;
     do {
         if ((BOD_NEXT_LINK_FLAGS(garbage_next) & 0x200) != 0) {
-            *(int*)((char*)garbage_next + 0x78) = 0;
+            ((SubGarbage*)BOD_NODE_FROM_NEXT_LINK(garbage_next))->state = 0;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(garbage_next);
         }
         garbage_next = (BodNode**)((char*)garbage_next + 0xc4);
         --garbage_count;
     } while (garbage_count != 0);
 
-    BodNode** slug_next = (BodNode**)(game + 0x3563ac);
+    BodNode** slug_next = &slug_hazards.slots[0].list_next;
     int slug_count = 8;
     do {
         if ((BOD_NEXT_LINK_FLAGS(slug_next) & 0x200) != 0) {
-            *(int*)((char*)slug_next + 0x74) = 0;
+            ((Slug*)BOD_NODE_FROM_NEXT_LINK(slug_next))->state = 0;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(slug_next);
         }
         slug_next = (BodNode**)((char*)slug_next + 0xec);
         --slug_count;
     } while (slug_count != 0);
 
-    BodNode** ring_next = (BodNode**)(game + 0x35b798);
+    BodNode** ring_next = &ring_effects.slots[0].list_next;
     int ring_count = 2;
     do {
-        if (*(int*)((char*)ring_next + 0x74) != 0) {
+        if (((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state != 0) {
             REMOVE_BOD_NODE_FROM_NEXT_LINK(ring_next);
-            *(int*)((char*)ring_next + 0x74) = 0;
+            ((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state = 0;
         }
         ring_next = (BodNode**)((char*)ring_next + 0x1f8);
         --ring_count;
@@ -130,21 +130,21 @@ void SubgameRuntime::remove_subgame_bods()
     ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list(
         (BodNode*)&embedded_player()->presentation.invincible_shell);
 
-    *(int*)(game + 0x3bbb70) = 0;
+    player.movement_mode_selector = 0;
     // The Windows cRSubGoldy teardown hook folds to the shared one-byte stub.
     ((RuntimeSlot*)embedded_player())->noop_runtime_ai();
 
-    GolbShot* shot = (GolbShot*)(game + 0x3bbbb4);
+    GolbShot* shot = player.golb_shots;
     for (int m = 0; m < 12; ++m) {
         if (shot->state == 1)
             shot->kill_golb();
-        shot = (GolbShot*)((char*)shot + 0x2e8);
+        ++shot;
     }
 
-    if ((*(DWORD*)(game + 0x3bb808) & 0x200) != 0)
+    if ((player.click_start.list_flags & 0x200) != 0)
         ((BodList*)(g_game_base + 0x5a8))->recycle_bod_to_free_list(
-            (BodNode*)(game + 0x3bb804));
+            (BodNode*)&player.click_start);
 
-    *(int*)(game + 0x3bb884) = 0;
+    player.click_start.state = 0;
     g_sprite_manager.kill_game_sprites();
 }

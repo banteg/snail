@@ -353,3 +353,11 @@ aliases respectively and restore the 85 clean operands.
 - The method remains instruction-exact at 396/396. Reassigning the current
   `$L5148` generation and registering `$L5149` restores all 85 clean operands;
   the aliases remain bounded by the curated `0x14`/`0x20` table sizes.
+
+2026-07-13 Player Golb-bank header refresh:
+
+- Replacing the opaque `Player +0x450..+0x2730` interval with twelve complete
+  `GolbShot` owners advances the same local labels to `$L5346`/`$L5347`.
+- COFF still places the five-entry bottom-HUD table at object `+0x62c` and the
+  eight-entry startup table at `+0x640`. The method remains instruction-exact
+  at 396/396; registering those bounded aliases restores all 85 operands.

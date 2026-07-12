@@ -1,6 +1,7 @@
 // spawn_golb_trail_sprite @ 0x415bb0 (thiscall, ret 0x4)
 
 #include "golb.h"
+#include "player.h"
 
 Sprite* GolbShot::spawn_golb_trail_sprite(Vector3* position)
 {

@@ -11,3 +11,18 @@ The callback tables pin the ownership:
 - `data_49731c` starts at `update_vapour`, so the old
   `g_track_jetpack_body_vtable` name was too narrow;
 - `data_497350` starts at `noop_runtime_ai` for the tertiary embedded body.
+
+## 2026-07-13 Player projectile-bank closure
+
+The three independent lifecycle passes now close the parent boundary:
+
+- construction initializes 12 `sizeof(GolbShot) == 0x2e8` records beginning
+  at `Player +0x450`;
+- movement dispatch scans those same 12 records and calls `create_golb` only
+  when `GolbShot::state` at `+0x244` is inactive; and
+- subgame teardown walks the identical bank and calls `kill_golb` for active
+  records.
+
+`12 * 0x2e8` ends exactly at `Player +0x2730`, the next independently named
+movement-fire field. The bank is therefore owned storage in `Player`, not a
+borrowed emitter view or a separate SubgameRuntime pool.

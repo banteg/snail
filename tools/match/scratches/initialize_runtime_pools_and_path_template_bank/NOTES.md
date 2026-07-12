@@ -235,3 +235,12 @@
   `ClickStart` receiver instead of a neutral RuntimeSlot.
 - Cross-port vtable and Init/AI symbols identify this as cRClickStart; focused
   Windows remains exact at 227/227 instructions with 72 clean operands.
+
+## 2026-07-13 Player Golb-shot bank ownership
+
+- The 12 constructor calls at `Player +0x450`, stride `0x2e8`, now target
+  `Player::golb_shots` and advance by `sizeof(GolbShot)`.
+- The exact extent ends at `Player +0x2730`; movement dispatch and subgame
+  teardown independently scan the same bank and use `GolbShot::state`.
+- Keeping the typed Player member access through the native `subgoldy` cursor
+  preserves the exact 227/227 instructions and all 72 clean operands.

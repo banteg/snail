@@ -611,6 +611,12 @@ typedef struct Snail {
     CutScene cutscene;
 } Snail;
 
+typedef struct GolbShot {
+    uint8_t _pad_000[0x244];
+    int32_t state;
+    uint8_t _pad_248[0xa0];
+} GolbShot;
+
 typedef struct Player {
     uint8_t _pad_00[0x38];
     TransformMatrix live_matrix;
@@ -692,7 +698,8 @@ typedef struct Player {
     uint8_t attachment_exit_gate_a;
     uint8_t attachment_exit_gate_b;
     uint8_t completion_handoff_voice_gate;
-    uint8_t _pad_44f[0x22e1];
+    uint8_t _pad_44f[0x1];
+    GolbShot golb_shots[0xc];
     float movement_fire_progress;
     float movement_fire_progress_step;
     float slide_extension_threshold_z;

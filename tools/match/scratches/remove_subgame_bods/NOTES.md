@@ -100,3 +100,19 @@ the source strings and owner paths themselves are correct. Hoisting the row
 lane counter and expanding the shared method again are codegen-neutral or
 regressive, so the remaining receiver/counter register rotation is left
 visible rather than forced.
+
+## 2026-07-13 embedded pool and Player-bank closure
+
+- Health, garbage, slug, and ring teardown cursors now start from their owned
+  `SubgameRuntime` arrays, and their inactive writes name each slot's `state`.
+  The speedup and JetPack singleton state clears use their embedded owners too.
+- The final projectile loop is `player.golb_shots`: 12 complete `GolbShot`
+  records at `Player +0x450`, ending exactly at the next Player field at
+  `+0x2730`. The same bank is constructed during runtime-pool initialization
+  and scanned by movement-flag emission.
+- The remaining tail names `player.movement_mode_selector` and the embedded
+  `player.click_start` body/state instead of reaching through SubgameRuntime
+  offsets. Intrusive-list removal still borrows only their `BodNode` prefixes.
+- These owner substitutions are codegen-neutral: focused Wibo remains 67.67%
+  with 495/501 instructions, 63 clean operands, and the same two documented
+  string-order mismatches.
