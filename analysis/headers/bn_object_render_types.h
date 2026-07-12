@@ -214,7 +214,7 @@ int32_t __cdecl load_object_definition(char* path, Object* object);
 
 ObjectAnimation* __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
-    float progress_step, uint16_t flags);
+    float progress_step, int32_t flags);
 void __cdecl build_object_texture_group_buffers(Object* object);
 void __cdecl refresh_object_vertex_buffer(Object* object);
 int32_t __cdecl render_object(

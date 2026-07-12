@@ -44,7 +44,10 @@ retains a `0x14`-byte `ObjectAnimation`, whose `frames` array points to
 and a two-normals-per-facequad buffer. Animation construction only borrows the
 caller's keyframe array for the duration of the call; its generated-frame loop
 keeps a pointer to the final record's `frame_number` as a sentinel but does not
-retain that pointer in `ObjectAnimation`.
+retain that pointer in `ObjectAnimation`. The authored mode argument is an
+`int`, narrowed only when stored into the graph's 16-bit `flags` member. Within
+the generated-frame loop, a cursor over the borrowed `Object*` links advances
+at the 0x80-byte keyframe stride; the graph never retains those links.
 
 The active `Object::vertices` and `Object::facequad_normals` pointers are views,
 not always the original allocations: animation generation and frame refresh

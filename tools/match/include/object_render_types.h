@@ -127,7 +127,7 @@ struct Object {
     void calc_object_edges(); // @ 0x4308b0
     ObjectAnimation* request_object_animation(
         int keyframe_count, XAnimationKeyframe* keyframes,
-        float progress_step, unsigned short flags); // @ 0x430a70
+        float progress_step, int flags); // @ 0x430a70
 
     char unknown_00[0x08];
     Vector3* toon_vertices; // +0x08, 12 bytes per source vertex

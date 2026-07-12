@@ -97,3 +97,26 @@ prefix, and 17 clean masked operands.
   to the next Object link rather than the current link, and reloads
   `Object::animation` once at return. No volatile barriers or dummy data flow
   are retained.
+
+## 2026-07-12 authored flags and object-link cursor
+
+- The fourth authored parameter is an `int`, as preserved by both later-port
+  symbols. Windows narrows it into the 16-bit `ObjectAnimation::flags` member;
+  it is not itself a 16-bit interface value. This recovers the native argument
+  homes and keeps the exact loader caller free of a zero-extension.
+- Once the final-frame sentinel has been borrowed, the generated-frame loop no
+  longer owns or indexes the keyframe array base. It advances an `Object**`
+  cursor rooted at each 0x80-byte record's borrowed `BodBase::object` lane.
+  Frame-number rebinding recovers the containing `XAnimationKeyframe`, while
+  interpolation reads the current and next borrowed Objects directly through
+  adjacent links.
+- Keeping that cursor inside the non-empty generated-frame guard lets its
+  register lifetime replace the now-dead array-base lifetime. Advancing it
+  before rebinding the frame-number locals reproduces native scheduling.
+
+Focused Wibo rises from 88.12% to **99.35%**, with 232/231 instructions, a
+225/231 prefix, and all 17 masked operands clean. The sole honest residual is
+the final retained-animation return: candidate VC6 stores `progress = 0` and
+then reloads `Object::animation`, while native keeps the already-loaded owner
+pointer in `eax` across its epilogue pops. Explicit result aliases regress and
+are not retained.

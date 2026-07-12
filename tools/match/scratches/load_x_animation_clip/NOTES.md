@@ -66,3 +66,8 @@ and closes the helper at **100.00%**, 228/228 instructions, with all 50 masked
 operands clean. The ordering also makes the lifecycle explicit: the loader
 resets the shared duplicate workspace first, then begins enumerating the
 caller-owned keyframe array.
+
+The animation mode is an authored `int`, matching the Android/iOS
+`cRObject::RequestAnim(..., int)` interface. The callee narrows it only when it
+stores `ObjectAnimation::flags`. Keeping `mode_flags` as an `int` preserves this
+helper's exact code while avoiding a synthetic zero-extension at the handoff.

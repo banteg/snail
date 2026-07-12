@@ -27,7 +27,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 
 ObjectAnimation* Object::request_object_animation(
     int keyframe_count, XAnimationKeyframe* keyframes,
-    float progress_step, unsigned short flags)
+    float progress_step, int flags)
 {
     for (int i = 0; i < keyframe_count; ++i) {
         if (keyframes[i].object->vertex_count != vertex_count) {
@@ -59,6 +59,7 @@ ObjectAnimation* Object::request_object_animation(
     if (generated_frame_count > 0) {
         float generated_frame_count_float = (float)generated_frame_count;
         int* last_frame_number = &keyframes[keyframe_count - 1].frame_number;
+        Object** keyframe_object_cursor = &keyframes->object;
         do {
             animation->frames[frame] =
                 (ObjectAnimationFrame*)allocate_tracked_memory(8, "Object Animation Frame");
@@ -74,8 +75,12 @@ ObjectAnimation* Object::request_object_animation(
             int frame_time = (int)floor(frame_time_float);
             if (frame_time >= next_time && current_keyframe < keyframe_count - 1) {
                 ++current_keyframe;
-                current_time = keyframes[current_keyframe].frame_number;
-                next_time = keyframes[current_keyframe + 1].frame_number;
+                keyframe_object_cursor =
+                    (Object**)((char*)keyframe_object_cursor + sizeof(XAnimationKeyframe));
+                current_time =
+                    ((XAnimationKeyframe*)((char*)keyframe_object_cursor - 0x24))->frame_number;
+                next_time = ((XAnimationKeyframe*)((char*)keyframe_object_cursor - 0x24))[1]
+                                .frame_number;
             }
 
             float keyframe_span = (float)(next_time - current_time);
@@ -84,10 +89,12 @@ ObjectAnimation* Object::request_object_animation(
             for (int vertex_index = 0; vertex_index < vertex_count; ++vertex_index) {
                 if (keyframe_count == 1) {
                     animation->frames[frame]->vertices[vertex_index] =
-                        keyframes[current_keyframe].object->vertices[vertex_index];
+                        (*keyframe_object_cursor)->vertices[vertex_index];
                 } else {
-                    Vector3* b = &keyframes[current_keyframe + 1].object->vertices[vertex_index];
-                    Vector3* a = &keyframes[current_keyframe].object->vertices[vertex_index];
+                    Object* next_object =
+                        *(Object**)((char*)keyframe_object_cursor + sizeof(XAnimationKeyframe));
+                    Vector3* b = &next_object->vertices[vertex_index];
+                    Vector3* a = &(*keyframe_object_cursor)->vertices[vertex_index];
                     Vector3* out = &animation->frames[frame]->vertices[vertex_index];
                     Vector3 tweened = (*b - *a) * tween + *a;
                     *out = tweened;

@@ -27,7 +27,7 @@ ObjectAnimation* DirectXLoader::load_x_animation_clip(char* mesh_name, Object* o
     float progress_step;
     int keyframe_count;
     XAnimationKeyframe* keyframes;
-    unsigned short mode_flags;
+    int mode_flags;
     char animation_tag[0x80];
     char path_pattern[0x100];
 
