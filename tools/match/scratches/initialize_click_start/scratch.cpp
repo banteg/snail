@@ -1,14 +1,15 @@
 // initialize_click_start @ 0x442170 (thiscall, ret 0x4)
 
 #include "player.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 
 void ClickStart::initialize_click_start(Player* new_player)
 {
-    prompt = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    prompt = g_game->border_manager.allocate_border();
     Color4f color;
     prompt->initialize_frontend_widget(0x400002, "Click to Start", 0x14, 0.0f,
         200.0f, color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
@@ -20,7 +21,7 @@ void ClickStart::initialize_click_start(Player* new_player)
     if ((flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = (BodNode**)(g_game_base + 0x5ac);
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* old_first = *first_ref;
         if (old_first == 0) {
             *first_ref = this;
@@ -43,7 +44,7 @@ void ClickStart::initialize_click_start(Player* new_player)
     render_arg_1c = 0;
     render_arg_20 = 0.0f;
 
-    if (*(g_game_base + 0x1066be8) != 0)
+    if (g_game->subgame.replay_launch_active != 0)
         prompt->hide_border_init();
     else
         prompt->unhide_border_init();

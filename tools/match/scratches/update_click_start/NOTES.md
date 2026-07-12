@@ -21,9 +21,9 @@ Residual mismatch:
 
 - native uses a direct jump table for states `0..4`; this scratch still lowers
   the state dispatch as a compare chain and saves extra callee registers;
-- the replay-start body is kept in raw `g_game_base` form because that improved
-  the local shape, but the app replay-launch globals need a wider owner before
-  they should be promoted.
+- `GameRoot::backdrop.unknown_660` is the exact owner of the byte raised on
+  state-2 entry, but this is its sole Windows reference, so its role remains
+  deliberately unnamed.
 
 2026-07-11 pause-owner closure: the prompt-hide gate now reads
 `GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
@@ -40,3 +40,16 @@ relative order. The exact Windows type/parent substitution is codegen-neutral
 at the honest 27.18%, 149/138 instructions, with 13 clean masks. Removing the
 explicit range guard or replacing early returns with breaks was neutral or
 worse and still produced a compare tree, so no jump-table fakematch was kept.
+
+2026-07-12 replay/root ownership pass: the state-2 handoff now uses the exact
+`SubgameRuntime::replay_launch_active`, `replay_launch_record`, and
+`replay_update_cursor` fields. Live input records are addressed through
+`current_high_score_record.run_records[cursor]`; the low-byte `flags` view is
+ORed with `0x20`, the intentional 16-bit view clears bit zero, and
+`current_high_score_record.source_tail` receives the cursor. State 3 seeds the
+RNG from `current_high_score_record.runtime_build_seed`. Prompt teardown and
+BOD recycling now use `GameRoot::border_manager` and `active_bod_list`.
+
+All substitutions are codegen-neutral at 27.18% (149/138, prefix 1, 13 clean
+masks). The native jump-table lowering remains the honest structural blocker;
+no register-shaped adapter or synthetic state arm is retained.

@@ -50,6 +50,9 @@ public:
     BackdropDistortCell distort_cells[64]; // +0x58
     int backdrop_refresh_pending; // +0x658
     int unknown_65c; // +0x65c
+    // cRClickStart::AI state 2 is the sole Windows reference and raises this
+    // byte to one. The exact Backdrop owner is proven; no reader yet proves a
+    // stronger semantic name.
     unsigned char unknown_660; // +0x660
     char unknown_661[0x664 - 0x661];
     float unknown_664; // +0x664

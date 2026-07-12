@@ -31,11 +31,10 @@ Focused match:
 - This callsite also behaves better with a float return view for
   `random_float_below`; the native instruction stream uses `fadd/fmul dword`
   constants for the returned value.
-- Remaining shape gap is local-frame layout: native reserves `0x1c` bytes and
-  uses larger stack offsets for the raw random/forward components, while the
-  current candidate uses a `0x10` frame. Splitting raw forward-Z into a separate
-  scalar looked plausible but regressed to 74.38%, because the compiler delayed
-  the owner-velocity load again.
+- The previous shape gap was local-frame layout: native reserved `0x1c` bytes
+  while the component-by-component candidate used a `0x10` frame. Splitting raw
+  forward-Z into a separate scalar regressed to 74.38%, because the compiler
+  delayed the owner-velocity load again.
 - 2026-06-21 follow-up release-vector audit: spelling
   `random_float_below(...) + 0.5f` inline and giving each forward-z load a
   distinct source local are both codegen-neutral at 88.80%; they do not move the
@@ -49,4 +48,13 @@ channels, cRInvincible gate, and Player backlink all belong to the one exact
 
 2026-07-09 frame campaign: dead pad floats are optimized away (still 0x10).
 Persistent raw `slot_x/y/z` locals before the 0.3 scale regress to 72.73%. Keep
-the staged `Vector3` form at 88.80%.
+the staged value semantics rather than padding the frame.
+
+2026-07-12 returned-vector source shape: each channel now assigns
+`Vector3(random_x, random_y, forward_z) * 0.3f`. The raw constructed value and
+the real `Vector3::operator*` return value recover the missing pair of vector
+temporaries and the exact native `0x1c` frame. Focused Wibo improves from
+88.80% to 92.80%, with 125/125 instructions, prefix 5, and all 31 masked
+operands clean. The residual is limited to the first random-X stack-slot choice
+and independent owner-load/store scheduling in the third channel; explicit
+raw-vector locals regress to 68.80% and are not retained.

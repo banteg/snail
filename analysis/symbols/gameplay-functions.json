@@ -2347,12 +2347,12 @@
     {
       "address": "0x442170",
       "name": "initialize_click_start",
-      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, seeds the prompt and state, and applies the replay-launch hide gate."
+      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `SubgameRuntime::replay_launch_active` as the initial hide gate."
     },
     {
       "address": "0x442290",
       "name": "update_click_start",
-      "description": "Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff, writes the parent startup index, recenters both pointers, plays SFX 8, and tears down the embedded RenderableBod child."
+      "description": "Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff through `SubgameRuntime`'s replay record/cursor fields, updates the working `SubSolution` run flags and parent startup index, recenters both pointers, plays SFX 8, and recycles the embedded RenderableBod child through `GameRoot::active_bod_list`."
     },
     {
       "address": "0x442500",
@@ -2382,7 +2382,7 @@
     {
       "address": "0x442e40",
       "name": "release_snail_weapons",
-      "description": "Authored `cRSnail::ReleaseWeapons()`: seeds release motion on the embedded Snail's weapon/jetpack channels once and ends the active Player jetpack hover."
+      "description": "Authored `cRSnail::ReleaseWeapons()`: constructs and scales one random/forward `Vector3` release step for each embedded weapon and jetpack animation channel, raises the one-shot Invincible gate, and ends the active Player jetpack hover."
     },
     {
       "address": "0x443070",
