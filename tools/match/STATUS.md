@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**534/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85108/325720** bytes (**26.13%**) are proof-grade, and overall fuzzy is **62.00%**.
+**534/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85108/325720** bytes (**26.13%**) are proof-grade, and overall fuzzy is **62.01%**.
 
 ## Proof Grade (534)
 
@@ -689,7 +689,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 | 🚧 | update_mouse | 0x44bc50 | 1012 | 294/295 | 73.68% | 5/295 | 1 mismatch, 70 ok |  |
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
-| 🚧 | load_object_definition | 0x44c420 | 1109 | 314/325 | 51.33% | 27/325 | 14 mismatch, 33 ok |  |
+| 🚧 | load_object_definition | 0x44c420 | 1109 | 314/325 | 54.77% | 30/325 | 12 mismatch, 36 ok |  |
 
 ## Early Progress (>0-49.99%) (44)
 

@@ -5,7 +5,7 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-int load_object_definition(char* path, Object* object); // @ 0x44c420
+void load_object_definition(char* path, Object* object); // @ 0x44c420
 void enumerate_matching_archive_or_fs_entries(
     char* directory,
     char* pattern,

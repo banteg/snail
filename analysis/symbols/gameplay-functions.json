@@ -3075,7 +3075,7 @@
     {
       "address": "0x44c420",
       "name": "load_object_definition",
-      "description": "Parses one authored object definition into the caller object; iOS RObject.o names this `cRObject::Load(char*)`."
+      "description": "Implements the staticized void `cRObject::Load(char*)` path: parses one authored object definition into the caller-owned Object slot, installs its owned vertex and facequad arrays, and borrows texture refs from the shared manager."
     },
     {
       "address": "0x44c880",

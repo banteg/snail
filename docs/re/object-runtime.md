@@ -73,10 +73,14 @@ site.
 
 ## Tooling note
 
-The canonical C/IDA declaration for `load_object_definition` is
-`int(char* path, Object* object)`. The current Binary Ninja database carries a
-stale zero-argument user type that rejects both the normal prototype command
-and direct `Function.set_user_type`; the other lifecycle prototypes and the
-global `ObjectList` data type apply and read back correctly. The sync script
-therefore leaves that one resistant function type untouched rather than
-pretending it was applied.
+The canonical Windows declaration for `load_object_definition` is the
+staticized `void(char* path, Object* object)`. The symbol-preserving iOS
+counterpart is `cRObject::Load(char*)`; its common epilogue restores registers
+without establishing `r0`, and every Windows caller discards `eax`, proving
+that the final text cursor is incidental residue rather than an API result.
+The current Binary Ninja database still carries a stale zero-argument user
+type that rejects both the normal prototype command and direct
+`Function.set_user_type`; the other lifecycle prototypes and the global
+`ObjectList` data type apply and read back correctly. The sync script therefore
+leaves that one resistant function type untouched rather than pretending it
+was applied.

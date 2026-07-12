@@ -236,7 +236,7 @@ int32_t __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
 void __thiscall build_all_objects(ObjectList* object_list);
 Object* __thiscall add_object_to_list(ObjectList* object_list);
-int32_t __cdecl load_object_definition(char* path, Object* object);
+void __cdecl load_object_definition(char* path, Object* object);
 
 void __thiscall initialize_directx_loader(DirectXLoader* loader);
 void __thiscall load_x_mesh(

@@ -14,7 +14,7 @@ char** parse_next_space_delimited_token(char** cursor, char* out);
 unsigned char* copy_c_string(unsigned char* destination, unsigned char* source);
 unsigned char* append_c_string(unsigned char* destination, unsigned char* source);
 
-int load_object_definition(char* path, Object* object)
+void load_object_definition(char* path, Object* object)
 {
     char object_file_path[0x100];
     char texture_path[0x80];
@@ -26,12 +26,12 @@ int load_object_definition(char* path, Object* object)
     load_file_bytes_from_archive_or_fs(
         object_file_path, file_text, &byte_count);
     file_text[byte_count - 2] = '\0';
+    int vertex_count = 0;
     int facequad_count = 0;
     texture_name[0] = '\0';
 
     char* cursor = file_text;
     char* line_cursor;
-    int vertex_count = 0;
 
     if (*cursor != '\0') {
         do {
@@ -135,5 +135,4 @@ int load_object_definition(char* path, Object* object)
         } while (*cursor != '\0');
     }
 
-    return (int)cursor;
 }

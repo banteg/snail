@@ -22,17 +22,17 @@ Recovered structure:
 - Lines starting with `*` are comments skipped by a hand-written newline scan,
   matching the native special case rather than the general line skipper helper.
 
-Focused matcher result: 51.33%, 314 candidate instructions versus 325 target
-instructions, with a 27-instruction exact prefix. The masked audit reports 33
-ok, zero unresolved, and 14 alignment-dependent mismatches.
+Focused matcher result: 54.77%, 314 candidate instructions versus 325 target
+instructions, with a 30-instruction exact prefix. The masked audit reports 36
+ok, zero unresolved, and 12 alignment-dependent mismatches.
 
 Known residuals:
 
 - Native and candidate now both use a `0x23c` frame, including the observed
   `byte_count`, texture-name, texture-path, and object-path slots.
-- Native spills the facequad and vertex running counts in the opposite order
-  from the candidate (`+0x24/+0x20` versus `+0x20/+0x24`). This ends the exact
-  prefix but does not change their ownership or lifetime.
+- Native and candidate now both spill the vertex running count at `+0x20` and
+  the facequad running count at `+0x24`; their declaration order owns the two
+  function-lifetime slots without padding or synthetic aliases.
 - Native stores vertex and facequad floats through x87 load/store scheduling;
   the remaining differences are primarily local-slot allocation, independent
   register selection, and block placement.
@@ -84,8 +84,29 @@ the recovered `header_word` field rather than an untyped cast.
 The same audit recovered one function-lifetime secondary cursor shared by the
 vertex counter, vertex parser, facequad counter, and facequad parser. Together
 with the function-lifetime `byte_count`, that reuse produces the native
-`0x23c` frame and exact buffer offsets. The retained 51.33% result is lower than
-the semantic similarity of the two listings because the swapped count spill
-slots and block layout disrupt sequence alignment; no dummy locals, volatile
-qualifiers, or synthetic pointer aliases were introduced to conceal that
-residual.
+`0x23c` frame and exact buffer offsets. Before the count-declaration correction,
+the 51.33% result was lower than the semantic similarity of the two listings
+because the swapped count spill slots and block layout disrupted sequence
+alignment; no dummy locals, volatile qualifiers, or synthetic pointer aliases
+were introduced to conceal that residual.
+
+2026-07-12 counter order and void ownership closure:
+
+- Declaring the vertex count before the facequad count recovers the native
+  spill ownership exactly: vertex count at `esp+0x20`, facequad count at
+  `esp+0x24`. This simple lifetime correction raises the focused match from
+  51.33% to 54.77%, extends the exact prefix from 27 to 30 instructions, and
+  improves the masked audit from 33 clean / 14 mismatched to 36 clean / 12
+  alignment-dependent mismatches, while retaining the exact `0x23c` frame.
+- The symbol-preserving iOS method is `cRObject::Load(char*)`. Its epilogue at
+  `0x13f3c` restores registers and returns without establishing `r0`, while
+  every Windows caller discards `eax`. The Windows cdecl helper is therefore a
+  staticized void load into the borrowed `Object*`; the final text cursor left
+  in `eax` is incidental. Promoting the checked-in declarations and scratch to
+  `void` is codegen-neutral at the retained 54.77% score.
+- A previewed live Binary Ninja prototype update still read back as the stale
+  `int32_t()` and was reverted by the bridge. The checked-in Binary Ninja
+  header now carries the correct void declaration, but the repeatable sync
+  continues to report this one resistant user-type defect rather than claiming
+  a live mutation succeeded. The headless IDA sync accepted and verified the
+  same void declaration with no missing or failed updates.

@@ -76,7 +76,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_object_definition",
-        "int __cdecl load_object_definition(char* path, Object* object);",
+        "void __cdecl load_object_definition(char* path, Object* object);",
     ),
     (
         "create_object_vertex_buffer_resource",

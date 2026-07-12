@@ -2066,7 +2066,8 @@
       "windows_name": "load_object_definition",
       "ios_symbol": "cRObject::Load(char*)",
       "source_object": "RObject.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API."
     },
     {
       "address": "0x44dce0",
