@@ -240,11 +240,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_anim_manager",
-        "void __thiscall initialize_anim_manager(AnimationDispatchState* manager);",
+        "void __thiscall initialize_anim_manager(AnimManager* manager);",
     ),
     (
         "update_anim_manager",
-        "void __thiscall update_anim_manager(AnimationDispatchState* manager);",
+        "void __thiscall update_anim_manager(AnimManager* manager);",
     ),
     (
         "set_weapon_animation",

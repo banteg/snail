@@ -2454,12 +2454,13 @@
     },
     {
       "address": "0x4447c0",
-      "name": "initialize_anim_manager"
+      "name": "initialize_anim_manager",
+      "description": "Exact void `cRAnimManager::Init()`: clears the state, progress, progress step, and completion latch of the authored 0x48-byte queued animation owner. Android preserves the same offsets and void contract."
     },
     {
       "address": "0x4447d0",
       "name": "update_anim_manager",
-      "description": "Advances one queued presentation animation channel, applying loop, bounce, or clamp flags and starting the next queued entry when the current one finishes."
+      "description": "Windows `cRAnimManager::AI()`: advances one authored 0x48-byte queued presentation-animation owner, applies loop, bounce, or clamp flags, and starts the next queued entry when the current one finishes. Android independently preserves the field map through +0x44."
     },
     {
       "address": "0x444960",

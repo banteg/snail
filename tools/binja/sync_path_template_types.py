@@ -26,6 +26,9 @@ PRESENTATION_SYMBOL_UPDATES = (
 
 SNAIL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x104", "anim_manager", "AnimManager"),
+    ("0x64c", "weapon_channels", "PresentationAnimationChannel[0x3]"),
+    ("0x11e0", "jetpack_channel", "PresentationAnimationChannel"),
     ("0x1894", "invincible_shell", "Invincible"),
     ("0x1938", "snail_skin", "SnailSkin"),
     ("0x1958", "cutscene", "CutScene"),
@@ -33,6 +36,19 @@ SNAIL_FIELD_UPDATES = (
 
 PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x108", "anim_manager", "AnimManager"),
+)
+
+ANIM_MANAGER_FIELD_UPDATES = (
+    ("0x00", "state", "int32_t"),
+    ("0x04", "progress", "float"),
+    ("0x08", "progress_step", "float"),
+    ("0x0c", "active_animation", "ObjectAnimation*"),
+    ("0x10", "completed", "uint8_t"),
+    ("0x14", "queued_animations", "int32_t[0xa]"),
+    ("0x3c", "queue_count", "int32_t"),
+    ("0x40", "target_model", "void*"),
+    ("0x44", "animation_slot_base_minus_24", "uint8_t*"),
 )
 
 INVINCIBLE_FIELD_UPDATES = (
@@ -92,6 +108,9 @@ REQUIRED_HEADER_STRUCTS = (
     "SnailSkin",
     "Snail",
     "CutScene",
+    "ObjectAnimation",
+    "AnimManager",
+    "PresentationAnimationChannel",
     "Player",
     "JetParticleSlot",
     "SubHover",
@@ -367,6 +386,14 @@ PROTO_UPDATES = (
     (
         "set_weapon_animation",
         "int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+    ),
+    (
+        "initialize_anim_manager",
+        "void __thiscall initialize_anim_manager(AnimManager* manager)",
+    ),
+    (
+        "update_anim_manager",
+        "void __thiscall update_anim_manager(AnimManager* manager)",
     ),
     (
         "set_snail_weapon",
@@ -690,6 +717,14 @@ def main() -> int:
             target=args.target,
             struct_name="PresentationAnimationChannel",
             updates=PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="AnimManager",
+            updates=ANIM_MANAGER_FIELD_UPDATES,
         )
     )
     operations.extend(

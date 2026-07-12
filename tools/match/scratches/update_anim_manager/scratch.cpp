@@ -80,7 +80,8 @@ void AnimManager::update_anim_manager()
             } else {
                 ((ModelInstance*)target_model)->flags |= 0x20u;
                 AnimationRecord* record =
-                    (AnimationRecord*)(animation_table + next_animation * sizeof(AnimationRecord));
+                    (AnimationRecord*)(animation_slot_base_minus_24
+                        + next_animation * sizeof(AnimationRecord));
                 progress = 0.0f;
                 PresentationAnimationVisualRoot* root = record->visual_root;
                 active_animation = root->active_animation;

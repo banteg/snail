@@ -10,6 +10,7 @@
  */
 
 typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 typedef short int16_t;
@@ -304,18 +305,28 @@ typedef struct PlayerControlSource {
     float steering_x;
 } PlayerControlSource;
 
-typedef struct AnimationDispatchState {
-    int32_t active;
+typedef struct ObjectAnimation {
+    uint16_t flags;
+    uint8_t _pad_02[0x2];
+    int32_t generated_frame_count;
+    void* frames;
     float progress;
     float progress_step;
-    void* active_keyframe;
-    uint8_t edge_latched;
+} ObjectAnimation;
+
+/* Authored cRAnimManager, exact 0x48-byte queued animation owner. */
+typedef struct AnimManager {
+    int32_t state;
+    float progress;
+    float progress_step;
+    ObjectAnimation* active_animation;
+    uint8_t completed;
     uint8_t _pad_11[0x3];
-    int32_t queued_animation_ids[10];
-    int32_t queued_animation_count;
-    void* self_ref;
-    void* queue_sentinel;
-} AnimationDispatchState;
+    int32_t queued_animations[10];
+    int32_t queue_count;
+    void* target_model;
+    uint8_t* animation_slot_base_minus_24;
+} AnimManager;
 
 typedef struct PresentationAnimationChannel {
     void* vtable;
@@ -327,7 +338,7 @@ typedef struct PresentationAnimationChannel {
     void* active_anim_manager;
     uint8_t _pad_7c[0x88];
     int32_t selected_state;
-    AnimationDispatchState anim_manager;
+    AnimManager anim_manager;
     uint8_t _pad_150[0x24];
     uint8_t animation_slot_table[0x25c];
     Vec3 release_step;
@@ -523,7 +534,7 @@ typedef struct Snail {
     TransformMatrix previous_live_matrix;
     TransformMatrix cached_cutscene_matrix;
     struct Player* owner_player;
-    AnimationDispatchState anim_manager;
+    AnimManager anim_manager;
     uint8_t _pad_14c[0x500];
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;

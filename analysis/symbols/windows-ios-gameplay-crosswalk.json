@@ -804,6 +804,24 @@
       "notes": "v1.9-only spelling preserves the shipped typo."
     },
     {
+      "address": "0x4447c0",
+      "windows_name": "initialize_anim_manager",
+      "ios_symbol": "cRAnimManager::Init()",
+      "android_symbol": "cRAnimManager::Init()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows and Android clear the same state, progress, progress-step, and completion fields. Android returns directly, proving that the exact Windows EAX zero is only a store source and the authored contract is void."
+    },
+    {
+      "address": "0x4447d0",
+      "windows_name": "update_anim_manager",
+      "ios_symbol": "cRAnimManager::AI()",
+      "android_symbol": "cRAnimManager::AI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android independently reads the same cRAnimManager offsets through +0x44 and preserves the state, flag, clamp, queue, target, and next-animation flow. Presentation-record stride and nested animation offsets differ by port."
+    },
+    {
       "address": "0x444960",
       "windows_name": "initialize_score_stats",
       "ios_symbol": "cRSquidge::Init()",

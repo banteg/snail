@@ -563,18 +563,28 @@ typedef struct CutScene {
     uint8_t _pad_59[0x3];
 } CutScene;
 
-typedef struct AnimationDispatchState {
-    int32_t active;
+typedef struct ObjectAnimation {
+    uint16_t flags;
+    uint8_t _pad_02[0x2];
+    int32_t generated_frame_count;
+    void* frames;
     float progress;
     float progress_step;
-    void* active_keyframe;
-    uint8_t edge_latched;
+} ObjectAnimation;
+
+/* Authored cRAnimManager, exact 0x48-byte queued animation owner. */
+typedef struct AnimManager {
+    int32_t state;
+    float progress;
+    float progress_step;
+    ObjectAnimation* active_animation;
+    uint8_t completed;
     uint8_t _pad_11[0x3];
-    int32_t queued_animation_ids[10];
-    int32_t queued_animation_count;
-    void* self_ref;
-    void* queue_sentinel;
-} AnimationDispatchState;
+    int32_t queued_animations[10];
+    int32_t queue_count;
+    void* target_model;
+    uint8_t* animation_slot_base_minus_24;
+} AnimManager;
 
 typedef struct PresentationAnimationChannel {
     void* vtable;
@@ -586,7 +596,7 @@ typedef struct PresentationAnimationChannel {
     void* active_anim_manager;
     uint8_t _pad_7c[0x88];
     int32_t selected_state;
-    AnimationDispatchState anim_manager;
+    AnimManager anim_manager;
     uint8_t _pad_150[0x24];
     uint8_t animation_slot_table[0x25c];
     Vec3 release_step;
@@ -641,7 +651,7 @@ typedef struct Snail {
     TransformMatrix previous_live_matrix;
     TransformMatrix cached_cutscene_matrix;
     Player* owner_player;
-    AnimationDispatchState anim_manager;
+    AnimManager anim_manager;
     uint8_t _pad_14c[0x500];
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;
@@ -1068,8 +1078,8 @@ void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);
 void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
 void __thiscall update_snail_skin(Snail* snail);
-void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
-void __thiscall update_anim_manager(AnimationDispatchState* manager);
+void __thiscall initialize_anim_manager(AnimManager* manager);
+void __thiscall update_anim_manager(AnimManager* manager);
 int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
