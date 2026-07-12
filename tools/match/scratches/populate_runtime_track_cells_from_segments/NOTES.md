@@ -179,6 +179,25 @@ arithmetic here is source-shape preservation, not an unresolved owner.
   the shared owner layout is exercised by the exact row/cell lookup helpers
   instead of forcing typed expressions into this large switch.
 
+## 2026-07-12 build-session ownership pass
+
+- The selected replay/high-score source is now read through
+  `selected_level_record_active` and the borrowed `selected_level_record`.
+  Modes 0, 1, and 4 reset the embedded
+  `SubgameRuntime::current_high_score_record` directly; the scratch-local
+  `HighScoreEntry` lookalike was not a separate owner.
+- The setup reset now names `replay_update_cursor` and the embedded `Player`
+  fields it actually mutates: `total_score`, `stopwatch`, `score_tail`,
+  `movement_flag_selector`, and `visible_life_stock`. The score-bucket reset is
+  likewise invoked on that same `Player` owner.
+- The high-score argument at runtime `+0x30` is the `level_arg_tail` view of
+  the base-rate union, and the initial mirror reset now uses
+  `track_mirror_enabled` / `track_mirror_repeat_count`.
+- All changes are codegen-neutral: focused Wibo remains the honest 28.25%,
+  1190/1245 instructions, with 57 clean masked operands and the known glyph
+  jump-table layout mismatch. This slice removes fake setup owners without
+  perturbing the still-incomplete glyph-builder source shape.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else

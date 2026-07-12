@@ -17,16 +17,6 @@ public:
     int set_bod_object(void* object);
 };
 
-struct HighScoreEntry {
-    void initialize_high_score_entry(
-        int runtime_build_seed,
-        int level_mode_arg,
-        int level_record_word,
-        unsigned int runtime_flags,
-        int archive_kind,
-        int replay_level_arg);
-};
-
 extern char* g_game_base; // data_4df904
 
 double random_float_below(float upper_bound, const char* tag);
@@ -40,8 +30,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     char* base = (char*)this;
     int runtime_build_seed;
 
-    if (*(unsigned char*)(base + 0xff25d0) != 0) {
-        SubSolution* record = *(SubSolution**)(base + 0xff25d4);
+    if (selected_level_record_active != 0) {
+        SubSolution* record = selected_level_record;
         runtime_build_seed = record->runtime_build_seed;
     } else {
         int mode = level_mode;
@@ -55,45 +45,45 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     int mode = level_mode;
     switch (mode) {
     case 0:
-        ((HighScoreEntry*)(base + 0xfd2b10))->initialize_high_score_entry(
+        current_high_score_record.initialize_high_score_entry(
             runtime_build_seed,
             level_mode_arg,
-            *(int*)(base + 0x30),
+            level_arg_tail,
             runtime_flags,
             0,
             level_mode_arg);
         break;
     case 1:
-        ((HighScoreEntry*)(base + 0xfd2b10))->initialize_high_score_entry(
+        current_high_score_record.initialize_high_score_entry(
             runtime_build_seed,
             level_mode_arg,
-            *(int*)(base + 0x30),
+            level_arg_tail,
             runtime_flags,
             1,
             level_mode_arg);
         break;
     case 4:
-        ((HighScoreEntry*)(base + 0xfd2b10))->initialize_high_score_entry(
+        current_high_score_record.initialize_high_score_entry(
             runtime_build_seed,
             level_mode_arg,
-            *(int*)(base + 0x30),
+            level_arg_tail,
             runtime_flags,
             2,
             level_mode_arg);
         break;
     }
 
-    *(int*)(base + 0xff25dc) = 0;
+    replay_update_cursor = 0;
     if (*(int*)(base + 0x1270fc8) == 3) {
         *(int*)(base + 0x1270fc8) = 1;
-        *(int*)(base + 0x3bba48) = 0;
-        ((Player*)(base + 0x3bb764))->clear_subgoldy_score_buckets();
-        *(int*)(base + 0x3bfaa4) = 3;
+        player.total_score = 0;
+        player.clear_subgoldy_score_buckets();
+        player.visible_life_stock = 3;
     }
 
-    ((Time*)(base + 0x3bba4c))->Zero();
-    *(int*)(base + 0x3bba64) = 0;
-    *(int*)(base + 0x3bba6c) = 0;
+    player.stopwatch.Zero();
+    player.score_tail = 0;
+    player.movement_flag_selector = 0;
     set_math_random_seed(runtime_build_seed);
     ((TextureSetSelector*)(g_game_base + 0xb24))->select_level_track_texture_set(
         *(int*)(base + 0x1b01e4));
@@ -132,8 +122,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         completion_row_start = runtime_row_count - *(int*)(base + 0x1abf1c);
     }
 
-    base[2] = 0; // track_mirror_enabled
-    *(int*)(base + 4) = 0; // track_mirror_repeat_count
+    track_mirror_enabled = false;
+    track_mirror_repeat_count = 0;
     int trampoline_counter = 0;
     char first_or_last_row = 0;
     int row_event_owner = 0;
