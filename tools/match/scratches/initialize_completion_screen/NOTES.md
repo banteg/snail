@@ -16,11 +16,12 @@ Recovered relationships:
 - The `SubSolution` tail fields at `+0x48/+0x4c/+0x50` now line up with the
   `complete_subgame` result-record copy and the completion replay bonus read.
 
-Current match: 64.10%, 278 target instructions / 268 candidate instructions,
-34 masked operands all resolved. The main residual is source-shape scheduling:
-native loads `g_game_base` before allocating the `Color4f` stack local and keeps
-the y/x bonus indices in `esi/edx`, while the scratch's straightforward C++
-keeps the game pointer in `edi` and swaps some index registers. No fakematching.
+Current match: 89.89%, 278 target instructions / 276 candidate instructions,
+with a 23-instruction exact prefix and 44 masked operands all resolved. The
+remaining bonus-table block is a register-allocation residual: native carries
+the difficulty/y index in `esi` and the speed/x source through `ecx`, while the
+straightforward C++ selects the opposite pair before converging on the same
+clamps, perfect-bonus test, and table lookups. No fakematching.
 
 2026-07-10 owner closure: replay-active and replay-record reads now use the
 embedded `GameRoot::subgame` aliases at relative `+0xff25d0/+0xff25d4`. The
@@ -33,3 +34,21 @@ the parcel-display and final-result phases without duplicating storage;
 `sizeof(Completion) == 0x50` matches the native ledger and ends exactly at
 `TimesUp`. The focused initializer remains honestly at 64.10%, 268/278, with
 all 34 operands clean.
+
+2026-07-12 source-shape recovery:
+
+- Removing the long-lived `GameRoot*` borrow matches the native ownership
+  boundaries: the root is reloaded for the initial mode, replay record, total
+  score, and later UI mode reads rather than being retained across widget
+  allocation callbacks.
+- Computing the difficulty/y division inside each replay/live-source branch
+  restores the native 23-instruction prefix and keeps the speed/x source raw
+  until the shared division point.
+- The perfect/non-perfect continue-widget calls are again separate source
+  branches, matching the native shared-tail layout without a synthetic stack
+  y-coordinate.
+- Together these changes raise the focused result from 64.10% (`268/278`,
+  prefix 0, 34 clean operands) to 89.89% (`276/278`, prefix 23, 44 clean
+  operands). Natural declaration-order, switch, shared-color, and temporary
+  variants were rejected because they regressed the result or only exchanged
+  registers; the residual stays visible.
