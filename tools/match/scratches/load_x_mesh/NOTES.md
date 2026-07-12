@@ -70,14 +70,37 @@ Notable shape details:
   `ObjectUv` struct assignments. This reproduces native's owner reloads and
   reaches a 492/492 instruction shape at 79.47%.
 - Material-face indices are truncated to signed 16-bit values before indexing
-  the temporary `TextureRef**` table. Resolving that pointer in a temporary
-  before assigning the Object-owned face slot matches the native evaluation
-  order and yields 80.20% (493/492 instructions, 46/492 prefix, 93 clean
-  masks, no unresolved operands or mismatches).
+  the temporary `TextureRef**` table. At this stage of the ownership recovery,
+  resolving that pointer in a temporary before assigning the Object-owned face
+  slot produced the closer evaluation order and yielded 80.20% (493/492
+  instructions, 46/492 prefix, 93 clean masks, no unresolved operands or
+  mismatches).
 
-Rejected probes: an explicit working face-count alias is codegen-neutral; an
-advancing material-slot pointer regresses to 73.39% by disturbing unrelated
-stack ownership; storing the parsed material index as a standalone `short` or
-casting it inline reaches only 79.39% because VC6 schedules the destination
-owner first. None are retained. The remaining residuals are honest local-slot
-and register-lifetime differences, not missing mesh ownership.
+2026-07-12 parser and material-slot lifetimes:
+
+- Native preserves the raw `parse_next_signed_int` return for the authored
+  vertex count, then sign-extends its low 16 bits into the working count. The
+  Android sibling independently exposes the same `Rstrint(...) << 16` / signed
+  high-half lifetime. Keeping both values and consuming the working count in
+  the vertex pass raises focused Wibo from 80.20% to 81.54%.
+- The material loop owns two distinct pieces of state: a zero-based material
+  index and an advancing `TextureRef**` slot. Crucially, the slot does not
+  become live until after the native `material_count > 0` guard. Binding it
+  inside that guarded scope recovers the Windows register and stack schedule,
+  taking the scratch from 83.52% to 95.54%.
+- Assigning the final material-table lookup directly into the Object-owned face
+  slot restores native right-hand-side evaluation and reaches 96.75% (494/492
+  instructions, 238/492 prefix, 94 clean masks, no unresolved operands or
+  mismatches).
+- The sole instruction-count residual is the non-quad flag update: the target
+  emits one direct byte `or`, while VC6 expands the typed field spelling into a
+  byte load/`or`/store. Pointer and raw-byte probes perturb the otherwise native
+  owner/register schedule, so the typed `ObjectFaceQuad::flags` update remains
+  rather than forcing an artificial exact match.
+
+Rejected probes: moving the parser locals into broad function-level scopes is
+codegen-neutral; making the material-slot pointer live before the empty-list
+guard loses the native index ownership; storing the parsed material index as a
+standalone `short` changes the final assignment schedule; and an explicit
+pointer to the face flag byte regresses the broader face-loop register
+allocation. None are retained.

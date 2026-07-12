@@ -57,8 +57,9 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
     material_header_cursor = find_case_insensitive_substring("{", material_header_cursor);
 
     parse_next_signed_int(&material_header_cursor);
-    short facequad_count = (short)parse_next_signed_int(&material_header_cursor);
-    short vertex_count = (short)parse_next_signed_int(&duplicate_cursor);
+    short parsed_facequad_count = (short)parse_next_signed_int(&material_header_cursor);
+    int parsed_vertex_count = parse_next_signed_int(&duplicate_cursor);
+    int vertex_count = (short)parsed_vertex_count;
     if (vertex_count != parse_next_signed_int(&mesh_cursor))
         report_errorf(
             "Mesh vertices count does not match vertext duplicate vertices count in %s",
@@ -74,6 +75,7 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
             "Mesh texture coords number does not match mesh vertext count in %s",
             mesh_file_path);
 
+    int facequad_count = parsed_facequad_count;
     object->request_object_facequads(facequad_count);
     object->request_object_vertices(vertex_count);
 
@@ -88,10 +90,15 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
         texture_coords[i].v = parse_next_float32(&texcoord_cursor);
     }
 
-    for (i = 0; i < vertex_count; ++i) {
-        object->vertices[i].x = parse_next_float32(&mesh_cursor);
-        object->vertices[i].y = parse_next_float32(&mesh_cursor);
-        object->vertices[i].z = parse_next_float32(&mesh_cursor);
+    if ((short)parsed_vertex_count > 0) {
+        int vertex_index = 0;
+        do {
+            object->vertices[vertex_index].x = parse_next_float32(&mesh_cursor);
+            object->vertices[vertex_index].y = parse_next_float32(&mesh_cursor);
+            object->vertices[vertex_index].z = parse_next_float32(&mesh_cursor);
+            ++vertex_index;
+            --vertex_count;
+        } while (vertex_count != 0);
     }
 
     if (facequad_count != parse_next_signed_int(&mesh_cursor))
@@ -148,41 +155,49 @@ int DirectXLoader::load_x_mesh(char* mesh_path, Object* object, unsigned char op
     TextureRef** materials = (TextureRef**)allocate_tracked_memory(
         material_count << 2, "Direct X Materiallist");
     char* material_text = material_cursor;
-    for (i = 0; i < material_count; ++i) {
-        char* texture_name = find_case_insensitive_substring("TextureFilename ", material_text);
-        if (texture_name == 0) {
-            if ((options_flags & 2) == 0)
-                report_warningf("No TextureFilename for Material %i in %s", i, mesh_file_path);
-            materials[i] =
-                g_texture_refs.get_or_create_texture_ref("Sprites/debug.tga", 0, 0);
-            material_text = material_cursor;
-        } else {
-            material_text = find_case_insensitive_substring("\"", texture_name) + 1;
-            texture_path[0] = 'X';
-            texture_path[1] = '/';
-            char* out = texture_path + 2;
-            while (*material_text != '.') {
-                *out++ = *material_text++;
-            }
-            *out++ = '.';
-            *out++ = 't';
-            *out++ = 'g';
-            *out++ = 'a';
-            *out = 0;
+    int material_index = 0;
+    if (material_count > 0) {
+        TextureRef** material_slot = materials;
+        do {
+            char* texture_name =
+                find_case_insensitive_substring("TextureFilename ", material_text);
+            if (texture_name == 0) {
+                if ((options_flags & 2) == 0)
+                    report_warningf(
+                        "No TextureFilename for Material %i in %s",
+                        material_index,
+                        mesh_file_path);
+                *material_slot =
+                    g_texture_refs.get_or_create_texture_ref("Sprites/debug.tga", 0, 0);
+                material_text = material_cursor;
+            } else {
+                material_text = find_case_insensitive_substring("\"", texture_name) + 1;
+                texture_path[0] = 'X';
+                texture_path[1] = '/';
+                char* out = texture_path + 2;
+                while (*material_text != '.') {
+                    *out++ = *material_text++;
+                }
+                *out++ = '.';
+                *out++ = 't';
+                *out++ = 'g';
+                *out++ = 'a';
+                *out = 0;
 
-            TextureRef* texture_ref =
-                g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
-            materials[i] = texture_ref;
-            texture_ref->flags |= 0x1000;
-            if ((options_flags & 2) != 0)
-                texture_ref->flags |= 0x8000;
-        }
+                *material_slot =
+                    g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+                (*material_slot)->flags |= 0x1000;
+                if ((options_flags & 2) != 0)
+                    (*material_slot)->flags |= 0x8000;
+            }
+            ++material_index;
+            ++material_slot;
+        } while (material_index < material_count);
     }
 
     for (i = 0; i < material_face_count; ++i) {
-        TextureRef* material =
+        object->facequads[i].texture_ref =
             materials[(short)parse_next_signed_int(&material_cursor)];
-        object->facequads[i].texture_ref = material;
     }
 
     return free_tracked_memory(materials);

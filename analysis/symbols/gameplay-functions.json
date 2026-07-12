@@ -233,7 +233,7 @@
     {
       "address": "0x405640",
       "name": "load_x_mesh",
-      "description": "Loads one DirectX X mesh into an owned Object: parses authored 16-bit vertex/face counts, allocates vertices and facequads, writes scalar UV and index lanes through the Object-owned face array, and resolves per-face TextureRef material pointers."
+      "description": "Loads one DirectX X mesh into an owned Object: preserves raw and signed-16-bit working counts while allocating vertices and facequads, writes scalar UV and index lanes through the Object-owned face array, then walks a guarded local TextureRef slot table to assign each face material."
     },
     {
       "address": "0x405c90",
