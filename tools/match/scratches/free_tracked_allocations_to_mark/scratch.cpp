@@ -3,7 +3,7 @@
 extern int g_tracked_allocation_depth;
 extern int g_tracked_allocation_mark;
 
-int free_tracked_memory(void* pointer);
+void free_tracked_memory(void* pointer);
 
 int free_tracked_allocations_to_mark()
 {

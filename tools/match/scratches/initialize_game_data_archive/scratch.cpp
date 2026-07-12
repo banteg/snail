@@ -9,7 +9,7 @@ extern float g_text_input_repeat_accumulator; // data_5108b8
 extern float g_text_input_repeat_step;        // data_50339c
 extern unsigned char g_text_input_last_repeat_code; // data_53c7f5
 extern unsigned char g_archive_startup_flag; // data_53c7f4
-extern int g_archive_data_base;              // data_53c7ec
+extern void* g_archive_data_base;            // data_53c7ec / RShellScratch
 extern char* g_music_memory_buffer;          // data_53c7e8
 char load_archive_index(char* path);
 void reset_registered_sound_sample_count();
@@ -34,7 +34,7 @@ char initialize_game_data_archive()
     }
 
     reset_registered_sound_sample_count();
-    g_archive_data_base = (int)allocate_tracked_memory(0x400000, "Scratch Pad");
+    g_archive_data_base = allocate_tracked_memory(0x400000, "Scratch Pad");
     g_music_memory_buffer =
         (char*)allocate_tracked_memory(0x64000, "Music Memory Buffer");
 

@@ -3776,20 +3776,22 @@
       "name": "g_music_memory_buffer",
       "kind": "global",
       "aliases": [
-        "data_53c7e8"
+        "data_53c7e8",
+        "RShellMusicMemoryBuffer"
       ],
       "size": "0x4",
-      "description": "Shared music/sample byte buffer allocated by initialize_game_data_archive and reused when loading archived music streams and registered sound samples."
+      "description": "Windows counterpart of the authored RShellMusicMemoryBuffer global: a shared music/sample byte buffer allocated by RShellInit and reused when loading archived music streams and registered sound samples."
     },
     {
       "address": "0x53c7f4",
       "name": "g_archive_startup_flag",
       "kind": "global",
       "aliases": [
-        "data_53c7f4"
+        "data_53c7f4",
+        "RShellDirectoryStackLevel"
       ],
       "size": "0x1",
-      "description": "Single-byte archive startup flag cleared by initialize_game_data_archive; no other code references are currently recovered."
+      "description": "Windows counterpart of the authored RShellDirectoryStackLevel global. RShellInit clears the byte; no other Windows reference is currently recovered."
     },
     {
       "address": "0x53c7f5",
@@ -3806,27 +3808,30 @@
       "name": "g_archive_data_base",
       "kind": "global",
       "aliases": [
-        "data_53c7ec"
+        "data_53c7ec",
+        "RShellScratch"
       ],
-      "description": "Base pointer for the loaded archive data buffer."
+      "description": "Windows counterpart of the authored RShellScratch global: base pointer for a 4 MiB transient workspace split into two 2 MiB regions by RShellMemoryScratch and RShellMemoryScratch2. It is not the DAT payload owner."
     },
     {
       "address": "0x53c7f0",
       "name": "g_archive_file",
       "kind": "global",
       "aliases": [
-        "data_53c7f0"
+        "data_53c7f0",
+        "gDatFP"
       ],
-      "description": "Open archive FILE stream closed by uninitialize_game_data_archive and used by archive read helpers."
+      "description": "Windows counterpart of the authored gDatFP global: open DAT FILE stream closed by uninitialize_game_data_archive and used by RShell archive-read helpers."
     },
     {
       "address": "0x53c7f8",
       "name": "g_archive_index_records",
       "kind": "global",
       "aliases": [
-        "data_53c7f8"
+        "data_53c7f8",
+        "gDat"
       ],
-      "description": "Loaded archive index record table pointer tested by archive and resource-loading helpers."
+      "description": "Windows counterpart of the authored gDat global: loaded ArchiveIndex owner tested by RShell archive and resource-loading helpers."
     },
     {
       "address": "0x53c800",

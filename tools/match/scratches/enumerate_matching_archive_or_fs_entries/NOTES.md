@@ -40,6 +40,15 @@ These residuals are compiler allocation and expression-form differences. Forcing
 the spill with `volatile`, a dummy local, or inline assembly would be
 fakematching, so the scratch leaves them visible.
 
+Cross-port ownership:
+
+- iOS `RShell.o` supplies the exact public signature
+  `RShellReadDirectory(char*, char*, int*, char (*)[128])`, proving the
+  caller-owned 128-byte output records.
+- The iOS entry is an empty platform stub, while Windows implements the
+  DAT/filesystem enumeration locally; no body equivalence is claimed beyond
+  the shared public contract.
+
 Rejected probes:
 
 - branching to the filesystem path before clearing `g_enumerated_entry_count` regressed to 34.41%;

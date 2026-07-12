@@ -48,3 +48,8 @@ filesystem topology.
   mismatches). The archive-found body now normalizes identically; the remaining
   diff is the filesystem-fallback layout and the two compiler encodings noted
   above.
+
+2026-07-12 cross-port ownership: iOS `RShell.o` names this public contract
+`RShellLoadFile(char*, void*, int*)`. The live analysis database now carries
+that destination and size-result ownership plus typed `ArchiveIndex` globals;
+the focused source remains byte-oriented to preserve the proven Windows shape.

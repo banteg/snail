@@ -1506,7 +1506,8 @@
     },
     {
       "address": "0x430e40",
-      "name": "initialize_game_data_archive"
+      "name": "initialize_game_data_archive",
+      "description": "Windows RShellInit(): resets the global shell, tracked-allocation, key-repeat, sound, and input state; initializes the DAT index; allocates the shared RShell scratch and music workspaces; and samples the current cursor clip rectangle."
     },
     {
       "address": "0x430ef0",
@@ -1520,12 +1521,13 @@
     },
     {
       "address": "0x430fd0",
-      "name": "archive_or_file_exists"
+      "name": "archive_or_file_exists",
+      "description": "Windows RShellFindFile(char*, bool): checks the loaded DAT index unless the boolean formal forces a direct filesystem probe."
     },
     {
       "address": "0x431030",
       "name": "load_file_bytes_fixed_size_from_archive_or_fs",
-      "description": "Loads exactly the caller-supplied byte count from a named archive entry or filesystem path, using ArchiveEntry data_offset for the sentinel, seek target, and XOR seed while reusing a caller buffer or allocating tracked storage."
+      "description": "Windows RShellLoadFileHeader(char*, void*, int): loads exactly the caller-supplied byte count from a named archive entry or filesystem path, using ArchiveEntry data_offset for the sentinel, seek target, and XOR seed while reusing a caller buffer or allocating tracked storage."
     },
     {
       "address": "0x431250",
@@ -1534,25 +1536,27 @@
     {
       "address": "0x4312d0",
       "name": "load_file_bytes_from_archive_or_fs",
-      "description": "Loads variable-size bytes through the shared ArchiveIndex or filesystem fallback: case-folds the requested path, uses ArchiveEntry data_offset and byte_count to seek/read/XOR into a caller buffer or tracked allocation, and reports the selected size when requested."
+      "description": "Windows RShellLoadFile(char*, void*, int*): loads variable-size bytes through the shared ArchiveIndex or filesystem fallback, using ArchiveEntry data_offset and byte_count to seek/read/XOR into a caller buffer or tracked allocation and reporting the selected size when requested."
     },
     {
       "address": "0x431520",
-      "name": "load_file_bytes"
+      "name": "load_file_bytes",
+      "description": "Exact Windows RShellLoadFile(char*, int*) overload that delegates to the three-argument loader with a null destination buffer."
     },
     {
       "address": "0x431540",
       "name": "delete_file_path_with_directory_walk",
-      "description": "Deletes one filesystem path after walking each parent directory component through the shared current-directory helper, mirroring the save-path builder beside it; used by the temporary BASS DLL teardown path."
+      "description": "Windows RShellDeleteFile(char*): deletes one filesystem path after walking each parent directory component through the shared current-directory helper, mirroring the save-path builder beside it; used by the temporary BASS DLL teardown path."
     },
     {
       "address": "0x431650",
-      "name": "write_file_bytes"
+      "name": "write_file_bytes",
+      "description": "Windows RShellSaveFile(char*, void*, int): walks intermediate directory components, writes the caller-owned byte range, and restores the original working directory."
     },
     {
       "address": "0x431740",
       "name": "enumerate_matching_archive_or_fs_entries",
-      "description": "Enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail."
+      "description": "Windows RShellReadDirectory(char*, char*, int*, char (*)[128]): enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail."
     },
     {
       "address": "0x431980",
@@ -1562,7 +1566,7 @@
     {
       "address": "0x4319c0",
       "name": "load_archive_index",
-      "description": "Decodes and parses the SnailMail.dat archive index into lookup records for archive-backed file loading."
+      "description": "Windows RShellDatInit(char*): decodes and parses the SnailMail.dat archive index, rebases the 12-byte entry paths against the installed ArchiveIndex owner, and opens the backing DAT stream."
     },
     {
       "address": "0x431a80",
@@ -1572,12 +1576,12 @@
     {
       "address": "0x431a90",
       "name": "get_archive_data_base",
-      "description": "Returns the base pointer of the loaded SnailMail.dat payload buffer used by archive-backed mesh, voice, and object-definition readers."
+      "description": "Windows RShellMemoryScratch(): returns the base of the global 4 MiB RShell scratch workspace used by transient mesh, voice, object-definition, and render-buffer builders. It does not own the DAT payload."
     },
     {
       "address": "0x431aa0",
       "name": "get_archive_data_end",
-      "description": "Returns the end pointer of the fixed-size loaded archive payload window; current Windows callers use it as the upper bound when walking archive-backed texture-group buffers."
+      "description": "Windows RShellMemoryScratch2(): returns the second 2 MiB region of the global RShell scratch workspace at base +0x200000. Despite the stable harness name, this is a second workspace base rather than an end sentinel."
     },
     {
       "address": "0x431ab0",
@@ -1597,12 +1601,12 @@
     {
       "address": "0x431b60",
       "name": "allocate_tracked_memory",
-      "description": "Allocates a zeroed guarded heap block, records it in the global tracked-allocation stack, writes the front and back `DE AD BA BE` sentinels, and returns the caller-visible payload pointer."
+      "description": "Windows RShellMemoryMalloc(int, char*): allocates a zeroed guarded heap block, records it in the global tracked-allocation stack, writes the front and back `DE AD BA BE` sentinels, and returns the caller-visible payload pointer."
     },
     {
       "address": "0x431bf0",
       "name": "free_tracked_memory",
-      "description": "Validates a guarded tracked allocation, removes its size from the global memory tally, frees the backing block, and drops the pointer from the tracked-allocation stack."
+      "description": "Windows RShellMemoryFree(void*): validates a guarded tracked allocation, removes its size from the global memory tally, frees the backing block, and drops the pointer from the tracked-allocation stack."
     },
     {
       "address": "0x431c70",
@@ -1612,22 +1616,22 @@
     {
       "address": "0x431cb0",
       "name": "set_tracked_allocation_mark",
-      "description": "Saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call."
+      "description": "Windows RShellMemoryBookmark(): saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call."
     },
     {
       "address": "0x431cc0",
       "name": "report_errorf",
-      "description": "Formats and emits one fatal-style engine error message with a varargs payload. Runtime and content-loading paths use it for hard failures such as missing hotspot textures, parcel-pool exhaustion, and invalid track segment lengths."
+      "description": "Windows RShellError(char*, ...): formats and emits one fatal-style engine error message with a varargs payload. Runtime and content-loading paths use it for hard failures such as missing hotspot textures, parcel-pool exhaustion, and invalid track segment lengths."
     },
     {
       "address": "0x431d10",
       "name": "report_warningf",
-      "description": "Formats one warning message with the native `* WARNING *` prefix and emits it through the shared debug-output path."
+      "description": "Windows RShellWarning(char*, ...): formats one warning message with the native `* WARNING *` prefix and emits it through the shared debug-output path."
     },
     {
       "address": "0x431d60",
       "name": "report_messagef",
-      "description": "Formats and emits one plain debug message without the warning prefix; archive/file loading paths use it for missing-file notices."
+      "description": "Windows RShellPrintText(char*, ...): formats and emits one plain debug message without the warning prefix; archive/file loading paths use it for missing-file notices."
     },
     {
       "address": "0x431da0",

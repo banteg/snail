@@ -13,3 +13,7 @@ before allocation and uses the `name` parameter directly for the tracked-stack
 record. Spelling those as separate `guarded_size` and `label` locals makes VC6
 compute through `eax` before saving callee-saved registers and passes the label
 through `ecx`.
+
+iOS `RShell.o` names the public contract `RShellMemoryMalloc(int, char*)`.
+Windows adds the recovered guard bytes and allocation-stack accounting around
+that size/label interface; iOS delegates its platform body directly to malloc.

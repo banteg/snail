@@ -12,3 +12,10 @@ Initial shape:
 Status:
 
 - 2026-06-18: 100%, 36/36 target instructions, 7 masked operands ok.
+
+Cross-port ownership:
+
+- iOS `RShell.o` names the exact public contract
+  `RShellFindFile(char*, bool)`.
+- Its boolean formal selects the same DAT-index versus direct-filesystem path
+  as the Windows byte formal; the stable harness name remains descriptive.

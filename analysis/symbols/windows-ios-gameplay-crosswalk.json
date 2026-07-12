@@ -1839,6 +1839,139 @@
       "notes": "Windows and Android validate caller-owned cRBodPos keyframes, retain an ObjectAnimation/frame graph on the destination Object, and generate vertices from current plus a scaled next-minus-current delta. Android's 0x74-byte keyframes and 0x18-byte animation record are port-specific; Windows proves 0x80-byte keyframes and a 0x14-byte ObjectAnimation."
     },
     {
+      "address": "0x430e40",
+      "windows_name": "initialize_game_data_archive",
+      "ios_symbol": "RShellInit()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both initialize the global RShell state, DAT index, scratch and music buffers, registered-sound count, input slots, and key-repeat state. The platform ports use different scratch sizes but preserve the same ownership."
+    },
+    {
+      "address": "0x430fd0",
+      "windows_name": "archive_or_file_exists",
+      "ios_symbol": "RShellFindFile(char*, bool)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both prefer the loaded DAT index unless the boolean formal forces a direct filesystem probe."
+    },
+    {
+      "address": "0x431030",
+      "windows_name": "load_file_bytes_fixed_size_from_archive_or_fs",
+      "ios_symbol": "RShellLoadFileHeader(char*, void*, int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "The ports share the caller-sized archive or filesystem read contract, including the DAT data-offset sentinel and caller-owned destination buffer."
+    },
+    {
+      "address": "0x4312d0",
+      "windows_name": "load_file_bytes_from_archive_or_fs",
+      "ios_symbol": "RShellLoadFile(char*, void*, int*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "The variable-size RShell loader reports the selected byte count, reads through the loaded DAT stream when possible, and otherwise owns the filesystem fallback allocation."
+    },
+    {
+      "address": "0x431520",
+      "windows_name": "load_file_bytes",
+      "ios_symbol": "RShellLoadFile(char*, int*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "The exact Windows wrapper supplies a null destination to the three-argument RShellLoadFile overload."
+    },
+    {
+      "address": "0x431540",
+      "windows_name": "delete_file_path_with_directory_walk",
+      "ios_symbol": "RShellDeleteFile(char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "The Windows implementation walks intermediate directories before deleting the final component; iOS delegates the same public RShell contract to MacDeleteFile."
+    },
+    {
+      "address": "0x431650",
+      "windows_name": "write_file_bytes",
+      "ios_symbol": "RShellSaveFile(char*, void*, int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "The Windows implementation creates intermediate path context and writes the caller-owned byte range; iOS delegates the same public RShell contract to MacSaveFile."
+    },
+    {
+      "address": "0x431740",
+      "windows_name": "enumerate_matching_archive_or_fs_entries",
+      "ios_symbol": "RShellReadDirectory(char*, char*, int*, char (*) [128])",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "The exact four-formal signature names the caller-owned 128-byte filename records. Windows implements DAT/filesystem enumeration locally; the iOS RShell entry is an empty platform stub."
+    },
+    {
+      "address": "0x4319c0",
+      "windows_name": "load_archive_index",
+      "ios_symbol": "RShellDatInit(char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both decode the DAT header and full index, rebase each 12-byte entry path against the installed index owner, and retain an open backing stream."
+    },
+    {
+      "address": "0x431a90",
+      "windows_name": "get_archive_data_base",
+      "ios_symbol": "RShellMemoryScratch()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "This returns the global RShell scratch workspace, not DAT payload ownership; Windows allocates a 4 MiB workspace while iOS allocates 5 MiB."
+    },
+    {
+      "address": "0x431aa0",
+      "windows_name": "get_archive_data_end",
+      "ios_symbol": "RShellMemoryScratch2()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "This returns the second RShell scratch region rather than an end sentinel: Windows adds 0x200000 to its 4 MiB workspace, while iOS adds 0x280000 to its 5 MiB workspace."
+    },
+    {
+      "address": "0x431b60",
+      "windows_name": "allocate_tracked_memory",
+      "ios_symbol": "RShellMemoryMalloc(int, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Windows adds guarded sentinels and tracked-stack accounting around the RShell allocation; iOS retains the public size and label contract while delegating to malloc."
+    },
+    {
+      "address": "0x431bf0",
+      "windows_name": "free_tracked_memory",
+      "ios_symbol": "RShellMemoryFree(void*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Windows validates and removes a guarded tracked allocation; iOS retains the public pointer contract while delegating to free."
+    },
+    {
+      "address": "0x431cb0",
+      "windows_name": "set_tracked_allocation_mark",
+      "ios_symbol": "RShellMemoryBookmark()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both snapshot the current RShell allocation depth for a later unwind; the saved-field offset differs between the platform-specific allocation-stack layouts."
+    },
+    {
+      "address": "0x431cc0",
+      "windows_name": "report_errorf",
+      "ios_symbol": "RShellError(char*, ...)",
+      "source_object": "RShell.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x431d10",
+      "windows_name": "report_warningf",
+      "ios_symbol": "RShellWarning(char*, ...)",
+      "source_object": "RShell.o",
+      "confidence": "high"
+    },
+    {
+      "address": "0x431d60",
+      "windows_name": "report_messagef",
+      "ios_symbol": "RShellPrintText(char*, ...)",
+      "source_object": "RShell.o",
+      "confidence": "high"
+    },
+    {
       "address": "0x44c3b0",
       "windows_name": "is_mouse_captured",
       "ios_symbol": "cRMouse::IsActive()",

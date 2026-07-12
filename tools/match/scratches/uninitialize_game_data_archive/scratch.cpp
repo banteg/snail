@@ -2,14 +2,14 @@
 
 #include "archive_index.h"
 
-extern int g_archive_data_base; // data_53c7ec
+extern void* g_archive_data_base; // data_53c7ec / RShellScratch
 
-int free_tracked_memory(void* pointer);
+void free_tracked_memory(void* pointer);
 extern "C" int __cdecl fclose(File* file);
 
 int uninitialize_game_data_archive()
 {
-    free_tracked_memory((void*)g_archive_data_base);
+    free_tracked_memory(g_archive_data_base);
     int result = (int)g_archive_index_records;
     if (g_archive_index_records != 0) {
         result = fclose(g_archive_file);

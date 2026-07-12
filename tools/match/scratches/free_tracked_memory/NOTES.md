@@ -12,3 +12,9 @@ buffers. The native entry shape comes from mutating the parameter to the guarded
 backing block before taking the typed byte view for sentinel checks; spelling the
 adjustment as a separate `char*` initializer makes VC6 compute `pointer - 4`
 through `eax` before saving `esi`.
+
+iOS `RShell.o` names the public contract `RShellMemoryFree(void*)`. Windows
+retains the same caller-owned pointer interface while adding guard validation
+and tracked-stack removal. Exact and near-exact callers now declare the helper
+`void`; the broad `initialize_intro_screen` relationship scratch still returns
+its incidental `eax` and is left for a dedicated `cRIntro::Init` ABI audit.

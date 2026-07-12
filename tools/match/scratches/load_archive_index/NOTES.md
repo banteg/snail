@@ -41,3 +41,9 @@ type for `find_archive_entry`, while `register_sound_sample` keeps its saved
 global as an `ArchiveIndex*`. All five focused objects remain exact; this clears
 the archive-index address from the shared-extern conflict report without
 changing code generation.
+
+2026-07-12 cross-port ownership: the exact iOS `RShell.o` symbol is
+`RShellDatInit(char*)`. Its ARM body independently decodes the 0x7c-byte
+header, allocates and decodes the full index, rebases each 12-byte entry path,
+installs `gDat`, and opens `gDatFP`, matching the Windows `ArchiveIndex` and
+`g_archive_file` ownership.

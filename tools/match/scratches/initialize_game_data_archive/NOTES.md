@@ -45,3 +45,9 @@
   `TrackedAllocationStack` and the reference manifest audits the alternate
   symbol. The focused result remains `94.74%`, `48/47`, with all 19 masked
   operands clean.
+- 2026-07-12 cross-port ownership: the exact iOS `RShell.o` symbol is
+  `RShellInit()`. Its body owns the same DAT initialization, shell globals,
+  registered-sound count, key-repeat state, input slots, scratch allocation,
+  and music buffer. The Windows `0x53c7ec` allocation is therefore typed as
+  the `RShellScratch` workspace rather than an archive payload address. This is
+  codegen-neutral at the retained 94.74% baseline.

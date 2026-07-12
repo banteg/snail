@@ -13,7 +13,7 @@ char* find_case_insensitive_substring(char* needle, char* haystack); // @ 0x44e6
 int parse_next_signed_int(char** cursor); // @ 0x44e710
 float parse_next_float32(char** cursor); // @ 0x431f20
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
-int free_tracked_memory(void* pointer); // @ 0x431bf0
+void free_tracked_memory(void* pointer); // @ 0x431bf0 / RShellMemoryFree(void*)
 int report_errorf(char* format, ...); // @ 0x431cc0
 int report_warningf(char* format, ...); // @ 0x431d10
 

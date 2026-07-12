@@ -50,3 +50,9 @@ Retain the `char**` entry-path walk.
   buffer paths now normalize identically; the remaining extra instruction is
   the `_getcwd` cleanup noted above, alongside the established ASCII-fold and
   loop-layout encodings.
+
+2026-07-12 cross-port ownership: iOS `RShell.o` names this public contract
+`RShellLoadFileHeader(char*, void*, int)`. The `void*` destination and signed
+32-bit byte count are now captured in the analysis type sync; the scratch keeps
+its byte-oriented `char*` spelling because that is codegen-neutral and clearer
+inside the decrypt loop.

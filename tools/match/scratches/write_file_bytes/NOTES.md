@@ -18,3 +18,7 @@ target: 74 insns, candidate: 74 insns
 prefix: 74/74 target insns
 masked operands: 10 ok, 0 unresolved, 0 mismatch
 ```
+
+iOS `RShell.o` names the public contract `RShellSaveFile(char*, void*, int)`.
+Using that caller-owned buffer and signed 32-bit length directly is
+codegen-neutral for the exact Windows implementation.

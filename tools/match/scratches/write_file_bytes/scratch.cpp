@@ -17,7 +17,7 @@ int __cdecl chdir(char* path);
 int report_messagef(char* format, ...);
 int set_current_directory_with_drive_fallback(char* path);
 
-int __cdecl write_file_bytes(char* path, char* bytes, unsigned int byte_count)
+int __cdecl write_file_bytes(char* path, void* bytes, int byte_count)
 {
     char path_part[256];
     char current_directory[512];
