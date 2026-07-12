@@ -14,7 +14,7 @@ int SegmentCache::add_track_cache_vertex(
     ObjectRenderVertex* vertices,
     int* vertex_count,
     int max_vertices,
-    int max_indices,
+    int unused_max_indices,
     unsigned int color,
     unsigned char project_uv)
 {
@@ -43,12 +43,13 @@ int SegmentCache::add_track_cache_vertex(
         ++i;
     }
 
+    float flipped_v = 1.0f - v;
     ObjectRenderVertex* vertex = &vertices[i];
     vertex->x = transformed.x;
     vertex->y = transformed.y;
     vertex->z = transformed.z;
     vertex->u = u;
-    vertex->v = 1.0f - v;
+    vertex->v = flipped_v;
     vertex->diffuse = color;
 
     ++*vertex_count;

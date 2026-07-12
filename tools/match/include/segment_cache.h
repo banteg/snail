@@ -37,7 +37,7 @@ public:
         ObjectRenderVertex* vertices,
         int* vertex_count,
         int max_vertices,
-        int max_indices,
+        int unused_max_indices,
         unsigned int color,
         unsigned char project_uv); // @ 0x433830
     int append_track_cache_object(
