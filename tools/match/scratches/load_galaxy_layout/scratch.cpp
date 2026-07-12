@@ -1,6 +1,6 @@
 // load_galaxy_layout @ 0x4088e0 (thiscall)
 
-#include "galaxy_route_types.h"
+#include "game_root.h"
 
 int sprintf(char* buffer, char* format, ...);
 
@@ -11,7 +11,7 @@ int parse_next_signed_int(char** cursor);
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 extern int dword_4a1d14;
 extern int dword_4a1d18[];
@@ -44,7 +44,7 @@ int Galaxy::load_galaxy_layout()
         galaxy_point_cursor += 2;
     } while ((int)galaxy_point_cursor < (int)g_galaxy_route_point_table_end);
 
-    level_progress_base = g_game_base + 0x74618;
+    level_progress_base = (char*)&g_game->subgame;
 
     char* file_text = load_file_bytes_from_archive_or_fs(
         "Galaxy/_Galaxy.txt",
@@ -90,42 +90,32 @@ int Galaxy::load_galaxy_layout()
         route_name_cursor[5] = current_galaxy_point[0];
         route_name_cursor[6] = star_index;
 
-        if (route_name_cursor[-1] > star_index) {
-            int step = 0;
-            int* saved_galaxy_point = current_galaxy_point;
-            do {
-                route_slots[record_count].record.route_name_index = galaxy_index;
-                route_slots[record_count].record.map_x_bits =
-                    dword_4a1d1c[(star_group_offset + step / route_name_cursor[-1]) * 2];
-                route_slots[record_count].record.map_y_bits =
-                    dword_4a1d20[(star_group_offset + step / route_name_cursor[-1]) * 2];
-                route_slots[record_count].record.map_z_bits = 0;
+        for (int step = 0; star_index < route_name_cursor[-1]; step += 10) {
+            route_slots[record_count].record.route_name_index = galaxy_index;
+            route_slots[record_count].record.map_x_bits =
+                dword_4a1d1c[(star_group_offset + step / route_name_cursor[-1]) * 2];
+            route_slots[record_count].record.map_y_bits =
+                dword_4a1d20[(star_group_offset + step / route_name_cursor[-1]) * 2];
+            route_slots[record_count].record.map_z_bits = 0;
 
-                char missing_label[128];
-                sprintf(missing_label, "LEVEL %i MISSING", record_count);
-                rstrcpy_checked_ascii(
-                    route_slots[record_count].record.detail_text, missing_label);
-                rstrcpy_checked_ascii(
-                    route_slots[record_count].record.description_text,
-                    missing_label);
-                ++star_index;
-                ++record_count;
-                step += 10;
-            } while (star_index < route_name_cursor[-1]);
-
-            current_galaxy_point = saved_galaxy_point;
-            star_index = 0;
+            char missing_label[128];
+            sprintf(missing_label, "LEVEL %i MISSING", record_count);
+            rstrcpy_checked_ascii(
+                route_slots[record_count].record.detail_text, missing_label);
+            rstrcpy_checked_ascii(
+                route_slots[record_count].record.description_text,
+                missing_label);
+            ++star_index;
+            ++record_count;
         }
+
+        star_index = 0;
 
         current_galaxy_point += 2;
         route_name_cursor += 40;
         ++galaxy_index;
         star_group_offset += 10;
-        if ((int)current_galaxy_point < (int)g_galaxy_route_point_table_end) {
-            continue;
-        }
-
-        {
+        if ((int)current_galaxy_point >= (int)g_galaxy_route_point_table_end) {
             route_slots[0].record.route_name_index = 0;
             route_slots[0].record.map_x_bits = dword_4a1d14;
             route_slots[0].record.map_y_bits = dword_4a1d18[0];

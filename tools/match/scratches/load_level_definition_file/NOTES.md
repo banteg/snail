@@ -62,3 +62,18 @@ Residuals:
   unresolved / 0 mismatch`, down from `147 ok / 18 unresolved / 0 mismatch`.
   All 18 previously-unresolved `push ADDR`/`mov ... ADDR` buffer references
   now resolve to the curated global.
+
+2026-07-12 Galaxy and landscape ownership closure:
+
+- The root-relative `+0x12d4638` gate is `SubgameRuntime::galaxy.active`.
+  Each parsed `ArcadeN` ordinal selects one owned `GalaxyRouteSlot` at the
+  native `0x2a0` stride; the loader writes the level name to
+  `record.detail_text` and `GalaxyText:` to `record.description_text`.
+- The native compiler retains the selected route as a byte offset from slot 0
+  rather than materializing a route pointer. Keeping that honest recurrence
+  over the typed `route_slots` array preserves the focused `75.17%`,
+  `939/926` instructions, and all `165` clean masked operands.
+- The `Background:` receiver is the already-proved embedded
+  `SubgameRuntime::landscape_manager`, not a standalone root-relative loader
+  view. Naming both owners is codegen-neutral and removes the last raw
+  `g_game_base` arithmetic from this parser.

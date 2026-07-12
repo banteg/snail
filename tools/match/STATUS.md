@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**528/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **79257/325720** bytes (**24.33%**) are proof-grade, and overall fuzzy is **61.51%**.
+**528/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **79257/325720** bytes (**24.33%**) are proof-grade, and overall fuzzy is **61.52%**.
 
 ## Proof Grade (528)
 
@@ -572,7 +572,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (57)
+## High Progress (80-94.99%) (58)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -580,6 +580,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 1 unresolved, 119 ok | msvc6.5 /O2 /G5 /W3 /GX |
+| 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 237/233 | 84.26% | 62/233 | 39 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 1029 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 938 | 266/287 | 87.88% | 6/287 | 1 mismatch, 53 ok |  |
@@ -634,7 +635,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (56)
+## Mid Progress (50-79.99%) (55)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -645,7 +646,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | initialize_main_loop_display_state | 0x406d70 | 79 | 11/23 | 64.71% | 7/23 | 9 ok |  |
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 338/325 | 63.65% | 1/325 | 6 mismatch, 125 ok |  |
-| 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 234/233 | 78.37% | 62/233 | 40 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 550/566 | 61.11% | 6/566 | 43 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 54.93% | 3/73 | 14 ok |  |

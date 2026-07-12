@@ -4,8 +4,9 @@
 #include "landscape_manager.h"
 #include "sub_tracks.h"
 #include "segment_catalog_types.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char* g_current_level_definition_name; // data_74ec74
 extern char g_level_file_text_buffer[]; // data_74ec78
 
@@ -70,31 +71,47 @@ void SubTracks::load_level_definition_file(char* filename)
     }
     *name_out = 0;
 
-    if (*(g_game_base + 0x12d4638) == 0) {
+    if (g_game->subgame.galaxy.active == 0) {
         cursor = find_case_insensitive_substring("Arcade", filename);
         if (cursor != 0) {
             cursor = find_case_insensitive_substring("e", cursor) + 1;
-            int galaxy_index = 0x2a0 * parse_next_signed_int(&cursor);
-            sprintf(g_game_base + galaxy_index + 0x12d4668, "%s", level_display_name);
+            int galaxy_route_offset =
+                sizeof(GalaxyRouteSlot) * parse_next_signed_int(&cursor);
+            sprintf(
+                g_game->subgame.galaxy.route_slots[0].record.detail_text
+                    + galaxy_route_offset,
+                "%s",
+                level_display_name);
 
             cursor = find_case_insensitive_substring("GalaxyText:", LEVEL_FILE_BUFFER);
             if (cursor == 0) {
                 report_warningf("Cannot find GalaxyText: in %s", filename);
-                rstrcpy_checked_ascii(g_game_base + galaxy_index + 0x12d46e8, "TEXT MISSING");
+                rstrcpy_checked_ascii(
+                    g_game->subgame.galaxy.route_slots[0].record.description_text
+                        + galaxy_route_offset,
+                    "TEXT MISSING");
             } else {
                 cursor = find_case_insensitive_substring("{", cursor);
                 if (cursor == 0) {
                     report_warningf("Cannot find { for GalaxyText: in %s", filename);
-                    rstrcpy_checked_ascii(g_game_base + galaxy_index + 0x12d46e8, "TEXT ERROR { MISSING");
+                    rstrcpy_checked_ascii(
+                        g_game->subgame.galaxy.route_slots[0].record.description_text
+                            + galaxy_route_offset,
+                        "TEXT ERROR { MISSING");
                 } else {
                     cursor = advance_to_next_crlf_line(cursor);
                     char* close_brace = find_case_insensitive_substring("}", cursor);
                     if (close_brace == 0) {
                         report_warningf("Cannot find } for GalaxyText: in %s", filename);
-                        rstrcpy_checked_ascii(g_game_base + galaxy_index + 0x12d46e8, "TEXT ERROR } MISSING");
+                        rstrcpy_checked_ascii(
+                            g_game->subgame.galaxy.route_slots[0].record.description_text
+                                + galaxy_route_offset,
+                            "TEXT ERROR } MISSING");
                     } else {
                         unsigned int text_end = (unsigned int)(close_brace - 2);
-                        char* text_out = g_game_base + galaxy_index + 0x12d46e8;
+                        char* text_out =
+                            g_game->subgame.galaxy.route_slots[0].record.description_text
+                                + galaxy_route_offset;
                         char* text_cursor = cursor;
                         while ((unsigned int)cursor < text_end) {
                             if (*text_cursor < 32) {
@@ -161,9 +178,8 @@ void SubTracks::load_level_definition_file(char* filename)
     *background_out++ = 'x';
     *background_out++ = 't';
     *background_out = 0;
-    landscape_script_index =
-        ((LandscapeManager*)(g_game_base + 0x106c218))
-            ->load_landscape_script_by_name(background_name);
+    landscape_script_index = g_game->subgame.landscape_manager
+        .load_landscape_script_by_name(background_name);
 
     cursor = find_case_insensitive_substring("Fringe:", LEVEL_FILE_BUFFER);
     if (cursor != 0) {

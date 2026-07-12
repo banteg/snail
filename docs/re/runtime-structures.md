@@ -505,9 +505,12 @@ The current high-confidence `Game` fields are:
 - `+0x125e480`: `track_parcels`
   - `50`-slot `TrackParcelRuntime` array
 - `+0x1260020`: `galaxy`
-  - exact `0x10fa4`-byte `GalaxyRoute` controller ending at `+0x1270fc4`
+  - exact `0x10fa8`-byte `Galaxy` controller ending at `+0x1270fc8`
   - 101 `0x2a0` slots at controller `+0x10`; each slot owns a four-byte tick
     prefix and a `0x29c` route record
+  - `load_level_definition_file` maps each `ArcadeN` definition to slot `N`,
+    writing the level display name to record `detail_text` and `GalaxyText:`
+    to record `description_text`
   - ten `0xa0` route-name records at controller `+0x10930`, ending exactly at
     the progress-base field at `+0x10f70`
 - `+0x12727d8`: `row_event_display`

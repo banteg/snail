@@ -510,7 +510,7 @@
     {
       "address": "0x4088e0",
       "name": "load_galaxy_layout",
-      "description": "Loads `Galaxy/_Galaxy.txt`, rescales the authored galaxy-point tables, and populates the embedded `Galaxy` route/star records. Android preserves the corresponding authored member as `cRGalaxy::Init2()`."
+      "description": "Loads `Galaxy/_Galaxy.txt`, rescales the authored galaxy-point tables, populates the embedded `Galaxy` route/star records, and binds the controller's borrowed progress backlink to the root-owned SubgameRuntime. Android preserves the corresponding authored member as `cRGalaxy::Init2()`."
     },
     {
       "address": "0x408c10",
@@ -2670,7 +2670,7 @@
     {
       "address": "0x447480",
       "name": "load_level_definition_file",
-      "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX."
+      "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Arcade definitions also populate the selected GalaxyRouteSlot's detail and description text in the root-owned Galaxy controller. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX."
     },
     {
       "address": "0x448060",

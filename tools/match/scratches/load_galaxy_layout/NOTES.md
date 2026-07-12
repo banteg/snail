@@ -13,8 +13,8 @@ The authored route-point table at `0x4a1c50` is named as
 `g_galaxy_route_point_table` with the one-past sentinel
 `g_galaxy_route_point_table_end` at `0x4a1ca0`.
 
-Current retained result: 78.37%, 234 candidate instructions for 233 target
-instructions, 62-instruction common prefix, and 40 clean / 0 unresolved / 0
+Current retained result: 84.26%, 237 candidate instructions for 233 target
+instructions, 62-instruction common prefix, and 39 clean / 0 unresolved / 0
 mismatched masked operands. The source keeps literals as literals so the matcher
 verifies the real `_Galaxy.txt` path, markers, errors, and missing-level string.
 
@@ -51,3 +51,18 @@ masked call mismatches. Keep the current local order.
 `cRGalaxy::Init2()`. Promoting the parent from the semantic `GalaxyRoute` name
 to `Galaxy` and absorbing its native-ledger tail keeps the honest 78.37%,
 234/233 result with all 40 operands clean.
+
+2026-07-12 route-star loop ownership recovery:
+
+- The per-galaxy star expansion does not need a separate positive-count guard:
+  its direct `while (star_index < star_count)` naturally handles empty groups.
+  Resetting `star_index` after that loop also applies to the empty case and is
+  semantically equivalent to the older guarded `do/while` spelling.
+- That simpler lifetime recovers native register ownership: `ebx` is the live
+  star ordinal, `ebp` is the ten-unit placement step, and the outer
+  `star_group_offset` remains spilled. The focused match rises from `78.37%`
+  (`234/233`) to `84.26%` (`237/233`) with the 62-instruction prefix intact and
+  39 clean operands.
+- The retained `level_progress_base` backlink now explicitly borrows the
+  root-owned `SubgameRuntime`; it is not a separately allocated progress
+  table. Naming that owner is codegen-neutral.
