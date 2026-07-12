@@ -77,3 +77,17 @@ mobile port initializes 100 cRLogoRows, while Windows initializes 32 fixed
 0x90-byte image donors, so only the owner and role are shared across ports; the
 Windows bank size and layout remain target-local facts. Focused Wibo remains
 90.00%, 60/60, with all 13 operands clean.
+
+## 2026-07-12 indexed donor-bank closure
+
+The native object-member cursor is not evidence for a raw `Object**` owner.
+Spelling the fixed bank as ordinary indexed `image_donors[logo_index]` access
+lets VC6 perform the native strength reduction itself: it seeds `esi` at the
+first donor's `object` member (`this + 0x2403c`), forms each `LogoLetter`
+receiver as `esi - 0x24`, advances the member cursor by the exact `0x90` record
+stride, and retains the two-register frame. This supersedes the explicit
+record-base cursor while preserving the typed `Logo`/`LogoLetter` ownership.
+
+Focused Wibo is now **100.00%**, `60/60`, prefix `60/60`, with all 13 masked
+operands clean. Together with the exact constructor, updater, teardown, and
+letter updater, `cRLogo::Open` now closes the complete shared Logo lifecycle.

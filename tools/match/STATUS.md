@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**535/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **85839/325720** bytes (**26.35%**) are proof-grade, and overall fuzzy is **62.89%**.
+**536/711** mapped gameplay functions matched, **711/711** mapped gameplay functions have a scratch, **86034/325720** bytes (**26.41%**) are proof-grade, and overall fuzzy is **62.90%**.
 
-## Proof Grade (535)
+## Proof Grade (536)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -178,6 +178,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_active_landscape_entry | 0x418ac0 | 130 | 41/41 | 100.00% | 41/41 | 4 ok |  |
 | ✅ | destroy_loading_screen | 0x418e50 | 41 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | update_loading_screen | 0x418e80 | 656 | 204/204 | 100.00% | 204/204 | 26 ok |  |
+| ✅ | open_logo | 0x419110 | 195 | 60/60 | 100.00% | 60/60 | 13 ok |  |
 | ✅ | destroy_intro_screen | 0x419920 | 184 | 61/61 | 100.00% | 61/61 | 7 ok |  |
 | ✅ | update_intro_screen | 0x4199e0 | 161 | 51/51 | 100.00% | 51/51 | 11 ok |  |
 | ✅ | update_intro_logo_renderable | 0x419a90 | 148 | 42/42 | 100.00% | 42/42 | 7 ok |  |
@@ -573,7 +574,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (61)
+## High Progress (80-94.99%) (60)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -594,7 +595,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  |
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
-| 🚧 | open_logo | 0x419110 | 195 | 60/60 | 90.00% | 4/60 | 13 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 85.19% | 18/27 | 2 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 120/119 | 84.52% | 28/119 | 1 ok |  |

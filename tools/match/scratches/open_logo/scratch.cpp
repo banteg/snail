@@ -15,17 +15,16 @@ int sprintf(char* buffer, char* format, ...);
 
 int Logo::open_logo()
 {
-    LogoLetter* slot = &image_donors[0];
-    int logo_count = LOGO_IMAGE_DONOR_CAPACITY;
-    do {
-        slot->set_bod_object(g_object_list.add_object_to_list());
-        Object* object = slot->object;
+    for (int logo_index = 0;
+         logo_index < LOGO_IMAGE_DONOR_CAPACITY;
+         ++logo_index) {
+        image_donors[logo_index].set_bod_object(
+            g_object_list.add_object_to_list());
+        Object* object = image_donors[logo_index].object;
         load_object_definition("Objects/Font3D", object);
-        object = slot->object;
+        object = image_donors[logo_index].object;
         object->flags |= 4;
-        ++slot;
-        --logo_count;
-    } while (logo_count != 0);
+    }
 
     int texture_count;
     char texture_names[0x4000];
