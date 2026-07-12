@@ -1,9 +1,9 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: wall2_emitter_maybe_fire_sub_lazer @ 0x439d50 */
-/* selector: wall2_emitter_maybe_fire_sub_lazer */
+/* function: update_sub_loc @ 0x439d50 */
+/* selector: update_sub_loc */
 
-// Runs the Wall2-tile emitter gate from one runtime fringe object: checks the row/tile conditions, requires the active runtime row start at `game+0x74668` to be behind Goldy's live row position at `game+0x42fdec`, rolls the random gate (`< 4/100`), derives a spawn origin + normalized direction, and calls `shoot_subgoldy` which drops the projectile into the 20-slot SubLazer pool at `game + 0x356b00`.
-void __thiscall sub_439D50(int this)
+// Runs cRSubLoc::AI for one runtime track cell: Wall2 emits through the SubLazer pool, while the remaining tile families cull or refresh their attachment color.
+void __thiscall update_sub_loc(int this)
 {
   void *v2; // ecx
   char v3; // al
@@ -73,7 +73,7 @@ void __thiscall sub_439D50(int this)
           v2 = MEMORY[0x4DF904];
 LABEL_9:
           if ( *(float *)(this + 24) < (double)*((float *)v2 + 1100223) )
-            destroy_sub_lazer_projectile(this);
+            remove_sub_loc(this);
           return;
         case 22:
           if ( *(float *)(this + 24) >= (double)*((float *)MEMORY[0x4DF904] + 1100223) )
@@ -96,18 +96,17 @@ LABEL_9:
           v12[2] = v11[2];
           v12[3] = v11[3];
           if ( *((float *)MEMORY[0x4DF904] + 1100223) - ((double)*(int *)(*(_DWORD *)(this + 56) + 72) + 5.0) > *(float *)(this + 24) )
-            destroy_sub_lazer_projectile(this);
+            remove_sub_loc(this);
           break;
         default:
           if ( *(float *)(this + 24) < (double)*((float *)MEMORY[0x4DF904] + 1100223)
             && (double)(*((_DWORD *)MEMORY[0x4DF904] + 119196) - 5) > *(float *)(this + 24) )
           {
 LABEL_13:
-            destroy_sub_lazer_projectile(this);
+            remove_sub_loc(this);
           }
           break;
       }
     }
   }
 }
-

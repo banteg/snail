@@ -1,4 +1,4 @@
-// wall2_emitter_maybe_fire_sub_lazer @ 0x439d50 (thiscall, ret)
+// update_sub_loc @ 0x439d50 (thiscall, ret)
 // Runtime-cell update: wall2 (tile 14) fires at the player through the
 // 4% gate once the first authored block passes the player z; tiles 22/29/30
 // and the default lane cull or sync the attachment skirt color.
@@ -17,7 +17,7 @@ inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 }
 
-void SubLoc::wall2_emitter_maybe_fire_sub_lazer()
+void SubLoc::update_sub_loc()
 {
     if ((lane_and_flags & 0x2000) == 0)
         return;
@@ -47,7 +47,7 @@ void SubLoc::wall2_emitter_maybe_fire_sub_lazer()
         }
 cull_check:
         if (anchor_position.z < g_game->subgame.embedded_player()->interaction_max_z)
-            destroy_sub_lazer_projectile();
+            remove_sub_loc();
         return;
     }
 
@@ -70,13 +70,13 @@ cull_check:
         if (g_game->subgame.embedded_player()->interaction_max_z
                 - ((float)attachment_template_record->row_span_count + 5.0f)
             > anchor_position.z)
-            destroy_sub_lazer_projectile();
+            remove_sub_loc();
         return;
     }
 
     if (anchor_position.z < g_game->subgame.embedded_player()->interaction_max_z
         && (float)(g_game->subgame.completion_row_start - 5) > anchor_position.z) {
 destroy:
-        destroy_sub_lazer_projectile();
+        remove_sub_loc();
     }
 }

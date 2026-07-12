@@ -467,21 +467,21 @@ pub const SubLazerPool = struct {
                         std.math.sin(slot.phase * std.math.tau) * native_sub_lazer_bob_amplitude;
                 },
                 .removing => {
-                    // PORT(verified): native `destroy_sub_lazer_projectile`
-                    // (`analysis/decompile/ida/functions/00439bc0-destroy_sub_lazer_projectile.c`)
-                    // unlinks the slot and its four nested body objects
-                    // from the shared intrusive-list machinery. The port's
-                    // plain-array pool just flips state back to inactive.
+                    // PORT(verified): native `update_sub_lazer_projectile`
+                    // (`analysis/decompile/ida/functions/004417d0-update_sub_lazer_projectile.c`)
+                    // returns a state-2 cRSubLazer through the shared BOD
+                    // list. The port's plain-array pool just flips state back
+                    // to inactive.
                     slot.state = .inactive;
                 },
             }
         }
     }
 
-    // PORT(verified): mirror of `destroy_sub_lazer_projectile`. Called
-    // when the emitter cell passes behind the player or the slot
-    // collides. The port simplification drops the intrusive-list unlink
-    // and just flips the state byte.
+    // PORT(verified): mirror of `deactivate_sub_lazer_projectile` /
+    // `cRSubLazer::Kill()` @ 0x441740. Called when a projectile exits or
+    // collides; the port simplification drops the intrusive-list unlink and
+    // just flips the state byte.
     pub fn destroy(_: *SubLazerPool, slot: *SubLazerSlot) void {
         slot.state = .inactive;
     }

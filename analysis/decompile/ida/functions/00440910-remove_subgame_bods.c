@@ -108,7 +108,7 @@ void __thiscall sub_440910(int this)
     v8 = 8;
     do
     {
-      destroy_sub_lazer_projectile(v1);
+      remove_sub_loc(v1);
       v1 += 84;
       --v8;
     }
@@ -478,4 +478,3 @@ void __thiscall sub_440910(int this)
   }
   kill_game_sprites();
 }
-

@@ -1963,13 +1963,13 @@
     },
     {
       "address": "0x439bc0",
-      "name": "destroy_sub_lazer_projectile",
-      "description": "Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing `SubRow::attachment_body` for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the stable Windows harness name is historical."
+      "name": "remove_sub_loc",
+      "description": "Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing `SubRow::attachment_body` for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner."
     },
     {
       "address": "0x439d50",
-      "name": "wall2_emitter_maybe_fire_sub_lazer",
-      "description": "Updates one runtime `TrackRowCell`/`cRSubLoc`. Wall2 tile 14 fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z; tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. Cross-port iOS names the owner family `cRSubLoc::AI()`."
+      "name": "update_sub_loc",
+      "description": "Windows `cRSubLoc::AI()`: updates one runtime `TrackRowCell`/SubLoc. Wall2 tile 14 fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z; tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. The Windows constructor callback and cross-port iOS symbol independently prove the owner."
     },
     {
       "address": "0x43a010",

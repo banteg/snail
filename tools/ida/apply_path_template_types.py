@@ -32,12 +32,12 @@ TRUSTED_DECLARATIONS = [
         "SubLoc* __thiscall initialize_bod(SubLoc* cell);",
     ),
     (
-        "destroy_sub_lazer_projectile",
-        "void __thiscall destroy_sub_lazer_projectile(SubLoc* cell);",
+        "remove_sub_loc",
+        "void __thiscall remove_sub_loc(SubLoc* cell);",
     ),
     (
-        "wall2_emitter_maybe_fire_sub_lazer",
-        "void __thiscall wall2_emitter_maybe_fire_sub_lazer(SubLoc* cell);",
+        "update_sub_loc",
+        "void __thiscall update_sub_loc(SubLoc* cell);",
     ),
     (
         "get_track_cell_row_index",

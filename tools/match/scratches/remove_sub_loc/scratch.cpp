@@ -1,4 +1,4 @@
-// destroy_sub_lazer_projectile @ 0x439bc0 (thiscall, ret)
+// remove_sub_loc @ 0x439bc0 (thiscall, ret)
 
 #include "fringe_object.h"
 #include "track_attachment_types.h"
@@ -57,7 +57,7 @@ int report_errorf(char* format, ...);
         }                                                         \
     } while (0)
 
-void SubLoc::destroy_sub_lazer_projectile()
+void SubLoc::remove_sub_loc()
 {
     int row_index = get_track_cell_row_index();
     unsigned char tile = tile_id;

@@ -1,11 +1,13 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: destroy_sub_lazer_projectile @ 0x439bc0 */
-/* selector: destroy_sub_lazer_projectile */
+/* function: remove_sub_loc @ 0x439bc0 */
+/* selector: remove_sub_loc */
 
 // Unlinks the BOD nodes owned by a live TrackRowCell/fringe runtime entry. Tile
 // 29/30 rows also clear the row-colour BOD record before the cell and its four
 // directional fringe objects return to the shared free list.
-_DWORD *__thiscall destroy_sub_lazer_projectile(TrackRowCell *cell)
+// The raw IDA text still infers an incidental pointer return; the canonical
+// cRSubLoc::Remove contract is the void thiscall recorded in the type sync.
+_DWORD *__thiscall remove_sub_loc(TrackRowCell *cell)
 {
   int v2; // eax
   char v3; // cl

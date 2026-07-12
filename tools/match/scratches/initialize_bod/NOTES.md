@@ -6,7 +6,7 @@ installs the cell-specific vtable at `0x497368`, increments the counter later
 reported as `LocCount`, and returns the receiver.
 
 The table entry at `0x497368` points directly to
-`wall2_emitter_maybe_fire_sub_lazer @ 0x439d50`, independently confirming the
+`update_sub_loc @ 0x439d50`, independently confirming the
 `cRSubLoc::AI()` receiver mapping.
 
 Ownership is fixed by three independent Windows facts:

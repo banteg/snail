@@ -2625,17 +2625,17 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "destroy_sub_lazer_projectile",
+      "selector": "remove_sub_loc",
       "address": "0x439bc0",
-      "name": "destroy_sub_lazer_projectile",
-      "artifact": "analysis/decompile/ida/functions/00439bc0-destroy_sub_lazer_projectile.c",
+      "name": "remove_sub_loc",
+      "artifact": "analysis/decompile/ida/functions/00439bc0-remove_sub_loc.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "wall2_emitter_maybe_fire_sub_lazer",
+      "selector": "update_sub_loc",
       "address": "0x439d50",
-      "name": "wall2_emitter_maybe_fire_sub_lazer",
-      "artifact": "analysis/decompile/ida/functions/00439d50-wall2_emitter_maybe_fire_sub_lazer.c",
+      "name": "update_sub_loc",
+      "artifact": "analysis/decompile/ida/functions/00439d50-update_sub_loc.c",
       "removed_stale_artifacts": []
     },
     {

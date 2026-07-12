@@ -1,6 +1,6 @@
-# destroy_sub_lazer_projectile
+# remove_sub_loc
 
-First relationship scratch for `SubLoc::destroy_sub_lazer_projectile()`
+First relationship scratch for `SubLoc::remove_sub_loc()`
 at `0x439bc0`.
 
 Android preserves the authored operation as `cRSubLoc::Remove()`: it begins
@@ -43,7 +43,7 @@ Promoted the analysis-side `TrackRowCell` prefix to `BodNode`, renamed
 `cell->bod.*` and starts the final four-pointer scan at `cell->fringe_front`.
 The IDA snapshot was corrected away from the stale `SubLazerSlot` wording.
 
-The same BN type sync does help `wall2_emitter_maybe_fire_sub_lazer`, but that
+The same BN type sync does help `update_sub_loc`, but that
 export was intentionally not kept in this slice because BN reused the
 `lane_and_flags` field name for a generic condition/temp value across the
 function, making the artifact less honest than the previous `result` spelling.
@@ -103,8 +103,8 @@ local `object` active check. A final-tail-only `FringeObject*` remover is also
 codegen-neutral, proving the residual is not caused by casting the fringe object
 through the shared `BodNode` prefix. Do not chase a non-void method signature:
 IDA infers a stale `_DWORD*` return from the last fringe expression, but the
-known callers (`wall2_emitter_maybe_fire_sub_lazer` and `remove_subgame_bods`)
-ignore the result and the shared header's `void destroy_sub_lazer_projectile()`
+known callers (`update_sub_loc` and `remove_subgame_bods`)
+ignore the result and the shared header's `void remove_sub_loc()`
 remains the source-plausible shape.
 
 ## 2026-07-12 attachment-body correction
@@ -120,3 +120,8 @@ The analysis headers now retain `SubLoc` as the authored alias for the Windows
 0x54-byte `TrackRowCell` layout, and the repeatable BN/IDA syncs apply that
 receiver plus the proven void/thiscall contract to `Remove` and `AI`, alongside
 the exact constructor and `Yi` signatures.
+
+2026-07-12 authored lifecycle name: Android's `cRSubLoc::Remove()`, the Windows
+constructor table, and both native callers prove this tears down one SubLoc,
+not a SubLazer projectile. The stable harness name is now `remove_sub_loc`;
+the rename is codegen-neutral at the honest 91.19% baseline.

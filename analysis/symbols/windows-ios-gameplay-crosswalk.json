@@ -366,7 +366,7 @@
     },
     {
       "address": "0x439bc0",
-      "windows_name": "destroy_sub_lazer_projectile",
+      "windows_name": "remove_sub_loc",
       "android_symbol": "cRSubLoc::Remove()",
       "source_object": null,
       "confidence": "high",
@@ -374,7 +374,7 @@
     },
     {
       "address": "0x439d50",
-      "windows_name": "wall2_emitter_maybe_fire_sub_lazer",
+      "windows_name": "update_sub_loc",
       "ios_symbol": "cRSubLoc::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",

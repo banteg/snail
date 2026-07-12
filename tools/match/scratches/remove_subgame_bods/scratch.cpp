@@ -50,7 +50,7 @@ void SubgameRuntime::remove_subgame_bods()
 
         int lane_count = 8;
         do {
-            cell->destroy_sub_lazer_projectile();
+            cell->remove_sub_loc();
             ++cell;
             --lane_count;
         } while (lane_count != 0);

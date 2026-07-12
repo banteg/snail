@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: wall2_emitter_maybe_fire_sub_lazer @ 0x439d50 */
+/* function: update_sub_loc @ 0x439d50 */
 
 00439d5c        if (((cell->lane_and_flags).w:1.b & 0x20) == 0)
 00439d5c        return
@@ -56,13 +56,13 @@
 00439ee4        long double temp2_1 = fconvert.t(*(game_base_1 + 0x4326fc))
 00439ee4        x87_r7_20 - temp2_1
 00439eef        if ((((x87_r7_20 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp2_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp2_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00439ef7        destroy_sub_lazer_projectile(cell)
+00439ef7        remove_sub_loc(cell)
 00439f03        if (eax_1.b == 0x16)
 00439f05        long double x87_r7_21 = fconvert.t(cell->anchor_position.z)
 00439f08        long double temp1_1 = fconvert.t(*(game_base_1 + 0x4326fc))
 00439f08        x87_r7_21 - temp1_1
 00439f13        if ((((x87_r7_21 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp1_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp1_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00439f1b        destroy_sub_lazer_projectile(cell)
+00439f1b        remove_sub_loc(cell)
 00439f2b        if (eax_1.b == 0x1d || eax_1.b == 0x1e)
 00439f73        int16_t top
 00439f73        if (cell->attachment_template_record->kind == PATH_TEMPLATE_KIND_WORM)
@@ -86,7 +86,7 @@
 00439ff8        bool c3_8 = unimplemented  {fcomp st0, dword [esi+0x18]} f== temp5_1
 00439ff8        unimplemented  {fcomp st0, dword [esi+0x18]}
 0043a000        if ((((c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top & 7) << 0xb):1.b & 0x41) == 0)
-0043a004        destroy_sub_lazer_projectile(cell)
+0043a004        remove_sub_loc(cell)
 00439f2d        long double x87_r7_22 = fconvert.t(cell->anchor_position.z)
 00439f30        long double temp6_1 = fconvert.t(*(game_base_1 + 0x4326fc))
 00439f30        x87_r7_22 - temp6_1
@@ -96,5 +96,5 @@
 00439f52        long double temp7_1 = fconvert.t(cell->anchor_position.z)
 00439f52        x87_r7_23 - temp7_1
 00439f5a        if ((((x87_r7_23 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_23, temp7_1) ? 1 : 0) << 0xa | (x87_r7_23 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00439f62        destroy_sub_lazer_projectile(cell)
+00439f62        remove_sub_loc(cell)
 0043a00d        return

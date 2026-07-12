@@ -3942,7 +3942,7 @@ pub const Runner = struct {
     }
 
     // PORT(partial): mirrors the recovered Wall2 tile branch inside
-    // `wall2_emitter_maybe_fire_sub_lazer` @ 0x439d50. Native runs this from
+    // `update_sub_loc` / `cRSubLoc::AI()` @ 0x439d50. Native runs this from
     // each live runtime row-cell object. The port still discovers candidate
     // emitters from the preview window, but the active-start gate
     // (`game+0x74668 < game+0x42fdec`), RNG source, origin, target-z scramble,
@@ -4011,12 +4011,11 @@ pub const Runner = struct {
         }
     }
 
-    // PORT(verified): the exit checks of `update_salt_hazard` @ 0x4417d0
-    // (pinned, tools/match). Native deactivates when position.y < 0 or
-    // position.z < game[+0x3be0e4] (the kill plane — the port's trailing
-    // window stands in for that global), or on the tile-14/wall2 floor exit
-    // while below y = 7. Salt only moves vertically (vx = 0, vz = 0 under
-    // OB-1), so the spawn row/lane stay valid for the grid lookup.
+    // PORT(partial): these exit checks were previously attributed to Salt at
+    // 0x4417d0, but the constructor vtable proves that address is
+    // `cRSubLazer::AI()`. Native `cRSalt::AI()` is `update_salt_hazard` at
+    // 0x441c10 and does not establish the borrowed floor/kill-plane policy
+    // below, so retain it only as an explicit port-side approximation.
     fn retireSaltHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         for (&self.runtime.salts.slots) |*slot| {
             if (slot.state != .active) continue;
@@ -4809,7 +4808,7 @@ pub const Runner = struct {
         const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
         // PORT(verified): `merge_track_tile_runs` writes the merged Wall2 run
         // width into `TrackRowCell.render_flags >> 8`, and
-        // `wall2_emitter_maybe_fire_sub_lazer` computes `origin.x` from the
+        // `update_sub_loc` computes `origin.x` from the
         // first cell anchor plus `width * 0.5`. The first cell anchor is the
         // authored cell center, so this intentionally lands half a cell to the
         // right of the geometric strip center.

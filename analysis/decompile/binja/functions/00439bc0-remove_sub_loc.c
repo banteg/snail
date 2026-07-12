@@ -1,7 +1,7 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: destroy_sub_lazer_projectile @ 0x439bc0 */
+/* function: remove_sub_loc @ 0x439bc0 */
 
 00439bc6        int32_t eax = get_track_cell_row_index(cell)
 00439bcb        uint8_t tile_id = cell->tile_id

@@ -24,7 +24,7 @@ Rejected same-family probes:
 - flattening the equivalent state-2 error checks in `update_salt_hazard`
   remained neutral at `75.78%`; its residual is a duplicated error-tail shape
   plus `game+0x5a8` materialization, not the intro-loop tail merge;
-- `destroy_sub_lazer_projectile` was rechecked at `91.19%`; its documented
+- `remove_sub_loc` was rechecked at `91.19%`; its documented
   residual is the fringe-loop active-flag reload/register-allocation tradeoff,
   so this goto-tail insight should not be transplanted there.
 

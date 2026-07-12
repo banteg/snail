@@ -85,3 +85,14 @@ candidate/target instructions, prefix 26/187, with 34 clean masked operands.
 The live Binary Ninja prototypes now agree: this function is a void thiscall on
 `TrackRowCell`, `get_track_skirt_color` is a `SubgameRuntime` method returning
 `Color4f*`, and `shoot_subgoldy` is a `SubLazerPool` method over two vectors.
+
+2026-07-12 authored lifecycle name: the Windows constructor callback and the
+high-confidence iOS `cRSubLoc::AI()` crosswalk make the former
+`wall2_emitter_maybe_fire_sub_lazer` label actively misleading: Wall2 is only
+one case in the full tile-family updater. The stable Windows harness name is
+now `update_sub_loc`; this is an ownership clarification and leaves the honest
+82.67% object unchanged.
+- The rename also retires two downstream provenance errors: `remove_sub_loc`
+  is not projectile teardown, and `0x4417d0` is `cRSubLazer::AI()`, not Salt.
+  Projectile kill/update remain at `0x441740`/`0x4417d0`; the exact Salt AI is
+  `0x441c10`.

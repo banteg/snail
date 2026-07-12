@@ -602,8 +602,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 86.10% | 244/555 | 1 mismatch, 105 ok |  |
-| 🚧 | destroy_sub_lazer_projectile | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
-| 🚧 | wall2_emitter_maybe_fire_sub_lazer | 0x439d50 | 702 | 188/187 | 82.67% | 26/187 | 34 ok |  |
+| 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
+| 🚧 | update_sub_loc | 0x439d50 | 702 | 188/187 | 82.67% | 26/187 | 34 ok |  |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
