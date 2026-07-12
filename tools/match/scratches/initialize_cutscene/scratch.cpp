@@ -25,9 +25,8 @@ void Snail::initialize_cutscene()
         if (owner_player->cutscene_pitch_cycle > 1.0f)
             owner_player->cutscene_pitch_cycle = 0.0f;
 
-        TransformMatrix* player_matrix = (TransformMatrix*)((char*)owner_player + 0x38);
-        scratch_matrix = *player_matrix;
-        source_matrix = *player_matrix;
+        scratch_matrix = *owner_player->live_transform();
+        source_matrix = *owner_player->live_transform();
         scratch_matrix.set_matrix_rotation_identity();
 
         float angle =
@@ -36,31 +35,29 @@ void Snail::initialize_cutscene()
         if (angle < -6.28318548f)
             angle = -6.28318548f;
         scratch_matrix.rotate_matrix_world_x(angle);
-        player_matrix->linear_interpolate_matrix(&scratch_matrix, &source_matrix, 0.939999998f);
+        owner_player->live_transform()->linear_interpolate_matrix(
+            &scratch_matrix, &source_matrix, 0.939999998f);
     } else {
         if (owner_player->attachment_exit_pending != 0) {
-            TransformMatrix* player_matrix = (TransformMatrix*)((char*)owner_player + 0x38);
-            scratch_matrix = *player_matrix;
-            source_matrix = *player_matrix;
+            scratch_matrix = *owner_player->live_transform();
+            source_matrix = *owner_player->live_transform();
             scratch_matrix.set_matrix_rotation_identity();
-            player_matrix->linear_interpolate_matrix(&scratch_matrix, &source_matrix, 0.970000029f);
+            owner_player->live_transform()->linear_interpolate_matrix(
+                &scratch_matrix, &source_matrix, 0.970000029f);
         }
     }
 
-    live_matrix = *(TransformMatrix*)((char*)owner_player + 0x38);
-    Vector3* camera_target = &owner_player->cached_camera_target_world;
-    live_matrix.position.x = camera_target->x;
-    live_matrix.position.y = camera_target->y;
-    live_matrix.position.z = camera_target->z;
+    Player* player = owner_player;
+    live_matrix = *player->live_transform();
+    Vector3* camera_target = &player->cached_camera_target_world;
+    live_matrix.position = *camera_target;
 
     scratch_matrix = live_matrix;
     live_matrix.linear_interpolate_matrix(
         &scratch_matrix,
         &cached_cutscene_matrix,
         0.699999988f);
-    live_matrix.position.x = scratch_matrix.position.x;
-    live_matrix.position.y = scratch_matrix.position.y;
-    live_matrix.position.z = scratch_matrix.position.z;
+    live_matrix.position = scratch_matrix.position;
 
     if (live_matrix.basis_up.y > 0.0f) {
         float yaw = (live_matrix.position.x - cached_cutscene_matrix.position.x)
@@ -78,8 +75,8 @@ void Snail::initialize_cutscene()
 
     base_matrix = live_matrix;
     set_matrix_identity(&roll_matrix);
-    float roll_angle = sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f;
-    roll_matrix.rotate_matrix_world_z(roll_angle);
+    roll_matrix.rotate_matrix_world_z(
+        sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f);
 
     inverse_live.invert_matrix_from_source(&live_matrix);
     live_matrix.multiply_matrix_in_place(&inverse_live);
@@ -89,12 +86,8 @@ void Snail::initialize_cutscene()
     live_matrix.multiply_matrix_in_place(&base_matrix);
 
     float lift_sine = sine(wobble_lift_phase * 6.28318548f);
-    live_matrix.position.x =
-        lift_sine * live_matrix.basis_up.x * 0.0299999993f + live_matrix.position.x;
-    live_matrix.position.y =
-        lift_sine * live_matrix.basis_up.y * 0.0299999993f + live_matrix.position.y;
-    live_matrix.position.z =
-        lift_sine * live_matrix.basis_up.z * 0.0299999993f + live_matrix.position.z;
+    live_matrix.position +=
+        (live_matrix.basis_up * lift_sine) * 0.0299999993f;
 
     cached_cutscene_matrix = live_matrix;
 
@@ -143,11 +136,9 @@ void Snail::initialize_cutscene()
     }
 
     snail_hotspot_source_matrix_a = live_matrix;
-    snail_hotspot_source_matrix_b = *(TransformMatrix*)((char*)owner_player + 0x38);
+    snail_hotspot_source_matrix_b = *owner_player->live_transform();
     camera_target = &owner_player->cached_camera_target_world;
-    snail_hotspot_source_matrix_b.position.x = camera_target->x;
-    snail_hotspot_source_matrix_b.position.y = camera_target->y;
-    snail_hotspot_source_matrix_b.position.z = camera_target->z;
+    snail_hotspot_source_matrix_b.position = *camera_target;
 
     update_snail_skin();
 

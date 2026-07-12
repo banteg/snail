@@ -2377,7 +2377,7 @@
     {
       "address": "0x4428d0",
       "name": "initialize_cutscene",
-      "description": "Stable historical Windows name for authored `cRSnail::AIGoldy()`. This per-frame presentation method advances snail skin, matrices, hotspots, hover jets, animation channels, and the embedded cRCutScene owner; Android exposes the same call sequence directly."
+      "description": "Stable historical Windows name for authored `cRSnail::AIGoldy()`. This per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner; Android exposes the same call sequence directly."
     },
     {
       "address": "0x442e40",

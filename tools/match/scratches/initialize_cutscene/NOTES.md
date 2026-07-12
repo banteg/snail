@@ -14,15 +14,16 @@ and layout validation, not a final register-perfect reconstruction.
 
 Current focused result:
 
-- 73.95% fuzzy match, 329 candidate insns / 339 native insns
-- prefix 1/339
-- masked comparison: 42 ok, 0 unresolved, 0 mismatch
+- 98.82% fuzzy match, 339 candidate insns / 339 native insns
+- prefix 110/339
+- masked comparison: 43 ok, 0 unresolved, 0 mismatch
 
 Remaining known shape issues:
 
-- native stack frame is `0x15c`; current candidate frame is `0x144`
-- `Player` still needs a careful `live_matrix` promotion at `+0x38`; this scratch
-  uses a pointer view to avoid breaking existing `Player::position` users
+- The native and candidate stack frames are both `0x15c`; all local value
+  lifetimes and the instruction count now agree.
+- `Player +0x38` is closed through the shared `Player::live_transform()`
+  accessor. `Player::position` remains the overlapping field view at `+0x68`.
 - 2026-06-18 source-shape correction: the early persistent `Player* player` /
   `player_matrix` assumption was wrong for this function. Native reloads
   `owner_player` through the pitch/exit gates, then uses short-lived player
@@ -46,3 +47,21 @@ hotspot construction, hover jets, animation dispatch, and the embedded
 CutScene initializer. The corrected `cRSnail::AIGoldy` prototype is `void`,
 matching the scratch and the fact that every per-frame caller ignores the
 incidental exit register.
+
+2026-07-12 live-transform and vector source-shape pass:
+
+- All four raw `Player +0x38` casts now use `Player::live_transform()`. The
+  steady camera path borrows one short-lived `Player*`, matching native's
+  single owner load for the live transform and cached camera target.
+- Whole `Vector3` assignments recover the authored position copies into the
+  live and hotspot-source matrices. The lift is the chained expression
+  `(basis_up * lift_sine) * 0.03f`; its two real returned vectors recover the
+  missing pair of 12-byte temporaries and the exact native `0x15c` frame.
+- Passing the roll sine expression directly into `rotate_matrix_world_z`
+  removes the non-native scalar spill. These source-shaped changes improve the
+  focused result from 73.95% (329/339, prefix 1) to 98.82% (339/339, prefix
+  110), with all 43 masked operands clean.
+- The only residuals are independent instruction scheduling: the up-basis FPU
+  comparison overlaps the following position copy, and the cached-matrix copy
+  overlaps the invincible-roll comparison. No artificial local or reordered
+  control flow is retained to force those schedules.
