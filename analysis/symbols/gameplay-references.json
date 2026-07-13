@@ -403,6 +403,26 @@
       "description": "Application instance handle cached during game window/input initialization and passed to Win32 window creation APIs."
     },
     {
+      "address": "0x503268",
+      "name": "g_saved_window_rect",
+      "kind": "global",
+      "aliases": [
+        "data_503268"
+      ],
+      "size": "0x10",
+      "description": "Win32 window rectangle saved when entering fullscreen and restored when returning to windowed mode."
+    },
+    {
+      "address": "0x503278",
+      "name": "g_saved_window_rect_valid",
+      "kind": "global",
+      "aliases": [
+        "data_503278"
+      ],
+      "size": "0x1",
+      "description": "Validity byte for the saved pre-fullscreen Win32 window rectangle."
+    },
+    {
       "address": "0x4df9c4",
       "name": "g_last_loading_budget",
       "kind": "global",

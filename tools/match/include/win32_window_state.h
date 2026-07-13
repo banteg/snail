@@ -2,6 +2,8 @@
 #ifndef WIN32_WINDOW_STATE_H
 #define WIN32_WINDOW_STATE_H
 
+#include "rect.h"
+
 typedef int BOOL;
 typedef int HWND;
 typedef int HDC;
@@ -75,5 +77,7 @@ extern HWND g_bass_window; // data_4dfaf8
 
 // The main-window module keeps its own cached instance in the renderer globals.
 extern HINSTANCE g_game_window_instance; // data_50327c
+extern Rect g_saved_window_rect; // data_503268
+extern unsigned char g_saved_window_rect_valid; // data_503278
 
 #endif

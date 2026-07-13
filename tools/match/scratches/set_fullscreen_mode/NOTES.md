@@ -10,3 +10,6 @@ Recovered relationship:
 
 - Loads `g_direct3d_renderer` as the receiver and forwards the fullscreen flag
   to `direct3d_renderer_set_fullscreen_mode`.
+
+The wrapper and member are `void`; callers ignore the live `EAX` left by the
+final Win32 call. Correcting the earlier inferred integer return remains exact.

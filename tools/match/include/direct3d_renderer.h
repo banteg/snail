@@ -64,7 +64,7 @@ public:
     int direct3d_renderer_set_cull_mode(char cull_front); // @ 0x411700
     void initialize_d3d8_device(char use_present_interval_one); // @ 0x411730
     void reset_direct3d_render_state(); // @ 0x4118b0
-    int direct3d_renderer_set_fullscreen_mode(int enabled);
+    void direct3d_renderer_set_fullscreen_mode(int enabled); // @ 0x414270
     void query_direct3d_device_caps(); // @ 0x414600
 
     int vertex_buffer_count; // +0x0000

@@ -871,6 +871,16 @@
       "description": "Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change."
     },
     {
+      "address": "0x414270",
+      "name": "direct3d_renderer_set_fullscreen_mode",
+      "description": "Direct3DRenderer member that owns the fullscreen presentation-parameter transition, resets the device and render state, restores the saved window placement, and recenters the cursor."
+    },
+    {
+      "address": "0x4143c0",
+      "name": "restore_texture_ref_stage_states",
+      "description": "Direct3DRenderer member that rebinds every registered D3D texture after a device reset and reapplies alpha and wrap texture-stage state from TextureRef flags."
+    },
+    {
       "address": "0x414500",
       "name": "bind_texture_ref",
       "description": "Binds one texture ref, skips redundant binds through the cached current-texture lane, and applies the texture-stage wrap-vs-clamp state from the ref flags. Cross-port Android symbols match this helper to `G0BindTexture(int)`."
