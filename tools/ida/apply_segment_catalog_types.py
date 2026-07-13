@@ -18,7 +18,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "copy_segment_definition_to_level_slot",
-        "void __stdcall copy_segment_definition_to_level_slot(char *segment_name, SubSegment *segment);",
+        "void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *segment_name, SubSegment *segment);",
     ),
     (
         "load_level_definition_file",

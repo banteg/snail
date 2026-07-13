@@ -67,3 +67,20 @@ Rejected probes:
   separate `entries` local is codegen-neutral at 54.10%. Keep the recomputed
   `&entries[index]` source until a form preserves the 42-instruction prefix and
   still lets native own the selected entry in `edx`.
+
+## 2026-07-13 receiver ABI and ownership
+
+- The three Windows caller sites at `0x447c19`, `0x447f9e`, and `0x44804d`
+  each load the owning `SubTracks*` into `ecx` immediately before the call and
+  push only the segment name and destination. Together with callee `ret 8` and
+  the iOS `cRSubTracks::ImportSegment(char*, cRSubSegment*)` symbol, this proves
+  a two-argument `thiscall`; the receiver is unused by the Windows body but is
+  not absent.
+- The scratch and shared declaration now model the real member ABI instead of
+  a global `__stdcall` function. This is byte-neutral for the callee and keeps
+  `load_level_definition_file` at its established `82.27%` caller shape.
+- The bridge reads the root-owned `SMTracks` catalog through typed `g_game`.
+  Glyphs and metadata are copied into the explicit caller-owned `SubSegment`;
+  only `source_name` remains as a borrowed pointer into the stable catalog
+  entry. The receiver can pass an ordinary slot, `first_segment`, or
+  `last_segment`, matching the three callsite families.

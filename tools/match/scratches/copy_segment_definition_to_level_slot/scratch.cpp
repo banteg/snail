@@ -1,16 +1,18 @@
-// copy_segment_definition_to_level_slot @ 0x447300 (stdcall, ret 0x8)
+// copy_segment_definition_to_level_slot @ 0x447300 (thiscall, ret 0x8)
 
 #include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char* g_current_level_definition_name; // data_74ec74
 
 int strings_equal_case_insensitive_path(char* lhs, char* rhs); // @ 0x44e6c0
 int report_errorf(char* format, ...);
 
-void __stdcall copy_segment_definition_to_level_slot(char* segment_name, SubSegment* slot)
+void SubTracks::copy_segment_definition_to_level_slot(
+    char* segment_name,
+    SubSegment* slot)
 {
-    SMTracks* catalog = &((GameRoot*)g_game_base)->subgame.sm_tracks;
+    SMTracks* catalog = &g_game->subgame.sm_tracks;
     int index = 0;
     SegmentCatalogEntry* scan = catalog->entries;
     while (index < catalog->count) {

@@ -2795,7 +2795,7 @@
     {
       "address": "0x447300",
       "name": "copy_segment_definition_to_level_slot",
-      "description": "Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a Windows SubSegment, and copies the authored row metadata including position and velocity vectors, path template, and ring-speed fields. The symbol-preserving iOS counterpart is the void member `cRSubTracks::ImportSegment(char*, cRSubSegment*)`; Windows staticizes the catalog lookup through the root owner and stores the 0x4220-byte SubSegment payload inline."
+      "description": "Implements the void `cRSubTracks::ImportSegment(char*, cRSubSegment*)` member: finds a root-owned catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a caller-selected SubSegment, and copies the authored row metadata including position and velocity vectors, path template, and ring-speed fields. The Windows body does not read its receiver, but all three callers establish the SubTracks owner in ECX before passing an ordinary, First, or Last 0x4220-byte inline destination."
     },
     {
       "address": "0x447480",

@@ -10,7 +10,9 @@ class SubTracks {
 public:
     void load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
     void load_level_definition_file(char* path); // @ 0x447480
-    void copy_segment_definition_to_level_slot(char* segment_name, SubSegment* segment);
+    void copy_segment_definition_to_level_slot(
+        char* segment_name,
+        SubSegment* segment); // @ 0x447300, cRSubTracks::ImportSegment
     void load_builtin_segment_definitions(SubSegmentRaw** raw_segments); // @ 0x448060
 
     int segment_count;                   // +0x000000

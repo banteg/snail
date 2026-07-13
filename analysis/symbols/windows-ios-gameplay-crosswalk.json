@@ -758,7 +758,7 @@
       "ios_symbol": "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
       "source_object": "Subtrack.o",
       "confidence": "high",
-      "notes": "The row-grid transpose and authored metadata copy agree. Windows exposes this void operation as a stdcall helper using the root SMTracks owner rather than retaining a SubTracks receiver, and its cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout."
+      "notes": "The row-grid transpose and authored metadata copy agree. All three Windows callers load the SubTracks owner into ECX and pass two stack arguments before the callee returns with ret 8, proving the same void thiscall member despite its unused receiver. Windows reads the source through the root SMTracks owner, and its destination cRSubSegment is a 0x4220-byte inline payload rather than the compact later-port layout."
     },
     {
       "address": "0x447480",
