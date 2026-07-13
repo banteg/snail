@@ -11,7 +11,7 @@ extern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string afte
 
 void Snail::build_snail_hotspots()
 {
-    Object* model = snail_hotspot_model;
+    Object* model = snail_hotspot_body.object;
     char** name_cursor = g_snail_hotspot_texture_names;
     float* hotspot_z = &snail_hotspots_local[0].z;
 

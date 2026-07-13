@@ -25,6 +25,7 @@ extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
+char* find_case_insensitive_substring(char* needle, char* haystack); // @ 0x44e600
 void initialize_font_wave_state(); // @ 0x449c70
 void initialize_font3d_objects(short font_id); // @ 0x44ae10
 void register_font_texture_sheet_wrapper(char* font_path, int font_id, float width_scale, float height_scale); // @ 0x432d20
@@ -2507,6 +2508,106 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[26].secondary.object;
 
     debug_report_stub((char*)"path generation end\n");
+
+    subgame.player.presentation.cutscene_animation_slots[0].body.set_bod_object(
+        g_object_list.add_object_to_list());
+
+    char base_animation_name[0x80];
+    char* test_line = find_case_insensitive_substring(
+        (char*)"Test:", loader->animation_bytes);
+    if (test_line != 0) {
+        char* source = find_case_insensitive_substring((char*)":", test_line) + 1;
+        char* destination = base_animation_name;
+        while (*source != '.')
+            *destination++ = *source++;
+        *destination++ = '.';
+        *destination++ = 'x';
+        *destination = 0;
+    } else {
+        rstrcpy_checked_ascii(
+            base_animation_name, (char*)"turbo-base-000.x");
+    }
+
+    loader->load_x_animation_clip(
+        base_animation_name,
+        subgame.player.presentation.cutscene_animation_slots[0].body.object);
+    ((BodBase*)&subgame.player.presentation)
+        ->set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        base_animation_name, subgame.player.presentation.object);
+
+    subgame.player.presentation.cutscene_animation_slots[1].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-move-000.x",
+        subgame.player.presentation.cutscene_animation_slots[1].body.object);
+    subgame.player.presentation.cutscene_animation_slots[2].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-bobalong-000.x",
+        subgame.player.presentation.cutscene_animation_slots[2].body.object);
+    subgame.player.presentation.cutscene_animation_slots[3].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-lookbackleft-000.x",
+        subgame.player.presentation.cutscene_animation_slots[3].body.object);
+    subgame.player.presentation.cutscene_animation_slots[4].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-lookbackright-000.x",
+        subgame.player.presentation.cutscene_animation_slots[4].body.object);
+    subgame.player.presentation.cutscene_animation_slots[5].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-fall-000.x",
+        subgame.player.presentation.cutscene_animation_slots[5].body.object);
+    subgame.player.presentation.cutscene_animation_slots[6].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-damaged-000.x",
+        subgame.player.presentation.cutscene_animation_slots[6].body.object);
+    subgame.player.presentation.cutscene_animation_slots[7].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-intoshell-000.x",
+        subgame.player.presentation.cutscene_animation_slots[7].body.object);
+    subgame.player.presentation.cutscene_animation_slots[8].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-skidstop-000.x",
+        subgame.player.presentation.cutscene_animation_slots[8].body.object);
+    subgame.player.presentation.cutscene_animation_slots[9].body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"turbo-talk-000.x",
+        subgame.player.presentation.cutscene_animation_slots[9].body.object);
+
+    subgame.player.presentation.snail_hotspot_body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_mesh(
+        (char*)"TurboHotSpots.x",
+        subgame.player.presentation.snail_hotspot_body.object,
+        2);
+    subgame.player.presentation.build_snail_hotspots();
+
+    int animation_count = 10;
+    PresentationAnimationSlot* animation_slot =
+        &subgame.player.presentation.cutscene_animation_slots[0];
+    do {
+        Object* animation_object = animation_slot->body.object;
+        animation_object->flags |= 4;
+        animation_object->apply_object_toon(0);
+        animation_object->distort.z_wave = 0.0f;
+        animation_object->distort.y_squash = 0.0f;
+        animation_object->distort.xyz_scale = 0.0f;
+        ++animation_slot;
+    } while (--animation_count != 0);
+
+    subgame.player.presentation.object->flags |= 4;
+    subgame.player.presentation.object->apply_object_toon(0);
+    subgame.player.presentation.object->distort.z_wave = 0.0f;
+    subgame.player.presentation.object->distort.y_squash = 0.0f;
+    subgame.player.presentation.object->distort.xyz_scale = 0.0f;
 
     return 1;
 }

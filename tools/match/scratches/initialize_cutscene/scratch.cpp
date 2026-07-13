@@ -138,9 +138,9 @@ void Snail::initialize_cutscene()
     }
 
     snail_hotspot_source_matrix_a = live_matrix;
-    snail_hotspot_source_matrix_b = *owner_player->live_transform();
+    snail_hotspot_body.transform = *owner_player->live_transform();
     camera_target = &owner_player->cached_camera_target_world;
-    snail_hotspot_source_matrix_b.position = *camera_target;
+    snail_hotspot_body.transform.position = *camera_target;
 
     update_snail_skin();
 

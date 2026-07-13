@@ -143,10 +143,8 @@ public:
     float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
     char unknown_15cc[0x1604 - 0x15cc];
     TransformMatrix snail_hotspot_source_matrix_a; // +0x1604
-    char unknown_1644[0x1670 - 0x1644];
-    Object* snail_hotspot_model;            // +0x1670
-    char unknown_1674[0x1684 - 0x1674];
-    TransformMatrix snail_hotspot_source_matrix_b; // +0x1684
+    char unknown_1644[0x164c - 0x1644];
+    RenderableBod snail_hotspot_body;        // +0x164c, owns model at +0x1670 and transform at +0x1684
     char unknown_16c4[0x16cc - 0x16c4];
     Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0

@@ -19,6 +19,29 @@ Expected residuals:
 - string literals are used for concrete asset paths recovered from the binary,
   so masked-operand audit may still need reference-manifest promotion later.
 
+## 2026-07-13 snail cutscene animation ownership
+
+The first animation bank after path construction is owned by the embedded
+`SubgameRuntime::player.presentation` snail. Startup constructs and loads its
+ten `cutscene_animation_slots` in native order: a config-selected base clip,
+then move, bobalong, left/right lookback, fall, damaged, into-shell, skid-stop,
+and talk. The base name is copied from the loader's `Test:` line through its
+extension when present, with `turbo-base-000.x` as the native fallback. All ten
+slot objects and the snail's main object receive toon mode and zeroed distortion.
+
+The adjacent hotspot storage is not a loose model pointer plus an unrelated
+matrix. Calls and consumers prove one complete `RenderableBod` at snail
+`+0x164c`: its object is at `+0x1670` and its transform at `+0x1684`.
+`initialize_cutscene` and `update_snail_skin` remain exact after spelling that
+shared owner; `build_snail_hotspots` remains unchanged at 83.78%.
+
+Focused Wibo rises from 49.81% (4,078/5,411 candidate instructions) to 51.10%
+(4,260/5,411), with clean masked operands rising from 1,300 to 1,352. The broad
+alignment audit reports one unresolved early helper and 39 expected mismatches;
+the added native island's object offsets, asset order, and calls were checked
+directly against `0x40f284..0x40f57d`. No padding or score-only scaffolding was
+added.
+
 2026-06-20 font bootstrap audit: the native FONT-MENU-HOVER setup call pushes
 `0x3f400000` (`0.75f`) for the width scale and `0x3f800000` (`1.0f`) for the
 height scale. The old scratch used `0.800000012f` and a `double` height

@@ -542,8 +542,8 @@ typedef struct Snail {
     PresentationAnimationChannel jetpack_channel;
     PresentationWobbleController wobble;
     TransformMatrix snail_hotspot_source_matrix_a;
-    uint8_t _pad_1644[0x40];
-    TransformMatrix snail_hotspot_source_matrix_b;
+    uint8_t _pad_1644[0x8];
+    RenderableBod snail_hotspot_body;
     uint8_t _pad_16c4[0x8];
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];

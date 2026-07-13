@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **66.92%**.
+**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **67.01%**.
 
 ## Proof Grade (571)
 
@@ -677,7 +677,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (49)
+## Mid Progress (50-79.99%) (50)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -689,6 +689,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 338/325 | 63.65% | 1/325 | 6 mismatch, 125 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 4260/5411 | 51.10% | 0/5411 | 39 mismatch, 1 unresolved, 1352 ok |  |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 54.93% | 3/73 | 14 ok |  |
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
@@ -731,13 +732,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1096 | 314/316 | 55.56% | 30/316 | 12 mismatch, 36 ok |  |
 
-## Early Progress (>0-49.99%) (42)
+## Early Progress (>0-49.99%) (41)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 688/712 | 40.43% | 0/712 | 1 mismatch, 48 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 415/439 | 45.43% | 3/439 | 26 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 4078/5411 | 49.81% | 0/5411 | 36 mismatch, 1 unresolved, 1300 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.74% | 0/721 | 40 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 662/745 | 30.56% | 0/745 | 2 mismatch, 40 ok |  |

@@ -37,6 +37,7 @@ SNAIL_FIELD_UPDATES = (
     ("0x14c", "cutscene_animation_slots", "PresentationAnimationSlot[0xa]"),
     ("0x64c", "weapon_channels", "PresentationAnimationChannel[0x3]"),
     ("0x11e0", "jetpack_channel", "PresentationAnimationChannel"),
+    ("0x164c", "snail_hotspot_body", "RenderableBod"),
     ("0x1894", "invincible_shell", "Invincible"),
     ("0x1938", "snail_skin", "SnailSkin"),
     ("0x1958", "cutscene", "CutScene"),
