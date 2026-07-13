@@ -51,3 +51,10 @@ from 23.92% (592/687) to 27.22% (628/687), with masked operands improving from
 the prologue-radius lifetime clears the masked audit at 37 ok, 0 unresolved,
 0 mismatch, but lowers focused Wibo to 26.62%, so the retained source keeps the
 loop-local radius spelling for now.
+
+2026-07-13 terminal ownership: replacing `primary_last` and `secondary_last`
+aliases with direct count-relative stores through the two `Path` sample arrays
+moves focused Wibo from 27.22% (628/687) to 28.27% (636/687). The masked
+audit remains 38 ok, 0 unresolved, 1 mismatch; its sole constant-alignment
+residual is unchanged. The constructor keeps its local delta-loop pointers and
+loop-local radius schedule.
