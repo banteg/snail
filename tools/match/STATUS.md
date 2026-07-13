@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**578/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91931/325437** bytes (**28.25%**) are proof-grade, and overall fuzzy is **70.52%**.
+**578/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91931/325437** bytes (**28.25%**) are proof-grade, and overall fuzzy is **70.53%**.
 
 ## Proof Grade (578)
 
@@ -757,7 +757,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 558/679 | 19.40% | 0/679 | 9 mismatch, 19 ok |  |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 536/610 | 25.65% | 0/610 | 31 ok |  |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 581/671 | 27.80% | 0/671 | 1 mismatch, 31 ok |  |
-| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 581/680 | 27.60% | 0/680 | 1 mismatch, 34 ok |  |
+| 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 589/680 | 28.53% | 0/680 | 1 mismatch, 34 ok |  |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 628/687 | 27.22% | 0/687 | 1 mismatch, 38 ok |  |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 514/608 | 29.95% | 0/608 | 29 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 510/600 | 29.37% | 0/600 | 23 ok |  |

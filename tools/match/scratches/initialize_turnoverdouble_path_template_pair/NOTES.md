@@ -33,3 +33,10 @@ the sine/cosine pairing in the curved interior.
 candidate `cosine` pairing before the existing target `cosine` vs candidate
 `sine` residual. Keep the phase-shifted sine spelling until the surrounding
 curved-call schedule changes.
+
+2026-07-13 terminal ownership: as in `turnover`, the delta loop retains its
+local sample pointers, while the two terminal writes belong directly to the
+`Path` sample arrays. Replacing `last_primary` and `last_secondary` pointer
+aliases with direct count-relative array stores moves focused Wibo from 27.60%
+(581/680) to 28.53% (589/680). The masked audit remains 34 ok, 0 unresolved,
+1 mismatch; the sole residual is still the curved sine/cosine call pairing.
