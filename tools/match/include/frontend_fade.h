@@ -4,6 +4,8 @@
 
 class FrontendFade {
 public:
+    // Windows folds this trivial initializer with cRBorderStack::Init().
+    void initialize_frontend_fade(); // @ 0x404350
     int begin_frontend_fade_out(int hold_state);
     void begin_frontend_fade_in();
     void update_frontend_transition_overlay();

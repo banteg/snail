@@ -35,6 +35,10 @@ public:
 typedef char BorderRecord_must_be_0x724[
     (sizeof(BorderRecord) == 0x724) ? 1 : -1];
 
+enum {
+    BORDER_RECORD_COUNT = 150,
+};
+
 class BorderManager : public BodBase {
 public:
     // The backing storage is BorderRecord-sized, but frontend callers use the
@@ -50,9 +54,8 @@ public:
     void update_border_manager(); // @ 0x403fc0
     int set_border_justify_centre(int justify_centre_bits); // @ 0x404730
 
-    BorderBatchState batch_state; // +0x38
-    char unknown_039[0x684 - 0x039];
-    BorderRecord borders[150]; // +0x684
+    BorderStack border_stack; // +0x38, exact cRBorderStack owner/link history
+    BorderRecord borders[BORDER_RECORD_COUNT]; // +0x684
     // One transition lane follows the fixed border pool. While active it
     // gates front-end input and drives the target widget's wobble/glow until
     // the queued flags are applied.

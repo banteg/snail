@@ -4,5 +4,5 @@
 
 int BorderManager::hide_all_borders()
 {
-    return batch_state.apply_all_border_visibility_mode(0);
+    return border_stack.apply_all_border_visibility_mode(0);
 }

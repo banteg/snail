@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "backdrop.h"
+#include "bod_list_endpoints_view.h"
 #include "bod_types.h"
 #include "cameraman.h"
 #include "cheat_state.h"
@@ -33,6 +34,18 @@ void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_
 void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a2f0
 void raise_backdrop_quad_edge_pair(int edge_pair, Object* object); // @ 0x41a440
 void initialize_backdrop_corner_quad(int corner, Object* object, char* texture_path); // @ 0x41a450
+void initialize_backdrop_tile_quad(
+    Object* object,
+    int edge_selector,
+    int orientation,
+    int row_selector,
+    int column_selector,
+    char* texture_path); // @ 0x41a4d0
+ColorBGRA8* set_object_color(Object* object, Color4f color); // @ 0x4141d0
+void set_input_controller_pointer_authored_xy(
+    int controller,
+    float authored_x,
+    float authored_y); // @ 0x4323a0
 char* __stdcall initialize_sound_bank(void* entries); // @ 0x44dcb0
 
 static __forceinline void link_root_bod(BodBase* bod)
@@ -78,6 +91,7 @@ char GameRoot::initialize_game_assets_and_world()
     *(float*)(game + 0x0c) = 50.0f;
     *(unsigned char*)(game + 0x04) = 1;
     player_count = 2;
+    fade.initialize_frontend_fade();
     frontend_link_latch = 0;
     subgame.subgame_pause_gate = 0;
 
@@ -2945,6 +2959,164 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.barrier.color.store_color4f(1.0f, 1.0f, 1.0f, 0.800000012f);
     subgame.barrier.object->blend_mode = 7;
     subgame.segment_cache.initialize_track_render_cache_manager();
+
+    BodBase* fringe_bod =
+        &root_bod_catalog.fringe_catalog.entries[0][0][0][0];
+    int fringe_family = 0;
+    do {
+        int fringe_direction = 0;
+        do {
+            int fringe_row = 0;
+            do {
+                int fringe_column = 0;
+                do {
+                    fringe_bod->set_bod_object(
+                        g_object_list.add_object_to_list());
+                    initialize_backdrop_tile_quad(
+                        fringe_bod->object,
+                        fringe_family,
+                        fringe_direction,
+                        fringe_row - 1,
+                        fringe_column - 1,
+                        (char*)"Objects/Universe/Fringe.tga");
+                    fringe_bod->object->blend_mode = 5;
+                    ++fringe_column;
+                    ++fringe_bod;
+                } while (fringe_column < TRACK_FRINGE_EDGE_VARIANT_COUNT);
+                ++fringe_row;
+            } while (fringe_row < TRACK_FRINGE_EDGE_VARIANT_COUNT);
+            ++fringe_direction;
+        } while (fringe_direction < TRACK_FRINGE_DIRECTION_COUNT);
+        ++fringe_family;
+    } while (fringe_family < TRACK_FRINGE_FAMILY_COUNT);
+
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/Universe/Fringe.tga", 0, 0)->flags |= 0x400;
+
+    BodListEndpointsView* active_bods =
+        (BodListEndpointsView*)&active_bod_list;
+    GameInput* game_input = &game_inputs[0];
+    int input_index = 0;
+    do {
+        active_bods->add_bod_to_front(game_input);
+        game_input->input.controller_slot = input_index;
+        game_input->input.initialize_input();
+        ++input_index;
+        ++game_input;
+    } while (input_index < 2);
+
+    int player_index = 0;
+    if (player_count > 0) {
+        do {
+            GamePlayer* player = &players[player_index];
+            set_matrix_identity(&player->transform);
+            set_matrix_identity(&player->camera.transform);
+            player->camera.fov_degrees = 110.0f;
+            player->game_input = &game_inputs[player_index];
+            player->transform = *transform.initialize_matrix_from_values(
+                0.0733430013f, 0.0f, -0.997310996f, 0.0f,
+                0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,
+                0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,
+                -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);
+            player->frontend_overlay.initialize_frontend_overlay_color_lerp(
+                0x1000000);
+            player->mouse_cursor.release_mouse_cursor();
+            player->mouse_cursor.suppress_next_draw = 0;
+            if (player_index == 0)
+                players[0].frontend_state = 12;
+            player->high_score_entry_pending = 0;
+            player->selected_high_score_rank = 0;
+            rstrcpy_checked_ascii(
+                player->player_name,
+                g_runtime_config.last_entered_player_name);
+            ++player_index;
+        } while (player_index < player_count);
+    }
+
+    subgame.sub_high_score.initialize_high_score_tables();
+    subgame.sub_high_score.load_high_scores_from_file((char*)"ScoreA.dat");
+    subgame.sub_high_score.load_high_scores_from_file((char*)"ScoreB.dat");
+    subgame.sub_high_score.load_high_scores_from_file((char*)"ScoreC.dat");
+    subgame.selected_level_record_persistent = 0;
+    subgame.selected_level_record_active = 0;
+
+    tip_manager.initialize_tip_manager();
+    active_bods->add_bod_to_front(&tip_manager);
+    ((BodListEndpointsView*)&((GameRoot*)g_game_base)->active_bod_list)
+        ->add_bod_to_front((BodNode*)&star_manager);
+    star_manager.open_star_field(36);
+    subgame.bottom_score_widget = 0;
+    subgame.top_score_widget = 0;
+    active_bods->add_bod_to_front(&backdrop);
+    backdrop.backdrop_render_enabled = 0;
+    active_bods->append_bod_to_end(&border_manager);
+    border_manager.border_stack.initialize_border_stack();
+    border_manager.border_stack.owner = &border_manager;
+    border_manager.delayed_widget_active = 0;
+    border_manager.set_border_justify_centre(0x41c80000);
+
+    BorderRecord* border = &border_manager.borders[0];
+    int border_count = BORDER_RECORD_COUNT;
+    do {
+        border->flags = 0;
+        ++border;
+        --border_count;
+    } while (border_count != 0);
+
+    g_object_list.build_all_objects();
+
+    set_object_color(
+        subgame.path_pairs[51].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[51].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[52].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[52].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[53].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[53].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[57].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[57].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[54].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[54].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[55].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[55].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[56].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[56].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[58].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[58].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[62].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[62].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[59].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[59].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[61].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[61].secondary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[60].primary.object, path_transition_color);
+    set_object_color(
+        subgame.path_pairs[60].secondary.object, path_transition_color);
+
+    set_input_controller_pointer_authored_xy(0, 320.0f, 240.0f);
+    set_input_controller_pointer_authored_xy(1, 320.0f, 240.0f);
+    subgame.subgame_rebuild_selector = 2;
 
     return 1;
 }
