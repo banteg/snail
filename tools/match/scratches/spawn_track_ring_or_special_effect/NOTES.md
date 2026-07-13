@@ -4,16 +4,16 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `51.07%`, `213/347` candidate/target instructions, prefix `9/347`, with
-  `34` masked operands ok, `9` known switch-grouping/table mismatches, and no
+- `52.86%`, `247/347` candidate/target instructions, prefix `3/347`, with
+  `45` masked operands ok, `6` known switch-grouping/table mismatches, and no
   unresolved operands.
 - The scratch is evidence-first rather than close-match source. The remaining
   mismatch is dominated by switch scheduling and grouped equivalent cases, not
   by the parent-field offsets below.
 - A fully duplicated switch version was rejected because MSVC failed before
-  emitting `scratch.obj`. Even splitting only kind `1` into its native
-  `RR2`/`RR3` path hit the same no-object failure, so the source keeps grouped
-  cases for compilability.
+  emitting `scratch.obj`. The native kind `1` `RR2`/`RR3` path now compiles
+  when its semantically identical phase-step store is emitted immediately
+  after the switch; the remaining equivalent cases stay grouped.
 
 Evidence:
 
@@ -41,10 +41,10 @@ Native switch map:
 - Kinds `5..8` are also separate in native for RNG tags:
   `5 -> RR10`, `8 -> RR11`, `6 -> RR12`, `7 -> RR13`. All use the
   ring-speed-derived `active_phase_step`.
-- The current grouped source intentionally uses only representative tags
-  (`RR`/`RR1`, `RR4`/`RR5`, `RR10`) so it can compile; the masked operand audit
-  mismatches around `RR2`/`RR3` are this known source grouping, not field-layout
-  evidence.
+- The current partial recovers the authored kind `1` `RR2`/`RR3` arm and uses
+  representative tags (`RR`/`RR1`, `RR4`/`RR5`, `RR10`) for the equivalent
+  cases that remain grouped. Their masked operand mismatches are known source
+  grouping, not field-layout evidence.
 
 Type consolidation:
 
@@ -115,9 +115,10 @@ Type consolidation:
   `spawn_track_ring_or_special_effect_kind_jump_table`. Its content honestly
   mismatches the compilable grouped switch, converting the former unresolved
   operand into an explicit ninth mismatch.
-- Retesting a separate authored kind-1 `RR2`/`RR3` arm still makes VC6 exit
-  without producing `scratch.obj`. The grouped switch remains an honest
-  partial; no duplicate arm or fake relocation was kept.
+- Retesting a separate authored kind-1 `RR2`/`RR3` arm with its phase-step
+  store inside the arm still makes VC6 exit without producing `scratch.obj`.
+  The later 2026-07-13 pass below recovers the real arm while preserving the
+  store through a post-switch semantic tail.
 
 2026-07-11 authored class names:
 
@@ -156,5 +157,21 @@ Type consolidation:
   because the native target was built with the normal `/O2` profile.
 - Reordering the phase-step store, sharing it through an explicit label, and
   taking a typed pointer to the field still trigger the ICE. The grouped switch
-  remains the honest compilable partial; no volatile barrier, fake return, raw
-  offset, or non-native compiler flag is kept.
+  was the honest compilable partial at this point; no volatile barrier, fake
+  return, raw offset, or non-native compiler flag is kept.
+
+## 2026-07-13 authored kind-1 path
+
+- Kind `1` now has its real duplicated placement path and authored `RR2`/`RR3`
+  streams. Moving only its ordinary `active_phase_step = default_phase_step`
+  store to a `kind == 1` tail immediately after the switch avoids the verified
+  VC6 backend failure without changing behavior or introducing matcher-only
+  state.
+- Focused matching improves from `51.07%`, `213/347` candidate/target
+  instructions, prefix `9/347`, and `34` clean operands to `52.86%`, `247/347`,
+  prefix `3/347`, and `45` clean operands. Known masked mismatches fall from
+  nine to six, with no unresolved operands.
+- Fully duplicating kinds `0..4`, sharing their outer locals, or adding a
+  distinct kind `4` arm still hits the same VC6 internal compiler error. A
+  distinct kind `3` or kind `8` arm compiles but regresses correspondence, so
+  neither is retained. The kind-1 recovery is the bounded honest improvement.

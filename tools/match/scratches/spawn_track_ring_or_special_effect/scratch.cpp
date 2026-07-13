@@ -53,7 +53,6 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     slot_position = &slot->transform.position;
     switch (kind) {
     case 0:
-    case 1:
     case 3:
     case 4: {
         Vector3 staged_position;
@@ -65,6 +64,17 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         slot_position->x = (float)((random_x + random_x) * 3.0);
         slot->active_phase = random_float_below(1.0f, "RR1") * 6.28318548f;
         slot->active_phase_step = default_phase_step;
+        break;
+    }
+    case 1: {
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z + 6.0f;
+        *slot_position = staged_position;
+        double random_x = random_float_below(1.0f, "RR2") - 0.5f;
+        slot_position->x = (float)((random_x + random_x) * 3.0);
+        slot->active_phase = random_float_below(1.0f, "RR3") * 6.28318548f;
         break;
     }
     case 2: {
@@ -94,6 +104,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         break;
     }
     }
+
+    if (kind == 1)
+        slot->active_phase_step = default_phase_step;
 
     TrackRowCell* result = get_track_grid_cell_at_world_position(slot_position);
     if (result->tile_id != 14) {
