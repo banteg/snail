@@ -394,3 +394,18 @@ contract, and the same name and prototype are applied in Binary Ninja. The
 focused bootstrap rises from 41.70% (2,983 candidate instructions) to 42.13%
 (3,030/5,411), with clean masked operands increasing from 945 to 962 and the
 existing problem counts unchanged.
+
+## 2026-07-13 sweep, cage, and P transitions
+
+The next authored island crosses storage order again: sweep pair `28`, cage pair
+`15`, then P-transition pairs `33`, `34`, and `35`. All five use independently
+allocated primary and secondary path objects, mirror into the secondary, and own
+one fringe body per side.
+
+The sweep uses scale/width `4`; the cage uses width `3`. The P variants share
+scale `4`, width `3`, and 14 curve segments, but form an intentional three-part
+lateral sequence: `0.5` to `-2.5`, `-2.5` to `2.5`, then `2.5` to `0.5` for
+variants `0`, `1`, and `2`. All five use Slide0/Back/VeryDark materials. The
+focused bootstrap rises from 42.13% (3,030 candidate instructions) to 44.21%
+(3,252/5,411), with clean masked operands increasing from 962 to 1,037 and the
+existing problem counts unchanged.
