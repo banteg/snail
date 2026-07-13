@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**578/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91931/325437** bytes (**28.25%**) are proof-grade, and overall fuzzy is **69.92%**.
+**578/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91931/325437** bytes (**28.25%**) are proof-grade, and overall fuzzy is **70.23%**.
 
 ## Proof Grade (578)
 
@@ -619,7 +619,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (64)
+## High Progress (80-94.99%) (65)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -644,6 +644,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 89.31% | 18/318 | 23 ok |  |
+| 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 92.87% | 69/421 | 25 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 112/113 | 81.78% | 24/113 | 9 ok |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 188/204 | 84.69% | 16/204 | 1 mismatch, 24 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
@@ -734,7 +735,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1096 | 314/316 | 55.56% | 30/316 | 12 mismatch, 36 ok |  |
 
-## Early Progress (>0-49.99%) (39)
+## Early Progress (>0-49.99%) (38)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -752,7 +753,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 546/652 | 25.04% | 0/652 | 1 mismatch, 32 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 549/652 | 22.15% | 0/652 | 1 mismatch, 35 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 477/552 | 18.66% | 0/552 | 1 mismatch, 27 ok |  |
-| 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 363/421 | 22.19% | 0/421 | 19 ok |  |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 580/683 | 26.92% | 0/683 | 3 mismatch, 32 ok |  |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 558/679 | 19.40% | 0/679 | 9 mismatch, 19 ok |  |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 526/610 | 22.01% | 0/610 | 1 mismatch, 27 ok |  |

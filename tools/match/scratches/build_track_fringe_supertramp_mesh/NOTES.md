@@ -20,18 +20,18 @@ Important type notes:
 
 Current focused result:
 
-- match: 22.19%
-- target/candidate instructions: 421 / 363
-- prefix: 0 / 421
-- masked operands: 19 clean, 0 unresolved, 0 mismatched
+- match: 92.87%
+- target/candidate instructions: 421 / 421
+- prefix: 69 / 421
+- masked operands: 25 clean, 0 unresolved, 0 mismatched
 
 Remaining gap:
 
-The scratch remains early progress, but the native vector-expression family is
-now recovered. The target uses a `0x5c` frame versus the candidate's `0x60`,
-keeps `this` in `esi`, the generated object in `ebx`, and centers the row loop
-cursor at the row's second vertex Z component. The remaining gap is dominated
-by those register/lifetime choices plus terminal-cap and face-store scheduling.
+The candidate now has the target's exact `0x5c` frame, instruction count, and
+major register/lifetime shape. Its seven bounded mismatch regions contain only
+independent store scheduling: two vector-temporary stores, face-index and UV
+stores, one component store in each cap expression, cap copy/push scheduling,
+and a final UV/epilogue reorder. No behavior or ownership gap remains.
 
 ## 2026-07-12 shared fringe source recovery
 
@@ -49,3 +49,30 @@ This raises the focused candidate from `303` to `363` instructions and the
 match from `17.13%` to `22.19%`, with `19` clean masked operands. The modest
 fuzzy increase understates the recovery: sixty previously absent instructions
 now come from real vector temporaries rather than padding or compiler barriers.
+
+## 2026-07-13 owner-relative source recovery
+
+The Windows compiler shape recovered once the scratch stopped naming indexing
+temporaries that neither the Android source nor the assembly requires. The
+source now:
+
+- advances a generated-row `Vector3*` cursor while indexing sampled strip
+  vertices directly through the owning `Path` fields;
+- writes both side faces with direct `row * 4` vertex indices rather than an
+  invented `vertex_base`;
+- writes the terminal face directly through
+  `facequads[segment_count * 2]`; and
+- forms and copies the two cap vertices with direct owner-relative vector
+  expressions, without invented `previous_row`, `final_row`, or `cap` views.
+
+Those changes moved the focused result from `22.19%` through `32.36%`,
+`58.10%`, and `78.74%` to `92.87%`. A scalar component-by-component version of
+the cap expressions was rejected: it regressed to `76.44%` and only `377`
+instructions. Android flattened those operators in its decompile, but the
+Windows target retains the by-value vector operator family.
+
+Binary Ninja now records the recovered prototype as
+`void __thiscall build_track_fringe_supertramp_mesh(Path* self, char* texture_path)`.
+The typed decompile resolves the generated object through the embedded fringe
+`BodBase` at `Path +0x60`, the source strip through the leading BOD, and the
+loop dimensions through `Path::segment_count` and `Path::width_cells`.
