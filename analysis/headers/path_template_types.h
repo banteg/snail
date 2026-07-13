@@ -1577,11 +1577,11 @@ typedef struct SubgameRuntime {
     BodBase track_body_list_head;
     BodBase barrier_sub_lazer_list_head;
     BodBase salt_hazard_list_head;
-    BodBase unknown_bod_355c44;
+    BodBase landscape_slice_list_head;
     BodBase unknown_bod_355c7c;
     BodBase special_track_cell_list_head;
     BodBase unknown_bod_355cec;
-    BodBase unknown_bod_355d24;
+    BodBase golb_vapour_list_head;
     BodBase unknown_bod_355d5c;
     int32_t active_level_score;
     Time active_level_timer;

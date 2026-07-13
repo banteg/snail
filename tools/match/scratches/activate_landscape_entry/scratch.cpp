@@ -4,6 +4,7 @@
 #include "landscape_manager.h"
 #include "backdrop.h"
 #include "border_manager.h"
+#include "game_root.h"
 #include "runtime_config.h"
 
 extern char* g_game_base; // data_4df904
@@ -34,8 +35,8 @@ void LandscapeManager::activate_landscape_entry(int script_index)
             entry->list_flags &= ~0x20;
             entry->set_bod_object(0);
         } else {
-            ActiveLandscapeEntry* head =
-                (ActiveLandscapeEntry*)(g_game_base + 0x3ca25c);
+            BodNode* head =
+                &((GameRoot*)g_game_base)->subgame.landscape_slice_list_head;
             if ((entry->list_flags & 0x200) != 0) {
                 report_errorf("List ADDafter");
             } else {

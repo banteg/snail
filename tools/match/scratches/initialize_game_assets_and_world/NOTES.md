@@ -12,10 +12,10 @@ and menu owners are typed; unrecovered later islands remain omitted.
 Expected residuals:
 - most later path-template, pickup, replay, score, and frontend pools are not
   modeled yet;
-- several list-link operations are expressed through a local helper, while the
-  target has the inline intrusive-list sequence;
-- the runtime lazer/salt clone loops and later catalog producers remain outside
-  this semantic partial;
+- the early overlay link still uses its local root-list helper, while the
+  recovered subgame group links use the shared inline intrusive-list operation;
+- later path-template and remaining world/catalog producers remain outside this
+  semantic partial;
 - string literals are used for concrete asset paths recovered from the binary,
   so masked-operand audit may still need reference-manifest promotion later.
 
@@ -211,3 +211,45 @@ without padding the candidate. Focused Wibo rises from 19.90% (1,011/5,411)
 to 20.29% (1,074/5,411), with 342 clean masked operands, one unresolved early
 helper reference, and the same 33 expected mismatches. The later banner and
 remaining world/path-template producer islands are still absent.
+
+## 2026-07-13 Banner producer and subgame BOD-group topology
+
+Startup initializes both embedded `BannerPool` records from a root-relative
+`index * 0x60` cursor. Each receives a fresh object loaded from
+`postofficestop.x`, a zero position, its `SubgameRuntime* owner_game`,
+visibility mode `0` or `1`, zero phase, and the exact phase step
+`0x3be38e38` (`0.006944444f`). The source keeps that native cursor shape while
+using the shared `Banner` fields; a compact `Banner&` trial was rejected because
+VC6 retained the full record pointer in a spare register and regressed the
+focused match.
+
+The following island proves the live-list ownership of the adjacent ten
+constructed `BodBase` records. Startup adds `track_body_list_head` to
+`GameRoot::active_bod_list`, then inserts eight siblings after that same head in
+this authored order:
+
+1. `barrier_sub_lazer_list_head`
+2. `salt_hazard_list_head`
+3. `golb_vapour_list_head`
+4. `fringe_attachment_list_head`
+5. `special_track_cell_list_head`
+6. `unknown_bod_355cec`
+7. `landscape_slice_list_head`
+8. `unknown_bod_355c7c`
+
+Because every insertion is directly after the track head, runtime traversal is
+the reverse of that sibling order. The tenth constructed record at `+0x355d5c`
+is not linked here. A full-binary displacement scan found no direct consumer for
+`+0x355c7c`, `+0x355cec`, or `+0x355d5c`, so those roles remain unnamed. The
+same scan proves `+0x355c44` as the ten-slice landscape anchor in
+`activate_landscape_entry` and `+0x355d24` as the embedded Golb vapour anchor in
+`create_golb`.
+
+The shared `BodNode::add_bod_after` helper reproduces the authored
+`cLinkedList<cRBod>::AddAfter` semantics without padding or volatile scheduling.
+Focused Wibo rises from 20.29% (1,074/5,411 candidate instructions) to 21.02%
+(1,288/5,411), with clean masked operands increasing from 342 to 360 and
+expected mismatches falling from 33 to 31. Binary Ninja now carries the whole
+ten-record band in `FrameSubgameRuntime`; field-xref search remains empty for
+the two global-root consumers because they address through the relocatable game
+base rather than a typed receiver.

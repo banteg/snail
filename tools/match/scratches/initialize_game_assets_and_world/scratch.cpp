@@ -424,6 +424,44 @@ char GameRoot::initialize_game_assets_and_world()
         --salt_count;
     } while (salt_count != 0);
 
+    int banner_index = 0;
+    do {
+        char* banner_cursor = game + banner_index * sizeof(Banner);
+        ((Banner*)(banner_cursor + 0x3cd698))
+            ->set_bod_object(g_object_list.add_object_to_list());
+        if (banner_index == 0) {
+            loader->load_x_mesh(
+                (char*)"postofficestop.x",
+                subgame.banners.slots[0].object,
+                1);
+        }
+        if (banner_index == 1) {
+            loader->load_x_mesh(
+                (char*)"postofficestop.x",
+                subgame.banners.slots[1].object,
+                banner_index);
+        }
+        ((Banner*)(banner_cursor + 0x3cd698))->position.z = 0.0f;
+        ((Banner*)(banner_cursor + 0x3cd698))->position.y = 0.0f;
+        ((Banner*)(banner_cursor + 0x3cd698))->position.x = 0.0f;
+        subgame.banners.slots[banner_index].owner_game = &subgame;
+        ((Banner*)(banner_cursor + 0x3cd698))->visibility_mode = banner_index;
+        ++banner_index;
+        ((Banner*)(banner_cursor + 0x3cd698))->phase = 0.0f;
+        ((Banner*)(banner_cursor + 0x3cd698))->phase_step = 0.006944444f;
+    } while (banner_index < 2);
+
+    BodNode* track_bod_list = &subgame.track_body_list_head;
+    active_bod_list.add_bod(track_bod_list);
+    subgame.barrier_sub_lazer_list_head.add_bod_after(track_bod_list);
+    subgame.salt_hazard_list_head.add_bod_after(track_bod_list);
+    subgame.golb_vapour_list_head.add_bod_after(track_bod_list);
+    subgame.fringe_attachment_list_head.add_bod_after(track_bod_list);
+    subgame.special_track_cell_list_head.add_bod_after(track_bod_list);
+    subgame.unknown_bod_355cec.add_bod_after(track_bod_list);
+    subgame.landscape_slice_list_head.add_bod_after(track_bod_list);
+    subgame.unknown_bod_355c7c.add_bod_after(track_bod_list);
+
     sub_449C00();
     return 1;
 }

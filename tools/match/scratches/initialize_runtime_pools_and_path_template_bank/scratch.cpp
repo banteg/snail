@@ -61,11 +61,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     track_body_list_head.initialize_bod_base();
     barrier_sub_lazer_list_head.initialize_bod_base();
     salt_hazard_list_head.initialize_bod_base();
-    unknown_bod_355c44.initialize_bod_base();
+    landscape_slice_list_head.initialize_bod_base();
     unknown_bod_355c7c.initialize_bod_base();
     special_track_cell_list_head.initialize_bod_base();
     unknown_bod_355cec.initialize_bod_base();
-    unknown_bod_355d24.initialize_bod_base();
+    golb_vapour_list_head.initialize_bod_base();
     unknown_bod_355d5c.initialize_bod_base();
     speedup_pickup.initialize_track_speedup_runtime();
     jetpack_pickup.initialize_track_jetpack_pickup_runtime();

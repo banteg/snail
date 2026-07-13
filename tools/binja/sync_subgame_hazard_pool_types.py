@@ -18,6 +18,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_hazard_pool_types.h"
 
 FRAME_SUBGAME_FIELD_UPDATES = (
+    ("0x355b64", "fringe_attachment_list_head", "FrameBodBase"),
+    ("0x355b9c", "track_body_list_head", "FrameBodBase"),
+    ("0x355bd4", "barrier_sub_lazer_list_head", "FrameBodBase"),
+    ("0x355c0c", "salt_hazard_list_head", "FrameBodBase"),
+    ("0x355c44", "landscape_slice_list_head", "FrameBodBase"),
+    ("0x355c7c", "unknown_bod_355c7c", "FrameBodBase"),
+    ("0x355cb4", "special_track_cell_list_head", "FrameBodBase"),
+    ("0x355cec", "unknown_bod_355cec", "FrameBodBase"),
+    ("0x355d24", "golb_vapour_list_head", "FrameBodBase"),
+    ("0x355d5c", "unknown_bod_355d5c", "FrameBodBase"),
     ("0x356b00", "sub_lazers", "FrameSubLazerManager"),
     ("0x3578c0", "salt_hazards", "FrameSaltManager"),
     ("0x359080", "banners", "BannerPool"),
@@ -81,7 +91,7 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the narrow SubLazer/Salt pool ownership slice to Binary Ninja."
+        description="Apply the subgame BOD-group and hazard-pool ownership slice to Binary Ninja."
     )
     parser.add_argument("--target", default="active", help="Binary Ninja target selector.")
     parser.add_argument(

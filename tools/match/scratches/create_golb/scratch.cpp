@@ -4,6 +4,7 @@
 // the sprite, vapour, or path-search presentation path used by update_golb_ai.
 
 #include "bod_ai_dispatch.h"
+#include "game_root.h"
 #include "golb.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
@@ -244,13 +245,14 @@ after_movement_flag_source:
             lifetime_step = *(float*)((char*)game + 0x38) * 0.041666668f;
 
             char* node = self + 0x80;
-            char* anchor = g_game_base + 0x3ca33c;
+            BodNode* anchor =
+                &((GameRoot*)g_game_base)->subgame.golb_vapour_list_head;
             if ((words[33] & 0x200) != 0) {
                 report_errorf("List ADDafter");
             } else {
                 words[34] = (DWORD)anchor;
-                words[35] = *(DWORD*)(anchor + 12);
-                *(DWORD*)(anchor + 12) = (DWORD)node;
+                words[35] = (DWORD)anchor->list_next;
+                anchor->list_next = (BodNode*)node;
                 if (words[35])
                     *(DWORD*)(words[35] + 8) = (DWORD)node;
                 words[33] |= 0x200;

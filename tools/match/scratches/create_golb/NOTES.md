@@ -17,6 +17,15 @@ embedded tertiary body, consistent with the mobile `cRGolbRocket` class name
 and its no-op AI callback. Focused matching is byte-for-byte unchanged at
 36.08% (460/582 instructions, 35 clean masked operands).
 
+## 2026-07-13 Golb vapour list ownership
+
+The kind-1 presentation path inserts its embedded `Vapour +0x80` after
+`SubgameRuntime::golb_vapour_list_head +0x355d24` (`GameRoot +0x3ca33c`).
+Startup independently installs that sentinel into the root active BOD chain.
+Replacing the raw root displacement with this owner is codegen-neutral:
+focused matching remains 36.08%, 460/582 instructions, with all 35 operands
+clean.
+
 create_golb @ 0x415280 initializes one live Golb projectile slot from Goldy's
 movement-flag family and emitter slot.
 

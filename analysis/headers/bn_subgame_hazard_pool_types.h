@@ -2,9 +2,10 @@
 #define BN_SUBGAME_HAZARD_POOL_TYPES_H
 
 /*
- * Narrow Binary Ninja projection of the contiguous SubLazer/Salt runtime
- * pools embedded in FrameSubgameRuntime. Names are lane-local so replaying
- * this header cannot overwrite older standalone hazard-slot experiments.
+ * Narrow Binary Ninja projection of the subgame BOD-group sentinels and the
+ * contiguous SubLazer/Salt runtime pools embedded in FrameSubgameRuntime.
+ * Names are lane-local so replaying this header cannot overwrite older
+ * standalone hazard-slot experiments.
  */
 
 typedef unsigned char uint8_t;
