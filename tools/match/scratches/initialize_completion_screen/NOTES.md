@@ -64,3 +64,14 @@ all 34 operands clean.
   completion-screen lane. BN lifecycle prototypes now live with the
   SubgameRuntime owner. This is codegen-neutral ownership cleanup; the honest
   89.89%, 276/278 initializer result remains unchanged.
+
+2026-07-13 canonical root reloads:
+
+- Each scene-state read now reloads the typed `GameRoot*` global and follows
+  `subgame` to the level mode, replay launch record, or player score. This
+  preserves native's short borrow boundaries across widget callbacks without
+  reconstructing `GameRoot` from a raw byte-base declaration.
+- All five UI handles are allocated through the root-owned `BorderManager`.
+  Focused Wibo remains codegen-neutral at 89.89%, 276/278 instructions,
+  prefix 23, with all 44 masked operands clean; the documented challenge-bonus
+  register allocation remains the honest residual.

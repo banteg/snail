@@ -4,11 +4,13 @@
 #include "game_root.h"
 #include <string.h>
 
+extern GameRoot* g_game; // data_4df904
+
 void Completion::initialize_completion_screen(
     int new_delivered_count,
     unsigned char new_perfect_delivery)
 {
-    int mode = ((GameRoot*)g_game_base)->subgame.level_mode;
+    int mode = g_game->subgame.level_mode;
 
     if (mode == 0) {
         if (new_perfect_delivery != 0)
@@ -18,9 +20,8 @@ void Completion::initialize_completion_screen(
     } else if (mode == 1) {
         int x_source;
         int y_index;
-        if (((GameRoot*)g_game_base)->subgame.replay_launch_active != 0) {
-            SubSolution* record =
-                ((GameRoot*)g_game_base)->subgame.replay_launch_record;
+        if (g_game->subgame.replay_launch_active != 0) {
+            SubSolution* record = g_game->subgame.replay_launch_record;
             y_index = record->challenge_difficulty_value / 20;
             x_source = record->challenge_speed_value;
         } else {
@@ -47,16 +48,16 @@ void Completion::initialize_completion_screen(
     int bonus = bonus_score;
     delivered_count = new_delivered_count;
     perfect_delivery = new_perfect_delivery;
-    total_score = ((GameRoot*)g_game_base)->subgame.player.total_score
+    total_score = g_game->subgame.player.total_score
         + new_delivered_count * 100 + bonus;
 
-    title_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    title_widget = g_game->border_manager.allocate_border();
     Color4f color;
     title_widget->initialize_frontend_widget(0x20400002, "Delivery Complete!",
         20, 0.0f, 80.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
 
-    delivered_count_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    delivered_count_widget = g_game->border_manager.allocate_border();
     if (delivered_count == 1) {
         delivered_count_widget->initialize_frontend_widget(0x20400002,
             " 0 Package Delivered", 20, 0.0f, 160.0f,
@@ -67,14 +68,14 @@ void Completion::initialize_completion_screen(
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
 
-    bonus_icon_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    bonus_icon_widget = g_game->border_manager.allocate_border();
     bonus_icon_widget->initialize_frontend_sprite_button(0x400800, 122,
         100.0f, 146.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);
     bonus_icon_widget->sprite_shadow_offset = 0.0f;
 
-    bonus_summary_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
-    mode = ((GameRoot*)g_game_base)->subgame.level_mode;
+    bonus_summary_widget = g_game->border_manager.allocate_border();
+    mode = g_game->subgame.level_mode;
     if (mode == 0) {
         bonus_summary_widget->initialize_frontend_widget(0x20400002,
             "PERFECT SCORE!>50,000 Bonus Points", 20, 0.0f, 302.0f,
@@ -90,7 +91,7 @@ void Completion::initialize_completion_screen(
     bonus_progress = 0.0f;
     bonus_progress_step = 0.041666668f;
 
-    continue_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    continue_widget = g_game->border_manager.allocate_border();
     if (perfect_delivery != 0) {
         continue_widget->initialize_frontend_widget(
             0x20400002, g_click_to_continue_text, 20, 0.0f, 400.0f,
