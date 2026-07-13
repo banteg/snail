@@ -58,6 +58,104 @@ def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[st
     }
 
 
+def types_declare_missing_only(
+    repo_root: Path, *, target: str, header_path: Path
+) -> dict[str, object]:
+    preview = run_bn(
+        repo_root,
+        "types",
+        "declare",
+        "--preview",
+        "--target",
+        target,
+        "--file",
+        str(header_path),
+        "--format",
+        "json",
+    )
+    if (
+        not isinstance(preview, dict)
+        or preview.get("success") is not True
+        or preview.get("preview") is not True
+        or preview.get("committed") is not False
+    ):
+        raise RuntimeError(f"type declaration preview failed for {header_path}: {preview!r}")
+
+    code = f"""
+import binaryninja
+
+header_path = {json.dumps(str(header_path))}
+with open(header_path, "r", encoding="utf-8") as header_file:
+    header = header_file.read()
+parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
+    header,
+    header_path,
+    bv.platform,
+    None,
+)
+if parsed is None or errors:
+    raise RuntimeError("; ".join(str(error) for error in errors))
+
+candidates = []
+for parsed_type in parsed.types:
+    existing = bv.get_type_by_name(parsed_type.name)
+    before_width = existing.width if existing is not None else None
+    parsed_width = parsed_type.type.width
+    if parsed_width > 0 and (before_width is None or before_width == 0):
+        candidates.append((parsed_type, before_width))
+
+applied = []
+for parsed_type, before_width in sorted(candidates, key=lambda item: item[0].type.width):
+    bv.define_user_type(parsed_type.name, parsed_type.type)
+    applied.append({{
+        "name": str(parsed_type.name),
+        "before_width": before_width,
+        "after_width": parsed_type.type.width,
+    }})
+
+bv.update_analysis_and_wait()
+verification = []
+for entry in applied:
+    observed = bv.get_type_by_name(entry["name"])
+    observed_width = observed.width if observed is not None else None
+    verification.append({{
+        **entry,
+        "observed_width": observed_width,
+        "verified": observed_width == entry["after_width"],
+    }})
+if not all(entry["verified"] for entry in verification):
+    raise RuntimeError(f"selective type declaration verification failed: {{verification!r}}")
+
+snapshot_saved = bv.file.save_auto_snapshot()
+result = {{
+    "applied": verification,
+    "snapshot_saved": snapshot_saved,
+}}
+"""
+    applied = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    return {
+        "op": "types_declare_missing_only",
+        "header": str(header_path),
+        "preview": {
+            "success": preview.get("success"),
+            "message": preview.get("message"),
+            "affected_type_count": len(preview.get("affected_types", ())),
+            "affected_function_count": len(preview.get("affected_functions", ())),
+        },
+        "result": applied,
+    }
+
+
 def parse_struct_layout_size(layout: str) -> int | None:
     match = STRUCT_SIZE_RE.search(layout)
     if match is None:
@@ -111,11 +209,13 @@ def types_declare_if_missing(
             "header": str(header_path),
             "required_structs": tuple(required_structs),
         }
-    return {
-        "op": "types_declare",
-        "missing_structs": tuple(missing),
-        "result": run_bn(repo_root, "types", "declare", "--target", target, "--file", str(header_path)),
-    }
+    result = types_declare_missing_only(
+        repo_root,
+        target=target,
+        header_path=header_path,
+    )
+    result["missing_structs"] = tuple(missing)
+    return result
 
 
 def normalize_type_name(type_name: str) -> str:

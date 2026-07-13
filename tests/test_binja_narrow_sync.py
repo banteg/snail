@@ -42,3 +42,55 @@ def test_struct_exists_accepts_complete_layout(monkeypatch) -> None:
     assert _narrow_sync.struct_exists(
         Path("."), target="snail-mail.exe", struct_name="SubgameRuntime"
     )
+
+
+def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
+    calls = []
+
+    monkeypatch.setattr(_narrow_sync, "struct_exists", lambda *_args, **_kwargs: False)
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        if args[:3] == ("types", "declare", "--preview"):
+            return {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "message": "Preview verified and reverted.",
+                "affected_types": ["SubgameRuntime"],
+                "affected_functions": [],
+            }
+        return {"result": {"applied": [{"name": "SubgameRuntime", "verified": True}]}}
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    result = _narrow_sync.types_declare_if_missing(
+        Path("."),
+        target="snail-mail.exe",
+        header_path=Path("runtime_types.h"),
+        required_structs=("SubgameRuntime",),
+    )
+
+    assert result["op"] == "types_declare_missing_only"
+    assert result["missing_structs"] == ("SubgameRuntime",)
+    assert calls[0][:3] == ("types", "declare", "--preview")
+    assert calls[1][:2] == ("py", "exec")
+    assert "define_user_type" in calls[1][-1]
+
+
+def test_types_declare_if_missing_skips_complete_structs(monkeypatch) -> None:
+    monkeypatch.setattr(_narrow_sync, "struct_exists", lambda *_args, **_kwargs: True)
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_bn",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("unexpected replay")),
+    )
+
+    result = _narrow_sync.types_declare_if_missing(
+        Path("."),
+        target="snail-mail.exe",
+        header_path=Path("runtime_types.h"),
+        required_structs=("SubgameRuntime",),
+    )
+
+    assert result["status"] == "skipped"
