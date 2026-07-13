@@ -1788,7 +1788,7 @@
     {
       "address": "0x4321c0",
       "name": "update_input_controller_pointer_region",
-      "description": "Refreshes one global input-controller slot from a screen-space pointer region: stores the active bounds, optionally warps the pixel cursor into that region, updates normalized authored 640x480 coordinates, and latches the per-slot button bits."
+      "description": "Refreshes one owned 0x38-byte InputControllerSlot from a screen-space pointer region: stores the active bounds, mutates the incoming X/Y coordinates while optionally warping the cursor into that region, updates authored 640x480 coordinates, and latches the per-slot button bits. The sole caller ignores the incidental comparison residue, proving the native contract is void."
     },
     {
       "address": "0x4323a0",

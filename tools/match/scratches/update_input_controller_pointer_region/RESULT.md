@@ -4,17 +4,25 @@
 
 | Metric | Value |
 |---|---:|
-| Match | **53.09%** |
+| Match | **98.51%** |
 | Target instructions | 134 |
-| Candidate instructions | 141 |
-| Common prefix | 0 / 134 |
-| Masked operands | 26 clean, 0 unresolved, 0 mismatched |
+| Candidate instructions | 134 |
+| Common prefix | 131 / 134 |
+| Masked operands | 30 clean, 0 unresolved, 0 mismatched |
 
-The first mismatch is the entry load schedule:
+The only mismatch is the final in-range Y-coordinate self-store:
 
 ```text
-target[0]    mov eax, dword [esp+0x8]
-candidate[0] mov ecx, dword [esp+0xc]
+target[131]    fld dword [ecx+ADDR]
+target[132]    fstp dword [ecx+ADDR]
+candidate[131] mov edx, dword [ecx+ADDR]
+candidate[132] mov dword [ecx+ADDR], edx
 ```
 
-The retained scratch matches the region stores, cursor hide/show calls, clamp/click path, authored coordinate conversion, button ORs, and x/y authored-coordinate clamps. Remaining work is source-shape and saved-register ownership in the top block: native keeps `slot` in `edi`, `screen_x` in `esi`, and `screen_y` in `ebx`, while this source gives those roles to different registers and shifts the branch layout.
+The retained scratch matches the region stores, cursor hide/show calls,
+clamp/click path, authored coordinate conversion, button ORs, and both authored
+coordinate clamps. Directly mutable `x`/`y` parameters recover the native saved
+register ownership; typed `InputControllerSlot` array access records the real
+0x38-byte slot owner. The remaining two-instruction difference is an equivalent
+floating-point versus integer self-copy, so no artificial cast or volatility is
+used to force it.

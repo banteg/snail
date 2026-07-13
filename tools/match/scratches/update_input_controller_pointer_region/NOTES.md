@@ -6,9 +6,15 @@ The routine installs a screen rectangle for an input slot, updates the OS cursor
 
 ## Source-shape findings
 
-- The slot state uses the same lane layout as the other input-controller helpers: slot 1 is `0x38` bytes after slot 0, so the scratch computes `(slot * 7) << 3` and accesses the lane globals through byte offsets.
-- Keeping the clamp as "choose a float, then store it" recovers the native x87 tail. The simpler source that only stores on out-of-range paths left a masked operand mismatch and scored lower.
-- The first native block keeps `slot`, `screen_x`, and `screen_y` in different saved registers from this scratch. The semantics are recovered, but the register-owner swap shifts the early labels and keeps the common prefix at zero.
+- The slot state is the shared two-entry `InputControllerSlot` owner: slot 1 is
+  `0x38` bytes after slot 0, and the native `(slot * 7) << 3` expression is the
+  array's byte stride rather than a collection of unrelated lane globals.
+- Keeping the clamp as "choose a float, then store it" recovers the native x87
+  tail. The simpler source that only stores on out-of-range paths left a
+  masked operand mismatch and scored lower.
+- Native keeps `slot` in `edi`, mutable `x` in `esi`, and mutable `y` in `ebx`.
+  Those roles fall out exactly when the sixth and seventh parameters are
+  modified directly rather than copied into shadow locals.
 
 ## Rejected trials
 
@@ -29,3 +35,23 @@ Follow-up variants that introduced a durable `slot_index`, declared `y` before
 stores with `+ 0.0f` were all codegen-neutral at 57.14%. The remaining early
 residual is still the saved-register owner rotation for `screen_x`, `screen_y`,
 and `slot`.
+
+## 2026-07-13 parameter and slot ownership closure
+
+- The native routine mutates its sixth and seventh parameters directly while
+  clamping an out-of-region pointer. The old `screen_x`/`screen_y` parameters
+  plus shadow `x`/`y` locals obscured that ownership and caused VC6 to rotate
+  all three saved-register roles.
+- Naming the mutable parameters `x` and `y` removes the false shadow lifetime
+  and recovers the entire native entry, clamp/warp, coordinate-conversion,
+  button, and X-clamp sequence. Focused Wibo moves from 57.14% (`139/134`,
+  prefix 4) to 98.51% (`134/134`, prefix 131), with all 30 masked operands
+  clean.
+- Direct `g_input_controller_slots[slot]` field access is codegen-equivalent
+  to the former scratch-local lane pointers and makes the recovered 0x38-byte
+  owner explicit. A retained pointer to the whole record changed x87 lifetime
+  and regressed to 68.16%, so the direct array-member form is retained.
+- The only residual is the final in-range Y self-store: native emits
+  `fld`/`fstp`, while VC6 emits a bit-preserving integer load/store for the
+  equivalent recovered source. A `double` temporary regressed to 94.81%, and
+  no-op arithmetic or artificial volatility is not retained.

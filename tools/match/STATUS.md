@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **69.28%**.
+**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **69.34%**.
 
 ## Proof Grade (571)
 
@@ -580,7 +580,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (26)
+## Near Match (95-99.99%) (27)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -595,6 +595,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 119/119 | 99.16% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
+| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 134/134 | 98.51% | 131/134 | 30 ok |  |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
 | 🚧 | build_track_render_caches | 0x433220 | 1552 | 475/475 | 99.79% | 90/475 | 20 ok |  |
@@ -678,7 +679,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (50)
+## Mid Progress (50-79.99%) (49)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -711,7 +712,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 129 | 54/53 | 74.77% | 14/53 | 1 ok |  |
 | 🚧 | find_archive_entry | 0x431250 | 122 | 61/60 | 79.34% | 7/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 31 ok |  |
-| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 139/134 | 57.14% | 4/134 | 26 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 24 ok |  |
