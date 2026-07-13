@@ -171,8 +171,8 @@ struct Path : public BodBase {
         int side_exit,
         char* texture_a,
         char* texture_b,
-        char* cap_texture,
-        char* underside_texture);
+        char* unused_texture,
+        char* cap_texture);
     void initialize_hill_valley_path_template_pair(
         int width_cells_,
         float height,

@@ -1,6 +1,7 @@
 # initialize_supertramp_path_template_pair
 
-Honest starter scratch for `initialize_supertramp_path_template_pair @ 0x423f10`.
+Ownership reconstruction for
+`initialize_supertramp_path_template_pair @ 0x423f10`.
 
 The native tail is `ret 0x1c`, matching seven explicit stack arguments. This
 constructor allocates an extra sample before decrementing `segment_count`, then
@@ -8,7 +9,10 @@ uses the final allocated sample directly in the mesh. The scratch models the
 flat approach, circular supertramp arc, separate secondary radius, direct mesh
 rows, deltas, and finalization.
 
-Residuals are expected.
+The retained scratch now matches 43.49% (538/552 candidate/target
+instructions), with a 15-instruction exact prefix, an exact 0x2c stack frame,
+and masked operands at 22 ok, 0 unresolved, 1 mismatch. Residuals are primarily
+register allocation and store scheduling; this is not an exact match.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 8.62% (144/552
@@ -99,3 +103,30 @@ calling the retained local helper, regressed focused Wibo from 18.66% (477/552)
 to 17.98% (449/552). Masked operands worsened from 27 ok, 0 unresolved,
 1 mismatch to 20 ok, 0 unresolved, 3 mismatch, so the helper-routed orientation
 stays retained.
+
+2026-07-13 ownership cascade: the earlier isolated probes above were retested
+after recovering the surrounding owner-relative source shape. Expanding the
+flat lead-in, indexing the arc directly through `Path::primary_samples` and
+`Path::secondary_samples`, spelling both orientation passes directly, and
+computing both delta streams in the owner all became strongly positive as a
+group. The focused match moved from 18.66% to 43.49%, candidate size from 477
+to 538 instructions, the exact prefix from 0 to 15 instructions, and the stack
+frame from 0x44 to the target's 0x2c. This supersedes the context-specific
+isolated rejections above; no register forcing, padding, barriers, or other
+fakematching is present.
+
+The same pass recovered the mesh as two native nested loops: an owner-relative
+sample-row cursor for vertices and a two-iteration front/back face loop for
+each cell. Vertex allocation precedes face allocation, face headers are cleared
+with the full `header_word`, and the generated vertex is staged as a lateral
+offset plus the sample position. The face writer retains the apparently
+redundant checkerboard branches because the same authored source-family shape
+appears in the halfpipe and cage2 builders and is present in the Windows
+control flow.
+
+Windows operand tracing also resolves the seven stack arguments. Argument 4
+owns the front texture, argument 5 owns the back texture, argument 6 is unused,
+and argument 7 owns the terminal cap texture. Both front parity arms select
+argument 4, both back parity arms select argument 5, and only the final row's
+front face selects argument 7. The shared `Path` declaration now records those
+owners as `texture_a`, `texture_b`, `unused_texture`, and `cap_texture`.
