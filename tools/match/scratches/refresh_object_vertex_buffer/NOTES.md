@@ -3,7 +3,7 @@
 Relationship-first scratch for the private object vertex-buffer refresher at
 `0x412250`.
 
-Current Wibo result: 60.81%, 134/139 instructions, prefix 41/139, masked
+Current Wibo result: 90.58%, 137/139 instructions, prefix 7/139, masked
 operands 4 ok, 0 unresolved, 0 mismatch.
 
 Recovered relationships:
@@ -37,10 +37,10 @@ Corrected assumptions:
 
 Expected residuals:
 
-- Native uses offset-driven copy loops with specific register owners
-  (`eax/ecx/edx` for count/source/destination in the animated path, and
-  `ecx/edi/ebx` in the UV path). The scratch now uses the same byte-offset
-  semantics, but VC6 still chooses different loop registers and label distances.
+- Native and candidate now have the same two indexed copy loops and the same
+  aggregate position/UV payload. VC6 schedules the source/destination address
+  formation differently and emits two fewer candidate instructions, which also
+  shifts the surrounding branch labels.
 
 The refresh parameter now aliases the shared `Object` layout; its old local
 field set is covered by shared `flags`, `vertices`, `facequad_normals`,
@@ -59,8 +59,15 @@ alias into the unrelated static UV path. Focused Wibo is 60.81%, 134/139, with
 four clean masked operands.
 
 The animated upload copies each borrowed generated position as a typed
-`Vector3` value into the position prefix of `ObjectRenderVertex`. VC6 emits the
-same three dword moves as the prior scalar spelling, so this clarifies the
-source/destination ownership without changing the honest 60.81% result. The
-static UV path remains scalar because the aggregate spelling materially changes
-its native register allocation.
+`Vector3` value into the position prefix of `ObjectRenderVertex`.
+
+2026-07-13 authored loop-shape recovery: both uploads are ordinary indexed
+loops over the object-owned `grouped_vertex_count`. The animated path copies
+the active generated `Vector3` view into each locked render vertex; the static
+path performs the same aggregate position copy and then preserves the authored
+facequad-corner UV lanes. This removes the manual byte offsets and scalar
+type-punning from the scratch. The natural typed spelling raises focused Wibo
+from 60.81% (`134/139`, prefix 41) to 90.58% (`137/139`, prefix 7), with all
+four references still clean. The two residual instructions are scheduling
+differences in source/destination address formation; no compiler-control
+scaffolding was added.

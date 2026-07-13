@@ -23,20 +23,8 @@ void refresh_object_vertex_buffer(Object* object)
             object->render_buffers->vertex_buffer, 0, object->grouped_vertex_count * 0x18,
             (void**)&vertices, 0);
 
-        int count = object->grouped_vertex_count;
-        int i = 0;
-        if (count > 0) {
-            int destination_offset = 0;
-            int source_offset = 0;
-            Vector3* source_vertices = object->vertices;
-            do {
-                int* source = (int*)((char*)source_vertices + source_offset);
-                int* destination = (int*)((char*)vertices + destination_offset);
-                ++i;
-                source_offset += 0xc;
-                destination_offset += 0x18;
-                *(Vector3*)destination = *(Vector3*)source;
-            } while (i < object->grouped_vertex_count);
+        for (int i = 0; i < object->grouped_vertex_count; ++i) {
+            *(Vector3*)&vertices[i] = object->vertices[i];
         }
 
         object->render_buffers->vertex_buffer->vtbl->Unlock(object->render_buffers->vertex_buffer);
@@ -46,33 +34,10 @@ void refresh_object_vertex_buffer(Object* object)
             object->render_buffers->vertex_buffer, 0, object->grouped_vertex_count * 0x18,
             (void**)&vertices, 0);
 
-        int count = object->grouped_vertex_count;
-        int i = 0;
-        if (count > 0) {
-            int destination_offset = 0;
-            int source_offset = 0;
-            do {
-                int* source = (int*)((char*)object->vertices + source_offset);
-                int* destination = (int*)((char*)vertices + destination_offset);
-                source_offset += 0xc;
-
-                int x = source[0];
-                destination_offset += 0x18;
-                destination[0] = x;
-
-                int y = source[1];
-                destination[1] = y;
-
-                int z = source[2];
-                destination[2] = z;
-
-                int quad_index = i / 4;
-                int corner_index = i & 3;
-                ++i;
-
-                destination[4] = *(int*)&object->facequads[quad_index].uv[corner_index].u;
-                destination[5] = *(int*)&object->facequads[quad_index].uv[corner_index].v;
-            } while (i < object->grouped_vertex_count);
+        for (int i = 0; i < object->grouped_vertex_count; ++i) {
+            *(Vector3*)&vertices[i] = object->vertices[i];
+            vertices[i].u = object->facequads[i / 4].uv[i & 3].u;
+            vertices[i].v = object->facequads[i / 4].uv[i & 3].v;
         }
 
         object->render_buffers->vertex_buffer->vtbl->Unlock(object->render_buffers->vertex_buffer);
