@@ -54,11 +54,11 @@ void GolbShot::update_golb_ai()
     }
 
     if (path_follow.active == 1) {
-        switch (path_follow.calc_path_length_z(path_factor, &position, &velocity)) {
+        switch (path_follow.calc_path_length_z(path_factor, &flight_transform.position, &velocity)) {
         case 1:
         case 3:
             {
-                Vec3* raw_position = &position;
+                Vec3* raw_position = &flight_transform.position;
                 Vec3* output_position = &source_matrix.position;
                 *output_position = *raw_position;
             }
@@ -72,12 +72,12 @@ void GolbShot::update_golb_ai()
         }
     } else {
         Vec3* movement = &velocity;
-        Vec3* current_position = &position;
+        Vec3* current_position = &flight_transform.position;
         current_position->x = movement->x + current_position->x;
         current_position->y = movement->y + current_position->y;
         current_position->z = movement->z + current_position->z;
         if (kind == 0) {
-            if (position.y > 0.49000001f || position.y < 0.0f) {
+            if (flight_transform.position.y > 0.49000001f || flight_transform.position.y < 0.0f) {
                 velocity.y = velocity.y - game->subgame_rate * 0.017000001f;
             } else {
                 velocity.y = 0.0f;
@@ -93,7 +93,7 @@ void GolbShot::update_golb_ai()
             target_delta.z = homing_target.z - current_position->z;
             delta = target_delta;
             if (normalize_vector(&delta) < 0.40000001f) {
-                spawn_golb_impact_sprite(&position);
+                spawn_golb_impact_sprite(&flight_transform.position);
                 goto retire;
             }
             float pull = homing_blend;
@@ -115,16 +115,16 @@ void GolbShot::update_golb_ai()
             if (speed < 0.1f)
                 goto retire;
         }
-        source_matrix.position = position;
-        if (path_entry_z_latch < source_matrix.position.z && position.y < 1.0f && position.y > 0.0f) {
+        source_matrix.position = flight_transform.position;
+        if (path_entry_z_latch < source_matrix.position.z && flight_transform.position.y < 1.0f && flight_transform.position.y > 0.0f) {
             GolbTrackRowCellTileView* cell = (GolbTrackRowCellTileView*)game->get_track_grid_cell_at_world_position(&source_matrix.position);
             if (cell->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z;
-                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)cell, &position, this);
+                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)cell, &flight_transform.position, this);
             }
             if (velocity.z > 1.0f && ((GolbTrackRowCellTileView*)((char*)cell - 672))->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z + 1.0f;
-                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)((char*)cell - 672), &position, this);
+                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)((char*)cell - 672), &flight_transform.position, this);
             }
         }
     }
@@ -176,9 +176,9 @@ void GolbShot::update_golb_ai()
 
     new_output = &source_matrix.position;
     new_direction = &direction;
-    direction_x = new_output->x - previous_output.x;
-    direction_y = new_output->y - previous_output.y;
-    direction_z = new_output->z - previous_output.z;
+    direction_x = new_output->x - previous_flight_transform.position.x;
+    direction_y = new_output->y - previous_flight_transform.position.y;
+    direction_z = new_output->z - previous_flight_transform.position.z;
     new_direction->x = direction_x;
     new_direction->y = direction_y;
     new_direction->z = direction_z;
@@ -188,11 +188,11 @@ void GolbShot::update_golb_ai()
     }
     lived = lifetime_step + lifetime;
     lifetime = lived;
-    previous_output = source_matrix.position;
+    previous_flight_transform.position = source_matrix.position;
     if (lived <= 1.0f) {
         Player* bounds_player = player;
-        if (position.z >= bounds_player->interaction_max_z
-            && bounds_player->position.z + 46.0f >= position.z) {
+        if (flight_transform.position.z >= bounds_player->interaction_max_z
+            && bounds_player->position.z + 46.0f >= flight_transform.position.z) {
             int garbage = (int)game->garbage_hazards.active_head;
             while (garbage) {
                 if (*(int*)(garbage + 132) == 1) {

@@ -34,7 +34,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 path_factor
                 * ((AttachmentSampleMatrixView*)current_template->secondary_samples)[current_template->segment_count - 1]
                       .delta_length;
-            shot->position = output_position;
+            shot->flight_transform.position = output_position;
 
             GolbPathTemplate* terminal_template = template_record;
             if (terminal_template->kind == 31) {
@@ -56,9 +56,9 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 position->y = base_y + forward_y;
                 position->z = base_z + forward_z;
                 position->x = old_x;
-                shot->position.x = position->x;
-                shot->position.y = position->y;
-                shot->position.z = position->z;
+                shot->flight_transform.position.x = position->x;
+                shot->flight_transform.position.y = position->y;
+                shot->flight_transform.position.z = position->z;
             } else {
                 float z =
                     delta
@@ -67,7 +67,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                     + source_cell->anchor_position.z
                     + terminal_template->width_or_scale;
                 position->z = z;
-                shot->position.z = z;
+                shot->flight_transform.position.z = z;
             }
             return 3;
         }
@@ -191,15 +191,15 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         output->z = result.z;
     }
 
-    Vec3* basis_right = &shot->basis_right_scratch;
+    Vec3* basis_right = &shot->flight_transform.basis_right;
     basis_right->x = transform.basis_right.x;
     basis_right->y = transform.basis_right.y;
     basis_right->z = transform.basis_right.z;
-    Vec3* basis_up = &shot->basis_up_scratch;
+    Vec3* basis_up = &shot->flight_transform.basis_up;
     basis_up->x = transform.basis_up.x;
     basis_up->y = transform.basis_up.y;
     basis_up->z = transform.basis_up.z;
-    Vec3* basis_forward = &shot->basis_forward_scratch;
+    Vec3* basis_forward = &shot->flight_transform.basis_forward;
     basis_forward->x = transform.basis_forward.x;
     basis_forward->y = transform.basis_forward.y;
     basis_forward->z = transform.basis_forward.z;
@@ -218,9 +218,9 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     float exit_threshold = (float)exit_template->width_cells * 0.5f + 0.30000001f;
     if (abs_lateral > exit_threshold) {
         active = 0;
-        shot->position.x = output_position.x;
-        shot->position.y = output_position.y;
-        shot->position.z = output_position.z;
+        shot->flight_transform.position.x = output_position.x;
+        shot->flight_transform.position.y = output_position.y;
+        shot->flight_transform.position.z = output_position.z;
         return template_record->side_exit_mode == 0;
     }
 

@@ -13,6 +13,7 @@ from _narrow_sync import (
     apply_symbol_updates,
     emit_summary,
     run_bn,
+    struct_exists,
     types_declare_if_missing,
 )
 
@@ -96,6 +97,61 @@ SNAIL_SKIN_FIELD_UPDATES = (
     ("0x18", "progress", "float"),
     ("0x1c", "progress_step", "float"),
 )
+
+GOLB_PATH_FOLLOW_STATE_FIELD_UPDATES = (
+    ("0x00", "active", "uint8_t"),
+    ("0x04", "template_record", "Path*"),
+    ("0x08", "source_cell", "TrackRowCell*"),
+    ("0x0c", "sample_index", "int32_t"),
+    ("0x10", "progress", "float"),
+    ("0x14", "vertical_offset", "float"),
+    ("0x18", "output_position", "Vec3"),
+    ("0x24", "shot", "GolbShot*"),
+)
+
+GOLB_PATH_FOLLOW_STATE_DECLARATION = """
+typedef struct GolbPathFollowState {
+    uint8_t active;
+    uint8_t _pad_01[0x3];
+    Path* template_record;
+    TrackRowCell* source_cell;
+    int32_t sample_index;
+    float progress;
+    float vertical_offset;
+    Vec3 output_position;
+    GolbShot* shot;
+} GolbPathFollowState;
+""".strip()
+
+GOLB_SHOT_FIELD_UPDATES = (
+    ("0x150", "live_matrix", "TransformMatrix"),
+    ("0x198", "homing_target_object", "ContactTargetObject*"),
+    ("0x19c", "homing_target", "Vec3"),
+    ("0x1a8", "rocket_owner_shot", "GolbShot*"),
+    ("0x1ac", "homing_blend", "float"),
+    ("0x1b0", "homing_blend_step", "float"),
+    ("0x1b4", "spin", "float"),
+    ("0x1b8", "spin_step", "float"),
+    ("0x1bc", "skip_one_tick", "uint8_t"),
+    ("0x1bd", "slug_bounce_armed", "uint8_t"),
+    ("0x1c0", "kind", "int32_t"),
+    ("0x1c4", "flight_transform", "TransformMatrix"),
+    ("0x204", "previous_flight_transform", "TransformMatrix"),
+    ("0x244", "state", "int32_t"),
+    ("0x248", "render_body_owner", "void*"),
+    ("0x24c", "velocity", "Vec3"),
+    ("0x258", "direction", "Vec3"),
+    ("0x264", "path_factor", "float"),
+    ("0x268", "lifetime", "float"),
+    ("0x26c", "lifetime_step", "float"),
+    ("0x270", "game", "SubgameRuntime*"),
+    ("0x274", "object_ref", "void*"),
+    ("0x278", "owner_player", "Player*"),
+    ("0x27c", "source_matrix", "TransformMatrix"),
+    ("0x2bc", "path_follow", "GolbPathFollowState"),
+    ("0x2e4", "path_entry_z_latch", "float"),
+)
+
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "BarrierActor",
@@ -475,7 +531,52 @@ def ensure_sub_loc_alias(*, target: str) -> dict[str, object]:
         ),
     }
 
-PROTO_UPDATES = (
+
+def ensure_golb_path_follow_state(*, target: str) -> dict[str, object]:
+    if struct_exists(
+        REPO_ROOT,
+        target=target,
+        struct_name="GolbPathFollowState",
+    ):
+        return {
+            "op": "types_declare",
+            "status": "skipped",
+            "reason": "GolbPathFollowState already present",
+            "declaration": GOLB_PATH_FOLLOW_STATE_DECLARATION,
+        }
+
+    return {
+        "op": "types_declare",
+        "declaration": GOLB_PATH_FOLLOW_STATE_DECLARATION,
+        "result": run_bn(
+            REPO_ROOT,
+            "types",
+            "declare",
+            "--target",
+            target,
+            GOLB_PATH_FOLLOW_STATE_DECLARATION,
+        ),
+    }
+
+# update_golb_ai can retain a no-argument auto prototype in older databases.
+# The bridge cannot preview that cdecl-to-thiscall replacement,
+# so keep it out of the replay instead of applying an unpreviewable direct override.
+GOLB_PROTO_UPDATES = (
+    (
+        "create_golb",
+        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
+    ),
+    (
+        "initialize_path_follow_golb",
+        "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot)",
+    ),
+    (
+        "calc_path_length_z",
+        "int32_t __thiscall calc_path_length_z(GolbPathFollowState* state, float path_factor, Vec3* position, Vec3* velocity)",
+    ),
+)
+
+PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_sub_loc",
         "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell)",
@@ -804,6 +905,11 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_HEADER_PATH,
         help="Path to the narrow Binary Ninja type-import header.",
     )
+    parser.add_argument(
+        "--golb-only",
+        action="store_true",
+        help="Replay only the GolbShot/path-follow ownership slice.",
+    )
     return parser.parse_args()
 
 
@@ -814,14 +920,47 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
-    operations.append(
-        types_declare_if_missing(
+    if not args.golb_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=REQUIRED_HEADER_STRUCTS,
+            )
+        )
+    operations.append(ensure_golb_path_follow_state(target=args.target))
+    operations.extend(
+        apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            header_path=header_path,
-            required_structs=REQUIRED_HEADER_STRUCTS,
+            struct_name="GolbPathFollowState",
+            updates=GOLB_PATH_FOLLOW_STATE_FIELD_UPDATES,
         )
     )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="GolbShot",
+            updates=GOLB_SHOT_FIELD_UPDATES,
+        )
+    )
+    if args.golb_only:
+        operations.extend(
+            apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=GOLB_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     operations.append(ensure_sub_loc_alias(target=args.target))
     operations.extend(
         apply_struct_field_updates(

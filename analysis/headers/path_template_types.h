@@ -1399,10 +1399,48 @@ typedef struct FollowState {
     uint8_t _pad_3c[0x4];
 } FollowState;
 
+typedef struct GolbPathFollowState {
+    uint8_t active;
+    uint8_t _pad_01[0x3];
+    Path* template_record;
+    TrackRowCell* source_cell;
+    int32_t sample_index;
+    float progress;
+    float vertical_offset;
+    Vec3 output_position;
+    struct GolbShot* shot;
+} GolbPathFollowState;
+
 typedef struct GolbShot {
-    uint8_t _pad_000[0x244];
+    uint8_t _pad_000[0x150];
+    TransformMatrix live_matrix;
+    uint8_t _pad_190[0x8];
+    ContactTargetObject* homing_target_object;
+    Vec3 homing_target;
+    struct GolbShot* rocket_owner_shot;
+    float homing_blend;
+    float homing_blend_step;
+    float spin;
+    float spin_step;
+    uint8_t skip_one_tick;
+    uint8_t slug_bounce_armed;
+    uint8_t _pad_1be[0x2];
+    int32_t kind;
+    TransformMatrix flight_transform;
+    TransformMatrix previous_flight_transform;
     int32_t state;
-    uint8_t _pad_248[0xa0];
+    void* render_body_owner;
+    Vec3 velocity;
+    Vec3 direction;
+    float path_factor;
+    float lifetime;
+    float lifetime_step;
+    SubgameRuntime* game;
+    void* object_ref;
+    Player* owner_player;
+    TransformMatrix source_matrix;
+    GolbPathFollowState path_follow;
+    float path_entry_z_latch;
 } GolbShot;
 
 typedef struct Player {

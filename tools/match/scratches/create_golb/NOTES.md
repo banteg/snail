@@ -1,5 +1,22 @@
 # create_golb
 
+## 2026-07-13 flight-transform ownership closure
+
+The old `basis_*_scratch`, `position`, padding, and `previous_output` window is
+now represented as two adjacent 0x40-byte `TransformMatrix` owners at
+`GolbShot +0x1c4` and `+0x204`. This function supplies the first owner directly
+to `Vapour::add_vapour_point`, uses its position row at `+0x1f4` as the raw
+projectile position, and seeds the second owner's position row at `+0x234` as
+the previous rendered output. Only the second owner's position row is proven
+live so far; the full type is pinned by its exact matrix-row placement and the
+same 0x40 current/previous separation in the Android `cRSubGolb::Create` port.
+
+Kind 2 also writes `this` at `+0x1a8`. That slot is now named
+`rocket_owner_shot`: it is the parent backlink immediately following the
+embedded tertiary body, consistent with the mobile `cRGolbRocket` class name
+and its no-op AI callback. Focused matching is byte-for-byte unchanged at
+36.08% (460/582 instructions, 35 clean masked operands).
+
 create_golb @ 0x415280 initializes one live Golb projectile slot from Goldy's
 movement-flag family and emitter slot.
 
@@ -145,8 +162,8 @@ Residuals:
   promoted `float*` vapour z-floor type are codegen-neutral for `create_golb`;
   `reset_vapour` remains exact at `7/7` instructions.
 - The remaining stable `GolbShot` owners are now used directly for kind/state,
-  source matrix, position/direction/previous output, lifetime, game, sprite
-  body, emitter identity, and path factor. `+0x274` is explicitly a union of
+  source matrix, flight/previous-flight transforms, direction, lifetime, game,
+  sprite body, emitter identity, and path factor. `+0x274` is explicitly a union of
   the sprite-facing `object_ref` and the caller-facing integer emitter index.
   This promotion is also codegen-neutral at `36.08%`, so no byte-shaping was
   introduced to obtain it.

@@ -63,7 +63,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     set_matrix_identity(&source_matrix);
     state = 1;
 
-    Vec3* position = &this->position;
+    Vec3* position = &flight_transform.position;
     char* player = (char*)owner_player;
     Vec3* player_position = (Vec3*)(player + 0x68);
     position->x = player_position->x;
@@ -199,7 +199,7 @@ after_movement_flag_source:
             if (adjusted_kind == 1) {
                 lifetime = 0.0f;
                 lifetime_step = *(float*)((char*)game + 0x38) * 0.027777776f;
-                words[106] = (DWORD)self;
+                rocket_owner_shot = this;
                 spin = 0.0f;
                 spin_step = 0.20943952f;
                 homing_target_object = 0;
@@ -259,7 +259,7 @@ after_movement_flag_source:
             ((Vapour*)(self + 0x80))->reset_vapour((float*)spawn_selector);
             ((Color4f*)(self + 0xa8))->store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->emitter_index = emitter_index;
-            ((Vapour*)(self + 0x80))->add_vapour_point((TransformMatrix*)(self + 0x1c4));
+            ((Vapour*)(self + 0x80))->add_vapour_point(&flight_transform);
             ((Vapour*)node)->update_vapour();
         }
     } else {
@@ -303,7 +303,7 @@ after_movement_flag_source:
     }
 
     path_factor = velocity.vector_magnitude();
-    Vec3* previous_output = &this->previous_output;
+    Vec3* previous_output = &previous_flight_transform.position;
     *previous_output = *position;
 
     ((BodAiDispatch*)self)->update_bod_ai();

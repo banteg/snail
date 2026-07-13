@@ -1,5 +1,18 @@
 # WIP scratch — 73.34%, 645/694 insns (2026-06-21)
 
+## 2026-07-13 flight-transform ownership closure
+
+The projectile's raw position is now the position row of
+`flight_transform +0x1c4`; the previous rendered output is the position row of
+the adjacent `previous_flight_transform +0x204`. This updater integrates the
+first row at `+0x1f4`, derives direction from `source_matrix.position -
+previous_flight_transform.position`, then advances the previous row at
+`+0x234`. Android `cRSubGolb::AI` preserves the same current/previous 0x40
+spacing at its port-shifted offsets, independently confirming the owner
+boundary. Only the previous transform's position row is currently proven
+live. Focused matching is byte-for-byte unchanged at 73.34% (645/694
+instructions, 68 clean masked operands).
+
 ## 2026-07-10 slug-pool owner closure
 
 The promoted `SubgameRuntime::slug_hazards` pool now supplies the exact
@@ -325,8 +338,9 @@ Recovered this pass (full field map in scratch.cpp):
 
 - GolbShot layout: live matrix +0x150; homing target/blend +0x198-0x1b0;
   spin pair +0x1b4; skip byte +0x1bc; bounce byte +0x1bd; kind +0x1c0
-  (0 golb, 1 lazer/vapour, 2 rocket); position +0x1f4; previous output
-  +0x234; state +0x244; owner body +0x248 (position row written at +72);
+  (0 golb, 1 lazer/vapour, 2 rocket); flight transform +0x1c4 (position row
+  +0x1f4); previous-flight transform +0x204 (position row +0x234); state
+  +0x244; owner body +0x248 (position row written at +72);
   velocity +0x24c; direction +0x258; path factor +0x264; lifetime pair
   +0x268; game +0x270; player +0x278; source transform +0x27c whose
   POSITION ROW is the output position at +0x2ac (one matrix, two views —

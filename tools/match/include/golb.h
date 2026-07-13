@@ -41,7 +41,7 @@ struct GolbPathSourceCell {
 struct GolbShotHomingStateOverlay {
     ContactTargetObject* homing_target_object; // +0x00
     Vector3 homing_target; // +0x04
-    char unknown_10[0x14 - 0x10];
+    GolbShot* rocket_owner_shot; // +0x10, kind-2 embedded-body backlink
     float homing_blend; // +0x14
     float homing_blend_step; // +0x18
     float spin; // +0x1c
@@ -106,7 +106,7 @@ public:
     char unknown_190[0x198 - 0x190];
     ContactTargetObject* homing_target_object; // +0x198, reserved target owner
     Vector3 homing_target;           // +0x19c
-    char unknown_1a8[4];
+    GolbShot* rocket_owner_shot;     // +0x1a8, kind-2 embedded-body backlink
     float homing_blend;              // +0x1ac
     float homing_blend_step;         // +0x1b0
     float spin;                      // +0x1b4
@@ -115,16 +115,11 @@ public:
     unsigned char slug_bounce_armed; // +0x1bd
     char unknown_1be[2];
     int kind;                    // +0x1c0
-    Vector3 basis_right_scratch;  // +0x1c4
-    char unknown_1d0[0x1d4 - 0x1d0];
-    Vector3 basis_up_scratch;     // +0x1d4
-    char unknown_1e0[0x1e4 - 0x1e0];
-    Vector3 basis_forward_scratch; // +0x1e4
-    char unknown_1f0[0x1f4 - 0x1f0];
-    Vector3 position;             // +0x1f4
-    char unknown_200[0x234 - 0x200];
-    Vector3 previous_output;      // +0x234
-    char unknown_240[0x244 - 0x240];
+    // Path interpolation writes the basis rows and raw projectile position
+    // into one transform. The next 0x40-byte owner retains the previous
+    // rendered position; only that position row is proven live so far.
+    TransformMatrix flight_transform;          // +0x1c4
+    TransformMatrix previous_flight_transform; // +0x204
     int state;                   // +0x244
     union {
         void* render_body_owner; // +0x248, kind-specific body/sprite owner
@@ -148,5 +143,7 @@ public:
     GolbPathFollowState path_follow; // +0x2bc
     float path_entry_z_latch; // +0x2e4
 };
+
+typedef char GolbShot_must_be_0x2e8[(sizeof(GolbShot) == 0x2e8) ? 1 : -1];
 
 #endif

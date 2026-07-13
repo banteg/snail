@@ -102,6 +102,12 @@ The presentation BN sync lane intentionally replays a narrow camera/render slice
 - the dependent `SnailVisual` / `PathTemplate` fields that keep those callers from falling back to raw offsets again
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
 
+For projectile-only ownership work, use `uv run python
+tools/binja/sync_path_template_types.py --golb-only`. It declares just the
+missing `GolbPathFollowState`, replays the explicit `GolbShot` fields, and
+updates the three previewable Golb/path-follow prototypes without reimporting
+unrelated forward-declared presentation types.
+
 The selected-record BN lane is even narrower:
 - just the expanded in-memory selected replay/high-score entry
 - the `Game.selected_level_record*` control fields

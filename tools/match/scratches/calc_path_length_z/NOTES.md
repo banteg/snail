@@ -1,5 +1,17 @@
 # calc_path_length_z
 
+## 2026-07-13 flight-transform ownership closure
+
+The three formerly separate basis scratch vectors and raw shot position are
+the four vector rows of one `TransformMatrix` at `GolbShot +0x1c4`: basis rows
+land at `+0x1c4/+0x1d4/+0x1e4`, and the position row lands at `+0x1f4`.
+`create_golb` independently passes that exact base to
+`Vapour::add_vapour_point`, while this function populates the basis and
+position rows during path traversal. The adjacent matrix-shaped owner at
+`+0x204` retains the prior rendered position at its `+0x30` row. Focused
+matching is byte-for-byte unchanged at 55.52% (400/425 instructions, 7 clean
+masked operands).
+
 calc_path_length_z @ 0x4217b0 advances the Golb projectile path-follow state
 used by `update_golb_ai`.
 
@@ -18,27 +30,27 @@ Recovered semantics covered by this scratch:
   from the primary sample bank, then uses either kind `42`
   `compute_kind42_attachment_transform` or ordinary matrix interpolation with
   zeroed matrix position rows;
-- every normal path stores the basis rows into the Golb slot scratch vectors,
+- every normal path stores the basis rows into the Golb flight transform,
   copies `direction` to `velocity`, checks the lateral exit threshold, and
   returns `0` for normal continuation or `template->side_exit_mode == 0` for
   side exit.
 
 Residuals:
 
-- Current matcher result: 40.58% (`tools/match/match.sh
-  tools/match/scratches/calc_path_length_z --full`).
+- Current matcher result: 55.52% (`uv run snail match scratch
+  tools/match/scratches/calc_path_length_z`).
 - The shared `golb.h` path-follow names were corrected while keeping
   `initialize_path_follow_golb` exact: this state stores the attachment
   template at `+0x04` and source cell at `+0x08`, not an independent Golb path
   bank/count pair.
 - Remaining diff is dominated by source-shape and stack layout, not missing
-  lanes: native reserves `0xf4` bytes while the scratch reserves `0xe0`, and
+  lanes: native reserves `0xf4` bytes while the scratch reserves `0xec`, and
   native keeps more float staging locals for the scalar lerps and matrix copies.
 - The overflow loop and normal advance block are semantically equivalent but
   laid out differently; native falls through into a shared advance head while
   the scratch lets VC6 place part of that path later in the function.
 - Terminal kind `31`, non-kind-31 terminal z, kind `42` transform, ordinary
-  matrix interpolation, basis scratch stores, direction-to-velocity copy, and
+  matrix interpolation, flight-transform basis stores, direction-to-velocity copy, and
   side-exit return are all covered. Avoid dummy locals solely to chase the
   native frame size without stronger original-source evidence.
 
@@ -110,11 +122,11 @@ methods for interpolation while the shared header still uses
 `AttachmentTransform`.
 
 2026-06-17 GolbShot consolidation: the local shot window moved into the shared
-`golb.h` view. This pins the basis scratch vectors at `+0x1c4`, `+0x1d4`, and
-`+0x1e4`, live position `+0x1f4`, previous output `+0x234`, velocity `+0x24c`,
-and direction `+0x258` against the exact small Golb helpers and this path-follow
-updater. Focused Wibo remains `40.58%`, `408/425`; the remaining diff is still
-the known stack/layout issue, not field uncertainty.
+`golb.h` view. The later ownership closure above supersedes the provisional
+scratch-vector names: those offsets are the basis and position rows of
+`flight_transform +0x1c4`, followed by the previous-flight owner at `+0x204`.
+Velocity `+0x24c` and direction `+0x258` remain independently pinned against
+the exact small Golb helpers and this path-follow updater.
 
 2026-06-14 recheck: localized diff still shows one broad region dominated by
 the `0xf4`/`0xe0` frame gap, overflow-loop placement, scalar lerp stack slots,
