@@ -11,8 +11,11 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 
 typedef struct Object Object;
+typedef struct BodNode BodNode;
 typedef struct Player Player;
+typedef struct Sprite Sprite;
 typedef struct SubgameRuntime SubgameRuntime;
+typedef struct TrackRowCell TrackRowCell;
 typedef struct TransformMatrix TransformMatrix;
 
 typedef struct Vec3 {
@@ -27,6 +30,13 @@ typedef struct Color4f {
     float b;
     float a;
 } Color4f;
+
+struct BodNode {
+    void* vtable;
+    uint32_t list_flags;
+    BodNode* list_prev;
+    BodNode* list_next;
+};
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
@@ -146,29 +156,21 @@ typedef struct SlugPool {
     SlugHazardRuntime slots[8];
 } SlugPool;
 
-typedef struct RingOrSpecialEffectParent RingOrSpecialEffectParent;
+typedef struct SubRing SubRing;
 
-typedef struct RingOrSpecialEffectParticle {
-    struct Sprite* sprite;
-    RingOrSpecialEffectParent* parent;
+typedef struct SubRingStar {
+    Sprite* sprite;
+    SubRing* parent;
     Vec3 base_position;
     float phase;
     float phase_step;
     float radius;
-} RingOrSpecialEffectParticle;
+} SubRingStar;
 
-typedef struct RingEffectRateSource {
-    uint8_t unknown_00[0x09];
-    uint8_t pause_gate;
-    uint8_t unknown_0a[0x2e];
-    float subgame_rate;
-} RingEffectRateSource;
+typedef SubRingStar RingOrSpecialEffectParticle;
 
-struct RingOrSpecialEffectParent {
-    void* vtable;
-    uint32_t list_flags;
-    RingOrSpecialEffectParent* list_prev;
-    RingOrSpecialEffectParent* list_next;
+struct SubRing {
+    BodNode bod;
     Vec3 bod_position;
     float render_arg_1c;
     float render_arg_20;
@@ -184,11 +186,11 @@ struct RingOrSpecialEffectParent {
     float world_position_w;
     uint8_t unknown_78[0x08];
     int32_t state;
-    struct Player* owner_player;
+    Player* owner_player;
     int32_t kind;
     int32_t owner_lives_snapshot;
-    RingOrSpecialEffectParticle particles[10];
-    RingEffectRateSource* rate_source;
+    SubRingStar particles[10];
+    SubgameRuntime* rate_source;
     float transition_progress;
     float transition_step;
     uint8_t oscillate_x;
@@ -200,12 +202,27 @@ struct RingOrSpecialEffectParent {
     uint8_t unknown_1f0[0x08];
 };
 
-typedef struct RingOrSpecialEffectPool {
-    RingOrSpecialEffectParent slots[2];
-} RingOrSpecialEffectPool;
+typedef SubRing RingOrSpecialEffectParent;
 
-void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle* particle, Player* owner);
-void __thiscall update_ring_or_special_effect_particle(RingOrSpecialEffectParticle* particle);
+typedef struct SubRingPool {
+    SubRing slots[2];
+} SubRingPool;
+
+typedef SubRingPool RingOrSpecialEffectPool;
+
+SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);
+void __thiscall spawn_track_ring_or_special_effect(
+    SubgameRuntime* game,
+    TrackRowCell* cell,
+    int32_t requested_kind,
+    Player* player,
+    float ring_speed);
+int32_t __thiscall initialize_ring_or_special_effect_particles(
+    SubRing* ring,
+    int32_t unused_lives_snapshot);
+void __thiscall emit_ring_star_shower(SubRingStar* particle, Player* owner);
+void __thiscall update_ring_or_special_effect_particle(SubRingStar* particle);
+void __thiscall update_ring_or_special_effect_parent(SubRing* ring);
 void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width);
 void __thiscall reset_vapour(Vapour* vapour, float* z_floor);
 void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);

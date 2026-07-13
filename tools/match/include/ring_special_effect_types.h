@@ -6,6 +6,7 @@
 
 class Player;
 class Sprite;
+class SubgameRuntime;
 class SubRing;
 typedef SubRing RingOrSpecialEffectParent;
 
@@ -27,14 +28,6 @@ typedef SubRingStar RingOrSpecialEffectParticle;
 
 typedef char SubRingStar_must_be_0x20[(sizeof(SubRingStar) == 0x20) ? 1 : -1];
 
-class RingEffectRateSource {
-public:
-    char unknown_00[0x09];
-    unsigned char subgame_pause_gate; // +0x09
-    char unknown_0a[0x38 - 0x0a];
-    float subgame_rate; // +0x38
-};
-
 class SubRing : public RenderableBod {
 public:
     SubRing* initialize_track_ring_or_special_effect_runtime(); // @ 0x408570
@@ -49,7 +42,7 @@ public:
     // Fixed child storage owned by this parent. Each child's sprite is a
     // separate SpriteManager allocation released on every parent-removal path.
     SubRingStar particles[10]; // +0x90, embedded child records
-    RingEffectRateSource* rate_source; // +0x1d0, borrowed SubgameRuntime view
+    SubgameRuntime* rate_source; // +0x1d0, borrowed enclosing cRSubGame
     float transition_progress; // +0x1d4
     float transition_step; // +0x1d8
     unsigned char oscillate_x; // +0x1dc

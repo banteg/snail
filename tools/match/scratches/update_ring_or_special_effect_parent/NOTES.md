@@ -49,9 +49,8 @@ Evidence:
 
 Type consolidation:
 
-- `RingOrSpecialEffectParent::state`, `transition_progress`,
-  `transition_step`, `oscillate_x`, and
-  `RingEffectRateSource::subgame_pause_gate` are now
+- `SubRing::state`, `transition_progress`, `transition_step`, and
+  `oscillate_x` are now
   in `tools/match/include/ring_special_effect_types.h`.
 - 2026-06-16 naming correction: the old exported name
   `update_subgoldy_bullet` was stale. The function is the virtual updater for
@@ -169,3 +168,11 @@ codegen-neutral at `98.21%`, `336/336` instructions, with all `37` masked
 operands clean, while making the common list ownership explicit. The only
 removal residual is one root-anchor register choice; the larger residual is
 still the state-3 camera-target `Vector3` staging at target instruction 193.
+
+2026-07-13 rate-owner closure: reset assigns each embedded ring's `+0x1d0`
+backlink directly to its enclosing `SubgameRuntime`; the updater consumes that
+same owner's `subgame_pause_gate +0x09` and `subgame_rate +0x38`. The former
+`RingEffectRateSource` shell represented no allocation or lifetime boundary and
+is retired. Focused matching remains 98.21%, 336/336, with 37 clean operands.
+The scratch now names `subgame_runtime.h` as a direct dependency rather than
+depending on `game_root.h` to expose the complete owner transitively.

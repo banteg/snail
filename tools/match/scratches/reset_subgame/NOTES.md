@@ -87,3 +87,12 @@ and the 40-slot 0x17c0 `SaltManager` at `+0x3578c0`.
 Binary Ninja preview verifies every stride and boundary while keeping
 `SubgameRuntime == 0x1272838`, then reverts. The exact reset body remains
 75/75 instructions with both masked operands clean.
+
+## 2026-07-13 cRSubRing backlink closure
+
+The final two-slot reset loop now closes the pool's lifetime model: each
+embedded `SubRing` is marked inactive and receives a borrowed pointer back to
+the enclosing `SubgameRuntime` at `+0x1d0`. `cRSubRing::Init` and `AI` consume
+that same owner for `subgame_rate` and the pause gate; there is no separately
+allocated rate-source object. The historical generic ring names remain aliases
+only, and the exact reset body remains 75/75.

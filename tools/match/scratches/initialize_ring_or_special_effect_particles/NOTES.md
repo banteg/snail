@@ -1,7 +1,6 @@
 # initialize_ring_or_special_effect_particles @ 0x43e470
 
-Live source map for the ten child halo sprites attached to a
-`RingOrSpecialEffectParent`.
+Live source map for the ten child halo sprites attached to a `SubRing`.
 
 Current match: 100.00%, 153/153 instructions, with 10 clean masked operands.
 
@@ -9,13 +8,17 @@ Evidence:
 
 - Parent `+0x80` is the state word cleared or set by the spawner, initializer,
   and updater.
-- Parent `+0x90` starts an inline array of ten `RingOrSpecialEffectParticle`
-  entries with stride `0x20`.
+- Parent `+0x90` starts an inline array of ten `SubRingStar` entries with
+  stride `0x20`.
 - The child layout matches the updater and emitter scratches:
   `sprite +0x00`, `parent +0x04`, `base_position +0x08`, `phase +0x14`,
   `phase_step +0x18`, and `radius +0x1c`.
-- Parent `+0x1d0` is a rate source pointer whose `+0x38` float feeds child
-  orbit phase step as `rate * 0.104719758`.
+- Parent `+0x1d0` borrows its enclosing `SubgameRuntime`; that owner's
+  `subgame_rate +0x38` feeds child orbit phase step as
+  `rate * 0.104719758`.
+- The scratch includes `subgame_runtime.h` directly because dereferencing that
+  backlink requires the complete owner definition; a forward declaration in
+  the ring layout header is intentionally sufficient only for storage.
 
 Source-shape win:
 

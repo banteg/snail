@@ -762,6 +762,51 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_subring_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00408570-initialize_track_ring_or_special_effect_runtime.c",
+      "required_substrings": [
+        "initialize_renderable_bod(ring)",
+        "ring->bod.vtable",
+        "return ring"
+      ],
+      "forbidden_substrings": [
+        "RingOrSpecialEffectParent",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_subring_pool_backlink_owner",
+      "artifact": "analysis/decompile/binja/functions/00437b10-reset_subgame.c",
+      "required_substrings": [
+        "ring_effects.slots[0].state = 0",
+        "ring_effects.slots[0].rate_source = game",
+        "game->slug_hazards.slots[0].owner_game"
+      ],
+      "forbidden_substrings": [
+        "RingEffectRateSource",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_subring_rate_owner",
+      "artifact": "analysis/decompile/binja/functions/0043e830-update_ring_or_special_effect_parent.c",
+      "required_substrings": [
+        "struct SubgameRuntime* rate_source = ring->rate_source",
+        "rate_source->subgame_pause_gate",
+        "rate_source->subgame_rate",
+        "struct SubRingStar"
+      ],
+      "forbidden_substrings": [
+        "RingEffectRateSource",
+        "RingOrSpecialEffectParent",
+        "RingOrSpecialEffectParticle",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

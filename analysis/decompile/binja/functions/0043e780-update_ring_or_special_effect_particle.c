@@ -12,12 +12,12 @@
 0043e7b4        particle->phase = fconvert.s(fconvert.t(particle->phase) - fconvert.t(6.28318548f))
 0043e7c0        long double x87_r7_7 = cosine(particle->phase) * fconvert.t(particle->radius)
 0043e7cb        long double st0_1 = sine(particle->phase)
-0043e7d0        struct RingOrSpecialEffectParent* parent = particle->parent
-0043e7de        struct Vec3* ecx_2 = &particle->sprite->position
-0043e7fa        ecx_2->x = fconvert.s(st0_1 * fconvert.t(particle->radius) + fconvert.t(parent->world_position.x))
-0043e808        ecx_2->y = fconvert.s(fconvert.t(fconvert.s(x87_r7_7)) + fconvert.t(parent->world_position.y))
-0043e80b        ecx_2->z = parent->world_position.z
-0043e80e        struct RingOrSpecialEffectParent* parent_1 = particle->parent
+0043e7d0        struct SubRing* parent = particle->parent
+0043e7de        void* __offset(Sprite, 0x48) ecx_2 = particle->sprite + 0x48
+0043e7fa        (ecx_2 - 0x48)->__offset(0x48).d = fconvert.s(st0_1 * fconvert.t(particle->radius) + fconvert.t(parent->world_position.x))
+0043e808        (ecx_2 - 0x48)->__offset(0x4c).d = fconvert.s(fconvert.t(fconvert.s(x87_r7_7)) + fconvert.t(parent->world_position.y))
+0043e80b        (ecx_2 - 0x48)->__offset(0x50).d = parent->world_position.z
+0043e80e        struct SubRing* parent_1 = particle->parent
 0043e819        if (parent_1->star_shower_counter == 0)
 0043e824        emit_ring_star_shower(particle, parent_1->owner_player)
 0043e82d        return

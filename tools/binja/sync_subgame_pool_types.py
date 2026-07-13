@@ -2,21 +2,21 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
-    apply_proto_updates,
-    apply_struct_field_updates,
+    apply_struct_and_proto_updates,
     emit_summary,
-    types_declare_if_missing,
+    struct_exists,
+    types_declare_missing_only,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
-TARGET = DEFAULT_TARGET
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
 
 REQUIRED_HEADER_STRUCTS = (
     "TrackSpeedupRuntime",
@@ -25,8 +25,17 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackHealthPickup",
     "SlugHazardRuntime",
     "SlugPool",
+    "SubRingStar",
+    "SubRing",
+    "SubRingPool",
+)
+
+RING_TYPE_REPLACEMENTS = (
+    "SubRingStar",
     "RingOrSpecialEffectParticle",
+    "SubRing",
     "RingOrSpecialEffectParent",
+    "SubRingPool",
     "RingOrSpecialEffectPool",
 )
 
@@ -35,7 +44,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x355e64", "jetpack_pickup", "JetPack"),
     ("0x356000", "health_pickups", "TrackHealthPickup[0x8]"),
     ("0x3563a0", "slug_hazards", "SlugPool"),
-    ("0x35b78c", "ring_effects", "RingOrSpecialEffectPool"),
+    ("0x35b78c", "ring_effects", "SubRingPool"),
 )
 
 TRACK_SPEEDUP_FIELD_UPDATES = (
@@ -70,18 +79,6 @@ SLUG_HAZARD_FIELD_UPDATES = (
     ("0x88", "owner_game", "SubgameRuntime*"),
 )
 
-RING_RATE_SOURCE_FIELD_UPDATES = (
-    ("0x09", "pause_gate", "uint8_t"),
-)
-
-RING_PARENT_FIELD_UPDATES = (
-    ("0x10", "bod_position", "Vec3"),
-    ("0x1c", "render_arg_1c", "int32_t"),
-    ("0x20", "render_arg_20", "float"),
-    ("0x24", "object", "void*"),
-    ("0x28", "color", "Color4f"),
-)
-
 PROTO_UPDATES = (
     ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
     (
@@ -108,76 +105,100 @@ PROTO_UPDATES = (
     ),
     ("update_vapour", "void __thiscall update_vapour(Vapour* vapour)"),
     (
+        "initialize_track_ring_or_special_effect_runtime",
+        "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring)",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, int32_t requested_kind, Player* player, float ring_speed)",
+    ),
+    (
+        "initialize_ring_or_special_effect_particles",
+        "int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing* ring, int32_t unused_lives_snapshot)",
+    ),
+    (
         "emit_ring_star_shower",
-        "void __thiscall emit_ring_star_shower(RingOrSpecialEffectParticle* particle, Player* owner)",
+        "void __thiscall emit_ring_star_shower(SubRingStar* particle, Player* owner)",
     ),
     (
         "update_ring_or_special_effect_particle",
-        "void __thiscall update_ring_or_special_effect_particle(RingOrSpecialEffectParticle* particle)",
+        "void __thiscall update_ring_or_special_effect_particle(SubRingStar* particle)",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "void __thiscall update_ring_or_special_effect_parent(SubRing* ring)",
     ),
 )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Apply the canonical subgame pickup, hazard, and cRSubRing ownership slice."
+    )
+    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
+    parser.add_argument(
+        "--header",
+        type=Path,
+        default=DEFAULT_HEADER_PATH,
+        help="Narrow Binary Ninja type header.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
+    args = parse_args()
+    header_path = args.header.resolve()
+    if not header_path.is_file():
+        raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
+
+    types_present = all(
+        struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name)
+        for struct_name in REQUIRED_HEADER_STRUCTS
+    )
+    type_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "canonical subgame pool structs already present",
+            "header": str(header_path),
+            "required_structs": REQUIRED_HEADER_STRUCTS,
+        }
+        if types_present
+        else types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=RING_TYPE_REPLACEMENTS,
+        )
+    )
+
+    struct_updates = [
+        ("SubgameRuntime", SUBGAME_FIELD_UPDATES),
+        ("TrackSpeedupRuntime", TRACK_SPEEDUP_FIELD_UPDATES),
+        ("Vapour", VAPOUR_FIELD_UPDATES),
+        ("JetPack", JETPACK_FIELD_UPDATES),
+        ("TrackHealthPickup", TRACK_HEALTH_PICKUP_FIELD_UPDATES),
+        ("SlugHazardRuntime", SLUG_HAZARD_FIELD_UPDATES),
+    ]
+    if struct_exists(REPO_ROOT, target=args.target, struct_name="FrameSubgameRuntime"):
+        struct_updates.insert(0, ("FrameSubgameRuntime", SUBGAME_FIELD_UPDATES))
+
     operations: list[dict[str, object]] = [
-        types_declare_if_missing(
+        type_operation,
+        *apply_struct_and_proto_updates(
             REPO_ROOT,
-            target=TARGET,
-            header_path=HEADER_PATH,
-            required_structs=REQUIRED_HEADER_STRUCTS,
+            target=args.target,
+            struct_updates=struct_updates,
+            proto_updates=PROTO_UPDATES,
         ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="SubgameRuntime",
-            updates=SUBGAME_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="TrackSpeedupRuntime",
-            updates=TRACK_SPEEDUP_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="Vapour",
-            updates=VAPOUR_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="JetPack",
-            updates=JETPACK_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="TrackHealthPickup",
-            updates=TRACK_HEALTH_PICKUP_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="SlugHazardRuntime",
-            updates=SLUG_HAZARD_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="RingEffectRateSource",
-            updates=RING_RATE_SOURCE_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=TARGET,
-            struct_name="RingOrSpecialEffectParent",
-            updates=RING_PARENT_FIELD_UPDATES,
-        ),
-        *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]
 
-    return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)
+    return emit_summary(
+        repo_root=REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+        operations=operations,
+    )
 
 
 if __name__ == "__main__":

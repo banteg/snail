@@ -3,6 +3,7 @@
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 
 int SubRing::initialize_ring_or_special_effect_particles(int)
 {

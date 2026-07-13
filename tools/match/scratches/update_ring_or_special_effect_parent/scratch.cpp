@@ -4,6 +4,7 @@
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "sprite.h"
+#include "subgame_runtime.h"
 
 extern GameRoot* g_game; // data_4df904
 
@@ -12,7 +13,7 @@ float sine(float radians);
 
 void SubRing::update_ring_or_special_effect_parent()
 {
-    RingEffectRateSource* rate = rate_source;
+    SubgameRuntime* rate = rate_source;
     if (rate->subgame_pause_gate != 0)
         return;
 

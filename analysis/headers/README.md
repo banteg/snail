@@ -103,6 +103,8 @@ intentional.
 - `uv run python tools/binja/sync_root_bod_catalog_types.py`
 - `bn_subgame_hazard_pool_types.h`
 - `uv run python tools/binja/sync_subgame_hazard_pool_types.py`
+- `bn_subgame_pool_types.h`
+- `uv run python tools/binja/sync_subgame_pool_types.py`
 - `star_manager_types.h`
 - `uv run python tools/binja/sync_star_manager_types.py`
 
@@ -130,6 +132,13 @@ The subgame-hazard lane owns the canonical `SubLazer` / `SubLazerManager` and
 `Salt` / `SaltManager` types. Its replay deliberately replaces the obsolete
 sparse slot experiments, preserves complete shared types from other lanes, and
 batches all field/prototype mutations behind one verified preview.
+
+The adjacent subgame-pool lane owns the canonical `SubRing` / `SubRingStar` /
+`SubRingPool` family. It records two inline `0x1f8` parents, ten inline `0x20`
+children per parent, and the borrowed backlink from each parent to its enclosing
+`SubgameRuntime`. The replay selectively replaces only the obsolete generic
+ring shells, preserves complete shared owners, and batches the verified root
+field and prototype changes.
 
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
