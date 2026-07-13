@@ -20,6 +20,13 @@ typedef int LPARAM;
 typedef int LRESULT;
 typedef unsigned short ATOM;
 
+struct Point {
+    LONG x;
+    LONG y;
+};
+
+typedef char Point_must_be_0x08[(sizeof(Point) == 0x08) ? 1 : -1];
+
 typedef LRESULT (__stdcall* WindowProc)(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 

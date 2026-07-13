@@ -18,7 +18,6 @@ extern float g_mouse_live_y[]; // data_777d60
 extern char g_hide_system_cursor_flag; // data_777d70
 extern DirectInputDevice* g_mouse_device; // data_777d9c
 
-int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y); // @ 0x44c100
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
 unsigned char read_left_mouse_button_state(int slot); // @ 0x407810
 unsigned char read_right_mouse_button_state(int slot); // @ 0x407830

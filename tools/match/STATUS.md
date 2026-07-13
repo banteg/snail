@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**572/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90042/325437** bytes (**27.67%**) are proof-grade, and overall fuzzy is **69.42%**.
+**573/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90482/325437** bytes (**27.80%**) are proof-grade, and overall fuzzy is **69.45%**.
 
-## Proof Grade (572)
+## Proof Grade (573)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -491,6 +491,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_mouse | 0x44bc50 | 1012 | 295/295 | 100.00% | 295/295 | 81 ok |  |
 | ✅ | set_hide_system_cursor_flag | 0x44c050 | 10 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | click_mouse_screen | 0x44c060 | 156 | 43/43 | 100.00% | 43/43 | 13 ok |  |
+| ✅ | convert_mouse_screen_xy | 0x44c100 | 440 | 115/115 | 100.00% | 115/115 | 35 ok |  |
 | ✅ | release_mouse_input | 0x44c2c0 | 66 | 21/21 | 100.00% | 21/21 | 5 ok |  |
 | ✅ | initialize_mouse_input | 0x44c310 | 157 | 46/46 | 100.00% | 46/46 | 18 ok |  |
 | ✅ | is_mouse_captured | 0x44c3b0 | 3 | 2/2 | 100.00% | 2/2 | - |  |
@@ -680,7 +681,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (48)
+## Mid Progress (50-79.99%) (47)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -730,7 +731,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
-| 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1096 | 314/316 | 55.56% | 30/316 | 12 mismatch, 36 ok |  |
 
 ## Early Progress (>0-49.99%) (40)

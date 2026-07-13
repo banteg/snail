@@ -77,7 +77,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "convert_mouse_screen_xy",
-        "BOOL __cdecl convert_mouse_screen_xy(int sensitivity_slot, float *x, float *y);",
+        "void __cdecl convert_mouse_screen_xy(int sensitivity_slot, float *x, float *y);",
     ),
     (
         "release_mouse_input",

@@ -3198,7 +3198,8 @@
     },
     {
       "address": "0x44c100",
-      "name": "convert_mouse_screen_xy"
+      "name": "convert_mouse_screen_xy",
+      "description": "Side-effect-only Windows cursor bridge: copies a captured OS cursor directly or converts centered cursor deltas into authored x/y, applies steering sensitivity only while uncaptured, zeros both outputs on query failure, and recenters the active main window. Native leaves incidental eax values; the helper has a void ABI."
     },
     {
       "address": "0x44c2c0",

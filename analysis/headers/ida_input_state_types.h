@@ -46,4 +46,9 @@ typedef struct MouseScreenRect {
     int32_t bottom;
 } MouseScreenRect;
 
+typedef struct Point {
+    int32_t x;
+    int32_t y;
+} Point;
+
 #endif

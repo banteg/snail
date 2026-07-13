@@ -99,7 +99,7 @@ PROTO_UPDATES = (
     ("0x44bc50", "int32_t __cdecl update_mouse(int32_t window_handle)"),
     ("0x44c050", "char __cdecl set_hide_system_cursor_flag(char hidden)"),
     ("0x44c060", "void* __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)"),
-    ("0x44c100", "BOOL __cdecl convert_mouse_screen_xy(int32_t arg1, float* arg2, float* arg3)"),
+    ("0x44c100", "void __cdecl convert_mouse_screen_xy(int32_t sensitivity_slot, float* x, float* y)"),
     ("0x44c2c0", "int32_t __cdecl release_mouse_input()"),
     ("0x44c310", "int32_t __cdecl initialize_mouse_input(int32_t window_handle)"),
 )
