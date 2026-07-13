@@ -1156,6 +1156,11 @@
       "description": "Sorts one Object's 0x30-byte face records into contiguous texture runs using independent scan and insertion cursors, swapping whole ObjectFaceQuad records so calc_object_texture_groups can retain cumulative run ends."
     },
     {
+      "address": "0x41a0a0",
+      "name": "disable_object_rendering",
+      "description": "Marks one Object with the 0x40000 render-suppression flag checked by render_object; startup applies it to selected backdrop objects after binding them into their BodBase owners."
+    },
+    {
       "address": "0x41a0b0",
       "name": "initialize_textured_backdrop_quad",
       "description": "Builds one shared 4-vertex textured backdrop quad with full-range UVs for the `Objects/Univers*` lane."
@@ -3006,6 +3011,26 @@
       "description": "Stripped release-build variadic debug reporter; it ignores every caller-owned argument and returns zero."
     },
     {
+      "address": "0x449c10",
+      "name": "initialize_global_font3d_bods_thunk",
+      "description": "CRT constructor-table thunk that tail-forwards to the fixed-array initializer for g_font3d_bods."
+    },
+    {
+      "address": "0x449c20",
+      "name": "initialize_global_font3d_bods",
+      "description": "Runs the BodBase constructor over all 128 entries of the global 3D-font BOD pool at a 0x38-byte stride."
+    },
+    {
+      "address": "0x449c40",
+      "name": "initialize_global_font_queue_colors_thunk",
+      "description": "CRT constructor-table thunk that tail-forwards to the FontQueueEntry color-subobject initializer."
+    },
+    {
+      "address": "0x449c50",
+      "name": "initialize_global_font_queue_colors",
+      "description": "Runs the folded trivial Color4f constructor over the +0x6c color member of all 1024 global font-queue entries at a 0x84-byte stride."
+    },
+    {
       "address": "0x449c70",
       "name": "initialize_font_wave_state",
       "description": "Seeds the shared sine-wave text animation phases and per-tick phase increments that `draw_font_text_instance` consumes for wobble text."
@@ -3473,6 +3498,26 @@
       "address": "0x44de30",
       "name": "stop_warning_sample_handle",
       "description": "Warning-system wrapper that stops one live warning-sample handle through the shared registered-sample backend."
+    },
+    {
+      "address": "0x44de40",
+      "name": "initialize_global_sprite_pool_colors_thunk",
+      "description": "CRT constructor-table thunk that tail-forwards to the SpriteManager pool color-subobject initializer."
+    },
+    {
+      "address": "0x44de50",
+      "name": "initialize_global_sprite_pool_colors",
+      "description": "Runs the folded trivial Color4f constructor over the +0x2c color member of all 3000 sprites embedded in the global SpriteManager at a 0xb4-byte stride."
+    },
+    {
+      "address": "0x44de70",
+      "name": "initialize_global_sprite_sentinel_color_thunk",
+      "description": "CRT constructor-table thunk that tail-forwards to initialization of the global sentinel Sprite's color subobject."
+    },
+    {
+      "address": "0x44de80",
+      "name": "initialize_global_sprite_sentinel_color",
+      "description": "Runs the folded trivial Color4f constructor for the +0x2c color member of the standalone global sprite-allocation sentinel."
     },
     {
       "address": "0x44de90",

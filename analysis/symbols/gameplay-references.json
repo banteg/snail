@@ -4867,6 +4867,7 @@
         "data_814cb0",
         "unk_814CB0"
       ],
+      "size": "0xb4",
       "description": "Sentinel sprite returned when allocation fails; kill_sprite treats this address as a no-op."
     }
   ]

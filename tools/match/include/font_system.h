@@ -4,6 +4,10 @@
 #include "main_loop_state.h"
 #include "sprite.h"
 
+enum {
+    FONT_QUEUE_CAPACITY = 1024,
+};
+
 struct FontSheet {
     int slot_count;             // +0x000
     TextureRef* texture_ref_a;  // +0x004
@@ -62,7 +66,7 @@ typedef char FontQueueEntry_must_be_0x84[
     (sizeof(FontQueueEntry) == 0x84) ? 1 : -1];
 
 extern FontSheet g_font_sheets[];        // data_7772f8
-extern FontQueueEntry g_font_queue[];    // data_7544e8
+extern FontQueueEntry g_font_queue[FONT_QUEUE_CAPACITY]; // data_7544e8
 extern int g_registered_font_count;       // data_777b20
 extern int g_font_queue_count;           // data_777b24
 extern char g_font_text_buffer[];         // data_753ce8

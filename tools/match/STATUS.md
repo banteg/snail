@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**561/735** mapped gameplay functions matched, **735/735** mapped gameplay functions have a scratch, **90305/325557** bytes (**27.74%**) are proof-grade, and overall fuzzy is **63.51%**.
+**570/744** mapped gameplay functions matched, **744/744** mapped gameplay functions have a scratch, **90312/325488** bytes (**27.75%**) are proof-grade, and overall fuzzy is **63.53%**.
 
-## Proof Grade (561)
+## Proof Grade (570)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -203,7 +203,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_main_menu | 0x419e00 | 326 | 68/68 | 100.00% | 68/68 | 16 ok |  |
 | ✅ | initialize_duplicate_vertices | 0x419f50 | 39 | 13/13 | 100.00% | 13/13 | 2 ok |  |
 | ✅ | clean_duplicate_vertices | 0x419f80 | 70 | 33/33 | 100.00% | 33/33 | - |  |
-| ✅ | sort_object_faces_by_texture_group | 0x419fd0 | 220 | 75/75 | 100.00% | 75/75 | - |  |
+| ✅ | sort_object_faces_by_texture_group | 0x419fd0 | 203 | 75/75 | 100.00% | 75/75 | - |  |
+| ✅ | disable_object_rendering | 0x41a0a0 | 12 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_textured_backdrop_quad | 0x41a0b0 | 181 | 57/57 | 100.00% | 57/57 | 6 ok |  |
 | ✅ | raise_backdrop_quad_edge_pair | 0x41a170 | 66 | 19/19 | 100.00% | 19/19 | 4 ok |  |
 | ✅ | initialize_backdrop_slice_quad | 0x41a1c0 | 196 | 61/61 | 100.00% | 61/61 | 7 ok |  |
@@ -462,7 +463,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | resume_audio_backend_if_paused | 0x449ba0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | 7/7 | - |  |
-| ✅ | debug_report_stub | 0x449c00 | 111 | 2/2 | 100.00% | 2/2 | - |  |
+| ✅ | debug_report_stub | 0x449c00 | 3 | 2/2 | 100.00% | 2/2 | - |  |
+| ✅ | initialize_global_font3d_bods_thunk | 0x449c10 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_font3d_bods | 0x449c20 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_global_font_queue_colors_thunk | 0x449c40 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_font_queue_colors | 0x449c50 | 31 | 12/12 | 100.00% | 12/12 | 2 ok |  |
 | ✅ | initialize_font_wave_state | 0x449c70 | 41 | 5/5 | 100.00% | 5/5 | 4 ok |  |
 | ✅ | update_font_wave_state | 0x449ca0 | 121 | 25/25 | 100.00% | 25/25 | 17 ok |  |
 | ✅ | font_slot_index_for_char | 0x449d20 | 358 | 145/145 | 100.00% | 145/145 | - |  |
@@ -548,6 +553,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_sound_effect_scaled | 0x44de00 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | play_warning_sample_backend | 0x44de20 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
 | ✅ | stop_warning_sample_handle | 0x44de30 | 14 | 5/5 | 100.00% | 5/5 | 1 ok |  |
+| ✅ | initialize_global_sprite_pool_colors_thunk | 0x44de40 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_sprite_pool_colors | 0x44de50 | 31 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_global_sprite_sentinel_color_thunk | 0x44de70 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_sprite_sentinel_color | 0x44de80 | 10 | 2/2 | 100.00% | 2/2 | 2 ok |  |
 | ✅ | initialize_sprite | 0x44de90 | 155 | 33/33 | 100.00% | 33/33 | 1 ok |  |
 | ✅ | update_sprite | 0x44df30 | 434 | 125/125 | 100.00% | 125/125 | 10 ok |  |
 | ✅ | register_sprite_texture | 0x44e0f0 | 109 | 35/35 | 100.00% | 35/35 | 6 ok |  |
