@@ -10,8 +10,10 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
+    apply_struct_and_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    current_prototypes,
     emit_summary,
     run_bn,
     struct_exists,
@@ -19,7 +21,7 @@ from _narrow_sync import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 PRESENTATION_SYMBOL_UPDATES = (
     ("0x4086d0", "initialize_player_presentation_controller"),
@@ -176,25 +178,18 @@ REQUIRED_HEADER_STRUCTS = (
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
-    "SubSpeedUp",
-    "SubLazerManager",
     "SubTracks",
-    "SlugPool",
     "SlugVoiceManager",
-    "TrackHealthPickup",
     "TimeTrial",
     "SnailVisual",
     "BodNode",
     "BodBase",
     "Banner",
-    "BannerPool",
     "Vapour",
     "JetPack",
     "RenderableBod",
     "FringeObject",
     "FringeManager",
-    "GarbageHazardPool",
-    "RingOrSpecialEffectPool",
     "SMTracks",
     "SmtrackHeightfieldAnimator",
     "TrackRowCell",
@@ -342,15 +337,9 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x355d5c", "unknown_bod_355d5c", "BodBase"),
     ("0x355d94", "active_level_score", "int32_t"),
     ("0x355d98", "active_level_timer", "Time"),
-    ("0x355db0", "speedup_pickup", "SubSpeedUp"),
-    ("0x355e64", "jetpack_pickup", "JetPack"),
-    ("0x356000", "health_pickups", "TrackHealthPickup[0x8]"),
-    ("0x3563a0", "slug_hazards", "SlugPool"),
-    ("0x356b00", "sub_lazers", "SubLazerManager"),
-    ("0x3578c0", "salt_hazards", "SaltManager"),
-    ("0x359080", "banners", "BannerPool"),
-    ("0x359140", "garbage_hazards", "GarbageHazardPool"),
-    ("0x35b78c", "ring_effects", "RingOrSpecialEffectPool"),
+    # The speedup, jetpack, health, slug, lazer, salt, banner, garbage, and
+    # ring pools are owned by their newer canonical replay lanes. Do not
+    # reinstall the historical presentation-header aliases here.
     ("0x35bb7c", "slug_voice_manager", "SlugVoiceManager"),
     ("0x35bb88", "top_score_widget", "FrontendWidget*"),
     ("0x35bb8c", "bottom_score_widget", "FrontendWidget*"),
@@ -465,14 +454,6 @@ PATH_FIELD_UPDATES = (
     ("0x9c", "has_entry_mesh_transition", "uint8_t"),
     ("0xa0", "entry_transition_strip_mesh", "Object*"),
     ("0xa4", "entry_base_strip_mesh", "Object*"),
-)
-
-SALT_HAZARD_FIELD_UPDATES = (
-    ("0x80", "state", "int32_t"),
-    ("0x88", "owner_game", "SubgameRuntime*"),
-    ("0x8c", "fade_alpha", "float"),
-    ("0x90", "spawn_velocity_y", "float"),
-    ("0x94", "collision_armed", "uint8_t"),
 )
 
 JET_PARTICLE_SLOT_FIELD_UPDATES = (
@@ -650,10 +631,6 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "compute_kind42_attachment_transform",
         "void __thiscall compute_kind42_attachment_transform(Path* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle)",
-    ),
-    (
-        "get_track_runtime_cell_at_world_z",
-        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
     ),
     (
         "set_weapon_animation",
@@ -897,12 +874,68 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ("update_invincible_shell", "void __thiscall update_invincible_shell(Invincible* invincible)"),
 )
 
+# The full SubgameRuntime field map above is the canonical owner view consumed
+# by these lifecycle functions. These two prototypes have stable receiver
+# overrides in the live database and are safe to replay with the fields.
+CORE_SUBGAME_PROTO_UPDATES = (
+    ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
+    (
+        "complete_subgame",
+        "void __thiscall complete_subgame(SubgameRuntime* game, uint8_t completed)",
+    ),
+)
+
+# These five lifecycle receivers are already SubgameRuntime methods in the
+# exact/working matching sources and in the cross-port cRSubGame symbol
+# evidence. The exact runtime-row lookup has the same owner proof through the
+# canonical array. Older BN databases pin a separate user-defined Game*
+# parameter variable on all six. Both the previewed prototype setter and local
+# retype API reject the owner-only correction, so report the drift instead of
+# claiming a mutation that analysis immediately restores. Preserve BN's
+# inferred calling convention here; the ownership pointer is the only intended
+# future change.
+DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
+    ("initialize_subgame", "void __fastcall initialize_subgame(SubgameRuntime* game)"),
+    (
+        "build_subgame_level",
+        "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index)",
+    ),
+    ("destroy_subgame", "void __fastcall destroy_subgame(SubgameRuntime* game)"),
+    ("update_subgame", "void __fastcall update_subgame(SubgameRuntime* game)"),
+    ("remove_subgame_bods", "void __fastcall remove_subgame_bods(SubgameRuntime* game)"),
+    (
+        "get_track_runtime_cell_at_world_z",
+        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
+    ),
+)
+
+
+def report_deferred_subgame_owner_prototypes(*, target: str) -> list[dict[str, object]]:
+    observed_prototypes = current_prototypes(
+        REPO_ROOT,
+        target=target,
+        identifiers=(
+            identifier for identifier, _prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
+        ),
+    )
+    return [
+        {
+            "op": "proto_owner_deferred",
+            "status": "deferred",
+            "reason": "existing user-defined Game* parameter is pinned by Binary Ninja",
+            "identifier": identifier,
+            "desired_prototype": prototype,
+            "observed_prototype": observed_prototypes.get(identifier),
+        }
+        for identifier, prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
+    ]
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Apply the narrow player-presentation type slice to a Binary Ninja target "
-            "and replay the proven Player field overlays."
+            "Apply the authoritative path/presentation ownership slice to a Binary Ninja "
+            "target and replay the proven Player and SubgameRuntime field overlays."
         )
     )
     parser.add_argument(
@@ -914,7 +947,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Path to the narrow Binary Ninja type-import header.",
+        help="Path to the authoritative ownership type-import header.",
     )
     parser.add_argument(
         "--golb-only",
@@ -974,149 +1007,35 @@ def main() -> int:
 
     operations.append(ensure_sub_loc_alias(target=args.target))
     operations.extend(
-        apply_struct_field_updates(
+        apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="SubgameRuntime",
-            updates=SUBGAME_RUNTIME_FIELD_UPDATES,
+            struct_updates=(
+                ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
+                ("Vapour", VAPOUR_FIELD_UPDATES),
+                ("JetPack", JETPACK_FIELD_UPDATES),
+                ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
+                ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
+                ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),
+                ("Path", PATH_FIELD_UPDATES),
+                ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
+                ("SubHover", SUB_HOVER_FIELD_UPDATES),
+                ("TipManager", TIP_MANAGER_FIELD_UPDATES),
+                ("Player", PLAYER_FIELD_UPDATES),
+                ("Snail", SNAIL_FIELD_UPDATES),
+                (
+                    "PresentationAnimationChannel",
+                    PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES,
+                ),
+                ("AnimManager", ANIM_MANAGER_FIELD_UPDATES),
+                ("Invincible", INVINCIBLE_FIELD_UPDATES),
+                ("CutScene", CUT_SCENE_FIELD_UPDATES),
+                ("SnailSkin", SNAIL_SKIN_FIELD_UPDATES),
+            ),
+            proto_updates=CORE_SUBGAME_PROTO_UPDATES,
         )
     )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Vapour",
-            updates=VAPOUR_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="JetPack",
-            updates=JETPACK_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="SnailVisual",
-            updates=SNAIL_VISUAL_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="TrackRowCell",
-            updates=TRACK_ROW_CELL_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="TrackAttachmentRuntimeRow",
-            updates=TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Path",
-            updates=PATH_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="SaltHazardSlot",
-            updates=SALT_HAZARD_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="JetParticleSlot",
-            updates=JET_PARTICLE_SLOT_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="SubHover",
-            updates=SUB_HOVER_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="TipManager",
-            updates=TIP_MANAGER_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Player",
-            updates=PLAYER_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Snail",
-            updates=SNAIL_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="PresentationAnimationChannel",
-            updates=PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="AnimManager",
-            updates=ANIM_MANAGER_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Invincible",
-            updates=INVINCIBLE_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="CutScene",
-            updates=CUT_SCENE_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="SnailSkin",
-            updates=SNAIL_SKIN_FIELD_UPDATES,
-        )
-    )
+    operations.extend(report_deferred_subgame_owner_prototypes(target=args.target))
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,

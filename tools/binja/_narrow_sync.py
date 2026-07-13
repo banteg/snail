@@ -22,6 +22,60 @@ DataVarUpdate = tuple[str, str]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 
 
+def _read_bn_spill(stdout: str, stderr: str) -> tuple[Path | None, object | None]:
+    spill_match = SPILL_PATH_RE.search(stdout) or SPILL_PATH_RE.search(stderr)
+    if spill_match is None:
+        return None, None
+
+    spill_path = Path(spill_match.group("path")).expanduser()
+    try:
+        return spill_path, json.loads(spill_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return spill_path, None
+
+
+def _summarize_bn_failure(payload: object) -> str:
+    if not isinstance(payload, dict):
+        return repr(payload)[:4000]
+
+    summary = {
+        key: payload[key]
+        for key in ("success", "preview", "committed", "message")
+        if key in payload
+    }
+    failure_keys = (
+        "op",
+        "status",
+        "function",
+        "identifier",
+        "address",
+        "struct_name",
+        "offset",
+        "field_name",
+        "before_prototype",
+        "expected_prototype",
+        "observed",
+        "message",
+        "error",
+    )
+    failures = []
+    results = payload.get("results")
+    if isinstance(results, list):
+        for entry in results:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("status") not in {"verification_failed", "failed", "error"} and not entry.get(
+                "error"
+            ):
+                continue
+            failures.append({key: entry[key] for key in failure_keys if key in entry})
+            if len(failures) == 10:
+                break
+    if failures:
+        summary["failures"] = failures
+    return json.dumps(summary, indent=2, sort_keys=True)
+
+
 def run_bn(repo_root: Path, *args: str) -> object:
     completed = subprocess.run(
         ["bn", *args],
@@ -30,17 +84,22 @@ def run_bn(repo_root: Path, *args: str) -> object:
         text=True,
         capture_output=True,
     )
-    if completed.returncode != 0:
-        raise RuntimeError(
-            f"bn {' '.join(args)} failed with exit code {completed.returncode}:\n{completed.stderr.strip()}"
-        )
-
     stdout = completed.stdout.strip()
     stderr = completed.stderr.strip()
-    spill_match = SPILL_PATH_RE.search(stdout) or SPILL_PATH_RE.search(stderr)
-    if spill_match is not None:
-        spill_path = Path(spill_match.group("path")).expanduser()
-        return json.loads(spill_path.read_text(encoding="utf-8"))
+    spill_path, spilled = _read_bn_spill(stdout, stderr)
+    if completed.returncode != 0:
+        if spilled is not None:
+            detail = f"details from {spill_path}:\n{_summarize_bn_failure(spilled)}"
+        else:
+            detail = stderr or stdout or "no diagnostic output"
+        raise RuntimeError(
+            f"bn {' '.join(args)} failed with exit code {completed.returncode}:\n{detail}"
+        )
+
+    if spill_path is not None:
+        if spilled is None:
+            raise RuntimeError(f"unable to read Binary Ninja spill payload from {spill_path}")
+        return spilled
     if not stdout:
         if not stderr:
             return {}
@@ -183,8 +242,13 @@ result = {{"applied": applied, "snapshot_saved": snapshot_saved}}
         "--code",
         code,
     )
+    observed_prototypes = current_prototypes(
+        repo_root,
+        target=target,
+        identifiers=(identifier for identifier, _prototype in update_list),
+    )
     for identifier, prototype in update_list:
-        observed = current_prototype(repo_root, target=target, identifier=identifier)
+        observed = observed_prototypes.get(identifier)
         if observed is None or normalize_prototype(
             observed, identifier=identifier
         ) != normalize_prototype(prototype, identifier=identifier):
@@ -211,8 +275,10 @@ def types_declare_missing_only(
     target: str,
     header_path: Path,
     replace_types: Iterable[str] = (),
+    include_types: Iterable[str] = (),
 ) -> dict[str, object]:
     replacement_names = tuple(replace_types)
+    included_names = tuple(include_types)
     preview = run_bn(
         repo_root,
         "types",
@@ -238,6 +304,7 @@ import binaryninja
 
 header_path = {json.dumps(str(header_path))}
 replacement_names = set({json.dumps(replacement_names)})
+included_names = set({json.dumps(included_names)})
 with open(header_path, "r", encoding="utf-8") as header_file:
     header = header_file.read()
 parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
@@ -251,10 +318,13 @@ if parsed is None or errors:
 
 candidates = []
 for parsed_type in parsed.types:
+    parsed_name = str(parsed_type.name)
+    if included_names and parsed_name not in included_names:
+        continue
     existing = bv.get_type_by_name(parsed_type.name)
     before_width = existing.width if existing is not None else None
     parsed_width = parsed_type.type.width
-    should_replace = str(parsed_type.name) in replacement_names
+    should_replace = parsed_name in replacement_names
     if parsed_width > 0 and (before_width is None or before_width == 0 or should_replace):
         candidates.append((parsed_type, before_width))
 
@@ -301,6 +371,7 @@ result = {{
         "op": "types_declare_missing_only",
         "header": str(header_path),
         "replace_types": replacement_names,
+        "include_types": included_names,
         "preview": {
             "success": preview.get("success"),
             "message": preview.get("message"),
@@ -340,6 +411,37 @@ def current_struct_size(repo_root: Path, *, target: str, struct_name: str) -> in
     return parse_struct_layout_size(layout)
 
 
+def current_type_widths(
+    repo_root: Path, *, target: str, type_names: Iterable[str]
+) -> dict[str, int | None]:
+    names = tuple(type_names)
+    code = f"""
+names = {json.dumps(names)}
+result = {{}}
+for name in names:
+    current = bv.get_type_by_name(name)
+    result[name] = current.width if current is not None else None
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        return {name: None for name in names}
+    return {
+        name: value if isinstance(value := payload.get(name), int) else None
+        for name in names
+    }
+
+
 def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
     # Binary Ninja reports a forward declaration as a zero-sized struct. It is
     # not sufficient for replay: treating it as present causes the authoritative
@@ -355,24 +457,37 @@ def types_declare_if_missing(
     header_path: Path,
     required_structs: Iterable[str],
 ) -> dict[str, object]:
-    missing = [
-        struct_name
-        for struct_name in required_structs
-        if not struct_exists(repo_root, target=target, struct_name=struct_name)
-    ]
+    required = tuple(required_structs)
+    widths = current_type_widths(repo_root, target=target, type_names=required)
+    missing = [name for name in required if not widths.get(name)]
     if not missing:
         return {
             "op": "types_declare",
             "status": "skipped",
             "reason": "required structs already present",
             "header": str(header_path),
-            "required_structs": tuple(required_structs),
+            "required_structs": required,
         }
     result = types_declare_missing_only(
         repo_root,
         target=target,
         header_path=header_path,
+        include_types=missing,
     )
+    response = result.get("result")
+    payload = response.get("result") if isinstance(response, dict) else None
+    applied = payload.get("applied") if isinstance(payload, dict) else None
+    applied_names = {
+        entry.get("name")
+        for entry in applied or ()
+        if isinstance(entry, dict) and entry.get("verified") is True
+    }
+    unresolved = [name for name in missing if name not in applied_names]
+    if unresolved:
+        raise RuntimeError(
+            f"{header_path} does not provide complete definitions for: "
+            f"{', '.join(unresolved)}"
+        )
     result["missing_structs"] = tuple(missing)
     return result
 
@@ -380,6 +495,11 @@ def types_declare_if_missing(
 def normalize_type_name(type_name: str) -> str:
     normalized = re.sub(r"\b(?:struct|enum)\s+", "", type_name)
     normalized = re.sub(r"\b([A-Za-z_][A-Za-z0-9_:]*)\s+const\s*\*", r"const \1*", normalized)
+    normalized = re.sub(
+        r"\[(0x[0-9a-fA-F]+|\d+)\]",
+        lambda match: f"[{int(match.group(1), 0)}]",
+        normalized,
+    )
     return normalized.replace(" ", "")
 
 
@@ -428,6 +548,54 @@ def current_struct_fields(repo_root: Path, *, target: str, struct_name: str) -> 
     return fields
 
 
+def current_struct_fields_batch(
+    repo_root: Path, *, target: str, struct_names: Iterable[str]
+) -> dict[str, dict[int, tuple[str, str]]]:
+    names = tuple(struct_names)
+    code = f"""
+names = {json.dumps(names)}
+result = {{}}
+for name in names:
+    current = bv.get_type_by_name(name)
+    if current is None or not hasattr(current, "members"):
+        result[name] = None
+        continue
+    result[name] = [
+        {{"offset": member.offset, "name": member.name, "type": str(member.type)}}
+        for member in current.members
+    ]
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        raise RuntimeError("Binary Ninja returned no batched struct layouts")
+
+    layouts: dict[str, dict[int, tuple[str, str]]] = {}
+    for name in names:
+        members = payload.get(name)
+        if not isinstance(members, list):
+            raise RuntimeError(f"Type is not a struct-like type: {name}")
+        layouts[name] = {
+            entry["offset"]: (entry["name"], normalize_type_name(entry["type"]))
+            for entry in members
+            if isinstance(entry, dict)
+            and isinstance(entry.get("offset"), int)
+            and isinstance(entry.get("name"), str)
+            and isinstance(entry.get("type"), str)
+        }
+    return layouts
+
+
 def current_prototype(repo_root: Path, *, target: str, identifier: str) -> str | None:
     result = run_bn(
         repo_root,
@@ -444,6 +612,45 @@ def current_prototype(repo_root: Path, *, target: str, identifier: str) -> str |
         if isinstance(prototype, str):
             return prototype
     return None
+
+
+def current_prototypes(
+    repo_root: Path, *, target: str, identifiers: Iterable[str]
+) -> dict[str, str | None]:
+    names = tuple(identifiers)
+    code = f"""
+identifiers = {json.dumps(names)}
+result = {{}}
+for identifier in identifiers:
+    functions = []
+    try:
+        address = int(identifier, 0)
+    except ValueError:
+        functions = list(bv.get_functions_by_name(identifier))
+    else:
+        function = bv.get_function_at(address)
+        if function is not None:
+            functions = [function]
+    result[identifier] = str(functions[0].type) if len(functions) == 1 else None
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        return {identifier: None for identifier in names}
+    return {
+        identifier: value if isinstance(value := payload.get(identifier), str) else None
+        for identifier in names
+    }
 
 
 def apply_direct_proto_update(
@@ -566,9 +773,15 @@ def apply_proto_updates(
     target: str,
     updates: Iterable[ProtoUpdate],
 ) -> list[dict[str, object]]:
+    update_list = list(updates)
     operations: list[dict[str, object]] = []
-    for identifier, prototype in updates:
-        existing = current_prototype(repo_root, target=target, identifier=identifier)
+    existing_prototypes = current_prototypes(
+        repo_root,
+        target=target,
+        identifiers=(identifier for identifier, _prototype in update_list),
+    )
+    for identifier, prototype in update_list:
+        existing = existing_prototypes.get(identifier)
         existing_normalized = (
             normalize_prototype(existing, identifier=identifier) if existing is not None else None
         )
@@ -611,11 +824,20 @@ def apply_struct_and_proto_updates(
     struct_updates: Iterable[StructUpdateGroup],
     proto_updates: Iterable[ProtoUpdate],
 ) -> list[dict[str, object]]:
+    struct_update_list = [
+        (struct_name, tuple(updates)) for struct_name, updates in struct_updates
+    ]
+    proto_update_list = list(proto_updates)
     batch_ops: list[dict[str, object]] = []
     skipped: list[dict[str, object]] = []
 
-    for struct_name, updates in struct_updates:
-        fields = current_struct_fields(repo_root, target=target, struct_name=struct_name)
+    existing_struct_fields = current_struct_fields_batch(
+        repo_root,
+        target=target,
+        struct_names=(struct_name for struct_name, _updates in struct_update_list),
+    )
+    for struct_name, updates in struct_update_list:
+        fields = existing_struct_fields[struct_name]
         for offset, name, field_type in updates:
             existing = fields.get(offset_to_int(offset))
             if existing == (name, normalize_type_name(field_type)):
@@ -641,8 +863,13 @@ def apply_struct_and_proto_updates(
                 }
             )
 
-    for identifier, prototype in proto_updates:
-        existing = current_prototype(repo_root, target=target, identifier=identifier)
+    existing_prototypes = current_prototypes(
+        repo_root,
+        target=target,
+        identifiers=(identifier for identifier, _prototype in proto_update_list),
+    )
+    for identifier, prototype in proto_update_list:
+        existing = existing_prototypes.get(identifier)
         existing_normalized = (
             normalize_prototype(existing, identifier=identifier) if existing is not None else None
         )
@@ -718,6 +945,45 @@ def apply_struct_and_proto_updates(
     ]
 
 
+def current_symbol_names(
+    repo_root: Path, *, target: str, identifiers: Iterable[str]
+) -> dict[str, str | None]:
+    names = tuple(identifiers)
+    code = f"""
+identifiers = {json.dumps(names)}
+result = {{}}
+for identifier in identifiers:
+    symbols = []
+    try:
+        address = int(identifier, 0)
+    except ValueError:
+        symbols = list(bv.get_symbols_by_name(identifier))
+    else:
+        symbol = bv.get_symbol_at(address)
+        if symbol is not None:
+            symbols = [symbol]
+    result[identifier] = symbols[0].name if len(symbols) == 1 else None
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        return {identifier: None for identifier in names}
+    return {
+        identifier: value if isinstance(value := payload.get(identifier), str) else None
+        for identifier in names
+    }
+
+
 def apply_symbol_updates(
     repo_root: Path,
     *,
@@ -725,8 +991,26 @@ def apply_symbol_updates(
     updates: Iterable[SymbolUpdate],
     kind: str = "auto",
 ) -> list[dict[str, object]]:
+    update_list = list(updates)
     operations: list[dict[str, object]] = []
-    for identifier, name in updates:
+    existing_names = current_symbol_names(
+        repo_root,
+        target=target,
+        identifiers=(identifier for identifier, _name in update_list),
+    )
+    for identifier, name in update_list:
+        if existing_names.get(identifier) == name:
+            operations.append(
+                {
+                    "op": "symbol_rename",
+                    "status": "skipped",
+                    "reason": "already current",
+                    "identifier": identifier,
+                    "name": name,
+                    "kind": kind,
+                }
+            )
+            continue
         command = [
             "symbol",
             "rename",
@@ -766,13 +1050,17 @@ for address_text, type_text in updates:
     parsed_type, _ = bv.parse_type_string(type_text)
     before = bv.get_data_var_at(address)
     before_type = str(before.type) if before is not None else None
-    bv.define_user_data_var(address, parsed_type)
+    requested_type = str(parsed_type)
+    changed = before_type != requested_type
+    if changed:
+        bv.define_user_data_var(address, parsed_type)
     after = bv.get_data_var_at(address)
     out.append({{
         "address": hex(address),
         "requested_type": type_text,
         "before_type": before_type,
         "after_type": str(after.type) if after is not None else None,
+        "changed": changed,
     }})
 result = out
 """
@@ -787,6 +1075,8 @@ result = out
             "type": entry.get("requested_type"),
             "before_type": entry.get("before_type"),
             "after_type": entry.get("after_type"),
+            "status": "verified" if entry.get("changed") else "skipped",
+            "reason": None if entry.get("changed") else "already current",
         }
         for entry in payload
         if isinstance(entry, dict)

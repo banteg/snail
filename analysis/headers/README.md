@@ -87,7 +87,7 @@ intentional.
 - `uv run python tools/binja/sync_frame_renderer_types.py`
 - `bn_input_state_types.h`
 - `uv run python tools/binja/sync_input_state_types.py`
-- `bn_player_presentation_types.h`
+- `path_template_types.h`
 - `uv run python tools/binja/sync_path_template_types.py`
 - `bn_selected_level_record_types.h`
 - `uv run python tools/binja/sync_selected_level_record_types.py`
@@ -108,10 +108,20 @@ intentional.
 - `star_manager_types.h`
 - `uv run python tools/binja/sync_star_manager_types.py`
 
-The presentation BN sync lane intentionally replays a narrow camera/render slice:
+The presentation BN sync lane selectively replays the authoritative camera/render slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
 - the dependent `SnailVisual` / `PathTemplate` fields that keep those callers from falling back to raw offsets again
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
+
+It also retains the complete canonical `SubgameRuntime` field map accumulated
+by the path, player, hazard, landscape, and lifecycle slices. The stable
+`reset_subgame` and `complete_subgame` receiver ABIs are replayed with that map.
+Five older functions still carry a pinned user-defined `Game*` parameter in BN;
+the sync reports those owner-only corrections as deferred because both the
+prototype and local-retype APIs restore the old tag. Their exact/working match
+sources and cross-port `cRSubGame` symbols remain the ownership authority. The
+same reporting guard covers `get_track_runtime_cell_at_world_z`, whose exact
+receiver ownership is pinned by the canonical `runtime_rows` array.
 
 For projectile-only ownership work, use `uv run python
 tools/binja/sync_path_template_types.py --golb-only`. It declares just the
