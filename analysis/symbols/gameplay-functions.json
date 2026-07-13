@@ -2682,9 +2682,19 @@
       "description": "Exact `SubgameRuntime` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
     },
     {
+      "address": "0x443860",
+      "name": "initialize_parcel_set_bucket_pool_thunk",
+      "description": "CRT startup thunk for `initialize_parcel_set_bucket_pool`; `.CRT$XCU` entry 0x4a1058 points here and the function tail-jumps directly to the recovered parcel-set bucket constructor."
+    },
+    {
       "address": "0x443870",
       "name": "initialize_parcel_set_bucket_pool",
       "description": "Initializes the 0x800-entry positive-count parcel-set bucket pool at `data_6487e8`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` fills it from authored parcel requests."
+    },
+    {
+      "address": "0x4438a0",
+      "name": "initialize_zero_parcel_bucket_pool_thunk",
+      "description": "CRT startup thunk for `initialize_zero_parcel_bucket_pool`; `.CRT$XCU` entry 0x4a105c points here and the function tail-jumps directly to the recovered zero-parcel bucket constructor."
     },
     {
       "address": "0x4438b0",

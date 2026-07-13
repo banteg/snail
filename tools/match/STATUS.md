@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**606/775** mapped gameplay functions matched, **775/775** mapped gameplay functions have a scratch, **92561/325224** bytes (**28.46%**) are proof-grade, and overall fuzzy is **70.80%**.
+**608/777** mapped gameplay functions matched, **777/777** mapped gameplay functions have a scratch, **92571/325203** bytes (**28.47%**) are proof-grade, and overall fuzzy is **70.81%**.
 
-## Proof Grade (606)
+## Proof Grade (608)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -418,7 +418,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_track_parcel_slots | 0x443160 | 38 | 13/13 | 100.00% | 13/13 | 1 ok |  |
 | ✅ | allocate_track_parcel_slot | 0x443190 | 54 | 18/18 | 100.00% | 18/18 | 2 ok |  |
 | ✅ | spawn_track_parcel | 0x443730 | 292 | 96/96 | 100.00% | 96/96 | 5 ok |  |
+| ✅ | initialize_parcel_set_bucket_pool_thunk | 0x443860 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
 | ✅ | initialize_parcel_set_bucket_pool | 0x443870 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
+| ✅ | initialize_zero_parcel_bucket_pool_thunk | 0x4438a0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | project_position_onto_track_attachment | 0x4444b0 | 333 | 106/106 | 100.00% | 106/106 | 5 ok |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 | - |  |
