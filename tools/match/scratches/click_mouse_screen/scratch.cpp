@@ -1,13 +1,13 @@
 // click_mouse_screen @ 0x44c060 (cdecl)
 
 #include "game_root.h"
+#include "main_loop_state.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) int __stdcall SetCursorPos(int x, int y);
 
 extern GameRoot* g_game; // data_4df904
-extern unsigned char g_window_deactivated; // data_4b7654
 extern int g_mouse_screen_x[]; // data_777d7c
 extern int g_mouse_screen_y[]; // data_777d74
 extern float g_mouse_live_x[]; // data_777d58

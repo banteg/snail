@@ -4,6 +4,7 @@
 #include "game_root.h"
 #include "sub_high_score.h"
 #include "loading_bar.h"
+#include "main_loop_state.h"
 #include "runtime_config.h"
 #include "audio_system.h"
 #include "win32_window_state.h"
@@ -19,20 +20,8 @@ extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
 extern char* g_game_base;                    // data_4df904
-extern unsigned char g_main_loop_exit_requested;  // g_main_loop_exit_requested
-extern unsigned char g_game_initialization_pending;  // g_game_initialization_pending
-extern unsigned char data_4b7759;
-extern unsigned char data_4b7758;
-extern unsigned char g_window_deactivated;   // data_4b7654
-extern unsigned char g_render_queue_active;  // data_4b7236
 extern float g_authored_view_width;          // data_4df85c
 extern float g_authored_view_height;         // data_4b7760
-extern float g_frame_time_accumulator;  // g_frame_time_accumulator
-extern float g_previous_frame_timestamp_seconds; // data_4dfb00
-extern float g_current_frame_timestamp_seconds;  // g_current_frame_timestamp_seconds
-extern float g_current_frame_update_steps;  // g_current_frame_update_steps
-extern float g_mean_update_steps_per_frame;  // g_mean_update_steps_per_frame
-extern float g_main_loop_frame_count;  // g_main_loop_frame_count
 
 extern int data_4df858;
 extern int data_4b775c;
@@ -147,17 +136,17 @@ int __stdcall game_startup_and_main_loop(
             load_registered_texture_refs(1);
             ((GameRoot*)g_game_base)->initialize_game_last();
             g_game_initialization_pending = 0;
-            data_4b7759 = 0;
+            g_frame_render_requested = 0;
             g_loading_bar.destroy_loading_screen();
             ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_in();
             show_and_focus_game_window();
         }
 
-        if (data_4b7759 != 0) {
+        if (g_frame_render_requested != 0) {
             render_game_frame_scene();
             if (*(int*)(g_game_base + 0x56c) == 0)
                 present_backbuffer();
-            data_4b7759 = 0;
+            g_frame_render_requested = 0;
         }
 
         do {
@@ -171,11 +160,11 @@ int __stdcall game_startup_and_main_loop(
         if (g_frame_time_accumulator > 0.41666666f)
             g_frame_time_accumulator = 0.41666666f;
 
-        data_4b7758 = 0;
+        g_fixed_update_abort_requested = 0;
         g_current_frame_update_steps = 0.0f;
 
         while (g_frame_time_accumulator > 0.0f) {
-            if (data_4b7758 != 0 || quit_requested != 0)
+            if (g_fixed_update_abort_requested != 0 || quit_requested != 0)
                 break;
 
             g_current_frame_update_steps = g_current_frame_update_steps + 1.0f;
@@ -210,7 +199,7 @@ update_game:
                         update_mouse(g_main_window);
                         update_font_wave_state();
                         int frame_result = ((GameRoot*)g_game_base)->run_frame_update();
-                        data_4b7759 = 1;
+                        g_frame_render_requested = 1;
                         if (frame_result == 1 || frame_result == 2 || frame_result == 3) {
                             quit_requested = 1;
                             break;
@@ -221,13 +210,13 @@ update_game:
             } else {
                 ClipCursor(0);
                 g_render_queue_active = 1;
-                data_4b7759 = 1;
+                g_frame_render_requested = 1;
                 if (g_runtime_config.fullscreen_enabled != 0)
                     sub_407490();
             }
         }
 
-        data_4b7758 = 0;
+        g_fixed_update_abort_requested = 0;
         float update_average_total = g_mean_update_steps_per_frame * g_main_loop_frame_count + g_current_frame_update_steps;
         g_main_loop_frame_count = g_main_loop_frame_count + 1.0f;
         g_mean_update_steps_per_frame = update_average_total / g_main_loop_frame_count;

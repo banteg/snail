@@ -2,6 +2,7 @@
 
 #include "audio_system.h"
 #include "display_mode_state.h"
+#include "main_loop_state.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int exit_code);
@@ -18,10 +19,8 @@ extern unsigned char g_left_mouse_button_latch[2];  // data_4b7764
 extern unsigned char g_left_mouse_button_state[2];  // data_4b7234
 extern unsigned char g_right_mouse_button_latch[2]; // data_4b7230
 extern unsigned char g_right_mouse_button_state[2]; // data_4b7640
-extern unsigned char g_window_deactivated;          // data_4b7654
 extern int g_mouse_wheel_delta[2];                  // data_4dfad0
 extern DisplayModeState g_display_mode_state;       // data_4df9e0
-extern float g_previous_frame_timestamp_seconds;    // data_4dfb00
 
 LRESULT __stdcall game_window_proc(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)

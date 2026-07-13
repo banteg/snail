@@ -138,3 +138,19 @@ its six existing structural mismatches unchanged.
 - Startup now uses the shared `AudioBackend` declaration for both stop and
   resume. The byte tested at `0x753c70` is therefore recovered as
   `g_audio_backend.is_paused` (`+0x18`), not a separate scratch-local global.
+
+2026-07-13 main-loop state ownership pass:
+
+- Binary Ninja xrefs show `0x4b7758` is confined to the startup/main-loop
+  function: it is reset before and after the fixed-update loop and tested beside
+  the local quit flag inside that loop. It is now
+  `g_fixed_update_abort_requested`; no writer that arms it is present in this
+  binary, so the name describes only the proven gate semantics.
+- The same xref pass shows `0x4b7759` is the loop's render-request latch. It is
+  set after each game update and by the inactive-window path, then consumed and
+  cleared around `render_game_frame_scene` / `present_backbuffer`. It is now
+  `g_frame_render_requested`.
+- Added `main_loop_state.h` for the process-owned flags and fixed-timestep
+  globals already shared by startup, window focus handling, render-queue
+  producers, and subgame input gating. This removes their accidental ownership
+  by individual scratch files and by `font_system.h`.

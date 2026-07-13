@@ -1,12 +1,12 @@
 // handle_game_window_deactivate @ 0x407440 (cdecl)
 
 #include "audio_system.h"
+#include "main_loop_state.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) void __stdcall ShowWindow(HWND window, int command);
 
-extern unsigned char g_window_deactivated; // data_4b7654
 extern int g_pending_window_deactivate;    // data_4df860
 
 char handle_game_window_deactivate()

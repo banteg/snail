@@ -13,6 +13,7 @@
 #include "subgame_runtime.h"
 #include "time_trial.h"
 #include "game_time.h"
+#include "main_loop_state.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "segment_cache.h"
@@ -43,7 +44,6 @@ struct RuntimeCellSlotBase {
 };
 
 extern char* g_game_base;
-extern unsigned char g_window_deactivated;
 extern char g_time_trial_string[];
 
 float random_float_below(float upper_bound, const char* tag);

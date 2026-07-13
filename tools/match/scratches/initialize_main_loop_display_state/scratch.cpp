@@ -1,15 +1,12 @@
 // initialize_main_loop_display_state @ 0x406d70 (cdecl)
 
 #include "display_mode_state.h"
+#include "main_loop_state.h"
 #include "transform_matrix.h"
 
 extern DisplayModeState g_display_mode_state; // data_4df9e0
-extern unsigned char g_window_deactivated; // data_4b7654
 extern int g_pending_window_deactivate; // data_4df860
 extern TransformMatrix g_object_texture_transform_matrix; // data_5031d8
-extern float g_mean_update_steps_per_frame; // data_4b7638
-extern float g_current_frame_update_steps; // data_4b763c
-extern float g_main_loop_frame_count; // data_4b7768
 
 void initialize_main_loop_display_state()
 {

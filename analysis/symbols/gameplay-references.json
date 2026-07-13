@@ -2693,6 +2693,26 @@
       "description": "Window deactivation latch set by activate/deactivate handling, read by click_mouse_screen and subgame update paths."
     },
     {
+      "address": "0x4b7758",
+      "name": "g_fixed_update_abort_requested",
+      "kind": "global",
+      "aliases": [
+        "data_4b7758"
+      ],
+      "size": "0x1",
+      "description": "Main-loop latch tested alongside the local quit flag to stop the remaining fixed updates for the current frame; reset before and after the fixed-update loop."
+    },
+    {
+      "address": "0x4b7759",
+      "name": "g_frame_render_requested",
+      "kind": "global",
+      "aliases": [
+        "data_4b7759"
+      ],
+      "size": "0x1",
+      "description": "Main-loop render request set after a game update or inactive-window pass, consumed and cleared by the next render/present pass."
+    },
+    {
       "address": "0x4b775c",
       "name": "g_current_display_height",
       "kind": "global",

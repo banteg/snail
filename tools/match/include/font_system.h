@@ -1,6 +1,7 @@
 #ifndef FONT_SYSTEM_H
 #define FONT_SYSTEM_H
 
+#include "main_loop_state.h"
 #include "sprite.h"
 
 struct FontSheet {
@@ -64,7 +65,6 @@ extern FontSheet g_font_sheets[];        // data_7772f8
 extern FontQueueEntry g_font_queue[];    // data_7544e8
 extern int g_registered_font_count;       // data_777b20
 extern int g_font_queue_count;           // data_777b24
-extern unsigned char g_render_queue_active; // data_4b7236
 extern char g_font_text_buffer[];         // data_753ce8
 extern char* g_font_text_cursor;          // data_7772f0
 extern float g_font_wave_phase_a;         // data_7772e8
