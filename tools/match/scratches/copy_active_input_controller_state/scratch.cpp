@@ -14,24 +14,24 @@ float* copy_active_input_controller_state(
     float* out_pointer_y)
 {
     if (slot_index == 0) {
-        *out_buttons = g_input_slot0_buttons[0];
-        *out_axis_x = g_input_slot0_axis_x[0];
-        *out_axis_y = g_input_slot0_axis_y[0];
-        *out_authored_x = g_input_slot0_authored_x[0];
-        *out_authored_y = g_input_slot0_authored_y[0];
-        *out_pointer_value = g_input_slot0_pointer_value[0];
-        *out_pointer_x = g_input_slot0_pointer_x[0];
-        *out_pointer_y = g_input_slot0_pointer_y[0];
+        *out_buttons = g_input_controller_slots[0].buttons;
+        *out_axis_x = g_input_controller_slots[0].axis_x;
+        *out_axis_y = g_input_controller_slots[0].axis_y;
+        *out_authored_x = g_input_controller_slots[0].authored_x;
+        *out_authored_y = g_input_controller_slots[0].authored_y;
+        *out_pointer_value = g_input_controller_slots[0].pointer_value;
+        *out_pointer_x = g_input_controller_slots[0].pointer_x;
+        *out_pointer_y = g_input_controller_slots[0].pointer_y;
         return out_pointer_value;
     } else {
-        *out_buttons = g_input_slot0_buttons[14];
-        *out_axis_x = g_input_slot0_axis_x[14];
-        *out_axis_y = g_input_slot0_axis_y[14];
-        *out_authored_x = g_input_slot0_authored_x[14];
-        *out_authored_y = g_input_slot0_authored_y[14];
-        *out_pointer_value = g_input_slot0_pointer_value[14];
-        *out_pointer_x = g_input_slot0_pointer_x[14];
-        *out_pointer_y = g_input_slot0_pointer_y[14];
+        *out_buttons = g_input_controller_slots[1].buttons;
+        *out_axis_x = g_input_controller_slots[1].axis_x;
+        *out_axis_y = g_input_controller_slots[1].axis_y;
+        *out_authored_x = g_input_controller_slots[1].authored_x;
+        *out_authored_y = g_input_controller_slots[1].authored_y;
+        *out_pointer_value = g_input_controller_slots[1].pointer_value;
+        *out_pointer_x = g_input_controller_slots[1].pointer_x;
+        *out_pointer_y = g_input_controller_slots[1].pointer_y;
     }
     return out_pointer_value;
 }

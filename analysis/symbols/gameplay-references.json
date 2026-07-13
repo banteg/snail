@@ -3633,10 +3633,11 @@
       "name": "g_input_slot0_axis_x",
       "kind": "global",
       "aliases": [
-        "data_50333c"
+        "data_50333c",
+        "g_input_controller_slots"
       ],
-      "size": "0x3c",
-      "description": "Input-controller X-axis lane array with slot 0 at this address and slot 1 at +0x38; written by controller updaters and read by copy_active_input_controller_state."
+      "size": "0x70",
+      "description": "Base of the two contiguous 0x38-byte InputControllerSlot records. The X-axis lane begins at +0x00 in each slot; controller updaters write the records and copy_active_input_controller_state reads slot 0."
     },
     {
       "address": "0x503340",
@@ -3720,12 +3721,13 @@
     },
     {
       "address": "0x5033b0",
-      "name": "g_input_controller_slots_end",
+      "name": "g_input_slot_axis_y_end",
       "kind": "offset",
       "aliases": [
-        "data_5033b0"
+        "data_5033b0",
+        "g_input_controller_slots_end"
       ],
-      "description": "One-past end sentinel for the two 0x38-byte input-controller slots reset by initialize_game_data_archive."
+      "description": "One-past axis-y cursor sentinel for the two 0x38-byte InputControllerSlot records reset by initialize_game_data_archive; it is four bytes beyond the complete array's one-past address."
     },
     {
       "address": "0x508890",

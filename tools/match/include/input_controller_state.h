@@ -17,7 +17,15 @@ struct InputControllerSlot {
 typedef char InputControllerSlot_must_be_0x38[
     (sizeof(InputControllerSlot) == 0x38) ? 1 : -1];
 
-// The globals are lane arrays: slot 1 is 14 dwords/floats after slot 0.
+enum {
+    INPUT_CONTROLLER_SLOT_COUNT = 2,
+};
+
+extern InputControllerSlot
+    g_input_controller_slots[INPUT_CONTROLLER_SLOT_COUNT]; // data_50333c
+
+// Field-address views used by functions that operate on one lane directly;
+// slot 1 is 14 dwords/floats after slot 0.
 extern float g_input_slot0_axis_x[];       // data_50333c
 extern float g_input_slot0_axis_y[];       // data_503340
 extern int g_input_slot0_buttons[];        // data_503344

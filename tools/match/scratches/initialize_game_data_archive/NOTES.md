@@ -3,18 +3,17 @@
 - Resets archive/input startup globals, the tracked allocation counters, the
   text-input repeat state, and the registered sound-sample count.
 - Loads `SnailMail.dat`, allocates the shared archive scratch pad and music
-  memory buffer, initializes the two controller slots to authored coordinates
-  `(640, 240)`, and samples the current clip cursor rectangle.
+  memory buffer, initializes the two controller slots to authored center
+  coordinates `(320, 240)`, and samples the current clip cursor rectangle.
 - `g_archive_startup_flag` (`0x53c7f4`) is only written here in the current
   map, so the name stays deliberately generic until another use explains it.
 - Current focused match: 94.74%, 48/47 candidate instructions. The controller
   reset loop is best expressed as a byte cursor seeded from
   `g_input_slot0_buttons - 4`, which lands on the native `axis_y` base without
   forcing an unrelated scalar global declaration.
-- `g_input_controller_slots_end` names the `0x5033b0` one-past sentinel for the
-  two 0x38-byte controller slots. The sentinel follows from the recovered lane
-  arrays (`slot 1 == slot 0 + 0x38`) and the native loop compare after the
-  second slot.
+- `g_input_slot_axis_y_end` names the `0x5033b0` one-past sentinel for the
+  loop's axis-y cursor over two 0x38-byte controller slots. The complete typed
+  array itself ends four bytes earlier at `0x5033ac`.
 - Remaining residual is source-shape scheduling: MSVC hoists the candidate
   cursor setup before the allocator-call stack cleanup as `mov eax,
   g_input_slot0_buttons; sub eax, 4`, while the native listing materializes the
@@ -51,3 +50,10 @@
   and music buffer. The Windows `0x53c7ec` allocation is therefore typed as
   the `RShellScratch` workspace rather than an archive payload address. This is
   codegen-neutral at the retained 94.74% baseline.
+- 2026-07-13 controller-owner closure: the reset loop proves two contiguous
+  `InputControllerSlot` records beginning at `0x50333c`, with a 0x38-byte
+  stride and a one-past end at `0x5033ac`. The shared header now exposes that
+  fixed array while retaining the field-address views used by lane-oriented
+  helpers. A direct typed-loop spelling makes VC6 choose the `buttons` lane as
+  its cursor and regresses to 82.47%; the retained axis-y cursor remains the
+  most faithful source shape without inventing dependencies.
