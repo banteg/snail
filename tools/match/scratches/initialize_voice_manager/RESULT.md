@@ -4,23 +4,24 @@
 
 | Metric | Final |
 |---|---:|
-| Match | **66.02%** |
+| Match | **88.68%** |
 | Target instructions | 269 |
-| Candidate instructions | 249 |
-| Common prefix | 4 / 269 |
-| Masked operands | 58 clean, 0 unresolved, 0 mismatched |
+| Candidate instructions | 270 |
+| Common prefix | 99 / 269 |
+| Masked operands | 62 clean, 0 unresolved, 0 mismatched |
 
-The first remaining mismatch is early register allocation:
+The first remaining mismatch is the whitespace-loop exit label, displaced by
+the candidate's one extra cursor-store instruction:
 
 ```text
-target[4]    xor ebx, ebx
-candidate[4] push edi
+target[99]    je L361
+candidate[99] je L362
 ```
 
-The native keeps `ebx` as an early zero register, uses `ebp` as the set index,
-and spills the voice-file cursor to the stack. The candidate keeps the archive
-base in `ebp`, uses `ebx` for the set index, and keeps the current voice-file
-line cursor in `esi`.
+The native increments the spilled parser cursor in place. The candidate uses
+`inc ecx` followed by a store back to the same slot. The remaining tail is
+register rotation and local scheduling; all calls, data references, strings,
+and the 16-entry set-name jump table now audit cleanly.
 
 ## Accepted Source Shape
 
@@ -34,6 +35,10 @@ line cursor in `esi`.
 - Uses a header-increment `for` loop for the 16-set sweep. Other loop-bound
   spellings compile equivalently after the improvement, while the original
   do-while spelling leaves the lower 61.78% shape.
+- Recovers one function-lifetime parser cursor and all 16 explicit voice-set
+  switch cases, moving the exact prefix from 4 to 99 instructions.
+- Content-audits target table `0x449260` against candidate `$L816`; all 16
+  function-relative destinations match exactly.
 
 ## Rejected Trials
 

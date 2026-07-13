@@ -1204,6 +1204,16 @@
       "description": "Compiler-emitted switch jump table that follows initialize_subgoldy_death immediately after the terminal return and padding byte."
     },
     {
+      "address": "0x449260",
+      "name": "initialize_voice_manager_set_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L816"
+      ],
+      "size": "0x40",
+      "description": "Compiler-emitted 16-entry voice-set name switch jump table used by initialize_voice_manager."
+    },
+    {
       "address": "0x449c00",
       "name": "debug_report_stub",
       "kind": "function",

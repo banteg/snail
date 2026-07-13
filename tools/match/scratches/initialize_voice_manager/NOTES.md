@@ -53,3 +53,17 @@ Source-shape details retained:
   `cRVoiceManager::{ReSet, Init, AI, Play}` and `gVoiceManager`. Its `Init`
   epilogue returns without establishing a value, independently confirming the
   recovered `void` contract.
+
+## 2026-07-13 voice-set table proof
+
+- The 16-entry Windows table at `0x449260` is now named
+  `initialize_voice_manager_set_jump_table`. Its destination offsets relative
+  to the function are `0x5a, 0x68, 0x76, 0x84, 0x92, 0x9d, 0xa8, 0xb3,
+  0xbe, 0xc9, 0xd4, 0xdf, 0xea, 0xf5, 0x100, 0x10b`.
+- COFF places candidate `$L816` at object `+0x380`; its 16 relocations resolve
+  to exactly the same function-relative offsets. Registering that bounded
+  alias converts the sole unresolved operand into a clean content-audited
+  jump-table reference.
+- Focused matching remains the honest 88.68% (`270/269`, prefix `99/269`), but
+  the proof audit improves from 61 clean plus one unresolved operand to 62
+  clean, zero unresolved, and zero mismatched operands.

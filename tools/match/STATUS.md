@@ -631,7 +631,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | copy_segment_definition_to_level_slot | 0x447300 | 379 | 125/125 | 85.60% | 74/125 | 5 ok |  |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 82.27% | 20/926 | 178 ok |  |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 83.12% | 16/154 | 25 ok |  |
-| 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 270/269 | 88.68% | 99/269 | 1 unresolved, 61 ok |  |
+| 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 270/269 | 88.68% | 99/269 | 62 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 89.39% | 3/65 | 17 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 92.54% | 2/66 | 19 ok |  |
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 87.14% | 3/69 | 2 mismatch, 18 ok |  |
