@@ -1640,6 +1640,16 @@
       "description": "Statically linked CRT _getcwd helper used by file error-reporting paths."
     },
     {
+      "address": "0x496a7b",
+      "name": "construct_game_runtime_eh_handler",
+      "kind": "function_alias",
+      "aliases": [
+        "$L6041"
+      ],
+      "size": "0xa",
+      "description": "Compiler-generated construct_game_runtime C++ frame-handler thunk. Candidate local label $L6041 has the same mov-EH-metadata and jump-to-__CxxFrameHandler body."
+    },
+    {
       "address": "0x4972b0",
       "name": "g_noop_runtime_callback_table",
       "kind": "vtable",

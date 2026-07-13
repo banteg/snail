@@ -22,7 +22,7 @@ it is not the shared cRBod constructor count printed on the preceding line.
 The `Size of cRFringeManager` ledger entry now comes from
 `sizeof(FringeManager)`. Its `7000 * sizeof(Fringe) + count` layout closes to
 the native `0x5fb44` total, and the constructor remains at its pinned 88.89%
-with the single compiler-local EH relocation unresolved.
+with every masked operand resolved.
 
 Current focused result after splitting the two adjacent helpers into their own
 manifest functions:
@@ -30,7 +30,7 @@ manifest functions:
 - match: 88.89%
 - target/candidate instructions: 268 / 299
 - prefix: 2 / 268
-- masked operands: 119 clean, 1 unresolved, 0 mismatched
+- masked operands: 120 clean, 0 unresolved, 0 mismatched
 
 The remaining broad shape gap is the compiler-generated setup around the root
 allocation. The native function has MSVC EH registration and batches the
@@ -362,7 +362,21 @@ Their exact extents form one contiguous chain through the existing
 `EnemyManager 0x1804`, and the unchanged `SubgameRuntime 0x1272838`, then
 reverted without changing the database.
 
-This is analysis ownership consolidation, not constructor source shaping.
-Focused output remains 88.89%, 299/268 candidate/target instructions, with
-119 clean masked operands and only the existing compiler-local EH relocation
-unresolved.
+This is analysis ownership consolidation, not constructor source shaping. At
+that point focused output remained 88.89%, 299/268 candidate/target
+instructions, with 119 clean masked operands and only the compiler-local EH
+relocation unresolved; the proof below closes that audit debt.
+
+## 2026-07-13 C++ frame-handler proof
+
+- Native `0x496a7b` and candidate `$L6041` are the same 10-byte compiler thunk:
+  `mov eax, <EH metadata>; jmp __CxxFrameHandler`.
+- The referenced 0x28-byte metadata records agree as well: both begin with
+  `0x19930520, 1`, relocate the unwind map at `+0x08`, retain zero try/IP maps,
+  and end with state `-1` plus the cleanup thunk at `+0x24`.
+- The reference manifest now records the bounded local-label function alias,
+  and the matcher permits that explicit alias without weakening its separate
+  content audit for local jump tables.
+- Focused instruction similarity remains the honest 88.89% (`299/268`, prefix
+  `2/268`), while the operand audit closes from 119 clean plus one unresolved
+  reference to 120 clean, zero unresolved, and zero mismatched.

@@ -313,6 +313,39 @@ def test_reference_symbol_manifest_rejects_duplicate_aliases(tmp_path: Path) -> 
         load_reference_symbol_manifest(manifest_path)
 
 
+def test_reference_symbol_manifest_allows_local_label_reuse_across_kinds(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "scoped local aliases",
+  "symbols": [
+    {
+      "address": "0x402000",
+      "name": "foo_jump_table",
+      "kind": "jump_table",
+      "aliases": ["$L6041"]
+    },
+    {
+      "address": "0x496a7b",
+      "name": "bar_eh_handler",
+      "kind": "function_alias",
+      "aliases": ["$L6041"]
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    manifest = load_reference_symbol_manifest(manifest_path)
+    assert [symbol.name for symbol in manifest.symbols] == [
+        "foo_jump_table",
+        "bar_eh_handler",
+    ]
+
+
 def test_reference_symbol_manifest_distinguishes_cpp_constructor_overloads(
     tmp_path: Path,
 ) -> None:
@@ -529,6 +562,31 @@ def test_extract_object_function_does_not_global_resolve_local_label_alias() -> 
     reference = function.relocation_references[0]
     assert reference.text == "sym:$L307"
     assert reference.key == "name:$L307"
+
+
+def test_extract_object_function_resolves_audited_local_function_alias() -> None:
+    code = bytes.fromhex("6800000000c3") + bytes.fromhex("b800000000c3")
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("$L6041", 6)], [(1, 1)]))
+    function = extract_object_function(
+        obj,
+        "foo",
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x496A7B,
+                    name="construct_game_runtime_eh_handler",
+                    kind="function_alias",
+                    aliases=("$L6041",),
+                    size=0xA,
+                ),
+            ),
+        ),
+    )
+    reference = function.relocation_references[0]
+    assert reference.text == "sym:$L6041"
+    assert reference.key == "ref:construct_game_runtime_eh_handler"
+    assert reference.explained
 
 
 def test_extract_object_function_preserves_reference_symbol_addends() -> None:

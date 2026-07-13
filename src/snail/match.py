@@ -115,7 +115,7 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
         raise ValueError("reference symbol manifest field 'symbols' must be a list")
 
     symbols: list[ReferenceSymbol] = []
-    seen_names: dict[str, str] = {}
+    seen_names: dict[str, dict[str, str]] = {}
     for index, raw_symbol in enumerate(raw_symbols):
         if not isinstance(raw_symbol, dict):
             raise ValueError(f"symbols[{index}] must be an object")
@@ -159,13 +159,24 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
             if not (raw_name.startswith("?") and "@" in raw_name):
                 checked_names.add(_canonical_symbol_name(raw_name))
             for checked_name in checked_names:
-                previous_symbol = seen_names.get(checked_name)
+                previous_symbols = seen_names.setdefault(checked_name, {})
+                previous_symbol = previous_symbols.get(kind)
                 if previous_symbol is not None and previous_symbol != name_value:
                     raise ValueError(
                         "duplicate reference symbol name or alias: "
                         f"{checked_name} ({previous_symbol}, {name_value})"
                     )
-                seen_names[checked_name] = name_value
+                if (
+                    not checked_name.startswith("$L")
+                    and previous_symbols
+                    and name_value not in previous_symbols.values()
+                ):
+                    previous_symbol = next(iter(previous_symbols.values()))
+                    raise ValueError(
+                        "duplicate reference symbol name or alias: "
+                        f"{checked_name} ({previous_symbol}, {name_value})"
+                    )
+                previous_symbols[kind] = name_value
         symbols.append(
             ReferenceSymbol(
                 address=address,
@@ -533,15 +544,15 @@ def _reference_symbol_by_name(
 
 def _reference_symbol_by_local_label(
     reference_manifest: ReferenceSymbolManifest | None,
-) -> dict[str, ReferenceSymbol]:
+) -> dict[str, tuple[ReferenceSymbol, ...]]:
     if reference_manifest is None:
         return {}
-    by_name: dict[str, ReferenceSymbol] = {}
+    by_name_lists: dict[str, list[ReferenceSymbol]] = {}
     for symbol in reference_manifest.symbols:
         for alias in symbol.aliases:
             if alias.startswith("$L"):
-                by_name[alias] = symbol
-    return by_name
+                by_name_lists.setdefault(alias, []).append(symbol)
+    return {name: tuple(symbols) for name, symbols in by_name_lists.items()}
 
 
 def _reference_key_by_name(
@@ -572,8 +583,13 @@ def _reference_symbol_for_symbol_name(
 def _reference_symbol_for_local_label(
     reference_manifest: ReferenceSymbolManifest | None,
     name: str,
+    *,
+    kind: str | None = None,
 ) -> ReferenceSymbol | None:
-    return _reference_symbol_by_local_label(reference_manifest).get(name)
+    candidates = _reference_symbol_by_local_label(reference_manifest).get(name, ())
+    if kind is not None:
+        candidates = tuple(symbol for symbol in candidates if symbol.kind == kind)
+    return candidates[0] if len(candidates) == 1 else None
 
 
 def _format_addend_suffix(addend: int) -> str:
@@ -662,6 +678,22 @@ def _resolve_object_relocation(
     reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> tuple[str, str | None, bool]:
     reference_symbol = _reference_symbol_for_symbol_name(reference_manifest, symbol.name)
+    if reference_symbol is None and symbol.name.startswith("$L"):
+        local_reference_symbol = _reference_symbol_for_local_label(
+            reference_manifest,
+            symbol.name,
+            kind="function_alias",
+        )
+        # Compiler-local jump-table labels require bounded content auditing.
+        # A local code label is accepted only when the manifest records it as
+        # a manually audited identical function alias at the exact label.
+        if (
+            local_reference_symbol is not None
+            and local_reference_symbol.kind == "function_alias"
+            and (addend or 0) == 0
+        ):
+            text, _key = _format_symbol_reference(symbol.name)
+            return text, _format_reference_key(local_reference_symbol), True
     if reference_symbol is not None:
         offset = addend or 0
         text, key = _format_symbol_reference(symbol.name, offset)
@@ -1115,6 +1147,7 @@ def disassemble_normalized_function(
             local_reference_symbol = _reference_symbol_for_local_label(
                 reference_manifest,
                 reference.symbol_name,
+                kind="jump_table",
             )
         if (
             reference is not None
