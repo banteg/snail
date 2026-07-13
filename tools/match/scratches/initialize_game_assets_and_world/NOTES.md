@@ -360,3 +360,20 @@ independent primary and mirrored secondary render bodies plus two fringe
 bodies. The focused bootstrap rises from 36.46% (2,460 candidate instructions)
 to 39.61% (2,768/5,411), with clean masked operands increasing from 767 to 870
 and the existing problem counts unchanged.
+
+## 2026-07-13 dip, screw, and slalom family
+
+The next native construction island owns five ordinary mirrored `PathPair`
+records in authored order: dip pair `20`, screw pair `21`, slalom pair `22`, big
+slalom pair `23`, and double-slalom pair `32`. Pair `32` is therefore grouped
+with the slalom family by construction order even though its storage follows a
+later run of unrelated templates.
+
+Each primary receives a separately allocated render body, each secondary
+receives another body before mirroring the primary, and both paths build and own
+their own fringe bodies. The dip uses width `2`; the screw uses 24 curve samples
+and width `3`; all three slalom variants use 32 curve samples and width `4`.
+Slide0 is the primary surface throughout, with Slide0 retained on the screw and
+Back used by the other four variants. The focused bootstrap rises from 39.61%
+(2,768 candidate instructions) to 41.70% (2,983/5,411), with clean masked
+operands increasing from 870 to 945 and the existing problem counts unchanged.
