@@ -426,3 +426,19 @@ does not implicitly mirror the fringe-builder offset. The focused bootstrap
 rises from 44.21% (3,252 candidate instructions) to 45.93% (3,459/5,411), with
 clean masked operands increasing from 1,037 to 1,112 and the existing problem
 counts unchanged.
+
+## 2026-07-13 borrowed loop-entry meshes
+
+Auxiliary loop pairs `51`, `52`, and `53` own scale/width combinations `6/3`,
+`6/2`, and `8/4`. Their primary and mirrored secondary paths each own a render
+body and fringe body exactly like visible path pairs, but their strip meshes are
+then borrowed by public pairs `0`, `1`, and `2` as entry-transition geometry.
+
+For each public path, `entry_transition_strip_mesh` points to the corresponding
+auxiliary path object while `entry_base_strip_mesh` points back to the public
+path's own object. No object ownership is transferred by these assignments. The
+native initializer also constructs a separate white path-transition color with
+alpha `0.60000002` immediately before this auxiliary bank. The focused bootstrap
+rises from 45.93% (3,459 candidate instructions) to 47.02% (3,620/5,411), with
+clean masked operands increasing from 1,112 to 1,159 and the existing problem
+counts unchanged.
