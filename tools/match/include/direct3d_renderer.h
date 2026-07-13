@@ -28,6 +28,7 @@ public:
     ObjectRenderBuffers* create_vertex_buffer(
         int vertex_count, int fvf); // @ 0x4114b0
     void release_direct3d_renderer_resources(); // @ 0x4116f0
+    void release_direct3d_device_interfaces(); // @ 0x411960
     int direct3d_renderer_set_cull_mode(char cull_front); // @ 0x411700
     int initialize_d3d8_device(char use_present_interval_one); // @ 0x411730
     void reset_direct3d_render_state(); // @ 0x4118b0

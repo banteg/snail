@@ -249,6 +249,15 @@
       "description": "Direct3DRenderer member teardown entry point tail-called by the global resource-release wrapper; it forwards the live renderer receiver to the device/interface release body."
     },
     {
+      "address": "0x411960",
+      "name": "release_direct3d_device_interfaces",
+      "kind": "function",
+      "aliases": [
+        "sub_411960"
+      ],
+      "description": "Direct3DRenderer member body that releases and clears its Direct3DDevice8 and Direct3D8 interface pointers at +0xbb94 and +0xbb90."
+    },
+    {
       "address": "0x4118b0",
       "name": "reset_direct3d_render_state",
       "kind": "function",
