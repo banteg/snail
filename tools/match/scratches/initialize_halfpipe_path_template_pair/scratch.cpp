@@ -7,7 +7,6 @@
 
 float sine(float angle);
 
-void __fastcall finalize_path_template(Path* path);
 
 void Path::initialize_halfpipe_path_template_pair(
     int unused_scale_bits,
@@ -274,5 +273,5 @@ void Path::initialize_halfpipe_path_template_pair(
         }
     }
 
-    finalize_path_template(this);
+    finalize_path_template();
 }

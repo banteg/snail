@@ -11,7 +11,6 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void orient_previous_with_up(
     PathTemplateSample* samples, int current_index, int first_index, float roll_angle)
@@ -240,7 +239,7 @@ void Path::initialize_sweep_path_template_pair(
 
     compute_terminal_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
-    finalize_path_template(this);
+    finalize_path_template();
     (void)scale_arg;
     (void)side_exit;
     (void)cap_texture;

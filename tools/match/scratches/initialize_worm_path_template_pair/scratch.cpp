@@ -27,7 +27,6 @@ typedef char WormFaceQuad_must_be_0x30[
     (sizeof(WormFaceQuad) == 0x30) ? 1 : -1];
 
 void __fastcall request_object_vertex_colours(Object* object);
-void __fastcall finalize_path_template(Path* path);
 
 const int PATH_TEMPLATE_KIND_WORM = 24;
 const float WORM_TAU = 6.2831855f;
@@ -337,5 +336,5 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
         } while (face_row < segment_count);
     }
 
-    finalize_path_template(this);
+    finalize_path_template();
 }

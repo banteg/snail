@@ -19,7 +19,6 @@ typedef AttachmentSample PathAttachmentSample;
 
 typedef ObjectFaceQuad PathTemplateFaceQuad;
 
-void __fastcall finalize_path_template(Path* path);
 
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,
@@ -667,7 +666,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 
-    finalize_path_template(this);
+    finalize_path_template();
     (void)side_exit;
     (void)cap_texture;
 }

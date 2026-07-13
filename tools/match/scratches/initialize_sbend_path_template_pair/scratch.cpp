@@ -10,7 +10,6 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void initialize_sample(
     PathTemplateSample* sample, float center_x, float x, float y, float z)
@@ -192,5 +191,5 @@ void Path::initialize_sbend_path_template_pair(
 
     compute_path_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
-    finalize_path_template(this);
+    finalize_path_template();
 }

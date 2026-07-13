@@ -11,7 +11,6 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void orient_previous_with_right(
     PathTemplateSample* samples, int current_index, int first_index)
@@ -254,7 +253,7 @@ void Path::initialize_start_path_template_pair(
 
     compute_direct_deltas(this);
     build_direct_strip_mesh(this, texture_a);
-    finalize_path_template(this);
+    finalize_path_template();
     (void)side_exit;
     (void)texture_b;
     (void)cap_texture;

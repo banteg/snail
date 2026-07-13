@@ -5,7 +5,6 @@
 #include "track_attachment_types.h"
 
 void __fastcall request_object_vertex_colours(Object* object);
-void __fastcall finalize_path_template(Path* path);
 
 void Path::mirror_path_template_pair_x(Path* source)
 {
@@ -140,5 +139,5 @@ void Path::mirror_path_template_pair_x(Path* source)
         } while (segment < segment_count);
     }
 
-    finalize_path_template(this);
+    finalize_path_template();
 }

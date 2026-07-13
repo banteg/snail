@@ -46,3 +46,25 @@ ABI. The key is keeping `primary` live for the subsequent dot call; scoped
 typed arguments or raw-right recomputation regress to 71.11%, inline casts fall
 back to the old 74.67% masked mismatch, and explicit segment-limit locals
 reshape the prologue down near 60%.
+
+2026-07-13 ownership pass: iOS exports the corresponding no-argument method as
+`cRPath::CalcLengthZ()`, and Windows reproduces its native register allocation
+when the semantic Windows name is declared as a `__fastcall Path` member.
+Twenty-nine constructor/mirror callsites now call that shared member directly
+instead of repeating a scratch-local free-function declaration. Focused
+constructor probes remain byte-for-byte score-neutral after the ownership
+change. `initialize_loopbow_path_template_pair` is the one deliberate ABI-view
+exception: it tail-returns the finalizer's stale mesh-flags value, so its local
+non-void call declaration remains explicit rather than pretending the member
+has a meaningful return contract.
+
+Passing the current right vector directly to `cross.dot_vector(...)` ends the
+temporary `primary` sample pointer's live range after `cross_vectors`. That
+restores the native segment-count/0xa8-byte-offset ownership through the
+cross/dot/clamp loop and raises the focused result from 75.34% to 81.78%
+(`112/113` candidate/target instructions, 24-instruction exact prefix, nine
+clean masked operands). Full typed-array indexing regresses to 63.01% by
+retaining a current-sample pointer across the calls; explicit base-pointer
+locals regress to 71.11%, and indexing the dot source separately by
+`segment_index` adds a second strength-reduced induction variable at 81.06%.
+Those variants are rejected rather than retained as matching scaffolding.

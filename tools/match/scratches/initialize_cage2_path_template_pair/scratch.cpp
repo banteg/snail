@@ -7,7 +7,6 @@
 
 float cosine(float angle);
 
-void __fastcall finalize_path_template(Path* path);
 
 void Path::initialize_cage2_path_template_pair(
     int width_cells_, char* texture_a, char* texture_b, char* vertical_texture)
@@ -251,5 +250,5 @@ void Path::initialize_cage2_path_template_pair(
         }
     }
 
-    finalize_path_template(this);
+    finalize_path_template();
 }

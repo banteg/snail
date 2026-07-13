@@ -11,7 +11,6 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-void __fastcall finalize_path_template(Path* path);
 
 static __forceinline void initialize_pair_sample(
     Path* path, int index, float center_x, float y, int z_index)
@@ -205,7 +204,7 @@ void Path::initialize_supertramp_path_template_pair(
 
     compute_direct_deltas(this);
     build_direct_strip_mesh(this, texture_b, underside_texture, cap_texture);
-    finalize_path_template(this);
+    finalize_path_template();
     (void)side_exit;
     (void)texture_a;
 }

@@ -36,6 +36,7 @@ struct LoopbowFaceQuad {
 typedef char LoopbowFaceQuad_must_be_0x30[
     (sizeof(LoopbowFaceQuad) == 0x30) ? 1 : -1];
 
+// This caller tail-returns the finalizer's stale EAX flags value.
 int __fastcall finalize_path_template(Path* path);
 
 int Path::initialize_loopbow_path_template_pair(
@@ -393,5 +394,5 @@ int Path::initialize_loopbow_path_template_pair(
         } while (segment < segment_count);
     }
 
-    return finalize_path_template(this);
+    return ::finalize_path_template(this);
 }
