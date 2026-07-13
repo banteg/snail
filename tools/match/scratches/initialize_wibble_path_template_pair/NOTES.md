@@ -43,3 +43,12 @@ mismatch.
 `uv[3].v` tail store moves focused Wibo from 24.46% (504/608) to 29.95%
 (514/608), with masked operands improving from 27 ok, 0 unresolved,
 0 mismatch to 29 ok, 0 unresolved, 0 mismatch.
+
+2026-07-13 terminal ownership: replacing the helper's `primary_last` and
+`secondary_last` aliases with direct count-relative stores through the two
+`Path` sample arrays moves focused Wibo from 29.95% (514/608) to 31.86%
+(522/608), while the masked audit remains clean at 29 ok, 0 unresolved,
+0 mismatch. Expanding the preceding delta loop into the method regressed the
+score to 30.84% (527/608) and introduced one masked call mismatch, so `wibble`
+retains local loop pointers and only the terminal stores carry direct owner
+shape.
