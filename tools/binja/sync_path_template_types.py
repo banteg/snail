@@ -94,6 +94,7 @@ REQUIRED_HEADER_STRUCTS = (
     "GUI",
     "Help",
     "ThanksScreen",
+    "GalaxyPoint",
     "Galaxy",
     "EnemyManager",
     "SubgameRuntime",

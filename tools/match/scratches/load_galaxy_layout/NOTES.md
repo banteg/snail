@@ -9,9 +9,18 @@ The loader now uses the shared `Galaxy`, `GalaxyRouteSlot`,
 `GalaxyRouteRecord`, and `GalaxyRouteNameRecord` views established with the
 constructor, route initializer, opener, updater, and closer.
 
-The authored route-point table at `0x4a1c50` is named as
-`g_galaxy_route_point_table` with the one-past sentinel
-`g_galaxy_route_point_table_end` at `0x4a1ca0`.
+The authored point banks are now owned as exact `GalaxyPoint { x, y }` arrays:
+
+- ten galaxy-group anchors occupy `0x4a1c4c..0x4a1c9c`; native retains a
+  cursor to each point's `y` field starting at `0x4a1c50` and compares the
+  advanced cursor against `0x4a1ca0`;
+- 101 route points occupy `0x4a1d14..0x4a203c`; route zero uses entry zero,
+  generated missing-level slots consume entries one onward, and the rescale
+  loop's `y`-field cursor stops at `0x4a2040`.
+
+This replaces the old false split into an unrelated 0x50-byte route table plus
+four scalar X/Y globals. The checked-in reference manifest now describes the
+two complete banks and the group `y`-cursor sentinel.
 
 Current retained result: 88.27%, 236 candidate instructions for 233 target
 instructions, 62-instruction common prefix, and 39 clean / 0 unresolved / 0
@@ -94,3 +103,12 @@ to `Galaxy` and absorbing its native-ledger tail keeps the honest 78.37%,
   returns, but the live session rejected both persisted prototype spellings on
   readback and rolled them back. The checked-in source/header correction is
   retained; the database artifact remains honestly unsynchronized.
+
+## 2026-07-13 point-bank ownership closure
+
+Using the two exact `GalaxyPoint` owners while retaining native's interior
+`y`-field cursor is codegen-neutral at 88.27%, 236/233 candidate/target
+instructions, prefix 62/233, and 39 clean masked operands. A scoped marker
+match temporary regressed to 87.85%, while direct terminal error returns
+regressed to 86.14%; both were reverted. The retained out-of-line error tails
+and cursor assignment remain the best evidence-backed Windows source shape.

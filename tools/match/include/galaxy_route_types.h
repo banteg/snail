@@ -6,6 +6,20 @@
 
 class SubgameRuntime;
 
+struct GalaxyPoint {
+    union {
+        int x_bits;
+        float x;
+    };
+    union {
+        int y_bits;
+        float y;
+    };
+};
+
+typedef char GalaxyPoint_must_be_0x08[
+    (sizeof(GalaxyPoint) == 0x08) ? 1 : -1];
+
 class GalaxyRouteRecord {
 public:
     int route_name_index; // +0x00

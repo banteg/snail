@@ -281,6 +281,17 @@ typedef struct GalaxyRouteRecord {
     char description_text[0x29c - 0x9c];
 } GalaxyRouteRecord;
 
+typedef struct GalaxyPoint {
+    union {
+        int32_t x_bits;
+        float x;
+    };
+    union {
+        int32_t y_bits;
+        float y;
+    };
+} GalaxyPoint;
+
 typedef struct GalaxyRouteSlot {
     int32_t unknown_000;
     GalaxyRouteRecord record;
