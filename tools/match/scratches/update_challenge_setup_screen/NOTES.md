@@ -77,3 +77,17 @@ at 80.68%, 354/355 instructions, prefix 8/355, with all 35 operands clean.
 2026-07-11 cRGUI ownership: cross-port symbols name this 0x28-byte receiver
 `cRGUI::AI()`. The class promotion is codegen-neutral at the honest 80.68%
 baseline; no register or control-flow residual was hidden for the rename.
+
+## 2026-07-13 exact replay-stack call shape
+
+The Time Trial replay visibility branch does not author a merged
+`previous_widget` local. Each arm hides or unhides `replay_button` and directly
+calls `back_button->stack_widget_below()` with either `play_button` or
+`replay_button`; VC6 shares only the call tail after each arm has pushed its
+argument. Binary Ninja's SSA merge had made the synthetic local look plausible,
+but the native branch-local pushes independently prove the direct source shape.
+
+Removing that false local restores the missing instruction and the surrounding
+register schedule across the rest of the method. Focused Wibo advances from
+80.68%, 354/355 instructions, to an exact 100.00%, 355/355 instructions, with
+prefix 355/355 and all 38 masked operands clean.

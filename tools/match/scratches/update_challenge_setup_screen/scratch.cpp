@@ -67,18 +67,16 @@ int GUI::update_challenge_setup_screen()
             next_level_button->widget_flags &= 0xffff7fff;
         }
 
-        FrontendWidget* previous_widget;
         int replay_active = game->sub_high_score
             .time_trial_route_records[game->level_mode_arg]
             .active;
         if (replay_active != 1) {
             replay_button->hide_border_init();
-            previous_widget = play_button;
+            back_button->stack_widget_below(play_button);
         } else {
             replay_button->unhide_border_init();
-            previous_widget = replay_button;
+            back_button->stack_widget_below(replay_button);
         }
-        back_button->stack_widget_below(previous_widget);
 
         flags = back_button->widget_flags;
         if ((flags & 0x20) != 0) {
