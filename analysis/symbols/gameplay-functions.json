@@ -1443,6 +1443,11 @@
       "description": "Applies one body's position into the supplied matrix before object rendering; iOS RObject.o names this `cRBod::ApplyPos(tMatrix&)`."
     },
     {
+      "address": "0x42f6e0",
+      "name": "initialize_object_constructor_thunk",
+      "description": "Object constructor thunk that calls the recovered object initializer and returns the original receiver."
+    },
+    {
       "address": "0x42f6f0",
       "name": "initialize_object",
       "description": "Constructs one render object with empty geometry buffers and default render flags; iOS RObject.o names this `cRObject::cRObject()`."
@@ -3280,6 +3285,11 @@
       "name": "multiply_matrix_in_place"
     },
     {
+      "address": "0x44d1d0",
+      "name": "multiply_matrix_in_place_forward_thunk",
+      "description": "Small thiscall forwarder that passes one rhs matrix to multiply_matrix_in_place while preserving the receiver."
+    },
+    {
       "address": "0x44d1e0",
       "name": "premultiply_matrix_in_place"
     },
@@ -3363,6 +3373,11 @@
       "address": "0x44dbb0",
       "name": "store_color4f",
       "description": "Stores one four-float tuple into the destination `Color4f` slot and returns the third component register value left live by the helper epilogue. Callers treat it as a write-only color helper."
+    },
+    {
+      "address": "0x44dbd0",
+      "name": "set_color_rgb",
+      "description": "Stores RGB on one Color4f while preserving its existing alpha channel."
     },
     {
       "address": "0x44dbf0",

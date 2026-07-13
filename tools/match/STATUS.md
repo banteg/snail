@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**550/724** mapped gameplay functions matched, **724/724** mapped gameplay functions have a scratch, **89268/325619** bytes (**27.41%**) are proof-grade, and overall fuzzy is **63.25%**.
+**553/727** mapped gameplay functions matched, **727/727** mapped gameplay functions have a scratch, **89316/325607** bytes (**27.43%**) are proof-grade, and overall fuzzy is **63.26%**.
 
-## Proof Grade (550)
+## Proof Grade (553)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -221,6 +221,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_bod_base | 0x42f5f0 | 87 | 27/27 | 100.00% | 27/27 | 5 ok |  |
 | ✅ | initialize_renderable_bod | 0x42f650 | 33 | 10/10 | 100.00% | 10/10 | 3 ok |  |
 | ✅ | apply_bod_position | 0x42f680 | 89 | 39/39 | 100.00% | 39/39 | 1 ok |  |
+| ✅ | initialize_object_constructor_thunk | 0x42f6e0 | 12 | 6/6 | 100.00% | 6/6 | 1 ok |  |
 | ✅ | initialize_object | 0x42f6f0 | 24 | 9/9 | 100.00% | 9/9 | - |  |
 | ✅ | request_object_vertices | 0x42f710 | 114 | 37/37 | 100.00% | 37/37 | 8 ok |  |
 | ✅ | copy_object_vertices | 0x42f790 | 57 | 28/28 | 100.00% | 28/28 | - |  |
@@ -509,6 +510,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_matrix_from_values | 0x44cfe0 | 116 | 34/34 | 100.00% | 34/34 | - |  |
 | ✅ | multiply_matrices | 0x44d060 | 312 | 114/114 | 100.00% | 114/114 | - |  |
 | ✅ | multiply_matrix_in_place | 0x44d1a0 | 45 | 18/18 | 100.00% | 18/18 | 1 ok |  |
+| ✅ | multiply_matrix_in_place_forward_thunk | 0x44d1d0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
 | ✅ | premultiply_matrix_in_place | 0x44d1e0 | 45 | 18/18 | 100.00% | 18/18 | 1 ok |  |
 | ✅ | set_matrix_identity | 0x44d210 | 55 | 19/19 | 100.00% | 19/19 | - |  |
 | ✅ | set_matrix_rotation_identity | 0x44d250 | 46 | 16/16 | 100.00% | 16/16 | - |  |
@@ -526,6 +528,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | store_color4f | 0x44dbb0 | 30 | 9/9 | 100.00% | 9/9 | - |  |
+| ✅ | set_color_rgb | 0x44dbd0 | 23 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | pack_color_rgba_u8 | 0x44dbf0 | 81 | 24/24 | 100.00% | 24/24 | 8 ok |  |
 | ✅ | set_color_white | 0x44dc50 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  |
 | ✅ | set_color_black | 0x44dc60 | 8 | 3/3 | 100.00% | 3/3 | 1 ok |  |
