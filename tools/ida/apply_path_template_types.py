@@ -269,7 +269,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_weapon_animation",
-        "int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
+        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
     ),
     (
         "update_snail_skin_transition",

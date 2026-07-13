@@ -2764,7 +2764,7 @@
     {
       "address": "0x4446e0",
       "name": "set_weapon_animation",
-      "description": "cRWeapon animation dispatcher over one PresentationAnimationChannel: queues an id or immediately selects one of five owned 0x80-byte RenderableBod slots, follows its Object::animation link, and installs the borrowed Object on the channel."
+      "description": "Authored void `cRWeapon::SetAnimation(int, bool, int)` over one PresentationAnimationChannel: queues an id or immediately selects one of five owned 0x80-byte RenderableBod slots, follows its Object::animation link, and installs the borrowed Object on the channel. Android independently preserves the void mutator contract."
     },
     {
       "address": "0x4447c0",

@@ -4,9 +4,9 @@
 #include "object_render_types.h"
 #include "presentation_animation_channel.h"
 
-int PresentationAnimationChannel::set_weapon_animation(
+void PresentationAnimationChannel::set_weapon_animation(
     int animation_id,
-    unsigned char immediate,
+    bool immediate,
     int initial_frame)
 {
     if (immediate != 0) {
@@ -42,9 +42,9 @@ int PresentationAnimationChannel::set_weapon_animation(
         int flags = anim_manager.target_model->list_flags;
         flags |= 0x20;
         anim_manager.target_model->list_flags = flags;
-        return flags;
+        return;
     }
 
     anim_manager.queued_animations[anim_manager.queue_count] = animation_id;
-    return ++anim_manager.queue_count;
+    ++anim_manager.queue_count;
 }

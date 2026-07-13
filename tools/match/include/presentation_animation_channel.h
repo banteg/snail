@@ -16,7 +16,7 @@ typedef char PresentationAnimationSlot_must_be_0x80[
 
 class PresentationAnimationChannel {
 public:
-    int set_weapon_animation(int animation_id, unsigned char immediate, int initial_frame);
+    void set_weapon_animation(int animation_id, bool immediate, int initial_frame);
 
     // BOD-node-compatible prefix linked by build_subgame_level. The channel
     // remains embedded in the authored Snail owner.

@@ -21,11 +21,11 @@ void Snail::set_snail_jetpack(int state)
     }
 
     int selected_state = jetpack_channel.selected_state;
-    unsigned char immediate = 1;
+    bool immediate = true;
     if (selected_state != target_state) {
         if (selected_state == 4) {
             jetpack_channel.set_weapon_animation(1, 1, 8);
-            immediate = 0;
+            immediate = false;
             g_sound_effect_manager.play_sound_effect(26);
         }
 

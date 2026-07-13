@@ -18,26 +18,34 @@ The default arm only assigns the first two target states from
 source-shaped local seen in both decompilers. In normal gameplay the producer
 (`update_player_movement_flags`) only emits the handled values above.
 
-Focused Wibo result: 39.43%, 244/248 candidate/target instructions. This is a
-semantic/relationship scratch, not a near-final match. The layout is useful:
-the calls hit channel bases `+0x64c`, `+0xa28`, and `+0xe04`, and selected
-states at channel `+0x104` (`+0x750`, `+0xb2c`, `+0xf08` in the presentation
-owner).
+Focused Wibo result: 68.29%, 244/248 candidate/target instructions, with 23
+clean masked operands. The calls hit channel bases `+0x64c`, `+0xa28`, and
+`+0xe04`, and selected states at channel `+0x104` (`+0x750`, `+0xb2c`,
+`+0xf08` in the presentation owner).
 
-iOS and Android retain the same authored method on cRSnail. Together with the
-three embedded channel bases, this makes the receiver the exact shared `Snail`
-at `Player +0x2984`, not a freestanding weapon controller.
+iOS and Android retain the same authored method on cRSnail. Android's complete
+`cRSnail::SetWeapon(int)` body independently preserves all three state maps,
+the selected-state tests, the same channel order, and the shared sound-25 tail.
+Together with the three embedded channel bases, this makes the receiver the
+exact shared `Snail` at `Player +0x2984`, not a freestanding weapon controller.
+
+The selected-state and target-state branches are ordinary sparse `switch`es.
+That source shape recovers the native decrement ladders throughout all three
+channels and raises the focused score from 39.43%. The final channel is a
+structured changed/unchanged branch rather than an early return: native places
+the already-selected sound check after the update paths, and Android preserves
+the same relationship.
 
 Main residual: native keeps state0 in `edi`, state1 in `ebp`, state2 on the
 stack, and uses `ebx` as a channel pointer in the first transition block. VC6
 currently keeps state1 in `ebx`, saves `ebp` only around the first block, and
-therefore shifts most later blocks. The source has been reshaped to the native
-decrement/goto ladders; do not add dummy aliasing or asm to force the remaining
-register ownership.
+therefore shifts later stack offsets. An explicit channel pointer scores higher
+but materializes `weapon_channels[0]` before the movement dispatcher, unlike
+native, so it is rejected. Do not add dummy aliasing or a volatile parameter
+reload to force the remaining register ownership.
 
-2026-06-20 lookup-table audit: the sparse movement dispatch now names
+The sparse movement dispatch names
 `set_snail_weapon_movement_jump_table` at `0x445bf0` and
-`set_snail_weapon_movement_lookup_table` at `0x445c0c`. Focused Wibo remains
-`39.43%`; masked audit is now `15 ok / 0 unresolved / 2 mismatch`, so the
-former lookup-table relocation is clean and the remaining debt is the existing
-register/layout mismatch.
+`set_snail_weapon_movement_lookup_table` at `0x445c0c`. The remaining masked
+mismatch is the candidate's compiler-local jump-table symbol; all runtime
+function/global operands are clean.

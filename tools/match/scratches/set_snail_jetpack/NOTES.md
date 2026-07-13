@@ -41,3 +41,8 @@ mismatch at the pre-save argument load. Rewriting the mapping as an `if` ladder
 recovers only a three-instruction prefix and regresses to 81.30%. The current
 switch remains the best mapping shape even though it saves `ebx` before loading
 the argument.
+
+2026-07-14 authored-call contract: Android names the shared callee
+`void cRWeapon::SetAnimation(int, bool, int)`. Modeling `immediate` as `bool`
+preserves the existing 86.18% result while removing the obsolete integer-return
+and byte-flag contract from this caller.

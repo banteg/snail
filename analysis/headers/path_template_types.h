@@ -1726,7 +1726,7 @@ void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
 void __thiscall update_snail_skin(Snail* snail);
 void __thiscall initialize_anim_manager(AnimManager* manager);
 void __thiscall update_anim_manager(AnimManager* manager);
-int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
+void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);

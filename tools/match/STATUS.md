@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.23%**.
+**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.32%**.
 
 ## Proof Grade (617)
 
@@ -727,7 +727,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (40)
+## Mid Progress (50-79.99%) (41)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -769,10 +769,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 2 mismatch, 63 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 53.93% | 8/673 | 86 ok |  |
+| 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 68.29% | 1/248 | 1 mismatch, 23 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
-## Early Progress (>0-49.99%) (37)
+## Early Progress (>0-49.99%) (36)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -808,7 +809,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1208/1245 | 29.27% | 2/1245 | 1 mismatch, 60 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 29.83% | 0/639 | 3 mismatch, 40 ok |  |
-| 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 39.43% | 1/248 | 2 mismatch, 15 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |

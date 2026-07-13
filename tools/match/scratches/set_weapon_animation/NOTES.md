@@ -21,6 +21,14 @@ Recovered behavior:
   channel `BodBase::object +0x24`, and ORs bit `0x20` into the target model's
   inherited list flags.
 
+Android preserves the authored signature as
+`void cRWeapon::SetAnimation(int, bool, int)`. Its two machine-code exits do
+not form a return value: the immediate path leaves the receiver in `r0`, while
+the queued path leaves the computed queue-slot address. Windows callers also
+discard `eax`; the old integer result was only incidental last-expression
+state. The shared matching and decompiler contracts now use the real void
+mutator and boolean immediate flag. This ownership correction is codegen-neutral.
+
 Focused Wibo result: 94.55%, 55/55 candidate/target instructions, 48/55 exact
 prefix, and three clean masked operands. The immediate path is exact; remaining
 shape debt is the equivalent `eax`/`edx` ownership swap in the queued-animation

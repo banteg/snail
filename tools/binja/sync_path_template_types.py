@@ -634,7 +634,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "set_weapon_animation",
-        "int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
     ),
     (
         "initialize_anim_manager",
