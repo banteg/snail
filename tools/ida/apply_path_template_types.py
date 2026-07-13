@@ -497,7 +497,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "begin_track_attachment_follow_state",
-        "Path* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
+        "void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);",
     ),
     (
         "update_track_attachment_follow_state",

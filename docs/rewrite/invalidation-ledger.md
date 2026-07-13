@@ -156,8 +156,8 @@ Template:
   `max(0, local_y - 0.49)`)
 - replacement evidence: matched native source (tools/match) shows no family
   branch on either entry lane — `begin_track_attachment_follow_state`
-  (94.55%) seeds raw world `y - 0.49` unclamped, and
-  `try_enter_track_attachment_from_swept_motion` (structure-aligned scratch)
+  (100%) seeds raw world `y - 0.49` unclamped, and
+  `try_enter_track_attachment_from_swept_motion` (84.69%)
   seeds `vertical_offset = 0` and snaps the player's world y to the rotated
   local-frame y before the validating follow update
 - port consequence: `entryVerticalOffset` removed from

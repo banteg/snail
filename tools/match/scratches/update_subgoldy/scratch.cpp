@@ -81,7 +81,7 @@ struct SubgoldyFollowStateView {
     unsigned char flag_3c;   // +0x3c
     char unknown_3d[3];
 
-    SubgoldyPathView* begin_track_attachment_follow_state(
+    void begin_track_attachment_follow_state(
         SubgoldyTrackRowCellView* cell, const Vector3* position,
         SubgoldyPlayerView* player);
     int update_track_attachment_follow_state(float advance, Vector3* position,

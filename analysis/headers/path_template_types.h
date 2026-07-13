@@ -1776,7 +1776,7 @@ void __thiscall uninit_nuke(Nuke* nuke);
 TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
 TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
 double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);
-Path* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
+void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
 int32_t __thiscall initialize_looptheloop_path_template_pair(

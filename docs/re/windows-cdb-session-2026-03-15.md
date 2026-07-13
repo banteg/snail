@@ -51,7 +51,7 @@ This is the highest-value next runtime target because the rewrite is still block
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - current prototype: `float __thiscall(void* arg1, float arg2, float arg3, float arg4, float arg5, float arg6, float arg7, void* arg8)`
 - `0x420c40` `begin_track_attachment_follow_state`
-  - current prototype: `void* __thiscall(char* arg1, void* arg2, void* arg3, int32_t arg4)`
+  - recovered prototype: `void __thiscall(FollowState*, TrackRowCell*, const Vector3*, Player*)`
 - `0x420cb0` `update_track_attachment_follow_state`
   - current prototype: `void __thiscall(char* arg1, float arg2, float* arg3, void* arg4)`
 - `0x43af60` `begin_post_follow_carryover`

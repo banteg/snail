@@ -1,70 +1,27 @@
-# Residual diff — 85.19%, 27/27 insns
+# Exact — 100.00%, 27/27 instructions
 
-The heading-table tail now keeps the ×61 index in `edx`, loads
-`data_4df904` into `ecx`, and schedules the `pop esi` like the target.
-The remaining miss is that the typed row-heading table pointer materializes
-the table base with `add ecx, ADDR`, then loads `[ecx + edx*4]`; the target
-folds the same table base into the final memory displacement as
-`[ecx + edx*4 + ADDR]`. Semantics and all offsets are pinned.
+Recovered `cRPathFollowGoldy::Init` ownership and behavior:
 
-2026-06-13 pin audit: focused matcher still verifies 94.55%, 28/27 insns.
-Keep this pinned; the remaining miss is only equivalent table-base folding.
+- The receiver is the 0x40-byte `FollowState` embedded in `Player`.
+- The borrowed `TrackRowCell` supplies the selected `Path`, anchor position,
+  and runtime row index; the borrowed world position and owning Player are
+  retained only through copied values/backlinks.
+- Initialization sets `active`, stores the Path and source cell, resets the
+  sample index, seeds `progress = world_position.z - cell.anchor_position.z`,
+  and seeds `vertical_offset = world_position.y - 0.49f` without clamping.
+- Root-relative `0x64118c` is the field-first address of
+  `SubgameRuntime::runtime_rows[0].installed_heading_delta`, not a standalone
+  float table. Indexing a real `TrackAttachmentRuntimeRow[]` explains the
+  native 0xf4-byte row stride and folded field displacement exactly.
 
-2026-06-14 breadth pass: re-tested the table-base residual with typed
-`GameImage` row-heading-table field forms. Direct field indexing folds the
-global offset but regresses register ownership to 85.19%; a `GameImage*` local
-improves that only to 88.89%; a `float*` field pointer keeps 94.55% but leaves
-a dead `add ecx, ADDR`; and a scalar `float heading` local wrongly lowers
-through x87. Keep the current table-pointer spelling until a source-plausible
-form preserves both native index ownership and folded displacement.
+The final ownership correction was the return type. The only caller at
+`update_subgoldy +0x77b` discards EAX and immediately reads
+`follow_state.template_record`; iOS names the method
+`cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`. Declaring the
+initializer `void` removes a synthetic Path reload and makes the candidate
+byte-identical. The Path pointer left in EAX by the final field store is an
+incidental compiler value, not an authored return contract.
 
-2026-06-19 folded-load audit: focused matcher still verifies 94.55%,
-27/28 instructions, 23/27 prefix, and 3 clean masked operands. Re-tested direct
-raw loads from the real row-heading table symbol, an explicit `g_game_base`
-local, a byte-offset local, raw `installed_heading_bits`, a `game_words`
-dword-table view, and the authored `row * 60 + row` spelling. The direct forms
-fold the `g_row_heading_table` displacement but consistently move the scaled
-row index from native `edx` to `ecx` and drop to 85.19%; moving the template
-reload after the table load regresses further to 78.57%. The raw-bit assignment
-through the retained table pointer is codegen-neutral at 94.55%, so keep the
-clear float `installed_heading_delta` assignment. Resume only with a new
-source-owner lead that can preserve both native `edx` index ownership and the
-folded table displacement.
-
-2026-06-20 larger attachment retry: focused Wibo still reports 94.55%,
-28/27 candidate/target instructions, 23/27 prefix, and three clean masked
-operands. Rechecking the direct byte-address load again folds the displacement
-but drops to 85.19% by moving the scaled row index into `ecx`. A raw `int*`
-table, a named `installed_heading_bits` local, and a byte-base `char* table`
-are all codegen-neutral at 94.55% and leave the same separate `add ecx, ADDR`.
-Modeling the recovered table as `float rows[][61]` is semantically tempting but
-regresses to 75.00% by disturbing saved-register ownership. Keep the flat
-float-table source until a form preserves native `edx` index ownership and the
-folded table displacement together.
-
-Recovered: FollowState layout (+0x00 active, +0x04 template, +0x08 cell,
-+0x0c sample_index, +0x10 progress = z - cell anchor z, +0x14
-vertical_offset = y - 0.49f, +0x38 player); `get_track_cell_row_index`
-is thiscall on the cell; the cell shares the +0x18 anchor-z / +0x38
-template offsets with the golb path struct (likely sibling types).
-
-## 2026-07-10 installed-heading owner closure
-
-Root-relative `0x64118c` is not a standalone heading table. Subtracting the
-embedded subgame base (`0x74618`) and runtime-row base (`0x5ccac8`) leaves
-exactly `TrackAttachmentRuntimeRow::installed_heading_delta +0xac`; the
-61-dword step is the row's `0xf4`-byte stride. The curated symbol and scratch
-now name this as the field-first
-`g_runtime_row_installed_heading_fields` view. Focused matching remains
-94.55%, 28/27 instructions, prefix 23/27, with three clean operands; the only
-residual is still the equivalent folded-displacement schedule.
-
-## 2026-07-10 no-fakematch audit
-
-The scratch-local `volatile` qualifier on `g_game_base` existed only to force a
-late singleton reload and is removed. With the ordinary relocatable owner,
-focused Wibo is 85.19%, 27/27 instructions, prefix 18, and two clean masks.
-The remaining tail rotates the row-index and singleton owners across
-`eax/ecx/edx`; it does not change the proven field-first
-`runtime_rows[].installed_heading_delta` relationship. Keep that scheduling
-debt visible instead of restoring the old 94.55% through a qualifier barrier.
+Earlier volatile-Game-base and flat-float-table experiments are rejected. The
+exact candidate uses the ordinary relocatable Game owner, the recovered row
+struct, and no source-only scheduling barriers.

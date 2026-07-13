@@ -1594,7 +1594,8 @@
       "windows_name": "begin_track_attachment_follow_state",
       "ios_symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The byte-identical Windows helper is a void initializer on the Player-embedded FollowState. Its sole caller ignores EAX; the final Path-shaped register value is incidental, not a return contract."
     },
     {
       "address": "0x420cb0",

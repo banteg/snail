@@ -221,8 +221,8 @@ source-shape issue is solved.
   partial-compatible row. `FrontendFade` is now a remaining unresolved-layout
   cleanup because `game_startup_and_main_loop` still keeps a minimal local
   startup-only declaration.
-- 2026-06-20 follow ABI cleanup: the local `FollowState` declaration now matches
-  the recovered `begin_track_attachment_follow_state` return type and const
+- 2026-06-20 follow ABI cleanup, corrected 2026-07-13: the local `FollowState`
+  declaration now matches the recovered void initializer and const
   world-position parameter from `track_attachment_types.h`. This is codegen
   neutral and leaves `update_subgoldy` at 72.51%, `2067/2087`, with the same
   `290 ok / 1` jump-table masked audit. Rewriting the two swept attachment

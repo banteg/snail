@@ -5894,7 +5894,7 @@ pub const Runner = struct {
             .sample_index = sample_index,
             .local_progress = local_progress,
             .lateral_offset = lateral_offset,
-            // PORT(verified): matched `begin_track_attachment_follow_state` (94.55%,
+            // PORT(verified): exact `begin_track_attachment_follow_state` (100%,
             // tools/match) seeds the follow height from raw world y - 0.49 with no
             // family branch; see tools/match/scratches/begin_track_attachment_follow_state.
             .vertical_offset = entry_world_position.y - attachment_entry_rider_height,

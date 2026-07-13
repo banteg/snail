@@ -357,7 +357,7 @@ typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 
 class FollowState {
 public:
-    Path* begin_track_attachment_follow_state(
+    void begin_track_attachment_follow_state(
         SubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0

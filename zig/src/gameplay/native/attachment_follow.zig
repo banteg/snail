@@ -3,9 +3,9 @@
 //! This module follows the matched native shape: one function per native
 //! function, native names, native statement order, fields per the recovered
 //! layout. Transcribed from proven sources in tools/match/scratches/
-//! (begin_track_attachment_follow_state @ 0x420c40, 94.55% match;
-//! try_enter_track_attachment_from_swept_motion @ 0x42c770, structure-aligned
-//! scratch with fully recovered semantics). Cross-reference
+//! (begin_track_attachment_follow_state @ 0x420c40, 100% match;
+//! try_enter_track_attachment_from_swept_motion @ 0x42c770, 84.69% with
+//! recovered vector and owner semantics). Cross-reference
 //! tools/match/include/track_attachment.h for the C++ twin.
 //!
 //! RULE: do not refactor this module for taste. It exists to be diffable
@@ -15,8 +15,8 @@
 //! Zig seams (documented, intentional):
 //! - the native TrackRowCell*/PathTemplate* pointers become the built
 //!   template reference plus the source row index
-//! - the native per-row heading table read (game base + 0x64118c + 244*row)
-//!   becomes a caller-supplied value; the table itself is asset-derived
+//! - the native `runtime_rows[row].installed_heading_delta` read
+//!   becomes a caller-supplied value; the row bank itself is asset-derived
 //! - the validating update_track_attachment_follow_state call at the end of
 //!   the swept entry stays caller-side until that function is matched
 //! - the native player y snap is returned to the caller instead of written
@@ -61,7 +61,7 @@ pub const FollowState = struct {
     attachment_exit_pending: bool = false,
 };
 
-/// begin_track_attachment_follow_state @ 0x420c40 (matched 94.55%).
+/// begin_track_attachment_follow_state @ 0x420c40 (matched 100%).
 /// Statement order mirrors the matched source.
 pub fn beginTrackAttachmentFollowState(
     state: *FollowState,
@@ -70,7 +70,7 @@ pub fn beginTrackAttachmentFollowState(
     cell_anchor_z: f32,
     world_position: Vec3,
     row_heading_delta: f32,
-) *Template {
+) void {
     state.active = true;
     state.template_record = template;
     state.source_cell_row = source_cell_row;
@@ -79,7 +79,6 @@ pub fn beginTrackAttachmentFollowState(
     const height = world_position.y - rider_height;
     state.vertical_offset = height;
     template.installed_heading_delta = row_heading_delta;
-    return template;
 }
 
 pub const SweptEntryAcceptance = struct {
@@ -196,7 +195,7 @@ test "begin seeds follow state in native order with raw world height" {
     var template = try testTemplate(std.testing.allocator, 4, &.{.{}});
     defer template.deinit(std.testing.allocator);
     var state = FollowState{ .attachment_exit_pending = true };
-    const returned = beginTrackAttachmentFollowState(
+    beginTrackAttachmentFollowState(
         &state,
         &template,
         7,
@@ -204,7 +203,6 @@ test "begin seeds follow state in native order with raw world height" {
         .{ .x = 0.0, .y = 0.2, .z = 3.5 },
         0.125,
     );
-    try std.testing.expect(returned == &template);
     try std.testing.expect(state.active);
     try std.testing.expectEqual(@as(i32, 0), state.sample_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.5), state.progress, 0.0001);

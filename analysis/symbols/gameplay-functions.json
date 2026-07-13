@@ -1274,7 +1274,7 @@
     {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state",
-      "description": "Starts one live attachment-follow session from the selected runtime attachment cell by marking the follow struct active, storing the template and owner cell, zeroing the segment index, seeding progress from `world_z - cell_anchor_z`, seeding local height from `world_y - 0.49`, caching the player pointer, and copying the row payload into template `+0x98`. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. iOS Path.o names the player-follow owner family `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`."
+      "description": "Exact void initializer for the Player-embedded attachment `FollowState`: stores the selected Path and borrowed runtime cell, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `SubgameRuntime::runtime_rows[row].installed_heading_delta` into the Path. Its only Windows caller discards EAX; the apparent Path result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. iOS Path.o names it `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`."
     },
     {
       "address": "0x420cb0",
