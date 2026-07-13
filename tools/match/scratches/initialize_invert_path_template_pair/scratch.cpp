@@ -193,6 +193,17 @@ void Path::initialize_invert_path_template_pair(
         primary_samples[i].transform.basis_up.x = sine(angle);
         primary_samples[i].transform.basis_up.y = cosine(angle);
         primary_samples[i].transform.basis_up.z = 0.0f;
+        primary_samples[i].transform.basis_forward = Vector3(
+            primary_samples[i].transform.position.x
+                - primary_samples[i - 1].transform.position.x,
+            primary_samples[i].transform.position.y
+                - primary_samples[i - 1].transform.position.y,
+            primary_samples[i].transform.position.z
+                - primary_samples[i - 1].transform.position.z);
+        primary_samples[i].transform.basis_forward.normalize_vector();
+        primary_samples[i].transform.basis_right.cross_vectors(
+            &primary_samples[i].transform.basis_up,
+            &primary_samples[i].transform.basis_forward);
         copy_secondary_transform_from_primary(this, i);
     }
 

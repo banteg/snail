@@ -61,3 +61,11 @@ five scratch-only scalar copies moves focused Wibo from 31.86% (522/608) to
 0 mismatch. Recovering the independently initialized primary and secondary
 endpoint transforms and their `delta_length = 1.0f` stores moves it further to
 36.48% (483/608), with 27 ok, 0 unresolved, 0 mismatch.
+
+2026-07-13 interior orientation ownership: after constructing each primary
+sample's up vector, the native loop derives `basis_forward` from the current
+position minus the previous primary position, normalizes it, and derives
+`basis_right` as `basis_up` cross `basis_forward` before copying the transform
+to the secondary lane. Restoring that chain moves focused Wibo from 36.48%
+(483/608) to 37.50% (512/608), with the masked audit still clean at 28 ok,
+0 unresolved, 0 mismatch.

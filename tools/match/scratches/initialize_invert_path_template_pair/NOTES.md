@@ -52,3 +52,10 @@ Spelling the independently initialized endpoint transforms directly, including
 the primary-only terminal pi rotation, scored 30.77% (479/600) with two call
 mismatches. Those endpoint experiments were rejected; only the proved interior
 ownership change is retained.
+
+2026-07-13 interior orientation ownership: each primary sample owns the
+position delta from its predecessor as `basis_forward`, normalizes that vector,
+then owns `basis_right = basis_up cross basis_forward` before its 0x40-byte
+transform is copied to the secondary lane. Recovering that sequence moves
+focused Wibo from 33.94% (508/600) to 36.59% (537/600), with the masked audit
+still clean at 25 ok, 0 unresolved, 0 mismatch.
