@@ -407,3 +407,14 @@ aliases respectively and restore the 85 clean operands.
   `+0x5ac`, `+0x5f2`, `+0x5f2`, and `+0x5e0`. Those sequences exactly match the
   native tables at `0x437adc`/`0x437af0`, so the content-bounded aliases restore
   all 85 clean operands without changing the 396-instruction body.
+
+2026-07-13 text-editor owner header refresh:
+
+- Promoting the seven `FrontendWidget` text-editor fields advances the same
+  compiler-local mode tables to `$L5384`/`$L5385` without changing the exact
+  instruction stream.
+- COFF still places them at object `+0x62c`/`+0x640`. The five-entry table
+  targets `+0x419`, `+0x42d`, `+0x46b`, `+0x46b`, and `+0x441`; the eight-entry
+  table targets `+0x56f`, `+0x5c6`, `+0x5f2`, `+0x5f2`, `+0x5ac`, `+0x5f2`,
+  `+0x5f2`, and `+0x5e0`. These are identical to the bounded native tables, so
+  the aliases restore all 85 clean operands by content, not by label spelling.

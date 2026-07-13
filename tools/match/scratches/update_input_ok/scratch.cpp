@@ -5,7 +5,7 @@
 FrontendWidget* InputOkState::update_input_ok()
 {
     FrontendWidget* source = source_widget;
-    unsigned int flags = *(unsigned int*)((char*)source + 0x70c);
+    unsigned int flags = source->input_flags;
     FrontendWidget* ok;
     float x;
 

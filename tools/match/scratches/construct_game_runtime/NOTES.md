@@ -390,3 +390,13 @@ body, and its relocated 0x28-byte metadata retains the same signature, single
 unwind-map entry, zero try/IP maps, state `-1`, and cleanup-thunk slot as the
 native record at `0x49f4f8`. Both local labels remain bounded aliases so older
 and current header revisions keep the same content-audited reference.
+
+### Text-editor owner header refresh
+
+Promoting the shared `FrontendWidget` editor state advances the handler label
+again to `$L6050`. COFF still emits the same bounded ten-byte `mov eax,
+<metadata>; jmp __CxxFrameHandler` thunk. Its relocated 0x28-byte `$T6044`
+record retains signature `0x19930520`, one unwind-map entry, zero try/IP maps,
+state `-1`, and the cleanup-thunk relocation. Registering this manually audited
+header-revision alias restores the 120 clean operands without changing the
+honest 88.89% instruction score.

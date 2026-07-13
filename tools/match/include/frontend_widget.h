@@ -138,7 +138,13 @@ public:
     float font_scale; // +0x6f0
     float layout_anchor_x; // +0x6f4
     float layout_anchor_y; // +0x6f8
-    char unknown_6fc[0x718 - 0x6fc];
+    int input_cursor; // +0x6fc, index of the visible editing marker
+    int input_cursor_visible; // +0x700, toggled by the blink timer
+    float input_cursor_blink_progress; // +0x704
+    float input_cursor_blink_step; // +0x708
+    unsigned int input_flags; // +0x70c, filter and OK-button placement modes
+    int input_length; // +0x710, text length excluding the editing marker
+    int input_capacity; // +0x714
     union {
         FrontendWidget* child_widget_0;
         FrontendWidget* slider_less_widget;

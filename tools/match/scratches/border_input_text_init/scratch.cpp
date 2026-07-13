@@ -7,34 +7,32 @@ void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
 FrontendWidget* FrontendWidget::border_input_text_init(int arg2, char* text, int flags)
 {
-    char* self = (char*)this;
+    input_flags = flags;
+    rstrcpy_checked_ascii(text_buffer + 0x400, text);
 
-    *(int*)(self + 0x70c) = flags;
-    rstrcpy_checked_ascii(self + 0x6cc, text);
-
-    *(int*)(self + 0x6fc) = 0;
-    *(int*)(self + 0x710) = 0;
+    input_cursor = 0;
+    input_length = 0;
 
     char* cursor = text_buffer;
     char ch = *cursor;
     if (ch != 0) {
         do {
             ++cursor;
-            ++*(int*)(self + 0x710);
-            ++*(int*)(self + 0x6fc);
+            ++input_length;
+            ++input_cursor;
             ch = *cursor;
         } while (ch != 0);
     }
 
-    text_buffer[*(int*)(self + 0x6fc)] = '|';
-    text_buffer[*(int*)(self + 0x6fc) + 1] = 0;
-    *(int*)(self + 0x704) = 0;
-    *(int*)(self + 0x700) = 1;
-    *(int*)(self + 0x714) = arg2;
-    *(int*)(self + 0x708) = 0x3daaaaab;
+    text_buffer[input_cursor] = '|';
+    text_buffer[input_cursor + 1] = 0;
+    input_cursor_blink_progress = 0.0f;
+    input_cursor_visible = 1;
+    input_capacity = arg2;
+    *(int*)&input_cursor_blink_step = 0x3daaaaab;
 
     FrontendWidget* result = (FrontendWidget*)layout_frontend_widget();
     if ((flags & 0xc) != 0)
-        return ((InputOkState*)(self + 0x2a8))->initialize_input_ok();
+        return ((InputOkState*)((char*)this + 0x2a8))->initialize_input_ok();
     return result;
 }
