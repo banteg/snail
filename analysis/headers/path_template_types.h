@@ -895,6 +895,17 @@ typedef struct SubSolution {
     int32_t unknown_1fabc;
 } SubSolution;
 
+/* Exact 0x947648-byte authored cRSubHighScore bank embedded in cRSubGame. */
+typedef struct SubHighScore {
+    SubSolution* active_record_bank;
+    int32_t active_record_count;
+    SubSolution postal_records[11];
+    SubSolution survival_records[11];
+    SubSolution time_trial_route_records[51];
+    SubSolution current_result_record;
+    SubSolution survival_pending_record;
+} SubHighScore;
+
 typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
@@ -1103,7 +1114,7 @@ typedef struct SubgameRuntime {
     Player player;
     TrackRowCell runtime_cells[3200][8];
     TrackAttachmentRuntimeRow runtime_rows[3200];
-    uint8_t _pad_68b4c8[0xfd2b10 - 0x68b4c8];
+    SubHighScore sub_high_score;
     SubSolution current_high_score_record;
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;

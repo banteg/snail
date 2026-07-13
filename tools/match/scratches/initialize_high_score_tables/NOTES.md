@@ -19,3 +19,14 @@ three bank windows and the `current_result_record` offset in `SubHighScore`.
 
 Focused Wibo matches 100.00%, 58/58 instructions, with four clean masked
 operands.
+
+2026-07-13 analysis propagation:
+
+- The path-template Binary Ninja/IDA campaign now declares the same exact
+  `SubHighScore` owner and embeds it at `SubgameRuntime +0x68b4c8`.
+- Its 11 postal, 11 survival, 51 time-trial, current-result, and pending-record
+  values end exactly at the working `SubSolution +0xfd2b10`; the former
+  0x947648-byte anonymous runtime pad is gone.
+- Binary Ninja declaration preview verifies both `SubHighScore == 0x947648`
+  and the enclosing `SubgameRuntime == 0x1272838`, then reverts. Focused Wibo
+  remains exact at 58/58 with all four operands clean.
