@@ -1695,5 +1695,31 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[32].secondary.fringe_mesh_bod.position.y = 0.0f;
     subgame.path_pairs[32].secondary.fringe_mesh_bod.position.x = 0.0f;
 
+    path = &subgame.path_pairs[24].primary;
+    path->set_bod_object(g_object_list.add_object_to_list());
+    path->initialize_worm_path_template_pair(
+        (char*)"Objects/World00/Worm.tga");
+    subgame.path_pairs[24].primary.position.z = 0.0f;
+    subgame.path_pairs[24].primary.position.y = 0.0f;
+    subgame.path_pairs[24].primary.position.x = 0.0f;
+
+    subgame.path_pairs[24].secondary.set_bod_object(
+        g_object_list.add_object_to_list());
+    subgame.path_pairs[24].secondary.mirror_path_template_pair_x(path);
+    subgame.path_pairs[24].secondary.position.z = 0.0f;
+    subgame.path_pairs[24].secondary.position.y = 0.0f;
+    subgame.path_pairs[24].secondary.position.x = 0.0f;
+
+    subgame.path_pairs[24].primary.fringe_mesh_bod.set_bod_object(
+        g_object_list.add_object_to_list());
+    disable_object_rendering(
+        subgame.path_pairs[24].primary.fringe_mesh_bod.object);
+    subgame.path_pairs[24].secondary.fringe_mesh_bod.set_bod_object(
+        g_object_list.add_object_to_list());
+    disable_object_rendering(
+        subgame.path_pairs[24].secondary.fringe_mesh_bod.object);
+    subgame.path_pairs[24].primary.object->blend_mode = 8;
+    subgame.path_pairs[24].secondary.object->blend_mode = 8;
+
     return 1;
 }

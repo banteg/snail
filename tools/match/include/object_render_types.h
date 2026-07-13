@@ -82,6 +82,8 @@ typedef char ObjectToonEdge_must_be_0x24[
 struct ObjectIndexBufferResource;
 struct Object;
 
+void disable_object_rendering(Object* object); // @ 0x41a0a0
+
 struct ObjectDistort {
     float z_wave; // +0x00, y offset envelope from vertex z
     float y_squash; // +0x04, x stretch plus y squash around bounds_min.y

@@ -377,3 +377,20 @@ Slide0 is the primary surface throughout, with Slide0 retained on the screw and
 Back used by the other four variants. The focused bootstrap rises from 39.61%
 (2,768 candidate instructions) to 41.70% (2,983/5,411), with clean masked
 operands increasing from 870 to 945 and the existing problem counts unchanged.
+
+## 2026-07-13 worm render ownership
+
+Pair `24` owns the worm primary and a separately allocated mirrored secondary,
+but its embedded fringe bodies follow a distinct lifecycle from every preceding
+path family. Both fringe bodies receive real `Object` allocations and are then
+passed to the independently proof-grade `disable_object_rendering` helper
+instead of building visible fringe meshes. The two visible path objects retain
+blend mode `8`.
+
+This proves that `Path::fringe_mesh_bod` is always owned storage, while the
+presence of an allocated object does not imply visible fringe geometry. The
+shared object header now exposes the helper with its recovered `Object*`
+contract, and the same name and prototype are applied in Binary Ninja. The
+focused bootstrap rises from 41.70% (2,983 candidate instructions) to 42.13%
+(3,030/5,411), with clean masked operands increasing from 945 to 962 and the
+existing problem counts unchanged.
