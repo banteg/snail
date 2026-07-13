@@ -22,7 +22,7 @@ import struct
 
 import capstone
 
-from .symbols import FunctionSymbolManifest, REPO_ROOT
+from .symbols import FunctionSymbol, FunctionSymbolManifest, REPO_ROOT
 
 IMAGE_FILE_MACHINE_I386 = 0x14C
 IMAGE_SYM_CLASS_EXTERNAL = 2
@@ -653,6 +653,16 @@ def _reference_alternate_keys_for_address(
     return tuple(alternate_keys)
 
 
+def _function_symbols_by_name(
+    manifest: FunctionSymbolManifest,
+) -> dict[str, FunctionSymbol]:
+    return {
+        name: symbol
+        for symbol in manifest.functions
+        for name in (symbol.name, *symbol.aliases)
+    }
+
+
 def _format_f32_constant(data: bytes, offset: int, value: int | None = None) -> tuple[str, str] | None:
     if not (0 <= offset <= len(data) - 4):
         return None
@@ -1033,13 +1043,22 @@ def _resolve_image_reference(
             normalized_code=normalized_code,
         )
     if manifest is not None:
-        by_address = {symbol.address: symbol.name for symbol in manifest.functions}
+        by_address = {symbol.address: symbol for symbol in manifest.functions}
         if value in by_address:
-            name = by_address[value]
-            text = f"fn:{name}@0x{value:x}"
-            key = f"name:{name}"
+            symbol = by_address[value]
+            text = f"fn:{symbol.name}@0x{value:x}"
+            key = f"name:{symbol.name}"
             explained = True
-            return MaskedReference(0, "", "image", value, text, key, explained)
+            return MaskedReference(
+                0,
+                "",
+                "image",
+                value,
+                text,
+                key,
+                explained,
+                alternate_keys=tuple(f"name:{alias}" for alias in symbol.aliases),
+            )
     if image is not None and value in image.imports_by_va:
         name = image.imports_by_va[value]
         canonical = _canonical_symbol_name(name.rsplit("!", 1)[-1])
@@ -1834,7 +1853,7 @@ def resolve_function_extent(
     in between, so trim padding and pass an explicit end when the diff shows
     an unrelated tail.
     """
-    by_name = {symbol.name: symbol for symbol in manifest.functions}
+    by_name = _function_symbols_by_name(manifest)
     if function_name not in by_name:
         raise ValueError(f"function {function_name!r} not in manifest")
     start = by_name[function_name].address
@@ -2756,7 +2775,7 @@ def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
     payload = {
         "image_base": manifest.image_base,
         "functions": [
-            [symbol.address, symbol.name]
+            [symbol.address, symbol.name, list(symbol.aliases)]
             for symbol in manifest.functions
         ],
     }
@@ -3078,7 +3097,7 @@ def collect_scratch_statuses(
     reference_manifest = load_default_reference_symbol_manifest()
     manifest_digest = _function_manifest_cache_digest(manifest)
     include_resolver = _ScratchIncludeResolver(match_root)
-    by_name = {symbol.name: symbol for symbol in manifest.functions}
+    by_name = _function_symbols_by_name(manifest)
     ordered: list[tuple[ScratchConfig, int]] = []
     statuses_by_directory: dict[Path, ScratchStatus] = {}
     uncached: list[tuple[ScratchConfig, int]] = []
@@ -3190,7 +3209,7 @@ def collect_masked_operand_issues(
 
     manifest_digest = _function_manifest_cache_digest(manifest)
     include_resolver = _ScratchIncludeResolver(match_root)
-    by_name = {symbol.name: symbol for symbol in manifest.functions}
+    by_name = _function_symbols_by_name(manifest)
     ordered: list[tuple[ScratchConfig, int]] = []
     results_by_directory: dict[
         Path, tuple[dict, MaskedOperandAudit] | ScratchAuditFailure
@@ -3300,7 +3319,7 @@ def manifest_cluster_totals(
     image = load_image(image_path, manifest.image_base)
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
     addresses = [symbol.address for symbol in functions]
-    function_names = {symbol.name for symbol in functions}
+    functions_by_name = _function_symbols_by_name(manifest)
     byte_total = 0
     for start, end in zip(addresses, addresses[1:]):
         byte_total += len(image.function_bytes(start, end))
@@ -3310,14 +3329,17 @@ def manifest_cluster_totals(
         byte_total += len(image.function_bytes(last, image.image_base + padding_index))
 
     scratched_functions = {
-        status.config.function for status in statuses if status.config.function in function_names
+        functions_by_name[status.config.function].name
+        for status in statuses
+        if status.config.function in functions_by_name
     }
     matched_bytes_by_function: dict[str, int] = {}
     fuzzy_bytes_by_function: dict[str, float] = {}
     for status in statuses:
-        function = status.config.function
-        if function not in function_names:
+        requested_function = status.config.function
+        if requested_function not in functions_by_name:
             continue
+        function = functions_by_name[requested_function].name
         if status.state == "match":
             matched_bytes_by_function[function] = max(
                 status.target_size,
@@ -3417,7 +3439,12 @@ def _missing_scratch_status_rows(
 ) -> list[tuple[str, ...]]:
     if manifest is None:
         return []
-    scratched_functions = {status.config.function for status in statuses}
+    functions_by_name = _function_symbols_by_name(manifest)
+    scratched_functions = {
+        functions_by_name[status.config.function].name
+        for status in statuses
+        if status.config.function in functions_by_name
+    }
     missing_functions = {
         symbol.name for symbol in manifest.functions if symbol.name not in scratched_functions
     }

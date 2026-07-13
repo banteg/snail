@@ -446,6 +446,38 @@ def test_masked_operand_audit_accepts_matching_callee_reference() -> None:
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_masked_operand_audit_accepts_function_manifest_alias() -> None:
+    target = bytes.fromhex("e80b000000c3")
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="test.exe",
+        reference_target="test.exe",
+        image_base=0x401000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(
+                address=0x401010,
+                name="right_helper",
+                aliases=("folded_helper",),
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        relocated_candidate("_folded_helper", "name:folded_helper"),
+        image=LoadedImage(
+            mapped=b"\x00" * 0x2000,
+            image_base=0x401000,
+            size_of_image=0x2000,
+        ),
+        target_va=0x401000,
+        manifest=manifest,
+    )
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
 def test_masked_operand_audit_flags_wrong_callee_reference() -> None:
     target = bytes.fromhex("e80b000000c3")
     result = match_function(
@@ -1821,7 +1853,7 @@ def test_render_status_rows_includes_prefix() -> None:
 def test_render_status_rows_skip_image_load_when_manifest_is_fully_scratched() -> None:
     config = ScratchConfig(
         directory=Path("scratch/foo"),
-        function="foo",
+        function="folded_foo",
         compiler="msvc6.5",
         cflags="/O2 /G5 /W3",
         end_va=None,
@@ -1844,7 +1876,13 @@ def test_render_status_rows_skip_image_load_when_manifest_is_fully_scratched() -
         image_base=0x1000,
         unwrapped_sha256="0" * 64,
         source_database=None,
-        functions=(FunctionSymbol(address=0x1000, name="foo"),),
+        functions=(
+            FunctionSymbol(
+                address=0x1000,
+                name="foo",
+                aliases=("folded_foo",),
+            ),
+        ),
     )
 
     rows = render_status_rows(
@@ -1854,7 +1892,7 @@ def test_render_status_rows_skip_image_load_when_manifest_is_fully_scratched() -
     )
 
     assert len(rows) == 1
-    assert rows[0][1] == "foo"
+    assert rows[0][1] == "folded_foo"
 
 
 def test_render_status_rows_include_missing_manifest_functions() -> None:
@@ -2145,6 +2183,10 @@ def test_resolve_function_extent_uses_next_curated_function() -> None:
     assert resolve_function_extent(manifest, "change_snail_skin", 0x446000) == (
         0x445FD0,
         0x446000,
+    )
+    assert resolve_function_extent(manifest, "initialize_frontend_fade") == (
+        0x404350,
+        0x404360,
     )
 
 

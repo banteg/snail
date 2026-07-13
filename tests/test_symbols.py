@@ -29,7 +29,10 @@ def test_default_function_symbol_manifest_loads() -> None:
     assert any(function.name == "get_or_create_texture_ref" for function in manifest.functions)
     assert summary["function_count"] == len(manifest.functions)
     assert summary["described_function_count"] >= 1
+    assert summary["alias_count"] >= 2
     assert summary["address_range"]["start"] == f"0x{min_address:x}"
+    by_name = {function.name: function for function in manifest.functions}
+    assert by_name["update_intro_logo_renderable"].aliases == ("update_logo_row",)
 
 
 def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Path) -> None:
@@ -44,6 +47,8 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     assert raw["functions"][0]["address"] == f"0x{first_function.address:x}"
     assert raw["functions"][0]["name"] == first_function.name
     assert "description" in raw["functions"][8]
+    aliased = next(function for function in raw["functions"] if "aliases" in function)
+    assert aliased["aliases"]
 
 
 def test_duplicate_symbol_addresses_are_rejected(tmp_path: Path) -> None:
@@ -66,4 +71,35 @@ def test_duplicate_symbol_addresses_are_rejected(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="duplicate function address"):
+        load_function_symbol_manifest(manifest_path)
+
+
+def test_duplicate_function_aliases_are_rejected(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "duplicate-aliases.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "name": "bad manifest",
+                "primary_target": "artifacts/bin/SnailMail_unwrapped.exe",
+                "reference_target": "artifacts/bin/SnailMail.RWG",
+                "image_base": "0x400000",
+                "unwrapped_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+                "functions": [
+                    {
+                        "address": "0x405140",
+                        "name": "file_exists",
+                        "aliases": ["shared_name"],
+                    },
+                    {
+                        "address": "0x405370",
+                        "name": "rebuild_game_archive_if_needed",
+                        "aliases": ["shared_name"],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="duplicate function name or alias: shared_name"):
         load_function_symbol_manifest(manifest_path)

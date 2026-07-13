@@ -143,6 +143,9 @@
     {
       "address": "0x404350",
       "name": "initialize_border_stack",
+      "aliases": [
+        "initialize_frontend_fade"
+      ],
       "description": "Exact Windows cRBorderStack::Init(): resets the generation and borrowed-entry count of the BorderManager-owned visibility transition stack. Windows folds the same two-zero-store body with FrontendFade::initialize."
     },
     {

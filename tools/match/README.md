@@ -116,6 +116,11 @@ Useful analysis helpers:
   Add `"size"` only for recovered object extents; the audit uses it to keep
   `symbol+offset` and end-pointer operands distinct from the next global at the
   same address.
+- Use a gameplay function entry's `aliases` list when one native range has
+  multiple stable source-level names, such as compiler-folded methods or an
+  older scratch name retained during an ownership rename. Aliases resolve
+  scratch configs, function extents, and masked call operands without creating
+  another function or changing cluster totals; duplicate names are rejected.
 - `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
   prints addressed normalized listings. Use this when a region involves jump
   tables, duplicated tails, or branch labels and the side-by-side diff is too

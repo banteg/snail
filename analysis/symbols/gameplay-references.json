@@ -30,15 +30,6 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
-      "address": "0x404350",
-      "name": "initialize_border_stack",
-      "kind": "function",
-      "aliases": [
-        "initialize_frontend_fade"
-      ],
-      "description": "Folded Windows body shared by cRBorderStack::Init() and FrontendFade::initialize_frontend_fade; the receiver callsites distinguish the two authored owners."
-    },
-    {
       "address": "0x408600",
       "name": "noop_runtime_slot_constructor",
       "kind": "function",

@@ -24,6 +24,7 @@ class FunctionSymbol:
     address: int
     name: str
     description: str | None = None
+    aliases: tuple[str, ...] = ()
 
     @property
     def address_hex(self) -> str:
@@ -86,6 +87,17 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
             raise ValueError(
                 f"functions[{index}].name must be a curated identifier-like symbol name"
             )
+        aliases_value = raw_symbol.get("aliases", [])
+        if not isinstance(aliases_value, list) or not all(
+            isinstance(alias, str) and is_curated_function_name(alias)
+            for alias in aliases_value
+        ):
+            raise ValueError(
+                f"functions[{index}].aliases must be a list of curated identifier-like names"
+            )
+        names = (name, *aliases_value)
+        if len(set(names)) != len(names):
+            raise ValueError(f"duplicate function name or alias: {name}")
         description = raw_symbol.get("description")
         if description is not None:
             if not isinstance(description, str) or not description.strip():
@@ -95,16 +107,22 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
             description = description.strip()
         if address in seen_addresses:
             raise ValueError(f"duplicate function address: 0x{address:x}")
-        if name in seen_names:
-            raise ValueError(f"duplicate function name: {name}")
+        for symbol_name in names:
+            if symbol_name in seen_names:
+                raise ValueError(f"duplicate function name or alias: {symbol_name}")
         if address <= previous_address:
             raise ValueError("function addresses must be strictly increasing")
 
         symbols.append(
-            FunctionSymbol(address=address, name=name, description=description)
+            FunctionSymbol(
+                address=address,
+                name=name,
+                description=description,
+                aliases=tuple(aliases_value),
+            )
         )
         seen_addresses.add(address)
-        seen_names.add(name)
+        seen_names.update(names)
         previous_address = address
 
     return tuple(symbols)
@@ -175,6 +193,7 @@ def normalize_function_symbol_manifest(
         "functions": [
             {
                 **{"address": function.address_hex, "name": function.name},
+                **({"aliases": list(function.aliases)} if function.aliases else {}),
                 **(
                     {"description": function.description}
                     if function.description is not None
@@ -213,6 +232,7 @@ def summarize_function_symbol_manifest(
         "described_function_count": sum(
             1 for function in manifest.functions if function.description is not None
         ),
+        "alias_count": sum(len(function.aliases) for function in manifest.functions),
         "image_base": f"0x{manifest.image_base:x}",
         "address_range": {
             "start": first.address_hex,
@@ -224,6 +244,7 @@ def summarize_function_symbol_manifest(
         "preview": [
             {
                 **{"address": symbol.address_hex, "name": symbol.name},
+                **({"aliases": list(symbol.aliases)} if symbol.aliases else {}),
                 **(
                     {"description": symbol.description}
                     if symbol.description is not None
