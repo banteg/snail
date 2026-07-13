@@ -9,8 +9,8 @@ void Object::calc_object_bounding_box()
     *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);
     Vector3* min = &bounds_min;
     *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);
-    int offset = 0;
-    bounding_radius = 0.0f;
+    int offset;
+    bounding_radius = offset = 0;
     int result = 0;
     if (vertex_count > 0) {
         do {

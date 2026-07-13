@@ -81,3 +81,19 @@ the register cannot carry one stable authored result. The repeatable BN/IDA
 slice now records the proved `void __thiscall` owner instead of the stale
 free/fastcall integer transcription; focused matching remains honestly partial
 at 84.52%.
+
+## 2026-07-13 shared zero owner recovery
+
+Native clears EBP once, uses it as the byte offset, and writes those same zero
+bits into `bounding_radius` before spilling the processed-vertex counter. The
+plausible old-C++ chained clear `bounding_radius = offset = 0` recovers that
+shared zero owner. It also lets VC6 form the loop vertex directly as
+`vertices + offset`, eliminating the previous synthetic register copy.
+
+Focused Wibo rises from 84.52% (120/119 instructions) to 99.16% with the exact
+119/119 instruction count, 28/119 exact prefix instructions, and one clean
+masked operand. The sole remaining difference is scheduling: native writes the
+radius zero before the counter spill and vertex-count test, while the candidate
+sinks that independent store to just after the comparison. No volatile store
+or artificial dependency is used to force the final instruction across the
+test.

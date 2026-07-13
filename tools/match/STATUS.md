@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **63.55%**.
+**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **63.56%**.
 
 ## Proof Grade (571)
 
@@ -580,7 +580,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (25)
+## Near Match (95-99.99%) (26)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -593,6 +593,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | activate_landscape_entry | 0x418870 | 442 | 123/123 | 99.19% | 65/123 | 20 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 197/197 | 95.43% | 58/197 | 26 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
+| 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 119/119 | 99.16% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  |
@@ -610,7 +611,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (62)
+## High Progress (80-94.99%) (61)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -634,7 +635,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
 | 🚧 | begin_track_attachment_follow_state | 0x420c40 | 98 | 27/27 | 85.19% | 18/27 | 2 ok |  |
-| 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 120/119 | 84.52% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 19 ok |  |
 | 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 189/188 | 92.84% | 9/188 | 32 ok |  |
