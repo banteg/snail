@@ -429,3 +429,11 @@ aliases respectively and restore the 85 clean operands.
   and `+0x56f`, `+0x5c6`, `+0x5f2`, `+0x5f2`, `+0x5ac`, `+0x5f2`, `+0x5f2`,
   `+0x5e0`, respectively. These content-bounded aliases preserve the exact
   `396/396` body and all 85 clean operands.
+
+2026-07-13 stable local-table audit: the matcher now derives a compiler-local
+symbol's byte extent from the next COFF symbol before reading its relocated
+entries. The exact five- and eight-entry tables therefore remain content-
+verified when unrelated header declarations renumber them (currently
+`$L5454/$L5455`). The accumulated `$L####` alias lists for these two tables
+have been removed; `initialize_subgame` remains 396/396 with all 85 operands
+clean, without trusting private label spelling.

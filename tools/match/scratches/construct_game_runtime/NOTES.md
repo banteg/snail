@@ -410,3 +410,13 @@ label to `$L6079`. COFF again emits the same bounded ten-byte `mov eax,
 zero try/IP maps, state `-1`, and the cleanup-thunk relocation. The audited
 alias restores all 120 clean operands without changing the honest 88.89%
 instruction score.
+
+### Stable EH-thunk audit
+
+The embedded twinkle owner declaration renumbered the same local thunk to
+`$L6120`. VC6 emits it in a separate `.text$x` section; the matcher now derives
+its exact 0xa-byte extent from COFF, retains that bounded section slice and its
+two relocation offsets, and compares the normalized `mov eax, metadata; jmp
+__CxxFrameHandler` body with native `0x496a7b`. The accumulated
+`$L6041/$L6044/$L6050/$L6079` aliases are removed; the current label remains
+verified structurally rather than whitelisted.

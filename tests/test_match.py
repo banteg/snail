@@ -589,6 +589,62 @@ def test_extract_object_function_resolves_audited_local_function_alias() -> None
     assert reference.explained
 
 
+def test_masked_operand_audit_accepts_cross_section_local_function_alias_by_code() -> None:
+    handler_address = 0x402000
+    mapped = bytearray(b"\x00" * 0x3000)
+    mapped[0x2000 : 0x200A] = bytes.fromhex("b800214000e9f6efffff")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=bytes.fromhex("6800000000c3"),
+        relocation_offsets=frozenset({1}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=1,
+                symbol_name="$Lnew",
+                text="sym:$Lnew",
+                key="name:$Lnew",
+                explained=True,
+                addend=0,
+                symbol_offset=None,
+                symbol_size=0xA,
+                symbol_data=bytes.fromhex("b800000000e900000000"),
+                symbol_relocation_offsets=frozenset({1, 6}),
+            ),
+        ),
+    )
+    result = match_function(
+        bytes.fromhex("6800204000c3"),
+        candidate,
+        image=LoadedImage(
+            mapped=bytes(mapped), image_base=0x400000, size_of_image=0x3000
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=handler_address,
+                    name="foo_eh_handler",
+                    kind="function_alias",
+                    size=0xA,
+                ),
+            ),
+        ),
+    )
+
+    assert result.ratio == 1.0
+    assert result.masked_operand_audit.ok_count == 1
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.target_references[0].normalized_code == (
+        "mov eax, ADDR",
+        "jmp ADDR",
+    )
+    assert (
+        entry.candidate_references[0].normalized_code
+        == entry.target_references[0].normalized_code
+    )
+
+
 def test_extract_object_function_preserves_reference_symbol_addends() -> None:
     code = bytes.fromhex("b808000000c3")
     obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_table", 0)], [(1, 1)]))
@@ -729,6 +785,86 @@ def local_jump_table_candidate(
     )
 
 
+def test_extract_object_function_records_local_symbol_extent() -> None:
+    from snail.match import CoffObject, CoffRelocation, CoffSection, CoffSymbol
+
+    code_and_tables = bytes.fromhex("ff248500000000c3") + struct.pack(
+        "<IIII", 0, 7, 0, 7
+    )
+    obj = CoffObject(
+        sections=(
+            CoffSection(
+                name=".text",
+                data=code_and_tables,
+                characteristics=0x20,
+                relocations=(
+                    CoffRelocation(3, 1, 0x06),
+                    CoffRelocation(8, 0, 0x06),
+                    CoffRelocation(12, 0, 0x06),
+                    CoffRelocation(16, 0, 0x06),
+                    CoffRelocation(20, 0, 0x06),
+                ),
+            ),
+        ),
+        symbols=(
+            CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            CoffSymbol(1, "$Ltable", 8, 1, 0, 3),
+            CoffSymbol(2, "$Lnext", 16, 1, 0, 3),
+        ),
+    )
+
+    function = extract_object_function(obj, "foo")
+    table_reference = next(
+        reference
+        for reference in function.relocation_references
+        if reference.symbol_name == "$Ltable"
+    )
+
+    assert table_reference.symbol_offset == 8
+    assert table_reference.symbol_size == 8
+    assert table_reference.symbol_data == code_and_tables[8:16]
+    assert table_reference.symbol_relocation_offsets == frozenset({0, 4})
+
+
+def test_extract_object_function_records_cross_section_local_code() -> None:
+    from snail.match import CoffObject, CoffRelocation, CoffSection, CoffSymbol
+
+    handler = bytes.fromhex("b800000000e900000000")
+    obj = CoffObject(
+        sections=(
+            CoffSection(
+                name=".text",
+                data=bytes.fromhex("6800000000c3"),
+                characteristics=0x20,
+                relocations=(CoffRelocation(1, 1, 0x06),),
+            ),
+            CoffSection(
+                name=".text$x",
+                data=handler,
+                characteristics=0x20,
+                relocations=(
+                    CoffRelocation(1, 2, 0x06),
+                    CoffRelocation(6, 3, 0x14),
+                ),
+            ),
+        ),
+        symbols=(
+            CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            CoffSymbol(1, "$Lhandler", 0, 2, 0, 3),
+            CoffSymbol(2, "$Tmetadata", 0, 0, 0, 2),
+            CoffSymbol(3, "___CxxFrameHandler", 0, 0, 0, 2),
+        ),
+    )
+
+    function = extract_object_function(obj, "foo")
+    handler_reference = function.relocation_references[0]
+
+    assert handler_reference.symbol_offset is None
+    assert handler_reference.symbol_size == len(handler)
+    assert handler_reference.symbol_data == handler
+    assert handler_reference.symbol_relocation_offsets == frozenset({1, 6})
+
+
 def test_masked_operand_audit_accepts_matching_local_jump_table_contents() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
@@ -757,7 +893,7 @@ def test_masked_operand_audit_accepts_matching_local_jump_table_contents() -> No
     assert entry.candidate_references[0].jump_table_entries == (0, 7)
 
 
-def test_masked_operand_audit_bounds_adjacent_local_jump_table_alias() -> None:
+def test_masked_operand_audit_bounds_unaliased_table_by_object_symbol_extent() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
     candidate = ObjectFunction(
@@ -773,6 +909,7 @@ def test_masked_operand_audit_bounds_adjacent_local_jump_table_alias() -> None:
                 explained=True,
                 addend=0,
                 symbol_offset=8,
+                symbol_size=8,
             ),
             ObjectRelocationReference(
                 offset=8,
@@ -824,7 +961,6 @@ def test_masked_operand_audit_bounds_adjacent_local_jump_table_alias() -> None:
                     address=0x402000,
                     name="foo_jump_table",
                     kind="jump_table",
-                    aliases=("$Ltable",),
                     size=0x8,
                 ),
             ),

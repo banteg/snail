@@ -80,6 +80,9 @@ class ObjectRelocationReference:
     explained: bool
     addend: int | None = None
     symbol_offset: int | None = None
+    symbol_size: int | None = None
+    symbol_data: bytes | None = None
+    symbol_relocation_offsets: frozenset[int] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
@@ -223,6 +226,7 @@ class MaskedReference:
     alternate_jump_table_entries: tuple[tuple[int, ...], ...] = ()
     audited_bytes: bytes | None = None
     local_data_bytes: bytes | None = None
+    normalized_code: tuple[str, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -688,9 +692,10 @@ def _resolve_object_relocation(
             symbol.name,
             kind="function_alias",
         )
-        # Compiler-local jump-table labels require bounded content auditing.
-        # A local code label is accepted only when the manifest records it as
-        # a manually audited identical function alias at the exact label.
+        # A manifest alias only supplies the canonical identity here. The
+        # masked-operand audit still requires the bounded local code body to
+        # match after relocation normalization; private label spelling alone
+        # never proves a function alias.
         if (
             local_reference_symbol is not None
             and local_reference_symbol.kind == "function_alias"
@@ -819,6 +824,25 @@ def extract_object_function(
             addend,
             reference_manifest=reference_manifest,
         )
+        symbol_section = (
+            obj.sections[symbol.section_number - 1]
+            if symbol.section_number > 0
+            else None
+        )
+        symbol_end = (
+            min(
+                (
+                    sibling.value
+                    for sibling in obj.symbols
+                    if sibling.section_number == symbol.section_number
+                    and sibling.value > symbol.value
+                ),
+                default=len(symbol_section.data),
+            )
+            if symbol_section is not None
+            else None
+        )
+        retain_local_symbol = symbol.name.startswith("$L") and symbol_end is not None
         relocation_references.append(
             ObjectRelocationReference(
                 offset=offset,
@@ -831,6 +855,29 @@ def extract_object_function(
                     symbol.value - target.value
                     if symbol.section_number == target.section_number
                     else None
+                ),
+                symbol_size=(
+                    symbol_end - symbol.value
+                    if symbol_end is not None
+                    else None
+                ),
+                symbol_data=(
+                    symbol_section.data[symbol.value : symbol_end]
+                    if retain_local_symbol and symbol_section is not None
+                    else None
+                ),
+                symbol_relocation_offsets=(
+                    frozenset(
+                        sibling_relocation.virtual_address - symbol.value
+                        for sibling_relocation in symbol_section.relocations
+                        if symbol.value
+                        <= sibling_relocation.virtual_address
+                        < symbol_end
+                    )
+                    if retain_local_symbol
+                    and symbol_section is not None
+                    and symbol_end is not None
+                    else frozenset()
                 ),
             )
         )
@@ -927,6 +974,7 @@ def _resolve_image_reference(
         text, key = _format_reference_symbol(reference_symbol)
         jump_table_entries = None
         audited_bytes = None
+        normalized_code = None
         if (
             reference_symbol.kind == "jump_table"
             and reference_symbol.size is not None
@@ -948,6 +996,25 @@ def _resolve_image_reference(
                 value - image.image_base,
                 reference_symbol.size,
             )
+        if (
+            reference_symbol.kind == "function_alias"
+            and reference_symbol.size is not None
+            and image is not None
+        ):
+            alias_bytes = _read_bytes(
+                image.mapped,
+                value - image.image_base,
+                reference_symbol.size,
+            )
+            if alias_bytes is not None:
+                normalized_code = normalize_function(
+                    alias_bytes,
+                    address_range=(
+                        image.image_base,
+                        image.image_base + image.size_of_image,
+                    ),
+                    base_address=value,
+                )
         return MaskedReference(
             0,
             "",
@@ -963,6 +1030,7 @@ def _resolve_image_reference(
             ),
             jump_table_entries=jump_table_entries,
             audited_bytes=audited_bytes,
+            normalized_code=normalized_code,
         )
     if manifest is not None:
         by_address = {symbol.address: symbol.name for symbol in manifest.functions}
@@ -1141,6 +1209,7 @@ def disassemble_normalized_function(
         alternate_jump_table_entries: tuple[tuple[int, ...], ...] = ()
         audited_bytes = None
         local_data_bytes = None
+        normalized_code = None
         reference_symbol = None
         local_reference_symbol = None
         if reference is not None:
@@ -1153,38 +1222,85 @@ def disassemble_normalized_function(
                 reference.symbol_name,
                 kind="jump_table",
             )
-        if (
-            reference is not None
-            and reference.symbol_name.startswith("$L")
-            and reference.symbol_offset is not None
-        ):
-            local_offset = reference.symbol_offset + (reference.addend or 0)
-            local_jump_table_size = (
+        if reference is not None and reference.symbol_name.startswith("$L"):
+            symbol_addend = reference.addend or 0
+            local_offset = (
+                reference.symbol_offset + symbol_addend
+                if reference.symbol_offset is not None
+                else None
+            )
+            local_symbol_size = None
+            if reference.symbol_size is not None:
+                local_symbol_size = reference.symbol_size - symbol_addend
+                if local_symbol_size <= 0:
+                    local_symbol_size = None
+            manifest_table_size = (
                 local_reference_symbol.size
                 if local_reference_symbol is not None
                 and local_reference_symbol.kind == "jump_table"
                 else None
             )
-            jump_table_entries = _read_object_jump_table_entries(
-                data,
-                local_offset,
-                relocation_by_offset,
-                byte_count=local_jump_table_size,
+            table_sizes = tuple(
+                dict.fromkeys(
+                    size
+                    for size in (local_symbol_size, manifest_table_size)
+                    if size is not None
+                )
             )
-            unbounded_jump_table_entries = _read_object_jump_table_entries(
-                data,
-                local_offset,
-                relocation_by_offset,
-            )
-            if jump_table_entries is None:
-                jump_table_entries = unbounded_jump_table_entries
-            elif (
-                unbounded_jump_table_entries is not None
-                and unbounded_jump_table_entries != jump_table_entries
+            if local_offset is not None:
+                table_options: list[tuple[int, ...]] = []
+                for table_size in table_sizes:
+                    entries = _read_object_jump_table_entries(
+                        data,
+                        local_offset,
+                        relocation_by_offset,
+                        byte_count=table_size,
+                    )
+                    if entries is not None and entries not in table_options:
+                        table_options.append(entries)
+                unbounded_entries = _read_object_jump_table_entries(
+                    data, local_offset, relocation_by_offset
+                )
+                if (
+                    unbounded_entries is not None
+                    and unbounded_entries not in table_options
+                ):
+                    table_options.append(unbounded_entries)
+                if table_options:
+                    jump_table_entries = table_options[0]
+                    alternate_jump_table_entries = tuple(table_options[1:])
+            if local_offset is not None and 0 <= local_offset < len(data):
+                local_end = (
+                    min(len(data), local_offset + local_symbol_size)
+                    if local_symbol_size is not None
+                    else len(data)
+                )
+                local_data_bytes = data[local_offset:local_end]
+                if local_symbol_size is not None:
+                    local_relocation_offsets = frozenset(
+                        offset - local_offset
+                        for offset in relocation_by_offset
+                        if local_offset <= offset < local_end
+                    )
+                    normalized_code = normalize_function(
+                        local_data_bytes,
+                        relocation_offsets=local_relocation_offsets,
+                        address_range=address_range,
+                    )
+            elif reference.symbol_data is not None and 0 <= symbol_addend < len(
+                reference.symbol_data
             ):
-                alternate_jump_table_entries = (unbounded_jump_table_entries,)
-            if 0 <= local_offset < len(data):
-                local_data_bytes = data[local_offset:]
+                local_data_bytes = reference.symbol_data[symbol_addend:]
+                local_relocation_offsets = frozenset(
+                    offset - symbol_addend
+                    for offset in reference.symbol_relocation_offsets
+                    if offset >= symbol_addend
+                )
+                normalized_code = normalize_function(
+                    local_data_bytes,
+                    relocation_offsets=local_relocation_offsets,
+                    address_range=address_range,
+                )
         if reference is not None:
             if (
                 reference_symbol is not None
@@ -1218,6 +1334,7 @@ def disassemble_normalized_function(
             alternate_jump_table_entries=alternate_jump_table_entries,
             audited_bytes=audited_bytes,
             local_data_bytes=local_data_bytes,
+            normalized_code=normalized_code,
         )
 
     def image_reference(
@@ -1248,6 +1365,7 @@ def disassemble_normalized_function(
             alternate_jump_table_entries=resolved.alternate_jump_table_entries,
             audited_bytes=resolved.audited_bytes,
             local_data_bytes=resolved.local_data_bytes,
+            normalized_code=resolved.normalized_code,
         )
 
     lines: list[DisassemblyLine] = []
@@ -1410,6 +1528,15 @@ def _reference_status(
             and candidate.source == "reloc"
         )
 
+    def is_local_function_alias(
+        target: MaskedReference, candidate: MaskedReference
+    ) -> bool:
+        return (
+            target.text.startswith("function_alias:")
+            and candidate.source == "reloc"
+            and candidate.text.startswith("sym:$L")
+        )
+
     def jump_table_entries_match(
         target: MaskedReference, candidate: MaskedReference
     ) -> bool:
@@ -1448,11 +1575,22 @@ def _reference_status(
             and len(candidate.local_data_bytes) >= byte_count
         )
 
+    def function_alias_code_matches(
+        target: MaskedReference, candidate: MaskedReference
+    ) -> bool:
+        return (
+            is_local_function_alias(target, candidate)
+            and target.normalized_code is not None
+            and target.normalized_code == candidate.normalized_code
+        )
+
     def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
         if is_local_jump_table(target, candidate):
             return jump_table_entries_match(target, candidate)
         if is_content_audited_reference(target, candidate):
             return audited_bytes_match(target, candidate)
+        if is_local_function_alias(target, candidate):
+            return function_alias_code_matches(target, candidate)
         target_keys = reference_key_options(target)
         candidate_keys = reference_key_options(candidate)
         return bool(target_keys & candidate_keys)
@@ -1489,11 +1627,21 @@ def _reference_status(
         )
         for target, candidate in zip(target_references, candidate_references)
     )
+    has_unverified_function_alias = any(
+        is_local_function_alias(target, candidate)
+        and not function_alias_code_matches(target, candidate)
+        and (
+            target.normalized_code is None
+            or candidate.normalized_code is None
+        )
+        for target, candidate in zip(target_references, candidate_references)
+    )
     if (
         not all_explained
         or any(not keys for keys in (*target_keys, *candidate_keys))
         or has_unverified_jump_table
         or has_unverified_content
+        or has_unverified_function_alias
     ):
         return "unresolved"
     return "mismatch"
@@ -2354,7 +2502,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 8
+CACHE_VERSION = 9
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -2383,6 +2531,11 @@ def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
         "local_data_bytes": (
             reference.local_data_bytes.hex()
             if reference.local_data_bytes is not None
+            else None
+        ),
+        "normalized_code": (
+            list(reference.normalized_code)
+            if reference.normalized_code is not None
             else None
         ),
     }
@@ -2414,6 +2567,11 @@ def _masked_reference_from_cache(payload: dict) -> MaskedReference:
         local_data_bytes=(
             bytes.fromhex(payload["local_data_bytes"])
             if payload["local_data_bytes"] is not None
+            else None
+        ),
+        normalized_code=(
+            tuple(payload["normalized_code"])
+            if payload["normalized_code"] is not None
             else None
         ),
     )
