@@ -256,3 +256,11 @@ mismatches.
   clean operands and the same two honest jump-table mismatches. The adjacent
   `update_subgoldy` baseline likewise remains 72.51%, 2067/2087, with its one
   existing follow-table mismatch.
+
+2026-07-13 final runtime-tail closure: the analysis owner now exposes the
+embedded `gui`, `galaxy`, rebuild selector, slug-voice cadence scalars, and
+contact-target manager already used by this scratch, rather than hiding the
+whole `+0x125ffd8..+0x12727d8` interval behind one byte array. The previewed
+field chain closes exactly and leaves focused Wibo unchanged at 78.22%,
+1033/1033 instructions, with 116 clean operands and the same two honest
+jump-table mismatches.

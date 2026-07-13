@@ -235,6 +235,71 @@ typedef struct GUI {
     void* replay_button;
 } GUI;
 
+typedef struct Help {
+    FrontendWidget* back_button;
+} Help;
+
+typedef struct ThanksScreen {
+    SubgameRuntime* game;
+    FrontendWidget* message_widget;
+    int32_t message_state;
+    float message_progress;
+    float message_progress_step;
+} ThanksScreen;
+
+typedef struct GalaxyRouteRecord {
+    int32_t route_name_index;
+    uint8_t unknown_004[0x08 - 0x04];
+    float map_x;
+    float map_y;
+    float map_z;
+    float route_tint_alpha;
+    float highlight_target;
+    char detail_text[0x80];
+    char description_text[0x29c - 0x9c];
+} GalaxyRouteRecord;
+
+typedef struct GalaxyRouteSlot {
+    int32_t unknown_000;
+    GalaxyRouteRecord record;
+} GalaxyRouteSlot;
+
+typedef struct GalaxyRouteNameRecord {
+    char name[0x80];
+    int32_t star_count;
+    float color_r;
+    float color_g;
+    float color_b;
+    float color_a;
+    float map_x;
+    float map_y;
+    float map_z;
+} GalaxyRouteNameRecord;
+
+typedef struct Galaxy {
+    uint8_t active;
+    uint8_t unknown_001[0x04 - 0x01];
+    int32_t route_mode;
+    int32_t route_state;
+    int32_t record_count;
+    GalaxyRouteSlot route_slots[101];
+    GalaxyRouteNameRecord route_names[10];
+    SubgameRuntime* level_progress_base;
+    FrontendWidget* exit_or_back_widget;
+    FrontendWidget* route_title_widget;
+    FrontendWidget* route_icon_widget;
+    int32_t selected_index;
+    int32_t hover_state;
+    uint8_t unknown_10f88[0x10f8c - 0x10f88];
+    FrontendWidget* bounds_frame_widget;
+    FrontendWidget* selected_title_widget;
+    FrontendWidget* selected_detail_widget;
+    FrontendWidget* selected_description_widget;
+    FrontendWidget* play_or_deliver_widget;
+    FrontendWidget* replay_widget;
+    int32_t unknown_10fa4;
+} Galaxy;
+
 typedef union RuntimeRateOrLevelArg {
     float base_rate;
     int32_t level_arg_tail;
@@ -314,7 +379,13 @@ typedef struct SubgameRuntime {
     float garbage_frequency;
     float salt_frequency;
     GUI gui;
-    uint8_t unknown_1260008[0x12727d8 - 0x1260008];
+    Help help;
+    ThanksScreen thanks_screen;
+    Galaxy galaxy;
+    int32_t subgame_rebuild_selector;
+    float next_slug_voice_trigger_z;
+    float slug_voice_trigger_spacing_z;
+    EnemyManager enemy_manager;
     Completion completion;
     TimesUp times_up;
 } SubgameRuntime;

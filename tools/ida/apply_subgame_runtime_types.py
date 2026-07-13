@@ -228,6 +228,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
                     "EnemyManager": _named_struct_size("EnemyManager"),
+                    "GUI": _named_struct_size("GUI"),
+                    "Help": _named_struct_size("Help"),
+                    "ThanksScreen": _named_struct_size("ThanksScreen"),
+                    "Galaxy": _named_struct_size("Galaxy"),
                     "Parcel": _named_struct_size("Parcel"),
                     "ParcelManager": _named_struct_size("ParcelManager"),
                     "Completion": _named_struct_size("Completion"),

@@ -349,3 +349,20 @@ proven one-byte `PathManager` at `+0xff2910`; TimeString callsites independently
 use the same start address as their receiver. Constructor metrics remain
 unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
 relocation unresolved.
+
+## 2026-07-13 final SubgameRuntime owner-band closure
+
+The consolidated Binary Ninja/IDA analysis layouts now replace the anonymous
+`+0x125ffd8..+0x12727d8` tail with the same proven owners used by the matching
+headers: normalized garbage/salt frequencies, `GUI`, `Help`, `ThanksScreen`,
+`Galaxy`, the rebuild and slug-voice cadence scalars, and `EnemyManager`.
+Their exact extents form one contiguous chain through the existing
+`Completion` and `TimesUp` tail. A Binary Ninja declaration preview verified
+`GUI 0x28`, `Help 0x04`, `ThanksScreen 0x14`, `Galaxy 0x10fa8`,
+`EnemyManager 0x1804`, and the unchanged `SubgameRuntime 0x1272838`, then
+reverted without changing the database.
+
+This is analysis ownership consolidation, not constructor source shaping.
+Focused output remains 88.89%, 299/268 candidate/target instructions, with
+119 clean masked operands and only the existing compiler-local EH relocation
+unresolved.

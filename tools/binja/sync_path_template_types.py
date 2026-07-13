@@ -91,6 +91,11 @@ REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "BarrierActor",
     "LandscapeManager",
+    "GUI",
+    "Help",
+    "ThanksScreen",
+    "Galaxy",
+    "EnemyManager",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -294,7 +299,16 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0xff7c00", "landscape_manager", "LandscapeManager"),
     ("0x10013a4", "smtrack_heightfield", "SmtrackHeightfieldAnimator"),
     ("0x10014cc", "sm_tracks", "SMTracks"),
+    ("0x125ffd8", "garbage_frequency", "float"),
+    ("0x125ffdc", "salt_frequency", "float"),
+    ("0x125ffe0", "gui", "GUI"),
+    ("0x1260008", "help", "Help"),
+    ("0x126000c", "thanks_screen", "ThanksScreen"),
+    ("0x1260020", "galaxy", "Galaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
+    ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
+    ("0x1270fd0", "slug_voice_trigger_spacing_z", "float"),
+    ("0x1270fd4", "enemy_manager", "EnemyManager"),
 )
 
 VAPOUR_FIELD_UPDATES = (
