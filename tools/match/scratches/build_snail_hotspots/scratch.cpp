@@ -52,5 +52,5 @@ void Snail::build_snail_hotspots()
         hotspot_z += 3;
     } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);
 
-    snail_hotspots_local[18].y += 0.300000012f;
+    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;
 }

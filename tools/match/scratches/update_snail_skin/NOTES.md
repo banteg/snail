@@ -23,3 +23,9 @@ index in `ebx`, the world-hotspot cursor in `ebp`, and preserves the by-value
 `TransformMatrix` stack copy before `multiply_vector_by_matrix`. Earlier
 pointer-walk and dual-pointer forms either swapped `ebx`/`ebp` ownership or
 changed the prologue.
+
+2026-07-13 index-owner closure: the exact loop now uses
+`SNAIL_HOTSPOT_COUNT` and switches source matrices at
+`SNAIL_HOTSPOT_PARCEL_POINT`, the first body/camera anchor after the eleven
+weapon hotspots. This is codegen-neutral and ties the transform-bank split to
+the same authored texture ordering used by extraction and cutscene consumers.

@@ -51,7 +51,8 @@ void CutScene::update_cutscene()
     case 2:
         camera_mode = 1;
         set_matrix_identity(&live_matrix);
-        live_matrix.position = presentation->snail_hotspots_world[18];
+        live_matrix.position = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         live_matrix.look_at_point(&presentation->live_matrix.position);
         progress = progress + progress_step;
         if (progress > 1.0f) {
@@ -66,7 +67,8 @@ void CutScene::update_cutscene()
         camera_mode = 1;
 
         set_matrix_identity(&camera_matrix_a);
-        camera_matrix_a.position = presentation->snail_hotspots_world[18];
+        camera_matrix_a.position = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         float swing = sine(progress * 3.1415927f);
         camera_matrix_a.position.x = swing + swing + camera_matrix_a.position.x;
         camera_matrix_a.look_at_point(&presentation->live_matrix.position);
@@ -113,7 +115,8 @@ void CutScene::update_cutscene()
     case 11: {
         camera_mode = -1;
         set_matrix_identity(&camera_matrix_b);
-        camera_matrix_b.position = presentation->snail_hotspots_world[18];
+        camera_matrix_b.position = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         float swing = sine(progress * 3.1415927f);
         camera_matrix_b.position.x = swing + swing + camera_matrix_b.position.x;
         if (camera_matrix_b.position.y < 0.0f)
@@ -139,7 +142,8 @@ void CutScene::update_cutscene()
         camera_mode = -1;
         force_camera_update = 1;
         set_matrix_identity(&live_matrix);
-        live_matrix.position = presentation->snail_hotspots_world[18];
+        live_matrix.position = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         if (live_matrix.position.y < 0.0f)
             live_matrix.position.y = 0.0f;
         live_matrix.look_at_point(&presentation->live_matrix.position);
@@ -189,8 +193,10 @@ void CutScene::update_cutscene()
         camera_mode = -1;
         set_matrix_identity(&camera_matrix_b);
 
-        camera_matrix_a.position = presentation->snail_hotspots_world[12];
-        completion_delta = presentation->snail_hotspots_world[18];
+        camera_matrix_a.position = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_SKID_STOP];
+        completion_delta = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         completion_delta.x -= camera_matrix_a.position.x;
         completion_delta.y -= camera_matrix_a.position.y;
         completion_delta.z -= camera_matrix_a.position.z;
@@ -221,7 +227,8 @@ void CutScene::update_cutscene()
         camera_mode = -1;
         force_camera_update = 1;
         set_matrix_identity(&live_matrix);
-        live_matrix.position = presentation->snail_hotspots_world[18];
+        live_matrix.position = presentation->snail_hotspots_world[
+            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         live_matrix.look_at_point(&presentation->live_matrix.position);
         if (presentation->anim_manager.queue_count == 0)
             presentation->dispatch_cutscene_animation(9, 0, -1);

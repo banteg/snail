@@ -134,3 +134,10 @@ to a nonexistent CutScene tail.
   minor register/stack-slot allocation differences plus the known switch-table
   identity mismatch. No artificial local, padding, or volatile qualifier was
   added to force those residuals.
+
+2026-07-13 hotspot-index closure: all cutscene reads of hotspot 18 and hotspot
+12 now use `SNAIL_HOTSPOT_CAMERA_INTRO_TALK` and
+`SNAIL_HOTSPOT_CAMERA_SKID_STOP`. Together with extraction and the exact
+world-space transform loop, this proves the named anchors across the complete
+producer-to-consumer chain. Focused code generation remains 93.25%, 503/505,
+with 57 clean masked operands and the existing jump-table mismatch.

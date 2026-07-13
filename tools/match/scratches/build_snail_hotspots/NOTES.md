@@ -18,6 +18,13 @@ The tail lift is deliberately named as Y: presentation `+0x17a8` is
 `snail_hotspots_local[18].y` (`+0x16cc + 18 * 0xc + 4`), despite the decompiler's
 transient `z`-lane cursor making it easy to misread.
 
+2026-07-13 hotspot-index ownership: the 19-entry authored texture table is now
+shared as `SnailHotspotIndex`. The final lift targets
+`SNAIL_HOTSPOT_CAMERA_INTRO_TALK`, while the exact world-space builder uses
+`SNAIL_HOTSPOT_PARCEL_POINT` as the matrix-bank split. The cutscene consumer
+now names its IntroTalk and SkidStop anchors through the same enum, closing the
+producer/transform/consumer index ownership without changing code generation.
+
 iOS and Android retain `cRSnail::ExtractHotSpots`; the Android body repeats the
 19-name scan, texture lookup, model-face vertex extraction, and final
 CameraIntroTalk Y lift on the same relative member family.
