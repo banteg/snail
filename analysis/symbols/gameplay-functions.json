@@ -1595,6 +1595,16 @@
       "description": "Walks the global object list and replaces one texture reference with another across face quads and any already-built grouped-render texture tables."
     },
     {
+      "address": "0x430e20",
+      "name": "initialize_tracked_allocation_depth_thunk",
+      "description": "CRT constructor-table thunk that tail-forwards to the adjacent initializer for the tracked-allocation stack depth."
+    },
+    {
+      "address": "0x430e30",
+      "name": "initialize_tracked_allocation_depth",
+      "description": "Initializes the shared tracked-allocation stack depth to zero before archive and shell startup begin using the guarded allocation helpers."
+    },
+    {
       "address": "0x430e40",
       "name": "initialize_game_data_archive",
       "description": "Windows RShellInit(): resets the global shell, tracked-allocation, key-repeat, sound, and input state; initializes the DAT index; allocates the shared RShell scratch and music workspaces; and samples the current cursor clip rectangle."
@@ -3217,6 +3227,11 @@
       "description": "Implements the staticized void `cRObject::Load(char*)` path: parses one authored object definition into the caller-owned Object slot, installs its owned vertex and facequad arrays, and borrows texture refs from the shared manager."
     },
     {
+      "address": "0x44c870",
+      "name": "initialize_global_identity_matrix_thunk",
+      "description": "CRT constructor-table thunk that tail-forwards to initialize_global_identity_matrix for the shared transform."
+    },
+    {
       "address": "0x44c880",
       "name": "initialize_global_identity_matrix",
       "description": "Startup wrapper that seeds the shared matrix at `data_77ff40` by calling `initialize_uniform_scale_matrix(..., 1.0)`. It is only referenced from the CRT constructor table."
@@ -3240,6 +3255,11 @@
       "address": "0x44c900",
       "name": "next_math_random_value",
       "description": "Advances the shared gameplay random-table index modulo 0x1fff and returns the next cached 15-bit value. Android symbols match this helper family to the shared `Rand()` / `gRMathRand2()` accessors."
+    },
+    {
+      "address": "0x44c920",
+      "name": "j_rand",
+      "description": "Game-code jump thunk to the statically linked CRT rand body, shared by the signed and unsigned random-float scaling helpers."
     },
     {
       "address": "0x44c930",
@@ -3318,6 +3338,11 @@
       "address": "0x44cd40",
       "name": "cross_vectors",
       "description": "Computes the 3D cross product of two vectors into a destination output. Android symbols match this helper to `tVector::Cross(const tVector&, const tVector&)`."
+    },
+    {
+      "address": "0x44cdd0",
+      "name": "destroy_cross_vectors_static_result",
+      "description": "Compiler-generated empty destruction callback registered for cross_vectors' function-local static Vector3 result."
     },
     {
       "address": "0x44cde0",
