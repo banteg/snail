@@ -437,3 +437,11 @@ verified when unrelated header declarations renumber them (currently
 `$L5454/$L5455`). The accumulated `$L####` alias lists for these two tables
 have been removed; `initialize_subgame` remains 396/396 with all 85 operands
 clean, without trusting private label spelling.
+
+2026-07-13 canonical Binary Ninja replay: the authoritative path-template
+header now supplies the complete `SubgameRuntime` owner map used by this exact
+source. Binary Ninja still pins an older user-defined `Game*` parameter local;
+both prototype and local-retype attempts are restored by analysis, so the sync
+reports the receiver correction as deferred instead of claiming a mutation.
+The matching source remains the ownership authority and stays exact at
+396/396 with all 85 operands clean.

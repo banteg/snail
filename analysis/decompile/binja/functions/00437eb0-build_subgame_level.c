@@ -66,8 +66,8 @@
 00437fcb        game->_pad_00[0x32] = edx_1:2.b
 00437fcb        game->_pad_00[0x33] = edx_1:3.b
 00437fdf        if (level_mode == 0 || level_mode == 4 || level_mode == 7)
-00438030        if (game->__offset(0x1b01d0).d != 0xbf800000)
-00438057        game->_pad_00[0x30].d = fconvert.s(fconvert.t(game->__offset(0x1b01d0).d) * fconvert.t(0.00999999978f) * fconvert.t(0.900000036f) + fconvert.t(0.200000003f))
+00438030        if (game->_pad_74622[0x13bbae].d != 0xbf800000)
+00438057        game->_pad_00[0x30].d = fconvert.s(fconvert.t(game->_pad_74622[0x13bbae].d) * fconvert.t(0.00999999978f) * fconvert.t(0.900000036f) + fconvert.t(0.200000003f))
 0043803a        game->_pad_00[0x30].d = fconvert.s(calc_slider_to_rate(0f))
 00437fe4        if (level_mode == 1)
 00437fec        int32_t __saved_ebp_6 = __saved_ebp_16
@@ -86,8 +86,8 @@
 00438148        game->__offset(0x125ffdc).d = game->selected_level_record->__offset(0x1fab4).d
 004380b2        int32_t level_mode_1 = game->level_mode
 004380cb        if (level_mode_1 == 2 || level_mode_1 == 3 || level_mode_1 == 0 || level_mode_1 == 4 || level_mode_1 == 7)
-00438110        game->__offset(0x125ffd8).d = fconvert.s(fconvert.t(game->__offset(0x1b01d4).d) * fconvert.t(0.00999999978f))
-00438122        game->__offset(0x125ffdc).d = fconvert.s(fconvert.t(game->__offset(0x1b01d8).d) * fconvert.t(0.00999999978f))
+00438110        game->__offset(0x125ffd8).d = fconvert.s(fconvert.t(game->_pad_74622[0x13bbb2].d) * fconvert.t(0.00999999978f))
+00438122        game->__offset(0x125ffdc).d = fconvert.s(fconvert.t(game->_pad_74622[0x13bbb6].d) * fconvert.t(0.00999999978f))
 004380d0        if (level_mode_1 == 1)
 004380e4        game->__offset(0x125ffd8).d = fconvert.s(float.t(data_4df960) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
 004380fc        game->__offset(0x125ffdc).d = fconvert.s(float.t(data_4df960) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
@@ -96,8 +96,13 @@
 0043816e        hide_border_init(game->__offset(0x35bb88).d)
 00438179        hide_border_init(game->__offset(0x35bb8c).d)
 00438181        int16_t x87control_1 = rebuild_track_runtime_from_segments(game, level_index)
-0043818d        if (game->__offset(0x1b01e4).d != 5)
-00438255        activate_landscape_entry(&game->__offset(0xff7c00).d, game->__offset(0x1b01dc).d)
+0043818d        if (game->_pad_74622[0x13bbc2].d != 5)
+00438248        int32_t eax_12
+00438248        eax_12.b = game->_pad_74622[0x13bbba]
+00438248        eax_12:1.b = game->_pad_74622[0x13bbbb]
+00438248        eax_12:2.b = game->_pad_74622[0x13bbbc]
+00438248        eax_12:3.b = game->_pad_74622[0x13bbbd]
+00438255        activate_landscape_entry(&game->__offset(0xff7c00).d, eax_12)
 00438193        int32_t __saved_ebp_10 = 0
 004381a1        int32_t eax_8 = ftol(x87control_1, random_float_below(4f))
 004381a9        int32_t level_index_1
@@ -120,49 +125,62 @@
 00438229        if ((((st0_5 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(st0_5, temp1_1) ? 1 : 0) << 0xa | (st0_5 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 00438240        g_game_base[0x4ec64] = 0
 00438231        g_game_base[0x4ec64] = 1
-00438273        if ((0x200 & game->__offset(0x359084).d) == 0)
-00438284        game->__offset(0x359088).d = &game->__offset(0x355b9c).d
-0043828a        game->__offset(0x35908c).d = game->__offset(0x355ba8).d
-0043828d        game->__offset(0x355ba8).d = &game->__offset(0x359080).d
-00438290        void* ecx_29 = game->__offset(0x35908c).d
-00438295        if (ecx_29 != 0)
-00438297        *(ecx_29 + 8) = (&game->__offset(0x359080).d).b
-00438297        *(ecx_29 + 9) = (&game->__offset(0x359080).d):1.b
-00438297        *(ecx_29 + 0xa) = (&game->__offset(0x359080).d):2.b
-00438297        *(ecx_29 + 0xb) = (&game->__offset(0x359080).d):3.b
-0043829a        game->__offset(0x359084).d |= 0x200
+00438273        if ((0x200 & game->banners.slots[0].bod.bod.list_flags) == 0)
+00438284        game->banners.slots[0].bod.bod.list_prev = &game->_pad_74622[0x2e157a]
+00438287        struct BodNode* ecx_28
+00438287        ecx_28.b = game->_pad_74622[0x2e1586]
+00438287        ecx_28:1.b = game->_pad_74622[0x2e1587]
+00438287        ecx_28:2.b = game->_pad_74622[0x2e1588]
+00438287        ecx_28:3.b = game->_pad_74622[0x2e1589]
+0043828a        game->banners.slots[0].bod.bod.list_next = ecx_28
+0043828d        game->_pad_74622[0x2e1586] = (&game->banners).b
+0043828d        game->_pad_74622[0x2e1587] = (&game->banners):1.b
+0043828d        game->_pad_74622[0x2e1588] = (&game->banners):2.b
+0043828d        game->_pad_74622[0x2e1589] = (&game->banners):3.b
+00438290        struct BodNode* list_next = game->banners.slots[0].bod.bod.list_next
+00438295        if (list_next != 0)
+00438297        list_next->list_prev.b = (&game->banners).b
+00438297        list_next->list_prev:1.b = (&game->banners):1.b
+00438297        list_next->list_prev:2.b = (&game->banners):2.b
+00438297        list_next->list_prev:3.b = (&game->banners):3.b
+0043829a        game->banners.slots[0].bod.bod.list_flags |= 0x200
 0043827a        report_errorf("List ADDafter")
-0043829d        game->__offset(0x359098).d = 0
-004382a3        game->__offset(0x359094).d = 0
-004382a9        game->__offset(0x359090).d = 0
-004382af        int32_t edx_7 = game->__offset(0x359084).d
-004382b5        long double x87_r7_25 = float.t(game->first_block_row_count)
-004382bf        game->__offset(0x3590d4).d = &game->__offset(0x3bb764).d
-004382c8        game->__offset(0x359098).d = fconvert.s(x87_r7_25)
-004382d9        game->__offset(0x359084).d = edx_7 & 0xffffffdf
-004382df        game->__offset(0x3590b4).d = 0x3f7fbe77
-004382ef        if ((0x200 & game->__offset(0x3590e4).d) == 0)
-00438300        game->__offset(0x3590e8).d = &game->__offset(0x355b9c).d
-00438306        game->__offset(0x3590ec).d = game->__offset(0x355ba8).d
-00438309        game->__offset(0x355ba8).d = &game->__offset(0x3590e0).d
-0043830c        void* ecx_32 = game->__offset(0x3590ec).d
-00438311        if (ecx_32 != 0)
-00438313        *(ecx_32 + 8) = (&game->__offset(0x3590e0).d).b
-00438313        *(ecx_32 + 9) = (&game->__offset(0x3590e0).d):1.b
-00438313        *(ecx_32 + 0xa) = (&game->__offset(0x3590e0).d):2.b
-00438313        *(ecx_32 + 0xb) = (&game->__offset(0x3590e0).d):3.b
-00438316        game->__offset(0x3590e4).d |= 0x200
+0043829d        game->banners.slots[0].bod.position.z = 0f
+004382a3        game->banners.slots[0].bod.position.y = 0f
+004382a9        game->banners.slots[0].bod.position.x = 0
+004382bf        game->banners.slots[0].owner_player = &game->__offset(0x3bb764).d
+004382c8        game->banners.slots[0].bod.position.z = fconvert.s(float.t(game->first_block_row_count))
+004382d9        game->banners.slots[0].bod.bod.list_flags &= 0xffffffdf
+004382df        game->banners.slots[0].bod.color.a = 0.999000013f
+004382ef        if ((0x200 & game->banners.slots[1].bod.bod.list_flags) == 0)
+00438300        game->banners.slots[1].bod.bod.list_prev = &game->_pad_74622[0x2e157a]
+00438303        struct BodNode* ecx_30
+00438303        ecx_30.b = game->_pad_74622[0x2e1586]
+00438303        ecx_30:1.b = game->_pad_74622[0x2e1587]
+00438303        ecx_30:2.b = game->_pad_74622[0x2e1588]
+00438303        ecx_30:3.b = game->_pad_74622[0x2e1589]
+00438306        game->banners.slots[1].bod.bod.list_next = ecx_30
+00438309        game->_pad_74622[0x2e1586] = (&game->banners.slots[1]).b
+00438309        game->_pad_74622[0x2e1587] = (&game->banners.slots[1]):1.b
+00438309        game->_pad_74622[0x2e1588] = (&game->banners.slots[1]):2.b
+00438309        game->_pad_74622[0x2e1589] = (&game->banners.slots[1]):3.b
+0043830c        struct BodNode* list_next_1 = game->banners.slots[1].bod.bod.list_next
+00438311        if (list_next_1 != 0)
+00438313        list_next_1->list_prev.b = (&game->banners.slots[1]).b
+00438313        list_next_1->list_prev:1.b = (&game->banners.slots[1]):1.b
+00438313        list_next_1->list_prev:2.b = (&game->banners.slots[1]):2.b
+00438313        list_next_1->list_prev:3.b = (&game->banners.slots[1]):3.b
+00438316        game->banners.slots[1].bod.bod.list_flags |= 0x200
 004382f6        report_errorf("List ADDafter")
-00438319        game->__offset(0x3590f8).d = 0
-0043831f        game->__offset(0x3590f4).d = 0
-00438325        game->__offset(0x3590f0).d = 0
-0043832b        int32_t eax_16 = game->__offset(0x3590e4).d
-00438331        long double x87_r7_26 = float.t(game->completion_row_start)
-0043833a        eax_16.b &= 0xdf
-0043833c        game->__offset(0x359134).d = &game->__offset(0x3bb764).d
-00438342        game->__offset(0x3590e4).d = eax_16
-00438348        game->__offset(0x3590f8).d = fconvert.s(x87_r7_26)
-0043834e        game->__offset(0x359114).d = 0x3f7fbe77
+00438319        game->banners.slots[1].bod.position.z = 0f
+0043831f        game->banners.slots[1].bod.position.y = 0f
+00438325        game->banners.slots[1].bod.position.x = 0
+0043832b        uint32_t list_flags = game->banners.slots[1].bod.bod.list_flags
+0043833a        list_flags.b &= 0xdf
+0043833c        game->banners.slots[1].owner_player = &game->__offset(0x3bb764).d
+00438342        game->banners.slots[1].bod.bod.list_flags = list_flags
+00438348        game->banners.slots[1].bod.position.z = fconvert.s(float.t(game->completion_row_start))
+0043834e        game->banners.slots[1].bod.color.a = 0.999000013f
 00438354        game->track_state_latch = 0
 0043835a        game->replay_update_cursor = 0
 00438360        game->times_up.state = 0
@@ -171,206 +189,213 @@
 00438389        release_mouse_cursor(&g_game_base[0x290])
 00438391        game->__offset(0x3bbb70).d = 1
 00438397        game->__offset(0x3be0d4).d = 0
-0043839d        char* runtime = initialize_subgoldy(&game->__offset(0x3bb764).d, 1)
-004383b5        if ((0x200 & *(runtime + 0x3bf2cc)) == 0)
-004383cc        char* ecx_37 = &g_game_base[0x5ac]
+0043839d        struct SubgameRuntime* runtime
+0043839d        struct Player* edi_3
+0043839d        runtime, edi_3 = initialize_subgoldy(&game->__offset(0x3bb764).d, 1)
+004383b5        if ((0x200 & runtime->player.presentation.jetpack_channel.list_flags) == 0)
+004383cc        char* ecx_35 = &g_game_base[0x5ac]
 004383d2        void* edx_10
-004383d2        edx_10.b = *ecx_37
-004383d2        edx_10:1.b = ecx_37[1]
-004383d2        edx_10:2.b = ecx_37[2]
-004383d2        edx_10:3.b = ecx_37[3]
+004383d2        edx_10.b = *ecx_35
+004383d2        edx_10:1.b = ecx_35[1]
+004383d2        edx_10:2.b = ecx_35[2]
+004383d2        edx_10:3.b = ecx_35[3]
 004383d6        if (edx_10 != 0)
-004383e4        *(edx_10 + 8) = &runtime[0x3bf2c8]
+004383e4        *(edx_10 + 8) = &runtime->player.presentation.jetpack_channel
 004383e7        void* edx_12
-004383e7        edx_12.b = *ecx_37
-004383e7        edx_12:1.b = ecx_37[1]
-004383e7        edx_12:2.b = ecx_37[2]
-004383e7        edx_12:3.b = ecx_37[3]
+004383e7        edx_12.b = *ecx_35
+004383e7        edx_12:1.b = ecx_35[1]
+004383e7        edx_12:2.b = ecx_35[2]
+004383e7        edx_12:3.b = ecx_35[3]
 004383ec        *(*(edx_12 + 8) + 0xc) = edx_12
 004383ef        void* edx_13
-004383ef        edx_13.b = *ecx_37
-004383ef        edx_13:1.b = ecx_37[1]
-004383ef        edx_13:2.b = ecx_37[2]
-004383ef        edx_13:3.b = ecx_37[3]
+004383ef        edx_13.b = *ecx_35
+004383ef        edx_13:1.b = ecx_35[1]
+004383ef        edx_13:2.b = ecx_35[2]
+004383ef        edx_13:3.b = ecx_35[3]
 004383f6        void* edx_14 = *(edx_13 + 8)
-004383f9        *ecx_37 = edx_14.b
-004383f9        ecx_37[1] = edx_14:1.b
-004383f9        ecx_37[2] = edx_14:2.b
-004383f9        ecx_37[3] = edx_14:3.b
+004383f9        *ecx_35 = edx_14.b
+004383f9        ecx_35[1] = edx_14:1.b
+004383f9        ecx_35[2] = edx_14:2.b
+004383f9        ecx_35[3] = edx_14:3.b
 004383fb        *(edx_14 + 8) = 0
-004383d8        *ecx_37 = (&runtime[0x3bf2c8]).b
-004383d8        ecx_37[1] = (&runtime[0x3bf2c8]):1.b
-004383d8        ecx_37[2] = (&runtime[0x3bf2c8]):2.b
-004383d8        ecx_37[3] = (&runtime[0x3bf2c8]):3.b
-004383da        *(runtime + 0x3bf2d0) = 0
+004383d8        *ecx_35 = (&runtime->player.presentation.jetpack_channel).b
+004383d8        ecx_35[1] = (&runtime->player.presentation.jetpack_channel):1.b
+004383d8        ecx_35[2] = (&runtime->player.presentation.jetpack_channel):2.b
+004383d8        ecx_35[3] = (&runtime->player.presentation.jetpack_channel):3.b
+004383da        runtime->player.presentation.jetpack_channel._pad_08[0] = 0
+004383da        runtime->player.presentation.jetpack_channel._pad_08[1] = 0
+004383da        runtime->player.presentation.jetpack_channel._pad_08[2] = 0
+004383da        runtime->player.presentation.jetpack_channel._pad_08[3] = 0
 004383dd        void* edx_11
-004383dd        edx_11.b = *ecx_37
-004383dd        edx_11:1.b = ecx_37[1]
-004383dd        edx_11:2.b = ecx_37[2]
-004383dd        edx_11:3.b = ecx_37[3]
+004383dd        edx_11.b = *ecx_35
+004383dd        edx_11:1.b = ecx_35[1]
+004383dd        edx_11:2.b = ecx_35[2]
+004383dd        edx_11:3.b = ecx_35[3]
 004383df        *(edx_11 + 0xc) = 0
-004383fe        *(runtime + 0x3bf2cc) |= 0x200
+004383fe        runtime->player.presentation.jetpack_channel.list_flags |= 0x200
 004383bc        report_errorf("List ADD")
-0043840f        if ((0x200 & *(runtime + 0x3be738)) == 0)
-00438425        void** eax_21 = &g_game_base[0x5ac]
-0043842a        void* edx_15 = *eax_21
+0043840f        if ((0x200 & runtime->player.presentation.weapon_channels[0].list_flags) == 0)
+00438425        void** eax_20 = &g_game_base[0x5ac]
+0043842a        void* edx_15 = *eax_20
 0043842e        if (edx_15 != 0)
-0043843c        *(edx_15 + 8) = &runtime[0x3be734]
-0043843f        void* edx_17 = *eax_21
+0043843c        *(edx_15 + 8) = &runtime->player.presentation.weapon_channels
+0043843f        void* edx_17 = *eax_20
 00438444        *(*(edx_17 + 8) + 0xc) = edx_17
-0043844e        void* edx_19 = *(*eax_21 + 8)
-00438451        *eax_21 = edx_19
+0043844e        void* edx_19 = *(*eax_20 + 8)
+00438451        *eax_20 = edx_19
 00438453        *(edx_19 + 8) = 0
-00438430        *eax_21 = &runtime[0x3be734]
-00438432        runtime[0x3be73c] = 0
-00438432        runtime[0x3be73d] = 0
-00438432        runtime[0x3be73e] = 0
-00438432        runtime[0x3be73f] = 0
-00438437        *(*eax_21 + 0xc) = 0
-00438456        *(runtime + 0x3be738) |= 0x200
+00438430        *eax_20 = &runtime->player.presentation.weapon_channels
+00438432        runtime->player.__offset(0x2fd8).b = 0
+00438432        runtime->player.__offset(0x2fd9).b = 0
+00438432        runtime->player.__offset(0x2fda).b = 0
+00438432        runtime->player.__offset(0x2fdb).b = 0
+00438437        *(*eax_20 + 0xc) = 0
+00438456        runtime->player.presentation.weapon_channels[0].list_flags |= 0x200
 00438416        report_errorf("List ADD")
-00438467        if ((0x200 & *(runtime + 0x3beb14)) == 0)
-0043847d        void** eax_24 = &g_game_base[0x5ac]
-00438482        void* edx_20 = *eax_24
+00438467        if ((0x200 & runtime->player.presentation.weapon_channels[1].list_flags) == 0)
+0043847d        void** eax_23 = &g_game_base[0x5ac]
+00438482        void* edx_20 = *eax_23
 00438486        if (edx_20 != 0)
-00438494        *(edx_20 + 8) = &runtime[0x3beb10]
-00438497        void* edx_22 = *eax_24
+00438494        *(edx_20 + 8) = &runtime->player.presentation.weapon_channels[1]
+00438497        void* edx_22 = *eax_23
 0043849c        *(*(edx_22 + 8) + 0xc) = edx_22
-004384a6        void* edx_24 = *(*eax_24 + 8)
-004384a9        *eax_24 = edx_24
+004384a6        void* edx_24 = *(*eax_23 + 8)
+004384a9        *eax_23 = edx_24
 004384ab        *(edx_24 + 8) = 0
-00438488        *eax_24 = &runtime[0x3beb10]
-0043848a        runtime[0x3beb18] = 0
-0043848a        runtime[0x3beb19] = 0
-0043848a        runtime[0x3beb1a] = 0
-0043848a        runtime[0x3beb1b] = 0
-0043848f        *(*eax_24 + 0xc) = 0
-004384ae        *(runtime + 0x3beb14) |= 0x200
+00438488        *eax_23 = &runtime->player.presentation.weapon_channels[1]
+0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[0] = 0
+0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[1] = 0
+0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[2] = 0
+0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[3] = 0
+0043848f        *(*eax_23 + 0xc) = 0
+004384ae        runtime->player.presentation.weapon_channels[1].list_flags |= 0x200
 0043846e        report_errorf("List ADD")
-004384bf        if ((0x200 & *(runtime + 0x3beef0)) == 0)
-004384d5        void** eax_27 = &g_game_base[0x5ac]
-004384da        void* edx_25 = *eax_27
+004384bf        if ((0x200 & runtime->player.presentation.weapon_channels[2].list_flags) == 0)
+004384d5        void** eax_26 = &g_game_base[0x5ac]
+004384da        void* edx_25 = *eax_26
 004384de        if (edx_25 != 0)
-004384ec        *(edx_25 + 8) = &runtime[0x3beeec]
-004384ef        void* edx_27 = *eax_27
+004384ec        *(edx_25 + 8) = &runtime->player.presentation.weapon_channels[2]
+004384ef        void* edx_27 = *eax_26
 004384f4        *(*(edx_27 + 8) + 0xc) = edx_27
-004384fe        void* edx_29 = *(*eax_27 + 8)
-00438501        *eax_27 = edx_29
+004384fe        void* edx_29 = *(*eax_26 + 8)
+00438501        *eax_26 = edx_29
 00438503        *(edx_29 + 8) = 0
-004384e0        *eax_27 = &runtime[0x3beeec]
-004384e2        runtime[0x3beef4] = 0
-004384e2        runtime[0x3beef5] = 0
-004384e2        runtime[0x3beef6] = 0
-004384e2        runtime[0x3beef7] = 0
-004384e7        *(*eax_27 + 0xc) = 0
-00438506        *(runtime + 0x3beef0) |= 0x200
+004384e0        *eax_26 = &runtime->player.presentation.weapon_channels[2]
+004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[0] = 0
+004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[1] = 0
+004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[2] = 0
+004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[3] = 0
+004384e7        *(*eax_26 + 0xc) = 0
+00438506        runtime->player.presentation.weapon_channels[2].list_flags |= 0x200
 004384c6        report_errorf("List ADD")
-00438517        if ((0x200 & *(runtime + 0x3bf980)) == 0)
-0043852d        void** eax_30 = &g_game_base[0x5ac]
-00438532        void* edx_30 = *eax_30
+00438517        if ((0x200 & runtime->player.presentation.invincible_shell.list_flags) == 0)
+0043852d        void** eax_29 = &g_game_base[0x5ac]
+00438532        void* edx_30 = *eax_29
 00438536        if (edx_30 != 0)
-00438544        *(edx_30 + 8) = &runtime[0x3bf97c]
-00438547        void* edx_32 = *eax_30
+00438544        *(edx_30 + 8) = &runtime->player.presentation.invincible_shell
+00438547        void* edx_32 = *eax_29
 0043854c        *(*(edx_32 + 8) + 0xc) = edx_32
-00438556        void* edx_34 = *(*eax_30 + 8)
-00438559        *eax_30 = edx_34
+00438556        void* edx_34 = *(*eax_29 + 8)
+00438559        *eax_29 = edx_34
 0043855b        *(edx_34 + 8) = 0
-00438538        *eax_30 = &runtime[0x3bf97c]
-0043853a        runtime[0x3bf984] = 0
-0043853a        runtime[0x3bf985] = 0
-0043853a        runtime[0x3bf986] = 0
-0043853a        runtime[0x3bf987] = 0
-0043853f        *(*eax_30 + 0xc) = 0
-0043855e        *(runtime + 0x3bf980) |= 0x200
+00438538        *eax_29 = &runtime->player.presentation.invincible_shell
+0043853a        runtime->player.presentation.invincible_shell.list_prev.b = nullptr
+0043853a        runtime->player.presentation.invincible_shell.list_prev:1.b = 0
+0043853a        runtime->player.presentation.invincible_shell.list_prev:2.b = 0
+0043853a        runtime->player.presentation.invincible_shell.list_prev:3.b = 0
+0043853f        *(*eax_29 + 0xc) = 0
+0043855e        runtime->player.presentation.invincible_shell.list_flags |= 0x200
 0043851e        report_errorf("List ADD")
-00438561        int32_t ecx_42 = *(runtime + 0x3bf980)
-00438567        ecx_42.b |= 0x80
-0043856a        *(runtime + 0x3bf980) = ecx_42
-0043857e        if ((0x200 & *(runtime + 0x3be0ec)) == 0)
-00438594        void** eax_33 = &g_game_base[0x5ac]
-00438599        void* edx_36 = *eax_33
+00438561        uint32_t list_flags_1 = runtime->player.presentation.invincible_shell.list_flags
+00438567        list_flags_1.b |= 0x80
+0043856a        runtime->player.presentation.invincible_shell.list_flags = list_flags_1
+0043857e        if ((0x200 & runtime->player.presentation.list_flags) == 0)
+00438594        void** eax_32 = &g_game_base[0x5ac]
+00438599        void* edx_36 = *eax_32
 0043859d        if (edx_36 != 0)
-004385ab        *(edx_36 + 8) = &runtime[0x3be0e8]
-004385ae        void* edx_38 = *eax_33
+004385ab        *(edx_36 + 8) = &runtime->player.presentation
+004385ae        void* edx_38 = *eax_32
 004385b3        *(*(edx_38 + 8) + 0xc) = edx_38
-004385bd        void* edx_40 = *(*eax_33 + 8)
-004385c0        *eax_33 = edx_40
+004385bd        void* edx_40 = *(*eax_32 + 8)
+004385c0        *eax_32 = edx_40
 004385c2        *(edx_40 + 8) = 0
-0043859f        *eax_33 = &runtime[0x3be0e8]
-004385a1        runtime[0x3be0f0] = 0
-004385a1        runtime[0x3be0f1] = 0
-004385a1        runtime[0x3be0f2] = 0
-004385a1        runtime[0x3be0f3] = 0
-004385a6        *(*eax_33 + 0xc) = 0
-004385c5        *(runtime + 0x3be0ec) |= 0x200
+0043859f        *eax_32 = &runtime->player.presentation
+004385a1        runtime->player.presentation._pad_08[0] = 0
+004385a1        runtime->player.presentation._pad_08[1] = 0
+004385a1        runtime->player.presentation._pad_08[2] = 0
+004385a1        runtime->player.presentation._pad_08[3] = 0
+004385a6        *(*eax_32 + 0xc) = 0
+004385c5        runtime->player.presentation.list_flags |= 0x200
 00438585        report_errorf("List ADD")
-004385cb        if ((game->__offset(0x3bb768).d & 0x200) == 0)
-004385e1        int32_t* eax_35 = &g_game_base[0x5ac]
-004385e6        void* ecx_44 = *eax_35
-004385ea        if (ecx_44 != 0)
-004385f8        *(ecx_44 + 8) = (&game->__offset(0x3bb764).d).b
-004385f8        *(ecx_44 + 9) = (&game->__offset(0x3bb764).d):1.b
-004385f8        *(ecx_44 + 0xa) = (&game->__offset(0x3bb764).d):2.b
-004385f8        *(ecx_44 + 0xb) = (&game->__offset(0x3bb764).d):3.b
-004385fb        void* ecx_46 = *eax_35
+004385cb        if ((edi_3->_pad_00[4].d & 0x200) == 0)
+004385e1        void** eax_34 = &g_game_base[0x5ac]
+004385e6        void* ecx_41 = *eax_34
+004385ea        if (ecx_41 != 0)
+004385f8        *(ecx_41 + 8) = edi_3.b
+004385f8        *(ecx_41 + 9) = edi_3:1.b
+004385f8        *(ecx_41 + 0xa) = edi_3:2.b
+004385f8        *(ecx_41 + 0xb) = edi_3:3.b
+004385fb        void* ecx_43 = *eax_34
 004385fd        void* edx_41
-004385fd        edx_41.b = *(ecx_46 + 8)
-004385fd        edx_41:1.b = *(ecx_46 + 9)
-004385fd        edx_41:2.b = *(ecx_46 + 0xa)
-004385fd        edx_41:3.b = *(ecx_46 + 0xb)
-00438600        *(edx_41 + 0xc) = ecx_46
-00438603        void* ecx_47 = *eax_35
-00438605        void* ecx_48
-00438605        ecx_48.b = *(ecx_47 + 8)
-00438605        ecx_48:1.b = *(ecx_47 + 9)
-00438605        ecx_48:2.b = *(ecx_47 + 0xa)
-00438605        ecx_48:3.b = *(ecx_47 + 0xb)
-00438608        *eax_35 = ecx_48
-0043860a        *(ecx_48 + 8) = 0
-0043860a        *(ecx_48 + 9) = 0
-0043860a        *(ecx_48 + 0xa) = 0
-0043860a        *(ecx_48 + 0xb) = 0
-004385ec        *eax_35 = &game->__offset(0x3bb764).d
-004385ee        game->__offset(0x3bb76c).d = 0
-004385f1        void* ecx_45 = *eax_35
-004385f3        *(ecx_45 + 0xc) = 0
-004385f3        *(ecx_45 + 0xd) = 0
-004385f3        *(ecx_45 + 0xe) = 0
-004385f3        *(ecx_45 + 0xf) = 0
-0043860d        game->__offset(0x3bb768).d |= 0x200
+004385fd        edx_41.b = *(ecx_43 + 8)
+004385fd        edx_41:1.b = *(ecx_43 + 9)
+004385fd        edx_41:2.b = *(ecx_43 + 0xa)
+004385fd        edx_41:3.b = *(ecx_43 + 0xb)
+00438600        *(edx_41 + 0xc) = ecx_43
+00438603        void* ecx_44 = *eax_34
+00438605        void* ecx_45
+00438605        ecx_45.b = *(ecx_44 + 8)
+00438605        ecx_45:1.b = *(ecx_44 + 9)
+00438605        ecx_45:2.b = *(ecx_44 + 0xa)
+00438605        ecx_45:3.b = *(ecx_44 + 0xb)
+00438608        *eax_34 = ecx_45
+0043860a        *(ecx_45 + 8) = 0
+0043860a        *(ecx_45 + 9) = 0
+0043860a        *(ecx_45 + 0xa) = 0
+0043860a        *(ecx_45 + 0xb) = 0
+004385ec        *eax_34 = edi_3
+004385ee        edi_3->_pad_00[8] = 0
+004385ee        edi_3->_pad_00[9] = 0
+004385ee        edi_3->_pad_00[0xa] = 0
+004385ee        edi_3->_pad_00[0xb] = 0
+004385f1        void* ecx_42 = *eax_34
+004385f3        *(ecx_42 + 0xc) = 0
+004385f3        *(ecx_42 + 0xd) = 0
+004385f3        *(ecx_42 + 0xe) = 0
+004385f3        *(ecx_42 + 0xf) = 0
+0043860d        edi_3->_pad_00[4].d |= 0x200
 004385d2        report_errorf("List ADD")
-00438616        initialize_slug_voice_manager(&runtime[0x35bb7c])
-0043862f        if ((0x200 & *(runtime + 0xff7bc8)) == 0)
-00438640        *(runtime + 0xff7bcc) = &runtime[0x355bd4]
-00438643        int32_t edx_43
-00438643        edx_43.b = runtime[0x355be0]
-00438643        edx_43:1.b = runtime[0x355be1]
-00438643        edx_43:2.b = runtime[0x355be2]
-00438643        edx_43:3.b = runtime[0x355be3]
-00438646        *(runtime + 0xff7bd0) = edx_43
-00438649        runtime[0x355be0] = (&runtime[0xff7bc4]).b
-00438649        runtime[0x355be1] = (&runtime[0xff7bc4]):1.b
-00438649        runtime[0x355be2] = (&runtime[0xff7bc4]):2.b
-00438649        runtime[0x355be3] = (&runtime[0xff7bc4]):3.b
-0043864c        void* ecx_51 = *(runtime + 0xff7bd0)
-00438651        if (ecx_51 != 0)
-00438653        *(ecx_51 + 8) = (&runtime[0xff7bc4]).b
-00438653        *(ecx_51 + 9) = (&runtime[0xff7bc4]):1.b
-00438653        *(ecx_51 + 0xa) = (&runtime[0xff7bc4]):2.b
-00438653        *(ecx_51 + 0xb) = (&runtime[0xff7bc4]):3.b
-00438656        *(runtime + 0xff7bc8) |= 0x200
+00438616        initialize_slug_voice_manager(&runtime->slug_voice_manager.active)
+0043862f        if ((0x200 & runtime->barrier.bod.bod.list_flags) == 0)
+00438640        runtime->barrier.bod.bod.list_prev = &runtime->barrier_sub_lazer_list_head
+00438643        struct BodNode* edx_43
+00438643        edx_43.b = runtime->barrier_sub_lazer_list_head.bod.list_next.b
+00438643        edx_43:1.b = runtime->barrier_sub_lazer_list_head.bod.list_next:1.b
+00438643        edx_43:2.b = runtime->barrier_sub_lazer_list_head.bod.list_next:2.b
+00438643        edx_43:3.b = runtime->barrier_sub_lazer_list_head.bod.list_next:3.b
+00438646        runtime->barrier.bod.bod.list_next = edx_43
+00438649        runtime->barrier_sub_lazer_list_head.bod.list_next.b = (&runtime->barrier).b
+00438649        runtime->barrier_sub_lazer_list_head.bod.list_next:1.b = (&runtime->barrier):1.b
+00438649        runtime->barrier_sub_lazer_list_head.bod.list_next:2.b = (&runtime->barrier):2.b
+00438649        runtime->barrier_sub_lazer_list_head.bod.list_next:3.b = (&runtime->barrier):3.b
+0043864c        struct BodNode* list_next_2 = runtime->barrier.bod.bod.list_next
+00438651        if (list_next_2 != 0)
+00438653        list_next_2->list_prev.b = (&runtime->barrier).b
+00438653        list_next_2->list_prev:1.b = (&runtime->barrier):1.b
+00438653        list_next_2->list_prev:2.b = (&runtime->barrier):2.b
+00438653        list_next_2->list_prev:3.b = (&runtime->barrier):3.b
+00438656        runtime->barrier.bod.bod.list_flags |= 0x200
 00438636        report_errorf("List ADDafter")
-00438659        int32_t eax_37 = *(runtime + 0x40)
-0043865c        *(runtime + 0xff7bfc) = &game->__offset(0x3bb764).d
-00438665        if (eax_37 == 0)
-00438673        int32_t __saved_ebp_15 = *(runtime + 0x1b01e0)
-00438680        sprintf(*(runtime + 0x35bb94) + 0x2cc, "0/%i")
-0043868e        unhide_border_init(*(runtime + 0x35bb90))
-00438699        unhide_border_init(*(runtime + 0x35bb94))
+0043865c        runtime->barrier.owner_player = edi_3
+00438665        if (runtime->level_mode == 0)
+00438673        int32_t __saved_ebp_15 = runtime->level_definition.parcel_count
+00438680        sprintf(&runtime->lives_text_widget->text_buffer, "0/%i")
+0043868e        unhide_border_init(runtime->lives_icon_widget)
+00438699        unhide_border_init(runtime->lives_text_widget)
 004386aa        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004386b7        set_input_controller_pointer_authored_xy(1, 320f, 240f)
-004386c1        *(runtime + 0x3bdea0) = 0x43a00000
-004386c7        *(runtime + 0x3bdea4) = 0x43a00000
-004386cd        *runtime = 1
+004386c1        runtime->player.track_z_offset = 320f
+004386c7        runtime->player.track_z_anchor = 320f
+004386cd        runtime->unknown_000000[0] = 1
 004386d0        calc_subgame_rate(runtime)
 004386d9        return

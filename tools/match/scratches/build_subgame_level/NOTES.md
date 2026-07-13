@@ -324,3 +324,14 @@ source keeps the same proven `SubTracks`, `BannerPool`, player backlink, and
 landscape ownership while leaving compiler allocation visible: focused Wibo is
 77.67%, 560/555 instructions, prefix 177, with 100 clean operands and the
 existing state jump-table identity mismatch.
+
+## 2026-07-13 canonical Binary Ninja replay
+
+The authoritative `SubgameRuntime` map now reaches this caller through the
+return value of `initialize_subgoldy`, exposing the embedded Player presentation
+channels, slug voice manager, active level definition, barrier backlink, and
+Banner pool. The tracked BN export drops from 81 to 28 raw offsets and is
+guarded by the decompile health checks. Its own receiver remains an honestly
+reported deferred `Game*` correction because Binary Ninja restores a pinned
+parameter local. Matching source is unchanged at the 77.67% no-fakematch
+frontier above.

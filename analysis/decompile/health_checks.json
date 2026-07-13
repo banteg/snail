@@ -856,6 +856,108 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_initialize_subgame_body_available",
+      "artifact": "analysis/decompile/binja/functions/004374b0-initialize_subgame.c",
+      "required_substrings": [
+        "game->level_mode",
+        "game->subgame_state",
+        "initialize_frontend_widget"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ],
+      "max_counts": {
+        "__offset(": 90
+      }
+    },
+    {
+      "name": "bn_build_track_fringe_body_available",
+      "artifact": "analysis/decompile/binja/functions/00434be0-build_track_fringe_objects.c",
+      "required_substrings": [
+        "initialize_fringe_manager",
+        "allocate_fringe_object",
+        "game_1->runtime_row_count"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_build_subgame_nested_owners",
+      "artifact": "analysis/decompile/binja/functions/00437eb0-build_subgame_level.c",
+      "required_substrings": [
+        "runtime->player.presentation.weapon_channels",
+        "runtime->slug_voice_manager",
+        "runtime->level_definition.parcel_count",
+        "runtime->barrier.owner_player"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ],
+      "max_counts": {
+        "__offset(": 30
+      }
+    },
+    {
+      "name": "bn_complete_subgame_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00438700-complete_subgame.c",
+      "required_substrings": [
+        "game->player",
+        "game->current_high_score_record",
+        "game->sub_high_score"
+      ],
+      "forbidden_substrings": [
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_runtime_population_body_available",
+      "artifact": "analysis/decompile/binja/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "game->runtime_row_count",
+        "game->completion_row_start",
+        "switch_track_mirror"
+      ],
+      "forbidden_substrings": [
+        "_pad_74622",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_subgame_body_available",
+      "artifact": "analysis/decompile/binja/functions/00438b90-update_subgame.c",
+      "required_substrings": [
+        "calc_subgame_rate",
+        "update_slug_voice_manager",
+        "update_subgame_camera"
+      ],
+      "forbidden_substrings": [
+        "_pad_74622",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_remove_subgame_bods_body_available",
+      "artifact": "analysis/decompile/binja/functions/00440910-remove_subgame_bods.c",
+      "required_substrings": [
+        "recycle_bod_to_free_list",
+        "kill_golb",
+        "kill_game_sprites"
+      ],
+      "forbidden_substrings": [
+        "_pad_74622",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

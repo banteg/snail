@@ -195,3 +195,11 @@ The shared runtime and replay headers now use `garbage_frequency` and
 `salt_frequency`, with explicit integer-bit aliases only where the native
 snapshot uses integer moves. Focused matching remains the honest pinned
 75.28%; this is ownership recovery, not instruction shaping.
+
+## 2026-07-13 canonical Binary Ninja replay
+
+The stable `SubgameRuntime*` receiver ABI is now replayed together with the
+complete owner map. The tracked BN export contains no raw offsets: the snapshot
+comes from the embedded `Player`, lands in `current_high_score_record`, and is
+dispatched through the embedded `sub_high_score` bank. A health check pins that
+owner graph. Matching source remains unchanged at the honest 75.28% frontier.
