@@ -127,3 +127,21 @@ twinkles, proving a 0xf8-byte `TwinkleManager` subobject at widget
 `+0x80..+0x177`. It ends exactly where the independently recovered
 `sprite_shadow_offset +0x178` begins. The shared widget and decompiler views
 now expose that owned subobject instead of anonymous padding.
+
+## 2026-07-13 complete widget field ownership
+
+The update body now addresses the shared `FrontendWidget` fields directly
+instead of rebuilding its exact 0x724-byte layout through raw `self + offset`
+casts. The same pass reaches the root-owned player cursor, borrowed
+`GameInput`, and embedded `BorderManager` through `GameRoot`. The primary and
+secondary input tests are the `pressed_buttons` bits `0x4000` and `0x8000`.
+
+The mouse-movement edge specifically samples `MouseCursorState::saved_x/y` at
+player-cursor `+0x0c/+0x10`; these are root `+0x29c/+0x2a0`, not the live
+coordinates at `+0x294/+0x298`. Focused output remains the honest 68.32%,
+644/647-instruction partial with all 93 masked operands clean.
+
+The preview-verified Binary Ninja layout now carries the complete 0x724-byte
+`FrontendWidget`, including the 0x40-byte tooltip/`InputOkState` overlay at
+`+0x28c`. This replaces the previous zero-sized forward declaration and makes
+all border-manager pointers use the recovered concrete record view.

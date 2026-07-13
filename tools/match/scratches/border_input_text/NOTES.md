@@ -48,3 +48,16 @@ corroborate these owners and remain 46/46 and 32/32 instructions. Remaining
 debt is ordinary prologue/register allocation and local shift-loop scheduling;
 no volatile locals, dummy operations, barriers, or pointer fakematching were
 retained.
+
+## 2026-07-13 tooltip-tail overlay ownership
+
+The conditional OK-button controller is an exact 0x24-byte `InputOkState`
+view beginning at widget `+0x2a8`, inside the 0x40-byte interaction block at
+`+0x28c`. Its `source_widget +0x1c` and `ok_widget +0x20` therefore occupy the
+last two pointer lanes at widget `+0x2c4/+0x2c8`. `FrontendWidget::input_ok_state()`
+centralizes that proven overlay instead of repeating raw interior casts.
+
+The editor teardown now reaches the embedded root `BorderManager` directly.
+`border_input_text` stays at 64.64% with 442/446 instructions and eight clean
+operands; `border_input_text_init`, `initialize_input_ok`, and
+`update_input_ok` remain exact at 46/46, 23/23, and 32/32 instructions.

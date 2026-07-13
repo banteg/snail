@@ -2,6 +2,7 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "input_ok_state.h"
 
 extern char* g_game_base; // data_4df904
@@ -13,8 +14,8 @@ void FrontendWidget::border_input_text()
     char key = read_repeating_text_input_key_code();
 
     if ((input_flags & 0x0c) != 0) {
-        ((InputOkState*)((char*)this + 0x2a8))->update_input_ok();
-        if ((((InputOkState*)((char*)this + 0x2a8))->ok_widget->widget_flags & 0x20) != 0)
+        input_ok_state()->update_input_ok();
+        if ((input_ok_state()->ok_widget->widget_flags & 0x20) != 0)
             goto finish_input;
     }
 
@@ -277,6 +278,6 @@ finish_input:
     widget_flags = closing_flags;
     layout_frontend_widget();
     if ((input_flags & 0x0c) != 0)
-        ((BorderManager*)(g_game_base + 0xb4c))
-            ->kill_border(((InputOkState*)((char*)this + 0x2a8))->ok_widget);
+        ((GameRoot*)g_game_base)->border_manager
+            .kill_border(input_ok_state()->ok_widget);
 }

@@ -8,6 +8,8 @@
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
+class InputOkState;
+
 // Semantic cRBorder view over BorderRecord storage. Its first 0x10 bytes are
 // the exact BodNode intrusive-list prefix; later front-end fields deliberately
 // overlay generic BodBase lanes whose gameplay names do not apply here.
@@ -31,6 +33,7 @@ public:
         float x, float y, Color4f* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
         Color4f* color, float z, int layer);
+    InputOkState* input_ok_state();
 
     unsigned int list_kind; // +0x00, BodNode::list_kind view
     unsigned int list_flags; // +0x04, BodNode::list_flags view
@@ -173,5 +176,12 @@ public:
 
 typedef char FrontendWidget_must_be_0x724[
     (sizeof(FrontendWidget) == 0x724) ? 1 : -1];
+
+inline InputOkState* FrontendWidget::input_ok_state()
+{
+    // Text-input widgets reuse the tooltip tail as an InputOkState. Its
+    // source/OK pointers land at the tooltip's final two pointer lanes.
+    return (InputOkState*)((char*)&tooltip + 0x1c);
+}
 
 #endif

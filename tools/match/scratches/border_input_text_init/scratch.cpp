@@ -33,6 +33,6 @@ FrontendWidget* FrontendWidget::border_input_text_init(int arg2, char* text, int
 
     FrontendWidget* result = (FrontendWidget*)layout_frontend_widget();
     if ((flags & 0xc) != 0)
-        return ((InputOkState*)((char*)this + 0x2a8))->initialize_input_ok();
+        return input_ok_state()->initialize_input_ok();
     return result;
 }

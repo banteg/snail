@@ -14,4 +14,7 @@ public:
     FrontendWidget* ok_widget; // +0x20
 };
 
+typedef char InputOkState_must_be_0x24[
+    (sizeof(InputOkState) == 0x24) ? 1 : -1];
+
 #endif
