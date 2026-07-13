@@ -120,3 +120,19 @@ Residuals:
   native displacements. The retained source gets the same induction from the
   real `SegmentCatalogEntry[150]` container and leaves the remaining row-anchor
   register choice visible rather than fakematching it.
+
+## 2026-07-13 root services and cross-port cursor audit
+
+- The mesh and path lookups now follow the canonical `GameRoot*` through its
+  owned `DirectXLoader` and `SubgameRuntime::path_manager`; the last raw
+  `g_game_base` declaration in this parser is gone. Focused output remains the
+  honest 62.24%, 573/571 instructions, with 80 clean operands and the five
+  shifted call/string mismatches.
+- The iOS and Android `cRSMTracks::Import()` bodies independently advance one
+  per-entry cursor (their later record is 0x90 bytes because row storage is
+  allocated). That proves the semantic cursor, but two corresponding Windows
+  source probes were rejected: advancing a typed `SegmentCatalogEntry*`
+  regressed to 56.94% and using it for the row/glyph banks regressed to 56.91%
+  while shrinking the exact 0x114e0 frame. Windows' inline 0x4088-byte rows
+  instead produce the retained containing-array strength reductions; no
+  pointer cast or synthetic spill was added to imitate the target register.

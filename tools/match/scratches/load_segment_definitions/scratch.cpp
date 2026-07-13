@@ -3,7 +3,7 @@
 #include "game_root.h"
 #include "segment_catalog_types.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int sprintf(char* buffer, char* format, ...);
 int report_errorf(char* format, ...);
@@ -158,7 +158,7 @@ void SMTracks::load_segment_definitions()
                 *mesh_out++ = 'x';
                 *mesh_out = 0;
                 row->object_id =
-                    ((GameRoot*)g_game_base)->directx_loader
+                    g_game->directx_loader
                         .load_or_reuse_cached_x_mesh(mesh_name);
 
                 option_match = find_case_insensitive_substring("(", option_match);
@@ -200,7 +200,7 @@ void SMTracks::load_segment_definitions()
                 }
                 *path_out = 0;
                 row->path_template_index =
-                    ((GameRoot*)g_game_base)->subgame.path_manager
+                    g_game->subgame.path_manager
                         .find_segment_path_index_by_name(path_name);
                 if (row->path_template_index == -1)
                     report_errorf("Unknown path %s in %s", path_name, segment_file_name);
