@@ -4,24 +4,24 @@
 /* function: spawn_salt_hazard @ 0x441560 */
 
 00441561        int32_t eax = 0
-00441563        uint32_t* edx = &pool_head->active
-0044156c        while ((edx - 0x80)->active != 0)
+00441563        int32_t* edx = &manager->slots[0].state
+0044156c        while ((edx - 0x80)->slots[0].state != 0)
 0044156e        eax += 1
 0044156f        edx = &edx[0x26]
 00441578        if (eax s>= 0x28)
 0044157b        return eax
-00441585        void* esi = &pool_head[eax]
+00441585        void* esi = &manager->slots[eax]
 0044158c        *(esi + 0x80) = 1
 00441596        *(esi + 0x8c) = 0
-004415b8        *(esi + 0x90) = fconvert.s(fconvert.t(*(data_4df904 + 0x74650)) * fconvert.t(0.0333333351f))
-004415c0        *(esi + 0x68) = owner->__offset(0x0).d
-004415c5        *(esi + 0x6c) = owner->__offset(0x4).d
-004415cd        *(esi + 0x70) = owner->__offset(0x8).d
+004415b8        *(esi + 0x90) = fconvert.s(fconvert.t(*(g_game_base + 0x74650)) * fconvert.t(0.0333333351f))
+004415c0        *(esi + 0x68) = position->x
+004415c5        *(esi + 0x6c) = position->y
+004415cd        *(esi + 0x70) = position->z
 004415d0        set_matrix_rotation_identity(esi + 0x38)
 004415de        int32_t var_c = 0x1fff
 004415f4        rotate_matrix_world_y(esi + 0x38, fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f)))
 004415f9        *(esi + 0x94) = 1
-0044160a        void* eax_5 = data_4df904 + 0x3ca224
+0044160a        void* eax_5 = &g_game_base[0x3ca224]
 00441617        if ((0x200 & *(esi + 4)) != 0)
 0044161e        report_errorf("List ADDafter")
 00441627        return 0

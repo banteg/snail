@@ -73,7 +73,10 @@ the Windows constructor table at `0x497340` points directly here. The scratch
 now defines the method on `Salt`; matching remains exact at 83/83 with twelve
 clean operands.
 
-2026-07-13 Binary Ninja ownership sync: the callback now consumes the exact
-`FrameSaltSlot` established by startup, including `owner_game +0x88`, fade at
-`+0x8c`, spawn velocity at `+0x90`, and collision latch at `+0x94`. This
-replaces the stale untyped fastcall signature; matching remains exact at 83/83.
+2026-07-13 Binary Ninja ownership consolidation: the callback now consumes the
+canonical authored `Salt` established by startup. Its `Vec3 velocity` at
+`+0x8c` carries the fade, spawn-y, and collision-latch overlays already proved
+by the exact scratch, while `owner_game +0x88` is a borrowed `SubgameRuntime*`.
+`SubgameRuntime` owns the exact 40-slot `SaltManager` at `+0x3578c0`; this
+replaces both the stale sparse slot experiment and lane-local `FrameSaltSlot`.
+Matching remains exact at 83/83.

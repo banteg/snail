@@ -121,6 +121,11 @@ The high-score bank and subgame-runtime BN lanes carry the recovered
 `SubSolution`, `SubHighScore`, and sparse `SubgameRuntime` layouts that
 make `complete_subgame` and the three `add_*_high_score` helpers readable.
 
+The subgame-hazard lane owns the canonical `SubLazer` / `SubLazerManager` and
+`Salt` / `SaltManager` types. Its replay deliberately replaces the obsolete
+sparse slot experiments, preserves complete shared types from other lanes, and
+batches all field/prototype mutations behind one verified preview.
+
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS

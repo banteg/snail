@@ -7,5 +7,5 @@ manager method and loop. The scratch remains exact at 7/7 instructions.
 2026-07-13 owner closure: the startup producer fixes this manager at
 `SubgameRuntime +0x3578c0`, immediately after the 20-slot SubLazer manager and
 before the banner pool. The replayable Binary Ninja projection now uses the
-same 40 inline `0x98` slots and corrects this function to a
-`FrameSaltManager*` thiscall receiver. Matching remains exact at 7/7.
+same canonical 40 inline `Salt` records and corrects this function to a
+`SaltManager*` thiscall receiver. Matching remains exact at 7/7.

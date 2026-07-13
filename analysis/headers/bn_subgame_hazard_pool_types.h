@@ -2,100 +2,95 @@
 #define BN_SUBGAME_HAZARD_POOL_TYPES_H
 
 /*
- * Narrow Binary Ninja projection of the subgame BOD-group sentinels and the
- * contiguous SubLazer/Salt runtime pools embedded in FrameSubgameRuntime.
- * Names are lane-local so replaying this header cannot overwrite older
- * standalone hazard-slot experiments.
+ * Canonical narrow Binary Ninja projection of the authored cRSubLazer and
+ * cRSalt owners. The dedicated sync replaces the obsolete sparse slot
+ * experiments while preserving complete shared types from other lanes.
  */
 
 typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
-typedef struct FrameHazardVec3 {
+typedef struct SubgameRuntime SubgameRuntime;
+
+typedef struct Vec3 {
     float x;
     float y;
     float z;
-} FrameHazardVec3;
+} Vec3;
 
-typedef struct FrameHazardVec4 {
-    float x;
-    float y;
-    float z;
-    float w;
-} FrameHazardVec4;
-
-typedef struct FrameHazardColor4f {
+typedef struct Color4f {
     float r;
     float g;
     float b;
     float a;
-} FrameHazardColor4f;
+} Color4f;
 
-typedef struct FrameHazardBodNode FrameHazardBodNode;
-struct FrameHazardBodNode {
+typedef struct BodNode BodNode;
+struct BodNode {
     void* vtable;
     uint32_t list_flags;
-    FrameHazardBodNode* list_prev;
-    FrameHazardBodNode* list_next;
+    BodNode* list_prev;
+    BodNode* list_next;
 };
 
-typedef struct FrameSubLazerSlot FrameSubLazerSlot;
-struct FrameSubLazerSlot {
-    void* vtable;
-    uint32_t list_flags;
-    FrameHazardBodNode* list_prev;
-    FrameHazardBodNode* list_next;
-    FrameHazardVec3 bod_position;
+typedef struct SubLazer {
+    BodNode bod;
+    Vec3 bod_position;
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    FrameHazardColor4f color;
-    FrameHazardVec4 basis_right;
-    FrameHazardVec4 basis_up;
-    FrameHazardVec4 basis_forward;
-    FrameHazardVec4 world_position;
+    Color4f color;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 position;
+    float position_w;
     uint8_t unknown_78[0x8];
     int32_t state;
     uint8_t unknown_84[0x4];
-    void* owner_game;
-    FrameHazardVec3 velocity;
+    SubgameRuntime* owner_game;
+    Vec3 velocity;
     float sprite_bob_phase;
     float sprite_bob_phase_step;
     uint8_t unknown_a0[0x10];
-};
+} SubLazer;
 
-typedef struct FrameSubLazerManager {
-    FrameSubLazerSlot slots[20];
-} FrameSubLazerManager;
+typedef SubLazer SubLazerSlot;
 
-typedef struct FrameSaltSlot FrameSaltSlot;
-struct FrameSaltSlot {
-    void* vtable;
-    uint32_t list_flags;
-    FrameHazardBodNode* list_prev;
-    FrameHazardBodNode* list_next;
-    FrameHazardVec3 bod_position;
+typedef struct SubLazerManager {
+    SubLazer slots[20];
+} SubLazerManager;
+
+typedef struct Salt {
+    BodNode bod;
+    Vec3 bod_position;
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    FrameHazardColor4f color;
-    FrameHazardVec4 basis_right;
-    FrameHazardVec4 basis_up;
-    FrameHazardVec4 basis_forward;
-    FrameHazardVec4 world_position;
+    Color4f color;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 position;
+    float position_w;
     uint8_t unknown_78[0x8];
     int32_t state;
     uint8_t unknown_84[0x4];
-    void* owner_game;
-    float fade_alpha;
-    float spawn_velocity_y;
-    uint8_t collision_armed;
-    uint8_t unknown_95[0x3];
-};
+    SubgameRuntime* owner_game;
+    Vec3 velocity;
+} Salt;
 
-typedef struct FrameSaltManager {
-    FrameSaltSlot slots[40];
-} FrameSaltManager;
+typedef Salt SaltHazardSlot;
+
+typedef struct SaltManager {
+    Salt slots[40];
+} SaltManager;
 
 #endif

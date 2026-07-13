@@ -7,10 +7,10 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
-    apply_proto_updates,
-    apply_struct_field_updates,
+    apply_struct_and_proto_updates,
     emit_summary,
-    types_declare,
+    struct_exists,
+    types_declare_missing_only,
 )
 
 
@@ -28,63 +28,82 @@ FRAME_SUBGAME_FIELD_UPDATES = (
     ("0x355cec", "unknown_bod_355cec", "FrameBodBase"),
     ("0x355d24", "golb_vapour_list_head", "FrameBodBase"),
     ("0x355d5c", "unknown_bod_355d5c", "FrameBodBase"),
-    ("0x356b00", "sub_lazers", "FrameSubLazerManager"),
-    ("0x3578c0", "salt_hazards", "FrameSaltManager"),
+    ("0x356b00", "sub_lazers", "SubLazerManager"),
+    ("0x3578c0", "salt_hazards", "SaltManager"),
     ("0x359080", "banners", "BannerPool"),
 )
 
-SUB_LAZER_FIELD_UPDATES = (
-    ("0x88", "owner_game", "FrameSubgameRuntime*"),
+SUBGAME_FIELD_UPDATES = (
+    ("0x356b00", "sub_lazers", "SubLazerManager"),
+    ("0x3578c0", "salt_hazards", "SaltManager"),
 )
 
-SALT_FIELD_UPDATES = (
-    ("0x88", "owner_game", "FrameSubgameRuntime*"),
+SUBGAME_PLAYER_FIELD_UPDATES = (
+    # update_sub_lazer_projectile reads Player::interaction_max_z through the
+    # borrowed owner_game backlink. Install this only after the Player lane is complete.
+    ("0x3bb764", "player", "Player"),
+)
+
+HAZARD_TYPE_REPLACEMENTS = (
+    "SubLazer",
+    "SubLazerSlot",
+    "SubLazerManager",
+    "Salt",
+    "SaltHazardSlot",
+    "SaltManager",
+)
+
+CANONICAL_HAZARD_STRUCTS = (
+    "SubLazer",
+    "SubLazerManager",
+    "Salt",
+    "SaltManager",
 )
 
 BANNER_FIELD_UPDATES = (
-    ("0x48", "owner_game", "FrameSubgameRuntime*"),
+    ("0x48", "owner_game", "SubgameRuntime*"),
 )
 
 PROTO_UPDATES = (
     (
         "initialize_sub_lazer_runtime",
-        "FrameSubLazerSlot* __thiscall initialize_sub_lazer_runtime(FrameSubLazerSlot* slot)",
+        "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* slot)",
     ),
     (
         "initialize_salt_hazard_runtime",
-        "FrameSaltSlot* __thiscall initialize_salt_hazard_runtime(FrameSaltSlot* slot)",
+        "Salt* __thiscall initialize_salt_hazard_runtime(Salt* slot)",
     ),
     (
         "initialize_sub_lazer_pool",
-        "int32_t* __thiscall initialize_sub_lazer_pool(FrameSubLazerManager* manager)",
+        "int32_t* __thiscall initialize_sub_lazer_pool(SubLazerManager* manager)",
     ),
     (
         "initialize_salt_hazard_pool",
-        "int32_t* __thiscall initialize_salt_hazard_pool(FrameSaltManager* manager)",
+        "int32_t* __thiscall initialize_salt_hazard_pool(SaltManager* manager)",
     ),
     (
         "spawn_sub_lazer_projectile",
-        "void __thiscall spawn_sub_lazer_projectile(FrameSubLazerSlot* slot, const FrameHazardVec3* origin, const FrameHazardVec3* direction)",
+        "void __thiscall spawn_sub_lazer_projectile(SubLazer* slot, const Vec3* origin, const Vec3* direction)",
     ),
     (
         "deactivate_sub_lazer_projectile",
-        "int32_t __thiscall deactivate_sub_lazer_projectile(FrameSubLazerSlot* slot)",
+        "int32_t __thiscall deactivate_sub_lazer_projectile(SubLazer* slot)",
     ),
     (
         "update_sub_lazer_projectile",
-        "void __thiscall update_sub_lazer_projectile(FrameSubLazerSlot* slot)",
+        "void __thiscall update_sub_lazer_projectile(SubLazer* slot)",
     ),
     (
         "shoot_subgoldy",
-        "void __thiscall shoot_subgoldy(FrameSubLazerManager* manager, FrameHazardVec3* origin, const FrameHazardVec3* direction)",
+        "void __thiscall shoot_subgoldy(SubLazerManager* manager, Vec3* origin, const Vec3* direction)",
     ),
     (
         "spawn_salt_hazard",
-        "int32_t __thiscall spawn_salt_hazard(FrameSaltManager* manager, const FrameHazardVec3* position)",
+        "int32_t __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position)",
     ),
     (
         "update_salt_hazard",
-        "void __thiscall update_salt_hazard(FrameSaltSlot* slot)",
+        "void __thiscall update_salt_hazard(Salt* slot)",
     ),
 )
 
@@ -109,40 +128,41 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = [
-        types_declare(
+    canonical_types_present = all(
+        struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name)
+        for struct_name in CANONICAL_HAZARD_STRUCTS
+    )
+    type_operation = (
+        {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "canonical hazard structs already present",
+            "header": str(header_path),
+            "required_structs": CANONICAL_HAZARD_STRUCTS,
+        }
+        if canonical_types_present
+        else types_declare_missing_only(
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-        ),
-        *apply_struct_field_updates(
+            replace_types=HAZARD_TYPE_REPLACEMENTS,
+        )
+    )
+    subgame_updates = list(SUBGAME_FIELD_UPDATES)
+    if struct_exists(REPO_ROOT, target=args.target, struct_name="Player"):
+        subgame_updates.extend(SUBGAME_PLAYER_FIELD_UPDATES)
+
+    operations: list[dict[str, object]] = [
+        type_operation,
+        *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="FrameSubgameRuntime",
-            updates=FRAME_SUBGAME_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="FrameSubLazerSlot",
-            updates=SUB_LAZER_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="FrameSaltSlot",
-            updates=SALT_FIELD_UPDATES,
-        ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Banner",
-            updates=BANNER_FIELD_UPDATES,
-        ),
-        *apply_proto_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=PROTO_UPDATES,
+            struct_updates=(
+                ("FrameSubgameRuntime", FRAME_SUBGAME_FIELD_UPDATES),
+                ("SubgameRuntime", subgame_updates),
+                ("Banner", BANNER_FIELD_UPDATES),
+            ),
+            proto_updates=PROTO_UPDATES,
         ),
     ]
     return emit_summary(

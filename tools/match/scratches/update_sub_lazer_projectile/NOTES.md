@@ -1,6 +1,6 @@
 # update_sub_lazer_projectile @ 0x4417d0
 
-Current best is `85.25%`, `216/218` candidate/target instructions, masked
+Current best is `92.63%`, `216/218` candidate/target instructions, masked
 operands `23 ok / 0 mismatch`. The scratch was originally pinned at `48.39%`
 with `17 ok / 0 mismatch`.
 
@@ -137,7 +137,10 @@ test. Reversing the source operands is codegen-neutral, and spelling separate
 primary/secondary hit tails still lets VC6 fully merge the suffix, so neither
 probe is retained. No volatile, label, or dummy-state nudge is used.
 
-2026-07-13 Binary Ninja ownership sync: the slot callback now consumes the
-same `FrameSubLazerSlot` established by startup, including the borrowed
-`owner_game +0x88` backlink. This replaces the stale fastcall signature; the
-focused source remains honestly near-exact at 92.63% (216/218).
+2026-07-13 Binary Ninja ownership consolidation: the slot callback now consumes
+the canonical authored `SubLazer` established by startup, including its
+`BodNode` prefix, transform, velocity, and borrowed `owner_game +0x88`
+backlink. `SubgameRuntime` owns the exact 20-slot `SubLazerManager` at
+`+0x356b00`; this replaces both the stale sparse slot experiment and the
+lane-local `FrameSubLazerSlot`. The focused source remains honestly near-exact
+at 92.63% (216/218).
