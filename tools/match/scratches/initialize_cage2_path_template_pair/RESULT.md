@@ -4,14 +4,14 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 0.19% | **43.55%** |
-| Target instructions | 1029 | 1029 |
+| Match | 0.19% on coarse range | **56.54%** focused |
+| Target instructions | 1029 coarse | **648** |
 | Candidate instructions | 2 | **629** |
-| Common prefix | 0 / 1029 | 0 / 1029 |
+| Common prefix | 0 / 1029 | 0 / 648 |
 | Masked operands | none | **39 ok, 0 unresolved, 1 mismatch** |
 
-The measured improvement is **+43.36 percentage points**. The first mismatch is
-the native `sub esp, 0x54` versus the candidate's `sub esp, 0x48`.
+The current focused score is **56.54%**. The first mismatch is the native
+`sub esp, 0x54` versus the candidate's `sub esp, 0x48`.
 
 The single masked mismatch is at the curve-loop call alignment: target
 instruction 127 resolves to `set_matrix_identity`, while candidate instruction
@@ -51,14 +51,14 @@ symbols or constants.
 - Cached face stride: lower score because it removed native word reloads.
 - `register` hints and named `0.49f` constants: no useful code-generation change.
 
-## Target-range audit
+## Target-range correction
 
-The official target dump is not limited to the initializer. Its `ret 0x10` is at
-target instruction 644, padding runs through instruction 657, and another
-function begins at `0x42f0a0` / target instruction 658. The reported
-1029-instruction target therefore contains 371 instructions from the following
-function. The `43.55%` result above is still the unmodified official matcher
-score.
+Promoting `load_png_image @ 0x42f0a0` removes its 371 instructions from this
+target. The corrected Cage2 range contains 648 decoded instructions: 645 through
+the main `ret 0x10`, followed by the real three-instruction out-of-line block at
+`0x42f08c..0x42f095`. Alignment NOPs before `0x42f0a0` are not counted. The
+candidate source is unchanged; correcting ownership alone raises its focused
+score from 43.55% to 56.54%.
 
 ## Next region to attack
 
@@ -71,9 +71,9 @@ revisit the terminal vertex-row scalar lifetimes that account for the remaining
 ## Final audit
 
 - Toolchain: `msvc6.5 /O2 /G5 /W3`.
-- Final score: `43.55%`.
-- Target/candidate: `1029 / 629` instructions.
-- Prefix: `0 / 1029`.
+- Final score: `56.54%`.
+- Target/candidate: `648 / 629` instructions.
+- Prefix: `0 / 648`.
 - Masks: `39 ok, 0 unresolved, 1 mismatch`.
 - No inline assembly, naked functions, volatile padding, fake globals, dummy
   externs, artificial stack padding, or matcher/normalizer gaming.

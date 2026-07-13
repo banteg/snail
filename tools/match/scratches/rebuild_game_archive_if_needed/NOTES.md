@@ -26,7 +26,7 @@ Recovered ownership:
 - a typed `ArchiveEntry*` establishes the record-array base before the header copy, while the hot loop keeps the native byte-count-field cursor so `[-2]`, `[-1]`, and `[0]` remain the path offset, data offset, and byte count;
 - the rebuilt output cursor begins at the first entry's `data_offset` field and advances by `sizeof(ArchiveEntry)`; the source-to-output base delta updates the corresponding serialized byte count;
 - `TgaImageView` now names the complete TGA header fields and inline pixel owner instead of treating the payload as raw byte offsets; its padded size remains the native `0x14` used by the converted payload calculation;
-- `load_png_image @ 0x42f0a0` is a seven-argument `cdecl` used only here. Direct disassembly reads arguments at `[ebp+8]` through `[ebp+0x20]`; Binary Ninja's extra `esi`/`edi` parameters are a bad auto-prototype induced by the helper's `setjmp` path, not hidden caller arguments.
+- `load_png_image @ 0x42f0a0` is a seven-argument `cdecl` used only here. Direct disassembly reads arguments at `[ebp+8]` through `[ebp+0x20]`; Binary Ninja's extra `esi`/`edi` parameters are a bad auto-prototype induced by the helper's `setjmp` path, not hidden caller arguments. The sixth argument receives the optional PNG `bKGD` color, and the seventh is an integer file offset.
 
 Retained source-shape gains:
 

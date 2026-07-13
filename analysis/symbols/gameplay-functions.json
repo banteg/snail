@@ -1492,6 +1492,11 @@
       "description": "Builds the Cage2 attachment path-template pair; iOS Path.o names this `cRPath::BuildCage2(int, char*, char*)`."
     },
     {
+      "address": "0x42f0a0",
+      "name": "load_png_image",
+      "description": "Authored seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It reads through the statically linked libpng 1.2.5 API, returns an allocated pixel buffer plus dimensions and channel count, and copies an optional PNG background color to the caller."
+    },
+    {
       "address": "0x42f470",
       "name": "load_config_file"
     },

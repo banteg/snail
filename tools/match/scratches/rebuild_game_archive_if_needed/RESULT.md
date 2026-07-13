@@ -41,7 +41,8 @@ native keeps and advances that output cursor as an independent local at
   named `TgaImageView` header, inline bottom-up BGR(A) pixel copy, converted
   byte-count update, extract printf, final DAT save, DAM/PNG deletes, and free.
 - Curated `load_png_image @ 0x42f0a0` as the ordinary seven-argument `cdecl`
-  proven by its body, rejecting Binary Ninja's spurious register parameters.
+  proven by its body, rejecting Binary Ninja's spurious register parameters;
+  its final lanes are an optional `bKGD` RGB output and an integer file offset.
 
 ## Rejected trials
 

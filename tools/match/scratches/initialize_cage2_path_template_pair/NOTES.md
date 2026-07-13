@@ -78,7 +78,9 @@ through `+0x5c`, and the runtime flag at `+0x9c`.
   than independent cursors, even though VC6 spills it instead of retaining the
   target's `ebx` allocation.
 
-Measured milestones during reconstruction were approximately:
+Measured milestones during reconstruction were approximately. The first rows
+use the old coarse target range that also contained the following PNG loader;
+the last row uses the corrected function boundary:
 
 | Shape | Match | Candidate instructions |
 |---|---:|---:|
@@ -90,23 +92,22 @@ Measured milestones during reconstruction were approximately:
 | Face-loop reload/control-flow work | 43.22% | 623 |
 | Float-boundary cleanup | 43.49% | 622 |
 | Terminal-row lateral vector | **43.55%** | **629** |
+| Promoted following-function boundary | **56.54%** | **629** |
 
-## Target-range anomaly
+## Resolved target boundary
 
-The saved target range is larger than the native initializer. In the target
-dump:
+`load_png_image @ 0x42f0a0` is now promoted as its own gameplay function. The
+saved Cage2 range is consequently limited to 648 decoded instructions:
 
-- the initializer's `ret 0x10` is target instruction 644 (645 instructions
-  through the return);
-- padding continues through target instruction 657; and
-- a different frame-pointer function begins at `0x42f0a0`, target instruction
-  658, then continues through the reported target instruction 1028.
+- the main epilogue and `ret 0x10` end at target instruction 644;
+- the real out-of-line face-selection block at `0x42f08c..0x42f095` occupies
+  target instructions 645 through 647 and jumps back into the function; and
+- alignment NOPs run from `0x42f096` up to the separate PNG helper at
+  `0x42f0a0` and are excluded from the focused instruction range.
 
-Thus the official 1029-instruction score includes 371 instructions belonging to
-the following function, plus the post-return padding. The official matcher
-number remains the result of record, but the concatenated tail explains the
-large final unmatched region and should be corrected before expecting a normal
-whole-function percentage.
+The same 629-instruction candidate therefore rises from the historical coarse
+43.55% score to the current focused **56.54%** without any source-shape change.
+The 371-instruction PNG helper is independently exact in its own scratch.
 
 ## Rejected trials
 
@@ -149,14 +150,14 @@ and `ObjectFaceQuad` declarations. The local facequad overlay mapped directly to
 `ObjectFaceQuad`; the zero store is spelled through `header_word` to preserve
 the former 16-bit `flags` store.
 
-The matcher stayed at the accepted baseline:
+The source stayed at the accepted baseline. After promoting the following
+function boundary, the focused result is:
 
 ```text
-match: 43.55%
-target: 1029 insns, candidate: 629 insns
+match: 56.54%
+target: 648 insns, candidate: 629 insns
 masked operands: 39 ok, 0 unresolved, 1 mismatch
 ```
 
 The shared type report now removes this initializer from the
-`Path` scratch-local list. The target-range anomaly above
-still applies.
+`Path` scratch-local list.

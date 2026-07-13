@@ -23,8 +23,8 @@ int __cdecl load_png_image(
     int* out_width,
     int* out_height,
     int* out_channels,
-    u8* palette_rgb,
-    void* file_offset);
+    u8* background_rgb,
+    int file_offset);
 
 void __cdecl rebuild_game_archive_if_needed(void)
 {
@@ -42,7 +42,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
     int entry_index;
     int dam_size;
     char* entry_path;
-    int palette_rgb;
+    int background_rgb;
     u8 stem[512];
     char* payload_cursor;
     unsigned int* source_byte_count;
@@ -108,7 +108,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
                     &png_width,
                     &png_height,
                     &png_channels,
-                    (u8*)&palette_rgb,
+                    (u8*)&background_rgb,
                     0);
 
                 *(int*)output_record_cursor = payload_cursor - rebuilt;

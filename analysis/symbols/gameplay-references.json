@@ -76,7 +76,7 @@
       "aliases": [
         "sub_42f0a0"
       ],
-      "description": "Seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It returns an allocated pixel buffer plus width, height, channel count, and a three-byte palette sample; the live ESI and EDI values at the callsite belong to the caller and are not hidden parameters."
+      "description": "Seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It returns an allocated pixel buffer plus width, height, channel count, and an optional three-byte bKGD background color; the live ESI and EDI values at the callsite belong to the caller and are not hidden parameters."
     },
     {
       "address": "0x42f6e0",
@@ -523,6 +523,26 @@
       ],
       "size": "0x4",
       "description": "Renderer vertex-buffer resource for the dynamic LoadingBarOn progress-fill quad updated by update_loading_screen."
+    },
+    {
+      "address": "0x5032f4",
+      "name": "g_png_read_struct",
+      "kind": "global",
+      "aliases": [
+        "data_5032f4"
+      ],
+      "size": "0x4",
+      "description": "File-scope libpng read-structure pointer owned exclusively by load_png_image; it is scratch state for the archive-rebuild compatibility path, not a persistent gameplay object."
+    },
+    {
+      "address": "0x5032f8",
+      "name": "g_png_info_struct",
+      "kind": "global",
+      "aliases": [
+        "data_5032f8"
+      ],
+      "size": "0x4",
+      "description": "File-scope libpng info-structure pointer owned exclusively by load_png_image alongside g_png_read_struct."
     },
     {
       "address": "0x413520",
@@ -1329,6 +1349,206 @@
         "sub_453467"
       ],
       "description": "D3DX simple texture creation wrapper used as the Sprites/Debug.tga fallback after texture creation failures."
+    },
+    {
+      "address": "0x461c31",
+      "name": "png_get_channels",
+      "kind": "function",
+      "aliases": [
+        "sub_461c31"
+      ],
+      "description": "Statically linked libpng 1.2.5 channel-count accessor used by load_png_image."
+    },
+    {
+      "address": "0x47d900",
+      "name": "png_create_read_struct",
+      "kind": "function",
+      "aliases": [
+        "sub_47d900"
+      ],
+      "description": "Statically linked libpng 1.2.5 read-structure constructor."
+    },
+    {
+      "address": "0x47daf7",
+      "name": "png_read_info",
+      "kind": "function",
+      "aliases": [
+        "sub_47daf7"
+      ],
+      "description": "Statically linked libpng 1.2.5 PNG-header reader."
+    },
+    {
+      "address": "0x47dfa8",
+      "name": "png_read_update_info",
+      "kind": "function",
+      "aliases": [
+        "sub_47dfa8"
+      ],
+      "description": "Statically linked libpng 1.2.5 transform-layout finalizer."
+    },
+    {
+      "address": "0x47e3d9",
+      "name": "png_read_image",
+      "kind": "function",
+      "aliases": [
+        "sub_47e3d9"
+      ],
+      "description": "Statically linked libpng 1.2.5 whole-image row reader."
+    },
+    {
+      "address": "0x47e426",
+      "name": "png_read_end",
+      "kind": "function",
+      "aliases": [
+        "sub_47e426"
+      ],
+      "description": "Statically linked libpng 1.2.5 end-chunk reader."
+    },
+    {
+      "address": "0x47e81a",
+      "name": "png_destroy_read_struct",
+      "kind": "function",
+      "aliases": [
+        "sub_47e81a"
+      ],
+      "description": "Statically linked libpng 1.2.5 read-structure destructor used on load_png_image failure paths."
+    },
+    {
+      "address": "0x47eb0b",
+      "name": "png_get_valid",
+      "kind": "function",
+      "aliases": [
+        "sub_47eb0b"
+      ],
+      "description": "Statically linked libpng 1.2.5 chunk-validity accessor."
+    },
+    {
+      "address": "0x47eb25",
+      "name": "png_get_rowbytes",
+      "kind": "function",
+      "aliases": [
+        "sub_47eb25"
+      ],
+      "description": "Statically linked libpng 1.2.5 transformed-row-size accessor."
+    },
+    {
+      "address": "0x47eb3b",
+      "name": "png_get_bKGD",
+      "kind": "function",
+      "aliases": [
+        "sub_47eb3b"
+      ],
+      "description": "Statically linked libpng 1.2.5 background-color chunk accessor."
+    },
+    {
+      "address": "0x47eb64",
+      "name": "png_get_gAMA",
+      "kind": "function",
+      "aliases": [
+        "sub_47eb64"
+      ],
+      "description": "Statically linked libpng 1.2.5 image-gamma chunk accessor."
+    },
+    {
+      "address": "0x47eb8d",
+      "name": "png_get_IHDR",
+      "kind": "function",
+      "aliases": [
+        "sub_47eb8d"
+      ],
+      "description": "Statically linked libpng 1.2.5 image-header field accessor."
+    },
+    {
+      "address": "0x47ecbf",
+      "name": "png_set_background",
+      "kind": "function",
+      "aliases": [
+        "sub_47ecbf"
+      ],
+      "description": "Statically linked libpng 1.2.5 alpha/background compositing transform."
+    },
+    {
+      "address": "0x47ed41",
+      "name": "png_set_strip_16",
+      "kind": "function",
+      "aliases": [
+        "sub_47ed41"
+      ],
+      "description": "Statically linked libpng 1.2.5 16-to-8-bit transform selector."
+    },
+    {
+      "address": "0x47ed4a",
+      "name": "png_set_gamma",
+      "kind": "function",
+      "aliases": [
+        "sub_47ed4a"
+      ],
+      "description": "Statically linked libpng 1.2.5 display/image gamma transform."
+    },
+    {
+      "address": "0x47ed9b",
+      "name": "png_set_expand",
+      "kind": "function",
+      "aliases": [
+        "sub_47ed9b"
+      ],
+      "description": "Statically linked libpng 1.2.5 palette, low-bit-depth, and transparency expansion selector."
+    },
+    {
+      "address": "0x47eda4",
+      "name": "png_set_gray_to_rgb",
+      "kind": "function",
+      "aliases": [
+        "sub_47eda4"
+      ],
+      "description": "Statically linked libpng 1.2.5 grayscale-to-RGB transform selector."
+    },
+    {
+      "address": "0x482978",
+      "name": "png_set_sig_bytes",
+      "kind": "function",
+      "aliases": [
+        "sub_482978"
+      ],
+      "description": "Statically linked libpng 1.2.5 consumed-signature-byte setter."
+    },
+    {
+      "address": "0x482a0c",
+      "name": "png_check_sig",
+      "kind": "function",
+      "aliases": [
+        "sub_482a0c"
+      ],
+      "description": "Legacy libpng 1.2.5 boolean PNG-signature compatibility wrapper."
+    },
+    {
+      "address": "0x482b00",
+      "name": "png_create_info_struct",
+      "kind": "function",
+      "aliases": [
+        "sub_482b00"
+      ],
+      "description": "Statically linked libpng 1.2.5 info-structure constructor."
+    },
+    {
+      "address": "0x482f3e",
+      "name": "png_init_io",
+      "kind": "function",
+      "aliases": [
+        "sub_482f3e"
+      ],
+      "description": "Statically linked libpng 1.2.5 stdio reader initializer."
+    },
+    {
+      "address": "0x48bf60",
+      "name": "_setjmp",
+      "kind": "function",
+      "aliases": [
+        "setjmp",
+        "setjmp3",
+        "sub_48bf60"
+      ],
+      "description": "Statically linked VC6 setjmp3 helper used by libpng error recovery; the compiler intrinsic supplies the hidden null frame argument."
     },
     {
       "address": "0x47bdf4",
