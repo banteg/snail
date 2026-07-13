@@ -11,74 +11,46 @@ float cosine(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-
-static __forceinline void orient_previous_with_right(
-    PathTemplateSample* samples, int current_index, int first_index)
-{
-    PathTemplateSample* previous = &samples[current_index - 1];
-    PathTemplateSample* current = &samples[current_index];
-
-    if (current_index <= first_index) {
-        previous->transform.set_matrix_rotation_identity();
-        return;
-    }
-
-    previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-    previous->transform.basis_forward = Vector3(
-        current->transform.position.x - previous->transform.position.x,
-        current->transform.position.y - previous->transform.position.y,
-        current->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
-    previous->transform.basis_up.cross_vectors(
-        &previous->transform.basis_forward,
-        &previous->transform.basis_right);
-}
-
-static __forceinline void compute_direct_deltas(Path* path)
-{
-    int i;
-    for (i = 0; i < path->segment_count; ++i) {
-        PathTemplateSample* primary = &path->primary_samples[i];
-        PathTemplateSample* primary_next = &path->primary_samples[i + 1];
-        primary->delta_dir_to_next = Vector3(
-            primary_next->transform.position.x - primary->transform.position.x,
-            primary_next->transform.position.y - primary->transform.position.y,
-            primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.normalize_vector();
-
-        PathTemplateSample* secondary = &path->secondary_samples[i];
-        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
-    }
-}
-
 static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
 {
-    path->strip_mesh->request_object_facequads(
-        2 * path->width_cells * path->segment_count);
     path->strip_mesh->request_object_vertices(
         (path->width_cells + 1) * (path->segment_count + 1));
+    path->strip_mesh->request_object_facequads(
+        2 * path->width_cells * path->segment_count);
 
     Vector3* vertices = path->strip_mesh->vertices;
     ObjectFaceQuad* facequads = path->strip_mesh->facequads;
     int row;
     int column;
 
-    for (row = 0; row <= path->segment_count; ++row) {
-        for (column = 0; column <= path->width_cells; ++column) {
-            PathTemplateSample* sample = &path->primary_samples[row];
-            float lateral = (float)column - (float)path->width_cells * 0.5f;
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            Vector3 generated_position(
-                sample->transform.position.x + lateral * sample->transform.basis_right.x,
-                sample->transform.position.y + lateral * sample->transform.basis_right.y,
-                sample->transform.position.z + lateral * sample->transform.basis_right.z);
-            *vertex = generated_position;
-        }
+    row = 0;
+    int sample_offset = 0;
+    if (path->segment_count >= 0) {
+        do {
+            column = 0;
+            if (path->width_cells >= 0) {
+                do {
+                    PathTemplateSample* sample = (PathTemplateSample*)(
+                        (char*)path->primary_samples + sample_offset);
+                    float lateral =
+                        (float)column - (float)path->width_cells * 0.5f;
+                    Vector3* vertex =
+                        &vertices[column + row * (path->width_cells + 1)];
+                    Vector3 lateral_offset(
+                        lateral * sample->transform.basis_right.x,
+                        lateral * sample->transform.basis_right.y,
+                        lateral * sample->transform.basis_right.z);
+                    Vector3 generated_position(
+                        sample->transform.position.x + lateral_offset.x,
+                        sample->transform.position.y + lateral_offset.y,
+                        sample->transform.position.z + lateral_offset.z);
+                    *vertex = generated_position;
+                    ++column;
+                } while (column <= path->width_cells);
+            }
+            ++row;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (row <= path->segment_count);
     }
 
     for (row = 0; row < path->segment_count; ++row) {
@@ -251,7 +223,32 @@ void Path::initialize_start_path_template_pair(
         }
     }
 
-    compute_direct_deltas(this);
+    int delta_index = 0;
+    if (segment_count > 0) {
+        do {
+            primary_samples[delta_index].delta_dir_to_next = Vector3(
+                primary_samples[delta_index + 1].transform.position.x -
+                    primary_samples[delta_index].transform.position.x,
+                primary_samples[delta_index + 1].transform.position.y -
+                    primary_samples[delta_index].transform.position.y,
+                primary_samples[delta_index + 1].transform.position.z -
+                    primary_samples[delta_index].transform.position.z);
+            primary_samples[delta_index].delta_length =
+                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+
+            secondary_samples[delta_index].delta_dir_to_next = Vector3(
+                secondary_samples[delta_index + 1].transform.position.x -
+                    secondary_samples[delta_index].transform.position.x,
+                secondary_samples[delta_index + 1].transform.position.y -
+                    secondary_samples[delta_index].transform.position.y,
+                secondary_samples[delta_index + 1].transform.position.z -
+                    secondary_samples[delta_index].transform.position.z);
+            secondary_samples[delta_index].delta_length =
+                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+
+            ++delta_index;
+        } while (delta_index < segment_count);
+    }
     build_direct_strip_mesh(this, texture_a);
     finalize_path_template();
     (void)side_exit;

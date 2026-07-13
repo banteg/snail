@@ -1,6 +1,6 @@
 # initialize_start_path_template_pair
 
-Honest starter scratch for `initialize_start_path_template_pair @ 0x426400`.
+Ownership reconstruction for `initialize_start_path_template_pair @ 0x426400`.
 
 The callsite passes six stack arguments and the native tail is `ret 0x18`.
 Unlike the simpler terminal-row templates, this constructor allocates one extra
@@ -8,7 +8,10 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-Residuals are expected.
+The retained scratch now matches 25.65% (536/610 candidate/target
+instructions), with masked operands at 31 ok, 0 unresolved, 0 mismatch. The
+candidate still has a 0x48 frame versus the target's 0x44 frame, so the
+prologue and sample-loop register ownership remain open.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
@@ -117,3 +120,26 @@ right-vector frames directly, moves focused Wibo from 21.65% (526/610) to
 22.01% (526/610). Masked operands stay at 27 ok, 0 unresolved, 1 mismatch; the
 remaining mismatch is still native orientation work aligned against the local
 mesh allocation call.
+
+2026-07-13 direct owner recovery: expanding both delta streams directly through
+`Path::primary_samples` and `Path::secondary_samples` removes the remaining
+scratch-local delta helper and moves the focused match to 25.39% (532/610).
+The masked call audit becomes fully clean at 31 ok, 0 unresolved, 0 mismatch.
+This is the same owner-level delta shape recovered independently in the
+supertramp builder.
+
+Windows instruction order confirms that the strip mesh requests vertices
+before facequads: `(width_cells + 1) * (segment_count + 1)` is passed to the
+vertex allocator first, followed by `2 * width_cells * segment_count` for
+faces. Restoring that native order after the direct-delta recovery is both
+source-correct and matcher-positive; the earlier 2026-07-04 facequads-first
+result was a local alignment artifact and is superseded. Recovering the
+owner-relative mesh row cursor and staging an explicit lateral offset then
+moves the retained match to 25.65% (536/610).
+
+Rejected after this ownership pass: rewriting only the five-sample lead-in or
+only the curved body from their local primary/secondary pointers to direct
+array expressions regressed the focused score. A do-loop spelling for the
+already recovered two-face writer was byte-identical and was not retained.
+Those loops remain explicit future ownership work rather than being forced to
+share the supertramp spelling.
