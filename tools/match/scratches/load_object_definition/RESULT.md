@@ -2,23 +2,24 @@
 
 ## Score
 
-| Metric | Starter | Final |
+| Metric | Before closure | Final |
 |---|---:|---:|
-| Match | 0.00% | **48.23%** |
-| Target instructions | 325 | 325 |
-| Candidate instructions | 0 | 297 |
-| Common prefix | 0 / 325 | **2 / 325** |
-| Masked operands | none | **36 clean, 0 unresolved, 5 mismatched** |
+| Match | 55.56% | **100.00%** |
+| Target instructions | 316 | 316 |
+| Candidate instructions | 314 | **316** |
+| Common prefix | 30 / 316 | **316 / 316** |
+| Masked operands | 36 clean, 12 mismatched | **59 clean, 0 unresolved, 0 mismatched** |
 
-This source-shaped scratch for the object definition loader now also shares the
-global `ObjectList -> Object` ownership model. It
-recovers the `_Object.txt` vertex and facequad parser, object-array allocation,
-texture path construction, and texture-ref ownership.
+The exact scratch recovers the `_Object.txt` vertex and facequad parser,
+object-owned vertex/facequad allocation, texture-path construction, and
+borrowed `TextureRef*` lookup through the global texture manager. The borrowed
+`Object*` is a slot from the global `ObjectList`; the loader installs the two
+arrays it owns.
 
-## Remaining Work
+Exactness came from recovering three distinct line-advance sites rather than
+one unconditional tail call. Non-bracket lines and completed vertex/facequad
+sections advance independently, while an unknown bracket marker reaches the
+termination test unchanged. VC6 then tail-merges those authentic call sites
+into the native control-flow graph, including the out-of-line comment skipper.
 
-The native `0x23c` frame is recovered. The next useful improvement is early
-callee-saved register ownership: native saves `ebp` before `esi` and preserves
-the object pointer in `edi`. After that, revisit the vertex and facequad store
-spelling so VC6 emits the native x87 store schedule instead of compact dword
-copies.
+There are no instruction or operand residuals.

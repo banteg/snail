@@ -22,20 +22,13 @@ Recovered structure:
 - Lines starting with `*` are comments skipped by a hand-written newline scan,
   matching the native special case rather than the general line skipper helper.
 
-Focused matcher result: 54.77%, 314 candidate instructions versus 325 target
-instructions, with a 30-instruction exact prefix. The masked audit reports 36
-ok, zero unresolved, and 12 alignment-dependent mismatches.
+Focused matcher result: **100.00%**, 316/316 instructions with a full exact
+prefix. The masked audit resolves all 59 operands with zero mismatches.
 
-Known residuals:
-
-- Native and candidate now both use a `0x23c` frame, including the observed
-  `byte_count`, texture-name, texture-path, and object-path slots.
-- Native and candidate now both spill the vertex running count at `+0x20` and
-  the facequad running count at `+0x24`; their declaration order owns the two
-  function-lifetime slots without padding or synthetic aliases.
-- Native stores vertex and facequad floats through x87 load/store scheduling;
-  the remaining differences are primarily local-slot allocation, independent
-  register selection, and block placement.
+The exact scratch retains the native `0x23c` frame, including the observed
+`byte_count`, texture-name, texture-path, and object-path slots. Vertex and
+facequad running counts occupy the native `+0x20` and `+0x24` function-lifetime
+slots without padding or synthetic aliases.
 
 Measured probes:
 
@@ -110,3 +103,20 @@ were introduced to conceal that residual.
   continues to report this one resistant user-type defect rather than claiming
   a live mutation succeeded. The headless IDA sync accepted and verified the
   same void declaration with no missing or failed updates.
+
+2026-07-14 parser-dispatch closure:
+
+- The prior scratch incorrectly placed one unconditional
+  `skip_to_next_line(&cursor)` after the bracket dispatch. Native has three
+  semantic call sites instead: non-`[` lines, the completed vertex section,
+  and the completed facequad section. An unrecognized `[` line falls directly
+  to the outer termination test without advancing.
+- Expressing those distinct parser paths lets VC6 tail-merge the real helper
+  calls exactly. In particular, the vertex path prepares its cursor argument
+  and jumps into the shared call tail, while the non-bracket and facequad paths
+  share the other entry. The formerly misplaced comment block also moves after
+  the epilogue and jumps back to the common termination test.
+- This semantic control-flow correction raises the focused result from 55.56%
+  (314/316, 30-instruction prefix, 36 clean and 12 mismatched operands) to
+  100.00% (316/316, full prefix, all 59 operands clean). No register hints,
+  volatile barriers, dummy locals, or byte-shaped fakematch were used.
