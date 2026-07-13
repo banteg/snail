@@ -95,13 +95,12 @@ static __forceinline void compute_path_deltas(Path* path)
         secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
     }
 
-    PathTemplateSample* primary_last = &path->primary_samples[path->segment_count - 1];
-    primary_last->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_last->delta_length = 1.0f;
-
-    PathTemplateSample* secondary_last = &path->secondary_samples[path->segment_count - 1];
-    secondary_last->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_last->delta_length = 1.0f;
+    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
+    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
