@@ -274,7 +274,7 @@ The checked-in header now also carries the stable `FollowState` slice used by th
 - `FollowState.output_position`
 - `FollowState.player`
 
-The five orientation floats remain intentionally neutral as `orientation_a` through `orientation_e`. They are live and useful for decompile readability, but they are not semantically closed enough to overname yet.
+The first two orientation slots remain conservatively named `orientation_a` and `orientation_b`. The following `+0x20..+0x28` range is now closed as one `orientation_up` vector: Windows copies all three components from the interpolated transform's up basis, and iOS `cRPathFollowGoldy::Traverse` preserves the same aggregate `tVector` copy. This replaces the older three-float `orientation_c` through `orientation_e` placeholder without overnaming the two scalar lanes.
 
 The same narrow typed lane now carries a minimal `TrackRowCell` prefix for the follow helpers:
 

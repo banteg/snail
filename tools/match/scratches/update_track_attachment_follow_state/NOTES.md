@@ -4,11 +4,11 @@ Best current source-shaped reconstruction for the native attachment-follow updat
 
 Current matcher result:
 
-- 69.38% match
+- 70.28% match
 - target: 726 instructions
-- candidate: 672 instructions
+- candidate: 694 instructions
 - exact prefix: 122 instructions
-- masked operands: 53 ok, 0 unresolved, 0 mismatch
+- masked operands: 51 ok, 0 unresolved, 0 mismatch
 
 Recovered shape:
 
@@ -24,7 +24,7 @@ Known residuals after the current source shape:
 
 - the stack frame now matches exactly at `sub esp, 0x180`; the first mismatch is the destination of the branch at target instruction 122 (`je L240` versus candidate `je L23e`)
 - the ordinary and kind-42 transform regions still differ in local stack-slot placement, x87 scheduling, and the amount of duplicated basis-copy code
-- the candidate remains 54 instructions shorter, with most of the deficit concentrated after the scalar interpolation prefix
+- the candidate remains 32 instructions shorter, with most of the deficit concentrated after the scalar interpolation prefix
 - the side-exit clamp tails use semantic C++ returns but do not reproduce the target's x87 constant-store schedule
 - `orientation_b` is intentionally overwritten by the installed-heading lane, matching the native semantic result; some dead/intermediate stores remain layout-only mismatches
 
@@ -35,9 +35,9 @@ Known residuals after the current source shape:
   +0x38, position row = the position vector at +0x68 — same shape as the
   hazard slots. Worth folding into the mirror's Player model even though
   the normalized addressing is identical either way.
-- FollowState +0x18..+0x20 is output_position (the swept entry zeroes
-  its x/y), orientation block spans +0x24..+0x34;
-  tools/match/include/track_attachment.h updated.
+- FollowState `+0x18/+0x1c` holds the two scalar orientation lanes,
+  `+0x20..+0x28` is the `orientation_up` vector, and `+0x2c..+0x34` is
+  `output_position`; the swept entry zeroes the two scalar lanes.
 - sample +0x8c renamed delta_length across the headers (the swept-entry
   "depth limit" gate is z < segment length); swept scratch updated, score
   holds at 79.80%.
@@ -226,3 +226,28 @@ World init supplies those pointers from an auxiliary pair and the public pair
 respectively. Replacing the local fake overlay with the shared owner types is
 codegen neutral: focused matching remains `69.38%`, `672/726`, prefix
 `122/726`, masks `53/0/0`.
+
+## 2026-07-13 aggregate ownership recovery
+
+Windows and iOS now agree on two aggregate owners that the scratch previously
+spelled as scalar copies:
+
+- the three game-relative stores at `0x42fdb4`, `0x42fdc4`, and `0x42fdd4`
+  publish the interpolated matrix's right, up, and forward `Vec3` rows into the
+  embedded Player live matrix;
+- `FollowState +0x20..+0x28` is one owned `orientation_up` vector copied from
+  that interpolated matrix's up basis, not three unrelated orientation floats.
+
+The iOS `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` body preserves
+both aggregate copies with `ldm/stm`, independently confirming the source
+shape. It also preserves the same `sample_index == segment_count * 2` voice-4
+guard before terminating at `sample_index == segment_count`, proving that lane
+is cross-platform dead code rather than an unresolved counter alias.
+
+Using real `Vec3` assignments for the published Player matrix rows and the
+side-exit output copy improves the focused Windows candidate from `69.38%`,
+`672/726` to `70.28%`, `694/726`, with the exact `122/726` prefix retained and
+`51/0/0` masked operands. The local `orientation_up` field remains component-
+assigned because a single aggregate expression perturbs unrelated VC6 register
+allocation and regresses to `67.19%`; the shared layout still records the real
+vector owner, with no padding, volatile qualifier, or synthetic scheduling aid.

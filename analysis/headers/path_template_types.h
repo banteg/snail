@@ -1392,9 +1392,7 @@ typedef struct FollowState {
     float vertical_offset;
     float orientation_a;
     float orientation_b;
-    float orientation_c;
-    float orientation_d;
-    float orientation_e;
+    Vec3 orientation_up;
     Vec3 output_position;
     Player* player;
     uint8_t _pad_3c[0x4];

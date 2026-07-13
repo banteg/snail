@@ -131,11 +131,13 @@ The current high-confidence follow-state layout is:
 - `+0x0c`: current segment index
 - `+0x10`: progress within the current sampled segment
 - `+0x14`: local height above the attachment surface
-- `+0x18..+0x28`: live pose/orientation intermediates updated each tick
+- `+0x18`: first wrapped orientation scalar
+- `+0x1c`: installed-heading phase scalar (the earlier wrapped interpolation is overwritten)
+- `+0x20`: `orientation_up`, one owned vector copied from the interpolated transform's up basis
 - `+0x2c`: interpolated output position written by `update_track_attachment_follow_state`
 - `+0x38`: player pointer
 
-That same stable layout is now checked in as [`FollowState`](../../analysis/headers/path_template_types.h) and mirrored into IDA through the narrow typed-header sync lane. The five orientation floats stay conservatively named as `orientation_a` through `orientation_e`.
+That same stable layout is now checked in as [`FollowState`](../../analysis/headers/path_template_types.h) and mirrored into IDA through the narrow typed-header sync lane. Windows emits a three-component copy into `+0x20`, while iOS `cRPathFollowGoldy::Traverse` emits the corresponding `ldm/stm` aggregate copy; together they close that range as one `Vec3` rather than three anonymous floats. The two preceding scalars remain conservatively named `orientation_a` and `orientation_b`.
 
 Recovered begin-state behavior from `begin_track_attachment_follow_state`:
 

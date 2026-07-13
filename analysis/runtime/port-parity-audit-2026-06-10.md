@@ -337,8 +337,9 @@ Native also gates the down-ramp lookback dispatch on
   `(index+frac)·delta/count` camera phase lane all match the port. The
   `side_exit_mode` flag the port omits is 0 in every shipped template
   constructor (nothing writes nonzero), so the omission is behaviorally
-  neutral. The `voice 4` milestone is documented unresolved in the export
-  header itself; the `flag_9c` BOD-swap milestones at `(3·count)/7` and
+  neutral. The `voice 4` milestone is unreachable: both Windows and iOS compare
+  the incremented index with `2 * segment_count` even though the same loop
+  terminates at `segment_count`. The `flag_9c` BOD-swap milestones at `(3·count)/7` and
   `count−1` belong to the known-partial installed-record/BOD lane.
 - `handle_subgoldy_collisions` @ 0x444cf0 constants: salt 0.15 @ 0.98 gate,
   sublazer 0.02 @ 0.49, garbage 0.04 @ 0.98 with z-tolerance 1.0 and

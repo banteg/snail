@@ -255,9 +255,7 @@ public:
     float follow_vertical_offset;          // +0x398
     float follow_orientation_a;            // +0x39c
     float follow_orientation_b;            // +0x3a0
-    float follow_orientation_c;            // +0x3a4
-    float follow_orientation_d;            // +0x3a8
-    float follow_orientation_e;            // +0x3ac
+    Vector3 follow_orientation_up;          // +0x3a4, interpolated transform basis_up
     Vector3 follow_output_position;        // +0x3b0
     Player* follow_player;                 // +0x3bc
     unsigned char follow_flag_3c;          // +0x3c0

@@ -2770,7 +2770,7 @@ pub const Runner = struct {
     }
 
     // PORT(partial): Windows drives the attachment-side camera lift/FOV envelopes from the
-    // player's overall attachment progress, `((player.z - source_cell_row_z) / sample_count_f32)`.
+    // player's overall attachment progress, `((player.z - source_cell_row_z) / segment_count_f32)`.
     pub fn currentAttachmentCameraProgress(self: *const Runner, preview: *const track.LoadedLevelPreview) ?AttachmentCameraProgress {
         if (self.movement_mode != .attachment or !self.attachment.follow.active) return null;
 

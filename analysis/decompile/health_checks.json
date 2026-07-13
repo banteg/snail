@@ -93,8 +93,8 @@
       "name": "bn_path_template_fields_intact",
       "artifact": "analysis/decompile/binja/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
       "required_substrings": [
-        "template_record->segment_count",
-        "template_record->secondary_samples",
+        "->segment_count",
+        "->secondary_samples",
         "source_cell->anchor_position"
       ],
       "forbidden_substrings": [

@@ -111,15 +111,15 @@ Important payload notes for the current script:
 - `level_start.build_flags`, `track_row_start`, and `track_row_end` are now emitted and are the main fields to compare against the static track-builder notes
 - every traced `cell` object now includes `flags` from `cell + 0x4`, not just `tile_type` and world position
 - every traced `cell` object now also includes `floor_height` from `cell + 0x14`
-- row-cell and gameplay-grid captures now also expose `row_scalar_a`, `row_scalar_b`, and `payload` from `+0x24`, `+0x34`, and `+0x50`
+- row-cell and gameplay-grid captures now also expose the recovered `render_object`, `render_alpha`, and `fringe_back` owners from `+0x24`, `+0x34`, and `+0x50`
 - `cell.storage` now tells you whether the event points at a gameplay grid cell or a row-cell attachment record
 - `cell.lane` is now derived for gameplay grid cells from the recovered runtime grid layout
 - `player_update` and `attachment_end` are `thiscall` methods and the newest script version reads their object state from `ecx`
 - `player_update.cell` is now sampled from player position via `get_track_grid_cell_at_world_position`; the older ambiguous field is retained only as `raw_cell`
 - attachment events now include:
-  - `template_summary` with the active attachment template header floats, kind, mirror or variant flags, terminal flag, sample count, width or scale, and sample-array pointers
-  - `template_summary.row_scalar_a` through `row_scalar_d` from `+0x98/+0x9c/+0xa0/+0xa4`
-  - `follow_state_summary` with the active follow sample index, progress, vertical offset, orientation-ish vector, and output pose
+  - `template_summary` with the active attachment template header floats, kind, mirror flag, side-exit mode, segment count, width or scale, width cells, and sample-array pointers
+  - the recovered template tail owners: `installed_heading_delta`, `has_entry_mesh_transition`, `entry_transition_strip_mesh`, and `entry_base_strip_mesh` from `+0x98/+0x9c/+0xa0/+0xa4`
+  - `follow_state_summary` with the active follow sample index, progress, vertical offset, two conservative orientation scalars, the recovered `orientation_up` vector, and output pose
 - `player_update` now also exposes the Subgoldy ghost sprite pointers at `player + 0x98/+0x9c` as `ghost_sprite_a` and `ghost_sprite_b`
 - `player_update` now also emits the statically recovered attachment-exit latch fields:
   - `movement_flag_selector`

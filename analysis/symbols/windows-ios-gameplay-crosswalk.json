@@ -1602,7 +1602,8 @@
       "windows_name": "update_track_attachment_follow_state",
       "ios_symbol": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Both builds store the interpolated matrix up basis as one owned FollowState vector. Both also retain the unreachable voice-4 guard at sample_index == segment_count * 2 even though traversal terminates at segment_count."
     },
     {
       "address": "0x421770",

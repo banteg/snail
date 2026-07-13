@@ -262,26 +262,26 @@ Important payload details:
 - `path_lookup.path_name_from_index` is the table-derived name from the recovered `51`-entry path list
 - `cell.flags` is the runtime per-cell flag dword read directly from `cell + 0x4`
 - `cell.floor_height` is the runtime floor slot read from `cell + 0x14`
-- `cell.row_scalar_a`, `cell.row_scalar_b`, and `cell.payload` now expose the row-cell fields at `+0x24`, `+0x34`, and `+0x50`
+- `cell.render_object`, `cell.render_alpha`, and `cell.fringe_back` expose the recovered row-cell owners at `+0x24`, `+0x34`, and `+0x50`
 - `cell.storage` distinguishes the compact gameplay grid cells from the larger row-cell records used by attachment-follow state
 - `cell.lane` is derived for gameplay grid cells from the recovered `game + 0x3bfac8 + (lane + row*8) * 0x54` layout
 - `template_summary` captures the active attachment template record:
   - `header_30` and `header_34`
   - kind
-  - `mirror_or_variant`
-  - `terminal_flag`
-  - sample count
-  - float sample-count copy
+  - `is_mirrored_x`
+  - `side_exit_mode`
+  - segment count and row-span count
+  - float segment-count copy
   - width or scale
-  - subdivision count
+  - width cells
   - sample-array pointers
-  - current per-sample delta and length fields
-  - the four row-scalar fields at `+0x98/+0x9c/+0xa0/+0xa4`
+  - installed heading delta
+  - the entry mesh-transition flag and two mesh owners at `+0x9c/+0xa0/+0xa4`
 - `follow_state_summary` captures the active attachment-follow state:
   - current sample index and progress
   - vertical offset
   - output pose
-  - orientation-like vector fields
+  - two conservative orientation scalars and the recovered `orientation_up` vector
   - resolved template summary
 - `attachment_end` now includes both pre-exit and post-exit follow-state snapshots, so the next capture can prove which fields are latched, zeroed, or copied across the exit boundary
 - the new death and completion handoff events also include app-side owner state from the singleton at `data_4df904`:

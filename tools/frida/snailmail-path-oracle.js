@@ -127,16 +127,19 @@ const ATTACHMENT = {
   gameplay_cell_flags_offset: 4,
   gameplay_cell_tile_offset: 60,
   gameplay_cell_world_offset: 16,
-  gameplay_cell_row_scalar_a_offset: 0x24,
-  gameplay_cell_row_scalar_b_offset: 0x34,
-  gameplay_cell_payload_offset: 0x50,
+  gameplay_cell_object_offset: 0x24,
+  gameplay_cell_alpha_offset: 0x34,
+  gameplay_cell_fringe_back_offset: 0x50,
   template_kind_offset: 0x38,
-  template_sample_count_offset: 0x44,
-  template_width_offset: 0x54,
-  template_primary_points_offset: 0x58,
-  template_secondary_points_offset: 0x5c,
-  template_row_scalar_offset: 0x98,
-  template_special_flag_offset: 0x9c,
+  template_segment_count_offset: 0x44,
+  template_width_or_scale_offset: 0x50,
+  template_width_cells_offset: 0x54,
+  template_primary_samples_offset: 0x58,
+  template_secondary_samples_offset: 0x5c,
+  template_installed_heading_delta_offset: 0x98,
+  template_entry_mesh_transition_offset: 0x9c,
+  template_entry_transition_strip_mesh_offset: 0xa0,
+  template_entry_base_strip_mesh_offset: 0xa4,
   sample_stride: 0xa8,
   sample_position_offset: 0x30,
   sample_delta_dir_offset: 0x80,
@@ -570,16 +573,19 @@ function summarizeAttachmentTemplate(templatePtr) {
     return null;
   }
 
-  const sampleIndex = safeReadU32(template, ATTACHMENT.template_sample_count_offset);
+  const segmentCount = safeReadU32(template, ATTACHMENT.template_segment_count_offset);
   return {
     ptr: hex(template),
     kind: safeReadU32(template, ATTACHMENT.template_kind_offset),
-    sample_count: sampleIndex,
-    width: safeReadFloat(template, ATTACHMENT.template_width_offset),
-    primary_points: hex(safeReadPointer(template, ATTACHMENT.template_primary_points_offset)),
-    secondary_points: hex(safeReadPointer(template, ATTACHMENT.template_secondary_points_offset)),
-    install_row_scalar: safeReadFloat(template, ATTACHMENT.template_row_scalar_offset),
-    special_flag: safeReadU32(template, ATTACHMENT.template_special_flag_offset),
+    segment_count: segmentCount,
+    width_or_scale: safeReadFloat(template, ATTACHMENT.template_width_or_scale_offset),
+    width_cells: safeReadU32(template, ATTACHMENT.template_width_cells_offset),
+    primary_samples: hex(safeReadPointer(template, ATTACHMENT.template_primary_samples_offset)),
+    secondary_samples: hex(safeReadPointer(template, ATTACHMENT.template_secondary_samples_offset)),
+    installed_heading_delta: safeReadFloat(template, ATTACHMENT.template_installed_heading_delta_offset),
+    has_entry_mesh_transition: boolFlag(safeReadU8(template, ATTACHMENT.template_entry_mesh_transition_offset)),
+    entry_transition_strip_mesh: hex(safeReadPointer(template, ATTACHMENT.template_entry_transition_strip_mesh_offset)),
+    entry_base_strip_mesh: hex(safeReadPointer(template, ATTACHMENT.template_entry_base_strip_mesh_offset)),
   };
 }
 
@@ -656,9 +662,9 @@ function summarizeCell(cellPtr, getTrackCellRowIndex, gamePtr) {
     flags: safeReadU32(cell, ATTACHMENT.gameplay_cell_flags_offset),
     tile_type: safeReadU8(cell, ATTACHMENT.gameplay_cell_tile_offset),
     world: safeReadVec3(cell, ATTACHMENT.gameplay_cell_world_offset),
-    row_scalar_a: safeReadFloat(cell, ATTACHMENT.gameplay_cell_row_scalar_a_offset),
-    row_scalar_b: safeReadFloat(cell, ATTACHMENT.gameplay_cell_row_scalar_b_offset),
-    payload: safeReadU32(cell, ATTACHMENT.gameplay_cell_payload_offset),
+    render_object: hex(safeReadPointer(cell, ATTACHMENT.gameplay_cell_object_offset)),
+    render_alpha: safeReadFloat(cell, ATTACHMENT.gameplay_cell_alpha_offset),
+    fringe_back: hex(safeReadPointer(cell, ATTACHMENT.gameplay_cell_fringe_back_offset)),
     attachment: hex(attachment),
     owner_summary: summarizeInstalledOwner(attachment, game),
   };
@@ -674,8 +680,8 @@ function summarizeFollowState(followStatePtr, getTrackCellRowIndex) {
   const gamePtr = safeReadPointer(playerPtr, 0x408);
   const templatePtr = safeReadPointer(follow, 4);
   const sampleIndex = safeReadU32(follow, 0xc);
-  const primaryPtr = safeReadPointer(templatePtr, ATTACHMENT.template_primary_points_offset);
-  const secondaryPtr = safeReadPointer(templatePtr, ATTACHMENT.template_secondary_points_offset);
+  const primaryPtr = safeReadPointer(templatePtr, ATTACHMENT.template_primary_samples_offset);
+  const secondaryPtr = safeReadPointer(templatePtr, ATTACHMENT.template_secondary_samples_offset);
   const outputPosition = safeReadVec3(follow, 0x2c);
   const primarySample = summarizeAttachmentSample(primaryPtr, sampleIndex);
   return {
@@ -687,6 +693,9 @@ function summarizeFollowState(followStatePtr, getTrackCellRowIndex) {
     sample_index: sampleIndex,
     progress: safeReadFloat(follow, 0x10),
     vertical_offset: safeReadFloat(follow, 0x14),
+    orientation_a: safeReadFloat(follow, 0x18),
+    orientation_b: safeReadFloat(follow, 0x1c),
+    orientation_up: safeReadVec3(follow, 0x20),
     output_position: outputPosition,
     current_primary_sample: primarySample,
     current_secondary_sample: summarizeAttachmentSample(secondaryPtr, sampleIndex),

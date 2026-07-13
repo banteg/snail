@@ -2,7 +2,7 @@
 /* function: update_track_attachment_follow_state @ 0x420cb0 */
 /* selector: update_track_attachment_follow_state */
 
-// Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. Raw BN plus IDA also show the nearby `voice 4` call guarded by `sample_index + 1 == template->sample_count << 1`, which conflicts with the same helper's `sample_index == template->sample_count` termination under the current typed counters, so that milestone lane remains unresolved rather than ported. iOS Path.o names the player-follow advance family `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)`.
+// Advances one live attachment-follow session along the current Path, updates segment progress and local height, publishes the interpolated transform basis into the live Player matrix, stores the transform's up basis as the owned `FollowState::orientation_up` vector, writes the output position, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. The static `voice 4` lane is dead: initialization seeds `sample_index = 0`, traversal increments it by one, and the same helper terminates at `sample_index == segment_count` before `sample_index == segment_count * 2` can hold. The iOS build preserves both that unreachable guard and the aggregate orientation-vector copy in `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)`.
 int32_t __thiscall update_track_attachment_follow_state(
         FollowState *follow_state,
         float path_factor,
@@ -10,26 +10,26 @@ int32_t __thiscall update_track_attachment_follow_state(
         Vec3 *motion)
 {
   uint32_t sample_index; // ecx
-  PathTemplate *template_record; // esi
+  Path *template_record; // esi
   PathTemplateSample *secondary_samples; // edx
   double v8; // st7
   float *p_delta_length; // edx
   double v10; // st7
   uint32_t v11; // ecx
-  PathTemplate *v12; // eax
+  Path *v12; // eax
   uint32_t segment_count; // eax
   uint32_t v14; // esi
   int v15; // esi
-  int track_cell_row_index; // eax
+  int32_t track_cell_row_index; // eax
   int v17; // esi
   uint32_t v18; // ebx
-  PathTemplate *v19; // edx
+  Path *v19; // edx
   int v20; // edi
   int v21; // eax
   float *p_x; // ecx
   double v23; // st7
-  PathTemplate *v24; // edx
-  PathTemplate *v25; // ecx
+  Path *v24; // edx
+  Path *v25; // ecx
   double v26; // st7
   uint32_t v27; // esi
   double v28; // st6
@@ -67,7 +67,7 @@ int32_t __thiscall update_track_attachment_follow_state(
   char *v61; // ecx
   float v62; // edx
   float z; // ecx
-  PathTemplate *v64; // edx
+  Path *v64; // edx
   float v65; // eax
   bool v66; // zf
   int v67; // ecx
@@ -239,11 +239,11 @@ LABEL_11:
       *((_DWORD *)v61 + 2) = LODWORD(transform.basis_forward.z);
     }
     v62 = transform.basis_up.y;
-    follow_state->orientation_c = transform.basis_up.x;
+    follow_state->orientation_up.x = transform.basis_up.x;
     z = transform.basis_up.z;
-    follow_state->orientation_d = v62;
+    follow_state->orientation_up.y = v62;
     v64 = follow_state->template_record;
-    follow_state->orientation_e = z;
+    follow_state->orientation_up.z = z;
     v65 = *(float *)&follow_state->sample_index;
     v66 = LODWORD(v65) == v64->segment_count - 1;
     arg1 = v65;
@@ -295,7 +295,7 @@ LABEL_11:
     follow_state->orientation_b = (v73 + (double)SLODWORD(arg1))
                                 * v64->installed_heading_delta
                                 / (double)(int)v64->segment_count;
-    if ( player->jetpack_gauge.state == 1 )
+    if ( player->sub_hover.state == 1 )
       goto LABEL_62;
     v75 = v38->x - v85;
     if ( v75 < 0.0 )
@@ -352,32 +352,32 @@ LABEL_62:
         {
           v15 = *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
                                       + (_DWORD)g_game_base
-                                      + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
+                                      + 244 * get_track_cell_row_index(follow_state->source_cell))
                           + 56);
           *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
                                 + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell))
                     + 36) = *(_DWORD *)(v15 + 164);
           *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
                                 + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell))
                     + 52) = 1065353216;
         }
         else if ( v14 == (int)(3 * segment_count) / 7 )
         {
-          track_cell_row_index = get_track_cell_row_index(&follow_state->source_cell->bod.vtable);
+          track_cell_row_index = get_track_cell_row_index(follow_state->source_cell);
           *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows + (_DWORD)g_game_base + 244 * track_cell_row_index) + 4) |= 0x80u;
           v17 = *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
                                       + (_DWORD)g_game_base
-                                      + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
+                                      + 244 * get_track_cell_row_index(follow_state->source_cell))
                           + 56);
           *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
                                 + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell))
                     + 36) = *(_DWORD *)(v17 + 160);
           *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
                                 + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(&follow_state->source_cell->bod.vtable))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell))
                     + 52) = 1058642330;
         }
       }

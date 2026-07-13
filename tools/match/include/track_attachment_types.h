@@ -374,9 +374,9 @@ public:
     // begin_post_follow_carryover's follow_orientation_b read.
     float orientation_a;         // +0x18 (zeroed by the swept entry)
     float orientation_b;         // +0x1c (zeroed by the swept entry)
-    float orientation_c;         // +0x20
-    float orientation_d;         // +0x24
-    float orientation_e;         // +0x28
+    // Aggregate assignment from the interpolated transform's up basis is
+    // preserved in both Windows and iOS cRPathFollowGoldy::Traverse.
+    Vector3 orientation_up;      // +0x20
     Vector3 output_position;     // +0x2c
     Player* player;              // +0x38 back-reference (player+0x3bc)
     unsigned char flag_3c;       // +0x3c, completion handoff gate

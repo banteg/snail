@@ -51,7 +51,7 @@ pub const FollowState = struct {
     orientation_a: f32 = 0.0,
     /// +0x1c = player+0x3a0, the carryover's follow_orientation_b
     orientation_b: f32 = 0.0,
-    // +0x20..+0x28 orientation_c..e; +0x2c output_position;
+    // +0x20..+0x28 orientation_up Vec3; +0x2c output_position Vec3;
     // +0x38 Player* back-reference — all runner-side
     /// player.velocity.y (+0x414): squidged then zeroed by swept entry
     player_velocity_y: f32 = 0.0,

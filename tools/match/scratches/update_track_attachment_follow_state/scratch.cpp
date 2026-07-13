@@ -37,9 +37,7 @@ public:
     float vertical_offset;
     float orientation_a;
     float orientation_b;
-    float orientation_c;
-    float orientation_d;
-    float orientation_e;
+    Vec3 orientation_up;
     Vec3 output_position;
     Player* player;
     unsigned char flag_3c;
@@ -184,15 +182,9 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
             output->y = y;
             vertical_offset = vertical;
             output->z = z;
-            *(float*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right.x;
-            *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 4) = transform.basis_right.y;
-            *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 8) = transform.basis_right.z;
-            *(float*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up.x;
-            *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 4) = transform.basis_up.y;
-            *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 8) = transform.basis_up.z;
-            *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward.x;
-            *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
-            *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
+            *(Vec3*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right;
+            *(Vec3*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up;
+            *(Vec3*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward;
         } else {
             AttachmentSampleMatrixView* secondary = current_template->secondary_samples;
             AttachmentSampleMatrixView* sample = &secondary[current_index];
@@ -243,20 +235,14 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
             output->y = v83;
             v84 = right_z + up_offset.z;
             output->z = v84;
-            *(float*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right.x;
-            *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 4) = transform.basis_right.y;
-            *(float*)(g_player_live_matrix_basis_right + (int)g_game_base + 8) = transform.basis_right.z;
-            *(float*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up.x;
-            *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 4) = transform.basis_up.y;
-            *(float*)(g_player_live_matrix_basis_up + (int)g_game_base + 8) = transform.basis_up.z;
-            *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward.x;
-            *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 4) = transform.basis_forward.y;
-            *(float*)(g_player_live_matrix_basis_forward + (int)g_game_base + 8) = transform.basis_forward.z;
+            *(Vec3*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right;
+            *(Vec3*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up;
+            *(Vec3*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward;
         }
 
-        orientation_c = transform.basis_up.x;
-        orientation_d = transform.basis_up.y;
-        orientation_e = transform.basis_up.z;
+        orientation_up.x = transform.basis_up.x;
+        orientation_up.y = transform.basis_up.y;
+        orientation_up.z = transform.basis_up.z;
 
         PathMatrixView* orient_template = this->template_record;
         unsigned int orient_index = sample_index;
@@ -305,9 +291,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
                 abs_lateral = -abs_lateral;
             if (abs_lateral > (float)(int)orient_template->width_cells * 0.5f + 0.30000001f
                 && vertical_offset <= 0.0f) {
-                out_position->x = output_position.x;
-                out_position->y = output_position.y;
-                out_position->z = output_position.z;
+                *out_position = output_position;
                 player->heading_roll =
                     this->template_record->installed_heading_delta + player->heading_roll;
                 if (out_position->x < -4.0f) {

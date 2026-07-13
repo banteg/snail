@@ -4,14 +4,14 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 46.44% | **69.38%** |
+| Match | 46.44% | **70.28%** |
 | Target instructions | 726 | 726 |
-| Candidate instructions | 678 | 672 |
+| Candidate instructions | 678 | 694 |
 | Exact prefix | 0 / 726 | **122 / 726** |
 | Stack frame | `0x160` | **`0x180`** |
-| Masked operands | 45 ok, 0 unresolved, 0 mismatch | **53 ok, 0 unresolved, 0 mismatch** |
+| Masked operands | 45 ok, 0 unresolved, 0 mismatch | **51 ok, 0 unresolved, 0 mismatch** |
 
-The measured improvement is **+22.94 percentage points**. The first remaining mismatch is target instruction 122, where both sides emit `je` but branch to differently laid-out blocks.
+The measured improvement is **+23.84 percentage points**. The first remaining mismatch is target instruction 122, where both sides emit `je` but branch to differently laid-out blocks.
 
 ## Accepted source-shape changes
 
@@ -22,6 +22,8 @@ The measured improvement is **+22.94 percentage points**. The first remaining mi
 - Recovered the kind-42 helper as a member-shaped call, plus the native blend polarity and matrix-position zeroing order.
 - Added semantic `Vec3` staging for ordinary offsets and the Supertramp terminal launch result.
 - Added ordinary-path x/y/z component intermediates to improve x87 scheduling.
+- Recovered aggregate `Vec3` publication into the embedded Player live-matrix rows.
+- Recovered `FollowState +0x20..+0x28` as one `orientation_up` vector and the side-exit output as a whole-vector copy.
 - Kept separate semantic clamp returns for the side-exit path.
 
 ## Rejected trials
@@ -38,4 +40,4 @@ The measured improvement is **+22.94 percentage points**. The first remaining mi
 
 - Fixed toolchain: `msvc6.5 /O2 /G5 /W3`.
 - No inline assembly, volatile padding, fake globals, dummy externs, or normalizer-specific tricks.
-- Final matcher output: `69.38%`, target `726`, candidate `672`, prefix `122`, masks `53/0/0`.
+- Final matcher output: `70.28%`, target `726`, candidate `694`, prefix `122`, masks `51/0/0`.
