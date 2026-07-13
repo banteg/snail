@@ -15,6 +15,12 @@ The exact source shape has two useful idioms:
 Native intentionally calls bank J twice and bank K twice for each slot. Keep
 those duplicate mutator calls; removing either breaks the exact call sequence.
 
+The CRT initializer at `0x4349c0` runs one 102-element constructor loop from
+bank B through bank C. That independently proves these are two 51-entry views
+of one contiguous `0x660`-byte allocation rather than unrelated globals; the
+shared `track_colour_banks.h` now records that owner without changing this
+function's exact instruction stream.
+
 2026-06-21 subgame-header consolidation: the helper now uses
 `SubgameRuntime::build_track_colours` instead of a scratch-local `Game` owner.
 Focused Wibo remains exact at `100.00%`, `37/37` instructions, with `24` clean

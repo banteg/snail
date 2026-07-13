@@ -3959,13 +3959,14 @@
     },
     {
       "address": "0x6437f8",
-      "name": "g_track_colour_bank_b",
+      "name": "g_track_colour_banks_b_c",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_b",
         "data_6437f8"
       ],
-      "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "size": "0x660",
+      "description": "Contiguous 102-entry Color4f allocation exposed to build_track_colours as 51-entry banks B and C. Its CRT constructor loop independently proves the combined extent."
     },
     {
       "address": "0x643b28",
@@ -3975,7 +3976,7 @@
         "data_643b28"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Second 51-entry view at +0x330 within the contiguous track-colour B/C allocation."
     },
     {
       "address": "0x643e58",

@@ -1989,6 +1989,107 @@
       "description": "Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor. Cross-port Android and iOS symbols match this member to `cRStarManager::UpdateStars(float)`."
     },
     {
+      "address": "0x434980",
+      "name": "initialize_track_colour_bank_a_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank A."
+    },
+    {
+      "address": "0x434990",
+      "name": "initialize_track_colour_bank_a",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry track colour bank A before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x4349b0",
+      "name": "initialize_track_colour_banks_b_c_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour banks B and C."
+    },
+    {
+      "address": "0x4349c0",
+      "name": "initialize_track_colour_banks_b_c",
+      "description": "Runs the folded no-op Color4f constructor across the 102-entry contiguous B/C allocation before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x4349e0",
+      "name": "initialize_track_colour_bank_d_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank D."
+    },
+    {
+      "address": "0x4349f0",
+      "name": "initialize_track_colour_bank_d",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank D before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434a10",
+      "name": "initialize_track_colour_bank_e_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank E."
+    },
+    {
+      "address": "0x434a20",
+      "name": "initialize_track_colour_bank_e",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank E before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434a40",
+      "name": "initialize_track_colour_bank_f_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank F."
+    },
+    {
+      "address": "0x434a50",
+      "name": "initialize_track_colour_bank_f",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank F before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434a70",
+      "name": "initialize_track_colour_bank_g_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank G."
+    },
+    {
+      "address": "0x434a80",
+      "name": "initialize_track_colour_bank_g",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank G before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434aa0",
+      "name": "initialize_track_colour_bank_h_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank H."
+    },
+    {
+      "address": "0x434ab0",
+      "name": "initialize_track_colour_bank_h",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank H before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434ad0",
+      "name": "initialize_track_colour_bank_i_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank I."
+    },
+    {
+      "address": "0x434ae0",
+      "name": "initialize_track_colour_bank_i",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank I before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434b00",
+      "name": "initialize_track_colour_bank_j_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank J."
+    },
+    {
+      "address": "0x434b10",
+      "name": "initialize_track_colour_bank_j",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank J before build_track_colours seeds authored white values."
+    },
+    {
+      "address": "0x434b30",
+      "name": "initialize_track_colour_bank_k_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank K."
+    },
+    {
+      "address": "0x434b40",
+      "name": "initialize_track_colour_bank_k",
+      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank K before build_track_colours seeds authored white values."
+    },
+
+    {
       "address": "0x434b60",
       "name": "is_neighbor_cell_solid",
       "description": "Exact Windows implementation of `cRSubGame::TestLoc(cRSubLoc*, int, int)`: derives the source row with SubLoc::Yi, applies lane and row offsets with bounds checks, probes the eight-lane runtime grid, rejects SubLoc::IsEmpty, then excludes tile ids 35, 0, 22, and 28. Android preserves the same method body and constants."

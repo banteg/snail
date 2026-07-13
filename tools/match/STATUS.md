@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**586/755** mapped gameplay functions matched, **755/755** mapped gameplay functions have a scratch, **92231/325376** bytes (**28.35%**) are proof-grade, and overall fuzzy is **70.81%**.
+**606/775** mapped gameplay functions matched, **775/775** mapped gameplay functions have a scratch, **92561/325224** bytes (**28.46%**) are proof-grade, and overall fuzzy is **70.80%**.
 
-## Proof Grade (586)
+## Proof Grade (606)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -313,6 +313,26 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | unhide_star_field | 0x4346b0 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 13 ok |  |
+| ✅ | initialize_track_colour_bank_a_thunk | 0x434980 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_a | 0x434990 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_banks_b_c_thunk | 0x4349b0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_banks_b_c | 0x4349c0 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_d_thunk | 0x4349e0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_d | 0x4349f0 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_e_thunk | 0x434a10 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_e | 0x434a20 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_f_thunk | 0x434a40 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_f | 0x434a50 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_g_thunk | 0x434a70 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_g | 0x434a80 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_h_thunk | 0x434aa0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_h | 0x434ab0 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_i_thunk | 0x434ad0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_i | 0x434ae0 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_j_thunk | 0x434b00 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_j | 0x434b10 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
+| ✅ | initialize_track_colour_bank_k_thunk | 0x434b30 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_track_colour_bank_k | 0x434b40 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
 | ✅ | is_neighbor_cell_solid | 0x434b60 | 127 | 47/47 | 100.00% | 47/47 | 2 ok |  |
 | ✅ | select_track_tile_edge_variants | 0x435a80 | 692 | 220/220 | 100.00% | 220/220 | 18 ok |  |
 | ✅ | build_track_colours | 0x435d40 | 161 | 37/37 | 100.00% | 37/37 | 24 ok |  |
@@ -616,7 +636,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_track_cache_vertex | 0x433830 | 299 | 103/103 | 99.03% | 76/103 | 7 ok |  |
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 95.81% | 16/167 | 6 ok |  |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 98.38% | 29/247 | 25 ok |  |
-| 🚧 | update_star_positions | 0x434800 | 860 | 106/106 | 98.11% | 44/106 | 11 ok |  |
+| 🚧 | update_star_positions | 0x434800 | 378 | 106/106 | 98.11% | 44/106 | 11 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  |
