@@ -45,24 +45,14 @@ masked mismatches.
   `begin_frontend_fade_in`, `save_high_scores_and_config`,
   `resume_audio_backend_if_paused`, and `stop_audio_backend` all report
   100.00%.
-- IDA, Binary Ninja, and the `stop_audio_backend` scratch agree that
-  `0x449b90` is a global `__stdcall` helper, not an `AudioBackend` method.
-  Promoting `game_startup_and_main_loop` to `audio_system.h` and calling the
-  global helper is source-truer but currently regresses the focused startup
-  candidate to 62.93% (`336` candidate instructions, `95` resolved masked
-  operands), so the local audio declaration remains documented debt for a later
-  shutdown-shape pass.
+- The callee at `0x449b90` does not read `ECX`, so its body alone cannot
+  distinguish a zero-argument global from a member method. The later caller
+  evidence below resolves that ABI ambiguity in favor of `AudioBackend`.
 
 2026-06-20 unresolved-layout cleanup:
 
-- Renamed the startup-only audio shell to `StartupAudioBackendView` so it no
-  longer masquerades as the real shared `AudioBackend` layout. The focused
-  startup matcher is unchanged at 63.14% with `96` ok / `30` unresolved / `4`
-  mismatched masked operands.
-- Rechecked the Binary Ninja decompile: `resume_audio_backend_if_paused` uses
-  the global backend at `0x753c58`, while `stop_audio_backend` remains the
-  global `__stdcall` helper. The source-truer shared-header rewrite is still
-  deferred because it has a measured score regression.
+- The temporary startup-only audio shell kept the focused source honest while
+  the stop call ABI was unresolved. It is superseded by the caller proof below.
 
 Known shape gaps:
 
@@ -137,3 +127,14 @@ stores its instance at `g_application_instance` (`0x4dfad8`) for the hidden
 BASS window, while main-window creation uses the distinct cached instance at
 `0x50327c`. The type-only rewrite leaves the focused 63.65%, 338/325 stream and
 its six existing structural mismatches unchanged.
+
+2026-07-13 audio backend ownership proof:
+
+- Binary Ninja finds exactly one native xref to `0x449b90`, at startup-loop
+  shutdown `0x407222`; the immediately preceding instruction loads
+  `ECX = 0x753c58`, the address of `g_audio_backend`. That caller-side ABI
+  evidence proves `stop_audio_backend` is an `AudioBackend` member even though
+  its leaf body never reads `this`.
+- Startup now uses the shared `AudioBackend` declaration for both stop and
+  resume. The byte tested at `0x753c70` is therefore recovered as
+  `g_audio_backend.is_paused` (`+0x18`), not a separate scratch-local global.

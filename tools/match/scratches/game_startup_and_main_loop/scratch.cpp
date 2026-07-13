@@ -5,13 +5,8 @@
 #include "sub_high_score.h"
 #include "loading_bar.h"
 #include "runtime_config.h"
+#include "audio_system.h"
 #include "win32_window_state.h"
-
-class StartupAudioBackendView {
-public:
-    int stop_audio_backend(); // @ 0x449b90
-    void resume_audio_backend_if_paused(); // @ 0x449ba0
-};
 
 extern "C" __declspec(dllimport) HWND __stdcall FindWindowExA(
     HWND parent, HWND child_after, char* class_name, char* window_name);
@@ -41,8 +36,6 @@ extern float g_main_loop_frame_count;  // g_main_loop_frame_count
 
 extern int data_4df858;
 extern int data_4b775c;
-extern unsigned char data_753c70;
-extern StartupAudioBackendView g_audio_backend; // data_753c58
 
 int query_directx_runtime_version(); // @ 0x44afc0
 char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0
@@ -201,7 +194,7 @@ int __stdcall game_startup_and_main_loop(
 
             HWND active_window = GetActiveWindow();
             if (active_window == g_main_window) {
-                if (data_753c70 == 1)
+                if (g_audio_backend.is_paused == 1)
                     g_audio_backend.resume_audio_backend_if_paused();
                 if (active_window == g_main_window)
                     goto update_game;
