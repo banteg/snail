@@ -114,6 +114,9 @@ masks, controller-axis fields, pointer-authored coordinates, and the embedded
 `GameInput.input` field proven by the exact Windows bridge and iOS
 `cRGameInput::AI()` provenance. The root frame lane also places the two owned
 records at `GameRoot +0x44` and their borrowed player backlinks at `+0x168`.
+Each record now exposes its inherited 0x38-byte cRBod-compatible prefix as
+`GameInputBodBase`; the constructor installs the one-entry
+`g_game_input_callback_table`, whose only entry is `update_game_input`.
 The same input lane separates the mouse platform globals from IDA's stale BSS
 aggregate, including the two-slot live/screen coordinates, `MouseScreenRect`,
 authored-coordinate scales, cursor-hide flag, and DirectInput interface/device

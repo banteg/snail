@@ -59,8 +59,20 @@ typedef struct InputState {
     int32_t current_buttons;
 } InputState;
 
+typedef struct GameInputBodBase {
+    void* vtable;
+    uint32_t list_flags;
+    struct GameInputBodBase* list_prev;
+    struct GameInputBodBase* list_next;
+    float position[3];
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    float color[4];
+} GameInputBodBase;
+
 typedef struct GameInput {
-    uint8_t unknown_00[0x38];
+    GameInputBodBase bod;
     InputState input;
 } GameInput;
 

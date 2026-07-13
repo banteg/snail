@@ -22,6 +22,7 @@ REQUIRED_STRUCTS = (
     "SpriteDepthNode",
     "FrontendFade",
     "InputState",
+    "GameInputBodBase",
     "GameInput",
     "MouseCursorState",
     "FrontendOverlayColorLerp",
@@ -116,6 +117,11 @@ GAME_PLAYER_FIELD_UPDATES = (
     ("0x1f0", "selected_high_score_mode", "int32_t"),
 )
 
+GAME_INPUT_FIELD_UPDATES = (
+    ("0x00", "bod", "GameInputBodBase"),
+    ("0x38", "input", "InputState"),
+)
+
 GAME_ROOT_FIELD_UPDATES = (
     ("0x24", "fade", "FrontendFade"),
     ("0x38", "frontend_quit_requested", "int32_t"),
@@ -162,6 +168,14 @@ def main() -> int:
             required_structs=REQUIRED_STRUCTS,
         )
     ]
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="GameInput",
+            updates=GAME_INPUT_FIELD_UPDATES,
+        )
+    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,

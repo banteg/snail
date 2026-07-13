@@ -11,6 +11,7 @@ import idc
 
 
 TRUSTED_NAMES = [
+    (0x4972F0, "g_game_input_callback_table"),
     (0x44BBB0, "initialize_mouse_authored_scale_from_clip_rect"),
     (0x44BBD0, "update_mouse_authored_scale"),
     (0x44BC20, "resolve_uncaptured_cursor_sensitivity_scale"),
@@ -89,6 +90,7 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (0x4972F0, "g_game_input_callback_table", "void *g_game_input_callback_table;"),
     (0x777D58, "g_mouse_live_x", "float g_mouse_live_x[2];"),
     (0x777D60, "g_mouse_live_y", "float g_mouse_live_y[2];"),
     (0x777D68, "g_mouse_screen_to_authored_y_scale", "float g_mouse_screen_to_authored_y_scale;"),
@@ -102,6 +104,7 @@ TRUSTED_DATA_DECLARATIONS = [
 ]
 
 TRUSTED_DATA_ITEMS = [
+    (0x4972F0, 4),
     (0x777D58, 8),
     (0x777D60, 8),
     (0x777D68, 4),

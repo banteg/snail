@@ -17,6 +17,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_input_state_types.h"
 TARGET = "active"
 
+GAME_INPUT_DATA_SYMBOL_UPDATES = (
+    ("0x4972f0", "g_game_input_callback_table"),
+)
+
+GAME_INPUT_DATA_VAR_UPDATES = (
+    ("0x4972f0", "void*"),
+)
+
 MOUSE_DATA_SYMBOL_UPDATES = (
     ("0x777d58", "g_mouse_live_x"),
     ("0x777d60", "g_mouse_live_y"),
@@ -73,6 +81,7 @@ INPUT_STATE_FIELDS = (
 )
 
 GAME_INPUT_FIELDS = (
+    ("0x00", "bod", "GameInputBodBase"),
     ("0x38", "input", "InputState"),
 )
 
@@ -110,6 +119,17 @@ def main() -> int:
             target=TARGET,
             struct_name="GameInput",
             updates=GAME_INPUT_FIELDS,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=GAME_INPUT_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=GAME_INPUT_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,
