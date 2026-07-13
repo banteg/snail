@@ -70,7 +70,6 @@ typedef struct FringeObject {
 } FringeObject;
 
 typedef struct Player Player;
-typedef struct Game Game;
 typedef struct Object Object;
 typedef struct SubSegment SubSegment;
 typedef struct SubgameRuntime SubgameRuntime;
@@ -83,7 +82,7 @@ typedef struct TrackRowCell TrackRowCell;
 typedef struct TrackRowCell SubLoc;
 typedef struct TransformMatrix TransformMatrix;
 
-/* Two authored cRBanner actors are embedded at Game/SubgameRuntime +0x359080. */
+/* Two authored cRBanner actors are embedded at SubgameRuntime +0x359080. */
 typedef struct Banner {
     BodBase bod;
     int32_t visibility_mode;
@@ -359,7 +358,7 @@ typedef struct SaltHazardSlot {
     uint8_t _pad_78[0x8];
     uint32_t state;
     uint8_t _pad_84[0x4];
-    struct Game* owner_game;
+    SubgameRuntime* owner_game;
     float fade_alpha;
     float spawn_velocity_y;
     uint8_t collision_armed;
@@ -388,7 +387,7 @@ typedef struct SubLazerSlot {
     uint8_t _pad_78[0x8];
     uint32_t state;
     uint8_t _pad_84[0x4];
-    struct Game* owner_game;
+    SubgameRuntime* owner_game;
     Vec3 velocity;
     float sprite_bob_phase;
     float sprite_bob_phase_step;
@@ -562,7 +561,7 @@ typedef struct Cameraman {
     TransformMatrix desired_matrix;
     TransformMatrix previous_desired_matrix;
     Player* player;
-    Game* game;
+    SubgameRuntime* game;
     float fov_degrees;
     uint8_t unresolved_cc;
     uint8_t _pad_cd[0x3];
@@ -604,7 +603,7 @@ typedef struct SubHover {
     float wobble_y;
     float wobble_alpha;
     JetParticleSlot particle_slots[30];
-    Game* game;
+    SubgameRuntime* game;
     uint8_t _pad_204[0x8];
     float warning_intensity_latch;
     float warning_intensity;
@@ -927,47 +926,6 @@ typedef struct PathPair {
     Path secondary;
 } PathPair;
 
-typedef struct Game {
-    uint8_t _pad_00[0x34];
-    float challenge_difficulty_scalar;
-    float subgame_rate;
-    int32_t subgame_state;
-    int32_t level_mode;
-    int32_t level_mode_arg;
-    float base_subgame_rate;
-    uint32_t runtime_flags;
-    int32_t first_block_row_count;
-    int32_t runtime_row_count;
-    int32_t completion_row_start;
-    SegmentCache segment_cache;
-    uint8_t track_state_latch;
-    uint8_t _pad_a855[0x3];
-    Tutorial tutorial;
-    int32_t level_segment_count;
-    uint8_t _pad_a878[0x74621 - 0xa878];
-    uint8_t pause_gate;
-    uint8_t _pad_74622[0x355e64 - 0x74622];
-    JetPack jetpack_pickup;
-    uint8_t _pad_356000[0x359080 - 0x356000];
-    BannerPool banners;
-    uint8_t _pad_359140[0xff25d0 - 0x359140];
-    uint8_t selected_level_record_active;
-    uint8_t selected_level_record_persistent;
-    uint8_t _pad_ff25d2[0x2];
-    SelectedLevelRecord* selected_level_record;
-    int32_t selected_level_record_saved_return_owner;
-    int32_t replay_update_cursor;
-    uint8_t _pad_ff25e0[0x4];
-    int32_t runtime_track_index;
-    uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
-    PathPair path_pairs[63];
-    uint8_t _pad_ff7bc4[0x125e480 - 0xff7bc4];
-    ParcelManager parcel_manager;
-    uint8_t _pad_125ffd8[0x12727d8 - 0x125ffd8];
-    Completion completion;
-    TimesUp times_up;
-} Game;
-
 typedef struct FollowState {
     uint8_t active;
     uint8_t _pad_01[0x3];
@@ -1097,6 +1055,54 @@ typedef struct Player {
     float slow_commentary_step;
 } Player;
 
+/*
+ * Authored cRSubGame owner embedded in the root runtime. This campaign keeps
+ * the broad object sparse, but the complete Player child at +0x3bb764 is now
+ * represented as ownership rather than flattened score/presentation aliases.
+ */
+typedef struct SubgameRuntime {
+    uint8_t _pad_00[0x09];
+    uint8_t subgame_pause_gate;
+    uint8_t _pad_0a[0x34 - 0x0a];
+    float challenge_difficulty_scalar;
+    float subgame_rate;
+    int32_t subgame_state;
+    int32_t level_mode;
+    int32_t level_mode_arg;
+    float base_subgame_rate;
+    uint32_t runtime_flags;
+    int32_t first_block_row_count;
+    int32_t runtime_row_count;
+    int32_t completion_row_start;
+    SegmentCache segment_cache;
+    uint8_t track_state_latch;
+    uint8_t _pad_a855[0x3];
+    Tutorial tutorial;
+    int32_t level_segment_count;
+    uint8_t _pad_a878[0x355e64 - 0xa878];
+    JetPack jetpack_pickup;
+    uint8_t _pad_356000[0x359080 - 0x356000];
+    BannerPool banners;
+    uint8_t _pad_359140[0x3bb764 - 0x359140];
+    Player player;
+    uint8_t _pad_3bfac8[0xff25d0 - 0x3bfac8];
+    uint8_t selected_level_record_active;
+    uint8_t selected_level_record_persistent;
+    uint8_t _pad_ff25d2[0x2];
+    SelectedLevelRecord* selected_level_record;
+    int32_t selected_level_record_cursor;
+    int32_t replay_update_cursor;
+    uint8_t _pad_ff25e0[0x4];
+    int32_t runtime_track_index;
+    uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
+    PathPair path_pairs[63];
+    uint8_t _pad_ff7bc4[0x125e480 - 0xff7bc4];
+    ParcelManager parcel_manager;
+    uint8_t _pad_125ffd8[0x12727d8 - 0x125ffd8];
+    Completion completion;
+    TimesUp times_up;
+} SubgameRuntime;
+
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
 void __fastcall allocate_path_template_samples(Path* self);
 int32_t __fastcall finalize_path_template(Path* self);
@@ -1219,9 +1225,9 @@ void __thiscall update_progress_bar(ProgressBar* progress_bar);
 void __thiscall initialize_nuke(Nuke* nuke);
 void __thiscall update_nuke(Nuke* nuke);
 void __thiscall uninit_nuke(Nuke* nuke);
-TrackRowCell* __thiscall get_track_grid_cell_at_world_position(Game* game, Vec3* position);
-TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);
-double __thiscall sample_track_floor_height_at_position(Game* game, Vec3* position);
+TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
+TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
+double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);
 Path* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 

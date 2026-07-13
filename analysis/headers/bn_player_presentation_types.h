@@ -27,7 +27,6 @@ struct TrackAttachmentRuntimeRow;
 struct SubSegment;
 struct PlayerControlSource;
 struct Snail;
-struct Game;
 struct Object;
 struct SubgameRuntime;
 typedef struct TransformMatrix TransformMatrix;
@@ -64,7 +63,7 @@ typedef struct BodBase {
     Color4f color;
 } BodBase;
 
-/* Two authored cRBanner actors are embedded at Game +0x359080. */
+/* Two authored cRBanner actors are embedded at SubgameRuntime +0x359080. */
 typedef struct Banner {
     BodBase bod;
     int32_t visibility_mode;
@@ -238,50 +237,13 @@ typedef struct TimesUp {
     float progress_step;
 } TimesUp;
 
-typedef struct Game {
-    uint8_t _pad_00[0x34];
-    float challenge_difficulty_scalar;
-    float subgame_rate;
-    int32_t subgame_state;
-    int32_t level_mode;
-    int32_t level_mode_arg;
-    float base_subgame_rate;
-    uint32_t runtime_flags;
-    int32_t first_block_row_count;
-    int32_t runtime_row_count;
-    int32_t completion_row_start;
-    uint8_t _pad_5c[0xa7f8];
-    uint8_t track_state_latch;
-    uint8_t _pad_a855[0x3];
-    Tutorial tutorial;
-    int32_t level_segment_count;
-    uint8_t _pad_a878[0x69da9];
-    uint8_t pause_gate;
-    uint8_t _pad_74622[0x355e64 - 0x74622];
-    JetPack jetpack_pickup;
-    uint8_t _pad_356000[0x359080 - 0x356000];
-    BannerPool banners;
-    uint8_t _pad_359140[0xff25d0 - 0x359140];
-    uint8_t selected_level_record_active;
-    uint8_t selected_level_record_persistent;
-    uint8_t _pad_ff25d2[0x2];
-    SelectedLevelRecord* selected_level_record;
-    int32_t selected_level_record_saved_return_owner;
-    int32_t replay_update_cursor;
-    uint8_t _pad_ff25e0[0x4];
-    int32_t runtime_track_index;
-    uint8_t _pad_ff25e8[0x2801f0];
-    Completion completion;
-    TimesUp times_up;
-} Game;
-
 /* Authored cRCameraman, exact 0xd8-byte follow-camera owner. */
 typedef struct Cameraman {
     TransformMatrix live_matrix;
     TransformMatrix desired_matrix;
     TransformMatrix previous_desired_matrix;
     struct Player* player;
-    Game* game;
+    struct SubgameRuntime* game;
     float fov_degrees;
     uint8_t unresolved_cc;
     uint8_t _pad_cd[0x3];
@@ -447,7 +409,7 @@ typedef struct SubHover {
     float wobble_y;
     float wobble_alpha;
     JetParticleSlot particle_slots[30];
-    Game* game;
+    struct SubgameRuntime* game;
     uint8_t _pad_204[0x8];
     float warning_intensity_latch;
     float warning_intensity;

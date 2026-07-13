@@ -237,3 +237,22 @@ mismatches.
   Focused Wibo remains 78.22% with the exact 1033/1033 instruction count,
   116 clean masked operands, and only the two already-documented state-table
   layout mismatches.
+
+2026-07-13 path-template analysis owner closure:
+
+- The Binary Ninja/IDA path-template campaign no longer declares a parallel
+  `Game` aggregate for this receiver. Every field and helper on that shell is
+  rooted at the authored `SubgameRuntime`/`cRSubGame` object.
+- The old `pause_gate +0x74621` lane mixed root-object and subgame-relative
+  coordinates. Since the subgame is embedded at root `+0x74618`, the real
+  field is `subgame_pause_gate +0x09` on the receiver.
+- The exact 0x4364-byte `Player` is now embedded at runtime `+0x3bb764`, ending
+  at the first runtime cell at `+0x3bfac8`; the former flattened stopwatch,
+  warning, and presentation aliases are retired. Cameraman, salt, sub-lazer,
+  hover, and player backlinks all borrow `SubgameRuntime*` consistently.
+- Binary Ninja declaration preview verifies the sparse analysis owner at exact
+  size 0x1272838 and reverts without mutating the database. Matching source is
+  unchanged: focused Wibo remains 78.22%, 1033/1033 instructions, with 116
+  clean operands and the same two honest jump-table mismatches. The adjacent
+  `update_subgoldy` baseline likewise remains 72.51%, 2067/2087, with its one
+  existing follow-table mismatch.

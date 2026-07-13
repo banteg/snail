@@ -89,7 +89,7 @@ SNAIL_SKIN_FIELD_UPDATES = (
 )
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
-    "Game",
+    "SubgameRuntime",
     "SnailVisual",
     "BodNode",
     "BodBase",
@@ -215,7 +215,8 @@ PLAYER_FIELD_UPDATES = (
     ("0x4344", "squidge", "Squidge"),
 )
 
-GAME_FIELD_UPDATES = (
+SUBGAME_RUNTIME_FIELD_UPDATES = (
+    ("0x09", "subgame_pause_gate", "uint8_t"),
     ("0x34", "challenge_difficulty_scalar", "float"),
     ("0x38", "subgame_rate", "float"),
     ("0x3c", "subgame_state", "int32_t"),
@@ -226,7 +227,6 @@ GAME_FIELD_UPDATES = (
     ("0x50", "first_block_row_count", "int32_t"),
     ("0x54", "runtime_row_count", "int32_t"),
     ("0x58", "completion_row_start", "int32_t"),
-    ("0x74621", "pause_gate", "uint8_t"),
     ("0xa854", "track_state_latch", "uint8_t"),
     ("0xa858", "tutorial", "Tutorial"),
     ("0xa874", "level_segment_count", "int32_t"),
@@ -234,13 +234,11 @@ GAME_FIELD_UPDATES = (
     ("0x356b00", "sub_lazers", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_hazards", "SaltHazardSlot[0x28]"),
     ("0x359080", "banners", "BannerPool"),
-    ("0x3bba4c", "stopwatch", "Time"),
-    ("0x3bbb58", "warning", "Warning"),
-    ("0x432700", "presentation", "Snail"),
+    ("0x3bb764", "player", "Player"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
     ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
-    ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
+    ("0xff25d8", "selected_level_record_cursor", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e4", "runtime_track_index", "int32_t"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
@@ -327,7 +325,7 @@ PATH_FIELD_UPDATES = (
 
 SALT_HAZARD_FIELD_UPDATES = (
     ("0x80", "state", "int32_t"),
-    ("0x88", "owner_game", "Game*"),
+    ("0x88", "owner_game", "SubgameRuntime*"),
     ("0x8c", "fade_alpha", "float"),
     ("0x90", "spawn_velocity_y", "float"),
     ("0x94", "collision_armed", "uint8_t"),
@@ -349,7 +347,7 @@ SUB_HOVER_FIELD_UPDATES = (
     ("0x18", "wobble_y", "float"),
     ("0x1c", "wobble_alpha", "float"),
     ("0x20", "particle_slots", "JetParticleSlot[0x1e]"),
-    ("0x200", "game", "Game*"),
+    ("0x200", "game", "SubgameRuntime*"),
     ("0x20c", "warning_intensity_latch", "float"),
     ("0x210", "warning_intensity", "float"),
 )
@@ -466,7 +464,7 @@ PROTO_UPDATES = (
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position)",
+        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
     ),
     (
         "set_weapon_animation",
@@ -752,8 +750,8 @@ def main() -> int:
         apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="Game",
-            updates=GAME_FIELD_UPDATES,
+            struct_name="SubgameRuntime",
+            updates=SUBGAME_RUNTIME_FIELD_UPDATES,
         )
     )
     operations.extend(

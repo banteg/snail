@@ -485,15 +485,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_grid_cell_at_world_position",
-        "TrackRowCell* __thiscall get_track_grid_cell_at_world_position(Game* game, Vec3* position);",
+        "TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);",
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);",
+        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);",
     ),
     (
         "sample_track_floor_height_at_position",
-        "double __thiscall sample_track_floor_height_at_position(Game* game, Vec3* position);",
+        "double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);",
     ),
     (
         "begin_track_attachment_follow_state",
@@ -621,51 +621,51 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "build_subgame_level",
-        "void __thiscall build_subgame_level(Game* game, int32_t level_index);",
+        "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);",
     ),
     (
         "calc_subgame_rate",
-        "void __thiscall calc_subgame_rate(Game* game);",
+        "void __thiscall calc_subgame_rate(SubgameRuntime* game);",
     ),
     (
         "populate_runtime_track_cells_from_segments",
-        "void __thiscall populate_runtime_track_cells_from_segments(Game* game);",
+        "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);",
     ),
     (
         "rebuild_track_runtime_from_segments",
-        "int32_t __thiscall rebuild_track_runtime_from_segments(Game* game, int32_t level_index);",
+        "int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
     ),
     (
         "place_parcels_on_track",
-        "int32_t __thiscall place_parcels_on_track(Game* game);",
+        "int32_t __thiscall place_parcels_on_track(SubgameRuntime* game);",
     ),
     (
         "mark_track_warning_zones",
-        "int32_t __thiscall mark_track_warning_zones(Game* game);",
+        "int32_t __thiscall mark_track_warning_zones(SubgameRuntime* game);",
     ),
     (
         "select_track_tile_edge_variants",
-        "int32_t __thiscall select_track_tile_edge_variants(Game* game);",
+        "int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime* game);",
     ),
     (
         "merge_track_tile_runs",
-        "int32_t __thiscall merge_track_tile_runs(Game* game);",
+        "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game);",
     ),
     (
         "promote_track_tiles_to_fringe_variants",
-        "int32_t __thiscall promote_track_tiles_to_fringe_variants(Game* game);",
+        "int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);",
     ),
     (
         "harmonize_center_lane_floor_slide_variants",
-        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(Game* game);",
+        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);",
     ),
     (
         "build_track_fringe_objects",
-        "int32_t __thiscall build_track_fringe_objects(Game* game);",
+        "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game);",
     ),
     (
         "update_subgame_camera",
-        "char __thiscall update_subgame_camera(Game* game);",
+        "char __thiscall update_subgame_camera(SubgameRuntime* game);",
     ),
 ]
 
