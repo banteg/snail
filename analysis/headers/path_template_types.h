@@ -1352,11 +1352,7 @@ typedef struct PathTemplateSample {
 /* Authored cRPath, exact 0xa8 bytes. Windows stores 126 instances as 63
  * adjacent primary/secondary PathPair records in SubgameRuntime. */
 typedef struct Path {
-    uint8_t _pad_00[0x24];
-    Object* strip_mesh;
-    uint8_t _pad_28[0x8];
-    float header_30;
-    float header_34;
+    BodBase bod;
     PathTemplateKind kind;
     uint8_t is_mirrored_x;
     uint8_t _pad_3d[0x3];
@@ -1368,7 +1364,7 @@ typedef struct Path {
     uint32_t width_cells;
     PathTemplateSample* primary_samples;
     PathTemplateSample* secondary_samples;
-    uint8_t _pad_60[0x38];
+    BodBase fringe_mesh_bod;
     float installed_heading_delta;
     uint8_t has_entry_mesh_transition;
     uint8_t _pad_9d[0x3];

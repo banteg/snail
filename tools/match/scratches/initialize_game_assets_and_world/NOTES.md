@@ -253,3 +253,28 @@ expected mismatches falling from 33 to 31. Binary Ninja now carries the whole
 ten-record band in `FrameSubgameRuntime`; field-xref search remains empty for
 the two global-root consumers because they address through the relocatable game
 base rather than a typed receiver.
+
+## 2026-07-13 first authored path-template family
+
+The next producer begins with the native debug marker
+`"path generation start\n"`, then fills the already-constructed embedded path
+bank in authored order. The first coherent family is deliberately non-linear:
+
+1. pairs `0`, `1`, and `2`: `LOOPTHELOOP` with `(6,3)`, `(6,2)`, and `(8,4)`;
+2. pair `6`: `LOOPTHELOOPW` with `(8,4)`; and
+3. pairs `3`, `4`, `5`, and `7`: the `(3,2..4)` loop variants followed by
+   `LOOPBOW (6,4)`.
+
+Every primary path receives a fresh strip-mesh object, the authored builder and
+Slide0/Back/VeryDark texture set, and a zero body position. Its secondary path
+receives a fresh object, mirrors the primary across X, and is likewise reset.
+Both paths then build a Fringe-textured side mesh whose owned `fringe_mesh_bod`
+position is zeroed.
+
+The constructor independently proves that `Path` owns the leading `BodBase`
+and a second `BodBase` at `+0x60`; the source and analysis headers now encode
+both relationships, and Binary Ninja carries the same exact `0xa8` layout.
+Adding this real producer family raises the focused bootstrap from 21.02%
+(1,288 candidate instructions) to 26.16% (1,629/5,411), with 474 clean masked
+operands. The one unresolved early constructor call and 36 alignment-dependent
+operand mismatches remain outside this path slice.

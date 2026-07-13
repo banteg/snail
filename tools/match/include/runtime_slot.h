@@ -24,7 +24,6 @@ public:
     RuntimeSlot* initialize_golb_shot();
     RuntimeSlot* initialize_sub_loc();
     RuntimeSlot* initialize_track_row_runtime();
-    RuntimeSlot* initialize_path_template_record_pair();
     RuntimeSlot* initialize_active_landscape_entry();
     RuntimeSlot* initialize_landscape_script_record();
     RuntimeSlot* sub_42F6E0();

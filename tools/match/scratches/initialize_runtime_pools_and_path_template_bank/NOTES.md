@@ -20,8 +20,10 @@
   this constructor exact at 227/227 with all 72 operands clean.
 - The `63 * 0x150 = 0x52b0` extent ends exactly at the embedded barrier at
   `SubgameRuntime +0xff7bc4`.
-- Despite its retained historical name, `initialize_path_template_record_pair`
-  initializes one record's leading `BodBase` and fringe `BodBase` at `+0x60`.
+- `initialize_path_template_record_pair` is now owned by `Path` itself: it
+  initializes the inherited leading `BodBase` and `fringe_mesh_bod` at `+0x60`.
+  Walking the typed flat bank as 126 adjacent `Path` records preserves this
+  constructor exactly at 227/227 instructions with all 72 operands clean.
 
 ## 2026-07-11 live-list sentinels
 

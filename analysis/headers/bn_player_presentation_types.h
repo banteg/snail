@@ -227,9 +227,7 @@ typedef struct Cameraman {
 } Cameraman;
 
 typedef struct Path {
-    uint8_t _pad_00[0x24];
-    void* strip_mesh;
-    uint8_t _pad_28[0x10];
+    BodBase bod;
     int32_t kind;
     uint8_t is_mirrored_x;
     uint8_t _pad_3d[0x3];
@@ -241,7 +239,7 @@ typedef struct Path {
     uint32_t width_cells;
     void* primary_samples;
     void* secondary_samples;
-    uint8_t _pad_60[0x38];
+    BodBase fringe_mesh_bod;
     float installed_heading_delta;
     uint8_t has_entry_mesh_transition;
     uint8_t _pad_9d[0x3];

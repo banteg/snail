@@ -157,11 +157,11 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         --row_count;
     } while (row_count);
 
-    RuntimeSlot* path_template = SLOT(0xff2914);
-    int path_template_count = 0x7e;
+    Path* path_template = &path_pairs[0].primary;
+    int path_template_count = PATH_COUNT;
     do {
         path_template->initialize_path_template_record_pair();
-        path_template = (RuntimeSlot*)((char*)path_template + 0xa8);
+        ++path_template;
         --path_template_count;
     } while (path_template_count);
 

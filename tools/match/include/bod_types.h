@@ -21,7 +21,10 @@ public:
     Vector3 position;   // +0x10, copied into temporary render matrices
     float render_arg_1c; // +0x1c, forwarded to render_object texture-u offset
     float render_arg_20; // +0x20, forwarded to render_object texture-v offset
-    Object* object;     // +0x24, borrowed render-object slot
+    union {
+        Object* object;     // +0x24, borrowed render-object slot
+        Object* strip_mesh; // cRPath provenance alias for the same render body
+    };
     Color4f color;      // +0x28
 };
 

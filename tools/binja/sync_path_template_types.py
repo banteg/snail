@@ -434,12 +434,11 @@ TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
     ("0xf0", "row_event_id", "int32_t"),
 )
 
-# Authored cRPath field overlay. The Windows runtime owns 126 exact 0xa8-byte
-# instances as 63 adjacent PathPair records.
+# Authored cRPath field overlay. Its leading render body and the +0x60 fringe
+# body are both constructor-proven BodBase owners. Windows stores 126 exact
+# 0xa8-byte instances as 63 adjacent PathPair records.
 PATH_FIELD_UPDATES = (
-    ("0x24", "strip_mesh", "Object*"),
-    ("0x30", "header_30", "float"),
-    ("0x34", "header_34", "float"),
+    ("0x00", "bod", "BodBase"),
     ("0x38", "kind", "PathTemplateKind"),
     ("0x3c", "is_mirrored_x", "uint8_t"),
     ("0x40", "side_exit_mode", "uint32_t"),
@@ -450,6 +449,7 @@ PATH_FIELD_UPDATES = (
     ("0x54", "width_cells", "uint32_t"),
     ("0x58", "primary_samples", "PathTemplateSample*"),
     ("0x5c", "secondary_samples", "PathTemplateSample*"),
+    ("0x60", "fringe_mesh_bod", "BodBase"),
     ("0x98", "installed_heading_delta", "float"),
     ("0x9c", "has_entry_mesh_transition", "uint8_t"),
     ("0xa0", "entry_transition_strip_mesh", "Object*"),

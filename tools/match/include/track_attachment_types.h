@@ -22,7 +22,8 @@ struct PathTemplateStripMesh {
     int flags;                       // +0x10
 };
 
-struct Path {
+struct Path : public BodBase {
+    Path* initialize_path_template_record_pair(); // @ 0x4085c0
     void allocate_path_template_samples(); // @ 0x41b0a0
     void initialize_worm_path_template_pair(char* texture_path);
     void initialize_cage2_path_template_pair(
@@ -233,10 +234,7 @@ struct Path {
     bool is_point_inside_track_attachment(
         Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90, cRPath::SearchPos
 
-    char unknown_00[0x24];
-    Object* strip_mesh;               // +0x24
-    char unknown_28[0x38 - 0x28];
-    int kind;                        // +0x38
+    int kind;                        // +0x38, after the inherited BodBase
     unsigned char is_mirrored_x;     // +0x3c
     char unknown_3d[0x40 - 0x3d];
     int side_exit_mode;              // +0x40
