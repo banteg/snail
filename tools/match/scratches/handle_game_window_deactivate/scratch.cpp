@@ -7,8 +7,6 @@
 
 extern "C" __declspec(dllimport) void __stdcall ShowWindow(HWND window, int command);
 
-extern int g_pending_window_deactivate;    // data_4df860
-
 char handle_game_window_deactivate()
 {
     char result = g_window_deactivated;

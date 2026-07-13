@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**558/732** mapped gameplay functions matched, **732/732** mapped gameplay functions have a scratch, **90189/325585** bytes (**27.70%**) are proof-grade, and overall fuzzy is **63.47%**.
+**561/735** mapped gameplay functions matched, **735/735** mapped gameplay functions have a scratch, **90305/325557** bytes (**27.74%**) are proof-grade, and overall fuzzy is **63.51%**.
 
-## Proof Grade (558)
+## Proof Grade (561)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -58,7 +58,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | log_startup_timestamp | 0x406d30 | 58 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | handle_game_window_activate | 0x4072f0 | 187 | 44/44 | 100.00% | 44/44 | 26 ok |  |
 | ✅ | show_and_focus_game_window | 0x4073b0 | 141 | 33/33 | 100.00% | 33/33 | 19 ok |  |
-| ✅ | handle_game_window_deactivate | 0x407440 | 112 | 18/18 | 100.00% | 18/18 | 9 ok |  |
+| ✅ | handle_game_window_deactivate | 0x407440 | 69 | 18/18 | 100.00% | 18/18 | 9 ok |  |
+| ✅ | minimize_game_window | 0x407490 | 32 | 10/10 | 100.00% | 10/10 | 4 ok |  |
 | ✅ | consume_mouse_wheel_delta | 0x4077f0 | 23 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
 | ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  |
@@ -287,6 +288,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | xor_decode_buffer_with_index | 0x433010 | 29 | 15/15 | 100.00% | 15/15 | - |  |
 | ✅ | get_authored_view_width | 0x433030 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  |
 | ✅ | get_authored_view_height | 0x433040 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  |
+| ✅ | launch_alpha72_url | 0x433050 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | ✅ | update_track_render_cache_rows | 0x433b30 | 848 | 227/227 | 100.00% | 227/227 | 27 ok |  |
 | ✅ | update_active_bod | 0x433e80 | 147 | 50/50 | 100.00% | 50/50 | 7 ok |  |
 | ✅ | bind_subgame_owner | 0x433fc0 | 13 | 4/4 | 100.00% | 4/4 | 1 ok |  |
@@ -460,6 +462,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | resume_audio_backend_if_paused | 0x449ba0 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  |
 | ✅ | pause_audio_backend_if_running | 0x449bc0 | 22 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | set_audio_normalization_scales | 0x449be0 | 24 | 7/7 | 100.00% | 7/7 | - |  |
+| ✅ | debug_report_stub | 0x449c00 | 111 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | initialize_font_wave_state | 0x449c70 | 41 | 5/5 | 100.00% | 5/5 | 4 ok |  |
 | ✅ | update_font_wave_state | 0x449ca0 | 121 | 25/25 | 100.00% | 25/25 | 17 ok |  |
 | ✅ | font_slot_index_for_char | 0x449d20 | 358 | 145/145 | 100.00% | 145/145 | - |  |

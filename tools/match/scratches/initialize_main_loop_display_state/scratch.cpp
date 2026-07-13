@@ -5,7 +5,6 @@
 #include "transform_matrix.h"
 
 extern DisplayModeState g_display_mode_state; // data_4df9e0
-extern int g_pending_window_deactivate; // data_4df860
 extern TransformMatrix g_object_texture_transform_matrix; // data_5031d8
 
 void initialize_main_loop_display_state()

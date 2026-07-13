@@ -301,6 +301,11 @@
       "description": "Runtime deactivation helper for the main window. When the game is active in fullscreen mode, it marks the window inactive, minimizes it, and clears the pending quit flag before returning."
     },
     {
+      "address": "0x407490",
+      "name": "minimize_game_window",
+      "description": "Posts WM_SIZE/SIZE_MINIMIZED to the process-owned main window after emitting the stripped software-minimize diagnostic."
+    },
+    {
       "address": "0x4074b0",
       "name": "game_window_proc",
       "description": "Primary Win32 window procedure for the game's main window. It handles activation and minimize transitions, ESC-to-quit, left and right mouse button latches, and mouse-wheel delta capture before delegating the rest to DefWindowProcA."
@@ -1843,6 +1848,11 @@
       "description": "Returns the authored 480-style view height float used while updating display-mode view samples."
     },
     {
+      "address": "0x433050",
+      "name": "launch_alpha72_url",
+      "description": "Completion-screen outbound-link helper that minimizes the game window and raises the pending-deactivate latch; its Alpha72.url path argument is unused by this stripped body."
+    },
+    {
       "address": "0x433060",
       "name": "initialize_track_render_cache_manager",
       "description": "Initializes the embedded cRSegmentCache owner: a fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its complete 0xa7f8-byte extent matches the Windows runtime size ledger."
@@ -2989,6 +2999,11 @@
       "address": "0x449be0",
       "name": "set_audio_normalization_scales",
       "description": "Stores the normalized music, SFX, and voice gain scales parsed from `VOICE/_VOICE.TXT` into the shared backend lanes that the music, sound, and voice wrappers multiply into live playback volume."
+    },
+    {
+      "address": "0x449c00",
+      "name": "debug_report_stub",
+      "description": "Stripped release-build variadic debug reporter; it ignores every caller-owned argument and returns zero."
     },
     {
       "address": "0x449c70",

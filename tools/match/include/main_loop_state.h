@@ -10,6 +10,7 @@ extern unsigned char g_fixed_update_abort_requested; // data_4b7758
 extern unsigned char g_frame_render_requested; // data_4b7759
 extern float g_main_loop_frame_count; // data_4b7768
 
+extern int g_pending_window_deactivate; // data_4df860
 extern unsigned char g_main_loop_exit_requested; // data_4df864
 extern unsigned char g_game_initialization_pending; // data_4df90c
 extern float g_frame_time_accumulator; // data_4dfafc
