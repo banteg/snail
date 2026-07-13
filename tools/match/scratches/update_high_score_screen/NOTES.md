@@ -48,3 +48,13 @@ screen shell without changing the honest 67.65% baseline.
   `replay_row_widgets[1]` view hid three banks and incorrectly truncated the
   known controller storage at `+0xd0`; replay slot nine proves it through
   `+0xf4`. The final `0x14` bytes before TipManager remain explicitly unknown.
+
+2026-07-13 canonical root graph:
+
+- Name commit/cancel, Back, record iteration, and replay launch now use the
+  typed `GameRoot*` global and follow the owned player, `SubgameRuntime`, and
+  `SubHighScore` members. The byte cursor remains intentional for native's
+  `0x1fac0` record stride.
+- The replay-launch branch still reloads the root around teardown rather than
+  retaining a callback-spanning borrow. Output remains exact at 205/205 with
+  all 40 operands clean.
