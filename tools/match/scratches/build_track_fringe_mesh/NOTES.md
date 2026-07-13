@@ -9,8 +9,8 @@ builds the two textured facequads for each segment.
 
 Current focused result:
 
-- match: 69.92%
-- target/candidate instructions: 318 / 317
+- match: 89.31%
+- target/candidate instructions: 318 / 318
 - prefix: 18 / 318
 - masked operands: 23 clean, 0 unresolved, 0 mismatched
 
@@ -32,10 +32,11 @@ Important type notes:
 Remaining gap:
 
 The remaining gap is now register and store scheduling. The exact `0x68` stack
-frame, row-centered generated-vertex cursor, vector temporary family, and face
-loop lifetime are recovered. Native keeps the retained generated `Object` in
-`ebx`, assigns the two sampled columns to the opposite `ecx`/`edx` pair, and
-schedules face index/UV stores differently from the current candidate.
+frame, row-centered generated-vertex cursor, vector temporary family, face-loop
+instruction count, and near/far source-column ownership are recovered. Native
+keeps the generated `Object` in `ebx` during setup where the current candidate
+uses `esi`, and schedules a few vector-result and face index/UV stores
+differently.
 
 ## 2026-07-12 authored vector and clamp recovery
 
@@ -58,3 +59,27 @@ schedules face index/UV stores differently from the current candidate.
 These source-backed changes improve the focused match from `42.07%` to
 `69.92%`, with `317/318` instructions, an `18/318` prefix, and all `23` masked
 operands clean.
+
+## 2026-07-13 source-column and face-index ownership
+
+- The generated face indices do not own a reusable `vertex_base` local.
+  Spelling each typed index directly from `row * 4` restores the target's
+  missing row copy and exact `318/318` instruction count, raising the focused
+  result from 69.92% to 73.27%.
+- The mirrored and non-mirrored branches assign the near source column before
+  the far source column. That source order gives VC6 the native `ecx`/`edx`
+  ownership through both edge-extrusion passes and raises the result to 89.31%.
+  Android's `cRPath::BuildFringe` independently confirms the same near/far
+  column pairs and the separate generated face loop.
+- The live Binary Ninja prototype now reads
+  `void __thiscall build_track_fringe_mesh(Path*, char*, float)`. Applying the
+  existing `Path` type makes the leading `bod.object` visible as the sampled
+  source mesh and `fringe_mesh_bod.object` as the separately owned generated
+  mesh; all callers ignore the stale machine return.
+
+Rejected probes are not retained: declaration-only reordering is codegen
+neutral; an Android-shaped 16-bit vertex cursor regresses Windows to 85.98%
+and loses instruction parity; narrowing the generated-object scope prevents
+the native stack-slot reuse and grows the frame to `0x74`; and no speculative
+UV setter was introduced because other recovered object paths corroborate
+scalar `ObjectUv` component assignments.

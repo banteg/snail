@@ -51,13 +51,13 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
             int near_inner_column;
 
             if (is_mirrored_x != 0) {
-                far_column = width_cells - 1;
                 near_column = width_cells;
+                far_column = width_cells - 1;
                 far_inner_column = 1;
                 near_inner_column = 0;
             } else {
-                far_column = 1;
                 near_column = 0;
+                far_column = 1;
                 far_inner_column = width_cells - 1;
                 near_inner_column = width_cells;
             }
@@ -105,11 +105,10 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
             ObjectFaceQuad* face = &facequads[row * 2];
 
             face[0].texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
-            int vertex_base = row << 2;
-            face[0].vertex_0 = vertex_base + 5;
-            face[0].vertex_1 = vertex_base + 4;
-            face[0].vertex_2 = vertex_base;
-            face[0].vertex_3 = vertex_base + 1;
+            face[0].vertex_0 = row * 4 + 5;
+            face[0].vertex_1 = row * 4 + 4;
+            face[0].vertex_2 = row * 4;
+            face[0].vertex_3 = row * 4 + 1;
             face[0].uv[3].u = 0.5f;
             face[0].uv[3].v = 0.0f;
             face[0].uv[0].u = 0.5f;
@@ -120,10 +119,10 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
             face[0].uv[2].v = 1.0f;
 
             face[1].texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
-            face[1].vertex_0 = vertex_base + 6;
-            face[1].vertex_1 = vertex_base + 7;
-            face[1].vertex_2 = vertex_base + 3;
-            face[1].vertex_3 = vertex_base + 2;
+            face[1].vertex_0 = row * 4 + 6;
+            face[1].vertex_1 = row * 4 + 7;
+            face[1].vertex_2 = row * 4 + 3;
+            face[1].vertex_3 = row * 4 + 2;
             face[1].uv[3].u = 0.5f;
             face[1].uv[3].v = 1.0f;
             face[1].uv[0].u = 0.5f;

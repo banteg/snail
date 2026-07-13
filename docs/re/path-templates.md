@@ -195,6 +195,10 @@ High-confidence fields on the `0xa8`-byte record:
 - `+0x54`: width-cell count used for the generated strip mesh
 - `+0x58`: pointer to the primary sampled-point array
 - `+0x5c`: pointer to the mirrored or secondary sampled-point array
+- `+0x60`: embedded `BodBase` that owns the generated fringe mesh
+  - its `object` field is at record offset `+0x84`
+  - `cRPath::BuildFringe` samples vertices from the leading BOD's `strip_mesh`
+    at `+0x24`, but allocates and retains the generated side mesh here
 - `+0x98`: install-time row scalar written during entry/begin
 - `+0x9c`: entry-cell mesh-transition enable flag
 - `+0xa0`: auxiliary transition `strip_mesh` pointer
