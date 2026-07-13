@@ -90,6 +90,7 @@ SNAIL_SKIN_FIELD_UPDATES = (
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "SubgameRuntime",
+    "SubSolution",
     "SnailVisual",
     "BodNode",
     "BodBase",
@@ -237,7 +238,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x3bb764", "player", "Player"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
-    ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
+    ("0xff25d4", "selected_level_record", "SubSolution*"),
     ("0xff25d8", "selected_level_record_cursor", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
     ("0xff25e4", "runtime_track_index", "int32_t"),

@@ -306,3 +306,19 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 4. rows < 4 start-platform anchor y;
 5. the mode-1 random segment pick + visited byte (+8) semantics vs
    the port's challenge build.
+
+## Replay record analysis ownership (2026-07-13)
+
+The path-template analysis header formerly called the borrowed runtime pointer
+target `SelectedLevelRecord` and stopped after one replay sample. That prefix is
+not an independent owner: its fields align exactly with `SubSolution`, and the
+21,600 six-byte `ReplayRunRecord` entries plus four tail dwords prove the full
+0x1fac0-byte authored `cRSubSolution` stride.
+
+The Binary Ninja and IDA-facing campaign now exposes the exact `SubSolution`
+and types `SubgameRuntime::selected_level_record +0xff25d4` accordingly. A
+Binary Ninja declaration preview verifies `ReplayRunRecord == 0x06`,
+`SubSolution == 0x1fac0`, and the borrowed runtime field without mutating the
+database. This is an analysis ownership correction only; focused Wibo remains
+the honest 28.25%, 1190/1245-instruction baseline with 57 clean operands and
+the existing glyph-table mismatch.

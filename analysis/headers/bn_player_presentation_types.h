@@ -160,31 +160,6 @@ typedef struct Time {
     float second_fraction;
 } Time;
 
-typedef struct SelectedLevelReplaySample {
-    int16_t lateral_x;
-    int16_t delta_z;
-    uint8_t flags;
-    uint8_t _pad_05;
-} SelectedLevelReplaySample;
-
-typedef struct SelectedLevelRecord {
-    uint32_t active;
-    uint32_t score;
-    uint8_t _pad_08[0x20];
-    uint32_t replay_level_index;
-    uint32_t replay_mode_id;
-    uint8_t _pad_30[0x8];
-    uint32_t runtime_build_flags;
-    uint8_t _pad_3c[0xc];
-    float replay_speed_scalar;
-    uint32_t challenge_speed_value;
-    uint32_t challenge_difficulty_value;
-    char name[0x14];
-    uint32_t runtime_build_seed;
-    uint32_t replay_sample_count;
-    SelectedLevelReplaySample replay_samples[1];
-} SelectedLevelRecord;
-
 typedef struct Tutorial {
     int32_t state;
     int32_t _pad_04;

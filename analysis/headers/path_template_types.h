@@ -854,30 +854,46 @@ typedef struct Completion {
     int32_t display_token;
 } Completion;
 
-typedef struct SelectedLevelReplaySample {
+typedef struct ReplayRunRecord {
     int16_t lateral_x;
     int16_t delta_z;
     uint8_t flags;
-    uint8_t _pad_05;
-} SelectedLevelReplaySample;
+    uint8_t reserved_05;
+} ReplayRunRecord;
 
-typedef struct SelectedLevelRecord {
-    uint32_t active;
-    uint32_t score;
-    uint8_t _pad_08[0x20];
-    uint32_t replay_level_index;
-    uint32_t replay_mode_id;
-    uint8_t _pad_30[0x08];
+typedef union SubSolutionScoreOrTime {
+    float total_seconds;
+    int32_t score_buckets[6];
+    Time timer;
+} SubSolutionScoreOrTime;
+
+/* Exact 0x1fac0-byte authored cRSubSolution replay/high-score record. */
+typedef struct SubSolution {
+    int32_t active;
+    int32_t score;
+    SubSolutionScoreOrTime score_or_time;
+    int32_t score_tail;
+    int32_t source_tail;
+    int32_t replay_level_index;
+    int32_t replay_mode_id;
+    int32_t unknown_30;
+    float challenge_difficulty_scalar;
     uint32_t runtime_build_flags;
-    uint8_t _pad_3c[0x0c];
+    int32_t high_score_mode_tag;
+    int32_t route_or_rank_index;
+    int32_t replay_cursor;
     float replay_speed_scalar;
-    uint32_t challenge_speed_value;
-    uint32_t challenge_difficulty_value;
-    char name[0x14];
-    uint32_t runtime_build_seed;
-    uint32_t replay_sample_count;
-    SelectedLevelReplaySample replay_samples[1];
-} SelectedLevelRecord;
+    int32_t challenge_speed_value;
+    int32_t challenge_difficulty_value;
+    char player_name[0x14];
+    int32_t runtime_build_seed;
+    int32_t replay_sample_count;
+    ReplayRunRecord run_records[21600];
+    float garbage_frequency;
+    float salt_frequency;
+    int32_t unknown_1fab8;
+    int32_t unknown_1fabc;
+} SubSolution;
 
 typedef TransformMatrix PathTemplateTransform;
 
@@ -1089,7 +1105,7 @@ typedef struct SubgameRuntime {
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];
-    SelectedLevelRecord* selected_level_record;
+    SubSolution* selected_level_record;
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
     uint8_t _pad_ff25e0[0x4];
