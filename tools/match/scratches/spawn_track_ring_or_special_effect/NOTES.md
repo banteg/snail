@@ -175,3 +175,21 @@ Type consolidation:
   distinct kind `4` arm still hits the same VC6 internal compiler error. A
   distinct kind `3` or kind `8` arm compiles but regresses correspondence, so
   neither is retained. The kind-1 recovery is the bounded honest improvement.
+
+## 2026-07-14 authored moving-effect paths
+
+- The native switch carries distinct random streams for moving-effect kinds
+  `5` through `8`: `RR10`, `RR12`, `RR13`, and `RR11`, respectively. Binary
+  Ninja also shows four independent placement paths whose identical phase and
+  speed calculation is tail-merged by VC6.
+- Restoring the complete four-arm family gives the optimizer the native merge
+  opportunity that was absent from the earlier isolated kind-8 probe. Focused
+  matching improves from `52.86%`, `247/347` candidate/target instructions,
+  prefix `3/347`, and `45` clean masked operands to `55.14%`, `295/347`, prefix
+  `3/347`, and `42` clean masked operands. All six remaining masked mismatches
+  are explicit and none are unresolved.
+- Retesting the ordinary kind-1 phase-step store inside its authored arm after
+  this switch expansion still makes VC6 exit `50` without producing
+  `scratch.obj`. The verified post-switch semantic tail remains; no compiler
+  flag, volatile barrier, or dummy state was introduced to evade the backend
+  failure.

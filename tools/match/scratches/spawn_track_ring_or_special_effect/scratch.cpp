@@ -89,16 +89,46 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         slot->active_phase_step = default_phase_step;
         break;
     }
-    case 5:
-    case 6:
-    case 7:
-    case 8: {
+    case 5: {
         Vector3 staged_position;
         staged_position.x = cell->anchor_position.x;
         staged_position.y = cell->anchor_position.y + 2.5f;
         staged_position.z = cell->anchor_position.z;
         *slot_position = staged_position;
         slot->active_phase = random_float_below(1.0f, "RR10") * 6.28318548f;
+        slot->active_phase_step =
+            1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
+        break;
+    }
+    case 6: {
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z;
+        *slot_position = staged_position;
+        slot->active_phase = random_float_below(1.0f, "RR12") * 6.28318548f;
+        slot->active_phase_step =
+            1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
+        break;
+    }
+    case 7: {
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z;
+        *slot_position = staged_position;
+        slot->active_phase = random_float_below(1.0f, "RR13") * 6.28318548f;
+        slot->active_phase_step =
+            1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
+        break;
+    }
+    case 8: {
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z;
+        *slot_position = staged_position;
+        slot->active_phase = random_float_below(1.0f, "RR11") * 6.28318548f;
         slot->active_phase_step =
             1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
         break;
