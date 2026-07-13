@@ -14,14 +14,20 @@
 #include "backdrop.h"
 #include "cheat_state.h"
 #include "click_start.h"
+#include "completion.h"
 #include "damage_guage.h"
+#include "game_root.h"
+#include "nuke.h"
 #include "object_render_types.h"
+#include "player.h"
 #include "sub_solution.h"
 #include "progress_bar.h"
 #include "presentation_animation_channel.h"
 #include "runtime_config.h"
 #include "sub_hover.h"
 #include "tip_manager.h"
+#include "times_up.h"
+#include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
 
@@ -33,27 +39,6 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
-
-struct SubgoldyCompletionView {
-    char unknown_00[0x14];
-    int state;             // +0x14
-    unsigned char gate_18; // +0x18
-
-    void update_row_event_display();
-    void flush_row_event_display();
-};
-
-struct SubgoldyTimesUpView {
-    int state;
-    void show_times_up_message();
-    void update_times_up();
-};
-
-struct SubgoldyNukeView {
-    int state;
-    void update_nuke();
-    void uninit_nuke();
-};
 
 struct SubgoldyTrackRowCellView;
 
@@ -103,59 +88,6 @@ struct SubgoldyFollowStateView {
                                              Vector3* velocity);
 };
 
-struct SubgoldyWarningView {
-    int state;
-    float phase;
-    float phase_step;
-    void* target;
-
-    void update_warning();
-};
-
-struct SubgoldyPlayerControlSourceView {
-    int unknown_00;
-    unsigned int control_flags_a; // +0x04
-    int unknown_08;
-    unsigned int control_flags_b; // +0x0c
-    char unknown_10[0x28 - 0x10];
-    float steering_x; // +0x28
-};
-
-struct SubgoldyCutSceneStateView {
-    char unknown_00[0x0c];
-    int state; // +0x0c (presentation +0x1964)
-    char unknown_10[0x5c - 0x10];
-};
-
-struct Presentation {
-    char unknown_00[0x24];
-    Object* object; // +0x24, borrowed animated cRObject
-    char unknown_28[0x48 - 0x28];
-    float live_basis_up_x; // +0x48
-    char unknown_4c[0x104 - 0x4c];
-    AnimManager anim_manager; // +0x104
-    char unknown_14c[0x64c - 0x14c];
-    PresentationAnimationChannel weapon_channels[3]; // +0x64c, stride 0x3dc
-    PresentationAnimationChannel jetpack_channel; // +0x11e0
-    char unknown_15bc[0x1958 - 0x15bc];
-    SubgoldyCutSceneStateView cutscene; // +0x1958, authored cRCutScene state at +0x1964
-    char unknown_19b4[0x19c0 - 0x19b4];
-
-    void dispatch_cutscene_animation(int animation, unsigned char flag, int arg);
-    void initialize_cutscene();
-};
-
-struct SubgoldySquidgeView {
-    float y_output; // +0x00
-    char unknown_04[0x0c - 0x04];
-    float z_output; // +0x0c
-    char unknown_10[0x18 - 0x10];
-
-    void update_squidge();
-    void start_squidge_y(float amount);
-    void start_squidge_z(float amount);
-};
-
 struct SubgoldyGameView {
     char unknown_00[0x09];
     unsigned char subgame_pause_gate; // +0x09
@@ -184,16 +116,15 @@ struct SubgoldyPlayerView {
     ClickStart click_start; // +0xa0, authored cRClickStart
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[3];
-    SubgoldyNukeView nuke; // +0x150, compact cRNuke prefix
-    char unknown_154[0x1d4 - 0x154];
+    Nuke nuke; // +0x150, authored cRNuke owner
+    char unknown_1cc[0x1d4 - 0x1cc];
     float damage_retrigger_timer; // +0x1d4
     float damage_retrigger_step;  // +0x1d8
     float surface_reaction_timer; // +0x1dc
     float surface_reaction_step;  // +0x1e0
     unsigned char trampoline_bounce_active; // +0x1e4
     char unknown_1e5[3];
-    int row_event_id;            // +0x1e8
-    TipData row_event_tip; // +0x1ec, authored cRTipData
+    PlayerRowEventState row_event; // +0x1e8, authored row-event child
     char unknown_200[0x2d8 - 0x200];
     unsigned char control_override_active; // +0x2d8
     char unknown_2d9[0x2e8 - 0x2d9];
@@ -221,7 +152,7 @@ struct SubgoldyPlayerView {
     SubgoldyFollowStateView follow_state; // +0x384
     DamageGuage damage_gauge; // +0x3c4, authored cRDamageGuage owner
     ProgressBar progress_bar; // +0x3f0
-    SubgoldyWarningView warning; // +0x3f4, compact cRWarning prefix
+    Warning warning; // +0x3f4, authored cRWarning owner
     int lives;                // +0x404
     SubgoldyGameView* game;               // +0x408
     int movement_mode_selector; // +0x40c
@@ -231,7 +162,7 @@ struct SubgoldyPlayerView {
     char unknown_41e[0x434 - 0x41e];
     float attachment_exit_progress;      // +0x434
     float attachment_exit_progress_step; // +0x438
-    SubgoldyPlayerControlSourceView* control_source; // +0x43c
+    PlayerControlSource* control_source; // +0x43c
     unsigned char completion_handoff_active; // +0x440
     char unknown_441[3];
     float completion_handoff_timer;       // +0x444
@@ -253,8 +184,9 @@ struct SubgoldyPlayerView {
     int steering_mode_selector;         // +0x2970
     char unknown_2974[0x2980 - 0x2974];
     float interaction_max_z;   // +0x2980
-    Presentation presentation; // +0x2984
-    SubgoldySquidgeView squidge; // +0x4344, authored cRSquidge
+    Snail presentation; // +0x2984, authored cRSnail owner
+    char unknown_4338[0x4344 - 0x4338];
+    Squidge squidge; // +0x4344, authored cRSquidge owner
     float slow_commentary_timer; // +0x435c
     float slow_commentary_step;  // +0x4360
 
@@ -286,7 +218,7 @@ void SubgoldyPlayerView::update_subgoldy()
             damage_gauge.update_damage_gauge();
             progress_bar.update_progress_bar();
             warning.update_warning();
-            ((SubgoldyCompletionView*)((char*)game + 0x12727d8))->update_row_event_display();
+            ((SubgameRuntime*)game)->completion.update_row_event_display();
         }
         return;
     }
@@ -320,31 +252,36 @@ void SubgoldyPlayerView::update_subgoldy()
     }
 
     SubgoldyGameView* latch_game = game;
-    if (*(int*)((char*)latch_game + 0xff25dc) > 20 && !*((unsigned char*)latch_game + 0xa854))
-        *((unsigned char*)latch_game + 0xa854) = 1;
+    if (((SubgameRuntime*)latch_game)->replay_update_cursor > 20
+        && !((SubgameRuntime*)latch_game)->track_state_latch)
+        ((SubgameRuntime*)latch_game)->track_state_latch = 1;
 
     Vector3* p_position;
     SubgoldyGameView* replay_game = game;
-    if (*((unsigned char*)replay_game + 0xff25d0)
-        && *(int*)((char*)replay_game + 0xff25dc)
-               < (*(SubSolution**)((char*)replay_game + 0xff25d4))->replay_sample_count
+    if (((SubgameRuntime*)replay_game)->selected_level_record_active
+        && ((SubgameRuntime*)replay_game)->replay_update_cursor
+               < ((SubgameRuntime*)replay_game)
+                     ->selected_level_record->replay_sample_count
         && click_start.state != 2) {
         p_position = &live_matrix.position;
         live_matrix.position.x = convert_math_type16_to_32(
-            (*(SubSolution**)((char*)replay_game + 0xff25d4))
-                ->run_records[*(int*)((char*)replay_game + 0xff25dc)]
+            ((SubgameRuntime*)replay_game)
+                ->selected_level_record
+                ->run_records[((SubgameRuntime*)replay_game)->replay_update_cursor]
                 .lateral_x,
             16.0f);
         SubgoldyGameView* flag_game = game;
-        if ((*(SubSolution**)((char*)flag_game + 0xff25d4))
-                ->run_records[*(int*)((char*)flag_game + 0xff25dc)]
+        if (((SubgameRuntime*)flag_game)
+                ->selected_level_record
+                ->run_records[((SubgameRuntime*)flag_game)->replay_update_cursor]
                 .flags
             & 4)
-            *((unsigned char*)flag_game + 0xa854) = 1;
+            ((SubgameRuntime*)flag_game)->track_state_latch = 1;
         else
-            *((unsigned char*)flag_game + 0xa854) = 0;
-        if ((*(SubSolution**)((char*)game + 0xff25d4))
-                ->run_records[*(int*)((char*)game + 0xff25dc)]
+            ((SubgameRuntime*)flag_game)->track_state_latch = 0;
+        if (((SubgameRuntime*)game)
+                ->selected_level_record
+                ->run_records[((SubgameRuntime*)game)->replay_update_cursor]
                 .flags
             & 8) {
             g_app->frontend_state = 26;
@@ -361,7 +298,8 @@ void SubgoldyPlayerView::update_subgoldy()
             float resolved;
             if (control_override_active) {
                 float pulled = track_z_offset
-                             - (presentation.live_basis_up_x + presentation.live_basis_up_x);
+                             - (presentation.live_matrix.basis_up.x
+                                + presentation.live_matrix.basis_up.x);
                 track_z_offset = pulled;
                 track_z_anchor = pulled;
                 if (track_z_offset < 0.0f)
@@ -405,44 +343,59 @@ steering_stored:
             convert_math_type32_to_16(live_matrix.position.x, 16.0f), 16.0f);
         live_matrix.position.x = quantized_x;
         SubgoldyGameView* record_game = game;
-        ((ReplayRunRecord*)((char*)record_game + 0xfd2b80))[*(int*)((char*)record_game + 0xff25dc)]
+        ((SubgameRuntime*)record_game)
+            ->current_high_score_record
+            .run_records[((SubgameRuntime*)record_game)->replay_update_cursor]
             .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);
         SubgoldyGameView* record_game_z = game;
-        if (!*(int*)((char*)game + 0xff25dc)) {
-            ((ReplayRunRecord*)((char*)record_game_z
-                                + 0xfd2b80))[*(int*)((char*)record_game_z + 0xff25dc)]
+        if (!((SubgameRuntime*)game)->replay_update_cursor) {
+            ((SubgameRuntime*)record_game_z)
+                ->current_high_score_record
+                .run_records[((SubgameRuntime*)record_game_z)->replay_update_cursor]
                 .delta_z = convert_math_type32_to_16(live_matrix.position.z, 32.0f);
             g_replay_accum_z = convert_math_type16_to_32(
-                ((ReplayRunRecord*)((char*)game + 0xfd2b80))[*(int*)((char*)game + 0xff25dc)]
+                ((SubgameRuntime*)game)
+                    ->current_high_score_record
+                    .run_records[((SubgameRuntime*)game)->replay_update_cursor]
                     .delta_z,
                 32.0f);
         } else {
-            ((ReplayRunRecord*)((char*)record_game_z
-                                + 0xfd2b80))[*(int*)((char*)record_game_z + 0xff25dc)]
+            ((SubgameRuntime*)record_game_z)
+                ->current_high_score_record
+                .run_records[((SubgameRuntime*)record_game_z)->replay_update_cursor]
                 .delta_z =
                 convert_math_type32_to_16(live_matrix.position.z - g_replay_accum_z, 32.0f);
             g_replay_accum_z =
-                convert_math_type16_to_32(((ReplayRunRecord*)((char*)game + 0xfd2b80))
-                                              [*(int*)((char*)game + 0xff25dc)]
-                                                  .delta_z,
-                                          32.0f)
+                convert_math_type16_to_32(
+                    ((SubgameRuntime*)game)
+                        ->current_high_score_record
+                        .run_records[((SubgameRuntime*)game)->replay_update_cursor]
+                        .delta_z,
+                    32.0f)
                 + g_replay_accum_z;
         }
         SubgoldyGameView* fire_game = game;
-        if (*((unsigned char*)fire_game + 0xa854)) {
+        if (((SubgameRuntime*)fire_game)->track_state_latch) {
             if (control_source->control_flags_a & 0x4000)
-                *((unsigned char*)fire_game + 6 * *(int*)((char*)fire_game + 0xff25dc)
-                  + 0xfd2b84) |= 1;
+                ((SubgameRuntime*)fire_game)
+                    ->current_high_score_record
+                    .run_records[((SubgameRuntime*)fire_game)->replay_update_cursor]
+                    .flags |= 1;
             if (control_source->control_flags_b & 0x4000)
-                *((unsigned char*)game + 6 * *(int*)((char*)game + 0xff25dc) + 0xfd2b84) |= 2;
+                ((SubgameRuntime*)game)
+                    ->current_high_score_record
+                    .run_records[((SubgameRuntime*)game)->replay_update_cursor]
+                    .flags |= 2;
         }
-        SubgoldyPlayerControlSourceView* source = control_source;
+        PlayerControlSource* source = control_source;
         if ((source->control_flags_b & 0x4000) == 0 && (source->control_flags_a & 0x4000) == 0)
-            *((unsigned char*)game + 0xa854) = 1;
+            ((SubgameRuntime*)game)->track_state_latch = 1;
         SubgoldyGameView* mark_game = game;
-        if (*((unsigned char*)mark_game + 0xa854))
-            *((unsigned char*)mark_game + 6 * *(int*)((char*)mark_game + 0xff25dc) + 0xfd2b84) |=
-                4;
+        if (((SubgameRuntime*)mark_game)->track_state_latch)
+            ((SubgameRuntime*)mark_game)
+                ->current_high_score_record
+                .run_records[((SubgameRuntime*)mark_game)->replay_update_cursor]
+                .flags |= 4;
     }
 
     if (p_position->x < -4.0f) {
@@ -459,19 +412,27 @@ steering_stored:
 
     SubgoldyTrackRowCellView* source_cell = game->get_track_grid_cell_at_world_position(p_position);
     SubgoldyGameView* event_game = game;
-    char* row_record =
-        (char*)event_game + 244 * source_cell->get_track_cell_row_index() + 0x5ccac8;
-    int event_id = *(int*)(row_record + 0xf0);
-    if (event_id > 0 && event_id != row_event_id
-        && event_id < *(int*)((char*)event_game + 0xa874) + 1) {
-        row_event_id = event_id;
-        if (*((char*)game + 16928 * *(int*)(row_record + 0xf0) + 0xa670)) {
-            row_event_tip.flags = 2;
-            row_event_tip.text = (char*)game + 16928 * *(int*)(row_record + 0xf0) + 0xa670;
-            row_event_tip.layout_y = 0.0f;
-            row_event_tip.text_scale = 30.0f;
-            row_event_tip.dismiss_seconds =
-                *(float*)((char*)game + 16928 * *(int*)(row_record + 0xf0) + 0xa870);
+    SubRow* row_record = &((SubgameRuntime*)event_game)
+                              ->runtime_rows[source_cell->get_track_cell_row_index()];
+    int event_id = row_record->row_event_id;
+    if (event_id > 0 && event_id != row_event.id
+        && event_id < ((SubgameRuntime*)event_game)->level_definition.segment_count + 1) {
+        row_event.id = event_id;
+        if (((SubgameRuntime*)game)
+                ->level_definition
+                .segment_slots[row_record->row_event_id - 1]
+                .message_text[0]) {
+            row_event.definition.flags = 2;
+            row_event.definition.text = ((SubgameRuntime*)game)
+                                            ->level_definition
+                                            .segment_slots[row_record->row_event_id - 1]
+                                            .message_text;
+            row_event.definition.layout_y = 0.0f;
+            row_event.definition.text_scale = 30.0f;
+            row_event.definition.dismiss_seconds = ((SubgameRuntime*)game)
+                                                        ->level_definition
+                                                        .segment_slots[row_record->row_event_id - 1]
+                                                        .message_duration.value;
             if (!row_event_cutscene_started) {
                 row_event_cutscene_started = 1;
                 if (p_position->x > 0.0f)
@@ -480,12 +441,21 @@ steering_stored:
                     presentation.dispatch_cutscene_animation(3, 1, -1);
                 presentation.dispatch_cutscene_animation(1, 0, -1);
             }
-            int definition = *(int*)(row_record + 0xf0);
+            int definition = row_record->row_event_id;
             SubgoldyGameView* voice_game = game;
-            if (*(int*)((char*)voice_game + 16928 * definition + 0xa874) != -1)
+            if (((SubgameRuntime*)voice_game)
+                    ->level_definition
+                    .segment_slots[definition - 1]
+                    .message_sample_id
+                != -1)
                 g_voice_manager.play_voice_manager(
-                    13, 2, *(int*)((char*)voice_game + 16928 * definition + 0xa874));
-            ((TipManager*)((char*)g_app + 0x12e6f58))->enqueue_tip_message(&row_event_tip, 1);
+                    13, 2,
+                    ((SubgameRuntime*)voice_game)
+                        ->level_definition
+                        .segment_slots[definition - 1]
+                        .message_sample_id);
+            ((GameRoot*)g_app)->tip_manager.enqueue_tip_message(
+                &row_event.definition, 1);
         }
     }
 
@@ -604,46 +574,50 @@ steering_stored:
             SubgoldyTrackRowCellView* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
             if (attachment_exit_pending) {
                 SubgoldyGameView* drag_game = game;
-                if ((*(int*)((char*)drag_game + 244 * landing_cell->get_track_cell_row_index()
-                             + 0x5ccac8)
-                     & 0x100) == 0
+                if ((((SubgameRuntime*)drag_game)
+                         ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                         .flags
+                      & 0x100)
+                    == 0
                     && !sub_hover.state && !control_override_active) {
                     velocity.z = (1.0f - drag_game->subgame_rate * 0.2f) * velocity.z;
                 }
-                if (*((unsigned char*)game + 244 * landing_cell->get_track_cell_row_index()
-                      + 0x5ccac8)
+                if (((SubgameRuntime*)game)
+                        ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                        .flags
                     & 0x40) {
                     Vector3 swept;
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    (*(SubgoldyTrackRowCellView**)((char*)game
-                                       + 244 * landing_cell->get_track_cell_row_index()
-                                       + 0x5ccb6c))
+                    ((SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                         ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                         .primary_attachment_cell)
                         ->attachment_template_record
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
-                            *(SubgoldyTrackRowCellView**)((char*)game
-                                              + 244 * landing_cell->get_track_cell_row_index()
-                                              + 0x5ccb6c));
+                            (SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                                ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                                .primary_attachment_cell);
                 }
                 if (attachment_exit_pending
-                    && (*((unsigned char*)game + 244 * landing_cell->get_track_cell_row_index()
-                          + 0x5ccac8)
+                    && (((SubgameRuntime*)game)
+                            ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                            .flags
                         & 0x80)) {
                     Vector3 swept;
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    (*(SubgoldyTrackRowCellView**)((char*)game
-                                       + 244 * landing_cell->get_track_cell_row_index()
-                                       + 0x5ccb70))
+                    ((SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                         ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                         .secondary_attachment_cell)
                         ->attachment_template_record
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
-                            *(SubgoldyTrackRowCellView**)((char*)game
-                                              + 244 * landing_cell->get_track_cell_row_index()
-                                              + 0x5ccb70));
+                            (SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                                ->runtime_rows[landing_cell->get_track_cell_row_index()]
+                                .secondary_attachment_cell);
                 }
             }
             if (!follow_state.active) {
@@ -881,7 +855,7 @@ steering_stored:
             completion_handoff_cycle_progress = 0.0f;
         completion_handoff_timer += completion_handoff_timer_step;
         SubgoldyGameView* display_game = game;
-        *(int*)((char*)display_game + 0x1270fc8) = 2;
+        ((SubgameRuntime*)display_game)->subgame_rebuild_selector = 2;
         if (completion_handoff_timer > 2.0f && !completion_handoff_voice_gate) {
             completion_handoff_voice_gate = 1;
             g_voice_manager.play_voice_manager(8, 2, -1);
@@ -889,17 +863,17 @@ steering_stored:
         if (completion_handoff_timer > 2.0f) {
             SubgoldyGameView* skip_game = game;
             if (skip_game->level_mode == 0 || skip_game->level_mode == 1) {
-                if (((SubgoldyCompletionView*)((char*)skip_game + 0x12727d8))->gate_18 == 1
+                if (((SubgameRuntime*)skip_game)->completion.gate_18 == 1
                     && (control_source->control_flags_a & 0x4000) != 0)
                     completion_handoff_timer = 5.0999999f;
-                if (((SubgoldyCompletionView*)((char*)skip_game + 0x12727d8))->state == 5)
+                if (((SubgameRuntime*)skip_game)->completion.state == 5)
                     completion_handoff_timer = 5.0999999f;
             }
         }
         if (completion_handoff_timer > 5.0f) {
             SubgoldyGameView* hold_game = game;
             if ((hold_game->level_mode == 0 || hold_game->level_mode == 1)
-                && ((SubgoldyCompletionView*)((char*)hold_game + 0x12727d8))->state != 5)
+                && ((SubgameRuntime*)hold_game)->completion.state != 5)
                 completion_handoff_timer =
                     completion_handoff_timer - completion_handoff_timer_step;
         }
@@ -909,20 +883,20 @@ steering_stored:
                 g_app->fade.begin_frontend_fade_out(0);
             } else if (fade_state == 4) {
                 SubgoldyGameView* finish_game = game;
-                if (((SubgoldyCompletionView*)((char*)finish_game + 0x12727d8))->state)
-                    ((SubgoldyCompletionView*)((char*)finish_game + 0x12727d8))
-                        ->flush_row_event_display();
+                if (((SubgameRuntime*)finish_game)->completion.state)
+                    ((SubgameRuntime*)finish_game)
+                        ->completion.flush_row_event_display();
                 SubgoldyGameView* dispatch_game = game;
                 if (!dispatch_game->level_mode) {
                     if (dispatch_game->level_mode_arg
-                        == *(int*)((char*)g_app + 0x12d4644) - 1) {
+                        == ((GameRoot*)g_app)->subgame.galaxy.record_count - 1) {
                         dispatch_game->complete_subgame(1);
                         g_app->frontend_substate = 29;
                         g_app->frontend_state = 26;
                         return;
                     }
                     dispatch_game->complete_subgame(0);
-                    *(int*)((char*)game + 0x1270fc8) = 1;
+                    ((SubgameRuntime*)game)->subgame_rebuild_selector = 1;
                 } else {
                     dispatch_game->complete_subgame(1);
                 }
@@ -931,7 +905,8 @@ steering_stored:
                     g_app->frontend_state = 26;
                     g_app->frontend_substate = 2;
                 } else {
-                    unsigned char persistent = *((unsigned char*)exit_game + 0xff25d1);
+                    unsigned char persistent =
+                        ((SubgameRuntime*)exit_game)->selected_level_record_persistent;
                     g_app->frontend_substate = g_app->frontend_state;
                     if (persistent)
                         g_app->frontend_state = 26;
@@ -949,7 +924,8 @@ steering_stored:
     sub_hover.update_jetpack_gauge();
     if (completion_handoff_active) {
         g_app->hud_target = g_app->hud_source;
-        *(float*)((char*)g_app + 0x300) = *(float*)((char*)g_app + 0x300) - 1.0f;
+        g_app->hud_target.scroll_progress =
+            g_app->hud_target.scroll_progress - 1.0f;
     }
     damage_gauge.update_damage_gauge();
     progress_bar.update_progress_bar();
@@ -1015,26 +991,35 @@ steering_stored:
 
     SubgoldyGameView* ghost_game = game;
     if (ghost_game->level_mode == 4) {
-        char* record_block = (char*)ghost_game + 129728 * ghost_game->level_mode_arg;
-        if (*(int*)(record_block + 0x944150) == 1
-            && !*((unsigned char*)ghost_game + 0xff25d0)) {
-            int cursor = *(int*)((char*)ghost_game + 0xff25dc);
-            if (cursor >= *(int*)(record_block + 0x9441bc))
-                cursor = *(int*)(record_block + 0x9441bc);
+        char* record_block =
+            (char*)ghost_game + sizeof(SubSolution) * ghost_game->level_mode_arg;
+        if (((SubSolution*)(record_block + 0x944150))->active == 1
+            && !((SubgameRuntime*)ghost_game)->selected_level_record_active) {
+            int cursor = ((SubgameRuntime*)ghost_game)->replay_update_cursor;
+            if (cursor
+                >= ((SubSolution*)(record_block + 0x944150))->replay_sample_count)
+                cursor =
+                    ((SubSolution*)(record_block + 0x944150))->replay_sample_count;
             int anchor = ghost_anchor_cursor;
             int offset_cursor;
             float ghost_z;
             if (!anchor
-                || (offset_cursor = *(int*)(record_block + 0x944174) - anchor + cursor) == 0)
-                ghost_z = convert_math_type16_to_32(*(unsigned short*)(record_block + 0x9441c2),
-                                                    32.0f);
+                || (offset_cursor =
+                        ((SubSolution*)(record_block + 0x944150))->source_tail
+                            - anchor + cursor)
+                    == 0)
+                ghost_z = convert_math_type16_to_32(
+                    (unsigned short)((SubSolution*)(record_block + 0x944150))
+                        ->run_records[0].delta_z,
+                    32.0f);
             else
                 ghost_z = convert_math_type16_to_32(
-                              *(unsigned short*)(record_block + 6 * offset_cursor + 0x9441c2),
+                              (unsigned short)((SubSolution*)(record_block + 0x944150))
+                                  ->run_records[offset_cursor].delta_z,
                               32.0f)
                         + g_subgoldy_ghost_z;
             g_subgoldy_ghost_z = ghost_z;
-            if (*((unsigned char*)game + 0xff25d0))
+            if (((SubgameRuntime*)game)->selected_level_record_active)
                 g_subgoldy_ghost_z = live_matrix.position.z;
             float ghost_horizon = live_matrix.position.z + 20.0f;
             float clamped_ghost_z;
@@ -1047,7 +1032,7 @@ steering_stored:
     }
 
     float backdrop_zoom = live_matrix.position.z / (float)game->runtime_row_count;
-    ((Backdrop*)((char*)g_app + 0x4ec10))->set_backdrop_zoom(backdrop_zoom);
+    ((GameRoot*)g_app)->backdrop.set_backdrop_zoom(backdrop_zoom);
 
     SubgoldyGameView* horizon_game = game;
     float interaction_limit = (float)horizon_game->completion_row_start - 30.0f;
@@ -1111,10 +1096,10 @@ steering_stored:
     presentation.weapon_channels[0].anim_manager.update_anim_manager();
     presentation.weapon_channels[1].anim_manager.update_anim_manager();
     presentation.weapon_channels[2].anim_manager.update_anim_manager();
-    ((ParcelManager*)((char*)game + 0x125e480))->update_track_parcels();
+    ((SubgameRuntime*)game)->parcel_manager.update_track_parcels();
     presentation.initialize_cutscene();
     update_player_movement_flags();
-    if (*(int*)((char*)g_app + 0x1066bf4) < 10)
+    if (((GameRoot*)g_app)->subgame.replay_update_cursor < 10)
         movement_fire_progress = movement_fire_progress_step;
 
     SubgoldyGameView* emitter_game = game;
@@ -1126,17 +1111,21 @@ steering_stored:
             movement_fire_progress = advanced;
             if (advanced > 1.0f)
                 movement_fire_progress = 0.0f;
-        } else if (*((unsigned char*)emitter_game + 0xa854)) {
-            if (*((unsigned char*)emitter_game + 0xff25d0)) {
-                if ((*(SubSolution**)((char*)emitter_game + 0xff25d4))
-                        ->run_records[*(int*)((char*)emitter_game + 0xff25dc)]
+        } else if (((SubgameRuntime*)emitter_game)->track_state_latch) {
+            if (((SubgameRuntime*)emitter_game)->selected_level_record_active) {
+                if (((SubgameRuntime*)emitter_game)
+                        ->selected_level_record
+                        ->run_records[((SubgameRuntime*)emitter_game)
+                                          ->replay_update_cursor]
                         .flags
                     & 1) {
                     play_movement_state_sound();
                     update_movement_flag_emitters(this);
                     movement_fire_progress = movement_fire_progress_step + 0.30000001f;
-                } else if ((*(SubSolution**)((char*)emitter_game + 0xff25d4))
-                               ->run_records[*(int*)((char*)emitter_game + 0xff25dc)]
+                } else if (((SubgameRuntime*)emitter_game)
+                               ->selected_level_record
+                               ->run_records[((SubgameRuntime*)emitter_game)
+                                                 ->replay_update_cursor]
                                .flags
                            & 2) {
                     movement_fire_progress = movement_fire_progress_step;
@@ -1155,14 +1144,17 @@ steering_stored:
         }
     }
 
-    ((SubgoldyCompletionView*)((char*)game + 0x12727d8))->update_row_event_display();
+    ((SubgameRuntime*)game)->completion.update_row_event_display();
     SubgoldyGameView* tick_game = game;
-    *(int*)((char*)tick_game + 0xfd2b7c) = *(int*)((char*)tick_game + 0xfd2b7c) + 1;
+    ((SubgameRuntime*)tick_game)->current_high_score_record.replay_sample_count =
+        ((SubgameRuntime*)tick_game)
+                ->current_high_score_record.replay_sample_count
+            + 1;
     SubgoldyGameView* cursor_game = game;
-    *(int*)((char*)cursor_game + 0xff25dc) = *(int*)((char*)cursor_game + 0xff25dc) + 1;
+    ((SubgameRuntime*)cursor_game)->replay_update_cursor =
+        ((SubgameRuntime*)cursor_game)->replay_update_cursor + 1;
     SubgoldyGameView* times_game = game;
-    if (*(int*)((char*)times_game + 0xff25dc) == 21000)
-        ((SubgoldyTimesUpView*)((char*)times_game + 0x1272828))
-            ->show_times_up_message();
-    ((SubgoldyTimesUpView*)((char*)game + 0x1272828))->update_times_up();
+    if (((SubgameRuntime*)times_game)->replay_update_cursor == 21000)
+        ((SubgameRuntime*)times_game)->times_up.show_times_up_message();
+    ((SubgameRuntime*)game)->times_up.update_times_up();
 }

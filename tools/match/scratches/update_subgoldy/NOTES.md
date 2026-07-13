@@ -22,7 +22,7 @@ scratch additionally pins:
   is called for its side effect each tick; selector 1 maps `steering_x`
   absolutely; steer target = `(320 - offset) * 0.0125` clamped ±3.7;
   `x += rate*0.2 * (target - x)` unless `click_start.state == 2`. Under control
-  override the offset is pulled by `-2 * presentation.live_basis_up.x`.
+  override the offset is pulled by `-2 * presentation.live_matrix.basis_up.x`.
 - **Lateral quantization EVERY tick**: `position.x =
   convert_math_type16_to_32(convert_math_type32_to_16(x, 16.0), 16.0)` —
   live x snaps to the 16-bit replay codec grid each frame before being
@@ -54,10 +54,11 @@ scratch additionally pins:
   pickup and ring effects set vz = rate*0.5) decaying through
   (1 - rate*0.003) toward the 0.17 floor — the "tile-boost cadence"
   hypothesis is dead; it's ring/speedup cadence.
-- **Ghost marking (level_mode 4)**: record block at game + 129728*arg;
-  active flag +0x944150, cursor base +0x944174, count +0x9441bc, ghost
-  words stride 6 at +0x9441c2; ghost z = min(accumulated ghost z, z+20)
-  through flt_643190, anchored by player+0x304;
+- **Ghost marking (level_mode 4)**: the selected bank has
+  `sizeof(SubSolution)` stride; an offset-preserving `SubSolution` view at
+  game+0x944150 owns `active`, `source_tail`, `replay_sample_count`, and the
+  six-byte `run_records`; ghost z = min(accumulated ghost z, z+20) through
+  flt_643190, anchored by player+0x304;
   `set_subgoldy_ghost_z(float)` each tick.
 - **Movement-fire emitters**: require runtime_flags & 0x400000, no
   handoff/override, `click_start.state` 0 or 4; fire cooldown via +0x2730
@@ -70,14 +71,18 @@ scratch additionally pins:
 - **Tail**: collisions, 5 anim managers (presentation +0x104, jetpack
   channel base +0x11e0 with manager +0x12e8, weapon channel bases
   +0x64c/+0xa28/+0xe04 stride 0x3dc with managers at base +0x108), track parcels
-  (game+0x125e480), initialize_cutscene, update_player_movement_flags,
-  row event display, frame counter game+0xfd2b7c++, cursor++ == 21000 →
-  times-up (game+0x1272828).
+  (`SubgameRuntime::parcel_manager`), initialize_cutscene,
+  update_player_movement_flags, `Completion` row-event display,
+  `current_high_score_record.replay_sample_count++`, and
+  `replay_update_cursor++ == 21000` → `TimesUp`.
 
 ## Struct facts (player block)
 
-damage_gauge at +0x3c4 (state is the FIRST field; skin_hold_ticks +0x18),
-empty progress_bar +0x3f0, warning +0x3f4, nuke +0x150, presentation +0x2984
+Exact embedded children now used here are `Nuke` +0x150,
+`PlayerRowEventState` +0x1e8, `DamageGuage` +0x3c4, empty `ProgressBar`
++0x3f0, `Warning` +0x3f4, `Snail` presentation +0x2984, and `Squidge`
++0x4344. Damage-gauge state is the first field and skin_hold_ticks is +0x18.
+The presentation owns
 (`Object* +0x24`; the lateral/squidge writes are its
 `ObjectDistort::{z_wave,y_squash,xyz_scale}` at +0x80/84/88, live
 basis_up.x +0x48, cutscene state +0x1964), authored cRSquidge +0x4344
@@ -87,15 +92,16 @@ slide threshold +0x2738, track_z offset/anchor +0x273c/+0x2740, handoff
 cycle +0x2744/8, authored cRSubHover +0x2750 (state +0xc, wobble x/y/alpha
 +0x14/18/1c), camera target +0x2964, steering selector +0x2970,
 interaction_max_z +0x2980, movement_mode_selector +0x40c (0/2 = early
-out), cRClickStart +0xa0 with state +0x120, resurrect_active +0x84, row event id +0x1e8
-+ tip def +0x1ec, ghost anchor +0x304, wall stall +0x328/c, exit voice
+out), cRClickStart +0xa0 with state +0x120, resurrect_active +0x84,
+`PlayerRowEventState::{id,definition}` +0x1e8/+0x1ec, ghost anchor +0x304,
+wall stall +0x328/c, exit voice
 timer +0x330/4, lane lean +0x350..+0x35c, timer pair +0x360/+0x368/+0x36c,
 nuke progress +0x374/8, handoff timer +0x444/8 + gates +0x44c/d/e.
 
-The scratch-local `SubgoldySquidgeView` is intentionally a narrow consumer
-view of the shared exact `Squidge` owner. Cross-port symbols and Android bodies
-identify the four helpers as `cRSquidge::{Init,StartY,StartZ,AI}`; the old
-Windows `initialize_score_stats` name is only a stable harness identifier.
+The scratch now uses the shared exact `Squidge` owner directly. Cross-port
+symbols and Android bodies identify the four helpers as
+`cRSquidge::{Init,StartY,StartZ,AI}`; the old Windows
+`initialize_score_stats` name is only a stable harness identifier.
 
 2026-07-12 nested ClickStart ownership: the former flat movement-state lane is
 the state at `+0x80` inside the exact 0xac-byte `ClickStart` child embedded at
@@ -109,19 +115,20 @@ three apparent presentation scalars at object `+0x80/+0x84/+0x88` are exactly
 the shared `ObjectDistort` lanes. Focused matching remains 72.51%, 2067/2087,
 with all existing operand evidence unchanged.
 
-Game side: level_mode at +0x40 (NOT +0x150), level_mode_arg +0x44,
-runtime_flags +0x4c, first_block_row_count +0x50, runtime_row_count
-+0x54, completion_row_start +0x58, row event defs +0xa670 stride 16928
-(text +0, dismiss +0x200, voice +0x204), level_segment_count +0xa874,
-row records +0x5ccac8 stride 244 (flags +0x00: 0x40/0x80 owner bits +
-0x100 no-drag; attachment cells +0xa4/+0xa8; event id +0xf0), ghost
-blocks +0x944150 stride 129728, frame counter +0xfd2b7c, replay buffer
-+0xfd2b80 stride 6, replay state +0xff25d0/d1/d4/dc, parcels +0x125e480,
-display +0x12727d8 (state +0x14, gate +0x18; the "2" flag dword sits at
-game+0x1270fc8), times-up +0x1272828. App: fade +0x24, hud rows
-+0x15c→+0x2cc (0x40 bytes, scroll float at +0x300 inside), states
-+0x1b8/+0x1bc, skip byte +0x30c, backdrop +0x4ec10, startup counter
-+0x1066bf4, level count +0x12d4644, tip manager +0x12e6f58.
+Game side: the compact outer call view still owns level_mode +0x40 (NOT
++0x150), level_mode_arg +0x44, runtime_flags +0x4c,
+first_block_row_count +0x50, runtime_row_count +0x54, and
+completion_row_start +0x58. Proven deeper owners now use
+`SubgameRuntime::level_definition` (`SubTracks`), `runtime_rows` (`SubRow`,
+stride 0xf4), `current_high_score_record`, selected-record replay state,
+`replay_update_cursor`, `track_state_latch`, `parcel_manager`,
+`subgame_rebuild_selector`, `completion`, and `times_up`. The level-definition
+message lanes are `SubTracks::segment_slots[event_id - 1]` fields rather than
+an anonymous +0xa670/16928 table. Root fields now use
+`GameRoot::{backdrop,tip_manager}` and
+`GameRoot::subgame.{galaxy.record_count,replay_update_cursor}`. `AppShell`
+owns the copied 0x40-byte HUD rows and names the +0x34 lane
+`scroll_progress`; its destination lands at root +0x300.
 
 2026-06-16 controller consolidation audit: row-event, warning, and nuke all
 have shared headers (`completion.h`, `warning.h`,
@@ -291,6 +298,36 @@ source-shape issue is solved.
   `complete_subgame(unsigned char)`, matching `complete_subgame` and
   `update_subgoldy_resurrect`. Focused Wibo remains `72.51%`, `2067/2087`,
   with the same `290 ok / 1` jump-table masked audit.
+
+## 2026-07-13 canonical child and runtime ownership pass
+
+The shared headers have matured enough to supersede the earlier local-prefix
+guidance without perturbing this scheduling-sensitive body:
+
+- `SubgoldyPlayerView` now embeds the exact shared `Nuke`,
+  `PlayerRowEventState`, `Warning`, `Snail`, and `Squidge` children, and uses
+  `PlayerControlSource*`. The scratch-local completion, times-up, nuke,
+  warning, control-source, presentation, cutscene, and squidge shells are gone.
+- Runtime row reads use the canonical `SubRow` slab. Authored row-event text,
+  duration, and sample id come from
+  `SubgameRuntime::level_definition.segment_slots`, whose owner is
+  `SubTracks`.
+- Replay and completion lanes now name the canonical selected-record state,
+  `current_high_score_record`, `replay_update_cursor`, `track_state_latch`,
+  `subgame_rebuild_selector`, `Completion`, `TimesUp`, and `ParcelManager`
+  members of `SubgameRuntime`.
+- Root accesses now name `GameRoot::backdrop`, `tip_manager`, the Galaxy record
+  count, and the replay cursor. `AppShellHudRow::scroll_progress` closes the
+  copied HUD row's live +0x34 lane.
+- The Time Trial ghost bank still uses an offset-preserving base followed by a
+  canonical `SubSolution` view. Spelling the same object directly through
+  `SubgameRuntime::sub_high_score.time_trial_route_records[level_mode_arg]`
+  regressed this caller to 70.68% and 285 clean operands; it was rejected as a
+  source-schedule change, not retained as a cosmetic ownership win.
+
+Focused Wibo remains `72.51%`, `2067/2087`, with 290 clean masked operands and
+the same one honest `update_subgoldy_follow_jump_table` mismatch. No waiver,
+assembly shim, or other fakematch was added.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

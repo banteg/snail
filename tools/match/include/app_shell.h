@@ -5,8 +5,13 @@
 #include "frontend_fade.h"
 
 struct AppShellHudRow {
-    int values[16];
+    int unknown_00[13];
+    float scroll_progress; // +0x34, copied into the target row then decremented
+    int unknown_38[2];
 };
+
+typedef char AppShellHudRow_must_be_0x40[
+    (sizeof(AppShellHudRow) == 0x40) ? 1 : -1];
 
 class AppShell {
 public:
