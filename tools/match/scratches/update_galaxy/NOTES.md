@@ -56,14 +56,15 @@ selected-level/replay launch handoff back to the subgame state machine.
 
 ## Match state
 
-Current result: 68.72%, 566 target instructions, 569 candidate instructions,
-a 79-instruction exact prefix, and 52 clean / 0 unresolved / 0 mismatched
+Current result: 71.01%, 566 target instructions, 569 candidate instructions,
+a 48-instruction exact prefix, and 52 clean / 0 unresolved / 0 mismatched
 masked operands.
 
-The first residual is now the route-icon loop exit target (`jl L28f` versus
-`jl L28d`). The loop has the native behavior and instruction count through its
-route-name color copy, but VC6 assigns the scaled route base and copied color
-lanes to different registers, shortening the candidate block by two bytes.
+The first residual is the selected-card connector's saved `map_y` temporary:
+native reuses `[esp+0x10]`, while the candidate uses the later cursor-y slot at
+`[esp+0x18]`. The connector behavior and both call operands remain correct.
+The next structural residual is still the route-icon loop: VC6 assigns its
+scaled route base and copied route-name color lanes to different registers.
 
 Rejected probes:
 
@@ -140,10 +141,9 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
   `set_color_rgba(...)` directly as the quad color argument. Those source
   expressions reproduce the native argument scheduling without padding.
 - The hit-test subtraction materializes a by-value `Vector3` result and copies
-  it into the address-taken normalized probe. A scratch-local two-component
-  `GalaxyScreenPoint` captures the native x/y subtraction while preserving the
-  route record's z; the same temp-to-local shape is already exact in
-  `look_at_point` and is visible in the Android Galaxy AI decompile.
+  it into the address-taken normalized probe. The same temp-to-local shape is
+  already exact in `look_at_point`; the Galaxy-specific subtraction preserves
+  the route record's z while subtracting the cursor x/y coordinates.
 - Keeping the secondary route-zero color inside the fused render phase lets
   VC6 reuse that dead storage for the later vector temporary while the primary
   color remains function-scoped. This recovers the native `0x3c` frame and
@@ -151,3 +151,21 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
 - Together these changes raise the honest focused result from 63.83%
   (537/566, 47 clean operands) to 68.72% (569/566, 52 clean operands), with no
   unresolved or mismatched masked operands.
+
+## 2026-07-13 scalar cursor ownership
+
+- Android `cRGalaxy::AI()` loads the authored cursor axes into two independent
+  scalar values (`v11` x and `v10` y), then subtracts those scalars from each
+  route position while copying the route position's z lane into the normalized
+  `tVector`. Windows performs the same two-axis subtraction at `0x4097ae` and
+  `0x40983e`.
+- Replacing the scratch-only `GalaxyScreenPoint` aggregate with owned
+  `mouse_x`/`mouse_y` scalars and an inline `subtract_screen_xy` expression
+  therefore removes an invented type without changing behavior. It lifts the
+  focused match from 68.72% to 71.01% at the same 569/566 instruction shape and
+  preserves all 52 clean operands with no unresolved or mismatched operands.
+- The scalar locals reduce the exact prefix from 79 to 48 because VC6 assigns
+  the selected-card connector temporary to a later reusable stack slot. That
+  is kept as an honest residual: direct native-style reloads of the card edge
+  or click input shrink the candidate frame to `0x38`, and retaining a
+  function-scoped `GameRoot*` regresses the whole-function score.

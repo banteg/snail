@@ -12,17 +12,11 @@
 
 extern char* g_game_base; // data_4df904
 
-// Cursor-space operand for the authored by-value route-position subtraction.
-struct GalaxyScreenPoint {
-    float x;
-    float y;
-};
-
-inline Vector3 operator-(const Vector3& lhs, const GalaxyScreenPoint& rhs)
+inline Vector3 subtract_screen_xy(const Vector3& lhs, float screen_x, float screen_y)
 {
     Vector3 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
+    result.x = lhs.x - screen_x;
+    result.y = lhs.y - screen_y;
     result.z = lhs.z;
     return result;
 }
@@ -155,18 +149,17 @@ int Galaxy::update_galaxy()
     int hovered_route_index = -1;
     int probe_index = 1;
     GameInput* mouse_state = ((GameRoot*)g_game_base)->players[0].game_input;
-    GalaxyScreenPoint mouse_position;
-    mouse_position.x = mouse_state->input.authored_x;
-    mouse_position.y = mouse_state->input.authored_y;
+    float mouse_x = mouse_state->input.authored_x;
+    float mouse_y = mouse_state->input.authored_y;
 
     hover_state = 0;
     if (route_state == 1) {
         FrontendWidget* card = bounds_frame_widget;
         float edge = card->active_padding;
-        if (card->frame_x - edge < mouse_position.x &&
-            card->frame_width + edge + card->frame_x > mouse_position.x &&
-            card->frame_y - edge < mouse_position.y &&
-            card->frame_height + card->frame_y + edge > mouse_position.y) {
+        if (card->frame_x - edge < mouse_x &&
+            card->frame_width + edge + card->frame_x > mouse_x &&
+            card->frame_y - edge < mouse_y &&
+            card->frame_height + card->frame_y + edge > mouse_y) {
             hover_state = 1;
             if (g_runtime_config.highest_galaxy_route_index >= 1) {
                 do {
@@ -186,8 +179,8 @@ int Galaxy::update_galaxy()
     } else if (hover_state == 0) {
         if (route_state == 1) {
             GalaxyRouteRecord* selected_record = &route_slots[selected_index].record;
-            Vector3 selected_probe;
-            selected_probe = *(Vector3*)&selected_record->map_x - mouse_position;
+            Vector3 selected_probe = subtract_screen_xy(
+                *(Vector3*)&selected_record->map_x, mouse_x, mouse_y);
             if (selected_probe.normalize_vector() < 17.0f && hover_state == 0) {
                 hovered_route_index = selected_index;
                 hover_state = 2;
@@ -198,8 +191,8 @@ int Galaxy::update_galaxy()
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
             GalaxyRouteSlot* probe_slot = &route_slots[1];
             do {
-                Vector3 probe;
-                probe = *(Vector3*)&probe_slot->record.map_x - mouse_position;
+                Vector3 probe = subtract_screen_xy(
+                    *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);
                 if (probe.normalize_vector() < 17.0f && hover_state == 0) {
                     hover_state = 2;
                     hovered_route_index = probe_index;
