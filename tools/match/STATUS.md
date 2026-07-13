@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**578/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91931/325437** bytes (**28.25%**) are proof-grade, and overall fuzzy is **70.80%**.
+**580/750** mapped gameplay functions matched, **750/750** mapped gameplay functions have a scratch, **91999/325426** bytes (**28.27%**) are proof-grade, and overall fuzzy is **70.81%**.
 
-## Proof Grade (578)
+## Proof Grade (580)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -56,6 +56,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_exit_prompt | 0x4060d0 | 1804 | 441/441 | 100.00% | 441/441 | 109 ok |  |
 | ✅ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 69 ok |  |
 | ✅ | log_startup_timestamp | 0x406d30 | 58 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
+| ✅ | initialize_main_loop_display_state | 0x406d70 | 37 | 8/8 | 100.00% | 8/8 | 7 ok |  |
+| ✅ | initialize_main_loop_timing_state | 0x406da0 | 31 | 4/4 | 100.00% | 4/4 | 3 ok |  |
 | ✅ | handle_game_window_activate | 0x4072f0 | 187 | 44/44 | 100.00% | 44/44 | 26 ok |  |
 | ✅ | show_and_focus_game_window | 0x4073b0 | 141 | 33/33 | 100.00% | 33/33 | 19 ok |  |
 | ✅ | handle_game_window_deactivate | 0x407440 | 69 | 18/18 | 100.00% | 18/18 | 9 ok |  |
@@ -689,7 +691,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (41)
+## Mid Progress (50-79.99%) (40)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -698,7 +700,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | initialize_main_loop_display_state | 0x406d70 | 79 | 11/23 | 64.71% | 7/23 | 9 ok |  |
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 338/325 | 63.65% | 1/325 | 6 mismatch, 125 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |

@@ -279,7 +279,12 @@
     {
       "address": "0x406d70",
       "name": "initialize_main_loop_display_state",
-      "description": "Resets the display-mode/view-sample state, window deactivation latches, object texture transform matrix, and main-loop timing counters before startup enters the active frame loop."
+      "description": "Resets the display-mode/view-sample state, window deactivation latches, and object texture transform matrix, then tail-calls the adjacent main-loop timing initializer before startup enters the active frame loop."
+    },
+    {
+      "address": "0x406da0",
+      "name": "initialize_main_loop_timing_state",
+      "description": "Seeds the mean update-step count, current-frame update-step count, and rendered-frame count to 1.0 before the active frame loop begins."
     },
     {
       "address": "0x406dc0",
