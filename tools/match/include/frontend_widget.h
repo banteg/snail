@@ -54,11 +54,22 @@ public:
         float frame_height;
         float authored_height;
     }; // +0x58
-    unsigned char texture_hit_test_enabled; // +0x05c
-    char unknown_05d[0x60 - 0x05d];
-    int background_texture_id; // +0x060
-    int texture_hit_test_sprite; // +0x064
-    char unknown_068[0x7c - 0x068];
+    union {
+        unsigned char texture_hit_test_enabled;
+        unsigned char sprite_extend_enabled;
+    }; // +0x05c
+    unsigned char sprite_wobble_positive; // +0x05d, false mirrors the delayed wobble
+    char unknown_05e[0x60 - 0x05e];
+    union {
+        int background_texture_id;
+        int sprite_hot_texture_id;
+    }; // +0x060
+    union {
+        int texture_hit_test_sprite;
+        int sprite_hit_mask_texture_id;
+    }; // +0x064
+    int sprite_extend_texture_c; // +0x068, stored by border_sprite_extend
+    char unknown_06c[0x7c - 0x06c];
     int widget_type; // +0x7c, border style/font preset
     char unknown_080[0x178 - 0x080];
     float sprite_shadow_offset; // +0x178, optional second sprite draw offset

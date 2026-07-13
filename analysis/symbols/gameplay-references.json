@@ -1011,7 +1011,8 @@
         "$L5357",
         "$L5375",
         "$L5378",
-        "$L5384"
+        "$L5384",
+        "$L5413"
       ],
       "size": "0x14",
       "description": "Compiler-emitted five-entry level-mode switch jump table used by initialize_subgame for bottom HUD setup."
@@ -1047,7 +1048,8 @@
         "$L5356",
         "$L5358",
         "$L5379",
-        "$L5385"
+        "$L5385",
+        "$L5414"
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
@@ -1690,10 +1692,11 @@
       "aliases": [
         "$L6041",
         "$L6044",
-        "$L6050"
+        "$L6050",
+        "$L6079"
       ],
       "size": "0xa",
-      "description": "Compiler-generated construct_game_runtime C++ frame-handler thunk. Candidate local labels $L6041, $L6044, and $L6050 are header-revision variants with the same mov-EH-metadata and jump-to-__CxxFrameHandler body."
+      "description": "Compiler-generated construct_game_runtime C++ frame-handler thunk. Candidate local labels $L6041, $L6044, $L6050, and $L6079 are header-revision variants with the same mov-EH-metadata and jump-to-__CxxFrameHandler body."
     },
     {
       "address": "0x4972b0",

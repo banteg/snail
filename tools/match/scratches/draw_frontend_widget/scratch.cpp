@@ -24,7 +24,6 @@ int queue_axis_aligned_textured_quad_uv(
 
 void FrontendWidget::draw_frontend_widget()
 {
-    char* self = (char*)this;
     Color4f glow_color;
     Color4f shadow_color;
     Color4f slider_color;
@@ -38,7 +37,7 @@ void FrontendWidget::draw_frontend_widget()
     if (g_render_queue_active == 0)
         return;
 
-    unsigned int flags = *(unsigned int*)(self + 0x1a0);
+    unsigned int flags = widget_flags;
     if ((flags & 0x1000) != 0)
         return;
 
@@ -49,17 +48,17 @@ void FrontendWidget::draw_frontend_widget()
         glow_layer = 3;
     }
 
-    float layout_width = *(float*)(self + 0x248);
-    float layout_height = *(float*)(self + 0x24c);
+    float widget_width = layout_width;
+    float widget_height = layout_height;
 
     if ((flags & 0x100000) != 0) {
-        Color4f* color = (Color4f*)(self + 0x1dc);
-        float slider = *(float*)(self + 0x180);
+        Color4f* color = &current_text_color;
+        float slider = slider_position_current;
         if (slider > 0.0f) {
             queue_axis_aligned_textured_quad_uv(
                 37,
-                *(float*)(self + 0x240) + layout_width * 0.5f - 128.0f,
-                *(float*)(self + 0x244) + 50.0f,
+                texture_hit_x + widget_width * 0.5f - 128.0f,
+                texture_hit_y + 50.0f,
                 slider * 256.0f,
                 32.0f,
                 0x1000000,
@@ -74,8 +73,8 @@ void FrontendWidget::draw_frontend_widget()
         if (slider < 1.0f) {
             queue_axis_aligned_textured_quad_uv(
                 36,
-                *(float*)(self + 0x240) + layout_width * 0.5f - 128.0f + slider * 256.0f,
-                *(float*)(self + 0x244) + 50.0f,
+                texture_hit_x + widget_width * 0.5f - 128.0f + slider * 256.0f,
+                texture_hit_y + 50.0f,
                 (1.0f - slider) * 256.0f,
                 32.0f,
                 0x1000000,
@@ -89,63 +88,63 @@ void FrontendWidget::draw_frontend_widget()
         }
     }
 
-    if (*(unsigned char*)(self + 0x5c) != 0) {
+    if (sprite_extend_enabled != 0) {
         float wobble = 0.0f;
         if (((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_active != 0
             && this == ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget) {
             wobble = sine(
                 ((BorderManager*)(g_game_base + 0xb4c))->delayed_widget_progress
                 * 3.1415927f) * 3.0f;
-            if (*(unsigned char*)(self + 0x5d) == 0)
+            if (sprite_wobble_positive == 0)
                 wobble = wobble * -1.0f;
         }
 
-        int texture = *(int*)(self + 0x270);
-        if ((*(unsigned char*)(self + 0x1a0) & 2) != 0)
-            texture = *(int*)(self + 0x60);
+        int texture = texture_id;
+        if ((widget_flags & 2) != 0)
+            texture = sprite_hot_texture_id;
 
-        float pad = *(float*)(self + 0x258) * 0.5f;
+        float pad = border_edge * 0.5f;
         queue_axis_aligned_textured_quad_uv(
             texture,
-            *(float*)(self + 0x240) + wobble - pad,
-            *(float*)(self + 0x244) - pad,
-            *(float*)(self + 0x250) + *(float*)(self + 0x258),
-            *(float*)(self + 0x254) + *(float*)(self + 0x258),
+            texture_hit_x + wobble - pad,
+            texture_hit_y - pad,
+            texture_hit_width + border_edge,
+            texture_hit_height + border_edge,
             0x1000000,
-            (Color4f*)(self + 0x1dc),
+            &current_text_color,
             0.0f,
             0.0f,
             1.0f,
             1.0f,
-            *(int*)(self + 0x274),
+            texture_layer,
             0);
         return;
     }
 
-    if ((*(unsigned int*)(self + 0x1a0) & 0x800) != 0) {
-        float pad = *(float*)(self + 0x258) * 0.5f;
+    if ((widget_flags & 0x800) != 0) {
+        float pad = border_edge * 0.5f;
         queue_axis_aligned_textured_quad_uv(
-            *(int*)(self + 0x270),
-            *(float*)(self + 0x240) - pad,
-            *(float*)(self + 0x244) - pad,
-            *(float*)(self + 0x250) + *(float*)(self + 0x258),
-            *(float*)(self + 0x254) + *(float*)(self + 0x258),
+            texture_id,
+            texture_hit_x - pad,
+            texture_hit_y - pad,
+            texture_hit_width + border_edge,
+            texture_hit_height + border_edge,
             0x1000000,
-            (Color4f*)(self + 0x1dc),
+            &current_text_color,
             0.0f,
             0.0f,
             1.0f,
             1.0f,
-            *(int*)(self + 0x274),
+            texture_layer,
             0);
 
-        if (*(float*)(self + 0x178) > 0.0f) {
+        if (sprite_shadow_offset > 0.0f) {
             queue_axis_aligned_textured_quad_uv(
-                *(int*)(self + 0x270),
-                *(float*)(self + 0x240) + *(float*)(self + 0x178) - pad,
-                *(float*)(self + 0x244) + *(float*)(self + 0x178) - pad,
-                *(float*)(self + 0x250) + *(float*)(self + 0x258),
-                *(float*)(self + 0x254) + *(float*)(self + 0x258),
+                texture_id,
+                texture_hit_x + sprite_shadow_offset - pad,
+                texture_hit_y + sprite_shadow_offset - pad,
+                texture_hit_width + border_edge,
+                texture_hit_height + border_edge,
                 0x1000000,
                 shadow_color.set_color_rgba(0.0f, 0.0f, 0.0f, 0.89999998f),
                 0.0f,
@@ -157,18 +156,18 @@ void FrontendWidget::draw_frontend_widget()
         }
     }
 
-    if ((*(unsigned int*)(self + 0x1a0) & 0x400000) != 0)
+    if ((widget_flags & 0x400000) != 0)
         return;
 
-    float x = *(float*)(self + 0x240);
-    float y = *(float*)(self + 0x244);
-    float width = layout_width;
-    float height = layout_height;
-    float edge = *(float*)(self + 0x230);
+    float x = texture_hit_x;
+    float y = texture_hit_y;
+    float width = widget_width;
+    float height = widget_height;
+    float edge = render_inset_base;
     float u0 = edge * 0.0078125f;
     float u1 = 1.0f - u0;
 
-    if (*(unsigned char*)(self + 0x234) != 0) {
+    if (render_inset_dynamic != 0) {
         edge = 4.0f;
         u0 = 0.1f;
         u1 = 0.89999998f;
@@ -176,10 +175,10 @@ void FrontendWidget::draw_frontend_widget()
         y += 3.0f;
         width -= 8.0f;
         height -= 6.0f;
-    } else if (*(float*)(self + 0x220) < *(float*)(self + 0x230)) {
-        float delta = *(float*)(self + 0x230) - *(float*)(self + 0x220);
-        *(float*)(self + 0x22c) = delta;
-        edge = *(float*)(self + 0x230);
+    } else if (current_padding < render_inset_base) {
+        float delta = render_inset_base - current_padding;
+        render_inset_delta = delta;
+        edge = render_inset_base;
         x += delta;
         y += delta;
         width -= delta + delta;
@@ -187,7 +186,7 @@ void FrontendWidget::draw_frontend_widget()
         u0 = edge * 0.0078125f;
         u1 = 1.0f - u0;
     } else {
-        edge = *(float*)(self + 0x220);
+        edge = current_padding;
         u0 = 0.2f;
         u1 = 0.80000001f;
     }
@@ -196,8 +195,8 @@ void FrontendWidget::draw_frontend_widget()
     float left = x - edge;
     float right = x + width;
     float bottom = y + height;
-    int texture = *(int*)(self + 0x48);
-    Color4f* color = (Color4f*)(self + 0x1ac);
+    int texture = border_texture_id;
+    Color4f* color = &current_fill_color;
 
     queue_axis_aligned_textured_quad_uv(texture, left, top, edge, edge, 0x1000000, color, 0.0f, 0.0f, u0, u0, layer, 0);
     queue_axis_aligned_textured_quad_uv(texture, x, top, width, edge, 0x1000000, color, u0, 0.0f, u1, u0, layer, 0);

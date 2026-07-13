@@ -418,3 +418,14 @@ aliases respectively and restore the 85 clean operands.
   table targets `+0x56f`, `+0x5c6`, `+0x5f2`, `+0x5f2`, `+0x5ac`, `+0x5f2`,
   `+0x5f2`, and `+0x5e0`. These are identical to the bounded native tables, so
   the aliases restore all 85 clean operands by content, not by label spelling.
+
+2026-07-13 extended-sprite owner header refresh:
+
+- Promoting the contextual `FrontendWidget` sprite aliases advances the same
+  compiler-local mode tables to `$L5413`/`$L5414` without changing the exact
+  instruction stream.
+- COFF still places the bounded tables at object `+0x62c`/`+0x640`. Their
+  relocation targets remain `+0x419`, `+0x42d`, `+0x46b`, `+0x46b`, `+0x441`
+  and `+0x56f`, `+0x5c6`, `+0x5f2`, `+0x5f2`, `+0x5ac`, `+0x5f2`, `+0x5f2`,
+  `+0x5e0`, respectively. These content-bounded aliases preserve the exact
+  `396/396` body and all 85 clean operands.

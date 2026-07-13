@@ -4,8 +4,8 @@ Starter scratch for the front-end border/widget renderer.
 
 Models the recovered render gate, slider track quads, sprite/icon branch,
 nine-slice border body, optional focus glow, and the real `queue_axis_aligned_textured_quad_uv`
-and color helpers. It intentionally keeps the view scratch-local because the
-shared `FrontendWidget` header does not yet expose the full render block.
+and color helpers. The shared `FrontendWidget` view now owns the recovered
+render fields; the unrecovered tail and local lifetimes remain scratch-local.
 
 Expected residuals:
 - stack-local and x87 scheduling are still decompiler-shaped;
@@ -52,3 +52,18 @@ progress at root `+0x440ec/+0x440f8/+0x440f0` are now typed as the embedded
   the focused match to `40.43%`, `688/712`, with `48 ok / 1 mismatch` masked
   operands. Splitting the scratch's persistent color placeholders into those
   exact lifetimes remains honest residual work.
+
+2026-07-13 extended-sprite ownership pass:
+
+- Exact `border_sprite_extend` proves the contextual sprite lane at
+  `FrontendWidget+0x5c..+0x68`: enable and wobble-direction bytes, the hot
+  texture at `+0x60`, hit-mask texture at `+0x64`, and a third stored texture
+  at `+0x68`. The draw path consumes the enable, direction, and hot texture;
+  `border_mouse_test` independently consumes the enable and hit-mask aliases.
+- Replacing the remaining raw-offset render reads with the shared owner is
+  codegen-neutral: the focused result remains the honest `40.43%`, `688/712`,
+  with `48 ok / 1 mismatch` masked operands.
+- Re-testing the native slider-color value copy changes the candidate to
+  `38.44%`, `698/712`, without recovering the target's larger frame. It remains
+  reverted until the surrounding stack-object lifetimes can be recovered as a
+  coherent source shape.

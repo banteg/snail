@@ -400,3 +400,13 @@ record retains signature `0x19930520`, one unwind-map entry, zero try/IP maps,
 state `-1`, and the cleanup-thunk relocation. Registering this manually audited
 header-revision alias restores the 120 clean operands without changing the
 honest 88.89% instruction score.
+
+### Extended-sprite owner header refresh
+
+Promoting the contextual `FrontendWidget` sprite aliases advances the handler
+label to `$L6079`. COFF again emits the same bounded ten-byte `mov eax,
+<metadata>; jmp __CxxFrameHandler` thunk at `.text$x+0x0b`. Its 0x28-byte
+`$T6073` metadata retains signature `0x19930520`, one unwind-map relocation,
+zero try/IP maps, state `-1`, and the cleanup-thunk relocation. The audited
+alias restores all 120 clean operands without changing the honest 88.89%
+instruction score.
