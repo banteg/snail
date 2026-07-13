@@ -692,6 +692,16 @@
       "description": "Advances the shared backdrop renderer, updates its distortion grid, and dispatches the split or warped draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
     },
     {
+      "address": "0x4113b0",
+      "name": "add_bod_to_front",
+      "description": "Intrusive BodList member that inserts an unlinked BodNode at the front and sets its linked flag, reporting an error if the node is already owned by a list."
+    },
+    {
+      "address": "0x411420",
+      "name": "append_bod_to_end",
+      "description": "Intrusive BodList member that walks to the tail and appends an unlinked BodNode, setting its linked flag or reporting an error for duplicate ownership."
+    },
+    {
       "address": "0x4114b0",
       "name": "create_vertex_buffer",
       "description": "Allocates one Direct3D vertex buffer in the renderer's fixed 3000-slot ObjectRenderBuffers pool using the requested FVF layout."

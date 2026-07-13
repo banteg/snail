@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**556/730** mapped gameplay functions matched, **730/730** mapped gameplay functions have a scratch, **89955/325595** bytes (**27.63%**) are proof-grade, and overall fuzzy is **63.46%**.
+**558/732** mapped gameplay functions matched, **732/732** mapped gameplay functions have a scratch, **90189/325585** bytes (**27.70%**) are proof-grade, and overall fuzzy is **63.47%**.
 
-## Proof Grade (556)
+## Proof Grade (558)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -128,6 +128,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_backdrop | 0x410e20 | 279 | 55/55 | 100.00% | 55/55 | 4 ok |  |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  |
 | ✅ | draw_split_backdrop | 0x410f90 | 172 | 50/50 | 100.00% | 50/50 | 4 ok |  |
+| ✅ | add_bod_to_front | 0x4113b0 | 105 | 33/33 | 100.00% | 33/33 | 2 ok |  |
+| ✅ | append_bod_to_end | 0x411420 | 129 | 33/33 | 100.00% | 33/33 | 2 ok |  |
 | ✅ | create_index_buffer | 0x4115d0 | 91 | 36/36 | 100.00% | 36/36 | 5 ok |  |
 | ✅ | initialize_direct3d_renderer_defaults | 0x411630 | 180 | 38/38 | 100.00% | 38/38 | 15 ok |  |
 | ✅ | release_direct3d_renderer_resources | 0x4116f0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
@@ -603,7 +605,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 39 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
-| 🚧 | update_backdrop | 0x4112f0 | 433 | 69/67 | 88.24% | 17/67 | 7 ok |  |
+| 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 1 mismatch, 56 ok |  |
 | 🚧 | set_blend_mode | 0x412d00 | 325 | 92/92 | 92.39% | 2/92 | 1 mismatch, 15 ok |  |
 | 🚧 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 19 ok |  |
