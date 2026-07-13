@@ -442,3 +442,19 @@ alpha `0.60000002` immediately before this auxiliary bank. The focused bootstrap
 rises from 45.93% (3,459 candidate instructions) to 47.02% (3,620/5,411), with
 clean masked operands increasing from 1,112 to 1,159 and the existing problem
 counts unchanged.
+
+## 2026-07-13 remaining public loop-entry meshes
+
+The same borrowed transition contract extends across the rest of the public
+loop bank in native construction order: loop-the-loop-wide pair `57` feeds
+public pair `6`; width-2/3/4 loop pairs `54`, `55`, and `56` feed public pairs
+`3`, `4`, and `5`; and loopbow pair `58` feeds public pair `7`.
+
+Every auxiliary pair still owns its primary, mirrored secondary, and both
+fringe bodies. Public pairs `3` through `7` retain their own objects in
+`entry_base_strip_mesh` and borrow only the corresponding auxiliary objects in
+`entry_transition_strip_mesh`. Together with the preceding slice, this recovers
+the complete auxiliary ownership graph for public loop pairs `0` through `7`.
+The focused bootstrap rises from 47.02% (3,620 candidate instructions) to 48.52%
+(3,875/5,411), with clean masked operands increasing from 1,159 to 1,234 and the
+existing problem counts unchanged.
