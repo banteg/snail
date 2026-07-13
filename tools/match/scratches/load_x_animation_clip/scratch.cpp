@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "archive_index.h"
 #include "bod_types.h"
 #include "directx_loader.h"
 #include "object_animation_types.h"
@@ -13,12 +14,12 @@ void enumerate_matching_archive_or_fs_entries(
     char* directory,
     char* pattern,
     int* out_count,
-    char* out_names); // @ 0x431740
+    DirectoryEntryName* out_names); // @ 0x431740
 int parse_next_signed_int(char** cursor); // @ 0x44e710
 float parse_next_float32(char** cursor); // @ 0x431f20
 int report_errorf(char* format, ...); // @ 0x431cc0
 
-extern char g_x_animation_clip_enumeration_names[]; // data_4b2f50
+extern DirectoryEntryName g_animation_directory[128]; // data_4b2f50
 
 void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
 {
@@ -43,7 +44,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
     *cursor++ = 0;
 
     enumerate_matching_archive_or_fs_entries("X", path_pattern, &keyframe_count,
-        g_x_animation_clip_enumeration_names);
+        g_animation_directory);
 
     keyframes = (XAnimationKeyframe*)allocate_tracked_memory(
         keyframe_count << 7, "Anim Key frame bods");
@@ -51,7 +52,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
     duplicate_vertices.active_count = 0;
     int i = 0;
     if (keyframe_count > 0) {
-        char* mesh_path = g_x_animation_clip_enumeration_names;
+        char* mesh_path = g_animation_directory[0];
         XAnimationKeyframe* keyframe = keyframes;
         do {
             keyframe->set_bod_object(g_object_list.add_object_to_list());
@@ -69,7 +70,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
     }
 
     duplicate_vertices.clean_duplicate_vertices(keyframe_count);
-    load_x_mesh(g_x_animation_clip_enumeration_names, object, 0);
+    load_x_mesh(g_animation_directory[0], object, 0);
     object->request_object_vertices_copy();
     object->flags |= 0x800000;
 

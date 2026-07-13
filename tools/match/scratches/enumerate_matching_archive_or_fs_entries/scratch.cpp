@@ -11,8 +11,6 @@ typedef struct FindData {
     char name[260];      // +0x14
 } FindData;
 
-typedef char EnumeratedEntryName[128];
-
 extern int g_enumerated_entry_count; // data_503320
 
 char* __cdecl getcwd(char* buffer, int size);
@@ -25,7 +23,7 @@ void rstrcpy_checked_ascii(char* destination, char* source);
 int set_current_directory_with_drive_fallback(char* path);
 
 void __cdecl enumerate_matching_archive_or_fs_entries(
-    char* directory, char* pattern, int* out_count, EnumeratedEntryName* names)
+    char* directory, char* pattern, int* out_count, DirectoryEntryName* names)
 {
     FindData find_data;
     char original_directory[512];

@@ -22,7 +22,9 @@ Retained source-shape choices:
 
 - model the function as `void`; callers ignore `eax`, and the observed return values are incidental leftovers from the archive pointer, count, or `chdir`;
 - keep `_finddata_t::name` at `+0x14`, matching the native copies from the stack record;
-- model each caller-owned output record as an `EnumeratedEntryName[128]`, making the fixed slot width explicit without changing code generation;
+- model each caller-owned output record as the shared 128-byte
+  `DirectoryEntryName`, matching the iOS `RShellReadDirectory` signature
+  without changing code generation;
 - scope the archive byte offset to the guarded record loop and rebind the local `ArchiveIndex*` from `g_archive_index_records` at the loop tail; this recovers the native `0x324` frame, pre-frame `eax` load, and archive-only `ebx`/`ebp` saves, raising the match from 49.60% to 71.39%;
 - compare the archive path through the advancing cursor directly, recovering the native `ecx`/`dl`/`al` register lanes and raising the match to 80.98%;
 - initialize the basename index before the pattern index, matching the native `edi`/`esi` zeroing order and raising the match to 81.52%;

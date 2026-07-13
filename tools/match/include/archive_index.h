@@ -12,6 +12,9 @@ typedef struct ArchiveIndex {
     ArchiveEntry entries[1]; // +0x04
 } ArchiveIndex;
 
+// Public RShellReadDirectory output record retained by iOS symbols.
+typedef char DirectoryEntryName[128];
+
 typedef enum ArchiveEntryExtensionClass {
     ARCHIVE_ENTRY_EXTENSION_UNKNOWN = 0,
     ARCHIVE_ENTRY_EXTENSION_TGA = 1,
@@ -20,6 +23,8 @@ typedef enum ArchiveEntryExtensionClass {
 } ArchiveEntryExtensionClass;
 
 typedef char ArchiveEntry_must_be_0x0c[(sizeof(ArchiveEntry) == 0x0c) ? 1 : -1];
+typedef char DirectoryEntryName_must_be_0x80[
+    (sizeof(DirectoryEntryName) == 0x80) ? 1 : -1];
 
 typedef struct File File;
 

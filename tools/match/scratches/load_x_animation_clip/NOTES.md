@@ -13,6 +13,12 @@ Starter semantic scratch for the X animation clip loader.
   `data_4b2f50` retained as an alias. Focused Wibo remains `69.32%`,
   `225/228`, `3/228` prefix, but the masked audit improves from
   `42 ok / 3 unresolved` to `45 ok / 0 unresolved`.
+- 2026-07-14 cross-port extent closure: the symbol-preserving iOS build names
+  the same owner `gAnimDirectory` and bounds it at exactly `0x4000` bytes before
+  the next data symbol. Windows uses it as 128 fixed 0x80-byte entry names, so
+  the shared spelling is now `g_animation_directory[128][128]`; the former
+  next-curated-global bound of `0x42e0` incorrectly overlapped a separate
+  startup-constructed object family beginning at `0x4b6fb4`.
 - 2026-06-21 argument-owner probe: adding local aliases for `mesh_name`,
   `object`, or both, including a `register` mesh-name alias, is codegen-neutral
   at 69.32%. VC6 still loads `mesh_name` into `ebp` before saving `esi`/`edi`,

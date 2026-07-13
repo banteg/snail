@@ -2568,13 +2568,25 @@
     },
     {
       "address": "0x4b2f50",
-      "name": "g_x_animation_clip_enumeration_names",
+      "name": "g_animation_directory",
       "kind": "global",
       "aliases": [
+        "gAnimDirectory",
+        "g_x_animation_clip_enumeration_names",
         "data_4b2f50"
       ],
-      "size": "0x42e0",
-      "description": "Temporary X-animation mesh-name enumeration buffer used by load_x_animation_clip as an array of 0x80-byte per-frame keyframe mesh paths."
+      "size": "0x4000",
+      "description": "Shared 128-entry by 128-byte animation-directory buffer used by load_x_animation_clip for per-frame keyframe mesh paths. The exact 0x4000-byte extent is independently preserved by the iOS gAnimDirectory symbol."
+    },
+    {
+      "address": "0x4b6fb4",
+      "name": "g_startup_noop_renderable_bods",
+      "kind": "global",
+      "aliases": [
+        "data_4b6fb4"
+      ],
+      "size": "0x24c",
+      "description": "Three 0xc4-byte global records whose only Windows references are the startup constructor body at 0x406bd0. Each owns a RenderableBod prefix and receives the shared no-op runtime callback table; no surviving consumer proves a narrower gameplay class."
     },
     {
       "address": "0x4b7230",
@@ -2779,6 +2791,16 @@
         "HIGH_SCORE_SAVE_BUFFER_SIZE"
       ],
       "description": "Five-million-byte temporary buffer size used while serializing ScoreA/B/C high-score files."
+    },
+    {
+      "address": "0x4df848",
+      "name": "g_startup_trivial_object",
+      "kind": "global",
+      "aliases": [
+        "data_4df848"
+      ],
+      "size": "0x10",
+      "description": "Otherwise-unreferenced 16-byte global object initialized through the folded no-op constructor at startup. Its size is bounded by g_current_display_width at 0x4df858; no consumer distinguishes the original class."
     },
     {
       "address": "0x4df858",

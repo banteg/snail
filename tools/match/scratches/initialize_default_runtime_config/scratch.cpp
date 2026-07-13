@@ -1,4 +1,4 @@
-// initialize_default_runtime_config @ 0x406c10 (cdecl startup initializer)
+// initialize_default_runtime_config @ 0x406c20 (cdecl startup initializer)
 
 #include "runtime_config.h"
 

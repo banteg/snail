@@ -268,9 +268,34 @@
       "description": "Exact Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
     },
     {
+      "address": "0x406bc0",
+      "name": "initialize_global_noop_renderable_bods_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor body for three otherwise-unreferenced renderable-derived globals."
+    },
+    {
+      "address": "0x406bd0",
+      "name": "initialize_global_noop_renderable_bods",
+      "description": "Constructs the RenderableBod prefix of three 0xc4-byte global records at 0x4b6fb4, 0x4b7078, and 0x4b713c, then installs the shared no-op runtime callback table on each. No post-startup consumer is present in the Windows image."
+    },
+    {
       "address": "0x406c10",
+      "name": "initialize_default_runtime_config_thunk",
+      "description": "CRT initializer-table thunk that tail-calls the adjacent SnailMail.cfg default-state initializer."
+    },
+    {
+      "address": "0x406c20",
       "name": "initialize_default_runtime_config",
       "description": "Seeds the 0xc4-byte SnailMail.cfg blob with default sound volume, music volume, fullscreen, progression, and tuning values before any file overlay is loaded."
+    },
+    {
+      "address": "0x406d10",
+      "name": "initialize_global_trivial_object_thunk",
+      "description": "CRT initializer-table thunk for the otherwise-unreferenced 16-byte global object at 0x4df848."
+    },
+    {
+      "address": "0x406d20",
+      "name": "initialize_global_trivial_object",
+      "description": "Invokes the folded no-op default constructor for the otherwise-unreferenced 16-byte global object at 0x4df848; no surviving consumer distinguishes its original class."
     },
     {
       "address": "0x406d30",

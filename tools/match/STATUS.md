@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**580/750** mapped gameplay functions matched, **750/750** mapped gameplay functions have a scratch, **91999/325426** bytes (**28.27%**) are proof-grade, and overall fuzzy is **70.81%**.
+**586/755** mapped gameplay functions matched, **755/755** mapped gameplay functions have a scratch, **92231/325376** bytes (**28.35%**) are proof-grade, and overall fuzzy is **70.81%**.
 
-## Proof Grade (580)
+## Proof Grade (586)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -54,7 +54,13 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | load_x_animation_clip | 0x405d60 | 754 | 228/228 | 100.00% | 228/228 | 50 ok |  |
 | ✅ | destroy_completion_screen | 0x406060 | 98 | 25/25 | 100.00% | 25/25 | 9 ok |  |
 | ✅ | initialize_exit_prompt | 0x4060d0 | 1804 | 441/441 | 100.00% | 441/441 | 109 ok |  |
-| ✅ | update_completion_screen | 0x4067e0 | 1069 | 207/207 | 100.00% | 207/207 | 69 ok |  |
+| ✅ | update_completion_screen | 0x4067e0 | 984 | 207/207 | 100.00% | 207/207 | 69 ok |  |
+| ✅ | initialize_global_noop_renderable_bods_thunk | 0x406bc0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_noop_renderable_bods | 0x406bd0 | 61 | 10/10 | 100.00% | 10/10 | 9 ok |  |
+| ✅ | initialize_default_runtime_config_thunk | 0x406c10 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_default_runtime_config | 0x406c20 | 231 | 36/36 | 100.00% | 36/36 | 32 ok |  |
+| ✅ | initialize_global_trivial_object_thunk | 0x406d10 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_trivial_object | 0x406d20 | 10 | 2/2 | 100.00% | 2/2 | 2 ok |  |
 | ✅ | log_startup_timestamp | 0x406d30 | 58 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | initialize_main_loop_display_state | 0x406d70 | 37 | 8/8 | 100.00% | 8/8 | 7 ok |  |
 | ✅ | initialize_main_loop_timing_state | 0x406da0 | 31 | 4/4 | 100.00% | 4/4 | 3 ok |  |
@@ -621,13 +627,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (65)
+## High Progress (80-94.99%) (64)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 87.57% | 23/177 | 20 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 276/278 | 89.89% | 23/278 | 44 ok |  |
-| 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 39 ok |  |
