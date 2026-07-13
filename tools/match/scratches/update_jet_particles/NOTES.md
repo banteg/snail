@@ -81,3 +81,21 @@ Cross-port Android and iOS identify this member as `cRSubHover::Jets()`.
 Android also retains sibling `JetInit`/`JetUnInit` methods over the same inline
 grid, closing the exact 0x214-byte `SubHover` ownership without changing the
 honest 52.96% Windows partial.
+
+## 2026-07-14 typed particle-bank closure
+
+- The Windows slot expression is now `particle_slots[row][column]` on the
+  exact embedded `JetParticleSlot[15][2]` bank. VC6 emits the same indexed
+  address as the former raw `this + ((column + row * 2 + 2) << 4)` spelling,
+  preserving `52.96%`, `174/181` candidate/target instructions, and all `16`
+  clean masked operands.
+- Android `cRSubHover::Jets()` independently walks the same inline two-column
+  rows and borrows the same Player hotspots, forward basis, velocity, and
+  sprite-manager owner. No slot, Sprite, Player, or runtime pointer is retained
+  beyond the update; the bank storage remains owned by `SubHover`.
+- Retesting aggregate regular-position assignment after the July RNG/order
+  recovery regressed to `49.30%`. Reversing the nozzle predicate regressed to
+  `52.39%`; a nested `for` spelling and interleaved puff velocity/position
+  stores were codegen-neutral. Those source-shape probes were reverted. The
+  remaining `0x50` target versus `0x44` candidate frame is still honest loop
+  counter and x87-temporary allocation debt, not missing storage ownership.

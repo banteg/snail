@@ -66,8 +66,7 @@ void SubHover::update_jet_particles()
             base_position.y = base_position.y + offset_position.y;
             base_position.z = base_position.z + offset_position.z;
 
-            JetParticleSlot* slot =
-                (JetParticleSlot*)((char*)this + ((column + row * 2 + 2) << 4));
+            JetParticleSlot* slot = &particle_slots[row][column];
             slot->sprite->size_end = sprite_size;
             slot->sprite->size_start = sprite_size;
             slot->sprite->position.x = base_position.x;
