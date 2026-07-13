@@ -193,3 +193,23 @@ Type consolidation:
   `scratch.obj`. The verified post-switch semantic tail remains; no compiler
   flag, volatile barrier, or dummy state was introduced to evade the backend
   failure.
+
+## 2026-07-14 authored kind-3 path
+
+- With the complete moving-effect family present, the independently authored
+  kind-3 placement arm now gives VC6 a useful merge graph. Restoring its
+  `RR6`/`RR7` streams improves focused matching from `55.14%`, `295/347`
+  candidate/target instructions, prefix `3/347`, and `42` clean operands to
+  `64.09%`, `327/347`, prefix `3/347`, and `48` clean operands. Ten masked
+  mismatches remain explicit and none are unresolved.
+- Kind `4` is the only placement stream still coalesced with kind `0`. A
+  distinct `RR8`/`RR9` arm continues to trigger VC6 exit `50` in every bounded
+  native-semantic spelling tested: staged or direct position writes, an in-arm
+  phase-step store, the existing post-switch store pattern, and no phase-step
+  store at all. Those probes were reverted rather than retaining an incomplete
+  or optimizer-directed implementation.
+- The caller declaration remains `float random_float_below(...)`. Although the
+  standalone callee is reconstructed with a wider return type, this target
+  caller performs `fcomp dword` and `fmul dword` operations. Declaring the call
+  as `double` changes those to qword operations and regresses focused matching
+  to `61.13%`; it also does not remove the kind-4 compiler failure.

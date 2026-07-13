@@ -53,7 +53,6 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     slot_position = &slot->transform.position;
     switch (kind) {
     case 0:
-    case 3:
     case 4: {
         Vector3 staged_position;
         staged_position.x = cell->anchor_position.x;
@@ -86,6 +85,18 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         double random_x = random_float_below(1.0f, "RR4") - 0.5f;
         slot_position->x = (float)((random_x + random_x) * 3.0);
         slot->active_phase = random_float_below(1.0f, "RR5") * 6.28318548f;
+        slot->active_phase_step = default_phase_step;
+        break;
+    }
+    case 3: {
+        Vector3 staged_position;
+        staged_position.x = cell->anchor_position.x;
+        staged_position.y = cell->anchor_position.y + 2.5f;
+        staged_position.z = cell->anchor_position.z + 6.0f;
+        *slot_position = staged_position;
+        double random_x = random_float_below(1.0f, "RR6") - 0.5f;
+        slot_position->x = (float)((random_x + random_x) * 3.0);
+        slot->active_phase = random_float_below(1.0f, "RR7") * 6.28318548f;
         slot->active_phase_step = default_phase_step;
         break;
     }
