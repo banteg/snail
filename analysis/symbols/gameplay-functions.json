@@ -2568,7 +2568,7 @@
     {
       "address": "0x444240",
       "name": "place_challenge_parcels_on_track",
-      "description": "Scans parcel-capable runtime rows whose copied parcel id is zero and places challenge parcels from that filtered set. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcelsSurvival()`."
+      "description": "Scans parcel-capable runtime rows whose copied parcel id is zero, records their row indices in the global survival scratch bank, and randomly places from that filtered set while compacting the bank in place. Cross-port Android and iOS preserve `cRSubGame::PlaceParcelsSurvival()` and the bank symbol `gParcelGroupSurvival0`."
     },
     {
       "address": "0x4444b0",

@@ -26,30 +26,27 @@ int SubgameRuntime::place_challenge_parcels_on_track()
 
     int candidate_count = 0;
     int row_index = 0;
-    int remaining = 0;
     if (runtime_row_count > 0) {
         TrackAttachmentRuntimeRow* row = runtime_rows;
         do {
             if ((row->flags & 1) != 0 && row->parcel_set_id == 0) {
-                g_challenge_parcel_rows[candidate_count] = row_index;
+                g_parcel_group_survival_0[candidate_count] = row_index;
                 ++candidate_count;
             }
             ++row_index;
             ++row;
         } while (row_index < runtime_row_count);
-        remaining = candidate_count;
     }
 
     int placed = 0;
     if (level_definition.parcel_count > 0) {
         int last_index = candidate_count - 1;
         while (placed < level_definition.parcel_count) {
-            if (remaining <= 0) {
+            if (candidate_count <= 0) {
                 break;
             }
-            int picked = (int)random_float_below((float)remaining, "P3");
-            int selected_row = g_challenge_parcel_rows[picked];
-            int* selected_slot = &g_challenge_parcel_rows[picked];
+            int picked = (int)random_float_below((float)candidate_count, "P3");
+            int selected_row = g_parcel_group_survival_0[picked];
             ++placed;
 
             runtime_rows[selected_row].flags |= 0x11;
@@ -64,16 +61,12 @@ int SubgameRuntime::place_challenge_parcels_on_track()
                     + 0.5f;
             }
 
-            if (picked < last_index) {
-                int move_count = last_index - picked;
-                do {
-                    *selected_slot = selected_slot[1];
-                    ++selected_slot;
-                    --move_count;
-                } while (move_count != 0);
+            for (int move_index = picked; move_index < last_index; ++move_index) {
+                g_parcel_group_survival_0[move_index] =
+                    g_parcel_group_survival_0[move_index + 1];
             }
 
-            --remaining;
+            --candidate_count;
             --last_index;
         }
     }
@@ -116,9 +109,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
                         ->get_path_position_at_node(
                             runtime_rows[scan].projection_payload,
                             node,
-                            runtime_rows[scan]
-                                .primary_attachment_cell
-                                ->get_track_cell_row_index(),
+                            cell->get_track_cell_row_index(),
                             runtime_rows[scan].projection_payload);
                 }
             }

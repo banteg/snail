@@ -20,25 +20,29 @@ the same kind-42/non-kind-42 tail used by the normal parcel placer.
   `challenge_difficulty_scalar`, and `runtime_row_count`. Focused Wibo remains
   44.70% at that checkpoint. This removes the local `Game` shell from the type
   census.
-- `g_challenge_parcel_rows @ 0x6447e8` is a recovered row-index scratch array. It is only referenced by this helper.
+- `g_parcel_group_survival_0 @ 0x6447e8` is a recovered row-index scratch
+  array. Android and iOS preserve its original symbol as
+  `gParcelGroupSurvival0`; it is only referenced by this helper.
 - The zero-bucket reset is best expressed as a pointer walk from `g_zero_parcel_buckets + 0x200` to `g_zero_parcel_buckets + 0x106200`; the signed pointer cast keeps the native `jl`.
 - The quota expression needs the two native multiplies by `50.0f` and `0.00999999978f`; otherwise VC folds them into `0.5f` and creates a masked constant mismatch.
 - The placement path uses `0x4000`, not `0x40`, for the row-center z adjustment before the final projection scan. The projection scan still gates on runtime row flag `0x40`.
 
 ## Residuals
 
-- Current score is 73.68%, with the native `0x48` frame, the exact 171 target
-  instructions, a 22-instruction prefix, and all 29 masked operands clean.
+- Current score is 81.40%, with 171 target instructions versus 173 candidate
+  instructions and all 33 masked operands clean. The candidate's `0x4c` frame
+  loses the prefix against the native `0x48` frame because VC spills the
+  source-cell borrow reused by the two `Yi()` calls.
 - The reset-loop end operand is curated as `g_zero_parcel_bucket_count_lane_end @ 0x643390`; spelling the loop bound with that sentinel keeps the score unchanged while resolving the masked audit reference.
 - The first residual is now the candidate-row scan. Native advances a cursor
   based at `parcel_set_id` and reaches row flags at `-0x9c`; the typed scratch
   keeps the natural `TrackAttachmentRuntimeRow*` base. Recreating the negative
   displacement with a container-of cast would be source-shape fakematching, so
   the typed owner remains.
-- The placement loop still swaps the native `esi`/`edx` ownership of the
-  selected row-index slot and runtime-row index temporary. The projection tail
-  is otherwise close; its remaining visible difference is the register choice
-  used to carry `attachment_template_record` into the kind-42 member call.
+- The placement body now has the native row-bank cursor, flag-byte test, and
+  compaction loop. The projection tail still differs in how VC carries the
+  borrowed source cell and `attachment_template_record` across the kind-42
+  dispatch; no pointer cast, dummy local, or barrier is retained to force it.
 
 ## Rejected trials
 
@@ -64,11 +68,25 @@ input vector and projected output vector.
 
 ## Global row-bank ownership (2026-07-13)
 
-The challenge candidate index bank is now declared once in
-`parcel_bucket.h` as `g_challenge_parcel_rows[4096]`. Its `0x4000`-byte extent
-is fixed by the reference manifest and ends exactly where the parcel-set bucket
-bank begins at `0x6487e8`. The helper fills at most the runtime's 3200 row
-indices, so this is global placement scratch capacity rather than
-`SubgameRuntime`-owned state. The typed bound is codegen-neutral: focused
-matching remains honestly at 73.68%, 171/171 instructions, with all 29 masked
-operands clean.
+The survival candidate index bank is now declared once in `parcel_bucket.h` as
+`g_parcel_group_survival_0[4096]`, normalized from the cross-port original
+symbol `gParcelGroupSurvival0`. Its `0x4000`-byte extent is fixed by both the
+Android symbol size and the Windows reference manifest, and ends exactly where
+the parcel-set bucket bank begins at `0x6487e8`. The helper fills at most the
+runtime's 3200 row indices, so this is global placement scratch capacity rather
+than `SubgameRuntime`-owned state.
+
+## Cross-port candidate lifetime recovery (2026-07-13)
+
+Android's `cRSubGame::PlaceParcelsSurvival()` decrements the candidate count
+itself after each placement and compacts `gParcelGroupSurvival0` by index. The
+old scratch invented a second `remaining` count and hand-authored an optimized
+pointer/count copy loop. Removing that duplicate state and restoring the
+indexed compaction lets VC6 derive the native Windows cursor walk on its own.
+
+The resulting claim/update/compaction body now aligns through the selected-row
+flag writes, the byte-lane `0x4000` test, and the complete row-bank shift. The
+focused result improves from 73.68% (171/171, prefix 22, 29 clean operands) to
+81.40% (171 target versus 173 candidate instructions, 33 clean operands, no
+masked mismatch). The remaining two instructions are honest source-lifetime
+debt in the typed row scan and reused source-cell borrow, not forced scheduling.

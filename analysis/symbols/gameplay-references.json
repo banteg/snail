@@ -3987,13 +3987,13 @@
     },
     {
       "address": "0x6447e8",
-      "name": "g_challenge_parcel_rows",
+      "name": "g_parcel_group_survival_0",
       "kind": "global",
       "aliases": [
         "data_6447e8"
       ],
       "size": "0x4000",
-      "description": "Fixed 4096-entry challenge-mode row-index scratch array filled by place_challenge_parcels_on_track before random parcel selection."
+      "description": "Fixed 4096-entry survival-mode row-index scratch array filled by place_challenge_parcels_on_track before random parcel selection; Android and iOS preserve the original symbol gParcelGroupSurvival0."
     },
     {
       "address": "0x6487e8",

@@ -8,7 +8,7 @@
 enum {
     PARCEL_BUCKET_CAPACITY = 0x800,
     PARCEL_CANDIDATE_CAPACITY = 0x20,
-    CHALLENGE_PARCEL_ROW_CAPACITY = 0x1000,
+    SURVIVAL_PARCEL_GROUP_CAPACITY = 0x1000,
 };
 
 class ParcelCandidate {
@@ -39,6 +39,7 @@ typedef char ParcelBucket_must_be_0x20c[
 
 extern ParcelBucket g_parcel_set_buckets[PARCEL_BUCKET_CAPACITY];  // data_6487e8
 extern ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY]; // data_53d190
-extern int g_challenge_parcel_rows[CHALLENGE_PARCEL_ROW_CAPACITY]; // data_6447e8
+// Cross-port original symbol: gParcelGroupSurvival0.
+extern int g_parcel_group_survival_0[SURVIVAL_PARCEL_GROUP_CAPACITY]; // data_6447e8
 
 #endif
