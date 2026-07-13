@@ -89,3 +89,9 @@ lanes advance the same bounded orientation and edge-selector tables to
 matcher verifies their four and seven relocation destinations against the
 curated target contents. Registering the refreshed aliases restores 367/367
 proof with all 63 operands clean; no source-body instruction changed.
+
+2026-07-13 no-fakematch audit: the shrink macro's first component read no
+longer carries a volatile qualifier. Current VC6 emits the same exact 367/367
+instruction stream without it. COFF renumbered the unchanged bounded tables to
+`$L1143`/`$L1144`; their contents remain audited at object `+0x52c`/`+0x53c`,
+restoring all 63 operands without a source barrier.

@@ -49,3 +49,9 @@
   helper. The later `+0x240/+0x244` pair remains the derived/clamped hit-test
   position owned by this member, closing the previously conflicting caller
   view.
+
+2026-07-13 no-fakematch audit: the authored-width volatile read was a register
+schedule barrier and is removed. The plain width-bit copy retains the recovered
+frontend layout block and exact instruction-count parity at an honest 87.57%,
+177/177, prefix 23, with all 20 operands clean. The remaining drift is argument
+and aggregate-copy allocation, not field ownership.

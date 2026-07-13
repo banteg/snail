@@ -314,3 +314,13 @@ Binary Ninja preview verifies `SubSegment == 0x4220`, `SubTracks == 0x1a5978`,
 and the enclosing `SubgameRuntime == 0x1272838`, then reverts. Matching source
 is unchanged: focused Wibo remains 86.10%, 560/555 instructions, with all 106
 masked operands clean and no mismatch.
+
+## 2026-07-13 no-fakematch audit
+
+The landscape fallback parameter reload and six start/completion Banner
+position stores no longer use volatile qualifiers. Those qualifiers existed
+only to preserve a stack reload and redundant zero-store schedule. The direct
+source keeps the same proven `SubTracks`, `BannerPool`, player backlink, and
+landscape ownership while leaving compiler allocation visible: focused Wibo is
+77.67%, 560/555 instructions, prefix 177, with 100 clean operands and the
+existing state jump-table identity mismatch.

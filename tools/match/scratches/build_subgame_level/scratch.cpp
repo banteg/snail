@@ -153,7 +153,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
                     .load_landscape_script_by_name("SpaceRed.txt");
             break;
         default:
-            landscape_index = *(volatile int*)&level_index;
+            landscape_index = level_index;
             break;
         }
 
@@ -181,9 +181,9 @@ void SubgameRuntime::build_subgame_level(int level_index)
         }
     }
 
-    *(volatile int*)(game + 0x359098) = zero;
-    *(volatile int*)(game + 0x359094) = zero;
-    *(volatile int*)(game + 0x359090) = zero;
+    *(int*)(game + 0x359098) = zero;
+    *(int*)(game + 0x359094) = zero;
+    *(int*)(game + 0x359090) = zero;
     unsigned int start_flags = *(unsigned int*)(game + 0x359084);
     *(Player**)(game + 0x3590d4) = embedded_player();
     *(float*)(game + 0x359098) = (float)*(int*)(game + 0x50);
@@ -205,9 +205,9 @@ void SubgameRuntime::build_subgame_level(int level_index)
         }
     }
 
-    *(volatile int*)(game + 0x3590f8) = zero;
-    *(volatile int*)(game + 0x3590f4) = zero;
-    *(volatile int*)(game + 0x3590f0) = zero;
+    *(int*)(game + 0x3590f8) = zero;
+    *(int*)(game + 0x3590f4) = zero;
+    *(int*)(game + 0x3590f0) = zero;
     unsigned int completion_flags = *(unsigned int*)(game + 0x3590e4);
     *(Player**)(game + 0x359134) = embedded_player();
     *(float*)(game + 0x3590f8) = (float)*(int*)(game + 0x58);

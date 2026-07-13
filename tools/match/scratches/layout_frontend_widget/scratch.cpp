@@ -49,7 +49,7 @@ int FrontendWidget::layout_frontend_widget()
             layout_left_ptr = &widget->layout_x;
             layout_top_ptr = &widget->layout_y;
             *(int*)layout_left_ptr = result;
-            int authored_width = *(volatile int*)&widget->frame_width;
+            int authored_width = *(int*)&widget->frame_width;
             *(int*)&widget->layout_width = authored_width;
             result = *(int*)&widget->frame_height;
             *(int*)layout_top_ptr = authored_top;

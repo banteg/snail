@@ -67,3 +67,9 @@ Residual:
   volatile value itself stayed at 93.75%, while equal-first and source-label
   variants recovered the instruction count but regressed branch layout to
   90.00%.
+
+2026-07-13 no-fakematch audit: the volatile equal-branch reload existed only to
+block VC6 tail merging and is removed. The direct member assignment preserves
+the recovered movement/presentation ownership and returns to the honest
+93.75%, 46/50 object with a 38-instruction prefix and two clean operands. The
+missing duplicate equal-tail epilogue remains visible compiler-layout debt.

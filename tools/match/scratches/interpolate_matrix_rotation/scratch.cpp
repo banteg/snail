@@ -27,9 +27,9 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
     working.w = extracted.w;
     if (working.x > -0.001f && working.x < 0.001f)
         working.x = 0.0f;
-    if (*(volatile float*)&working.y > -0.001f && *(volatile float*)&working.y < 0.001f)
+    if (working.y > -0.001f && working.y < 0.001f)
         working.y = 0.0f;
-    if (*(volatile float*)&working.z > -0.001f && *(volatile float*)&working.z < 0.001f)
+    if (working.z > -0.001f && working.z < 0.001f)
         working.z = 0.0f;
     if (working.x == 0.0f && working.y == 0.0f && working.z == 0.0f) {
         TransformMatrix rebuilt;

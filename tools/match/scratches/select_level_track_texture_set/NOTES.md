@@ -29,3 +29,9 @@ dropping to `76.19%`. Reading the default through a volatile parameter view
 keeps the switch selector in `eax`, copies only the default value into `edi`,
 and matches exactly: `100.00%`, `43/43` instructions, `43/43` prefix, with the
 curated `select_level_track_texture_set_jump_table` mask audited cleanly.
+
+2026-07-13 no-fakematch audit: the volatile parameter reload was solely
+coercing switch-register ownership and is removed. The direct default
+assignment keeps the real five-bank selector semantics at the honest 76.19%,
+41/43 object with six clean operands; the native pre-save selector load and
+separate default reload remain visible layout debt.

@@ -58,7 +58,6 @@ slow_fire:
         return result;
     }
 
-    volatile unsigned int* movement_flags_view = &movement_flags;
-    previous_movement_flags = *movement_flags_view;
+    previous_movement_flags = movement_flags;
     return result;
 }

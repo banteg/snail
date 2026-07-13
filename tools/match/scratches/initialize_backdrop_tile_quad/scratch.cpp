@@ -6,7 +6,7 @@
 #define SHRINK_BACKDROP_TILE_COMPONENT(component_expr)     \
     do {                                                   \
         float* component = &(component_expr);               \
-        float component_value = *(volatile float*)component;\
+        float component_value = *component;                 \
         int sign;                                          \
         if (component_value < 0.0f) {                       \
             sign = -1;                                     \

@@ -571,7 +571,8 @@
         "$L1055",
         "$L1074",
         "$L1140",
-        "$L1151"
+        "$L1151",
+        "$L1143"
       ],
       "size": "0x10",
       "description": "Compiler-emitted orientation switch jump table used by initialize_backdrop_tile_quad for cases 0 through 3."
@@ -586,7 +587,8 @@
         "$L1056",
         "$L1075",
         "$L1141",
-        "$L1152"
+        "$L1152",
+        "$L1144"
       ],
       "size": "0x1c",
       "description": "Compiler-emitted edge-selector switch jump table used by initialize_backdrop_tile_quad for normalized cases 0 through 6."

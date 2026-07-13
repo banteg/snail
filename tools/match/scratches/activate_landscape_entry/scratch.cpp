@@ -47,7 +47,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
                 entry->list_flags |= 0x200;
             }
 
-            *(volatile int*)((char*)entry + 0x80) = 1;
+            entry->state = 1;
             unsigned int flags = entry->list_flags;
             flags |= 0x20;
             entry->list_flags = flags;

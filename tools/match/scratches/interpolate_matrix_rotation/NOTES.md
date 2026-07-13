@@ -42,3 +42,9 @@ resolution and the Android-backed matrix-constructor alias clear the final
 audit mismatch without relaxing the instruction or reference checks. Final
 focused result is proof-grade at 100.00%, 105/105 instructions, a 105-instruction
 prefix, and 17 masked operands OK.
+
+2026-07-13 no-fakematch audit: the volatile y/z reads were copy-propagation
+barriers rather than recovered quaternion semantics and are removed. Direct
+member comparisons keep instruction-count parity and all 17 operands clean at
+an honest 96.19%, with a 30-instruction prefix. The four stack-slot choices are
+left as allocator debt.

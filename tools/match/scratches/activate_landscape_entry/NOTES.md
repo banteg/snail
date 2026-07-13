@@ -36,3 +36,9 @@ ahead of the state write; no extra fake symbol or dummy call is involved.
 receiver to `LandscapeManager` remains exact at 123/123. Direct
 `scripts[script_index]` expressions let VC6 retain the native manager-relative
 `+0x5a4` field displacements without an overlapping window type.
+
+2026-07-13 no-fakematch audit: the volatile state write was only pinning the
+store ahead of a list-flag reload. It is now the ordinary typed
+`ActiveLandscapeEntry::state` assignment. Ownership and instruction parity are
+unchanged; focused matching is honestly 99.19%, 123/123, prefix 65, with all
+20 operands clean and only the independent load/store schedule swapped.

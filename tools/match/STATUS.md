@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**575/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90339/325437** bytes (**27.76%**) are proof-grade, and overall fuzzy is **63.54%**.
+**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **63.43%**.
 
-## Proof Grade (575)
+## Proof Grade (571)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -121,7 +121,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 9 ok |  |
 | ✅ | initialize_distort | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
-| ✅ | select_level_track_texture_set | 0x410730 | 156 | 43/43 | 100.00% | 43/43 | 7 ok |  |
 | ✅ | update_frontend_state_machine | 0x4107d0 | 1116 | 180/180 | 100.00% | 180/180 | 69 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | change_backdrop | 0x410d50 | 111 | 34/34 | 100.00% | 34/34 | - |  |
@@ -189,7 +188,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_new_game_menu | 0x417eb0 | 1064 | 273/273 | 100.00% | 273/273 | 62 ok |  |
 | ✅ | reset_landscape_manager | 0x4182e0 | 11 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | load_landscape_script_by_name | 0x4182f0 | 1404 | 386/386 | 100.00% | 386/386 | 63 ok |  |
-| ✅ | activate_landscape_entry | 0x418870 | 442 | 123/123 | 100.00% | 123/123 | 20 ok |  |
 | ✅ | clear_active_landscape_entries | 0x418a30 | 141 | 49/49 | 100.00% | 49/49 | 5 ok |  |
 | ✅ | update_active_landscape_entry | 0x418ac0 | 130 | 41/41 | 100.00% | 41/41 | 4 ok |  |
 | ✅ | destroy_loading_screen | 0x418e50 | 41 | 15/15 | 100.00% | 15/15 | 3 ok |  |
@@ -320,7 +318,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | is_sub_loc_slide | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  |
 | ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 | 8 ok |  |
 | ✅ | health_collect_particles | 0x43a010 | 386 | 104/104 | 100.00% | 104/104 | 13 ok |  |
-| ✅ | update_player_movement_flags | 0x43a1a0 | 344 | 50/50 | 100.00% | 50/50 | 2 ok |  |
 | ✅ | update_movement_flag_emitters | 0x43a300 | 97 | 39/39 | 100.00% | 39/39 | 1 ok |  |
 | ✅ | end_jetpack_hover | 0x43a370 | 28 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | uninit_jet_particles | 0x43a580 | 36 | 17/17 | 100.00% | 17/17 | 1 ok |  |
@@ -540,7 +537,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_quaternion_from_axis | 0x44d530 | 74 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 | 4 ok |  |
 | ✅ | initialize_matrix_from_quaternion | 0x44d820 | 247 | 82/82 | 100.00% | 82/82 | 3 ok |  |
-| ✅ | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 100.00% | 105/105 | 17 ok |  |
 | ✅ | linear_interpolate_matrix | 0x44da90 | 195 | 61/61 | 100.00% | 61/61 | 6 ok |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | 3/3 | - |  |
@@ -584,17 +580,17 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (23)
+## Near Match (95-99.99%) (24)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 429/429 | 99.30% | 55/429 | 1 mismatch, 49 ok |  |
-| 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 98.31% | 23/177 | 20 ok |  |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  |
 | 🚧 | load_x_mesh | 0x405640 | 1603 | 494/492 | 96.75% | 238/492 | 94 ok |  |
 | 🚧 | run_frame_update | 0x40a2a0 | 485 | 135/135 | 97.78% | 18/135 | 23 ok |  |
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 600/600 | 98.00% | 80/600 | 137 ok |  |
+| 🚧 | activate_landscape_entry | 0x418870 | 442 | 123/123 | 99.19% | 65/123 | 20 ok |  |
 | 🚧 | is_point_inside_track_attachment | 0x42ca90 | 348 | 111/111 | 99.10% | 42/111 | 6 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 73 ok |  |
@@ -610,12 +606,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 97.83% | 18/92 | - |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
+| 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (60)
+## High Progress (80-94.99%) (61)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
+| 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 87.57% | 23/177 | 20 ok |  |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 276/278 | 89.89% | 23/278 | 44 ok |  |
 | 🚧 | initialize_default_runtime_config | 0x406c10 | 282 | 36/48 | 85.71% | 0/48 | 32 ok |  |
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
@@ -643,9 +641,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 50/50 | 84.00% | 5/50 | - |  |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  |
-| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 86.10% | 244/555 | 106 ok |  |
 | 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 17 ok |  |
 | 🚧 | update_sub_loc | 0x439d50 | 702 | 188/187 | 83.20% | 26/187 | 35 ok |  |
+| 🚧 | update_player_movement_flags | 0x43a1a0 | 344 | 46/50 | 93.75% | 38/50 | 2 ok |  |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  |
 | 🚧 | play_movement_state_sound | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 19 ok |  |
 | 🚧 | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 72/76 | 85.14% | 5/76 | 9 ok |  |
@@ -677,7 +675,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (48)
+## Mid Progress (50-79.99%) (50)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -688,6 +686,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 338/325 | 63.65% | 1/325 | 6 mismatch, 125 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
+| 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
 | 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 54.93% | 3/73 | 14 ok |  |
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 134/139 | 60.81% | 41/139 | 4 ok |  |
@@ -713,6 +712,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 24 ok |  |
+| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 1 mismatch, 100 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1033/1033 | 78.22% | 9/1033 | 2 mismatch, 116 ok |  |
 | 🚧 | update_jet_particles | 0x43a690 | 670 | 174/181 | 52.96% | 0/181 | 16 ok |  |
