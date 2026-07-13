@@ -534,6 +534,113 @@ typedef struct SaltManager {
     SaltHazardSlot slots[40];
 } SaltManager;
 
+typedef struct GarbageHazardSlot GarbageHazardSlot;
+struct GarbageHazardSlot {
+    BodNode bod;
+    Vec3 bod_position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 world_position;
+    float world_position_w;
+    uint8_t _pad_78[0x80 - 0x78];
+    GarbageHazardSlot* next_active;
+    int32_t state;
+    int32_t collision_side;
+    SubgameRuntime* game;
+    Vec3 velocity;
+    float radius;
+    float sprite_y_offset;
+    int32_t unknown_a4;
+    float burst_rate_step;
+    float smoke_timer;
+    float smoke_timer_step;
+    Sprite* sprite;
+    TrackRowCell* source_cell;
+    uint8_t hidden;
+    uint8_t _pad_bd[0xc0 - 0xbd];
+    Player* player;
+};
+
+typedef struct GarbageHazardPool {
+    GarbageHazardSlot* active_head;
+    GarbageHazardSlot slots[50];
+} GarbageHazardPool;
+
+typedef struct RingOrSpecialEffectParent RingOrSpecialEffectParent;
+
+typedef struct RingOrSpecialEffectParticle {
+    Sprite* sprite;
+    RingOrSpecialEffectParent* parent;
+    Vec3 base_position;
+    float phase;
+    float phase_step;
+    float radius;
+} RingOrSpecialEffectParticle;
+
+typedef struct RingEffectRateSource {
+    uint8_t _pad_00[0x09];
+    uint8_t subgame_pause_gate;
+    uint8_t _pad_0a[0x38 - 0x0a];
+    float subgame_rate;
+} RingEffectRateSource;
+
+struct RingOrSpecialEffectParent {
+    BodNode bod;
+    Vec3 bod_position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 world_position;
+    float world_position_w;
+    uint8_t _pad_78[0x80 - 0x78];
+    int32_t state;
+    Player* owner_player;
+    int32_t kind;
+    int32_t owner_lives_snapshot;
+    RingOrSpecialEffectParticle particles[10];
+    RingEffectRateSource* rate_source;
+    float transition_progress;
+    float transition_step;
+    uint8_t oscillate_x;
+    uint8_t _pad_1dd[0x1e0 - 0x1dd];
+    float active_phase;
+    float active_phase_step;
+    int32_t star_shower_counter;
+    int32_t star_sprite_id;
+    uint8_t _pad_1f0[0x1f8 - 0x1f0];
+};
+
+typedef struct RingOrSpecialEffectPool {
+    RingOrSpecialEffectParent slots[2];
+} RingOrSpecialEffectPool;
+
+typedef struct SlugVoiceManager {
+    uint8_t active;
+    uint8_t _pad_01[0x3];
+    float progress;
+    float step;
+} SlugVoiceManager;
+
+typedef struct FringeManager {
+    FringeObject objects[7000];
+    int32_t count;
+} FringeManager;
+
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;
@@ -1266,7 +1373,17 @@ typedef struct SubgameRuntime {
     SubLazerManager sub_lazers;
     SaltManager salt_hazards;
     BannerPool banners;
-    uint8_t _pad_359140[0x3bb764 - 0x359140];
+    GarbageHazardPool garbage_hazards;
+    RingOrSpecialEffectPool ring_effects;
+    SlugVoiceManager slug_voice_manager;
+    FrontendWidget* top_score_widget;
+    FrontendWidget* bottom_score_widget;
+    FrontendWidget* lives_icon_widget;
+    FrontendWidget* lives_text_widget;
+    FrontendWidget* life_stock_widgets[9];
+    FringeManager fringe_manager;
+    int32_t blink_random_index;
+    float blink_random_samples[24];
     Player player;
     TrackRowCell runtime_cells[3200][8];
     TrackAttachmentRuntimeRow runtime_rows[3200];

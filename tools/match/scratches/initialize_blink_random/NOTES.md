@@ -13,3 +13,11 @@ This helper resets the blink cadence index at `+0x3bb700` and fills the
 and `+0x3bb704`; the table ends exactly where the owned player begins.
 Focused VC6 remains exact at 100.00%, 21/21 instructions, with five clean
 masked operands. The only native xref is the root-world bootstrap.
+
+2026-07-13 analysis propagation: the path-template runtime view now closes the
+entire preceding owner band as `GarbageHazardPool`,
+`RingOrSpecialEffectPool`, `SlugVoiceManager`, HUD handles, and the exact
+`FringeManager`. Its terminal count lands at `+0x3bb6fc`; the index and 24
+samples then still end exactly at `Player +0x3bb764`. Binary Ninja declaration
+preview verifies the complete enclosing layout and reverts. Focused matching
+remains exact at 21/21 with all five operands clean.

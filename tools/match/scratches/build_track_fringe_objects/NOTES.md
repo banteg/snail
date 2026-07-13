@@ -166,3 +166,17 @@ that swap with volatile locals, register tricks, or raw-offset aliases.
 - Runtime row/cell cursors now start from the owned `runtime_rows` and
   `runtime_cells` arrays. These ownership substitutions preserve the honest
   60.39%, 492/495-instruction result with all 48 operands clean.
+
+## 2026-07-13 analysis runtime-band closure
+
+The path-template Binary Ninja/IDA owner now embeds the exact
+`FringeManager` at `SubgameRuntime +0x35bbbc`: 7,000 owned 0x38-byte
+`FringeObject` records followed by `count +0x5fb40`, ending exactly at
+`blink_random_index +0x3bb700`. The four score/lives handles and nine life
+stock handles immediately before it are typed as borrowed `FrontendWidget*`
+values rather than part of an anonymous pad.
+
+Binary Ninja preview verifies `FringeManager == 0x5fb44` and keeps the
+enclosing `SubgameRuntime == 0x1272838`, then reverts. The exact two-instruction
+manager initializer remains proof-grade; this builder remains honestly partial
+at 60.39%, 492/495 instructions, with all 48 operands clean.
