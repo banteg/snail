@@ -90,6 +90,7 @@ SNAIL_SKIN_FIELD_UPDATES = (
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "BarrierActor",
+    "LandscapeManager",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -112,6 +113,8 @@ REQUIRED_HEADER_STRUCTS = (
     "FringeManager",
     "GarbageHazardPool",
     "RingOrSpecialEffectPool",
+    "SMTracks",
+    "SmtrackHeightfieldAnimator",
     "TrackRowCell",
     "TrackAttachmentRuntimeRow",
     "Path",
@@ -288,6 +291,9 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0xff2910", "path_manager", "PathManager"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
     ("0xff7bc4", "barrier", "BarrierActor"),
+    ("0xff7c00", "landscape_manager", "LandscapeManager"),
+    ("0x10013a4", "smtrack_heightfield", "SmtrackHeightfieldAnimator"),
+    ("0x10014cc", "sm_tracks", "SMTracks"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
 )
 

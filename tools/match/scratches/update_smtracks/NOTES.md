@@ -14,3 +14,8 @@ animator at `SubgameRuntime +0x10013a4`:
 `BodBase 0x38 + FrameSequence 0xf0 = 0x128`, ending exactly at the following
 `SMTracks +0x10014cc`. The descriptive class name stays distinct from
 the reported `0x25cfb4` native `cRSMTracks`/segment-catalog owner.
+
+The 2026-07-13 owner-boundary pass replaced the enclosing runtime pad with
+these two exact objects. A previewed Binary Ninja declaration preserved the
+`0x128` animator, the following catalog address, and the complete
+`0x1272838`-byte `SubgameRuntime`; the focused matcher remains byte-identical.

@@ -652,6 +652,56 @@ typedef struct BarrierActor {
     Player* owner_player;
 } BarrierActor;
 
+typedef struct ActiveLandscapeEntry {
+    RenderableBod bod;
+    uint8_t _pad_78[0x80 - 0x78];
+    int32_t state;
+    uint8_t _pad_84[0x88 - 0x84];
+    float repeat_z_span;
+    RenderableBod* reference_bod;
+} ActiveLandscapeEntry;
+
+typedef struct LandscapeScriptRecord {
+    int32_t id;
+    char name[0x84 - 0x04];
+    int32_t backdrop_texture_id;
+    uint8_t split_backdrop_texture_pair;
+    char backdrop_texture_path[0x10c - 0x89];
+    int32_t object_index;
+    Color4f fog_color;
+    float distort;
+} LandscapeScriptRecord;
+
+typedef struct LandscapeManager {
+    ActiveLandscapeEntry active_entries[10];
+    int32_t script_count;
+    LandscapeScriptRecord scripts[128];
+} LandscapeManager;
+
+/* Exact FrameSequence extent; its internals are owned by the renderer lane. */
+typedef struct FrameSequence {
+    uint8_t _storage[0xf0];
+} FrameSequence;
+
+typedef struct SmtrackHeightfieldAnimator {
+    BodBase bod;
+    FrameSequence frame_sequence;
+} SmtrackHeightfieldAnimator;
+
+typedef struct SegmentCatalogEntry {
+    char display_name[0x40];
+    char filename[0x40];
+    int32_t id;
+    int32_t row_count;
+    char glyph_columns[0x100][8];
+    AuthoredSegmentRow rows[256];
+} SegmentCatalogEntry;
+
+typedef struct SMTracks {
+    int32_t count;
+    SegmentCatalogEntry entries[150];
+} SMTracks;
+
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;
@@ -1411,7 +1461,9 @@ typedef struct SubgameRuntime {
     uint8_t _pad_ff2911[0xff2914 - 0xff2911];
     PathPair path_pairs[63];
     BarrierActor barrier;
-    uint8_t _pad_ff7c00[0x125e480 - 0xff7c00];
+    LandscapeManager landscape_manager;
+    SmtrackHeightfieldAnimator smtrack_heightfield;
+    SMTracks sm_tracks;
     ParcelManager parcel_manager;
     uint8_t _pad_125ffd8[0x12727d8 - 0x125ffd8];
     Completion completion;

@@ -66,6 +66,13 @@ Status:
   reapplies the checked-in header instead of treating a present name as proof
   that its layout is current; its normal readback verifies both the layouts and
   the six owner-aware prototypes.
+- 2026-07-13: The enclosing `SubgameRuntime` now owns the complete `SMTracks`
+  catalog at `+0x10014cc`. Its leading count plus 150 exact `0x4088` entries
+  produces the verified `0x25cfb4` extent and lands exactly on the existing
+  `ParcelManager +0x125e480`. A previewed Binary Ninja declaration preserved
+  both boundaries and the `0x1272838` runtime size. This owner promotion is
+  codegen-neutral at the honest 62.24% parser baseline; the five shifted
+  call/string mismatches remain visible.
 
 Corrections propagated to the reader:
 
