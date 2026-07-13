@@ -127,7 +127,7 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             break;
         }
 
-        sprite->facing_angle = player->heading_roll + sprite_y_offset;
+        sprite->facing_angle = player->heading_roll + attachment_facing_angle;
         Player* roll_result = player;
         if (roll_result->follow_active == 1)
             sprite->facing_angle = roll_result->follow_orientation_b + sprite->facing_angle;

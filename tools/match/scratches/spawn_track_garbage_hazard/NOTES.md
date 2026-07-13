@@ -78,7 +78,7 @@ Residuals:
   spills. Keep the two-step `staged_y` temporary.
 - Native relationship evidence: the projected position block writes
   `GarbageHazardSlot::world_position +0x68` from the cell anchor plus
-  `radius +0x9c`, then passes `sprite_y_offset +0xa0` to
+  `radius +0x9c`, then passes `attachment_facing_angle +0xa0` to
   `project_position_onto_track_attachment`. The tail stores `source_cell +0xb8`
   and clears `hidden +0xbc`, so those fields are metadata for later update and
   visibility paths rather than inputs to the projection.
@@ -190,3 +190,11 @@ Residuals:
 - Cross-port `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)` provenance and the
   primary `SubGarbage` slot view leave the helper exact at 143/143 with all 16
   masked operands clean.
+
+## 2026-07-13 projection-output naming
+
+The exact projection call writes garbage `+0xa0`, and the updater consumes that
+same scalar only as the attachment-facing angle added to the player's heading.
+The field and raw word constant are now named `attachment_facing_angle`; the
+former `sprite_y_offset` label is rejected. This naming-only recovery leaves
+the spawner exact at 143/143 instructions with all 16 operands clean.

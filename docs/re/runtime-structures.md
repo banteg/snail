@@ -1026,7 +1026,7 @@ High-confidence current fields:
 - `+0x88`: `collision_side`
 - `+0x8c`: `game`
 - `+0x90`: `velocity`
-- `+0xa0`: `sprite_y_offset`
+- `+0xa0`: `attachment_facing_angle`
 - `+0xac`: `smoke_timer`
 - `+0xb0`: `smoke_timer_step`
 - `+0xb4`: `sprite`
@@ -1055,6 +1055,7 @@ High-confidence current fields:
 - `+0x84`: `death_toss_direction`
 - `+0x88`: `game`
 - `+0x8c`: `velocity`
+- `+0x98`: `attachment_facing_angle`
 - `+0xac`: `sprite`
 - `+0xb0`: `source_cell`
 - `+0xb4`: `passed_player`
@@ -1081,6 +1082,7 @@ Current practical read:
 - the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows; this is separate from the direct ambient `play_slug_voice` one-shot
 - `hit_slug_hazard` decrements `hit_points`, latches `hit_flash_pending`, and calls `play_slug_voice(slot, 36 - scaled_random)` while the slot remains alive, mapping to `SLUG-HIT1..3`
 - `kill_slug_hazard` only acts on live state `1`; it calls `play_slug_voice(slot, 28 - scaled_random)` for `SLUG-DEATH1..2`, switches the slot to explosion state `2`, records the left/right toss selector from `world_position.x`, awards slug score, and then calls `explode_slug_hazard`
+- `spawn_slug_hazard` passes `attachment_facing_angle` to the track-attachment projector, and `update_slug_hazard_ai` later adds that projected angle to the player's heading for the sprite; the garbage family has the same producer/consumer contract at its own `attachment_facing_angle`
 - `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
 

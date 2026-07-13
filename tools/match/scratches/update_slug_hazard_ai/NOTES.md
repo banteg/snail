@@ -83,3 +83,19 @@ entry is this function at 0x43f930; Android and iOS both retain
 `cRSlug::AI()`. Focused matching remains the honest 66.15%, 434/464
 instructions, with 47 clean operands and the two documented structural table /
 list-string mismatches. No label, padding, or dummy-local fakematch is used.
+
+## 2026-07-13 attachment-facing field recovery
+
+- Slug `+0x98` is now `attachment_facing_angle`, not anonymous motion padding.
+  The exact spawner passes that address as the `out_angle` result of
+  `project_position_onto_track_attachment`; this updater then adds the value to
+  `Player::heading_roll` before applying the optional follow orientation.
+- The exact garbage spawner/updater pair has the same producer/consumer
+  relation at garbage `+0xa0`, and Android independently retains both
+  `cRSlug::AI()` and `cRSubGarbage::AI()` with the corresponding facing-angle
+  additions. The old garbage name `sprite_y_offset` was therefore misleading
+  and is retired in the shared types and sync manifests.
+- Only the proven scalar is promoted. Slug `+0x9c..+0xa8` remains unnamed
+  because the state-2 writes have no independently identified consumer.
+  Focused matching is codegen-neutral at 66.15%, 434/464 instructions, with 47
+  clean operands and the same two documented structural mismatches.

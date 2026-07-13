@@ -199,7 +199,7 @@ active_state_tail:
         break;
     }
 
-    sprite->facing_angle = player->heading_roll + *(float*)((char*)this + 0x98);
+    sprite->facing_angle = player->heading_roll + attachment_facing_angle;
     if (player->follow_active == 1)
         sprite->facing_angle += player->follow_orientation_b;
     update_slug_voice_ai();

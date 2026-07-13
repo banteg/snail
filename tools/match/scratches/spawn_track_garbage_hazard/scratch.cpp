@@ -22,7 +22,7 @@ enum {
     GARBAGE_SLOT_MATRIX_WORD = 877663,
     GARBAGE_SLOT_WORLD_POSITION_FLOAT = 877675,
     GARBAGE_SLOT_RADIUS_WORD = 877688,
-    GARBAGE_SLOT_SPRITE_Y_OFFSET_WORD = 877689,
+    GARBAGE_SLOT_ATTACHMENT_FACING_ANGLE_WORD = 877689,
     GARBAGE_SLOT_SPRITE_WORD = 877694,
     GARBAGE_SLOT_PLAYER_WORD = 877697,
     GAME_ACTIVE_BOD_TAIL_WORD = 978393,
@@ -75,7 +75,9 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     staged_position.z = cell->anchor_position.z;
     Vector3* live_position = (Vector3*)(slot_base_words + GARBAGE_SLOT_WORLD_POSITION_FLOAT);
     *live_position = staged_position;
-    project_position_onto_track_attachment(live_position, slot_base_words + GARBAGE_SLOT_SPRITE_Y_OFFSET_WORD);
+    project_position_onto_track_attachment(
+        live_position,
+        slot_base_words + GARBAGE_SLOT_ATTACHMENT_FACING_ANGLE_WORD);
 
     BodNode* node = (BodNode*)slot;
     BodNode* tail = (BodNode*)(self_words + GAME_ACTIVE_BOD_TAIL_WORD);

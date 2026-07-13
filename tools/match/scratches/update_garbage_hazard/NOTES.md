@@ -242,3 +242,14 @@ points directly to this helper; Android and iOS retain the authored spelling
 `cRSubGarbage::AI()`. Focused Wibo remains 93.55%, 217/217 instructions,
 13/217 prefix, and 22 clean masked operands. No source-shape fakematch was
 introduced for the four documented local scheduling residuals.
+
+## 2026-07-13 attachment-facing field correction
+
+Garbage `+0xa0` is now `attachment_facing_angle`. The exact spawner supplies
+that field to `project_position_onto_track_attachment` as its angle output, and
+this updater adds it to `Player::heading_roll` for the sprite presentation.
+The exact slug spawner/updater pair repeats the same contract at slug `+0x98`,
+and Android retains the equivalent additions in both authored classes. The old
+`sprite_y_offset` label described neither its producer nor its consumer.
+Focused matching remains codegen-neutral at 93.55%, 217/217 instructions,
+13/217 prefix, and 22 clean masked operands.

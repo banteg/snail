@@ -112,3 +112,12 @@ The exact 160-instruction allocator still keeps its narrow raw slot-base
 spelling because a broad typed receiver changes saved-register ownership. Its
 scan nevertheless starts at `SlugPool::slots`, uses `sizeof(Slug) == 0xec`, and
 closes the complete 0x760 native allocation.
+
+## 2026-07-13 projection-output ownership
+
+The projection call's raw output address is slug `+0x98`. The shared `Slug`
+view now names it `attachment_facing_angle`: `update_slug_hazard_ai` adds the
+same scalar to the player's heading before assigning the sprite facing angle.
+The exact garbage spawn/update pair independently proves the same field
+contract at garbage `+0xa0`, and Android retains both authored consumers. The
+slug spawner remains exact at 160/160 instructions with all 18 operands clean.

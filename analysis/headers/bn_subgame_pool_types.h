@@ -129,7 +129,8 @@ typedef struct SlugHazardRuntime {
     int32_t death_toss_direction;
     SubgameRuntime* owner_game;
     Vec3 velocity;
-    uint8_t unknown_98[0x14];
+    float attachment_facing_angle;
+    uint8_t unknown_9c[0x10];
     struct Sprite* sprite;
     struct TrackRowCell* source_cell;
     uint8_t passed_player;

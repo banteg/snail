@@ -114,7 +114,7 @@ struct GarbageHazardSlot {
     SubgameRuntime* game;
     Vec3 velocity;
     float radius;
-    float sprite_y_offset;
+    float attachment_facing_angle;
     int32_t unknown_a4;
     float burst_rate_step;
     float smoke_timer;

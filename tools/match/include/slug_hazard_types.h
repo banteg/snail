@@ -27,7 +27,8 @@ public:
     int death_toss_direction;          // +0x84
     SubgameRuntime* owner_game;        // +0x88
     Vector3 velocity;                  // +0x8c
-    char unknown_98[0xac - 0x98];
+    float attachment_facing_angle;     // +0x98, projection output added to player heading
+    char unknown_9c[0xac - 0x9c];
     Sprite* sprite;                    // +0xac
     TrackRowCell* source_cell;         // +0xb0
     unsigned char passed_player;       // +0xb4

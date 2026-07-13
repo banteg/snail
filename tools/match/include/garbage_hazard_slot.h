@@ -39,7 +39,7 @@ public:
     SubgameRuntime* game;           // +0x8c
     Vector3 velocity;               // +0x90
     float radius;                   // +0x9c
-    float sprite_y_offset;          // +0xa0
+    float attachment_facing_angle;  // +0xa0, projection output added to player heading
     int unknown_a4;                 // +0xa4
     float burst_rate_step;          // +0xa8
     float smoke_timer;              // +0xac

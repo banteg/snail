@@ -77,6 +77,8 @@ TRACK_HEALTH_PICKUP_FIELD_UPDATES = (
 
 SLUG_HAZARD_FIELD_UPDATES = (
     ("0x88", "owner_game", "SubgameRuntime*"),
+    ("0x98", "attachment_facing_angle", "float"),
+    ("0x9c", "unknown_9c", "uint8_t[0x10]"),
 )
 
 PROTO_UPDATES = (
