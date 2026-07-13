@@ -1111,9 +1111,8 @@ High-confidence `PathTemplate` fields:
 Byte-lane clarifications:
 
 - `is_mirrored_x` is a byte flag, not a `uint32_t`
-- `has_entry_mesh_transition` is a byte flag; the provenance alias
-  `special_runtime_flag_9c` remains available in the match header for older
-  constructor scratches
+- `has_entry_mesh_transition` is a byte flag, and all current constructor
+  scratches use that recovered owner directly
 
 The tail ownership is now closed:
 

@@ -52,8 +52,9 @@ Recovered Windows `PathTemplate` fields that matter for the constructor/follow p
 Two byte-lane clarifications from the constructor-family audit:
 
 - `is_mirrored_x` is a byte flag, not a `uint32_t`
-- the `+0x9c` lane is a byte flag; the match header retains
-  `special_runtime_flag_9c` as a provenance alias for older scratches
+- the `+0x9c` lane is the byte `has_entry_mesh_transition` flag; the obsolete
+  `special_runtime_flag_9c` provenance alias has been retired from the match
+  headers and constructor scratches
 
 2026-07-10 correction: the constructor and installed banks are the same 63-pair
 array. World init wires the 12 tail pairs into flagged public templates at

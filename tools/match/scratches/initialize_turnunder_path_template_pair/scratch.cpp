@@ -196,7 +196,7 @@ void Path::initialize_turnunder_path_template_pair(
     segment_count_f = (float)segment_count;
     allocate_path_template_samples();
 
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
     for (int i = 0; i < 6; ++i) {
         float center = (float)width_cells * 0.5f - 4.0f;
         initialize_pair_sample(this, i, center, center, 0.0f, (float)i);

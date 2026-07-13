@@ -162,7 +162,7 @@ void Path::initialize_invert_path_template_pair(
     segment_count_f = 34.0f;
     allocate_path_template_samples();
 
-    special_runtime_flag_9c = 1;
+    has_entry_mesh_transition = 1;
     initialize_sample(
         &primary_samples[0], (float)width_cells * 0.5f - 4.0f,
         (float)width_cells * 0.5f - 4.0f, 0.0f, 0.0f);

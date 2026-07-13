@@ -147,7 +147,7 @@ void Path::initialize_start_path_template_pair(
     segment_count_f = (float)last_segment_index;
     float radius = (float)curve_segments * 0.31830987f;
     allocate_path_template_samples();
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
     segment_count = segment_count - 1;
 
     int i;

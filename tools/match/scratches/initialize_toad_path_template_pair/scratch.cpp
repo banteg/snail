@@ -210,7 +210,7 @@ void Path::initialize_toad_path_template_pair(
     segment_count_f = (float)segment_count;
     allocate_path_template_samples();
 
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
     for (int i = 0; i < lead_count; ++i) {
         initialize_sample(&primary_samples[i], start_x, start_x, 0.0f, (float)i);
         primary_samples[i].delta_length = 1.0f;

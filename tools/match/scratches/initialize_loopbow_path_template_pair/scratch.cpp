@@ -69,7 +69,7 @@ int Path::initialize_loopbow_path_template_pair(
     curve_scale = curve_segment_count_f * 0.15915494f;
 
     allocate_path_template_samples();
-    special_runtime_flag_9c = 1;
+    has_entry_mesh_transition = 1;
 
     int i = 0;
     do {

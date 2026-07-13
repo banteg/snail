@@ -29,7 +29,7 @@ void Path::initialize_halfpipe_path_template_pair(
     segment_count = 66;
     segment_count_f = 66.0f;
     allocate_path_template_samples();
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
 
     int i = 0;
     do {

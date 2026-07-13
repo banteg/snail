@@ -28,7 +28,7 @@ void Path::mirror_path_template_pair_x(Path* source)
     width_cells = source->width_cells;
     allocate_path_template_samples();
 
-    special_runtime_flag_9c = source->special_runtime_flag_9c;
+    has_entry_mesh_transition = source->has_entry_mesh_transition;
     strip_mesh->flags = source->strip_mesh->flags;
     kind = source->kind;
     side_exit_mode = source->side_exit_mode;

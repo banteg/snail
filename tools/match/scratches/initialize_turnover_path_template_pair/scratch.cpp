@@ -183,7 +183,7 @@ void Path::initialize_turnover_path_template_pair(
     segment_count_f = (float)(curve_segments + 8);
     float radius = (float)curve_segments * 0.15915494f;
     allocate_path_template_samples();
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
 
     float left = (float)width_cells * 0.5f - 4.0f;
     float right = 4.0f - (float)width_cells * 0.5f;

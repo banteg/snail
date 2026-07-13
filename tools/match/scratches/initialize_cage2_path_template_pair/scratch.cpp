@@ -22,7 +22,7 @@ void Path::initialize_cage2_path_template_pair(
     segment_count_f = 22.0f;
     allocate_path_template_samples();
 
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
     primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;
     primary_samples[0].rotation_scalar_98 = 0.0f;
     primary_samples[0].rotation_scalar_94 = 0.0f;

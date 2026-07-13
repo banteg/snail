@@ -55,7 +55,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
     segment_count = 24;
     segment_count_f = 96.0f;
     allocate_path_template_samples();
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
 
     int entrance_index = 0;
     do {

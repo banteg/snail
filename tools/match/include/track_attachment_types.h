@@ -250,12 +250,9 @@ struct Path : public BodBase {
         float installed_heading_delta;
         int installed_heading_bits;
     };                               // +0x98
-    union {
-        // When set, follow progress swaps the installed entry cell to the
-        // auxiliary mesh at 3/7 and restores the public mesh at the end.
-        unsigned char has_entry_mesh_transition; // +0x9c
-        unsigned char special_runtime_flag_9c;   // provenance alias
-    };
+    // When set, follow progress swaps the installed entry cell to the
+    // auxiliary mesh at 3/7 and restores the public mesh at the end.
+    unsigned char has_entry_mesh_transition; // +0x9c
     char unknown_9d[0xa0 - 0x9d];
     Object* entry_transition_strip_mesh; // +0xa0, borrowed from an auxiliary pair
     Object* entry_base_strip_mesh;       // +0xa4, the public pair's own strip mesh

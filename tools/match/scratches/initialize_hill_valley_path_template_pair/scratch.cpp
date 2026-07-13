@@ -201,7 +201,7 @@ void Path::initialize_hill_valley_path_template_pair(
     segment_count_f = (float)(last + 1);
     allocate_path_template_samples();
 
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
 
     float center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
     initialize_sample(&primary_samples[0], center_x, 0.0f, 0.0f);

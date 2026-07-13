@@ -186,7 +186,7 @@ void Path::initialize_p_path_template_pair(
     float radius = (float)radius_calc;
 
     allocate_path_template_samples();
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
 
     initialize_pair_sample(this, 0, start_x, 0.0f, 0);
     initialize_pair_sample(this, last_index, end_x, 0.0f, last_index);

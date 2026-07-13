@@ -180,7 +180,7 @@ void Path::initialize_slalomdouble_path_template_pair(
     segment_count = 70;
     segment_count_f = 70.0f;
     allocate_path_template_samples();
-    special_runtime_flag_9c = 0;
+    has_entry_mesh_transition = 0;
 
     int i;
     for (i = 0; i < 4; ++i)
