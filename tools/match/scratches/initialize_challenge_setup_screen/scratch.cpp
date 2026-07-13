@@ -1,6 +1,7 @@
 // initialize_challenge_setup_screen @ 0x415f50 (thiscall)
 
 #include "border_manager.h"
+#include "game_root.h"
 #include "gui.h"
 #include "frontend_widget_virtual_layout.h"
 #include "sub_tracks.h"
@@ -8,12 +9,12 @@
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_back_text[]; // 0x4a20ec
 
 int GUI::initialize_challenge_setup_screen()
 {
-    ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
+    g_game->players[0].mouse_cursor.capture_mouse_cursor();
     game->level_definition.load_frontend_level_by_mode_and_index(
         game->level_mode,
         game->level_mode_arg);
@@ -29,7 +30,7 @@ int GUI::initialize_challenge_setup_screen()
     Color4f replay_color;
     Color4f back_color;
 
-    difficulty_slider = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    difficulty_slider = g_game->border_manager.allocate_border();
     difficulty_slider->initialize_frontend_widget(
         0x100004,
         "     Select Difficulty     >",
@@ -44,7 +45,7 @@ int GUI::initialize_challenge_setup_screen()
     difficulty_slider->slider_target_value = difficulty_slider->slider_value;
     ((FrontendWidgetVirtualLayout*)difficulty_slider)->layout_frontend_widget();
 
-    speed_slider = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    speed_slider = g_game->border_manager.allocate_border();
     speed_slider->initialize_frontend_widget(
         0x100004,
         "       Select Speed       >",
@@ -64,7 +65,7 @@ int GUI::initialize_challenge_setup_screen()
     if (game->sub_high_score.survival_pending_record.active == 1)
         play_anchor_x = 100.0f;
 
-    play_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    play_button = g_game->border_manager.allocate_border();
     play_button->initialize_frontend_widget(
         0x40000016,
         "Play",
@@ -76,7 +77,7 @@ int GUI::initialize_challenge_setup_screen()
         play_anchor_x);
     play_button->stack_widget_below(speed_slider);
 
-    replay_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    replay_button = g_game->border_manager.allocate_border();
     replay_button->initialize_frontend_widget(
         0x40000016,
         "Watch Replay",
@@ -90,7 +91,7 @@ int GUI::initialize_challenge_setup_screen()
     if (game->sub_high_score.survival_pending_record.active != 1)
         replay_button->hide_border_init();
 
-    back_button = (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
         0x16,
         g_back_text,

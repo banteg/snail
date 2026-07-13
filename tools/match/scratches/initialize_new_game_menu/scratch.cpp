@@ -5,7 +5,7 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
@@ -18,30 +18,20 @@ extern char g_back_text[]; // 0x4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-class NewGameBorderManager {
-public:
-    FrontendWidget* allocate_border();
-};
-
 void Intro::initialize_new_game_menu()
 {
     Color4f color;
 
-    ((GameRoot*)g_game_base)->star_manager.hide_star_field();
+    g_game->star_manager.hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
-    int script_index =
-        ((LandscapeManager*)(g_game_base + 0x106c218))
-            ->load_landscape_script_by_name(g_menu_background_script_path);
-    ((Backdrop*)(g_game_base + 0x4ec10))
-        ->change_backdrop(
-            &((LandscapeManager*)(g_game_base + 0x106c218))
-                ->scripts[script_index],
-            0);
-    ((BorderManager*)(g_game_base + 0xb4c))
-        ->set_border_justify_centre(0x41c80000);
-    ((GameRoot*)g_game_base)->render_skip_countdown = 2;
+    int script_index = g_game->subgame.landscape_manager
+                           .load_landscape_script_by_name(g_menu_background_script_path);
+    g_game->backdrop.change_backdrop(
+        &g_game->subgame.landscape_manager.scripts[script_index], 0);
+    g_game->border_manager.set_border_justify_centre(0x41c80000);
+    g_game->render_skip_countdown = 2;
 
-    tutorial_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    tutorial_button = g_game->border_manager.allocate_border();
     tutorial_button->initialize_frontend_widget(
         0x40000014,
         g_tutorial_text,
@@ -52,7 +42,7 @@ void Intro::initialize_new_game_menu()
         2,
         0.0f);
 
-    postal_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    postal_button = g_game->border_manager.allocate_border();
     postal_button->initialize_frontend_widget(
         0x40000014,
         g_postal_mode_text,
@@ -64,7 +54,7 @@ void Intro::initialize_new_game_menu()
         0.0f);
     postal_button->stack_widget_below(tutorial_button);
 
-    time_trial_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    time_trial_button = g_game->border_manager.allocate_border();
     time_trial_button->initialize_frontend_widget(
         0x40000014,
         g_time_trial_text,
@@ -76,7 +66,7 @@ void Intro::initialize_new_game_menu()
         0.0f);
     time_trial_button->stack_widget_below(postal_button);
 
-    challenge_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    challenge_button = g_game->border_manager.allocate_border();
     challenge_button->initialize_frontend_widget(
         0x14,
         g_challenge_mode_text,
@@ -88,7 +78,7 @@ void Intro::initialize_new_game_menu()
         0.0f);
     challenge_button->stack_widget_below(time_trial_button);
 
-    help_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    help_button = g_game->border_manager.allocate_border();
     help_button->initialize_frontend_widget(
         0x40000014,
         g_help_text,
@@ -99,7 +89,7 @@ void Intro::initialize_new_game_menu()
         2,
         -220.0f);
 
-    back_button = ((NewGameBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
         0x14,
         g_back_text,

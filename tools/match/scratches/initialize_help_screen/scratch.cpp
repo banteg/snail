@@ -2,10 +2,11 @@
 
 #include "backdrop.h"
 #include "border_manager.h"
+#include "game_root.h"
 #include "help.h"
 #include "landscape_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_help_script_path[]; // 0x4a3488
 extern char g_blank_text[]; // 0x4dfb08
@@ -13,27 +14,18 @@ extern char g_back_text[]; // 0x4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-class HelpBorderManager {
-public:
-    FrontendWidget* allocate_border();
-};
-
 void Help::initialize_help_screen()
 {
     Color4f color;
 
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
-    int script_index =
-        ((LandscapeManager*)(g_game_base + 0x106c218))
-            ->load_landscape_script_by_name(g_help_script_path);
-    ((Backdrop*)(g_game_base + 0x4ec10))
-        ->change_backdrop(
-            &((LandscapeManager*)(g_game_base + 0x106c218))
-                ->scripts[script_index],
-            0);
-    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    int script_index = g_game->subgame.landscape_manager
+                           .load_landscape_script_by_name(g_help_script_path);
+    g_game->backdrop.change_backdrop(
+        &g_game->subgame.landscape_manager.scripts[script_index], 0);
+    g_game->border_manager.set_border_justify_centre(0);
 
-    back_button = ((HelpBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
         0x40000014,
         g_back_text,

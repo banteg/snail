@@ -3,38 +3,30 @@
 #include "backdrop.h"
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "landscape_manager.h"
 #include "sprite.h"
 #include "star_manager.h"
 #include "thanks_screen.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_blank_text[]; // 0x4dfb08
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
-
-class ThanksBorderManager {
-public:
-    FrontendWidget* allocate_border();
-};
 
 void ThanksScreen::initialize_thanks_for_playing_screen()
 {
     Color4f color;
 
-    ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
+    g_game->star_manager.hide_star_field();
     cache_music_file("music/introtext.ogg", 0, g_blank_text);
-    int script_index =
-        ((LandscapeManager*)(g_game_base + 0x106c218))
-            ->load_landscape_script_by_name("Splash.txt");
-    ((Backdrop*)(g_game_base + 0x4ec10))
-        ->change_backdrop(
-            &((LandscapeManager*)(g_game_base + 0x106c218))
-                ->scripts[script_index],
-            0);
-    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    int script_index = g_game->subgame.landscape_manager
+                           .load_landscape_script_by_name("Splash.txt");
+    g_game->backdrop.change_backdrop(
+        &g_game->subgame.landscape_manager.scripts[script_index], 0);
+    g_game->border_manager.set_border_justify_centre(0);
 
-    message_widget = ((ThanksBorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    message_widget = g_game->border_manager.allocate_border();
     message_widget->initialize_frontend_widget(
         0x20400002,
         "Thanks For Playing!",

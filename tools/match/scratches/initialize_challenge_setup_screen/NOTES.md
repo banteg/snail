@@ -23,3 +23,8 @@ remains exact at 167/167 instructions with 37 clean masked operands.
 `cRGUI::Init()`. Android independently preserves the borrowed game pointer at
 +0x00 and the same widget fields through +0x24. The Windows 0x28-byte layout
 also closes exactly between the salt-frequency dword and the `Help` owner.
+
+2026-07-13 root-owner cleanup: player-zero mouse capture and all five widget
+allocations now use the canonical `GameRoot` graph. The borrowed
+`SubgameRuntime* game` remains screen-local state; exact output remains 167/167
+with all 37 operands clean.

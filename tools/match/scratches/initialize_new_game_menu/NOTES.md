@@ -23,3 +23,10 @@ Postal Adventure, Pro-Challenge, Time Trial, Challenge Mode, Help, and Back.
 Windows omits the mobile-only Pro-Challenge pointer and closes its exact
 root-owned `Intro` at 0x48 bytes. Promoting the synthetic `NewGameMenu` owner to
 `Intro` preserves the exact 182/182 body and all 48 clean operands.
+
+## 2026-07-13 root-owner cleanup
+
+The star field, landscape bank, backdrop, border pool, and render-skip
+countdown now use canonical `GameRoot` members. Removing the screen-local
+`NewGameBorderManager` view keeps the initializer exact at 182/182 with all 48
+operands clean.

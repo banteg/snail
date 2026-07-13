@@ -50,3 +50,8 @@ discards the tail-forwarded route-card pointer. Mobile `cRGalaxy::Init()` and
 its final `BoxOn` handoff likewise establish no semantic return. Promoting both
 Windows members to void is codegen-neutral and keeps this initializer exact at
 338/338 instructions with 74 clean operands.
+
+2026-07-13 root-owner cleanup: star field, landscape bank, backdrop, border
+pool, player-zero mouse, and render-skip countdown now use their canonical
+`GameRoot` members. The screen-local `GalaxyBorderManager` pseudo-type is
+removed. Exact output remains 338/338 with all 74 operands clean.

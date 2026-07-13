@@ -16,3 +16,8 @@ Source-shape note:
 - Do not keep a local `BorderManager*`; native reloads `g_game_base + 0xb4c`
   for each allocation. A saved manager pointer keeps the value in `edi` and
   regresses to 83.62%.
+
+2026-07-13 root-owner cleanup: each allocation now reloads the typed global
+and follows `GameRoot::border_manager`; no manager local is retained. Mouse
+capture follows `players[0].mouse_cursor`. This canonical spelling preserves
+the exact 88/88 stream and all 23 clean operands.
