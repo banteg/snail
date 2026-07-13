@@ -114,7 +114,8 @@ typedef struct ObjectVertexBuffer {
 } ObjectVertexBuffer;
 
 typedef struct ObjectRenderBuffers {
-    uint8_t _pad_00[0x08];
+    uint32_t fvf;
+    int32_t unknown_04;
     ObjectVertexBuffer* vertex_buffer;
 } ObjectRenderBuffers;
 

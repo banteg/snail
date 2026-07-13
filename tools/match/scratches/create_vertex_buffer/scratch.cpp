@@ -2,62 +2,30 @@
 
 #include "direct3d_renderer.h"
 
-struct Direct3DBufferFactoryDevice;
-
-struct Direct3DBufferFactoryVtbl {
-    char unknown_00[0x5c];
-    int (__stdcall* CreateVertexBuffer)(
-        Direct3DBufferFactoryDevice* self,
-        unsigned int length,
-        unsigned int usage,
-        unsigned int fvf,
-        unsigned int pool,
-        ObjectVertexBuffer** out_buffer);
-};
-
-struct Direct3DBufferFactoryDevice {
-    Direct3DBufferFactoryVtbl* vtbl;
-};
-
-struct VertexBufferPoolSlotView {
-    unsigned int fvf; // +0x00
-    int unknown_04; // +0x04
-    ObjectVertexBuffer* vertex_buffer; // +0x08
-};
-
-typedef char VertexBufferPoolSlotView_must_be_0x0c[
-    (sizeof(VertexBufferPoolSlotView) == 0x0c) ? 1 : -1];
-
 extern int report_errorf(char* format, ...); // @ 0x431cc0
 extern int debug_report_stub(char* format, ...); // @ 0x449c00
 
 ObjectRenderBuffers* Direct3DRenderer::create_vertex_buffer(
     int vertex_count, int fvf)
 {
-    ((VertexBufferPoolSlotView*)vertex_buffers)[vertex_buffer_count].fvf = fvf;
+    vertex_buffers[vertex_buffer_count].fvf = fvf;
 
     int result;
     switch (fvf) {
     case 0x142:
-        result = ((Direct3DBufferFactoryDevice*)g_d3d_device)->vtbl->CreateVertexBuffer(
-            (Direct3DBufferFactoryDevice*)g_d3d_device,
+        result = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
             vertex_count * 24, 8, 0x142, 1,
-            &((VertexBufferPoolSlotView*)vertex_buffers)[vertex_buffer_count]
-                .vertex_buffer);
+            &vertex_buffers[vertex_buffer_count].vertex_buffer);
         goto created;
     case 0x102:
-        result = ((Direct3DBufferFactoryDevice*)g_d3d_device)->vtbl->CreateVertexBuffer(
-            (Direct3DBufferFactoryDevice*)g_d3d_device,
+        result = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
             vertex_count * 20, 8, 0x102, 1,
-            &((VertexBufferPoolSlotView*)vertex_buffers)[vertex_buffer_count]
-                .vertex_buffer);
+            &vertex_buffers[vertex_buffer_count].vertex_buffer);
         goto created;
     case 2:
-        result = ((Direct3DBufferFactoryDevice*)g_d3d_device)->vtbl->CreateVertexBuffer(
-            (Direct3DBufferFactoryDevice*)g_d3d_device,
+        result = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
             vertex_count * 12, 8, 2, 1,
-            &((VertexBufferPoolSlotView*)vertex_buffers)[vertex_buffer_count]
-                .vertex_buffer);
+            &vertex_buffers[vertex_buffer_count].vertex_buffer);
         goto created;
     default:
         result = vertex_count;

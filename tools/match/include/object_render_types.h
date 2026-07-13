@@ -16,9 +16,13 @@ struct ObjectAnimation;
 struct XAnimationKeyframe;
 
 struct ObjectRenderBuffers {
-    char unknown_00[0x08];
+    unsigned int fvf; // +0x00, D3D flexible vertex format requested by owner
+    int unknown_04;
     ObjectVertexBuffer* vertex_buffer; // +0x08
 };
+
+typedef char ObjectRenderBuffers_must_be_0x0c[
+    (sizeof(ObjectRenderBuffers) == 0x0c) ? 1 : -1];
 
 struct ObjectRenderVertex {
     float x;
