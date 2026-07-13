@@ -5,15 +5,17 @@ Starter scratch for the large root-world bootstrap.
 This is intentionally a semantic partial, not a line-for-line transcription. It
 captures the recovered early root defaults, texture/object-list startup, overlay
 registration, landscape/menu/audio/font/sprite setup, the first backdrop/pillar
-world-object islands, and a small track-template setup island. Recovered root,
-subgame, viewport, overlay, player-camera, landscape, catalog, and menu owners
-are typed; unrecovered later islands remain raw-offset based.
+world-object islands, and the first proven root-owned track/world asset banks.
+Recovered root, subgame, viewport, overlay, player-camera, landscape, catalog,
+and menu owners are typed; unrecovered later islands remain omitted.
 
 Expected residuals:
 - most later path-template, pickup, replay, score, and frontend pools are not
   modeled yet;
 - several list-link operations are expressed through a local helper, while the
   target has the inline intrusive-list sequence;
+- the runtime lazer/salt clone loops and later catalog producers remain outside
+  this semantic partial;
 - string literals are used for concrete asset paths recovered from the binary,
   so masked-operand audit may still need reference-manifest promotion later.
 
@@ -118,9 +120,8 @@ offsets in the old semantic partial:
 Focused Wibo is now 5.65%, with 358/5,411 candidate/target instructions,
 prefix 0/5,411, 74 clean masked operands, no unresolved operands, and 17
 expected mismatches across the still-sparse semantic partial. The native
-`0x12c` frame and its first stack-local `noop_this_constructor` remain absent,
-as do most later world and path-template islands; no score-only scaffolding was
-added to imitate them.
+`0x12c` frame and most later world and path-template islands remain absent; no
+score-only scaffolding was added to imitate them.
 
 ## 2026-07-11 sprite render workspace ownership
 
@@ -163,3 +164,32 @@ the subgame Player. Android `cRGame::Init2()` independently calls
 `cRCameraman::Init()` and preserves every field offset through +0xd4. The broad
 initializer remains at the honest 5.65% frontier with 74 clean and 17
 mismatched operands.
+
+## 2026-07-13 root track/world BOD catalog
+
+The constructor and this producer jointly close `GameRoot +0x44100..+0x48e00`
+as one 352-record `RootBodCatalog`. The recovered startup roles are:
+
+- index 0: universe-hole quad;
+- indices 5..17: floor/warning/slide corner banks and `Tramp.x`;
+- indices 22..57: eight pillars, three eight-slice banks, three ramp edges,
+  and the lazer donor;
+- indices 58..345: the complete 8x4x3x3 fringe catalog; and
+- index 351: the `salt.x` donor copied into the 40 runtime salt records later
+  in the target.
+
+Indices 1..4, 18..21, and 346..350 remain numbered unknowns because no producer
+or consumer has established a role. The corner initializer also proves the
+authored-id-to-storage order `0, 1, 3, 2`; the source exposes that mapping
+explicitly rather than pretending the physical bank is authored order.
+
+The source now spells the native sprite registration sequence inline, corrects
+`StarTail.tga`, restores the missing particle/collision/progress/jet-thrust and
+ghost registrations, uses the native Track0/TrackWarn/Slide0 slice families,
+and initializes the pillar, ramp, corner, trampoline, hole, and lazer donors
+through their actual root owner. Focused Wibo rises from 5.65% (358 candidate
+instructions) to 19.90% (1,011/5,411), with 332 clean operands, one unresolved
+early helper reference, and 33 expected mismatches across the still-partial
+function. The first stack-local no-op constructor is now present; the candidate
+frame remains `0x54` versus native `0x12c` because later locals and islands are
+still honestly absent.

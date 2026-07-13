@@ -19,3 +19,7 @@
   `cRSubLoc::IsEmpty()` and `cRSubLoc::IsRamp()`. The field-first cursor is
   retained for native source shape; the enclosing cell casts express the real
   owner. The function remains exact at 220/220 with all 18 operands clean.
+- 2026-07-13 catalog-owner pass: the three four-entry corner banks now resolve
+  through `GameRoot::root_bod_catalog`. The explicit authored-id-to-storage
+  mapping preserves the physical `0, 1, 3, 2` bank order and keeps the function
+  exact at 220/220 with all 18 operands clean.

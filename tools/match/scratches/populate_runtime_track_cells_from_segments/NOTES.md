@@ -338,3 +338,12 @@ Binary Ninja preview keeps the enclosing `SubgameRuntime` size at 0x1272838
 while exposing those owned arrays and record, then reverts. No matcher source
 was reshaped, so the focused 28.25% baseline and honest glyph-table mismatch
 remain unchanged.
+
+## Root BOD catalog consumer pass (2026-07-13)
+
+Every root-owned track object selected by the glyph switch now resolves through
+`GameRoot::root_bod_catalog`: floor/slide slice 0, trampoline, universe hole,
+three ramp edges, and pillar 0. The spelling retains the byte-shaped switch and
+runtime-cell cursors that VC6 needs for the established source shape. Focused
+Wibo remains 28.25% (1,190/1,245), with 57 clean operands and the single known
+glyph jump-table layout mismatch.

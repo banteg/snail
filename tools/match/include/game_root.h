@@ -18,15 +18,15 @@
 #include "overlay.h"
 #include "options.h"
 #include "render_camera_slot.h"
+#include "root_bod_catalog.h"
 #include "sprite.h"
 #include "star_manager.h"
 #include "subgame_runtime.h"
 #include "tip_manager.h"
-#include "track_fringe_bod_catalog.h"
 #include "vector3.h"
 
 enum {
-    GAME_ROOT_BOD_COUNT = 0x160,
+    GAME_ROOT_BOD_COUNT = ROOT_BOD_CATALOG_ENTRY_COUNT,
 };
 
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
@@ -103,7 +103,7 @@ public:
     // Exact cRBorder manager: the 150-record pool is followed by its delayed
     // transition lane and center-justify scalar, ending at the root BOD bank.
     BorderManager border_manager; // +0xb4c, ends exactly at +0x44100
-    BodBase root_bods[GAME_ROOT_BOD_COUNT]; // +0x44100, fixed cRBod array
+    RootBodCatalog root_bod_catalog; // +0x44100, fixed 352-entry cRBod bank
     DirectXLoader directx_loader; // +0x48e00, owns 128 cached X-mesh slots
     Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
     // Contiguous front-end owner block. The exact component extents prove
@@ -135,8 +135,7 @@ inline TrackFringeBodCatalog* GameRoot::track_fringe_bod_catalog()
 {
     // The asset constructor proves entries 58..345 of the root BOD bank are
     // the complete 8x4x3x3 track-fringe catalog.
-    return (TrackFringeBodCatalog*)
-        &root_bods[TRACK_FRINGE_BOD_CATALOG_ROOT_BOD_INDEX];
+    return &root_bod_catalog.fringe_catalog;
 }
 
 #endif

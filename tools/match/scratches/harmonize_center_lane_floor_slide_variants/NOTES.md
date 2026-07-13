@@ -26,3 +26,7 @@
   those calls keeps the focused score at 58.98% but improves the masked audit
   from `20 ok / 4 mismatch` to `24 ok / 0 mismatch`; the remaining fuzzy gap is
   still the typed-cell cursor displacement/register tradeoff documented above.
+- 2026-07-13 catalog-owner pass: floor and slide comparisons/replacements now
+  use their typed `RootBodCatalog` banks. This ownership-only substitution keeps
+  the honest 58.98% result and all 24 operands clean; the documented cursor and
+  register-shape residual remains.

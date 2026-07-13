@@ -94,6 +94,8 @@ Current checked-in Binary Ninja companion:
 - `uv run python tools/binja/sync_subgame_runtime_types.py`
 - `bn_overlay_types.h`
 - `uv run python tools/binja/sync_overlay_types.py` (after the presentation/path-template lane)
+- `bn_root_bod_catalog_types.h`
+- `uv run python tools/binja/sync_root_bod_catalog_types.py`
 - `star_manager_types.h`
 - `uv run python tools/binja/sync_star_manager_types.py`
 

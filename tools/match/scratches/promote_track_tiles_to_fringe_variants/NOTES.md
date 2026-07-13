@@ -42,3 +42,10 @@ Root cause: once the source mentions both `cursor-0x24` and `cursor+0x27c`,
 VC6 algebraically shares the `-0x24` base and steals `ebx` from the promoted
 flag. No durable original-looking spelling broke that without regressing the
 two-register cell-cursor frame. Pin the typed `TrackRowCell*` source.
+
+## 2026-07-13 catalog-owner pass
+
+The floor, warning, and slide replacement objects now come from the typed
+`RootBodCatalog` slice/corner banks rather than duplicate root offsets. The
+source retains its proven cell cursor and offset loop, so focused Wibo remains
+81.33% with the native instruction count and all six operands clean.

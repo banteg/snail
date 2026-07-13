@@ -1,6 +1,7 @@
 // harmonize_center_lane_floor_slide_variants @ 0x4356f0 (thiscall)
 
 #include "bod_types.h"
+#include "root_bod_catalog.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
@@ -30,17 +31,34 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                             && (is_sub_loc_floor(next) == 1
                                 || next->tile_id == 0x1e)) {
                             char* game = g_game_base;
-                            if (((BodBase*)cell)->object == *(void**)(game + 0x447b4)) {
-                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x44b34));
+                            if (((BodBase*)cell)->object
+                                == ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                       ->floor_slices.storage[0]
+                                       .object) {
+                                ((BodBase*)cell)->set_bod_object(
+                                    ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->slide_slices.storage[0]
+                                        .object);
                                 cell->lane_and_flags |= transition_flag;
                                 game = g_game_base;
                             }
                             int offset = 0;
                             do {
                                 if (((BodBase*)cell)->object
-                                    == *(void**)(game + offset + 0x4423c)) {
+                                    == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->floor_corners
+                                        + offset))
+                                           ->object) {
                                     ((BodBase*)cell)
-                                        ->set_bod_object(*(void**)(game + offset + 0x443fc));
+                                        ->set_bod_object(
+                                            ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                                    + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                                    ->slide_corners
+                                                + offset))
+                                                ->object);
                                     cell->lane_and_flags |= transition_flag;
                                     game = g_game_base;
                                 }
@@ -54,17 +72,34 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                             && is_sub_loc_floor(cell) == 1
                             && is_sub_loc_slide(next) == 1) {
                             char* game = g_game_base;
-                            if (((BodBase*)cell)->object == *(void**)(game + 0x44b34)) {
-                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x447b4));
+                            if (((BodBase*)cell)->object
+                                == ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                       ->slide_slices.storage[0]
+                                       .object) {
+                                ((BodBase*)cell)->set_bod_object(
+                                    ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->floor_slices.storage[0]
+                                        .object);
                                 cell->lane_and_flags |= transition_flag;
                                 game = g_game_base;
                             }
                             int offset = 0;
                             do {
                                 if (((BodBase*)cell)->object
-                                    == *(void**)(game + offset + 0x443fc)) {
+                                    == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->slide_corners
+                                        + offset))
+                                           ->object) {
                                     ((BodBase*)cell)
-                                        ->set_bod_object(*(void**)(game + offset + 0x4423c));
+                                        ->set_bod_object(
+                                            ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                                    + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                                    ->floor_corners
+                                                + offset))
+                                                ->object);
                                     cell->lane_and_flags |= transition_flag;
                                     game = g_game_base;
                                 }
@@ -85,17 +120,34 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                             && (is_sub_loc_floor(previous) == 1
                                 || previous->tile_id == 0x20)) {
                             char* game = g_game_base;
-                            if (((BodBase*)cell)->object == *(void**)(game + 0x447b4)) {
-                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x44b34));
+                            if (((BodBase*)cell)->object
+                                == ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                       ->floor_slices.storage[0]
+                                       .object) {
+                                ((BodBase*)cell)->set_bod_object(
+                                    ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->slide_slices.storage[0]
+                                        .object);
                                 cell->lane_and_flags |= transition_flag;
                                 game = g_game_base;
                             }
                             int offset = 0;
                             do {
                                 if (((BodBase*)cell)->object
-                                    == *(void**)(game + offset + 0x4423c)) {
+                                    == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->floor_corners
+                                        + offset))
+                                           ->object) {
                                     ((BodBase*)cell)
-                                        ->set_bod_object(*(void**)(game + offset + 0x443fc));
+                                        ->set_bod_object(
+                                            ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                                    + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                                    ->slide_corners
+                                                + offset))
+                                                ->object);
                                     cell->lane_and_flags |= transition_flag;
                                     game = g_game_base;
                                 }
@@ -109,17 +161,34 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                             && is_sub_loc_floor(cell) == 1
                             && is_sub_loc_slide(previous) == 1) {
                             char* game = g_game_base;
-                            if (((BodBase*)cell)->object == *(void**)(game + 0x44b34)) {
-                                ((BodBase*)cell)->set_bod_object(*(void**)(game + 0x447b4));
+                            if (((BodBase*)cell)->object
+                                == ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                       ->slide_slices.storage[0]
+                                       .object) {
+                                ((BodBase*)cell)->set_bod_object(
+                                    ((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->floor_slices.storage[0]
+                                        .object);
                                 cell->lane_and_flags |= transition_flag;
                                 game = g_game_base;
                             }
                             int offset = 0;
                             do {
                                 if (((BodBase*)cell)->object
-                                    == *(void**)(game + offset + 0x443fc)) {
+                                    == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->slide_corners
+                                        + offset))
+                                           ->object) {
                                     ((BodBase*)cell)
-                                        ->set_bod_object(*(void**)(game + offset + 0x4423c));
+                                        ->set_bod_object(
+                                            ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                                    + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                                    ->floor_corners
+                                                + offset))
+                                                ->object);
                                     cell->lane_and_flags |= transition_flag;
                                     game = g_game_base;
                                 }

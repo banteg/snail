@@ -158,7 +158,8 @@ that swap with volatile locals, register tricks, or raw-offset aliases.
 - Each direction advances by nine BODs (`9 * 0x38 = 0x1f8`), proving why the
   former object-field bases were `+0x44dd4`, `+0x44fcc`, `+0x451c4`, and
   `+0x453bc`. The full catalog is exactly 0x3f00 bytes at root-BOD indices
-  58..345; six root BODs follow before `DirectXLoader`.
+  58..345. Five unknown root BODs and the final `salt.x` donor follow before
+  `DirectXLoader`.
 - `build_track_fringe_objects` now selects
   `TrackFringeBodCatalog::entries[family][direction][edge_a][edge_b].object`.
   The allocated `Fringe` borrows that render object, while each SubLoc fringe

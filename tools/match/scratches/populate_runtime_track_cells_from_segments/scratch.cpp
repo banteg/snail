@@ -5,6 +5,7 @@
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "game_time.h"
+#include "root_bod_catalog.h"
 #include "track_attachment_types.h"
 #include "texture_set_selector.h"
 
@@ -18,6 +19,9 @@ public:
 };
 
 extern char* g_game_base; // data_4df904
+
+#define ROOT_BOD_OBJECT(slot) \
+    (((RootBodCatalog*)(g_game_base + ROOT_BOD_CATALOG_GAME_OFFSET))->slot.object)
 
 double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
@@ -362,12 +366,14 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
                 break;
             case '$':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x17;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '&':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x22;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
@@ -377,7 +383,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 if (trampoline_counter == 15)
                     trampoline_counter = 0;
                 if (trampoline_counter == 8) {
-                    ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x444dc));
+                    ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                        ->set_bod_object(ROOT_BOD_OBJECT(trampoline));
                     *(int*)(cell + 0x3bfacc) |= 0x20;
                     ((Color4f*)(base + 0x54 * (lane + build_row * 8 + 0xb6cc)))
                         ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);
@@ -385,22 +392,26 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(unsigned char*)(cell + 0x3bfb04) = 0x16;
                 break;
             case '+':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x18;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case ',':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44124));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(universe_hole));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x1c;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '-':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x15;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '.':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 1;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
@@ -424,7 +435,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             case '8':
             case '9':
                 if ((*(int*)row_record & 0xc0) == 0) {
-                    ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                    ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                        ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                     *(unsigned char*)(cell + 0x3bfb04) = 0xf;
                     *(int*)(cell + 0x3bfacc) |= 0x20;
                 } else {
@@ -433,7 +445,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 }
                 break;
             case '<':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44d2c));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
                 *(unsigned char*)(cell + 0x3bfb04) = 6;
@@ -441,12 +454,14 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 break;
             case '=':
             case '|':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x445f4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(pillars[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0xe;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '>':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44d2c));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
                 if (build_row > 0 && *(unsigned char*)(cell + 0x3bf864) == 3) {
@@ -463,22 +478,26 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 switch_track_mirror();
                 break;
             case 'F':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x13;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'G':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x11;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'J':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x19;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'M':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x12;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
@@ -534,24 +553,28 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
                 break;
             case '[':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44cf4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
                 *(unsigned char*)(cell + 0x3bfb04) = 5;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '_':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0xf;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'o':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44b34));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x10;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '{':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44cf4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
                 if (build_row > 0 && *(unsigned char*)(cell + 0x3bf864) == 3) {
@@ -563,7 +586,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '}':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x44d64));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[2]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
                 if (build_row > 0 && *(unsigned char*)(cell + 0x3bf864) == 3) {
@@ -575,7 +599,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 's':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(*(void**)(g_game_base + 0x447b4));
+                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x21;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
@@ -670,3 +695,5 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
     (void)trampoline_counter;
 }
+
+#undef ROOT_BOD_OBJECT

@@ -1,6 +1,7 @@
 // select_track_tile_edge_variants @ 0x435a80 (thiscall)
 
 #include "bod_types.h"
+#include "root_bod_catalog.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "track_row_cell_tile_views.h"
@@ -61,13 +62,23 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x4423c));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->floor_corners.storage[
+                                                TRACK_CORNER_0_STORAGE_INDEX]
+                                            .object);
                             } else if (tile != 0x16 && tile != 0x0e
                                 && ((SubLoc*)((char*)cell - 0x3c))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x443fc));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->slide_corners.storage[
+                                                TRACK_CORNER_0_STORAGE_INDEX]
+                                            .object);
                             }
                         }
                         break;
@@ -78,13 +89,23 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x44274));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->floor_corners.storage[
+                                                TRACK_CORNER_1_STORAGE_INDEX]
+                                            .object);
                             } else if (tile != 0x16 && tile != 0x0e
                                 && ((SubLoc*)((char*)cell - 0x3c))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x44434));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->slide_corners.storage[
+                                                TRACK_CORNER_1_STORAGE_INDEX]
+                                            .object);
                             }
                         }
                         break;
@@ -95,13 +116,23 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x442ac));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->floor_corners.storage[
+                                                TRACK_CORNER_3_STORAGE_INDEX]
+                                            .object);
                             } else if (tile != 0x16 && tile != 0x0e
                                 && ((SubLoc*)((char*)cell - 0x3c))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x4446c));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->slide_corners.storage[
+                                                TRACK_CORNER_3_STORAGE_INDEX]
+                                            .object);
                             }
                         }
                         break;
@@ -112,13 +143,23 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x442e4));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->floor_corners.storage[
+                                                TRACK_CORNER_2_STORAGE_INDEX]
+                                            .object);
                             } else if (tile != 0x16 && tile != 0x0e
                                 && ((SubLoc*)((char*)cell - 0x3c))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
-                                    ->set_bod_object(*(void**)(g_game_base + 0x444a4));
+                                    ->set_bod_object(
+                                        ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                            ->slide_corners.storage[
+                                                TRACK_CORNER_2_STORAGE_INDEX]
+                                            .object);
                             }
                         }
                         break;

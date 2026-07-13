@@ -169,16 +169,20 @@ keeps `construct_game_runtime` focused on the actual cRGame constructor body.
   exact. This constructor remains `88.89%`, `299/268`, with 119 clean operands
   and only the compiler-local EH handler unresolved.
 
-## 2026-07-11 root cRBod array ownership
+## 2026-07-13 root cRBod catalog ownership
 
 - The immediately preceding constructor loop initializes 352 consecutive
   `0x38`-byte `BodBase` records from root `+0x44100`. The product is exactly
   `0x4d00`, so the array ends at the now-proven `DirectXLoader +0x48e00`
   boundary with no padding or overlap.
-- `GameRoot::root_bods[0x160]` owns that interval. The world asset pass now
-  proves indices 58..345 are the contiguous 8x4x3x3
-  `TrackFringeBodCatalog`; the prefix and final six records stay deliberately
-  unnamed until their authored world-object roles are mapped.
+- `GameRoot::root_bod_catalog` owns that interval. The world asset pass now
+  maps index 0 to the universe-hole quad; indices 5..17 to three corner banks
+  plus the trampoline; indices 22..57 to pillars, slice banks, ramp edges, and
+  the lazer donor; indices 58..345 to the contiguous 8x4x3x3 fringe catalog;
+  and index 351 to the `salt.x` donor copied into the runtime salt pool.
+- Indices 1..4, 18..21, and 346..350 remain deliberately numbered unknowns.
+  The typed catalog is layout-equivalent to the original flat constructor loop,
+  so focused output stays 88.89%, 299/268, with all 120 operands clean.
 
 ## 2026-07-11 logo renderable-bank ownership
 

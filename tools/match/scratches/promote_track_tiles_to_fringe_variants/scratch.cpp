@@ -1,6 +1,7 @@
 // promote_track_tiles_to_fringe_variants @ 0x4355f0 (thiscall)
 
 #include "bod_types.h"
+#include "root_bod_catalog.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
@@ -23,9 +24,24 @@ void SubgameRuntime::promote_track_tiles_to_fringe_variants()
                     int offset = 0;
                     do {
                         void* object = ((BodBase*)cell)->object;
-                        if (object == *(void**)(game + offset + 0x447b4)
-                            || object == *(void**)(game + offset + 0x44b34)) {
-                            ((BodBase*)cell)->set_bod_object(*(void**)(game + offset + 0x44974));
+                        if (object
+                                == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->floor_slices
+                                    + offset))
+                                       ->object
+                            || object
+                                == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->slide_slices
+                                    + offset))
+                                       ->object) {
+                            ((BodBase*)cell)->set_bod_object(
+                                ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->warning_slices
+                                    + offset))
+                                    ->object);
                             cell->lane_and_flags |= promoted_flag;
                             game = g_game_base;
                         }
@@ -35,9 +51,24 @@ void SubgameRuntime::promote_track_tiles_to_fringe_variants()
                     offset = 0;
                     do {
                         void* object = ((BodBase*)cell)->object;
-                        if (object == *(void**)(game + offset + 0x4423c)
-                            || object == *(void**)(game + offset + 0x443fc)) {
-                            ((BodBase*)cell)->set_bod_object(*(void**)(game + offset + 0x4431c));
+                        if (object
+                                == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->floor_corners
+                                    + offset))
+                                       ->object
+                            || object
+                                == ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->slide_corners
+                                    + offset))
+                                       ->object) {
+                            ((BodBase*)cell)->set_bod_object(
+                                ((BodBase*)((char*)&((RootBodCatalog*)(game
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->warning_corners
+                                    + offset))
+                                    ->object);
                             cell->lane_and_flags |= promoted_flag;
                             game = g_game_base;
                         }

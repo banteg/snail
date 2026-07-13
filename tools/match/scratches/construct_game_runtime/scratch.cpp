@@ -137,7 +137,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
             &RuntimeSlot::initialize_border_record);
         border_manager->vtable = &g_border_manager_callback_table;
 
-        BodBase* bod = &root->root_bods[0];
+        BodBase* bod = &root->root_bod_catalog.universe_hole;
         int bod_count = GAME_ROOT_BOD_COUNT;
         do {
             bod->initialize_bod_base();
