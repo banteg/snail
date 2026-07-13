@@ -636,7 +636,8 @@
     },
     {
       "address": "0x410710",
-      "name": "initialize_distort"
+      "name": "zero_vector3",
+      "description": "Zeroes the x, y, and z components of one 12-byte Vector3. All five known callsites target embedded BodBase position vectors: four path/fringe positions in auxiliary loopout pair 60 and the shared barrier position."
     },
     {
       "address": "0x410720",

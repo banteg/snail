@@ -36,6 +36,7 @@ struct Vector3 {
         return *this;
     }
 
+    int zero_vector3(); // @ 0x410710, thiscall
     float normalize_vector(); // thiscall callsite view for @ 0x44cca0
     float normalize_vector_from_source(const Vector3* source); // callsite view for @ 0x44cd20
     float dot_vector(const Vector3* rhs); // @ 0x44cb70

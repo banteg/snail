@@ -630,8 +630,8 @@
     },
     {
       "address": "0x410710",
-      "name": "initialize_distort",
-      "artifact": "analysis/decompile/binja/functions/00410710-initialize_distort.c"
+      "name": "zero_vector3",
+      "artifact": "analysis/decompile/binja/functions/00410710-zero_vector3.c"
     },
     {
       "address": "0x410720",

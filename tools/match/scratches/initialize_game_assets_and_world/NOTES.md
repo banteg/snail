@@ -458,3 +458,22 @@ the complete auxiliary ownership graph for public loop pairs `0` through `7`.
 The focused bootstrap rises from 47.02% (3,620 candidate instructions) to 48.52%
 (3,875/5,411), with clean masked operands increasing from 1,159 to 1,234 and the
 existing problem counts unchanged.
+
+## 2026-07-13 final auxiliary transition group
+
+The path bank closes with auxiliary invert pair `62`, then loopout pairs `59`,
+`61`, and `60` in native construction order. They own independent primary and
+mirrored secondary objects plus both fringe bodies. Public invert pair `41`
+borrows pair `62`; public loopout pairs `25`, `27`, and `26` borrow pairs `59`,
+`61`, and `60` respectively. As before, each public path retains its own object
+as `entry_base_strip_mesh`, so none of these links transfer ownership.
+
+Pair `60` is the only path record whose four positions are cleared by calls to
+`zero_vector3` instead of inline stores. The independently exact helper has five
+total xrefs: these four embedded path/fringe `BodBase.position` vectors and the
+barrier position. This disproves the old scratch-local `initialize_distort`
+owner and recovers a shared `Vector3` operation. The native path phase then
+closes with `debug_report_stub("path generation end\n")` before snail animation
+assets begin. The focused bootstrap rises from 48.52% (3,875 candidate
+instructions) to 49.81% (4,078/5,411), with clean masked operands increasing
+from 1,234 to 1,300 and the pre-existing audit problem counts unchanged.

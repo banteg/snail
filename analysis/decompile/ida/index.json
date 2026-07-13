@@ -861,11 +861,13 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_distort",
+      "selector": "zero_vector3",
       "address": "0x410710",
-      "name": "initialize_distort",
-      "artifact": "analysis/decompile/ida/functions/00410710-initialize_distort.c",
-      "removed_stale_artifacts": []
+      "name": "zero_vector3",
+      "artifact": "analysis/decompile/ida/functions/00410710-zero_vector3.c",
+      "removed_stale_artifacts": [
+        "analysis/decompile/ida/functions/00410710-initialize_distort.c"
+      ]
     },
     {
       "selector": "initialize_game_last",
