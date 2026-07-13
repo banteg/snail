@@ -2609,5 +2609,209 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.object->distort.y_squash = 0.0f;
     subgame.player.presentation.object->distort.xyz_scale = 0.0f;
 
+    ((BodBase*)&subgame.player.presentation.jetpack_channel)
+        ->set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"jetpack-base-000.x",
+        subgame.player.presentation.jetpack_channel.object);
+    subgame.player.presentation.jetpack_channel.animation_slots[0]
+        .body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"jetpack-base-000.x",
+        subgame.player.presentation.jetpack_channel.animation_slots[0]
+            .body.object);
+    subgame.player.presentation.jetpack_channel.animation_slots[1]
+        .body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"jetpack-draw-000.x",
+        subgame.player.presentation.jetpack_channel.animation_slots[1]
+            .body.object);
+
+    animation_count = 2;
+    animation_slot =
+        &subgame.player.presentation.jetpack_channel.animation_slots[0];
+    do {
+        Object* animation_object = animation_slot->body.object;
+        animation_object->flags |= 4;
+        animation_object->apply_object_toon(0);
+        animation_object->distort.z_wave = 0.0f;
+        animation_object->distort.y_squash = 0.0f;
+        animation_object->distort.xyz_scale = 0.0f;
+        ++animation_slot;
+    } while (--animation_count != 0);
+
+    subgame.player.presentation.jetpack_channel.object->flags |= 4;
+    subgame.player.presentation.jetpack_channel.object->apply_object_toon(0);
+    subgame.player.presentation.jetpack_channel.object->distort.z_wave = 0.0f;
+    subgame.player.presentation.jetpack_channel.object->distort.y_squash = 0.0f;
+    subgame.player.presentation.jetpack_channel.object->distort.xyz_scale = 0.0f;
+
+    ((BodBase*)&subgame.player.presentation.weapon_channels[0])
+        ->set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterleft-base-000.x",
+        subgame.player.presentation.weapon_channels[0].object);
+    subgame.player.presentation.weapon_channels[0].animation_slots[0]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterleft-base-000.x",
+        subgame.player.presentation.weapon_channels[0].animation_slots[0]
+            .body.object);
+    subgame.player.presentation.weapon_channels[0].animation_slots[1]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterleft-draw-000.x",
+        subgame.player.presentation.weapon_channels[0].animation_slots[1]
+            .body.object);
+    subgame.player.presentation.weapon_channels[0].animation_slots[2]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterleft-fire-000.x",
+        subgame.player.presentation.weapon_channels[0].animation_slots[2]
+            .body.object);
+    subgame.player.presentation.weapon_channels[0].animation_slots[3]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"Laserleft-base-000.x",
+        subgame.player.presentation.weapon_channels[0].animation_slots[3]
+            .body.object);
+    subgame.player.presentation.weapon_channels[0].animation_slots[4]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"Laserleft-draw-000.x",
+        subgame.player.presentation.weapon_channels[0].animation_slots[4]
+            .body.object);
+
+    animation_count = 5;
+    animation_slot =
+        &subgame.player.presentation.weapon_channels[0].animation_slots[0];
+    do {
+        Object* animation_object = animation_slot->body.object;
+        animation_object->flags |= 4;
+        animation_object->apply_object_toon(0);
+        animation_object->distort.z_wave = 0.0f;
+        animation_object->distort.y_squash = 0.0f;
+        animation_object->distort.xyz_scale = 0.0f;
+        ++animation_slot;
+    } while (--animation_count != 0);
+
+    subgame.player.presentation.weapon_channels[0].object->flags |= 4;
+    subgame.player.presentation.weapon_channels[0].object->apply_object_toon(0);
+    subgame.player.presentation.weapon_channels[0].object->distort.z_wave = 0.0f;
+    subgame.player.presentation.weapon_channels[0].object->distort.y_squash = 0.0f;
+    subgame.player.presentation.weapon_channels[0].object->distort.xyz_scale = 0.0f;
+
+    ((BodBase*)&subgame.player.presentation.weapon_channels[1])
+        ->set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterRight-base-000.x",
+        subgame.player.presentation.weapon_channels[1].object);
+    subgame.player.presentation.weapon_channels[1].animation_slots[0]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterRight-base-000.x",
+        subgame.player.presentation.weapon_channels[1].animation_slots[0]
+            .body.object);
+    subgame.player.presentation.weapon_channels[1].animation_slots[1]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterRight-draw-000.x",
+        subgame.player.presentation.weapon_channels[1].animation_slots[1]
+            .body.object);
+    subgame.player.presentation.weapon_channels[1].animation_slots[2]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterRight-fire-000.x",
+        subgame.player.presentation.weapon_channels[1].animation_slots[2]
+            .body.object);
+    subgame.player.presentation.weapon_channels[1].animation_slots[3]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"Laserright-base-000.x",
+        subgame.player.presentation.weapon_channels[1].animation_slots[3]
+            .body.object);
+    subgame.player.presentation.weapon_channels[1].animation_slots[4]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"Laserright-draw-000.x",
+        subgame.player.presentation.weapon_channels[1].animation_slots[4]
+            .body.object);
+
+    animation_count = 5;
+    animation_slot =
+        &subgame.player.presentation.weapon_channels[1].animation_slots[0];
+    do {
+        Object* animation_object = animation_slot->body.object;
+        animation_object->flags |= 4;
+        animation_object->apply_object_toon(0);
+        animation_object->distort.z_wave = 0.0f;
+        animation_object->distort.y_squash = 0.0f;
+        animation_object->distort.xyz_scale = 0.0f;
+        ++animation_slot;
+    } while (--animation_count != 0);
+
+    subgame.player.presentation.weapon_channels[1].object->flags |= 4;
+    subgame.player.presentation.weapon_channels[1].object->apply_object_toon(0);
+    subgame.player.presentation.weapon_channels[1].object->distort.z_wave = 0.0f;
+    subgame.player.presentation.weapon_channels[1].object->distort.y_squash = 0.0f;
+    subgame.player.presentation.weapon_channels[1].object->distort.xyz_scale = 0.0f;
+
+    ((BodBase*)&subgame.player.presentation.weapon_channels[2])
+        ->set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterTop-base-000.x",
+        subgame.player.presentation.weapon_channels[2].object);
+    subgame.player.presentation.weapon_channels[2].animation_slots[0]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterTop-base-000.x",
+        subgame.player.presentation.weapon_channels[2].animation_slots[0]
+            .body.object);
+    subgame.player.presentation.weapon_channels[2].animation_slots[1]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterTop-draw-000.x",
+        subgame.player.presentation.weapon_channels[2].animation_slots[1]
+            .body.object);
+    subgame.player.presentation.weapon_channels[2].animation_slots[2]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"blasterTop-fire-000.x",
+        subgame.player.presentation.weapon_channels[2].animation_slots[2]
+            .body.object);
+    subgame.player.presentation.weapon_channels[2].animation_slots[3]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"rocketlauncher-base-000.x",
+        subgame.player.presentation.weapon_channels[2].animation_slots[3]
+            .body.object);
+    subgame.player.presentation.weapon_channels[2].animation_slots[4]
+        .body.set_bod_object(g_object_list.add_object_to_list());
+    loader->load_x_animation_clip(
+        (char*)"rocketlauncher-draw-000.x",
+        subgame.player.presentation.weapon_channels[2].animation_slots[4]
+            .body.object);
+
+    animation_count = 5;
+    animation_slot =
+        &subgame.player.presentation.weapon_channels[2].animation_slots[0];
+    do {
+        Object* animation_object = animation_slot->body.object;
+        animation_object->flags |= 4;
+        animation_object->apply_object_toon(0);
+        animation_object->distort.z_wave = 0.0f;
+        animation_object->distort.y_squash = 0.0f;
+        animation_object->distort.xyz_scale = 0.0f;
+        ++animation_slot;
+    } while (--animation_count != 0);
+
+    subgame.player.presentation.weapon_channels[2].object->flags |= 4;
+    subgame.player.presentation.weapon_channels[2].object->apply_object_toon(0);
+    subgame.player.presentation.weapon_channels[2].object->distort.z_wave = 0.0f;
+    subgame.player.presentation.weapon_channels[2].object->distort.y_squash = 0.0f;
+    subgame.player.presentation.weapon_channels[2].object->distort.xyz_scale = 0.0f;
+
     return 1;
 }

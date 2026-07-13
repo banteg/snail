@@ -42,6 +42,31 @@ the added native island's object offsets, asset order, and calls were checked
 directly against `0x40f284..0x40f57d`. No padding or score-only scaffolding was
 added.
 
+## 2026-07-13 snail equipment animation ownership
+
+The contiguous animation producer continues through the embedded jetpack and
+three weapon channels. The jetpack channel owns its main base object plus base
+and draw slots `0..1`. The weapon channel array's authored order is left,
+right, top; each channel owns one main base object and five slots:
+
+- left: blaster base/draw/fire, then laser base/draw;
+- right: blaster base/draw/fire, then laser base/draw; and
+- top: blaster base/draw/fire, then rocket-launcher base/draw.
+
+Startup allocates every object through `g_object_list`, loads the exact native
+clip spelling (including the original mixed-case names), and applies the same
+toon flag and zero distortion to every slot object and channel main object.
+Direct root-relative member accesses are intentional: retaining a temporary
+channel pointer made VC6 rebase the remaining function around that subobject,
+unlike native, and was rejected.
+
+The recovered producer now reaches `0x40fb40`. Focused Wibo rises from 51.10%
+(4,260/5,411 candidate instructions, 1,352 clean operands) to 52.00%
+(4,565/5,411, 1,401 clean operands). The broad alignment audit reports one
+unresolved early helper and 49 expected mismatches; native object offsets,
+assets, call order, and the repeated two/five-slot loops were checked directly.
+No fake padding or operand-only matching was introduced.
+
 2026-06-20 font bootstrap audit: the native FONT-MENU-HOVER setup call pushes
 `0x3f400000` (`0.75f`) for the width scale and `0x3f800000` (`1.0f`) for the
 height scale. The old scratch used `0.800000012f` and a `double` height

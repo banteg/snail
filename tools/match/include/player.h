@@ -135,7 +135,10 @@ public:
     Player* owner_player;                   // +0x100, non-owning backlink to containing Player
     AnimManager anim_manager;               // +0x104
     PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
+    // Authored order: left blaster/laser, right blaster/laser, top
+    // blaster/rocket launcher. Each channel owns its five animation slots.
     PresentationAnimationChannel weapon_channels[3]; // +0x64c
+    // Owns the jetpack base/draw slots in animation_slots[0..1].
     PresentationAnimationChannel jetpack_channel;     // +0x11e0
     float wobble_roll_phase;            // +0x15bc
     float wobble_roll_phase_step;       // +0x15c0
