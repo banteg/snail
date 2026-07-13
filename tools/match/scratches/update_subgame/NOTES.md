@@ -26,14 +26,15 @@ The shared camera call is left at function tail, while native early-return paths
 
 ## Runtime layout findings
 
-The row scanner uses the following measured layouts:
+The row scanner uses the canonical `SubRow` owner at
+`SubgameRuntime::runtime_rows`:
 
-- active runtime row stride: `0xf4` bytes;
+- `SubRow` stride: `0xf4` bytes;
 - row flags: `+0x00`;
-- primary intrusive `BodNode`: `+0x04`;
-- parcel position: `+0x90`;
-- attachment intrusive `BodNode`: `+0xb0`;
-- attachment position: `+0xc0`;
+- embedded `RowModel`: `+0x04`;
+- overloaded parcel projection payload: `+0x90`;
+- embedded attachment `BodBase`: `+0xb0` (position at `+0xc0`);
+- authored ring/effect speed: `+0xe8`;
 - track cell stride: `0x54` bytes;
 - four fringe-object pointers begin at the cell's `+0x44` lane.
 
@@ -72,7 +73,7 @@ cmp eax, 7
 
 ## Remaining mismatches
 
-Focused matcher result: 78.22%, 1033 candidate instructions versus 1033 target instructions, 9-instruction prefix, 116 clean masked operands, and 2 jump-table mismatches.
+Focused matcher result: 79.75%, 1036 candidate instructions versus 1033 target instructions, 9-instruction prefix, 117 clean masked operands, and 2 jump-table mismatches.
 
 The first mismatch is the destination label of the range-check `ja`; its semantics agree, but later block sizes give the normalized target and candidate labels different identities. Both switch jump-table operands are now content-audited and classified as real mismatches, not unresolved data or call targets.
 
@@ -270,3 +271,27 @@ now uses the shared `BodAiDispatch` ABI overlay instead of a scratch-local
 virtual class. This preserves the explicit cRBod-compatible vtable word and
 does not change focused output: 78.22%, 1033/1033 instructions, 116 clean
 operands, and the same two honest jump-table mismatches.
+
+2026-07-13 runtime-owner consolidation:
+
+- The scratch-local `ActiveRuntimeRow` shell is retired. All row accesses now
+  use `runtime_rows[cell_index]` and the canonical `SubRow` children:
+  `row_model`, `projection_payload`, `attachment_body`, and `ring_speed`.
+- The formerly raw root offsets are established `GameRoot` ownership:
+  `render_skip_count`, `active_bod_list`, `star_manager`, `fade.state`,
+  `intro.hide_for_replay_latch`, `intro.attract_reset_progress`, and player
+  zero's current/saved front-end states.
+- The Time Trial HUD record is exactly
+  `sub_high_score.time_trial_route_records[level_mode_arg]` because
+  `0x68b4c8 + 0x2b8c88 == 0x944150`. Direct owner access recovers the native
+  index/address sequence and a further clean audited operand.
+- The runtime-cell body now names `object` and `render_arg_20`; adjacent lanes
+  use `SubLoc` pointer arithmetic, and the projected ring cell is explicitly
+  the same lane six rows ahead (`6 * 8` cells). `RuntimeCellSlotBase` remains
+  only to preserve VC6's native late `+0x3bfac8` displacement and register
+  allocation, as documented above.
+
+Focused Wibo improves from 78.22% to 79.75%. The candidate is 1036/1033
+instructions with 117 clean masked operands, no unresolved operands, and only
+the same two honest state-table identity mismatches. No score-only alias or
+masked-operand waiver is introduced.
