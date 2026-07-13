@@ -13,6 +13,8 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
+typedef struct TransformMatrix TransformMatrix;
+
 typedef struct Vec3 {
     float x;
     float y;
@@ -93,6 +95,14 @@ struct Sprite {
     float frame_progress;
     float frame_progress_step;
 };
+
+typedef struct SpriteManager {
+    uint8_t paused;
+    uint8_t unknown_01[0x3];
+    Sprite sprites[3000];
+    Sprite* active_heads[5];
+    Sprite* free_head;
+} SpriteManager;
 
 typedef struct StarManagerEntry {
     int32_t active;

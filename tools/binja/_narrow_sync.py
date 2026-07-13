@@ -318,7 +318,7 @@ def parse_struct_layout_size(layout: str) -> int | None:
     return int(match.group("size"), 0)
 
 
-def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
+def current_struct_size(repo_root: Path, *, target: str, struct_name: str) -> int | None:
     try:
         result = run_bn(
             repo_root,
@@ -331,16 +331,20 @@ def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
             "json",
         )
     except RuntimeError:
-        return False
+        return None
     if not isinstance(result, dict):
-        return False
+        return None
     layout = result.get("layout")
     if not isinstance(layout, str):
-        return False
+        return None
+    return parse_struct_layout_size(layout)
+
+
+def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
     # Binary Ninja reports a forward declaration as a zero-sized struct. It is
     # not sufficient for replay: treating it as present causes the authoritative
     # header import to be skipped forever, leaving every owner pointer opaque.
-    size = parse_struct_layout_size(layout)
+    size = current_struct_size(repo_root, target=target, struct_name=struct_name)
     return size is not None and size > 0
 
 

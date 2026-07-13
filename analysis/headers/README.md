@@ -163,10 +163,12 @@ a shared concrete screen base class.
 The star-manager lane records the cross-port `cRStarManager` owner, its
 constructed `BodBase` prefix, the `0x2c` entry stride, and the lifecycle fields
 shared by the seven Windows helpers from destruction through per-frame update.
-It deliberately carries the already proven complete `Sprite` and `TextureRef`
-prerequisites too: BN treats forward-only redeclarations as destructive, so the
-lane must remain monotonic instead of erasing those layouts while adding the
-manager types.
+It deliberately carries the already proven complete `Sprite`, `SpriteManager`,
+and `TextureRef` prerequisites too. Its replay compares their exact expected
+sizes, selectively repairs only missing or incomplete definitions, and batches
+field/prototype verification. BN treats forward-only redeclarations as
+destructive, so this lane remains monotonic instead of erasing complete shared
+layouts while adding the star-manager types.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

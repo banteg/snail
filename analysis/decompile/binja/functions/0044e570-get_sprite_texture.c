@@ -3,4 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: get_sprite_texture @ 0x44e570 */
 
-0044e57b        return g_sprite_texture_table[arg1]
+0044e57b        return g_sprite_texture_table[texture_id]

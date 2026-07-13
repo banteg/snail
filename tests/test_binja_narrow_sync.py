@@ -31,6 +31,23 @@ def test_parse_struct_layout_size() -> None:
     assert _narrow_sync.parse_struct_layout_size("struct Runtime") is None
 
 
+def test_current_struct_size_reads_layout(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_bn",
+        lambda *_args, **_kwargs: {
+            "layout": "struct Sprite // size=0xb4\n0x0000: void* object_ref",
+        },
+    )
+
+    assert (
+        _narrow_sync.current_struct_size(
+            Path("."), target="snail-mail.exe", struct_name="Sprite"
+        )
+        == 0xB4
+    )
+
+
 def test_struct_exists_rejects_forward_declaration(monkeypatch) -> None:
     monkeypatch.setattr(
         _narrow_sync,
@@ -57,6 +74,15 @@ def test_struct_exists_accepts_complete_layout(monkeypatch) -> None:
     assert _narrow_sync.struct_exists(
         Path("."), target="snail-mail.exe", struct_name="SubgameRuntime"
     )
+
+
+def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
+    source = (BINJA_DIR / "sync_star_manager_types.py").read_text(encoding="utf-8")
+
+    assert "types_declare_missing_only" in source
+    assert "current_struct_size" in source
+    assert '"Sprite": 0xB4' in source
+    assert "types_declare(" not in source
 
 
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:

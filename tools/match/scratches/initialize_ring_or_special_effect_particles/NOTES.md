@@ -83,3 +83,13 @@ Type consolidation:
   cross-port `cRSubRingStar::AI()` and `Shower()` symbols. The historical
   combined-effect names remain compatibility aliases only.
 - The method stays exact at 153/153 instructions with ten clean operands.
+
+## 2026-07-13 Sprite consumer ownership recovery
+
+- Restoring the complete live `Sprite` definition recovers the child sprite's
+  `draw_mode`, `color`, flags, animation progress, size, position, gravity, and
+  facing fields in the tracked Binary Ninja artifact.
+- The same repair restores typed `Sprite` velocity/position ownership in
+  `emit_ring_star_shower` and the position owner in the child updater.
+- These are analysis-only ownership gains: the exact 153/153 initializer
+  source and its native bytes are unchanged.

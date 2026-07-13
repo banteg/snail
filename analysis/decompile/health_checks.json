@@ -807,6 +807,55 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_sprite_texture_frame_owner",
+      "artifact": "analysis/decompile/binja/functions/0044e550-set_sprite_texture_ref.c",
+      "required_substrings": [
+        "struct TextureRef* result",
+        "g_sprite_texture_table[texture_id][frame]",
+        "sprite->texture_ref = result"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "*(arg1 + 0x1c)",
+        "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_subring_sprite_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/0043e470-initialize_ring_or_special_effect_particles.c",
+      "required_substrings": [
+        "sprite->draw_mode",
+        "sprite->color",
+        "sprite->progress",
+        "sprite->size_start",
+        "sprite->position"
+      ],
+      "forbidden_substrings": [
+        "sprite->__offset(",
+        "__offset(Sprite",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_subring_star_shower_sprite_owner",
+      "artifact": "analysis/decompile/binja/functions/0043e690-emit_ring_star_shower.c",
+      "required_substrings": [
+        "struct Sprite* eax_2",
+        "eax_2->velocity.x",
+        "&particle->sprite->position",
+        "eax_2->gravity_step"
+      ],
+      "forbidden_substrings": [
+        "eax_2->__offset(",
+        "__offset(Sprite",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

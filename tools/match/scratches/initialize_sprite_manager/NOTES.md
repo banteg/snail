@@ -35,3 +35,11 @@ The owner and layout are corroborated by `allocate_sprite`, `kill_sprite`,
 sprite, while `g_sprite_depth_buckets[256]` owns the clamped 8-bit depth heads.
 The shared `SPRITE_POOL_CAPACITY` constant now ties both fixed pools to the
 same proven capacity without changing this exact initializer.
+
+2026-07-13 Binary Ninja ownership repair: `SpriteManager` itself still had the
+correct `0x83d7c` extent, but its embedded `Sprite` element type had regressed
+to a zero-sized declaration. The sprite/star sync now carries the complete
+manager declaration and an exact-size contract for all shared prerequisites.
+It selectively restored `Sprite` (`0xb4`) and `TextureRef` (`0xa4`) without
+redeclaring the already-complete manager, field, or star layouts; the immediate
+idempotence run skipped every type, field, and prototype operation.
