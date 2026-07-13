@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 import difflib
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import struct
@@ -34,6 +35,8 @@ DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
     REPO_ROOT / "analysis/symbols/gameplay-references.json"
 )
 CONTENT_AUDITED_REFERENCE_KINDS = frozenset(("data_blob", "lookup_table"))
+DEFAULT_MATCH_JOBS = min(8, max(1, os.cpu_count() or 1))
+LOCAL_INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"\r\n]+)"', re.MULTILINE)
 
 
 @dataclass(frozen=True, slots=True)
@@ -1867,11 +1870,43 @@ def _mtime_ns(path: Path) -> int | None:
     return path.stat().st_mtime_ns if path.exists() else None
 
 
-def _scratch_include_headers(match_root: Path) -> tuple[Path, ...]:
+def _scratch_include_headers(
+    config: ScratchConfig, match_root: Path
+) -> tuple[Path, ...]:
+    """Return only local headers transitively included by one scratch.
+
+    VC6 searches the directory of an included header before the configured
+    project include directory. The scratch source itself is copied into its
+    build directory, so its project headers resolve through ``match/include``.
+    """
     include_dir = match_root / "include"
-    if not include_dir.exists():
-        return ()
-    return tuple(sorted(path for path in include_dir.rglob("*.h") if path.is_file()))
+    source = config.directory / "scratch.cpp"
+    pending = [source]
+    visited = {source}
+    headers: set[Path] = set()
+
+    while pending:
+        including_path = pending.pop()
+        try:
+            text = including_path.read_text(encoding="latin1")
+        except OSError:
+            continue
+        for match in LOCAL_INCLUDE_RE.finditer(text):
+            include_name = Path(match.group(1).replace("\\", "/"))
+            candidates = [include_dir / include_name]
+            if including_path != source:
+                candidates.insert(0, including_path.parent / include_name)
+            dependency = next((path for path in candidates if path.is_file()), None)
+            if dependency is None:
+                continue
+            dependency = dependency.resolve()
+            if dependency in visited:
+                continue
+            visited.add(dependency)
+            headers.add(dependency)
+            pending.append(dependency)
+
+    return tuple(sorted(headers))
 
 
 def _scratch_compile_argv(config: ScratchConfig, match_root: Path) -> tuple[str, ...]:
@@ -1892,7 +1927,7 @@ def _scratch_build_dependencies(config: ScratchConfig, match_root: Path) -> tupl
         config.directory / "scratch.conf",
         match_root / "cl.sh",
         compiler_exe,
-        *_scratch_include_headers(match_root),
+        *_scratch_include_headers(config, match_root),
     )
 
 
@@ -2413,23 +2448,32 @@ def collect_scratch_statuses(
     manifest: FunctionSymbolManifest,
     image_path: Path,
     match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    jobs: int = DEFAULT_MATCH_JOBS,
 ) -> list[ScratchStatus]:
     """Match every scratch, reusing cached results for unchanged ones.
 
-    The cache keys on scratch source/conf, shared headers, compiler inputs,
+    The cache keys on scratch source/conf, transitive shared headers, compiler inputs,
     image, function/reference manifests, and matcher mtimes. An unchanged
     scratch therefore costs a dependency-stat pass instead of a compile,
     disassembly, and diff while target-map or normalizer changes still
     invalidate old scores.
     """
-    image: LoadedImage | None = None
+    from concurrent.futures import ThreadPoolExecutor
+
+    if jobs < 1:
+        raise ValueError("jobs must be positive")
+
     reference_manifest = load_default_reference_symbol_manifest()
     manifest_digest = _function_manifest_cache_digest(manifest)
     by_name = {symbol.name: symbol for symbol in manifest.functions}
-    statuses: list[ScratchStatus] = []
+    ordered: list[tuple[ScratchConfig, int]] = []
+    statuses_by_directory: dict[Path, ScratchStatus] = {}
+    uncached: list[tuple[ScratchConfig, int]] = []
     for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
         config = load_scratch_config(conf_path.parent)
         address = by_name[config.function].address if config.function in by_name else 0
+        ordered.append((config, address))
 
         if (
             cached := _load_cached_status(
@@ -2439,11 +2483,19 @@ def collect_scratch_statuses(
                 manifest_digest=manifest_digest,
             )
         ) is not None:
-            statuses.append(ScratchStatus(config=config, address=address, **cached))
+            statuses_by_directory[config.directory] = ScratchStatus(
+                config=config, address=address, **cached
+            )
             continue
+        uncached.append((config, address))
 
-        if image is None:
-            image = load_image(image_path, manifest.image_base)
+    if not uncached:
+        return [statuses_by_directory[config.directory] for config, _ in ordered]
+
+    image = load_image(image_path, manifest.image_base)
+
+    def match_uncached(item: tuple[ScratchConfig, int]) -> ScratchStatus:
+        config, address = item
         try:
             start, end = resolve_function_extent(manifest, config.function, config.end_va)
             target_data = image.function_bytes(start, end)
@@ -2493,8 +2545,17 @@ def collect_scratch_statuses(
                 match_root,
                 manifest_digest=manifest_digest,
             )
-        statuses.append(ScratchStatus(config=config, address=address, **fields))
-    return statuses
+        return ScratchStatus(config=config, address=address, **fields)
+
+    if jobs == 1 or len(uncached) == 1:
+        for status in map(match_uncached, uncached):
+            statuses_by_directory[status.config.directory] = status
+    else:
+        with ThreadPoolExecutor(max_workers=min(jobs, len(uncached))) as executor:
+            for status in executor.map(match_uncached, uncached):
+                statuses_by_directory[status.config.directory] = status
+
+    return [statuses_by_directory[config.directory] for config, _ in ordered]
 
 
 def _summarize_error(error: Exception) -> str:

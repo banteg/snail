@@ -2201,7 +2201,9 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     include_dir.mkdir()
     header = include_dir / "shared.h"
     header.write_text("struct Shared { int x; };\n")
-    (scratch_dir / "scratch.cpp").write_text("// candidate\n")
+    unrelated_header = include_dir / "unrelated.h"
+    unrelated_header.write_text("struct Unrelated { int x; };\n")
+    (scratch_dir / "scratch.cpp").write_text('#include "shared.h"\n// candidate\n')
     (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
     image = tmp_path / "image.exe"
     image.write_bytes(b"MZ")
@@ -2312,8 +2314,125 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
 
     store_status()
     stamp += 10
+    os.utime(unrelated_header, (stamp, stamp))
+    assert load_status() == fields
+
+    stamp += 10
     os.utime(header, (stamp, stamp))
     assert load_status() is None
+
+
+def test_scratch_include_headers_follow_transitive_local_graph(tmp_path: Path) -> None:
+    from snail.match import ScratchConfig, _scratch_include_headers
+
+    match_root = tmp_path / "match"
+    scratch_dir = match_root / "scratches/foo"
+    include_dir = match_root / "include"
+    scratch_dir.mkdir(parents=True)
+    include_dir.mkdir()
+    source = scratch_dir / "scratch.cpp"
+    first = include_dir / "first.h"
+    nested = include_dir / "nested.h"
+    unrelated = include_dir / "unrelated.h"
+    source.write_text('#include "first.h"\n')
+    first.write_text('#include "nested.h"\n')
+    nested.write_text('#include "first.h"\n')
+    unrelated.write_text("struct Unrelated {};\n")
+    config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+
+    assert _scratch_include_headers(config, match_root) == (first, nested)
+
+
+def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import threading
+    import time
+
+    import snail.match as match_module
+    from snail.match import MatchResult, collect_scratch_statuses
+
+    match_root = tmp_path / "match"
+    for name in ("first", "second"):
+        scratch_dir = match_root / f"scratches/{name}"
+        scratch_dir.mkdir(parents=True)
+        (scratch_dir / "scratch.conf").write_text(f"FUNCTION={name}\n")
+        (scratch_dir / "scratch.cpp").write_text(f"void {name}() {{}}\n")
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="image.exe",
+        reference_target="image.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="first"),
+            FunctionSymbol(address=0x1010, name="second"),
+            FunctionSymbol(address=0x1020, name="sentinel"),
+        ),
+    )
+    image_path = tmp_path / "image.exe"
+    image_path.write_bytes(b"MZ")
+    active = 0
+    peak_active = 0
+    lock = threading.Lock()
+
+    def compile_scratch(config: ScratchConfig, _match_root: Path) -> Path:
+        nonlocal active, peak_active
+        with lock:
+            active += 1
+            peak_active = max(peak_active, active)
+        time.sleep(0.05)
+        with lock:
+            active -= 1
+        return tmp_path / f"{config.function}.obj"
+
+    monkeypatch.setattr(
+        match_module,
+        "load_image",
+        lambda *_args: LoadedImage(
+            mapped=b"\0" * 0x30, image_base=0x1000, size_of_image=0x30
+        ),
+    )
+    monkeypatch.setattr(match_module, "compile_scratch", compile_scratch)
+    monkeypatch.setattr(match_module, "parse_coff_object", lambda _data: object())
+    monkeypatch.setattr(
+        Path,
+        "read_bytes",
+        lambda self: b"obj" if self.suffix == ".obj" else b"MZ",
+    )
+    monkeypatch.setattr(
+        match_module,
+        "extract_object_function",
+        lambda *_args, **_kwargs: ObjectFunction("candidate", b"", frozenset()),
+    )
+    monkeypatch.setattr(
+        match_module,
+        "match_function",
+        lambda *_args, **_kwargs: MatchResult(1.0, 0, (), ()),
+    )
+    monkeypatch.setattr(match_module, "_store_cached_status", lambda *_args, **_kwargs: None)
+
+    statuses = collect_scratch_statuses(manifest, image_path, match_root, jobs=2)
+
+    assert [status.config.function for status in statuses] == ["first", "second"]
+    assert peak_active == 2
+
+
+def test_match_status_jobs_must_be_positive() -> None:
+    from snail.cli import build_parser
+
+    parser = build_parser()
+    assert parser.parse_args(["match", "status", "-j", "3"]).jobs == 3
+    with pytest.raises(SystemExit):
+        parser.parse_args(["match", "status", "-j", "0"])
 
 
 def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
@@ -2336,10 +2455,12 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
     compiler_dir.mkdir(parents=True)
     (match_root / "cl.sh").write_text("#!/bin/sh\n")
     (compiler_dir / "CL.EXE").write_bytes(b"cl")
-    (scratch_dir / "scratch.cpp").write_text("// candidate\n")
+    (scratch_dir / "scratch.cpp").write_text('#include "shared.h"\n// candidate\n')
     (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
     header = include_dir / "shared.h"
     header.write_text("struct Shared { int x; };\n")
+    unrelated_header = include_dir / "unrelated.h"
+    unrelated_header.write_text("struct Unrelated { int x; };\n")
     obj_path = build_dir / "scratch.obj"
     obj_path.write_bytes(b"obj")
     config = ScratchConfig(
@@ -2358,6 +2479,7 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
         scratch_dir / "scratch.cpp",
         scratch_dir / "scratch.conf",
         header,
+        unrelated_header,
     ):
         os.utime(path, (base, base))
     os.utime(obj_path, (base + 10, base + 10))
@@ -2375,6 +2497,9 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
         symbol=None,
     )
     assert not _scratch_object_is_current(obj_path, changed_flags, match_root)
+
+    os.utime(unrelated_header, (base + 20, base + 20))
+    assert _scratch_object_is_current(obj_path, config, match_root)
 
     os.utime(header, (base + 20, base + 20))
     assert not _scratch_object_is_current(obj_path, config, match_root)

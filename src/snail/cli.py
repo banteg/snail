@@ -13,6 +13,7 @@ import msgspec
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
+    DEFAULT_MATCH_JOBS,
     IDIOM_CASES,
     IDIOM_CASES_BY_NAME,
     compile_idiom_case,
@@ -155,6 +156,13 @@ def _print_masked_operand_audit(audit) -> None:
         print(f"    insn: {entry.instruction}")
         print(f"    target: {_format_masked_reference_list(entry.target_references)}")
         print(f"    candidate: {_format_masked_reference_list(entry.candidate_references)}")
+
+
+def _positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -582,6 +590,13 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Exit non-zero if any scratch fails to compile or match.",
     )
+    match_status_parser.add_argument(
+        "-j",
+        "--jobs",
+        type=_positive_int,
+        default=DEFAULT_MATCH_JOBS,
+        help=f"Maximum concurrent scratch jobs (default: {DEFAULT_MATCH_JOBS}).",
+    )
 
     match_audit_parser = match_subparsers.add_parser(
         "audit",
@@ -821,7 +836,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "match" and args.match_command == "status":
         manifest = load_function_symbol_manifest(args.manifest)
         image_path = args.image or REPO_ROOT / manifest.primary_target
-        statuses = collect_scratch_statuses(manifest, image_path)
+        statuses = collect_scratch_statuses(manifest, image_path, jobs=args.jobs)
         totals = manifest_cluster_totals(manifest, image_path, statuses)
         type_findings = type_consolidation_findings()
         print(
