@@ -42,3 +42,9 @@ shape regressed focused Wibo from 23.33% to 22.59% (501/579) and reintroduced
 one masked call mismatch (`target request_object_facequads` against candidate
 `request_object_vertices`). Keep the retained facequads-first spelling until a
 larger mesh-loop rewrite changes the alignment context.
+
+2026-07-13 interior lane ownership: both native decompilers show the oriented
+primary sample copied to its secondary peer as exactly 0x40 bytes. Removing the
+scratch-only scalar copies outside `TransformMatrix` moves focused Wibo from
+23.33% (501/579) to 24.67% (491/579), with the masked audit improving from
+25 ok to 29 ok and remaining fully clean.

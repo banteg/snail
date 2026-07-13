@@ -58,3 +58,11 @@ moves focused Wibo from 27.22% (628/687) to 28.27% (636/687). The masked
 audit remains 38 ok, 0 unresolved, 1 mismatch; its sole constant-alignment
 residual is unchanged. The constructor keeps its local delta-loop pointers and
 loop-local radius schedule.
+
+2026-07-13 interior lane ownership: the native oriented-sample copy is exactly
+the 0x40-byte `TransformMatrix`; fields at `+0x90..+0xa4` are not secondary
+copies. Removing that scratch-only scalar traffic changes focused Wibo from
+28.27% (636/687) to 27.77% (624/687), while the masked audit stays at 38 ok,
+0 unresolved, 1 mismatch. The small fuzzy-score regression is retained as a
+proved ownership correction rather than preserving non-native work for metric
+alignment.

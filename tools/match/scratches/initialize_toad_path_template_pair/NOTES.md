@@ -55,3 +55,10 @@ moves focused Wibo from 25.97% (600/663) to 27.69% (608/663). The
 1-instruction prefix is preserved and the masked audit remains 22 ok,
 0 unresolved, 2 mismatch; both pre-existing interior orientation residuals are
 unchanged. The delta loop retains its local sample pointers.
+
+2026-07-13 interior lane ownership: the native post-orientation copy is a
+0x40-byte `TransformMatrix` copy, so `center_x`, rotation, lateral-scale, and
+special scalars remain primary-owned. Removing those non-native secondary
+copies moves focused Wibo from 27.69% (608/663) to 27.94% (597/663). The
+1-instruction prefix and masked audit remain unchanged at 22 ok, 0 unresolved,
+2 mismatch.

@@ -30,11 +30,6 @@ static __forceinline void copy_secondary_from_primary(Path* path, int index)
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
 
-    secondary->center_x = primary->center_x;
-    secondary->rotation_scalar_98 = primary->rotation_scalar_98;
-    secondary->rotation_scalar_94 = primary->rotation_scalar_94;
-    secondary->special_scalar = primary->special_scalar;
-    secondary->lateral_scale = primary->lateral_scale;
     secondary->transform = primary->transform;
     secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
     secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
