@@ -1394,7 +1394,7 @@
     {
       "address": "0x42b9c0",
       "name": "get_path_position_at_node",
-      "description": "Projects a path node and row index into local/output position for attachment-row consumers; iOS Path.o names this `cRPath::GetPos(tVector&, int, int, tVector&)`."
+      "description": "Projects a path node and row index into a borrowed output vector for attachment-row consumers; iOS Path.o names this `cRPath::GetPos(tVector&, int, int, tVector&)`. Both Windows callers discard EAX, and the byte-identical VC6 candidate naturally leaves the final z bits there when declared void, confirming that the apparent scalar return is compiler residue rather than an owned result."
     },
     {
       "address": "0x42ba80",

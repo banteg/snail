@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**575/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91300/325437** bytes (**28.05%**) are proof-grade, and overall fuzzy is **69.74%**.
+**576/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91485/325437** bytes (**28.11%**) are proof-grade, and overall fuzzy is **69.76%**.
 
-## Proof Grade (575)
+## Proof Grade (576)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -218,6 +218,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_path_follow_golb | 0x421770 | 58 | 16/16 | 100.00% | 16/16 | 1 ok |  |
 | ✅ | find_segment_path_index_by_name | 0x429ae0 | 59 | 27/27 | 100.00% | 27/27 | 3 ok |  |
 | ✅ | compute_kind42_attachment_transform | 0x42b920 | 146 | 48/48 | 100.00% | 48/48 | 8 ok |  |
+| ✅ | get_path_position_at_node | 0x42b9c0 | 185 | 56/56 | 100.00% | 56/56 | - |  |
 | ✅ | load_config_file | 0x42f470 | 23 | 9/9 | 100.00% | 9/9 | 1 ok |  |
 | ✅ | load_file_bytes_from_path | 0x42f490 | 169 | 59/59 | 100.00% | 59/59 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC |
 | ✅ | save_config_file | 0x42f540 | 98 | 31/31 | 100.00% | 31/31 | 5 ok |  |
@@ -683,7 +684,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (46)
+## Mid Progress (50-79.99%) (45)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -707,7 +708,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 400/425 | 55.52% | 0/425 | 7 ok |  |
 | 🚧 | mirror_path_template_pair_x | 0x421dc0 | 1058 | 310/314 | 79.17% | 31/314 | 15 ok |  |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 317/318 | 69.92% | 18/318 | 23 ok |  |
-| 🚧 | get_path_position_at_node | 0x42b9c0 | 185 | 52/56 | 77.78% | 8/56 | - |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 2 mismatch, 60 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 110/113 | 75.34% | 24/113 | 9 ok |  |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 190/204 | 75.63% | 16/204 | 1 mismatch, 24 ok |  |

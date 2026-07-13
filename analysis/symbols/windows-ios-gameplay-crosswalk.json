@@ -1767,7 +1767,8 @@
       "windows_name": "get_path_position_at_node",
       "ios_symbol": "cRPath::GetPos(tVector&, int, int, tVector&)",
       "source_object": "Path.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Both Windows callsites discard EAX; the byte-identical VC6 candidate remains exact as a void method and naturally leaves the final z bits in EAX, so no synthetic scalar return is owned."
     },
     {
       "address": "0x42ba80",

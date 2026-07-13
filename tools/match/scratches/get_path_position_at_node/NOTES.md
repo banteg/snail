@@ -1,7 +1,7 @@
 # get_path_position_at_node @ 0x42b9c0
 
-Current source-shaped lead: 77.78% (56 target instructions, 52 candidate,
-8-instruction prefix).
+Exact VC6 match: 100.00% (56/56 instructions, full prefix, no masked
+operands).
 
 Confirmed semantics:
 
@@ -10,7 +10,8 @@ Confirmed semantics:
   basis;
 - adds the sample position row;
 - adds `row_index` to projected z;
-- writes the projected x/y/z output and returns the z bits in `eax`.
+- writes the projected x/y/z output; the final z copy naturally leaves its bits
+  in `eax`, but both native callers immediately overwrite `eax`.
 
 The iPhone v1.5 symbol table gives the original cross-port signature as
 `cRPath::GetPos(tVector&, int, int, tVector&)`. Its ARM implementation at
@@ -18,16 +19,24 @@ The iPhone v1.5 symbol table gives the original cross-port signature as
 `position + local.x * right + local.y * up`, adds the integer row to z, and
 copies the resulting three-float vector to the output reference. The shared
 prototype and both parcel-placement callers therefore use `Vector3&` for the
-input/output alias instead of the old `float*` cast.
+input/output alias instead of the old `float*` cast. The two Windows callsites
+at `0x444212` and `0x444482` discard EAX, and changing the candidate from an
+invented integer return to `void` preserves the exact codegen. The local
+header and live Binary Ninja prototype now model the method as
+`void cRPath::GetPos(...)`.
 
-Modeling the original inline vector scale/add operators and keeping the
-up-basis contribution as a named `Vector3` raises the Windows scratch from
-41.12% to 77.78%. It preserves the native `0x24` stack frame, saved `esi`
-input-reference lifetime, and 8-instruction prefix. The honest residual is
-still VC6 x87 scheduling: the target duplicates the live local-y value before
-each multiply and delays loading the output reference until the final copy;
-the candidate loads basis lanes separately and folds the integer row with
-`fiadd`.
+The exact source shape keeps local y as a real `float`, builds a named up-basis
+contribution, and gives the additions distinct lifetimes:
+
+- `projected = local.x * right + position`;
+- `projected = projected + scaled_up`;
+- `final_position = projected` before adding `row_index` to z;
+- one final assignment to the borrowed output reference.
+
+Those ordinary value-copy boundaries explain the native `0x24` frame, saved
+`esi` input-reference lifetime, duplicated x87 lanes, delayed output-pointer
+load, and reuse of the dead up-contribution slot for final z. No volatile,
+inline assembly, or dummy aliasing is involved.
 
 Rejected probes:
 
@@ -39,7 +48,7 @@ Rejected probes:
 - an all-in-one inline vector expression reached 69.81% but lost the saved
   `esi` input-reference schedule;
 - spelling the final copy component-by-component or through an inline copy
-  helper regressed to 33.96%-40.00%.
-
-Do not force this with volatile locals, asm, or dummy aliasing; resume only with
-a source-idiom lead for the native duplicated-x87-lane schedule.
+  helper regressed to 33.96%-40.00%;
+- a distinct result for the whole second addition loaded the output pointer too
+  early and folded the row with `fiadd`; copying only after that addition
+  recovered the authored final-value lifetime and the exact tail.
