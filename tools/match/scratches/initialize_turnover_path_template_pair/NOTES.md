@@ -38,3 +38,13 @@ straight local order fell to 24.88% (567/671) and kept one mismatch; the
 interleaved `sine(angle)`, `cosine(angle)`, `sine(half)` order fell to 24.54%
 (568/671), with masked operands moving to 30 ok, 0 unresolved, 0 mismatch. Keep
 the inline expression until a schedule preserves the fuzzy score.
+
+2026-07-13 terminal ownership: fully expanding `compute_terminal_deltas` into
+the method regressed focused Wibo from 26.85% (573/671) to 24.03% (586/671)
+and worsened the masked audit from 31 ok, 0 unresolved, 1 mismatch to 25 ok,
+0 unresolved, 2 mismatch, so `turnover` retains its local delta-loop sample
+pointers. Narrowing the change to direct terminal stores through
+`path->primary_samples[path->segment_count - 1]` and the secondary array moves
+focused Wibo to 27.80% (581/671), with the masked audit unchanged at 31 ok,
+0 unresolved, 1 mismatch. The recovered boundary is terminal-array ownership,
+not wholesale helper removal.
