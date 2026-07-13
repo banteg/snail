@@ -67,3 +67,10 @@ facequads-before-vertices regressed focused Wibo from 26.92% (580/683) to
 3 mismatch to 30 ok, 0 unresolved, 5 mismatch, adding explicit vertices vs
 facequads allocation call pairings alongside the existing orientation residuals.
 The helper keeps vertices-first order.
+
+2026-07-13 terminal ownership: removing the `last_primary` and
+`last_secondary` pointer aliases while retaining the constructor-specific
+delta loop moves focused Wibo from 26.92% (580/683) to 29.90% (588/683).
+The masked audit remains 32 ok, 0 unresolved, 3 mismatch; all three residuals
+are the pre-existing interior orientation pairings. The terminal stores belong
+directly to the two count-relative `Path` sample arrays.
