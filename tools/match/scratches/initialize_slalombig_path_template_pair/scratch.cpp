@@ -77,13 +77,12 @@ static __forceinline void compute_terminal_deltas(Path* path)
         secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
     }
 
-    PathTemplateSample* last_primary = &path->primary_samples[path->segment_count - 1];
-    last_primary->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    last_primary->delta_length = 1.0f;
-
-    PathTemplateSample* last_secondary = &path->secondary_samples[path->segment_count - 1];
-    last_secondary->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    last_secondary->delta_length = 1.0f;
+    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
+    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
 static __forceinline void build_extrapolated_strip_mesh(

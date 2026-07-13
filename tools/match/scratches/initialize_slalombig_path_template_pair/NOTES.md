@@ -57,3 +57,11 @@ orientation block so both lanes build fixed-up frames before either roll call
 cleared the masked audit to 26 ok, 0 unresolved, 0 mismatch, but regressed
 focused Wibo from 21.76% (600/696) to 18.68% (589/696). Unlike `slalom`, this
 target keeps the compact `orient_previous_with_up` helper calls.
+
+2026-07-13 terminal ownership: fully expanding the delta helper into the method
+regressed focused Wibo slightly to 21.70% (613/696) and reduced masked operands
+to 22 ok, 0 unresolved, 1 mismatch, so the local delta-loop pointers remain.
+Changing only the terminal stores to address the two `Path` sample arrays
+directly moves focused Wibo from 21.76% (600/696) to 24.69% (608/696), with
+the masked audit unchanged at 25 ok, 0 unresolved, 1 mismatch. This confirms
+terminal-array ownership independently of the constructor-specific loop shape.
