@@ -15,12 +15,11 @@ Semantics:
 This scratch also promotes the shared `ObjectToonEdge` layout used by
 `render_object_toon`, `request_object_edges`, and this builder.
 
-Focused Wibo result: 71.63%, 141/141 instructions, with 10 clean masked
-operands and three masked mismatches caused by current setup/removal-region
-alignment. The candidate COFF relocations for `g_object_edge_build_edges` and
-`g_object_edge_build_count` are source-correct; the mismatch report pairs a
-shifted setup store against the wrong native store until the prologue/local
-shape is improved.
+Focused Wibo result: 75.62%, 142 candidate instructions versus 141 target
+instructions, with 14 clean masked operands and no unresolved or mismatched
+operands. The remaining gap is the cleanup-loop allocation: native reuses one
+stack dword across the face and edge phases, while VC6 currently spills both
+the edge index and its strength-reduced byte offset into an eight-byte frame.
 
 2026-06-21 removal-loop follow-up: swapping the two setup stores is
 codegen-neutral at 71.63% and leaves the same shifted masked-pairing report.
@@ -46,3 +45,24 @@ analysis headers and BN/IDA sync now correct the old `void __fastcall(char*)`
 transcription to a void Object thiscall. This clarifies ownership for the six
 `AddEdge` calls without claiming the remaining cleanup-loop frame mismatch is
 solved.
+
+2026-07-14 typed cleanup and cross-build pass:
+
+- `edge_count` now begins as the local zero installed in the global workspace
+  count. It is refreshed with `build_edges` only after the face loop actually
+  calls `add_object_edge`; the zero-face path keeps the original scratch pointer
+  and count, matching the native control-flow ownership.
+- The face-loop tail advances the borrowed face pointer, face index, and paired
+  normal index in native order. This removes the last otherwise-identical tail
+  scheduling mismatch.
+- The removal loop now addresses `build_edges[index]` and copies typed adjacent
+  `ObjectToonEdge` records rather than maintaining source-level byte offsets.
+  VC6 independently strength-reduces those indices into the native-style
+  running offset. The checked-in Android `cRObject::CalcEdges` implementation
+  corroborates the same indexed edge-array compaction and global scratch owner,
+  despite that platform's smaller edge representation.
+- Together these source/ownership corrections raise the focused result from
+  71.63% (141/141, 10 clean and three mismatched operands) to 75.62% (142/141,
+  all 14 operands clean). Pointer cursors, explicit register hints, and raw
+  address spellings remain rejected; the two-spill versus one-spill allocator
+  residual stays visible rather than being fakematched.
