@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**574/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90967/325437** bytes (**27.95%**) are proof-grade, and overall fuzzy is **69.57%**.
+**574/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90967/325437** bytes (**27.95%**) are proof-grade, and overall fuzzy is **69.58%**.
 
 ## Proof Grade (574)
 
@@ -729,7 +729,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
 | 🚧 | update_track_parcel | 0x4431d0 | 1148 | 290/312 | 63.79% | 8/312 | 1 mismatch, 34 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 171/171 | 73.68% | 22/171 | 29 ok |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 659/673 | 52.85% | 8/673 | 86 ok |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 53.93% | 8/673 | 86 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1096 | 314/316 | 55.56% | 30/316 | 12 mismatch, 36 ok |  |

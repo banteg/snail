@@ -44,16 +44,17 @@ void Player::handle_subgoldy_collisions()
     if (!attachment_exit_pending && !boost_one_tick && !control_override_active) {
         if ((movement_flags & 0x80) == 0) {
             for (int i = 0; i < 6080; i += 152) {
-                Salt* slot = (Salt*)((char*)game->salt_hazards.slots + i);
-                if (slot->state == 1 && slot->collision_armed() == 1) {
-                    delta.x = slot->position.x - cached_camera_target_world.x;
-                    delta.y = slot->position.y - cached_camera_target_world.y;
-                    delta.z = slot->position.z - cached_camera_target_world.z;
+                char* slot = (char*)game + i;
+                if (*(int*)(slot + 0x357940) == 1
+                    && *(unsigned char*)(slot + 0x357954) == 1) {
+                    delta.x = *(float*)(slot + 0x357928) - cached_camera_target_world.x;
+                    delta.y = *(float*)(slot + 0x35792c) - cached_camera_target_world.y;
+                    delta.z = *(float*)(slot + 0x357930) - cached_camera_target_world.z;
                     probe_salt = delta;
                     if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {
                         if (damage_retrigger_timer == 0.0f)
                             damage_retrigger_timer = damage_retrigger_step;
-                        slot->collision_armed() = 0;
+                        *(unsigned char*)((char*)game + i + 0x357954) = 0;
                         damage_gauge.apply_damage_gauge_delta(0.15000001f, 0);
                     }
                 }
@@ -164,7 +165,7 @@ void Player::handle_subgoldy_collisions()
                     parcels_collected = collected;
                     if (!parcel_game->level_mode)
                         sprintf(
-                            (char*)parcel_game->lives_text_widget + 716,
+                            parcel_game->lives_text_widget->text_buffer,
                             g_parcel_format,
                             collected,
                             parcel_game->level_definition.parcel_count);
@@ -182,10 +183,13 @@ void Player::handle_subgoldy_collisions()
             probe_b.z = pickup->world_position.z - cached_camera_target_world.z;
             probe_c.z = probe_b.z;
             if (position.y >= 0.49000001f && probe_b.z < 1.0f) {
-                float dy = probe_b.y;
-                if (dy < 0.0f)
-                    dy = -dy;
-                if (dy < 0.40000001f && normalize_vector(&probe_c) < 0.98000002f) {
+                float pickup_y;
+                if (probe_b.y < 0.0f)
+                    pickup_y = -probe_b.y;
+                else
+                    pickup_y = probe_b.y;
+                if (pickup_y < 0.40000001f
+                    && normalize_vector(&probe_c) < 0.98000002f) {
                     g_sound_effect_manager.play_sound_effect(14);
                     pickup->state = 2;
                     health_collect_particles(pickup);
@@ -203,10 +207,13 @@ void Player::handle_subgoldy_collisions()
         probe_b.z = speedup->world_position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
         if (position.y >= 0.49000001f && probe_b.z < 1.0f) {
-            float dy = probe_b.y;
-            if (dy < 0.0f)
-                dy = -dy;
-            if (dy < 0.40000001f && normalize_vector(&probe_c) < 0.98000002f) {
+            float pickup_y;
+            if (probe_b.y < 0.0f)
+                pickup_y = -probe_b.y;
+            else
+                pickup_y = probe_b.y;
+            if (pickup_y < 0.40000001f
+                && normalize_vector(&probe_c) < 0.98000002f) {
                 speedup->state = 2;
                 noop_runtime_ai();
                 velocity.z = game->subgame_rate * 0.5f;

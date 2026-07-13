@@ -1,7 +1,31 @@
-# WIP scratch — 47.99%, 648/673 insns (2026-06-16 ring reward ladder pass)
+# WIP scratch — 53.93%, 651/673 insns (2026-07-13 collision source-shape pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-07-13 collision source-shape and ownership pass: retained two independent,
+behavior-preserving compiler-shape recoveries that were measured but deferred
+during the earlier slug-only slice. The salt sweep now uses the native
+game-base byte cursor (`0..0x17c0`, stride `0x98`), which restores the target's
+long-lived byte offset register and improves the focused result from `52.85%`
+(`659/673`) to `53.46%` (`655/673`). The raw spelling does not make ownership
+unknown: `SubgameRuntime::salt_hazards`, `SaltManager::slots`, `Salt::state`,
+`Salt::position`, and `Salt::collision_armed()` jointly prove every accessed
+lane. It is retained only because spelling the same walk as `Salt*` changes
+VC6's register allocation in this large function.
+
+Health and speedup now assign a semantic `pickup_y` on both sides of the sign
+conditional before testing the absolute vertical distance. This reproduces the
+target's two-load/fchs x87 form, removes four candidate instructions, and lifts
+the result again to `53.93%` (`651/673`). The masked audit remains fully clean:
+`86 ok / 0 unresolved / 0 mismatch`, with prefix `8/673`. A probe that instead
+mutated `probe_b.y` regressed to `52.26%` and introduced two masked constant
+mismatches, so it was rejected.
+
+The parcel HUD write now names `FrontendWidget::text_buffer` instead of adding
+raw `+0x2cc` to `lives_text_widget`. Binary Ninja decompilation shows the same
+member access, and the shared widget layout independently fixes the buffer at
+`+0x2cc`; this ownership clarification is codegen-neutral.
 
 2026-06-16 slug runtime consolidation: the first-hit/cutscene branch now uses
 the shared `SlugHazardRuntime::player_encounter_latched` byte at `+0xd9` instead of a
