@@ -5,6 +5,7 @@
 #include "bod_types.h"
 #include "border_manager.h"
 #include "font_system.h"
+#include "game_root.h"
 #include "intro_screen_runtime.h"
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
@@ -14,7 +15,7 @@
 #include "star_manager.h"
 #include "transform_matrix.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern TextureRefList g_texture_refs; // data_4b7790
 extern char g_blank_text[]; // data_4dfb08
 
@@ -28,56 +29,33 @@ int report_errorf(char* format, ...);
 
 static __forceinline void add_intro_renderable_to_active_list(LogoLetter* bod)
 {
-    char* node = (char*)bod;
-    if ((*(unsigned int*)(node + 4) & 0x200) != 0) {
-        report_errorf("List ADD");
-        return;
-    }
-
-    char* head = g_game_base + 0x5ac;
-    char* first = *(char**)head;
-    if (first == 0) {
-        *(LogoLetter**)head = bod;
-        *(int*)(node + 8) = 0;
-        *(int*)(*(int*)head + 12) = 0;
-    } else {
-        *(LogoLetter**)(first + 8) = bod;
-        *(char**)(*(char**)(*(char**)head + 8) + 12) = *(char**)head;
-        first = *(char**)(*(char**)head + 8);
-        *(char**)head = first;
-        *(int*)(first + 8) = 0;
-    }
-    *(unsigned int*)(node + 4) |= 0x200;
+    g_game->active_bod_list.add_bod(bod);
 }
 
 void Logo::initialize_intro_screen(char* file_name)
 {
     cache_music_file((char*)"music/introtext.ogg", 0, g_blank_text);
-    int script_index =
-        ((LandscapeManager*)(g_game_base + 0x106c218))
-            ->load_landscape_script_by_name((char*)"SpaceRed.txt");
-    ((Backdrop*)(g_game_base + 0x4ec10))
-        ->change_backdrop(
-            &((LandscapeManager*)(g_game_base + 0x106c218))
-                ->scripts[script_index],
-            0);
-    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
-    ((StarManager*)(g_game_base + 0x4f33c))->unhide_star_field();
+    int script_index = g_game->subgame.landscape_manager
+                           .load_landscape_script_by_name((char*)"SpaceRed.txt");
+    g_game->backdrop.change_backdrop(
+        &g_game->subgame.landscape_manager.scripts[script_index], 0);
+    g_game->border_manager.set_border_justify_centre(0);
+    g_game->star_manager.unhide_star_field();
 
     char* file_bytes = load_file_bytes(file_name, 0);
     saved_render_flags = g_runtime_config.render_flags;
 
     TransformMatrix matrix;
-    *(TransformMatrix*)(g_game_base + 0x15c) =
+    g_game->players[0].transform =
         *matrix.initialize_matrix_from_values(
             1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 0.63439298f, 0.77301002f, 0.0f,
             0.0f, -0.77301002f, 0.63439298f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f);
-    *(float*)(g_game_base + 0x284) = 100.0f;
+    g_game->players[0].camera.fov_degrees = 100.0f;
     progress = 0.0f;
     progress_step = 1.0f / 600.0f;
-    ((MouseCursorState*)(g_game_base + 0x290))->release_mouse_cursor();
+    g_game->players[0].mouse_cursor.release_mouse_cursor();
     state = 0;
 
     float crawl_y = 0.2f;

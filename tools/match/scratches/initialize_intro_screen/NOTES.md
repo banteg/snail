@@ -122,3 +122,18 @@ The two LogoLetter slot-zero calls now use the shared, 4-byte
 overlay is cast-only because LogoLetter retains its explicit cRBod-compatible
 vtable word and must not acquire a second C++ vptr. Focused Wibo remains
 88.31%, 523/521 instructions, prefix 88/521, with all 66 operands clean.
+
+## 2026-07-13 root and active-list ownership
+
+- The SpaceRed landscape, backdrop, border manager, star field, and mouse
+  lifecycle now flow through their canonical `GameRoot` members. The two
+  formerly raw player writes are `players[0].transform` and the owned camera's
+  `fov_degrees`, closing the root-side scene setup without a byte-offset view.
+- LogoLetter insertion now reuses the shared force-inlined
+  `GameRoot::active_bod_list.add_bod` operation. The emitted list splice is
+  unchanged, but the source no longer duplicates `BodNode` link offsets or
+  reconstructs the root list head at `+0x5ac`.
+- The ownership cleanup is codegen-neutral: focused Wibo remains 88.31%,
+  523/521 instructions, prefix 88/521, with all 66 masked operands clean. The
+  two documented allocator instructions remain visible rather than being
+  forced through synthetic lifetimes.
