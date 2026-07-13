@@ -55,7 +55,7 @@ int update_keyboard_input(); // @ 0x44b870
 int update_joystick_input(); // @ 0x44b570
 int update_mouse(HWND hwnd); // @ 0x44bc50
 int update_font_wave_state(); // @ 0x449ca0
-BOOL sub_407b00(); // @ 0x407b00
+int shutdown_bass_audio_window(); // @ 0x407b00
 int free_tracked_allocations_to_mark(); // @ 0x431c70
 void scalar_delete(void* pointer); // @ 0x48ba34
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
@@ -224,7 +224,7 @@ update_game:
     } while (g_main_loop_exit_requested == 0 && quit_requested == 0);
 
     g_audio_backend.stop_audio_backend();
-    sub_407b00();
+    shutdown_bass_audio_window();
     ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(1);
     ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(2);
     ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(4);

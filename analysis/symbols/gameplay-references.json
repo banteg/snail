@@ -192,7 +192,7 @@
       "aliases": [
         "sub_407b00"
       ],
-      "description": "Tears down the BASS audio backend, destroys the hidden audio window, clears its handle, and unregisters the BASS window class."
+      "description": "Tears down the BASS audio backend, destroys the hidden audio window, and unregisters its class; the handle-zeroing store occurs only after the fatal destroy-failure report."
     },
     {
       "address": "0x40acd4",

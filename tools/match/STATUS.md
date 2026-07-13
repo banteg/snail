@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**545/719** mapped gameplay functions matched, **719/719** mapped gameplay functions have a scratch, **89162/325651** bytes (**27.38%**) are proof-grade, and overall fuzzy is **63.21%**.
+**547/721** mapped gameplay functions matched, **721/721** mapped gameplay functions have a scratch, **89281/325632** bytes (**27.42%**) are proof-grade, and overall fuzzy is **63.25%**.
 
-## Proof Grade (545)
+## Proof Grade (547)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -69,7 +69,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | clear_display_mode_state | 0x407910 | 14 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | reset_display_mode_probe_count | 0x407920 | 8 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | read_next_display_mode_view_sample | 0x407930 | 167 | 55/55 | 100.00% | 55/55 | - |  |
+| ✅ | bass_audio_window_proc | 0x4079e0 | 47 | 16/16 | 100.00% | 16/16 | 2 ok |  |
 | ✅ | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 23 ok |  |
+| ✅ | shutdown_bass_audio_window | 0x407b00 | 72 | 19/19 | 100.00% | 19/19 | 10 ok |  |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  |
 | ✅ | initialize_game_player | 0x408000 | 61 | 17/17 | 100.00% | 17/17 | 6 ok |  |
 | ✅ | initialize_noop_renderable_bod | 0x408040 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  |

@@ -154,3 +154,8 @@ its six existing structural mismatches unchanged.
   globals already shared by startup, window focus handling, render-queue
   producers, and subgame input gating. This removes their accidental ownership
   by individual scratch files and by `font_system.h`.
+
+2026-07-13 BASS window ownership closure: shutdown now calls the separately
+tracked `shutdown_bass_audio_window` owner by name. Its native body proves the
+hidden window handle is zeroed only on the fatal destroy-failure path; successful
+window destruction jumps directly to class unregistration.

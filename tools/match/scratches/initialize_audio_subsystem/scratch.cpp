@@ -10,10 +10,11 @@ extern "C" __declspec(dllimport) HWND __stdcall CreateWindowExA(unsigned int ex_
     HWND parent, HMENU menu, HINSTANCE instance, void* param);
 extern "C" __declspec(dllimport) BOOL __stdcall EndDialog(HWND hwnd, int result);
 
-extern LRESULT __stdcall sub_4079e0(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
+extern LRESULT __stdcall bass_audio_window_proc(
+    HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
 void abort_startup_with_3d_error(); // @ 0x4088a0
-void sub_407b00(); // cleanup after CreateWindowEx failure
+int shutdown_bass_audio_window(); // cleanup after CreateWindowEx failure
 
 extern char g_blank_text[];              // data_4dfb08
 
@@ -23,7 +24,7 @@ char initialize_audio_subsystem()
     int zero = 0;
 
     window_class.style = zero;
-    window_class.wnd_proc = sub_4079e0;
+    window_class.wnd_proc = bass_audio_window_proc;
     window_class.cls_extra = zero;
     window_class.wnd_extra = zero;
     window_class.instance = g_application_instance;
@@ -41,7 +42,7 @@ char initialize_audio_subsystem()
     g_bass_window = CreateWindowExA(0, "BASS", g_blank_text, 0x86000000, 0, 0, 0, 0,
         0, 0, g_application_instance, 0);
     if (g_bass_window == 0) {
-        sub_407b00();
+        shutdown_bass_audio_window();
         abort_startup_with_3d_error();
         return 0;
     }

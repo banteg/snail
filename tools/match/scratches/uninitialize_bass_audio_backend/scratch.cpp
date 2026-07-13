@@ -1,4 +1,6 @@
-// uninitialize_bass_audio_backend @ 0x4496d0
+// AudioBackend::uninitialize_bass_audio_backend @ 0x4496d0
+
+#include "audio_system.h"
 
 typedef int (__stdcall* BassStopFn)();
 typedef int (__stdcall* BassFreeFn)();
@@ -11,7 +13,7 @@ extern int __cdecl report_errorf(char* format, ...);
 extern int __cdecl delete_file_path_with_directory_walk(char* path);
 extern "C" __declspec(dllimport) int __stdcall FreeLibrary(int module);
 
-void uninitialize_bass_audio_backend()
+void AudioBackend::uninitialize_bass_audio_backend()
 {
     g_bass_stop();
     if (g_bass_free() == 0) {

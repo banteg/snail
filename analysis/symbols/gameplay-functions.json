@@ -356,8 +356,18 @@
       "description": "Returns the next display-mode view sample or the current mode dimensions during the startup probe warm-up."
     },
     {
+      "address": "0x4079e0",
+      "name": "bass_audio_window_proc",
+      "description": "Hidden BASS window procedure that posts WM_QUIT on close and otherwise forwards messages to DefWindowProcA."
+    },
+    {
       "address": "0x407a10",
       "name": "initialize_audio_subsystem"
+    },
+    {
+      "address": "0x407b00",
+      "name": "shutdown_bass_audio_window",
+      "description": "Uninitializes the audio backend, destroys the hidden BASS window, and unregisters the BASS window class; its handle-zeroing store is confined to the fatal destroy-failure path."
     },
     {
       "address": "0x407b50",

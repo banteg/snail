@@ -7,6 +7,7 @@
 class AudioBackend {
 public:
     char initialize_bass_audio_backend(void* hwnd); // @ 0x449460
+    void uninitialize_bass_audio_backend(); // @ 0x4496d0
     void noop_runtime_ai();
     int stop_audio_backend(); // @ 0x449b90
     void stop_music_stream(); // @ 0x4498d0
