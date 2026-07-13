@@ -16,3 +16,7 @@ initialized by `initialize_completion_screen` at `game+0x12e6df0`.
 2026-07-11 authored owner: Android retains this sibling as
 `cRExit::UnInit()`. The root-owned `Exit` rename remains exact at 25/25
 with all nine operands clean.
+
+2026-07-13 canonical root graph: widget teardown now follows the root-owned
+`BorderManager`, and the restored state follows `players[0]`. The typed global
+reload spelling preserves the exact 25/25 stream and all nine clean operands.

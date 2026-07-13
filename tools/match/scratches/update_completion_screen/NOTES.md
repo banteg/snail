@@ -39,3 +39,9 @@ belong directly to `GameRoot`. The complete rewrite remains exact at 207/207.
 
 Android and iOS retain the authored owner as `cRExit::AI()`. The primary
 `Exit` rename is codegen-neutral and keeps all 69 operands clean.
+
+2026-07-13 canonical root graph: every state-machine transition now reloads
+the typed `GameRoot*` global and follows the owning menu, galaxy, subgame,
+pause, player, or link-latch member. This removes all 41 raw `GameRoot` casts
+without coalescing callback-separated borrows. Output remains exact at 207/207
+instructions with all 69 operands clean.
