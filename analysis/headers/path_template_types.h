@@ -82,6 +82,87 @@ typedef struct TrackRowCell TrackRowCell;
 typedef struct TrackRowCell SubLoc;
 typedef struct TransformMatrix TransformMatrix;
 
+typedef union AuthoredFloatBits {
+    int32_t bits;
+    float value;
+} AuthoredFloatBits;
+
+typedef struct AuthoredSegmentRow {
+    int32_t flags;
+    int32_t parcel_set_id;
+    Vec3 local_position;
+    int32_t object_id;
+    Vec3 object_position;
+    Vec3 object_velocity;
+    int32_t path_template_index;
+    AuthoredFloatBits ring_speed;
+} AuthoredSegmentRow;
+
+/* Exact 0x4220-byte authored cRSubSegment value. */
+struct SubSegment {
+    int32_t row_base;
+    int32_t row_count;
+    uint8_t visited;
+    uint8_t unknown_09[0x0c - 0x09];
+    int32_t path_index;
+    char* source_name;
+    char glyph_rows[8][0x100];
+    AuthoredSegmentRow rows[256];
+    AuthoredFloatBits angle_radians;
+    char message_text[0x4218 - 0x4018];
+    AuthoredFloatBits message_duration;
+    int32_t message_sample_id;
+};
+
+/* Exact 0x1a5978-byte authored cRSubTracks level-definition owner. */
+typedef struct SubTracks {
+    int32_t segment_count;
+    SubSegment segment_slots[100];
+    SubSegment first_segment;
+    SubSegment last_segment;
+    int32_t random_length;
+    uint8_t random_enabled;
+    uint8_t unknown_1a58c9[0x1a58cc - 0x1a58c9];
+    Color4f fringe_color;
+    char level_display_name[0x80];
+    union {
+        float selected_speed;
+        int32_t selected_speed_bits;
+    };
+    float garbage_frequency;
+    float salt_frequency;
+    int32_t landscape_script_index;
+    int32_t parcel_count;
+    int32_t track_texture_set;
+    int32_t parcel_quota;
+} SubTracks;
+
+/* Exact 0xb4-byte authored cRSubSpeedUp singleton. */
+typedef struct SubSpeedUp {
+    BodNode bod;
+    Vec3 bod_position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    Color4f color;
+    Vec3 basis_right;
+    float basis_right_w;
+    Vec3 basis_up;
+    float basis_up_w;
+    Vec3 basis_forward;
+    float basis_forward_w;
+    Vec3 world_position;
+    float world_position_w;
+    uint8_t unknown_78[0x80 - 0x78];
+    int32_t state;
+    Player* owner;
+    uint8_t unknown_88[0x8c - 0x88];
+    SubgameRuntime* owner_game;
+    uint8_t unknown_90[0xac - 0x90];
+    Sprite* sprite;
+    uint8_t unknown_b0[0xb4 - 0xb0];
+} SubSpeedUp;
+
 /* Two authored cRBanner actors are embedded at SubgameRuntime +0x359080. */
 typedef struct Banner {
     BodBase bod;
@@ -1105,8 +1186,21 @@ typedef struct SubgameRuntime {
     uint8_t track_state_latch;
     uint8_t _pad_a855[0x3];
     Tutorial tutorial;
-    int32_t level_segment_count;
-    uint8_t _pad_a878[0x355e64 - 0xa878];
+    SubTracks level_definition;
+    SubTracks level_definition_scratch;
+    BodBase fringe_attachment_list_head;
+    BodBase track_body_list_head;
+    BodBase barrier_sub_lazer_list_head;
+    BodBase salt_hazard_list_head;
+    BodBase unknown_bod_355c44;
+    BodBase unknown_bod_355c7c;
+    BodBase special_track_cell_list_head;
+    BodBase unknown_bod_355cec;
+    BodBase unknown_bod_355d24;
+    BodBase unknown_bod_355d5c;
+    int32_t active_level_score;
+    Time active_level_timer;
+    SubSpeedUp speedup_pickup;
     JetPack jetpack_pickup;
     uint8_t _pad_356000[0x359080 - 0x356000];
     BannerPool banners;

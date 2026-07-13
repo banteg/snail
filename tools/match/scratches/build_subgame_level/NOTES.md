@@ -299,3 +299,18 @@ Retiring the synthetic `TrackRenderGrid` header view advances the unchanged
 tables to `$L6040`/`$L6041`. COFF retains their bounded five- and four-entry
 contents at object `+0x838`/`+0x84c`; registering the current aliases restores
 all 106 operands. The body remains honestly partial at 86.10%.
+
+## 2026-07-13 analysis level-definition closure
+
+The path-template Binary Ninja/IDA campaign now embeds both complete
+0x1a5978-byte `SubTracks` owners in `SubgameRuntime`: the active
+`level_definition +0xa874` and startup scratch storage at `+0x1b01ec`. Their
+100 segment slots, first/last segments, random controls, colors, level name,
+speed/hazard controls, landscape index, and parcel fields end exactly at the
+sentinel band at `+0x355b64`; the old first-dword `level_segment_count` view is
+retired.
+
+Binary Ninja preview verifies `SubSegment == 0x4220`, `SubTracks == 0x1a5978`,
+and the enclosing `SubgameRuntime == 0x1272838`, then reverts. Matching source
+is unchanged: focused Wibo remains 86.10%, 560/555 instructions, with all 106
+masked operands clean and no mismatch.

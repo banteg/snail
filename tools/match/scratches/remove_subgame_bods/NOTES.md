@@ -126,3 +126,17 @@ pool-specific list-anchor aliases are retired. Embedded runtime pools retain
 object storage; only inherited `BodNode` membership moves through the root
 active/free list. This source cleanup is codegen-neutral at 67.67%, 495/501,
 with the same 63 clean operands and two honest string-order mismatches.
+
+## 2026-07-13 analysis sentinel-band closure
+
+The path-template analysis owner now exposes all ten consecutive `BodBase`
+sentinels at `SubgameRuntime +0x355b64`, followed by `active_level_score`, the
+embedded `Time` snapshot, and the exact 0xb4-byte `SubSpeedUp` singleton. This
+closes the full 0x300-byte bridge from the second `SubTracks` owner to the
+existing `JetPack +0x355e64` without an anonymous pad or shifted downstream
+fields.
+
+Binary Ninja preview verifies `SubSpeedUp == 0xb4` and keeps
+`SubgameRuntime == 0x1272838`, then reverts. Focused teardown matching remains
+the honest 67.67%, 495/501-instruction baseline with 63 clean operands and the
+same two documented speedup/JetPack string-order mismatches.
