@@ -21,6 +21,8 @@
 
 extern char* g_game_base; // data_4df904
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
+extern char g_help_script_path[]; // 0x4a3488
+extern char g_menu_background_script_path[]; // 0x4a347c
 extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
@@ -132,7 +134,7 @@ char GameRoot::initialize_game_assets_and_world()
     sm_tracks->load_segment_definitions();
     landscape->load_landscape_script_by_name((char*)"Starmap.txt");
     landscape->load_landscape_script_by_name((char*)"Splash.txt");
-    landscape->load_landscape_script_by_name((char*)"Help.txt");
+    landscape->load_landscape_script_by_name(g_help_script_path);
 
     subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
     ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
@@ -145,7 +147,7 @@ char GameRoot::initialize_game_assets_and_world()
     options.apply_audio_config_volumes();
     sm_tracks->load_level_definitions();
     ((LandscapeManager*)(g_game_base + 0x106c218))
-        ->load_landscape_script_by_name((char*)"Menubg.txt");
+        ->load_landscape_script_by_name(g_menu_background_script_path);
     subgame.level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
 
@@ -3008,26 +3010,26 @@ char GameRoot::initialize_game_assets_and_world()
     int player_index = 0;
     if (player_count > 0) {
         do {
-            GamePlayer* player = &players[player_index];
-            set_matrix_identity(&player->transform);
-            set_matrix_identity(&player->camera.transform);
-            player->camera.fov_degrees = 110.0f;
-            player->game_input = &game_inputs[player_index];
-            player->transform = *transform.initialize_matrix_from_values(
+            set_matrix_identity(&players[player_index].transform);
+            set_matrix_identity(&players[player_index].camera.transform);
+            players[player_index].camera.fov_degrees = 110.0f;
+            players[player_index].game_input = &game_inputs[player_index];
+            players[player_index].transform =
+                *transform.initialize_matrix_from_values(
                 0.0733430013f, 0.0f, -0.997310996f, 0.0f,
                 0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,
                 0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,
                 -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);
-            player->frontend_overlay.initialize_frontend_overlay_color_lerp(
+            players[player_index].frontend_overlay.initialize_frontend_overlay_color_lerp(
                 0x1000000);
-            player->mouse_cursor.release_mouse_cursor();
-            player->mouse_cursor.suppress_next_draw = 0;
+            players[player_index].mouse_cursor.release_mouse_cursor();
+            players[player_index].mouse_cursor.suppress_next_draw = 0;
             if (player_index == 0)
                 players[0].frontend_state = 12;
-            player->high_score_entry_pending = 0;
-            player->selected_high_score_rank = 0;
+            players[player_index].high_score_entry_pending = 0;
+            players[player_index].selected_high_score_rank = 0;
             rstrcpy_checked_ascii(
-                player->player_name,
+                players[player_index].player_name,
                 g_runtime_config.last_entered_player_name);
             ++player_index;
         } while (player_index < player_count);

@@ -556,3 +556,30 @@ closes with `debug_report_stub("path generation end\n")` before snail animation
 assets begin. The focused bootstrap rises from 48.52% (3,875 candidate
 instructions) to 49.81% (4,078/5,411), with clean masked operands increasing
 from 1,234 to 1,300 and the pre-existing audit problem counts unchanged.
+
+## 2026-07-14 root player-array ownership
+
+The final two-record player bootstrap is authored through the enclosing
+`GameRoot::players` array, not through a cached `GamePlayer*`. Native computes
+`GameRoot + player_index * 0x1f8` and then accesses the record through biased
+root-relative offsets; adding the array's `+0x124` base maps those accesses
+exactly to the recovered `GamePlayer` fields. Direct array expressions restore
+that induction base while retaining the typed transform, camera, input,
+frontend-overlay, cursor, score-entry, and player-name owners.
+
+The Help and menu-background loads now use the already curated
+`g_help_script_path` and `g_menu_background_script_path` globals rather than
+creating duplicate string-literal references. Focused Wibo rises from 80.28%
+to 80.49% with the candidate still at 5,391/5,411 instructions. Clean masked
+operands rise from 1,540 to 1,542; unresolved operands remain 75 and broad
+alignment mismatches fall from 35 to 33.
+
+Native also reserves a distinct final `0x40` matrix temporary for the player
+initializer. A second typed `TransformMatrix` was rejected because the shared
+`Vector3` default-constructor view adds code absent from this native function;
+a raw backing array exposed the expected lifetime but left every fixed local
+four bytes high due an earlier animation-name spill and did not improve the
+aggregate match. Neither experiment is retained. The semantic source keeps the
+existing typed matrix until the preceding path/animation register allocation
+can recover the native stack layout without padding, undersized storage, or
+other score-only scaffolding.
