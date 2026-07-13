@@ -2,8 +2,9 @@
 
 #include "border_manager.h"
 #include "exit.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int Exit::initialize_exit_prompt()
 {
@@ -27,11 +28,11 @@ int Exit::initialize_exit_prompt()
     Color4f color_19;
     Color4f color_20;
 
-    ((BorderManager*)(g_game_base + 0xb4c))->hide_all_borders();
+    g_game->border_manager.hide_all_borders();
 
     switch (state - 2) {
     case 7:
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x14,
             "Yes",
@@ -42,7 +43,7 @@ int Exit::initialize_exit_prompt()
             2,
             140.0f);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         return (int)no_button->initialize_frontend_widget(
             0x14,
             "No",
@@ -54,7 +55,7 @@ int Exit::initialize_exit_prompt()
             268.0f);
 
     case 8:
-        prompt_title = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
             0x400002,
             "Do you really want to quit?",
@@ -65,7 +66,7 @@ int Exit::initialize_exit_prompt()
             2,
             0.0f);
 
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x40000014,
             "Yes",
@@ -77,7 +78,7 @@ int Exit::initialize_exit_prompt()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
             0x14,
             "No",
@@ -90,7 +91,7 @@ int Exit::initialize_exit_prompt()
         return (int)no_button->stack_widget_below(prompt_title);
 
     case 9:
-        prompt_title = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
             0x400002,
             "Do you really want to quit?",
@@ -101,7 +102,7 @@ int Exit::initialize_exit_prompt()
             2,
             0.0f);
 
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x40000014,
             "Yes",
@@ -113,7 +114,7 @@ int Exit::initialize_exit_prompt()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
             0x14,
             "No",
@@ -127,7 +128,7 @@ int Exit::initialize_exit_prompt()
 
     case 0:
     case 5:
-        prompt_title = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
             0x400002,
             "Do you really want to quit?",
@@ -138,7 +139,7 @@ int Exit::initialize_exit_prompt()
             2,
             0.0f);
 
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x40000014,
             "Yes",
@@ -150,7 +151,7 @@ int Exit::initialize_exit_prompt()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
             0x14,
             "No",
@@ -163,7 +164,7 @@ int Exit::initialize_exit_prompt()
         return (int)no_button->stack_widget_below(prompt_title);
 
     case 1:
-        prompt_title = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
             0x400002,
             "Do you really want to quit?",
@@ -174,7 +175,7 @@ int Exit::initialize_exit_prompt()
             2,
             0.0f);
 
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x40000014,
             "Yes",
@@ -186,7 +187,7 @@ int Exit::initialize_exit_prompt()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
             0x14,
             "No",
@@ -199,7 +200,7 @@ int Exit::initialize_exit_prompt()
         return (int)no_button->stack_widget_below(prompt_title);
 
     case 2:
-        prompt_title = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
             0x400002,
             "Do you really want to quit?",
@@ -210,7 +211,7 @@ int Exit::initialize_exit_prompt()
             2,
             0.0f);
 
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x40000014,
             "Yes",
@@ -222,7 +223,7 @@ int Exit::initialize_exit_prompt()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
             0x14,
             "No",
@@ -235,7 +236,7 @@ int Exit::initialize_exit_prompt()
         return (int)no_button->stack_widget_below(prompt_title);
 
     case 3:
-        yes_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
             0x14,
             "Yes",
@@ -246,7 +247,7 @@ int Exit::initialize_exit_prompt()
             0,
             0.0f);
 
-        no_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        no_button = g_game->border_manager.allocate_border();
         return (int)no_button->initialize_frontend_widget(
             0x14,
             "No",

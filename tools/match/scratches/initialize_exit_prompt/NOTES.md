@@ -39,3 +39,7 @@
 - 2026-07-11 owner closure: `Exit` is the primary 0x1c-byte owner at
   `GameRoot +0x4f3ac`. It is distinct from the 0x50-byte subgame `Completion`
   at root `+0x12e6df0`. The rename is codegen-neutral at the exact baseline.
+- 2026-07-13 root-owner cleanup: border hiding and every prompt allocation now
+  reload the canonical `GameRoot::border_manager` member. The native duplicated
+  switch bodies and their short borrow lifetimes remain untouched; output is
+  still exact at 441/441 instructions with all 109 operands clean.
