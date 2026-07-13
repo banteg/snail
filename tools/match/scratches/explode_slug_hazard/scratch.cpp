@@ -44,11 +44,7 @@ void Slug::explode_slug_hazard()
             (float)next_math_random_value() * spread * 0.000030517578f
             + game->player.velocity.z;
         float speed = game->subgame_rate;
-        Vector3 staged_velocity;
-        staged_velocity.x = speed * random_velocity.x;
-        staged_velocity.y = random_velocity.y * speed;
-        staged_velocity.z = random_velocity.z * speed;
-        sprite->velocity = staged_velocity;
+        sprite->velocity = random_velocity * speed;
 
         Vector3* velocity = &sprite->velocity;
         float position_scale = (float)next_math_random_value() * 0.00030517578f;

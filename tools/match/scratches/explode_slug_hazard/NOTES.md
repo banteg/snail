@@ -112,3 +112,13 @@ before scaling forward Z; VC6 legally commutes the same multiplies in the
 candidate. A named integer RNG seed regresses to 95.89% by emitting `fimul`,
 and moving the owner lifetime earlier shortens the prefix, so neither probe is
 retained. No volatile or fake alias is used to force the `fxch`.
+
+## 2026-07-13 vector result ownership
+
+The scaled velocity is now expressed as the real by-value
+`random_velocity * speed` operation assigned directly to the sprite. VC6 still
+materializes the same three-component result in the native-sized `0x40` frame,
+so the focused result remains 97.61%, 146/147 instructions, prefix 79, and 32
+clean masked operands. This retires the artificial named `staged_velocity`
+owner without changing bytes; the remaining gap is still only the documented
+owner-load/x87 schedule and is not forced.
