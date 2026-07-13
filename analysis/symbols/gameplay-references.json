@@ -3357,6 +3357,16 @@
       "description": "Per-frame sprite depth-sort workspace containing 3000 contiguous 0x18-byte SpriteDepthNode records, one for every slot in the fixed sprite-manager pool."
     },
     {
+      "address": "0x4f6e50",
+      "name": "g_color4f_bank_32",
+      "kind": "global",
+      "aliases": [
+        "data_4f6e50"
+      ],
+      "size": "0x200",
+      "description": "Exact 32-entry Color4f allocation proven by its CRT constructor loop and by the contiguous bounds between `g_sprite_depth_nodes` and `g_sprite_depth_buckets`. No instruction outside the constructor addresses any lane, so its semantic role remains deliberately unnamed."
+    },
+    {
       "address": "0x4f7050",
       "name": "g_sprite_depth_buckets",
       "kind": "global",

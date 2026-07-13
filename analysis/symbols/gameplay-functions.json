@@ -683,6 +683,16 @@
       "description": "Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded MouseCursorState saved position from the active camera anchor."
     },
     {
+      "address": "0x410c00",
+      "name": "initialize_global_color4f_bank_32_thunk",
+      "description": "CRT startup thunk for the adjacent 32-entry Color4f constructor loop; `.CRT$XCU` entry 0x4a1014 points here."
+    },
+    {
+      "address": "0x410c10",
+      "name": "initialize_global_color4f_bank_32",
+      "description": "Runs the folded no-op Color4f constructor across the exact 32-entry global allocation at `data_4f6e50`. No runtime consumer or cross-port symbol supports a more specific semantic owner."
+    },
+    {
       "address": "0x410c30",
       "name": "set_backdrop_progress_fraction",
       "description": "Stores the active backdrop zoom at +0x6c8. Windows `update_subgoldy` drives it from the normalized current track-row payload ratio, while symbol-preserving iOS builds name the corresponding authored member `cRBackdrop::SetZoom(float)`."

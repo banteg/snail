@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**610/779** mapped gameplay functions matched, **779/779** mapped gameplay functions have a scratch, **92586/325189** bytes (**28.47%**) are proof-grade, and overall fuzzy is **70.82%**.
+**612/781** mapped gameplay functions matched, **781/781** mapped gameplay functions have a scratch, **92567/325170** bytes (**28.47%**) are proof-grade, and overall fuzzy is **70.82%**.
 
-## Proof Grade (610)
+## Proof Grade (612)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -130,7 +130,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_frontend_transition_overlay | 0x40abf0 | 248 | 62/62 | 100.00% | 62/62 | 9 ok |  |
 | ✅ | zero_vector3 | 0x410710 | 11 | 5/5 | 100.00% | 5/5 | - |  |
 | ✅ | initialize_game_last | 0x410720 | 14 | 4/4 | 100.00% | 4/4 | 1 ok |  |
-| ✅ | update_frontend_state_machine | 0x4107d0 | 1116 | 180/180 | 100.00% | 180/180 | 69 ok |  |
+| ✅ | update_frontend_state_machine | 0x4107d0 | 1064 | 180/180 | 100.00% | 180/180 | 69 ok |  |
+| ✅ | initialize_global_color4f_bank_32_thunk | 0x410c00 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
+| ✅ | initialize_global_color4f_bank_32 | 0x410c10 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | change_backdrop | 0x410d50 | 111 | 34/34 | 100.00% | 34/34 | - |  |
 | ✅ | change_backdrop_real | 0x410dc0 | 87 | 30/30 | 100.00% | 30/30 | 1 ok |  |
