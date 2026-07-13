@@ -36,36 +36,6 @@ static __forceinline void orient_previous_with_up(
         previous->transform.rotate_matrix_world_z(roll_angle);
 }
 
-static __forceinline void compute_terminal_deltas(Path* path)
-{
-    int i;
-    for (i = 0; i < path->segment_count - 1; ++i) {
-        PathTemplateSample* primary = &path->primary_samples[i];
-        PathTemplateSample* primary_next = &path->primary_samples[i + 1];
-        primary->delta_dir_to_next = Vector3(
-            primary_next->transform.position.x - primary->transform.position.x,
-            primary_next->transform.position.y - primary->transform.position.y,
-            primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.normalize_vector();
-
-        PathTemplateSample* secondary = &path->secondary_samples[i];
-        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
-    }
-
-    PathTemplateSample* last_primary = &path->primary_samples[path->segment_count - 1];
-    last_primary->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    last_primary->delta_length = 1.0f;
-
-    PathTemplateSample* last_secondary = &path->secondary_samples[path->segment_count - 1];
-    last_secondary->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    last_secondary->delta_length = 1.0f;
-}
-
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_vertices(
@@ -237,7 +207,38 @@ void Path::initialize_sweep_path_template_pair(
         orient_previous_with_up(secondary_samples, i, 3, 0.0f);
     }
 
-    compute_terminal_deltas(this);
+    int delta_index = 0;
+    if (segment_count > 1) {
+        do {
+            primary_samples[delta_index].delta_dir_to_next = Vector3(
+                primary_samples[delta_index + 1].transform.position.x -
+                    primary_samples[delta_index].transform.position.x,
+                primary_samples[delta_index + 1].transform.position.y -
+                    primary_samples[delta_index].transform.position.y,
+                primary_samples[delta_index + 1].transform.position.z -
+                    primary_samples[delta_index].transform.position.z);
+            primary_samples[delta_index].delta_length =
+                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+
+            secondary_samples[delta_index].delta_dir_to_next = Vector3(
+                secondary_samples[delta_index + 1].transform.position.x -
+                    secondary_samples[delta_index].transform.position.x,
+                secondary_samples[delta_index + 1].transform.position.y -
+                    secondary_samples[delta_index].transform.position.y,
+                secondary_samples[delta_index + 1].transform.position.z -
+                    secondary_samples[delta_index].transform.position.z);
+            secondary_samples[delta_index].delta_length =
+                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+
+            ++delta_index;
+        } while (delta_index < segment_count - 1);
+    }
+
+    primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
+    primary_samples[segment_count - 1].delta_length = 1.0f;
+    secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
+    secondary_samples[segment_count - 1].delta_length = 1.0f;
+
     build_strip_mesh(this, texture_a, texture_b);
     finalize_path_template();
     (void)scale_arg;

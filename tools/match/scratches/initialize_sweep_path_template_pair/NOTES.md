@@ -74,3 +74,16 @@ regressed focused Wibo from 25.04% (546/652) to 17.26% (553/652). It did clear
 the masked audit from 32 ok, 0 unresolved, 1 mismatch to 25 ok, 0 unresolved,
 0 mismatch, but the score loss is too large for the Phase B ratchet. Keep the
 direct component stores in the sweep vertex loop.
+
+2026-07-13 delta ownership: the native body owns both sample arrays and their
+delta loop directly; the scratch-local `compute_terminal_deltas(Path*)` helper
+kept `Path` behind an alias for the whole region. Expanding the loop against
+`primary_samples` and `secondary_samples` moves focused Wibo from 25.04%
+(546/652) to 27.14% (549/652), with the masked audit unchanged at 32 ok,
+0 unresolved, 1 mismatch.
+
+Addressing each terminal sample directly as `samples[segment_count - 1]`,
+instead of extending a shared `terminal_index` lifetime, then moves focused
+Wibo to 32.70% (559/652) and clears the masked audit to 34 ok, 0 unresolved,
+0 mismatch. This recovers a real `Path` ownership boundary and the native
+count-relative terminal addressing; it is not a register or scheduling shim.
