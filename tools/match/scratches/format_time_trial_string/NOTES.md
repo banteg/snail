@@ -44,3 +44,14 @@ promotable local duplicate.
 - Cross-port symbols recover the parameter owner as `cRTime`, so the local C
   shell and the shared C++ class now use `Time` vocabulary. This remains a
   naming-only change to the exact 0x18-byte layout.
+
+2026-07-13 analysis propagation:
+
+- The path-template Binary Ninja/IDA runtime now embeds the complete 0x330-byte
+  `TimeTrial` at `+0xff25e0`, followed by the one-byte `PathManager` at
+  `+0xff2910` and all 63 exact `PathPair` values at `+0xff2914`.
+- The former `runtime_track_index` lane was a flattened field inside the
+  TimeTrial extent, not an independent SubgameRuntime member.
+- Binary Ninja preview verifies all boundaries and keeps
+  `SubgameRuntime == 0x1272838`, then reverts. The formatter remains exact at
+  36/36 instructions with all twelve operands clean.

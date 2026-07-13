@@ -641,6 +641,17 @@ typedef struct FringeManager {
     int32_t count;
 } FringeManager;
 
+/* Exact 0x330-byte authored cRTimeTrial owner. */
+typedef struct TimeTrial {
+    uint8_t _storage[0x330];
+} TimeTrial;
+
+/* Exact 0x3c-byte authored cRBarrier tutorial actor. */
+typedef struct BarrierActor {
+    BodBase bod;
+    Player* owner_player;
+} BarrierActor;
+
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;
@@ -1395,11 +1406,12 @@ typedef struct SubgameRuntime {
     SubSolution* selected_level_record;
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
-    uint8_t _pad_ff25e0[0x4];
-    int32_t runtime_track_index;
-    uint8_t _pad_ff25e8[0xff2914 - 0xff25e8];
+    TimeTrial time_trial;
+    PathManager path_manager;
+    uint8_t _pad_ff2911[0xff2914 - 0xff2911];
     PathPair path_pairs[63];
-    uint8_t _pad_ff7bc4[0x125e480 - 0xff7bc4];
+    BarrierActor barrier;
+    uint8_t _pad_ff7c00[0x125e480 - 0xff7c00];
     ParcelManager parcel_manager;
     uint8_t _pad_125ffd8[0x12727d8 - 0x125ffd8];
     Completion completion;

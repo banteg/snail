@@ -89,6 +89,7 @@ SNAIL_SKIN_FIELD_UPDATES = (
 )
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
+    "BarrierActor",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -98,6 +99,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SlugPool",
     "SlugVoiceManager",
     "TrackHealthPickup",
+    "TimeTrial",
     "SnailVisual",
     "BodNode",
     "BodBase",
@@ -282,8 +284,10 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0xff25d4", "selected_level_record", "SubSolution*"),
     ("0xff25d8", "selected_level_record_cursor", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
-    ("0xff25e4", "runtime_track_index", "int32_t"),
+    ("0xff25e0", "time_trial", "TimeTrial"),
+    ("0xff2910", "path_manager", "PathManager"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
+    ("0xff7bc4", "barrier", "BarrierActor"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
 )
 
