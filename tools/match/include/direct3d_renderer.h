@@ -23,6 +23,37 @@ struct D3DPresentParameters {
     unsigned int fullscreen_presentation_interval;
 };
 
+struct D3DDeviceCaps8 {
+    char unknown_00[0x58];
+    unsigned int max_texture_width;  // +0x58
+    unsigned int max_texture_height; // +0x5c
+    char unknown_60[0xd4 - 0x60];
+};
+
+struct D3DDisplayMode {
+    unsigned int width;
+    unsigned int height;
+    unsigned int refresh_rate;
+    unsigned int format;
+};
+
+struct Direct3D8Vtbl {
+    char unknown_00[0x20];
+    int (__stdcall* GetAdapterDisplayMode)(
+        Direct3D8* self, unsigned int adapter, D3DDisplayMode* mode);
+    char unknown_24[0x34 - 0x24];
+    int (__stdcall* GetDeviceCaps)(Direct3D8* self, unsigned int adapter,
+        unsigned int device_type, D3DDeviceCaps8* caps);
+    char unknown_38[0x3c - 0x38];
+    int (__stdcall* CreateDevice)(Direct3D8* self, unsigned int adapter,
+        unsigned int device_type, int focus_window, unsigned int behavior_flags,
+        D3DPresentParameters* parameters, Direct3DDevice8** out_device);
+};
+
+struct Direct3D8 {
+    Direct3D8Vtbl* vtbl;
+};
+
 class Direct3DRenderer {
 public:
     ObjectRenderBuffers* create_vertex_buffer(
@@ -31,10 +62,10 @@ public:
     void release_direct3d_renderer_resources(); // @ 0x4116f0
     void release_direct3d_device_interfaces(); // @ 0x411960
     int direct3d_renderer_set_cull_mode(char cull_front); // @ 0x411700
-    int initialize_d3d8_device(char use_present_interval_one); // @ 0x411730
+    void initialize_d3d8_device(char use_present_interval_one); // @ 0x411730
     void reset_direct3d_render_state(); // @ 0x4118b0
     int direct3d_renderer_set_fullscreen_mode(int enabled);
-    int query_direct3d_device_caps(); // @ 0x414600
+    void query_direct3d_device_caps(); // @ 0x414600
 
     int vertex_buffer_count; // +0x0000
     ObjectRenderBuffers vertex_buffers[0xbb8]; // +0x0004, 3000 entries
@@ -45,7 +76,7 @@ public:
     Direct3D8* d3d;                  // +0xbb90
     Direct3DDevice8* device;         // +0xbb94
     D3DPresentParameters present;    // +0xbb98
-    char unknown_bbcc[0xbca0 - 0xbbcc];
+    D3DDeviceCaps8 device_caps;       // +0xbbcc
     unsigned int display_format;     // +0xbca0
     unsigned int requested_width;    // +0xbca4
     unsigned int requested_height;   // +0xbca8
@@ -57,6 +88,14 @@ public:
 
 typedef char D3DPresentParameters_must_be_0x34[
     (sizeof(D3DPresentParameters) == 0x34) ? 1 : -1];
+typedef char D3DDeviceCaps8_must_be_0xd4[
+    (sizeof(D3DDeviceCaps8) == 0xd4) ? 1 : -1];
+typedef char D3DDisplayMode_must_be_0x10[
+    (sizeof(D3DDisplayMode) == 0x10) ? 1 : -1];
+typedef char Direct3D8Vtbl_must_cover_0x40[
+    (sizeof(Direct3D8Vtbl) == 0x40) ? 1 : -1];
+typedef char Direct3D8_must_be_0x04[
+    (sizeof(Direct3D8) == 0x04) ? 1 : -1];
 typedef char Direct3DRenderer_must_be_0xbcc0[
     (sizeof(Direct3DRenderer) == 0xbcc0) ? 1 : -1];
 

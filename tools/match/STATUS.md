@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**553/727** mapped gameplay functions matched, **727/727** mapped gameplay functions have a scratch, **89316/325607** bytes (**27.43%**) are proof-grade, and overall fuzzy is **63.26%**.
+**554/728** mapped gameplay functions matched, **728/728** mapped gameplay functions have a scratch, **89315/325606** bytes (**27.43%**) are proof-grade, and overall fuzzy is **63.26%**.
 
-## Proof Grade (553)
+## Proof Grade (554)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -158,7 +158,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | set_object_color | 0x4141d0 | 139 | 47/47 | 100.00% | 47/47 | 3 ok |  |
 | ✅ | set_fullscreen_mode | 0x414260 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
 | ✅ | bind_texture_ref | 0x414500 | 178 | 62/62 | 100.00% | 62/62 | 11 ok |  |
-| ✅ | replace_object_group_texture_refs | 0x4145c0 | 129 | 26/26 | 100.00% | 26/26 | - |  |
+| ✅ | replace_object_group_texture_refs | 0x4145c0 | 63 | 26/26 | 100.00% | 26/26 | - |  |
+| ✅ | query_direct3d_device_caps | 0x414600 | 65 | 21/21 | 100.00% | 21/21 | 4 ok |  |
 | ✅ | reset_render_counters | 0x414650 | 18 | 5/5 | 100.00% | 5/5 | 3 ok |  |
 | ✅ | kill_golb | 0x414670 | 418 | 132/132 | 100.00% | 132/132 | 16 ok |  |
 | ✅ | spawn_golb_trail_sprite | 0x415bb0 | 161 | 47/47 | 100.00% | 47/47 | 2 ok |  |

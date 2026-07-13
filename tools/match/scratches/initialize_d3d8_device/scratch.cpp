@@ -5,43 +5,12 @@
 
 #include <string.h>
 
-typedef unsigned int UINT;
-typedef int HRESULT;
-
-struct D3DDisplayMode {
-    UINT width;
-    UINT height;
-    UINT refresh_rate;
-    UINT format;
-};
-
-struct Direct3D8;
-
-struct Direct3D8Vtbl {
-    char unknown_00[0x20];
-    HRESULT (__stdcall* GetAdapterDisplayMode)(
-        Direct3D8* self, UINT adapter, D3DDisplayMode* mode);
-    char unknown_24[0x3c - 0x24];
-    HRESULT (__stdcall* CreateDevice)(
-        Direct3D8* self,
-        UINT adapter,
-        UINT device_type,
-        HWND focus_window,
-        UINT behavior_flags,
-        D3DPresentParameters* parameters,
-        Direct3DDevice8** out_device);
-};
-
-struct Direct3D8 {
-    Direct3D8Vtbl* vtbl;
-};
-
-extern Direct3D8* __stdcall Direct3DCreate8(UINT sdk_version);
+extern Direct3D8* __stdcall Direct3DCreate8(unsigned int sdk_version);
 extern int abort_startup_with_3d_error(); // @ 0x4088a0
 extern int debug_report_stub(const char* format, ...); // @ 0x449c00
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 
-int Direct3DRenderer::initialize_d3d8_device(char use_present_interval_one)
+void Direct3DRenderer::initialize_d3d8_device(char use_present_interval_one)
 {
     Direct3D8* d3d8 = Direct3DCreate8(0xdc);
     d3d = d3d8;
@@ -52,9 +21,9 @@ int Direct3DRenderer::initialize_d3d8_device(char use_present_interval_one)
 
     D3DDisplayMode display_mode;
     if (d3d->vtbl->GetAdapterDisplayMode(d3d, 0, &display_mode) < 0) {
-        int result = abort_startup_with_3d_error();
+        abort_startup_with_3d_error();
         device_initialized = 0;
-        return result;
+        return;
     }
 
     display_format = display_mode.format;
@@ -91,9 +60,8 @@ int Direct3DRenderer::initialize_d3d8_device(char use_present_interval_one)
     }
 
     reset_direct3d_render_state();
-    int result = query_direct3d_device_caps();
+    query_direct3d_device_caps();
     device_initialized = 1;
-    return result;
 }
 
 void Direct3DRenderer::reset_direct3d_render_state()

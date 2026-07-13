@@ -25,8 +25,14 @@ helper as a real call target instead of measuring it as part of the initializer.
 - Attempts `CreateDevice` with hardware vertex processing (`0x40`), then falls
   back to software vertex processing (`0x20`), reporting the selected path
   through the stripped debug-report helper.
-- Calls `reset_direct3d_render_state`, then `query_direct3d_device_caps`, sets
-  the initialized byte, and returns the query result.
+- Calls `reset_direct3d_render_state`, then `query_direct3d_device_caps`, and
+  sets the initialized byte.
+
+2026-07-13 ownership pass: both renderer lifecycle calls are now typed as
+`void`. Their apparent integer returns were merely the last callee's `EAX`
+left live at `ret`; the sole bootstrap caller ignores `initialize_d3d8_device`
+and it likewise ignores `query_direct3d_device_caps`. The corrected signatures
+remain byte-identical.
 
 ## Current match
 

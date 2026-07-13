@@ -881,6 +881,11 @@
       "description": "Rewrites one built object's grouped-render texture-ref table from an old texture reference to a replacement after grouped buffers have been built."
     },
     {
+      "address": "0x414600",
+      "name": "query_direct3d_device_caps",
+      "description": "Direct3DRenderer member that queries adapter device capabilities into its owned D3DDeviceCaps8 block and reports the maximum texture dimensions."
+    },
+    {
       "address": "0x414650",
       "name": "reset_render_counters",
       "description": "Clears the per-frame renderer counters for submitted triangles, DrawPrimitive calls, and texture binds before render_game_frame starts."
