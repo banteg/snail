@@ -1409,7 +1409,7 @@
     {
       "address": "0x42c770",
       "name": "try_enter_track_attachment_from_swept_motion",
-      "description": "Scans the authored runtime attachment samples against the player's swept motion box, seeds the shared scratch follow-state block when a candidate hit survives the local bounds tests, and immediately runs one follow update to validate the candidate. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches the live follow-state path driven by this entry family. Raw BN plus the checked-in IDA export now also show the helper itself does not directly clear `player + 0x41d` before control returns to the caller's secondary-slot gate."
+      "description": "Scans `Path::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `FollowState`, copies the runtime row's installed heading into the Path, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family."
     },
     {
       "address": "0x42ca90",

@@ -60,7 +60,7 @@ Recovered `update_subgoldy` entry split:
 - when `player + 0x41d != 0`, the same function instead probes installed entry through `try_enter_track_attachment_from_swept_motion`
 - that swept probe is driven from the live current cell's installed-owner flags, not from a broader visited-row event pass
 - `flags_b & 0x40` is probed first, and `flags_b & 0x80` is only probed if `player + 0x41d` is still nonzero after the first callsite
-- raw disassembly plus the checked-in IDA export do not show a direct helper-side clear of `player + 0x41d` before that second gate check, so immediate success on the `0x40` callsite does not retire the gate up front
+- accepted entry reaches `0x42c98a`, which clears `player + 0x41d`; therefore a successful `0x40` probe suppresses the `0x80` probe, while a miss leaves the secondary slot eligible
 - the swept helper is therefore a separate re-entry path, not the generic current-row begin path
 
 Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_motion`:
@@ -73,16 +73,18 @@ Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_m
   - start `z` within `[0, delta_length]`
   - end `y <= 0.001`
 
-Static narrowing for the later retirement of `attachment_exit_pending`:
+Static narrowing for retirement of `attachment_exit_pending`:
 
-- Binary Ninja field xrefs now show `player + 0x41d` is only written in two places:
+- Direct disassembly and both checked-in decompiles show an additional writer
+  that field xrefs missed because it is reached through the relocatable Game base:
+  - successful `try_enter_track_attachment_from_swept_motion` clears it at `0x42c98a`
   - `begin_post_follow_carryover` sets it to `1`
   - `update_subgoldy` clears it at five addresses: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
-- the swept helper itself is not one of those writers; raw BN plus the checked-in IDA export still show no direct helper-side clear before control returns to the caller's secondary-slot gate
 - Binary Ninja field xrefs also now show `attachment_exit_progress` (`player + 0x434`) is only written by:
   - `begin_post_follow_carryover`
   - the single progress-update store at `update_subgoldy` `0x43ce96`
-- practical consequence: current static RE no longer supports a separate "helper clears the gate" story or a raw "progress >= 1.0 clears the gate" story
+- practical consequence: accepted swept re-entry clears the gate immediately,
+  while current static RE still does not support a raw `progress >= 1.0` clear
 
 Current best static read of those five clear sites:
 

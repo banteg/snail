@@ -1,82 +1,55 @@
-# WIP — 75.63% score, 190/204 insns on standard flags
+# WIP — 84.69% score, 188/204 instructions on standard flags
 
-Now on the project-standard `msvc6.5 /O2 /G5 /W3` (the earlier `/Op`
-experiment reached 205/204 instructions, but flag changes remain only
-experiments). Current source-shape wins:
+The candidate uses the project-standard `msvc6.5 /O2 /G5 /W3`. Current
+source-shape recoveries:
 
-- `do { ... } while (--idx >= 0); return;` with `if (probe.y <= 0.001f)
-  goto seed;` — reproduces the target layout (seed block after the plain
-  return, fallthrough-free hot loop)
-- copying `cell->anchor_position` into a `Vector3` first recovers the native
-  `add eax, 0x10` anchor-load prologue and the `v19/v20/v21` stack slots
-- explicit `sample_origin`, `hit_origin`, and `swept_position` vectors recover
-  the native 0x64-byte frame and the stored world-y/z and swept-y/z lanes
-- two-step y/z subtracts (`v23 = py; v23 -= v31`) recover the target `fsub`
-  polarity on the first probe; world x lanes still stay FPU-resident
-- the seed block uses the real Player-owned `FollowState`, velocity, squidge,
-  and attachment-exit fields rather than treating them as standalone globals
+- `cell->anchor_position` is copied as a `Vector3`, reproducing the native
+  anchor-load prologue and three persistent stack lanes.
+- Both local probes are real vector subtractions. The swept endpoint is a
+  vector addition before the second subtraction; the obsolete scalar-copy
+  scaffolding was removed without changing codegen.
+- The two sample gates read the array element before forming a pointer. This
+  recovers both native sample-base calculations and raises the honest focused
+  score from 75.63% to 84.69%.
+- `do { ... } while (--idx >= 0); return;` plus the accepted-probe jump keeps
+  the native seed-after-return layout. A structured `break`/exhaustion form
+  introduced an extra check and regressed to 84.26%, so it was rejected.
 
-Remaining residuals at 79.80%:
+Recovered behavior and ownership:
 
-- sample pointer formation uses `eax` + `ecx` (`mov eax, [edi+0x5c]; mov ecx,
-  ebp; add ecx, eax`) instead of target `mov ecx, [edi+0x5c]; add ecx, ebp`
-- first probe z-copy scheduling has one integer move before the `fsub`
-  where target schedules it after
-- second-probe vector copy registers are swapped (`eax`/`edx`) around the
-  `v25/v26/v27 -> probe` stores
-- loop-exit branch polarity is still `jl return; jmp loop` versus target
-  `jge loop; return` for the same seed-after-return layout
-- seed stores for `progress` and `player.position.y` are integer moves; target
-  uses `fld/fstp`. Plain casts and neutral arithmetic did not move codegen.
+- Scan `Path::secondary_samples` backward from `segment_count - 1`, with the
+  exact 0xa8-byte `AttachmentSample` stride, skipping samples whose authored
+  world-up Y component is non-positive.
+- Rotate `position - (cell anchor + sample position)` into sample-local space;
+  require the integer-half-width bounds plus `y >= -0.2`, `z > 0`, and
+  `z < delta_length`.
+- Rotate `(position + sweep) - sample origin` again and accept when local
+  `y <= 0.001f`.
+- On acceptance, `0x42c98a` clears
+  `Player::attachment_exit_pending` at player+0x41d. The caller rechecks that
+  byte before its secondary-slot probe, so a successful primary entry retires
+  the gate while a miss leaves the secondary candidate eligible.
+- The seeded block at game+0x430100 is `Player::FollowState` at player+0x384,
+  not a standalone global. It owns the borrowed `Path`, borrowed `SubLoc`,
+  sample index, progress, vertical offset, orientation fields, and Player
+  backlink.
+- The same Player owns the adjacent position, velocity, exit byte, and inline
+  `cRSquidge`; the installed heading comes from
+  `SubgameRuntime::runtime_rows[row].installed_heading_delta`.
+- The final validation is
+  `FollowState::update_track_attachment_follow_state(player.velocity.z,
+  &player.position, &player.velocity)`.
 
-Semantics fully recovered (see also the seeding writes in scratch.cpp):
+The two native callers discard EAX, both empty exits return without producing
+a value, and the final helper result is not semantically consumed. Binary Ninja
+now records `void __thiscall(Path*, six floats, TrackRowCell*)`, replacing the
+stale `int PathTemplate::*` view. iOS names the broader family
+`cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)`; the Windows
+split keeps only seven stack dwords for position, sweep, and the borrowed cell.
 
-- scan template samples backward from `sample_count-1` (+0x44), stride
-  0xa8 via base at +0x5c, skipping samples with +0x14 <= 0
-- probe 1: position minus (cell anchor + sample offset), rotated into
-  the sample local frame (`Vector3::rotate_vector_by_matrix`, thiscall)
-- gates: `(float)(width_cells / -2) - 0.3f < x < (float)(width_cells / 2)
-  + 0.3f` (signed INTEGER division — the 06-10 half-span finding),
-  `y >= -0.2` (double constant), `z > 0.0f`, `z < sample depth limit
-  (+0x8c)`
-- probe 2: sweep-displaced position re-rotated; accept when rotated
-  y <= 0.001f
-- seeding: the FollowState at game+0x430100 — UNIFIED (2026-06-12): this
-  is the Player's embedded 0x40-byte follow sub-struct at player+0x384,
-  not a standalone global (0x42fd7c + 0x384 = 0x430100). The seed re-reads as:
-  active=1, template, cell, sample index, progress = rotated z,
-  vertical_offset = 0, player back-reference, orientation_a/_b
-  (+0x18/+0x1c) reset, **attachment_exit_pending (player+0x41d) cleared,
-  squidge.start_squidge_y(player.velocity.y) then velocity.y = 0** — the
-  exit-lane squidge idiom in reverse — player position.y snapped to
-  rotated local y, heading table write (61-dword row stride), then a
-  validating `update_track_attachment_follow_state(player.velocity.z,
-  &player.position, &player.velocity)` — thiscall, three args
-
-## 2026-07-10 installed-heading owner closure
-
-The seed's former `g_row_heading_table[row * 61]` read is the same field-first
-view of `SubgameRuntime::runtime_rows[row].installed_heading_delta` used by
-the direct follow-state initializer. Renaming the curated offset and source
-expression preserves the 79.80% match, 202/204 instructions, and all 36 clean
-operands while removing the last standalone-table ownership fiction from both
-attachment-entry paths.
-
-## 2026-07-10 no-fakematch audit
-
-The scratch no longer declares the relocatable singleton pointer `volatile` or
-caches three hand-staged copies around the seed calls. Direct owner expressions
-let normal call aliasing determine reloads. Focused Wibo is the honest 75.63%,
-190/204 instructions, prefix 16, with 24 clean masks and one remaining masked
-layout mismatch. The score loss is concentrated in repeated seed stores that
-VC6 now coalesces through one live Game/Player base; the recovered embedded
-Player, FollowState, runtime-row heading field, squidge, velocity, and exit-lane
-ownership is unchanged.
-
-## 2026-07-11 Squidge ownership closure
-
-The seed call now uses the shared exact `Squidge` owner. iOS and Android name
-the method `cRSquidge::StartY(float)`, while the surrounding method family and
-six-float layout prove `Player +0x4344` is the inline authored cRSquidge rather
-than a generic animation-state block. The focused match remains at the honest
-no-fakematch baseline.
+Remaining honest deltas are one commutative swept-X addition order, the loop
+branch polarity, and the seed block. Native repeatedly reloads the relocatable
+Game base and uses x87 stores for two float fields, while VC6 coalesces the
+direct owner expressions and uses integer copies. Volatile aliases, dummy
+reloads, and neutral arithmetic were rejected as fakematching; these residuals
+remain until a real authored owner/source expression explains them.

@@ -2,8 +2,16 @@
 /* function: try_enter_track_attachment_from_swept_motion @ 0x42c770 */
 /* selector: try_enter_track_attachment_from_swept_motion */
 
-// Scans the authored runtime attachment samples against the player's swept motion box, seeds the shared scratch follow-state block when a candidate hit survives the local bounds tests, and immediately runs one follow update to validate the candidate. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches the live follow-state path driven by this entry family. Raw BN plus the checked-in IDA export now also show the helper itself does not directly clear `player + 0x41d` before control returns to the caller's secondary-slot gate.
-void __thiscall sub_42C770(_DWORD *this, float a2, float a3, float a4, float a5, float a6, float a7, int a8)
+// Scans `Path::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `FollowState`, copies the runtime row's installed heading into the Path, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family.
+void __thiscall try_enter_track_attachment_from_swept_motion(
+        _DWORD *this,
+        float a2,
+        float a3,
+        float a4,
+        float a5,
+        float a6,
+        float a7,
+        int a8)
 {
   int v9; // esi
   int v10; // esi
@@ -84,27 +92,29 @@ void __thiscall sub_42C770(_DWORD *this, float a2, float a3, float a4, float a5,
       if ( --v10 < 0 )
         return;
     }
-    *((_BYTE *)&loc_430199 + (_DWORD)MEMORY[0x4DF904]) = 0;
-    start_squidge_y((int)uninit_thanks_screen + (_DWORD)MEMORY[0x4DF904], *((float *)MEMORY[0x4DF904] + 1097828));
-    *((_BYTE *)&loc_430100 + (_DWORD)MEMORY[0x4DF904]) = 1;
-    *((_DWORD *)MEMORY[0x4DF904] + 1097793) = this;
-    *((_DWORD *)MEMORY[0x4DF904] + 1097794) = a8;
-    *((_DWORD *)MEMORY[0x4DF904] + 1097795) = v10;
-    *((float *)MEMORY[0x4DF904] + 1097796) = v18;
-    *((_DWORD *)MEMORY[0x4DF904] + 1097797) = 0;
-    *((float *)MEMORY[0x4DF904] + 1097594) = v17;
-    *((_DWORD *)MEMORY[0x4DF904] + 1097828) = 0;
-    *((_DWORD *)MEMORY[0x4DF904] + 1097806) = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
-    *(_DWORD *)(*((_DWORD *)MEMORY[0x4DF904] + 1097793) + 152) = *(int *)((char *)&unk_64118C
-                                                                        + (_DWORD)MEMORY[0x4DF904]
-                                                                        + 244 * get_track_cell_row_index((_DWORD *)a8));
-    *((_DWORD *)MEMORY[0x4DF904] + 1097799) = 0;
-    *(_DWORD *)((char *)&loc_430118 + (_DWORD)MEMORY[0x4DF904]) = 0;
+    *((_BYTE *)&g_player_attachment_exit_pending_offset + (_DWORD)g_game_base) = 0;
+    start_squidge_y(
+      (SquidgeState *)((char *)uninit_thanks_screen + (_DWORD)g_game_base),
+      *((float *)g_game_base + 1097828));
+    *((_BYTE *)&g_player_follow_state_block + (_DWORD)g_game_base) = 1;
+    *((_DWORD *)g_game_base + 1097793) = this;
+    *((_DWORD *)g_game_base + 1097794) = a8;
+    *((_DWORD *)g_game_base + 1097795) = v10;
+    *((float *)g_game_base + 1097796) = v18;
+    *((_DWORD *)g_game_base + 1097797) = 0;
+    *((float *)g_game_base + 1097594) = v17;
+    *((_DWORD *)g_game_base + 1097828) = 0;
+    *((_DWORD *)g_game_base + 1097806) = (char *)&g_player_block + (_DWORD)g_game_base;
+    *(_DWORD *)(*((_DWORD *)g_game_base + 1097793) + 152) = *(_DWORD *)((char *)&g_row_heading_table
+                                                                      + (_DWORD)g_game_base
+                                                                      + 244 * get_track_cell_row_index((_DWORD *)a8));
+    *((_DWORD *)g_game_base + 1097799) = 0;
+    *(_DWORD *)((char *)&loc_430118 + (_DWORD)g_game_base) = 0;
     update_track_attachment_follow_state(
-      (char *)&loc_430100 + (_DWORD)MEMORY[0x4DF904],
-      *((float *)MEMORY[0x4DF904] + 1097829),
-      (float *)MEMORY[0x4DF904] + 1097593,
-      (int)MEMORY[0x4DF904] + 4391308);
+      (FollowState *)((char *)&g_player_follow_state_block + (_DWORD)g_game_base),
+      *((float *)g_game_base + 1097829),
+      (Vec3 *)((char *)g_game_base + 4390372),
+      (Vec3 *)((char *)g_game_base + 4391308));
   }
 }
 

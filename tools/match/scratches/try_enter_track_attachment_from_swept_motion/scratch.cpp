@@ -1,8 +1,18 @@
 // try_enter_track_attachment_from_swept_motion @ 0x42c770 (thiscall, ret 0x1c)
-// WIP: structure aligned (205/204 insns with /Op), registers still shifted —
-// see NOTES.md for the recovered semantics and remaining deltas.
+// WIP: real vector expressions and owner fields recovered; see NOTES.md for
+// the remaining standard-flags compiler deltas.
 #include "track_attachment.h"
 #include "player.h"
+
+inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+}
+
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+}
 
 // The follow state is embedded in the fixed player owned by SubgameRuntime.
 extern char* g_game_base;
@@ -23,58 +33,31 @@ void Path::try_enter_track_attachment_from_swept_motion(
     float v19 = anchor.x;
     float v20 = anchor.y;
     float v21 = anchor.z;
-    float v22;
-    float v23;
-    float v24;
-    float v25;
-    float v26;
-    float v27;
-    float v31;
-    float v32;
-    float v33;
-    float v34;
-    float v35;
-    float v36;
     int idx = segment_count - 1;
     if (idx < 0)
         return;
     do {
-        AttachmentSample* s = &secondary_samples[idx];
-        if (s->transform.basis_up.y > 0.0f) {
+        if (secondary_samples[idx].transform.basis_up.y > 0.0f) {
+            AttachmentSample* sample = &secondary_samples[idx];
             sample_origin = Vector3(
-                v19 + s->transform.position.x,
-                v20 + s->transform.position.y,
-                v21 + s->transform.position.z);
-            v31 = sample_origin.y;
-            v32 = sample_origin.z;
-            v22 = px - sample_origin.x;
-            v23 = py;
-            v23 -= v31;
-            v24 = pz;
-            v24 -= v32;
-            local = Vector3(v22, v23, v24);
-            local.rotate_vector_by_matrix(&s->inverse_matrix);
+                v19 + sample->transform.position.x,
+                v20 + sample->transform.position.y,
+                v21 + sample->transform.position.z);
+            local = Vector3(px, py, pz) - sample_origin;
+            local.rotate_vector_by_matrix(&sample->inverse_matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
                 && local.y >= -0.2
                 && local.z > 0.0f) {
-                AttachmentSample* hit = &secondary_samples[idx];
-                if (local.z < hit->delta_length) {
+                if (local.z < secondary_samples[idx].delta_length) {
+                    AttachmentSample* hit = &secondary_samples[idx];
                     hit_origin = Vector3(
                         v19 + hit->transform.position.x,
                         v20 + hit->transform.position.y,
                         v21 + hit->transform.position.z);
-                    v35 = hit_origin.y;
-                    v36 = hit_origin.z;
-                    swept_position = Vector3(sweep_x + px, py + sweep_y, pz + sweep_z);
-                    v33 = swept_position.y;
-                    v34 = swept_position.z;
-                    v25 = swept_position.x - hit_origin.x;
-                    v26 = v33;
-                    v26 -= v35;
-                    v27 = v34;
-                    v27 -= v36;
-                    probe = Vector3(v25, v26, v27);
+                    swept_position =
+                        Vector3(px, py, pz) + Vector3(sweep_x, sweep_y, sweep_z);
+                    probe = swept_position - hit_origin;
                     probe.rotate_vector_by_matrix(&hit->inverse_matrix);
                     if (probe.y <= 0.001f)
                         goto seed;

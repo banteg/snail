@@ -1791,7 +1791,7 @@
       "ios_symbol": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "The iOS name describes the same swept-search responsibility; Windows factors follow-state setup through adjacent helpers."
+      "notes": "The iOS name describes the same swept-search responsibility. Windows retains a Path receiver and seven stack dwords for position, sweep, and a borrowed SubLoc; accepted entry seeds the Player-embedded FollowState and clears the Player-owned exit-pending gate."
     },
     {
       "address": "0x42ca90",

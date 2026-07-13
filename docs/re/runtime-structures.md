@@ -603,11 +603,12 @@ Current practical read:
     - `update_subgoldy` does not directly read `player + 0x430` in the bounded retirement families
     - `update_cameraman` only consumes `player + 0x42c`, not `player + 0x430`
   - the separate death handoff remains the older `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
-  - newer field-xref narrowing rules out two earlier static guesses:
-    - `try_enter_track_attachment_from_swept_motion` does not directly clear `attachment_exit_pending`
+  - direct disassembly corrects one field-xref omission while retaining the
+    progress finding:
+    - accepted `try_enter_track_attachment_from_swept_motion` clears `attachment_exit_pending` at `0x42c98a`; the relocatable Game-base access was absent from the earlier field-xref result
     - `attachment_exit_progress` does not have its own separate progress-expiry clear
   - current BN xrefs show `attachment_exit_progress` is only written by `begin_post_follow_carryover` and the single `update_subgoldy` store at `0x43ce96`
-  - the later retirement of `attachment_exit_pending` is instead limited to five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
+  - outside successful swept re-entry, later retirement of `attachment_exit_pending` is limited to five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
     - the special `0x43bcb3` late clear is now statically tied to the non-follow floor-cache/slide motion block: the branch first checks runtime tiles `0x0f`, `0x10`, `0x12`, and `0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
     - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are also statically identifiable
     - the `0x43ce75` late clear is now narrowed too: it sits behind `sub_hover.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
