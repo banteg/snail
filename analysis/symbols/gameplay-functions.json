@@ -1759,9 +1759,24 @@
       "description": "Small cdecl wrapper used by startup to forward the FONT-MENU-HOVER sheet path, font kind, width scale, and height scale into `register_font_texture_sheet`."
     },
     {
+      "address": "0x432d40",
+      "name": "reset_registered_sound_sample_count",
+      "description": "Resets the registered runtime sound-sample table count before archive-backed audio registration begins."
+    },
+    {
       "address": "0x432d50",
       "name": "cache_music_file",
       "description": "Ensures one `music/*.ogg` payload is resident in the shared music-file cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
+    },
+    {
+      "address": "0x432dd0",
+      "name": "play_registered_warning_sample",
+      "description": "Forwards one registered warning sample id to the process audio backend's default sample-play method."
+    },
+    {
+      "address": "0x432de0",
+      "name": "stop_registered_warning_sample",
+      "description": "Forwards one live warning sample handle to the process audio backend's handle-stop method."
     },
     {
       "address": "0x432df0",

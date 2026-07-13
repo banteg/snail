@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**547/721** mapped gameplay functions matched, **721/721** mapped gameplay functions have a scratch, **89281/325632** bytes (**27.42%**) are proof-grade, and overall fuzzy is **63.25%**.
+**550/724** mapped gameplay functions matched, **724/724** mapped gameplay functions have a scratch, **89268/325619** bytes (**27.41%**) are proof-grade, and overall fuzzy is **63.25%**.
 
-## Proof Grade (547)
+## Proof Grade (550)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -269,8 +269,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  |
 | ✅ | read_pressed_text_input_key_code | 0x432440 | 915 | 338/338 | 100.00% | 338/338 | 55 ok |  |
-| ✅ | register_font_texture_sheet_wrapper | 0x432d20 | 43 | 11/11 | 100.00% | 11/11 | 1 ok |  |
-| ✅ | cache_music_file | 0x432d50 | 160 | 42/42 | 100.00% | 42/42 | 11 ok |  |
+| ✅ | register_font_texture_sheet_wrapper | 0x432d20 | 29 | 11/11 | 100.00% | 11/11 | 1 ok |  |
+| ✅ | reset_registered_sound_sample_count | 0x432d40 | 11 | 2/2 | 100.00% | 2/2 | 1 ok |  |
+| ✅ | cache_music_file | 0x432d50 | 118 | 42/42 | 100.00% | 42/42 | 11 ok |  |
+| ✅ | play_registered_warning_sample | 0x432dd0 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
+| ✅ | stop_registered_warning_sample | 0x432de0 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
 | ✅ | play_sound_effect_backend | 0x432df0 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  |
 | ✅ | register_sound_sample | 0x432f10 | 171 | 51/51 | 100.00% | 51/51 | 19 ok |  |

@@ -32,8 +32,10 @@ public:
         int sample_id, float volume, float pitch); // @ 0x449a80
     void play_registered_sound_sample_scaled_panned(
         int sample_id, float volume, float pitch, float pan); // @ 0x449ae0
+    int stop_sound_sample_handle(int sample_handle); // @ 0x449a10
     void stop_registered_sound_sample(int sample_id); // @ 0x449a20
     bool is_registered_sound_sample_playing(int sample_id); // @ 0x449a40
+    int play_registered_sound_sample_default(int sample_id); // @ 0x449a60
 
     unsigned char music_stream_active; // +0x00
     char unknown_01[0x0c - 0x01];
