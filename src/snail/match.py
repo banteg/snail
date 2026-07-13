@@ -2186,6 +2186,40 @@ def _store_scratch_build_key(
     )
 
 
+def _format_cl_failure(
+    *,
+    returncode: int,
+    stdout: str,
+    stderr: str,
+    obj_path: Path,
+    source_name: str,
+    context: str | None = None,
+) -> str:
+    """Explain CL failures, including VC6's diagnostic-free ICE path."""
+    label = "cl failed" if context is None else f"cl failed for {context}"
+    reasons: list[str] = []
+    if returncode != 0:
+        reasons.append(f"exit code {returncode}")
+    if not obj_path.exists():
+        reasons.append(f"{obj_path.name} was not produced")
+    suffix = f" ({'; '.join(reasons)})" if reasons else ""
+
+    output = f"{stdout}{stderr}".rstrip()
+    output_lines = [line.strip() for line in output.splitlines() if line.strip()]
+    meaningful_output = [line for line in output_lines if line != source_name]
+    if meaningful_output:
+        return f"{label}{suffix}:\n{output}"
+
+    ice_hint = (
+        "no compiler diagnostics beyond the source-file echo; VC6 may have hit "
+        "an internal compiler error. Rerun the same cl.sh command with "
+        "WIBO_DEBUG=1 to inspect the guest exception"
+    )
+    if output:
+        return f"{label}{suffix}:\n{output}\n{ice_hint}"
+    return f"{label}{suffix}:\n{ice_hint}"
+
+
 def compile_scratch(
     config: ScratchConfig,
     match_root: Path = DEFAULT_MATCH_ROOT,
@@ -2216,7 +2250,15 @@ def compile_scratch(
         text=True,
     )
     if completed.returncode != 0 or not obj_path.exists():
-        raise RuntimeError(f"cl failed:\n{completed.stdout}{completed.stderr}")
+        raise RuntimeError(
+            _format_cl_failure(
+                returncode=completed.returncode,
+                stdout=completed.stdout,
+                stderr=completed.stderr,
+                obj_path=obj_path,
+                source_name=source.name,
+            )
+        )
     _store_scratch_build_key(
         obj_path, config, match_root, include_resolver=include_resolver
     )
@@ -2564,7 +2606,16 @@ def compile_idiom_case(
         text=True,
     )
     if completed.returncode != 0 or not obj_path.exists():
-        raise RuntimeError(f"cl failed for {case.name}:\n{completed.stdout}{completed.stderr}")
+        raise RuntimeError(
+            _format_cl_failure(
+                returncode=completed.returncode,
+                stdout=completed.stdout,
+                stderr=completed.stderr,
+                obj_path=obj_path,
+                source_name=source_path.name,
+                context=case.name,
+            )
+        )
     obj = parse_coff_object(obj_path.read_bytes())
     function = extract_object_function(obj, case.symbol)
     return IdiomResult(

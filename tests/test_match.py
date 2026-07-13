@@ -2973,6 +2973,41 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
     assert not _scratch_object_is_current(obj_path, config, match_root)
 
 
+def test_format_cl_failure_identifies_diagnostic_free_vc6_ice(tmp_path: Path) -> None:
+    from snail.match import _format_cl_failure
+
+    message = _format_cl_failure(
+        returncode=50,
+        stdout="scratch.cpp\r\n",
+        stderr="",
+        obj_path=tmp_path / "scratch.obj",
+        source_name="scratch.cpp",
+    )
+
+    assert "exit code 50" in message
+    assert "scratch.obj was not produced" in message
+    assert "no compiler diagnostics beyond the source-file echo" in message
+    assert "internal compiler error" in message
+    assert "WIBO_DEBUG=1" in message
+
+
+def test_format_cl_failure_preserves_real_diagnostics(tmp_path: Path) -> None:
+    from snail.match import _format_cl_failure
+
+    message = _format_cl_failure(
+        returncode=2,
+        stdout="scratch.cpp\r\n",
+        stderr="scratch.cpp(4) : error C2065: 'missing' : undeclared identifier\r\n",
+        obj_path=tmp_path / "scratch.obj",
+        source_name="scratch.cpp",
+        context="example",
+    )
+
+    assert "cl failed for example" in message
+    assert "error C2065" in message
+    assert "internal compiler error" not in message
+
+
 def test_lint_extern_declarations_flags_conflicts(tmp_path: Path) -> None:
     from snail.match import ReferenceSymbol, ReferenceSymbolManifest, lint_extern_declarations
 

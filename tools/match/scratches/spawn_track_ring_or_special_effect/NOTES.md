@@ -4,7 +4,7 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `53.45%`, `218/347` candidate/target instructions, prefix `28/347`, with
+- `51.07%`, `213/347` candidate/target instructions, prefix `9/347`, with
   `34` masked operands ok, `9` known switch-grouping/table mismatches, and no
   unresolved operands.
 - The scratch is evidence-first rather than close-match source. The remaining
@@ -141,3 +141,20 @@ Type consolidation:
   instructions, prefix 9/347, with 34 clean operands and the same nine
   documented grouped-switch mismatches. No barrier or dummy return is retained
   to recover the former score.
+
+## 2026-07-13 VC6 optimizer failure boundary
+
+- The authored kind-1 arm was bisected under the normal `/O2 /G5 /W3` build.
+  Its placement, `RR2` x randomization, and `RR3` phase call all compile; adding
+  the `active_phase_step = default_phase_step` tail makes VC6 delete
+  `scratch.obj` and exit `50` after only echoing `scratch.cpp`.
+- `WIBO_DEBUG=1` confirms the guest compiler raises its `INTERNAL COMPILER
+  ERROR` path. `/Zm200` through `/Zm1000` do not change the failure, so this is
+  not the compiler front-end heap limit. Disabling global optimization with
+  `/Og-` or frame-pointer omission with `/Oy-` avoids it, which localizes the
+  failure to the optimized backend/tail-merging shape; neither flag is retained
+  because the native target was built with the normal `/O2` profile.
+- Reordering the phase-step store, sharing it through an explicit label, and
+  taking a typed pointer to the field still trigger the ICE. The grouped switch
+  remains the honest compilable partial; no volatile barrier, fake return, raw
+  offset, or non-native compiler flag is kept.
