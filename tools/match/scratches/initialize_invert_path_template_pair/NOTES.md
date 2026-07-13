@@ -33,3 +33,10 @@ interpolated lateral value in `center_x` but leaves transform `position.x` at
 `uv[3].v` tail store moves focused Wibo from 23.82% (500/600) to 29.37%
 (510/600), with masked operands improving from 21 ok, 0 unresolved,
 0 mismatch to 23 ok, 0 unresolved, 0 mismatch.
+
+2026-07-13 terminal ownership: replacing `primary_last` and `secondary_last`
+pointer aliases with direct count-relative stores through the two `Path` sample
+arrays moves focused Wibo from 29.37% (510/600) to 31.31% (518/600). The
+masked audit remains clean at 23 ok, 0 unresolved, 0 mismatch. The delta loop
+retains its local sample pointers, matching the independently measured `wibble`
+boundary.
