@@ -170,3 +170,22 @@ also remains 0x214 versus the candidate's 0x208. Constructor-shaped glyph
 temporaries and a container-of cursor can reproduce pieces of those byte
 patterns, but both were rejected: they regress the global comparison and do
 not add ownership evidence.
+
+## Sequential runtime-row projection cursor (2026-07-14)
+
+The attachment-projection tail now retains a cursor rooted at
+`SubgameRuntime::runtime_rows[0]` and advances it by one owned `SubRow` per
+iteration. This is the lifetime visible in the Windows loop: its induction
+pointer starts at the row flags, then reaches the borrowed primary attachment
+cell and overloaded projection payload through `SubRow` fields. The previous
+per-index spelling let VC6 root the induction at the attachment-cell field,
+obscuring the actual owner and leaving the runtime-row base as a masked-address
+mismatch.
+
+Focused Wibo improves from 29.83% to 30.93%, remains 635/639 instructions, and
+keeps 40 clean masked operands while reducing known address mismatches from
+three to two. Directly repeating the row-to-cell-to-path expression was also
+tested and rejected: it expands the candidate to 641 instructions, loses the
+native helper-call alignment, and regresses to 27.19%. The cached borrowed cell
+and path views therefore remain the best honest expression of that part of the
+tail.

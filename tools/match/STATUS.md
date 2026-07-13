@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.33%**.
+**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.34%**.
 
 ## Proof Grade (617)
 
@@ -808,7 +808,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1208/1245 | 29.27% | 2/1245 | 1 mismatch, 60 ok |  |
 | 🚧 | update_click_start | 0x442290 | 624 | 149/138 | 27.18% | 1/138 | 13 ok |  |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 29.83% | 0/639 | 3 mismatch, 40 ok |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 30.93% | 0/639 | 2 mismatch, 40 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
 | 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
 | 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
