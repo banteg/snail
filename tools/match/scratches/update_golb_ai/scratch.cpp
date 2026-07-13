@@ -148,7 +148,7 @@ void GolbShot::update_golb_ai()
         break;
     }
     case 1:
-        ((Vapour*)vapour)->add_vapour_point(&source_matrix);
+        vapour.add_vapour_point(&source_matrix);
         break;
     case 0: {
         Vec3* body_position = (Vec3*)((char*)owner_body + 72);

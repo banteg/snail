@@ -6,6 +6,7 @@
 
 #include "bod_types.h"
 #include "sprite.h"
+#include "vapour.h"
 #include "vector3.h"
 
 class Player;
@@ -99,7 +100,8 @@ public:
         };
         struct {
             char unknown_000[0x080];
-            char vapour[0x150 - 0x080]; // +0x080, Vapour object view
+            Vapour vapour; // +0x080, kind-1 trail renderer/BOD-compatible view
+            char unknown_114[0x150 - 0x114];
             TransformMatrix live_matrix; // +0x150
         };
     };

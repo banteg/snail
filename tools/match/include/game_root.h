@@ -22,6 +22,7 @@
 #include "sprite.h"
 #include "star_manager.h"
 #include "subgame_runtime.h"
+#include "texture_set_selector.h"
 #include "tip_manager.h"
 #include "vector3.h"
 
@@ -99,7 +100,9 @@ public:
     Overlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport slot 0
     Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport slot 2
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
-    char unknown_000a60[0xb4c - 0xa60];
+    char unknown_000a60[0xb24 - 0xa60];
+    TextureSetSelector texture_set_selector; // +0xb24, four track/slide pairs
+    char unknown_000b48[0xb4c - 0xb48];
     // Exact cRBorder manager: the 150-record pool is followed by its delayed
     // transition lane and center-justify scalar, ending at the root BOD bank.
     BorderManager border_manager; // +0xb4c, ends exactly at +0x44100

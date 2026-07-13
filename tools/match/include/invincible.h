@@ -2,20 +2,18 @@
 #ifndef INVINCIBLE_H
 #define INVINCIBLE_H
 
-#include "sprite.h"
+#include "bod_types.h"
 #include "transform_matrix.h"
 
-class Invincible {
+class Invincible : public BodBase {
 public:
     void initialize_invincible_shell(); // @ 0x444ac0, cRInvincible::Init
     void start_invincible_shell(); // @ 0x444ae0, cRInvincible::Start
     void update_invincible_shell(); // @ 0x444b50, cRInvincible::AI
 
-    // BOD-node-compatible prefix linked by build_subgame_level. The owner
-    // remains embedded in the authored Snail owner.
-    void* vtable; // +0x00, update_invincible_shell callback
-    char unknown_04[0x28 - 0x04];
-    Color4f color; // +0x28
+    // The complete inherited BOD prefix is linked by build_subgame_level and
+    // owns the invincible shell render object. This child remains embedded in
+    // the authored Snail owner.
     TransformMatrix transform; // +0x38, live snail matrix followed by yaw spin
     char unknown_78[0x80 - 0x78];
     int state; // +0x80

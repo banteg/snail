@@ -28,6 +28,7 @@ struct SubSegment;
 struct PlayerControlSource;
 struct Snail;
 struct Object;
+struct TextureRef;
 struct SubgameRuntime;
 typedef struct TransformMatrix TransformMatrix;
 typedef struct Sprite Sprite;
@@ -346,7 +347,7 @@ typedef struct PresentationAnimationChannel {
 /* Authored cRSnailSkin, exact 0x20-byte material-selection owner. */
 typedef struct SnailSkin {
     int32_t selected_slot;
-    int32_t slot_ids[3];
+    struct TextureRef* material_overrides[3];
     struct Snail* owner_snail;
     int32_t active;
     float progress;
@@ -466,7 +467,13 @@ typedef struct PresentationWobbleController {
 /* Authored cRInvincible, exact 0xa4-byte spinning shell visual owner. */
 typedef struct Invincible {
     void* vtable;
-    uint8_t _pad_04[0x24];
+    uint32_t list_flags;
+    BodNode* list_prev;
+    BodNode* list_next;
+    Vec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    struct Object* object;
     Color4f color;
     TransformMatrix transform;
     uint8_t _pad_78[0x8];
@@ -565,8 +572,21 @@ typedef struct GolbPathFollowState {
 } GolbPathFollowState;
 
 typedef struct GolbShot {
-    uint8_t _pad_000[0x150];
-    TransformMatrix live_matrix;
+    union {
+        struct {
+            RenderableBod primary_body;
+            uint8_t _pad_078[0x080 - 0x078];
+            RenderableBod secondary_body;
+            uint8_t _pad_0f8[0x118 - 0x0f8];
+            RenderableBod tertiary_body;
+        };
+        struct {
+            uint8_t _pad_000[0x080];
+            Vapour vapour;
+            uint8_t _pad_114[0x150 - 0x114];
+            TransformMatrix live_matrix;
+        };
+    };
     uint8_t _pad_190[0x8];
     struct ContactTargetObject* homing_target_object;
     Vec3 homing_target;

@@ -2813,5 +2813,138 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.weapon_channels[2].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[2].object->distort.xyz_scale = 0.0f;
 
+    subgame.player.presentation.snail_skin.material_overrides[0] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"x/snail-turbo.tga", 0, 0);
+    subgame.player.presentation.snail_skin.material_overrides[1] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"x/snail-turbo-damage.tga", 0, 0);
+    subgame.player.presentation.snail_skin.material_overrides[2] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"x/snail-turbo-invincible.tga", 0, 0);
+
+    subgame.player.presentation.invincible_shell.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_mesh(
+        (char*)"invincible-base-000.x",
+        subgame.player.presentation.invincible_shell.object,
+        1);
+    subgame.player.presentation.invincible_shell.object->flags &= 0xffefffff;
+
+    GolbShot* golb_shot = &subgame.player.golb_shots[0];
+    golb_shot->tertiary_body.set_bod_object(
+        g_object_list.add_object_to_list());
+    loader->load_x_mesh(
+        (char*)"rocket-base-000.x", golb_shot->tertiary_body.object, 1);
+    Object* rocket_object = golb_shot->tertiary_body.object;
+    int golb_shot_count = 12;
+    do {
+        golb_shot->secondary_body.set_bod_object(
+            g_object_list.add_object_to_list());
+        Object* vapour_object = golb_shot->secondary_body.object;
+        vapour_object->flags |= 0x100004;
+        vapour_object->blend_mode = 9;
+        load_object_definition((char*)"Objects/VapourLazer", vapour_object);
+        golb_shot->vapour.initialize_vapour(vapour_object, 0.159999996f);
+        golb_shot->tertiary_body.set_bod_object(rocket_object);
+        ++golb_shot;
+    } while (--golb_shot_count != 0);
+
+    TextureRef* texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/VapourLazer/Lazer.tga", 0, 0);
+    texture_ref->flags |= 0x400;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Worm.tga", 0, 0);
+    texture_ref->flags |= 0x1403;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Back.tga", 0, 0);
+    texture_ref->flags |= 0x1402;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/TrackWarn.tga", 0, 0);
+    texture_ref->flags = 0x1000;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/Universe/Ramp.tga", 0, 0);
+    texture_ref->flags |= 0x1000;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track0.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide0.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track1.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide1.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track2.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide2.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track3.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+    texture_ref = g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide3.tga", 0, 0);
+    texture_ref->flags |= 0x1002;
+
+    texture_set_selector.primary_textures[0] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Track0.tga", 0, 0);
+    texture_set_selector.secondary_textures[0] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Slide0.tga", 0, 0);
+    texture_set_selector.primary_textures[1] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Track1.tga", 0, 0);
+    texture_set_selector.secondary_textures[1] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Slide1.tga", 0, 0);
+    texture_set_selector.primary_textures[2] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Track2.tga", 0, 0);
+    texture_set_selector.secondary_textures[2] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Slide2.tga", 0, 0);
+    texture_set_selector.primary_textures[3] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Track3.tga", 0, 0);
+    texture_set_selector.secondary_textures[3] =
+        g_texture_refs.get_or_create_texture_ref(
+            (char*)"Objects/World00/Slide3.tga", 0, 0);
+    texture_set_selector.current_texture_set = 0;
+
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Back.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/TrackWarn.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/Universe/Ramp.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track0.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide0.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track1.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide1.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track2.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide2.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Track3.tga", 0, 0)->mip_levels = 2;
+    g_texture_refs.get_or_create_texture_ref(
+        (char*)"Objects/World00/Slide3.tga", 0, 0)->mip_levels = 2;
+
+    subgame.barrier.set_bod_object(g_object_list.add_object_to_list());
+    load_object_definition((char*)"Objects/Barrier", subgame.barrier.object);
+    subgame.barrier.position.zero_vector3();
+    subgame.barrier.color.store_color4f(1.0f, 1.0f, 1.0f, 0.800000012f);
+    subgame.barrier.object->blend_mode = 7;
+    subgame.segment_cache.initialize_track_render_cache_manager();
+
     return 1;
 }

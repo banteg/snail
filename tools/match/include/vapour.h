@@ -4,7 +4,7 @@
 
 #include "transform_matrix.h"
 
-class Object;
+struct Object;
 
 class Vapour {
 public:

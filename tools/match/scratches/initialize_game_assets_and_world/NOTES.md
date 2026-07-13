@@ -67,6 +67,37 @@ unresolved early helper and 49 expected mismatches; native object offsets,
 assets, call order, and the repeated two/five-slot loops were checked directly.
 No fake padding or operand-only matching was introduced.
 
+## 2026-07-13 post-animation runtime ownership
+
+The contiguous startup producer now continues through the texture, projectile,
+barrier, and render-cache handoff at `0x40fb46..0x40ffd6`:
+
+- `SnailSkin +0x04` owns three `TextureRef*` material overrides for the base,
+  damage, and invincible snail skins. The former integer-slot spelling was
+  rejected by the three direct `get_or_create_texture_ref` stores.
+- `Invincible` is a real `BodBase` child, not a flattened vtable/padding view.
+  Its inherited object at `+0x24` owns `invincible-base-000.x`; startup clears
+  the object's `0x100000` flag after loading it.
+- Each `GolbShot` overlays a `Vapour` at `+0x080` with its secondary render
+  body, while the tertiary rocket body at `+0x118` overlaps the live matrix at
+  `+0x150`. The shared rocket mesh is owned by shot zero and borrowed by all
+  twelve shots. The checked C and C++ layouts retain this as a union; the
+  Binary Ninja projection deliberately does not flatten the overlapping views.
+- `GameRoot +0xb24` is the exact `TextureSetSelector`: four primary track
+  textures, four secondary slide textures, and the current set at `+0x20`.
+  Startup also applies the recovered texture flags and two-level mip policy.
+- The final island constructs the embedded `SubgameRuntime::barrier`, loads its
+  object, clears its inherited position, applies the authored translucent
+  color/blend mode, and initializes the owned `SegmentCache`.
+
+Focused Wibo rises from 52.00% (4,565/5,411 candidate instructions, 1,401 clean
+operands) to 54.48% (4,887/5,411, 1,516 clean operands). The one unresolved
+early helper remains, with 56 expected broad-alignment mismatches. The native
+Golb loop chooses an object-field induction pointer while the semantic source
+keeps a `GolbShot*`; that small code-shape difference is retained rather than
+replacing the recovered owner with offset arithmetic. No fake padding or
+score-only scaffolding was added.
+
 2026-06-20 font bootstrap audit: the native FONT-MENU-HOVER setup call pushes
 `0x3f400000` (`0.75f`) for the width scale and `0x3f800000` (`1.0f`) for the
 height scale. The old scratch used `0.800000012f` and a `double` height

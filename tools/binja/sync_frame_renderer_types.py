@@ -34,6 +34,7 @@ REQUIRED_STRUCTS = (
     "FrameRenderCameraSlot",
     "FrameContactTargetRegistry",
     "FrameSubgameRuntime",
+    "TextureSetSelector",
     "GameRoot",
 )
 
@@ -136,6 +137,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x570", "inactive_bod_sentinel", "FrameBodBase"),
     ("0x5a8", "active_bod_list", "FrameBodList"),
     ("0x5b4", "render_camera_slots", "FrameRenderCameraSlot[5]"),
+    ("0xb24", "texture_set_selector", "TextureSetSelector"),
     ("0x74618", "subgame", "FrameSubgameRuntime"),
 )
 

@@ -67,6 +67,13 @@ ANIM_MANAGER_FIELD_UPDATES = (
 
 INVINCIBLE_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x08", "list_prev", "BodNode*"),
+    ("0x0c", "list_next", "BodNode*"),
+    ("0x10", "position", "Vec3"),
+    ("0x1c", "render_arg_1c", "float"),
+    ("0x20", "render_arg_20", "float"),
+    ("0x24", "object", "Object*"),
     ("0x28", "color", "Color4f"),
     ("0x38", "transform", "TransformMatrix"),
     ("0x80", "state", "int32_t"),
@@ -92,7 +99,7 @@ CUT_SCENE_FIELD_UPDATES = (
 
 SNAIL_SKIN_FIELD_UPDATES = (
     ("0x00", "selected_slot", "int32_t"),
-    ("0x04", "slot_ids", "int32_t[0x3]"),
+    ("0x04", "material_overrides", "TextureRef*[0x3]"),
     ("0x10", "owner_snail", "Snail*"),
     ("0x14", "active", "int32_t"),
     ("0x18", "progress", "float"),
@@ -125,7 +132,9 @@ typedef struct GolbPathFollowState {
 """.strip()
 
 GOLB_SHOT_FIELD_UPDATES = (
-    ("0x150", "live_matrix", "TransformMatrix"),
+    # GolbShot +0x000..+0x18f is an overlapping body/vapour/live-matrix
+    # union in the import header. Do not flatten it with field updates here:
+    # installing the +0x118 body view would evict the +0x150 matrix view.
     ("0x198", "homing_target_object", "ContactTargetObject*"),
     ("0x19c", "homing_target", "Vec3"),
     ("0x1a8", "rocket_owner_shot", "GolbShot*"),

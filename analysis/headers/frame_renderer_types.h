@@ -167,6 +167,14 @@ typedef struct FrameContactTargetRegistry {
     uint8_t entries[0x1800];
 } FrameContactTargetRegistry;
 
+typedef struct TextureRef TextureRef;
+
+typedef struct TextureSetSelector {
+    TextureRef* primary_textures[4];
+    TextureRef* secondary_textures[4];
+    int32_t current_texture_set;
+} TextureSetSelector;
+
 typedef struct FrameSubgameRuntime {
     uint8_t unknown_000000[0x40];
     int32_t level_mode;
@@ -191,7 +199,9 @@ typedef struct GameRoot {
     FrameBodBase inactive_bod_sentinel;
     FrameBodList active_bod_list;
     FrameRenderCameraSlot render_camera_slots[5];
-    uint8_t unknown_00067c[0x74618 - 0x67c];
+    uint8_t unknown_00067c[0xb24 - 0x67c];
+    TextureSetSelector texture_set_selector;
+    uint8_t unknown_000b48[0x74618 - 0xb48];
     FrameSubgameRuntime subgame;
     uint8_t unknown_12e6df0[0x12e6ff4 - 0x12e6df0];
 } GameRoot;
