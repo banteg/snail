@@ -142,6 +142,10 @@ typedef struct SlugHazardRuntime {
     float blink_step;
 } SlugHazardRuntime;
 
+typedef struct SlugPool {
+    SlugHazardRuntime slots[8];
+} SlugPool;
+
 typedef struct RingOrSpecialEffectParent RingOrSpecialEffectParent;
 
 typedef struct RingOrSpecialEffectParticle {

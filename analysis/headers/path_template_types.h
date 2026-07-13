@@ -475,6 +475,65 @@ typedef struct SubLazerSlot {
     uint8_t _pad_a0[0x10];
 } SubLazerSlot;
 
+/* Exact 0x74-byte authored cRSubHealth pickup slot. */
+typedef struct TrackHealthPickup {
+    BodNode bod;
+    Vec3 world_position;
+    uint8_t _pad_1c[0x38 - 0x1c];
+    int32_t state;
+    Player* owner;
+    uint8_t _pad_40[0x44 - 0x40];
+    SubgameRuntime* owner_game;
+    uint8_t _pad_48[0x64 - 0x48];
+    Sprite* sprite;
+    TrackRowCell* source_cell;
+    float bob_phase;
+    float bob_phase_step;
+} TrackHealthPickup;
+
+/* Exact 0xec-byte authored cRSlug hazard slot. */
+typedef struct SlugHazardRuntime {
+    RenderableBod bod;
+    uint8_t _pad_78[0x80 - 0x78];
+    int32_t state;
+    int32_t death_toss_direction;
+    SubgameRuntime* owner_game;
+    Vec3 velocity;
+    uint8_t _pad_98[0xac - 0x98];
+    Sprite* sprite;
+    TrackRowCell* source_cell;
+    uint8_t passed_player;
+    uint8_t _pad_b5[0xb8 - 0xb5];
+    float lateral_phase;
+    float lateral_phase_step;
+    Player* player;
+    int32_t engagement_voice_gate;
+    int32_t hit_points;
+    uint8_t hit_flash_pending;
+    uint8_t _pad_cd[0xd0 - 0xcd];
+    float hit_flash_progress;
+    float hit_flash_progress_step;
+    uint8_t voice_active;
+    uint8_t player_encounter_latched;
+    uint8_t _pad_da[0xdc - 0xda];
+    float voice_progress;
+    float voice_progress_step;
+    float blink_progress;
+    float blink_step;
+} SlugHazardRuntime;
+
+typedef struct SlugPool {
+    SlugHazardRuntime slots[8];
+} SlugPool;
+
+typedef struct SubLazerManager {
+    SubLazerSlot slots[20];
+} SubLazerManager;
+
+typedef struct SaltManager {
+    SaltHazardSlot slots[40];
+} SaltManager;
+
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;
@@ -1202,7 +1261,10 @@ typedef struct SubgameRuntime {
     Time active_level_timer;
     SubSpeedUp speedup_pickup;
     JetPack jetpack_pickup;
-    uint8_t _pad_356000[0x359080 - 0x356000];
+    TrackHealthPickup health_pickups[8];
+    SlugPool slug_hazards;
+    SubLazerManager sub_lazers;
+    SaltManager salt_hazards;
     BannerPool banners;
     uint8_t _pad_359140[0x3bb764 - 0x359140];
     Player player;

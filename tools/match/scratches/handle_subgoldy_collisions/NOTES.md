@@ -394,3 +394,16 @@ BN and IDA-facing headers now agree with the exact 0x4364-byte matching owner:
 This corrects the analysis owner used by collision, completion, parcel HUD,
 and subgoldy update paths without reshaping the matcher scratch. The 52.85%,
 659/673 instruction result with 86 clean operands remains the honest baseline.
+
+## Pickup and hazard manager analysis closure (2026-07-13)
+
+The analysis `SubgameRuntime` now embeds the health, slug, sub-lazer, and salt
+owners consumed by this function rather than spanning them with one anonymous
+pad. Their exact slot counts and extents meet at `+0x356000`, `+0x3563a0`,
+`+0x356b00`, `+0x3578c0`, and the existing `BannerPool +0x359080` boundary.
+Borrowed `Player*` and `SubgameRuntime*` backlinks remain distinct from row-cell
+sources inside each slot.
+
+Binary Ninja declaration preview verifies the manager layouts and reverts.
+Focused Wibo remains honestly unchanged at 52.85%, 659/673 instructions, with
+all 86 masked operands clean and no mismatch.

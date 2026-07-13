@@ -75,3 +75,15 @@ Together with the exact constructor and AI table, this closes the complete
 the primary `JetPack::owner_game +0x44` lane at runtime `+0x355ea8`. Its two
 embedded cRVapour children occupy the rest of the exact 0x19c extent. Reset
 remains exact at 75/75.
+
+## 2026-07-13 analysis pool-band closure
+
+The path-template and narrow pool analysis lanes now expose the complete
+contiguous pool band between `JetPack` and `BannerPool`: eight exact 0x74-byte
+`TrackHealthPickup`/cRSubHealth records at `+0x356000`, the eight-slot 0x760
+`SlugPool` at `+0x3563a0`, the 20-slot 0xdc0 `SubLazerManager` at `+0x356b00`,
+and the 40-slot 0x17c0 `SaltManager` at `+0x3578c0`.
+
+Binary Ninja preview verifies every stride and boundary while keeping
+`SubgameRuntime == 0x1272838`, then reverts. The exact reset body remains
+75/75 instructions with both masked operands clean.
