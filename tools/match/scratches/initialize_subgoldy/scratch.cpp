@@ -5,6 +5,7 @@
 #include "click_start.h"
 #include "damage_guage.h"
 #include "invincible.h"
+#include "object_render_types.h"
 #include "sub_hover.h"
 #include "player.h"
 #include "snail_skin.h"
@@ -54,73 +55,92 @@ void Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x434) = zero;
     *(int*)(self + 0x438) = 0x3c888889;
 
-    if ((*(int*)(*(char**)(self + 0x29a8) + 0x10) & 0x200000) != 0) {
-        *(int*)(self + 0x2988) |= 0x800;
-        *(char**)(self + 0x29fc) = self + 0x2a88;
-        ((AnimManager*)(self + 0x2a88))->initialize_anim_manager();
-        *(int*)(self + 0x2a88) = 1;
-        *(char**)(self + 0x2ac8) = self + 0x2984;
-        *(char**)(self + 0x2acc) = self + 0x2ad0;
-        *(int*)(self + 0x2ac4) = zero;
+    if ((this->presentation.object->flags & 0x200000) != 0) {
+        this->presentation.list_flags |= 0x800;
+        this->presentation.render_animation_manager =
+            &this->presentation.anim_manager;
+        this->presentation.anim_manager.initialize_anim_manager();
+        this->presentation.anim_manager.state = 1;
+        this->presentation.anim_manager.target_model =
+            (BodBase*)&this->presentation;
+        this->presentation.anim_manager.animation_slots =
+            this->presentation.cutscene_animation_slots;
+        this->presentation.anim_manager.queue_count = zero;
     } else {
-        ((AnimManager*)(self + 0x2a88))->initialize_anim_manager();
-        *(int*)(self + 0x2a88) = zero;
+        this->presentation.anim_manager.initialize_anim_manager();
+        this->presentation.anim_manager.state = zero;
     }
 
-    if ((*(int*)(*(char**)(self + 0x3b88) + 0x10) & 0x200000) != 0) {
-        *(int*)(self + 0x3b68) = (*(int*)(self + 0x3b68) & 0xffffffdf) | 0x800;
-        *(int*)(self + 0x3c68) = zero;
-        *(char**)(self + 0x3bdc) = self + 0x3c6c;
-        ((AnimManager*)(self + 0x3c6c))->initialize_anim_manager();
-        *(int*)(self + 0x3c6c) = 1;
-        *(char**)(self + 0x3cac) = self + 0x3b64;
-        *(char**)(self + 0x3cb0) = self + 0x3cb4;
-        *(int*)(self + 0x3ca8) = zero;
+    if ((this->presentation.jetpack_channel.object->flags & 0x200000) != 0) {
+        this->presentation.jetpack_channel.list_flags =
+            (this->presentation.jetpack_channel.list_flags & 0xffffffdf) | 0x800;
+        this->presentation.jetpack_channel.selected_state = zero;
+        this->presentation.jetpack_channel.render_animation_manager =
+            &this->presentation.jetpack_channel.anim_manager;
+        this->presentation.jetpack_channel.anim_manager.initialize_anim_manager();
+        this->presentation.jetpack_channel.anim_manager.state = 1;
+        this->presentation.jetpack_channel.anim_manager.target_model =
+            (BodBase*)&this->presentation.jetpack_channel;
+        this->presentation.jetpack_channel.anim_manager.animation_slots =
+            this->presentation.jetpack_channel.animation_slots;
+        this->presentation.jetpack_channel.anim_manager.queue_count = zero;
     } else {
-        ((AnimManager*)(self + 0x3c6c))->initialize_anim_manager();
-        *(int*)(self + 0x3c6c) = zero;
+        this->presentation.jetpack_channel.anim_manager.initialize_anim_manager();
+        this->presentation.jetpack_channel.anim_manager.state = zero;
     }
 
-    if ((*(int*)(*(char**)(self + 0x2ff4) + 0x10) & 0x200000) != 0) {
-        *(int*)(self + 0x2fd4) = (*(int*)(self + 0x2fd4) & 0xffffffdf) | 0x800;
-        *(int*)(self + 0x30d4) = zero;
-        *(char**)(self + 0x3048) = self + 0x30d8;
-        ((AnimManager*)(self + 0x30d8))->initialize_anim_manager();
-        *(int*)(self + 0x30d8) = 1;
-        *(char**)(self + 0x3118) = self + 0x2fd0;
-        *(char**)(self + 0x311c) = self + 0x3120;
-        *(int*)(self + 0x3114) = zero;
+    if ((this->presentation.weapon_channels[0].object->flags & 0x200000) != 0) {
+        this->presentation.weapon_channels[0].list_flags =
+            (this->presentation.weapon_channels[0].list_flags & 0xffffffdf) | 0x800;
+        this->presentation.weapon_channels[0].selected_state = zero;
+        this->presentation.weapon_channels[0].render_animation_manager =
+            &this->presentation.weapon_channels[0].anim_manager;
+        this->presentation.weapon_channels[0].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[0].anim_manager.state = 1;
+        this->presentation.weapon_channels[0].anim_manager.target_model =
+            (BodBase*)&this->presentation.weapon_channels[0];
+        this->presentation.weapon_channels[0].anim_manager.animation_slots =
+            this->presentation.weapon_channels[0].animation_slots;
+        this->presentation.weapon_channels[0].anim_manager.queue_count = zero;
     } else {
-        ((AnimManager*)(self + 0x30d8))->initialize_anim_manager();
-        *(int*)(self + 0x30d8) = zero;
+        this->presentation.weapon_channels[0].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[0].anim_manager.state = zero;
     }
 
-    if ((*(int*)(*(char**)(self + 0x33d0) + 0x10) & 0x200000) != 0) {
-        *(int*)(self + 0x33b0) = (*(int*)(self + 0x33b0) & 0xffffffdf) | 0x800;
-        *(int*)(self + 0x34b0) = zero;
-        *(char**)(self + 0x3424) = self + 0x34b4;
-        ((AnimManager*)(self + 0x34b4))->initialize_anim_manager();
-        *(int*)(self + 0x34b4) = 1;
-        *(char**)(self + 0x34f4) = self + 0x33ac;
-        *(char**)(self + 0x34f8) = self + 0x34fc;
-        *(int*)(self + 0x34f0) = zero;
+    if ((this->presentation.weapon_channels[1].object->flags & 0x200000) != 0) {
+        this->presentation.weapon_channels[1].list_flags =
+            (this->presentation.weapon_channels[1].list_flags & 0xffffffdf) | 0x800;
+        this->presentation.weapon_channels[1].selected_state = zero;
+        this->presentation.weapon_channels[1].render_animation_manager =
+            &this->presentation.weapon_channels[1].anim_manager;
+        this->presentation.weapon_channels[1].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[1].anim_manager.state = 1;
+        this->presentation.weapon_channels[1].anim_manager.target_model =
+            (BodBase*)&this->presentation.weapon_channels[1];
+        this->presentation.weapon_channels[1].anim_manager.animation_slots =
+            this->presentation.weapon_channels[1].animation_slots;
+        this->presentation.weapon_channels[1].anim_manager.queue_count = zero;
     } else {
-        ((AnimManager*)(self + 0x34b4))->initialize_anim_manager();
-        *(int*)(self + 0x34b4) = zero;
+        this->presentation.weapon_channels[1].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[1].anim_manager.state = zero;
     }
 
-    if ((*(int*)(*(char**)(self + 0x37ac) + 0x10) & 0x200000) != 0) {
-        *(int*)(self + 0x378c) = (*(int*)(self + 0x378c) & 0xffffffdf) | 0x800;
-        *(int*)(self + 0x388c) = zero;
-        *(char**)(self + 0x3800) = self + 0x3890;
-        ((AnimManager*)(self + 0x3890))->initialize_anim_manager();
-        *(int*)(self + 0x3890) = 1;
-        *(char**)(self + 0x38d0) = self + 0x3788;
-        *(char**)(self + 0x38d4) = self + 0x38d8;
-        *(int*)(self + 0x38cc) = zero;
+    if ((this->presentation.weapon_channels[2].object->flags & 0x200000) != 0) {
+        this->presentation.weapon_channels[2].list_flags =
+            (this->presentation.weapon_channels[2].list_flags & 0xffffffdf) | 0x800;
+        this->presentation.weapon_channels[2].selected_state = zero;
+        this->presentation.weapon_channels[2].render_animation_manager =
+            &this->presentation.weapon_channels[2].anim_manager;
+        this->presentation.weapon_channels[2].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[2].anim_manager.state = 1;
+        this->presentation.weapon_channels[2].anim_manager.target_model =
+            (BodBase*)&this->presentation.weapon_channels[2];
+        this->presentation.weapon_channels[2].anim_manager.animation_slots =
+            this->presentation.weapon_channels[2].animation_slots;
+        this->presentation.weapon_channels[2].anim_manager.queue_count = zero;
     } else {
-        ((AnimManager*)(self + 0x3890))->initialize_anim_manager();
-        *(int*)(self + 0x3890) = zero;
+        this->presentation.weapon_channels[2].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[2].anim_manager.state = zero;
     }
 
     this->presentation.snail_skin.initialize_snail_skin();

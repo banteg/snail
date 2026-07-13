@@ -128,27 +128,33 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `update_subgoldy` uses it to index the uncaptured-cursor sensitivity table
   - when the selector is `1`, the same block copies `control_source->steering_x` directly into the live `track_z_offset` lane instead of preserving the anchored delta
 - `player + 0x2984` is the inline exact 0x19b4-byte `Snail` (`cRSnail`)
-  - `+0x04`: `visual_flags`
-  - `+0x24`: `visual_root`
+  - `+0x04`: inherited BOD `list_flags`
+  - `+0x24`: borrowed animated `Object* object`
   - `+0x38`: `live_matrix`
+  - `+0x78`: borrowed `render_animation_manager` pointing to the owned manager
+    at `+0x104` while the linked Object has generated animation
   - `+0x80`: `previous_live_matrix`
   - `+0x100`: `owner_player`
   - `+0x104`: inline `anim_manager`
-    - `+0x00`: `active`
+    - `+0x00`: `state`
     - `+0x04`: `progress`
     - `+0x08`: `progress_step`
-    - `+0x0c`: `active_keyframe`
-    - `+0x14`: `queued_animation_ids[10]`
-    - `+0x3c`: `queued_animation_count`
-    - `+0x40`: `self_ref`
-    - `+0x44`: `queue_sentinel`
+    - `+0x0c`: borrowed `ObjectAnimation* active_animation`
+    - `+0x10`: completion latch
+    - `+0x14`: `queued_animations[10]`
+    - `+0x3c`: `queue_count`
+    - `+0x40`: borrowed `BodBase* target_model` backlink
+    - `+0x44`: borrowed `PresentationAnimationSlot* animation_slots`
+  - `+0x14c`: ten owned 0x80-byte cutscene animation donor slots
   - `+0x64c/+0xa28/+0xe04`: repeated `PresentationAnimationChannel` weapon lanes
-    - `+0x04`: `visual_flags`
-    - `+0x24`: `visual_root`
+    - `+0x04`: inherited BOD `list_flags`
+    - `+0x24`: borrowed animated `Object* object`
     - `+0x38`: `live_matrix`
-    - `+0x78`: `active_anim_manager`
+    - `+0x78`: borrowed `render_animation_manager` pointing to the owned
+      manager at `+0x108`
     - `+0x104`: `selected_state`
     - `+0x108`: inline `anim_manager`
+    - `+0x150`: five owned 0x80-byte animation donor slots
     - `+0x3d0`: `release_step`
   - `+0x11e0`: repeated `PresentationAnimationChannel` jetpack lane
   - `+0x15bc`: `wobble`
@@ -183,7 +189,9 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x18`: `progress`
     - `+0x1c`: `progress_step`
     - `initialize_snail_skin` seeds the parent backlink and clears the timed skin-swap state
-    - `update_snail_skin_transition` follows `owner_snail->visual_root`, raises visual flag `0x8`, writes the selected material index, and advances the timer lanes
+    - `update_snail_skin_transition` follows `owner_snail->object`, raises
+      object flag `0x8`, writes the selected material index, and advances the
+      timer lanes
     - raw code at `0x4428ef` confirms `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition`; there is no separate `weapon_release_active` byte ahead of this state
   - `+0x1958`: exact 0x5c-byte `cutscene` (`cRCutScene`)
     - `+0x00/+0x04`: presentation and Player backlinks

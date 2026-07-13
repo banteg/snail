@@ -310,6 +310,12 @@ typedef struct ObjectAnimation {
     float progress_step;
 } ObjectAnimation;
 
+/* One owned 0x80-byte Windows presentation-animation donor slot. */
+typedef struct PresentationAnimationSlot {
+    RenderableBod body;
+    uint8_t _pad_78[0x8];
+} PresentationAnimationSlot;
+
 /* Authored cRAnimManager, exact 0x48-byte queued animation owner. */
 typedef struct AnimManager {
     int32_t state;
@@ -320,23 +326,22 @@ typedef struct AnimManager {
     uint8_t _pad_11[0x3];
     int32_t queued_animations[10];
     int32_t queue_count;
-    void* target_model;
-    uint8_t* animation_slot_base_minus_24;
+    BodBase* target_model;
+    PresentationAnimationSlot* animation_slots;
 } AnimManager;
 
 typedef struct PresentationAnimationChannel {
     void* vtable;
-    uint32_t visual_flags;
+    uint32_t list_flags;
     uint8_t _pad_08[0x1c];
-    struct SnailVisual* visual_root;
+    struct Object* object;
     uint8_t _pad_28[0x10];
     TransformMatrix live_matrix;
-    void* active_anim_manager;
+    AnimManager* render_animation_manager;
     uint8_t _pad_7c[0x88];
     int32_t selected_state;
     AnimManager anim_manager;
-    uint8_t _pad_150[0x24];
-    uint8_t animation_slot_table[0x25c];
+    PresentationAnimationSlot animation_slots[5];
     Vec3 release_step;
 } PresentationAnimationChannel;
 
@@ -523,17 +528,18 @@ typedef struct CutScene {
 /* Authored cRSnail, exact 0x19b4-byte Player presentation owner. */
 typedef struct Snail {
     void* vtable;
-    uint32_t visual_flags;
+    uint32_t list_flags;
     uint8_t _pad_08[0x1c];
-    struct SnailVisual* visual_root;
+    struct Object* object;
     uint8_t _pad_28[0x10];
     TransformMatrix live_matrix;
-    uint8_t _pad_78[0x8];
+    AnimManager* render_animation_manager;
+    uint8_t _pad_7c[0x4];
     TransformMatrix previous_live_matrix;
     TransformMatrix cached_cutscene_matrix;
     struct Player* owner_player;
     AnimManager anim_manager;
-    uint8_t _pad_14c[0x500];
+    PresentationAnimationSlot cutscene_animation_slots[10];
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;
     PresentationWobbleController wobble;

@@ -380,3 +380,13 @@ relocation unresolved; the proof below closes that audit debt.
 - Focused instruction similarity remains the honest 88.89% (`299/268`, prefix
   `2/268`), while the operand audit closes from 119 clean plus one unresolved
   reference to 120 clean, zero unresolved, and zero mismatched.
+
+### Animation-owner header refresh
+
+Promoting the presentation animation owners changed compiler-local numbering
+without changing this thunk: it is now emitted as `$L6044`. The candidate
+still has the same ten-byte `mov eax, <EH metadata>; jmp __CxxFrameHandler`
+body, and its relocated 0x28-byte metadata retains the same signature, single
+unwind-map entry, zero try/IP maps, state `-1`, and cleanup-thunk slot as the
+native record at `0x49f4f8`. Both local labels remain bounded aliases so older
+and current header revisions keep the same content-audited reference.

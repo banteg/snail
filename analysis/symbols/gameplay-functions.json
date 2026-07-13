@@ -589,7 +589,7 @@
     {
       "address": "0x40a490",
       "name": "render_game_frame",
-      "description": "Renders every active root viewport in camera sort order, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`."
+      "description": "Renders every active root viewport in camera sort order, synchronizes flagged Snail/weapon BODs from their borrowed AnimManager progress into Object::animation, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`, and Android preserves the animation-progress chain at port-specific offsets."
     },
     {
       "address": "0x40aa50",
@@ -2144,7 +2144,7 @@
     {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
-      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the SubgameRuntime-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. Android and iOS retain the method."
+      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the SubgameRuntime-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own AnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method."
     },
     {
       "address": "0x43af10",

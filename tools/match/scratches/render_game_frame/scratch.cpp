@@ -3,32 +3,15 @@
 #include "bod_types.h"
 #include "font_system.h"
 #include "game_root.h"
+#include "object_animation_types.h"
 #include "object_render_types.h"
 #include "render_camera_slot.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 
-struct RenderBodTextureOwnerView;
-
-class RenderBodView : public RenderableBod {
+class RenderAnimatedBodView : public RenderableBod {
 public:
-    RenderBodTextureOwnerView* texture_owner; // +0x78
-    char unknown_7c[0xbc - 0x7c];
-};
-
-struct RenderBodTextureSinkView {
-    char unknown_00[0x0c];
-    int texture_slot; // +0x0c
-};
-
-struct RenderBodParentTextureView {
-    char unknown_00[0xbc];
-    RenderBodTextureSinkView* texture_sink; // +0xbc
-};
-
-struct RenderBodTextureOwnerView {
-    char unknown_00[0x04];
-    int texture_slot; // +0x04
+    AnimManager* render_animation_manager; // +0x78, borrowed cRSnail/cRWeapon manager
 };
 
 void reset_render_counters();                // @ 0x414650
@@ -42,7 +25,7 @@ int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in relea
 int draw_sprite_quad(Vector3* position, Sprite* sprite); // @ 0x4137f0
 void draw_font_text_queue(unsigned int render_mask);     // @ 0x44a730
 
-extern RenderBodView* g_post_sprite_bods[];       // data_4dfb10
+extern RenderAnimatedBodView* g_post_sprite_bods[]; // data_4dfb10
 
 void GameRoot::render_game_frame()
 {
@@ -127,8 +110,9 @@ void GameRoot::render_game_frame()
 
             post_sprite_count = 0;
             if ((slot->flags & 2) == 0) {
-                RenderBodView* bod = (RenderBodView*)active_bod_list.first;
-                RenderBodView** post_cursor = g_post_sprite_bods;
+                RenderAnimatedBodView* bod =
+                    (RenderAnimatedBodView*)active_bod_list.first;
+                RenderAnimatedBodView** post_cursor = g_post_sprite_bods;
                 while (bod != 0) {
                     if ((bod->list_flags & 0x10) != 0) {
                         debug_report_stub("DEBUG RENDER\n");
@@ -143,11 +127,11 @@ void GameRoot::render_game_frame()
                             ++post_sprite_count;
                         }
                         if ((bod->list_flags & 0x800) != 0) {
-                            RenderBodParentTextureView* texture_parent =
-                                (RenderBodParentTextureView*)bod->object;
-                            RenderBodTextureOwnerView* texture_owner = bod->texture_owner;
-                            texture_parent->texture_sink->texture_slot =
-                                texture_owner->texture_slot;
+                            Object* animated_object = bod->object;
+                            AnimManager* animation_manager =
+                                bod->render_animation_manager;
+                            animated_object->animation->progress =
+                                animation_manager->progress;
                         }
                         if ((bod->list_flags & 0x400) != 0) {
                             render_object(
@@ -169,7 +153,7 @@ void GameRoot::render_game_frame()
                         }
                     }
 
-                    bod = (RenderBodView*)bod->list_next;
+                    bod = (RenderAnimatedBodView*)bod->list_next;
                 }
             }
 
@@ -265,10 +249,11 @@ void GameRoot::render_game_frame()
                     slot->draw_world,
                     1);
 
-                RenderBodView** post_cursor = g_post_sprite_bods + post_sprite_count;
+                RenderAnimatedBodView** post_cursor =
+                    g_post_sprite_bods + post_sprite_count;
                 do {
                     --post_cursor;
-                    RenderBodView* bod = *post_cursor;
+                    RenderAnimatedBodView* bod = *post_cursor;
                     unsigned int bod_flags = bod->list_flags;
                     if ((bod_flags & 0x400) != 0) {
                         render_object(

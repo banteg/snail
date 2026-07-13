@@ -21,11 +21,15 @@ public:
     // BOD-node-compatible prefix linked by build_subgame_level. The channel
     // remains embedded in the authored Snail owner.
     void* vtable; // +0x00, shared no-op animation-channel callback
-    char unknown_004[0x24 - 0x04];
+    unsigned int list_flags; // +0x04, inherited BOD render/list flags
+    char unknown_008[0x24 - 0x08];
     Object* object; // +0x24, borrowed animated cRObject
     char unknown_028[0x38 - 0x28];
     TransformMatrix live_matrix; // +0x38
-    char unknown_078[0x104 - 0x78];
+    // Installed only when the linked Object owns generated animation frames.
+    // cRGame::Render borrows this manager's progress for Object::animation.
+    AnimManager* render_animation_manager; // +0x78, borrowed owned manager at +0x108
+    char unknown_07c[0x104 - 0x7c];
     int selected_state; // +0x104
     AnimManager anim_manager; // +0x108
     PresentationAnimationSlot animation_slots[5]; // +0x150, owned renderable slots

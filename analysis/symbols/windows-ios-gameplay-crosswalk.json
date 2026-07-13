@@ -187,7 +187,7 @@
       "ios_symbol": "cRGame::Render()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI."
+      "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI. Android independently preserves the flagged cRBod -> borrowed cRAnimManager progress -> cRObjectAnim progress synchronization with port-specific offsets."
     },
     {
       "address": "0x40aab0",
@@ -906,7 +906,7 @@
       "android_symbol": "cRSubGoldy::Init(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All ports initialize the same owned Goldy actor and its embedded cRSubHover child. The Windows caller discards the incidental register value; the recovered source contract is void."
+      "notes": "All ports initialize the same owned Goldy actor and its embedded cRSubHover child. Windows and Android also bind the animated cRSnail/cRWeapon BODs to their self-owned cRAnimManager and donor-slot banks consumed by cRGame::Render. The Windows caller discards the incidental register value; the recovered source contract is void."
     },
     {
       "address": "0x43b120",

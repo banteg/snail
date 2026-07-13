@@ -121,12 +121,15 @@ public:
     // The first 0x10 bytes are an intrusive BOD-list node. build_subgame_level
     // links this embedded presentation object; the list does not own it.
     void* vtable;                          // +0x00, noop presentation callback
-    unsigned int visual_flags;              // +0x04
+    unsigned int list_flags;               // +0x04, inherited BOD render/list flags
     char unknown_08[0x24 - 0x08];
     Object* object;                            // +0x24, borrowed animated cRObject
     char unknown_28[0x38 - 0x28];
     TransformMatrix live_matrix;            // +0x38
-    char unknown_78[0x80 - 0x78];
+    // Installed only when the linked Object owns generated animation frames.
+    // cRGame::Render borrows this manager's progress for Object::animation.
+    AnimManager* render_animation_manager; // +0x78, borrowed owned manager at +0x104
+    char unknown_7c[0x80 - 0x7c];
     TransformMatrix previous_live_matrix;   // +0x80
     TransformMatrix cached_cutscene_matrix; // +0xc0
     Player* owner_player;                   // +0x100, non-owning backlink to containing Player

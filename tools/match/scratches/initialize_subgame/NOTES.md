@@ -395,3 +395,15 @@ aliases respectively and restore the 85 clean operands.
 - COFF still places their bounded five- and eight-entry relocation sequences
   at object `+0x62c`/`+0x640`. `$L5346` is reassigned to the current startup
   table; the instruction-exact 396/396 body retains all 85 clean operands.
+
+2026-07-13 animation-owner header refresh:
+
+- Replacing the stale presentation animation pointer/padding names with the
+  proven Snail/weapon `AnimManager` bindings and owned donor-slot arrays
+  advances the unchanged tables to `$L5378`/`$L5379`.
+- COFF still places the five-entry table at object `+0x62c`, with relocation
+  targets `+0x419`, `+0x42d`, `+0x46b`, `+0x46b`, and `+0x441`; the eight-entry
+  table remains at `+0x640`, targeting `+0x56f`, `+0x5c6`, `+0x5f2`, `+0x5f2`,
+  `+0x5ac`, `+0x5f2`, `+0x5f2`, and `+0x5e0`. Those sequences exactly match the
+  native tables at `0x437adc`/`0x437af0`, so the content-bounded aliases restore
+  all 85 clean operands without changing the 396-instruction body.

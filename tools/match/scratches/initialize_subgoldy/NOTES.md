@@ -172,3 +172,20 @@ authored `Cameraman`. Android `cRSubGoldy::Init()` calls
 `cRCameraman::Init()` through the matching embedded object, whose full field
 layout agrees with Windows. Focused Wibo remains exact at 279/279 instructions
 with all 27 operands clean.
+
+2026-07-13 animation render-binding closure:
+
+- Each animated presentation owner stores a borrowed pointer to its own
+  `AnimManager` in the first derived lane after `RenderableBod`: Snail `+0x78`
+  points to its manager at `+0x104`; every weapon/jetpack channel `+0x78`
+  points to its manager at `+0x108`.
+- The same setup binds `AnimManager::target_model` back to the containing
+  Snail/channel and `AnimManager::animation_slots` to the owner's ten- or
+  five-entry `PresentationAnimationSlot` bank. Those are ownership links, not
+  a biased byte pointer or a texture controller.
+- The five formerly raw-offset blocks now use the exact `Snail`,
+  `PresentationAnimationChannel`, `AnimManager`, `Object`, and animation-slot
+  fields. Focused Windows remains exact at 279/279 with all 27 operands clean.
+- Android `cRSubGoldy::Init(int)` independently stores the same self-owned
+  manager pointers on the matching `cRSnail` and `cRWeapon` BODs before
+  `cRGame::Render()` consumes manager progress.

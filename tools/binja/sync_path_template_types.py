@@ -29,7 +29,11 @@ PRESENTATION_SYMBOL_UPDATES = (
 
 SNAIL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x24", "object", "Object*"),
+    ("0x78", "render_animation_manager", "AnimManager*"),
     ("0x104", "anim_manager", "AnimManager"),
+    ("0x14c", "cutscene_animation_slots", "PresentationAnimationSlot[0xa]"),
     ("0x64c", "weapon_channels", "PresentationAnimationChannel[0x3]"),
     ("0x11e0", "jetpack_channel", "PresentationAnimationChannel"),
     ("0x1894", "invincible_shell", "Invincible"),
@@ -39,7 +43,12 @@ SNAIL_FIELD_UPDATES = (
 
 PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x24", "object", "Object*"),
+    ("0x78", "render_animation_manager", "AnimManager*"),
+    ("0x104", "selected_state", "int32_t"),
     ("0x108", "anim_manager", "AnimManager"),
+    ("0x150", "animation_slots", "PresentationAnimationSlot[0x5]"),
 )
 
 ANIM_MANAGER_FIELD_UPDATES = (
@@ -50,8 +59,8 @@ ANIM_MANAGER_FIELD_UPDATES = (
     ("0x10", "completed", "uint8_t"),
     ("0x14", "queued_animations", "int32_t[0xa]"),
     ("0x3c", "queue_count", "int32_t"),
-    ("0x40", "target_model", "void*"),
-    ("0x44", "animation_slot_base_minus_24", "uint8_t*"),
+    ("0x40", "target_model", "BodBase*"),
+    ("0x44", "animation_slots", "PresentationAnimationSlot*"),
 )
 
 INVINCIBLE_FIELD_UPDATES = (
@@ -138,6 +147,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Snail",
     "CutScene",
     "ObjectAnimation",
+    "PresentationAnimationSlot",
     "AnimManager",
     "PresentationAnimationChannel",
     "GolbShot",

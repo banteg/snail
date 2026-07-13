@@ -73,8 +73,8 @@ Expected residuals:
 - The BOD prefix through `RenderableBod +0x78` is now shared through
   `bod_types.h` and the existing `BodNode`/`ContactTargetObject` prefix: signed
   flags, list links, position, render-object pass-through arguments, object,
-  color, and optional embedded transform. `RenderBodView` remains local only for
-  the renderer-specific pointer at `+0x78` and the unknown tail.
+  color, and optional embedded transform. The cast-only renderer view adds only
+  the animation-manager binding used by flagged Snail/weapon owners at `+0x78`.
 - The five renderer state wrapper calls are named through exact standalone
   scratches; remaining work is the larger frame/register/data-owner shape.
 - The native method is void. The only caller ignores its result, the positive
@@ -107,3 +107,19 @@ fixed-five camera ordering, and the void common tail raises focused Wibo from
 `35.31%` to `45.43%`. The candidate remains an honest partial at `415/439`
 instructions with `26` clean masked operands and no unresolved or mismatched
 operands.
+
+2026-07-13 animation-progress ownership closure:
+
+- The old local `texture_owner` / `texture_sink` names were wrong. Windows
+  copies `AnimManager::progress +0x04` from the flagged BOD's borrowed manager
+  pointer at `+0x78` into `Object::animation->progress +0x0c` before drawing.
+- Exact `cRSubGoldy::Init` installs that pointer as the address of the manager
+  owned by `cRSnail +0x104` or `cRWeapon +0x108`; it also installs each
+  manager's target-model backlink and owned animation-slot bank.
+- Android `cRGame::Render()` independently performs the same chain using its
+  port-specific offsets (`cRBod +0x6c -> cRAnimManager +0x04` and
+  `cRObject +0x104 -> cRObjectAnim +0x10`). This proves the relationship rather
+  than merely renaming the Windows operands.
+- Replacing three opaque texture views with `AnimManager`, `Object`, and
+  `ObjectAnimation` is codegen-neutral. Focused Windows remains the honest
+  45.43%, 415/439 instructions, prefix 3, with all 26 operands clean.
