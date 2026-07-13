@@ -3625,6 +3625,11 @@
       "description": "Interpolates one transform toward another by blending rotation in matrix space and linearly blending translation. Android symbols match this helper to `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)`."
     },
     {
+      "address": "0x44db50",
+      "name": "noop_this_constructor",
+      "description": "Exact three-byte identity body shared by compiler-folded trivial default constructors. Windows has 51 xrefs spanning Color4f, axis-angle/quaternion temporaries, callback objects, and startup globals; the body establishes no unique owning class."
+    },
+    {
       "address": "0x44db60",
       "name": "set_color_rgba",
       "description": "Stores one four-float RGBA color tuple into the destination color/vector slot and returns the same destination pointer."

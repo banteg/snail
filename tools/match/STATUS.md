@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**614/783** mapped gameplay functions matched, **783/783** mapped gameplay functions have a scratch, **92554/325157** bytes (**28.46%**) are proof-grade, and overall fuzzy is **70.81%**.
+**615/784** mapped gameplay functions matched, **784/784** mapped gameplay functions have a scratch, **92551/325154** bytes (**28.46%**) are proof-grade, and overall fuzzy is **70.81%**.
 
-## Proof Grade (614)
+## Proof Grade (615)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -580,7 +580,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_quaternion_from_axis | 0x44d530 | 74 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 | 4 ok |  |
 | ✅ | initialize_matrix_from_quaternion | 0x44d820 | 247 | 82/82 | 100.00% | 82/82 | 3 ok |  |
-| ✅ | linear_interpolate_matrix | 0x44da90 | 195 | 61/61 | 100.00% | 61/61 | 6 ok |  |
+| ✅ | linear_interpolate_matrix | 0x44da90 | 189 | 61/61 | 100.00% | 61/61 | 6 ok |  |
+| ✅ | noop_this_constructor | 0x44db50 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 | - |  |
 | ✅ | set_color_alpha | 0x44db80 | 10 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | set_color_grayscale | 0x44db90 | 24 | 7/7 | 100.00% | 7/7 | - |  |
