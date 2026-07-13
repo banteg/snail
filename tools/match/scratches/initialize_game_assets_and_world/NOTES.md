@@ -297,3 +297,23 @@ meshes, then zero both owned fringe-body positions. The focused bootstrap rises
 from 26.16% (1,629 candidate instructions) to 30.58% (1,973/5,411), with 594
 clean masked operands. The pre-existing one unresolved call and 36
 alignment-dependent operand mismatches are unchanged.
+
+## 2026-07-13 independently authored path-pair members
+
+The following native island first completes the mirrored advanced shapes, then
+proves that not every `PathPair` derives its secondary record from its primary:
+
+1. pair `42`: `HALFPIPE (6-bit-pattern,8,1)`, mirrored with the standard
+   Slide0/Back/VeryDark surfaces;
+2. pair `40`: `WIBBLE (6,8,1)`, mirrored with Slide0 on both main surfaces;
+3. pair `31`: two separately initialized `SUPERTRAMP (6,2,1)` records, each
+   owning the TrackWarn underside and using `BuildFringeSuperTramp`; and
+4. pair `36`: two separately initialized `START (4,8,1)` records, where the
+   secondary uses the distinct `Slidex.tga` middle surface.
+
+The independent records each allocate their own render object and run the full
+builder rather than calling `mirror_path_template_pair_x`. This recovers a real
+per-member ownership distinction that the `PathPair` container alone could not
+express. The focused bootstrap rises from 30.58% (1,973 candidate instructions)
+to 33.02% (2,155/5,411), with 662 clean masked operands and unchanged problem
+counts.
