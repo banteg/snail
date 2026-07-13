@@ -330,3 +330,15 @@ body.
 This family raises the focused bootstrap from 33.02% (2,155 candidate
 instructions) to 34.49% (2,284/5,411), with clean masked operands increasing
 from 662 to 707 and the existing problem counts unchanged.
+
+## 2026-07-13 hump and dump height profiles
+
+The next four mirrored pairs form two matched `HUMP`/`DUMP` profiles. Pairs
+`16` and `17` use curve scale `4`, height `1`, width `3`, and side mode `1`;
+pairs `18` and `19` repeat those owners at the native `0.300000012` height.
+All four retain the standard Slide0/Back/VeryDark material set and separately
+owned primary, secondary, and fringe render bodies.
+
+The focused bootstrap rises from 34.49% (2,284 candidate instructions) to
+36.46% (2,460/5,411), with clean masked operands increasing from 707 to 767
+and the existing problem counts unchanged.
