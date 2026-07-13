@@ -776,6 +776,11 @@
       "description": "Updates the shared display-mode view-sample state against the authored view dimensions before the frame render pass."
     },
     {
+      "address": "0x4129c0",
+      "name": "initialize_direct3d_renderer",
+      "description": "Initializes renderer defaults, creates the Direct3D8 device, and allocates the shared transient 8-vertex sprite/object buffer."
+    },
+    {
       "address": "0x4129f0",
       "name": "set_cull_mode",
       "description": "Programs the shared renderer cull state from the one-bit front-vs-back-face selection. Cross-port Android symbols match this helper to `G0SetCull(int)`."

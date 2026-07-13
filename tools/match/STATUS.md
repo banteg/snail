@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/718** mapped gameplay functions matched, **718/718** mapped gameplay functions have a scratch, **89115/325659** bytes (**27.36%**) are proof-grade, and overall fuzzy is **63.19%**.
+**545/719** mapped gameplay functions matched, **719/719** mapped gameplay functions have a scratch, **89162/325651** bytes (**27.38%**) are proof-grade, and overall fuzzy is **63.21%**.
 
-## Proof Grade (544)
+## Proof Grade (545)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -142,6 +142,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | render_object_toon | 0x4123e0 | 721 | 219/219 | 100.00% | 219/219 | 31 ok |  |
 | ✅ | render_object | 0x4126c0 | 640 | 196/196 | 100.00% | 196/196 | 25 ok |  |
 | ✅ | update_display_mode_view_state | 0x412940 | 120 | 46/46 | 100.00% | 46/46 | 4 ok |  |
+| ✅ | initialize_direct3d_renderer | 0x4129c0 | 47 | 12/12 | 100.00% | 12/12 | 7 ok |  |
 | ✅ | set_cull_mode | 0x4129f0 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  |
 | ✅ | load_registered_texture_refs | 0x412a00 | 108 | 35/35 | 100.00% | 35/35 | 11 ok |  |
 | ✅ | load_registered_texture_ref | 0x412a70 | 647 | 216/216 | 100.00% | 216/216 | 47 ok |  |
