@@ -409,3 +409,20 @@ variants `0`, `1`, and `2`. All five use Slide0/Back/VeryDark materials. The
 focused bootstrap rises from 42.13% (3,030 candidate instructions) to 44.21%
 (3,252/5,411), with clean masked operands increasing from 962 to 1,037 and the
 existing problem counts unchanged.
+
+## 2026-07-13 snake and handed toad fringes
+
+Snake pair `29` is followed in native order by toad pairs `47` through `50`,
+again proving that construction families are not laid out contiguously in the
+template bank. All five records own independent primary, mirrored secondary,
+and per-side fringe render bodies. The snake uses scale `2`, width `4`, and the
+Slide0/Track0/VeryDark material set.
+
+The toads encode left/right shape in the constructor flag and also author their
+fringe placement independently. Pairs `47` and `48` use centered fringes for
+constructor modes `1` and `0`. Pair `49` uses `-1` on the primary and `1` on the
+mirror; pair `50` reverses those offsets. This shows that mirroring path geometry
+does not implicitly mirror the fringe-builder offset. The focused bootstrap
+rises from 44.21% (3,252 candidate instructions) to 45.93% (3,459/5,411), with
+clean masked operands increasing from 1,037 to 1,112 and the existing problem
+counts unchanged.

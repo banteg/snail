@@ -1883,5 +1883,152 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[35].secondary.fringe_mesh_bod.position.y = 0.0f;
     subgame.path_pairs[35].secondary.fringe_mesh_bod.position.x = 0.0f;
 
+    path = &subgame.path_pairs[29].primary;
+    path->set_bod_object(g_object_list.add_object_to_list());
+    path->initialize_snake_path_template_pair(
+        2.0f,
+        4,
+        1,
+        (char*)"Objects/World00/Slide0.tga",
+        (char*)"Objects/World00/Track0.tga",
+        (char*)"Objects/Path/VeryDark.tga");
+    subgame.path_pairs[29].primary.position.z = 0.0f;
+    subgame.path_pairs[29].primary.position.y = 0.0f;
+    subgame.path_pairs[29].primary.position.x = 0.0f;
+
+    subgame.path_pairs[29].secondary.set_bod_object(
+        g_object_list.add_object_to_list());
+    subgame.path_pairs[29].secondary.mirror_path_template_pair_x(path);
+    subgame.path_pairs[29].secondary.position.z = 0.0f;
+    subgame.path_pairs[29].secondary.position.y = 0.0f;
+    subgame.path_pairs[29].secondary.position.x = 0.0f;
+
+    path->build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 0.0f);
+    subgame.path_pairs[29].primary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[29].primary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[29].primary.fringe_mesh_bod.position.x = 0.0f;
+    subgame.path_pairs[29].secondary.build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 0.0f);
+    subgame.path_pairs[29].secondary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[29].secondary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[29].secondary.fringe_mesh_bod.position.x = 0.0f;
+
+    path = &subgame.path_pairs[47].primary;
+    path->set_bod_object(g_object_list.add_object_to_list());
+    path->initialize_toad_path_template_pair(
+        1,
+        (char*)"Objects/World00/Slide0.tga",
+        (char*)"Objects/World00/Track0.tga",
+        (char*)"Objects/Path/VeryDark.tga");
+    subgame.path_pairs[47].primary.position.z = 0.0f;
+    subgame.path_pairs[47].primary.position.y = 0.0f;
+    subgame.path_pairs[47].primary.position.x = 0.0f;
+
+    subgame.path_pairs[47].secondary.set_bod_object(
+        g_object_list.add_object_to_list());
+    subgame.path_pairs[47].secondary.mirror_path_template_pair_x(path);
+    subgame.path_pairs[47].secondary.position.z = 0.0f;
+    subgame.path_pairs[47].secondary.position.y = 0.0f;
+    subgame.path_pairs[47].secondary.position.x = 0.0f;
+
+    path->build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 0.0f);
+    subgame.path_pairs[47].primary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[47].primary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[47].primary.fringe_mesh_bod.position.x = 0.0f;
+    subgame.path_pairs[47].secondary.build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 0.0f);
+    subgame.path_pairs[47].secondary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[47].secondary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[47].secondary.fringe_mesh_bod.position.x = 0.0f;
+
+    path = &subgame.path_pairs[48].primary;
+    path->set_bod_object(g_object_list.add_object_to_list());
+    path->initialize_toad_path_template_pair(
+        0,
+        (char*)"Objects/World00/Slide0.tga",
+        (char*)"Objects/World00/Track0.tga",
+        (char*)"Objects/Path/VeryDark.tga");
+    subgame.path_pairs[48].primary.position.z = 0.0f;
+    subgame.path_pairs[48].primary.position.y = 0.0f;
+    subgame.path_pairs[48].primary.position.x = 0.0f;
+
+    subgame.path_pairs[48].secondary.set_bod_object(
+        g_object_list.add_object_to_list());
+    subgame.path_pairs[48].secondary.mirror_path_template_pair_x(path);
+    subgame.path_pairs[48].secondary.position.z = 0.0f;
+    subgame.path_pairs[48].secondary.position.y = 0.0f;
+    subgame.path_pairs[48].secondary.position.x = 0.0f;
+
+    path->build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 0.0f);
+    subgame.path_pairs[48].primary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[48].primary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[48].primary.fringe_mesh_bod.position.x = 0.0f;
+    subgame.path_pairs[48].secondary.build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 0.0f);
+    subgame.path_pairs[48].secondary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[48].secondary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[48].secondary.fringe_mesh_bod.position.x = 0.0f;
+
+    path = &subgame.path_pairs[49].primary;
+    path->set_bod_object(g_object_list.add_object_to_list());
+    path->initialize_toad_path_template_pair(
+        1,
+        (char*)"Objects/World00/Slide0.tga",
+        (char*)"Objects/World00/Track0.tga",
+        (char*)"Objects/Path/VeryDark.tga");
+    subgame.path_pairs[49].primary.position.z = 0.0f;
+    subgame.path_pairs[49].primary.position.y = 0.0f;
+    subgame.path_pairs[49].primary.position.x = 0.0f;
+
+    subgame.path_pairs[49].secondary.set_bod_object(
+        g_object_list.add_object_to_list());
+    subgame.path_pairs[49].secondary.mirror_path_template_pair_x(path);
+    subgame.path_pairs[49].secondary.position.z = 0.0f;
+    subgame.path_pairs[49].secondary.position.y = 0.0f;
+    subgame.path_pairs[49].secondary.position.x = 0.0f;
+
+    path->build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", -1.0f);
+    subgame.path_pairs[49].primary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[49].primary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[49].primary.fringe_mesh_bod.position.x = 0.0f;
+    subgame.path_pairs[49].secondary.build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 1.0f);
+    subgame.path_pairs[49].secondary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[49].secondary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[49].secondary.fringe_mesh_bod.position.x = 0.0f;
+
+    path = &subgame.path_pairs[50].primary;
+    path->set_bod_object(g_object_list.add_object_to_list());
+    path->initialize_toad_path_template_pair(
+        0,
+        (char*)"Objects/World00/Slide0.tga",
+        (char*)"Objects/World00/Track0.tga",
+        (char*)"Objects/Path/VeryDark.tga");
+    subgame.path_pairs[50].primary.position.z = 0.0f;
+    subgame.path_pairs[50].primary.position.y = 0.0f;
+    subgame.path_pairs[50].primary.position.x = 0.0f;
+
+    subgame.path_pairs[50].secondary.set_bod_object(
+        g_object_list.add_object_to_list());
+    subgame.path_pairs[50].secondary.mirror_path_template_pair_x(path);
+    subgame.path_pairs[50].secondary.position.z = 0.0f;
+    subgame.path_pairs[50].secondary.position.y = 0.0f;
+    subgame.path_pairs[50].secondary.position.x = 0.0f;
+
+    path->build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", 1.0f);
+    subgame.path_pairs[50].primary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[50].primary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[50].primary.fringe_mesh_bod.position.x = 0.0f;
+    subgame.path_pairs[50].secondary.build_track_fringe_mesh(
+        (char*)"Objects/Universe/Fringe.tga", -1.0f);
+    subgame.path_pairs[50].secondary.fringe_mesh_bod.position.z = 0.0f;
+    subgame.path_pairs[50].secondary.fringe_mesh_bod.position.y = 0.0f;
+    subgame.path_pairs[50].secondary.fringe_mesh_bod.position.x = 0.0f;
+
     return 1;
 }
