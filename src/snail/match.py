@@ -2019,8 +2019,52 @@ def _mtime_ns(path: Path) -> int | None:
     return path.stat().st_mtime_ns if path.exists() else None
 
 
+class _ScratchIncludeResolver:
+    """Resolve each local include edge once during a status or audit sweep."""
+
+    def __init__(self, match_root: Path) -> None:
+        self.include_dir = match_root / "include"
+        self._direct_dependencies: dict[tuple[Path, bool], tuple[Path, ...]] = {}
+
+    def direct_dependencies(
+        self, including_path: Path, *, source: bool
+    ) -> tuple[Path, ...]:
+        cache_key = (including_path, source)
+        if cache_key in self._direct_dependencies:
+            return self._direct_dependencies[cache_key]
+
+        try:
+            text = including_path.read_text(encoding="latin1")
+        except OSError:
+            self._direct_dependencies[cache_key] = ()
+            return ()
+
+        dependencies: list[Path] = []
+        seen: set[Path] = set()
+        for match in LOCAL_INCLUDE_RE.finditer(text):
+            include_name = Path(match.group(1).replace("\\", "/"))
+            candidates = [self.include_dir / include_name]
+            if not source:
+                candidates.insert(0, including_path.parent / include_name)
+            dependency = next((path for path in candidates if path.is_file()), None)
+            if dependency is None:
+                continue
+            dependency = dependency.resolve()
+            if dependency in seen:
+                continue
+            seen.add(dependency)
+            dependencies.append(dependency)
+
+        resolved = tuple(dependencies)
+        self._direct_dependencies[cache_key] = resolved
+        return resolved
+
+
 def _scratch_include_headers(
-    config: ScratchConfig, match_root: Path
+    config: ScratchConfig,
+    match_root: Path,
+    *,
+    resolver: _ScratchIncludeResolver | None = None,
 ) -> tuple[Path, ...]:
     """Return only local headers transitively included by one scratch.
 
@@ -2028,7 +2072,7 @@ def _scratch_include_headers(
     project include directory. The scratch source itself is copied into its
     build directory, so its project headers resolve through ``match/include``.
     """
-    include_dir = match_root / "include"
+    resolver = resolver or _ScratchIncludeResolver(match_root)
     source = config.directory / "scratch.cpp"
     pending = [source]
     visited = {source}
@@ -2036,19 +2080,9 @@ def _scratch_include_headers(
 
     while pending:
         including_path = pending.pop()
-        try:
-            text = including_path.read_text(encoding="latin1")
-        except OSError:
-            continue
-        for match in LOCAL_INCLUDE_RE.finditer(text):
-            include_name = Path(match.group(1).replace("\\", "/"))
-            candidates = [include_dir / include_name]
-            if including_path != source:
-                candidates.insert(0, including_path.parent / include_name)
-            dependency = next((path for path in candidates if path.is_file()), None)
-            if dependency is None:
-                continue
-            dependency = dependency.resolve()
+        for dependency in resolver.direct_dependencies(
+            including_path, source=including_path == source
+        ):
             if dependency in visited:
                 continue
             visited.add(dependency)
@@ -2069,24 +2103,36 @@ def _scratch_compile_argv(config: ScratchConfig, match_root: Path) -> tuple[str,
     )
 
 
-def _scratch_build_dependencies(config: ScratchConfig, match_root: Path) -> tuple[Path, ...]:
+def _scratch_build_dependencies(
+    config: ScratchConfig,
+    match_root: Path,
+    *,
+    include_resolver: _ScratchIncludeResolver | None = None,
+) -> tuple[Path, ...]:
     compiler_exe = match_root / "compilers" / config.compiler / "Bin" / "CL.EXE"
     return (
         config.directory / "scratch.cpp",
         config.directory / "scratch.conf",
         match_root / "cl.sh",
         compiler_exe,
-        *_scratch_include_headers(config, match_root),
+        *_scratch_include_headers(config, match_root, resolver=include_resolver),
     )
 
 
-def _scratch_build_key(config: ScratchConfig, match_root: Path) -> dict:
+def _scratch_build_key(
+    config: ScratchConfig,
+    match_root: Path,
+    *,
+    include_resolver: _ScratchIncludeResolver | None = None,
+) -> dict:
     return {
         "compiler": config.compiler,
         "argv": list(_scratch_compile_argv(config, match_root)),
         "dependencies": [
             [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _mtime_ns(path)]
-            for path in _scratch_build_dependencies(config, match_root)
+            for path in _scratch_build_dependencies(
+                config, match_root, include_resolver=include_resolver
+            )
         ],
     }
 
@@ -2095,12 +2141,16 @@ def _scratch_object_is_current(
     obj_path: Path,
     config: ScratchConfig,
     match_root: Path,
+    *,
+    include_resolver: _ScratchIncludeResolver | None = None,
 ) -> bool:
     if not obj_path.exists():
         return False
 
     obj_mtime = obj_path.stat().st_mtime_ns
-    for dependency in _scratch_build_dependencies(config, match_root):
+    for dependency in _scratch_build_dependencies(
+        config, match_root, include_resolver=include_resolver
+    ):
         dependency_mtime = _mtime_ns(dependency)
         if dependency_mtime is None or dependency_mtime > obj_mtime:
             return False
@@ -2113,16 +2163,35 @@ def _scratch_object_is_current(
         cached = json.loads(build_key_path.read_text())
     except (json.JSONDecodeError, OSError):
         return False
-    return cached.get("key") == _scratch_build_key(config, match_root)
-
-
-def _store_scratch_build_key(obj_path: Path, config: ScratchConfig, match_root: Path) -> None:
-    (obj_path.parent / "scratch-build.json").write_text(
-        json.dumps({"key": _scratch_build_key(config, match_root)})
+    return cached.get("key") == _scratch_build_key(
+        config, match_root, include_resolver=include_resolver
     )
 
 
-def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT) -> Path:
+def _store_scratch_build_key(
+    obj_path: Path,
+    config: ScratchConfig,
+    match_root: Path,
+    *,
+    include_resolver: _ScratchIncludeResolver | None = None,
+) -> None:
+    (obj_path.parent / "scratch-build.json").write_text(
+        json.dumps(
+            {
+                "key": _scratch_build_key(
+                    config, match_root, include_resolver=include_resolver
+                )
+            }
+        )
+    )
+
+
+def compile_scratch(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    include_resolver: _ScratchIncludeResolver | None = None,
+) -> Path:
     """Compile scratch.cpp with cl.sh when the object is missing or stale."""
     import os
     import shutil
@@ -2132,7 +2201,9 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     validate_scratch_source(source)
     build_dir = config.directory / "build"
     obj_path = build_dir / "scratch.obj"
-    if _scratch_object_is_current(obj_path, config, match_root):
+    if _scratch_object_is_current(
+        obj_path, config, match_root, include_resolver=include_resolver
+    ):
         return obj_path
 
     build_dir.mkdir(exist_ok=True)
@@ -2146,7 +2217,9 @@ def compile_scratch(config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT
     )
     if completed.returncode != 0 or not obj_path.exists():
         raise RuntimeError(f"cl failed:\n{completed.stdout}{completed.stderr}")
-    _store_scratch_build_key(obj_path, config, match_root)
+    _store_scratch_build_key(
+        obj_path, config, match_root, include_resolver=include_resolver
+    )
     return obj_path
 
 
@@ -2646,10 +2719,13 @@ def _scratch_cache_key(
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
     manifest_digest: str,
+    include_resolver: _ScratchIncludeResolver | None = None,
 ) -> dict:
     return {
         "version": CACHE_VERSION,
-        "build": _scratch_build_key(config, match_root),
+        "build": _scratch_build_key(
+            config, match_root, include_resolver=include_resolver
+        ),
         "match": {
             "function": config.function,
             "end_va": config.end_va,
@@ -2668,6 +2744,7 @@ def _load_cached_match(
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
     manifest_digest: str,
+    include_resolver: _ScratchIncludeResolver | None = None,
 ) -> tuple[dict, MaskedOperandAudit] | None:
     import json
 
@@ -2683,6 +2760,7 @@ def _load_cached_match(
         image_path,
         match_root,
         manifest_digest=manifest_digest,
+        include_resolver=include_resolver,
     ):
         return None
     status = cached.get("status")
@@ -2702,12 +2780,14 @@ def _load_cached_status(
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
     manifest_digest: str,
+    include_resolver: _ScratchIncludeResolver | None = None,
 ) -> dict | None:
     cached = _load_cached_match(
         config,
         image_path,
         match_root,
         manifest_digest=manifest_digest,
+        include_resolver=include_resolver,
     )
     return cached[0] if cached is not None else None
 
@@ -2720,6 +2800,7 @@ def _store_cached_status(
     *,
     manifest_digest: str,
     audit: MaskedOperandAudit | None = None,
+    include_resolver: _ScratchIncludeResolver | None = None,
 ) -> None:
     import json
 
@@ -2733,6 +2814,7 @@ def _store_cached_status(
                     image_path,
                     match_root,
                     manifest_digest=manifest_digest,
+                    include_resolver=include_resolver,
                 ),
                 "status": status,
                 "masked_operand_audit": _masked_audit_cache_payload(
@@ -2855,13 +2937,18 @@ def _collect_uncached_match_outcomes(
     match_root: Path,
     manifest_digest: str,
     jobs: int,
+    include_resolver: _ScratchIncludeResolver,
 ) -> list[_ScratchMatchOutcome]:
     """Compile in threads, then perform CPU-heavy matching in worker processes."""
     tasks = [_ScratchMatchTask(config, address) for config, address in uncached]
 
     def compile_task(task: _ScratchMatchTask) -> _ScratchMatchTask | _ScratchMatchOutcome:
         try:
-            compile_scratch(task.config, match_root)
+            compile_scratch(
+                task.config,
+                match_root,
+                include_resolver=include_resolver,
+            )
         except (OSError, RuntimeError, ValueError) as error:
             return _ScratchMatchOutcome(
                 config=task.config,
@@ -2914,6 +3001,7 @@ def _collect_uncached_match_outcomes(
                 match_root,
                 manifest_digest=manifest_digest,
                 audit=outcome.audit,
+                include_resolver=include_resolver,
             )
     return [outcomes_by_directory[task.config.directory] for task in tasks]
 
@@ -2938,6 +3026,7 @@ def collect_scratch_statuses(
 
     reference_manifest = load_default_reference_symbol_manifest()
     manifest_digest = _function_manifest_cache_digest(manifest)
+    include_resolver = _ScratchIncludeResolver(match_root)
     by_name = {symbol.name: symbol for symbol in manifest.functions}
     ordered: list[tuple[ScratchConfig, int]] = []
     statuses_by_directory: dict[Path, ScratchStatus] = {}
@@ -2953,6 +3042,7 @@ def collect_scratch_statuses(
                 image_path,
                 match_root,
                 manifest_digest=manifest_digest,
+                include_resolver=include_resolver,
             )
         ) is not None:
             statuses_by_directory[config.directory] = ScratchStatus(
@@ -2975,6 +3065,7 @@ def collect_scratch_statuses(
         match_root=match_root,
         manifest_digest=manifest_digest,
         jobs=jobs,
+        include_resolver=include_resolver,
     )
     for outcome in matched:
         if outcome.fields is None:
@@ -3047,6 +3138,7 @@ def collect_masked_operand_issues(
         raise ValueError("jobs must be positive")
 
     manifest_digest = _function_manifest_cache_digest(manifest)
+    include_resolver = _ScratchIncludeResolver(match_root)
     by_name = {symbol.name: symbol for symbol in manifest.functions}
     ordered: list[tuple[ScratchConfig, int]] = []
     results_by_directory: dict[
@@ -3063,6 +3155,7 @@ def collect_masked_operand_issues(
             image_path,
             match_root,
             manifest_digest=manifest_digest,
+            include_resolver=include_resolver,
         )
         if cached is not None:
             results_by_directory[config.directory] = cached
@@ -3081,6 +3174,7 @@ def collect_masked_operand_issues(
             match_root=match_root,
             manifest_digest=manifest_digest,
             jobs=jobs,
+            include_resolver=include_resolver,
         )
         for outcome in matched:
             if outcome.fields is None or outcome.audit is None:

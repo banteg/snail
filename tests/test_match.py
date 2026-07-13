@@ -2529,6 +2529,61 @@ def test_scratch_include_headers_follow_transitive_local_graph(tmp_path: Path) -
     assert _scratch_include_headers(config, match_root) == (first, nested)
 
 
+def test_scratch_include_resolver_reuses_shared_header_parses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from snail.match import (
+        ScratchConfig,
+        _ScratchIncludeResolver,
+        _scratch_include_headers,
+    )
+
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    shared = include_dir / "shared.h"
+    leaf = include_dir / "leaf.h"
+    shared.write_text('#include "leaf.h"\n')
+    leaf.write_text("struct Leaf {};\n")
+
+    configs = []
+    for name in ("first", "second"):
+        scratch_dir = match_root / f"scratches/{name}"
+        scratch_dir.mkdir(parents=True)
+        (scratch_dir / "scratch.cpp").write_text('#include "shared.h"\n')
+        configs.append(
+            ScratchConfig(
+                directory=scratch_dir,
+                function=name,
+                compiler="msvc6.5",
+                cflags="/O2 /G5 /W3",
+                end_va=None,
+                symbol=None,
+            )
+        )
+
+    original_read_text = Path.read_text
+    header_reads: dict[Path, int] = {}
+
+    def counted_read_text(path: Path, *args, **kwargs) -> str:
+        if path in (shared, leaf):
+            header_reads[path] = header_reads.get(path, 0) + 1
+        return original_read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", counted_read_text)
+    resolver = _ScratchIncludeResolver(match_root)
+
+    assert _scratch_include_headers(configs[0], match_root, resolver=resolver) == (
+        leaf,
+        shared,
+    )
+    assert _scratch_include_headers(configs[1], match_root, resolver=resolver) == (
+        leaf,
+        shared,
+    )
+    assert header_reads == {shared: 1, leaf: 1}
+
+
 def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -2563,7 +2618,9 @@ def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
     peak_active = 0
     lock = threading.Lock()
 
-    def compile_scratch(config: ScratchConfig, _match_root: Path) -> Path:
+    def compile_scratch(
+        config: ScratchConfig, _match_root: Path, **_kwargs
+    ) -> Path:
         nonlocal active, peak_active
         with lock:
             active += 1
@@ -2807,7 +2864,11 @@ def test_masked_operand_audit_runs_cache_misses_in_parallel(
         "load_image",
         lambda *_args: LoadedImage(mapped=b"", image_base=0x1000, size_of_image=0),
     )
-    monkeypatch.setattr(match_module, "compile_scratch", lambda *_args: tmp_path / "scratch.obj")
+    monkeypatch.setattr(
+        match_module,
+        "compile_scratch",
+        lambda *_args, **_kwargs: tmp_path / "scratch.obj",
+    )
     monkeypatch.setattr(match_module, "_match_precompiled_task", match_scratch)
     monkeypatch.setattr(match_module, "ProcessPoolExecutor", ThreadedProcessPool)
     monkeypatch.setattr(match_module, "_store_cached_status", lambda *_args, **_kwargs: None)
