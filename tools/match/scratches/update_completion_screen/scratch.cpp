@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int Exit::update_completion_screen()
+void Exit::update_completion_screen()
 {
     FrontendWidget* button;
     unsigned int flags;
@@ -142,7 +142,7 @@ int Exit::update_completion_screen()
         button->widget_flags = flags & ~0x20;
         g_game->players[0].frontend_state = previous_frontend_state;
         g_game->frontend_link_latch = 0;
-        return destroy_completion_screen();
+        destroy_completion_screen();
+        return;
     }
-    return flags;
 }

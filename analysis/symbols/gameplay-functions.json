@@ -85,11 +85,13 @@
     },
     {
       "address": "0x4033f0",
-      "name": "hide_all_borders"
+      "name": "hide_all_borders",
+      "description": "Exact void cRBorderManager::HideBorders() wrapper that pushes a nested 0x1000 visibility transition through the embedded BorderStack."
     },
     {
       "address": "0x403400",
-      "name": "unhide_all_borders"
+      "name": "unhide_all_borders",
+      "description": "Exact void cRBorderManager::UnHideBorders() wrapper that unwinds the newest 0x1000 visibility transition through the embedded BorderStack."
     },
     {
       "address": "0x403410",
@@ -137,6 +139,16 @@
     {
       "address": "0x404080",
       "name": "update_twinkle"
+    },
+    {
+      "address": "0x404350",
+      "name": "initialize_border_stack",
+      "description": "Exact Windows cRBorderStack::Init(): resets the generation and borrowed-entry count of the BorderManager-owned visibility transition stack. Windows folds the same two-zero-store body with FrontendFade::initialize."
+    },
+    {
+      "address": "0x404360",
+      "name": "apply_all_border_visibility_mode",
+      "description": "Applies one of four nested visibility transitions to the BorderManager-owned 150-record pool, recording borrowed FrontendWidget handles by generation so hide and disabled-state bits can be unwound in LIFO batches."
     },
     {
       "address": "0x404540",
@@ -255,7 +267,7 @@
     {
       "address": "0x406060",
       "name": "destroy_completion_screen",
-      "description": "Exact Windows `Exit::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
+      "description": "Exact void Windows `Exit::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
     },
     {
       "address": "0x4060d0",
@@ -265,7 +277,7 @@
     {
       "address": "0x4067e0",
       "name": "update_completion_screen",
-      "description": "Exact Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
+      "description": "Exact void Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
     },
     {
       "address": "0x406bc0",

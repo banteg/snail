@@ -46,8 +46,8 @@ public:
     FrontendWidget* allocate_border(); // @ 0x4032a0
     void activate_all_borders(); // @ 0x403300
     int kill_all_borders(); // @ 0x4033c0
-    int hide_all_borders(); // @ 0x4033f0
-    int unhide_all_borders(); // @ 0x403400
+    void hide_all_borders(); // @ 0x4033f0, iOS cRBorderManager::HideBorders()
+    void unhide_all_borders(); // @ 0x403400, iOS cRBorderManager::UnHideBorders()
     int kill_border(FrontendWidget* border);
     char queue_frontend_widget_flag_after_delay(
         FrontendWidget* widget, int queued_flags); // @ 0x403f60

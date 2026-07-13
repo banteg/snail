@@ -2,7 +2,7 @@
 
 #include "border_manager.h"
 
-int BorderManager::unhide_all_borders()
+void BorderManager::unhide_all_borders()
 {
-    return border_stack.apply_all_border_visibility_mode(1);
+    border_stack.apply_all_border_visibility_mode(1);
 }

@@ -45,3 +45,9 @@ the typed `GameRoot*` global and follows the owning menu, galaxy, subgame,
 pause, player, or link-latch member. This removes all 41 raw `GameRoot` casts
 without coalescing callback-separated borrows. Output remains exact at 207/207
 instructions with all 69 operands clean.
+
+2026-07-14 return-contract correction: every Windows caller discards EAX and
+Android/iOS retain this lifecycle edge as `cRExit::AI()`. The trailing button
+test and teardown call merely leak incidental register values on their paths;
+modeling the method as `void` preserves the exact 207/207 stream and all 69
+operands while removing a fabricated API result.

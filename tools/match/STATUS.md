@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**612/781** mapped gameplay functions matched, **781/781** mapped gameplay functions have a scratch, **92567/325170** bytes (**28.47%**) are proof-grade, and overall fuzzy is **70.82%**.
+**614/783** mapped gameplay functions matched, **783/783** mapped gameplay functions have a scratch, **92554/325157** bytes (**28.46%**) are proof-grade, and overall fuzzy is **70.81%**.
 
-## Proof Grade (612)
+## Proof Grade (614)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -32,7 +32,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | update_border_manager | 0x403fc0 | 111 | 28/28 | 100.00% | 28/28 | 2 ok |  |
 | ✅ | update_twinkle_manager | 0x404030 | 53 | 23/23 | 100.00% | 23/23 | 1 ok |  |
 | ✅ | draw_twinkle | 0x404070 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  |
-| ✅ | update_twinkle | 0x404080 | 1208 | 181/181 | 100.00% | 181/181 | 48 ok |  |
+| ✅ | update_twinkle | 0x404080 | 709 | 181/181 | 100.00% | 181/181 | 48 ok |  |
+| ✅ | initialize_border_stack | 0x404350 | 14 | 3/3 | 100.00% | 3/3 | - |  |
+| ✅ | apply_all_border_visibility_mode | 0x404360 | 472 | 137/137 | 100.00% | 137/137 | 1 ok |  |
 | ✅ | border_sprite_extend | 0x404540 | 55 | 14/14 | 100.00% | 14/14 | - |  |
 | ✅ | set_border_justify_centre | 0x404730 | 13 | 3/3 | 100.00% | 3/3 | - |  |
 | ✅ | initialize_cheat | 0x404740 | 11 | 5/5 | 100.00% | 5/5 | - |  |
@@ -662,7 +664,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 39 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5391/5411 | 80.28% | 0/5411 | 35 mismatch, 77 unresolved, 1538 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5391/5411 | 80.28% | 0/5411 | 35 mismatch, 75 unresolved, 1540 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 1 mismatch, 56 ok |  |

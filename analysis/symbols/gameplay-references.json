@@ -30,13 +30,13 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
-      "address": "0x404360",
-      "name": "apply_all_border_visibility_mode",
+      "address": "0x404350",
+      "name": "initialize_border_stack",
       "kind": "function",
       "aliases": [
-        "sub_404360"
+        "initialize_frontend_fade"
       ],
-      "description": "Shared border-manager batch helper called by hide_all_borders and unhide_all_borders to apply a visibility mode to active border records."
+      "description": "Folded Windows body shared by cRBorderStack::Init() and FrontendFade::initialize_frontend_fade; the receiver callsites distinguish the two authored owners."
     },
     {
       "address": "0x408600",
@@ -105,6 +105,16 @@
       ],
       "size": "0x10",
       "description": "Compiler-emitted widget-type switch jump table used by initialize_frontend_widget for widget types 20 through 23."
+    },
+    {
+      "address": "0x404528",
+      "name": "apply_all_border_visibility_mode_jump_table",
+      "kind": "jump_table",
+      "aliases": [
+        "$L1308"
+      ],
+      "size": "0x10",
+      "description": "Compiler-emitted four-entry mode switch for the BorderStack visibility transition helper."
     },
     {
       "address": "0x405018",
