@@ -5,13 +5,17 @@
 #include "bod_types.h"
 #include "player.h"
 
+class SubgameRuntime;
+
 class Banner : public BodBase {
 public:
     void update_banner(); // @ 0x441d40, cRBanner::AI
 
     // Android preserves this same tail immediately after its platform BodBase.
     int visibility_mode; // +0x38, 0 start row; 1 completion row
-    char unknown_3c[0x54 - 0x3c];
+    char unknown_3c[0x48 - 0x3c];
+    SubgameRuntime* owner_game; // +0x48, borrowed embedded-subgame backlink
+    char unknown_4c[0x54 - 0x4c];
     Player* owner_player; // +0x54, borrowed row-position source
     float phase; // +0x58
     float phase_step; // +0x5c

@@ -487,9 +487,19 @@ The current high-confidence `Game` fields are:
 - `+0x3563a0`: `slug_hazards`
   - `8`-slot `SlugHazardRuntime` array in Windows
 - `+0x356b00`: `sub_lazers`
-  - fixed `20`-slot `SubLazerPool`; collision borrows slots while the subgame is live
+  - fixed `20`-slot `SubLazerPool` (`0xb0` stride); startup clones the root
+    lazer donor into every slot and stores a borrowed subgame backlink at
+    slot `+0x88`
+  - collision borrows slots while the subgame is live
 - `+0x3578c0`: `salt_hazards`
-  - fixed `40`-slot `SaltHazardPool`; each slot owns a one-byte `collision_armed` latch at `+0x94`
+  - fixed `40`-slot `SaltHazardPool` (`0x98` stride); startup clones the root
+    `salt.x` donor into every slot and stores a borrowed subgame backlink at
+    slot `+0x88`
+  - each slot owns a one-byte `collision_armed` latch at `+0x94`
+- `+0x359080`: `banners`
+  - two inline `0x60`-byte `Banner` records ending exactly at `+0x359140`
+  - banner `+0x48` borrows the subgame while `+0x54` separately borrows the
+    row-source player
 - `+0x359140`: `active_garbage_hazards`
   - head pointer for the active garbage list
 - `+0x359144`: `garbage_hazards`

@@ -193,3 +193,21 @@ early helper reference, and 33 expected mismatches across the still-partial
 function. The first stack-local no-op constructor is now present; the candidate
 frame remains `0x54` versus native `0x12c` because later locals and islands are
 still honestly absent.
+
+## 2026-07-13 owned SubLazer and salt clone pools
+
+The next native producer island copies the root `lazer_model` donor into the
+20 inline `SubLazer` records at `SubgameRuntime +0x356b00` (stride `0xb0`),
+then loads root `salt_model` from `salt.x` and copies it into the 40 inline
+`Salt` records at `+0x3578c0` (stride `0x98`). Both slot families retain a
+borrowed `SubgameRuntime*` at slot `+0x88`; the lazer pass also registers the
+shared texture, sets alpha `0.7` and blend mode `9`, while the salt pass sets
+alpha `0.9`, blend mode `12`, and an identity transform.
+
+The source intentionally follows native's field-first induction variables:
+the lazer loop advances `object +0x24`, and the salt loop advances
+`owner_game +0x88`. This recovers the real ownership and instruction schedule
+without padding the candidate. Focused Wibo rises from 19.90% (1,011/5,411)
+to 20.29% (1,074/5,411), with 342 clean masked operands, one unresolved early
+helper reference, and the same 33 expected mismatches. The later banner and
+remaining world/path-template producer islands are still absent.

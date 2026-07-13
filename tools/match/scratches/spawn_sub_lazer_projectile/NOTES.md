@@ -70,3 +70,8 @@ with `6` clean masked operands.
 method on `SubLazer`. Android preserves the same two-vector signature; iOS
 v1.9 adds the owning Goldy argument. `SubLazerSlot` remains a compatibility
 alias only. Matching stays exact at 63/63 with six clean operands.
+
+2026-07-13 Binary Ninja ownership sync: the startup clone pass proves the
+slot's `owner_game +0x88` backlink and the manager's 20-slot extent. The live
+prototype is now the slot-level thiscall with two borrowed vectors, replacing
+the stale fastcall projection. Matching remains exact at 63/63.

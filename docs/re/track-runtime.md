@@ -206,7 +206,12 @@ Recovered row-wise ramp and connector rewrites:
 
 High-confidence findings:
 
-- `salt.x` is cloned into a `40`-slot runtime array and managed separately from slugs
+- startup loads `salt.x` into the root salt donor and clones that object into
+  the `40` inline `0x98`-byte salt slots at `SubgameRuntime +0x3578c0`
+- startup likewise clones the root lazer donor into the `20` inline
+  `0xb0`-byte sub-lazer slots at `SubgameRuntime +0x356b00`
+- both slot families borrow their owning subgame through slot `+0x88`
+- salt is managed separately from slugs
 - slugs use an `8`-slot pool and a different runtime path
 - authored `R` rows map onto ring-effect helpers through the packed ring bits
 - runtime tile `0x18` exists in the track builder but the later entity-population path calls a stubbed `nullsub`, not a live pickup or hazard spawner

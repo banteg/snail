@@ -82,3 +82,9 @@ remains exact at `100.00%`, `67/67`, with `10` clean masked operands.
 `SaltManager`, matching Android `cRSaltManager::Add(tVector&)`; iOS v1.9 adds
 the owning Goldy argument. The allocated slot is an inline `Salt`, not a
 transferred hazard object. Matching remains 67/67 with ten clean operands.
+
+2026-07-13 Binary Ninja ownership sync: the startup clone pass proves the
+manager's 40 inline `0x98` slots and each slot's `owner_game +0x88` backlink.
+The live prototype is now the manager thiscall plus one borrowed position,
+retiring the stale path-template/multi-argument projection. Matching remains
+exact at 67/67.

@@ -35,3 +35,9 @@ bit `0x20` visibility toggle, phase wrap, and sinusoidal y bob.
 Source-shape note: do not stage the sine argument in an `angle` local. Native
 keeps no stack local in the prologue and uses `push ecx; fstp [esp]` directly
 before calling `sine`.
+
+2026-07-13 ownership clarification: startup writes `&game->subgame` at banner
+`+0x48`, proving a distinct borrowed `SubgameRuntime*` backlink before the
+existing `Player* +0x54`. The shared header and Binary Ninja `Banner` type now
+preserve both owners. `update_banner` does not read the new field and remains
+exact at 44/44.

@@ -72,3 +72,8 @@ Wibo remains exact at `100.00%`, `83/83`, with `12` clean masked operands.
 the Windows constructor table at `0x497340` points directly here. The scratch
 now defines the method on `Salt`; matching remains exact at 83/83 with twelve
 clean operands.
+
+2026-07-13 Binary Ninja ownership sync: the callback now consumes the exact
+`FrameSaltSlot` established by startup, including `owner_game +0x88`, fade at
+`+0x8c`, spawn velocity at `+0x90`, and collision latch at `+0x94`. This
+replaces the stale untyped fastcall signature; matching remains exact at 83/83.

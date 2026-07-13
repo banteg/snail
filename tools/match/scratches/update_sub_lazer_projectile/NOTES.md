@@ -136,3 +136,8 @@ two-instruction partial tail merge after a successful primary containment
 test. Reversing the source operands is codegen-neutral, and spelling separate
 primary/secondary hit tails still lets VC6 fully merge the suffix, so neither
 probe is retained. No volatile, label, or dummy-state nudge is used.
+
+2026-07-13 Binary Ninja ownership sync: the slot callback now consumes the
+same `FrameSubLazerSlot` established by startup, including the borrowed
+`owner_game +0x88` backlink. This replaces the stale fastcall signature; the
+focused source remains honestly near-exact at 92.63% (216/218).
