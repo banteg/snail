@@ -2,7 +2,7 @@
 
 #include "direct_input_view.h"
 #include "game_root.h"
-#include "rect.h"
+#include "mouse_window_state.h"
 #include "win32_window_state.h"
 
 struct DirectInputMouseState {
@@ -22,13 +22,6 @@ extern float g_mouse_live_x[]; // data_777d58
 extern float g_mouse_live_y[]; // data_777d60
 extern char g_hide_system_cursor_flag; // data_777d70
 extern DirectInputDevice* g_mouse_device; // data_777d9c
-
-extern int g_mouse_captured_client_left;
-extern int g_mouse_captured_client_top;
-extern int g_mouse_uncaptured_clip_left;
-extern int g_mouse_uncaptured_clip_top;
-extern int g_mouse_uncaptured_clip_right;
-extern int g_mouse_uncaptured_clip_bottom;
 
 int convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y); // @ 0x44c100
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
@@ -106,13 +99,13 @@ int update_mouse(HWND hwnd)
         ClipCursor(0);
         if (!g_game->players[0].mouse_cursor.is_mouse_captured()) {
             clip_rect.left =
-                window_rect.left + client_rect.left - g_mouse_uncaptured_clip_left;
+                window_rect.left + client_rect.left - g_mouse_uncaptured_clip_rect.left;
             clip_rect.right =
-                window_rect.right + client_rect.right - g_mouse_uncaptured_clip_right;
+                window_rect.right + client_rect.right - g_mouse_uncaptured_clip_rect.right;
             clip_rect.top =
-                window_rect.top + client_rect.top - g_mouse_uncaptured_clip_top;
+                window_rect.top + client_rect.top - g_mouse_uncaptured_clip_rect.top;
             clip_rect.bottom =
-                window_rect.bottom + client_rect.bottom - g_mouse_uncaptured_clip_bottom;
+                window_rect.bottom + client_rect.bottom - g_mouse_uncaptured_clip_rect.bottom;
             ClipCursor(&clip_rect);
 
             update_input_controller_pointer_region(
@@ -134,10 +127,10 @@ int update_mouse(HWND hwnd)
 
         update_input_controller_pointer_region(
             0,
-            window_rect.left + client_rect.left - g_mouse_captured_client_left,
-            window_rect.top + client_rect.top - g_mouse_captured_client_top,
-            window_rect.left + client_rect.right - g_mouse_captured_client_left,
-            window_rect.top + client_rect.bottom - g_mouse_captured_client_top,
+            window_rect.left + client_rect.left - g_mouse_captured_client_rect.left,
+            window_rect.top + client_rect.top - g_mouse_captured_client_rect.top,
+            window_rect.left + client_rect.right - g_mouse_captured_client_rect.left,
+            window_rect.top + client_rect.bottom - g_mouse_captured_client_rect.top,
             (int)g_mouse_live_x[0],
             (int)g_mouse_live_y[0],
             consume_mouse_wheel_delta(0),
@@ -151,22 +144,22 @@ int update_mouse(HWND hwnd)
             ClipCursor(0);
         } else {
             clip_rect.left =
-                window_rect.left + client_rect.left - g_mouse_uncaptured_clip_left;
+                window_rect.left + client_rect.left - g_mouse_uncaptured_clip_rect.left;
             clip_rect.right =
-                window_rect.right + client_rect.right - g_mouse_uncaptured_clip_right;
+                window_rect.right + client_rect.right - g_mouse_uncaptured_clip_rect.right;
             clip_rect.top =
-                window_rect.top + client_rect.top - g_mouse_uncaptured_clip_top;
+                window_rect.top + client_rect.top - g_mouse_uncaptured_clip_rect.top;
             clip_rect.bottom =
-                window_rect.bottom + client_rect.bottom - g_mouse_uncaptured_clip_bottom;
+                window_rect.bottom + client_rect.bottom - g_mouse_uncaptured_clip_rect.bottom;
             ClipCursor(&clip_rect);
         }
 
         update_input_controller_pointer_region(
             0,
-            window_rect.left + client_rect.left - g_mouse_uncaptured_clip_left,
-            window_rect.top + client_rect.top - g_mouse_uncaptured_clip_top,
-            window_rect.left + client_rect.right - g_mouse_uncaptured_clip_left,
-            window_rect.top + client_rect.bottom - g_mouse_uncaptured_clip_top,
+            window_rect.left + client_rect.left - g_mouse_uncaptured_clip_rect.left,
+            window_rect.top + client_rect.top - g_mouse_uncaptured_clip_rect.top,
+            window_rect.left + client_rect.right - g_mouse_uncaptured_clip_rect.left,
+            window_rect.top + client_rect.bottom - g_mouse_uncaptured_clip_rect.top,
             (int)g_mouse_live_x[0],
             (int)g_mouse_live_y[0],
             consume_mouse_wheel_delta(0),

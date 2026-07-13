@@ -8,15 +8,15 @@
 | Target instructions | 295 | 295 |
 | Candidate instructions | 0 | 294 |
 | Common prefix | 0 / 295 | **5 / 295** |
-| Masked operands | none | **61 clean, 9 unresolved, 1 mismatched** |
+| Masked operands | none | **70 clean, 0 unresolved, 1 mismatched** |
 
 The scratch recovers the DirectInput mouse poll/acquire path, live mouse X/Y
 accumulation and clamping, captured and uncaptured cursor clipping, forwarded
 mouse-wheel/button state, and optional system-cursor hide.
 
-The unresolved masked operands are scratch-local names for the client/clip
-offset globals at `0x4b7770..0x4b778c`, which are not yet promoted to the
-symbol manifest. The lone masked mismatch is a diff-alignment artifact around
+The former unresolved client/clip globals are now owned as two complete Win32
+`RECT` values at `0x4b7770` and `0x4b7780`, shared with renderer-default
+initialization. The lone masked mismatch is a diff-alignment artifact around
 the Win32 rect calls; the candidate object has separate relocations for
 `GetWindowRect` and `GetClientRect`.
 

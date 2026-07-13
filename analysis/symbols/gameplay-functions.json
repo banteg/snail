@@ -682,6 +682,21 @@
       "description": "Advances the shared backdrop renderer, updates its distortion grid, and dispatches the split or warped draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
     },
     {
+      "address": "0x4114b0",
+      "name": "create_vertex_buffer",
+      "description": "Allocates one Direct3D vertex buffer in the renderer's fixed 3000-slot ObjectRenderBuffers pool using the requested FVF layout."
+    },
+    {
+      "address": "0x4115d0",
+      "name": "create_index_buffer",
+      "description": "Allocates one 16-bit Direct3D index buffer in the renderer's embedded fixed 3000-slot IndexBufferFactory pool."
+    },
+    {
+      "address": "0x411630",
+      "name": "initialize_direct3d_renderer_defaults",
+      "description": "Seeds authored mouse client/clip rectangles and initializes the Direct3D renderer's inactive interface pointers and default presentation fields."
+    },
+    {
       "address": "0x4116f0",
       "name": "release_direct3d_renderer_resources",
       "description": "Direct3DRenderer member teardown entry point that tail-calls the device/interface release body with the existing renderer receiver."

@@ -27,6 +27,7 @@ class Direct3DRenderer {
 public:
     ObjectRenderBuffers* create_vertex_buffer(
         int vertex_count, int fvf); // @ 0x4114b0
+    void initialize_direct3d_renderer_defaults(); // @ 0x411630
     void release_direct3d_renderer_resources(); // @ 0x4116f0
     void release_direct3d_device_interfaces(); // @ 0x411960
     int direct3d_renderer_set_cull_mode(char cull_front); // @ 0x411700

@@ -7,8 +7,8 @@ coordinates, clips the system cursor against the active client rectangle, and
 forwards the current pointer state into slot 0 through
 `update_input_controller_pointer_region`.
 
-The `g_mouse_*client*` and `g_mouse_*clip*` globals at `0x4b7770..0x4b778c`
-are recovered Win32 client/clip offsets now named in the reference manifest.
+The ranges at `0x4b7770..0x4b777f` and `0x4b7780..0x4b778f` are recovered as
+the captured-client and uncaptured-clip Win32 `RECT` globals.
 
 ## Source-shape notes
 
@@ -45,3 +45,10 @@ owned cRMouse-compatible prefix through `GameRoot::players[0].mouse_cursor`.
 The DirectInput/Win32 helper remains a free platform function, and the focused
 result stays 73.68%, 294/295 instructions, prefix 5/295, with the same 70 clean
 operands and one import-alignment mismatch.
+
+2026-07-13 rectangle ownership pass: `initialize_direct3d_renderer_defaults`
+proves the eight adjacent dwords are two complete Win32 rectangles, seeded from
+the integer-authored viewport dimensions before the uncaptured rectangle is
+expanded with `AdjustWindowRectEx`. `update_mouse` now consumes the shared
+`mouse_window_state.h` owners and remains byte-shape neutral at 73.68%, 294/295,
+with 70 clean operands and the same one alignment mismatch.

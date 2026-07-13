@@ -2783,63 +2783,25 @@
     },
     {
       "address": "0x4b7770",
-      "name": "g_mouse_captured_client_left",
+      "name": "g_mouse_captured_client_rect",
       "kind": "global",
       "aliases": [
-        "data_4b7770"
+        "data_4b7770",
+        "g_mouse_captured_client_left"
       ],
-      "size": "0x4",
-      "description": "Left client-rectangle offset subtracted by update_mouse when forwarding captured pointer bounds."
-    },
-    {
-      "address": "0x4b7774",
-      "name": "g_mouse_captured_client_top",
-      "kind": "global",
-      "aliases": [
-        "data_4b7774"
-      ],
-      "size": "0x4",
-      "description": "Top client-rectangle offset subtracted by update_mouse when forwarding captured pointer bounds."
+      "size": "0x10",
+      "description": "Captured-window client RECT initialized from the authored viewport; update_mouse subtracts its left/top origin when forwarding captured pointer bounds."
     },
     {
       "address": "0x4b7780",
-      "name": "g_mouse_uncaptured_clip_left",
+      "name": "g_mouse_uncaptured_clip_rect",
       "kind": "global",
       "aliases": [
-        "data_4b7780"
+        "data_4b7780",
+        "g_mouse_uncaptured_clip_left"
       ],
-      "size": "0x4",
-      "description": "Left clip-rectangle offset subtracted by update_mouse when clipping or forwarding uncaptured pointer bounds."
-    },
-    {
-      "address": "0x4b7784",
-      "name": "g_mouse_uncaptured_clip_top",
-      "kind": "global",
-      "aliases": [
-        "data_4b7784"
-      ],
-      "size": "0x4",
-      "description": "Top clip-rectangle offset subtracted by update_mouse when clipping or forwarding uncaptured pointer bounds."
-    },
-    {
-      "address": "0x4b7788",
-      "name": "g_mouse_uncaptured_clip_right",
-      "kind": "global",
-      "aliases": [
-        "data_4b7788"
-      ],
-      "size": "0x4",
-      "description": "Right clip-rectangle offset subtracted by update_mouse when clipping uncaptured pointer bounds."
-    },
-    {
-      "address": "0x4b778c",
-      "name": "g_mouse_uncaptured_clip_bottom",
-      "kind": "global",
-      "aliases": [
-        "data_4b778c"
-      ],
-      "size": "0x4",
-      "description": "Bottom clip-rectangle offset subtracted by update_mouse when clipping uncaptured pointer bounds."
+      "size": "0x10",
+      "description": "Uncaptured-window clip RECT initialized from the authored viewport and adjusted for the window frame; update_mouse uses all four bounds for clipping and pointer forwarding."
     },
     {
       "address": "0x4b7790",
@@ -2880,6 +2842,16 @@
       ],
       "size": "0x4",
       "description": "Authored viewport width converted during renderer default setup and used to seed mouse live X."
+    },
+    {
+      "address": "0x4a16d8",
+      "name": "g_windowed_adjust_style",
+      "kind": "global",
+      "aliases": [
+        "data_4a16d8"
+      ],
+      "size": "0x4",
+      "description": "Window style value 0x06cf0000 passed only to AdjustWindowRectEx while seeding the uncaptured mouse clip rectangle."
     },
     {
       "address": "0x4a1c4c",

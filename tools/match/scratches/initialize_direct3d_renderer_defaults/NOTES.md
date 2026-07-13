@@ -1,0 +1,15 @@
+# initialize_direct3d_renderer_defaults @ 0x411630
+
+Initializes the process renderer before Direct3D device creation.
+
+- The contiguous globals at `0x4b7770` and `0x4b7780` are recovered as two
+  Win32 `RECT` values: captured client bounds and uncaptured clip bounds. Both
+  start as the integer-authored 640x480 view; the latter is expanded through
+  `AdjustWindowRectEx` with the one-use style value `0x06cf0000`.
+- Clears the renderer's `Direct3D8*`, device pointer, multisample state, and
+  initialized byte, while seeding 640x480 requested dimensions, depth-stencil
+  format `0x50`, and creation flags `0x20`.
+- The dwords at `+0xbcb0/+0xbcb4` remain explicitly unknown: this function
+  writes `0` and `0x17`, but no other native consumer proves their semantics.
+
+Focused match is exact: 38/38 instructions with all 15 masked operands clean.
