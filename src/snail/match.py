@@ -10,6 +10,7 @@ the exact common instruction prefix before the first normalized mismatch.
 
 from __future__ import annotations
 
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field
 import difflib
 import hashlib
@@ -2353,7 +2354,119 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 7
+CACHE_VERSION = 8
+
+
+def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
+    return {
+        "operand_index": reference.operand_index,
+        "kind": reference.kind,
+        "source": reference.source,
+        "value": reference.value,
+        "text": reference.text,
+        "key": reference.key,
+        "explained": reference.explained,
+        "alternate_keys": list(reference.alternate_keys),
+        "jump_table_entries": (
+            list(reference.jump_table_entries)
+            if reference.jump_table_entries is not None
+            else None
+        ),
+        "alternate_jump_table_entries": [
+            list(entries) for entries in reference.alternate_jump_table_entries
+        ],
+        "audited_bytes": (
+            reference.audited_bytes.hex()
+            if reference.audited_bytes is not None
+            else None
+        ),
+        "local_data_bytes": (
+            reference.local_data_bytes.hex()
+            if reference.local_data_bytes is not None
+            else None
+        ),
+    }
+
+
+def _masked_reference_from_cache(payload: dict) -> MaskedReference:
+    return MaskedReference(
+        operand_index=payload["operand_index"],
+        kind=payload["kind"],
+        source=payload["source"],
+        value=payload["value"],
+        text=payload["text"],
+        key=payload["key"],
+        explained=payload["explained"],
+        alternate_keys=tuple(payload["alternate_keys"]),
+        jump_table_entries=(
+            tuple(payload["jump_table_entries"])
+            if payload["jump_table_entries"] is not None
+            else None
+        ),
+        alternate_jump_table_entries=tuple(
+            tuple(entries) for entries in payload["alternate_jump_table_entries"]
+        ),
+        audited_bytes=(
+            bytes.fromhex(payload["audited_bytes"])
+            if payload["audited_bytes"] is not None
+            else None
+        ),
+        local_data_bytes=(
+            bytes.fromhex(payload["local_data_bytes"])
+            if payload["local_data_bytes"] is not None
+            else None
+        ),
+    )
+
+
+def _masked_audit_cache_payload(audit: MaskedOperandAudit) -> list[dict]:
+    return [
+        {
+            "target_index": entry.target_index,
+            "candidate_index": entry.candidate_index,
+            "target_offset": entry.target_offset,
+            "candidate_offset": entry.candidate_offset,
+            "target_address": entry.target_address,
+            "candidate_address": entry.candidate_address,
+            "instruction": entry.instruction,
+            "target_references": [
+                _masked_reference_cache_payload(reference)
+                for reference in entry.target_references
+            ],
+            "candidate_references": [
+                _masked_reference_cache_payload(reference)
+                for reference in entry.candidate_references
+            ],
+            "status": entry.status,
+        }
+        for entry in audit.entries
+    ]
+
+
+def _masked_audit_from_cache(payload: list[dict]) -> MaskedOperandAudit:
+    return MaskedOperandAudit(
+        tuple(
+            MaskedOperandAuditEntry(
+                target_index=entry["target_index"],
+                candidate_index=entry["candidate_index"],
+                target_offset=entry["target_offset"],
+                candidate_offset=entry["candidate_offset"],
+                target_address=entry["target_address"],
+                candidate_address=entry["candidate_address"],
+                instruction=entry["instruction"],
+                target_references=tuple(
+                    _masked_reference_from_cache(reference)
+                    for reference in entry["target_references"]
+                ),
+                candidate_references=tuple(
+                    _masked_reference_from_cache(reference)
+                    for reference in entry["candidate_references"]
+                ),
+                status=entry["status"],
+            )
+            for entry in payload
+        )
+    )
 
 
 def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
@@ -2391,13 +2504,13 @@ def _scratch_cache_key(
     }
 
 
-def _load_cached_status(
+def _load_cached_match(
     config: ScratchConfig,
     image_path: Path,
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
     manifest_digest: str,
-) -> dict | None:
+) -> tuple[dict, MaskedOperandAudit] | None:
     import json
 
     cache_path = config.directory / "build/match-cache.json"
@@ -2414,7 +2527,31 @@ def _load_cached_status(
         manifest_digest=manifest_digest,
     ):
         return None
-    return cached.get("status")
+    status = cached.get("status")
+    audit_payload = cached.get("masked_operand_audit")
+    if not isinstance(status, dict) or not isinstance(audit_payload, list):
+        return None
+    try:
+        audit = _masked_audit_from_cache(audit_payload)
+    except (KeyError, TypeError, ValueError):
+        return None
+    return status, audit
+
+
+def _load_cached_status(
+    config: ScratchConfig,
+    image_path: Path,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    manifest_digest: str,
+) -> dict | None:
+    cached = _load_cached_match(
+        config,
+        image_path,
+        match_root,
+        manifest_digest=manifest_digest,
+    )
+    return cached[0] if cached is not None else None
 
 
 def _store_cached_status(
@@ -2424,6 +2561,7 @@ def _store_cached_status(
     match_root: Path = DEFAULT_MATCH_ROOT,
     *,
     manifest_digest: str,
+    audit: MaskedOperandAudit | None = None,
 ) -> None:
     import json
 
@@ -2439,9 +2577,187 @@ def _store_cached_status(
                     manifest_digest=manifest_digest,
                 ),
                 "status": status,
+                "masked_operand_audit": _masked_audit_cache_payload(
+                    audit or MaskedOperandAudit()
+                ),
             }
         )
     )
+
+
+def _match_precompiled_scratch_config(
+    config: ScratchConfig,
+    *,
+    image: LoadedImage,
+    manifest: FunctionSymbolManifest,
+    reference_manifest: ReferenceSymbolManifest,
+) -> tuple[int, MatchResult]:
+    start, end = resolve_function_extent(manifest, config.function, config.end_va)
+    target_data = image.function_bytes(start, end)
+    obj_path = config.directory / "build/scratch.obj"
+    obj = parse_coff_object(obj_path.read_bytes())
+    candidate = extract_object_function(
+        obj,
+        config.symbol or config.function,
+        reference_manifest=reference_manifest,
+    )
+    result = match_function(
+        target_data,
+        candidate,
+        image=image,
+        target_va=start,
+        manifest=manifest,
+        reference_manifest=reference_manifest,
+    )
+    return len(target_data), result
+
+
+def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
+    return {
+        "target_size": target_size,
+        "ratio": result.ratio,
+        "prefix_instructions": result.prefix_instructions,
+        "target_instructions": len(result.target_lines),
+        "candidate_instructions": len(result.candidate_lines),
+        "masked_ok": result.masked_operand_audit.ok_count,
+        "masked_unresolved": result.masked_operand_audit.unresolved_count,
+        "masked_mismatches": result.masked_operand_audit.mismatch_count,
+        "error": None,
+    }
+
+
+@dataclass(frozen=True, slots=True)
+class _ScratchMatchTask:
+    config: ScratchConfig
+    address: int
+
+
+@dataclass(frozen=True, slots=True)
+class _ScratchMatchOutcome:
+    config: ScratchConfig
+    address: int
+    fields: dict | None = None
+    audit: MaskedOperandAudit | None = None
+    error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class _MatchWorkerContext:
+    image: LoadedImage
+    manifest: FunctionSymbolManifest
+    reference_manifest: ReferenceSymbolManifest
+
+
+_MATCH_WORKER_CONTEXT: _MatchWorkerContext | None = None
+
+
+def _initialize_match_worker(context: _MatchWorkerContext) -> None:
+    global _MATCH_WORKER_CONTEXT
+    _MATCH_WORKER_CONTEXT = context
+
+
+def _match_precompiled_task_with_context(
+    task: _ScratchMatchTask,
+    context: _MatchWorkerContext,
+) -> _ScratchMatchOutcome:
+    try:
+        target_size, result = _match_precompiled_scratch_config(
+            task.config,
+            image=context.image,
+            manifest=context.manifest,
+            reference_manifest=context.reference_manifest,
+        )
+    except (OSError, RuntimeError, ValueError) as error:
+        return _ScratchMatchOutcome(
+            config=task.config,
+            address=task.address,
+            error=_summarize_error(error),
+        )
+    return _ScratchMatchOutcome(
+        config=task.config,
+        address=task.address,
+        fields=_scratch_status_fields(target_size, result),
+        audit=result.masked_operand_audit,
+    )
+
+
+def _match_precompiled_task(task: _ScratchMatchTask) -> _ScratchMatchOutcome:
+    if _MATCH_WORKER_CONTEXT is None:
+        raise RuntimeError("parallel match worker was not initialized")
+    return _match_precompiled_task_with_context(task, _MATCH_WORKER_CONTEXT)
+
+
+def _collect_uncached_match_outcomes(
+    uncached: list[tuple[ScratchConfig, int]],
+    *,
+    image: LoadedImage,
+    image_path: Path,
+    manifest: FunctionSymbolManifest,
+    reference_manifest: ReferenceSymbolManifest,
+    match_root: Path,
+    manifest_digest: str,
+    jobs: int,
+) -> list[_ScratchMatchOutcome]:
+    """Compile in threads, then perform CPU-heavy matching in worker processes."""
+    tasks = [_ScratchMatchTask(config, address) for config, address in uncached]
+
+    def compile_task(task: _ScratchMatchTask) -> _ScratchMatchTask | _ScratchMatchOutcome:
+        try:
+            compile_scratch(task.config, match_root)
+        except (OSError, RuntimeError, ValueError) as error:
+            return _ScratchMatchOutcome(
+                config=task.config,
+                address=task.address,
+                error=_summarize_error(error),
+            )
+        return task
+
+    if jobs == 1 or len(tasks) == 1:
+        compiled = list(map(compile_task, tasks))
+    else:
+        with ThreadPoolExecutor(max_workers=min(jobs, len(tasks))) as executor:
+            compiled = list(executor.map(compile_task, tasks))
+
+    outcomes_by_directory = {
+        item.config.directory: item
+        for item in compiled
+        if isinstance(item, _ScratchMatchOutcome)
+    }
+    match_tasks = [item for item in compiled if isinstance(item, _ScratchMatchTask)]
+    context = _MatchWorkerContext(image, manifest, reference_manifest)
+    if jobs == 1 or len(match_tasks) == 1:
+        matched = [
+            _match_precompiled_task_with_context(task, context) for task in match_tasks
+        ]
+    elif match_tasks:
+        try:
+            with ProcessPoolExecutor(
+                max_workers=min(jobs, len(match_tasks)),
+                initializer=_initialize_match_worker,
+                initargs=(context,),
+            ) as executor:
+                matched = list(executor.map(_match_precompiled_task, match_tasks))
+        except (NotImplementedError, PermissionError):
+            # Some restricted sandboxes cannot query/create POSIX semaphores.
+            matched = [
+                _match_precompiled_task_with_context(task, context)
+                for task in match_tasks
+            ]
+    else:
+        matched = []
+
+    for outcome in matched:
+        outcomes_by_directory[outcome.config.directory] = outcome
+        if outcome.fields is not None and outcome.audit is not None:
+            _store_cached_status(
+                outcome.config,
+                image_path,
+                outcome.fields,
+                match_root,
+                manifest_digest=manifest_digest,
+                audit=outcome.audit,
+            )
+    return [outcomes_by_directory[task.config.directory] for task in tasks]
 
 
 def collect_scratch_statuses(
@@ -2459,8 +2775,6 @@ def collect_scratch_statuses(
     disassembly, and diff while target-map or normalizer changes still
     invalidate old scores.
     """
-    from concurrent.futures import ThreadPoolExecutor
-
     if jobs < 1:
         raise ValueError("jobs must be positive")
 
@@ -2494,38 +2808,18 @@ def collect_scratch_statuses(
 
     image = load_image(image_path, manifest.image_base)
 
-    def match_uncached(item: tuple[ScratchConfig, int]) -> ScratchStatus:
-        config, address = item
-        try:
-            start, end = resolve_function_extent(manifest, config.function, config.end_va)
-            target_data = image.function_bytes(start, end)
-            obj_path = compile_scratch(config, match_root)
-            obj = parse_coff_object(obj_path.read_bytes())
-            candidate = extract_object_function(
-                obj,
-                config.symbol or config.function,
-                reference_manifest=reference_manifest,
-            )
-            result = match_function(
-                target_data,
-                candidate,
-                image=image,
-                target_va=start,
-                manifest=manifest,
-                reference_manifest=reference_manifest,
-            )
-            fields = {
-                "target_size": len(target_data),
-                "ratio": result.ratio,
-                "prefix_instructions": result.prefix_instructions,
-                "target_instructions": len(result.target_lines),
-                "candidate_instructions": len(result.candidate_lines),
-                "masked_ok": result.masked_operand_audit.ok_count,
-                "masked_unresolved": result.masked_operand_audit.unresolved_count,
-                "masked_mismatches": result.masked_operand_audit.mismatch_count,
-                "error": None,
-            }
-        except (ValueError, RuntimeError) as error:
+    matched = _collect_uncached_match_outcomes(
+        uncached,
+        image=image,
+        image_path=image_path,
+        manifest=manifest,
+        reference_manifest=reference_manifest,
+        match_root=match_root,
+        manifest_digest=manifest_digest,
+        jobs=jobs,
+    )
+    for outcome in matched:
+        if outcome.fields is None:
             fields = {
                 "target_size": 0,
                 "ratio": None,
@@ -2535,25 +2829,15 @@ def collect_scratch_statuses(
                 "masked_ok": 0,
                 "masked_unresolved": 0,
                 "masked_mismatches": 0,
-                "error": _summarize_error(error),
+                "error": outcome.error or "unknown error",
             }
         else:
-            _store_cached_status(
-                config,
-                image_path,
-                fields,
-                match_root,
-                manifest_digest=manifest_digest,
-            )
-        return ScratchStatus(config=config, address=address, **fields)
-
-    if jobs == 1 or len(uncached) == 1:
-        for status in map(match_uncached, uncached):
-            statuses_by_directory[status.config.directory] = status
-    else:
-        with ThreadPoolExecutor(max_workers=min(jobs, len(uncached))) as executor:
-            for status in executor.map(match_uncached, uncached):
-                statuses_by_directory[status.config.directory] = status
+            fields = outcome.fields
+        statuses_by_directory[outcome.config.directory] = ScratchStatus(
+            config=outcome.config,
+            address=outcome.address,
+            **fields,
+        )
 
     return [statuses_by_directory[config.directory] for config, _ in ordered]
 
@@ -2593,55 +2877,85 @@ def collect_masked_operand_issues(
     *,
     statuses: frozenset[str] = frozenset(("unresolved", "mismatch")),
     exact_only: bool = False,
+    jobs: int = DEFAULT_MATCH_JOBS,
 ) -> MaskedOperandAuditReport:
     """Collect detailed masked-operand audit issues across scratch matches.
 
-    Scratches that fail to compile or match are reported as failures instead
-    of aborting the whole audit; one broken scratch must not hide the rest.
+    Detailed results share the status cache and uncached scratches are compiled
+    and matched concurrently. Scratches that fail are reported instead of
+    aborting the whole audit; one broken scratch must not hide the rest.
     """
-    image = load_image(image_path, manifest.image_base)
-    reference_manifest = load_default_reference_symbol_manifest()
+    if jobs < 1:
+        raise ValueError("jobs must be positive")
+
+    manifest_digest = _function_manifest_cache_digest(manifest)
     by_name = {symbol.name: symbol for symbol in manifest.functions}
-    issues: list[ScratchMaskedOperandIssue] = []
-    failures: list[ScratchAuditFailure] = []
+    ordered: list[tuple[ScratchConfig, int]] = []
+    results_by_directory: dict[
+        Path, tuple[dict, MaskedOperandAudit] | ScratchAuditFailure
+    ] = {}
+    uncached: list[tuple[ScratchConfig, int]] = []
+
     for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
         config = load_scratch_config(conf_path.parent)
         address = by_name[config.function].address if config.function in by_name else 0
-        try:
-            start, end = resolve_function_extent(manifest, config.function, config.end_va)
-            target_data = image.function_bytes(start, end)
-            obj_path = compile_scratch(config, match_root)
-            obj = parse_coff_object(obj_path.read_bytes())
-            candidate = extract_object_function(
-                obj,
-                config.symbol or config.function,
-                reference_manifest=reference_manifest,
-            )
-            result = match_function(
-                target_data,
-                candidate,
-                image=image,
-                target_va=start,
-                manifest=manifest,
-                reference_manifest=reference_manifest,
-            )
-        except (ValueError, RuntimeError) as error:
-            failures.append(
-                ScratchAuditFailure(
-                    config=config, address=address, error=_summarize_error(error)
+        ordered.append((config, address))
+        cached = _load_cached_match(
+            config,
+            image_path,
+            match_root,
+            manifest_digest=manifest_digest,
+        )
+        if cached is not None:
+            results_by_directory[config.directory] = cached
+        else:
+            uncached.append((config, address))
+
+    if uncached:
+        image = load_image(image_path, manifest.image_base)
+        reference_manifest = load_default_reference_symbol_manifest()
+        matched = _collect_uncached_match_outcomes(
+            uncached,
+            image=image,
+            image_path=image_path,
+            manifest=manifest,
+            reference_manifest=reference_manifest,
+            match_root=match_root,
+            manifest_digest=manifest_digest,
+            jobs=jobs,
+        )
+        for outcome in matched:
+            if outcome.fields is None or outcome.audit is None:
+                results_by_directory[outcome.config.directory] = ScratchAuditFailure(
+                    config=outcome.config,
+                    address=outcome.address,
+                    error=outcome.error or "unknown error",
                 )
-            )
+            else:
+                results_by_directory[outcome.config.directory] = (
+                    outcome.fields,
+                    outcome.audit,
+                )
+
+    issues: list[ScratchMaskedOperandIssue] = []
+    failures: list[ScratchAuditFailure] = []
+    for config, address in ordered:
+        outcome = results_by_directory[config.directory]
+        if isinstance(outcome, ScratchAuditFailure):
+            failures.append(outcome)
             continue
-        if exact_only and result.ratio != 1.0:
+        fields, audit = outcome
+        ratio = fields["ratio"]
+        if exact_only and ratio != 1.0:
             continue
-        for entry in result.masked_operand_audit.entries:
+        for entry in audit.entries:
             if entry.status not in statuses:
                 continue
             issues.append(
                 ScratchMaskedOperandIssue(
                     config=config,
                     address=address,
-                    ratio=result.ratio,
+                    ratio=ratio,
                     entry=entry,
                 )
             )

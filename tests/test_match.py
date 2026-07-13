@@ -2322,6 +2322,49 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     assert load_status() is None
 
 
+def test_masked_operand_audit_cache_roundtrip() -> None:
+    from snail.match import (
+        MaskedOperandAudit,
+        MaskedOperandAuditEntry,
+        MaskedReference,
+        _masked_audit_cache_payload,
+        _masked_audit_from_cache,
+    )
+
+    reference = MaskedReference(
+        operand_index=1,
+        kind="memory",
+        source="object",
+        value=0x1234,
+        text="table+4",
+        key="lookup:table+4",
+        explained=True,
+        alternate_keys=("lookup:alias+4",),
+        jump_table_entries=(1, 2),
+        alternate_jump_table_entries=((3, 4),),
+        audited_bytes=b"\x01\x02",
+        local_data_bytes=b"\x03\x04",
+    )
+    audit = MaskedOperandAudit(
+        (
+            MaskedOperandAuditEntry(
+                target_index=2,
+                candidate_index=3,
+                target_offset=4,
+                candidate_offset=5,
+                target_address=0x401004,
+                candidate_address=5,
+                instruction="mov eax, ADDR",
+                target_references=(reference,),
+                candidate_references=(reference,),
+                status="mismatch",
+            ),
+        )
+    )
+
+    assert _masked_audit_from_cache(_masked_audit_cache_payload(audit)) == audit
+
+
 def test_scratch_include_headers_follow_transitive_local_graph(tmp_path: Path) -> None:
     from snail.match import ScratchConfig, _scratch_include_headers
 
@@ -2420,6 +2463,21 @@ def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
     )
     monkeypatch.setattr(match_module, "_store_cached_status", lambda *_args, **_kwargs: None)
 
+    class InlineProcessPool:
+        def __init__(self, *, initializer, initargs, **_kwargs) -> None:
+            initializer(*initargs)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args) -> None:
+            return None
+
+        def map(self, function, items):
+            return map(function, items)
+
+    monkeypatch.setattr(match_module, "ProcessPoolExecutor", InlineProcessPool)
+
     statuses = collect_scratch_statuses(manifest, image_path, match_root, jobs=2)
 
     assert [status.config.function for status in statuses] == ["first", "second"]
@@ -2431,8 +2489,217 @@ def test_match_status_jobs_must_be_positive() -> None:
 
     parser = build_parser()
     assert parser.parse_args(["match", "status", "-j", "3"]).jobs == 3
+    assert parser.parse_args(["match", "audit", "-j", "4"]).jobs == 4
     with pytest.raises(SystemExit):
         parser.parse_args(["match", "status", "-j", "0"])
+    with pytest.raises(SystemExit):
+        parser.parse_args(["match", "audit", "-j", "0"])
+
+
+def test_masked_operand_audit_uses_cached_detailed_match(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import snail.match as match_module
+    from snail.match import (
+        MaskedOperandAudit,
+        MaskedOperandAuditEntry,
+        MaskedReference,
+        ScratchConfig,
+        _function_manifest_cache_digest,
+        _store_cached_status,
+        collect_masked_operand_issues,
+    )
+
+    match_root = tmp_path / "match"
+    scratch_dir = match_root / "scratches/foo"
+    scratch_dir.mkdir(parents=True)
+    (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
+    (scratch_dir / "scratch.cpp").write_text("void foo() {}\n")
+    image_path = tmp_path / "image.exe"
+    image_path.write_bytes(b"MZ")
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="image.exe",
+        reference_target="image.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="foo"),
+            FunctionSymbol(address=0x1010, name="sentinel"),
+        ),
+    )
+    config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    reference = MaskedReference(0, "immediate", "image", 0x2000, "ADDR", None, False)
+    audit = MaskedOperandAudit(
+        (
+            MaskedOperandAuditEntry(
+                0,
+                0,
+                1,
+                2,
+                0x1001,
+                2,
+                "push ADDR",
+                (reference,),
+                (reference,),
+                "unresolved",
+            ),
+        )
+    )
+    fields = {
+        "target_size": 16,
+        "ratio": 1.0,
+        "prefix_instructions": 1,
+        "target_instructions": 1,
+        "candidate_instructions": 1,
+        "masked_ok": 0,
+        "masked_unresolved": 1,
+        "masked_mismatches": 0,
+        "error": None,
+    }
+    _store_cached_status(
+        config,
+        image_path,
+        fields,
+        match_root,
+        manifest_digest=_function_manifest_cache_digest(manifest),
+        audit=audit,
+    )
+    monkeypatch.setattr(
+        match_module,
+        "load_image",
+        lambda *_args: pytest.fail("cache hit should not load or match the image"),
+    )
+
+    report = collect_masked_operand_issues(manifest, image_path, match_root)
+
+    assert report.clean is False
+    assert len(report.issues) == 1
+    assert report.issues[0].entry == audit.entries[0]
+
+
+def test_masked_operand_audit_runs_cache_misses_in_parallel(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import threading
+    import time
+
+    import snail.match as match_module
+    from concurrent.futures import ThreadPoolExecutor
+
+    from snail.match import (
+        MaskedOperandAudit,
+        _ScratchMatchOutcome,
+        collect_masked_operand_issues,
+    )
+
+    match_root = tmp_path / "match"
+    for name in ("first", "second"):
+        scratch_dir = match_root / f"scratches/{name}"
+        scratch_dir.mkdir(parents=True)
+        (scratch_dir / "scratch.conf").write_text(f"FUNCTION={name}\n")
+        (scratch_dir / "scratch.cpp").write_text(f"void {name}() {{}}\n")
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="image.exe",
+        reference_target="image.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="first"),
+            FunctionSymbol(address=0x1010, name="second"),
+            FunctionSymbol(address=0x1020, name="sentinel"),
+        ),
+    )
+    image_path = tmp_path / "image.exe"
+    image_path.write_bytes(b"MZ")
+    active = 0
+    peak_active = 0
+    lock = threading.Lock()
+
+    def match_scratch(task) -> _ScratchMatchOutcome:
+        nonlocal active, peak_active
+        with lock:
+            active += 1
+            peak_active = max(peak_active, active)
+        time.sleep(0.05)
+        with lock:
+            active -= 1
+        return _ScratchMatchOutcome(
+            config=task.config,
+            address=task.address,
+            fields={
+                "target_size": 16,
+                "ratio": 1.0,
+                "prefix_instructions": 0,
+                "target_instructions": 0,
+                "candidate_instructions": 0,
+                "masked_ok": 0,
+                "masked_unresolved": 0,
+                "masked_mismatches": 0,
+                "error": None,
+            },
+            audit=MaskedOperandAudit(),
+        )
+
+    class ThreadedProcessPool:
+        def __init__(self, *, max_workers, initializer, initargs) -> None:
+            self.max_workers = max_workers
+            initializer(*initargs)
+
+        def __enter__(self):
+            self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
+            return self
+
+        def __exit__(self, *_args) -> None:
+            self.executor.shutdown()
+
+        def map(self, function, items):
+            return self.executor.map(function, items)
+
+    monkeypatch.setattr(
+        match_module,
+        "load_image",
+        lambda *_args: LoadedImage(mapped=b"", image_base=0x1000, size_of_image=0),
+    )
+    monkeypatch.setattr(match_module, "compile_scratch", lambda *_args: tmp_path / "scratch.obj")
+    monkeypatch.setattr(match_module, "_match_precompiled_task", match_scratch)
+    monkeypatch.setattr(match_module, "ProcessPoolExecutor", ThreadedProcessPool)
+    monkeypatch.setattr(match_module, "_store_cached_status", lambda *_args, **_kwargs: None)
+
+    report = collect_masked_operand_issues(manifest, image_path, match_root, jobs=2)
+
+    assert report.clean
+    assert peak_active == 2
+
+    class BlockedProcessPool:
+        def __init__(self, **_kwargs) -> None:
+            raise PermissionError("sandbox blocks POSIX semaphores")
+
+    active = 0
+    peak_active = 0
+    monkeypatch.setattr(match_module, "ProcessPoolExecutor", BlockedProcessPool)
+    monkeypatch.setattr(
+        match_module,
+        "_match_precompiled_task_with_context",
+        lambda task, _context: match_scratch(task),
+    )
+
+    fallback_report = collect_masked_operand_issues(
+        manifest, image_path, match_root, jobs=2
+    )
+
+    assert fallback_report.clean
+    assert peak_active == 1
 
 
 def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:

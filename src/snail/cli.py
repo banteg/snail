@@ -634,6 +634,13 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print detailed audit entries as JSON.",
     )
+    match_audit_parser.add_argument(
+        "-j",
+        "--jobs",
+        type=_positive_int,
+        default=DEFAULT_MATCH_JOBS,
+        help=f"Maximum concurrent scratch jobs (default: {DEFAULT_MATCH_JOBS}).",
+    )
 
     match_idioms_parser = match_subparsers.add_parser(
         "idioms",
@@ -888,6 +895,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             image_path,
             statuses=audit_statuses,
             exact_only=args.exact_only,
+            jobs=args.jobs,
         )
         if args.json:
             print(
