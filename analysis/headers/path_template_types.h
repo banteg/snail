@@ -32,6 +32,12 @@ typedef struct Color4f {
     float a;
 } Color4f;
 
+typedef struct TwinkleManager {
+    uint8_t twinkles[0xf0];
+    int32_t active_state;
+    int32_t twinkle_count;
+} TwinkleManager;
+
 typedef struct ColorBGRA8 {
     uint8_t b;
     uint8_t g;
@@ -384,7 +390,7 @@ typedef struct FrontendWidget {
     int32_t texture_hit_test_sprite;
     uint8_t _pad_68[0x14];
     int32_t widget_type;
-    uint8_t _pad_80[0xf8];
+    TwinkleManager twinkle_manager;
     float sprite_shadow_offset;
     float slider_position_target;
     float slider_position_current;

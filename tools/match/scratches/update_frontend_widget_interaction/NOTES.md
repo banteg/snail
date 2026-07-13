@@ -119,3 +119,11 @@ Together these corrections lift the focused result from `64.35%` (`646/647`)
 to `68.32%` (`644/647`) and improve the masked audit from
 `83 ok / 1 mismatch` to `93 ok / 0 mismatch`. The one-instruction prefix still
 reflects the documented extra saved `ebx`; no fake register coercion was kept.
+
+2026-07-13 embedded twinkle ownership: native forms `ecx = this + 0x80` before
+the exact `update_twinkle_manager` call. That manager's exact helper reads
+`active_state +0xf0`, `twinkle_count +0xf4`, and walks five 0x30-byte inline
+twinkles, proving a 0xf8-byte `TwinkleManager` subobject at widget
+`+0x80..+0x177`. It ends exactly where the independently recovered
+`sprite_shadow_offset +0x178` begins. The shared widget and decompiler views
+now expose that owned subobject instead of anonymous padding.

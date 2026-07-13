@@ -31,6 +31,7 @@ FRONTEND_WIDGET_FIELDS = (
     ("0x60", "background_texture_id", "int32_t"),
     ("0x64", "texture_hit_test_sprite", "int32_t"),
     ("0x7c", "widget_type", "int32_t"),
+    ("0x80", "twinkle_manager", "TwinkleManager"),
     ("0x178", "sprite_shadow_offset", "float"),
     ("0x17c", "slider_position_target", "float"),
     ("0x180", "slider_position_current", "float"),

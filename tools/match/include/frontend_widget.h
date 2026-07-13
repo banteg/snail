@@ -6,6 +6,7 @@
 
 #include "sprite.h"
 #include "tooltip_state.h"
+#include "twinkle_manager.h"
 
 // Semantic cRBorder view over BorderRecord storage. Its first 0x10 bytes are
 // the exact BodNode intrusive-list prefix; later front-end fields deliberately
@@ -71,7 +72,7 @@ public:
     int sprite_extend_texture_c; // +0x068, stored by border_sprite_extend
     char unknown_06c[0x7c - 0x06c];
     int widget_type; // +0x7c, border style/font preset
-    char unknown_080[0x178 - 0x080];
+    TwinkleManager twinkle_manager; // +0x080, five inline twinkles and manager state
     float sprite_shadow_offset; // +0x178, optional second sprite draw offset
     union {
         float slider_value;

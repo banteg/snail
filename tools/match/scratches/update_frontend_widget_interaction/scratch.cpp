@@ -191,7 +191,7 @@ update_after_input:
             ((BorderManager*)(g_game_base + 0xb4c))->activate_all_borders();
     }
 
-    ((TwinkleManager*)(self + 0x80))->update_twinkle_manager();
+    twinkle_manager.update_twinkle_manager();
     ((FrontendWidgetTooltip*)(self + 0x28c))->update_tooltip();
     char render_hot_text = (char)((*(unsigned int*)(self + 0x1a0) >> 8) & 1);
     layout_frontend_widget();
