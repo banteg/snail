@@ -2,6 +2,11 @@
 
 #include "track_attachment.h"
 
+inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+}
+
 bool Path::is_point_inside_track_attachment(
     Vector3 probe, Vector3 swept_motion, TrackRowCell* cell)
 {
@@ -11,11 +16,6 @@ bool Path::is_point_inside_track_attachment(
     float anchor_x = anchor.x;
     float anchor_y = anchor.y;
     float anchor_z = anchor.z;
-    float delta_x;
-    float delta_y;
-    float delta_z;
-    float origin_y;
-    float origin_z;
 
     int idx = segment_count - 1;
     while (idx >= 0) {
@@ -23,14 +23,7 @@ bool Path::is_point_inside_track_attachment(
         sample_origin.y = anchor_y + secondary_samples[idx].transform.position.y;
         TransformMatrix* inverse_matrix = &secondary_samples[idx].inverse_matrix;
         sample_origin.z = anchor_z + secondary_samples[idx].transform.position.z;
-        origin_y = sample_origin.y;
-        origin_z = sample_origin.z;
-        delta_z = probe.z;
-        delta_z -= origin_z;
-        delta_y = probe.y;
-        delta_y -= origin_y;
-        delta_x = probe.x - sample_origin.x;
-        local = Vector3(delta_x, delta_y, delta_z);
+        local = probe - sample_origin;
         local.rotate_vector_by_matrix(inverse_matrix);
 
         if ((float)(width_cells / -2) - 0.300000012f < local.x

@@ -1414,7 +1414,7 @@
     {
       "address": "0x42ca90",
       "name": "is_point_inside_track_attachment",
-      "description": "Tests whether one probe/swept-motion pair lies inside the selected attachment template cell by constructing a local Z/Y/X delta and rotating it through each inverse sample matrix. Android retains `cRPath::SearchPos` by name, and iOS Path.o names the corresponding helper `cRPath::SearchPos(tVector, tVector, cRSubLoc*)`."
+      "description": "Tests whether one by-value probe lies inside a borrowed attachment cell by subtracting each anchored secondary-sample origin as a real vector expression and rotating the result through the sample inverse matrix. Android retains `cRPath::SearchPos` by name, iOS Path.o gives `cRPath::SearchPos(tVector, tVector, cRSubLoc*)`, and the exact Windows candidate confirms that the second by-value vector remains ABI-owned even though this split does not read it."
     },
     {
       "address": "0x42cbf0",

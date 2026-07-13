@@ -1798,8 +1798,8 @@
       "windows_name": "is_point_inside_track_attachment",
       "ios_symbol": "cRPath::SearchPos(tVector, tVector, cRSubLoc*)",
       "source_object": "Path.o",
-      "confidence": "medium",
-      "notes": "Point-in-template test is the closest Windows split of the iOS path-position search helper."
+      "confidence": "high",
+      "notes": "Android retains the SearchPos name and evaluates the local probe subtraction in the same vector-expression order. The byte-identical Windows candidate confirms the two by-value vectors, borrowed TrackRowCell pointer, bool return, and Path ownership; the second vector remains ABI-owned but unused in this platform split."
     },
     {
       "address": "0x42cbf0",
