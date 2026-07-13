@@ -1101,7 +1101,10 @@ typedef struct SubgameRuntime {
     BannerPool banners;
     uint8_t _pad_359140[0x3bb764 - 0x359140];
     Player player;
-    uint8_t _pad_3bfac8[0xff25d0 - 0x3bfac8];
+    TrackRowCell runtime_cells[3200][8];
+    TrackAttachmentRuntimeRow runtime_rows[3200];
+    uint8_t _pad_68b4c8[0xfd2b10 - 0x68b4c8];
+    SubSolution current_high_score_record;
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];

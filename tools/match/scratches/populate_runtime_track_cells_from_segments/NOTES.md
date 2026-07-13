@@ -322,3 +322,19 @@ Binary Ninja declaration preview verifies `ReplayRunRecord == 0x06`,
 database. This is an analysis ownership correction only; focused Wibo remains
 the honest 28.25%, 1190/1245-instruction baseline with 57 clean operands and
 the existing glyph-table mismatch.
+
+## Runtime storage closure (2026-07-13)
+
+The same analysis owner now replaces the anonymous `+0x3bfac8..+0xff25d0`
+range with the three independently measured embedded stores:
+
+- `TrackRowCell runtime_cells[3200][8]` at `+0x3bfac8`, ending at `+0x5ccac8`;
+- `TrackAttachmentRuntimeRow runtime_rows[3200]` at `+0x5ccac8`, ending at
+  `+0x68b4c8`; and
+- the working `SubSolution current_high_score_record` at `+0xfd2b10`, ending
+  exactly at the replay-launch flags at `+0xff25d0`.
+
+Binary Ninja preview keeps the enclosing `SubgameRuntime` size at 0x1272838
+while exposing those owned arrays and record, then reverts. No matcher source
+was reshaped, so the focused 28.25% baseline and honest glyph-table mismatch
+remain unchanged.
