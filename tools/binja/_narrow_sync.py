@@ -12,6 +12,7 @@ SPILL_PATH_RE = re.compile(r"^path:\s+(?P<path>.+)$", re.MULTILINE)
 STRUCT_FIELD_RE = re.compile(
     r"^(?P<offset>0x[0-9a-fA-F]+):\s+(?P<type>.+?)\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)$"
 )
+STRUCT_SIZE_RE = re.compile(r"^struct\s+\S+\s+//\s+size=(?P<size>0x[0-9a-fA-F]+|\d+)$", re.MULTILINE)
 
 FieldUpdate = tuple[str, str, str]
 ProtoUpdate = tuple[str, str]
@@ -57,6 +58,13 @@ def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[st
     }
 
 
+def parse_struct_layout_size(layout: str) -> int | None:
+    match = STRUCT_SIZE_RE.search(layout)
+    if match is None:
+        return None
+    return int(match.group("size"), 0)
+
+
 def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
     try:
         result = run_bn(
@@ -71,7 +79,16 @@ def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
         )
     except RuntimeError:
         return False
-    return isinstance(result, dict) and isinstance(result.get("layout"), str)
+    if not isinstance(result, dict):
+        return False
+    layout = result.get("layout")
+    if not isinstance(layout, str):
+        return False
+    # Binary Ninja reports a forward declaration as a zero-sized struct. It is
+    # not sufficient for replay: treating it as present causes the authoritative
+    # header import to be skipped forever, leaving every owner pointer opaque.
+    size = parse_struct_layout_size(layout)
+    return size is not None and size > 0
 
 
 def types_declare_if_missing(
