@@ -2156,7 +2156,7 @@
     {
       "address": "0x4356f0",
       "name": "harmonize_center_lane_floor_slide_variants",
-      "description": "Normalizes center-lane floor and slide seam variants after the main edge pass. Cross-port Android and iOS symbols match this pass to `cRSubGame::SlideSmoothTrack()`."
+      "description": "Normalizes center-lane floor and slide seam variants after the main edge pass: a floor current cell beside a slide neighbor is promoted to the matching slide object, while a slide current cell beside a floor neighbor is restored to the floor object. Cross-port Android and iOS symbols match this pass to `cRSubGame::SlideSmoothTrack()`."
     },
     {
       "address": "0x435a80",

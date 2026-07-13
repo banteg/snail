@@ -30,3 +30,27 @@
   use their typed `RootBodCatalog` banks. This ownership-only substitution keeps
   the honest 58.98% result and all 24 operands clean; the documented cursor and
   register-shape residual remains.
+
+## 2026-07-14 predicate contract correction
+
+The retained scratch had drifted back to the historical reversed predicate
+labels despite the 2026-06-21 note claiming the correction. Native calls
+`is_sub_loc_floor` at `0x435770`/`0x435901` before replacing the current floor
+object with its slide variant, and calls `is_sub_loc_slide` at
+`0x43582b`/`0x4359bc` before the reverse replacement. Android
+`cRSubGame::SlideSmoothTrack()` independently preserves the same four
+current/neighbor contracts.
+
+The source now follows that behavior in both row-phase arms:
+
+- floor current plus slide neighbor (or the authored special tile) promotes
+  floor objects to slide objects;
+- slide current plus floor neighbor restores slide objects to floor objects.
+
+Focused instruction similarity remains 58.98% (`225/226`, prefix `9`). The
+masked audit changes from 24 clean to 20 clean plus four mismatches because the
+sequence aligner pairs each target call with the other same-shaped candidate
+call across the still-unresolved typed-cell/base-offset block. Direct target
+addresses and the Android body prove the corrected call order; retaining the
+reversed semantics merely to make those four aligned references green would
+be fakematching.
