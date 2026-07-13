@@ -7,7 +7,7 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-runtime-grid high-score and segment-rate slices: 28.25%, 1190/1245 candidate
+runtime-grid high-score, segment-rate, and row-event ownership slices: 29.27%, 1208/1245 candidate
 instructions (`tools/match/match.sh
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
@@ -347,3 +347,18 @@ three ramp edges, and pillar 0. The spelling retains the byte-shaped switch and
 runtime-cell cursors that VC6 needs for the established source shape. Focused
 Wibo remains 28.25% (1,190/1,245), with 57 clean operands and the single known
 glyph jump-table layout mismatch.
+
+## Completed-segment event ownership (2026-07-13)
+
+The builder stamps each runtime `SubRow::row_event_id +0xf0` from a local
+completed-segment event-definition index. That index advances after the last
+row of each segment. Mode 3 is the sole exception: its synthetic Start and Last
+blocks set a `first_or_last_row` latch and suppress the advance, while ordinary
+mode-3 segments still advance it.
+
+The scratch previously recovered the latch assignments but then cleared the
+latch before every lane pass and never advanced the event owner. Keeping the
+latch for the selected segment and restoring the native tail condition recovers
+the 0x44-byte native frame and improves focused Wibo from 28.25% (1,190/1,245)
+to 29.27% (1,208/1,245). The only masked-operand mismatch remains the visible
+glyph jump-table layout difference.

@@ -348,7 +348,7 @@ struct SubRow {                          // stride 0xf4
     BodBase attachment_body;              // +0xb0, embedded attachment/fringe row actor
     float ring_speed;                     // +0xe8, authored ring/effect rate source
     SubSegment* source_segment;           // +0xec, borrowed embedded subsegment
-    int row_event_id;                     // +0xf0, segment-definition/message index
+    int row_event_id;                     // +0xf0, completed-segment event-definition index
 };
 
 typedef SubRow TrackAttachmentRuntimeRow;

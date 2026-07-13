@@ -321,7 +321,6 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)row_record |= 0x1000;
         *(int*)(row_record + 0xe8) = *(int*)(authored_row + 0x34);
 
-        first_or_last_row = 0;
         char attachment_entry_installed = 0;
         for (int lane = 0; lane < 8; ++lane) {
             int authored_lane;
@@ -691,6 +690,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             }
         }
         ++segment_row;
+        if (segment_row >= ((SubSegment*)active_segment)->row_count
+            && (level_mode != 3 || first_or_last_row == 0)) {
+            ++row_event_owner;
+        }
     }
 
     (void)trampoline_counter;
