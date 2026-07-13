@@ -317,3 +317,16 @@ per-member ownership distinction that the `PathPair` container alone could not
 express. The focused bootstrap rises from 30.58% (1,973 candidate instructions)
 to 33.02% (2,155/5,411), with 662 clean masked operands and unchanged problem
 counts.
+
+## 2026-07-13 loop-out path family
+
+The next authored family fills mirrored `LOOPOUT` pairs in native order rather
+than array order: pair `25` uses `(3,4,1)`, pair `27` uses `(5,4,1)`, and pair
+`26` uses `(3,3,1)`. All three own the standard Slide0/Back/VeryDark surfaces
+and independent primary and secondary render objects; the secondary geometry
+is produced by mirroring the primary before both records build their fringe
+body.
+
+This family raises the focused bootstrap from 33.02% (2,155 candidate
+instructions) to 34.49% (2,284/5,411), with clean masked operands increasing
+from 662 to 707 and the existing problem counts unchanged.
