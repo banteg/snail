@@ -382,6 +382,17 @@
       "description": "Pointer to the 0x1c-byte temporary object render vertex records used while build_object_texture_group_buffers appends/de-duplicates grouped vertices and uploads the D3D vertex buffer."
     },
     {
+      "address": "0x503308",
+      "name": "g_temp_colour",
+      "kind": "global",
+      "aliases": [
+        "GTempColour",
+        "data_503308"
+      ],
+      "size": "0x10",
+      "description": "Exact 16-byte Color4f owner constructed during CRT startup. Symbol-preserving iOS builds retain the corresponding `GTempColour` global at the same exact extent before `gEdgeStore`; neither port exposes a stronger semantic consumer."
+    },
+    {
       "address": "0x503290",
       "name": "g_loading_bar",
       "kind": "global",

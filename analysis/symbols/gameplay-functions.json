@@ -1543,6 +1543,16 @@
       "name": "request_object_vertex_colours"
     },
     {
+      "address": "0x42f8a0",
+      "name": "initialize_global_temp_colour_thunk",
+      "description": "CRT startup thunk for the adjacent `GTempColour` constructor body; `.CRT$XCU` entry 0x4a1028 points here."
+    },
+    {
+      "address": "0x42f8b0",
+      "name": "initialize_global_temp_colour",
+      "description": "Runs the folded no-op Color4f constructor for the 16-byte global at `data_503308`. The matching symbol-preserving iOS owner is `GTempColour`, also exactly 16 bytes before its next global."
+    },
+    {
       "address": "0x42f8c0",
       "name": "request_object_facequads",
       "description": "Ensures one render object has the requested face-quad storage; iOS RObject.o names this `cRObject::RequestFaceQuads(int)`."

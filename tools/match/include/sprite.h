@@ -29,6 +29,9 @@ struct Color4f {
     float a; // +0x0c
 };
 
+// Windows counterpart of the symbol-preserving iOS `GTempColour` owner.
+extern Color4f g_temp_colour; // data_503308
+
 struct ColorBGRA8 {
     ColorBGRA8* noop_this_constructor();
     ColorBGRA8* pack_color_rgba_u8(Color4f* color); // @ 0x44dbf0
