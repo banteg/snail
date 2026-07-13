@@ -342,3 +342,21 @@ owned primary, secondary, and fringe render bodies.
 The focused bootstrap rises from 34.49% (2,284 candidate instructions) to
 36.46% (2,460/5,411), with clean masked operands increasing from 707 to 767
 and the existing problem counts unchanged.
+
+## 2026-07-13 hill, valley, and S-bend profiles
+
+The following seven mirrored pairs form one native undulation band:
+
+1. rising `HILL_VALLEY` pairs `8`, `10`, and `9`, covering width `8` centered,
+   width `4` uncentered, and width `4` centered at height `4` and length `20`;
+2. pair `14`, an `SBEND` with width/height `8`, z amplitude `14`, and Track0 on
+   both main surfaces; and
+3. descending `HILL_VALLEY` pairs `11`, `13`, and `12`, using the same width and
+   centering pattern at height `-4` and length `20`.
+
+The wide hill/valley records use Slide0 on both main surfaces, while the two
+rising width-4 variants retain Back as the secondary surface. All seven own
+independent primary and mirrored secondary render bodies plus two fringe
+bodies. The focused bootstrap rises from 36.46% (2,460 candidate instructions)
+to 39.61% (2,768/5,411), with clean masked operands increasing from 767 to 870
+and the existing problem counts unchanged.
