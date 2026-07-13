@@ -701,6 +701,11 @@
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
     },
     {
+      "address": "0x411d70",
+      "name": "release_global_direct3d_renderer_resources",
+      "description": "Loads the process-owned Direct3D renderer singleton and tail-calls its renderer-resource teardown method for window/input failure and shutdown paths."
+    },
+    {
       "address": "0x411d80",
       "name": "uninitialize_input_devices",
       "description": "Shuts down the live DirectInput stack by releasing the enumerated controllers, keyboard input, mouse device, and shared DirectInput interface handles."

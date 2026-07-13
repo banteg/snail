@@ -70,3 +70,14 @@ extent.
   function entry/layout, so the source-truer branchless ternary remains. The
   focused baseline stays 87.88%, 266/287, with 53 clean operands and one honest
   table mismatch.
+
+2026-07-13 function-boundary recovery:
+
+- The old tracked extent ran through the resolution jump table and alignment
+  into `release_global_direct3d_renderer_resources` at `0x411d70`. Binary Ninja
+  confirms that address is a distinct two-instruction wrapper with four callers,
+  not a cleanup thunk owned by this function.
+- Promoting the wrapper to the gameplay function manifest gives this initializer
+  its honest next-function boundary. The compiler-owned resolution table remains
+  separately curated and content-audited rather than being modeled as source
+  instructions.

@@ -240,6 +240,15 @@
       "description": "Initializes the Direct3D renderer wrapper defaults, window-rect bookkeeping, presentation dimensions, and inactive device/interface slots before device creation."
     },
     {
+      "address": "0x4116f0",
+      "name": "release_direct3d_renderer_resources",
+      "kind": "function",
+      "aliases": [
+        "j_sub_411960"
+      ],
+      "description": "Direct3DRenderer member teardown entry point tail-called by the global resource-release wrapper; it forwards the live renderer receiver to the device/interface release body."
+    },
+    {
       "address": "0x4118b0",
       "name": "reset_direct3d_render_state",
       "kind": "function",
