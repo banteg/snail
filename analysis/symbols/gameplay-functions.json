@@ -3183,7 +3183,8 @@
     },
     {
       "address": "0x44bc50",
-      "name": "update_mouse"
+      "name": "update_mouse",
+      "description": "Polls the DirectInput mouse through a 20-byte DIMOUSESTATE2-compatible owner, accumulates and clamps live pointer coordinates, selects captured or uncaptured Win32 clip rectangles, and forwards wheel/button state into InputControllerSlot 0."
     },
     {
       "address": "0x44c050",

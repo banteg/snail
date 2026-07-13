@@ -1,6 +1,6 @@
 # update_mouse
 
-First scratch for `update_mouse @ 0x44bc50`.
+Exact scratch for `update_mouse @ 0x44bc50`.
 
 The helper polls the DirectInput mouse device, updates the shared live mouse
 coordinates, clips the system cursor against the active client rectangle, and
@@ -19,12 +19,11 @@ the captured-client and uncaptured-clip Win32 `RECT` globals.
 - The live-coordinate clamps use the native `< 0.0f` then `> max` shape. The
   equivalent `>= 0.0f` outer test inverted the branch layout and reduced the
   match.
-- The DirectInput acquire retry is retained as ordinary source. Native's
-  scheduling differs in the first retry block, but the recovered behavior is
-  the expected `Acquire` loop while the mouse device reports input lost.
+- The DirectInput acquire retry is retained as ordinary source: `Acquire`
+  repeats while the mouse device reports input lost.
 
-Focused matcher result: 73.68%, 294 candidate instructions versus 295 target
-instructions, 5-instruction prefix, and 70 clean masked operands.
+Focused matcher result: 100.00%, 295/295 instructions, full prefix, and 81
+clean masked operands.
 
 The former nine unresolved masked operands were the mouse client/clip offset
 globals at `0x4b7770..0x4b778c`; those now resolve cleanly. The remaining
@@ -52,3 +51,24 @@ the integer-authored viewport dimensions before the uncaptured rectangle is
 expanded with `AdjustWindowRectEx`. `update_mouse` now consumes the shared
 `mouse_window_state.h` owners and remains byte-shape neutral at 73.68%, 294/295,
 with 70 clean operands and the same one alignment mismatch.
+
+## 2026-07-13 DirectInput and clip-lifetime closure
+
+- The 20-byte state passed to `GetDeviceState` is the SDK `DIMOUSESTATE2`
+  layout: three signed motion/wheel dwords followed by eight button bytes. It
+  now lives in the shared DirectInput header as `DirectInputMouseState` rather
+  than a scratch-local anonymous record.
+- Native clears that complete state owner before polling. Replacing five
+  field stores with `memset(&state, 0, sizeof(state))` recovers the vtable-load
+  schedule and lifts the focused result from 73.68% to 97.97%, while removing
+  the spurious Win32 import-alignment mismatch.
+- The failed window/client-rectangle path stores the four zero fields in the
+  native bottom/left/right/top order. A whole-`Rect` `memset` regressed to
+  59.50% by changing saved-register ownership and was rejected.
+- The non-fullscreen captured branch falls through the uncaptured rectangle
+  construction and takes the captured/null clip path as the alternate edge.
+  Spelling that query as `if (!is_mouse_captured())` recovers the native
+  borrowed-rectangle lifetime and closes the remaining branch exactly.
+- Final focused Wibo is 100.00% (`295/295`, full prefix), with all 81 masked
+  operands resolved and equal. No register hints, volatile state, or dummy
+  control flow are used.

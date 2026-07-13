@@ -1,6 +1,17 @@
 #ifndef DIRECT_INPUT_VIEW_H
 #define DIRECT_INPUT_VIEW_H
 
+// SDK DIMOUSESTATE2 layout passed to GetDeviceState for the mouse device.
+struct DirectInputMouseState {
+    int x;
+    int y;
+    int wheel;
+    unsigned char buttons[8];
+};
+
+typedef char DirectInputMouseState_must_be_0x14[
+    (sizeof(DirectInputMouseState) == 0x14) ? 1 : -1];
+
 // Partial SDK-style C++ COM views for IDirectInput8A/IDirectInputDevice8A.
 struct DirectInputDevice {
     virtual int __stdcall QueryInterface(void* iid, void** out_object) = 0;

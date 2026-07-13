@@ -5,12 +5,7 @@
 #include "mouse_window_state.h"
 #include "win32_window_state.h"
 
-struct DirectInputMouseState {
-    int x;
-    int y;
-    int wheel;
-    unsigned char buttons[8];
-};
+#include <string.h>
 
 extern "C" __declspec(dllimport) int __stdcall GetWindowRect(HWND hwnd, Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall GetClientRect(HWND hwnd, Rect* rect);
@@ -50,11 +45,7 @@ int update_mouse(HWND hwnd)
     Rect clip_rect;
 
     if (g_mouse_device != 0) {
-        state.x = 0;
-        state.y = 0;
-        state.wheel = 0;
-        *(int*)&state.buttons[0] = 0;
-        *(int*)&state.buttons[4] = 0;
+        memset(&state, 0, sizeof(state));
 
         if (g_mouse_device->GetDeviceState(20, &state) < 0) {
             while (g_mouse_device->Acquire() == 0x8007001e) {
@@ -63,15 +54,15 @@ int update_mouse(HWND hwnd)
     }
 
     if (!GetWindowRect(hwnd, &window_rect)) {
-        window_rect.left = 0;
-        window_rect.top = 0;
-        window_rect.right = 0;
         window_rect.bottom = 0;
+        window_rect.left = 0;
+        window_rect.right = 0;
+        window_rect.top = 0;
     } else if (!GetClientRect(hwnd, &client_rect)) {
-        window_rect.left = 0;
-        window_rect.top = 0;
-        window_rect.right = 0;
         window_rect.bottom = 0;
+        window_rect.left = 0;
+        window_rect.right = 0;
+        window_rect.top = 0;
     }
 
     if (g_fullscreen_active
@@ -140,9 +131,7 @@ int update_mouse(HWND hwnd)
             g_game->players[0].mouse_cursor.is_mouse_captured(),
             g_fullscreen_active);
     } else {
-        if (g_game->players[0].mouse_cursor.is_mouse_captured()) {
-            ClipCursor(0);
-        } else {
+        if (!g_game->players[0].mouse_cursor.is_mouse_captured()) {
             clip_rect.left =
                 window_rect.left + client_rect.left - g_mouse_uncaptured_clip_rect.left;
             clip_rect.right =
@@ -152,6 +141,8 @@ int update_mouse(HWND hwnd)
             clip_rect.bottom =
                 window_rect.bottom + client_rect.bottom - g_mouse_uncaptured_clip_rect.bottom;
             ClipCursor(&clip_rect);
+        } else {
+            ClipCursor(0);
         }
 
         update_input_controller_pointer_region(
