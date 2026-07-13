@@ -48,3 +48,10 @@ to 25.97% (600/663). The 1-instruction prefix is preserved and masked operands
 improve from 18 ok, 0 unresolved, 2 mismatch to 22 ok, 0 unresolved,
 2 mismatch. The remaining audit debt stays in the interior orientation/copy
 schedule.
+
+2026-07-13 terminal ownership: replacing `primary_last` and `secondary_last`
+aliases with direct count-relative stores through the two `Path` sample arrays
+moves focused Wibo from 25.97% (600/663) to 27.69% (608/663). The
+1-instruction prefix is preserved and the masked audit remains 22 ok,
+0 unresolved, 2 mismatch; both pre-existing interior orientation residuals are
+unchanged. The delta loop retains its local sample pointers.
