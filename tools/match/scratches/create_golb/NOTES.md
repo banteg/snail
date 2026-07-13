@@ -162,3 +162,15 @@ Residuals:
   pointer is retained at `GolbShot +0x198`, kind zero reserves that object with
   flag `0x1000`, and its position is copied into the homing target. This keeps
   the existing honest `36.08%`, `460/582`, with 35 clean masked operands.
+
+## 2026-07-13 void AI-dispatch contract
+
+- The sole Windows caller, `update_movement_flag_emitters`, discards EAX. The
+  independent iOS `cRSubGolb::Create(cRSubGoldy*, int, int)` body also ends by
+  invoking the actor's slot-zero AI callback and returns without establishing
+  a result value.
+- `GolbShot::create_golb` is therefore `void`. Its scratch-local
+  return-valued virtual shell is replaced by the shared, cast-only
+  `BodAiDispatch` ABI view; this does not add a second vptr to `GolbShot`.
+- Focused Windows output is byte-shape neutral at 36.08%, 460/582
+  instructions, prefix 1/582, with all 35 masked operands clean.

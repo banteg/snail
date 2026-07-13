@@ -65,7 +65,7 @@ public:
     void spawn_track_jetpack_pickup(SubLoc* cell, Player* player); // @ 0x43d890
     unsigned int* spawn_track_garbage_hazard(SubLoc* cell, Player* player); // @ 0x43da80
     int spawn_slug_hazard(SubLoc* cell, Player* player); // @ 0x43dc80
-    SubLoc* spawn_track_ring_or_special_effect(
+    void spawn_track_ring_or_special_effect(
         SubLoc* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0

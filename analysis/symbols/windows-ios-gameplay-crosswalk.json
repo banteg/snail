@@ -241,6 +241,14 @@
       "notes": "All ports consume staged backdrop changes and advance the distortion cells. Windows additionally dispatches split or single rendering from AI when the persistent +0x658 draw gate equals one; mobile calls cRBackdrop::Render() separately from the game render loop."
     },
     {
+      "address": "0x415280",
+      "windows_name": "create_golb",
+      "ios_symbol": "cRSubGolb::Create(cRSubGoldy*, int, int)",
+      "source_object": "Golb.o",
+      "confidence": "high",
+      "notes": "The sole Windows caller discards EAX. The independent iOS body invokes the actor's slot-zero AI callback and returns without establishing a result, proving the shared void contract."
+    },
+    {
       "address": "0x415e20",
       "windows_name": "initialize_enemy_manager",
       "ios_symbol": "cREnemyManager::Init()",
@@ -562,7 +570,7 @@
       "ios_symbol": "cRSubGame::AddRing(...)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 has AddRing(cRSubLoc*, int, cRSubGoldy*, float); v1.9 adds cRSubRow*."
+      "notes": "v1.5 has AddRing(cRSubLoc*, int, cRSubGoldy*, float); v1.9 adds cRSubRow*. All five Windows callers discard EAX, while the iOS body returns from failure paths without establishing a result and ends by invoking cRSubRing::AI(), proving the shared void contract."
     },
     {
       "address": "0x43f130",

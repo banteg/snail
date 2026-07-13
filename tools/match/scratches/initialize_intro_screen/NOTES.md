@@ -114,3 +114,11 @@ the owned file buffer after the velocity-copy loop consumes `esi`.
   `initialize_intro_screen` now has the real void member contract and ends with
   a plain free call. Focused Wibo remains honestly unchanged at 88.23%,
   524/521, with 66 clean operands.
+
+## 2026-07-13 shared BOD AI dispatch
+
+The two LogoLetter slot-zero calls now use the shared, 4-byte
+`BodAiDispatch` ABI overlay instead of a scratch-local virtual class. The
+overlay is cast-only because LogoLetter retains its explicit cRBod-compatible
+vtable word and must not acquire a second C++ vptr. Focused Wibo remains
+88.31%, 523/521 instructions, prefix 88/521, with all 66 operands clean.

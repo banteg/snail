@@ -2,15 +2,11 @@
 
 #include "active_bod.h"
 #include "audio_system.h"
+#include "bod_ai_dispatch.h"
 #include "cheat_state.h"
 #include "game_root.h"
 #include "sprite.h"
 #include "voice_manager.h"
-
-class RuntimeCallback {
-public:
-    virtual void update();
-};
 
 int report_errorf(const char* format, ...);
 int queue_axis_aligned_textured_quad(
@@ -89,9 +85,9 @@ int GameRoot::run_frame_update()
                 } while (true);
             }
 
-            ((RuntimeCallback*)&players[0])->update();
+            ((BodAiDispatch*)&players[0])->update_bod_ai();
             if (subgame.level_mode == 6) {
-                ((RuntimeCallback*)&players[1])->update();
+                ((BodAiDispatch*)&players[1])->update_bod_ai();
             }
 
             Sprite** bucket = g_sprite_active_heads;

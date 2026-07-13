@@ -127,3 +127,17 @@ Type consolidation:
 - `SubRingPool` owns the fixed storage; Player, SubgameRuntime rate source,
   child parent links, and Sprite pointers retain their borrowed/manager-owned
   lifetimes. Focused matching remains 53.45%, 218/347.
+
+## 2026-07-13 void AddRing contract and shared dispatch
+
+- All five Windows `update_subgame` callsites discard EAX. The independent iOS
+  `cRSubGame::AddRing` body returns from its pool-full and invalid-cell paths
+  without establishing a result and ends by invoking `cRSubRing::AI()`.
+- `spawn_track_ring_or_special_effect` is therefore `void`. The fabricated
+  `TrackRowCell*` return and scratch-local return-valued virtual class are
+  retired in favor of the shared, cast-only `BodAiDispatch` ABI view.
+- VC6 now coalesces the void early exits and no longer preserves the old
+  incidental return registers. The honest focused result is 51.07%, 213/347
+  instructions, prefix 9/347, with 34 clean operands and the same nine
+  documented grouped-switch mismatches. No barrier or dummy return is retained
+  to recover the former score.

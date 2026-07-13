@@ -1,11 +1,7 @@
 // update_track_parcels @ 0x443130 (thiscall, ret)
 
+#include "bod_ai_dispatch.h"
 #include "track_parcel_runtime.h"
-
-class TrackParcelVirtualUpdater {
-public:
-    virtual void update_track_parcel();
-};
 
 void ParcelManager::update_track_parcels()
 {
@@ -13,7 +9,7 @@ void ParcelManager::update_track_parcels()
     int count = 50;
     do {
         if (slot->state != 0) {
-            ((TrackParcelVirtualUpdater*)slot)->update_track_parcel();
+            ((BodAiDispatch*)slot)->update_bod_ai();
         }
         ++slot;
         --count;

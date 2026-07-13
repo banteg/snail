@@ -4,6 +4,8 @@
 makes the native vtable call for every nonzero state. The manager owns slot
 storage; individual parcels only borrow the subgame, Player, and sprite
 handles. Android and iOS retain this owner as `cRParcelManager::AI()`. The
-shared typed version remains 100% (16/16) with a narrow dispatch overlay used
-only to express the native virtual call without adding a second C++ vptr to
-the explicit `BodNode` layout.
+shared typed version remains 100% (16/16) with the common 4-byte
+`BodAiDispatch` overlay used only to express the native slot-zero call without
+adding a second C++ vptr to the explicit `BodNode` layout. This retires the
+former parcel-local virtual shell and shares the same ABI fact with SubRing,
+SubLoc, LogoLetter, GolbShot, and Player consumers.

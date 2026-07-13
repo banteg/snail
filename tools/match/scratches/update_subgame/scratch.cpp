@@ -1,6 +1,7 @@
 // update_subgame @ 0x438b90 (thiscall, ret)
 
 #include "bod_list.h"
+#include "bod_ai_dispatch.h"
 #include "fringe_object.h"
 #include "sub_solution.h"
 #include "new_game_menu.h"
@@ -18,11 +19,6 @@
 #include "track_parcel_runtime.h"
 #include "segment_cache.h"
 #include "vector3.h"
-
-class RuntimeCellView {
-public:
-    virtual void update_runtime_cell();
-};
 
 struct ActiveRuntimeRow {
     unsigned int flags;                 // +0x00
@@ -345,7 +341,7 @@ void SubgameRuntime::update_subgame()
                                     node->list_flags |= 0x200;
                                 }
                             }
-                            ((RuntimeCellView*)&cell_slot->cell)->update_runtime_cell();
+                            ((BodAiDispatch*)&cell_slot->cell)->update_bod_ai();
                         }
 
                         Fringe** fringe = &cell_slot->cell.fringe_front;

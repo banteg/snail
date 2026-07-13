@@ -1,6 +1,7 @@
 // initialize_intro_screen @ 0x4191e0 (thiscall, ret 0x4)
 
 #include "backdrop.h"
+#include "bod_ai_dispatch.h"
 #include "bod_types.h"
 #include "border_manager.h"
 #include "font_system.h"
@@ -24,11 +25,6 @@ float parse_next_float32(char** cursor);
 int sprintf(char* buffer, const char* format, ...);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
-
-class LogoLetterVirtualView {
-public:
-    virtual void update_intro_logo_renderable() = 0;
-};
 
 static __forceinline void add_intro_renderable_to_active_list(LogoLetter* bod)
 {
@@ -150,8 +146,7 @@ void Logo::initialize_intro_screen(char* file_name)
             velocity->y = 0.0f;
             velocity->x = 0.0f;
             LogoLetter* renderable = &letters[renderable_count];
-            ((LogoLetterVirtualView*)renderable)
-                ->update_intro_logo_renderable();
+            ((BodAiDispatch*)renderable)->update_bod_ai();
 
             ++image_donor;
             ++renderable_count;
@@ -192,8 +187,7 @@ void Logo::initialize_intro_screen(char* file_name)
                     letters[renderable_count].glyph = *glyph;
                     LogoLetter* renderable =
                         &letters[renderable_count];
-                    ((LogoLetterVirtualView*)renderable)
-                        ->update_intro_logo_renderable();
+                    ((BodAiDispatch*)renderable)->update_bod_ai();
 
                     x -= g_font3d_scales[font_slot_index_for_char(*glyph)]
                         * 0.80000001f;

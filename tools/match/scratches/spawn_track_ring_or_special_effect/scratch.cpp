@@ -1,5 +1,6 @@
 // spawn_track_ring_or_special_effect @ 0x43df10 (thiscall, ret 0x10)
 
+#include "bod_ai_dispatch.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "subgame_runtime.h"
@@ -11,12 +12,7 @@ extern char* g_game_base; // data_4df904
 float random_float_below(float upper_bound, const char* tag);
 int report_errorf(const char* format, ...);
 
-class RingOrSpecialEffectVirtual {
-public:
-    virtual TrackRowCell* update_ring_or_special_effect_parent(); // vtable slot 0
-};
-
-TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
+void SubgameRuntime::spawn_track_ring_or_special_effect(
     TrackRowCell* cell,
     int requested_kind,
     Player* player,
@@ -31,7 +27,7 @@ TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
         scan = (SubRing*)((char*)scan + 0x1f8);
         if (slot_index < 2)
             continue;
-        return (TrackRowCell*)slot_index;
+        return;
     }
 
     SubRing* slot = &ring_effects.slots[slot_index];
@@ -127,8 +123,6 @@ TrackRowCell* SubgameRuntime::spawn_track_ring_or_special_effect(
         }
 
         slot->initialize_ring_or_special_effect_particles(player->lives);
-        return ((RingOrSpecialEffectVirtual*)slot)->update_ring_or_special_effect_parent();
+        ((BodAiDispatch*)slot)->update_bod_ai();
     }
-
-    return result;
 }

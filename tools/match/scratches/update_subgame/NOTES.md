@@ -264,3 +264,9 @@ whole `+0x125ffd8..+0x12727d8` interval behind one byte array. The previewed
 field chain closes exactly and leaves focused Wibo unchanged at 78.22%,
 1033/1033 instructions, with 116 clean operands and the same two honest
 jump-table mismatches.
+
+2026-07-13 shared runtime-cell AI dispatch: the active SubLoc slot-zero call
+now uses the shared `BodAiDispatch` ABI overlay instead of a scratch-local
+virtual class. This preserves the explicit cRBod-compatible vtable word and
+does not change focused output: 78.22%, 1033/1033 instructions, 116 clean
+operands, and the same two honest jump-table mismatches.

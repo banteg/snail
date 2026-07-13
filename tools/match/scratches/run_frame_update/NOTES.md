@@ -56,14 +56,16 @@ scheduling, not a missing local name.
 `include/active_bod.h` and calls the known slot-0 updater as
 `update_active_bod()`. This removes the scratch-local `virtual update()`
 conflict without changing the pinned 97.78% residual profile. The adjacent
-`RuntimeCallback` vtable row is still deliberately local because it spans
-larger partials with different callback names and needs a separate pass.
+`RuntimeCallback` vtable row remained local at this point because it spanned
+larger partials with different callback names; the shared ABI pass below later
+retires it.
 
 2026-06-20 runtime no-op AI split: the empty runtime-slot callback is now
 spelled as `RuntimeSlot::noop_runtime_ai()` in the three subgame/player
-callsite scratches. This leaves the local `RuntimeCallback` here scoped to the
-two frame-loop virtual `update()` slots at `base + 0x124` and `base + 0x31c`.
-Focused Wibo remains pinned at 97.78% with the same two scheduling residuals.
+callsite scratches. This left the local `RuntimeCallback` scoped to the two
+frame-loop virtual `update()` slots at `base + 0x124` and `base + 0x31c` until
+the later shared-dispatch pass. Focused Wibo remains pinned at 97.78% with the
+same two scheduling residuals.
 
 2026-06-20 larger near-proof pass: replacing the named `MouseCursorState*`
 local with a direct `((MouseCursorState*)(base + 0x290))->is_mouse_captured()`
@@ -98,6 +100,12 @@ masked operands.
   `saved_x/saved_y`: capture copies live coordinates there, release restores
   them, and exact `cRPlayer::AI()` refreshes them from the current camera
   anchor.
+
+2026-07-13 shared player AI dispatch: both embedded Player slot-zero calls now
+use the shared `BodAiDispatch` ABI overlay. This retires the last local
+`RuntimeCallback` shell without adding a second vptr to Player's explicit
+cRBod-compatible prefix. Focused Wibo remains 97.78%, 135/135 instructions,
+prefix 18/135, with all 23 operands clean.
 - The active BOD traversal now begins at `active_bod_list.first`, both virtual
   callbacks are the two owned `players`, and the level-mode/contact-registry
   tail is reached through `subgame`.

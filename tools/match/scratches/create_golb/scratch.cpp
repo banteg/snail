@@ -3,6 +3,7 @@
 // spawn position and velocity from Goldy's movement flag family, then install
 // the sprite, vapour, or path-search presentation path used by update_golb_ai.
 
+#include "bod_ai_dispatch.h"
 #include "golb.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
@@ -13,18 +14,13 @@ typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
 
-class GolbShotPrimaryBodyView {
-public:
-    virtual int create_dispatch();
-};
-
 extern char* g_game_base; // data_4df904
 
 void __fastcall set_matrix_identity(void* transform);
 int report_errorf(char* format, ...);
 int next_math_random_value();
 
-int GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
+void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
 {
     char* self = (char*)this;
     DWORD* words = (DWORD*)self;
@@ -310,5 +306,5 @@ after_movement_flag_source:
     Vec3* previous_output = &this->previous_output;
     *previous_output = *position;
 
-    return ((GolbShotPrimaryBodyView*)self)->create_dispatch();
+    ((BodAiDispatch*)self)->update_bod_ai();
 }

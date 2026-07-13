@@ -927,7 +927,7 @@
     {
       "address": "0x415280",
       "name": "create_golb",
-      "description": "Initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before the actor enters `update_golb_ai`."
+      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and the independent iOS body establish no result contract."
     },
     {
       "address": "0x415bb0",
@@ -2227,7 +2227,7 @@
     {
       "address": "0x43df10",
       "name": "spawn_track_ring_or_special_effect",
-      "description": "Dispatches authored Ring=* rows into the ring, explode, or slow particle effect families. Cross-port iOS symbols match this helper family to `cRSubGame::AddRing(...)`, with v1.9 adding the row pointer argument."
+      "description": "Void Windows `cRSubGame::AddRing(...)`: dispatches authored Ring=* rows into the ring, explode, or slow particle effect families and immediately invokes the selected SubRing's slot-zero AI callback. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result."
     },
     {
       "address": "0x43e470",

@@ -83,7 +83,7 @@ public:
     GolbShot* initialize_golb_shot(); // @ 0x408690
     void kill_golb(); // @ 0x414670
     void update_golb_ai(); // @ 0x414820
-    int create_golb(Player* player, int spawn_selector, int emitter_index); // @ 0x415280
+    void create_golb(Player* player, int spawn_selector, int emitter_index); // @ 0x415280
     Sprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80
