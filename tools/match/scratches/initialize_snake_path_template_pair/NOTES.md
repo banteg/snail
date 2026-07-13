@@ -102,3 +102,12 @@ facequads-before-vertices stayed neutral at 22.15% (549/652) with masked
 operands unchanged at 35 ok, 0 unresolved, 1 mismatch. The single mismatch
 only flipped from target vertices vs candidate facequads to target facequads vs
 candidate vertices, so the helper keeps vertices-first order.
+
+2026-07-13 delta ownership: independently of `sweep`, the native `snake` body
+also owns the primary and secondary delta loop directly. Removing the
+scratch-local `compute_terminal_deltas(Path*)` alias, indexing both arrays from
+the method owner, and addressing terminal samples directly as
+`samples[segment_count - 1]` moves focused Wibo from 22.15% (549/652) to
+30.15% (562/652). The masked audit improves from 35 ok, 0 unresolved,
+1 mismatch to 37 ok, 0 unresolved, 0 mismatch. This is shared `Path` source
+shape confirmed by a second target, not a copied register-lifetime trick.
