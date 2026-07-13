@@ -17,3 +17,9 @@ First scratch for main-menu dispatch. Focused Wibo result:
 - 2026-07-11 owner closure promotes the contiguous root block to
   `Intro`, `MainMenu`, `StarManager`, `Options`, and
   `Exit`; this remains exact 68/68.
+
+2026-07-13 canonical root graph: New Game, Credits, Exit, Options, and High
+Scores now reload the typed `GameRoot*` global and follow the owned player,
+`Exit`, `Options`, and `HighScore` members. Native's callback-separated root
+reloads are preserved; output remains exact at 68/68 with all 16 operands
+clean.

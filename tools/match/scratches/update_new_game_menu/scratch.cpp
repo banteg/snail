@@ -91,37 +91,37 @@ void Intro::update_new_game_menu()
     replay_probe_progress = 0.0f;
 
     int attempts = 0;
-    ((GameRoot*)g_game_base)->subgame.replay_launch_record = 0;
+    g_game->subgame.replay_launch_record = 0;
     do {
         ++attempts;
         switch (replay_attract_bank_cursor) {
         case 0: {
             int index = (int)((float)next_math_random_value() * 0.000122070312f);
             SubSolution* record =
-                &((GameRoot*)g_game_base)->subgame.sub_high_score.postal_records[index];
+                &g_game->subgame.sub_high_score.postal_records[index];
             if (record->active == 1) {
-                ((GameRoot*)g_game_base)->subgame.replay_launch_record = record;
-                ((GameRoot*)g_game_base)->subgame.level_mode = 0;
+                g_game->subgame.replay_launch_record = record;
+                g_game->subgame.level_mode = 0;
             }
             break;
         }
         case 1: {
             int index = (int)((float)next_math_random_value() * 0.000122070312f);
             SubSolution* record =
-                &((GameRoot*)g_game_base)->subgame.sub_high_score.survival_records[index];
+                &g_game->subgame.sub_high_score.survival_records[index];
             if (record->active == 1) {
-                ((GameRoot*)g_game_base)->subgame.replay_launch_record = record;
-                ((GameRoot*)g_game_base)->subgame.level_mode = 1;
+                g_game->subgame.replay_launch_record = record;
+                g_game->subgame.level_mode = 1;
             }
             break;
         }
         case 3: {
             int index = (int)((float)next_math_random_value() * 0.00155639648f);
             SubSolution* record =
-                &((GameRoot*)g_game_base)->subgame.sub_high_score.time_trial_route_records[index];
+                &g_game->subgame.sub_high_score.time_trial_route_records[index];
             if (record->active == 1) {
-                ((GameRoot*)g_game_base)->subgame.replay_launch_record = record;
-                ((GameRoot*)g_game_base)->subgame.level_mode = 4;
+                g_game->subgame.replay_launch_record = record;
+                g_game->subgame.level_mode = 4;
             }
             break;
         }
@@ -131,7 +131,7 @@ void Intro::update_new_game_menu()
 
         if (++replay_attract_bank_cursor == 5)
             replay_attract_bank_cursor = 0;
-    } while (((GameRoot*)g_game_base)->subgame.replay_launch_record == 0
+    } while (g_game->subgame.replay_launch_record == 0
         && attempts < 1000);
 
     if (attempts < 1000) {

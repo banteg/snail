@@ -20,3 +20,8 @@ mode through `SubgameRuntime` is codegen-neutral. Focused Wibo remains exact at
 2026-07-11 cRGUI ownership: Android and iOS retain `cRGUI::UnInit()`, and the
 Android body independently branches on modes 0, 1, and 4 while killing the
 same +0x04 through +0x24 widget slots. Windows stays exact at 96/96.
+
+2026-07-13 root border ownership: each mode-specific teardown now reloads the
+canonical `GameRoot::border_manager` instead of reconstructing a manager from
+`g_game_base +0xb4c`. The borrowed `GUI::game` still owns the mode selector;
+focused output remains exact at 96/96 with all 32 operands clean.

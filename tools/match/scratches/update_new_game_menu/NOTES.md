@@ -58,3 +58,11 @@ Together these ordinary control-flow and ownership forms raise the method from
 63.06% (263/273, prefix 41) to exact 100.00% (273/273, prefix 273), with 62
 clean operands. No padding, volatile barriers, dummy dependencies, inline
 assembly, or register-forcing constructs are used.
+
+## 2026-07-13 replay-bank root cleanup
+
+The attract loop now uses the same typed `g_game` graph as the button paths:
+its selected record, three owned `SubHighScore` banks, replay-launch slot, and
+`level_mode` all belong to `SubgameRuntime`. Removing the remaining raw
+`GameRoot` casts preserves native's independent loads and keeps the method
+exact at 273/273 with all 62 operands clean.

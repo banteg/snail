@@ -2,7 +2,7 @@
 
 #include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void MainMenu::update_main_menu()
 {
@@ -10,8 +10,8 @@ void MainMenu::update_main_menu()
     if ((flags & 0x20) != 0) {
         new_game_widget->widget_flags = flags & ~0x20u;
         destroy_main_menu();
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 2;
-        ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
+        g_game->players[0].frontend_state = 2;
+        g_game->players[0].redispatch_requested = 1;
         return;
     }
 
@@ -20,8 +20,8 @@ void MainMenu::update_main_menu()
     if ((flags & 0x20) != 0) {
         credits->widget_flags = flags & ~0x20u;
         destroy_main_menu();
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 14;
-        ((GameRoot*)g_game_base)->players[0].redispatch_requested = 1;
+        g_game->players[0].frontend_state = 14;
+        g_game->players[0].redispatch_requested = 1;
         return;
     }
 
@@ -29,12 +29,12 @@ void MainMenu::update_main_menu()
     flags = exit->widget_flags;
     if ((flags & 0x20) != 0) {
         exit->widget_flags = flags & ~0x20u;
-        GameRoot* game = (GameRoot*)g_game_base;
+        GameRoot* game = g_game;
         game->exit_controller.previous_frontend_state =
             game->players[0].frontend_state;
-        ((GameRoot*)g_game_base)->exit_controller.prompt_y = exit_widget->layout_y;
-        ((GameRoot*)g_game_base)->exit_controller.state = 10;
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
+        g_game->exit_controller.prompt_y = exit_widget->layout_y;
+        g_game->exit_controller.state = 10;
+        g_game->players[0].frontend_state = 8;
         return;
     }
 
@@ -42,11 +42,11 @@ void MainMenu::update_main_menu()
     flags = options->widget_flags;
     if ((flags & 0x20) != 0) {
         options->widget_flags = flags & ~0x20u;
-        ((GameRoot*)g_game_base)->options.active = 1;
-        GameRoot* game = (GameRoot*)g_game_base;
+        g_game->options.active = 1;
+        GameRoot* game = g_game;
         game->options.previous_frontend_state =
             game->players[0].frontend_state;
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 6;
+        g_game->players[0].frontend_state = 6;
         return;
     }
 
@@ -55,7 +55,7 @@ void MainMenu::update_main_menu()
     if ((result & 0x20) != 0) {
         high_scores->widget_flags = result & ~0x20u;
         destroy_main_menu();
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 18;
-        ((GameRoot*)g_game_base)->high_score.mode = 0;
+        g_game->players[0].frontend_state = 18;
+        g_game->high_score.mode = 0;
     }
 }
