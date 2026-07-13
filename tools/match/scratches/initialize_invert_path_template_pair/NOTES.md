@@ -40,3 +40,15 @@ arrays moves focused Wibo from 29.37% (510/600) to 31.31% (518/600). The
 masked audit remains clean at 23 ok, 0 unresolved, 0 mismatch. The delta loop
 retains its local sample pointers, matching the independently measured `wibble`
 boundary.
+
+2026-07-13 interior lane ownership: the native interior loop copies only the
+0x40-byte `TransformMatrix`; `center_x`, rotation, special, and lateral-scale
+fields remain primary-owned. Giving that loop an interior-specific transform
+copy moves focused Wibo from 31.31% (518/600) to 33.94% (508/600), while the
+masked audit remains clean at 23 ok, 0 unresolved, 0 mismatch. Letting the
+transform-only helper also cover endpoints scored 36.03% (488/600) but
+introduced two call mismatches and lost the endpoint ownership boundary.
+Spelling the independently initialized endpoint transforms directly, including
+the primary-only terminal pi rotation, scored 30.77% (479/600) with two call
+mismatches. Those endpoint experiments were rejected; only the proved interior
+ownership change is retained.

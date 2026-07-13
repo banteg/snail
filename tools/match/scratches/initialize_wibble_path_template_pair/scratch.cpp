@@ -31,11 +31,6 @@ static __forceinline void copy_secondary_from_primary(Path* path, int index)
     PathTemplateSample* primary = &path->primary_samples[index];
     PathTemplateSample* secondary = &path->secondary_samples[index];
 
-    secondary->center_x = primary->center_x;
-    secondary->rotation_scalar_98 = primary->rotation_scalar_98;
-    secondary->rotation_scalar_94 = primary->rotation_scalar_94;
-    secondary->special_scalar = primary->special_scalar;
-    secondary->lateral_scale = primary->lateral_scale;
     secondary->transform = primary->transform;
     secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
     secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
@@ -164,11 +159,21 @@ void Path::initialize_wibble_path_template_pair(
     initialize_sample(
         &primary_samples[0], (float)width_cells * 0.5f - 4.0f,
         (float)width_cells * 0.5f - 4.0f, 0.0f, 0.0f);
-    copy_secondary_from_primary(this, 0);
+    primary_samples[0].delta_length = 1.0f;
+    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.position.x = primary_samples[0].center_x;
+    secondary_samples[0].transform.position.y = 0.49000001f;
+    secondary_samples[0].transform.position.z = 0.0f;
+    secondary_samples[0].delta_length = 1.0f;
     initialize_sample(
         &primary_samples[31], 4.0f - (float)width_cells * 0.5f,
         4.0f - (float)width_cells * 0.5f, 0.0f, 31.0f);
-    copy_secondary_from_primary(this, 31);
+    primary_samples[31].delta_length = 1.0f;
+    set_matrix_identity(&secondary_samples[31].transform);
+    secondary_samples[31].transform.position.x = primary_samples[31].center_x;
+    secondary_samples[31].transform.position.y = 0.49000001f;
+    secondary_samples[31].transform.position.z = 31.0f;
+    secondary_samples[31].delta_length = 1.0f;
 
     for (int i = 1; i < 31; ++i) {
         float local_index = (float)(i - 1);

@@ -52,3 +52,12 @@ mismatch.
 score to 30.84% (527/608) and introduced one masked call mismatch, so `wibble`
 retains local loop pointers and only the terminal stores carry direct owner
 shape.
+
+2026-07-13 lane ownership: the native interior loop copies exactly the
+0x40-byte `TransformMatrix` from each primary sample to its secondary peer;
+the scalar fields at offsets `+0x90..+0xa0` remain primary-owned. Removing the
+five scratch-only scalar copies moves focused Wibo from 31.86% (522/608) to
+35.27% (492/608), with the masked audit still clean at 29 ok, 0 unresolved,
+0 mismatch. Recovering the independently initialized primary and secondary
+endpoint transforms and their `delta_length = 1.0f` stores moves it further to
+36.48% (483/608), with 27 ok, 0 unresolved, 0 mismatch.

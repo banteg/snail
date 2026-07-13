@@ -42,6 +42,17 @@ static __forceinline void copy_secondary_from_primary(Path* path, int index)
     secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
 }
 
+static __forceinline void copy_secondary_transform_from_primary(Path* path, int index)
+{
+    PathTemplateSample* primary = &path->primary_samples[index];
+    PathTemplateSample* secondary = &path->secondary_samples[index];
+
+    secondary->transform = primary->transform;
+    secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
+    secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
+    secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
+}
+
 static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
@@ -182,7 +193,7 @@ void Path::initialize_invert_path_template_pair(
         primary_samples[i].transform.basis_up.x = sine(angle);
         primary_samples[i].transform.basis_up.y = cosine(angle);
         primary_samples[i].transform.basis_up.z = 0.0f;
-        copy_secondary_from_primary(this, i);
+        copy_secondary_transform_from_primary(this, i);
     }
 
     compute_path_deltas(this);
