@@ -3,6 +3,9 @@
 project_position_onto_track_attachment @ 0x4444b0 projects a mutable
 `position[3]` onto an attachment runtime row in place.
 
+Android and iOS preserve the original signature as
+`cRSubGame::CalcRealPos(tVector&, float&)`.
+
 Recovered semantics:
 
 - indexes the owned `SubgameRuntime::runtime_rows[(int)position.z]` slab;
@@ -19,7 +22,7 @@ Recovered semantics:
   and vertical offset `position.y * basis_up`, then writes the projected x/y/z
   back into the input position.
 
-Residuals:
+Recovery history:
 
 - 2026-06-13: first promoted scratch scored 56.00% under the standard
   `msvc6.5 /O2 /G5 /W3` configuration. The control flow and field accesses
@@ -60,10 +63,10 @@ Residuals:
   vertical, anchored, and projected locals are codegen-neutral on top of the
   aggregate tail; computing lateral before vertical regresses to 72.12%, and
   z-before-y write-back regresses to 80.19%.
-- Remaining diff is source-shape/register allocation rather than a known
-  semantic gap: the non-kind42 vector locals still use different stack slots
-  around the lateral and anchored-base components. Do not introduce dummy
-  volatile locals or inline assembly to coerce these offsets.
+- At that checkpoint, the remaining diff was source-shape/register allocation:
+  the non-kind42 vector locals still used different stack slots around the
+  lateral and anchored-base components. The later by-value expression recovery
+  below closes it without dummy volatile locals or inline assembly.
 - 2026-06-21 subgame receiver cleanup: the method now lives on
   `SubgameRuntime`, matching its `cRSubGame` call surface and the shared
   declaration used by garbage/slug callers. Focused Wibo is unchanged at
@@ -86,3 +89,18 @@ discard EAX immediately after the call. Removing the decompiler-derived
 `char*` return and spelling the helper as `void` also preserves identical
 codegen in this scratch and both caller scratches; the apparent row/helper/x
 returns were only whatever value happened to remain live in EAX.
+
+## 2026-07-13 authored vector-expression recovery
+
+The non-kind-42 arm is a by-value vector chain, not four manually accumulated
+component buffers. It forms named vertical and lateral basis contributions,
+constructs the anchored base directly from the sample position plus the entry
+cell anchor, adds the lateral contribution, and assigns the final sum with the
+vertical contribution back to the borrowed position.
+
+The direct three-component `Vector3` constructor for the anchored base is the
+missing statement boundary: it preserves the native x87 stack while the two
+inline additions create the exact temporary lifetimes. Focused Wibo improves
+from 88.68% (106/106, prefix 67, five clean operands) to 100.00%, exact
+106/106 with a full prefix and all five operands clean. No scheduling-only
+barrier, volatile local, cast, or lane-order override is retained.

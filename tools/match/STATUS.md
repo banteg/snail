@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**574/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90967/325437** bytes (**27.95%**) are proof-grade, and overall fuzzy is **69.73%**.
+**575/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **91300/325437** bytes (**28.05%**) are proof-grade, and overall fuzzy is **69.74%**.
 
-## Proof Grade (574)
+## Proof Grade (575)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -389,6 +389,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_track_parcel | 0x443730 | 292 | 96/96 | 100.00% | 96/96 | 5 ok |  |
 | ✅ | initialize_parcel_set_bucket_pool | 0x443870 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 39 | 15/15 | 100.00% | 15/15 | 3 ok |  |
+| ✅ | project_position_onto_track_attachment | 0x4444b0 | 333 | 106/106 | 100.00% | 106/106 | 5 ok |  |
 | ✅ | initialize_anim_manager | 0x4447c0 | 14 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | update_anim_manager | 0x4447d0 | 399 | 134/134 | 100.00% | 134/134 | 13 ok |  |
 | ✅ | initialize_score_stats | 0x444960 | 20 | 8/8 | 100.00% | 8/8 | - |  |
@@ -615,7 +616,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (63)
+## High Progress (80-94.99%) (62)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -663,7 +664,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 5/125 | 31 ok |  |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 173/171 | 81.40% | 0/171 | 33 ok |  |
-| 🚧 | project_position_onto_track_attachment | 0x4444b0 | 333 | 106/106 | 88.68% | 67/106 | 5 ok |  |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  |
 | 🚧 | set_snail_jetpack | 0x445860 | 185 | 61/62 | 86.18% | 0/62 | 8 ok |  |

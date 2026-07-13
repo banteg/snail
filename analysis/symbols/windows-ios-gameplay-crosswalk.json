@@ -695,6 +695,15 @@
       "confidence": "high"
     },
     {
+      "address": "0x4444b0",
+      "windows_name": "project_position_onto_track_attachment",
+      "ios_symbol": "cRSubGame::CalcRealPos(tVector&, float&)",
+      "android_symbol": "cRSubGame::CalcRealPos(tVector&, float&)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "All ports select the runtime row from position.z, clear the angle output, dispatch nonlinear path kinds through a local matrix, and otherwise project sample position plus cell anchor plus lateral/right and vertical/up vector contributions."
+    },
+    {
       "address": "0x446020",
       "windows_name": "update_subgame_camera",
       "ios_symbol": "cRSubGame::CameraAI()",

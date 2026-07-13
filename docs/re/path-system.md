@@ -64,7 +64,8 @@ Ownership note:
 - `initialize_subgoldy_death` at `0x446e30`
 - `place_parcels_on_track` at `0x4438e0`
 - `place_challenge_parcels_on_track` at `0x444240`
-- `project_position_onto_track_attachment` at `0x4444b0`
+- `project_position_onto_track_attachment` at `0x4444b0` (authored
+  `cRSubGame::CalcRealPos(tVector&, float&)`)
 - `handle_subgoldy_collisions` at `0x444cf0`
 - `get_track_grid_cell_at_world_position` at `0x43d410`
 - `get_track_cell_row_index` at `0x447040`

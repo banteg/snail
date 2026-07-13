@@ -13,7 +13,8 @@ Inside `rebuild_track_runtime_from_segments`:
   - the selected `AttachmentPathTemplate*` at entry-cell `+0x38`
 - `project_position_onto_track_attachment` chooses the active sample by
   `current_row - entry_cell_row`, so the runtime uses an installed entry-cell
-  owner chain rather than raw parser metadata
+  owner chain rather than raw parser metadata; Android and iOS preserve this
+  exact owner as `cRSubGame::CalcRealPos(tVector&, float&)`
 
 This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata. `P -> 30`, `p -> 29`, and the separate mirror byte's primary/secondary selection are now recovered; the remaining entry questions concern overlap and exit behavior.
 

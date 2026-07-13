@@ -2573,7 +2573,7 @@
     {
       "address": "0x4444b0",
       "name": "project_position_onto_track_attachment",
-      "description": "Projects a mutable world-space position onto an active track attachment template in place. Both native callers discard EAX, confirming a void SubgameRuntime method rather than the decompiler's stale-return contract."
+      "description": "Projects a mutable world-space position onto an active track attachment template in place. Android and iOS preserve the authored `cRSubGame::CalcRealPos(tVector&, float&)` signature; both Windows callers discard EAX, confirming the same void SubgameRuntime method rather than the decompiler's stale-return contract."
     },
     {
       "address": "0x444600",
