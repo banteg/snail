@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
@@ -18,7 +19,7 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_garbage_hazard_types.h"
-TARGET = "active"
+TARGET = DEFAULT_TARGET
 
 REQUIRED_HEADER_STRUCTS = (
     "BodList",

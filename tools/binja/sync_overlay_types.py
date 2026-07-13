@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import apply_data_var_updates, apply_proto_updates, emit_summary, types_declare
 
 
@@ -26,9 +27,9 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the narrow overlay and embedded camera types to the active Binary Ninja target."
+        description="Apply the narrow overlay and embedded camera types to a Binary Ninja target."
     )
-    parser.add_argument("--target", default="active", help="Binary Ninja target selector.")
+    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
     parser.add_argument("--header", type=Path, default=DEFAULT_HEADER_PATH, help="Narrow type header.")
     return parser.parse_args()
 

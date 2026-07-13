@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
@@ -63,9 +64,9 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the narrow cRSegmentCache type slice to the active Binary Ninja target."
+        description="Apply the narrow cRSegmentCache type slice to a Binary Ninja target."
     )
-    parser.add_argument("--target", default="active", help="Binary Ninja target selector.")
+    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
     parser.add_argument("--header", type=Path, default=DEFAULT_HEADER_PATH, help="Narrow Binary Ninja type header.")
     return parser.parse_args()
 

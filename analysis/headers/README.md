@@ -76,6 +76,11 @@ Current checked-in example:
 
 Current checked-in Binary Ninja companion:
 
+Repo-specific Binary Ninja scripts default to `SnailMail_unwrapped.exe.bndb`
+so another project's focused GUI tab cannot receive these mutations by
+accident. Pass `--target active` only when following the focused tab is
+intentional.
+
 - `bn_frontend_widget_types.h`
 - `uv run python tools/binja/sync_frontend_widget_types.py`
 - `bn_frame_renderer_types.h`

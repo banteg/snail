@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
@@ -14,7 +15,7 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
-TARGET = "active"
+TARGET = DEFAULT_TARGET
 
 FRONTEND_WIDGET_FIELDS = (
     ("0x00", "list_kind", "uint32_t"),

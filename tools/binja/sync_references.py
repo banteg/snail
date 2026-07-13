@@ -9,6 +9,8 @@ import sys
 import tempfile
 from typing import Any
 
+from _target import DEFAULT_TARGET
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
@@ -203,8 +205,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--target",
-        default="active",
-        help="Binary Ninja target selector. Defaults to the active target.",
+        default=DEFAULT_TARGET,
+        help="Binary Ninja target selector. Defaults to the Snail Mail database.",
     )
     parser.add_argument(
         "--dry-run",

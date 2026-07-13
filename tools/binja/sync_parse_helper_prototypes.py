@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import apply_proto_updates, emit_summary, types_declare
 
 
@@ -24,12 +25,12 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the narrow parser-helper prototype slice to the active Binary Ninja target."
+        description="Apply the narrow parser-helper prototype slice to a Binary Ninja target."
     )
     parser.add_argument(
         "--target",
-        default="active",
-        help="Binary Ninja target selector. Defaults to the active target.",
+        default=DEFAULT_TARGET,
+        help="Binary Ninja target selector. Defaults to the Snail Mail database.",
     )
     parser.add_argument(
         "--header",

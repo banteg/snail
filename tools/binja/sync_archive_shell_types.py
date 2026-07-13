@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
@@ -102,7 +103,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the narrow RShell archive/file ownership slice to Binary Ninja."
     )
-    parser.add_argument("--target", default="active", help="Binary Ninja target selector.")
+    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
     parser.add_argument(
         "--header",
         type=Path,

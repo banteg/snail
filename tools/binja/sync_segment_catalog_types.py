@@ -5,12 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
+from _target import DEFAULT_TARGET
 from _narrow_sync import apply_proto_updates, emit_summary, types_declare
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/segment_catalog_types.h"
-TARGET = "active"
+TARGET = DEFAULT_TARGET
 
 PROTO_UPDATES = (
     (

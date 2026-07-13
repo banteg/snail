@@ -3,12 +3,26 @@ import json
 from pathlib import Path
 
 
-MODULE_PATH = Path(__file__).parents[1] / "tools/binja/_narrow_sync.py"
+BINJA_DIR = Path(__file__).parents[1] / "tools/binja"
+MODULE_PATH = BINJA_DIR / "_narrow_sync.py"
 MODULE_SPEC = importlib.util.spec_from_file_location("_narrow_sync", MODULE_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
     raise RuntimeError(f"unable to load {MODULE_PATH}")
 _narrow_sync = importlib.util.module_from_spec(MODULE_SPEC)
 MODULE_SPEC.loader.exec_module(_narrow_sync)
+
+
+def test_binja_scripts_do_not_default_to_active_target() -> None:
+    offenders = []
+    for path in BINJA_DIR.glob("*.py"):
+        source = path.read_text(encoding="utf-8")
+        if 'default="active"' in source or 'TARGET = "active"' in source:
+            offenders.append(path.name)
+
+    assert offenders == []
+    assert 'DEFAULT_TARGET = "SnailMail_unwrapped.exe.bndb"' in (
+        BINJA_DIR / "_target.py"
+    ).read_text(encoding="utf-8")
 
 
 def test_parse_struct_layout_size() -> None:
