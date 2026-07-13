@@ -1197,7 +1197,8 @@
     },
     {
       "address": "0x41aa50",
-      "name": "apply_distort_to_object"
+      "name": "apply_distort_to_object",
+      "description": "Applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals."
     },
     {
       "address": "0x41ace0",
