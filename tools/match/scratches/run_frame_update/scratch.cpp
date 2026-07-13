@@ -26,12 +26,11 @@ int GameRoot::run_frame_update()
     g_cheat_state.update_cheat();
     g_voice_manager.update_voice_manager();
 
-    float next_frame_accum = fixed_update_accumulator + 1.0f;
     int sprite_update_count = 0;
     int next_frame_counter = frame_counter + 1;
     MouseCursorState* mouse = &players[0].mouse_cursor;
     frontend_quit_requested = 0;
-    fixed_update_accumulator = next_frame_accum;
+    fixed_update_accumulator += 1.0f;
     fixed_update_count = 1;
     frame_counter = next_frame_counter;
     input_sampling_gate = 1;
@@ -42,17 +41,14 @@ int GameRoot::run_frame_update()
             players[0].mouse_cursor.suppress_next_draw = 0;
         } else {
             Color4f color;
-            Color4f* tint = color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-            float mouse_y = players[0].mouse_cursor.saved_y - 7.0f;
-            float mouse_x = players[0].mouse_cursor.saved_x - 8.0f;
             queue_axis_aligned_textured_quad(
                 22,
-                mouse_x,
-                mouse_y,
+                players[0].mouse_cursor.saved_x - 8.0f,
+                players[0].mouse_cursor.saved_y - 7.0f,
                 64.0f,
                 64.0f,
                 0x1000000,
-                tint,
+                color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                 7);
         }
     }

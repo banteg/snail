@@ -1,18 +1,16 @@
 # run_frame_update
 
-Source-shaped scratch for the frame update loop at `0x40a2a0`.
+Exact source-shaped scratch for the frame update loop at `0x40a2a0`.
 
-Current match: 97.78% (`135/135` candidate instructions, 23 masked
-operands ok). Remaining differences are local scheduling/argument evaluation:
-the target prepares the mouse-state `this` pointer one instruction earlier, and
-pushes the cursor draw layer before evaluating the `Color4f::set_color_rgba`
-argument.
+Current match: 100.00% (`135/135` candidate instructions, full prefix, 23
+masked operands ok). The former residuals were local scheduling/argument
+evaluation around the accumulator store and captured-cursor draw.
 
 Rejected/neutral probes:
 
-- Inlining `color.set_color_rgba(...)` as the queue-call argument matched the
-  target's layer-before-tint evaluation order, but grew the stack frame and
-  regressed the function to 75.74%.
+- Inlining only `color.set_color_rgba(...)` while retaining precomputed mouse
+  x/y locals matched the target's layer-before-tint evaluation order, but grew
+  the stack frame and regressed the function to 75.74%.
 - Naming the mouse-state pointer is source-legible but codegen-neutral; the
   target still schedules the `lea ecx, [this+0x290]` before the float store.
 
@@ -112,3 +110,18 @@ prefix 18/135, with all 23 operands clean.
 - All ownership substitutions are codegen-neutral. Focused Wibo remains the
   honest 97.78%, 135/135 result with the same two scheduling differences and
   23 clean masked operands.
+
+## 2026-07-13 frame-lifetime closure
+
+- The fixed-step seed is an in-place owner update,
+  `fixed_update_accumulator += 1.0f`, rather than a detached temporary copied
+  back later. VC6 consequently keeps the x87 sum live across the mouse-owner
+  `lea` and quit-latch clear, matching the native store schedule.
+- The captured-cursor quad is one source-level call expression. Keeping the
+  saved x/y offsets and `Color4f::set_color_rgba` expression directly in the
+  call lets VC6 evaluate the final layer argument first, construct the tint,
+  and then materialize y/x without spill slots. Inlining only the tint while
+  retaining precomputed mouse locals grows the frame and remains rejected.
+- Final focused Wibo is exact: 100.00% (`135/135`, full prefix), with all 23
+  masked operands resolved and equal. No register hints, volatile state, dummy
+  control flow, or flag changes are used.
