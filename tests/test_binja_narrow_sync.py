@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 
 
@@ -94,3 +95,89 @@ def test_types_declare_if_missing_skips_complete_structs(monkeypatch) -> None:
     )
 
     assert result["status"] == "skipped"
+
+
+def test_previewed_mutation_verifies_before_apply(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        if "--preview" in args:
+            return {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "message": "Preview verified and reverted.",
+                "affected_types": [],
+                "affected_functions": ["update_sub_lazer_projectile"],
+            }
+        return {"success": True, "committed": True}
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    result = _narrow_sync.run_previewed_bn_mutation(
+        Path("."), "proto", "set", "update_sub_lazer_projectile", "void callback()"
+    )
+
+    assert "--preview" in calls[0]
+    assert "--preview" not in calls[1]
+    assert result["preview"]["affected_function_count"] == 1
+    assert result["apply"]["committed"] is True
+
+
+def test_previewed_mutation_rejects_failed_apply(monkeypatch) -> None:
+    responses = iter(
+        (
+            {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "affected_types": [],
+                "affected_functions": [],
+            },
+            {"success": False, "committed": False},
+        )
+    )
+    monkeypatch.setattr(_narrow_sync, "run_bn", lambda *_args, **_kwargs: next(responses))
+
+    try:
+        _narrow_sync.run_previewed_bn_mutation(Path("."), "proto", "set", "callback", "void f()")
+    except RuntimeError as error:
+        assert "mutation apply failed" in str(error)
+    else:
+        raise AssertionError("failed mutation apply was accepted")
+
+
+def test_previewed_batch_uses_one_preview_and_apply(monkeypatch) -> None:
+    manifests = []
+
+    def fake_run_bn(_repo_root, *args):
+        manifest_path = Path(args[3] if args[2] == "--preview" else args[2])
+        manifests.append(json.loads(manifest_path.read_text()))
+        preview = "--preview" in args
+        return {
+            "success": True,
+            "preview": preview,
+            "committed": not preview,
+            "message": "Preview verified and reverted." if preview else "Mutation committed.",
+            "affected_types": [],
+            "affected_functions": [],
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    operations = [
+        {
+            "op": "set_prototype",
+            "identifier": "update_sub_lazer_projectile",
+            "prototype": "void callback()",
+        }
+    ]
+
+    result = _narrow_sync.run_previewed_bn_batch(
+        Path("."), target="snail-mail.exe", operations=operations
+    )
+
+    assert len(manifests) == 2
+    assert manifests[0] == manifests[1]
+    assert manifests[0]["ops"] == operations
+    assert result["apply"]["committed"] is True

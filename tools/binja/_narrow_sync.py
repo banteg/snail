@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 from typing import Iterable
 
 
@@ -18,6 +19,7 @@ FieldUpdate = tuple[str, str, str]
 ProtoUpdate = tuple[str, str]
 SymbolUpdate = tuple[str, str]
 DataVarUpdate = tuple[str, str]
+StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 
 
 def run_bn(repo_root: Path, *args: str) -> object:
@@ -51,6 +53,151 @@ def run_bn(repo_root: Path, *args: str) -> object:
     return result
 
 
+def run_previewed_bn_mutation(repo_root: Path, *args: str) -> dict[str, object]:
+    preview = run_bn(repo_root, *args, "--preview", "--format", "json")
+    if (
+        not isinstance(preview, dict)
+        or preview.get("success") is not True
+        or preview.get("preview") is not True
+        or preview.get("committed") is not False
+    ):
+        raise RuntimeError(f"Binary Ninja mutation preview failed for {args!r}: {preview!r}")
+    applied = run_bn(repo_root, *args, "--format", "json")
+    if (
+        not isinstance(applied, dict)
+        or applied.get("success") is not True
+        or applied.get("committed") is not True
+    ):
+        raise RuntimeError(f"Binary Ninja mutation apply failed for {args!r}: {applied!r}")
+    return {
+        "preview": {
+            "success": preview.get("success"),
+            "message": preview.get("message"),
+            "affected_type_count": len(preview.get("affected_types", ())),
+            "affected_function_count": len(preview.get("affected_functions", ())),
+        },
+        "apply": applied,
+    }
+
+
+def run_bn_batch(
+    repo_root: Path,
+    *,
+    target: str,
+    operations: list[dict[str, object]],
+    preview: bool,
+) -> dict[str, object]:
+    manifest = {"target": target, "ops": operations}
+    with tempfile.TemporaryDirectory(prefix="snail-bn-batch-") as temp_dir:
+        manifest_path = Path(temp_dir) / "manifest.json"
+        manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        args = ["batch", "apply"]
+        if preview:
+            args.append("--preview")
+        args.extend((str(manifest_path), "--format", "json"))
+        result = run_bn(repo_root, *args)
+    if (
+        not isinstance(result, dict)
+        or result.get("success") is not True
+        or result.get("preview") is not preview
+        or result.get("committed") is not (not preview)
+    ):
+        phase = "preview" if preview else "apply"
+        raise RuntimeError(f"Binary Ninja batch {phase} failed: {result!r}")
+    return result
+
+
+def run_previewed_bn_batch(
+    repo_root: Path, *, target: str, operations: list[dict[str, object]]
+) -> dict[str, object]:
+    preview = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=True,
+    )
+    applied = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=False,
+    )
+    return {
+        "preview": {
+            "success": preview.get("success"),
+            "message": preview.get("message"),
+            "affected_type_count": len(preview.get("affected_types", ())),
+            "affected_function_count": len(preview.get("affected_functions", ())),
+        },
+        "apply": applied,
+    }
+
+
+def apply_direct_proto_updates_batch(
+    repo_root: Path, *, target: str, updates: Iterable[ProtoUpdate]
+) -> dict[str, object]:
+    update_list = list(updates)
+    code = f"""
+updates = {json.dumps(update_list)}
+state = bv.begin_undo_actions()
+applied = []
+try:
+    for identifier, prototype in updates:
+        functions = list(bv.get_functions_by_name(identifier))
+        if len(functions) != 1:
+            raise RuntimeError(
+                f"expected one function named {{identifier}}, found {{len(functions)}}"
+            )
+        fn = functions[0]
+        before = str(fn.type)
+        parsed_type, _ = bv.parse_type_string(prototype)
+        fn.set_user_type(parsed_type)
+        applied.append({{
+            "identifier": identifier,
+            "before": before,
+            "requested": str(parsed_type),
+        }})
+    bv.update_analysis_and_wait()
+    for entry in applied:
+        fn = list(bv.get_functions_by_name(entry["identifier"]))[0]
+        entry["after"] = str(fn.type)
+        entry["verified"] = entry["after"] == entry["requested"]
+    if not all(entry["verified"] for entry in applied):
+        raise RuntimeError(f"direct prototype verification failed: {{applied!r}}")
+    bv.commit_undo_actions(state)
+    snapshot_saved = bv.file.save_auto_snapshot()
+except Exception:
+    bv.revert_undo_actions(state)
+    bv.update_analysis_and_wait()
+    raise
+result = {{"applied": applied, "snapshot_saved": snapshot_saved}}
+"""
+    result = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    for identifier, prototype in update_list:
+        observed = current_prototype(repo_root, target=target, identifier=identifier)
+        if observed is None or normalize_prototype(
+            observed, identifier=identifier
+        ) != normalize_prototype(prototype, identifier=identifier):
+            raise RuntimeError(
+                f"direct prototype batch readback failed for {identifier}: {observed!r}"
+            )
+    return {
+        "op": "proto_set_direct_batch",
+        "operation_count": len(update_list),
+        "result": result,
+    }
+
+
 def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[str, object]:
     return {
         "op": "types_declare",
@@ -59,8 +206,13 @@ def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[st
 
 
 def types_declare_missing_only(
-    repo_root: Path, *, target: str, header_path: Path
+    repo_root: Path,
+    *,
+    target: str,
+    header_path: Path,
+    replace_types: Iterable[str] = (),
 ) -> dict[str, object]:
+    replacement_names = tuple(replace_types)
     preview = run_bn(
         repo_root,
         "types",
@@ -85,6 +237,7 @@ def types_declare_missing_only(
 import binaryninja
 
 header_path = {json.dumps(str(header_path))}
+replacement_names = set({json.dumps(replacement_names)})
 with open(header_path, "r", encoding="utf-8") as header_file:
     header = header_file.read()
 parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
@@ -101,7 +254,8 @@ for parsed_type in parsed.types:
     existing = bv.get_type_by_name(parsed_type.name)
     before_width = existing.width if existing is not None else None
     parsed_width = parsed_type.type.width
-    if parsed_width > 0 and (before_width is None or before_width == 0):
+    should_replace = str(parsed_type.name) in replacement_names
+    if parsed_width > 0 and (before_width is None or before_width == 0 or should_replace):
         candidates.append((parsed_type, before_width))
 
 applied = []
@@ -146,6 +300,7 @@ result = {{
     return {
         "op": "types_declare_missing_only",
         "header": str(header_path),
+        "replace_types": replacement_names,
         "preview": {
             "success": preview.get("success"),
             "message": preview.get("message"),
@@ -384,7 +539,7 @@ def apply_struct_field_updates(
                 "offset": offset,
                 "field_name": name,
                 "field_type": field_type,
-                "result": run_bn(
+                "result": run_previewed_bn_mutation(
                     repo_root,
                     "struct",
                     "field",
@@ -431,7 +586,7 @@ def apply_proto_updates(
                 "op": "proto_set",
                 "identifier": identifier,
                 "prototype": prototype,
-                "result": run_bn(
+                "result": run_previewed_bn_mutation(
                     repo_root,
                     "proto",
                     "set",
@@ -443,6 +598,120 @@ def apply_proto_updates(
             }
         )
     return operations
+
+
+def apply_struct_and_proto_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    struct_updates: Iterable[StructUpdateGroup],
+    proto_updates: Iterable[ProtoUpdate],
+) -> list[dict[str, object]]:
+    batch_ops: list[dict[str, object]] = []
+    skipped: list[dict[str, object]] = []
+
+    for struct_name, updates in struct_updates:
+        fields = current_struct_fields(repo_root, target=target, struct_name=struct_name)
+        for offset, name, field_type in updates:
+            existing = fields.get(offset_to_int(offset))
+            if existing == (name, normalize_type_name(field_type)):
+                skipped.append(
+                    {
+                        "op": "struct_field_set",
+                        "status": "skipped",
+                        "reason": "already current",
+                        "struct_name": struct_name,
+                        "offset": offset,
+                        "field_name": name,
+                        "field_type": field_type,
+                    }
+                )
+                continue
+            batch_ops.append(
+                {
+                    "op": "struct_field_set",
+                    "struct_name": struct_name,
+                    "offset": offset,
+                    "field_name": name,
+                    "field_type": field_type,
+                }
+            )
+
+    for identifier, prototype in proto_updates:
+        existing = current_prototype(repo_root, target=target, identifier=identifier)
+        existing_normalized = (
+            normalize_prototype(existing, identifier=identifier) if existing is not None else None
+        )
+        if existing_normalized == normalize_prototype(prototype, identifier=identifier):
+            skipped.append(
+                {
+                    "op": "proto_set",
+                    "status": "skipped",
+                    "reason": "already current",
+                    "identifier": identifier,
+                    "prototype": prototype,
+                }
+            )
+            continue
+        batch_ops.append(
+            {
+                "op": "set_prototype",
+                "identifier": identifier,
+                "prototype": prototype,
+            }
+        )
+
+    if not batch_ops:
+        return skipped
+    preview = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=batch_ops,
+        preview=True,
+    )
+    field_ops = [operation for operation in batch_ops if operation["op"] == "struct_field_set"]
+    direct_proto_updates = [
+        (str(operation["identifier"]), str(operation["prototype"]))
+        for operation in batch_ops
+        if operation["op"] == "set_prototype"
+    ]
+    applied: list[dict[str, object]] = []
+    if field_ops:
+        applied.append(
+            {
+                "op": "struct_field_batch",
+                "operation_count": len(field_ops),
+                "result": run_bn_batch(
+                    repo_root,
+                    target=target,
+                    operations=field_ops,
+                    preview=False,
+                ),
+            }
+        )
+    if direct_proto_updates:
+        applied.append(
+            apply_direct_proto_updates_batch(
+                repo_root,
+                target=target,
+                updates=direct_proto_updates,
+            )
+        )
+    return [
+        *skipped,
+        {
+            "op": "batch_apply",
+            "operation_count": len(batch_ops),
+            "operations": batch_ops,
+            "preview": {
+                "success": preview.get("success"),
+                "message": preview.get("message"),
+                "affected_type_count": len(preview.get("affected_types", ())),
+                "affected_function_count": len(preview.get("affected_functions", ())),
+            },
+            "applied": applied,
+        },
+    ]
 
 
 def apply_symbol_updates(
@@ -469,7 +738,7 @@ def apply_symbol_updates(
                 "identifier": identifier,
                 "name": name,
                 "kind": kind,
-                "result": run_bn(repo_root, *command),
+                "result": run_previewed_bn_mutation(repo_root, *command),
             }
         )
     return operations
