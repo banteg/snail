@@ -65,3 +65,18 @@ Expected residuals:
   independently recovered `FrontendWidget` or high-score bank types. The live
   Binary Ninja replay verified `title_widget` at `+0x18`, Back at `+0x1c`, the
   four footer prototypes, and all five row banks through `+0xf4`.
+
+2026-07-13 root-owner graph cleanup:
+
+- The initializer now reaches the root-owned `StarManager`, `SubgameRuntime`,
+  `LandscapeManager`, `Backdrop`, `BorderManager`, and player-zero
+  `MouseCursorState` through `GameRoot` members instead of reconstructing each
+  owner from a raw `char* + offset` cast.
+- The active score-bank pointer/count and every widget allocation use the same
+  typed root graph. The remaining byte cursor is intentional: native advances
+  through the borrowed `SubSolution` bank by the authored `0x1fac0` record
+  stride and reloads that pointer after widget callbacks.
+- This removes the false global-blob ownership view without changing codegen:
+  focused Wibo remains 98.00%, 600/600 instructions, prefix 80, with all 137
+  masked operands clean. The twelve honest `Color4f` stack-slot permutations
+  remain the only residuals.

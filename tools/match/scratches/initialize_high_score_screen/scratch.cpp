@@ -9,7 +9,7 @@
 #include "star_manager.h"
 #include "subgame_runtime.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // data_4dfb08
@@ -41,21 +41,17 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
     else
         entering_name = 1;
 
-    ((StarManager*)(g_game_base + 0x4f33c))->hide_star_field();
-    ((SubgameRuntime*)(g_game_base + 0x74618))->hide_gameplay_scores();
+    g_game->star_manager.hide_star_field();
+    g_game->subgame.hide_gameplay_scores();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
-    int script_index =
-        ((LandscapeManager*)(g_game_base + 0x106c218))
-            ->load_landscape_script_by_name(g_menu_background_script_path);
-    ((Backdrop*)(g_game_base + 0x4ec10))
-        ->change_backdrop(
-            &((LandscapeManager*)(g_game_base + 0x106c218))
-                ->scripts[script_index],
-            0);
-    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0x41c80000);
-    ((MouseCursorState*)(g_game_base + 0x290))->capture_mouse_cursor();
+    int script_index = g_game->subgame.landscape_manager
+                           .load_landscape_script_by_name(g_menu_background_script_path);
+    g_game->backdrop.change_backdrop(
+        &g_game->subgame.landscape_manager.scripts[script_index], 0);
+    g_game->border_manager.set_border_justify_centre(0x41c80000);
+    g_game->players[0].mouse_cursor.capture_mouse_cursor();
 
-    title_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    title_widget = g_game->border_manager.allocate_border();
     float y;
     int record_offset;
     float row_step;
@@ -64,18 +60,18 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
         title_widget->initialize_frontend_widget(
             0, (char*)"Postal High Scores", 23, 0.0f, 64.0f,
             color_44.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_bank =
-            ((GameRoot*)g_game_base)->subgame.sub_high_score.postal_records;
-        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_count = 10;
+        g_game->subgame.sub_high_score.active_record_bank =
+            g_game->subgame.sub_high_score.postal_records;
+        g_game->subgame.sub_high_score.active_record_count = 10;
         row_step = 27.0f;
         break;
     case 1:
         title_widget->initialize_frontend_widget(
             0, (char*)"Challenge High Scores", 23, 0.0f, 64.0f,
             color_45.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_bank =
-            ((GameRoot*)g_game_base)->subgame.sub_high_score.survival_records;
-        ((GameRoot*)g_game_base)->subgame.sub_high_score.active_record_count = 10;
+        g_game->subgame.sub_high_score.active_record_bank =
+            g_game->subgame.sub_high_score.survival_records;
+        g_game->subgame.sub_high_score.active_record_count = 10;
         row_step = 27.0f;
         break;
     }
@@ -90,15 +86,14 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
     do {
         replay_row_widgets[row_index] = 0;
         int highlight = row_index == selected_rank ? 2 : 0;
-        if (((SubSolution*)((char*)((GameRoot*)g_game_base)
-                ->subgame.sub_high_score.active_record_bank
+        if (((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                 + record_offset))->active == 1) {
             switch (selected_bank) {
             case 0: {
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 row_background_widgets[row_index]->initialize_frontend_widget(
                     highlight | 0x20000000,
                     (char*)"                                               ",
@@ -107,7 +102,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                     1, -228.0f);
 
                 rank_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 int row_flags = highlight | 0x20400000;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
@@ -117,11 +112,10 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 rank_row_widgets[row_index]->layout_frontend_widget();
 
                 name_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 name_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags,
-                    ((SubSolution*)((char*)((GameRoot*)g_game_base)
-                        ->subgame.sub_high_score.active_record_bank
+                    ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
                     color_51.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -134,19 +128,18 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 name_row_widgets[row_index]->layout_frontend_widget();
 
                 score_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
                     color_48.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                     3, 160.0f);
                 score_row_widgets[row_index]->border_add_text_number(
-                    ((SubSolution*)((char*)((GameRoot*)g_game_base)
-                        ->subgame.sub_high_score.active_record_bank
+                    ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->score);
                 score_row_widgets[row_index]->layout_frontend_widget();
 
                 replay_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 replay_row_widgets[row_index]->initialize_frontend_widget(
                     highlight | 0x20000014, (char*)"Replay", 22, 0.0f, y,
                     color_50.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -159,7 +152,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 row_background_widgets[row_index]->initialize_frontend_widget(
                     highlight | 0x20000000,
                     (char*)"                                           ",
@@ -168,7 +161,7 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                     1, -228.0f);
 
                 rank_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 int row_flags = highlight | 0x20400000;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
@@ -178,11 +171,10 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 rank_row_widgets[row_index]->layout_frontend_widget();
 
                 name_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 name_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags,
-                    ((SubSolution*)((char*)((GameRoot*)g_game_base)
-                        ->subgame.sub_high_score.active_record_bank
+                    ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
                     color_52.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -195,19 +187,18 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
                 name_row_widgets[row_index]->layout_frontend_widget();
 
                 score_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
                     color_47.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                     3, 125.0f);
                 score_row_widgets[row_index]->border_add_text_number(
-                    ((SubSolution*)((char*)((GameRoot*)g_game_base)
-                        ->subgame.sub_high_score.active_record_bank
+                    ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->score);
                 score_row_widgets[row_index]->layout_frontend_widget();
 
                 replay_row_widgets[row_index] =
-                    ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                    g_game->border_manager.allocate_border();
                 replay_row_widgets[row_index]->initialize_frontend_widget(
                     highlight | 0x20000014, (char*)"Replay", 22, 0.0f, y,
                     color_54.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -233,25 +224,25 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
 
     y = row_step * 10.0f + 111.0f;
     if (entering_name != 0) {
-        cancel_name_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        cancel_name_button = g_game->border_manager.allocate_border();
         cancel_name_button->initialize_frontend_widget(
             0x20000014, (char*)"Cancel", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
         cancel_name_button->set_frontend_widget_shortcut_key(11);
 
-        submit_name_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        submit_name_button = g_game->border_manager.allocate_border();
         submit_name_button->initialize_frontend_widget(
             0x20000014, (char*)"Submit", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
         return submit_name_button->set_frontend_widget_shortcut_key(5);
     }
 
-    back_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
         0x20000014, g_back_text, 23, 0.0f, y,
         color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
 
-    bank_toggle_button = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    bank_toggle_button = g_game->border_manager.allocate_border();
     switch (selected_bank) {
     case 0:
         return bank_toggle_button->initialize_frontend_widget(
