@@ -278,3 +278,22 @@ Adding this real producer family raises the focused bootstrap from 21.02%
 (1,288 candidate instructions) to 26.16% (1,629/5,411), with 474 clean masked
 operands. The one unresolved early constructor call and 36 alignment-dependent
 operand mismatches remain outside this path slice.
+
+## 2026-07-13 advanced turn path family
+
+The next contiguous native producer island fills another deliberately
+non-linear authored family:
+
+1. pairs `37` and `38`: `TURNOVER` and `TURNOVERDOUBLE`, both `(6,4,1)`;
+2. pairs `43` and `44`: `TWISTER (2.5,3)` with handedness `1` and `0`;
+3. pairs `45` and `46`: `TWISTER2 (2.5,3)` with handedness `1` and `0`;
+4. pair `39`: `TURNUNDER (6,4,1)`; and
+5. pair `41`: `INVERT (6,8,1)`.
+
+Each producer follows the same owned `PathPair` lifecycle as the first family:
+allocate the primary and secondary render objects, build the primary, mirror it
+into the secondary, zero both inherited body positions, build both fringe
+meshes, then zero both owned fringe-body positions. The focused bootstrap rises
+from 26.16% (1,629 candidate instructions) to 30.58% (1,973/5,411), with 594
+clean masked operands. The pre-existing one unresolved call and 36
+alignment-dependent operand mismatches are unchanged.
