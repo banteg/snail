@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **69.08%**.
+**571/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **89030/325437** bytes (**27.36%**) are proof-grade, and overall fuzzy is **69.28%**.
 
 ## Proof Grade (571)
 
@@ -678,10 +678,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (49)
+## Mid Progress (50-79.99%) (50)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
+| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 694/712 | 67.28% | 3/712 | 61 ok |  |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 644/647 | 68.32% | 1/647 | 93 ok |  |
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
@@ -732,11 +733,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | convert_mouse_screen_xy | 0x44c100 | 440 | 116/115 | 77.06% | 3/115 | 32 ok |  |
 | 🚧 | load_object_definition | 0x44c420 | 1096 | 314/316 | 55.56% | 30/316 | 12 mismatch, 36 ok |  |
 
-## Early Progress (>0-49.99%) (41)
+## Early Progress (>0-49.99%) (40)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
-| 🚧 | draw_frontend_widget | 0x401130 | 2353 | 688/712 | 40.43% | 0/712 | 1 mismatch, 48 ok |  |
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 415/439 | 45.43% | 3/439 | 26 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 639/721 | 35.74% | 0/721 | 40 ok |  |

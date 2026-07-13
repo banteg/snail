@@ -1,15 +1,16 @@
 # draw_frontend_widget @ 0x401130
 
-Starter scratch for the front-end border/widget renderer.
+Recovered scratch for the front-end border/widget renderer.
 
 Models the recovered render gate, slider track quads, sprite/icon branch,
 nine-slice border body, optional focus glow, and the real `queue_axis_aligned_textured_quad_uv`
-and color helpers. The shared `FrontendWidget` view now owns the recovered
-render fields; the unrecovered tail and local lifetimes remain scratch-local.
+and color helpers. The shared `FrontendWidget` view owns the render fields, and
+the native function ends after the delayed glow; there is no missing text or
+special-widget tail.
 
 Expected residuals:
-- stack-local and x87 scheduling are still decompiler-shaped;
-- the tail text/special-widget paths are incomplete;
+- register selection and some x87/argument scheduling remain source-shape
+  residuals;
 - color lane names are relationship-first and need promotion only after exact
   layout confidence improves.
 
@@ -65,5 +66,28 @@ progress at root `+0x440ec/+0x440f8/+0x440f0` are now typed as the embedded
   with `48 ok / 1 mismatch` masked operands.
 - Re-testing the native slider-color value copy changes the candidate to
   `38.44%`, `698/712`, without recovering the target's larger frame. It remains
-  reverted until the surrounding stack-object lifetimes can be recovered as a
-  coherent source shape.
+  reverted at this point in the history until the surrounding stack-object
+  lifetimes can be recovered as a coherent source shape.
+
+2026-07-13 render-lifetime closure:
+
+- Live Binary Ninja disassembly proves the complete native extent ends at
+  `0x401a60`, immediately after the delayed-glow quads. The earlier note about
+  an unrecovered text/special-widget tail was stale.
+- The native frame has five distinct 16-byte `Color4f` slots: white and slider
+  objects, two additional prologue-constructed objects, and one branch-local
+  slot shared by the shadow constructor and the later delayed-glow default
+  constructor. The slider now truthfully owns a value copy of
+  `current_text_color`; shadow and glow use non-overlapping lexical objects that
+  VC6 reuses at the same stack address.
+- Width and height have one lifetime from the first slider test through the
+  nine-slice body. Right and bottom begin only before their first respective
+  quad, while the nine-slice texture and fill color are read directly from the
+  owning widget. These are native lifetime/ownership facts, not register
+  coercions.
+- The recovered candidate now uses the exact native `0x78` frame and exact four
+  prologue constructor receivers. It improves the focused result from
+  `40.43%`, `688/712`, `48 ok / 1 mismatch` to `67.28%`, `694/712`, with
+  `61 ok / 0 mismatch` masked operands. The two `reserved_color_*` names remain
+  explicit placeholders because the binary proves their storage and lifetime,
+  but not their authored names.
