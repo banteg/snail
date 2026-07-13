@@ -9,9 +9,9 @@ Initial shape:
   both the destination slot and the static table entry's first dword.
 - The eight row strings are copied into the slot grid at `slot+0x14`, lane
   major with a 0x100-byte row buffer per lane.
-- `slot[102].row_base` is seeded to `1000`; that offset matches
-  `base+4+0x4220*102`, the same slot math used for the `First:` and `Last:`
-  special slots in `load_level_definition_file`.
+- The owner-level `random_length` field is seeded to `1000`; it follows the
+  100 ordinary slots plus the separately named `first_segment` and
+  `last_segment` records.
 
 Status:
 
@@ -43,9 +43,10 @@ Status:
   complete `SubTracks`, not a standalone 103-slot store. The old
   `LevelSegmentSlotStore` declaration was too large and crossed the exact
   `0x1a5978` owner boundary into the following BodBase sentinels.
-- `slots[102].row_base` is a deliberate overlapping access to the existing
-  loader tail at `+0x1a58c4`; the function never owns or touches a complete
-  103rd `0x4220`-byte slot.
+- The former `slots[102].row_base` view merely reached the same
+  `random_length +0x1a58c4` address through array arithmetic. The source now
+  names the owner field directly and no longer implies a nonexistent 103rd
+  `SubSegment`.
 - Moving the method onto the real owner initially left the honest focused
   result unchanged at `52.97%`, 93/92 candidate/target instructions.
 
@@ -69,3 +70,16 @@ Status:
 - iOS dynamically allocates its compact destination `cRSubSegment` glyph
   storage. That later-port destination layout is not transplanted onto the
   Windows inline `0x4220` `SubSegment` array.
+
+## 2026-07-13 owner-field and glyph-grid cleanup
+
+- The initialization now writes `SubTracks::random_length` directly instead
+  of reaching the same `+0x1a58c4` field through the misleading
+  `segment_slots[102].row_base` alias. Focused codegen is unchanged.
+- Writing `segment_slots[active_slot].glyph_rows[row_index][column]` through
+  the owned two-dimensional grid removes the last raw destination-offset
+  calculation and improves the focused match from `97.83%` to `98.91%`, with
+  the exact `92/92` instruction count.
+- The only remaining difference is the commutative ModRM spelling
+  `[esi+eax]` versus `[eax+esi]` in the row-0 length scan. Equivalent pointer
+  syntax compiles identically, so the clear indexed source is retained.

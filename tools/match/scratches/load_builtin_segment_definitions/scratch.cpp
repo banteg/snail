@@ -8,7 +8,7 @@ void SubTracks::load_builtin_segment_definitions(
     SubSegment* slots = segment_slots;
 
     segment_count = 0;
-    slots[102].row_base = 1000;
+    random_length = 1000;
 
     if (*raw_segments[0]->glyph_rows[0] != 0) {
         do {
@@ -30,8 +30,7 @@ void SubTracks::load_builtin_segment_definitions(
                 int active_slot = segment_count;
                 int column = 0;
                 do {
-                    int destination = 0x4220 * active_slot + grid_offset + column;
-                    *((char*)&slots[0] + destination + 0x14) =
+                    slots[active_slot].glyph_rows[row_index][column] =
                         raw_segments[active_slot]->glyph_rows[row_index][column];
                     ++column;
                     active_slot = segment_count;
