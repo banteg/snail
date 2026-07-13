@@ -8,7 +8,7 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
-    apply_proto_updates,
+    apply_direct_proto_update,
     apply_struct_field_updates,
     emit_summary,
     struct_exists,
@@ -51,6 +51,10 @@ SUBGAME_BOD_FIELD_UPDATES = (
 
 SUBGAME_PLAYER_FIELD_UPDATES = (
     ("0x3bb764", "player", "Player"),
+)
+
+COMPLETION_FIELD_UPDATES = (
+    ("0x34", "widget_world", "Vec3"),
 )
 
 PROTO_UPDATES = (
@@ -271,7 +275,27 @@ def main() -> int:
                 updates=SUBGAME_PLAYER_FIELD_UPDATES,
             )
         )
-    operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="Completion",
+            updates=COMPLETION_FIELD_UPDATES,
+        )
+    )
+    # Several legacy analysis aliases (Stopwatch, ContactTargetRegistry,
+    # TrackParcelRuntime, and RowEventDisplayController) are re-inferred while
+    # the generic previewed setter waits for analysis. The direct setter keeps
+    # the requested user type authoritative and verifies it after analysis.
+    operations.extend(
+        apply_direct_proto_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier=identifier,
+            prototype=prototype,
+        )
+        for identifier, prototype in PROTO_UPDATES
+    )
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 

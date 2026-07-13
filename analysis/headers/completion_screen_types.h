@@ -12,6 +12,12 @@ typedef struct Color4f {
     float a;
 } Color4f;
 
+typedef struct Vec3 {
+    float x;
+    float y;
+    float z;
+} Vec3;
+
 typedef struct TwinkleManager {
     uint8_t twinkles[0xf0];
     int32_t active_state;
@@ -146,7 +152,7 @@ typedef struct Completion {
     int32_t delivered_count_display;
     float delivered_count_progress_limit;
     float delivered_count_progress_step;
-    uint8_t _pad_34[0x40 - 0x34];
+    Vec3 widget_world;
     float bonus_progress;
     float bonus_progress_step;
     int32_t bonus_score;

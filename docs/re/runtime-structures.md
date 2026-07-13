@@ -877,9 +877,7 @@ High-confidence current fields:
 - `+0x28`: `delivered_parcel_count`
 - `+0x2c`: `progress`
 - `+0x30`: `progress_step`
-- `+0x34`: `widget_world_x`
-- `+0x38`: `widget_world_y`
-- `+0x3c`: `widget_world_z`
+- `+0x34..+0x3f`: `widget_world` (`Vector3` parcel-delivery destination)
 - `+0x40`: `bonus_blink_progress`
 - `+0x44`: `bonus_blink_step`
 - `+0x48`: `bonus_score`

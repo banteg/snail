@@ -65,9 +65,7 @@ typedef struct Completion {
     int32_t delivered_parcel_count;
     float progress;
     float progress_step;
-    float widget_world_x;
-    float widget_world_y;
-    float widget_world_z;
+    Vec3 widget_world;
     float bonus_blink_progress;
     float bonus_blink_step;
     int32_t bonus_score;

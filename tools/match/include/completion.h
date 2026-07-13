@@ -4,6 +4,7 @@
 #define COMPLETION_H
 
 #include "frontend_widget.h"
+#include "vector3.h"
 
 class Completion {
 public:
@@ -61,9 +62,7 @@ public:
         float progress_step;
         float delivered_count_progress_step;
     }; // +0x30
-    float widget_world_x; // +0x34
-    float widget_world_y; // +0x38
-    float widget_world_z; // +0x3c
+    Vector3 widget_world; // +0x34, authored parcel-delivery destination
     union {
         float bonus_blink_progress;
         float bonus_progress;

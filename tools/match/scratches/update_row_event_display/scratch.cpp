@@ -130,7 +130,7 @@ void Completion::update_row_event_display()
     Vec3 target;
     Vec3 base_target;
     Vec3 widget_world;
-    Vec3* widget_world_out = (Vec3*)&controller->widget_world_x;
+    Vec3* widget_world_out = &controller->widget_world;
 
     camera_forward.x = game[95] * 6.0f;
     camera_forward.y = game[96] * 6.0f;

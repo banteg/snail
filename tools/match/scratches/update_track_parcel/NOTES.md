@@ -18,8 +18,8 @@ Recovered relationships:
 - State `5` interpolates back toward `subgame+0x3bf91c`, shrinks the sprite
   from `1.0` to `0.4`, and adds a sine arc along `subgame+0x3be130`.
 - State `6` starts the row-display delivery arc and randomizes
-  `delivery_offset`; state `7` flies from `subgame+0x3bf91c` to
-  `Completion::widget_world_*` at `subgame+0x12727d8`, then
+  `delivery_offset`; state `7` flies from `subgame+0x3bf91c` to the owned
+  `Completion::widget_world` vector at `subgame+0x12727d8`, then
   calls `register_parcel_delivery()`.
 
 The shared parcel header now models the primary authored `Parcel : BodBase`;
@@ -45,3 +45,26 @@ The Binary Ninja and IDA subgame-runtime lanes now carry the same exact
 inline `0x8c` records, and each record only borrows its enclosing runtime,
 embedded player, and sprite handle. This is a type/prototype correction; the
 honest 63.79%, 290/312 instruction scratch is unchanged.
+
+## 2026-07-13 authored vector lifetime recovery
+
+Windows keeps one reusable local `Vector3` across the state-4 home delta and
+state-7 display delta. Both paths are formed by the same by-value subtraction,
+scaled-vector, addition, and in-place addition operators already proven by
+other exact or near-exact scratches. Restoring those expressions recovers the
+native temporary-to-local copies instead of hand-authoring their component
+stores.
+
+The state-7 source also proves `Completion +0x34` is one owned
+`Vector3 widget_world`, not three unrelated scalar fields: the exact
+`update_row_event_display` producer writes the contiguous vector and this
+consumer subtracts the parcel home anchor from it. The first display anchor is
+used for the delta, while the second is intentionally reacquired after sprite
+scaling, matching the native owner reload and pointer lifetime.
+
+Focused Wibo improves from 63.79% (290/312 instructions, prefix 8, 34 clean
+operands and one jump-table mismatch) to 99.68% with the exact 312/312
+instruction count, a 237-instruction prefix, all 34 operands clean, and no
+masked mismatch. The sole residual is an equivalent scheduling swap between
+copying the vector temporary's z lane and multiplying the sprite scale; no
+barrier or dummy data flow is retained to force it.

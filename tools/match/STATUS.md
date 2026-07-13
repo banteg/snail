@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**574/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90967/325437** bytes (**27.95%**) are proof-grade, and overall fuzzy is **69.59%**.
+**574/749** mapped gameplay functions matched, **749/749** mapped gameplay functions have a scratch, **90967/325437** bytes (**27.95%**) are proof-grade, and overall fuzzy is **69.72%**.
 
 ## Proof Grade (574)
 
@@ -583,7 +583,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (26)
+## Near Match (95-99.99%) (27)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -608,6 +608,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  |
+| 🚧 | update_track_parcel | 0x4431d0 | 1148 | 312/312 | 99.68% | 237/312 | 34 ok |  |
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
@@ -681,7 +682,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (48)
+## Mid Progress (50-79.99%) (47)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -727,7 +728,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 2 mismatch, 47 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 2 mismatch, 63 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
-| 🚧 | update_track_parcel | 0x4431d0 | 1148 | 290/312 | 63.79% | 8/312 | 1 mismatch, 34 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 171/171 | 73.68% | 22/171 | 29 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 53.93% | 8/673 | 86 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |

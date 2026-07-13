@@ -2538,7 +2538,7 @@
     {
       "address": "0x4431d0",
       "name": "update_track_parcel",
-      "description": "Runs one live `Parcel` through bobbing, homing, and final delivery-arc states, then registers delivery before tearing down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain `cRParcel::AI()`."
+      "description": "Runs one live `Parcel` through bobbing, homing, and final delivery-arc states, consuming the owned `Completion::widget_world` vector before registering delivery and tearing down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain `cRParcel::AI()`."
     },
     {
       "address": "0x443650",

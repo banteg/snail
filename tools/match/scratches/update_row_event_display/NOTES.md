@@ -142,3 +142,9 @@ RegisterParcel. Defining it as `Completion::update_row_event_display()` rather
 than a free `__fastcall` function is the missing Windows source shape: the
 scratch is now exact at 100.00%, 213/213, full prefix, with all 38 operands
 clean. The old separate `RowEventDisplayController` header is retired.
+
+2026-07-13 widget destination ownership: the producer's typed output at
+`Completion +0x34` is now the direct `Vector3 widget_world` member rather than
+a cast over three scalar names. The 100.00%, 213/213 exact result is unchanged,
+and `update_track_parcel` independently consumes the same owned vector in its
+state-7 delivery expression.
