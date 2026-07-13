@@ -17,11 +17,6 @@ struct TransformMatrix;
 struct SubSegment;
 class Player;
 
-struct PathTemplateStripMesh {
-    char unknown_00[0x10];
-    int flags;                       // +0x10
-};
-
 struct Path : public BodBase {
     Path* initialize_path_template_record_pair(); // @ 0x4085c0
     void allocate_path_template_samples(); // @ 0x41b0a0

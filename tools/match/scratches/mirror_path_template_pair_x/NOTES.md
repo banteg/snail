@@ -9,9 +9,9 @@ template.
 
 Current focused result:
 
-- match: 79.17%
-- target/candidate instructions: 314 / 310
-- prefix: 31 / 314
+- match: 97.45%
+- target/candidate instructions: 314 / 314
+- prefix: 273 / 314
 - masked operands: 15 clean, 0 unresolved, 0 mismatched
 
 Important shape notes:
@@ -20,6 +20,17 @@ Important shape notes:
   native `> 0`, `>= 0`, and `<`/`<=` signed comparisons.
 - The 0x40 sample transform copies and 0x30 face copies are aggregate
   assignments, which MSVC lowers to the expected `rep movsd` blocks.
+- `primary_samples[sample_index]` and `secondary_samples[sample_index]` are
+  owned typed arrays. Natural array indexing lets MSVC recover the native
+  count and strength-reduced 0xa8-byte induction variables; keeping the loop
+  increment at the source-level loop bottom raises the exact prefix from 31 to
+  273 instructions.
+- The iOS `cRPath::Mirror(cRPath*)` implementation independently confirms the
+  typed sample-array walk and aggregate 0x40 transform copies. Its platform
+  implementation stops before the Windows-only strip-mesh mirroring work.
+- `strip_mesh` is the shared borrowed `Object*` owner. The scratch-local 0x60
+  mesh overlay duplicated the already recovered `Object::flags`, `vertices`,
+  `vertex_colours`, and `facequads` fields and is no longer needed.
 - The scalar sample fields before the transform copy are real source stores,
   not artifacts. The transform copy only covers the first 0x40 bytes.
 - Transform and delta X components use multiply-by-`-1.0f`, while the direct
@@ -29,8 +40,11 @@ Important shape notes:
 
 Remaining gap:
 
-The scratch is behaviorally complete, but the sample loop still differs in
-equivalent SIB operand ordering (`base + index` vs `index + base`) and in a few
-scheduler choices around the secondary sample X negation. The face loop also
-has minor scheduling differences in the vertex/UV swaps. Those are left visible
-rather than forcing the source with non-semantic clutter.
+The scratch is behaviorally complete and the first 273 target instructions are
+exact. The remaining face-loop instructions differ only in independent
+vertex/UV swap scheduling: the target keeps both UV values on the x87 stack,
+while this equivalent candidate moves one value through a general register.
+Separate UV temporary names are codegen-neutral; explicitly loading both sides
+produces the target x87 operation forms but regresses scheduling. The natural
+one-temporary swaps are retained rather than forcing instruction order with
+non-semantic clutter.
