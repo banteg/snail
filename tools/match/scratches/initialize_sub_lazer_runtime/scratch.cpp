@@ -7,7 +7,7 @@ extern void* g_sub_lazer_vtable; // off_49733c / data_49733c
 
 SubLazer* SubLazer::initialize_sub_lazer_runtime()
 {
-    ((RenderableBod*)this)->initialize_renderable_bod();
+    initialize_renderable_bod();
     vtable = &g_sub_lazer_vtable;
     return this;
 }

@@ -80,3 +80,9 @@ by the exact scratch, while `owner_game +0x88` is a borrowed `SubgameRuntime*`.
 `SubgameRuntime` owns the exact 40-slot `SaltManager` at `+0x3578c0`; this
 replaces both the stale sparse slot experiment and lane-local `FrameSaltSlot`.
 Matching remains exact at 83/83.
+
+2026-07-14 renderable-owner closure: both fade/kill-plane reads now name
+`Salt::transform.position`. With the constructor and spawner, this proves the
+whole prefix is the shared inherited `RenderableBod`, while the manager still
+owns the 40 inline derived records. Matching remains exact at 83/83 with twelve
+clean operands.

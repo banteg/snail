@@ -608,3 +608,12 @@ owner backlink instead of reconstructing it from root `+0x74618`. Focused
 output remains byte-identical at 80.49%, 5,391/5,411 instructions, with 1,542
 clean operands; the two still-unknown startup words at root `+0x514/+0xb48`
 remain raw.
+
+## 2026-07-14 inline hazard renderable inheritance
+
+The SubLazer and Salt bootstrap loops now consume the shared inherited
+`RenderableBod` prefix: typed `Object*`, `Color4f`, and `TransformMatrix`
+members replace duplicated prefix lanes while each manager retains its exact
+inline array extent. The large initializer remains at its prior 80.49%,
+5,391/5,411 baseline; exact constructors, spawners, and Salt updater remain
+byte-identical, and the near-exact SubLazer updater is byte-stable.

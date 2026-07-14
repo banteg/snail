@@ -7,7 +7,7 @@ extern void* g_salt_vtable; // off_497340 / data_497340
 
 Salt* Salt::initialize_salt_hazard_runtime()
 {
-    ((RenderableBod*)this)->initialize_renderable_bod();
+    initialize_renderable_bod();
     vtable = &g_salt_vtable;
     return this;
 }

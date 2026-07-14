@@ -75,3 +75,9 @@ alias only. Matching stays exact at 63/63 with six clean operands.
 slot's `owner_game +0x88` backlink and the manager's 20-slot extent. The live
 prototype is now the slot-level thiscall with two borrowed vectors, replacing
 the stale fastcall projection. Matching remains exact at 63/63.
+
+2026-07-14 renderable-owner closure: matrix initialization, origin copy, and
+forward-axis reconstruction now use the inherited `SubLazer::transform`
+directly. The former field-by-field prefix is retired; zero-offset BOD linkage
+continues through `RenderableBod -> BodBase -> BodNode`. Matching remains exact
+at 63/63 with six clean operands.

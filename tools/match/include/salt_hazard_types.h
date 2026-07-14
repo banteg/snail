@@ -1,4 +1,5 @@
-// Authored cRSalt/cRSaltManager views. Each inline manager slot is 0x98 bytes.
+// Authored cRSalt/cRSaltManager views. Each inline manager slot derives from
+// RenderableBod and is 0x98 bytes.
 #ifndef SALT_HAZARD_TYPES_H
 #define SALT_HAZARD_TYPES_H
 
@@ -8,28 +9,13 @@
 
 class SubgameRuntime;
 
-class Salt : public BodNode {
+class Salt : public RenderableBod {
 public:
     Salt* initialize_salt_hazard_runtime(); // @ 0x408630
     void update_salt_hazard();    // @ 0x441c10
     float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
     unsigned char& collision_armed() { return *(unsigned char*)&velocity.z; } // +0x94
 
-    Vector3 bod_position;     // +0x10, BodBase::position
-    float render_arg_1c;      // +0x1c, BodBase texture-u render argument
-    float render_arg_20;      // +0x20, BodBase render argument
-    void* object;              // +0x24
-    Color4f color;             // +0x28, updater drives alpha
-    // RenderableBod transform rows. Kept field-by-field because the slot also
-    // uses the zero-offset BodNode list overlay.
-    Vector3 basis_right;       // +0x38
-    float basis_right_w;       // +0x44
-    Vector3 basis_up;          // +0x48
-    float basis_up_w;          // +0x54
-    Vector3 basis_forward;     // +0x58
-    float basis_forward_w;     // +0x64
-    Vector3 position;          // +0x68, RenderableBod::transform.position
-    float position_w;          // +0x74
     char unknown_78[0x80 - 0x78];
     int state;                 // +0x80
     char unknown_84[0x88 - 0x84];

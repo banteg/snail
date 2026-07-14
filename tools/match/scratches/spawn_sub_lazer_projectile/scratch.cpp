@@ -8,9 +8,9 @@ int report_errorf(char* format, ...);
 void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)
 {
     state = 1;
-    TransformMatrix* live_matrix = (TransformMatrix*)((char*)this + 0x38);
+    TransformMatrix* live_matrix = &transform;
     set_matrix_identity(live_matrix);
-    Vector3* position = &this->position;
+    Vector3* position = &transform.position;
     *position = *origin;
     velocity = *direction;
     sprite_bob_phase = 0.0f;

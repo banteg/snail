@@ -88,3 +88,9 @@ manager's 40 inline `0x98` slots and each slot's `owner_game +0x88` backlink.
 The live prototype is now the manager thiscall plus one borrowed position,
 retiring the stale path-template/multi-argument projection. Matching remains
 exact at 67/67.
+
+2026-07-14 renderable-owner closure: the spawn matrix reset and position copy
+now use `Salt::transform` and `Salt::transform.position` directly. The exact
+constructor and updater corroborate the same inherited `RenderableBod`; the
+former field-by-field transform duplicate represented no separate owner.
+Matching remains exact at 67/67 with ten clean operands.

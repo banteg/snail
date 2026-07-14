@@ -407,18 +407,17 @@ char GameRoot::initialize_game_assets_and_world()
     lazer->set_bod_object(g_object_list.add_object_to_list());
     load_object_definition((char*)"Objects/Lazer", lazer->object);
 
-    void** sub_lazer_object = &subgame.sub_lazers.slots[0].object;
+    Object** sub_lazer_object = &subgame.sub_lazers.slots[0].object;
     int sub_lazer_count = 20;
     do {
         ((BodBase*)((char*)sub_lazer_object - 0x24))
             ->set_bod_object(lazer->object);
-        ((Object*)*sub_lazer_object)
-            ->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
+        (*sub_lazer_object)->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
         *(SubgameRuntime**)((char*)sub_lazer_object + 0x64) = &subgame;
         ((Color4f*)(sub_lazer_object + 1))
             ->store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
-        ((Object*)*sub_lazer_object)->blend_mode = 9;
-        sub_lazer_object = (void**)((char*)sub_lazer_object + sizeof(SubLazer));
+        (*sub_lazer_object)->blend_mode = 9;
+        sub_lazer_object = (Object**)((char*)sub_lazer_object + sizeof(SubLazer));
         --sub_lazer_count;
     } while (sub_lazer_count != 0);
 
@@ -434,7 +433,7 @@ char GameRoot::initialize_game_assets_and_world()
         *salt_owner = &subgame;
         salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
         ((Object*)salt->object)->blend_mode = 12;
-        set_matrix_identity((TransformMatrix*)&salt->basis_right);
+        set_matrix_identity(&salt->transform);
         salt_owner = (SubgameRuntime**)((char*)salt_owner + sizeof(Salt));
         --salt_count;
     } while (salt_count != 0);

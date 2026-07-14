@@ -31,17 +31,18 @@ void SubLazer::update_sub_lazer_projectile()
             state = 2;
             return;
         }
-        Vector3* live_position = &position;
+        Vector3* live_position = &transform.position;
         live_position->x = velocity.x + live_position->x;
         live_position->y = velocity.y + live_position->y;
         float* live_z = &live_position->z;
         *live_z = velocity.z + *live_z;
-        if (position.y >= 0.0f && position.z >= owner_game->player.interaction_max_z) {
+        if (transform.position.y >= 0.0f
+            && transform.position.z >= owner_game->player.interaction_max_z) {
             TrackRowCell* grid =
                 g_game->subgame.get_track_grid_cell_at_world_position(live_position);
             SubRow* cell =
                 g_game->subgame.get_track_runtime_cell_at_world_z(live_position);
-            if (grid->tile_id != 14 || position.y >= 7.0f) {
+            if (grid->tile_id != 14 || transform.position.y >= 7.0f) {
                 if ((cell->flags & 0x40) == 0
                     || !cell->primary_attachment_cell->attachment_template_record->is_point_inside_track_attachment(
                         Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),

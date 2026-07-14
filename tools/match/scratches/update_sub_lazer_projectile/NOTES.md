@@ -149,3 +149,9 @@ at 92.63% (216/218).
 `GameRoot::active_bod_list`, and both runtime-cell lookups use
 `GameRoot::subgame`. Focused output is unchanged at 92.63%, 216/218
 instructions, prefix 9/218, with 23 clean operands.
+
+2026-07-14 renderable-owner closure: projectile integration and bounds checks
+now use `SubLazer::transform.position`, completing the inheritance proved by
+the exact constructor and spawner. Focused output is byte-stable at 92.63%,
+216/218 instructions, with all 23 operands clean; the remaining gap is still
+the documented commutative x87/tail-merge scheduling, not layout ambiguity.

@@ -8,3 +8,9 @@ returns the receiver. That table points directly to
 `SubLazerManager` owns 20 inline 0xb0-byte records; their exact 0xdc0 total
 matches the native cRSubLazerManager size ledger. The scratch remains exact at
 7/7 instructions with two clean operands.
+
+2026-07-14 renderable inheritance closure: `SubLazer` now derives from the
+shared `RenderableBod` owner initialized here. The hand-written duplicate of
+its `BodBase + TransformMatrix` prefix is retired; inherited `BodNode` linkage
+still begins at offset zero. The constructor remains exact at 7/7 with both
+masked operands clean.
