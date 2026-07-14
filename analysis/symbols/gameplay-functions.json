@@ -134,7 +134,8 @@
     },
     {
       "address": "0x404070",
-      "name": "draw_twinkle"
+      "name": "draw_twinkle",
+      "description": "Exact `Twinkle::draw_twinkle` / Android `cRTwinkle::Draw()` method: constructs the temporary draw color while leaving the live Twinkle receiver unused."
     },
     {
       "address": "0x404080",

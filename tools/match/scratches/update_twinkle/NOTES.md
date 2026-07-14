@@ -11,6 +11,11 @@
   the member `draw_twinkle()` call shape needed by this scratch. Focused matcher
   stayed exact at 181/181 instructions with 48 clean masked operands.
 
+- 2026-07-14 draw-owner closure: the exact callee now defines
+  `Twinkle::draw_twinkle()` directly. Android independently retains
+  `cRTwinkle::Draw()`, confirming that the unused receiver is still an authored
+  member rather than a free temporary-color helper.
+
 ## 2026-07-14 border owner recovery
 
 The scratch-local `TwinkleOwner` shadow is retired. Its four observed field
