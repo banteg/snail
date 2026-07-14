@@ -68,6 +68,43 @@ def test_current_struct_size_reads_layout(monkeypatch) -> None:
     )
 
 
+def test_ensure_function_entry_verifies_created_boundary(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "address": "0x406c20",
+                "created": True,
+                "observed_start": "0x406c20",
+                "verified": True,
+                "snapshot_saved": True,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.ensure_function_entry(
+        Path("."), target="snail-mail.exe", address=0x406C20
+    ) == {
+        "op": "function_entry_ensure",
+        "address": "0x406c20",
+        "status": "verified",
+        "reason": None,
+        "result": {
+            "address": "0x406c20",
+            "created": True,
+            "observed_start": "0x406c20",
+            "verified": True,
+            "snapshot_saved": True,
+        },
+    }
+    assert len(calls) == 1
+    assert calls[0][:2] == ("py", "exec")
+    assert "bv.add_function(address)" in calls[0][-1]
+
+
 def test_current_type_widths_batches_readback(monkeypatch) -> None:
     calls = []
 
@@ -954,6 +991,70 @@ def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
         "get_or_create_texture_ref": "TEXTURE_REF_DISABLE_PATH_REUSE",
         "load_registered_texture_ref": "TEXTURE_REF_SKIP_RUNTIME_LOAD",
         "bind_texture_ref": "TEXTURE_REF_WRAP_ADDRESSING",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
+def test_runtime_config_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "runtime_config_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/runtime_config.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_runtime_config_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_runtime_config_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for header in (analysis_header, matcher_header):
+        assert "RUNTIME_RENDER_STAR_FIELD = 0x00000004" in header
+        assert "RUNTIME_RENDER_PARTICLE_EFFECTS = 0x00000010" in header
+        assert "RUNTIME_RENDER_TRACK_FRINGE = 0x00000020" in header
+        assert "RUNTIME_RENDER_FONT_WAVE = 0x00000100" in header
+        assert "RUNTIME_RENDER_32_BIT_COLOR = 0x00000400" in header
+        assert "RUNTIME_RENDER_FONT_WAVE_BIT = 8" in header
+        assert "last_entered_player_name[0x40]" in header
+        assert "highest_galaxy_route_index" in header
+        assert "new_game_tutorial_started" in header
+
+    assert '("0x1c", "render_flags", "RuntimeRenderFlag")' in binja_sync
+    assert '("0x4df918", "g_runtime_config")' in binja_sync
+    assert '("0x4df918", "RuntimeConfig")' in binja_sync
+    assert 'struct_name="RuntimeConfig"' in binja_sync
+    assert 'initialize_default_runtime_config_thunk(void)' in analysis_header
+    assert '(0x406C10, "initialize_default_runtime_config_thunk")' in ida_sync
+    assert '(0x406C20, "initialize_default_runtime_config")' in ida_sync
+    assert '(0x4DF918, "g_runtime_config")' in ida_sync
+    assert 'RuntimeConfig g_runtime_config;' in ida_sync
+
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    owner = next(
+        entry
+        for entry in references["symbols"]
+        if int(entry["address"], 0) == 0x4DF918
+    )
+    assert owner["name"] == "g_runtime_config"
+    assert "g_config_sample_volume" in owner["aliases"]
+    assert owner["size"] == "0xc4"
+
+    consumers = {
+        "initialize_game_window_and_input": "RUNTIME_RENDER_32_BIT_COLOR",
+        "open_star_field": "RUNTIME_RENDER_STAR_FIELD",
+        "emit_ring_star_shower": "RUNTIME_RENDER_PARTICLE_EFFECTS",
+        "build_track_fringe_objects": "RUNTIME_RENDER_TRACK_FRINGE",
+        "layout_frontend_widget": "RUNTIME_RENDER_FONT_WAVE_BIT",
     }
     for function_name, constant in consumers.items():
         scratch = (

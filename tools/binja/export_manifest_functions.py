@@ -175,6 +175,24 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
     return removed
 
 
+def _prune_same_address_artifacts(
+    out_dir: Path,
+    *,
+    address: int,
+    keep_path: Path,
+) -> list[str]:
+    """Retire obsolete focused-export filenames after a function rename."""
+    removed: list[str] = []
+    if not out_dir.is_dir():
+        return removed
+    for path in sorted(out_dir.glob(f"{address:08x}-*.c")):
+        if path == keep_path:
+            continue
+        path.unlink()
+        removed.append(_display_path(path))
+    return removed
+
+
 def _load_existing_index(index_path: Path) -> dict[str, object]:
     if not index_path.is_file():
         return {}
@@ -348,6 +366,7 @@ def main() -> int:
     exported: list[dict[str, object]] = []
     mismatches: list[dict[str, object]] = []
     expected_paths: set[Path] = set()
+    removed: list[str] = []
     for function in selected_functions:
         live = live_functions.get(function.address)
         if live is None:
@@ -376,6 +395,7 @@ def main() -> int:
             target_selector,
             function.address_hex,
         )
+        artifact = _artifact_path(out_dir, function)
         exported.append(
             _write_artifact(
                 out_dir,
@@ -385,9 +405,18 @@ def main() -> int:
                 manifest_path=manifest_path,
             )
         )
-        expected_paths.add(_artifact_path(out_dir, function))
+        expected_paths.add(artifact)
+        if args.only:
+            removed.extend(
+                _prune_same_address_artifacts(
+                    out_dir,
+                    address=function.address,
+                    keep_path=artifact,
+                )
+            )
 
-    removed = [] if args.only else _prune_stale_artifacts(out_dir, expected_paths)
+    if not args.only:
+        removed = _prune_stale_artifacts(out_dir, expected_paths)
 
     indexed_exports = (
         _merge_focused_exports(

@@ -801,6 +801,31 @@ Current practical read:
   - the hide-release lane is now modeled as the recovered `+0x8` accumulator and `+0xc = 1/3600` step reset after each probe pass; the remaining static gap is the dormant launch-step producer at `+0x14`
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
+## Runtime Configuration
+
+The process-global storage at `0x4df918` is one exact 0xc4-byte
+`RuntimeConfig`, persisted wholesale as `SnailMail.cfg`. The checked-in analysis
+owner now spans the complete range instead of leaving its first field and
+interior consumers as unrelated globals.
+
+High-confidence regions are:
+
+- `+0x00/+0x04`: sample and stream volume;
+- `+0x08`: fullscreen selection;
+- `+0x1c`: the dword `RuntimeRenderFlag` word;
+- `+0x20..+0x33`: validation tail, validity latch, and alignment;
+- `+0x34`: display-mode index;
+- `+0x38`: two steering-sensitivity scalars;
+- `+0x40/+0x44/+0x48`: challenge score/speed defaults;
+- `+0x60`: 64-byte last-entered player name;
+- `+0xa0..+0xac`: route limit, landscape selector, selected score bank, and
+  loading budget; and
+- `+0xc0`: new-game tutorial latch.
+
+The initializer and every load/save site independently prove the full 0xc4
+extent. Reserved fields keep offset-based names because no current consumer
+justifies stronger semantics.
+
 ## Backdrop
 
 The Windows root owns one exact `0x6cc`-byte `cRBackdrop`-compatible object at

@@ -18,6 +18,11 @@ def _safe_name(name):
     return SAFE_NAME_RE.sub("_", name).strip("_") or "function"
 
 
+def _normalize_pseudocode(pseudocode):
+    """Normalize the body before the artifact writer adds one final newline."""
+    return "\n".join(line.rstrip() for line in pseudocode.splitlines()).rstrip()
+
+
 def _prune_same_address_artifacts(out_dir, start, keep_path):
     removed = []
     prefix = f"{start:08x}-"
@@ -82,7 +87,7 @@ def _export_function(out_dir, selector):
             f"/* database: {idc.get_idb_path()} */\n"
             f"/* function: {name} @ {hex(start)} */\n"
             f"/* selector: {display_selector} */\n\n"
-            f"{pseudocode}\n"
+            f"{_normalize_pseudocode(pseudocode)}\n"
         ),
         encoding="utf-8",
     )

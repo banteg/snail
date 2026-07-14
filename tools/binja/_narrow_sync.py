@@ -581,6 +581,53 @@ def current_struct_size(repo_root: Path, *, target: str, struct_name: str) -> in
     return parse_struct_layout_size(layout)
 
 
+def ensure_function_entry(
+    repo_root: Path, *, target: str, address: int
+) -> dict[str, object]:
+    code = f"""
+address = {address}
+before = bv.get_function_at(address)
+created = before is None
+if created:
+    bv.add_function(address)
+    bv.update_analysis_and_wait()
+after = bv.get_function_at(address)
+if after is None:
+    raise RuntimeError(f"failed to create function entry at {{address:#x}}")
+snapshot_saved = bv.file.save_auto_snapshot() if created else None
+result = {{
+    "address": hex(address),
+    "created": created,
+    "observed_start": hex(after.start),
+    "verified": after.start == address,
+    "snapshot_saved": snapshot_saved,
+}}
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict) or payload.get("verified") is not True:
+        raise RuntimeError(
+            f"function-entry verification failed at {address:#x}: {response!r}"
+        )
+    return {
+        "op": "function_entry_ensure",
+        "address": hex(address),
+        "status": "verified" if payload.get("created") else "skipped",
+        "reason": None if payload.get("created") else "already current",
+        "result": payload,
+    }
+
+
 def current_type_widths(
     repo_root: Path, *, target: str, type_names: Iterable[str]
 ) -> dict[str, int | None]:

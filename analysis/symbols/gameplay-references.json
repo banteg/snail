@@ -3262,15 +3262,15 @@
     },
     {
       "address": "0x4df918",
-      "name": "g_config_sample_volume",
+      "name": "g_runtime_config",
       "kind": "global",
       "aliases": [
         "data_4df918",
         "g_config_blob",
-        "g_runtime_config"
+        "g_config_sample_volume"
       ],
       "size": "0xc4",
-      "description": "Start of the 0xc4-byte SnailMail.cfg blob; the first float is the saved sample-volume config applied to the audio backend."
+      "description": "Exact 0xc4-byte RuntimeConfig owner persisted as SnailMail.cfg; its first float is the saved sample-volume config applied to the audio backend."
     },
     {
       "address": "0x4df91c",

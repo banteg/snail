@@ -63,3 +63,18 @@ consumers remain exact, while `firework_shoot` (94.17%),
 `layout_frontend_widget` (84.18%), and
 `initialize_game_window_and_input` (92.48%) preserve their honest residuals.
 The exact 36/36 default initializer is unchanged.
+
+## 2026-07-14 analysis ownership synchronization
+
+The exact 0xc4-byte `RuntimeConfig` now has a dedicated shared analysis header,
+narrow Binary Ninja/IDA replay lanes, and the primary `g_runtime_config` symbol
+at `0x4df918`. Binary Ninja now types the full global data variable and its
+`render_flags +0x1c` field with the proven enum. The matcher and all individual
+interior symbol aliases remain byte-identical; reserved fields retain their
+conservative offset-based names.
+
+The replay also records the real function boundary: the CRT initializer-table
+entry at `0x406c10` is a one-instruction thunk, while the 36-instruction default
+initializer begins at `0x406c20`. Focused Binary Ninja exports now retire an
+obsolete same-address artifact after a tracked function rename, matching the
+existing IDA behavior without pruning unrelated exports.
