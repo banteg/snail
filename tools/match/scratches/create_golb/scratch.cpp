@@ -291,8 +291,8 @@ after_movement_flag_source:
 
     if (owner_player->follow_active == 1 && owner_player->follow_vertical_offset < 0.5f) {
         path_follow.active = 1;
-        path_follow.template_record = (GolbPathTemplate*)owner_player->follow_template;
-        path_follow.source_cell = (GolbPathSourceCell*)owner_player->follow_source_cell;
+        path_follow.template_record = owner_player->follow_template;
+        path_follow.source_cell = owner_player->follow_source_cell;
         path_follow.sample_index = owner_player->follow_sample_index;
         path_follow.progress = owner_player->follow_progress;
         path_follow.vertical_offset = 0.0f;

@@ -13,11 +13,6 @@
 typedef Vector3 Vec3;
 float __fastcall normalize_vector(Vec3* vector);
 
-struct GolbTrackRowCellTileView {
-    char unknown_00[0x3c];
-    unsigned char tile_id; // +0x3c
-};
-
 void GolbShot::update_golb_ai()
 {
     float speed;
@@ -117,14 +112,16 @@ void GolbShot::update_golb_ai()
         }
         source_matrix.position = flight_transform.position;
         if (path_entry_z_latch < source_matrix.position.z && flight_transform.position.y < 1.0f && flight_transform.position.y > 0.0f) {
-            GolbTrackRowCellTileView* cell = (GolbTrackRowCellTileView*)game->get_track_grid_cell_at_world_position(&source_matrix.position);
+            SubLoc* cell = game->get_track_grid_cell_at_world_position(&source_matrix.position);
             if (cell->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z;
-                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)cell, &flight_transform.position, this);
+                path_follow.initialize_path_follow_golb(
+                    cell, &flight_transform.position, this);
             }
-            if (velocity.z > 1.0f && ((GolbTrackRowCellTileView*)((char*)cell - 672))->tile_id == 30) {
+            if (velocity.z > 1.0f && (cell - 8)->tile_id == 30) {
                 path_entry_z_latch = source_matrix.position.z + 1.0f;
-                path_follow.initialize_path_follow_golb((GolbPathSourceCell*)((char*)cell - 672), &flight_transform.position, this);
+                path_follow.initialize_path_follow_golb(
+                    cell - 8, &flight_transform.position, this);
             }
         }
     }
@@ -193,24 +190,25 @@ void GolbShot::update_golb_ai()
         Player* bounds_player = player;
         if (flight_transform.position.z >= bounds_player->interaction_max_z
             && bounds_player->position.z + 46.0f >= flight_transform.position.z) {
-            int garbage = (int)game->garbage_hazards.active_head;
+            SubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
-                if (*(int*)(garbage + 132) == 1) {
-                    probe.x = *(float*)(garbage + 104) - new_output->x;
-                    probe.y = *(float*)(garbage + 108) - new_output->y;
-                    probe.z = *(float*)(garbage + 112) - new_output->z;
+                if (garbage->state == 1) {
+                    probe.x = garbage->world_position.x - new_output->x;
+                    probe.y = garbage->world_position.y - new_output->y;
+                    probe.z = garbage->world_position.z - new_output->z;
                     float dz = probe.z;
                     if (dz < 0.0f)
                         dz = -dz;
-                    if (dz < 3.0f && normalize_vector(&probe) < *(float*)(garbage + 156) + 0.49000001f) {
-                        *(int*)(garbage + 132) = 2;
-                        *(int*)(garbage + 136) = probe.x >= 0.0f ? 1 : 2;
+                    if (dz < 3.0f
+                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {
+                        garbage->state = 2;
+                        garbage->collision_side = probe.x >= 0.0f ? 1 : 2;
                         player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         if (kind != 1)
                             goto garbage_hit;
                     }
                 }
-                garbage = *(int*)(garbage + 128);
+                garbage = garbage->next_active;
             }
 
             {
@@ -268,17 +266,19 @@ garbage_hit:
             kill_golb();
             spawn_golb_impact_sprite(new_output);
             if (kind == 2) {
-                for (int splash = (int)game->garbage_hazards.active_head; splash; splash = *(int*)(splash + 128)) {
-                    if (*(int*)(splash + 132) == 1) {
-                        probe.x = *(float*)(splash + 104) - new_output->x;
-                        probe.y = *(float*)(splash + 108) - new_output->y;
-                        probe.z = *(float*)(splash + 112) - new_output->z;
+                for (SubGarbage* splash = game->garbage_hazards.active_head;
+                    splash;
+                    splash = splash->next_active) {
+                    if (splash->state == 1) {
+                        probe.x = splash->world_position.x - new_output->x;
+                        probe.y = splash->world_position.y - new_output->y;
+                        probe.z = splash->world_position.z - new_output->z;
                         if (normalize_vector(&probe) < 3.0f) {
-                            *(int*)(splash + 132) = 2;
+                            splash->state = 2;
                             if (probe.x >= 0.0f)
-                                *(int*)(splash + 136) = 1;
+                                splash->collision_side = 1;
                             else
-                                *(int*)(splash + 136) = 2;
+                                splash->collision_side = 2;
                             player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         }
                     }
@@ -287,7 +287,7 @@ garbage_hit:
             return;
 
 wall_probe:
-            if (((GolbTrackRowCellTileView*)game->get_track_grid_cell_at_world_position(new_output))->tile_id != 14)
+            if (game->get_track_grid_cell_at_world_position(new_output)->tile_id != 14)
                 return;
             wall_impact.x = new_output->x;
             wall_impact.y = new_output->y;

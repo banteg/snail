@@ -978,7 +978,7 @@
     {
       "address": "0x414820",
       "name": "update_golb_ai",
-      "description": "Advances one live Golb shot actor, including straight-flight or path-follow motion, collision transitions, burst or smoke aftermath, and the final cleanup path once it passes the player or leaves the valid band."
+      "description": "Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and the shared `SubGarbagePool` collision chain for straight-flight or path-follow motion, impact transitions, trail effects, and final cleanup."
     },
     {
       "address": "0x415280",
@@ -1339,12 +1339,12 @@
     {
       "address": "0x421770",
       "name": "initialize_path_follow_golb",
-      "description": "Starts one Golb projectile attachment-follow session; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
+      "description": "Starts one Golb projectile attachment-follow session by borrowing the runtime `SubLoc`, its authored `Path`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
     },
     {
       "address": "0x4217b0",
       "name": "calc_path_length_z",
-      "description": "Advances one Golb projectile attachment-follow session and emits the interpolated position or exit velocity. iOS Path.o names the matching follow-state advance family `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the path-template length finalizer is separately exposed as `cRPath::CalcLengthZ()`."
+      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. iOS Path.o names this family `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`."
     },
     {
       "address": "0x421dc0",

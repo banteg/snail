@@ -1,5 +1,26 @@
 # WIP scratch — 73.34%, 645/694 insns (2026-06-21)
 
+## 2026-07-14 path-cell and garbage-chain ownership
+
+The projectile follow state now borrows the shared authored `Path*` and
+`SubLoc*` directly. This removes both the scratch-local tile-byte shell and the
+duplicate `GolbPathTemplate` / `GolbPathSourceCell` prefix types. The fast-shot
+look-ahead is the preceding runtime row (`cell - 8`, or `8 * 0x54 = 672`
+bytes), while the same `SubLoc` supplies the attachment template and anchor
+position consumed by `initialize_path_follow_golb` and `calc_path_length_z`.
+
+Both garbage collision sweeps now walk the shared `SubGarbagePool::active_head`
+chain as `SubGarbage*`: the first sweep handles direct projectile contact and
+the kind-2 splash sweep marks nearby live garbage through the same `state`,
+`collision_side`, `world_position`, `radius`, and `next_active` fields used by
+the garbage spawner, AI, collision, and teardown paths.
+
+These ownership substitutions are codegen-neutral: focused Wibo remains
+73.34%, `645/694`, prefix `9/694`, with all 68 masked operands clean. A typed
+slug cursor was also retried, but it changed the loop-base register schedule
+and regressed to 70.40%; the existing raw slug scan is retained until its
+source shape can be consolidated without throwing away match evidence.
+
 ## 2026-07-13 flight-transform ownership closure
 
 The projectile's raw position is now the position row of

@@ -1,41 +1,18 @@
-// Golb (player shot) path-follow structures, partial.
-// iOS Path.o keeps this live projectile traversal family as cRPathFollowGolb.
-// Offsets per analysis/decompile/*/00421770-*.c.
+// Golb (player shot) path-follow structures, partial. iOS Path.o keeps this
+// live projectile traversal family as cRPathFollowGolb; its state borrows the
+// shared authored Path and SubLoc owners rather than private prefix views.
 #ifndef GOLB_H
 #define GOLB_H
 
 #include "bod_types.h"
 #include "sprite.h"
+#include "track_attachment_types.h"
 #include "vapour.h"
 #include "vector3.h"
 
 class Player;
 class SubgameRuntime;
 class GolbShot;
-
-struct AttachmentSampleMatrixView;
-
-// Attachment path template fields touched by Golb path-follow helpers.
-struct GolbPathTemplate {
-    char unknown_00[0x38];
-    int kind;                         // +0x38
-    unsigned char is_mirrored_x;      // +0x3c
-    char unknown_3d[0x40 - 0x3d];
-    int side_exit_mode;               // +0x40
-    int segment_count;                // +0x44
-    char unknown_48[0x50 - 0x48];
-    float width_or_scale;             // +0x50
-    int width_cells;                  // +0x54
-    AttachmentSampleMatrixView* primary_samples;   // +0x58
-    AttachmentSampleMatrixView* secondary_samples; // +0x5c
-};
-
-struct GolbPathSourceCell {
-    char unknown_00[0x10];
-    Vector3 anchor_position; // +0x10
-    char unknown_1c[0x38 - 0x1c];
-    GolbPathTemplate* path_template; // +0x38
-};
 
 // Kind/state overlay for the projectile lane at GolbShot+0x198..+0x1bf.
 // Kind 2 retains a borrowed contact target here until teardown releases it.
@@ -58,15 +35,15 @@ typedef char GolbShotHomingStateOverlay_must_be_0x28[
 class GolbPathFollowState {
 public:
     int initialize_path_follow_golb(
-        GolbPathSourceCell* source_cell,
+        SubLoc* source_cell,
         const Vector3* position,
         GolbShot* shot_); // @ 0x421770
     int calc_path_length_z(float path_factor, Vector3* position, Vector3* velocity); // @ 0x4217b0
 
     unsigned char active;     // +0x00
     char unknown_01[3];
-    GolbPathTemplate* template_record; // +0x04
-    GolbPathSourceCell* source_cell;   // +0x08
+    Path* template_record;       // +0x04, borrowed authored cRPath
+    SubLoc* source_cell;        // +0x08, borrowed runtime-grid cell
     int sample_index;          // +0x0c
     float progress;            // +0x10
     float vertical_offset;     // +0x14

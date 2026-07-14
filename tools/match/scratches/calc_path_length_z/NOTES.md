@@ -208,3 +208,14 @@ without a result vector regress to 54.46%, and aggregate assignment
 variants compile identically to the retained result constructor, so the scratch
 keeps the smaller source spelling until a stronger lead explains native's
 separate rotated-product stack slots.
+
+## 2026-07-14 authored path and source-cell ownership
+
+`GolbPathFollowState` now borrows the same shared `Path*` and `SubLoc*` owners
+used by the player attachment lane. The private `GolbPathTemplate` and
+`GolbPathSourceCell` prefix views are gone; sample traversal uses the canonical
+`AttachmentSample` banks, and kind 42 calls the shared `Path` method without a
+cast. Focused matching stays honestly unchanged at 55.52%, `400/425`, with all
+seven masked operands clean. The exact 16-instruction initializer also remains
+proof-grade after loading `SubLoc::attachment_template_record` and
+`SubLoc::anchor_position` directly.
