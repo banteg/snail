@@ -18,3 +18,8 @@ First scratch for the options screen constructor.
 method as `cROptions::Init()`. The shared root owner is now `Options`; its
 fields close the exact 0x24-byte interval from `GameRoot +0x4f388` to the
 adjacent `Exit`, and the initializer remains exact at 127/127.
+
+2026-07-14 root-client consolidation: the initializer now names both
+`GameRoot::border_manager` and `GameRoot::frontend_link_latch`; the latter is
+the byte formerly reached as root +0x568. The complete owner graph remains
+exact at 127/127 instructions with 32 clean operands.

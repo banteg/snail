@@ -1,8 +1,8 @@
 // uninit_pause_menu @ 0x440600 (thiscall, ret)
 
-#include "border_manager.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 class PauseMenuMouseCursorReleaseView {
 public:
@@ -20,9 +20,9 @@ public:
 
 int PauseMenuTeardownView::uninit_pause_menu()
 {
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(options_widget);
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(end_game_widget);
-    ((BorderManager*)(g_game_base + 0xb4c))->kill_border(resume_widget);
-    return ((PauseMenuMouseCursorReleaseView*)(g_game_base + 0x290))
+    g_game->border_manager.kill_border(options_widget);
+    g_game->border_manager.kill_border(end_game_widget);
+    g_game->border_manager.kill_border(resume_widget);
+    return ((PauseMenuMouseCursorReleaseView*)&g_game->players[0].mouse_cursor)
         ->release_mouse_cursor();
 }

@@ -1,15 +1,15 @@
 // initialize_warning @ 0x446e80 (thiscall, ret)
 
-#include "border_manager.h"
+#include "game_root.h"
 #include "warning.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Warning::initialize_warning()
 {
     Color4f color;
 
-    border = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    border = g_game->border_manager.allocate_border();
     border->initialize_frontend_sprite_button(0x400802, 0x5e, 288.0f, 64.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.999000013f), 0.0f, 4);
     border->sprite_shadow_offset = 0.0f;

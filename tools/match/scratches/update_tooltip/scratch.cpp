@@ -1,9 +1,9 @@
 // update_tooltip @ 0x403c20 (thiscall)
 
-#include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void FrontendWidgetTooltip::update_tooltip()
@@ -24,7 +24,7 @@ void FrontendWidgetTooltip::update_tooltip()
         if ((owner->widget_flags & 0x20000) == 0) {
             FrontendWidget* border = tooltip_widget;
             state = 1;
-            ((BorderManager*)(g_game_base + 0xb4c))->kill_border(border);
+            g_game->border_manager.kill_border(border);
             tooltip_widget = 0;
         }
         return;
@@ -48,12 +48,13 @@ void FrontendWidgetTooltip::update_tooltip()
             if (tooltip_widget != 0)
                 report_errorf("Tool tip overload");
             else
-                tooltip_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+                tooltip_widget = g_game->border_manager.allocate_border();
 
             flags = mode_flags;
             if ((flags & 1) != 0) {
                 tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
-                    *(float*)(g_game_base + 0x29c), *(float*)(g_game_base + 0x2a0) + 64.0f,
+                    g_game->players[0].mouse_cursor.saved_x,
+                    g_game->players[0].mouse_cursor.saved_y + 64.0f,
                     color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
             } else if ((flags & 4) != 0) {
                 FrontendWidget* local_owner = owner_widget;

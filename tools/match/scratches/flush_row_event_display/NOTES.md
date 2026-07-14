@@ -25,3 +25,9 @@ Rejected variants: duplicating the first widget kill across bonus/non-bonus
 paths regressed to 79.17% by splitting the teardown flow; local-count and
 pointer-to-field spellings for the bonus increment were neutral and still
 lowered to `inc dword [mem]`.
+
+2026-07-14 root-client consolidation: score awards and restoration now follow
+`GameRoot::subgame.player`, proving root +0x430060 is
+`Player::total_score`; all five widget releases use the root-owned
+`BorderManager`. The complete graph remains exact at 67/67 instructions with
+19 clean operands.

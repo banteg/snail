@@ -2,8 +2,9 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void FrontendWidget::initialize_frontend_sprite_button(
@@ -16,7 +17,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     int layer)
 {
     char* self = (char*)this;
-    FrontendWidget* head = (FrontendWidget*)(g_game_base + 0xb4c);
+    FrontendWidget* head = (FrontendWidget*)&g_game->border_manager;
 
     if ((list_flags & 0x200) != 0) {
         report_errorf("List ADDafter");
@@ -79,7 +80,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(int*)(self + 0x25c) = 0;
     *(float*)(self + 0x260) = anchor_x;
     float adjusted_anchor_x =
-        anchor_x + ((BorderManager*)(g_game_base + 0xb4c))->justify_centre;
+        anchor_x + g_game->border_manager.justify_centre;
     *(float*)(self + 0x238) = x;
     *(float*)(self + 0x23c) = y;
     *(float*)(self + 0x260) = adjusted_anchor_x;

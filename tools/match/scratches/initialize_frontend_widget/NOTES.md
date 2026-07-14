@@ -99,3 +99,9 @@ them as `+0x24`, `+0xa4`, and `+0x114`. The first short displacement also moves
 three case-label offsets by three bytes, so candidate `$L1214` is deliberately
 not accepted as the curated jump table. Declaration-order and temp-name probes
 were codegen-neutral or regressed; no volatile or fake alias was retained.
+
+2026-07-14 root-client consolidation: the active-list head, shared justify
+scalar, and three slider-child allocations now all traverse
+`GameRoot::border_manager`. The ownership-only rewrite leaves the honest
+temporary-slot/jump-table residual byte-for-byte unchanged at 99.30%, 429/429
+instructions, 49 clean operands, and one mismatch.

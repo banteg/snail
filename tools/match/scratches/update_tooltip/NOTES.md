@@ -63,3 +63,9 @@ surface dispatch syntax.
   handle refers to a `BorderManager`-owned widget that the controller releases.
 - Focused matching is proof-grade at 100.00%, 218/218 instructions, a 218/218
   prefix, and 23 clean masked operands.
+
+2026-07-14 root-client consolidation: tooltip allocation and release now use
+`GameRoot::border_manager`; mouse-anchored tooltips read
+`GameRoot::players[0].mouse_cursor.saved_x/saved_y`. This proves root
++0x29c/+0x2a0 are the saved cursor pair and remains exact at 218/218
+instructions with 23 clean operands.

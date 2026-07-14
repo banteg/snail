@@ -1,35 +1,34 @@
 // flush_row_event_display @ 0x404830 (thiscall, ret)
 
-#include "border_manager.h"
 #include "completion.h"
-#include "player.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Completion::flush_row_event_display()
 {
     if (state != 0) {
         if (delivered_parcel_count != parcel_target_count) {
             while (delivered_parcel_count < parcel_target_count) {
-                ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
+                g_game->subgame.player.add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
                 delivered_parcel_count += 1;
             }
 
             if (bonus_enabled != 0) {
-                ((Player*)(g_game_base + 0x42fd7c))->add_subgoldy_score(bonus_score, 0);
+                g_game->subgame.player.add_subgoldy_score(bonus_score, 0);
             }
         }
 
         delivered_parcel_count += 1;
 
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_a);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(delivered_count_widget);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(widget_d);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(bonus_widget);
-        ((BorderManager*)(g_game_base + 0xb4c))->kill_border(continue_widget);
+        g_game->border_manager.kill_border(widget_a);
+        g_game->border_manager.kill_border(delivered_count_widget);
+        g_game->border_manager.kill_border(widget_d);
+        g_game->border_manager.kill_border(bonus_widget);
+        g_game->border_manager.kill_border(continue_widget);
 
-        if (*(int*)(g_game_base + 0x430060) != display_token)
-            *(int*)(g_game_base + 0x430060) = display_token;
+        if (g_game->subgame.player.total_score != display_token)
+            g_game->subgame.player.total_score = display_token;
 
     }
     state = 0;

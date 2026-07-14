@@ -1,11 +1,11 @@
 // initialize_options_menu @ 0x41ace0 (thiscall)
 
-#include "border_manager.h"
 #include "frontend_widget_virtual_layout.h"
+#include "game_root.h"
 #include "options.h"
 #include "runtime_config.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_blank_text[]; // 0x4dfb08
 extern char g_sounds_volume_text[]; // 0x4a3d30
 extern char g_music_volume_text[]; // 0x4a3d14
@@ -14,11 +14,11 @@ void Options::initialize_options_menu()
 {
     Color4f color;
 
-    ((BorderManager*)(g_game_base + 0xb4c))->hide_all_borders();
-    *(g_game_base + 0x568) = 1;
+    g_game->border_manager.hide_all_borders();
+    g_game->frontend_link_latch = 1;
 
     fullscreen_widget =
-        (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        g_game->border_manager.allocate_border();
     fullscreen_widget->initialize_frontend_widget(
         0x14,
         g_blank_text,
@@ -31,7 +31,7 @@ void Options::initialize_options_menu()
     fullscreen_widget->layout_anchor_y += 8.0f;
 
     sound_volume_widget =
-        (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        g_game->border_manager.allocate_border();
     sound_volume_widget->initialize_frontend_widget(
         0x900004,
         g_sounds_volume_text,
@@ -47,7 +47,7 @@ void Options::initialize_options_menu()
     ((FrontendWidgetVirtualLayout*)sound_volume_widget)->layout_frontend_widget();
 
     music_volume_widget =
-        (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        g_game->border_manager.allocate_border();
     music_volume_widget->initialize_frontend_widget(
         0x100004,
         g_music_volume_text,
@@ -63,7 +63,7 @@ void Options::initialize_options_menu()
     ((FrontendWidgetVirtualLayout*)music_volume_widget)->layout_frontend_widget();
 
     back_widget =
-        (FrontendWidget*)((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        g_game->border_manager.allocate_border();
     back_widget->initialize_frontend_widget(
         0x14,
         g_back_text,

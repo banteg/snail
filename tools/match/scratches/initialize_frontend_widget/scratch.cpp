@@ -2,8 +2,9 @@
 
 #include "border_manager.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);
@@ -44,7 +45,7 @@ int FrontendWidget::initialize_frontend_widget(
     render_inset_delta = 0.0f;
     render_inset_base = 20.0f;
     render_inset_dynamic = 0;
-    head = (FrontendWidget*)(g_game_base + 0xb4c);
+    head = (FrontendWidget*)&g_game->border_manager;
 
     if ((list_flags & 0x200) != 0) {
         report_errorf("List ADDafter");
@@ -140,34 +141,34 @@ int FrontendWidget::initialize_frontend_widget(
     text_alignment = alignment;
     this->anchor_x = anchor_x;
     this->anchor_x =
-        anchor_x + ((BorderManager*)(g_game_base + 0xb4c))->justify_centre;
+        anchor_x + g_game->border_manager.justify_centre;
     mouse_history_warmup_frames = 1;
 
     if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
-        slider_more_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        slider_more_widget = g_game->border_manager.allocate_border();
         float slider_y = y + 40.0f;
         slider_more_widget->initialize_frontend_sprite_button(
             (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
             42,
-            ((BorderManager*)(g_game_base + 0xb4c))->justify_centre + 458.0f,
+            g_game->border_manager.justify_centre + 458.0f,
             slider_y,
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
         slider_more_widget->border_sprite_extend(44, 43, 45, 1);
 
-        slider_less_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        slider_less_widget = g_game->border_manager.allocate_border();
         slider_less_widget->initialize_frontend_sprite_button(
             (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
             38,
-            ((BorderManager*)(g_game_base + 0xb4c))->justify_centre + 118.0f,
+            g_game->border_manager.justify_centre + 118.0f,
             slider_y,
             tmp0.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
         slider_less_widget->border_sprite_extend(40, 39, 41, 0);
 
-        slider_value_widget = ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        slider_value_widget = g_game->border_manager.allocate_border();
         slider_value_widget->initialize_frontend_widget(
             0x400000,
             (char*)"00%",

@@ -4,7 +4,7 @@ First source-shaped scratch for `initialize_frontend_sprite_button @ 0x401a70`.
 
 The scratch reconstructs the sprite-backed frontend widget initializer:
 
-- inserts the widget after the border-manager list head at `g_game_base+0xb4c`
+- inserts the widget after the root-owned `GameRoot::border_manager` list head
   or reports `"List ADDafter"` if it is already linked;
 - resets tooltip ownership fields back to the widget itself;
 - seeds sprite button padding, font scale, render inset, anchors, flags, text
@@ -54,3 +54,8 @@ optional second sprite draw. These names are now present in the exact
 0x724-byte shared/live Binary Ninja type. The scratch deliberately keeps the
 alias-sensitive raw stores that preserve VC6's exact `ebp` lifetime and remains
 100.00%, 157/157 instructions, with ten clean masked operands.
+
+2026-07-14 root-client consolidation: both the intrusive list head and the
+final `justify_centre` adjustment now name `GameRoot::border_manager`
+directly. This removes the last raw root-base reconstruction from the exact
+initializer while preserving 157/157 instructions and ten clean operands.
