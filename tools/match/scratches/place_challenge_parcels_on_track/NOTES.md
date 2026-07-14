@@ -115,3 +115,11 @@ removes IDA's `_pad_20[8]` access for the quota source. This is a type/ownership
 recovery only: the focused source remains at 81.40%, 173/171 instructions, and
 all 33 masked operands clean; no scheduling or container-of construct was
 added.
+
+## 2026-07-14 challenge parcel row flags
+
+Challenge placement now names the candidate/request, mirror, primary-path,
+and parcel-coordinate-space lanes on `SubRow`. In particular, `0x4000` is
+proved as `SUBROW_FLAG_PARCEL_Z_IS_LOCAL`: only rows carrying it add the
+selected absolute row and `0.5` to authored z. Focused output is byte-identical
+at 81.40%, 173/171 instructions, with all 33 operands clean.

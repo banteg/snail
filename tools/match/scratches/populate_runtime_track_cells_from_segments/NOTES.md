@@ -536,3 +536,14 @@ service and offset aliases without converting the surrounding byte cursor that
 VC6 schedules differently. Tested independently and together, the focused
 result remains 29.67%, 1,229/1,245 candidate instructions, 66 clean operands,
 and the same two documented alignment mismatches.
+
+## 2026-07-14 authored-to-runtime row flags
+
+The builder now names both sides of the copy: `AuthoredSegmentRowFlag` owns
+parser metadata and `SubRowFlag` owns generated state. It preserves the shared
+path/model-velocity lane, copies the model, render-suppression, NoFall, ring,
+and jetpack lanes, and adds only runtime-owned mirror, attachment-span, parcel
+candidate, and local-z state. The mode-1 digit parcel path explicitly clears
+local-z before storing an already absolute row coordinate. Focused output is
+byte-identical at 29.67%, 1,229/1,245 instructions, 66 clean operands, and the
+same two alignment mismatches.

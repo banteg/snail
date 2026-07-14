@@ -404,6 +404,66 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "tile_flags_3d" not in tile_view_header
 
 
+def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    analysis_segment_header = (HEADER_DIR / "segment_catalog_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_row_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_segment_header = (
+        repo_root / "tools/match/include/segment_catalog_types.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"AuthoredSegmentRowFlag",' in binja_source
+    assert '"SubRowFlag",' in binja_source
+
+    for header in (
+        analysis_path_header,
+        analysis_segment_header,
+        matcher_segment_header,
+    ):
+        assert "AUTHORED_SEGMENT_ROW_FLAG_PARCEL = 0x0001" in header
+        assert "AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER = 0x0004" in header
+        assert (
+            "AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY = 0x0008" in header
+        )
+        assert "AUTHORED_SEGMENT_ROW_FLAG_NO_FALL = 0x0100" in header
+        assert "AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP = 0x2000" in header
+        assert "AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF = 0x8000" in header
+
+    for header in (analysis_path_header, matcher_row_header):
+        assert "SUBROW_FLAG_PARCEL_CANDIDATE = 0x0001" in header
+        assert "SUBROW_FLAG_SUPPRESS_TRACK_RENDER = 0x0004" in header
+        assert "SUBROW_FLAG_PATH_OR_MODEL_VELOCITY = 0x0008" in header
+        assert "SUBROW_FLAG_PARCEL_SPAWN_REQUESTED = 0x0010" in header
+        assert "SUBROW_ATTACHMENT_MASK = 0x00c0" in header
+        assert "SUBROW_FLAG_NO_FALL = 0x0100" in header
+        assert "SUBROW_FLAG_PARCEL_Z_IS_LOCAL = 0x4000" in header
+        assert "SUBROW_FLAG_JETPACK_OFF = 0x8000" in header
+
+    load_segment = (
+        repo_root / "tools/match/scratches/load_segment_definitions/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    update_subgoldy = (
+        repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    place_challenge = (
+        repo_root
+        / "tools/match/scratches/place_challenge_parcels_on_track/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY" in load_segment
+    assert "SUBROW_FLAG_NO_FALL" in update_subgoldy
+    assert "SUBROW_FLAG_PARCEL_Z_IS_LOCAL" in place_challenge
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

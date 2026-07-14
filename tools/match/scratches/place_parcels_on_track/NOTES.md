@@ -221,3 +221,12 @@ Windows spills the receiver and Android retains a receiver alias. It left the
 candidate at 635 instructions but regressed the focused score from 30.93% to
 30.46% and did not recover the native prologue, so it was rejected rather than
 retained as register-allocation matching.
+
+## 2026-07-14 parcel row-flag ownership
+
+Candidate, selected-spawn, mirror, and primary-attachment tests now use the
+shared `SubRowFlag` owner; the catalog scan uses the distinct authored Parcel
+bit. The native `0x11` claim write is the named combination of candidate and
+spawn-request state, matching its duplicate-request diagnostic. Focused output
+remains 30.93%, 635/639 instructions, with 40 clean operands and the same two
+honest operand mismatches.

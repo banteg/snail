@@ -10,8 +10,24 @@ union AuthoredFloatBits {
     float value;
 };
 
+// Parser-owned metadata bits stored with each authored segment row. Bit 0x08
+// is intentionally shared: 3DModel Velocity= and Path= both set it.
+enum AuthoredSegmentRowFlag {
+    AUTHORED_SEGMENT_ROW_FLAG_PARCEL = 0x0001,
+    AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL = 0x0002,
+    AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER = 0x0004,
+    AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY = 0x0008,
+    AUTHORED_SEGMENT_ROW_FLAG_NO_FALL = 0x0100,
+    AUTHORED_SEGMENT_ROW_FLAG_RING_NONE = 0x0200,
+    AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL = 0x0400,
+    AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE = 0x0800,
+    AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW = 0x1000,
+    AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP = 0x2000,
+    AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF = 0x8000,
+};
+
 struct AuthoredSegmentRow {
-    int flags;                     // +0x00
+    int flags;                     // +0x00, AuthoredSegmentRowFlag bits
     int parcel_set_id;             // +0x04
     Vector3 local_position;        // +0x08
     int object_id;                 // +0x14

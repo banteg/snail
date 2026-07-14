@@ -50,7 +50,7 @@ void SubHover::update_jetpack_gauge()
             SubRow* runtime_cell =
                 g_game->subgame.get_track_runtime_cell_at_world_z(
                     &g_game->subgame.embedded_player()->transform.position);
-            if ((runtime_cell->flags & 0x8000) != 0) {
+            if ((runtime_cell->flags & SUBROW_FLAG_JETPACK_OFF) != 0) {
                 progress = 0.94f;
                 debug_report_stub("Auto Shutoff Jetpack\n");
             }

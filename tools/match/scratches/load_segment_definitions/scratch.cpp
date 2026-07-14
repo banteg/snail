@@ -131,7 +131,7 @@ void SMTracks::load_segment_definitions()
             ++entry->row_count;
 
             if (*option_cursor == '*')
-                row->flags |= 4;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER;
 
             char* option_out = option_text;
             char option_char = *option_cursor;
@@ -153,7 +153,7 @@ void SMTracks::load_segment_definitions()
                     ++option_match;
                     mesh_char = *option_match;
                 }
-                row->flags |= 2;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL;
                 *mesh_out++ = '.';
                 *mesh_out++ = 'x';
                 *mesh_out = 0;
@@ -169,7 +169,8 @@ void SMTracks::load_segment_definitions()
                 option_match = find_case_insensitive_substring("Velocity=", option_text);
                 if (option_match != 0) {
                     option_match = find_case_insensitive_substring("=", option_match) + 1;
-                    row->flags |= 8;
+                    row->flags |=
+                        AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY;
                     option_match = find_case_insensitive_substring("(", option_match);
                     row->object_velocity.x = parse_next_float32(&option_match);
                     row->object_velocity.y = parse_next_float32(&option_match);
@@ -179,7 +180,7 @@ void SMTracks::load_segment_definitions()
 
             option_match = find_case_insensitive_substring("Parcel=", option_text);
             if (option_match != 0) {
-                row->flags |= 1;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_PARCEL;
                 option_match = find_case_insensitive_substring("=", option_match) + 1;
                 row->parcel_set_id = parse_next_signed_int(&option_match);
                 option_match = find_case_insensitive_substring("(", option_match) + 1;
@@ -205,27 +206,28 @@ void SMTracks::load_segment_definitions()
                 if (row->path_template_index == -1)
                     report_errorf("Unknown path %s in %s", path_name, segment_file_name);
                 else
-                    row->flags |= 8;
+                    row->flags |=
+                        AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY;
             }
 
             option_match = find_case_insensitive_substring("NoFall", option_text);
             if (option_match != 0)
-                row->flags |= 0x100;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_NO_FALL;
             option_match = find_case_insensitive_substring("Ring=None", option_text);
             if (option_match != 0)
-                row->flags |= 0x200;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_NONE;
             option_match = find_case_insensitive_substring("Ring=Normal", option_text);
             if (option_match != 0)
-                row->flags |= 0x400;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL;
             option_match = find_case_insensitive_substring("Ring=PowerUp", option_text);
             if (option_match != 0)
-                row->flags |= 0x2000;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP;
             option_match = find_case_insensitive_substring("Ring=Explode", option_text);
             if (option_match != 0)
-                row->flags |= 0x800;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE;
             option_match = find_case_insensitive_substring("Ring=Slow", option_text);
             if (option_match != 0)
-                row->flags |= 0x1000;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW;
 
             option_match = find_case_insensitive_substring("RingSpeed=", option_text);
             if (option_match != 0) {
@@ -237,7 +239,7 @@ void SMTracks::load_segment_definitions()
 
             option_match = find_case_insensitive_substring("JetPack=Off", option_text);
             if (option_match != 0)
-                row->flags |= 0x8000;
+                row->flags |= AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF;
 
             data_cursor = advance_to_next_crlf_line(option_cursor);
             if (data_cursor == 0) {

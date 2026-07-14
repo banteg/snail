@@ -57,7 +57,8 @@ int SubgameRuntime::build_track_fringe_objects()
                 if (tile_id == 4 || tile_id == 10 || tile_id == 7)
                     family = 7;
 
-                if ((row_record->flags & 4) != 0 || open_edge_mask == 0
+                if ((row_record->flags & SUBROW_FLAG_SUPPRESS_TRACK_RENDER) != 0
+                    || open_edge_mask == 0
                     || tile_id == 0x20
                     || (g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) == 0) {
                     cell->fringe_front = 0;
@@ -163,7 +164,9 @@ int SubgameRuntime::build_track_fringe_objects()
                 }
 
                 row_record = row_record_head;
-                if ((row_record_head->flags & 4) != 0) {
+                if ((row_record_head->flags
+                        & SUBROW_FLAG_SUPPRESS_TRACK_RENDER)
+                    != 0) {
                     Fringe* object = cell->fringe_front;
                     if (object != 0)
                         object->list_flags &= ~0x20;

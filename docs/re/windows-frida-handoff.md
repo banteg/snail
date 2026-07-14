@@ -600,8 +600,11 @@ The Windows agent should assume all of these are already established statically:
 - `P/p` cells install runtime attachment pointers on neighboring cells.
 - the main player update can enter a dedicated attachment-follow state from those attachments.
 - `Salt:` and authored `&` are not the same system.
-- `JetPack=Off` seeds runtime `0x8000`, but `0x8000` is later reused by edge-variant logic too.
-- `NoFall` is live runtime state and already affects glyph normalization.
+- `JetPack=Off` seeds `SubRow::flags` `0x8000`; the same numeric bit in
+  `SubLoc::lane_and_flags` is a separate per-cell owner, not a reuse.
+- `NoFall` seeds `SubRow::flags` `0x100`; the proved static consumer suppresses
+  post-attachment forward-velocity drag, while glyph normalization reads the
+  separate game-wide `runtime_flags` word.
 
 ## Open Questions To Prioritize
 

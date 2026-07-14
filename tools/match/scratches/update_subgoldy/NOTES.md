@@ -493,3 +493,12 @@ byte-for-byte
 (`56d9084051f977d866ddf7443f41deab0d9a04521c830d3e2d4f3d96da2003cb`)
 and the honest 74.20% focused result (`2075/2087`, prefix `12/2087`, 290 clean
 operands, one bounded jump-table mismatch).
+
+## 2026-07-14 player-side SubRow flags
+
+Primary and secondary swept path entry now use the shared attachment-span
+bits. The authored `NoFall` lane is also closed through its only proved player
+consumer: when the bit is absent after an attachment exit, forward z velocity
+receives rate-scaled drag; when present, that drag is skipped. Focused output
+is byte-identical at 74.20%, 2075/2087 instructions, prefix 12/2087, 290 clean
+operands, and the same bounded jump-table mismatch.

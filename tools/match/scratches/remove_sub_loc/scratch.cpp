@@ -74,7 +74,9 @@ void SubLoc::remove_sub_loc()
 
     if (tile == 0x1d || tile == 0x1e) {
         char* row_record = (char*)g_game + row_index * sizeof(SubRow);
-        if ((OUTER_RUNTIME_ROW(row_record)->flags & 0x08) != 0) {
+        if ((OUTER_RUNTIME_ROW(row_record)->flags
+                & SUBROW_FLAG_PATH_OR_MODEL_VELOCITY)
+            != 0) {
             if ((OUTER_RUNTIME_ROW(row_record)->attachment_body.list_flags & 0x200) != 0)
                 REMOVE_BOD_NODE(&OUTER_RUNTIME_ROW(row_record)->attachment_body, unlink_mask);
         }

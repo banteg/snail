@@ -79,9 +79,8 @@ struct SubgoldyFloorSamplerCallView {
     float sample_track_floor_height_at_position(Vector3* position);
 };
 
-// row records live at game + 244*row + 0x5ccac8: flags dword at +0x00
-// (0x40 primary owner, 0x80 secondary owner, 0x100 no-drag), attachment
-// cells at +0xa4 (0x5ccb6c) / +0xa8 (0x5ccb70), the row event id /
+// row records live at game + 244*row + 0x5ccac8: SubRowFlag dword at +0x00,
+// attachment cells at +0xa4 (0x5ccb6c) / +0xa8 (0x5ccb70), the row event id /
 // definition index at +0xf0 (0x5ccbb8). row event definitions live at
 // game + 16928*index + 0xa670: text at +0x00, dismiss seconds at +0x200,
 // voice id at +0x204 (0xa874); the flat 0xa874 read is
@@ -457,7 +456,7 @@ steering_stored:
                 SubgameRuntime* drag_game = game;
                 if ((drag_game->runtime_rows[landing_cell->get_track_cell_row_index()]
                          .flags
-                      & 0x100)
+                      & SUBROW_FLAG_NO_FALL)
                     == 0
                     && !sub_hover.state && !control_override_active) {
                     velocity.z = (1.0f - drag_game->subgame_rate * 0.2f) * velocity.z;
@@ -465,7 +464,7 @@ steering_stored:
                 if (game
                         ->runtime_rows[landing_cell->get_track_cell_row_index()]
                         .flags
-                    & 0x40) {
+                    & SUBROW_FLAG_PRIMARY_ATTACHMENT) {
                     Vector3 swept;
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
@@ -484,7 +483,7 @@ steering_stored:
                     && (game
                             ->runtime_rows[landing_cell->get_track_cell_row_index()]
                             .flags
-                        & 0x80)) {
+                        & SUBROW_FLAG_SECONDARY_ATTACHMENT)) {
                     Vector3 swept;
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;

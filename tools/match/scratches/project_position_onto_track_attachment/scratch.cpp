@@ -12,7 +12,7 @@ void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, f
 {
     SubRow* row = &runtime_rows[(int)position->z];
     *out_angle = 0.0f;
-    if ((row->flags & 0x40) != 0) {
+    if ((row->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
         TrackRowCell* cell = row->primary_attachment_cell;
         Path* template_record = cell->attachment_template_record;
         int sample_index = (int)position->z - cell->get_track_cell_row_index();

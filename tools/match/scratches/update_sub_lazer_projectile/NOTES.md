@@ -170,3 +170,11 @@ active, and state 2 is recycle-pending. State 2 is written both by the bob
 expiry and by player collision, then consumed here to return the inherited BOD
 node through `GameRoot::active_bod_list`. The unused Windows word at +0x84 has
 no independent reader and remains deliberately unnamed.
+
+## 2026-07-14 attachment-span flags
+
+The two containment probes now use `SUBROW_FLAG_PRIMARY_ATTACHMENT` and
+`SUBROW_FLAG_SECONDARY_ATTACHMENT`, matching their borrowed cells at `+0xa4`
+and `+0xa8`. Focused output remains 97.25%, 218/218 instructions, prefix
+82/218, with all 24 operands clean; the only residuals are the established
+commutative x87 load/add orderings.

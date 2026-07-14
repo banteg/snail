@@ -440,23 +440,23 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
         char* row_record = base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE;
         if (base[TRACK_MIRROR_FLAG_OFFSET])
-            *(int*)row_record |= 0x20;
+            *(int*)row_record |= SUBROW_FLAG_MIRRORED;
 
         int authored_flags = *(int*)(
             active_segment + SEGMENT_AUTHORED_ROWS_BASE
             + sizeof(AuthoredSegmentRow) * segment_row);
-        if ((authored_flags & 0x100) != 0)
-            *(int*)row_record |= 0x100;
-        if ((authored_flags & 0x8000) != 0)
-            *(int*)row_record |= 0x8000;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_NO_FALL) != 0)
+            *(int*)row_record |= SUBROW_FLAG_NO_FALL;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF) != 0)
+            *(int*)row_record |= SUBROW_FLAG_JETPACK_OFF;
 
         *(char**)(row_record + offsetof(SubRow, source_segment)) = active_segment;
         *(int*)(row_record + offsetof(SubRow, row_event_id)) = row_event_owner;
 
         char* authored_row = active_segment + SEGMENT_AUTHORED_ROWS_BASE
             + sizeof(AuthoredSegmentRow) * segment_row;
-        if ((authored_flags & 0x2) != 0) {
-            *(int*)row_record |= 0x2;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL) != 0) {
+            *(int*)row_record |= SUBROW_FLAG_ROW_MODEL_PRESENT;
             int object_id = *(int*)(authored_row + AUTHORED_ROW_OBJECT_ID);
             Object* object =
                 g_game->directx_loader.cached_x_mesh_slots[object_id].object;
@@ -470,8 +470,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_Z);
             *(float*)(row_record + ROW_MODEL_POSITION_Z) += (float)build_row;
 
-            if ((authored_flags & 0x8) != 0) {
-                *(int*)row_record |= 0x8;
+            if ((authored_flags
+                    & AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY)
+                != 0) {
+                *(int*)row_record |= SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;
                 *(int*)(row_record + ROW_MODEL_VELOCITY_X) =
                     *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_X);
                 *(int*)(row_record + ROW_MODEL_VELOCITY_Y) =
@@ -485,8 +487,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             }
         }
 
-        if ((authored_flags & 0x1) != 0) {
-            *(int*)row_record |= 0x4001;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0) {
+            *(int*)row_record |=
+                SUBROW_FLAG_PARCEL_CANDIDATE | SUBROW_FLAG_PARCEL_Z_IS_LOCAL;
             ((SubRow*)row_record)->parcel_set_id =
                 *(int*)(authored_row + AUTHORED_ROW_PARCEL_SET_ID);
             *(int*)(row_record + ROW_PROJECTION_X) =
@@ -496,23 +499,25 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)(row_record + ROW_PROJECTION_Z) =
                 *(int*)(authored_row + AUTHORED_ROW_LOCAL_Z);
         }
-        if ((authored_flags & 0x8) != 0) {
-            *(int*)row_record |= 0x8;
+        if ((authored_flags
+                & AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY)
+            != 0) {
+            *(int*)row_record |= SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;
             ((SubRow*)row_record)->attachment_template_index =
                 *(int*)(authored_row + AUTHORED_ROW_PATH_TEMPLATE_INDEX);
         }
-        if ((authored_flags & 0x4) != 0)
-            *(int*)row_record |= 0x4;
-        if ((authored_flags & 0x200) != 0)
-            *(int*)row_record |= 0x200;
-        if ((authored_flags & 0x400) != 0)
-            *(int*)row_record |= 0x400;
-        if ((authored_flags & 0x2000) != 0)
-            *(int*)row_record |= 0x2000;
-        if ((authored_flags & 0x800) != 0)
-            *(int*)row_record |= 0x800;
-        if ((authored_flags & 0x1000) != 0)
-            *(int*)row_record |= 0x1000;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_STAR_MARKER) != 0)
+            *(int*)row_record |= SUBROW_FLAG_SUPPRESS_TRACK_RENDER;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_RING_NONE) != 0)
+            *(int*)row_record |= SUBROW_FLAG_RING_NONE;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL) != 0)
+            *(int*)row_record |= SUBROW_FLAG_RING_NORMAL;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP) != 0)
+            *(int*)row_record |= SUBROW_FLAG_RING_POWER_UP;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE) != 0)
+            *(int*)row_record |= SUBROW_FLAG_RING_EXPLODE;
+        if ((authored_flags & AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW) != 0)
+            *(int*)row_record |= SUBROW_FLAG_RING_SLOW;
         *(int*)(row_record + offsetof(SubRow, ring_speed)) =
             *(int*)(authored_row + AUTHORED_ROW_RING_SPEED);
 
@@ -619,7 +624,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 break;
             case '0':
                 if (level_mode == 1) {
-                    *(int*)row_record = (*(int*)row_record & 0xffffbfff) | 1;
+                    *(int*)row_record =
+                        (*(int*)row_record & ~SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
+                        | SUBROW_FLAG_PARCEL_CANDIDATE;
                     ((SubRow*)row_record)->parcel_set_id = 0;
                     *(float*)(row_record + ROW_PROJECTION_X) = (float)lane - 3.5f;
                     *(int*)(row_record + ROW_PROJECTION_Y) =
@@ -638,7 +645,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             case '7':
             case '8':
             case '9':
-                if ((*(int*)row_record & 0xc0) == 0) {
+                if ((*(int*)row_record & SUBROW_ATTACHMENT_MASK) == 0) {
                     ((BodBase*)(cell + CELL_BOD_BASE))
                         ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                     *(unsigned char*)(cell + CELL_TILE_ID) = 0xf;
@@ -747,11 +754,13 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     if (template_record->row_span_count > 0) {
                         do {
                             int stamped_flags = stamped_row->flags;
-                            if ((stamped_flags & 0x40) == 0) {
-                                stamped_row->flags = stamped_flags | 0x40;
+                            if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) == 0) {
+                                stamped_row->flags =
+                                    stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;
                                 stamped_row->primary_attachment_cell = runtime_cell;
                             } else {
-                                stamped_row->flags = stamped_flags | 0x80;
+                                stamped_row->flags =
+                                    stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;
                                 stamped_row->secondary_attachment_cell = runtime_cell;
                             }
                             ++span_index;

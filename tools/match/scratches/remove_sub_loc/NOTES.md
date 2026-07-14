@@ -177,3 +177,12 @@ cursor still uses byte arithmetic only where VC6's lifetime requires it, with
 its displacement derived from the typed root and runtime-row owners. Focused
 output is unchanged at 91.19%, 130/131 instructions, prefix 87/131, with all
 17 operands clean.
+
+## 2026-07-14 overloaded path/velocity lane
+
+Entry-tile teardown now names the row's `0x08` lane as
+`SUBROW_FLAG_PATH_OR_MODEL_VELOCITY`. The overload is real: the parser sets the
+same authored bit for either `Path=` or model `Velocity=`, while this tile-gated
+consumer uses its path side to decide whether the embedded attachment body can
+be removed. Focused output remains 91.19%, 130/131 instructions, prefix
+87/131, with all 17 operands clean.

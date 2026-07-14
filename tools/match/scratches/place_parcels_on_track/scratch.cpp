@@ -15,10 +15,9 @@
 double random_float_below(float upper_bound, const char* tag);
 void report_errorf(const char* format, ...);
 
-// row records at game + 244*row + 0x5ccac8: flags +0x00 (0x01 live, 0x10
-// parcel occupied, 0x11 written on claim, 0x20 mirror lateral, 0x40
-// attachment row), payload vec3 +0x90, count accumulator +0x94, row-center
-// accumulator +0x98, attachment cell ptr +0xa4.
+// row records at game + 244*row + 0x5ccac8: flags +0x00, payload vec3
+// +0x90, count accumulator +0x94, row-center accumulator +0x98, and primary
+// attachment cell ptr +0xa4. SubRowFlag owns the packed state transitions.
 
 int SubgameRuntime::place_parcels_on_track()
 {
@@ -49,7 +48,8 @@ int SubgameRuntime::place_parcels_on_track()
             ParcelBucket* set_entry = &g_parcel_set_buckets[set_entry_count];
             for (int row = 0; row < record->row_count; ++row) {
                 AuthoredSegmentRow* authored = &record->rows[row];
-                if ((authored->flags & 1) != 0 && authored->parcel_set_id == set) {
+                if ((authored->flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0
+                    && authored->parcel_set_id == set) {
                     if (set) {
                         set_entry->segment_index = segment;
                         set_entry->candidates[set_entry->candidate_count].row = row;
@@ -133,17 +133,20 @@ int SubgameRuntime::place_parcels_on_track()
                 int absolute_row =
                     entry->candidates[spot].row
                     + level_definition.segment_slots[entry->segment_index].row_base;
-                if (runtime_rows[absolute_row].flags & 0x10)
+                if (runtime_rows[absolute_row].flags
+                    & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
                     report_errorf("Duplicate Parcel Request in %s.",
                                   level_definition.level_display_name);
-                runtime_rows[absolute_row].flags |= 0x11;
+                runtime_rows[absolute_row].flags |=
+                    SUBROW_FLAG_PARCEL_CANDIDATE
+                    | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
                 runtime_rows[absolute_row].projection_payload = entry->candidates[spot].position;
                 runtime_rows[absolute_row].projection_payload.z =
                     (float)((double)absolute_row
                             + runtime_rows[absolute_row].projection_payload.z + 0.5);
                 runtime_rows[absolute_row].projection_payload.y =
                     runtime_rows[absolute_row].projection_payload.y + 1.0f;
-                if (runtime_rows[absolute_row].flags & 0x20)
+                if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
                     runtime_rows[absolute_row].projection_payload.x =
                         runtime_rows[absolute_row].projection_payload.x * -1.0f;
             }
@@ -176,17 +179,20 @@ int SubgameRuntime::place_parcels_on_track()
             int absolute_row =
                 entry->candidates[0].row
                 + level_definition.segment_slots[entry->segment_index].row_base;
-            if (runtime_rows[absolute_row].flags & 0x10)
+            if (runtime_rows[absolute_row].flags
+                & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
                 report_errorf("Duplicate Parcel Request in %s.",
                               level_definition.level_display_name);
-            runtime_rows[absolute_row].flags |= 0x11;
+            runtime_rows[absolute_row].flags |=
+                SUBROW_FLAG_PARCEL_CANDIDATE
+                | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
             runtime_rows[absolute_row].projection_payload = entry->candidates[0].position;
             runtime_rows[absolute_row].projection_payload.z =
                 (float)((double)absolute_row
                         + runtime_rows[absolute_row].projection_payload.z + 0.5);
             runtime_rows[absolute_row].projection_payload.y =
                 runtime_rows[absolute_row].projection_payload.y + 1.0f;
-            if (runtime_rows[absolute_row].flags & 0x20)
+            if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
                 runtime_rows[absolute_row].projection_payload.x =
                     runtime_rows[absolute_row].projection_payload.x * -1.0f;
             for (int move = picked; move < zero_entry_count - 1; ++move) {
@@ -218,7 +224,8 @@ int SubgameRuntime::place_parcels_on_track()
     int result = runtime_row_count;
     SubRow* row_record = runtime_rows;
     for (int row = 0; row < runtime_row_count; ++row, ++row_record) {
-        if ((row_record->flags & 1) != 0 && (row_record->flags & 0x40) != 0) {
+        if ((row_record->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
+            && (row_record->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
             TrackRowCell* cell = row_record->primary_attachment_cell;
             int node =
                 (int)row_record->projection_payload.z - cell->get_track_cell_row_index();

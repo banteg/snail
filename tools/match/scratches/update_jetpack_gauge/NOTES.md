@@ -76,3 +76,11 @@ row flag, and final `Hover(tVector&, float)` call. The exact owner is 0x214
 bytes at `Player +0x2750`; the stable Windows function names remain unchanged.
 Replacing the fake derived no-op caller with the typed SubHover member call is
 codegen-neutral at the same honest 85.93% with 34 clean masks.
+
+## 2026-07-14 JetPack row flag
+
+The auto-shutoff test now consumes `SUBROW_FLAG_JETPACK_OFF`, copied from the
+authored `JetPack=Off` metadata lane. It belongs to `SubRow::flags`; the same
+numeric `0x8000` in the separate `SubLoc::lane_and_flags` owner is unrelated.
+Focused output remains 85.93%, 132/131 instructions, prefix 6/131, with all 34
+operands clean.

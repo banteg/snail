@@ -247,7 +247,9 @@ void SubgameRuntime::update_subgame()
 
         cell_index = runtime_row_scan_begin;
         while (cell_index < runtime_row_scan_end) {
-            if ((runtime_rows[cell_index].flags & 2) != zero) {
+            if ((runtime_rows[cell_index].flags
+                    & SUBROW_FLAG_ROW_MODEL_PRESENT)
+                != zero) {
                 BodNode* row_node = &runtime_rows[cell_index].row_model;
                 if ((row_node->list_flags & 0x200) != zero) {
                     report_errorf("List ADD");
@@ -270,7 +272,9 @@ void SubgameRuntime::update_subgame()
                 }
             }
 
-            if ((runtime_rows[cell_index].flags & 0x10) != zero
+            if ((runtime_rows[cell_index].flags
+                    & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
+                != zero
                 && (runtime_flags & 0x800000) != zero)
                 spawn_track_parcel(
                     &runtime_rows[cell_index].projection_payload,
@@ -447,21 +451,21 @@ void SubgameRuntime::update_subgame()
                         }
 
                         unsigned int ring_flags = runtime_rows[cell_index].flags;
-                        if ((ring_flags & 0x200) == 0) {
+                        if ((ring_flags & SUBROW_FLAG_RING_NONE) == 0) {
                             if (cell_slot->cell.tile_id == 35) {
-                                if ((ring_flags & 0x400) != 0) {
+                                if ((ring_flags & SUBROW_FLAG_RING_NORMAL) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 5, &player,
                                         runtime_rows[cell_index].ring_speed);
-                                } else if ((ring_flags & 0x2000) != 0) {
+                                } else if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 8, &player,
                                         runtime_rows[cell_index].ring_speed);
-                                } else if ((ring_flags & 0x800) != 0) {
+                                } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 6, &player,
                                         runtime_rows[cell_index].ring_speed);
-                                } else if ((ring_flags & 0x1000) != 0) {
+                                } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 7, &player,
                                         runtime_rows[cell_index].ring_speed);
@@ -478,7 +482,7 @@ after_authored_ring:
                                 && player.last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
-                                if ((ring_flags & 0x2000) != 0) {
+                                if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
@@ -488,7 +492,7 @@ after_authored_ring:
                                         (&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT]
                                             .position.z;
-                                } else if ((ring_flags & 0x800) != 0) {
+                                } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
@@ -498,7 +502,7 @@ after_authored_ring:
                                         (&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT]
                                             .position.z;
-                                } else if ((ring_flags & 0x1000) != 0) {
+                                } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
@@ -527,14 +531,16 @@ after_authored_ring:
                                 && player.last_ring_spawn_z + 10.0f
                                     < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
-                                if ((ring_flags & 0x800) != 0) {
+                                if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 2, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;
                                 } else if (random_float_below(1.0f, "R2") > 0.7f
                                     || level_mode == 7
-                                    || ((runtime_rows[cell_index].flags & 0x800) != 0)) {
+                                    || ((runtime_rows[cell_index].flags
+                                            & SUBROW_FLAG_RING_EXPLODE)
+                                        != 0)) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 2, &player, 0.0f);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;

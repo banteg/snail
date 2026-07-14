@@ -318,3 +318,12 @@ The state-3/4 pause branch now enters the authored `SubPause` embedded at
 `cRSubPause::AI()` symbols, plus Android's three-pointer body layout, close the
 0x0c-byte owner without changing the honest partial baseline: 79.75%,
 1036/1033 instructions, 117 clean operands, and the same two table mismatches.
+
+## 2026-07-14 runtime row-flag consumers
+
+The row scan now names the model-present and parcel-spawn lanes, while the
+ring dispatcher names all five authored ring modes and the explicit suppress
+bit. These are `SubRow` flags; they are intentionally separate from the
+adjacent `SubLoc::lane_and_flags` hazard/cache owner. Focused output remains
+byte-identical at 79.75%, 1036/1033 instructions, prefix 9/1033, 117 clean
+operands, and the same two table-identity mismatches.

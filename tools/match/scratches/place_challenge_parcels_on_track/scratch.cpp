@@ -27,7 +27,8 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     if (runtime_row_count > 0) {
         SubRow* row = runtime_rows;
         do {
-            if ((row->flags & 1) != 0 && row->parcel_set_id == 0) {
+            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
+                && row->parcel_set_id == 0) {
                 g_parcel_group_survival_0[candidate_count] = row_index;
                 ++candidate_count;
             }
@@ -47,12 +48,16 @@ int SubgameRuntime::place_challenge_parcels_on_track()
             int selected_row = g_parcel_group_survival_0[picked];
             ++placed;
 
-            runtime_rows[selected_row].flags |= 0x11;
+            runtime_rows[selected_row].flags |=
+                SUBROW_FLAG_PARCEL_CANDIDATE
+                | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
             runtime_rows[selected_row].projection_payload.y += 1.0f;
-            if ((runtime_rows[selected_row].flags & 0x20) != 0) {
+            if ((runtime_rows[selected_row].flags & SUBROW_FLAG_MIRRORED) != 0) {
                 runtime_rows[selected_row].projection_payload.x *= -1.0f;
             }
-            if ((runtime_rows[selected_row].flags & 0x4000) != 0) {
+            if ((runtime_rows[selected_row].flags
+                    & SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
+                != 0) {
                 runtime_rows[selected_row].projection_payload.z =
                     (float)selected_row
                     + runtime_rows[selected_row].projection_payload.z
@@ -76,8 +81,10 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     int scan = 0;
     if (result > 0) {
         do {
-            if ((runtime_rows[scan].flags & 1) != 0
-                && (runtime_rows[scan].flags & 0x40) != 0) {
+            if ((runtime_rows[scan].flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
+                && (runtime_rows[scan].flags
+                        & SUBROW_FLAG_PRIMARY_ATTACHMENT)
+                    != 0) {
                 TrackRowCell* cell = runtime_rows[scan].primary_attachment_cell;
                 int source_row = cell->get_track_cell_row_index();
                 int node =

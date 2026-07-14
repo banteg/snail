@@ -34,7 +34,7 @@ Current Zig port note:
 
 - the segment parser and preview pipeline now preserve per-row `RingSpeed` metadata as a first-class row/runtime field instead of dropping it during text import
 
-Observed uses of the packed row-flags dword at `+0x88c`:
+`AuthoredSegmentRowFlag` owns the packed row-flags dword at `+0x88c`:
 
 - low byte:
   - `Parcel` sets `0x01`
@@ -271,17 +271,37 @@ Wall2 / runtime tile `0x0e` render ownership:
 
 ## Runtime Flags
 
-Confirmed authored-to-runtime lanes:
+`SubRowFlag` owns the generated `SubRow::flags` dword. Confirmed
+authored-to-runtime lanes:
 
-- `Parcel` -> runtime low-byte `0x01` plus `0x4000`
-- `NoFall` -> runtime `0x100`
-- `JetPack=Off` -> runtime `0x8000`
+- `Parcel` (`0x0001`) becomes `SUBROW_FLAG_PARCEL_CANDIDATE` plus
+  `SUBROW_FLAG_PARCEL_Z_IS_LOCAL` (`0x4000`); the latter tells challenge
+  placement to add the selected absolute row to the authored local z
+- `3DModel` (`0x0002`) becomes `SUBROW_FLAG_ROW_MODEL_PRESENT`, consumed when
+  `update_subgame` activates the embedded `RowModel`
+- the authored `*` marker (`0x0004`) becomes
+  `SUBROW_FLAG_SUPPRESS_TRACK_RENDER`; both fringe construction and merged-run
+  cleanup suppress the row's cells and attachment body
+- authored `Path` and model `Velocity` deliberately share `0x0008`; the
+  runtime lane remains named `SUBROW_FLAG_PATH_OR_MODEL_VELOCITY` rather than
+  pretending those two parser concepts are separable
+- `NoFall` becomes `SUBROW_FLAG_NO_FALL` (`0x0100`); the proved player-side
+  consumer skips the post-attachment forward-velocity drag on that row
+- `Ring=None`, `Normal`, `Explode`, `Slow`, and `PowerUp` preserve their
+  `0x0200`, `0x0400`, `0x0800`, `0x1000`, and `0x2000` lanes for the ring and
+  special-effect dispatcher
+- `JetPack=Off` becomes `SUBROW_FLAG_JETPACK_OFF` (`0x8000`) and snaps the
+  active jetpack gauge to its `0.94` shutoff band
 
-Important caveat:
+Runtime-only lanes add state that does not belong to the authored record:
 
-- `0x8000` is seeded by authored `JetPack=Off`, but later visual normalization also reuses that lane
-- path attachments use different low-byte lanes, so they should not be flattened together with `JetPack=Off`
-- the rewrite should keep `Parcel`, `NoFall`, `JetPack=Off`, and path attachments as distinct authored concepts
+- `0x0010`: a selected parcel spawn request
+- `0x0020`: mirrored-row parcel coordinates
+- `0x0040` / `0x0080`: primary and overlapping secondary attachment spans
+
+The identical numeric `0x8000` in `SubLoc::lane_and_flags` belongs to the
+separate per-cell owner (`SUBLOC_FLAG_CORNER_OBJECT`). It is not a reuse of the
+`SubRow` jetpack bit.
 
 ## Runtime Cell Quantization
 

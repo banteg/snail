@@ -113,3 +113,11 @@ leave `runtime_row_count`. Unlike the independently proven void warning pass,
 that is not enough to exclude an integer contract, so analysis retains the
 conservative `int32_t` result while the matching member remains a side-effect
 only `cRSubGame::CondenseTrack()` transcription.
+
+## 2026-07-14 row render-suppression flag
+
+The `SubRow::flags` byte reached from the attachment-body cursor now tests
+`SUBROW_FLAG_SUPPRESS_TRACK_RENDER`. Its effect is concrete: clear the cell's
+render/list lanes, remove its uncached-body state, and suppress the row-owned
+attachment body. Focused output remains 67.50%, 284/276 instructions, with all
+12 operands clean.

@@ -104,3 +104,9 @@ inline additions create the exact temporary lifetimes. Focused Wibo improves
 from 88.68% (106/106, prefix 67, five clean operands) to 100.00%, exact
 106/106 with a full prefix and all five operands clean. No scheduling-only
 barrier, volatile local, cast, or lane-order override is retained.
+
+## 2026-07-14 primary attachment flag
+
+The exact projection gate now uses `SUBROW_FLAG_PRIMARY_ATTACHMENT`, tying the
+borrowed path cell at `+0xa4` to its owning span bit. The helper remains exact
+at 106/106 instructions with all five operands clean.

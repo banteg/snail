@@ -136,3 +136,14 @@ Residuals:
   while shrinking the exact 0x114e0 frame. Windows' inline 0x4088-byte rows
   instead produce the retained containing-array strength reductions; no
   pointer cast or synthetic spill was added to imitate the target register.
+
+## 2026-07-14 authored row-flag ownership
+
+The parser's packed metadata now belongs to `AuthoredSegmentRowFlag`. Its
+names come directly from the accepted text (`Parcel`, `3DModel`, `NoFall`, the
+five `Ring=` values, and `JetPack=Off`), while the literal post-row `*` remains
+named as syntax rather than assigned a speculative parser meaning. `Path=` and
+model `Velocity=` deliberately share `0x08`; the enum preserves that overload
+instead of fakematching two independent bits. Focused output is byte-identical
+at 62.24%, 573/571 instructions, prefix 5/571, 80 clean operands, and the same
+five shifted call/string mismatches.

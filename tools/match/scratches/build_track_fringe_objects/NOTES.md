@@ -198,3 +198,11 @@ edge-selector register scheduling; no register-shaped construct is introduced.
 
 The unused scratch-local `Vec3Bits` declaration is also retired: all emitted
 positions already use the shared `Vector3` owned by `BodBase` and `SubLoc`.
+
+## 2026-07-14 row render-suppression flag
+
+Both row checks now consume `SUBROW_FLAG_SUPPRESS_TRACK_RENDER`, the runtime
+copy of the authored `*` marker. They clear directional fringe ownership for
+that row without conflating the flag with any per-cell `SubLoc` bit. Focused
+output remains byte-identical at 60.39%, 492/495 instructions, prefix 3/495,
+with all 48 operands clean.

@@ -351,13 +351,37 @@ public:
 
 typedef char RowModel_must_be_0x8c[(sizeof(RowModel) == 0x8c) ? 1 : -1];
 
+// Runtime row state. The builder copies the authored lanes, then adds parcel
+// selection, mirror, attachment-span, and coordinate-space state. The 0x08
+// lane remains deliberately overloaded between path metadata and model
+// velocity because the authored parser stores both concepts in the same bit.
+enum SubRowFlag {
+    SUBROW_FLAG_PARCEL_CANDIDATE = 0x0001,
+    SUBROW_FLAG_ROW_MODEL_PRESENT = 0x0002,
+    SUBROW_FLAG_SUPPRESS_TRACK_RENDER = 0x0004,
+    SUBROW_FLAG_PATH_OR_MODEL_VELOCITY = 0x0008,
+    SUBROW_FLAG_PARCEL_SPAWN_REQUESTED = 0x0010,
+    SUBROW_FLAG_MIRRORED = 0x0020,
+    SUBROW_FLAG_PRIMARY_ATTACHMENT = 0x0040,
+    SUBROW_FLAG_SECONDARY_ATTACHMENT = 0x0080,
+    SUBROW_ATTACHMENT_MASK = 0x00c0,
+    SUBROW_FLAG_NO_FALL = 0x0100,
+    SUBROW_FLAG_RING_NONE = 0x0200,
+    SUBROW_FLAG_RING_NORMAL = 0x0400,
+    SUBROW_FLAG_RING_EXPLODE = 0x0800,
+    SUBROW_FLAG_RING_SLOW = 0x1000,
+    SUBROW_FLAG_RING_POWER_UP = 0x2000,
+    SUBROW_FLAG_PARCEL_Z_IS_LOCAL = 0x4000,
+    SUBROW_FLAG_JETPACK_OFF = 0x8000,
+};
+
 // Authored per-track-row runtime owner. The Windows constructor ledger names
 // the complete 3200-entry slab cRSubRow and reports 0xbea00 bytes, fixing one
 // SubRow at 0xf4 bytes. Live match sources use this authored owner directly.
 struct SubRow {                          // stride 0xf4
     SubRow* initialize_track_row_runtime(); // @ 0x408590
 
-    unsigned int flags;                  // +0x00, 0x40 primary, 0x80 secondary
+    unsigned int flags;                  // +0x00, SubRowFlag bits
     RowModel row_model;                   // +0x04, ends at +0x90
     // place_parcels_on_track uses this as an overloaded parcel projection
     // payload: x is lateral/local x, y is incremented as a claim/count lane,

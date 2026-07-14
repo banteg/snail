@@ -173,7 +173,9 @@ void SubgameRuntime::merge_track_tile_runs()
                     }
                 }
 
-                if ((((unsigned char*)row_attachment_flags)[-0xb4] & 4) != 0) {
+                if ((((unsigned char*)row_attachment_flags)[-0xb4]
+                        & SUBROW_FLAG_SUPPRESS_TRACK_RENDER)
+                    != 0) {
                     CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &= ~0x222;
                     *cell_lane_flags &= ~SUBLOC_FLAG_UNCACHED_BODY;
                     *row_attachment_flags &= ~0x20;
