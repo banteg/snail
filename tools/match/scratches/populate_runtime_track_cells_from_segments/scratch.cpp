@@ -134,6 +134,26 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     player.follow_state.flag_3c = 0;
 
     enum {
+        TRACK_MIRROR_FLAG_OFFSET =
+            offsetof(SubgameRuntime, track_mirror_enabled),
+        LEVEL_SEGMENT_SLOTS_BASE =
+            offsetof(SubgameRuntime, level_definition)
+            + offsetof(SubTracks, segment_slots),
+        LEVEL_FIRST_SEGMENT_BASE =
+            offsetof(SubgameRuntime, level_definition)
+            + offsetof(SubTracks, first_segment),
+        LEVEL_LAST_SEGMENT_BASE =
+            offsetof(SubgameRuntime, level_definition)
+            + offsetof(SubTracks, last_segment),
+        SCRATCH_SEGMENT_SLOTS_BASE =
+            offsetof(SubgameRuntime, level_definition_scratch)
+            + offsetof(SubTracks, segment_slots),
+        RUNTIME_ROWS_BASE = offsetof(SubgameRuntime, runtime_rows),
+        PATH_PAIRS_BASE = offsetof(SubgameRuntime, path_pairs),
+        PATH_PAIR_SECONDARY_DELTA = offsetof(PathPair, secondary),
+        PATH_36_PRIMARY_SAMPLES =
+            PATH_PAIRS_BASE + 36 * sizeof(PathPair)
+            + offsetof(PathPair, primary) + offsetof(Path, primary_samples),
         ROW_CURSOR_BASE =
             offsetof(SubRow, projection_payload) + offsetof(Vector3, y),
         ROW_CURSOR_TO_FLAGS =
@@ -174,6 +194,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         CELL_LANE_FLAGS_TO_COLOR =
             (int)offsetof(BodBase, color)
             - (int)offsetof(SubLoc, lane_and_flags),
+        ATTACHMENT_SAMPLE_POSITION_Y =
+            offsetof(AttachmentSample, transform)
+            + offsetof(TransformMatrix, position) + offsetof(Vector3, y),
     };
     char* cell_payload_cursor = (char*)&runtime_cells[0][0].fringe_front;
     int* row_cursor = (int*)&runtime_rows[0].projection_payload.y;
@@ -235,12 +258,12 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     char* active_segment = 0;
     for (int build_row = 0; build_row < runtime_row_count; ++build_row) {
         if (build_row == 0) {
-            active_segment = base + 0x1a7cf8;
+            active_segment = base + LEVEL_FIRST_SEGMENT_BASE;
             first_or_last_row = 1;
             segment_row = 0;
             ((SubSegment*)active_segment)->row_base = build_row;
         } else if (build_row == completion_row_start && level_definition.random_enabled == 0) {
-            active_segment = base + 0x1abf18;
+            active_segment = base + LEVEL_LAST_SEGMENT_BASE;
             first_or_last_row = 1;
             segment_row = 0;
             ((SubSegment*)active_segment)->row_base = build_row;
@@ -255,18 +278,21 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                         * (float)level_definition.segment_count;
                     int picked = (int)random_float_below(segment_pick_range, "Segdif");
                     picked = (int)((float)picked * base_subgame_rate);
-                    active_segment = base + 0xa878 + 0x4220 * picked;
+                    active_segment =
+                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
                 } else {
                     segment_pick_range = (float)level_definition.segment_count;
                     int picked = (int)random_float_below(segment_pick_range, "Segtra");
                     picked = (int)((float)picked * base_subgame_rate);
-                    active_segment = base + 0xa878 + 0x4220 * picked;
+                    active_segment =
+                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
                 }
                 ((SubSegment*)active_segment)->visited = 1;
             } else {
                 int picked = segment_cursor;
                 ++segment_cursor;
-                active_segment = base + 0xa878 + 0x4220 * picked;
+                active_segment =
+                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
                 switch_track_mirror();
             }
             segment_row = 0;
@@ -277,27 +303,31 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
         if (level_mode != 2 && build_row >= completion_row_start) {
             if (level_mode == 0 || level_mode == 4 || level_mode == 1 || level_mode == 7) {
-                active_segment = base + 0x1abf18;
+                active_segment = base + LEVEL_LAST_SEGMENT_BASE;
                 if (build_row == completion_row_start)
                     segment_row = 0;
             } else if (level_mode == 3) {
-                // level_definition_scratch.segment_slots[1]
-                active_segment = base + 0x1b4410;
+                active_segment =
+                    base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);
             }
 
             int segment_end =
                 ((SubSegment*)active_segment)->row_count - segment_row + build_row;
-            // The three raw addresses preserve native shape for scratch slots
-            // 1, 3, and 4 of level_definition_scratch.
+            // Keep byte-shaped address formation for scratch slots 1, 3, and
+            // 4 while deriving their storage from the complete owner.
             if (segment_end > completion_row_start
-                && active_segment != base + 0x1b4410
-                && active_segment != base + 0x1bc850
-                && active_segment != base + 0x1c0a70
+                && active_segment
+                    != base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment)
+                && active_segment
+                    != base + SCRATCH_SEGMENT_SLOTS_BASE + 3 * sizeof(SubSegment)
+                && active_segment
+                    != base + SCRATCH_SEGMENT_SLOTS_BASE + 4 * sizeof(SubSegment)
                 && (level_mode == 0
                     || level_mode == 4
                     || level_mode == 1
                     || level_mode == 7
-                    || (level_mode == 3 && active_segment != base + 0x1abf18))) {
+                    || (level_mode == 3
+                        && active_segment != base + LEVEL_LAST_SEGMENT_BASE))) {
                 int extra_rows = ((SubSegment*)active_segment)->row_count
                     - completion_row_start - segment_row + build_row;
                 completion_row_start += extra_rows;
@@ -305,8 +335,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             }
         }
 
-        char* row_record = base + 0xf4 * build_row + 0x5ccac8;
-        if (base[2]) // track_mirror_enabled
+        char* row_record = base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE;
+        if (base[TRACK_MIRROR_FLAG_OFFSET])
             *(int*)row_record |= 0x20;
 
         int authored_flags = *(int*)(active_segment + 0x814 + 0x38 * segment_row);
@@ -372,12 +402,12 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         char attachment_entry_installed = 0;
         for (int lane = 0; lane < 8; ++lane) {
             int authored_lane;
-            if (base[2]) // track_mirror_enabled
+            if (base[TRACK_MIRROR_FLAG_OFFSET])
                 authored_lane = 7 - lane;
             else
                 authored_lane = lane;
 
-            char* cell = base + 0x54 * (lane + build_row * 8);
+            char* cell = base + sizeof(SubLoc) * (lane + build_row * 8);
             int cell_word = *(int*)(cell + 0x3bfb08);
             ((unsigned char*)&cell_word)[0] &= 0xe0;
             cell_word ^= lane & 7;
@@ -471,7 +501,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     *(float*)(row_record + 0x90) = (float)lane - 3.5f;
                     *(int*)(row_record + 0x94) = *(int*)(cell + 0x3bfadc);
                     *(float*)(row_record + 0x98) = (float)build_row + 0.5f;
-                    if (base[2]) // track_mirror_enabled
+                    if (base[TRACK_MIRROR_FLAG_OFFSET])
                         *(float*)(row_record + 0x90) *= -1.0f;
                 }
             case '1':
@@ -561,10 +591,13 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 int template_index =
                     ((SubRow*)row_record)->attachment_template_index;
                 Path* template_record;
-                if (base[2] == 0) // track_mirror_enabled
-                    template_record = (Path*)(base + 0xff2914 + template_index * 0x150);
+                if (base[TRACK_MIRROR_FLAG_OFFSET] == 0)
+                    template_record = (Path*)(
+                        base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));
                 else
-                    template_record = (Path*)(base + 0xff29bc + template_index * 0x150);
+                    template_record = (Path*)(
+                        base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA
+                        + template_index * sizeof(PathPair));
 
                 runtime_cell->attachment_template_record = template_record;
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
@@ -698,7 +731,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             }
 
             if (build_row < 4 && level_mode != 2)
-                *(int*)(cell + 0x3bfadc) = *(int*)(*(char**)(base + 0xff58ac) + 0x34);
+                *(int*)(cell + 0x3bfadc) = *(int*)(
+                    *(char**)(base + PATH_36_PRIMARY_SAMPLES)
+                    + ATTACHMENT_SAMPLE_POSITION_Y);
 
             if (*(unsigned char*)(cell + 0x3bfb04) == 0x1c)
                 *(float*)(cell + 0x3bfadc) -= 0.029999999f;

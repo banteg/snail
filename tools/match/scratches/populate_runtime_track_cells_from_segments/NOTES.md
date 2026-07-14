@@ -431,3 +431,25 @@ track-texture selector and mode-3 repeated row count now read the embedded
 1,208/1,245 frontier with 60 clean operands and the sole documented glyph
 jump-table mismatch; no typed whole-row rewrite or register-forcing alias was
 introduced.
+
+## Builder address ownership (2026-07-14)
+
+The native byte cursors remain because earlier typed rewrites measurably changed
+VC6 scheduling, but their large address constants no longer stand alone:
+
+- ordinary, first, last, and mode-3 scratch segment addresses derive from the
+  two embedded `SubTracks` owners, `SubSegment` stride, and slot indices;
+- the row cursor derives from `SubgameRuntime::runtime_rows` and `sizeof(SubRow)`;
+- the cell index cursor derives from `sizeof(SubLoc)`, while the mirror-byte
+  lookup derives from `SubgameRuntime::track_mirror_enabled`;
+- primary/secondary template selection derives from `path_pairs`, `PathPair`
+  stride, and `PathPair::secondary`; and
+- the early-row height seed resolves to path pair 36's borrowed
+  `Path::primary_samples` pointer and `AttachmentSample::transform.position.y`.
+
+A separately compiled pre-change scratch and this source produce identical
+normalized candidate listings (SHA-256
+`4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`).
+Focused matching therefore remains exactly 29.27%, 1,208/1,245 instructions,
+60 clean operands, and the one documented glyph jump-table mismatch without
+using a typed-expression regression or any match-only forcing.
