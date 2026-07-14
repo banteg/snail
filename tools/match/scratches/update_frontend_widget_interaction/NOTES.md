@@ -176,3 +176,11 @@ Its three active-list removals, player-zero cursor/input reads, and delayed
 widget operations therefore traverse the canonical root graph without a
 scratch-local byte-owner declaration. Focused output remains 68.32%, 644/647
 instructions, with all 93 operands clean.
+
+## 2026-07-14 analysis ownership synchronization
+
+The proven nine-bit `FrontendWidgetFlag` vocabulary now reaches every
+checked-in `FrontendWidget` analysis header and the narrow Binary Ninja replay.
+Both `widget_flags +0x1a0` and `previous_widget_flags +0x1a4` carry the shared
+enum on the exact 0x724-byte live owner. The matcher remains byte-identical;
+unproven interaction/style bits deliberately stay numeric.

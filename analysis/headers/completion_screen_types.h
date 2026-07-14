@@ -28,6 +28,18 @@ typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
 
+typedef enum FrontendWidgetFlag {
+    FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED = 0x00000020,
+    FRONTEND_WIDGET_FLAG_KILL_PENDING = 0x00000200,
+    FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE = 0x00000400,
+    FRONTEND_WIDGET_FLAG_HIDDEN = 0x00001000,
+    FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE = 0x00002000,
+    FRONTEND_WIDGET_FLAG_DISABLED = 0x00008000,
+    FRONTEND_WIDGET_FLAG_POINTER_INSIDE = 0x00020000,
+    FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED = 0x00080000,
+    FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION = 0x40000000,
+} FrontendWidgetFlag;
+
 typedef struct FrontendWidgetTextBuffer {
     uint8_t raw[0x420];
 } FrontendWidgetTextBuffer;
@@ -73,8 +85,8 @@ typedef struct FrontendWidget {
     float slider_hit_bottom;
     int32_t shortcut_key_code;
     uint8_t _pad_198[0x8];
-    uint32_t widget_flags;
-    uint32_t previous_widget_flags;
+    FrontendWidgetFlag widget_flags;
+    FrontendWidgetFlag previous_widget_flags;
     uint8_t _pad_1a8[0x4];
     tColour current_fill_color;
     tColour idle_fill_color;

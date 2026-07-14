@@ -900,6 +900,12 @@ High-confidence current fields:
 - `+0x71c`: `slider_more_widget`
 - `+0x720`: `slider_value_widget`
 
+The adjacent `+0x1a0/+0x1a4` words now share the proven
+`FrontendWidgetFlag` ownership in every checked-in analysis lane and in the
+narrow Binary Ninja replay. Only bits with independent writers and readers are
+named; the remaining interaction/style bits stay unresolved rather than being
+inferred from nearby behavior.
+
 Conservative current read:
 
 - `layout_frontend_widget` owns the authored/live/clamped rect lane plus slider hit bounds

@@ -189,6 +189,7 @@ GOLB_SHOT_FIELD_UPDATES = (
 
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
+    "FrontendWidgetFlag",
     "BarrierActor",
     "LandscapeManager",
     "GUI",

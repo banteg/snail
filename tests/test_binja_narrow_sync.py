@@ -816,6 +816,59 @@ def test_warning_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_frontend_widget_flag_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_frontend_widget_types.h",
+            "completion_screen_types.h",
+            "frontend_replay_types.h",
+            "path_template_types.h",
+        )
+    ]
+    matcher_header = (
+        repo_root / "tools/match/include/frontend_widget.h"
+    ).read_text(encoding="utf-8")
+
+    assert '("0x1a0", "widget_flags", "FrontendWidgetFlag")' in frontend_sync
+    assert (
+        '("0x1a4", "previous_widget_flags", "FrontendWidgetFlag")'
+        in frontend_sync
+    )
+    assert '"FrontendWidgetFlag",' in path_sync
+    for header in (*analysis_headers, matcher_header):
+        assert "FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED = 0x00000020" in header
+        assert "FRONTEND_WIDGET_FLAG_KILL_PENDING = 0x00000200" in header
+        assert "FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE = 0x00000400" in header
+        assert "FRONTEND_WIDGET_FLAG_HIDDEN = 0x00001000" in header
+        assert "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE = 0x00002000" in header
+        assert "FRONTEND_WIDGET_FLAG_DISABLED = 0x00008000" in header
+        assert "FRONTEND_WIDGET_FLAG_POINTER_INSIDE = 0x00020000" in header
+        assert "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED = 0x00080000" in header
+        assert "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION = 0x40000000" in header
+
+    consumers = {
+        "kill_border": "FRONTEND_WIDGET_FLAG_KILL_PENDING",
+        "hide_border_init": "FRONTEND_WIDGET_FLAG_HIDDEN",
+        "border_input_text": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE",
+        "update_frontend_widget_interaction": "FRONTEND_WIDGET_FLAG_POINTER_INSIDE",
+        "set_frontend_widget_shortcut_key": "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED",
+        "queue_frontend_widget_flag_after_delay": "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_damage_guage_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
