@@ -23,8 +23,6 @@ float* layout_and_queue_wrapped_font_text(
     char measure_only,
     char pulse_alpha);
 
-#define WIDGET_FLOAT_AT(widget, offset) (*(float*)((char*)(widget) + (offset)))
-
 int FrontendWidget::layout_frontend_widget()
 {
     FrontendWidget* widget = this;
@@ -117,28 +115,28 @@ int FrontendWidget::layout_frontend_widget()
             *layout_top_ptr = clamped_top_local;
 
             if ((flags & 0x100000) != 0) {
-                WIDGET_FLOAT_AT(widget, 0x184) =
+                widget->slider_hit_left =
                     widget->layout_width * 0.100000001f + clamped_left + 4.0f -
                     12.0f;
-                WIDGET_FLOAT_AT(widget, 0x188) =
+                widget->slider_hit_right =
                     widget->layout_width * 0.80000001f + clamped_left - 4.0f;
                 float slider_mid =
                     widget->layout_height * 0.5f + clamped_top_local;
-                WIDGET_FLOAT_AT(widget, 0x18c) = slider_mid - 6.0f;
-                WIDGET_FLOAT_AT(widget, 0x190) = slider_mid + 32.0f - 6.0f;
+                widget->slider_hit_top = slider_mid - 6.0f;
+                widget->slider_hit_bottom = slider_mid + 32.0f - 6.0f;
             }
 
             if (result == 0) {
                 break;
             }
 
-            widget->child_widget_1->layout_y = widget->texture_hit_y + 33.0f;
-            widget->child_widget_1->layout_frontend_widget();
-            widget->child_widget_0->layout_y = widget->texture_hit_y + 33.0f;
-            widget->child_widget_0->layout_frontend_widget();
-            widget->child_widget_2->layout_anchor_y =
+            widget->slider_more_widget->layout_y = widget->texture_hit_y + 33.0f;
+            widget->slider_more_widget->layout_frontend_widget();
+            widget->slider_less_widget->layout_y = widget->texture_hit_y + 33.0f;
+            widget->slider_less_widget->layout_frontend_widget();
+            widget->slider_value_widget->layout_anchor_y =
                 widget->texture_hit_y + 49.0f;
-            widget = widget->child_widget_2;
+            widget = widget->slider_value_widget;
         } else {
             break;
         }

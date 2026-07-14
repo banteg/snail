@@ -55,3 +55,12 @@ schedule barrier and is removed. The plain width-bit copy retains the recovered
 frontend layout block and exact instruction-count parity at an honest 87.57%,
 177/177, prefix 23, with all 20 operands clean. The remaining drift is argument
 and aggregate-copy allocation, not field ownership.
+
+## 2026-07-14 slider layout ownership
+
+The four slider hit bounds now use the shared `FrontendWidget` fields at
+`+0x184..+0x190`, and the recursive tail follows the owned
+`slider_more_widget`, `slider_less_widget`, and `slider_value_widget` handles
+at `+0x71c/+0x718/+0x720`. This removes the last raw-offset writes and generic
+child aliases from the layout pass while preserving the honest 87.57%,
+177/177 instruction result, 23-instruction prefix, and all 20 clean operands.
