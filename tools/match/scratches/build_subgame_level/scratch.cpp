@@ -31,8 +31,6 @@ void set_input_controller_pointer_authored_xy(int controller, float x, float y);
 
 void SubgameRuntime::build_subgame_level(int level_index)
 {
-    char* game = (char*)this;
-
     g_game->star_manager.unhide_star_field();
     if (level_mode == 7)
         hide_gameplay_scores();
@@ -168,7 +166,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     BodNode* track_bod_list = &track_body_list_head;
     {
-        BodNode* start_row = (BodNode*)(game + 0x359080);
+        BodNode* start_row = &banners.slots[0];
         if ((start_row->list_flags & 0x200) != zero) {
             report_errorf("List ADDafter");
         } else {
@@ -181,18 +179,18 @@ void SubgameRuntime::build_subgame_level(int level_index)
         }
     }
 
-    *(int*)(game + 0x359098) = zero;
-    *(int*)(game + 0x359094) = zero;
-    *(int*)(game + 0x359090) = zero;
-    unsigned int start_flags = *(unsigned int*)(game + 0x359084);
-    *(Player**)(game + 0x3590d4) = embedded_player();
-    *(float*)(game + 0x359098) = (float)*(int*)(game + 0x50);
+    *(int*)&banners.slots[0].position.z = zero;
+    *(int*)&banners.slots[0].position.y = zero;
+    *(int*)&banners.slots[0].position.x = zero;
+    unsigned int start_flags = banners.slots[0].list_flags;
+    banners.slots[0].owner_player = embedded_player();
+    banners.slots[0].position.z = (float)first_block_row_count;
     int row_alpha = 0x3f7fbe77;
-    *(unsigned int*)(game + 0x359084) = start_flags & ~0x20;
-    *(int*)(game + 0x3590b4) = row_alpha;
+    banners.slots[0].list_flags = start_flags & ~0x20;
+    *(int*)&banners.slots[0].color.a = row_alpha;
 
     {
-        BodNode* completion_row = (BodNode*)(game + 0x3590e0);
+        BodNode* completion_row = &banners.slots[1];
         if ((completion_row->list_flags & 0x200) != zero) {
             report_errorf("List ADDafter");
         } else {
@@ -205,15 +203,15 @@ void SubgameRuntime::build_subgame_level(int level_index)
         }
     }
 
-    *(int*)(game + 0x3590f8) = zero;
-    *(int*)(game + 0x3590f4) = zero;
-    *(int*)(game + 0x3590f0) = zero;
-    unsigned int completion_flags = *(unsigned int*)(game + 0x3590e4);
-    *(Player**)(game + 0x359134) = embedded_player();
-    *(float*)(game + 0x3590f8) = (float)*(int*)(game + 0x58);
+    *(int*)&banners.slots[1].position.z = zero;
+    *(int*)&banners.slots[1].position.y = zero;
+    *(int*)&banners.slots[1].position.x = zero;
+    unsigned int completion_flags = banners.slots[1].list_flags;
+    banners.slots[1].owner_player = embedded_player();
+    banners.slots[1].position.z = (float)completion_row_start;
     ((unsigned char*)&completion_flags)[0] &= 0xdf;
-    *(unsigned int*)(game + 0x3590e4) = completion_flags;
-    *(int*)(game + 0x359114) = row_alpha;
+    banners.slots[1].list_flags = completion_flags;
+    *(int*)&banners.slots[1].color.a = row_alpha;
 
     track_state_latch = (unsigned char)zero;
     replay_update_cursor = zero;

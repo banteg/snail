@@ -3,8 +3,7 @@
 ## Scope
 
 This scratch reconstructs `Game::build_subgame_level(int level_index)` at
-`0x437eb0` using shared runtime headers where their call surfaces are already
-stable, with raw `Game` offsets still kept local.
+`0x437eb0` through the shared `SubgameRuntime` and `GameRoot` owner graphs.
 
 The source shape was recovered from both decompile exports:
 
@@ -372,3 +371,17 @@ The jetpack and three weapon nodes now enter the active list through their real
 retains storage ownership and the root list only borrows those four embedded
 subobjects. Focused output is byte-identical at 77.67%, 560/555 instructions,
 prefix 177, with 101 clean operands and the existing state-table mismatch.
+
+## 2026-07-14 Banner owner closure
+
+The start and completion row actors now use the two embedded
+`SubgameRuntime::banners.slots` directly. Their inherited position, list flags,
+color alpha, and `owner_player` backlink are initialized from the named
+`first_block_row_count` and `completion_row_start` fields; the scratch no
+longer needs a raw byte alias of its receiver or any `+0x359080..+0x359134`
+accesses.
+
+This completes the same `BannerPool` ownership used by exact teardown and the
+exact constructor/update pair without reshaping the compiler-sensitive store
+schedule. Focused output remains byte-identical at 77.67%, 560/555
+instructions, prefix 177, with all 101 masked operands clean.
