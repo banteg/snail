@@ -463,7 +463,9 @@ The current high-confidence `Game` fields are:
 - `+0x40`: `level_mode`
 - `+0x44`: `level_mode_arg`
 - `+0x48`: `base_subgame_rate`
-- `+0x4c`: `runtime_flags`
+- `+0x4c`: `runtime_flags`, the game-wide `SubgameRuntimeFlag` course-feature
+  word; it is distinct from authored/runtime row flags, and its proved bit
+  consumers and native mode presets are cataloged in `track-runtime.md`
 - `+0xa854`: `track_state_latch`
 - `+0xa858`: `tutorial`
   - inline `TutorialController`

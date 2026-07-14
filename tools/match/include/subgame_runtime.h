@@ -41,6 +41,41 @@
 #include "track_speedup.h"
 #include "tutorial.h"
 
+// Game-wide course feature bits owned by cRSubGame::runtime_flags at +0x4c.
+// Names below are limited to behavior proved by Windows producers/consumers.
+// Preset-only bits 0x040000, 0x100000, and 0x200000 deliberately remain
+// unnamed until a native consumer establishes their meaning.
+enum SubgameRuntimeFlag {
+    SUBGAME_RUNTIME_FLAG_PRESERVE_SPACE_GLYPH = 0x000001,
+    SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE = 0x000002,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_O_GLYPH = 0x000004,
+    SUBGAME_RUNTIME_FLAG_DEFAULT_RAMP_RINGS = 0x000008,
+    SUBGAME_RUNTIME_FLAG_RING_LIFE_REWARD = 0x000010,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_BRACE_ORIENTATION = 0x000020,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_UNDERSCORE_GLYPH = 0x000040,
+    SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS = 0x000080,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_EQUALS_BAR_GLYPHS = 0x000100,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_RAMP_GLYPHS = 0x000200,
+    SUBGAME_RUNTIME_FLAG_ALLOW_FALLING = 0x000400,
+    SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS = 0x000800,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_DASH_GLYPH = 0x004000,
+    SUBGAME_RUNTIME_FLAG_AMBIENT_SALT = 0x010000,
+    SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS = 0x400000,
+    SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS = 0x800000,
+};
+
+// Composite words written by set_subgame_features and initialize_tutorial.
+// These remain full native masks because the selected-level replay path also
+// persists and restores the complete word, including the three opaque bits.
+enum SubgameRuntimeFlagPreset {
+    SUBGAME_RUNTIME_FLAGS_SWITCH_SEED = 0x000484,
+    SUBGAME_RUNTIME_FLAGS_ENGINE_DEFAULT = 0x600484,
+    SUBGAME_RUNTIME_FLAGS_POSTAL_CHALLENGE = 0xf5cfff,
+    SUBGAME_RUNTIME_FLAGS_TIME_TRIAL = 0x75cfff,
+    SUBGAME_RUNTIME_FLAGS_TUTORIAL = 0xe4cfff,
+    SUBGAME_RUNTIME_FLAGS_TUTORIAL_INIT_OR_MASK = 0x600000,
+};
+
 class SubgameRuntime {
 public:
     SubgameRuntime* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
@@ -123,7 +158,7 @@ public:
     int level_mode; // +0x40
     int level_mode_arg; // +0x44
     float base_subgame_rate; // +0x48, segment/ring speed scale
-    unsigned int runtime_flags; // +0x4c
+    unsigned int runtime_flags; // +0x4c, SubgameRuntimeFlag bits/full preset word
     int first_block_row_count; // +0x50
     int runtime_row_count; // +0x54
     int completion_row_start; // +0x58

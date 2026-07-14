@@ -605,6 +605,10 @@ The Windows agent should assume all of these are already established statically:
 - `NoFall` seeds `SubRow::flags` `0x100`; the proved static consumer suppresses
   post-attachment forward-velocity drag, while glyph normalization reads the
   separate game-wide `runtime_flags` word.
+- `SubgameRuntime::runtime_flags` at `+0x4c` now has sixteen statically proved
+  feature bits. Preset-only bits `0x040000`, `0x100000`, and `0x200000` remain
+  intentionally unnamed; captures should not infer their meaning from mode
+  membership alone.
 
 ## Open Questions To Prioritize
 

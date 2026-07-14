@@ -26,3 +26,11 @@ masked table operands:
 `SubgameRuntime` for the mirror flag, runtime flags, and completion-row fields.
 Focused Wibo remains exact at `100.00%`, `160/160` instructions, with `2` clean
 masked operands.
+
+## 2026-07-14 game-wide feature owner
+
+All twelve feature tests now resolve through the shared
+`SubgameRuntimeFlag` owner. The names describe only the glyph behavior this
+exact helper proves, while the separate falling bit is also backed by the
+player-floor consumer. The focused result remains exact at 100.00%, 160/160
+instructions, full prefix, and two clean table operands.

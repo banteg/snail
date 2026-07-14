@@ -502,3 +502,11 @@ consumer: when the bit is absent after an attachment exit, forward z velocity
 receives rate-scaled drag; when present, that drag is skipped. Focused output
 is byte-identical at 74.20%, 2075/2087 instructions, prefix 12/2087, 290 clean
 operands, and the same bounded jump-table mismatch.
+
+## 2026-07-14 game-wide feature consumers
+
+The player update now identifies `runtime_flags & 0x400` as the game-wide
+falling gate and `runtime_flags & 0x400000` as the movement-fire emitter gate.
+The former remains separate from per-row `SUBROW_FLAG_NO_FALL`. Focused output
+is byte-identical at 74.20%, 2,075/2,087 instructions, prefix 12/2,087, 290
+clean operands, and the same bounded jump-table mismatch.

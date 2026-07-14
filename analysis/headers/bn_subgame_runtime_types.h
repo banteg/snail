@@ -15,6 +15,34 @@ typedef struct TrackRowCell TrackRowCell;
 typedef struct TransformMatrix TransformMatrix;
 typedef struct BodNode BodNode;
 
+typedef enum SubgameRuntimeFlag {
+    SUBGAME_RUNTIME_FLAG_PRESERVE_SPACE_GLYPH = 0x000001,
+    SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE = 0x000002,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_O_GLYPH = 0x000004,
+    SUBGAME_RUNTIME_FLAG_DEFAULT_RAMP_RINGS = 0x000008,
+    SUBGAME_RUNTIME_FLAG_RING_LIFE_REWARD = 0x000010,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_BRACE_ORIENTATION = 0x000020,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_UNDERSCORE_GLYPH = 0x000040,
+    SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS = 0x000080,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_EQUALS_BAR_GLYPHS = 0x000100,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_RAMP_GLYPHS = 0x000200,
+    SUBGAME_RUNTIME_FLAG_ALLOW_FALLING = 0x000400,
+    SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS = 0x000800,
+    SUBGAME_RUNTIME_FLAG_PRESERVE_DASH_GLYPH = 0x004000,
+    SUBGAME_RUNTIME_FLAG_AMBIENT_SALT = 0x010000,
+    SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS = 0x400000,
+    SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS = 0x800000,
+} SubgameRuntimeFlag;
+
+typedef enum SubgameRuntimeFlagPreset {
+    SUBGAME_RUNTIME_FLAGS_SWITCH_SEED = 0x000484,
+    SUBGAME_RUNTIME_FLAGS_ENGINE_DEFAULT = 0x600484,
+    SUBGAME_RUNTIME_FLAGS_POSTAL_CHALLENGE = 0xf5cfff,
+    SUBGAME_RUNTIME_FLAGS_TIME_TRIAL = 0x75cfff,
+    SUBGAME_RUNTIME_FLAGS_TUTORIAL = 0xe4cfff,
+    SUBGAME_RUNTIME_FLAGS_TUTORIAL_INIT_OR_MASK = 0x600000,
+} SubgameRuntimeFlagPreset;
+
 typedef struct Vec3 {
     float x;
     float y;
@@ -349,7 +377,7 @@ typedef struct SubgameRuntime {
     int32_t level_mode;
     int32_t level_mode_arg;
     float base_subgame_rate;
-    uint32_t runtime_flags;
+    uint32_t runtime_flags; /* SubgameRuntimeFlag bits/full preset word. */
     int32_t first_block_row_count;
     int32_t runtime_row_count;
     int32_t completion_row_start;

@@ -11,23 +11,23 @@ int SubgameRuntime::set_subgame_features()
     }
 
     int mode = level_mode;
-    runtime_flags = 0x484;
+    runtime_flags = SUBGAME_RUNTIME_FLAGS_SWITCH_SEED;
     if ((unsigned int)mode <= 7) {
-        runtime_flags = 0x600484;
+        runtime_flags = SUBGAME_RUNTIME_FLAGS_ENGINE_DEFAULT;
         switch (mode) {
         case 0:
         case 1:
-            runtime_flags = 0xf5cfff;
+            runtime_flags = SUBGAME_RUNTIME_FLAGS_POSTAL_CHALLENGE;
             break;
         case 4:
-            runtime_flags = 0x75cfff;
+            runtime_flags = SUBGAME_RUNTIME_FLAGS_TIME_TRIAL;
             break;
         case 7:
-            runtime_flags = 0xe4cfff;
+            runtime_flags = SUBGAME_RUNTIME_FLAGS_TUTORIAL;
             break;
         }
     } else {
-        runtime_flags = 0x600484;
+        runtime_flags = SUBGAME_RUNTIME_FLAGS_ENGINE_DEFAULT;
     }
     return mode;
 }

@@ -275,7 +275,7 @@ void SubgameRuntime::update_subgame()
             if ((runtime_rows[cell_index].flags
                     & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
                 != zero
-                && (runtime_flags & 0x800000) != zero)
+                && (runtime_flags & SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS) != zero)
                 spawn_track_parcel(
                     &runtime_rows[cell_index].projection_payload,
                     &player);
@@ -369,7 +369,8 @@ void SubgameRuntime::update_subgame()
                         } while (fringe_count != zero);
 
                         if (cell_slot->cell.tile_id == 23
-                            && (runtime_flags & 0x800) != zero
+                            && (runtime_flags & SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS)
+                                != zero
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
                             spawn_track_health_pickup(&cell_slot->cell, &player);
@@ -392,7 +393,9 @@ void SubgameRuntime::update_subgame()
                                         & SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN)
                                 == 0
                                 && (hazard_tile == 1 || hazard_tile == 21)
-                                && (runtime_flags & 2) != 0
+                                && (runtime_flags
+                                        & SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE)
+                                    != 0
                                 && random_float_below(1.0f, "G")
                                     > (1.0f - garbage_frequency) * 0.2f
                                         + 0.8f
@@ -433,7 +436,8 @@ void SubgameRuntime::update_subgame()
                             && (hazard_tile == 1 || hazard_tile == 15)
                             && player.click_start.state
                                 != CLICK_START_STATE_WAITING_FOR_START
-                            && (runtime_flags & 0x10000) != 0
+                            && (runtime_flags & SUBGAME_RUNTIME_FLAG_AMBIENT_SALT)
+                                != 0
                             && random_float_below(1.0f, "S")
                                 > (1.0f - salt_frequency) * 0.02f
                                     + 0.98f
@@ -443,7 +447,7 @@ void SubgameRuntime::update_subgame()
                                 &cell_slot->cell.position);
                         }
 
-                        if ((runtime_flags & 0x80) != 0
+                        if ((runtime_flags & SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS) != 0
                             && cell_slot->cell.tile_id == 18
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
@@ -512,7 +516,9 @@ after_authored_ring:
                                         (&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT]
                                             .position.z;
-                                } else if ((runtime_flags & 8) != 0
+                                } else if ((runtime_flags
+                                                & SUBGAME_RUNTIME_FLAG_DEFAULT_RAMP_RINGS)
+                                            != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
                                         || level_mode == 7)
                                     && cell_slot->cell.tile_id != 5 && cell_slot->cell.tile_id != 6

@@ -536,7 +536,8 @@ steering_stored:
                 SubgameRuntime* probe_game = game;
                 if (probe_game->level_mode == 3)
                     probe_game->get_track_grid_cell_at_world_position(p_position);
-                if (((game->runtime_flags & 0x400) == 0 || (g_cheat_state.flags & 2) != 0)
+                if (((game->runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) == 0
+                        || (g_cheat_state.flags & 2) != 0)
                     && transform.position.y < 0.49000001f) {
                     squidge.start_squidge_y(velocity.y);
                     trampoline_bounce_active = 0;
@@ -981,7 +982,10 @@ steering_stored:
         movement_fire_progress = movement_fire_progress_step;
 
     SubgameRuntime* emitter_game = game;
-    if ((emitter_game->runtime_flags & 0x400000) != 0 && !completion_handoff_active
+    if ((emitter_game->runtime_flags
+            & SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS)
+            != 0
+        && !completion_handoff_active
         && !control_override_active
         && (click_start.state == CLICK_START_STATE_INACTIVE
             || click_start.state == CLICK_START_STATE_TEARDOWN)) {

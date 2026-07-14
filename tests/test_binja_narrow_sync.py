@@ -464,6 +464,57 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "SUBROW_FLAG_PARCEL_Z_IS_LOCAL" in place_challenge
 
 
+def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (repo_root / "tools/match/include/subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"SubgameRuntimeFlag",' in binja_source
+    assert '"SubgameRuntimeFlagPreset",' in binja_source
+    for header in (*analysis_headers, matcher_header):
+        assert "SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE = 0x000002" in header
+        assert "SUBGAME_RUNTIME_FLAG_DEFAULT_RAMP_RINGS = 0x000008" in header
+        assert "SUBGAME_RUNTIME_FLAG_RING_LIFE_REWARD = 0x000010" in header
+        assert "SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS = 0x000080" in header
+        assert "SUBGAME_RUNTIME_FLAG_ALLOW_FALLING = 0x000400" in header
+        assert "SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS = 0x000800" in header
+        assert "SUBGAME_RUNTIME_FLAG_AMBIENT_SALT = 0x010000" in header
+        assert "SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS = 0x400000" in header
+        assert "SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS = 0x800000" in header
+        assert "SUBGAME_RUNTIME_FLAGS_POSTAL_CHALLENGE = 0xf5cfff" in header
+        assert "SUBGAME_RUNTIME_FLAGS_TIME_TRIAL = 0x75cfff" in header
+        assert "SUBGAME_RUNTIME_FLAGS_TUTORIAL = 0xe4cfff" in header
+        assert "SUBGAME_RUNTIME_FLAGS_TUTORIAL_INIT_OR_MASK = 0x600000" in header
+
+    consumers = {
+        "set_subgame_features": "SUBGAME_RUNTIME_FLAGS_POSTAL_CHALLENGE",
+        "normalize_segment_glyph_for_track_flags": (
+            "SUBGAME_RUNTIME_FLAG_PRESERVE_RAMP_GLYPHS"
+        ),
+        "initialize_tutorial": "SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE",
+        "update_subgame": "SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS",
+        "update_subgoldy": "SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS",
+        "handle_subgoldy_collisions": "SUBGAME_RUNTIME_FLAG_RING_LIFE_REWARD",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

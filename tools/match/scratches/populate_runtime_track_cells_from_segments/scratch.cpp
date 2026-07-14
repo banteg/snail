@@ -905,7 +905,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(float*)(cell + CELL_POSITION_X) *= 1.10000002f;
 
             if (*(unsigned char*)(cell + CELL_TILE_ID) == 0x16) {
-                if (level_mode != 3 || (runtime_flags & 0x400) != 0) {
+                if (level_mode != 3
+                    || (runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) != 0) {
                     *(float*)(cell + CELL_POSITION_Y) = -3.0f;
                     *(float*)(cell + CELL_POSITION_Z) = row_anchor_z;
                 }

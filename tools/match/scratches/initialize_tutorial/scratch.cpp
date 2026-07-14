@@ -10,10 +10,10 @@ void Tutorial::initialize_tutorial()
 {
     state = 0;
     game = &g_game->subgame;
-    game->runtime_flags |= 0x600000;
+    game->runtime_flags |= SUBGAME_RUNTIME_FLAGS_TUTORIAL_INIT_OR_MASK;
 
     SubgameRuntime* owner = game;
     unsigned int flags = owner->runtime_flags;
-    flags &= 0xfffffffd;
+    flags &= ~SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE;
     owner->runtime_flags = flags;
 }

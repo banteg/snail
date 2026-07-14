@@ -327,3 +327,11 @@ bit. These are `SubRow` flags; they are intentionally separate from the
 adjacent `SubLoc::lane_and_flags` hazard/cache owner. Focused output remains
 byte-identical at 79.75%, 1036/1033 instructions, prefix 9/1033, 117 clean
 operands, and the same two table-identity mismatches.
+
+## 2026-07-14 game-wide feature consumers
+
+The row scanner now names the distinct game-wide gates for parcel requests,
+health pickups, ambient garbage and salt, slug hazards, and default ramp
+rings. These are `SubgameRuntime::runtime_flags` bits, not `SubRow` metadata.
+Focused output remains byte-identical at 79.75%, 1,036/1,033 instructions,
+prefix 9/1,033, 117 clean operands, and the same two table mismatches.

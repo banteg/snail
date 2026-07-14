@@ -198,6 +198,8 @@ REQUIRED_HEADER_STRUCTS = (
     "Galaxy",
     "EnemyManager",
     "RuntimeRateOrLevelArg",
+    "SubgameRuntimeFlag",
+    "SubgameRuntimeFlagPreset",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",

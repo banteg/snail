@@ -312,7 +312,10 @@ void Player::handle_subgoldy_collisions()
                     if (effect_kind == 4 || effect_kind == 5) {
                         int current_lives = lives;
                         if (current_lives < 10) {
-                            if ((ladder_game->runtime_flags & 0x10) != 0 && ladder_game->level_mode != 3)
+                            if ((ladder_game->runtime_flags
+                                    & SUBGAME_RUNTIME_FLAG_RING_LIFE_REWARD)
+                                    != 0
+                                && ladder_game->level_mode != 3)
                                 lives = current_lives + 1;
                             g_voice_manager.play_voice_manager(
                                 VOICE_SET_POWER_UP,

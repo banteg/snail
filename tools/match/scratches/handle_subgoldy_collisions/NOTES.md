@@ -500,3 +500,11 @@ The collision sweep now names its state-1 test as
 pending state to recycle the inherited BOD node, closing the player-to-pool
 lifecycle edge. Focused output remains byte-stable at 53.93%, 651/673
 instructions, with all 86 operands clean.
+
+## 2026-07-14 ring life feature consumer
+
+The kind-4/5 ring collision path now names `runtime_flags & 0x10` for its only
+proved effect: adding one life below ten outside mode 3. It is therefore the
+game-wide ring-life-reward bit, independent of the per-row ring-kind bits.
+Focused output remains byte-stable at 53.93%, 651/673 instructions, prefix 8,
+with all 86 operands clean.

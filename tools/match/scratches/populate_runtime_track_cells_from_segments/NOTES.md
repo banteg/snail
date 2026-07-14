@@ -547,3 +547,11 @@ candidate, and local-z state. The mode-1 digit parcel path explicitly clears
 local-z before storing an already absolute row coordinate. Focused output is
 byte-identical at 29.67%, 1,229/1,245 instructions, 66 clean operands, and the
 same two alignment mismatches.
+
+## 2026-07-14 game-wide feature owner
+
+The mode-3 tile-`0x16` branch now consumes the shared game-wide
+`SUBGAME_RUNTIME_FLAG_ALLOW_FALLING` bit instead of a raw `0x400`. This is not
+the per-row `SUBROW_FLAG_NO_FALL` lane. Focused output is byte-identical at
+29.67%, 1,229/1,245 instructions, 66 clean operands, and the same two
+documented mismatches.

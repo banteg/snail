@@ -110,6 +110,52 @@ Related shared color helper:
 - the currently recovered initializer path (`build_track_colours` -> `sub_44dc50` -> `sub_44db90(..., 1.0)`) leaves those skirt RGB scalars at white unless another later owner mutates them
 - the same helper is used while populating runtime track rows and while emitting fringe objects
 
+## Game-Wide Runtime Feature Flags
+
+`SubgameRuntime::runtime_flags` at `+0x4c` is a game-wide course-feature word.
+It is a separate owner from both `AuthoredSegmentRow::flags` and the copied
+`SubRow::flags` word. `set_subgame_features` writes the mode preset before
+track population, while selected replay/high-score records can restore the
+complete persisted word.
+
+Windows producer/consumer evidence currently proves these individual bits:
+
+| Bit | Recovered owner meaning | Native consumer |
+|---:|---|---|
+| `0x000001` | preserve the space glyph variant | glyph normalizer; also selects disabled `=`/`|` fallbacks |
+| `0x000002` | ambient garbage spawning | random garbage fallback in `update_subgame` |
+| `0x000004` | preserve authored `o` | glyph normalizer |
+| `0x000008` | default ramp rings | unauthored kind-4 ramp-ring path in `update_subgame` |
+| `0x000010` | ring life reward | kind-4/5 ring collision adds one life below ten outside mode 3 |
+| `0x000020` | preserve brace/bracket orientation | glyph normalizer keeps `{}`/`[]` variants instead of collapsing them |
+| `0x000040` | preserve authored `_` | glyph normalizer; also the disabled `o`/`$` fallback |
+| `0x000080` | slug hazards | runtime tile `0x12` slug spawn path |
+| `0x000100` | preserve authored `=` and `|` | glyph normalizer |
+| `0x000200` | preserve ramp punctuation | glyph normalizer gates `<>[]{}` |
+| `0x000400` | allow falling | player update skips its blanket floor clamp; builder preserves gap behavior |
+| `0x000800` | health pickups | runtime tile `0x17` health spawn path |
+| `0x004000` | preserve authored `-` | glyph normalizer |
+| `0x010000` | ambient salt spawning | random salt fallback in `update_subgame` |
+| `0x400000` | movement-fire emitters | late `update_subgoldy` presentation/audio path |
+| `0x800000` | parcel spawns | selected `SubRow` parcel request in `update_subgame` |
+
+The exact native composite words are:
+
+| Producer path | Mask |
+|---|---:|
+| pre-switch seed | `0x000484` |
+| transitional/default engine modes | `0x600484` |
+| Postal and Challenge | `0xf5cfff` |
+| Time Trial | `0x75cfff` |
+| Tutorial from `set_subgame_features` | `0xe4cfff` |
+| `initialize_tutorial` OR mask | `0x600000` |
+
+Bits `0x040000`, `0x100000`, and `0x200000` remain present only through those
+composite presets in the recovered Windows paths. They deliberately remain
+unnamed until a native consumer establishes their behavior; in particular,
+the tutorial `0x600000` OR must not be flattened into two guessed feature
+names. Tutorial then clears only the proved ambient-garbage bit `0x000002`.
+
 ## Level Runtime Field Mapping
 
 High-confidence downstream behavior:

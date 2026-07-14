@@ -24,3 +24,11 @@ the exact 12/12 member to Android/iOS `cRTutorial::Init()`.
 2026-07-14 root-owner closure: `Tutorial::game` now receives
 `&g_game->subgame` directly. The initializer remains exact at 12/12 with both
 operands clean.
+
+## 2026-07-14 game-wide feature owner
+
+The initializer now spells the native `0x600000` write as the composite
+tutorial-init OR mask and clears the proved ambient-garbage bit by name. The
+composite deliberately retains its unresolved `0x200000` member rather than
+inventing a feature label. Focused output remains exact at 12/12 instructions
+with both operands clean.
