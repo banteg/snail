@@ -84,3 +84,15 @@ The opening teardown latch at root `+0x4f26c` is also inside the exact
 `GameRoot::backdrop` extent, at `Backdrop +0x65c`. Its semantics remain
 unproven, so the shared field stays honestly named `unknown_65c`; naming the
 owner is codegen-neutral and does not invent a role.
+
+## 2026-07-14 pool-stride ownership
+
+The two remaining literal pool advances now derive from `sizeof(SubLazer)`
+and `sizeof(Salt)`, agreeing with their complete embedded manager layouts.
+The exact function remains 246/246 with all 41 operands clean.
+
+The next-link cursor's `-8/-4/-0xc` spellings remain intentional. Replacing
+them with equivalent `offsetof(BodNode, ...)` expressions changes VC6's live
+mask choice (`0x200` versus `~0x200`) and regresses the function to 76.70%.
+The shared `BodNode` ownership is proven, but forcing the prettier expression
+would discard the exact native source-shape evidence.

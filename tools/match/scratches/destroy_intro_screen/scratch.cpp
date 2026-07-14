@@ -1,5 +1,7 @@
 // destroy_intro_screen @ 0x419920 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "game_root.h"
 #include "intro_screen_runtime.h"
 #include "runtime_config.h"
@@ -23,7 +25,9 @@ int Logo::destroy_intro_screen()
     if (result > 0) {
         BodNode** next_ref = &letters[0].list_next;
         do {
-            unsigned int* flags_ref = (unsigned int*)((char*)next_ref - 8);
+            unsigned int* flags_ref = (unsigned int*)((char*)next_ref
+                + (int)offsetof(BodNode, list_flags)
+                - (int)offsetof(BodNode, list_next));
             unsigned int flags = *flags_ref;
             BodList* list = &g_game->active_bod_list;
             BodNode* next;
@@ -40,16 +44,21 @@ int Logo::destroy_intro_screen()
 
             next = *next_ref;
             if (next != 0)
-                next->list_prev = *(BodNode**)((char*)next_ref - 4);
+                next->list_prev = *(BodNode**)((char*)next_ref
+                    + (int)offsetof(BodNode, list_prev)
+                    - (int)offsetof(BodNode, list_next));
 
-            prev = *(BodNode**)((char*)next_ref - 4);
+            prev = *(BodNode**)((char*)next_ref
+                + (int)offsetof(BodNode, list_prev)
+                - (int)offsetof(BodNode, list_next));
             if (prev != 0)
                 prev->list_next = *next_ref;
             else
                 list->first = *next_ref;
 
             *next_ref = list->free_top;
-            list->free_top = (BodNode*)((char*)next_ref - 0xc);
+            list->free_top = (BodNode*)((char*)next_ref
+                - (int)offsetof(BodNode, list_next));
 
             updated = *flags_ref;
             updated &= ~0x200;

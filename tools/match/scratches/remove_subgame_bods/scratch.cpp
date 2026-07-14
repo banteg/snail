@@ -1,5 +1,7 @@
 // remove_subgame_bods @ 0x440910 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "bod_list.h"
 #include "game_root.h"
 #include "golb.h"
@@ -15,8 +17,11 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-#define BOD_NEXT_LINK_FLAGS(next_link) (*(DWORD*)((char*)(next_link) - 8))
-#define BOD_NODE_FROM_NEXT_LINK(next_link) ((BodNode*)((char*)(next_link) - 0x0c))
+#define BOD_NEXT_LINK_FLAGS(next_link) \
+    (*(DWORD*)((char*)(next_link) + (int)offsetof(BodNode, list_flags) \
+        - (int)offsetof(BodNode, list_next)))
+#define BOD_NODE_FROM_NEXT_LINK(next_link) \
+    ((BodNode*)((char*)(next_link) - (int)offsetof(BodNode, list_next)))
 
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr)            \
     do {                                                         \

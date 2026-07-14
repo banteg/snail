@@ -40,3 +40,8 @@ it.
 `frontend_state`. The crawl slots borrow `GameRoot::active_bod_list` for
 teardown. Naming all three owners preserves the exact 61/61 instructions and
 all seven operands.
+
+2026-07-14 intrusive-node offset closure: the native loop still keeps its
+cursor at `BodNode::list_next`, but all backward reaches to `list_flags`,
+`list_prev`, and the containing node now derive from the shared member offsets.
+The ownership cleanup remains exact at 61/61 with all seven operands clean.

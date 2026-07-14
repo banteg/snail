@@ -94,14 +94,14 @@ void SubgameRuntime::destroy_subgame()
         for (int i = 0; i < 20; ++i) {
             if ((BOD_NEXT_LINK_FLAGS(sub_lazer_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(sub_lazer_next, linked_flag);
-            sub_lazer_next = (BodNode**)((char*)sub_lazer_next + 0xb0);
+            sub_lazer_next = (BodNode**)((char*)sub_lazer_next + sizeof(SubLazer));
         }
 
         BodNode** salt_next = &salt_hazards.slots[0].list_next;
         for (int j = 0; j < 40; ++j) {
             if ((BOD_NEXT_LINK_FLAGS(salt_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(salt_next, linked_flag);
-            salt_next = (BodNode**)((char*)salt_next + 0x98);
+            salt_next = (BodNode**)((char*)salt_next + sizeof(Salt));
         }
 
         BodNode** banner_next = &banners.slots[0].list_next;

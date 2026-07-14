@@ -166,3 +166,12 @@ The jetpack and weapon channels are now recycled through their inherited
 embedded Snail continues to own all four channel objects. Focused output stays
 byte-identical at 67.67%, 495/501 instructions, 63 clean operands, and the same
 two honest string-order mismatches.
+
+## 2026-07-14 intrusive-node offset closure
+
+The pool loops retain their native `BodNode::list_next` cursors, while the
+backward reach to `list_flags` and the containing node now derives from the
+shared `BodNode` layout. This removes the parallel `-8/-0xc` layout facts
+without changing the cursor ownership or register shape. Focused output stays
+at the honest 67.67%, 495/501 baseline with 63 clean operands and the same two
+documented string-order mismatches.
