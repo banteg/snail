@@ -520,10 +520,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 if (attachment_entry_installed == 0) {
                     attachment_entry_installed = 1;
                     ((BodBase*)(cell + 0x3bfac8))->set_bod_object(
-                        *(void**)((char*)template_record + 0x24));
+                        template_record->object);
                     *(int*)(cell + 0x3bfacc) |= 0x20;
                     ((SubRow*)row_record)->attachment_body.set_bod_object(
-                        *(void**)((char*)template_record + 0x84));
+                        template_record->fringe_mesh_bod.object);
                     *(int*)(row_record + 0xb4) |= 0x20;
                     *(int*)(row_record + 0xac) = *(int*)(active_segment + 0x4014);
 

@@ -217,6 +217,18 @@ arithmetic here is source-shape preservation, not an unresolved owner.
   the previously measured 26.40% regression and was also reverted; neither
   residual is hidden with dummy source or masked proof.
 
+## 2026-07-14 path render-body ownership
+
+- The `P`/`p` entry installer no longer reads opaque `Path +0x24/+0x84`
+  pointers. The exact `initialize_path_template_record_pair` constructor proves
+  that each `Path` owns an inherited `BodBase` at `+0x00` and a second
+  `fringe_mesh_bod` at `+0x60`; the two lanes are therefore
+  `Path::object` and `Path::fringe_mesh_bod.object` respectively.
+- The runtime entry cell borrows the public strip mesh, while the row's
+  embedded attachment body borrows the generated fringe mesh. The raw
+  primary/secondary pair-bank address formation remains deliberate because its
+  typed equivalent changes the large function's register and branch layout.
+
 ## Build sequence
 
 1. runtime_build_seed: replay -> recorded seed; modes 4/7 -> 0; else
