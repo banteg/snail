@@ -15,7 +15,7 @@ void Cameraman::update_cameraman()
 {
     TransformMatrix transform;
     Player* p = player;
-    unresolved_cc = 0;
+    force_camera_update = 0;
     desired_matrix = *transform.initialize_matrix_from_values(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.94600099f, 0.32416201f, 0.0f,

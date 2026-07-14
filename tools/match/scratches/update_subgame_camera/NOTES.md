@@ -38,3 +38,11 @@ front-end `GamePlayer`; they are deliberately distinct from the gameplay
 `SubgameRuntime::player.cameraman` that supplies the target matrix and FOV.
 Replacing the raw root offsets with that complete owner graph remains exact at
 70/70 instructions with all nine masked operands clean.
+
+2026-07-14 camera-source request recovery: both selected camera owners expose
+the same handoff semantic. The cutscene branch copies
+`CutScene::force_camera_update`, and the normal branch copies
+`Cameraman::force_camera_update`, into `SubgameRuntime::camera_snap_requested`.
+The latter was the final unnamed byte in the exact 0xd8-byte Cameraman owner.
+The outer handoff remains exact at 70/70 instructions with all nine operands
+clean.

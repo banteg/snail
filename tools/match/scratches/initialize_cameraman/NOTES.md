@@ -29,3 +29,9 @@ remains exact at 20/20 instructions with six clean masked operands.
 2026-07-14 root-owner closure: both backlinks now follow the canonical
 `GameRoot -> SubgameRuntime -> Player` graph. The method remains exact at
 20/20 with all six operands clean.
+
+2026-07-14 camera handoff recovery: the byte at `Cameraman +0xcc` is
+`force_camera_update`. `update_subgame_camera` copies it into the same
+`camera_snap_requested` gate used by `CutScene::force_camera_update`; the
+Cameraman initializer and AI both clear the request in the shipped Windows
+path. The semantic rename is instruction-exact in this initializer.

@@ -8,7 +8,7 @@ void Cameraman::initialize_cameraman()
 {
     player = g_game->subgame.embedded_player();
     game = &g_game->subgame;
-    unresolved_cc = 0;
+    force_camera_update = 0;
     set_matrix_identity(&previous_desired_matrix);
     set_matrix_identity(&desired_matrix);
     set_matrix_identity(&live_matrix);

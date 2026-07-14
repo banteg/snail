@@ -141,3 +141,13 @@ owns the call edge. The shared Windows type is now `Cameraman`, and both
 analysis prototypes are corrected from incidental `int` to `void`. Focused
 Wibo remains an honest 92.55%, 322/322 instructions, prefix 36/322, with 72
 clean masked operands and the existing single call mismatch.
+
+## 2026-07-14 force-camera-update ownership
+
+The former `unresolved_cc` byte is now `force_camera_update`. The outer
+`cRSubGame::CameraAI()` path copies `Cameraman +0xcc` into
+`SubgameRuntime::camera_snap_requested`, exactly as its alternate cutscene
+branch copies `CutScene::force_camera_update` into that gate. This Cameraman AI
+clears the request at entry in the Windows build. The rename preserves the
+focused 92.55%, 322/322 instruction result and its existing single call-name
+mismatch.

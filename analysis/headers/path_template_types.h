@@ -986,7 +986,7 @@ typedef struct Cameraman {
     Player* player;
     SubgameRuntime* game;
     float fov_degrees;
-    uint8_t unresolved_cc;
+    uint8_t force_camera_update;
     uint8_t _pad_cd[0x3];
     float attachment_lift_envelope;
     float smoothed_attachment_lift_envelope;

@@ -18,7 +18,7 @@ public:
     Player* player; // +0xc0
     SubgameRuntime* game; // +0xc4, non-owning backlink
     float fov_degrees; // +0xc8
-    unsigned char unresolved_cc; // +0xcc
+    unsigned char force_camera_update; // +0xcc, copied into the subgame camera snap gate
     char unknown_cd[3];
     float attachment_lift_envelope; // +0xd0
     float smoothed_attachment_lift_envelope; // +0xd4
