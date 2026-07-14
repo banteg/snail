@@ -1,15 +1,11 @@
 // configure_sprite_render_state @ 0x413670 (cdecl, ret)
 
 #include "direct3d_device8_view.h"
-
-struct SpriteRenderStateView {
-    char unknown_00[0x28];
-    int draw_mode; // +0x28
-};
+#include "sprite.h"
 
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 
-int configure_sprite_render_state(SpriteRenderStateView* sprite)
+int configure_sprite_render_state(Sprite* sprite)
 {
     switch (sprite->draw_mode) {
     case 2:

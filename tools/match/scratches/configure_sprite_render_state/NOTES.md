@@ -2,18 +2,20 @@
 
 Small sprite-renderer state mapper used only by `draw_sprite_quad`.
 
-- `Sprite +0x28` is the sprite draw/render-state mode. The scratch keeps a
-  narrow `SpriteRenderStateView` instead of including `sprite.h`: direct
-  inclusion preserves the instructions but degrades the switch-table masked
-  audit from 18 ok to 16 ok / 2 mismatch.
-- The same switch-table audit issue happens if this scratch includes the shared
-  `Direct3DDevice8` wrapper, so the device wrapper is kept local here even
-  though `draw_sprite_quad` can use the shared view cleanly.
+- `Sprite +0x28` is the sprite draw/render-state mode. The exact helper and its
+  exact `draw_sprite_quad` caller now share the canonical `Sprite*` contract.
+- The Direct3D device and vtable calls use the shared
+  `Direct3DDevice8` wrapper.
 - Native modes `0`, `1`, `2`, `9`, `10`, and `13` program D3D render state
   `0x1b/0x13/0x14`; other modes return the mode unchanged.
 - The native sparse switch lowers through a lookup table before the case jump
   table, so the repeated default path is intentional.
-- 2026-06-20 local view naming: the source now uses
-  `SpriteRenderStateView`, matching the narrow-view rule above. This keeps the
-  exact match at `100.00%`, `109/109`, with `18 ok` masked operands, while
-  removing the misleading `Sprite` header-compatible type candidate.
+
+## 2026-07-14 Sprite owner recovery
+
+The previous scratch-local `SpriteRenderStateView` was not a distinct runtime
+owner; it was a prefix-only workaround for an older jump-table audit issue.
+Retesting the complete shared `Sprite` owner now preserves the exact 109/109
+instruction stream and all 18 audited operands. The function declaration also
+lives in `sprite.h`, so the renderer caller and implementation can no longer
+drift to incompatible parameter types.

@@ -128,6 +128,8 @@ public:
 typedef char Sprite_must_be_0xb4[
     (sizeof(Sprite) == 0xb4) ? 1 : -1];
 
+int configure_sprite_render_state(Sprite* sprite); // @ 0x413670
+
 // Per-frame depth-sort workspace owned by the sprite renderer. The node pool
 // mirrors the manager's fixed sprite capacity; the bucket table covers every
 // clamped 8-bit depth index.

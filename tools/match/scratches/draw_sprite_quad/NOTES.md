@@ -47,3 +47,7 @@ reference. The full 259/259 stream and all 29 operands remain exact.
 2026-07-14 shared vertex ownership: removed the private `SpriteVertex`
 lookalike and used the common `ObjectRenderVertex` payload directly. The exact
 259/259 sprite renderer is retained as the consolidation's regression oracle.
+
+2026-07-14 render-state ABI consolidation: the helper declaration now comes
+from `sprite.h` with the proved `Sprite*` parameter. Removing the caller-local
+prototype preserves the exact 259/259 stream and all 29 operands.

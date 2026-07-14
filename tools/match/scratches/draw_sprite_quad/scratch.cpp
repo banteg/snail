@@ -18,7 +18,6 @@ extern "C" TransformMatrix* __stdcall D3DXMatrixTranslation(
     TransformMatrix* matrix, float x, float y, float z);
 
 void bind_texture_ref(TextureRef* texture);
-int configure_sprite_render_state(Sprite* sprite);
 float cosine(float angle);
 float sine(float angle);
 int report_errorf(const char* format, ...);
