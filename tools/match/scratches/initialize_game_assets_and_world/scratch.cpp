@@ -103,13 +103,13 @@ char GameRoot::initialize_game_assets_and_world()
 
     g_texture_refs.initialize_texture_list(500);
     g_object_list.initialize_object_list(3000);
-    *(int*)(game + 0x514) = 0;
+    unknown_000514 = 0;
     fixed_update_accumulator = 0.0f;
     frame_counter = 0;
     inactive_bod_sentinel.list_next = 0;
     active_bod_list.free_top = &inactive_bod_sentinel;
     active_bod_list.first = 0;
-    *(int*)(game + 0xb48) = 0;
+    unknown_000b48 = 0;
     memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
 
     render_camera_slots[0].sort_key = 0;

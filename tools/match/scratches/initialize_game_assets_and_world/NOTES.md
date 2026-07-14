@@ -659,3 +659,14 @@ positional/default/scaled playback overloads.
 The focused bootstrap improves from 80.49% (5,391/5,411 instructions, 1,549
 clean operands) to 80.50% (5,392/5,411, 1,550 clean operands), while the 101
 broad alignment mismatches remain unchanged.
+
+## 2026-07-14 startup-only root dwords
+
+The two remaining raw root stores at `+0x514` and `+0xb48` are now canonical
+`GameRoot` members with their proven dword width, while deliberately retaining
+offset-based names. A complete Binary Ninja constant sweep finds no field
+consumer for either lane beyond startup's zero stores; other `0x514` hits are
+stack-frame displacements and the other `0xb48` hit is unrelated data. That is
+enough evidence to distinguish owned four-byte storage from padding, but not to
+assign gameplay semantics. The initializer now writes
+`unknown_000514`/`unknown_000b48` directly with no guessed name or fake owner.

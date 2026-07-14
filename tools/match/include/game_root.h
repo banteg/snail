@@ -83,7 +83,7 @@ public:
     int player_count; // +0x40, controls the two-player initialization loop
     GameInput game_inputs[2]; // +0x44, owned cRGameInput array
     GamePlayer players[2]; // +0x124, owned cRPlayer array
-    char unknown_000514[0x518 - 0x514];
+    int unknown_000514; // +0x514, startup-only dword storage
     float fixed_update_accumulator; // +0x518, consumed in unit fixed steps
     int frame_counter; // +0x51c, creation timestamp for front-end borders
     unsigned char input_sampling_gate; // +0x520, live input sampled on first step
@@ -102,7 +102,7 @@ public:
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
     char unknown_000a60[0xb24 - 0xa60];
     TextureSetSelector texture_set_selector; // +0xb24, four track/slide pairs
-    char unknown_000b48[0xb4c - 0xb48];
+    int unknown_000b48; // +0xb48, startup-only dword storage
     // Exact cRBorder manager: the 150-record pool is followed by its delayed
     // transition lane and center-justify scalar, ending at the root BOD bank.
     BorderManager border_manager; // +0xb4c, ends exactly at +0x44100
