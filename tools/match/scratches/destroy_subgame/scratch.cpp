@@ -91,21 +91,27 @@ void SubgameRuntime::destroy_subgame()
             completion.flush_row_event_display();
 
         BodNode** sub_lazer_next = &sub_lazers.slots[0].list_next;
-        for (int i = 0; i < 20; ++i) {
+        for (int i = 0;
+             i < (int)(sizeof(sub_lazers.slots) / sizeof(sub_lazers.slots[0]));
+             ++i) {
             if ((BOD_NEXT_LINK_FLAGS(sub_lazer_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(sub_lazer_next, linked_flag);
             sub_lazer_next = (BodNode**)((char*)sub_lazer_next + sizeof(SubLazer));
         }
 
         BodNode** salt_next = &salt_hazards.slots[0].list_next;
-        for (int j = 0; j < 40; ++j) {
+        for (int j = 0;
+             j < (int)(sizeof(salt_hazards.slots) / sizeof(salt_hazards.slots[0]));
+             ++j) {
             if ((BOD_NEXT_LINK_FLAGS(salt_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(salt_next, linked_flag);
             salt_next = (BodNode**)((char*)salt_next + sizeof(Salt));
         }
 
         BodNode** banner_next = &banners.slots[0].list_next;
-        for (int k = 0; k < 2; ++k) {
+        for (int k = 0;
+             k < (int)(sizeof(banners.slots) / sizeof(banners.slots[0]));
+             ++k) {
             if ((BOD_NEXT_LINK_FLAGS(banner_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(banner_next, linked_flag);
             banner_next = (BodNode**)((char*)banner_next + sizeof(Banner));
@@ -133,7 +139,9 @@ void SubgameRuntime::destroy_subgame()
         g_game->border_manager.kill_border(lives_text_widget);
 
         FrontendWidget** widget = life_stock_widgets;
-        for (int n = 0; n < 9; ++n)
+        for (int n = 0;
+             n < (int)(sizeof(life_stock_widgets) / sizeof(life_stock_widgets[0]));
+             ++n)
             g_game->border_manager.kill_border(widget[n]);
     }
 }

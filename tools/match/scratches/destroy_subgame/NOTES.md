@@ -96,3 +96,11 @@ them with equivalent `offsetof(BodNode, ...)` expressions changes VC6's live
 mask choice (`0x200` versus `~0x200`) and regresses the function to 76.70%.
 The shared `BodNode` ownership is proven, but forcing the prettier expression
 would discard the exact native source-shape evidence.
+
+## 2026-07-14 fixed-array counts
+
+The SubLazer, Salt, Banner, and postal life-stock loops now derive their counts
+from their embedded arrays. Together with the existing `sizeof(SubLazer)`,
+`sizeof(Salt)`, and `sizeof(Banner)` cursor steps, teardown no longer duplicates
+the `20/40/2/9` owner extents in executable source. The function remains exact
+at 246/246 instructions with all 41 masked operands clean.

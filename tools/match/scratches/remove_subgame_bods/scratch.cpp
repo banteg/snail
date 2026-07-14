@@ -45,8 +45,6 @@ int report_errorf(char* format, ...);
 
 void SubgameRuntime::remove_subgame_bods()
 {
-    char* game = (char*)this;
-
     TrackRowCell* cell = &runtime_cells[0][0];
     BodNode** row_next = &runtime_rows[0].row_model.list_next;
     int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);
@@ -142,7 +140,9 @@ void SubgameRuntime::remove_subgame_bods()
     ((RuntimeSlot*)embedded_player())->noop_runtime_ai();
 
     GolbShot* shot = player.golb_shots;
-    for (int m = 0; m < 12; ++m) {
+    for (int m = 0;
+         m < (int)(sizeof(player.golb_shots) / sizeof(player.golb_shots[0]));
+         ++m) {
         if (shot->state == 1)
             shot->kill_golb();
         ++shot;
