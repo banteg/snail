@@ -591,3 +591,20 @@ The startup clear at root `+0x4f2e0` now names
 proves the owning controller and `update_subgame` proves the downstream HUD
 suppression lifecycle. The broad initializer remains byte-identical at 80.49%,
 5,391/5,411 instructions, with 1,542 clean operands.
+
+## 2026-07-14 canonical bootstrap root graph
+
+The startup environment block now names the root-owned fog color and scalar
+state, fixed-step count and accumulator, frame counter, and render-skip count.
+Exact frame-loop and renderer consumers independently prove those members. The
+inline BOD linker reaches `GameRoot::active_bod_list.first` through the typed
+root owner while retaining the native global reload.
+
+The startup services now borrow `subgame.landscape_manager` directly. The
+second menu-background load retains its independent global root reload but
+follows the same canonical `GameRoot -> SubgameRuntime -> LandscapeManager`
+path. Sub-lazer and salt slots likewise store `&subgame` as their borrowed
+owner backlink instead of reconstructing it from root `+0x74618`. Focused
+output remains byte-identical at 80.49%, 5,391/5,411 instructions, with 1,542
+clean operands; the two still-unknown startup words at root `+0x514/+0xb48`
+remain raw.

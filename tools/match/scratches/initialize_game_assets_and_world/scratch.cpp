@@ -59,7 +59,7 @@ static __forceinline void link_root_bod(BodBase* bod)
         return;
     }
 
-    char* head = g_game_base + 0x5ac;
+    char* head = (char*)&((GameRoot*)g_game_base)->active_bod_list.first;
     char* first = *(char**)head;
     if (first != 0) {
         *(char**)(first + 8) = node;
@@ -87,11 +87,11 @@ char GameRoot::initialize_game_assets_and_world()
     Color4f asset_color;
     asset_color.noop_this_constructor();
 
-    ((Color4f*)(game + 0x14))->store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    *(float*)(game + 0x10) = 1.0f;
-    *(float*)(game + 0x08) = 30.0f;
-    *(float*)(game + 0x0c) = 50.0f;
-    *(unsigned char*)(game + 0x04) = 1;
+    fog_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
+    fog_density = 1.0f;
+    fog_start = 30.0f;
+    fog_end = 50.0f;
+    fog_enabled = 1;
     player_count = 2;
     fade.initialize_frontend_fade();
     frontend_link_latch = 0;
@@ -101,14 +101,14 @@ char GameRoot::initialize_game_assets_and_world()
     intro.hide_for_replay_latch = 0;
     subgame.initialize_blink_random();
     subgame.set_subgame_rate(1.1f);
-    *(int*)(game + 0x56c) = 2;
-    *(int*)(game + 0x3c) = 1;
+    render_skip_count = 2;
+    fixed_update_count = 1;
 
     g_texture_refs.initialize_texture_list(500);
     g_object_list.initialize_object_list(3000);
     *(int*)(game + 0x514) = 0;
-    ((GameRoot*)game)->fixed_update_accumulator = 0.0f;
-    ((GameRoot*)game)->frame_counter = 0;
+    fixed_update_accumulator = 0.0f;
+    frame_counter = 0;
     inactive_bod_sentinel.list_next = 0;
     active_bod_list.free_top = &inactive_bod_sentinel;
     active_bod_list.first = 0;
@@ -128,7 +128,7 @@ char GameRoot::initialize_game_assets_and_world()
     memset(g_directx_loader_scratch, 0, 0x15c);
     DirectXLoader* loader = &directx_loader;
     loader->initialize_directx_loader();
-    LandscapeManager* landscape = (LandscapeManager*)(game + 0x106c218);
+    LandscapeManager* landscape = &subgame.landscape_manager;
     landscape->reset_landscape_manager();
     SMTracks* sm_tracks = &subgame.sm_tracks;
     sm_tracks->load_segment_definitions();
@@ -146,8 +146,8 @@ char GameRoot::initialize_game_assets_and_world()
     g_voice_manager.initialize_voice_manager();
     options.apply_audio_config_volumes();
     sm_tracks->load_level_definitions();
-    ((LandscapeManager*)(g_game_base + 0x106c218))
-        ->load_landscape_script_by_name(g_menu_background_script_path);
+    ((GameRoot*)g_game_base)->subgame.landscape_manager
+        .load_landscape_script_by_name(g_menu_background_script_path);
     subgame.level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
 
@@ -414,8 +414,7 @@ char GameRoot::initialize_game_assets_and_world()
             ->set_bod_object(lazer->object);
         ((Object*)*sub_lazer_object)
             ->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
-        *(SubgameRuntime**)((char*)sub_lazer_object + 0x64) =
-            (SubgameRuntime*)(game + 0x74618);
+        *(SubgameRuntime**)((char*)sub_lazer_object + 0x64) = &subgame;
         ((Color4f*)(sub_lazer_object + 1))
             ->store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
         ((Object*)*sub_lazer_object)->blend_mode = 9;
@@ -432,7 +431,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         Salt* salt = (Salt*)((char*)salt_owner - 0x88);
         ((BodBase*)salt)->set_bod_object(salt_model->object);
-        *salt_owner = (SubgameRuntime*)(game + 0x74618);
+        *salt_owner = &subgame;
         salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
         ((Object*)salt->object)->blend_mode = 12;
         set_matrix_identity((TransformMatrix*)&salt->basis_right);
