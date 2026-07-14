@@ -157,3 +157,11 @@ partial with a one-instruction prefix and all 93 masked operands clean.
 The three active-list removals now rely on that proven public inheritance
 directly. No `BodNode*` prefix cast remains to obscure that the list borrows
 the widget's inherited node rather than a separate overlay object.
+
+## 2026-07-14 root ownership closure
+
+The interaction method now holds the process global as `GameRoot*` throughout.
+Its three active-list removals, player-zero cursor/input reads, and delayed
+widget operations therefore traverse the canonical root graph without a
+scratch-local byte-owner declaration. Focused output remains 68.32%, 644/647
+instructions, with all 93 operands clean.

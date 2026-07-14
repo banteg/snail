@@ -91,3 +91,11 @@ progress at root `+0x440ec/+0x440f8/+0x440f0` are now typed as the embedded
   `61 ok / 0 mismatch` masked operands. The two `reserved_color_*` names remain
   explicit placeholders because the binary proves their storage and lifetime,
   but not their authored names.
+
+## 2026-07-14 root ownership closure
+
+Both delayed-glow paths now reach the canonical `GameRoot*` and its embedded
+`BorderManager` without a repeated cast from a scratch-local `char*` global.
+The manager owns the delayed-widget handle, active latch, and progress scalar;
+the widget only borrows that state while drawing. Focused output is unchanged
+at 67.28%, 694/712 instructions, with all 61 operands clean.

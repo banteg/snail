@@ -61,3 +61,10 @@ The editor teardown now reaches the embedded root `BorderManager` directly.
 `border_input_text` stays at 64.64% with 442/446 instructions and eight clean
 operands; `border_input_text_init`, `initialize_input_ok`, and
 `update_input_ok` remain exact at 46/46, 23/23, and 32/32 instructions.
+
+## 2026-07-14 root ownership closure
+
+The editor's final OK-button teardown now uses the canonical `GameRoot*`
+global and its embedded `BorderManager` directly. This retires the last
+`char*` process-root declaration in the authored text-input path while
+preserving the 64.64%, 442/446-instruction result and all eight clean operands.

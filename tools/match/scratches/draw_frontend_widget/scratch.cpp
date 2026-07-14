@@ -6,7 +6,7 @@
 #include "game_root.h"
 #include "runtime_config.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
@@ -97,10 +97,10 @@ void FrontendWidget::draw_frontend_widget()
 
     if (sprite_extend_enabled != 0) {
         float wobble = 0.0f;
-        if (((GameRoot*)g_game_base)->border_manager.delayed_widget_active != 0
-            && this == ((GameRoot*)g_game_base)->border_manager.delayed_widget) {
+        if (g_game->border_manager.delayed_widget_active != 0
+            && this == g_game->border_manager.delayed_widget) {
             wobble = sine(
-                ((GameRoot*)g_game_base)->border_manager.delayed_widget_progress
+                g_game->border_manager.delayed_widget_progress
                 * 3.1415927f) * 3.0f;
             if (sprite_wobble_positive == 0)
                 wobble = wobble * -1.0f;
@@ -212,8 +212,8 @@ void FrontendWidget::draw_frontend_widget()
     queue_axis_aligned_textured_quad_uv(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, glow_layer, 0);
     queue_axis_aligned_textured_quad_uv(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, glow_layer, 0);
 
-    if (((GameRoot*)g_game_base)->border_manager.delayed_widget_active != 0
-        && this == ((GameRoot*)g_game_base)->border_manager.delayed_widget) {
+    if (g_game->border_manager.delayed_widget_active != 0
+        && this == g_game->border_manager.delayed_widget) {
         tColour glow_color;
         glow_color.noop_this_constructor();
         white.set_color_white();
@@ -221,9 +221,9 @@ void FrontendWidget::draw_frontend_widget()
             white.r,
             white.g,
             white.b,
-            1.0f - ((GameRoot*)g_game_base)->border_manager.delayed_widget_progress);
+            1.0f - g_game->border_manager.delayed_widget_progress);
         float glow_edge =
-            (((GameRoot*)g_game_base)->border_manager.delayed_widget_progress
+            (g_game->border_manager.delayed_widget_progress
                 * 0.69999999f
              + 1.0f) * edge;
         queue_axis_aligned_textured_quad_uv(99, x - glow_edge, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, 0.0f, 0.0f, u0, u0, 3, 0);

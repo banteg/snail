@@ -10,7 +10,7 @@
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);
@@ -50,13 +50,13 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     unsigned int flags = widget_flags;
     if (flags == 0) {
-        ((GameRoot*)g_game_base)->active_bod_list.remove_bod(this);
+        g_game->active_bod_list.remove_bod(this);
         tooltip.reset_tooltip();
         return;
     }
     if ((flags & 0x200) != 0) {
         widget_flags = flags & ~0x200u;
-        ((GameRoot*)g_game_base)->active_bod_list.remove_bod(this);
+        g_game->active_bod_list.remove_bod(this);
         tooltip.reset_tooltip();
         widget_flags = 0;
         return;
@@ -65,7 +65,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     if ((flags & 0x400) != 0) {
         teardown_progress = teardown_progress_step + teardown_progress;
         if (teardown_progress > 1.0f) {
-            ((GameRoot*)g_game_base)->active_bod_list.remove_bod(this);
+            g_game->active_bod_list.remove_bod(this);
             tooltip.reset_tooltip();
             widget_flags = 0;
             return;
@@ -87,23 +87,23 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     if ((widget_flags & 0x2000000) != 0
         && mouse_history_warmup_frames == 0
-        && (((GameRoot*)g_game_base)->players[0].mouse_cursor.saved_x != previous_mouse_x
-            || ((GameRoot*)g_game_base)->players[0].mouse_cursor.saved_y != previous_mouse_y)) {
+        && (g_game->players[0].mouse_cursor.saved_x != previous_mouse_x
+            || g_game->players[0].mouse_cursor.saved_y != previous_mouse_y)) {
         widget_flags |= 0x4000000;
     }
 
     if ((widget_flags & 0x80000) != 0
-        && ((GameRoot*)g_game_base)->players[0].mouse_cursor.is_mouse_captured()
+        && g_game->players[0].mouse_cursor.is_mouse_captured()
         && read_pressed_text_input_key_code() == shortcut_key_code) {
         tooltip.reset_tooltip();
         if ((widget_flags & 0x1000000) != 0)
             widget_flags |= 0x20;
         else
-            ((GameRoot*)g_game_base)->border_manager
+            g_game->border_manager
                 .queue_frontend_widget_flag_after_delay(this, 0x20);
     }
 
-    if (((GameRoot*)g_game_base)->players[0].mouse_cursor.is_mouse_captured() == 0
+    if (g_game->players[0].mouse_cursor.is_mouse_captured() == 0
         || border_mouse_test() == 0) {
         widget_flags &= 0xffdfffff;
         if (((widget_flags & 0x2000) == 0)
@@ -131,13 +131,13 @@ void FrontendWidget::update_frontend_widget_interaction()
     }
 
     if ((widget_flags & 0x10) != 0) {
-        GameInput* input = ((GameRoot*)g_game_base)->players[0].game_input;
-        if (((GameRoot*)g_game_base)->border_manager.delayed_widget_active == 0
+        GameInput* input = g_game->players[0].game_input;
+        if (g_game->border_manager.delayed_widget_active == 0
             && (input->input.pressed_buttons & 0x4000) != 0) {
             if ((widget_flags & 0x1000000) != 0) {
                 widget_flags |= 0x20;
             } else {
-                ((GameRoot*)g_game_base)->border_manager
+                g_game->border_manager
                     .queue_frontend_widget_flag_after_delay(this, 0x20);
             }
             if ((widget_flags & 0x800000) == 0)
@@ -148,13 +148,13 @@ void FrontendWidget::update_frontend_widget_interaction()
     }
 
     {
-        GameInput* input = ((GameRoot*)g_game_base)->players[0].game_input;
+        GameInput* input = g_game->players[0].game_input;
         if ((widget_flags & 0x40) != 0
             && (((unsigned char*)&input->input.pressed_buttons)[1] & 0x80) != 0) {
             if ((widget_flags & 0x1000000) != 0)
                 widget_flags |= 0x80;
             else
-                ((GameRoot*)g_game_base)->border_manager
+                g_game->border_manager
                     .queue_frontend_widget_flag_after_delay(this, 0x80);
             g_sound_effect_manager.play_sound_effect(8);
             tooltip.reset_tooltip();
@@ -183,10 +183,10 @@ update_after_input:
     }
 
     if ((widget_flags & 0x2000) != 0
-        && ((GameRoot*)g_game_base)->players[0].mouse_cursor.is_mouse_captured() != 0) {
+        && g_game->players[0].mouse_cursor.is_mouse_captured() != 0) {
         border_input_text();
         if ((widget_flags & 0x2000) == 0)
-            ((GameRoot*)g_game_base)->border_manager.activate_all_borders();
+            g_game->border_manager.activate_all_borders();
     }
 
     twinkle_manager.update_twinkle_manager();
@@ -251,8 +251,8 @@ update_after_input:
 
     if (mouse_history_warmup_frames != 0)
         --mouse_history_warmup_frames;
-    previous_mouse_x = ((GameRoot*)g_game_base)->players[0].mouse_cursor.saved_x;
-    previous_mouse_y = ((GameRoot*)g_game_base)->players[0].mouse_cursor.saved_y;
+    previous_mouse_x = g_game->players[0].mouse_cursor.saved_x;
+    previous_mouse_y = g_game->players[0].mouse_cursor.saved_y;
 
     if ((widget_flags & 0x100000) != 0) {
         FrontendWidget* more = slider_more_widget;

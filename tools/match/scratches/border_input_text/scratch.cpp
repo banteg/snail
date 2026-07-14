@@ -5,7 +5,7 @@
 #include "game_root.h"
 #include "input_ok_state.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 char read_repeating_text_input_key_code();
 
@@ -278,6 +278,6 @@ finish_input:
     widget_flags = closing_flags;
     layout_frontend_widget();
     if ((input_flags & 0x0c) != 0)
-        ((GameRoot*)g_game_base)->border_manager
+        g_game->border_manager
             .kill_border(input_ok_state()->ok_widget);
 }
