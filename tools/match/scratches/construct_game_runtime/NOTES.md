@@ -437,3 +437,17 @@ verified structurally rather than whitelisted.
   byte-for-byte (`bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`)
   and the honest 88.89% focused result (`299/268`, prefix `2/268`, 120 clean
   operands).
+
+## 2026-07-14 root constructor pool extents
+
+- The `GameRoot` owner now supplies the two `GameInput`, two `GamePlayer`, and
+  five `RenderCameraSlot` constructor-loop extents from its fixed arrays. The
+  camera cursor advances by its recovered type instead of a raw `0x28` stride.
+- The `BorderManager` owner likewise supplies its exact `BorderRecord` stride
+  and 150-record capacity to the array constructor instead of duplicating
+  `0x724` and `0x96` literals.
+- These compile-time ownership derivations preserve the normalized candidate
+  listing byte-for-byte
+  (`bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`)
+  and the honest 88.89% focused result (`299/268`, prefix `2/268`, 120 clean
+  operands).

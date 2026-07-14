@@ -82,7 +82,8 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         GameRoot* root = (GameRoot*)game;
         GameInput* game_input = &root->game_inputs[0];
-        int game_input_count = 2;
+        int game_input_count =
+            sizeof(root->game_inputs) / sizeof(root->game_inputs[0]);
         do {
             game_input->initialize_bod_base();
             game_input->vtable = &g_game_input_callback_table;
@@ -91,7 +92,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         } while (game_input_count);
 
         GamePlayer* player = &root->players[0];
-        int player_count = 2;
+        int player_count = sizeof(root->players) / sizeof(root->players[0]);
         do {
             player->initialize_game_player();
             ++player;
@@ -101,10 +102,11 @@ __forceinline GameRootAllocation::GameRootAllocation()
         root->inactive_bod_sentinel.initialize_bod_base();
 
         RenderCameraSlot* camera = &root->render_camera_slots[0];
-        int camera_count = 5;
+        int camera_count =
+            sizeof(root->render_camera_slots) / sizeof(root->render_camera_slots[0]);
         do {
             camera->initialize_render_camera_slot();
-            camera = (RenderCameraSlot*)((char*)camera + 0x28);
+            ++camera;
             --camera_count;
         } while (camera_count);
 
@@ -132,8 +134,8 @@ __forceinline GameRootAllocation::GameRootAllocation()
         border_manager->initialize_bod_base();
         initialize_array_with_constructor(
             (RuntimeSlot*)&border_manager->borders[0],
-            0x724,
-            0x96,
+            sizeof(border_manager->borders[0]),
+            BORDER_RECORD_COUNT,
             &RuntimeSlot::initialize_border_record);
         border_manager->vtable = &g_border_manager_callback_table;
 
