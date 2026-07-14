@@ -55,7 +55,7 @@ void Completion::update_row_event_display()
                         game->subgame.parcel_home_anchor(),
                         &game->subgame.player);
                 Sprite* sprite = parcel->sprite;
-                parcel->state = 6;
+                parcel->state = PARCEL_STATE_DELIVERY_PENDING;
                 sprite->size_end = 0.0f;
                 parcel->sprite->size_start = 0.0f;
             }

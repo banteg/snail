@@ -22,3 +22,9 @@ pool geometry.
 through `ParcelManager::slots` instead of adding the 0x23-word representation
 of the 0x8c-byte stride. Matching remains exact at 18/18 instructions with both
 operands clean.
+
+## 2026-07-14 parcel lifecycle ownership
+
+Allocation now tests `PARCEL_STATE_INACTIVE` directly. This closes the free
+slot contract against reset and every updater teardown while preserving the
+exact 18/18 instruction body and both clean operands.

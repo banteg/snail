@@ -67,6 +67,18 @@ typedef struct EnemyManager {
     ContactTargetEntry entries[256];
 } EnemyManager;
 
+typedef enum ParcelState {
+    PARCEL_STATE_INACTIVE = 0,
+    PARCEL_STATE_TRACK_ACTIVE = 1,
+    /* The updater preserves values 2 and 3, but no live Windows writer is known. */
+    PARCEL_STATE_UNKNOWN_2 = 2,
+    PARCEL_STATE_UNKNOWN_3 = 3,
+    PARCEL_STATE_COLLECT_PENDING = 4,
+    PARCEL_STATE_COLLECTING = 5,
+    PARCEL_STATE_DELIVERY_PENDING = 6,
+    PARCEL_STATE_DELIVERING = 7,
+} ParcelState;
+
 /* Exact 0x8c-byte Windows cRParcel, flattened across its BodBase prefix. */
 typedef struct Parcel {
     void* vtable;
@@ -81,7 +93,7 @@ typedef struct Parcel {
     float color_g;
     float color_b;
     float color_a;
-    int32_t state;
+    ParcelState state;
     SubgameRuntime* owner_subgame;
     uint8_t unknown_40[0x54 - 0x40];
     Sprite* sprite;

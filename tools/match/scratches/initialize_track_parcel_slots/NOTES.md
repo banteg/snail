@@ -14,3 +14,10 @@ The 2026-07-14 extent pass derives the loop bound from
 `ParcelManager::slots`. Its normalized listing remains byte-identical
 (`764ab79c9a5d43f9013f4ec2996b4c288e80374c3d7d455e45359d914adc70ac`)
 and exact at 13/13 instructions with one clean operand.
+
+## 2026-07-14 parcel lifecycle ownership
+
+The run reset now names each manager-owned slot's terminal value as
+`PARCEL_STATE_INACTIVE`. The borrowed `owner_subgame` backlink is unchanged,
+and focused matching remains exact at 13/13 instructions with one clean
+operand.

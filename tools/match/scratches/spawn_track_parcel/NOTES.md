@@ -25,3 +25,9 @@ Exact match.
   exact Windows `Parcel*` return is authored API semantics rather than a
   caller-ignored register artifact. iOS v1.9 adds the source `cRSubRow*`
   argument, but preserves the same SubGame/Parcel ownership relationship.
+
+## 2026-07-14 parcel lifecycle ownership
+
+The spawner now enters `PARCEL_STATE_TRACK_ACTIVE`, pairing the exact producer
+with the manager's inactive-slot allocator and the collision consumer. Focused
+matching remains exact at 96/96 instructions with all five operands clean.

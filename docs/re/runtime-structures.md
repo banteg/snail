@@ -997,7 +997,7 @@ The placed parcel pickups now line up on a dedicated embedded runtime slot shape
 High-confidence current fields:
 
 - `+0x10`: `world_position`
-- `+0x38`: `state`
+- `+0x38`: `state` (`ParcelState`)
 - `+0x3c`: `owner_subgame`
 - `+0x54`: `sprite`
 - `+0x5c`: `bob_phase`
@@ -1017,15 +1017,20 @@ Current practical read:
 
 - `initialize_runtime_pools_and_path_template_bank` seeds the `50`-slot array with `initialize_track_parcel_runtime`
 - `build_subgame_level` clears the live array for the current run through `initialize_track_parcel_slots`
-- `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->parcel_manager`, seeds the spawn position, installs the sprite, and stores the borrowed player pointer
-- `update_track_parcel` runs the parcel's bobbing, homing, and final delivery arc, then calls `register_parcel_delivery(&parcel->owner_subgame->completion)` before killing the sprite and clearing the slot state
+- `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->parcel_manager`, seeds the spawn position, installs the sprite, stores the borrowed player pointer, and enters `TRACK_ACTIVE`
+- `update_track_parcel` owns the recovered lifecycle:
+  - `TRACK_ACTIVE` bobs on the track and retires behind the player
+  - collision moves the slot to `COLLECT_PENDING`; the updater advances it to `COLLECTING` and homes it into the player's parcel anchor
+  - `update_row_event_display` reuses a spawned slot as `DELIVERY_PENDING`; the updater advances it to `DELIVERING`, flies it into `Completion::widget_world`, and calls `register_parcel_delivery`
+  - every completed or discarded lane returns the manager-owned slot to `INACTIVE`
+  - values `2` and `3` remain `UNKNOWN_2` and `UNKNOWN_3`: the exact updater treats both as inert, but no recovered live Windows producer writes either value
 - `place_parcels_on_track` and `place_challenge_parcels_on_track` decide how many authored parcel rows stay live and feed the HUD-facing `parcel_target_count`
   - the survival/challenge path first builds the full candidate list in the
     global 4096-entry `g_parcel_group_survival_0` bank (cross-port original
     symbol `gParcelGroupSurvival0`), then keeps `target_count` entries with one
     random draw and in-place compaction per kept parcel; it is not an
     `N - target` random-removal pass
-- `handle_subgoldy_collisions` reads the same slots back, awards the parcel score tier, and flips collected slots from state `1` to state `4`
+- `handle_subgoldy_collisions` reads the same slots back, awards the parcel score tier, and moves collected slots from `TRACK_ACTIVE` to `COLLECT_PENDING`
 - these slots are the gameplay parcel runtime behind `cRSubGame::AddParcel`, not a separate manager path from it
 
 ## Track Pickup Runtime

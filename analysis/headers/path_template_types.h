@@ -255,9 +255,21 @@ typedef struct JetPack {
     Vapour vapour_b;
 } JetPack;
 
+typedef enum ParcelState {
+    PARCEL_STATE_INACTIVE = 0,
+    PARCEL_STATE_TRACK_ACTIVE = 1,
+    /* The updater preserves values 2 and 3, but no live Windows writer is known. */
+    PARCEL_STATE_UNKNOWN_2 = 2,
+    PARCEL_STATE_UNKNOWN_3 = 3,
+    PARCEL_STATE_COLLECT_PENDING = 4,
+    PARCEL_STATE_COLLECTING = 5,
+    PARCEL_STATE_DELIVERY_PENDING = 6,
+    PARCEL_STATE_DELIVERING = 7,
+} ParcelState;
+
 typedef struct Parcel {
     BodBase bod;
-    int32_t state;
+    ParcelState state;
     SubgameRuntime* owner_subgame;
     uint8_t _pad_40[0x54 - 0x40];
     Sprite* sprite;

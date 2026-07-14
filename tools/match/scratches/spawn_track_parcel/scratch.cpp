@@ -6,7 +6,7 @@ Parcel* SubgameRuntime::spawn_track_parcel(Vector3* world_position, Player*)
 {
     Parcel* parcel = parcel_manager.allocate_track_parcel_slot();
     if (parcel != 0) {
-        parcel->state = 1;
+        parcel->state = PARCEL_STATE_TRACK_ACTIVE;
         parcel->position = *world_position;
         parcel->owner_player = &player;
 

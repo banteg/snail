@@ -518,3 +518,12 @@ selector-only ladder, and explode kinds arm the nuke. Kind `1` stays explicitly
 unknown despite its proved score + `PW1` behavior because its producer is not
 recovered. Focused output remains 53.93%, 651/673 instructions, prefix 8/673,
 with all 86 operands clean.
+
+## 2026-07-14 parcel lifecycle ownership
+
+The parcel sweep now names its only accepted source state as
+`PARCEL_STATE_TRACK_ACTIVE` and its collision handoff as
+`PARCEL_STATE_COLLECT_PENDING`. The exact parcel updater independently consumes
+that transition and completes the flight into the player-owned home anchor.
+Focused output remains byte-stable at 53.93%, 651/673 instructions, prefix
+8/673, with all 86 operands clean.

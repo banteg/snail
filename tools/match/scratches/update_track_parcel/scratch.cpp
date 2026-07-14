@@ -32,13 +32,13 @@ void Parcel::update_track_parcel()
         return;
 
     switch (state) {
-    case 0:
+    case PARCEL_STATE_INACTIVE:
         break;
 
-    case 1: {
+    case PARCEL_STATE_TRACK_ACTIVE: {
         if (subgame->embedded_player()->interaction_max_z - 10.0f > position.z) {
             sprite->kill_sprite();
-            state = 0;
+            state = PARCEL_STATE_INACTIVE;
         }
 
         float advanced_bob = bob_phase_step + bob_phase;
@@ -57,11 +57,11 @@ void Parcel::update_track_parcel()
         return;
     }
 
-    case 2:
-    case 3:
+    case PARCEL_STATE_UNKNOWN_2:
+    case PARCEL_STATE_UNKNOWN_3:
         return;
 
-    case 4: {
+    case PARCEL_STATE_COLLECT_PENDING: {
         float bob_lift = sine(bob_phase * 6.2831855f) * 0.30000001f;
         SubgameRuntime* current_subgame = owner_subgame;
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
@@ -73,14 +73,14 @@ void Parcel::update_track_parcel()
         float distance = delta.vector_magnitude();
 
         Vector3* direction_home_anchor = owner_subgame->parcel_home_anchor();
-        state = 5;
+        state = PARCEL_STATE_COLLECTING;
         target_distance = distance;
         travel_dir = position - *direction_home_anchor;
         travel_dir.normalize_vector();
     }
         /* fall through */
 
-    case 5: {
+    case PARCEL_STATE_COLLECTING: {
         float remaining = 1.0f - progress;
         Vector3* home_anchor = owner_subgame->parcel_home_anchor();
         position = travel_dir * (remaining * target_distance) + *home_anchor;
@@ -96,16 +96,16 @@ void Parcel::update_track_parcel()
         progress = advanced_progress;
         if (advanced_progress > 1.0f) {
             Sprite* dying_sprite = sprite;
-            state = 0;
+            state = PARCEL_STATE_INACTIVE;
             dying_sprite->kill_sprite();
         }
         return;
     }
 
-    case 6:
+    case PARCEL_STATE_DELIVERY_PENDING:
         progress = 0.0f;
         progress_step = 0.0166666675f;
-        state = 7;
+        state = PARCEL_STATE_DELIVERING;
         delivery_offset.x =
             ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;
         {
@@ -116,7 +116,7 @@ void Parcel::update_track_parcel()
         }
         /* fall through */
 
-    case 7: {
+    case PARCEL_STATE_DELIVERING: {
         SubgameRuntime* current_subgame = owner_subgame;
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
         delta = current_subgame->completion.widget_world - *home_anchor;
@@ -137,7 +137,7 @@ void Parcel::update_track_parcel()
         if (advanced_progress > 1.0f) {
             owner_subgame->completion.register_parcel_delivery();
             Sprite* dying_sprite = sprite;
-            state = 0;
+            state = PARCEL_STATE_INACTIVE;
             dying_sprite->kill_sprite();
         }
         break;

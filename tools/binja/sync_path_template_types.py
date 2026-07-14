@@ -214,6 +214,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Banner",
     "Vapour",
     "JetPack",
+    "ParcelState",
     "AxisAngle",
     "Quaternion",
     "RenderableBod",

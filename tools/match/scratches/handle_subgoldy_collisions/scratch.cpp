@@ -199,7 +199,7 @@ void Player::handle_subgoldy_collisions()
              n += (int)sizeof(Parcel)) {
             Parcel* parcel =
                 (Parcel*)((char*)game->parcel_manager.slots + n);
-            if (parcel->state == 1) {
+            if (parcel->state == PARCEL_STATE_TRACK_ACTIVE) {
                 probe_salt.x = parcel->position.x - cached_camera_target_world.x;
                 probe_salt.y = parcel->position.y - cached_camera_target_world.y;
                 probe_salt.z = parcel->position.z - cached_camera_target_world.z;
@@ -209,7 +209,7 @@ void Player::handle_subgoldy_collisions()
                     g_voice_manager.play_voice_manager(
                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
                     g_sound_effect_manager.play_sound_effect(27);
-                    parcel->state = 4;
+                    parcel->state = PARCEL_STATE_COLLECT_PENDING;
                     SubgameRuntime* parcel_game = game;
                     int collected = parcels_collected + 1;
                     parcels_collected = collected;

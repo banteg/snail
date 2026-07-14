@@ -89,3 +89,14 @@ is the native Windows schedule. Focused matching is now exact: **100.00%,
 312/312 instructions, full 312/312 prefix, and 35 clean masked operands**.
 No volatile barrier, dummy dependency, precision cast, or unrelated work is
 used to force the ordering.
+
+## 2026-07-14 parcel lifecycle ownership
+
+The exact switch now exposes `ParcelState`: active track parcels bob until
+collision or retirement, `COLLECT_PENDING -> COLLECTING` owns the flight into
+the player's home anchor, and `DELIVERY_PENDING -> DELIVERING` owns the later
+flight into `Completion::widget_world`. All terminal paths return the slot to
+`INACTIVE`. Values `2` and `3` remain explicitly unknown because this updater
+only preserves them as inert states and no recovered live producer writes
+either one. Focused matching remains exact at 312/312 instructions with all 35
+operands clean.

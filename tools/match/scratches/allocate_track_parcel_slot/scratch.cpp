@@ -9,7 +9,7 @@ Parcel* ParcelManager::allocate_track_parcel_slot()
     int index = 0;
     Parcel* scan = slots;
 
-    while (index < 50 && scan->state != 0) {
+    while (index < 50 && scan->state != PARCEL_STATE_INACTIVE) {
         ++index;
         ++scan;
         if (index >= 50) {

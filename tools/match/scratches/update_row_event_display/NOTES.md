@@ -165,3 +165,11 @@ hides, reveals, and blinks `title_widget`, `bonus_icon_widget`, and
 `bonus_summary_widget` directly. The root declaration and all traversals are
 canonical, and focused output remains byte-exact at 213/213 instructions with
 all 38 operands clean.
+
+## 2026-07-14 parcel lifecycle ownership
+
+The completion controller's staged parcel producer now writes
+`PARCEL_STATE_DELIVERY_PENDING`. This distinguishes its HUD-bound reuse of a
+fresh slot from the normal track-active spawn and closes the producer edge into
+the exact parcel updater's delivery transition. Focused matching remains exact
+at 213/213 instructions with all 38 operands clean.

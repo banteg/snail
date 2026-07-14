@@ -572,6 +572,55 @@ def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_parcel_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/track_parcel_runtime.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"ParcelState",' in runtime_sync
+    assert '("0x38", "state", "ParcelState")' in runtime_sync
+    assert '"ParcelState",' in path_sync
+    for header in (*analysis_headers, matcher_header):
+        assert "PARCEL_STATE_INACTIVE = 0" in header
+        assert "PARCEL_STATE_TRACK_ACTIVE = 1" in header
+        assert "PARCEL_STATE_UNKNOWN_2 = 2" in header
+        assert "PARCEL_STATE_UNKNOWN_3 = 3" in header
+        assert "PARCEL_STATE_COLLECT_PENDING = 4" in header
+        assert "PARCEL_STATE_COLLECTING = 5" in header
+        assert "PARCEL_STATE_DELIVERY_PENDING = 6" in header
+        assert "PARCEL_STATE_DELIVERING = 7" in header
+
+    consumers = {
+        "update_track_parcels": "PARCEL_STATE_INACTIVE",
+        "initialize_track_parcel_slots": "PARCEL_STATE_INACTIVE",
+        "allocate_track_parcel_slot": "PARCEL_STATE_INACTIVE",
+        "update_track_parcel": "PARCEL_STATE_UNKNOWN_2",
+        "spawn_track_parcel": "PARCEL_STATE_TRACK_ACTIVE",
+        "handle_subgoldy_collisions": "PARCEL_STATE_COLLECT_PENDING",
+        "update_row_event_display": "PARCEL_STATE_DELIVERY_PENDING",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

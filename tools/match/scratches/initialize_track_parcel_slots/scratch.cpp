@@ -10,7 +10,7 @@ void ParcelManager::initialize_track_parcel_slots()
     Parcel* slot = slots;
     int count = sizeof(slots) / sizeof(slots[0]);
     do {
-        slot->state = 0;
+        slot->state = PARCEL_STATE_INACTIVE;
         slot->owner_subgame = &g_game->subgame;
         ++slot;
         --count;
