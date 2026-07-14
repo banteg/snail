@@ -1,9 +1,12 @@
 // initialize_subgame @ 0x4374b0 (thiscall)
 
+#include <stddef.h>
+
 #include "backdrop.h"
 #include "border_manager.h"
 #include "gui.h"
 #include "frontend_widget.h"
+#include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
 #include "runtime_config.h"
@@ -18,7 +21,7 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 #pragma intrinsic(memcpy)
 #pragma intrinsic(memset)
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
@@ -35,9 +38,13 @@ void SubgameRuntime::initialize_subgame()
     int scratch[6];
 
     TrackRowCellFringeLinkView* cell = runtime_cell_fringe_links();
-    for (int row = 0; row < 3200; ++row) {
-        for (int lane = 0; lane < 8; ++lane) {
-            memset(cell, 0, 4 * sizeof(Fringe*));
+    for (int row = 0;
+         row < (int)(sizeof(runtime_cells) / sizeof(runtime_cells[0]));
+         ++row) {
+        for (int lane = 0;
+             lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
+             ++lane) {
+            memset(cell, 0, offsetof(TrackRowCellFringeLinkView, next_cell));
             ++cell;
         }
     }
@@ -46,15 +53,12 @@ void SubgameRuntime::initialize_subgame()
     if (selector == 2 || selector == 1) {
         cache_music_file(g_main_menu_music_path, 0, g_blank_text);
         int script_index =
-            ((LandscapeManager*)(g_game_base + 0x106c218))
-                ->load_landscape_script_by_name(g_menu_background_script_path);
-        ((Backdrop*)(g_game_base + 0x4ec10))
-            ->change_backdrop(
-                &((LandscapeManager*)(g_game_base + 0x106c218))
-                    ->scripts[script_index],
+            g_game->subgame.landscape_manager
+                .load_landscape_script_by_name(g_menu_background_script_path);
+        g_game->backdrop.change_backdrop(
+                &g_game->subgame.landscape_manager.scripts[script_index],
                 0);
-        ((BorderManager*)(g_game_base + 0xb4c))
-            ->set_border_justify_centre(0x41c80000);
+        g_game->border_manager.set_border_justify_centre(0x41c80000);
     }
 
     int level_mode = this->level_mode;
@@ -91,8 +95,7 @@ void SubgameRuntime::initialize_subgame()
     subgame_state = 0;
     *(int*)(game + 0x1272828) = 0;
 
-    top_score_widget =
-        ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    top_score_widget = g_game->border_manager.allocate_border();
     top_score_widget->initialize_frontend_widget(
         0x400002,
         "0",
@@ -107,8 +110,7 @@ void SubgameRuntime::initialize_subgame()
     top_score_widget->text_buffer[0] = 0;
 
     if (this->level_mode == 0) {
-        lives_icon_widget =
-            ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        lives_icon_widget = g_game->border_manager.allocate_border();
         lives_icon_widget->initialize_frontend_sprite_button(
             0x400800,
             122,
@@ -120,8 +122,7 @@ void SubgameRuntime::initialize_subgame()
         lives_icon_widget->hide_border_init();
         lives_icon_widget->sprite_shadow_offset = 0.0f;
 
-        lives_text_widget =
-            ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+        lives_text_widget = g_game->border_manager.allocate_border();
         lives_text_widget->initialize_frontend_widget(
             0x400002,
             "0",
@@ -137,8 +138,7 @@ void SubgameRuntime::initialize_subgame()
         int icon_index = 0;
         FrontendWidget** icon_slot = life_stock_widgets;
         do {
-            *icon_slot =
-                ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+            *icon_slot = g_game->border_manager.allocate_border();
             (*icon_slot)->initialize_frontend_sprite_button(
                 0x400800,
                 123,
@@ -151,7 +151,8 @@ void SubgameRuntime::initialize_subgame()
             (*icon_slot)->hide_border_init();
             ++icon_index;
             ++icon_slot;
-        } while (icon_index < 9);
+        } while (icon_index
+            < (int)(sizeof(life_stock_widgets) / sizeof(life_stock_widgets[0])));
     }
 
     level_mode = this->level_mode;
@@ -177,8 +178,7 @@ void SubgameRuntime::initialize_subgame()
         }
     }
 
-    bottom_score_widget =
-        ((BorderManager*)(g_game_base + 0xb4c))->allocate_border();
+    bottom_score_widget = g_game->border_manager.allocate_border();
     bottom_score_widget->initialize_frontend_widget(
         0x400002,
         "0",
@@ -214,16 +214,16 @@ void SubgameRuntime::initialize_subgame()
         break;
     }
 
-    if (*(unsigned char*)(g_game_base + 0x4f2e0) != 0 || this->level_mode == 7) {
+    if (*(unsigned char*)((char*)g_game + 0x4f2e0) != 0 || this->level_mode == 7) {
         bottom_score_widget->hide_border_init();
         top_score_widget->hide_border_init();
     }
 
-    if (*(unsigned char*)(g_game_base + 0x30d) != 0)
+    if (*(unsigned char*)((char*)g_game + 0x30d) != 0)
         return;
 
-    *(unsigned char*)(g_game_base + 0x30d) = 0;
-    *(int*)(g_game_base + 0x310) = 0;
+    *(unsigned char*)((char*)g_game + 0x30d) = 0;
+    *(int*)((char*)g_game + 0x310) = 0;
     level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
     Player* player = embedded_player();

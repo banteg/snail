@@ -380,6 +380,19 @@ aliases respectively and restore the 85 clean operands.
   the latter. The method remains instruction-exact at 396/396 with all 85
   operands clean.
 
+## 2026-07-14 exact root and fixed-pool ownership
+
+Landscape loading, backdrop selection, border allocation, and center
+justification now use the canonical `GameRoot* g_game` and its embedded
+owners. The unknown bytes at root `+0x4f2e0`, `+0x30d`, and `+0x310` remain
+raw because their authored member identities are not yet established.
+
+The grid reset derives its 3,200-row and eight-lane bounds from
+`runtime_cells`; the four borrowed fringe handles are cleared through the
+field-first view up to `next_cell`; and the HUD life-stock loop derives its
+nine handles from `life_stock_widgets`. The complete method remains exact at
+396/396 instructions with all 85 operands clean.
+
 2026-07-13 root BOD-list owner refresh:
 
 - Retiring the duplicate sub-lazer and garbage list-anchor typedefs advances
