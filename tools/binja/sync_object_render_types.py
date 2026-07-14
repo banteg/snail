@@ -21,6 +21,10 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
+TEXTURE_REF_FIELDS = (
+    ("0x00", "flags", "TextureRefFlags"),
+)
+
 OBJECT_FIELDS = (
     ("0x08", "toon_vertices", "Vec3*"),
     ("0x0c", "toon_facequad_normals", "ObjectToonFaceQuadNormal*"),
@@ -229,6 +233,14 @@ def main() -> int:
         )
     )
     operations.extend(apply_struct_field_updates(REPO_ROOT, target=args.target, struct_name="Object", updates=OBJECT_FIELDS))
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="TextureRef",
+            updates=TEXTURE_REF_FIELDS,
+        )
+    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,

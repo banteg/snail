@@ -28,3 +28,11 @@ Recovered sprite relationships:
   instead of wrapping to zero.
 
 Exact match: 100.00%, 125/125 instructions, with ten masked operands audited.
+
+## 2026-07-14 analysis ownership synchronization
+
+The proven eleven-bit `SpriteFlag` word now reaches both checked-in concrete
+`Sprite` analysis headers and the narrow Binary Ninja replays at owner `+0x04`.
+The live owner remains exactly 0xb4 bytes, and this exact matcher remains
+byte-identical. Bits without independent lifecycle or renderer evidence remain
+unnamed.

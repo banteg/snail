@@ -106,6 +106,17 @@ typedef enum FrontendWidgetFlag {
     FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION = 0x40000000,
 } FrontendWidgetFlag;
 
+typedef enum TextureRefFlags {
+    TEXTURE_REF_RETAIN_SOURCE_BYTES = 0x20,
+    TEXTURE_REF_REGISTERED = 0x400,
+    TEXTURE_REF_DISABLE_PATH_REUSE = 0x800,
+    TEXTURE_REF_WRAP_ADDRESSING = 0x1000,
+    TEXTURE_REF_ANIMATED = 0x2000,
+    TEXTURE_REF_ANIMATION_PING_PONG = 0x4000,
+    TEXTURE_REF_SKIP_RUNTIME_LOAD = 0x8000,
+    TEXTURE_REF_HAS_ALPHA = 0x10000,
+} TextureRefFlags;
+
 typedef union AuthoredFloatBits {
     int32_t bits;
     float value;
@@ -520,7 +531,7 @@ typedef struct SubPause {
 } SubPause;
 
 typedef struct TextureRef {
-    uint32_t flags;
+    TextureRefFlags flags;
     uint8_t _pad_04[0x8];
     char name[0x8c - 0x0c];
     int32_t slot_index;

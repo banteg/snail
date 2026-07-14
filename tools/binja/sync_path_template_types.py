@@ -190,6 +190,7 @@ GOLB_SHOT_FIELD_UPDATES = (
 REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "FrontendWidgetFlag",
+    "TextureRefFlags",
     "BarrierActor",
     "LandscapeManager",
     "GUI",
@@ -475,6 +476,10 @@ CLICK_START_FIELD_UPDATES = (
     ("0x8c", "teardown_progress_step", "float"),
     ("0x98", "owner_player", "Player*"),
     ("0xa8", "hide_prompt", "uint8_t"),
+)
+
+TEXTURE_REF_FIELD_UPDATES = (
+    ("0x00", "flags", "TextureRefFlags"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -1249,6 +1254,7 @@ def main() -> int:
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("Nuke", NUKE_FIELD_UPDATES),
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
+                ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),

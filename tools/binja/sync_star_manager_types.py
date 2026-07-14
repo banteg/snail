@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     current_struct_size,
+    current_type_widths,
     emit_summary,
     types_declare_missing_only,
 )
@@ -30,8 +31,13 @@ EXPECTED_STRUCT_SIZES = {
     "StarManager": 0x4C,
 }
 
+EXPECTED_FLAG_TYPE_WIDTHS = {
+    "TextureRefFlags": 0x4,
+    "SpriteFlag": 0x4,
+}
+
 TEXTURE_REF_FIELD_UPDATES = (
-    ("0x00", "flags", "uint32_t"),
+    ("0x00", "flags", "TextureRefFlags"),
     ("0x04", "loaded_width", "int32_t"),
     ("0x08", "loaded_height", "int32_t"),
     ("0x0c", "name", "char[0x80]"),
@@ -44,7 +50,7 @@ TEXTURE_REF_FIELD_UPDATES = (
 
 SPRITE_FIELD_UPDATES = (
     ("0x00", "object_ref", "void*"),
-    ("0x04", "flags", "uint32_t"),
+    ("0x04", "flags", "SpriteFlag"),
     ("0x08", "owner", "int32_t"),
     ("0x0c", "next", "Sprite*"),
     ("0x10", "prev", "Sprite*"),
@@ -188,15 +194,26 @@ def main() -> int:
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
         if current_struct_size(REPO_ROOT, target=args.target, struct_name=name) != expected_size
     )
+    flag_type_widths = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=EXPECTED_FLAG_TYPE_WIDTHS,
+    )
+    missing_flag_types = tuple(
+        name
+        for name, expected_width in EXPECTED_FLAG_TYPE_WIDTHS.items()
+        if flag_type_widths.get(name) != expected_width
+    )
     type_operation: dict[str, object]
-    if mismatched_types:
+    if mismatched_types or missing_flag_types:
         type_operation = types_declare_missing_only(
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            replace_types=mismatched_types,
+            replace_types=(*mismatched_types, *missing_flag_types),
         )
         type_operation["repaired_types"] = mismatched_types
+        type_operation["declared_flag_types"] = missing_flag_types
         type_operation["expected_sizes"] = {
             name: EXPECTED_STRUCT_SIZES[name] for name in mismatched_types
         }
@@ -207,6 +224,7 @@ def main() -> int:
             "reason": "sprite and star-manager owner sizes already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
+            "expected_flag_type_widths": EXPECTED_FLAG_TYPE_WIDTHS,
         }
 
     struct_updates = (

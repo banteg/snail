@@ -1371,6 +1371,13 @@ High-confidence `TextureRef` / `TextureRefList` surface used by facequads:
 - `TextureRef +0x8c`: `slot_index`
 - `TextureRef +0x98`: `arg3_98`
 - `TextureRef +0xa0`: `one_a0`
+
+The exact `TextureRef +0x00` word now carries the shared `TextureRefFlags`
+ownership in the object-render, path, and star-manager analysis lanes. The
+exact 0xb4-byte `Sprite` owner likewise carries `SpriteFlag` at `+0x04` in the
+star and garbage-hazard lanes. These names cover only behavior closed by
+independent lifecycle, renderer, animation, and loader consumers; unknown bits
+remain unnamed.
   - both names stay intentionally offset-based: `get_or_create_texture_ref` writes caller `arg3` into `arg3_98` and constant `1` into `one_a0`, but their gameplay meaning is still open
 
 Binary Ninja typing note:

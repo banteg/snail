@@ -66,3 +66,7 @@ Rejected/no-op variants:
   `TEXTURE_REF_REGISTERED`. Font-atlas registration independently reasserts
   that baseline flag, while split atlases combine it with
   `TEXTURE_REF_RETAIN_SOURCE_BYTES`; the allocator remains exact at 79/79.
+- 2026-07-14 analysis ownership synchronization: the complete proven
+  `TextureRefFlags` vocabulary now reaches every concrete checked-in
+  `TextureRef` analysis header and the narrow Binary Ninja field replays at
+  owner `+0x00`. The exact allocator remains byte-identical at 79/79.

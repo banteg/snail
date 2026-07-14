@@ -40,10 +40,24 @@ typedef struct BodList {
     BodNode* free_top;
 } BodList;
 
+typedef enum SpriteFlag {
+    SPRITE_FLAG_ACTIVE = 0x0001,
+    SPRITE_FLAG_ORIENT_TO_MOTION = 0x0002,
+    SPRITE_FLAG_SKIP_INITIAL_PROGRESS = 0x0008,
+    SPRITE_FLAG_RENDER_ENABLED = 0x0040,
+    SPRITE_FLAG_PRESERVE_AT_PROGRESS_END = 0x0100,
+    SPRITE_FLAG_DELAYED_RENDER = 0x0200,
+    SPRITE_FLAG_THROTTLE_FACING_REFRESH = 0x0400,
+    SPRITE_FLAG_GAMEPLAY_OWNED = 0x0800,
+    SPRITE_FLAG_FORCE_OPAQUE = 0x1000,
+    SPRITE_FLAG_ANIMATED = 0x2000,
+    SPRITE_FLAG_ANIMATION_PING_PONG = 0x4000,
+} SpriteFlag;
+
 typedef struct Sprite Sprite;
 struct Sprite {
     void* object_ref;
-    uint32_t flags;
+    SpriteFlag flags;
     int32_t owner;
     Sprite* next;
     Sprite* prev;

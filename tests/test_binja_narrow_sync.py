@@ -869,6 +869,99 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    sync_sources = {
+        script_name: (BINJA_DIR / script_name).read_text(encoding="utf-8")
+        for script_name in (
+            "sync_garbage_hazard_types.py",
+            "sync_object_render_types.py",
+            "sync_path_template_types.py",
+            "sync_star_manager_types.py",
+        )
+    }
+    sprite_analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_garbage_hazard_types.h",
+            "star_manager_types.h",
+        )
+    ]
+    texture_analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_object_render_types.h",
+            "object_render_types.h",
+            "path_template_types.h",
+            "star_manager_types.h",
+        )
+    ]
+    matcher_header = (repo_root / "tools/match/include/sprite.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '("0x04", "flags", "SpriteFlag")' in sync_sources[
+        "sync_garbage_hazard_types.py"
+    ]
+    assert '("0x04", "flags", "SpriteFlag")' in sync_sources[
+        "sync_star_manager_types.py"
+    ]
+    assert '("0x00", "flags", "TextureRefFlags")' in sync_sources[
+        "sync_object_render_types.py"
+    ]
+    assert '("0x00", "flags", "TextureRefFlags")' in sync_sources[
+        "sync_path_template_types.py"
+    ]
+    assert '("0x00", "flags", "TextureRefFlags")' in sync_sources[
+        "sync_star_manager_types.py"
+    ]
+
+    sprite_constants = (
+        "SPRITE_FLAG_ACTIVE = 0x0001",
+        "SPRITE_FLAG_ORIENT_TO_MOTION = 0x0002",
+        "SPRITE_FLAG_SKIP_INITIAL_PROGRESS = 0x0008",
+        "SPRITE_FLAG_RENDER_ENABLED = 0x0040",
+        "SPRITE_FLAG_PRESERVE_AT_PROGRESS_END = 0x0100",
+        "SPRITE_FLAG_DELAYED_RENDER = 0x0200",
+        "SPRITE_FLAG_THROTTLE_FACING_REFRESH = 0x0400",
+        "SPRITE_FLAG_GAMEPLAY_OWNED = 0x0800",
+        "SPRITE_FLAG_FORCE_OPAQUE = 0x1000",
+        "SPRITE_FLAG_ANIMATED = 0x2000",
+        "SPRITE_FLAG_ANIMATION_PING_PONG = 0x4000",
+    )
+    texture_constants = (
+        "TEXTURE_REF_RETAIN_SOURCE_BYTES = 0x20",
+        "TEXTURE_REF_REGISTERED = 0x400",
+        "TEXTURE_REF_DISABLE_PATH_REUSE = 0x800",
+        "TEXTURE_REF_WRAP_ADDRESSING = 0x1000",
+        "TEXTURE_REF_ANIMATED = 0x2000",
+        "TEXTURE_REF_ANIMATION_PING_PONG = 0x4000",
+        "TEXTURE_REF_SKIP_RUNTIME_LOAD = 0x8000",
+        "TEXTURE_REF_HAS_ALPHA = 0x10000",
+    )
+    for header in (*sprite_analysis_headers, matcher_header):
+        for constant in sprite_constants:
+            assert constant in header
+    for header in (*texture_analysis_headers, matcher_header):
+        for constant in texture_constants:
+            assert constant in header
+
+    consumers = {
+        "initialize_sprite": "SPRITE_FLAG_RENDER_ENABLED",
+        "update_sprite": "SPRITE_FLAG_ANIMATION_PING_PONG",
+        "update_sprite_facing_angle": "SPRITE_FLAG_THROTTLE_FACING_REFRESH",
+        "draw_sprite_quad": "SPRITE_FLAG_FORCE_OPAQUE",
+        "get_or_create_texture_ref": "TEXTURE_REF_DISABLE_PATH_REUSE",
+        "load_registered_texture_ref": "TEXTURE_REF_SKIP_RUNTIME_LOAD",
+        "bind_texture_ref": "TEXTURE_REF_WRAP_ADDRESSING",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_damage_guage_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

@@ -24,6 +24,7 @@ TARGET = DEFAULT_TARGET
 REQUIRED_HEADER_STRUCTS = (
     "BodList",
     "BodNode",
+    "SpriteFlag",
     "GarbageHazardPool",
     "GarbageHazardSlot",
     "Sprite",
@@ -41,7 +42,7 @@ SUBGAME_FIELD_UPDATES = (
 
 SPRITE_FIELD_UPDATES = (
     ("0x00", "object_ref", "void*"),
-    ("0x04", "flags", "uint32_t"),
+    ("0x04", "flags", "SpriteFlag"),
     ("0x08", "owner", "int32_t"),
     ("0x0c", "next", "Sprite*"),
     ("0x10", "prev", "Sprite*"),
