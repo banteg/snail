@@ -145,3 +145,9 @@ to its containing keyframe now subtracts
 the next record already uses `sizeof(XAnimationKeyframe)`, so the full cursor
 relationship is now derived from the owned type. Focused Wibo remains exact at
 231/231 instructions with all 17 operands clean.
+
+2026-07-14 animation-flag ownership: the allocated record now exposes its
+stored 16-bit word as `ObjectAnimationFlags`, backed by the proven
+`ObjectAnimationFlag` values. The selector-only preserve-current value lives
+in the separate `ObjectAnimationModeOverride` enum because `-1` is accepted by
+the authored `int` API but never narrowed into this member.

@@ -36,7 +36,7 @@ void AnimManager::update_anim_manager()
         }
 
         if (progress < 0.0f) {
-            unsigned char* frame_flags = (unsigned char*)active_animation;
+            unsigned char* frame_flags = (unsigned char*)&active_animation->flags;
             if ((*frame_flags & OBJECT_ANIMATION_MODE_PING_PONG) != 0) {
                 progress = -progress;
                 completed = true;

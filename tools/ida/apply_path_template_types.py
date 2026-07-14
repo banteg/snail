@@ -394,7 +394,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_weapon_animation",
-        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
+        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
     ),
     (
         "update_snail_skin_transition",
@@ -582,7 +582,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "dispatch_cutscene_animation",
-        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
+        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
     ),
     (
         "initialize_cutscene_ai",

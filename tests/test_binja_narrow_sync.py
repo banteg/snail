@@ -4,6 +4,8 @@ from pathlib import Path
 
 
 BINJA_DIR = Path(__file__).parents[1] / "tools/binja"
+IDA_DIR = Path(__file__).parents[1] / "tools/ida"
+HEADER_DIR = Path(__file__).parents[1] / "analysis/headers"
 MODULE_PATH = BINJA_DIR / "_narrow_sync.py"
 MODULE_SPEC = importlib.util.spec_from_file_location("_narrow_sync", MODULE_PATH)
 if MODULE_SPEC is None or MODULE_SPEC.loader is None:
@@ -338,6 +340,33 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "get_track_runtime_cell_at_world_z",
     ):
         assert f'"{function_name}"' in deferred_prototypes
+
+
+def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    object_header = (HEADER_DIR / "object_render_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    for source in (binja_source, ida_source):
+        assert "set_weapon_animation" in source
+        assert "dispatch_cutscene_animation" in source
+        assert "int32_t mode_flags" in source
+        assert "initial_frame" not in source
+
+    for header in (object_header, path_header):
+        assert "typedef enum ObjectAnimationFlag" in header
+        assert "typedef enum ObjectAnimationModeOverride" in header
+        assert "ObjectAnimationFlags flags;" in header
+        assert "ObjectAnimationFrame** frames;" in header
 
 
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:

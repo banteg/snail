@@ -87,3 +87,8 @@ code shape and all 13 clean operands are unchanged.
 - Queued animation id `-1` hides `target_model`; third-argument `-1` in the two
   selection helpers instead preserves the chosen clip's current mode flags.
   Separate constants keep those equal-valued but distinct contracts visible.
+- The shared type surface now records the stored bits as
+  `ObjectAnimationFlag` and the preserve-current request value as the separate
+  `ObjectAnimationModeOverride`. The member remains a two-byte unsigned-short
+  alias, and this exact updater reads it through that owner even where native
+  needs only its low byte.

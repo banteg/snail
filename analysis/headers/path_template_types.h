@@ -1035,11 +1035,29 @@ typedef struct CutScene {
     uint8_t _pad_59[0x3];
 } CutScene;
 
+typedef enum ObjectAnimationFlag {
+    OBJECT_ANIMATION_MODE_LOOP = 1,
+    OBJECT_ANIMATION_MODE_PING_PONG = 2,
+    OBJECT_ANIMATION_MODE_ONCE = 4,
+    OBJECT_ANIMATION_MODE_ONCE_REVERSE = 8,
+} ObjectAnimationFlag;
+
+typedef enum ObjectAnimationModeOverride {
+    OBJECT_ANIMATION_MODE_UNCHANGED = -1,
+} ObjectAnimationModeOverride;
+
+typedef uint16_t ObjectAnimationFlags;
+
+typedef struct ObjectAnimationFrame {
+    Vec3* vertices;
+    Vec3* facequad_normals;
+} ObjectAnimationFrame;
+
 typedef struct ObjectAnimation {
-    uint16_t flags;
+    ObjectAnimationFlags flags;
     uint8_t _pad_02[0x2];
     int32_t generated_frame_count;
-    void* frames;
+    ObjectAnimationFrame** frames;
     float progress;
     float progress_step;
 } ObjectAnimation;

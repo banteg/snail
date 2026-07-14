@@ -115,8 +115,21 @@ typedef struct ObjectAnimationFrame {
     Vec3* facequad_normals;
 } ObjectAnimationFrame;
 
+typedef enum ObjectAnimationFlag {
+    OBJECT_ANIMATION_MODE_LOOP = 1,
+    OBJECT_ANIMATION_MODE_PING_PONG = 2,
+    OBJECT_ANIMATION_MODE_ONCE = 4,
+    OBJECT_ANIMATION_MODE_ONCE_REVERSE = 8,
+} ObjectAnimationFlag;
+
+typedef enum ObjectAnimationModeOverride {
+    OBJECT_ANIMATION_MODE_UNCHANGED = -1,
+} ObjectAnimationModeOverride;
+
+typedef uint16_t ObjectAnimationFlags;
+
 typedef struct ObjectAnimation {
-    uint16_t flags;
+    ObjectAnimationFlags flags;
     uint8_t _pad_02[0x04 - 0x02];
     int32_t generated_frame_count;
     ObjectAnimationFrame** frames;

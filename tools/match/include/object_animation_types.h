@@ -6,13 +6,23 @@
 
 struct Object;
 
-enum {
+// Stored 16-bit ObjectAnimation mode bits. Keep ObjectAnimationFlags as the
+// unsigned-short storage alias below so this enum does not widen the recovered
+// 0x14-byte allocation.
+enum ObjectAnimationFlag {
     OBJECT_ANIMATION_MODE_LOOP = 1,
     OBJECT_ANIMATION_MODE_PING_PONG = 2,
     OBJECT_ANIMATION_MODE_ONCE = 4,
     OBJECT_ANIMATION_MODE_ONCE_REVERSE = 8,
+};
+
+// Selector-only override value. This is accepted by the authored int API but
+// is never stored in ObjectAnimation::flags.
+enum ObjectAnimationModeOverride {
     OBJECT_ANIMATION_MODE_UNCHANGED = -1,
 };
+
+typedef unsigned short ObjectAnimationFlags;
 
 struct XAnimationKeyframe : public BodBase {
     char unknown_38[0x7c - 0x38];
@@ -31,7 +41,7 @@ typedef char ObjectAnimationFrame_must_be_0x08[
     (sizeof(ObjectAnimationFrame) == 0x08) ? 1 : -1];
 
 struct ObjectAnimation {
-    unsigned short flags; // +0x00
+    ObjectAnimationFlags flags; // +0x00, ObjectAnimationFlag bitset
     char unknown_02[0x04 - 0x02];
     int generated_frame_count; // +0x04
     ObjectAnimationFrame** frames; // +0x08

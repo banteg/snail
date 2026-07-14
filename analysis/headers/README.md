@@ -118,7 +118,11 @@ The presentation BN sync lane selectively replays the authoritative camera/rende
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
 
 The object-render lane owns the complete shared `Object`, `tColourSmall`, and
-grouped-buffer layouts plus the trusted render contracts. The live database
+grouped-buffer layouts plus the trusted render contracts. Its retained
+`ObjectAnimation` record keeps a two-byte `ObjectAnimationFlags` field, while
+the named stored-bit enum stays separate from the selector-only `-1`
+preserve-current override. Its retained frame bank is consistently typed as
+`ObjectAnimationFrame**` in both the object and presentation replay lanes. The live database
 currently pins `pack_color_rgba_u8` to the retired `ColorBGRA8` tag: its
 `tColourSmall` update previews correctly but is restored during live
 verification, so that one prototype is intentionally deferred while the
