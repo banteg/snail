@@ -466,3 +466,23 @@ byte-for-byte
 (`bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`)
 and the honest 88.89% focused result (`299/268`, prefix `2/268`, 120 clean
 operands).
+
+## 2026-07-14 root callback and passive-renderable ownership
+
+The root constructor now publishes the canonical `GameRoot* g_game`, installs
+the callback table through `GameRoot::vtable`, and constructs
+`GameRoot::fog_color` directly. These replace the final byte-global, slot-zero,
+and color-offset aliases in the constructor without changing their addresses.
+
+Windows constructs a complete `RenderableBod` at root `+0xa60` and then
+installs the shared callback table whose AI entry is the exact no-op stub. A
+Binary Ninja constant sweep finds no other GameRoot-relative consumer that
+would justify a gameplay-specific class name, so the shared owner is retained
+conservatively as `root_noop_renderable`; the following `+0xae0..+0xb24` bytes
+remain anonymous. The adjacent no-op constructor call now derives `+0xae0`
+from `sizeof(RenderableBod)` rather than asserting a larger guessed owner.
+
+Focused output remains 88.89%, 299/268 candidate/target instructions, prefix
+2/268, with all 120 masked operands clean. The constructor no longer needs a
+byte-shaped receiver; its remaining mismatch is still the documented EH and
+debug-call cleanup shape.

@@ -708,3 +708,14 @@ walks those same full banks, and Binary Ninja types them as `[10]` at
 intentionally remains a count of two: its channel owns five slots, but startup
 loads and post-processes only the base and draw clips. Keeping that subset
 separate avoids falsely equating populated assets with storage capacity.
+
+## 2026-07-14 canonical live-root service access
+
+The three deliberate singleton reloads in the world initializer now retain the
+canonical `GameRoot* g_game` type. The field-first active-list helper, menu
+landscape load, and star-manager insertion still reload the live process root,
+but no longer discard its `active_bod_list`, `subgame`, or
+`landscape_manager` ownership through a `char*` cast.
+
+This is byte-stable at the existing 80.50%, 5,392/5,411 instruction frontier,
+with 1,550 clean operands and the same 101 broad alignment mismatches.

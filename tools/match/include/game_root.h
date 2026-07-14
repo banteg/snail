@@ -67,7 +67,7 @@ typedef char GamePlayer_must_be_0x1f8[
 
 class GameRoot {
 public:
-    char unknown_000000[0x04];
+    void* vtable; // +0x00, root runtime callback table
     unsigned char fog_enabled; // +0x04
     char unknown_000005[0x08 - 0x05];
     float fog_start; // +0x08, D3DRS_FOGSTART
@@ -100,7 +100,8 @@ public:
     Overlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport slot 0
     Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport slot 2
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
-    char unknown_000a60[0xb24 - 0xa60];
+    RenderableBod root_noop_renderable; // +0xa60, callback has an empty AI slot
+    char unknown_000ae0[0xb24 - 0xae0];
     TextureSetSelector texture_set_selector; // +0xb24, four track/slide pairs
     int unknown_000b48; // +0xb48, startup-only dword storage
     // Exact cRBorder manager: the 150-record pool is followed by its delayed

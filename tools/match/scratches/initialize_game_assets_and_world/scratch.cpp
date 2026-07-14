@@ -20,7 +20,7 @@
 #include "transform_matrix.h"
 #include "voice_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern char g_help_script_path[]; // 0x4a3488
 extern char g_menu_background_script_path[]; // 0x4a347c
@@ -57,7 +57,7 @@ static __forceinline void link_root_bod(BodBase* bod)
         return;
     }
 
-    char* head = (char*)&((GameRoot*)g_game_base)->active_bod_list.first;
+    char* head = (char*)&g_game->active_bod_list.first;
     char* first = *(char**)head;
     if (first != 0) {
         *(char**)(first + 8) = node;
@@ -144,7 +144,7 @@ char GameRoot::initialize_game_assets_and_world()
     g_voice_manager.initialize_voice_manager();
     options.apply_audio_config_volumes();
     sm_tracks->load_level_definitions();
-    ((GameRoot*)g_game_base)->subgame.landscape_manager
+    g_game->subgame.landscape_manager
         .load_landscape_script_by_name(g_menu_background_script_path);
     subgame.level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
@@ -3062,7 +3062,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     tip_manager.initialize_tip_manager();
     active_bods->add_bod_to_front(&tip_manager);
-    ((GameRoot*)g_game_base)->active_bod_list.add_bod_to_front(
+    g_game->active_bod_list.add_bod_to_front(
         (BodNode*)&star_manager);
     star_manager.open_star_field(36);
     subgame.bottom_score_widget = 0;

@@ -11,7 +11,7 @@ void* operator new(unsigned int size);
 
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern int g_bod_base_init_count; // data_50331c
 extern int g_sub_loc_count;       // data_4dfadc
 extern int g_loc_mirror_count;    // data_4dfae0
@@ -62,9 +62,6 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("Solutions %i\n", sizeof(SubHighScore)); \
 } while (0)
 
-#define SLOT(offset) ((RuntimeSlot*)(game + (offset)))
-#define COLOR(offset) ((tColour*)(game + (offset)))
-
 class GameRootAllocation {
 public:
     // The promoted GameRoot view contains reverse-engineered helper types with
@@ -76,11 +73,9 @@ public:
 
 __forceinline GameRootAllocation::GameRootAllocation()
 {
-    char* game = (char*)this;
     {
-        COLOR(0x14)->noop_this_constructor();
-
-        GameRoot* root = (GameRoot*)game;
+        GameRoot* root = (GameRoot*)this;
+        root->fog_color.noop_this_constructor();
         GameInput* game_input = &root->game_inputs[0];
         int game_input_count =
             sizeof(root->game_inputs) / sizeof(root->game_inputs[0]);
@@ -125,9 +120,10 @@ __forceinline GameRootAllocation::GameRootAllocation()
         overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
-        RuntimeSlot* passive_renderable = SLOT(0xa60);
+        RenderableBod* passive_renderable = &root->root_noop_renderable;
         passive_renderable->initialize_renderable_bod();
-        ((RuntimeSlot*)((char*)passive_renderable + 0x80))->noop_runtime_slot_constructor();
+        ((RuntimeSlot*)((char*)passive_renderable + sizeof(RenderableBod)))
+            ->noop_runtime_slot_constructor();
         passive_renderable->vtable = &g_noop_runtime_callback_table;
 
         BorderManager* border_manager = &root->border_manager;
@@ -182,7 +178,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         tip_manager->initialize_bod_base();
         tip_manager->vtable = &g_tip_manager_callback_table;
 
-        SLOT(0)->vtable = &g_root_runtime_callback_table;
+        root->vtable = &g_root_runtime_callback_table;
     }
 }
 
@@ -192,11 +188,8 @@ int construct_game_runtime()
 
     GameRoot* game = (GameRoot*)new GameRootAllocation;
 
-    g_game_base = (char*)game;
+    g_game = game;
     debug_report_stub("BodCount=%i  Memory=%i\n", g_bod_base_init_count, g_bod_base_init_count * 0x38);
     debug_report_stub("LocCount=%i Memory=%i\n", g_sub_loc_count, g_sub_loc_count * sizeof(SubLoc));
     return debug_report_stub("LocMirrorCount=%i Memory=%i\n", g_loc_mirror_count, g_loc_mirror_count * 0x15c);
 }
-
-#undef SLOT
-#undef COLOR
