@@ -43,8 +43,8 @@ sub-lazer position/state lanes as the initializer, spawner, updater, and
 deactivator. Focused Wibo remains `47.99%`, `648/673`, with the same known
 slug-block masked mismatch.
 
-2026-06-16 speedup renderable-prefix consolidation: `TrackSpeedupRuntime` now
-exposes the same transform row window, with `world_position +0x68` as
+2026-06-16 speedup renderable-prefix consolidation: `TrackSpeedupRuntime` began
+exposing the same transform row window, with the position row at `+0x68` as
 `RenderableBod::transform.position`. This collision scratch consumes the full
 speedup x/y/z vector, while the exact updater consumes the z lane and the
 initializer proves the renderable constructor path. The singleton still keeps
@@ -156,7 +156,7 @@ sub-lazer sweeps still use byte-strided loop expressions even though the local
 pool fields are typed as `SlugHazardRuntime[8]` and `SubLazerSlot[20]`. The
 useful cross-confirmations are:
 
-- `TrackSpeedupRuntime` has a full `world_position` vector at `+0x68..+0x70`
+- `TrackSpeedupRuntime` has a full transform position vector at `+0x68..+0x70`
   and `state` at `+0x80`; `update_track_speedup` only needed the z lane, but
   collision consumes x/y/z.
 - `TrackHealthPickup`, `JetPack`, `Parcel`,
@@ -431,3 +431,19 @@ sources inside each slot.
 Binary Ninja declaration preview verifies the manager layouts and reverts.
 Focused Wibo remains honestly unchanged at 52.85%, 659/673 instructions, with
 all 86 masked operands clean and no mismatch.
+
+## 2026-07-14 speedup renderable inheritance
+
+The singleton collision probe now reads the full position through
+`speedup->transform.position`. Exact constructor and updater evidence proves
+the shared `RenderableBod` base, while the collision body confirms all three
+position lanes. Focused output is byte-stable at the current 53.93%, 651/673
+instructions, with all 86 operands clean; no matching nudge is involved.
+
+## 2026-07-14 garbage renderable inheritance
+
+The active garbage-chain probe now reads the body through
+`garbage->transform.position`. Exact constructor/spawn/destroy evidence and the
+93.55% updater all preserve the same `RenderableBod` owner and 0xc4 slot stride.
+This large consumer remains byte-stable at 53.93%, 651/673 instructions, with
+all 86 operands clean.

@@ -9,3 +9,8 @@ table's sole entry is the exact `update_track_speedup` @ 0x43ee50.
 The complete object is 0xb4 bytes and ends exactly at the adjacent
 `JetPack +0x355e64`, matching the native `Size of cRSubSpeedUp` ledger.
 `TrackSpeedupRuntime` remains only a compatibility alias.
+
+2026-07-14 renderable inheritance closure: `SubSpeedUp` now derives directly
+from the `RenderableBod` initialized here. This retires its duplicated
+`BodBase + TransformMatrix` fields while preserving inherited zero-offset list
+linkage. The constructor remains exact at 7/7 with both operands clean.

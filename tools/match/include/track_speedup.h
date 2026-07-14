@@ -1,37 +1,22 @@
-// Authored cRSubSpeedUp singleton runtime, partial.
+// Authored cRSubSpeedUp singleton runtime, partial. The singleton derives from
+// the shared RenderableBod prefix and remains linked through its inherited
+// zero-offset BodNode.
 // Proven by initialize_track_speedup_runtime, update_track_speedup,
 // remove_subgame_bods, and the speedup branch in handle_subgoldy_collisions.
 #ifndef TRACK_SPEEDUP_H
 #define TRACK_SPEEDUP_H
 
-#include "bod_list.h"
 #include "bod_types.h"
-#include "vector3.h"
 
 class Player;
 class Sprite;
 class SubgameRuntime;
 
-class SubSpeedUp : public BodNode {
+class SubSpeedUp : public RenderableBod {
 public:
     SubSpeedUp* initialize_track_speedup_runtime(); // @ 0x4084b0
     void update_track_speedup(); // @ 0x43ee50
 
-    Vector3 bod_position; // +0x10, BodBase::position
-    float render_arg_1c; // +0x1c, BodBase texture-u render argument
-    float render_arg_20; // +0x20, BodBase render argument
-    void* object; // +0x24
-    Color4f color; // +0x28
-    // RenderableBod transform rows. Kept field-by-field because the singleton
-    // also uses the zero-offset BodNode list overlay.
-    Vector3 basis_right; // +0x38
-    float basis_right_w; // +0x44
-    Vector3 basis_up; // +0x48
-    float basis_up_w; // +0x54
-    Vector3 basis_forward; // +0x58
-    float basis_forward_w; // +0x64
-    Vector3 world_position; // +0x68, RenderableBod::transform.position
-    float world_position_w; // +0x74
     char unknown_78[0x80 - 0x78];
     int state; // +0x80
     Player* owner; // +0x84

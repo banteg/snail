@@ -76,17 +76,17 @@ Residuals:
   x/z is semantically valid, but regresses to 89.75% by moving `fld [scale]`
   before the native cell reload and still does not recover the native x/z stack
   spills. Keep the two-step `staged_y` temporary.
-- Native relationship evidence: the projected position block writes
-  `GarbageHazardSlot::world_position +0x68` from the cell anchor plus
+- Native relationship evidence: the projected position block writes the
+  garbage renderable position row at `+0x68` from the cell anchor plus
   `radius +0x9c`, then passes `attachment_facing_angle +0xa0` to
   `project_position_onto_track_attachment`. The tail stores `source_cell +0xb8`
   and clears `hidden +0xbc`, so those fields are metadata for later update and
   visibility paths rather than inputs to the projection.
 - 2026-06-16 renderable-prefix consolidation: the shared
-  `GarbageHazardSlot` header now records the renderable transform rows at
-  `+0x38..+0x77`, with `world_position` as the transform position row at
-  `+0x68`. `initialize_garbage_hazard` now uses the same shared slot view and
-  remains exact. The spawn scratch intentionally stays raw-offset shaped because
+  `GarbageHazardSlot` header began recording the renderable transform rows at
+  `+0x38..+0x77`, with the position row at `+0x68`.
+  `initialize_garbage_hazard` used the same shared slot view and remained exact.
+  The spawn scratch intentionally stays raw-offset shaped because
   the earlier typed-slot spelling changed saved-register ownership and
   regressed to 60.56%.
 - 2026-06-16 cell typing pass: the incoming `cRSubLoc*` argument is now typed
@@ -190,6 +190,14 @@ Residuals:
 - Cross-port `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)` provenance and the
   primary `SubGarbage` slot view leave the helper exact at 143/143 with all 16
   masked operands clean.
+
+## 2026-07-14 renderable inheritance closure
+
+The shared `SubGarbage` slot now inherits `RenderableBod` instead of duplicating
+its 0x78-byte prefix. This exact spawner intentionally retains its proven raw
+cursor/source shape, but its 0xc4 slot stride and all 16 masked operands remain
+exact while the constructor and typed AI consumers independently prove
+`transform.position +0x68`.
 
 ## 2026-07-13 projection-output naming
 

@@ -77,9 +77,9 @@ void Player::handle_subgoldy_collisions()
              garbage;
              garbage = garbage->next_active) {
             if (garbage->state == 1) {
-                delta.x = garbage->world_position.x - cached_camera_target_world.x;
-                delta.y = garbage->world_position.y - cached_camera_target_world.y;
-                delta.z = garbage->world_position.z - cached_camera_target_world.z;
+                delta.x = garbage->transform.position.x - cached_camera_target_world.x;
+                delta.y = garbage->transform.position.y - cached_camera_target_world.y;
+                delta.z = garbage->transform.position.z - cached_camera_target_world.z;
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {
                     if ((movement_flags & 0x80) == 0) {
@@ -200,11 +200,11 @@ void Player::handle_subgoldy_collisions()
     }
     SubSpeedUp* speedup = &game->speedup_pickup;
     if (speedup->state == 1) {
-        probe_b.x = speedup->world_position.x - cached_camera_target_world.x;
-        probe_b.y = speedup->world_position.y - cached_camera_target_world.y;
+        probe_b.x = speedup->transform.position.x - cached_camera_target_world.x;
+        probe_b.y = speedup->transform.position.y - cached_camera_target_world.y;
         probe_c.x = probe_b.x;
         probe_c.y = probe_b.y;
-        probe_b.z = speedup->world_position.z - cached_camera_target_world.z;
+        probe_b.z = speedup->transform.position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
         if (live_matrix.position.y >= 0.49000001f && probe_b.z < 1.0f) {
             float pickup_y;

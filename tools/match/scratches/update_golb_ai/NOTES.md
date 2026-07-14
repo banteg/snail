@@ -12,8 +12,13 @@ position consumed by `initialize_path_follow_golb` and `calc_path_length_z`.
 Both garbage collision sweeps now walk the shared `SubGarbagePool::active_head`
 chain as `SubGarbage*`: the first sweep handles direct projectile contact and
 the kind-2 splash sweep marks nearby live garbage through the same `state`,
-`collision_side`, `world_position`, `radius`, and `next_active` fields used by
+`collision_side`, `transform.position`, `radius`, and `next_active` fields used by
 the garbage spawner, AI, collision, and teardown paths.
+
+The two position probes now name the inherited
+`SubGarbage::transform.position` owner directly. This closes the shared
+`RenderableBod` relationship without changing the updater's 73.34%, 645/694
+instructions, 9/694 prefix, or 68 clean masked operands.
 
 These ownership substitutions are codegen-neutral: focused Wibo remains
 73.34%, `645/694`, prefix `9/694`, with all 68 masked operands clean. A typed

@@ -1,37 +1,24 @@
-// Authored cRSubGarbage view, cross-checked by spawn, Smoke, AI, collision,
-// BOD-list, and Kill paths.
+// Authored cRSubGarbage view, cross-checked by constructor, spawn, Smoke, AI,
+// collision, BOD-list, and Kill paths. Each slot derives from the shared
+// RenderableBod prefix and remains linked through its inherited BodNode.
 #ifndef GARBAGE_HAZARD_SLOT_H
 #define GARBAGE_HAZARD_SLOT_H
 
-#include "bod_list.h"
-#include "sprite.h"
+#include "bod_types.h"
 #include "sub_loc_fwd.h"
+#include "vector3.h"
 
 class Player;
+class Sprite;
 class SubgameRuntime;
 
-class SubGarbage : public BodNode {
+class SubGarbage : public RenderableBod {
 public:
     SubGarbage* initialize_garbage_hazard();
     SubGarbage* update_garbage_hazard();
     SubGarbage* destroy_garbage_hazard();
     void spawn_garbage_smoke_particle(Vector3* position, Vector3* velocity, Player* player);
 
-    Vector3 bod_position;           // +0x10, BodBase::position
-    float render_arg_1c;            // +0x1c, BodBase texture-u render argument
-    float render_arg_20;            // +0x20, BodBase render argument
-    void* object;                   // +0x24
-    Color4f color;                  // +0x28
-    // RenderableBod transform rows. Kept field-by-field because VC6 rejects a
-    // union containing TransformMatrix's constructors.
-    Vector3 basis_right;            // +0x38
-    float basis_right_w;            // +0x44
-    Vector3 basis_up;               // +0x48
-    float basis_up_w;               // +0x54
-    Vector3 basis_forward;          // +0x58
-    float basis_forward_w;          // +0x64
-    Vector3 world_position;         // +0x68, RenderableBod::transform.position
-    float world_position_w;         // +0x74
     char unknown_78[0x80 - 0x78];
     SubGarbage* next_active;        // +0x80
     int state;                      // +0x84

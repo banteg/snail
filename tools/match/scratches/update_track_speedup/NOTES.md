@@ -11,7 +11,7 @@ Recovered behavior:
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;
-- state `1` performs the same teardown once `world_position.z` falls behind
+- state `1` performs the same teardown once `transform.position.z` falls behind
   `owner->interaction_max_z`.
 
 Both teardown arms now call the recovered inline `BodList::remove_bod`, matching
@@ -31,13 +31,12 @@ session now name `0x43ee50` as `update_track_speedup`, matching the gameplay
 manifest and this exact scratch.
 
 2026-06-16 renderable-prefix consolidation: the shared
-`TrackSpeedupRuntime` header now records the renderable transform rows at
+`TrackSpeedupRuntime` header began recording the renderable transform rows at
 `+0x38..+0x77`, with `world_position +0x68` as
 `RenderableBod::transform.position`. The initializer calls
 `initialize_renderable_bod()`, this exact updater consumes `world_position.z`,
-and `handle_subgoldy_collisions` consumes the full x/y/z vector. The type stays
-`BodNode`-based because the zero-offset intrusive list overlay is real and is
-used by both teardown paths.
+and `handle_subgoldy_collisions` consumes the full x/y/z vector. It was kept as
+a field-by-field `BodNode` view at that stage.
 
 2026-07-11 owner-view retirement: the duplicate pickup-only owner view was
 removed in favor of the canonical `SubgameRuntime` owner. Focused matching
@@ -56,3 +55,10 @@ bodies with the owned inline `BodList::remove_bod` keeps the function exact at
 2026-07-14 root-list closure: both removal arms now borrow
 `GameRoot::active_bod_list` directly. Matching remains exact at 103/103 with
 all 15 operands clean.
+
+2026-07-14 renderable-owner closure: the state-1 kill-plane read now names
+`SubSpeedUp::transform.position.z`. Together with the exact constructor and
+the full-vector collision consumer, this promotes the real inherited
+`RenderableBod` rather than a duplicated prefix. The inherited `BodNode` still
+owns both teardown links, and matching remains exact at 103/103 with all 15
+operands clean.

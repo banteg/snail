@@ -20,12 +20,12 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             goto function_return;
 
         case 1: {
-            Vector3* position = &world_position;
+            Vector3* position = &transform.position;
             Vector3* visual_position = &sprite->position;
             *visual_position = *position;
 
             Player* owner = player;
-            if (world_position.z < owner->interaction_max_z)
+            if (transform.position.z < owner->interaction_max_z)
                 return destroy_garbage_hazard();
 
             if (owner->nuke_effect_progress > 0.0f) {
@@ -39,7 +39,7 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             }
 
             game->enemy_manager.append_subgame_contact_target(
-                &world_position,
+                &transform.position,
                 radius,
                 0,
                 this);
@@ -95,7 +95,7 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             // fall through
 
         case 3: {
-            Vector3* position = &world_position;
+            Vector3* position = &transform.position;
             Vector3* movement = &velocity;
             float next_x = movement->x + position->x;
             position->x = next_x;
@@ -110,7 +110,8 @@ SubGarbage* SubGarbage::update_garbage_hazard()
                 * -0.0099999998f;
             velocity.y = gravity_step + velocity.y;
 
-            if (world_position.y < -10.0f || world_position.z < player->interaction_max_z)
+            if (transform.position.y < -10.0f
+                || transform.position.z < player->interaction_max_z)
                 return destroy_garbage_hazard();
 
             Player* owner = player;
@@ -118,7 +119,7 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             smoke_timer = next_smoke_timer;
             if (next_smoke_timer > 1.0f) {
                 smoke_timer = 0.0f;
-                spawn_garbage_smoke_particle(&world_position, &velocity, owner);
+                spawn_garbage_smoke_particle(&transform.position, &velocity, owner);
             }
             break;
         }

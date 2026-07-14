@@ -38,7 +38,7 @@ state_two:
     return;
 
 state_one:
-    if (world_position.z >= owner->interaction_max_z) {
+    if (transform.position.z >= owner->interaction_max_z) {
         return;
     }
 

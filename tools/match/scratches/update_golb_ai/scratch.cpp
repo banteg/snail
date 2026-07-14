@@ -193,9 +193,9 @@ void GolbShot::update_golb_ai()
             SubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
                 if (garbage->state == 1) {
-                    probe.x = garbage->world_position.x - new_output->x;
-                    probe.y = garbage->world_position.y - new_output->y;
-                    probe.z = garbage->world_position.z - new_output->z;
+                    probe.x = garbage->transform.position.x - new_output->x;
+                    probe.y = garbage->transform.position.y - new_output->y;
+                    probe.z = garbage->transform.position.z - new_output->z;
                     float dz = probe.z;
                     if (dz < 0.0f)
                         dz = -dz;
@@ -270,9 +270,9 @@ garbage_hit:
                     splash;
                     splash = splash->next_active) {
                     if (splash->state == 1) {
-                        probe.x = splash->world_position.x - new_output->x;
-                        probe.y = splash->world_position.y - new_output->y;
-                        probe.z = splash->world_position.z - new_output->z;
+                        probe.x = splash->transform.position.x - new_output->x;
+                        probe.y = splash->transform.position.y - new_output->y;
+                        probe.z = splash->transform.position.z - new_output->z;
                         if (normalize_vector(&probe) < 3.0f) {
                             splash->state = 2;
                             if (probe.x >= 0.0f)

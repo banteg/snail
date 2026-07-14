@@ -156,15 +156,15 @@ Residuals:
   including the `0x1000` suppress bit consumed by
   `append_subgame_contact_target`. Focused result remains 80.00%, 218/217
   instructions, `19 ok, 1 mismatch`.
-- 2026-06-16 BOD/contact inheritance consolidation: `GarbageHazardSlot` now
-  inherits `BodNode`, and `BodNode` inherits `ContactTargetObject`. This keeps
+- 2026-06-16 BOD/contact inheritance consolidation: `GarbageHazardSlot` began
+  inheriting `BodNode`, and `BodNode` inherits `ContactTargetObject`. This keeps
   the contact append call source-typed through the shared prefix while making
   the destroy/list semantics agree with the other BOD-list users. Focused
   result remains 80.00%, 218/217 instructions, `19 ok, 1 mismatch`.
-- 2026-06-16 renderable-prefix consolidation: `initialize_garbage_hazard` now
-  uses the shared `GarbageHazardSlot` header and remains exact. The shared slot
-  view records the renderable transform rows at `+0x38..+0x77`; the
-  `world_position` consumed here is the transform position row at `+0x68`.
+- 2026-06-16 renderable-prefix consolidation: `initialize_garbage_hazard` began
+  using the shared `GarbageHazardSlot` header and remained exact. At that stage
+  the shared slot recorded the transform rows field by field; the position
+  consumed here is the renderable transform row at `+0x68`.
   Focused result remains 80.00%, 218/217 instructions, `19 ok, 1 mismatch`.
 - 2026-06-20 larger garbage-family retry: focused Wibo still reports 80.00%,
   218/217 instructions, with 19 clean masked operands and the known jump-table
@@ -242,6 +242,15 @@ points directly to this helper; Android and iOS retain the authored spelling
 `cRSubGarbage::AI()`. Focused Wibo remains 93.55%, 217/217 instructions,
 13/217 prefix, and 22 clean masked operands. No source-shape fakematch was
 introduced for the four documented local scheduling residuals.
+
+## 2026-07-14 renderable-owner closure
+
+Every live body read/write now names `SubGarbage::transform.position`, and the
+primary type directly inherits `RenderableBod`. The exact constructor proves
+the base initializer; the exact spawner and destroyer prove the unchanged pool
+stride/list owner; this updater remains byte-stable at 93.55%, 217/217
+instructions, with all 22 operands clean. The ownership promotion does not
+attempt to disguise the four remaining compiler-scheduling residuals.
 
 ## 2026-07-13 attachment-facing field correction
 
