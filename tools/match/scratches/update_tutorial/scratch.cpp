@@ -6,5 +6,5 @@
 void* Tutorial::update_tutorial()
 {
     SubgameRuntime* owner = game;
-    return owner->get_track_grid_cell_at_world_position((Vector3*)((char*)owner + 0x3bb7cc));
+    return owner->get_track_grid_cell_at_world_position(&owner->player.transform.position);
 }

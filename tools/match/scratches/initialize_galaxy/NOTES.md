@@ -4,9 +4,9 @@ First structural scratch for the galaxy/star-map screen initializer. This uses
 the shared `Galaxy` layout while reusing established frontend-widget,
 color, star-field, backdrop, landscape-bank, and mouse cursor helpers.
 
-The scratch is intentionally relationship-first: several widget post-init lanes
-at `+0x6f0`, `+0x26c`, and `+0x214` remain raw writes until more frontend
-scratches agree on names.
+The scratch is intentionally relationship-first. The widget post-init lane at
+`+0x6f0` is now the shared `FrontendWidget::font_scale` field; lanes without
+equally strong cross-screen agreement remain raw.
 
 2026-06-20 proof result: 100.00%, 338/338 candidate/target instructions,
 prefix 338/338, and 74 masked operands clean.
@@ -62,3 +62,8 @@ adjacent `route_tint_alpha_bits`, and its step derives from
 `sizeof(GalaxyRouteSlot)`. This removes the raw `this + 0x2c` base and literal
 168-dword stride while preserving the exact 338/338 function and all 74 clean
 operands.
+
+2026-07-14 widget-field ownership: five title, detail, description, and replay
+scale stores now use `FrontendWidget::font_scale`. The field is independently
+used by frontend-widget initialization, subgame HUD setup, text layout, and the
+thanks screen; exact output remains 338/338 with all 74 operands clean.

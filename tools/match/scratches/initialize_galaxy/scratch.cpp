@@ -65,7 +65,7 @@ void Galaxy::initialize_galaxy()
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
-        *(int*)((char*)route_title_widget + 0x6f0) = 0x3f547ae1;
+        route_title_widget->font_scale = 0.83f;
 
         route_icon_widget = g_game->border_manager.allocate_border();
         route_icon_widget->initialize_frontend_sprite_button(
@@ -149,7 +149,7 @@ void Galaxy::initialize_galaxy()
             0,
             0.0f);
         selected_title_widget->hide_border_init();
-        *(int*)((char*)selected_title_widget + 0x6f0) = 0x3f666666;
+        selected_title_widget->font_scale = 0.9f;
         selected_title_widget->stack_gap = 0.0f;
 
         selected_detail_widget = g_game->border_manager.allocate_border();
@@ -163,7 +163,7 @@ void Galaxy::initialize_galaxy()
             0,
             0.0f);
         selected_detail_widget->hide_border_init();
-        *(int*)((char*)selected_detail_widget + 0x6f0) = 0x3f666666;
+        selected_detail_widget->font_scale = 0.9f;
         selected_detail_widget->stack_gap = 0.0f;
 
         selected_description_widget = g_game->border_manager.allocate_border();
@@ -177,7 +177,7 @@ void Galaxy::initialize_galaxy()
             0,
             0.0f);
         selected_description_widget->hide_border_init();
-        *(int*)((char*)selected_description_widget + 0x6f0) = 0x3f333333;
+        selected_description_widget->font_scale = 0.7f;
         selected_description_widget->stack_gap = 0.0f;
     }
 
@@ -222,7 +222,7 @@ void Galaxy::initialize_galaxy()
             0.0f);
         replay_widget->hide_border_init();
         replay_widget->stack_gap = 10.0f;
-        *(int*)((char*)replay_widget + 0x6f0) = 0x3f4ccccd;
+        replay_widget->font_scale = 0.8f;
         replay_widget->idle_padding = 4.0f;
         replay_widget->idle_padding = 8.0f;
     }

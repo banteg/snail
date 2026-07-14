@@ -36,7 +36,7 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    *(float*)((char*)message_widget + 0x6f0) = 1.2f;
+    message_widget->font_scale = 1.2f;
     message_progress = 0.0f;
     message_progress_step = 0.00416666688f;
     message_state = 0;
