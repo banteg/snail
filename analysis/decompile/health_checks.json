@@ -190,6 +190,38 @@
       ]
     },
     {
+      "name": "bn_condense_track_body_retained",
+      "artifact": "analysis/decompile/binja/functions/00435180-merge_track_tile_runs.c",
+      "required_substrings": [
+        "game_1->runtime_row_count",
+        "is_sub_loc_floor",
+        "is_sub_loc_slide",
+        "g_game_base",
+        "0xffff9fff"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_condense_track_grid_owner",
+      "artifact": "analysis/decompile/ida/functions/00435180-merge_track_tile_runs.c",
+      "required_substrings": [
+        "int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)",
+        "game->runtime_cells",
+        "v1->level_mode",
+        "g_game_base",
+        "0xFFFF9FFF"
+      ],
+      "forbidden_substrings": [
+        "Game *game",
+        "game->_pad_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_star_manager_fields_intact",
       "artifact": "analysis/decompile/binja/functions/00434310-initialize_star_field.c",
       "required_substrings": [

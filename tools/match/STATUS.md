@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**620/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96377/317040** bytes (**30.40%**) are proof-grade, and overall fuzzy is **73.00%**.
+**620/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96377/317040** bytes (**30.40%**) are proof-grade, and overall fuzzy is **73.03%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -761,7 +761,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 31 ok |  |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
-| 🚧 | merge_track_tile_runs | 0x435180 | 873 | 290/276 | 54.77% | 0/276 | 10 ok |  |
+| 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  |
 | 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 4 mismatch, 20 ok |  |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 101 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |

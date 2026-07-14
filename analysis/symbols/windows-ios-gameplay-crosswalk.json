@@ -363,6 +363,15 @@
       "notes": "Both ports register a position, radius, kind, and cRBodPos-compatible owner in the fixed per-frame EnemyManager."
     },
     {
+      "address": "0x435180",
+      "windows_name": "merge_track_tile_runs",
+      "ios_symbol": "cRSubGame::CondenseTrack()",
+      "android_symbol": "cRSubGame::CondenseTrack()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The mobile method preserves the separate floor and slide run scans. Windows proves the embedded SubLoc grid, SubRow attachment-body cleanup, and RootBodCatalog slice owners. Its sole caller discards EAX, but both native exits leave runtime_row_count, so analysis conservatively retains the integer result until the ABI is independently resolved."
+    },
+    {
       "address": "0x4354f0",
       "windows_name": "mark_track_warning_zones",
       "ios_symbol": "cRSubGame::WarnTrack()",

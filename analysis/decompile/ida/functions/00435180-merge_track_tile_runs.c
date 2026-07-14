@@ -2,14 +2,14 @@
 /* function: merge_track_tile_runs @ 0x435180 */
 /* selector: merge_track_tile_runs */
 
-// Collapses repeated horizontal tile runs into longer strip variants where the renderer allows it.
-int32_t __thiscall merge_track_tile_runs(Game *game)
+// Authored `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `SubLoc` cells. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies.
+int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
 {
-  Game *v1; // esi
+  SubgameRuntime *v1; // esi
   int32_t v2; // edx
-  uint8_t *v3; // eax
+  uint32_t *p_lane_and_flags; // eax
   int v4; // ecx
-  int v5; // ebp
+  uint32_t v5; // ebp
   int32_t result; // eax
   int *v7; // ebx
   int v8; // ebp
@@ -20,13 +20,13 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
   char v13; // al
   int v14; // eax
   int v15; // esi
-  uint8_t *v16; // eax
+  uint32_t *v16; // eax
   int v17; // ecx
   int v18; // esi
   int *v19; // edi
   int v20; // eax
   int v21; // esi
-  uint8_t *v22; // eax
+  uint32_t *v22; // eax
   int v23; // ebp
   int v24; // edx
   char v25; // al
@@ -37,7 +37,7 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
   int v30; // edx
   int v31; // ecx
   int v32; // esi
-  uint8_t *v33; // eax
+  uint32_t *v33; // eax
   int v34; // ecx
   int v35; // eax
   int32_t v36; // [esp+8h] [ebp-10h]
@@ -48,16 +48,16 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
   v2 = 0;
   if ( game->runtime_row_count > 0 )
   {
-    v3 = &game->_pad_74622[3454182];
+    p_lane_and_flags = &game->runtime_cells[0][0].lane_and_flags;
     do
     {
       v4 = 8;
       do
       {
-        v5 = *(_DWORD *)v3;
-        v3 += 84;
+        v5 = *p_lane_and_flags;
+        p_lane_and_flags += 21;
         --v4;
-        *((_DWORD *)v3 - 21) = v5 | 0x6000;
+        *(p_lane_and_flags - 21) = v5 | 0x6000;
       }
       while ( v4 );
       ++v2;
@@ -69,7 +69,7 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
   if ( result > 0 )
   {
     v39 = (_DWORD *)((char *)&unk_5CCB7C + (_DWORD)v1);
-    v7 = (int *)&v1->_pad_74622[3454182];
+    v7 = (int *)&v1->runtime_cells[0][0].lane_and_flags;
     do
     {
       v8 = 0;
@@ -109,7 +109,7 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
               while ( v29 < 8 );
               if ( v27 > 1 )
               {
-                set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 14 * v27 + 69999));
+                set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 14 * v27 + 69999));
                 v30 = *v7;
                 BYTE1(v30) = BYTE1(*v7) & 0xF0;
                 v31 = v30 | ((v27 & 0xF) << 8);
@@ -117,14 +117,14 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
                 *v7 = v31;
                 if ( v32 > 0 )
                 {
-                  v33 = &game->_pad_74622[672 * v36 + 3454182 + 84 * v8 + 84 * v32];
+                  v33 = &game->runtime_cells[v36][v8 + v32].lane_and_flags;
                   do
                   {
-                    v34 = *((_DWORD *)v33 - 15);
-                    v33 -= 84;
-                    *((_DWORD *)v33 + 6) = v34 & 0xFFFFFFDF;
+                    v34 = *(v33 - 15);
+                    v33 -= 21;
+                    v33[6] = v34 & 0xFFFFFFDF;
                     --v32;
-                    *((_DWORD *)v33 + 21) &= 0xFFFF9FFF;
+                    v33[21] &= 0xFFFF9FFF;
                   }
                   while ( v32 );
                 }
@@ -137,7 +137,7 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
               *v7 = v35;
               if ( v1->level_mode == 2 )
               {
-                set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 69705));
+                set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 69705));
               }
               else
               {
@@ -168,18 +168,18 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
             while ( v8 < 8 );
             if ( v18 > 1 )
             {
-              set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 14 * v18 + 70335));
+              set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 14 * v18 + 70335));
               v21 = v18 - 1;
               if ( v21 > 0 )
               {
-                v22 = &game->_pad_74622[672 * v36 + 3454182 + 84 * v38 + 84 * v21];
+                v22 = &game->runtime_cells[v36][v38 + v21].lane_and_flags;
                 do
                 {
-                  v23 = *((_DWORD *)v22 - 15);
-                  v22 -= 84;
-                  *((_DWORD *)v22 + 6) = v23 & 0xFFFFFFDF;
+                  v23 = *(v22 - 15);
+                  v22 -= 21;
+                  v22[6] = v23 & 0xFFFFFFDF;
                   --v21;
-                  *((_DWORD *)v22 + 21) &= 0xFFFF9FFF;
+                  v22[21] &= 0xFFFF9FFF;
                 }
                 while ( v21 );
               }
@@ -211,18 +211,18 @@ int32_t __thiscall merge_track_tile_runs(Game *game)
           while ( v11 < 8 );
           if ( v10 > 1 )
           {
-            set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 14 * v10 + 70111));
+            set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 14 * v10 + 70111));
             v15 = v10 - 1;
             if ( v15 > 0 )
             {
-              v16 = &game->_pad_74622[672 * v36 + 3454182 + 84 * v8 + 84 * v15];
+              v16 = &game->runtime_cells[v36][v8 + v15].lane_and_flags;
               do
               {
-                v17 = *((_DWORD *)v16 - 15);
-                v16 -= 84;
-                *((_DWORD *)v16 + 6) = v17 & 0xFFFFFFDF;
+                v17 = *(v16 - 15);
+                v16 -= 21;
+                v16[6] = v17 & 0xFFFFFFDF;
                 --v15;
-                *((_DWORD *)v16 + 21) &= 0xFFFF9FFF;
+                v16[21] &= 0xFFFF9FFF;
               }
               while ( v15 );
             }

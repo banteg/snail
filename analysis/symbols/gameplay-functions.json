@@ -2152,7 +2152,7 @@
     {
       "address": "0x435180",
       "name": "merge_track_tile_runs",
-      "description": "Authored `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation cells."
+      "description": "Authored `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `SubLoc` cells. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies."
     },
     {
       "address": "0x4354f0",

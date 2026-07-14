@@ -83,3 +83,31 @@ its containing `SubLoc` through `offsetof` rather than a duplicated `0x40`.
 Focused output is byte-identical at 54.77%, 290/276 instructions, prefix
 0/276, with all ten operands clean. The native/candidate frame and induction
 variable schedule remain the same documented honest residual.
+
+## 2026-07-14 consumed run-length ownership
+
+The native does not create an independent `run_length - 1` cleanup counter.
+After installing a wider floor, slide, or pillar object, it consumes that
+branch's now-dead run length directly: one decrement selects the final
+continuation cell and the cleanup loop decrements the same owner to zero.
+Spelling that lifetime explicitly recovers the native `dec`/`test` entry and
+loop counter at all three call sites.
+
+The cleanup write also names the containing `SubLoc` directly from its
+`lane_and_flags` field cursor instead of keeping a redundant `clear_cell`
+local alive. This removes six candidate instructions while retaining the
+indexed `SubgameRuntime::runtime_cells[row][lane]` owner and the native
+backward walk.
+
+Focused matching rises from 54.77% (290/276) to **67.50% (284/276)** with all
+12 masked operands clean. A slide-only flags cursor recovered native's
+`mov edi, ebx` induction base but added an instruction and scored 67.38%;
+removing the outer cell owner scored 66.43%. Both probes were rejected. The
+remaining 0x14-versus-0x10 frame and parallel cell-base lifetime are left as
+honest compiler-shape residuals.
+
+The sole Windows caller discards EAX, but the zero-row and populated exits both
+leave `runtime_row_count`. Unlike the independently proven void warning pass,
+that is not enough to exclude an integer contract, so analysis retains the
+conservative `int32_t` result while the matching member remains a side-effect
+only `cRSubGame::CondenseTrack()` transcription.

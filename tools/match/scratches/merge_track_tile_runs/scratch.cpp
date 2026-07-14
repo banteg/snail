@@ -22,20 +22,18 @@ unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
 
 #define CLEAR_MERGED_CONTINUATIONS(game, row, first_lane, run_length)          \
     do {                                                                       \
-        int clear_count = (run_length) - 1;                                    \
-        if (clear_count > 0) {                                                 \
+        --(run_length);                                                        \
+        if ((run_length) > 0) {                                                \
             unsigned int* clear_lane_flags =                                   \
-                &(game)->runtime_cells[(row)][(first_lane) + clear_count]       \
+                &(game)->runtime_cells[(row)][(first_lane) + (run_length)]      \
                      .lane_and_flags;                                           \
             do {                                                               \
-                TrackRowCell* clear_cell =                                     \
-                    CELL_FROM_LANE_FLAGS(clear_lane_flags);                     \
-                clear_cell->list_flags &= ~0x20;                               \
+                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &= ~0x20;    \
                 *clear_lane_flags &= ~0x6000u;                                 \
                 clear_lane_flags -=                                           \
                     sizeof(TrackRowCell) / sizeof(unsigned int);               \
-                --clear_count;                                                 \
-            } while (clear_count != 0);                                        \
+                --(run_length);                                                \
+            } while ((run_length) != 0);                                       \
         }                                                                      \
     } while (0)
 

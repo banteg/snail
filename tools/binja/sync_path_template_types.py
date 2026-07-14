@@ -1026,7 +1026,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
 )
 
 # The full SubgameRuntime field map above is the canonical owner view consumed
-# by these lifecycle functions. These two prototypes have stable receiver
+# by these lifecycle functions. These prototypes have stable receiver
 # overrides in the live database and are safe to replay with the fields.
 CORE_SUBGAME_PROTO_UPDATES = (
     ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
@@ -1040,11 +1040,11 @@ CORE_SUBGAME_PROTO_UPDATES = (
     ),
 )
 
-# These five lifecycle receivers are already SubgameRuntime methods in the
+# These lifecycle and track-normalization receivers are already SubgameRuntime methods in the
 # exact/working matching sources and in the cross-port cRSubGame symbol
 # evidence. The exact runtime-row lookup has the same owner proof through the
 # canonical array. Older BN databases pin a separate user-defined Game*
-# parameter variable on all six. Both the previewed prototype setter and local
+# parameter variable on all seven. Both the previewed prototype setter and local
 # retype API reject the owner-only correction, so report the drift instead of
 # claiming a mutation that analysis immediately restores. Preserve BN's
 # inferred calling convention here; the ownership pointer is the only intended
@@ -1058,6 +1058,10 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ("destroy_subgame", "void __fastcall destroy_subgame(SubgameRuntime* game)"),
     ("update_subgame", "void __fastcall update_subgame(SubgameRuntime* game)"),
     ("remove_subgame_bods", "void __fastcall remove_subgame_bods(SubgameRuntime* game)"),
+    (
+        "merge_track_tile_runs",
+        "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game)",
+    ),
     (
         "get_track_runtime_cell_at_world_z",
         "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
