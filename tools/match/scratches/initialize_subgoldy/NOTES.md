@@ -200,3 +200,8 @@ all 27 operands clean.
 0x40-byte `FollowState` / `cRPathFollowGoldy` owner instead of exposing twelve
 flattened aliases. Initialization through `follow_state.active` remains exact
 at 279/279 instructions with all 27 operands clean.
+
+2026-07-14 Player renderable inheritance: the exact authored initializer now
+seeds the inherited `RenderableBod::transform` position at `+0x38`; the cached
+camera target remains Player-owned at `+0x2964`. Focused Wibo remains exact at
+279/279 instructions, full prefix, and 27 clean operands.

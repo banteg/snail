@@ -22,7 +22,7 @@ int report_errorf(char* format, ...);
 void SegmentCache::update_track_render_cache_rows()
 {
     int live_mask = 0x200;
-    if (g_game->subgame.embedded_player()->live_matrix.position.z + 46.0f <= next_cache_row_z)
+    if (g_game->subgame.embedded_player()->transform.position.z + 46.0f <= next_cache_row_z)
         return;
 
     do {
@@ -75,5 +75,5 @@ void SegmentCache::update_track_render_cache_rows()
 
         next_cache_row_z += 24.0f;
         next_cache_row_index++;
-    } while (g_game->subgame.embedded_player()->live_matrix.position.z + 46.0f > next_cache_row_z);
+    } while (g_game->subgame.embedded_player()->transform.position.z + 46.0f > next_cache_row_z);
 }

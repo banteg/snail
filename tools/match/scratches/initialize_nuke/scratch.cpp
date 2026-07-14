@@ -14,7 +14,7 @@ void Nuke::initialize_nuke()
         Sprite** slots = sprite_slots;
         int count = 25;
 
-        orbit_center_z = owner_player->live_matrix.position.z - 5.0f;
+        orbit_center_z = owner_player->transform.position.z - 5.0f;
         float rate = g_game->subgame.subgame_rate;
         orbit_phase = 0.0f;
         orbit_phase_step = 0.104719758f;

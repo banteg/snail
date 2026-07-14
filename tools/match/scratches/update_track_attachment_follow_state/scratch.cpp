@@ -145,9 +145,9 @@ int FollowState::update_track_attachment_follow_state(
             output->y = y;
             vertical_offset = vertical;
             output->z = z;
-            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_right = transform.basis_right;
-            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_up = transform.basis_up;
-            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_forward = transform.basis_forward;
+            ((GameRoot*)g_game_base)->subgame.player.transform.basis_right = transform.basis_right;
+            ((GameRoot*)g_game_base)->subgame.player.transform.basis_up = transform.basis_up;
+            ((GameRoot*)g_game_base)->subgame.player.transform.basis_forward = transform.basis_forward;
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
@@ -198,9 +198,9 @@ int FollowState::update_track_attachment_follow_state(
             output->y = v83;
             v84 = right_z + up_offset.z;
             output->z = v84;
-            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_right = transform.basis_right;
-            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_up = transform.basis_up;
-            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_forward = transform.basis_forward;
+            ((GameRoot*)g_game_base)->subgame.player.transform.basis_right = transform.basis_right;
+            ((GameRoot*)g_game_base)->subgame.player.transform.basis_up = transform.basis_up;
+            ((GameRoot*)g_game_base)->subgame.player.transform.basis_forward = transform.basis_forward;
         }
 
         orientation_up.x = transform.basis_up.x;

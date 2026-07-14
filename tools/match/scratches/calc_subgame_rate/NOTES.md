@@ -6,7 +6,8 @@ Recovered relationships:
 
 - `base_rate +0x30` feeds `subgame_rate +0x38` when `subgame_state +0x3c`
   is not active state `2`.
-- active-state rate ramps from the embedded `player.live_matrix.position.z`
+- active-state rate ramps from the embedded Player's inherited
+  `player.transform.position.z`
   (`Player +0x70`, runtime `+0x3bb7d4`) divided by
   `completion_row_start +0x58`, clamped to `[0, 1]`.
 - `level_mode +0x40` selects the completion ramp constants: `0.55` for modes

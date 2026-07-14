@@ -159,9 +159,9 @@ void Player::initialize_subgoldy(int player_slot)
 
     *(int*)(self + 0x1d8) = 0x3d4ede62;
     *(int*)(self + 0x1e0) = 0x3d4ede62;
-    live_matrix.position.x = 0.0f;
-    live_matrix.position.y = 0.0f;
-    live_matrix.position.z = 4.0f;
+    transform.position.x = 0.0f;
+    transform.position.y = 0.0f;
+    transform.position.z = 4.0f;
     *(int*)(self + 0x37c) = zero;
     *(int*)(self + 0x328) = zero;
     *(int*)(self + 0x32c) = 0x3c888889;
@@ -172,7 +172,7 @@ void Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x3f48) = zero;
     *(int*)(self + 0x3f4c) = 0x3bde0163;
     *(unsigned char*)(self + 0x84) = (unsigned char)zero;
-    cached_camera_target_world = live_matrix.position;
+    cached_camera_target_world = transform.position;
     int* velocity_lanes = (int*)(self + 0x410);
     velocity_lanes[2] = zero;
     velocity_lanes[1] = zero;

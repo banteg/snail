@@ -9,14 +9,14 @@ void Banner::update_banner()
 {
     switch (visibility_mode) {
     case 0:
-        if (owner_player->live_matrix.position.z < 40.0f)
+        if (owner_player->transform.position.z < 40.0f)
             list_flags |= 0x20;
         else
             list_flags &= ~0x20;
         break;
 
     case 1:
-        if (position.z - owner_player->live_matrix.position.z < 46.0f)
+        if (position.z - owner_player->transform.position.z < 46.0f)
             list_flags |= 0x20;
         else
             list_flags &= ~0x20;

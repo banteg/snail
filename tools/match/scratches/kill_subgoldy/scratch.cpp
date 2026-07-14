@@ -5,5 +5,5 @@
 void Player::kill_subgoldy()
 {
     begin_post_follow_carryover();
-    live_matrix.position.y = -8.0f;
+    transform.position.y = -8.0f;
 }

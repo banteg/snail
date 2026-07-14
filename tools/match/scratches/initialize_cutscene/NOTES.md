@@ -23,7 +23,7 @@ Remaining known shape issues:
 
 - The native and candidate stack frames are both `0x15c`; all local value
   lifetimes and the instruction count now agree.
-- `Player +0x38` is the shared `Player::live_matrix`; the retained
+- `Player +0x38` is inherited `Player::transform`; the retained
   `Player::live_transform()` accessor returns that exact owner.
 - 2026-06-18 source-shape correction: the early persistent `Player* player` /
   `player_matrix` assumption was wrong for this function. Native reloads
@@ -51,7 +51,8 @@ incidental exit register.
 
 2026-07-12 live-transform and vector source-shape pass:
 
-- All four raw `Player +0x38` casts now use `Player::live_transform()`. The
+- All four raw `Player +0x38` casts now use `Player::live_transform()`, which
+  returns the inherited `RenderableBod::transform`. The
   steady camera path borrows one short-lived `Player*`, matching native's
   single owner load for the live transform and cached camera target.
 - Whole `Vector3` assignments recover the authored position copies into the

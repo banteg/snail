@@ -128,17 +128,17 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         7000,
         &RuntimeSlot::initialize_fringe_object);
 
-    RuntimeSlot* subgoldy = (RuntimeSlot*)&player;
+    Player* subgoldy = &player;
     subgoldy->initialize_renderable_bod();
-    ((Player*)subgoldy)->click_start.initialize_click_start_controller_runtime();
+    subgoldy->click_start.initialize_click_start_controller_runtime();
     ((RuntimeSlot*)((char*)subgoldy + 0x200))->noop_runtime_slot_constructor();
     ((RuntimeSlot*)((char*)subgoldy + 0x384))->noop_runtime_slot_constructor();
     initialize_array_with_constructor(
-        (RuntimeSlot*)((Player*)subgoldy)->golb_shots,
+        (RuntimeSlot*)subgoldy->golb_shots,
         sizeof(GolbShot),
         0xc,
         &RuntimeSlot::initialize_golb_shot);
-    ((Player*)subgoldy)->presentation.initialize_player_presentation_controller();
+    subgoldy->presentation.initialize_player_presentation_controller();
     subgoldy->vtable = &g_subgoldy_callback_table;
 
     SubLoc* loc = &runtime_cells[0][0];

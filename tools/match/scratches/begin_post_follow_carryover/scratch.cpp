@@ -13,7 +13,7 @@ void Player::begin_post_follow_carryover()
     }
     follow_state.active = 0;
     attachment_exit_pending = 1;
-    attachment_exit_anchor_z = live_matrix.position.z;
+    attachment_exit_anchor_z = transform.position.z;
     attachment_exit_progress = 0;
     attachment_exit_gate_a = 0;
     attachment_exit_gate_b = 0;

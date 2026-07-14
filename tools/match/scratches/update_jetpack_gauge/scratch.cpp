@@ -33,7 +33,7 @@ void SubHover::update_jetpack_gauge()
         SubgameRuntime* live_game = game;
         Player* live_player = player;
         if (next_progress > 1.0f
-            || (float)(live_game->completion_row_start - 5) < live_player->live_matrix.position.z) {
+            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {
             goto finish_hover;
         }
 
@@ -49,7 +49,7 @@ void SubHover::update_jetpack_gauge()
             warning_intensity = 1.0f;
             SubRow* runtime_cell =
                 g_game->subgame.get_track_runtime_cell_at_world_z(
-                    &g_game->subgame.embedded_player()->live_matrix.position);
+                    &g_game->subgame.embedded_player()->transform.position);
             if ((runtime_cell->flags & 0x8000) != 0) {
                 progress = 0.94f;
                 debug_report_stub("Auto Shutoff Jetpack\n");
@@ -64,7 +64,7 @@ void SubHover::update_jetpack_gauge()
         wobble_alpha = 0.0f;
         *(int*)&warning_intensity_latch = intensity_bits;
         wobble_y = (wobble_y_sine * 0.25f + 1.0f) * warning_intensity;
-        spawn_track_speedup(&player->live_matrix.position, progress);
+        spawn_track_speedup(&player->transform.position, progress);
         return;
     }
 

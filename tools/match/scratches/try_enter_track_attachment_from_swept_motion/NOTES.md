@@ -39,7 +39,7 @@ Recovered behavior and ownership:
   `SubgameRuntime::runtime_rows[row].installed_heading_delta`.
 - The final validation is
   `FollowState::update_track_attachment_follow_state(player.velocity.z,
-  &player.live_matrix.position, &player.velocity)`.
+  &player.transform.position, &player.velocity)`.
 
 The two native callers discard EAX, both empty exits return without producing
 a value, and the final helper result is not semantically consumed. Binary Ninja
@@ -52,7 +52,7 @@ split keeps only seven stack dwords for position, sweep, and the borrowed cell.
 
 The fixed player is now reached through
 `GameRoot::subgame.player`; every accepted-entry write traverses canonical
-`Player` fields, including the embedded `follow_state`, live matrix, velocity,
+`Player` fields, including the embedded `follow_state`, inherited transform, velocity,
 exit gate, and `Squidge`. The installed heading likewise comes from the real
 `SubgameRuntime::runtime_rows[row]` owner. Seven field-first absolute globals
 are no longer needed by matching sources.

@@ -35,9 +35,9 @@ void Player::play_movement_state_sound()
             Vector3 vector;
             Vector3 normalized_vector;
 
-            vector.x = g_game->players[0].transform.position.x - live_matrix.position.x;
-            vector.y = g_game->players[0].transform.position.y - live_matrix.position.y;
-            vector.z = g_game->players[0].transform.position.z - live_matrix.position.z;
+            vector.x = g_game->players[0].transform.position.x - transform.position.x;
+            vector.y = g_game->players[0].transform.position.y - transform.position.y;
+            vector.z = g_game->players[0].transform.position.z - transform.position.z;
 
             normalized_vector = vector;
             float distance = (float)normalize_vector(&normalized_vector);

@@ -468,3 +468,9 @@ both prototype and local-retype attempts are restored by analysis, so the sync
 reports the receiver correction as deferred instead of claiming a mutation.
 The matching source remains the ownership authority and stays exact at
 396/396 with all 85 operands clean.
+
+2026-07-14 Player renderable inheritance: subgame reset initializes the
+embedded Player's inherited transform and copies its position into the
+Player-owned cached camera target. The separate Snail, Cameraman, and CutScene
+matrices keep their established owners. This method remains exact at 396/396
+instructions with all 85 operands clean.

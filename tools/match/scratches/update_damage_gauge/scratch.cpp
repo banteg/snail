@@ -61,7 +61,7 @@ void DamageGuage::update_damage_gauge()
             warning_transition_progress = next_warning;
             if (next_warning >= 1.0f) {
                 game = g_game;
-                if (*(int*)&game->subgame.embedded_player()->live_matrix.position.y != 0x3efae148)
+                if (*(int*)&game->subgame.embedded_player()->transform.position.y != 0x3efae148)
                     goto render;
                 state = 2;
                 g_voice_manager.play_voice_manager(14, 0, -1);
@@ -81,7 +81,7 @@ void DamageGuage::update_damage_gauge()
                 game = g_game;
             }
             if ((fill == 0.0f
-                    && *(int*)&game->subgame.embedded_player()->live_matrix.position.y == 0x3efae148)
+                    && *(int*)&game->subgame.embedded_player()->transform.position.y == 0x3efae148)
                 || game->subgame.embedded_player()->completion_handoff_timer > 0.0f
                 || game->subgame.embedded_player()->resurrect_progress > 0.0f
                 || game->subgame.embedded_player()->presentation.cutscene.state) {

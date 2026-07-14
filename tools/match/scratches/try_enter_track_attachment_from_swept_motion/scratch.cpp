@@ -77,7 +77,7 @@ seed:
     PLAYER->follow_state.sample_index = idx;
     PLAYER->follow_state.progress = local.z;
     PLAYER->follow_state.vertical_offset = 0;
-    PLAYER->live_matrix.position.y = local.y;
+    PLAYER->transform.position.y = local.y;
     PLAYER->velocity.y = 0;
     PLAYER->follow_state.player = PLAYER;
     PLAYER->follow_state.template_record->installed_heading_delta =
@@ -88,6 +88,6 @@ seed:
     PLAYER->follow_state.orientation_a = 0;
     PLAYER->follow_state.update_track_attachment_follow_state(
         PLAYER->velocity.z,
-        &PLAYER->live_matrix.position,
+        &PLAYER->transform.position,
         &PLAYER->velocity);
 }

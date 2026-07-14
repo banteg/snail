@@ -29,7 +29,7 @@ void SubLoc::update_sub_loc()
         return;
     if (tile_id == 14) {
         if ((float)g_game->subgame.first_block_row_count
-            >= g_game->subgame.embedded_player()->live_matrix.position.z)
+            >= g_game->subgame.embedded_player()->transform.position.z)
             goto cull_check;
         if (random_float_below(100.0f, "W") < 4.0f) {
             Vector3 spawn = position;
@@ -37,7 +37,7 @@ void SubLoc::update_sub_loc()
             unsigned int lane = (lane_and_flags >> 8) & 0xF;
             spawn.x = (float)lane * 0.5f + spawn.x;
             float jitter = random_signed_float_below(3.0f, "Wall2");
-            Vector3 target = g_game->subgame.embedded_player()->live_matrix.position;
+            Vector3 target = g_game->subgame.embedded_player()->transform.position;
             target.z = jitter + 8.0f + target.z;
             Vector3 direction;
             direction = target - spawn;

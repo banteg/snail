@@ -128,7 +128,7 @@ public:
 };
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
 
-class Player {
+class Player : public RenderableBod {
 public:
     void update_subgoldy();              // @ 0x43b120, cRSubGoldy::Update
     void begin_post_follow_carryover();   // @ 0x43af60
@@ -148,14 +148,10 @@ public:
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
     Sprite* set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
-    TransformMatrix* live_transform(); // RenderableBod-compatible view at +0x38
+    TransformMatrix* live_transform(); // inherited render transform at +0x38
 
-    // The first 0x10 bytes are an intrusive BOD-list node. Player storage is
-    // embedded in SubgameRuntime and merely linked into the global active list.
-    char unknown_00[0x04];
-    unsigned int list_flags;               // +0x04, intrusive BOD membership/render flags
-    char unknown_08[0x38 - 0x08];
-    TransformMatrix live_matrix;           // +0x38, inherited render transform
+    // Player storage is embedded in SubgameRuntime. Its inherited BOD node is
+    // merely linked into the global active list; the list never owns it.
     char unknown_78[0x80 - 0x78];
     int resurrect_final_loss;              // +0x80
     unsigned char resurrect_active;        // +0x84
@@ -283,7 +279,7 @@ typedef char Player_must_be_0x4364[(sizeof(Player) == 0x4364) ? 1 : -1];
 
 inline TransformMatrix* Player::live_transform()
 {
-    return &live_matrix;
+    return &transform;
 }
 
 #endif

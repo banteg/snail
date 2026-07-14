@@ -230,7 +230,7 @@ void SubgameRuntime::initialize_subgame()
     set_matrix_identity(player->live_transform());
     player->movement_mode_selector = 0;
     player->game = this;
-    player->cached_camera_target_world = player->live_matrix.position;
+    player->cached_camera_target_world = player->transform.position;
     player->attachment_exit_pending = 0;
     player->boost_one_tick = 0;
     player->lives = 0;

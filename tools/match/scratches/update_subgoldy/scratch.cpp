@@ -123,8 +123,8 @@ void Player::update_subgoldy()
         && replay_game->replay_update_cursor
                < replay_game->selected_level_record->replay_sample_count
         && click_start.state != 2) {
-        p_position = &live_matrix.position;
-        live_matrix.position.x = convert_math_type16_to_32(
+        p_position = &transform.position;
+        transform.position.x = convert_math_type16_to_32(
             replay_game
                 ->selected_level_record
                 ->run_records[replay_game->replay_update_cursor]
@@ -194,14 +194,14 @@ steering_stored:
                 steer_target = 3.7f;
             if (click_start.state != 2) {
                 float pull = game->subgame_rate * 0.2f;
-                float steer_delta = steer_target - live_matrix.position.x;
-                live_matrix.position.x = pull * steer_delta + live_matrix.position.x;
+                float steer_delta = steer_target - transform.position.x;
+                transform.position.x = pull * steer_delta + transform.position.x;
             }
         }
-        p_position = &live_matrix.position;
+        p_position = &transform.position;
         float quantized_x = convert_math_type16_to_32(
-            convert_math_type32_to_16(live_matrix.position.x, 16.0f), 16.0f);
-        live_matrix.position.x = quantized_x;
+            convert_math_type32_to_16(transform.position.x, 16.0f), 16.0f);
+        transform.position.x = quantized_x;
         SubgameRuntime* record_game = game;
         record_game
             ->current_high_score_record
@@ -212,7 +212,7 @@ steering_stored:
             record_game_z
                 ->current_high_score_record
                 .run_records[record_game_z->replay_update_cursor]
-                .delta_z = convert_math_type32_to_16(live_matrix.position.z, 32.0f);
+                .delta_z = convert_math_type32_to_16(transform.position.z, 32.0f);
             g_replay_accum_z = convert_math_type16_to_32(
                 game
                     ->current_high_score_record
@@ -224,7 +224,7 @@ steering_stored:
                 ->current_high_score_record
                 .run_records[record_game_z->replay_update_cursor]
                 .delta_z =
-                convert_math_type32_to_16(live_matrix.position.z - g_replay_accum_z, 32.0f);
+                convert_math_type32_to_16(transform.position.z - g_replay_accum_z, 32.0f);
             g_replay_accum_z =
                 convert_math_type16_to_32(
                     game
@@ -339,7 +339,7 @@ steering_stored:
             velocity.z = 0.0f;
     } else {
         SubgameRuntime* accel_game = game;
-        if ((float)accel_game->first_block_row_count > live_matrix.position.z)
+        if ((float)accel_game->first_block_row_count > transform.position.z)
             velocity.z = accel_game->subgame_rate * accel_game->subgame_rate * 0.0040000002f
                        + velocity.z;
         if (velocity.z > 1.0f)
@@ -411,9 +411,9 @@ steering_stored:
                 float rate = game->subgame_rate;
                 float quantum = rate * rate * 0.0040000002f;
                 velocity.z = quantum + quantum + velocity.z;
-                if ((float)game->first_block_row_count <= live_matrix.position.z
-                    && live_matrix.position.z > slide_extension_threshold_z) {
-                    slide_extension_threshold_z = live_matrix.position.z + 1.0f;
+                if ((float)game->first_block_row_count <= transform.position.z
+                    && transform.position.z > slide_extension_threshold_z) {
+                    slide_extension_threshold_z = transform.position.z + 1.0f;
                 }
             }
         }
@@ -481,26 +481,26 @@ steering_stored:
                 }
             }
             if (!follow_state.active) {
-                if (live_matrix.position.y < 0.49000001f
-                    && live_matrix.position.y > -0.16333334f
+                if (transform.position.y < 0.49000001f
+                    && transform.position.y > -0.16333334f
                     && !landing_cell->is_sub_loc_empty()
                     && landing_cell->tile_id != 22) {
-                    live_matrix.set_matrix_rotation_identity();
+                    transform.set_matrix_rotation_identity();
                     trampoline_bounce_active = 0;
                     if (velocity.y < -0.029999999f) {
                         float squidge_amount = velocity.y - 0.029999999f;
                         squidge.start_squidge_y(squidge_amount);
                     }
                     if (velocity.y <= 0.0f) {
-                        live_matrix.position.y = 0.49000001f;
+                        transform.position.y = 0.49000001f;
                         velocity.y = 0.0f;
                     }
                     attachment_exit_pending = 0;
                 }
                 unsigned char landing_tile = landing_cell->tile_id;
                 if ((!landing_tile || landing_tile == 35)
-                    && live_matrix.position.y < 0.49000001f && velocity.y <= 0.0f) {
-                    float fraction = live_matrix.position.z - (float)(int)live_matrix.position.z;
+                    && transform.position.y < 0.49000001f && velocity.y <= 0.0f) {
+                    float fraction = transform.position.z - (float)(int)transform.position.z;
                     unsigned char flags_3d = landing_cell->tile_flags_3d;
                     float fraction_high;
                     if (!(flags_3d & 2))
@@ -518,14 +518,14 @@ steering_stored:
                 if (probe_game->level_mode == 3)
                     probe_game->get_track_grid_cell_at_world_position(p_position);
                 if (((game->runtime_flags & 0x400) == 0 || (g_cheat_state.flags & 2) != 0)
-                    && live_matrix.position.y < 0.49000001f) {
+                    && transform.position.y < 0.49000001f) {
                     squidge.start_squidge_y(velocity.y);
                     trampoline_bounce_active = 0;
                     velocity.y = 0.0f;
                     attachment_exit_pending = 0;
-                    live_matrix.position.y = 0.49000001f;
+                    transform.position.y = 0.49000001f;
                 }
-                if (live_matrix.position.y < -7.0f && !resurrect_active)
+                if (transform.position.y < -7.0f && !resurrect_active)
                     initialize_subgoldy_death();
             }
         }
@@ -540,9 +540,9 @@ steering_stored:
                 ((SubgoldyFloorSamplerCallView*)game)
                     ->sample_track_floor_height_at_position(p_position)
                 + 0.49000001f;
-            if (floor_top > live_matrix.position.y) {
+            if (floor_top > transform.position.y) {
                 if (velocity.y <= 0.0f)
-                    live_matrix.position.y = floor_top;
+                    transform.position.y = floor_top;
                 if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 8
                     || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 9
                     || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 10
@@ -584,7 +584,7 @@ steering_stored:
                 float gravity = rate * rate * -0.0099999998f;
                 velocity.y = gravity + velocity.y;
             }
-            if (live_matrix.position.y < 0.0f && velocity.y <= 0.0f)
+            if (transform.position.y < 0.0f && velocity.y <= 0.0f)
                 begin_post_follow_carryover();
         } else {
             {
@@ -595,11 +595,11 @@ steering_stored:
             SubLoc* trampoline_cell =
                 game->get_track_grid_cell_at_world_position(p_position);
             if (trampoline_cell->tile_id == 22
-                && trampoline_cell->position.y + 0.49000001f > live_matrix.position.y
-                && trampoline_cell->position.y - 0.49000001f < live_matrix.position.y) {
+                && trampoline_cell->position.y + 0.49000001f > transform.position.y
+                && trampoline_cell->position.y - 0.49000001f < transform.position.y) {
                 squidge.start_squidge_y(velocity.y);
                 velocity.y = game->subgame_rate * 0.30000001f;
-                live_matrix.position.y = trampoline_cell->position.y + 0.49000001f;
+                transform.position.y = trampoline_cell->position.y + 0.49000001f;
                 attachment_exit_pending = 0;
                 trampoline_bounce_active = 1;
                 g_sound_effect_manager.play_sound_effect(41);
@@ -616,11 +616,11 @@ steering_stored:
         || (probe_y = p_position->y, probe_z = p_position->z + 0.49000001f,
             wall_probe.x = p_position->x, wall_probe.z = probe_z, wall_probe.y = probe_y,
             game->get_track_grid_cell_at_world_position(&wall_probe)->tile_id != 14)
-        || live_matrix.position.y >= 6.5f) {
+        || transform.position.y >= 6.5f) {
         barrier_hold_progress = 0.0f;
     } else {
         velocity.z = 0.0f;
-        live_matrix.position.z = (float)(int)(live_matrix.position.z + 0.49000001f) - 0.5f;
+        transform.position.z = (float)(int)(transform.position.z + 0.49000001f) - 0.5f;
         if (squidge.z_output == 0.0f)
             g_sound_effect_manager.play_sound_effect(47);
         squidge.start_squidge_z(-0.33000001f);
@@ -643,7 +643,7 @@ steering_stored:
             || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 10
             || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 11
             || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 13)
-        && !attachment_exit_pending && live_matrix.position.y <= 0.98000002f) {
+        && !attachment_exit_pending && transform.position.y <= 0.98000002f) {
         lane_lean_progress_step = game->subgame_rate * 0.037037037f;
         if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 2
             || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 5
@@ -666,7 +666,7 @@ steering_stored:
 
     SubgameRuntime* completion_game = game;
     float completion_start = (float)completion_game->completion_row_start;
-    if (live_matrix.position.z < completion_start || attachment_exit_pending) {
+    if (transform.position.z < completion_start || attachment_exit_pending) {
         if (!boost_one_tick && !control_override_active) {
             float window = completion_game->subgame_rate * 0.17f;
             if (velocity.z >= window) {
@@ -680,7 +680,7 @@ steering_stored:
         if (!completion_handoff_active) {
             if (completion_game->level_mode == 4) {
                 float remaining =
-                    (1.0f - (live_matrix.position.z - completion_start) / velocity.z)
+                    (1.0f - (transform.position.z - completion_start) / velocity.z)
                     * 0.016666668f;
                 stopwatch.Add(remaining);
             }
@@ -703,7 +703,7 @@ steering_stored:
         }
         completion_handoff_active = 1;
         SubgameRuntime* run_out_game = game;
-        if ((float)run_out_game->completion_row_start + 2.5f < live_matrix.position.z) {
+        if ((float)run_out_game->completion_row_start + 2.5f < transform.position.z) {
             float rate = run_out_game->subgame_rate;
             float quantum = rate * rate * 0.0040000002f;
             float slowed = velocity.z - (quantum + quantum);
@@ -794,17 +794,17 @@ steering_stored:
     Vector3* camera_target = &cached_camera_target_world;
     float wobble_alpha = sub_hover.wobble_alpha;
     *camera_target = *p_position;
-    float forward_x = wobble_alpha * live_matrix.basis_forward.x;
-    float forward_y = wobble_alpha * live_matrix.basis_forward.y;
-    float forward_z = wobble_alpha * live_matrix.basis_forward.z;
+    float forward_x = wobble_alpha * transform.basis_forward.x;
+    float forward_y = wobble_alpha * transform.basis_forward.y;
+    float forward_z = wobble_alpha * transform.basis_forward.z;
     float wobble_y = sub_hover.wobble_y;
-    float up_x = wobble_y * live_matrix.basis_up.x;
-    float up_y = wobble_y * live_matrix.basis_up.y;
-    float up_z = wobble_y * live_matrix.basis_up.z;
+    float up_x = wobble_y * transform.basis_up.x;
+    float up_y = wobble_y * transform.basis_up.y;
+    float up_z = wobble_y * transform.basis_up.z;
     float wobble_x = sub_hover.wobble_x;
-    wall_probe.x = wobble_x * live_matrix.basis_right.x;
-    wall_probe.y = wobble_x * live_matrix.basis_right.y;
-    float right_z = wobble_x * live_matrix.basis_right.z;
+    wall_probe.x = wobble_x * transform.basis_right.x;
+    wall_probe.y = wobble_x * transform.basis_right.y;
+    float right_z = wobble_x * transform.basis_right.z;
     float lateral_x = wall_probe.x + up_x;
     float lateral_y = wall_probe.y + up_y;
     wall_probe.x = lateral_x + forward_x;
@@ -881,8 +881,8 @@ steering_stored:
                         + g_subgoldy_ghost_z;
             g_subgoldy_ghost_z = ghost_z;
             if (game->selected_level_record_active)
-                g_subgoldy_ghost_z = live_matrix.position.z;
-            float ghost_horizon = live_matrix.position.z + 20.0f;
+                g_subgoldy_ghost_z = transform.position.z;
+            float ghost_horizon = transform.position.z + 20.0f;
             float clamped_ghost_z;
             if (g_subgoldy_ghost_z < ghost_horizon)
                 clamped_ghost_z = g_subgoldy_ghost_z;
@@ -892,18 +892,18 @@ steering_stored:
         }
     }
 
-    float backdrop_zoom = live_matrix.position.z / (float)game->runtime_row_count;
+    float backdrop_zoom = transform.position.z / (float)game->runtime_row_count;
     ((GameRoot*)g_app)->backdrop.set_backdrop_zoom(backdrop_zoom);
 
     SubgameRuntime* horizon_game = game;
     float interaction_limit = (float)horizon_game->completion_row_start - 30.0f;
-    float interaction_near = live_matrix.position.z - 8.0f;
+    float interaction_near = transform.position.z - 8.0f;
     if (interaction_limit >= interaction_near)
         interaction_limit = interaction_near;
     int hover_state = sub_hover.state;
     interaction_max_z = interaction_limit;
     if (hover_state == 1) {
-        if (live_matrix.position.y < 1.0f) {
+        if (transform.position.y < 1.0f) {
             velocity.y = velocity.y * 0.89999998f;
             velocity.y = velocity.y - game->subgame_rate * game->subgame_rate * -0.0099999998f;
         }
@@ -917,10 +917,10 @@ steering_stored:
             g_voice_manager.play_voice_manager(3, 0, -1);
             unsigned char override_active = control_override_active;
             attachment_exit_gate_a = 1;
-            if (!override_active && live_matrix.position.y < -6.0f)
+            if (!override_active && transform.position.y < -6.0f)
                 presentation.dispatch_cutscene_animation(5, 1, -1);
         }
-        if (live_matrix.position.y < -7.0f && !attachment_exit_gate_b) {
+        if (transform.position.y < -7.0f && !attachment_exit_gate_b) {
             g_voice_manager.play_voice_manager(1, 2, -1);
             attachment_exit_gate_b = 1;
             attachment_exit_gate_a = 1;

@@ -16,7 +16,7 @@ Recovered shape:
 - advances `progress` by `path_factor * secondary_samples[sample_index].delta_length`
 - consumes sample overflows until the active sample can hold the remaining delta
 - terminates at `sample_index == template->segment_count`, clears `active`, returns `3`, and handles the Supertramp launch special case
-- normal path interpolates the path center/lateral/special scalars, builds either kind-42 nonlinear transform or ordinary interpolated secondary-sample transform, stores output position and publishes the basis rows into `GameRoot::subgame.player.live_matrix`, then checks side exits
+- normal path interpolates the path center/lateral/special scalars, builds either kind-42 nonlinear transform or ordinary interpolated secondary-sample transform, stores output position and publishes the basis rows into `GameRoot::subgame.player.transform`, then checks side exits
 - special-runtime row updates traverse `GameRoot::subgame.runtime_rows[row_index].primary_attachment_cell`
 - Supertramp launch path reloads `GameRoot::subgame.subgame_rate`
 
@@ -270,7 +270,7 @@ This consolidation is codegen neutral: focused matching remains `70.28%`,
 ## 2026-07-14 canonical root publication
 
 Both traversal branches now publish the interpolated right, up, and forward
-rows through `GameRoot::subgame.player.live_matrix`. The former three
+rows through `GameRoot::subgame.player.transform`. The former three
 field-first matrix-row globals described the same storage but obscured the
 complete root, subgame, player, and transform ownership chain. The two
 entry-mesh milestones use the same canonical root to reach the owned `SubRow`

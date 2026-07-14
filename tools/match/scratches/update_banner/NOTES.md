@@ -7,7 +7,7 @@
 - `+0x18` state-1 reference z
 - `+0x38` visibility mode
 - `+0x54` borrowed `Player*`, read through
-  `Player::live_matrix.position.z` at `+0x70`
+  inherited `Player::transform.position.z` at `+0x70`
 - `+0x58` phase
 - `+0x5c` phase step
 

@@ -416,8 +416,8 @@ honest jump-table mismatch.
 ## 2026-07-14 canonical player and subgame ownership
 
 The remaining broad player/game local owners are retired. `update_subgoldy` is now the
-canonical `Player::update_subgoldy()` method, and `Player +0x38` owns the full
-0x40-byte live transform rather than exposing only its position row. The
+canonical `Player::update_subgoldy()` method, and `Player +0x38` exposes the full
+0x40-byte render transform rather than only its position row. The
 shared player also names the replay anchor, tile-14 wall-stall window,
 exit-voice timer, and timer-360 state used here. Every outer runtime access now
 uses the borrowed canonical `SubgameRuntime*` backlink.
@@ -430,6 +430,15 @@ without duplicating runtime storage or inventing data ownership.
 
 The full promotion is byte-identical at 72.51%, 2067/2087 instructions, 290
 clean operands, and the same one honest follow jump-table mismatch.
+
+## 2026-07-14 Player renderable inheritance
+
+The canonical Player now inherits the complete `RenderableBod` prefix, so all
+movement, collision, replay, camera, and attachment paths use inherited
+`transform` rather than a duplicated `live_matrix` field. GolbShot,
+Cameraman, CutScene, and presentation-channel matrices remain distinct owners.
+This scratch is byte-identical at 72.51%, 2067/2087 instructions, 290 clean
+operands, and the same one honest follow jump-table mismatch.
 
 ## 2026-07-14 presentation renderable inheritance
 
