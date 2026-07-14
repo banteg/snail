@@ -17,17 +17,18 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
-    DWORD* scan = game_words + 874407; // jetpack_pickup.state
+    JetPack* scan = &jetpack_pickup;
     while (1) {
-        if (*scan == 0)
+        if (scan->state == 0)
             break;
         ++slot_index;
-        scan += 103;
+        ++scan;
         if (slot_index >= 1)
             return;
     }
 
-    DWORD* slot_base = game_words + 103 * slot_index;
+    DWORD* slot_base =
+        game_words + sizeof(JetPack) / sizeof(DWORD) * slot_index;
     SubgameRuntime* slot = (SubgameRuntime*)slot_base;
     slot->jetpack_pickup.state = 1;
     slot->jetpack_pickup.owner = player;
@@ -48,7 +49,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
         live_position->x = live_position->x - 0.5f;
     }
 
-    BodNode* node = (BodNode*)&slot->jetpack_pickup;
+    BodNode* node = &slot->jetpack_pickup;
     g_game->active_bod_list.add_bod(node);
 
     Sprite* sprite =

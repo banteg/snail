@@ -138,3 +138,10 @@ all nine clean references are unchanged.
 active list. Exact constructor/updater evidence independently fixes the base;
 this allocator stays byte-stable at the honest 84.72%, 144/144 baseline with
 all nine operands clean.
+
+2026-07-14 singleton traversal ownership: the occupied check now starts from
+the owned `JetPack jetpack_pickup` member and advances a typed pointer. The
+shifted receiver used by the remaining source shape derives its displacement
+from `sizeof(JetPack)` rather than the unexplained 103-word stride, and the
+inherited BOD conversion no longer needs a cast. Focused output remains the
+honest 84.72%, 144/144 baseline, prefix 7, with all nine operands clean.

@@ -190,3 +190,10 @@ instructions, prefix 6/122, with seven clean operands.
 `BodBase -> BodNode` object. The allocator remains byte-stable at 90.08%,
 120/122 instructions, with all seven operands clean; its residuals remain the
 honest void epilogue and compiler scheduling described above.
+
+2026-07-14 pool traversal ownership: the free-slot scan now walks the owned
+`SubHealth health_pickups[8]` array and advances a typed pointer. The later
+optimizer-sensitive shifted receiver still derives its displacement from
+`sizeof(SubHealth)` rather than the unexplained 29-word stride, and the
+inherited BOD conversion no longer needs a cast. Focused output is unchanged at
+90.08%, 120/122 instructions, prefix 6, with all seven operands clean.

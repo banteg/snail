@@ -17,18 +17,19 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
-    DWORD* scan = game_words + 874510; // health_pickups[0].state
+    SubHealth* scan = health_pickups;
     while (1) {
-        if (*scan == 0)
+        if (scan->state == 0)
             break;
         ++slot_index;
-        scan += 29;
+        ++scan;
         if (slot_index < 8)
             continue;
         return;
     }
 
-    DWORD* slot_base = game_words + 29 * slot_index;
+    DWORD* slot_base =
+        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;
     SubgameRuntime* slot = (SubgameRuntime*)slot_base;
     slot->health_pickups[0].state = 1;
     slot->health_pickups[0].owner = player;
@@ -40,7 +41,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     Vector3* live_position = &slot->health_pickups[0].position;
     *live_position = staged_position;
 
-    BodNode* node = (BodNode*)&slot->health_pickups[0];
+    BodNode* node = &slot->health_pickups[0];
     g_game->active_bod_list.add_bod(node);
 
     Sprite* sprite =
