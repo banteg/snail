@@ -1,3 +1,4 @@
+// Shared Windows RShell archive and transient-workspace ownership.
 #ifndef ARCHIVE_INDEX_H
 #define ARCHIVE_INDEX_H
 
@@ -11,6 +12,16 @@ typedef struct ArchiveIndex {
     int count;               // +0x00
     ArchiveEntry entries[1]; // +0x04
 } ArchiveIndex;
+
+// Windows RShell owns one 4 MiB transient workspace exposed as two 2 MiB
+// regions, plus a separate shared buffer for archived music and samples.
+enum {
+    RSHELL_SCRATCH_REGION_SIZE = 0x200000,
+    RSHELL_SCRATCH_REGION_COUNT = 2,
+    RSHELL_SCRATCH_SIZE =
+        RSHELL_SCRATCH_REGION_SIZE * RSHELL_SCRATCH_REGION_COUNT,
+    RSHELL_MUSIC_MEMORY_BUFFER_SIZE = 0x64000,
+};
 
 // Public RShellReadDirectory output record retained by iOS symbols.
 typedef char DirectoryEntryName[128];
@@ -28,7 +39,10 @@ typedef char DirectoryEntryName_must_be_0x80[
 
 typedef struct File File;
 
+extern char* g_music_memory_buffer; // data_53c7e8 / iOS RShellMusicMemoryBuffer
+extern void* g_archive_data_base;   // data_53c7ec / iOS RShellScratch
 extern File* g_archive_file; // data_53c7f0 / iOS gDatFP
+extern unsigned char g_archive_startup_flag; // data_53c7f4 / iOS RShellDirectoryStackLevel
 extern ArchiveIndex* g_archive_index_records; // data_53c7f8 / iOS gDat
 
 #endif

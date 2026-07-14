@@ -3,8 +3,6 @@
 #include "audio_system.h"
 #include "archive_index.h"
 
-extern char* g_music_memory_buffer; // data_53c7e8
-
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 int report_errorf(char* format, ...);
 
@@ -17,7 +15,7 @@ char cache_music_file(char* path, int unused, char* unused_default_path)
         if (result != 0) {
             char* bytes =
                 load_file_bytes_from_archive_or_fs(source_path, g_music_memory_buffer, (int*)&path);
-            if ((int)path >= 0x64000) {
+            if ((int)path >= RSHELL_MUSIC_MEMORY_BUFFER_SIZE) {
                 report_errorf("Music buffer overflow Increase RSHELL_MUSIC_MEMORY_BUFFER_SIZE");
             }
 

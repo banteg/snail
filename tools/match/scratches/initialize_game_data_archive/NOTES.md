@@ -61,3 +61,25 @@
   `g_tracked_allocation_stack` object, so the folded initializer is called
   directly on that owner rather than through a cast from its first depth word.
   The focused result remains 94.74%, 48/47, with all 19 operands resolved.
+
+## 2026-07-14 RShell workspace owner closure
+
+Binary Ninja confirms that the music-memory pointer at `0x53c7e8` is shared by
+the initializer, music cache, and registered-sample loader, while the
+`RShellScratch` pointer at `0x53c7ec` is shared by the initializer, teardown,
+and both scratch-region accessors. The sole Windows reference at `0x53c7f4`
+is the initializer store; the iOS symbol identifies that byte as
+`RShellDirectoryStackLevel`, so the shared declaration records the provenance
+without inventing an additional Windows consumer.
+
+`archive_index.h` now owns those RShell globals and the independently proved
+Windows capacities: a 4 MiB scratch allocation split into two 2 MiB regions,
+and the `RSHELL_MUSIC_MEMORY_BUFFER_SIZE` named by the native overflow error.
+The initializer and all five consumers remain byte-identical:
+
+- initializer: `cf57d2aa6b6ec2b8d6ce30f0dd8fe32acd8f4749e1d346c494b7094f115b781b`
+- teardown: `986ca145af72664ec5bd35562a812df98293d858aa65303d7c3d10dc07006a6c`
+- first-region accessor: `2df4fffd27a4400b08c05e5784cb79d1025c2fff73499b15083733d16cbe0bd1`
+- second-region accessor: `5d7dfafc53d46ca3b9ac447302e7cd6d334924e118d117e6a415fd374aff0317`
+- music cache: `d07b24a7d7e26ffb2e76c383884f7140ca6d1659abf326acd426d91e2f849ffa`
+- sample registration: `4c26a7c9c45bbaa1fc167475662dda1dba4e7ff8527e74f64df1dc1a5adcd335`

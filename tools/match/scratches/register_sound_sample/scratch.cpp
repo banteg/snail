@@ -3,8 +3,6 @@
 #include "audio_system.h"
 #include "archive_index.h"
 
-extern char* g_music_memory_buffer; // data_53c7e8
-
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);

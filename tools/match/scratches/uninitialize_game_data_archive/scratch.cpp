@@ -2,8 +2,6 @@
 
 #include "archive_index.h"
 
-extern void* g_archive_data_base; // data_53c7ec / RShellScratch
-
 void free_tracked_memory(void* pointer);
 extern "C" int __cdecl fclose(File* file);
 
