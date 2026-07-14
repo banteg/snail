@@ -9,3 +9,10 @@ Embedded `IndexBufferFactory` allocator owned by `Direct3DRenderer + 0x8ca4`.
   original shared "Vertex Buffer Request fail" diagnostic for HRESULT failure.
 
 Focused match is exact: 36/36 instructions with all five masked operands clean.
+
+2026-07-14 device ABI ownership: the call target is the canonical
+`Direct3DDevice8*` global and vtable slot `+0x60`, directly after the shared
+`CreateVertexBuffer` slot. The scratch-local `Direct3DIndexFactoryDevice` and
+vtable were partial duplicates, not a distinct owner. `IndexBufferFactory`
+continues to own the returned 3000 interface slots; the device only creates
+each COM resource.

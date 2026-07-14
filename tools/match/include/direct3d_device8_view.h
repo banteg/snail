@@ -5,6 +5,7 @@
 class Direct3DTexture8;
 struct Direct3DDevice8;
 struct Direct3DVertexBuffer8;
+struct ObjectIndexBufferResource;
 struct TransformMatrix;
 
 struct D3DViewport8 {
@@ -41,7 +42,10 @@ struct Direct3DDevice8Vtbl {
     int (__stdcall* CreateVertexBuffer)(Direct3DDevice8* self,
         unsigned int length, unsigned int usage, unsigned int fvf,
         unsigned int pool, Direct3DVertexBuffer8** out_buffer);
-    char unknown_060[0x88 - 0x60];
+    int (__stdcall* CreateIndexBuffer)(Direct3DDevice8* self,
+        unsigned int length, unsigned int usage, unsigned int format,
+        unsigned int pool, ObjectIndexBufferResource** out_buffer);
+    char unknown_064[0x88 - 0x64];
     int (__stdcall* BeginScene)(Direct3DDevice8* self);
     int (__stdcall* EndScene)(Direct3DDevice8* self);
     int (__stdcall* Clear)(Direct3DDevice8* self, unsigned int count, void* rects,

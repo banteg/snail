@@ -3,31 +3,12 @@
 #include "render_buffer_factories.h"
 #include "direct3d_device8_view.h"
 
-struct Direct3DIndexFactoryDevice;
-
-struct Direct3DIndexFactoryVtbl {
-    char unknown_00[0x60];
-    int (__stdcall* CreateIndexBuffer)(
-        Direct3DIndexFactoryDevice* self,
-        unsigned int length,
-        unsigned int usage,
-        unsigned int format,
-        unsigned int pool,
-        ObjectIndexBufferResource** out_buffer);
-};
-
-struct Direct3DIndexFactoryDevice {
-    Direct3DIndexFactoryVtbl* vtbl;
-};
-
 extern int report_errorf(char* format, ...); // @ 0x431cc0
 
 ObjectIndexBuffer* IndexBufferFactory::create_index_buffer(int index_count)
 {
-    Direct3DIndexFactoryDevice* factory =
-        (Direct3DIndexFactoryDevice*)g_d3d_device;
-    int result = factory->vtbl->CreateIndexBuffer(
-        factory,
+    int result = g_d3d_device->vtbl->CreateIndexBuffer(
+        g_d3d_device,
         index_count * 2,
         0x28,
         0x65,
