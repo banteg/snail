@@ -148,3 +148,10 @@ clean. The old separate `RowEventDisplayController` header is retired.
 a cast over three scalar names. The 100.00%, 213/213 exact result is unchanged,
 and `update_track_parcel` independently consumes the same owned vector in its
 state-7 delivery expression.
+
+2026-07-14 root player closure: parcel staging now passes
+`SubgameRuntime::parcel_home_anchor()` and the embedded `subgame.player` to the
+parcel manager, while the zero-parcel bonus gate names `subgame.level_mode`
+and awards the same player. This removes the raw `root + 0x433f34`,
+`+0x42fd7c`, and `+0x74658` expressions without changing the exact 213/213
+body or its 38 clean operands.

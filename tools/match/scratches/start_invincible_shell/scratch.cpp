@@ -1,9 +1,10 @@
 // start_invincible_shell @ 0x444ae0 (thiscall, ret)
 
 #include "audio_system.h"
+#include "game_root.h"
 #include "invincible.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Invincible::start_invincible_shell()
 {
@@ -20,6 +21,6 @@ void Invincible::start_invincible_shell()
     spin_phase_step = 0.0333333351f;
     fade_progress = 0.0f;
     fade_step = 0.0333333351f;
-    *(unsigned int*)(g_game_base + 0x433f98) |= 0x20;
+    g_game->subgame.player.presentation.invincible_shell.list_flags |= 0x20;
     g_audio_backend.play_registered_sound_sample_scaled(0x30, 1.0f);
 }

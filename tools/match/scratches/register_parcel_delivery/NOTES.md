@@ -18,3 +18,7 @@ Two source-shape details matter:
 The 0x50-byte `Completion` is the single owner for parcel display and final
 result phases. Consolidating the former row-event view remains exact at 36/36
 with all 10 operands clean.
+
+Both score awards now name the embedded `GameRoot::subgame.player` producer
+instead of reconstructing `Player*` from `root + 0x42fd7c`. The direct global
+reloads and exact 36/36 code shape are unchanged.

@@ -51,9 +51,9 @@ void Completion::update_row_event_display()
                 controller->staged_parcel_count = staged_parcel_count;
                 char* game = g_game_base;
                 Parcel* parcel =
-                    ((SubgameRuntime*)(game + 0x74618))->spawn_track_parcel(
-                        (Vector3*)(game + 0x433f34),
-                        (Player*)(game + 0x42fd7c));
+                    ((GameRoot*)game)->subgame.spawn_track_parcel(
+                        ((GameRoot*)game)->subgame.parcel_home_anchor(),
+                        &((GameRoot*)game)->subgame.player);
                 Sprite* sprite = parcel->sprite;
                 parcel->state = 6;
                 sprite->size_end = 0.0f;
@@ -91,8 +91,9 @@ void Completion::update_row_event_display()
             controller->bonus_widget->unhide_border_init();
             if (controller->parcel_target_count == 0) {
                 char* game = g_game_base;
-                if (*(int*)(game + 0x74658) == 1) {
-                    ((Player*)(game + 0x42fd7c))->add_subgoldy_score(SUBGOLDY_SCORE_BONUS, controller->bonus_score);
+                if (((GameRoot*)game)->subgame.level_mode == 1) {
+                    ((GameRoot*)game)->subgame.player.add_subgoldy_score(
+                        SUBGOLDY_SCORE_BONUS, controller->bonus_score);
                     g_sound_effect_manager.play_sound_effect(0x31);
                 }
             }
