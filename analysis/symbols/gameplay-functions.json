@@ -2142,7 +2142,7 @@
     {
       "address": "0x435180",
       "name": "merge_track_tile_runs",
-      "description": "Collapses repeated horizontal tile runs into longer strip variants where the renderer allows it."
+      "description": "Authored `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation cells."
     },
     {
       "address": "0x4354f0",

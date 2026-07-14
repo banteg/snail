@@ -44,6 +44,8 @@ struct RootBodCatalog {
     TrackCornerBodBank slide_corners; // indices 13..16, Slide0.tga
     BodBase trampoline; // index 17, Tramp.x
     BodBase unknown_18_21[4];
+    // pillar1.x..pillar8.x; CondenseTrack selects [run_length - 1] for
+    // horizontal tile-0x0e runs.
     BodBase pillars[TRACK_PILLAR_BOD_COUNT]; // indices 22..29
     TrackSliceBodBank floor_slices; // indices 30..37, Track0.tga
     TrackSliceBodBank warning_slices; // indices 38..45, TrackWarn.tga

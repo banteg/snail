@@ -1,6 +1,7 @@
 // merge_track_tile_runs @ 0x435180 (thiscall, ret)
 
 #include "bod_types.h"
+#include "root_bod_catalog.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
@@ -9,7 +10,7 @@ extern char* g_game_base; // data_4df904
 unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
 unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
 
-#define IS_SLIDE_RUN_TILE(tile) \
+#define IS_FLOOR_RUN_TILE(tile) \
     ((tile) == 1 || (tile) == 0x15 || (tile) == 0x1b || (tile) == 0x21 \
         || (tile) == 0x22)
 
@@ -68,7 +69,7 @@ void SubgameRuntime::merge_track_tile_runs()
                     int run_length = 0;
                     TrackRowCell* cursor = cell;
                     int lane_cursor = lane;
-                    while (lane_cursor < 8 && IS_SLIDE_RUN_TILE(cursor->tile_id)
+                    while (lane_cursor < 8 && IS_FLOOR_RUN_TILE(cursor->tile_id)
                            && (cursor->lane_and_flags & 0x8000) == 0
                            && (cursor->lane_and_flags & 0x4000) != 0
                            && (cursor->lane_and_flags & 0x60) == 0) {
@@ -80,7 +81,10 @@ void SubgameRuntime::merge_track_tile_runs()
                     if (run_length > 1) {
                         ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
                             ->set_bod_object(
-                                *(void**)(g_game_base + run_length * 0x38 + 0x4477c));
+                                ((RootBodCatalog*)(g_game_base
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                    ->floor_slices.storage[run_length - 1]
+                                    .object);
                         CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
                     }
                 } else if (is_sub_loc_slide(cell) != 0
@@ -101,7 +105,10 @@ void SubgameRuntime::merge_track_tile_runs()
                     if (run_length > 1) {
                         ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
                             ->set_bod_object(
-                                *(void**)(g_game_base + run_length * 0x38 + 0x44afc));
+                                ((RootBodCatalog*)(g_game_base
+                                        + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                    ->slide_slices.storage[run_length - 1]
+                                    .object);
                         CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
                     }
                 } else {
@@ -127,7 +134,10 @@ void SubgameRuntime::merge_track_tile_runs()
                         if (run_length > 1) {
                             ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
                                 ->set_bod_object(
-                                    *(void**)(g_game_base + run_length * 0x38 + 0x445bc));
+                                    ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->pillars[run_length - 1]
+                                        .object);
                             *cell_lane_flags =
                                 (*cell_lane_flags & ~0x0f00)
                                 | ((run_length & 0xf) << 8);
@@ -137,7 +147,10 @@ void SubgameRuntime::merge_track_tile_runs()
                         *cell_lane_flags &= ~0x2000u;
                         if (level_mode == 2) {
                             ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
-                                ->set_bod_object(*(void**)(g_game_base + 0x44124));
+                                ->set_bod_object(
+                                    ((RootBodCatalog*)(g_game_base
+                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
+                                        ->universe_hole.object);
                         } else {
                             *cell_lane_flags &= ~0x4000u;
                         }
@@ -164,4 +177,4 @@ void SubgameRuntime::merge_track_tile_runs()
 
 #undef CLEAR_MERGED_CONTINUATIONS
 #undef CELL_FROM_LANE_FLAGS
-#undef IS_SLIDE_RUN_TILE
+#undef IS_FLOOR_RUN_TILE

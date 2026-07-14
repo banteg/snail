@@ -89,11 +89,11 @@ other tile except {22, 14, ramp family} takes the **Slide0** corner.
 Runs only on rows where `row % 8 == 3` (look ahead one row) or `row % 8 == 5`
 (look behind one row), every lane, skipping cells with flag 0x20:
 
-- slide-family cell next to a floor-family neighbor (or neighbor tile 30 for
+- floor-family cell next to a slide-family neighbor (or neighbor tile 30 for
   the ahead case / 32 for the behind case): if the cell quad is Track0
   slice 0, swap to Slide0 slice 0; any Track0 corner swaps to the same-index
   Slide0 corner. Set flag 0x40.
-- floor-family cell next to a slide-family neighbor: the mirror swap
+- slide-family cell next to a floor-family neighbor: the mirror swap
   (Slide0 → Track0), flag 0x40.
 
 This is the seam-alignment pass the port stubbed out in
@@ -105,6 +105,10 @@ are the Track0 and Slide0 corner banks.
 Collapses repeated same-family quad runs into the longer slice variants
 (slices 1..7 = strip lengths). Skips cells with flag 0x8000 (corner variant)
 or 0x40 (seam-swapped). Pre-pass ORs 0x6000 into every cell's flag dword.
+Floor-family runs select `floor_slices[run_length - 1]`; slide-family runs
+select `slide_slices[run_length - 1]`. Tile-0x0e runs use the matching
+`pillar[run_length - 1]` mesh, while empty/tile-0x23 cells in level mode 2 use
+the universe-hole object.
 
 ## Pass 4: promote_track_tiles_to_fringe_variants @ 0x4355f0
 

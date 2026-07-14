@@ -49,3 +49,24 @@ The remaining gap is mostly the compiler preserving a parallel cell-base
 induction variable and scheduling the three continuation-cleanup stores
 differently. No dummy locals, volatile qualifiers, or equivalent-instruction
 normalization are used to force those differences.
+
+## 2026-07-14 catalog and floor-family ownership
+
+The first run predicate is the floor family, not the slide family. It follows
+an `is_sub_loc_floor` gate and accepts floor ids `1, 21, 27, 33, 34` (the
+authored floor set excluding id `20`); Android `cRSubGame::CondenseTrack()`
+preserves the same split before its separate `IsSlide` path. The misleading
+`IS_SLIDE_RUN_TILE` macro is now `IS_FLOOR_RUN_TILE`.
+
+The four remaining raw root-object addresses also close against the shared
+`RootBodCatalog`:
+
+- a floor run of length N selects `floor_slices.storage[N - 1]`;
+- a slide run selects `slide_slices.storage[N - 1]`;
+- a tile-`0x0e` run selects `pillars[N - 1]` (`pillar1.x..pillar8.x`);
+- the level-mode-2 empty-cell fallback borrows `universe_hole.object`.
+
+These typed substitutions compile to the same honest frontier: 54.77%,
+`290/276` instructions, with all ten masked operands clean. They replace
+duplicate address arithmetic with producer/consumer ownership without changing
+the pinned register/scheduling residual.
