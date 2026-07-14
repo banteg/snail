@@ -10,12 +10,12 @@ int report_errorf(char* format, ...);
 int SaltManager::spawn_salt_hazard(const Vector3* position)
 {
     int index = 0;
-    int* state = &slots[0].state;
+    Salt* scan = slots;
     while (1) {
-        if (!*state)
+        if (!scan->state)
             break;
         ++index;
-        state += 38;
+        ++scan;
         if (index >= 40)
             return index;
     }

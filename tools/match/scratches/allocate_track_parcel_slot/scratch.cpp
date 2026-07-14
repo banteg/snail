@@ -7,11 +7,11 @@ int report_errorf(char* format, ...);
 Parcel* ParcelManager::allocate_track_parcel_slot()
 {
     int index = 0;
-    int* state = &slots[0].state;
+    Parcel* scan = slots;
 
-    while (index < 50 && *state != 0) {
+    while (index < 50 && scan->state != 0) {
         ++index;
-        state += 0x23;
+        ++scan;
         if (index >= 50) {
             report_errorf("Too Many Parcels increase RPARCEL_MAXIMUM");
             return 0;

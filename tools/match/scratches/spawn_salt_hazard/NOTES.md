@@ -94,3 +94,8 @@ now use `Salt::transform` and `Salt::transform.position` directly. The exact
 constructor and updater corroborate the same inherited `RenderableBod`; the
 former field-by-field transform duplicate represented no separate owner.
 Matching remains exact at 67/67 with ten clean operands.
+
+2026-07-14 manager traversal ownership: the free-slot loop now advances a
+typed `Salt*` through `SaltManager::slots` instead of treating each 0x98-byte
+record as 38 integer lanes. This is byte-identical at 67/67 instructions with
+all ten operands clean.

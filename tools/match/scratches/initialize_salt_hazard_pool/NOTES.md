@@ -9,3 +9,7 @@ manager method and loop. The scratch remains exact at 7/7 instructions.
 before the banner pool. The replayable Binary Ninja projection now uses the
 same canonical 40 inline `Salt` records and corrects this function to a
 `SaltManager*` thiscall receiver. Matching remains exact at 7/7.
+
+2026-07-14 stride ownership: the exact state cursor now advances by
+`sizeof(Salt) / sizeof(int)` rather than the anonymous 38-word stride. The
+seven instructions remain byte-identical.

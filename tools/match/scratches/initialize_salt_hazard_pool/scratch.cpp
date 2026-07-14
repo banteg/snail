@@ -8,7 +8,7 @@ int* SaltManager::initialize_salt_hazard_pool()
     int count = 40;
     do {
         *state = 0;
-        state += 38;
+        state += sizeof(Salt) / sizeof(int);
         --count;
     } while (count);
     return state;

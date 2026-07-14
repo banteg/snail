@@ -17,3 +17,8 @@ duplicate post-loop error path.
 This exact allocator, `update_track_parcels`, `spawn_track_parcel`, and the
 parcel/ring loop in `handle_subgoldy_collisions` all consume the same 50-slot
 pool geometry.
+
+2026-07-14 traversal ownership: the state scan now advances a typed `Parcel*`
+through `ParcelManager::slots` instead of adding the 0x23-word representation
+of the 0x8c-byte stride. Matching remains exact at 18/18 instructions with both
+operands clean.

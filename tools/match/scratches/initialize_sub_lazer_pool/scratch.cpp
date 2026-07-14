@@ -8,7 +8,7 @@ int* SubLazerManager::initialize_sub_lazer_pool()
     int count = 20;
     do {
         *state = 0;
-        state += 44;
+        state += sizeof(SubLazer) / sizeof(int);
         --count;
     } while (count);
     return state;

@@ -10,3 +10,7 @@ the same manager method and 20-slot loop. The scratch now defines the method on
 Binary Ninja projection now uses the same canonical 20 inline `SubLazer`
 records and corrects this function to a `SubLazerManager*` thiscall receiver.
 Matching remains exact at 7/7.
+
+2026-07-14 stride ownership: the exact state cursor now advances by
+`sizeof(SubLazer) / sizeof(int)` rather than the anonymous 44-word stride. The
+seven instructions remain byte-identical.

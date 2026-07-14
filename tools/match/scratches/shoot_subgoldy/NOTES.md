@@ -68,3 +68,8 @@ passing the unstaggered origin by reference leaves the caller byte-exact at
 cross-port `cRSubLazerManager::Shoot(tVector, tVector)`. Its 20 `SubLazer`
 records remain inline manager-owned storage. Matching stays exact at 48/48
 with four clean operands.
+
+2026-07-14 traversal ownership: the free-slot scan now advances a typed
+`SubLazer*` through the manager-owned array instead of adding 44 integer lanes.
+The function remains byte-identical at 48/48 instructions with all four
+operands clean.
