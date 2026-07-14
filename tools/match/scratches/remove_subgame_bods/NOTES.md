@@ -140,3 +140,13 @@ Binary Ninja preview verifies `SubSpeedUp == 0xb4` and keeps
 `SubgameRuntime == 0x1272838`, then reverts. Focused teardown matching remains
 the honest 67.67%, 495/501-instruction baseline with 63 clean operands and the
 same two documented speedup/JetPack string-order mismatches.
+
+## 2026-07-14 typed pool extents
+
+The teardown retains next-link cursors because that source shape is required
+for native VC6 register scheduling, but their bounds and advances now come
+from the complete embedded owners: `SubRow[3200]`, `SubLoc[3200][8]`,
+`SubHealth[8]`, `SubGarbage[50]`, `Slug[8]`, and `SubRing[2]`. This removes the
+parallel magic counts and strides without pretending the cursors own storage.
+Focused matching is byte-identical at 67.67%, 495/501 instructions, 63 clean
+operands, and the same two honest string-order mismatches.
