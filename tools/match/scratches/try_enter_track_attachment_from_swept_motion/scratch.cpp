@@ -79,7 +79,7 @@ seed:
     FOLLOW->sample_index = idx;
     FOLLOW->progress = local.z;
     FOLLOW->vertical_offset = 0;
-    PLAYER->position.y = local.y;
+    PLAYER->live_matrix.position.y = local.y;
     ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->y = 0;
     FOLLOW->player = PLAYER;
     FOLLOW->template_record->installed_heading_delta =

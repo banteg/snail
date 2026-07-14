@@ -27,7 +27,7 @@ void ProgressBar::update_progress_bar()
 {
     GameRoot* game = g_game;
     float progress =
-        (game->subgame.embedded_player()->position.z
+        (game->subgame.embedded_player()->live_matrix.position.z
             - (float)game->subgame.first_block_row_count)
         / ((float)game->subgame.completion_row_start
             - (float)game->subgame.first_block_row_count);

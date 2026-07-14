@@ -86,12 +86,11 @@ The player fields at +0x384..+0x3c3 are the shared embedded 0x40-byte
 `Player` fields. The canonical embedded member is now proven codegen-neutral
 in this scratch.
 
-2026-06-16 Player header consolidation: `player.h` now documents the
-`PlayerLiveMatrixRows` view for the matrix at `Player+0x38`; `Player::position`
-remains the exposed field at `+0x68` because `Vector3`/`TransformMatrix`
-members cannot be safely overlapped in a VC6 union. A union probe failed with
-C2620 before codegen, so the shared header keeps this as an offset-checked
-row-view type plus comments rather than a field alias.
+2026-07-14 Player matrix consolidation: `player.h` now embeds the complete
+`TransformMatrix live_matrix` at `Player+0x38`; its position row lands at
++0x68. This replaces the former offset-only row view and is codegen-neutral in
+this scratch at 92.55%, 322/322 instructions, with the same one masked call
+mismatch.
 
 Scratch next: structure is linear with two matrix locals; the matched
 matrix helpers cover every call.

@@ -37,27 +37,6 @@ class Sprite;
 class SubgameRuntime;
 class SubHealth;
 
-struct PlayerLiveMatrixRows {
-    float basis_right_x;   // +0x00
-    float basis_right_y;   // +0x04
-    float basis_right_z;   // +0x08
-    float basis_right_w;   // +0x0c
-    float basis_up_x;      // +0x10
-    float basis_up_y;      // +0x14
-    float basis_up_z;      // +0x18
-    float basis_up_w;      // +0x1c
-    float basis_forward_x; // +0x20
-    float basis_forward_y; // +0x24
-    float basis_forward_z; // +0x28
-    float basis_forward_w; // +0x2c
-    float position_x;      // +0x30
-    float position_y;      // +0x34
-    float position_z;      // +0x38
-    float position_w;      // +0x3c
-};
-typedef char PlayerLiveMatrixRows_must_be_0x40[
-    (sizeof(PlayerLiveMatrixRows) == 0x40) ? 1 : -1];
-
 extern char g_player_live_matrix_basis_right[];   // 0x42fdb4 = g_player_block + 0x38
 extern char g_player_live_matrix_basis_up[];      // 0x42fdc4 = g_player_block + 0x48
 extern char g_player_live_matrix_basis_forward[]; // 0x42fdd4 = g_player_block + 0x58
@@ -160,6 +139,7 @@ typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
 
 class Player {
 public:
+    void update_subgoldy();              // @ 0x43b120, cRSubGoldy::Update
     void begin_post_follow_carryover();   // @ 0x43af60
     int update_player_movement_flags();    // @ 0x43a1a0
     void update_movement_flag_emitters(Player* player); // @ 0x43a300
@@ -183,9 +163,9 @@ public:
     // embedded in SubgameRuntime and merely linked into the global active list.
     char unknown_00[0x04];
     unsigned int list_flags;               // +0x04, intrusive BOD membership/render flags
-    char unknown_08[0x68 - 0x08];          // +0x38..+0x77 is PlayerLiveMatrixRows
-    Vector3 position;                      // +0x68 (PlayerLiveMatrixRows.position)
-    char unknown_74[0x80 - 0x74];
+    char unknown_08[0x38 - 0x08];
+    TransformMatrix live_matrix;           // +0x38, inherited render transform
+    char unknown_78[0x80 - 0x78];
     int resurrect_final_loss;              // +0x80
     unsigned char resurrect_active;        // +0x84
     char unknown_85[0x8c - 0x85];
@@ -220,16 +200,16 @@ public:
     Time stopwatch;                         // +0x2e8, authored cRTime value
     // Only confirmed consumer copies this value into SubSolution::score_tail.
     int score_tail;                         // +0x300
-    // Click-start seeds this slot; update_subgoldy later reuses it as the
-    // replay/ghost anchor cursor.
+    // Click-start captures the replay cursor; completion persists it as the
+    // source-tail anchor and ghost playback uses it to align the source run.
     int startup_track_index;                // +0x304
     int movement_flag_selector;             // +0x308
     char unknown_30c[0x310 - 0x30c];
     int score_buckets[SUBGOLDY_SCORE_BUCKET_COUNT]; // +0x310
-    float barrier_hold_progress;            // +0x328
-    float barrier_hold_step;                // +0x32c
-    float startup_voice_timer;              // +0x330
-    float startup_voice_step;               // +0x334
+    float barrier_hold_progress;             // +0x328, tile-14 hold window
+    float barrier_hold_step;                 // +0x32c
+    float startup_voice_timer;               // +0x330
+    float startup_voice_step;                // +0x334
     unsigned int movement_flags;           // +0x338
     unsigned int previous_movement_flags;   // +0x33c
     char unknown_340[0x350 - 0x340];
@@ -237,7 +217,10 @@ public:
     float lane_lean_amplitude;             // +0x354
     float lane_lean_progress;              // +0x358
     float lane_lean_progress_step;         // +0x35c
-    char unknown_360[0x370 - 0x360];
+    int timer_360_state;                     // +0x360
+    int unknown_364;
+    float timer_360_progress;                // +0x368
+    float timer_360_step;                    // +0x36c
     float heading_roll;                     // +0x370
     float nuke_effect_progress;             // +0x374
     float nuke_effect_progress_step;        // +0x378
@@ -309,7 +292,7 @@ typedef char Player_must_be_0x4364[(sizeof(Player) == 0x4364) ? 1 : -1];
 
 inline TransformMatrix* Player::live_transform()
 {
-    return (TransformMatrix*)((char*)this + 0x38);
+    return &live_matrix;
 }
 
 #endif

@@ -7,7 +7,8 @@ owned by `GameRoot::subgame` and its embedded `Player`:
 - Warning start is blocked by `Player::attachment_exit_pending` at `+0x41d`
   or `Player::completion_handoff_active` at `+0x440`; the latter also forces
   the accelerated drain path.
-- `Game+0x42fde8 == 0.49f` is `Player::position.y == rest height`, so the
+- `Game+0x42fde8 == 0.49f` is
+  `Player::live_matrix.position.y == rest height`, so the
   transition into state 2 is grounded-player behavior.
 - state-2 drain refreshes change_snail_skin(1, 0.2) per tick (matches
   the Zig controller's state-2 skin refresh)

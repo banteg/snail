@@ -251,11 +251,10 @@ source-shape issue is solved.
   The rename is codegen neutral at the same focused baseline.
 - 2026-07-11 parcel manager owner: the tail now dispatches through the shared
   `ParcelManager` at game `+0x125e480`, removing the local one-method
-  `TrackParcels` shell. The scratch's broad player transcription is named
-  `SubgoldyPlayerView` instead of aliasing the authored shared `Player`, which
-  lets both types coexist without pretending the sparse view is complete.
-  This is codegen-neutral at `72.51%`, `2067/2087`, with the same `290 ok / 1`
-  real follow-jump-table mismatch.
+  `TrackParcels` shell. The later canonical-player promotion below supersedes
+  the temporary broad player transcription. This remains codegen-neutral at
+  `72.51%`, `2067/2087`, with the same `290 ok / 1` real follow-jump-table
+  mismatch.
 - 2026-07-11 cRCompletion view naming: the compact local display prefix is now
   `SubgoldyCompletionView`, reflecting that all `+0x12727d8` calls and gates
   belong to the authored embedded `Completion`. The full shared header still
@@ -275,36 +274,32 @@ source-shape issue is solved.
   these compact local slices as promotable `Warning`, `PlayerControlSource`,
   or `CutScene` definitions. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
-- 2026-06-20 Player ABI cleanup: the compact local `Player` method surface now
-  matches `player.h` for `initialize_subgoldy_death()` and
+- 2026-06-20 Player ABI cleanup, superseded 2026-07-14: the temporary local
+  method surface was aligned with `player.h` for `initialize_subgoldy_death()` and
   `update_player_movement_flags()` returning `int`. Their return values are
   still ignored at the callsites in this large update body, so focused Wibo
   remains `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked
-  audit; full shared `player.h` remains rejected for the include-boundary and
-  relocation-shape reasons above.
-- 2026-06-21 Player type-row cleanup: the scheduling-sensitive local owner is
-  now named `SubgoldyPlayerView`, with `typedef SubgoldyPlayerView Player` kept
-  only so the scratch still emits the `Player::update_subgoldy` method symbol.
-  This is codegen-neutral at `72.51%`, `2067/2087`, with the same
-  `290 ok / 1` jump-table masked audit, and it makes
-  `uv run snail match types --paths` report no remaining consolidation
-  candidates. Full shared `player.h` remains intentionally unforced.
-- 2026-06-20 Game ABI cleanup: the compact local game owner is now named
-  `SubgoldyGameView` rather than `Game`. This preserves the caller-local
-  `float sample_track_floor_height_at_position(...)` declaration that keeps the
+  audit. The complete shared owner now compiles identically.
+- 2026-06-21 Player type-row cleanup, superseded 2026-07-14: the temporary
+  `SubgoldyPlayerView` prevented a misleading type merge while the shared
+  header was incomplete. It is now retired; the body defines
+  `Player::update_subgoldy()` directly with unchanged focused evidence.
+- 2026-06-20 Game ABI cleanup, superseded 2026-07-14: the temporary
+  `SubgoldyGameView` preserved the caller-local
+  `float sample_track_floor_height_at_position(...)` return view that keeps the
   native `fadd dword` shape here; forcing the standalone helper's exact
   `double` return into this large caller regressed to `72.46%` and `289 ok / 1`.
-  The completion call surface was still narrowed to
-  `complete_subgame(unsigned char)`, matching `complete_subgame` and
-  `update_subgoldy_resurrect`. Focused Wibo remains `72.51%`, `2067/2087`,
-  with the same `290 ok / 1` jump-table masked audit.
+  The real owner is now canonical `SubgameRuntime*`; only a fieldless
+  `SubgoldyFloorSamplerCallView` retains that return-type ambiguity because
+  MSVC does not encode it in the thiscall symbol. Focused Wibo remains
+  `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked audit.
 
 ## 2026-07-13 canonical child and runtime ownership pass
 
 The shared headers have matured enough to supersede the earlier local-prefix
 guidance without perturbing this scheduling-sensitive body:
 
-- `SubgoldyPlayerView` now embeds the exact shared `Nuke`,
+- The then-local player view adopted the exact shared `Nuke`,
   `PlayerRowEventState`, `Warning`, `Snail`, and `Squidge` children, and uses
   `PlayerControlSource*`. The scratch-local completion, times-up, nuke,
   warning, control-source, presentation, cutscene, and squidge shells are gone.
@@ -417,3 +412,21 @@ exact initializer and exit-carryover producer. All nine focused binaries are
 byte-identical to their pre-consolidation baselines; `update_subgoldy` itself
 remains 72.51%, 2067/2087 instructions, 290 clean operands, with the same one
 honest jump-table mismatch.
+
+## 2026-07-14 canonical player and subgame ownership
+
+The remaining broad player/game local owners are retired. `update_subgoldy` is now the
+canonical `Player::update_subgoldy()` method, and `Player +0x38` owns the full
+0x40-byte live transform rather than exposing only its position row. The
+shared player also names the replay anchor, tile-14 wall-stall window,
+exit-voice timer, and timer-360 state used here. Every outer runtime access now
+uses the borrowed canonical `SubgameRuntime*` backlink.
+
+One fieldless caller-ABI view remains for
+`sample_track_floor_height_at_position`: the standalone exact helper body is
+source-exact under `double`, while this native callsite proves float arithmetic
+with `fadd dword`. Keeping that return view restores the native callsite
+without duplicating runtime storage or inventing data ownership.
+
+The full promotion is byte-identical at 72.51%, 2067/2087 instructions, 290
+clean operands, and the same one honest follow jump-table mismatch.

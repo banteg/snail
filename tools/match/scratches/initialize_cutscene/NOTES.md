@@ -22,8 +22,8 @@ Remaining known shape issues:
 
 - The native and candidate stack frames are both `0x15c`; all local value
   lifetimes and the instruction count now agree.
-- `Player +0x38` is closed through the shared `Player::live_transform()`
-  accessor. `Player::position` remains the overlapping field view at `+0x68`.
+- `Player +0x38` is the shared `Player::live_matrix`; the retained
+  `Player::live_transform()` accessor returns that exact owner.
 - 2026-06-18 source-shape correction: the early persistent `Player* player` /
   `player_matrix` assumption was wrong for this function. Native reloads
   `owner_player` through the pitch/exit gates, then uses short-lived player

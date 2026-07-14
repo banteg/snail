@@ -7,7 +7,7 @@ float sine(float angle);
 void SubgameRuntime::calc_subgame_rate()
 {
     if (subgame_state == 2) {
-        float completion_fraction = player.position.z / (float)completion_row_start;
+        float completion_fraction = player.live_matrix.position.z / (float)completion_row_start;
         if (completion_fraction < 0.0f)
             completion_fraction = 0.0f;
         else if (completion_fraction > 1.0f)

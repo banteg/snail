@@ -108,7 +108,7 @@ void Slug::update_slug_hazard_ai()
         }
 
 active_state_tail:
-        if (player->position.z + 1.0f > transform.position.z
+        if (player->live_matrix.position.z + 1.0f > transform.position.z
             && player_encounter_latched == 0) {
             player_encounter_latched = 1;
             random_value = next_math_random_value();
@@ -119,11 +119,11 @@ active_state_tail:
             }
         }
 
-        if (transform.position.z < player->position.z && passed_player == 0)
+        if (transform.position.z < player->live_matrix.position.z && passed_player == 0)
             passed_player = 1;
 
         if (engagement_voice_gate == 1
-            && player->position.z + 16.0f > transform.position.z) {
+            && player->live_matrix.position.z + 16.0f > transform.position.z) {
             engagement_voice_gate = 0;
             g_voice_manager.play_voice_manager(2, 1, -1);
         }
@@ -146,7 +146,7 @@ active_state_tail:
         if (lateral_phase > 6.28318548f)
             lateral_phase = lateral_phase - 6.28318548f;
         transform.position.x = sine(lateral_phase) * 3.0f;
-        if (transform.position.z < player->position.z && passed_player == 0)
+        if (transform.position.z < player->live_matrix.position.z && passed_player == 0)
             passed_player = 1;
         sprite->position = transform.position;
         if (transform.position.z < player->interaction_max_z) {

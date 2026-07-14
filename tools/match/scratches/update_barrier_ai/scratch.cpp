@@ -5,7 +5,7 @@
 void* BarrierActor::update_barrier_ai()
 {
     Player* owner = owner_player;
-    position.z = owner->position.z;
+    position.z = owner->live_matrix.position.z;
     position.y = 0.4f;
     return owner;
 }

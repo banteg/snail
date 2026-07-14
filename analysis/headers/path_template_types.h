@@ -1504,7 +1504,10 @@ typedef struct Player {
     float lane_lean_amplitude;
     float lane_lean_progress;
     float lane_lean_progress_step;
-    uint8_t _pad_360[0x10];
+    int32_t timer_360_state;
+    int32_t unknown_364;
+    float timer_360_progress;
+    float timer_360_step;
     float heading_roll;
     float nuke_effect_progress;
     float nuke_effect_progress_step;

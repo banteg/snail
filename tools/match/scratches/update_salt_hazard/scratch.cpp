@@ -48,7 +48,7 @@ void Salt::update_salt_hazard()
     }
     case 1: {
         float alpha =
-            1.0f - (position.z - owner_game->player.position.z) * 0.021739131f;
+            1.0f - (position.z - owner_game->player.live_matrix.position.z) * 0.021739131f;
         fade_alpha() = alpha;
         if (alpha < 0.0f) {
             alpha = 0.0f;

@@ -9,7 +9,7 @@ track progress indicator:
   height=`256 - remaining_height`
 
 The progress input is
-`(Player::position.z - SubgameRuntime::first_block_row_count) /
+`(Player::live_matrix.position.z - SubgameRuntime::first_block_row_count) /
 (SubgameRuntime::completion_row_start - first_block_row_count)`. The former raw
 root offsets are therefore the embedded player's live z and the authored
 first/completion block boundaries, not a separate active-row window. The
@@ -44,7 +44,7 @@ remains exact at `100.00%`, `110/110` instructions, with `19` clean masked
 operands.
 
 2026-07-11 ownership closure: `Player` now owns the embedded `ProgressBar` at
-`+0x3f0`, while this updater reads `Player::position.z` and the enclosing
+`+0x3f0`, while this updater reads `Player::live_matrix.position.z` and the enclosing
 `SubgameRuntime::first_block_row_count/completion_row_start` directly through
 `GameRoot`. The synthetic root view and active-row window are removed. Focused
 Wibo remains exact at 110/110 instructions with 19 clean masked operands.

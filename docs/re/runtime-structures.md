@@ -293,8 +293,14 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x04`: `lane_lean_amplitude`
   - `+0x08`: `lane_lean_progress`
   - `+0x0c`: `lane_lean_progress_step`
+  - `+0x10`: `timer_360_state`
+  - `+0x14`: unresolved dword
+  - `+0x18`: `timer_360_progress`
+  - `+0x1c`: `timer_360_step`
   - `+0x20`: `heading_roll`
   - `update_subgoldy` arms the `lane_lean_*` triplet on specific tile families, advances `lane_lean_progress` by `lane_lean_progress_step`, and clears the state once the progress lane exceeds `1.0`
+  - it independently advances the offset-named `timer_360_*` window and clears
+    its state once progress exceeds `1.0`; no stronger role name is asserted yet
   - `update_cameraman` consumes `lane_lean_amplitude`, `lane_lean_progress`, and `heading_roll` directly when building the live camera roll
   - `update_track_attachment_follow_state` also accumulates `installed_heading_delta` into `heading_roll`, matching the same live lane the port already mirrors
 

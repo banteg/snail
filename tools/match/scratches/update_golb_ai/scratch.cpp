@@ -189,7 +189,7 @@ void GolbShot::update_golb_ai()
     if (lived <= 1.0f) {
         Player* bounds_player = player;
         if (flight_transform.position.z >= bounds_player->interaction_max_z
-            && bounds_player->position.z + 46.0f >= flight_transform.position.z) {
+            && bounds_player->live_matrix.position.z + 46.0f >= flight_transform.position.z) {
             SubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
                 if (garbage->state == 1) {

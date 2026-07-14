@@ -182,7 +182,7 @@ void Player::handle_subgoldy_collisions()
             probe_c.y = probe_b.y;
             probe_b.z = pickup->world_position.z - cached_camera_target_world.z;
             probe_c.z = probe_b.z;
-            if (position.y >= 0.49000001f && probe_b.z < 1.0f) {
+            if (live_matrix.position.y >= 0.49000001f && probe_b.z < 1.0f) {
                 float pickup_y;
                 if (probe_b.y < 0.0f)
                     pickup_y = -probe_b.y;
@@ -206,7 +206,7 @@ void Player::handle_subgoldy_collisions()
         probe_c.y = probe_b.y;
         probe_b.z = speedup->world_position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
-        if (position.y >= 0.49000001f && probe_b.z < 1.0f) {
+        if (live_matrix.position.y >= 0.49000001f && probe_b.z < 1.0f) {
             float pickup_y;
             if (probe_b.y < 0.0f)
                 pickup_y = -probe_b.y;
@@ -228,7 +228,7 @@ void Player::handle_subgoldy_collisions()
         probe_c.y = probe_b.y;
         probe_b.z = jetpack->world_position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
-        if (position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
+        if (live_matrix.position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
             jetpack->state = 2;
             sub_hover.arm_jetpack_gauge();
         }
