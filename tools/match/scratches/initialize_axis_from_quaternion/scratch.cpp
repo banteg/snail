@@ -6,7 +6,7 @@
 float sine(float angle);
 float arccosine(float value);
 
-void Axis::initialize_axis_from_quaternion(const Quaternion* quaternion)
+void AxisAngle::initialize_axis_from_quaternion(const Quaternion* quaternion)
 {
     float half_angle = arccosine(quaternion->w);
     x = quaternion->x / sine(half_angle);

@@ -7,15 +7,6 @@
 #include "axis.h"
 #include "transform_matrix.h"
 
-struct AxisAngle {
-    AxisAngle(); // out-of-line default ctor in the image
-
-    float x;
-    float y;
-    float z;
-    float angle;
-};
-
 void TransformMatrix::interpolate_matrix_rotation(float alpha)
 {
     Quaternion working;
@@ -36,10 +27,10 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
         rebuilt.initialize_matrix_from_quaternion(&working);
         *this = rebuilt;
     } else {
-        ((Axis*)&axis)->initialize_axis_from_quaternion(&working);
+        axis.initialize_axis_from_quaternion(&working);
         if (axis.angle != 0.0f) {
             axis.angle = axis.angle * alpha;
-            working.initialize_quaternion_from_axis((Axis*)&axis);
+            working.initialize_quaternion_from_axis(&axis);
             TransformMatrix rebuilt;
             rebuilt.initialize_matrix_from_quaternion(&working);
             *this = rebuilt;

@@ -195,3 +195,6 @@ boundaries.
 This is byte-identical at 60.39%, 492/495 instructions, prefix 3/495, with all
 48 operands clean. The remaining partial is still the documented receiver and
 edge-selector register scheduling; no register-shaped construct is introduced.
+
+The unused scratch-local `Vec3Bits` declaration is also retired: all emitted
+positions already use the shared `Vector3` owned by `BodBase` and `SubLoc`.

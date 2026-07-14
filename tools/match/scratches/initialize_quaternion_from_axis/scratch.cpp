@@ -6,7 +6,7 @@
 float sine(float angle);
 float cosine(float angle);
 
-void Quaternion::initialize_quaternion_from_axis(const Axis* axis)
+void Quaternion::initialize_quaternion_from_axis(const AxisAngle* axis)
 {
     double scale = sine(axis->angle * 0.5f);
     x = (float)scale * axis->x;

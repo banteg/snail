@@ -48,3 +48,9 @@ barriers rather than recovered quaternion semantics and are removed. Direct
 member comparisons keep instruction-count parity and all 17 operands clean at
 an honest 96.19%, with a 30-instruction prefix. The four stack-slot choices are
 left as allocator debt.
+
+2026-07-14 axis-angle ownership: the scratch-local `AxisAngle` duplicate is
+gone. The shared 0x10-byte type now owns the folded Windows default constructor,
+the quaternion conversion method, and the angle scaled here; Android's `tAxis`
+name remains as the `Axis` compatibility alias. This preserves the real
+constructor call and does not introduce a cast-only view.

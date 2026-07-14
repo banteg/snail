@@ -10,7 +10,7 @@ The call setup matches native, and casting the live sine result before the
 axis-lane multiply makes VC6 duplicate the x87 sine value with `fld st(0)`,
 matching native's scale-left source shape.
 
-2026-06-20 type consolidation: the local `Axis` copy was replaced with
+2026-06-20 type consolidation: the local axis-angle copy was replaced with
 `include/axis.h`. Focused rerun preserved the prior result before the scale-cast
 fix.
 
@@ -18,3 +18,8 @@ fix.
 `(float)scale * axis->lane` recovers the native x87 order and makes the scratch
 proof-grade at 100.00%, with clean masked operands. Keep this spelling; the
 uncast `double` product regresses to the old axis-first multiply form.
+
+2026-07-14 owner-name closure: the shared four-float owner is now canonically
+`AxisAngle`, matching the Windows trivial-constructor relocation, with `Axis`
+retained only as Android `tAxis` compatibility vocabulary. The exact conversion
+continues to use the same 0x10-byte record.

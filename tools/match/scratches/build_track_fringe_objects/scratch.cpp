@@ -14,12 +14,6 @@ extern GameRoot* g_game; // data_4df904
     (g_game->root_bod_catalog.fringe_catalog \
             .entries[family][direction][edge_a][edge_b].object)
 
-struct Vec3Bits {
-    int x;
-    int y;
-    int z;
-};
-
 int debug_report_stub(char* format, ...);
 extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
