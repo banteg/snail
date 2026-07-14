@@ -49,3 +49,18 @@ The floor, warning, and slide replacement objects now come from the typed
 `RootBodCatalog` slice/corner banks rather than duplicate root offsets. The
 source retains its proven cell cursor and offset loop, so focused Wibo remains
 81.33% with the native instruction count and all six operands clean.
+
+## 2026-07-14 root, grid, and bank extents
+
+The reloadable catalog pointer is now the canonical `GameRoot* g_game`, and
+all three floor/slide/warning comparisons name its embedded
+`root_bod_catalog`. The runtime cursor begins at `runtime_cells[0][0]`; its
+eight-lane count derives from that row. Both catalog scans advance by
+`sizeof(BodBase)` and stop at the recovered slice/corner bank extents instead
+of repeating `0x38`, `0x1c0`, and `0xe0`.
+
+These ownership substitutions are byte-identical at 81.33%, 75/75
+instructions, prefix 11/75, with all six operands clean. The documented
+object-field cursor residual remains intentionally unresolved: direct
+object-slot source makes VC6 steal the live promoted-flag register and is not
+an ownership improvement.
