@@ -17,9 +17,6 @@ float cosine(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
-typedef ObjectFaceQuad PathTemplateFaceQuad;
-
-
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,
     PathAttachmentSample* secondary,
@@ -611,7 +608,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     strip_mesh->request_object_facequads(2 * width_cells * segment_count);
 
     Vector3* vertices = strip_mesh->vertices;
-    PathTemplateFaceQuad* facequads = (PathTemplateFaceQuad*)strip_mesh->facequads;
+    ObjectFaceQuad* facequads = strip_mesh->facequads;
 
     int mesh_row;
     int mesh_column;
@@ -651,7 +648,7 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
-                    PathTemplateFaceQuad* face =
+                    ObjectFaceQuad* face =
                         &facequads[2 * face_column + 2 * face_row * width_cells + face_index];
                     face->header_word = 0;
                     if (face_index == 0) {
