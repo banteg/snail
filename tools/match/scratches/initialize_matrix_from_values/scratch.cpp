@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-TransformMatrix* TransformMatrix::initialize_matrix_from_values(
+TransformMatrix::TransformMatrix(
     float m00,
     float m01,
     float m02,
@@ -36,5 +36,4 @@ TransformMatrix* TransformMatrix::initialize_matrix_from_values(
     position.y = m31;
     position.z = m32;
     position_w = m33;
-    return this;
 }

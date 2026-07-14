@@ -3560,7 +3560,8 @@
     },
     {
       "address": "0x44cfe0",
-      "name": "initialize_matrix_from_values"
+      "name": "initialize_matrix_from_values",
+      "description": "Stable Windows harness identity for the authored 16-float `tMatrix::tMatrix(float, ..., float)` constructor retained by Android and iOS. The exact constructor writes all four matrix rows and returns its receiver only through the ordinary VC6 constructor ABI."
     },
     {
       "address": "0x44d060",
@@ -3625,12 +3626,12 @@
     {
       "address": "0x44d5d0",
       "name": "initialize_quaternion_from_matrix",
-      "description": "Builds a quaternion from the rotational basis of a transform matrix. Android symbols match this helper to `tQuaternian::tQuaternian(const tMatrix&)`."
+      "description": "Stable Windows harness identity for the authored `tQuaternian::tQuaternian(const tMatrix&)` constructor retained by Android. The typed const-reference constructor builds a quaternion from the matrix's rotational basis."
     },
     {
       "address": "0x44d820",
       "name": "initialize_matrix_from_quaternion",
-      "description": "Builds a rotation matrix from a quaternion and resets translation and homogeneous slots to their identity values. Android symbols match this helper to `tMatrix::tMatrix(const tQuaternian&)`."
+      "description": "Stable Windows harness identity for the authored `tMatrix::tMatrix(const tQuaternian&)` constructor retained by Android. The exact typed const-reference constructor builds the rotation basis and resets translation and homogeneous slots to identity values."
     },
     {
       "address": "0x44d920",

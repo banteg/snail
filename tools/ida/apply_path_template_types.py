@@ -18,6 +18,9 @@ TRUSTED_NAMES = [
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
     (0x44CDE0, "initialize_uniform_scale_matrix"),
+    (0x44CFE0, "initialize_matrix_from_values"),
+    (0x44D5D0, "initialize_quaternion_from_matrix"),
+    (0x44D820, "initialize_matrix_from_quaternion"),
     (0x44D920, "interpolate_matrix_rotation"),
     (0x4AC5C8, "g_default_tip_message"),
     (0x497354, "g_player_presentation_noop_vtable"),
@@ -102,6 +105,14 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_matrix_from_values",
         "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33);",
+    ),
+    (
+        "initialize_quaternion_from_matrix",
+        "Quaternion* __thiscall initialize_quaternion_from_matrix(Quaternion* out, const TransformMatrix* matrix);",
+    ),
+    (
+        "initialize_matrix_from_quaternion",
+        "TransformMatrix* __thiscall initialize_matrix_from_quaternion(TransformMatrix* out, const Quaternion* quaternion);",
     ),
     (
         "rotate_matrix_world_x",

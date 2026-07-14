@@ -27,6 +27,9 @@ SYMBOL_UPDATES = (
     ("0x44c870", "initialize_global_identity_matrix_thunk"),
     ("0x44c880", "initialize_global_identity_matrix"),
     ("0x44cde0", "initialize_uniform_scale_matrix"),
+    ("0x44cfe0", "initialize_matrix_from_values"),
+    ("0x44d5d0", "initialize_quaternion_from_matrix"),
+    ("0x44d820", "initialize_matrix_from_quaternion"),
     ("0x44d920", "interpolate_matrix_rotation"),
     ("0x4086d0", "initialize_player_presentation_controller"),
     ("0x4ac5c8", "g_default_tip_message"),
@@ -187,6 +190,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Banner",
     "Vapour",
     "JetPack",
+    "Quaternion",
     "RenderableBod",
     "FringeObject",
     "FringeManager",
@@ -601,6 +605,14 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_matrix_from_values",
         "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)",
+    ),
+    (
+        "initialize_quaternion_from_matrix",
+        "Quaternion* __thiscall initialize_quaternion_from_matrix(Quaternion* out, const TransformMatrix* matrix)",
+    ),
+    (
+        "initialize_matrix_from_quaternion",
+        "TransformMatrix* __thiscall initialize_matrix_from_quaternion(TransformMatrix* out, const Quaternion* quaternion)",
     ),
     (
         "initialize_global_identity_matrix_thunk",

@@ -3,17 +3,17 @@
 #include "quaternion.h"
 #include "transform_matrix.h"
 
-TransformMatrix* TransformMatrix::initialize_matrix_from_quaternion(const Quaternion* quaternion)
+TransformMatrix::TransformMatrix(const Quaternion& quaternion)
 {
-    float xx = quaternion->x * quaternion->x;
-    float xy = quaternion->y * quaternion->x;
-    float xz = quaternion->z * quaternion->x;
-    float xw = quaternion->w * quaternion->x;
-    float yy = quaternion->y * quaternion->y;
-    float yz = quaternion->z * quaternion->y;
-    float yw = quaternion->w * quaternion->y;
-    float zz = quaternion->z * quaternion->z;
-    float zw = quaternion->w * quaternion->z;
+    float xx = quaternion.x * quaternion.x;
+    float xy = quaternion.y * quaternion.x;
+    float xz = quaternion.z * quaternion.x;
+    float xw = quaternion.w * quaternion.x;
+    float yy = quaternion.y * quaternion.y;
+    float yz = quaternion.z * quaternion.y;
+    float yw = quaternion.w * quaternion.y;
+    float zz = quaternion.z * quaternion.z;
+    float zw = quaternion.w * quaternion.z;
 
     basis_right.x = 1.0f - 2.0f * (zz + yy);
     basis_up.x = 2.0f * (xy - zw);
@@ -31,5 +31,4 @@ TransformMatrix* TransformMatrix::initialize_matrix_from_quaternion(const Quater
     position.y = 0.0f;
     position.x = 0.0f;
     position_w = 1.0f;
-    return this;
 }

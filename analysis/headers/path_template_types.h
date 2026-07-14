@@ -891,6 +891,14 @@ typedef struct TransformMatrix {
     Vec4 position;
 } TransformMatrix;
 
+/* Authored four-float tQuaternian value retained by the Android symbols. */
+typedef struct Quaternion {
+    float x;
+    float y;
+    float z;
+    float w;
+} Quaternion;
+
 typedef struct RenderObjectTextureGroups {
     uint8_t _pad_00[0xc0];
     void* vertex_buffer;
@@ -1633,6 +1641,14 @@ TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, Trans
 TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
 void __thiscall set_matrix_z_direction(TransformMatrix* transform, const Vec3* direction);
 void __thiscall look_at_point(TransformMatrix* transform, const Vec3* target);
+Quaternion* __thiscall initialize_quaternion_from_matrix(
+    Quaternion* out,
+    const TransformMatrix* matrix
+);
+TransformMatrix* __thiscall initialize_matrix_from_quaternion(
+    TransformMatrix* out,
+    const Quaternion* quaternion
+);
 void __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);
 void __thiscall linear_interpolate_matrix(
     TransformMatrix* out,

@@ -2262,6 +2262,15 @@
       "notes": "Android retains both emitted single-float constructor symbols. A real Windows TransformMatrix(float) definition is exact at 21/21 instructions; its EAX receiver is the VC6 constructor ABI, while Android and iOS expose a distinct mutating tMatrix::Scale(float) member."
     },
     {
+      "address": "0x44cfe0",
+      "windows_name": "initialize_matrix_from_values",
+      "ios_symbol": "tMatrix::tMatrix(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)",
+      "android_symbol": "tMatrix::tMatrix(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The real Windows 16-float constructor is exact at 34/34 instructions. Its EAX result is the ordinary VC6 constructor receiver ABI; large partial callers retain a documented initializer compatibility view only where direct temporary syntax changes stack and register allocation."
+    },
+    {
       "address": "0x44d280",
       "windows_name": "invert_matrix_in_place",
       "ios_symbol": "tMatrix::Invert()",
@@ -2278,6 +2287,22 @@
       "source_object": "RMaths.o",
       "confidence": "high",
       "notes": "The exact Windows void spelling remains 55/55 instructions. All ordinary Windows and Android callers discard the result register; the only tail calls are from independently void cRPlayer/cROverlay AI callbacks, and the ARM helper returns directly after its last matrix store without establishing a value."
+    },
+    {
+      "address": "0x44d5d0",
+      "windows_name": "initialize_quaternion_from_matrix",
+      "android_symbol": "tQuaternian::tQuaternian(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The typed Windows const-reference constructor remains an honest 92.47% match with 186/186 instruction parity, a 42-instruction prefix, and 23 clean operands. The remaining differences are fallback branch layout, not ownership or ABI uncertainty."
+    },
+    {
+      "address": "0x44d820",
+      "windows_name": "initialize_matrix_from_quaternion",
+      "android_symbol": "tMatrix::tMatrix(tQuaternian const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The real Windows const-reference constructor is exact at 82/82 instructions with three clean operands and no explicit source return."
     },
     {
       "address": "0x44d920",

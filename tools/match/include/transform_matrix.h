@@ -11,6 +11,14 @@ struct Quaternion;
 struct TransformMatrix {
     TransformMatrix() {}
     TransformMatrix(float scale); // @ 0x44cde0, tMatrix::tMatrix(float)
+    TransformMatrix(
+        float m00, float m01, float m02, float m03,
+        float m10, float m11, float m12, float m13,
+        float m20, float m21, float m22, float m23,
+        float m30, float m31, float m32, float m33); // @ 0x44cfe0
+    TransformMatrix(const Quaternion& quaternion); // @ 0x44d820
+    // ABI compatibility view for partial callers that copy from the
+    // constructor's EAX result. The owned definition is the overload above.
     TransformMatrix* initialize_matrix_from_values(
         float m00, float m01, float m02, float m03,
         float m10, float m11, float m12, float m13,
@@ -26,7 +34,6 @@ struct TransformMatrix {
     void invert_matrix_in_place(); // @ 0x44d280, tMatrix::Invert()
     void invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330, tMatrix::Invert(tMatrix const&)
     void invert_matrix_from_source(const TransformMatrix* source); // const-callsite view
-    TransformMatrix* initialize_matrix_from_quaternion(const Quaternion* quaternion); // @ 0x44d820
     void linear_interpolate_matrix(
         const TransformMatrix* from,
         const TransformMatrix* to,

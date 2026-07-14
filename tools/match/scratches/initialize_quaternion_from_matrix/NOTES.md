@@ -1,12 +1,15 @@
 # initialize_quaternion_from_matrix @ 0x44d5d0
 
 Builds a quaternion from the rotational 3x3 basis of a transform matrix. Android
-symbols identify this as `tQuaternian::tQuaternian(const tMatrix&)`.
+symbols identify this as `tQuaternian::tQuaternian(const tMatrix&)`; the scratch
+now defines the corresponding real `Quaternion(const TransformMatrix&)`
+constructor.
 
 ## Recovered shape
 
 - `this` is the output quaternion `{x, y, z, w}` in `ecx`.
-- The stack argument is a `float*` pointing at the matrix basis rows.
+- The stack argument is a const matrix reference. The body aliases its first
+  basis float only to preserve the native indexed row arithmetic.
 - The positive trace path computes `scale = 0.5 / sqrt(trace)`, then writes
   `w, x, y, z` from the standard matrix-to-quaternion formula.
 - The fallback path uses the native dominant-diagonal branch order rather than a
@@ -26,12 +29,10 @@ stack slot before passing it to `square_root`.
 
 No inline assembly, fake globals, volatile padding, or dummy aliases are used.
 
-2026-06-20 type consolidation: the shared four-float `Quaternion` layout now
-lives in `include/quaternion.h` with the axis/matrix conversion declarations.
-The Android symbol still identifies this body as a constructor, so the header
-keeps the constructor overloads needed by `interpolate_matrix_rotation`; the
-type scanner now treats overloads within one definition as normal C++ rather
-than a cross-scratch ABI conflict.
+2026-07-14 constructor ownership: the shared four-float `Quaternion` layout now
+declares the typed const-reference constructor used directly by
+`interpolate_matrix_rotation`. Replacing the synthetic `float*` initializer
+with that constructor leaves the honest focused result unchanged.
 
 ## Current status
 

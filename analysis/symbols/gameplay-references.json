@@ -122,6 +122,15 @@
       "description": "Stable Windows harness identity for the recovered single-float TransformMatrix constructor."
     },
     {
+      "address": "0x44cfe0",
+      "name": "initialize_matrix_from_values",
+      "kind": "function",
+      "aliases": [
+        "??0TransformMatrix@@QAE@MMMMMMMMMMMMMMMM@Z"
+      ],
+      "description": "Stable Windows harness identity for the recovered sixteen-float TransformMatrix constructor."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",
@@ -1303,9 +1312,18 @@
       "name": "initialize_quaternion_from_matrix",
       "kind": "function",
       "aliases": [
-        "??0Quaternion@@QAE@PBM@Z"
+        "??0Quaternion@@QAE@ABUTransformMatrix@@@Z"
       ],
       "description": "Quaternion matrix-argument constructor; Android symbols identify the recovered helper as tQuaternian::tQuaternian(const tMatrix&)."
+    },
+    {
+      "address": "0x44d820",
+      "name": "initialize_matrix_from_quaternion",
+      "kind": "function",
+      "aliases": [
+        "??0TransformMatrix@@QAE@ABUQuaternion@@@Z"
+      ],
+      "description": "TransformMatrix quaternion-argument constructor retained by Android as tMatrix::tMatrix(const tQuaternian&)."
     },
     {
       "address": "0x44db50",

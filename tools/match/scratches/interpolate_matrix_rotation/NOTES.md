@@ -1,4 +1,4 @@
-# Proof-grade exact match — 100.00%, 105/105 insns
+# Honest constructor-family match — 96.19%, 105/105 insns
 
 Semantics complete: extract quaternion from the 3x3 (matrix-arg ctor),
 copy to a working quat, snap |x|,|y|,|z| < 0.001 to zero (w untouched),
@@ -7,26 +7,18 @@ convert to axis-angle, scale the ANGLE by alpha, recompose
 quat -> matrix. Quirk preserved: when the extracted angle is exactly
 zero the matrix is left untouched (no rebuild on that path).
 
-The normalized instruction stream and full 105-instruction prefix are exact.
+The instruction count remains exact and the first 30 target instructions match.
 The retained source uses the recovered `Axis`/`Quaternion`/`TransformMatrix`
-member-call surfaces, which restores the native `thiscall` helper ABI. Narrow
-volatile reads on the working quaternion's y/z epsilon checks prevent VC6 from
-copy-propagating those reads back to the extracted quaternion slots.
+member and constructor surfaces, preserving the native `thiscall` ABI without
+copy-propagation barriers.
 
-All 17 masked operands audit cleanly. The call at target `0x44d5d0` is named
-`initialize_quaternion_from_matrix` by the function manifest and resolves from
-the candidate object's exact matrix-argument constructor symbol
-`??0Quaternion@@QAE@PBM@Z`; the matcher keeps it distinct from the no-op default
-constructor `??0Quaternion@@QAE@XZ`.
+All 17 masked operands audit cleanly. The calls at target `0x44d5d0` and
+`0x44d820` resolve from the candidate object's exact const-reference constructor
+symbols `??0Quaternion@@QAE@ABUTransformMatrix@@@Z` and
+`??0TransformMatrix@@QAE@ABUQuaternion@@@Z`.
 
 Combined with linear_interpolate_matrix this fully specifies native pose
 interpolation for the cluster-1 mirror transform lane.
-
-2026-06-20 Quaternion consolidation: this scratch now consumes the shared
-`include/quaternion.h` layout. Rewriting the extract step as
-`extracted.initialize_quaternion_from_matrix(...)` cleared the type report but
-regressed the focused matcher to 65.12% with only a 4-instruction prefix, so the
-constructor spelling is retained.
 
 2026-07-09 member-ABI recovery: replacing scratch-local cdecl conversion
 helpers with the recovered member calls raised the focused result from 71.89%
@@ -61,3 +53,9 @@ the ARM function's three exits restore the frame without establishing one.
 Windows' sole caller likewise ignores EAX, while its two return sites leave
 path-dependent helper residue. The shared scratch was already honestly `void`;
 the BN/IDA analysis prototypes now agree with that contract.
+
+2026-07-14 constructor-family ownership: the extract and rebuild calls now use
+the real `Quaternion(const TransformMatrix&)` and
+`TransformMatrix(const Quaternion&)` definitions recovered from Android. This
+keeps the current honest 96.19% score, 105/105 instruction parity, 30-instruction
+prefix, and 17 clean operands while removing both synthetic initializer APIs.
