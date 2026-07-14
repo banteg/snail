@@ -17,15 +17,16 @@ Current match:
 Evidence:
 
 - `initialize_track_health_pickup_runtime` now uses this same promoted
-  `TrackHealthPickup` type, casting through `BodBase` only for the exact base
-  initializer and vtable store. That confirms the shared first `0x38` bytes
-  are the BOD base prefix whose payload is reused as pickup world/state fields.
+  `TrackHealthPickup` type and calls its inherited `BodBase` initializer
+  directly. That confirms the shared first `0x38` bytes are the real BOD base;
+  this allocator writes its inherited `position` payload.
 - Scans eight health pickup slots at `subgame +0x356000`, stride `0x74`. The
   source keeps the native slot-base arithmetic by viewing the shifted slot base
   as a `SubgameRuntime*` and accessing `slot->health_pickups[0]`. A direct
   `this->health_pickups[slot_index]` member made VC6 choose the wrong base
   register.
-- Seeds the promoted partial `TrackHealthPickup` fields: `world_position +0x10`,
+- Seeds the promoted partial `TrackHealthPickup` fields: inherited
+  `BodBase::position +0x10`,
   `state +0x38`, `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`,
   `bob_phase +0x6c`, and `bob_phase_step +0x70`.
 - Allocates sprite texture `57`, marks sprite flag `0x800`, clears gravity and
@@ -34,7 +35,7 @@ Evidence:
   `TrackHealthPickup::owner_game +0x44`, the reset-initialized subgame pause
   view read by `update_track_health_pickup`.
 - Initializes `bob_phase +0x6c` from a numeric float-to-int conversion of
-  `world_position.z`, matching the native `__ftol` lane: even z starts at
+  `position.z`, matching the native `__ftol` lane: even z starts at
   `0.5f`, odd z stays `0.0f`.
 
 This scratch now uses the shared `SubgameRuntime::health_pickups` layout, but
@@ -183,3 +184,9 @@ void epilogue and independent setup-tail scheduling, not list ownership.
 2026-07-14 root-list closure: the inherited pickup BOD is inserted through
 `GameRoot::active_bod_list`. Focused output remains 90.08%, 120/122
 instructions, prefix 6/122, with seven clean operands.
+
+2026-07-14 BOD-base ownership: the staged cell anchor now lands in inherited
+`SubHealth::position`, and the active-list node is the same zero-offset
+`BodBase -> BodNode` object. The allocator remains byte-stable at 90.08%,
+120/122 instructions, with all seven operands clean; its residuals remain the
+honest void epilogue and compiler scheduling described above.

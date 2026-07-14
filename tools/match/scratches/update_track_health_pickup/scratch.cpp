@@ -39,7 +39,7 @@ state_two:
     return;
 
 state_one:
-    if (world_position.z < owner->interaction_max_z) {
+    if (position.z < owner->interaction_max_z) {
         state = zero;
         g_game->active_bod_list.remove_bod(this);
         sprite->kill_sprite();
@@ -53,5 +53,5 @@ update_bob:
         bob_phase = advanced - 1.0f;
     sprite->position.y =
         (sine(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f
-        + world_position.y;
+        + position.y;
 }

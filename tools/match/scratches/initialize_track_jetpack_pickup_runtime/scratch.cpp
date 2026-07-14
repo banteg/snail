@@ -7,7 +7,7 @@ extern void* g_vapour_vtable;               // off_49731c / data_49731c
 
 JetPack* JetPack::initialize_track_jetpack_pickup_runtime()
 {
-    ((BodBase*)this)->initialize_bod_base();
+    initialize_bod_base();
     RenderableBod* vapour = (RenderableBod*)&vapour_a;
     vapour->initialize_renderable_bod();
     vapour->vtable = &g_vapour_vtable;

@@ -37,7 +37,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     staged_position.x = cell->anchor_position.x;
     staged_position.z = cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 0.60000002f;
-    Vector3* live_position = &slot->health_pickups[0].world_position;
+    Vector3* live_position = &slot->health_pickups[0].position;
     *live_position = staged_position;
 
     BodNode* node = (BodNode*)&slot->health_pickups[0];
@@ -59,7 +59,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     slot->health_pickups[0].source_cell = cell;
     float* bob_phase = &slot->health_pickups[0].bob_phase;
     *bob_phase = 0.0f;
-    if (((int)slot->health_pickups[0].world_position.z & 1) != 0)
+    if (((int)slot->health_pickups[0].position.z & 1) != 0)
         *bob_phase = 0.0f;
     else
         *bob_phase = 0.5f;

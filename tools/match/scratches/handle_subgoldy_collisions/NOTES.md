@@ -447,3 +447,11 @@ The active garbage-chain probe now reads the body through
 93.55% updater all preserve the same `RenderableBod` owner and 0xc4 slot stride.
 This large consumer remains byte-stable at 53.93%, 651/673 instructions, with
 all 86 operands clean.
+
+## 2026-07-14 pickup BOD-base inheritance
+
+Health and JetPack collision probes now read inherited `BodBase::position`
+instead of duplicate `world_position` fields. Their exact constructors prove
+the zero-offset base initializer, their exact updaters consume y/z, and this
+collision body consumes all three lanes. Focused output remains byte-stable at
+53.93%, 651/673 instructions, with all 86 operands clean.

@@ -19,7 +19,8 @@ Evidence:
 
 - Allocates the single jetpack pickup runtime at `subgame +0x355e64`; the
   shared parent layout now lives in `track_jetpack_pickup.h`.
-- The collision-visible lanes are `position +0x10`, `state +0x38`,
+- The collision-visible lanes are inherited `BodBase::position +0x10`,
+  `state +0x38`,
   `owner +0x3c`, `sprite +0x64`, `source_cell +0x68`, `bob_phase +0x6c`,
   and `bob_phase_step +0x70`, matching the corrected
   `handle_subgoldy_collisions` offsets `position 0x355e74` and
@@ -131,3 +132,9 @@ and VC6's lane-14 constant/register schedule, not ownership.
 2026-07-14 root-list closure: the singleton's inherited BOD now enters
 `GameRoot::active_bod_list` directly. The honest 84.72%, 144/144 baseline and
 all nine clean references are unchanged.
+
+2026-07-14 BOD-base ownership: the cell anchor now lands in inherited
+`JetPack::position`, while the same zero-offset `BodBase -> BodNode` enters the
+active list. Exact constructor/updater evidence independently fixes the base;
+this allocator stays byte-stable at the honest 84.72%, 144/144 baseline with
+all nine operands clean.

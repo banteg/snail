@@ -36,7 +36,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     staged_position.x = cell->anchor_position.x;
     staged_position.z = cell->anchor_position.z;
     staged_position.y = cell->anchor_position.y + 1.5f;
-    Vector3* live_position = &slot->jetpack_pickup.world_position;
+    Vector3* live_position = &slot->jetpack_pickup.position;
     *live_position = staged_position;
 
     int lane = cell->lane_and_flags & 7;
@@ -68,7 +68,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     float* bob_phase = &slot->jetpack_pickup.bob_phase;
     *bob_phase = 0.0f;
 
-    int z_as_int = (int)slot->jetpack_pickup.world_position.z;
+    int z_as_int = (int)slot->jetpack_pickup.position.z;
     if ((z_as_int & 1) != 0) {
         *bob_phase = 0.0f;
         slot->jetpack_pickup.bob_phase_step = 0.012820513f;

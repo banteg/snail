@@ -1,27 +1,24 @@
-// Authored cRJetPack singleton runtime, partial.
+// Authored cRJetPack singleton runtime, partial. The parent derives from the
+// shared BodBase; its two child Vapours remain embedded below the pickup state.
 // Proven by initialize_track_jetpack_pickup_runtime,
 // spawn_track_jetpack_pickup, update_track_jetpack_pickup,
 // remove_subgame_bods, and handle_subgoldy_collisions.
 #ifndef TRACK_JETPACK_PICKUP_H
 #define TRACK_JETPACK_PICKUP_H
 
-#include "bod_list.h"
 #include "bod_types.h"
 #include "sub_loc_fwd.h"
 #include "vapour.h"
-#include "vector3.h"
 
 class Player;
 class Sprite;
 class SubgameRuntime;
 
-class JetPack : public BodNode {
+class JetPack : public BodBase {
 public:
     JetPack* initialize_track_jetpack_pickup_runtime(); // @ 0x4084d0
     void update_track_jetpack_pickup(); // @ 0x43efb0
 
-    Vector3 world_position; // +0x10
-    char unknown_1c[0x38 - 0x1c];
     int state; // +0x38
     Player* owner; // +0x3c
     char unknown_40[0x44 - 0x40];

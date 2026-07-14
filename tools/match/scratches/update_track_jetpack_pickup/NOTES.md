@@ -11,7 +11,7 @@ The same parent slot starts at `game + 0x355e64`.
 Layout facts now shared with `track_jetpack_pickup.h`:
 
 - parent list prefix at `+0x00`, with live/free-list flags at `+0x04`
-- world position at `+0x10`; the updater uses y as the sprite bob base and
+- inherited `BodBase::position` at `+0x10`; the updater uses y as the sprite bob base and
   z for the owner kill-plane compare
 - state `+0x38`, owner `+0x3c`, containing `SubgameRuntime*` backlink `+0x44`
 - sprite `+0x64`, source row cell `+0x68`, bob phase/step `+0x6c/+0x70`
@@ -72,3 +72,8 @@ at `127/127`.
 2026-07-14 root-list closure: both removal arms now borrow
 `GameRoot::active_bod_list` directly. Matching remains exact at 127/127 with
 all 20 operands clean.
+
+2026-07-14 BOD-base ownership: the parent now directly inherits `BodBase`;
+the kill plane and bob base read `position.z/y`, while list removal continues
+through inherited `BodNode`. Matching remains exact at 127/127 with all 20
+operands clean.

@@ -10,7 +10,7 @@ Recovered behavior:
 - state `0` returns immediately;
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;
-- state `1` performs the same teardown once `world_z` falls behind
+- state `1` performs the same teardown once inherited `position.z` falls behind
   `owner->interaction_max_z`;
 - all other nonzero states advance the health bob phase, wrap only when the
   phase is strictly greater than `1.0f`, and write
@@ -64,10 +64,9 @@ duplicated unlink blocks and the native final bob-tail placement.
 `BodNode` list prefix from `bod_list.h`. Match remains 71.88%.
 
 2026-06-16 initializer consolidation: `initialize_track_health_pickup_runtime`
-now uses this same promoted `TrackHealthPickup` type, while casting through
-`BodBase` for the exact initializer and vtable write. The first `0x38` bytes are
-therefore both the BOD base prefix at initialization time and the pickup
-world/state payload used by spawn/update/collision paths.
+began using this same promoted `TrackHealthPickup` type and casting through
+`BodBase` for the exact initializer and vtable write. This first established
+the BOD-base interpretation of the first `0x38` bytes.
 
 Important naming correction: reset_subgame initializes health pickup `+0x44`
 with the containing `SubgameRuntime*`, so this lane is now `owner_game`, not a visibility-cell
@@ -134,3 +133,8 @@ saved `Sprite*`. Focused Windows matching is now exact at `128/128`.
 2026-07-14 root-list closure: both removal arms now borrow
 `GameRoot::active_bod_list` directly. The updater remains exact at 128/128
 with all 21 operands clean.
+
+2026-07-14 BOD-base ownership: the receiver now directly inherits `BodBase`;
+the kill plane and bob base read `position.z/y`, while list removal continues
+through inherited `BodNode`. Matching remains exact at 128/128 with all 21
+operands clean.

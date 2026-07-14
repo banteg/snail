@@ -141,6 +141,14 @@ Binary Ninja preview verifies `SubSpeedUp == 0xb4` and keeps
 the honest 67.67%, 495/501-instruction baseline with 63 clean operands and the
 same two documented speedup/JetPack string-order mismatches.
 
+## 2026-07-14 pickup BOD-base inheritance
+
+The health pool and JetPack singleton now expose their real zero-offset
+`BodBase -> BodNode` inheritance instead of duplicating only the list prefix
+and position lane. Their 0x74 and 0x19c extents, state offsets, and teardown
+list links are unchanged. Focused output remains 67.67%, 495/501 instructions,
+with the same 63 clean operands and two documented string-order mismatches.
+
 ## 2026-07-14 typed pool extents
 
 The teardown retains next-link cursors because that source shape is required
