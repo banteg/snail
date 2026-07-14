@@ -8,7 +8,7 @@ int StarManager::hide_star_field()
     if (result != 0) {
         result = count;
         for (int i = 0; i < result; ++i) {
-            entries[i].sprite->flags &= ~0x40;
+            entries[i].sprite->flags &= ~SPRITE_FLAG_RENDER_ENABLED;
             result = count;
         }
     }

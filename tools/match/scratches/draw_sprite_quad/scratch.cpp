@@ -51,7 +51,7 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
     configure_sprite_render_state(sprite);
 
     float alpha;
-    if ((sprite->flags & 0x1000) != 0) {
+    if ((sprite->flags & SPRITE_FLAG_FORCE_OPAQUE) != 0) {
         alpha = 1.0f;
     } else {
         alpha = (1.0f - sprite->progress) * sprite->color.a;

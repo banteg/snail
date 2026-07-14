@@ -14,8 +14,13 @@ Recovered sprite relationships:
   owner lists.
 - `Sprite +0x1c/+0x20/+0x24` are primary/secondary texture-record pointers.
 - `Sprite +0x9c` stores the primary texture id used for metadata lookups.
-- Texture-record flags at `0x2000/0x4000` propagate into sprite flags, and
-  texture metadata at `+0x90/+0x94` populates sprite frame count `+0xa0` and
-  frame-progress step `+0xb0`.
+- `owner + RENDER_SCENE_BIT_BASE` selects the sprite's high-byte scene bit.
+- `TEXTURE_REF_ANIMATED` and `TEXTURE_REF_ANIMATION_PING_PONG` propagate into
+  the corresponding Sprite flags, while texture metadata at `+0x90/+0x94`
+  populates sprite frame count `+0xa0` and frame-progress step `+0xb0`.
+
+Texture flags `0x10/0x20` still control the two auxiliary texture pointers, but
+no tracked consumer yet proves semantic names for those bits, so they remain
+numeric rather than being guessed.
 
 Exact match: 100.00%, 81/81 instructions, with ten masked operands audited.

@@ -6,6 +6,7 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
+#include "render_scene.h"
 #include "vector3.h"
 
 struct TgaImageView;
@@ -61,8 +62,24 @@ enum TextureRefFlags {
     TEXTURE_REF_REGISTERED = 0x400,
     TEXTURE_REF_DISABLE_PATH_REUSE = 0x800,
     TEXTURE_REF_WRAP_ADDRESSING = 0x1000,
+    TEXTURE_REF_ANIMATED = 0x2000,
+    TEXTURE_REF_ANIMATION_PING_PONG = 0x4000,
     TEXTURE_REF_SKIP_RUNTIME_LOAD = 0x8000,
     TEXTURE_REF_HAS_ALPHA = 0x10000,
+};
+
+enum SpriteFlag {
+    SPRITE_FLAG_ACTIVE = 0x0001, // live active-list member
+    SPRITE_FLAG_ORIENT_TO_MOTION = 0x0002, // renderer updates facing from motion
+    SPRITE_FLAG_SKIP_INITIAL_PROGRESS = 0x0008, // consumed by first update
+    SPRITE_FLAG_RENDER_ENABLED = 0x0040, // renderer visibility gate
+    SPRITE_FLAG_PRESERVE_AT_PROGRESS_END = 0x0100, // do not kill at progress bound
+    SPRITE_FLAG_DELAYED_RENDER = 0x0200, // lifetime delay still active
+    SPRITE_FLAG_THROTTLE_FACING_REFRESH = 0x0400, // use refresh cadence pair
+    SPRITE_FLAG_GAMEPLAY_OWNED = 0x0800, // paused and bulk-killed with gameplay
+    SPRITE_FLAG_FORCE_OPAQUE = 0x1000, // draw alpha as 1.0
+    SPRITE_FLAG_ANIMATED = 0x2000, // advance texture frames
+    SPRITE_FLAG_ANIMATION_PING_PONG = 0x4000, // reverse frame step at bounds
 };
 
 struct TextureRef {

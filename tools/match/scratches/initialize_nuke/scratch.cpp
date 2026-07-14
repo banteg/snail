@@ -24,7 +24,7 @@ void Nuke::initialize_nuke()
         do {
             Sprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x83, -1, -1);
             *slots = sprite;
-            sprite->flags |= 0x800;
+            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             slots++;
 
             (*(slots - 1))->progress = 0.0f;

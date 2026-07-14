@@ -4,7 +4,8 @@
 
 void Sprite::initialize_sprite()
 {
-    flags = 0x49;
+    flags = SPRITE_FLAG_ACTIVE | SPRITE_FLAG_SKIP_INITIAL_PROGRESS
+        | SPRITE_FLAG_RENDER_ENABLED;
     color.set_color_white();
 
     int zero = 0;

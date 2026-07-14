@@ -2,7 +2,8 @@
 
 Near-match for Sprite facing-angle refresh at `0x44e410`.
 
-- Flag `0x400` enables throttled facing refresh through `+0x8c/+0x90`.
+- `SPRITE_FLAG_THROTTLE_FACING_REFRESH` enables throttled facing refresh
+  through `+0x8c/+0x90`.
 - When throttled, native recomputes the angle only when
   `facing_refresh_progress == 0.0f`; the previous nonzero interpretation was
   wrong.

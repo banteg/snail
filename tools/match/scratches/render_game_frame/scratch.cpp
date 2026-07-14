@@ -166,9 +166,9 @@ void GameRoot::render_game_frame()
                 ++rendered_sprite_count;
                 unsigned int sprite_flags = sprite->flags;
                 if ((slot->flags & sprite_flags & RENDER_SCENE_MASK) != 0) {
-                    if ((sprite_flags & 1) != 0 &&
-                        (sprite_flags & 0x40) != 0 &&
-                        (sprite_flags & 0x200) == 0) {
+                    if ((sprite_flags & SPRITE_FLAG_ACTIVE) != 0 &&
+                        (sprite_flags & SPRITE_FLAG_RENDER_ENABLED) != 0 &&
+                        (sprite_flags & SPRITE_FLAG_DELAYED_RENDER) == 0) {
                         Vector3 projected = sprite->position;
                         TransformMatrix camera_matrix = source->view_matrix;
                         projected *= camera_matrix;
@@ -224,7 +224,7 @@ void GameRoot::render_game_frame()
             for (int bucket = 0xff; bucket >= 0; --bucket) {
                 SpriteDepthNode* node = g_sprite_depth_buckets[bucket];
                 while (node != 0) {
-                    if ((node->sprite->flags & 2) != 0) {
+                    if ((node->sprite->flags & SPRITE_FLAG_ORIENT_TO_MOTION) != 0) {
                         node->sprite->update_sprite_facing_angle(&source->view_matrix);
                     }
                     draw_sprite_quad(&node->position, node->sprite);

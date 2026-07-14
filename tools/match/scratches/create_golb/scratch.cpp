@@ -277,7 +277,7 @@ after_movement_flag_source:
             -1,
             -1);
         render_sprite = sprite;
-        sprite->flags |= 0x800;
+        sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         sprite->progress = 0.0f;
         sprite->progress_step = 0.0f;
         sprite->gravity_step = 0.0f;

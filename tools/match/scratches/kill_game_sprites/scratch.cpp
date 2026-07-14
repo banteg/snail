@@ -5,7 +5,7 @@
 void SpriteManager::kill_game_sprites()
 {
     Sprite** bucket = g_sprite_active_heads;
-    unsigned int game_sprite_flag = 0x800;
+    unsigned int game_sprite_flag = SPRITE_FLAG_GAMEPLAY_OWNED;
 
     do {
         Sprite* sprite = *bucket;

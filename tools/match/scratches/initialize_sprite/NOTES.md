@@ -9,6 +9,9 @@ replaced with the shared Sprite fields recovered from `update_sprite`,
 Confirmed fields include:
 
 - `object_ref` at `+0x00`, initialized to the `-1` sentinel;
+- `flags` at `+0x04`, initialized to `ACTIVE | SKIP_INITIAL_PROGRESS |
+  RENDER_ENABLED`; the exact updater consumes the one-frame skip bit and the
+  renderer independently consumes the active/render gates;
 - texture refs at `+0x1c/+0x20/+0x24` and `draw_mode` at `+0x28`;
 - `previous_position`, `position`, and `velocity` at `+0x3c/+0x48/+0x54`;
 - `size_start`/`size_end` at `+0x60/+0x64`, interpolated by `progress`

@@ -67,7 +67,7 @@ void SubHover::update_jet_particles()
                 Sprite* sprite =
                     g_sprite_manager.allocate_sprite(
                         game->embedded_player()->player_slot, 0x21, -1, -1);
-                sprite->flags |= 0x800;
+                sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
                 sprite->progress = 0.0f;
                 sprite->progress_step = 0.138888896f;
                 sprite->lifetime = 0.0f;

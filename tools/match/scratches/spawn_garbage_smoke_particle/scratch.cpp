@@ -19,7 +19,7 @@ void SubGarbage::spawn_garbage_smoke_particle(
             -1,
             -1);
         sprite->progress = 0.0f;
-        sprite->flags |= 0x800;
+        sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         sprite->progress_step = owner_game->subgame_rate * 0.033333335f;
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = owner_game->subgame_rate * 0.41666669f;

@@ -71,7 +71,8 @@ int StarManager::initialize_star_field()
                 entries[index].position;
 
             Sprite* sprite = entries[index].sprite;
-            sprite->flags |= 0x402;
+            sprite->flags |= SPRITE_FLAG_THROTTLE_FACING_REFRESH
+                | SPRITE_FLAG_ORIENT_TO_MOTION;
             entries[index].sprite->progress = 0.0f;
             entries[index].sprite->progress_step = 0.0f;
             entries[index].sprite->gravity_step = 0.0f;

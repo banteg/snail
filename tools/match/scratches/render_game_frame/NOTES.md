@@ -39,7 +39,11 @@ Recovered relationships:
 - Sprite rendering uses `g_sprite_active_heads[camera_index]`, checks the
   sprite and camera high render-mask bytes, depth-sorts visible sprites into
   the `data_4f7050` bucket heads with nodes from `data_4e5510`, then calls
-  `update_sprite_facing_angle` for `flags & 2` sprites before `draw_sprite_quad`.
+  `update_sprite_facing_angle` for `SPRITE_FLAG_ORIENT_TO_MOTION` sprites before
+  `draw_sprite_quad`.
+- The renderer admits only `SPRITE_FLAG_ACTIVE | SPRITE_FLAG_RENDER_ENABLED`
+  sprites and excludes `SPRITE_FLAG_DELAYED_RENDER`; exact initialization and
+  update functions independently prove the producer side of all three bits.
 - Sprite projection negates camera-space z for storage, then negates it again
   when building the depth key before multiplying by `4.19672108f` and adding
   `Sprite +0x98`.

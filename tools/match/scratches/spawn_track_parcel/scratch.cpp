@@ -12,7 +12,7 @@ Parcel* SubgameRuntime::spawn_track_parcel(Vector3* world_position, Player*)
 
         Sprite* sprite = g_sprite_manager.allocate_sprite(player.player_slot, 0x79, -1, -1);
         parcel->sprite = sprite;
-        sprite->flags |= 0x800;
+        sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         parcel->sprite->progress = 0.0f;
         parcel->sprite->progress_step = 0.0f;
         parcel->sprite->gravity_step = 0.0f;

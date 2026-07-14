@@ -93,7 +93,8 @@ void SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* play
         -1,
         -1);
     garbage_hazards.slots[slot_index].sprite = sprite;
-    garbage_hazards.slots[slot_index].sprite->flags |= 0x800u;
+    garbage_hazards.slots[slot_index].sprite->flags |=
+        SPRITE_FLAG_GAMEPLAY_OWNED;
     garbage_hazards.slots[slot_index].sprite->gravity_step = 0.0f;
     garbage_hazards.slots[slot_index].sprite->progress = 0.0f;
     garbage_hazards.slots[slot_index].sprite->progress_step = 0.0f;

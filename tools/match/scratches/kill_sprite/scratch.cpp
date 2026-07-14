@@ -6,11 +6,11 @@ int report_errorf(char* format, ...);
 
 void Sprite::kill_sprite()
 {
-    if ((flags & 1) == 0) {
+    if ((flags & SPRITE_FLAG_ACTIVE) == 0) {
         report_errorf("Sprite kill error, already dead (%s)", texture_ref->name);
     }
     if (this != &g_sprite_sentinel) {
-        flags &= ~1;
+        flags &= ~SPRITE_FLAG_ACTIVE;
         if (this == g_sprite_manager.active_heads[owner]) {
             Sprite* next_sprite = next;
             if (next_sprite != 0) {

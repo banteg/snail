@@ -5,16 +5,17 @@
 void Sprite::update_sprite()
 {
     unsigned int current_flags = flags;
-    if ((current_flags & 0x800) != 0 && g_sprite_manager.paused != 0) {
+    if ((current_flags & SPRITE_FLAG_GAMEPLAY_OWNED) != 0
+        && g_sprite_manager.paused != 0) {
         return;
     }
 
-    if ((current_flags & 0x8) == 0) {
+    if ((current_flags & SPRITE_FLAG_SKIP_INITIAL_PROGRESS) == 0) {
         float next_progress = progress_step + progress;
         progress = next_progress;
         if (next_progress > 1.0f || next_progress < 0.0f) {
             progress = 1.0f;
-            if ((current_flags & 0x100) == 0) {
+            if ((current_flags & SPRITE_FLAG_PRESERVE_AT_PROGRESS_END) == 0) {
                 kill_sprite();
             }
             return;
@@ -28,10 +29,10 @@ void Sprite::update_sprite()
             }
         }
     } else {
-        flags = current_flags & ~0x8;
+        flags = current_flags & ~SPRITE_FLAG_SKIP_INITIAL_PROGRESS;
     }
 
-    flags &= ~0x8;
+    flags &= ~SPRITE_FLAG_SKIP_INITIAL_PROGRESS;
 
     Vector3* previous = &previous_position;
     Vector3* current = &position;
@@ -45,13 +46,13 @@ void Sprite::update_sprite()
     facing_angle += facing_angle_step;
 
     if (lifetime_step > 0.0f) {
-        flags |= 0x200;
+        flags |= SPRITE_FLAG_DELAYED_RENDER;
     } else {
-        flags &= ~0x200;
+        flags &= ~SPRITE_FLAG_DELAYED_RENDER;
     }
 
     unsigned int animation_flags = flags;
-    if ((animation_flags & 0x2000) == 0) {
+    if ((animation_flags & SPRITE_FLAG_ANIMATED) == 0) {
         return;
     }
 
@@ -62,7 +63,7 @@ void Sprite::update_sprite()
         frame += frame_step;
         int next_frame = frame;
 
-        if ((animation_flags & 0x4000) != 0) {
+        if ((animation_flags & SPRITE_FLAG_ANIMATION_PING_PONG) != 0) {
             if (next_frame == frame_count) {
                 frame_step = -1;
                 frame = frame_count - 1;

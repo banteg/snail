@@ -12,6 +12,8 @@ Current recovered relationships:
   by `configure_sprite_render_state`, `+0x2c..+0x38` is `tColour`, `+0x60/+0x64`
   are size endpoints, `+0x68` is progress, `+0x7c` is facing angle, and
   `+0x88` is the rotated-corner scale/stretch lane.
+- `SPRITE_FLAG_FORCE_OPAQUE` replaces the interpolated color alpha with `1.0f`
+  before the packed vertex color is built.
 - The 0x60-byte locked buffer is four 0x18-byte vertices:
   `float x, y, z; uint32 color; float u, v`.
 - Those records are the shared, size-asserted `ObjectRenderVertex` FVF `0x142`

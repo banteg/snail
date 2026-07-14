@@ -15,7 +15,8 @@ void Slug::explode_slug_hazard()
         size = size * 0.75f + 0.25f;
         Sprite* sprite = g_sprite_manager.allocate_sprite(1, 129, -1, -1);
         sprite->progress = 0.0f;
-        sprite->flags |= 0x802;
+        sprite->flags |=
+            SPRITE_FLAG_GAMEPLAY_OWNED | SPRITE_FLAG_ORIENT_TO_MOTION;
         sprite->corner_scale = size + size;
         float progress_step =
             1.0f

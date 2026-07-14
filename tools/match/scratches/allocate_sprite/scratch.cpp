@@ -24,7 +24,7 @@ Sprite* SpriteManager::allocate_sprite(int owner, int texture_id, int texture_a,
 
     sprite->initialize_sprite();
 
-    sprite->flags |= 1 << (owner + 0x18);
+    sprite->flags |= 1 << (owner + RENDER_SCENE_BIT_BASE);
     sprite->texture_ref = g_sprite_texture_table[primary_texture_id];
 
     if (texture_b != -1) {
@@ -42,11 +42,15 @@ Sprite* SpriteManager::allocate_sprite(int owner, int texture_id, int texture_a,
     sprite->frame_progress_step = 0.0f;
     sprite->frame_count = g_sprite_texture_table[primary_texture_id]->frame_count;
 
-    if ((g_sprite_texture_table[primary_texture_id]->flags & 0x2000) != 0) {
-        sprite->flags |= 0x2000;
+    if ((g_sprite_texture_table[primary_texture_id]->flags
+            & TEXTURE_REF_ANIMATED)
+        != 0) {
+        sprite->flags |= SPRITE_FLAG_ANIMATED;
         sprite->frame_progress_step = g_sprite_texture_table[primary_texture_id]->frame_progress_step;
-        if ((g_sprite_texture_table[primary_texture_id]->flags & 0x4000) != 0) {
-            sprite->flags |= 0x4000;
+        if ((g_sprite_texture_table[primary_texture_id]->flags
+                & TEXTURE_REF_ANIMATION_PING_PONG)
+            != 0) {
+            sprite->flags |= SPRITE_FLAG_ANIMATION_PING_PONG;
         }
     }
 

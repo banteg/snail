@@ -18,7 +18,7 @@ void Player::health_collect_particles(SubHealth* pickup)
             Sprite* sprite =
                 g_sprite_manager.allocate_sprite(player_slot, 0x80, -1, -1);
 
-            sprite->flags |= 0x800u;
+            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             sprite->progress = 0.0f;
             sprite->progress_step = 0.041666668f;
             sprite->gravity_step = -0.00019999999f;
