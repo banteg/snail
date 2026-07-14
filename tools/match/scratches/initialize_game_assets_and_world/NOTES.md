@@ -686,3 +686,14 @@ The focused result remains 80.50% (5,392/5,411 instructions, 1,550 clean
 operands, 101 known broad mismatches). A separately saved pre-change object and
 the rebuilt object produce the same normalized candidate-listing SHA-256,
 `df7a171903be7dac262a2012d9000dfb6d1df49b3764539fae538cfd6486efd3`.
+
+## 2026-07-14 paired root player/input capacity
+
+`GAME_ROOT_PLAYER_SLOT_COUNT` now owns the shared two-entry extent of
+`GameRoot::game_inputs` and `GameRoot::players`. Startup stores that capacity
+in `player_count`, initializes both input records, then initializes each player
+and gives it the correspondingly indexed borrowed `GameInput*`. The root
+constructor independently walks two complete 0x70-byte input owners and two
+complete 0x1f8-byte player owners. Binary Ninja also pins the arrays at
+`+0x44` and `+0x124` and the runtime count at `+0x40`. This is a derived paired
+capacity, not a guessed limit or an original-symbol spelling claim.

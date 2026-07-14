@@ -90,7 +90,7 @@ char GameRoot::initialize_game_assets_and_world()
     fog_start = 30.0f;
     fog_end = 50.0f;
     fog_enabled = 1;
-    player_count = 2;
+    player_count = GAME_ROOT_PLAYER_SLOT_COUNT;
     fade.initialize_frontend_fade();
     frontend_link_latch = 0;
     subgame.subgame_pause_gate = 0;
@@ -3012,7 +3012,7 @@ char GameRoot::initialize_game_assets_and_world()
         game_input->input.initialize_input();
         ++input_index;
         ++game_input;
-    } while (input_index < 2);
+    } while (input_index < GAME_ROOT_PLAYER_SLOT_COUNT);
 
     int player_index = 0;
     if (player_count > 0) {

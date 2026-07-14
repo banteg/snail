@@ -28,6 +28,7 @@
 
 enum {
     GAME_ROOT_BOD_COUNT = ROOT_BOD_CATALOG_ENTRY_COUNT,
+    GAME_ROOT_PLAYER_SLOT_COUNT = 2,
 };
 
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
@@ -81,8 +82,8 @@ public:
     };
     int fixed_update_count;      // +0x3c
     int player_count; // +0x40, controls the two-player initialization loop
-    GameInput game_inputs[2]; // +0x44, owned cRGameInput array
-    GamePlayer players[2]; // +0x124, owned cRPlayer array
+    GameInput game_inputs[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x44, paired input owners
+    GamePlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124, owned cRPlayer array
     int unknown_000514; // +0x514, startup-only dword storage
     float fixed_update_accumulator; // +0x518, consumed in unit fixed steps
     int frame_counter; // +0x51c, creation timestamp for front-end borders
