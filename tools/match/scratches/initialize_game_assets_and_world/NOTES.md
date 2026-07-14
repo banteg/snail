@@ -646,3 +646,15 @@ the root constructor, and all inline list users agree on the same 0x0c-byte
 `BodList`; the former `BodListEndpointsView` had no separate storage or ABI
 role and is retired. This is an ownership clarification, not a derived-list
 relationship.
+
+## 2026-07-14 sound-manager method ownership
+
+The startup sound-bank call now uses `g_sound_effect_manager` as its receiver.
+Native pushes the 52-entry bank, loads the manager at `0x78ff88` into `ecx`,
+and calls exact `SoundEffectManager::initialize_sound_bank`; Android likewise
+binds `gSFXBank` through `gRSound`. This closes the owner shared with the exact
+positional/default/scaled playback overloads.
+
+The focused bootstrap improves from 80.49% (5,391/5,411 instructions, 1,549
+clean operands) to 80.50% (5,392/5,411, 1,550 clean operands), while the 101
+broad alignment mismatches remain unchanged.

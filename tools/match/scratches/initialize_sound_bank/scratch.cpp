@@ -1,10 +1,10 @@
-// initialize_sound_bank @ 0x44dcb0 (stdcall, ret 0x4)
+// initialize_sound_bank @ 0x44dcb0 (thiscall, ret 0x4)
 
 #include "sound_effect_manager.h"
 
 int register_sound_sample(char* path, int normalization_class);
 
-char* __stdcall initialize_sound_bank(SoundBankEntry* entries)
+char* SoundEffectManager::initialize_sound_bank(SoundBankEntry* entries)
 {
     SoundBankEntry* cursor = entries;
     char* result = cursor->path;

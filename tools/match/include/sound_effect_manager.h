@@ -15,6 +15,7 @@ struct SoundBankEntry {
 
 class SoundEffectManager {
 public:
+    char* initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
     void play_sound_effect(int sound_id); // @ 0x44dde0
     void play_sound_effect_scaled(int sound_id, float gain); // @ 0x44de00
     void play_sound_effect_at_position(
@@ -25,8 +26,6 @@ public:
 
 extern SoundEffectManager g_sound_effect_manager;
 extern SoundBankEntry g_sound_bank_entries[52]; // 0x4a2140, Android gSFXBank
-
-char* __stdcall initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
 
 typedef char SoundBankEntry_must_be_0x0c[
     (sizeof(SoundBankEntry) == 0x0c) ? 1 : -1];

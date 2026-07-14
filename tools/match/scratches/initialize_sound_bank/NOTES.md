@@ -14,4 +14,9 @@ repository's descriptive naming convention. `sample_id` is intentionally not
 called a handle: `register_sound_sample` returns the registered table index,
 which the cross-port `cRSound::Play` methods later read from `+0x04`.
 
-The promoted type leaves this function exact at 21/21 instructions.
+Windows startup pushes `g_sound_bank_entries`, loads
+`g_sound_effect_manager @ 0x78ff88` into `ecx`, and calls this helper. That
+receiver setup proves the Windows ABI is also a `SoundEffectManager` member,
+even though its body needs no receiver fields. Android additionally stores the
+bank address in `gRSound` before walking it. Promoting the body and startup call
+to the shared owner leaves this function exact at 21/21 instructions.
