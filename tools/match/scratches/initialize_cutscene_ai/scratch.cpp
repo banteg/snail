@@ -1,12 +1,13 @@
 // initialize_cutscene_ai @ 0x446130 (thiscall, ret)
 
+#include "game_root.h"
 #include "player.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void CutScene::initialize_cutscene_ai()
 {
-    presentation = (Snail*)(g_game_base + 0x432700);
-    player = (Player*)(g_game_base + 0x42fd7c);
+    presentation = &g_game->subgame.embedded_player()->presentation;
+    player = g_game->subgame.embedded_player();
     state = 0;
 }

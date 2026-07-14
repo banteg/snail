@@ -14,3 +14,6 @@ Focused match: 100%, 4/4 instructions, with one clean masked operand.
 For the GUI callsite, iOS and Android identify this one-store operation as
 `cRGUI::Open()`. The generic Windows name remains intentional because the
 linker folded the byte-identical ThanksScreen owner bind into the same address.
+
+2026-07-14 root-owner closure: the folded helper now borrows
+`&g_game->subgame` directly. It remains exact at 4/4 with its one operand clean.

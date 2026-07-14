@@ -1,12 +1,13 @@
 // initialize_cameraman @ 0x446160 (thiscall, ret)
 #include "cameraman.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Cameraman::initialize_cameraman()
 {
-    player = (Player*)(g_game_base + 0x42fd7c);
-    game = (SubgameRuntime*)(g_game_base + 0x74618);
+    player = g_game->subgame.embedded_player();
+    game = &g_game->subgame;
     unresolved_cc = 0;
     set_matrix_identity(&previous_desired_matrix);
     set_matrix_identity(&desired_matrix);

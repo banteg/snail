@@ -12,3 +12,7 @@ three stores when called by `cRSubGoldy::Init`. iOS v1.9 exposes the parent
 explicitly as `cRSnailSkin::Init(cRSnail*)`. Keeping the typed local parent in
 the Windows source preserves the native store order; removing that local
 regresses the focused match and is not a more faithful source shape.
+
+2026-07-14 parent-owner closure: the retained local now borrows
+`SubgameRuntime::player.presentation` directly. Matching stays exact at 6/6
+with both operands clean.

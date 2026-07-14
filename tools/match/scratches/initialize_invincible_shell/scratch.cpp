@@ -1,11 +1,13 @@
 // initialize_invincible_shell @ 0x444ac0 (thiscall, ret)
+#include "game_root.h"
 #include "invincible.h"
 #include "snail_skin.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Invincible::initialize_invincible_shell()
 {
     state = 0;
-    ((SnailSkin*)(g_game_base + 0x434038))->change_snail_skin(0, 0.0f);
+    g_game->subgame.embedded_player()->presentation.snail_skin
+        .change_snail_skin(0, 0.0f);
 }

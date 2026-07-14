@@ -20,3 +20,8 @@ return interpretation.
 
 Focused Wibo remains exact: 100.00%, 8/8 instructions, with four clean masked
 operands.
+
+2026-07-14 parent-owner closure: the initializer now borrows
+`SubgameRuntime::player` and its owned `Player::presentation` directly instead
+of rebuilding root `+0x42fd7c/+0x432700`. It stays exact at 8/8 with all four
+operands clean.

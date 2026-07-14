@@ -4,8 +4,8 @@ Exact match: `100%`, `20/20` instructions, `6 ok` masked operands.
 
 This initializes the shared `Cameraman` layout:
 
-- `player` points at `g_game_base + 0x42fd7c`
-- `game` points at `g_game_base + 0x74618`
+- `player` borrows `SubgameRuntime::player`
+- `game` borrows the enclosing `GameRoot::subgame`
 - `previous_desired_matrix`, `desired_matrix`, and `live_matrix` are reset to
   identity
 - attachment lift smoothing starts at zero
@@ -25,3 +25,7 @@ same three matrices at +0x00/+0x40/+0x80, Player/SubgameRuntime backlinks at
 +0xd0/+0xd4. This independently proves the exact 0xd8-byte Windows
 `Cameraman` owner and the side-effect-only `void` contract. Focused Wibo
 remains exact at 20/20 instructions with six clean masked operands.
+
+2026-07-14 root-owner closure: both backlinks now follow the canonical
+`GameRoot -> SubgameRuntime -> Player` graph. The method remains exact at
+20/20 with all six operands clean.

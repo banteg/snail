@@ -15,3 +15,7 @@ and behavior agree.
 
 Focused Wibo: exact 100.00%, 7/7 instructions, with three clean masked
 operands.
+
+2026-07-14 sibling-owner closure: the skin reset now follows the owned
+`Player::presentation.snail_skin` path instead of root `+0x434038`. The helper
+remains exact at 7/7 with all three operands clean.
