@@ -3,9 +3,15 @@
 #ifndef ANIM_MANAGER_H
 #define ANIM_MANAGER_H
 
-struct ObjectAnimation;
+#include "object_animation_types.h"
+
 class BodBase;
 struct PresentationAnimationSlot;
+
+enum {
+    ANIM_MANAGER_QUEUE_CAPACITY = 10,
+    ANIM_MANAGER_HIDE_ANIMATION_ID = -1,
+};
 
 class AnimManager {
 public:
@@ -18,7 +24,7 @@ public:
     ObjectAnimation* active_animation; // +0x0c
     bool completed;          // +0x10
     char unknown_11[0x14 - 0x11];
-    int queued_animations[10]; // +0x14
+    int queued_animations[ANIM_MANAGER_QUEUE_CAPACITY]; // +0x14
     int queue_count;       // +0x3c
     BodBase* target_model; // +0x40, borrowed Snail/channel renderable owner
     PresentationAnimationSlot* animation_slots; // +0x44, borrowed inline slot bank

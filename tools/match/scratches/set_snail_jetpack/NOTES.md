@@ -13,8 +13,8 @@ Recovered behavior:
 - input state `0` maps to channel state `0`;
 - input state `1` maps to channel state `4`;
 - any other input is passed through as the target state;
-- leaving selected state `4` queues animation `1` with frame `8` and plays
-  sound `26`;
+- leaving selected state `4` queues animation `1` in reverse-once mode and
+  plays sound `26`;
 - entering target state `4` plays animation `1`, queues animation `0`, plays
   sound `16`, and stores selected state `4`;
 - entering target state `0` clears the channel with animation `-1`.
@@ -46,3 +46,8 @@ the argument.
 `void cRWeapon::SetAnimation(int, bool, int)`. Modeling `immediate` as `bool`
 preserves the existing 86.18% result while removing the obsolete integer-return
 and byte-flag contract from this caller.
+
+2026-07-14 animation-mode closure: the third argument is now tied to the
+parser/updater-owned mode bits. State `4` selects the once mode, leaving it uses
+reverse-once, and queued followups preserve the clip's existing flags. The
+equal-valued animation-id `-1` remains a separate hide-channel sentinel.

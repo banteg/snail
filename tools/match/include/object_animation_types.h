@@ -6,6 +6,14 @@
 
 struct Object;
 
+enum {
+    OBJECT_ANIMATION_MODE_LOOP = 1,
+    OBJECT_ANIMATION_MODE_PING_PONG = 2,
+    OBJECT_ANIMATION_MODE_ONCE = 4,
+    OBJECT_ANIMATION_MODE_ONCE_REVERSE = 8,
+    OBJECT_ANIMATION_MODE_UNCHANGED = -1,
+};
+
 struct XAnimationKeyframe : public BodBase {
     char unknown_38[0x7c - 0x38];
     int frame_number; // +0x7c

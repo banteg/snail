@@ -85,7 +85,7 @@ public:
     void set_snail_jetpack(int state);      // @ 0x445860
     void set_snail_weapon(int movement_flags); // @ 0x445920
     void initialize_cutscene();             // @ 0x4428d0
-    int dispatch_cutscene_animation(int animation, unsigned char immediate, int initial_frame); // @ 0x444600
+    int dispatch_cutscene_animation(int animation, unsigned char immediate, int mode_flags); // @ 0x444600
     void update_snail_skin();               // @ 0x445cd0
     void build_snail_hotspots();            // @ 0x445d50
 

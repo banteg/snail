@@ -15,7 +15,7 @@ typedef char PresentationAnimationSlot_must_be_0x80[
 
 class PresentationAnimationChannel : public RenderableBod {
 public:
-    void set_weapon_animation(int animation_id, bool immediate, int initial_frame);
+    void set_weapon_animation(int animation_id, bool immediate, int mode_flags);
 
     // build_subgame_level links this inherited renderable BOD. The channel
     // remains embedded in the authored Snail owner; the list only borrows it.

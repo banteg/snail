@@ -97,19 +97,19 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
         mode_flags = 0;
         cursor = find_case_insensitive_substring("Mode:Loop", animation_block);
         if (cursor != 0)
-            mode_flags = 1;
+            mode_flags = OBJECT_ANIMATION_MODE_LOOP;
         cursor = find_case_insensitive_substring("Mode:Once", animation_block);
         if (cursor != 0)
-            mode_flags |= 4;
+            mode_flags |= OBJECT_ANIMATION_MODE_ONCE;
         cursor = find_case_insensitive_substring("Mode:Pingpong", animation_block);
         if (cursor != 0)
-            mode_flags |= 2;
+            mode_flags |= OBJECT_ANIMATION_MODE_PING_PONG;
 
         *animation_end = saved_end_char;
     } else {
         report_errorf("Did not find Anim:%s in _Animation.txt. Using defaults", mesh_name);
         progress_step = 0.0166666675f;
-        mode_flags |= 1;
+        mode_flags |= OBJECT_ANIMATION_MODE_LOOP;
     }
 
     if (keyframe_count == 1)

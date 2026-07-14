@@ -22,14 +22,14 @@ void AnimManager::update_anim_manager()
 
         if (next_progress >= 1.0f) {
             unsigned short frame_flags = active_animation->flags;
-            if ((frame_flags & 1) != 0) {
+            if ((frame_flags & OBJECT_ANIMATION_MODE_LOOP) != 0) {
                 completed = true;
                 progress = next_progress - 1.0f;
-            } else if ((frame_flags & 4) != 0) {
+            } else if ((frame_flags & OBJECT_ANIMATION_MODE_ONCE) != 0) {
                 progress = 0.999000013f;
                 progress_step = 0.0f;
                 completed = true;
-            } else if ((frame_flags & 2) != 0) {
+            } else if ((frame_flags & OBJECT_ANIMATION_MODE_PING_PONG) != 0) {
                 progress = 2.0f - next_progress;
                 progress_step *= -1.0f;
             }
@@ -37,12 +37,12 @@ void AnimManager::update_anim_manager()
 
         if (progress < 0.0f) {
             unsigned char* frame_flags = (unsigned char*)active_animation;
-            if ((*frame_flags & 2) != 0) {
+            if ((*frame_flags & OBJECT_ANIMATION_MODE_PING_PONG) != 0) {
                 progress = -progress;
                 completed = true;
                 progress_step *= -1.0f;
             }
-            if ((*frame_flags & 8) != 0) {
+            if ((*frame_flags & OBJECT_ANIMATION_MODE_ONCE_REVERSE) != 0) {
                 progress = 0.0f;
                 progress_step = 0.0f;
                 completed = true;
@@ -65,7 +65,7 @@ void AnimManager::update_anim_manager()
 
     if (completed && queue_count > 0) {
         int next_animation = queued_animations[0];
-        if (next_animation == -1) {
+        if (next_animation == ANIM_MANAGER_HIDE_ANIMATION_ID) {
             progress = 0.0f;
             progress_step = 0.0f;
             target_model->list_flags &= ~0x20u;

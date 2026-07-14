@@ -312,10 +312,13 @@ steering_stored:
             if (!row_event_cutscene_started) {
                 row_event_cutscene_started = 1;
                 if (p_position->x > 0.0f)
-                    presentation.dispatch_cutscene_animation(4, 1, -1);
+                    presentation.dispatch_cutscene_animation(
+                        4, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
                 else
-                    presentation.dispatch_cutscene_animation(3, 1, -1);
-                presentation.dispatch_cutscene_animation(1, 0, -1);
+                    presentation.dispatch_cutscene_animation(
+                        3, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
+                presentation.dispatch_cutscene_animation(
+                    1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             }
             int definition = row_record->row_event_id;
             SubgameRuntime* voice_game = game;
@@ -583,10 +586,13 @@ steering_stored:
                     velocity.y = game->subgame_rate * 0.2f;
                     if (!control_override_active) {
                         if (p_position->x > 0.0f)
-                            presentation.dispatch_cutscene_animation(4, 1, -1);
+                            presentation.dispatch_cutscene_animation(
+                                4, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
                         else
-                            presentation.dispatch_cutscene_animation(3, 1, -1);
-                        presentation.dispatch_cutscene_animation(1, 0, -1);
+                            presentation.dispatch_cutscene_animation(
+                                3, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
+                        presentation.dispatch_cutscene_animation(
+                            1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
                     }
                 } else if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
                            && game->get_track_grid_cell_at_world_position(p_position)->tile_id
@@ -925,7 +931,8 @@ steering_stored:
             unsigned char override_active = control_override_active;
             attachment_exit_gate_a = 1;
             if (!override_active && transform.position.y < -6.0f)
-                presentation.dispatch_cutscene_animation(5, 1, -1);
+                presentation.dispatch_cutscene_animation(
+                    5, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
         }
         if (transform.position.y < -7.0f && !attachment_exit_gate_b) {
             g_voice_manager.play_voice_manager(

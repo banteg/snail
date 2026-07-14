@@ -147,7 +147,7 @@ void Snail::initialize_cutscene()
     if (cutscene.state != 0) {
         cutscene.update_cutscene();
     } else if (anim_manager.queue_count == 0 && owner_player->control_override_active == 0) {
-        dispatch_cutscene_animation(1, 0, -1);
+        dispatch_cutscene_animation(1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
     }
 
     owner_player->sub_hover.update_jet_particles();

@@ -639,7 +639,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "set_weapon_animation",
-        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
     ),
     (
         "initialize_anim_manager",
@@ -671,7 +671,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "dispatch_cutscene_animation",
-        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+        "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
     ),
     (
         "initialize_snail_skin",

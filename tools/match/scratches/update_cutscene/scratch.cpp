@@ -52,9 +52,12 @@ void CutScene::update_cutscene()
         progress = 0.0f;
         progress_step = 0.00833333377f;
         force_camera_update = 1;
-        presentation->dispatch_cutscene_animation(9, 1, -1);
-        presentation->dispatch_cutscene_animation(9, 0, -1);
-        presentation->dispatch_cutscene_animation(1, 0, -1);
+        presentation->dispatch_cutscene_animation(
+            9, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
+        presentation->dispatch_cutscene_animation(
+            9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
+        presentation->dispatch_cutscene_animation(
+            1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         // fall through
 
     case 2:
@@ -111,7 +114,8 @@ void CutScene::update_cutscene()
 
     case 10:
         camera_mode = -1;
-        presentation->dispatch_cutscene_animation(7, 1, -1);
+        presentation->dispatch_cutscene_animation(
+            7, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
         state = 11;
         progress = 0.0f;
         progress_step = 0.00833333377f;
@@ -172,9 +176,12 @@ void CutScene::update_cutscene()
     case 5: {
         state = 7;
         camera_mode = -1;
-        presentation->dispatch_cutscene_animation(8, 1, -1);
-        presentation->dispatch_cutscene_animation(9, 0, -1);
-        presentation->dispatch_cutscene_animation(9, 0, -1);
+        presentation->dispatch_cutscene_animation(
+            8, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
+        presentation->dispatch_cutscene_animation(
+            9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
+        presentation->dispatch_cutscene_animation(
+            9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
 
         state = 6;
         progress = 0.0f;
@@ -243,7 +250,8 @@ void CutScene::update_cutscene()
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         live_matrix.look_at_point(&presentation->transform.position);
         if (presentation->anim_manager.queue_count == 0)
-            presentation->dispatch_cutscene_animation(9, 0, -1);
+            presentation->dispatch_cutscene_animation(
+                9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         progress = progress + progress_step;
         break;
 

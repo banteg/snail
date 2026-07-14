@@ -59,26 +59,35 @@ void Snail::set_snail_weapon(int movement_flags)
     if (selected_state != state0) {
         switch (selected_state) {
         case 1:
-            weapon_channels[0].set_weapon_animation(1, 1, 8);
+            weapon_channels[0].set_weapon_animation(
+                1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             immediate = 0;
             break;
         case 2:
-            weapon_channels[0].set_weapon_animation(4, 1, 8);
+            weapon_channels[0].set_weapon_animation(
+                4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             immediate = 0;
             break;
         }
 
         switch (state0) {
         case 0:
-            weapon_channels[0].set_weapon_animation(-1, 0, -1);
+            weapon_channels[0].set_weapon_animation(
+                ANIM_MANAGER_HIDE_ANIMATION_ID,
+                0,
+                OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 1:
-            weapon_channels[0].set_weapon_animation(1, immediate, 4);
-            weapon_channels[0].set_weapon_animation(0, 0, -1);
+            weapon_channels[0].set_weapon_animation(
+                1, immediate, OBJECT_ANIMATION_MODE_ONCE);
+            weapon_channels[0].set_weapon_animation(
+                0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 2:
-            weapon_channels[0].set_weapon_animation(4, immediate, 4);
-            weapon_channels[0].set_weapon_animation(3, 0, -1);
+            weapon_channels[0].set_weapon_animation(
+                4, immediate, OBJECT_ANIMATION_MODE_ONCE);
+            weapon_channels[0].set_weapon_animation(
+                3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         }
 
@@ -93,26 +102,35 @@ void Snail::set_snail_weapon(int movement_flags)
 
     switch (selected_state) {
     case 1:
-        weapon_channels[1].set_weapon_animation(1, 1, 8);
+        weapon_channels[1].set_weapon_animation(
+            1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
         immediate = 0;
         break;
     case 2:
-        weapon_channels[1].set_weapon_animation(4, 1, 8);
+        weapon_channels[1].set_weapon_animation(
+            4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
         immediate = 0;
         break;
     }
 
     switch (state1) {
     case 0:
-        weapon_channels[1].set_weapon_animation(-1, 0, -1);
+        weapon_channels[1].set_weapon_animation(
+            ANIM_MANAGER_HIDE_ANIMATION_ID,
+            0,
+            OBJECT_ANIMATION_MODE_UNCHANGED);
         break;
     case 1:
-        weapon_channels[1].set_weapon_animation(1, immediate, 4);
-        weapon_channels[1].set_weapon_animation(0, 0, -1);
+        weapon_channels[1].set_weapon_animation(
+            1, immediate, OBJECT_ANIMATION_MODE_ONCE);
+        weapon_channels[1].set_weapon_animation(
+            0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         break;
     case 2:
-        weapon_channels[1].set_weapon_animation(4, immediate, 4);
-        weapon_channels[1].set_weapon_animation(3, 0, -1);
+        weapon_channels[1].set_weapon_animation(
+            4, immediate, OBJECT_ANIMATION_MODE_ONCE);
+        weapon_channels[1].set_weapon_animation(
+            3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         break;
     }
 
@@ -125,27 +143,36 @@ channel2:
     if (selected_state != state2) {
         switch (selected_state) {
         case 1:
-            weapon_channels[2].set_weapon_animation(1, 1, 8);
+            weapon_channels[2].set_weapon_animation(
+                1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             immediate = 0;
             break;
         case 3:
-            weapon_channels[2].set_weapon_animation(4, 1, 8);
+            weapon_channels[2].set_weapon_animation(
+                4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             immediate = 0;
         }
 
         switch (state2) {
         case 0:
-            weapon_channels[2].set_weapon_animation(-1, 0, -1);
+            weapon_channels[2].set_weapon_animation(
+                ANIM_MANAGER_HIDE_ANIMATION_ID,
+                0,
+                OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 1:
-            weapon_channels[2].set_weapon_animation(1, immediate, 4);
-            weapon_channels[2].set_weapon_animation(0, 0, -1);
+            weapon_channels[2].set_weapon_animation(
+                1, immediate, OBJECT_ANIMATION_MODE_ONCE);
+            weapon_channels[2].set_weapon_animation(
+                0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             weapon_channels[2].selected_state = state2;
             g_sound_effect_manager.play_sound_effect(25);
             return;
         case 3:
-            weapon_channels[2].set_weapon_animation(4, immediate, 4);
-            weapon_channels[2].set_weapon_animation(3, 0, -1);
+            weapon_channels[2].set_weapon_animation(
+                4, immediate, OBJECT_ANIMATION_MODE_ONCE);
+            weapon_channels[2].set_weapon_animation(
+                3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             weapon_channels[2].selected_state = state2;
             g_sound_effect_manager.play_sound_effect(25);
             return;

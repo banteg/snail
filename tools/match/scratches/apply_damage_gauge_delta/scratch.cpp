@@ -26,9 +26,11 @@ void DamageGuage::apply_damage_gauge_delta(float delta, char force)
                     hit_flash_progress = hit_flash_step;
                 if (!g_game->subgame.embedded_player()->control_override_active) {
                     g_game->subgame.embedded_player()->presentation
-                        .dispatch_cutscene_animation(6, 1, -1);
+                        .dispatch_cutscene_animation(
+                            6, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
                     g_game->subgame.embedded_player()->presentation
-                        .dispatch_cutscene_animation(1, 0, -1);
+                        .dispatch_cutscene_animation(
+                            1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
                 }
             } else {
                 hit_flash_progress = hit_flash_step;

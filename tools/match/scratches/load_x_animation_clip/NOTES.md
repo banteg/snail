@@ -78,6 +78,9 @@ The animation mode is an authored `int`, matching the Android/iOS
 `cRObject::RequestAnim(..., int)` interface. The callee narrows it only when it
 stores `ObjectAnimation::flags`. Keeping `mode_flags` as an `int` preserves this
 helper's exact code while avoiding a synthetic zero-extension at the handoff.
+The shared mode constants name the parser's proven loop `1`, ping-pong `2`, and
+once `4` bits; reverse-once `8` is established by the animation selectors and
+the exact manager updater rather than by a text tag in this parser.
 
 ## 2026-07-12 void loader ABI closure
 

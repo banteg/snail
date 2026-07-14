@@ -49,3 +49,9 @@ The sparse movement dispatch names
 `set_snail_weapon_movement_lookup_table` at `0x445c0c`. The remaining masked
 mismatch is the candidate's compiler-local jump-table symbol; all runtime
 function/global operands are clean.
+
+2026-07-14 animation-mode closure: each outgoing transition uses reverse-once,
+each incoming transition uses once, and its queued base/draw followup preserves
+the clip's current mode flags. Animation id `-1` is separately named as the
+manager's hide-channel queue sentinel. Focused code remains byte-identical at
+68.29%, 244/248, with the same 23 clean operands and one jump-table-only mask.

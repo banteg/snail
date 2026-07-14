@@ -24,7 +24,8 @@ void Snail::set_snail_jetpack(int state)
     bool immediate = true;
     if (selected_state != target_state) {
         if (selected_state == 4) {
-            jetpack_channel.set_weapon_animation(1, 1, 8);
+            jetpack_channel.set_weapon_animation(
+                1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             immediate = false;
             g_sound_effect_manager.play_sound_effect(26);
         }
@@ -32,11 +33,15 @@ void Snail::set_snail_jetpack(int state)
         if (target_state != 0) {
             if (target_state == 4) {
                 jetpack_channel.set_weapon_animation(1, immediate, target_state);
-                jetpack_channel.set_weapon_animation(0, 0, -1);
+                jetpack_channel.set_weapon_animation(
+                    0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
                 g_sound_effect_manager.play_sound_effect(16);
             }
         } else {
-            jetpack_channel.set_weapon_animation(-1, 0, -1);
+            jetpack_channel.set_weapon_animation(
+                ANIM_MANAGER_HIDE_ANIMATION_ID,
+                0,
+                OBJECT_ANIMATION_MODE_UNCHANGED);
         }
 
         jetpack_channel.selected_state = target_state;

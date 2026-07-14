@@ -72,3 +72,9 @@ the ten complete `RenderableBod` slots at `+0x14c`. The immediate path now
 follows each slot's inherited `object +0x24` into `Object::animation +0xbc`
 and installs that same borrowed `Object*` on the Snail. This is codegen-neutral
 at 94.55%, 55/55, with the same 48-instruction exact prefix.
+
+2026-07-14 animation-mode ownership: the third argument is the authored
+animation mode word, not an initial frame. The parser and exact updater prove
+loop `1`, ping-pong `2`, once `4`, and reverse-once `8`; caller sentinel `-1`
+preserves the selected clip's current flags. Queued animation id `-1` has a
+separate role: the exact manager updater consumes it by hiding the target model.

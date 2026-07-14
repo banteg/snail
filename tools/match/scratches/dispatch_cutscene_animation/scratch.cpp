@@ -7,15 +7,17 @@
 int Snail::dispatch_cutscene_animation(
     int animation_id,
     unsigned char immediate,
-    int initial_frame)
+    int mode_flags)
 {
     if (immediate != 0) {
         Object** slot_object = &cutscene_animation_slots[animation_id].body.object;
         anim_manager.active_animation = (*slot_object)->animation;
-        if (initial_frame != -1)
-            anim_manager.active_animation->flags = (unsigned short)initial_frame;
+        if (mode_flags != OBJECT_ANIMATION_MODE_UNCHANGED)
+            anim_manager.active_animation->flags = (unsigned short)mode_flags;
 
-        if ((anim_manager.active_animation->flags & 8) != 0) {
+        if ((anim_manager.active_animation->flags
+                & OBJECT_ANIMATION_MODE_ONCE_REVERSE)
+            != 0) {
             ObjectAnimation* active_animation = anim_manager.active_animation;
             float step;
             if (active_animation->progress_step < 0.0f)

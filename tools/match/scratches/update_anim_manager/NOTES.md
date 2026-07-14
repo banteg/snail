@@ -73,3 +73,17 @@ until a source shape recovers native's `edx` zero lane without extra saves.
 The frame delta now reads the root-owned `GameRoot::subgame.base_rate` field
 instead of spelling its absolute `root + 0x74648` address. The exact 134/134
 code shape and all 13 clean operands are unchanged.
+
+## 2026-07-14 animation modes and queue sentinels
+
+- The X animation parser maps authored `Mode:Loop`, `Mode:Pingpong`, and
+  `Mode:Once` tags to bits `1`, `2`, and `4`. This exact updater gives those
+  modes their loop, direction-reversal, and hold-at-end behavior.
+- Immediate animation selection also establishes bit `8` as reverse-once: it
+  starts from the far end and this updater stops it at zero.
+- The owned queue has ten physical entries, ending exactly at `queue_count`.
+  Native producers do not bounds-check it, so the recovered source does not
+  invent a capacity guard.
+- Queued animation id `-1` hides `target_model`; third-argument `-1` in the two
+  selection helpers instead preserves the chosen clip's current mode flags.
+  Separate constants keep those equal-valued but distinct contracts visible.

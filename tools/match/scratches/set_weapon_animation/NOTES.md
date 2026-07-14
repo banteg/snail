@@ -11,8 +11,10 @@ Recovered behavior:
   `+0x150 + animation_id * 0x80`; its `Object*` link is at slot `+0x24`
   (channel `+0x174` for slot zero);
 - the linked `Object::animation +0xbc` supplies the active `ObjectAnimation*`;
-- `initial_frame != -1` overwrites the active animation's low flag word;
-- object-animation flag `8` starts from the reverse end by storing
+- `mode_flags != OBJECT_ANIMATION_MODE_UNCHANGED` overwrites the active
+  animation's low flag word;
+- object-animation mode `OBJECT_ANIMATION_MODE_ONCE_REVERSE` starts from the
+  reverse end by storing
   `progress_step = -abs(active_animation->progress_step)` and
   `progress = 1 + step`;
 - otherwise it starts from `progress = 0` and
@@ -82,3 +84,10 @@ inherits the complete `RenderableBod` prefix. Its five slot bodies remain
 owned children and its first derived field remains the render-manager backlink
 at `+0x78`. Focused output is byte-identical at the honest 94.55%, 55/55
 instructions, prefix 48, with three clean operands.
+
+2026-07-14 animation-mode ownership: the X animation parser, this setter, and
+the exact manager updater jointly establish flags `1`, `2`, `4`, and `8` as
+loop, ping-pong, once, and reverse-once modes. The third parameter is therefore
+named `mode_flags`, while `-1` is retained as the caller-side preserve-current
+sentinel and is never stored. This is distinct from queued animation id `-1`,
+which hides the target model when consumed.
