@@ -4,6 +4,8 @@
 // pickups, the speedup and jetpack singles, and the ring-effect ladder.
 // Shared idiom: delta z pre-gate < threshold, then normalize_vector distance.
 
+#include <stddef.h>
+
 #include "damage_guage.h"
 #include "garbage_hazard_slot.h"
 #include "sub_hover.h"
@@ -31,6 +33,29 @@ extern char g_parcel_format[];
 
 void Player::handle_subgoldy_collisions()
 {
+    enum {
+        SALT_POOL_FROM_SUBGAME =
+            offsetof(SubgameRuntime, salt_hazards) + offsetof(SaltManager, slots),
+        SALT_STATE_FROM_SUBGAME = SALT_POOL_FROM_SUBGAME + offsetof(Salt, state),
+        SALT_POSITION_FROM_SUBGAME =
+            SALT_POOL_FROM_SUBGAME
+            + offsetof(Salt, transform)
+            + offsetof(TransformMatrix, position),
+        SALT_COLLISION_ARMED_FROM_SUBGAME =
+            SALT_POOL_FROM_SUBGAME
+            + offsetof(Salt, velocity)
+            + offsetof(Vector3, z),
+        SUB_LAZER_POOL_FROM_SUBGAME =
+            offsetof(SubgameRuntime, sub_lazers)
+            + offsetof(SubLazerManager, slots),
+        SUB_LAZER_STATE_FROM_SUBGAME =
+            SUB_LAZER_POOL_FROM_SUBGAME + offsetof(SubLazer, state),
+        SUB_LAZER_POSITION_FROM_SUBGAME =
+            SUB_LAZER_POOL_FROM_SUBGAME
+            + offsetof(SubLazer, transform)
+            + offsetof(TransformMatrix, position)
+    };
+
     Vec3 probe_b;      // v67
     Vec3 probe_c;      // v68
     Vec3 delta;        // v69
@@ -45,18 +70,25 @@ void Player::handle_subgoldy_collisions()
         if ((movement_flags & 0x80) == 0) {
             for (int i = 0;
                  i < (int)sizeof(game->salt_hazards.slots);
-                 i += (int)sizeof(Salt)) {
+                i += (int)sizeof(Salt)) {
                 char* slot = (char*)game + i;
-                if (*(int*)(slot + 0x357940) == 1
-                    && *(unsigned char*)(slot + 0x357954) == 1) {
-                    delta.x = *(float*)(slot + 0x357928) - cached_camera_target_world.x;
-                    delta.y = *(float*)(slot + 0x35792c) - cached_camera_target_world.y;
-                    delta.z = *(float*)(slot + 0x357930) - cached_camera_target_world.z;
+                if (*(int*)(slot + SALT_STATE_FROM_SUBGAME) == 1
+                    && *(unsigned char*)(slot + SALT_COLLISION_ARMED_FROM_SUBGAME) == 1) {
+                    delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME
+                                       + offsetof(Vector3, x))
+                            - cached_camera_target_world.x;
+                    delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME
+                                       + offsetof(Vector3, y))
+                            - cached_camera_target_world.y;
+                    delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME
+                                       + offsetof(Vector3, z))
+                            - cached_camera_target_world.z;
                     probe_salt = delta;
                     if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {
                         if (damage_retrigger_timer == 0.0f)
                             damage_retrigger_timer = damage_retrigger_step;
-                        *(unsigned char*)((char*)game + i + 0x357954) = 0;
+                        *(unsigned char*)((char*)game + i
+                            + SALT_COLLISION_ARMED_FROM_SUBGAME) = 0;
                         damage_gauge.apply_damage_gauge_delta(0.15000001f, 0);
                     }
                 }
@@ -66,13 +98,19 @@ void Player::handle_subgoldy_collisions()
              j < (int)sizeof(game->sub_lazers.slots);
              j += (int)sizeof(SubLazer)) {
             char* slot = (char*)game + j;
-            if (*(int*)(slot + 0x356b80) == 1) {
-                delta.x = *(float*)(slot + 0x356b68) - cached_camera_target_world.x;
-                delta.y = *(float*)(slot + 0x356b6c) - cached_camera_target_world.y;
-                delta.z = *(float*)(slot + 0x356b70) - cached_camera_target_world.z;
+            if (*(int*)(slot + SUB_LAZER_STATE_FROM_SUBGAME) == 1) {
+                delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME
+                                   + offsetof(Vector3, x))
+                        - cached_camera_target_world.x;
+                delta.y = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME
+                                   + offsetof(Vector3, y))
+                        - cached_camera_target_world.y;
+                delta.z = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME
+                                   + offsetof(Vector3, z))
+                        - cached_camera_target_world.z;
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {
-                    *(int*)((char*)game + j + 0x356b80) = 2;
+                    *(int*)((char*)game + j + SUB_LAZER_STATE_FROM_SUBGAME) = 2;
                     damage_gauge.apply_damage_gauge_delta(0.02f, 0);
                 }
             }

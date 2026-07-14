@@ -473,3 +473,21 @@ VC6's long-lived registers in this 673-instruction function. Replacing the
 duplicated decimal extents and strides with compile-time owner facts is
 codegen-neutral: focused output remains 53.93%, 651/673 instructions, with all
 86 operands clean.
+
+## 2026-07-14 derived salt and sub-lazer lanes
+
+The two remaining absolute fixed-pool address families are now compile-time
+derivations from their recovered owners while preserving the native byte
+cursors. Salt state, inherited render position, and collision-armed byte come
+from `SubgameRuntime::salt_hazards`, `SaltManager::slots`, `Salt::state`,
+`Salt::transform.position`, and the proven `Salt::velocity.z` overlay. The
+sub-lazer state and inherited render position similarly come from
+`SubgameRuntime::sub_lazers`, `SubLazerManager::slots`, `SubLazer::state`, and
+`SubLazer::transform.position`. This removes the raw `0x3579xx` and `0x356bxx`
+lane literals without pretending that a typed record iterator matches the
+original loop source shape.
+
+Focused output remains 53.93% (651/673 instructions, prefix 8, 86 clean
+operands). Saved pre-change and rebuilt normalized candidate listings have the
+same SHA-256,
+`e1e032120cb1016572a143f75cd82849fe408b46dab7c7d9818668a012b67db2`.
