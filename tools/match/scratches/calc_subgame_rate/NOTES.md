@@ -30,3 +30,10 @@ Recovered relationships:
 `SubgameRuntime +0x3bb764` proves that all five former contextual rate aliases
 belong to the embedded actor. Replacing the sparse runtime overlay with direct
 `player` fields preserves the proof-grade 100.00% match and all 16 operands.
+
+## 2026-07-14 damage lifecycle ownership
+
+The rate envelope now consumes the typed `DamageGuageState` and adds its
+mode-dependent bonus only while the controller is
+`DAMAGE_GUAGE_STATE_DRAINING`. Matching remains exact at 84/84 instructions
+with all 16 operands clean.

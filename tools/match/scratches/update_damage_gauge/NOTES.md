@@ -111,3 +111,12 @@ object. This maps mobile `AI()` here, correcting the former false association
 with the separate Windows jetpack controller at player +0x2750. The shared
 owner now keeps the shipped `Guage` spelling. Focused Wibo remains an honest
 94.03%, 268/268 instructions, with 65 clean masked operands.
+
+## 2026-07-14 damage lifecycle ownership
+
+The controller now names its complete graph as `MONITORING ->
+WARNING_TRANSITION -> DRAINING -> MONITORING`. Monitoring waits for a full
+gauge, the transition arm owns warning startup and its six-tick ramp, and the
+draining arm owns skin refresh, forced decay, and warning teardown. Focused
+output remains byte-stable at 94.03%, 268/268 instructions, prefix 122/268,
+with all 65 operands clean.

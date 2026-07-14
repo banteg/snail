@@ -816,6 +816,39 @@ def test_warning_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_damage_guage_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/damage_guage.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"DamageGuageState",' in path_sync
+    assert '("0x00", "state", "DamageGuageState")' in path_sync
+    for header in (analysis_header, matcher_header):
+        assert "DAMAGE_GUAGE_STATE_MONITORING = 0" in header
+        assert "DAMAGE_GUAGE_STATE_WARNING_TRANSITION = 1" in header
+        assert "DAMAGE_GUAGE_STATE_DRAINING = 2" in header
+
+    consumers = {
+        "initialize_damage_gauge": "DAMAGE_GUAGE_STATE_MONITORING",
+        "update_damage_gauge": "DAMAGE_GUAGE_STATE_WARNING_TRANSITION",
+        "apply_damage_gauge_delta": "DAMAGE_GUAGE_STATE_DRAINING",
+        "calc_subgame_rate": "DAMAGE_GUAGE_STATE_DRAINING",
+        "update_subgoldy": "DAMAGE_GUAGE_STATE_DRAINING",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

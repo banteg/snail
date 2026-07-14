@@ -88,3 +88,11 @@ fallback as `if (!play damage) { play ouch; animate; } else { seed timer; }`
 then recovers the native failure-first layout without changing behavior.
 Focused Wibo improves to 78.92%, 91/94 instructions, with all 20 masked
 operands clean.
+
+## 2026-07-14 damage lifecycle ownership
+
+The special input gate now explicitly belongs to
+`DAMAGE_GUAGE_STATE_DRAINING`: unforced positive deltas are rejected, while
+negative deltas remain conditional on the trampoline latch. Focused output is
+byte-stable at 78.92%, 91/94 instructions, prefix 0, with all 20 operands
+clean.

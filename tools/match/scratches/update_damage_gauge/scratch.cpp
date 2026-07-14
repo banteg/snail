@@ -40,13 +40,13 @@ void DamageGuage::update_damage_gauge()
         }
 
         switch (state) {
-        case 0: {
+        case DAMAGE_GUAGE_STATE_MONITORING: {
             if (*(int*)&fill == 0x3f800000) {
                 game = g_game;
                 if (game->subgame.embedded_player()->attachment_exit_pending
                     || game->subgame.embedded_player()->completion_handoff_active)
                     goto render;
-                state = 1;
+                state = DAMAGE_GUAGE_STATE_WARNING_TRANSITION;
                 warning_transition_progress = 0.0f;
                 warning_transition_step = 0.16666667f;
                 g_game->subgame.embedded_player()->warning.start_warning();
@@ -54,7 +54,7 @@ void DamageGuage::update_damage_gauge()
             goto render_after_refresh;
         }
 
-        case 1: {
+        case DAMAGE_GUAGE_STATE_WARNING_TRANSITION: {
             if (g_game->subgame.embedded_player()->completion_handoff_active)
                 warning_transition_progress = 1.0f;
             float next_warning = warning_transition_step + warning_transition_progress;
@@ -63,14 +63,14 @@ void DamageGuage::update_damage_gauge()
                 game = g_game;
                 if (*(int*)&game->subgame.embedded_player()->transform.position.y != 0x3efae148)
                     goto render;
-                state = 2;
+                state = DAMAGE_GUAGE_STATE_DRAINING;
                 g_voice_manager.play_voice_manager(
                     VOICE_SET_POSTAL, VOICE_PLAY_IF_IDLE, -1);
             }
             goto render_after_refresh;
         }
 
-        case 2: {
+        case DAMAGE_GUAGE_STATE_DRAINING: {
             GameRoot* skin_game = g_game;
             skin_game->subgame.embedded_player()
                 ->presentation.snail_skin.change_snail_skin(
@@ -87,7 +87,7 @@ void DamageGuage::update_damage_gauge()
                 || game->subgame.embedded_player()->completion_handoff_timer > 0.0f
                 || game->subgame.embedded_player()->resurrect_progress > 0.0f
                 || game->subgame.embedded_player()->presentation.cutscene.state) {
-                state = 0;
+                state = DAMAGE_GUAGE_STATE_MONITORING;
                 g_game->subgame.embedded_player()->warning.stop_warning();
                 g_game->subgame.embedded_player()->warning.stop_warning_sample();
                 goto render_after_refresh;

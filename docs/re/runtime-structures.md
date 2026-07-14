@@ -341,11 +341,14 @@ Important caveat:
 
 ## Damage Gauge Controller
 
-The inline controller at `player + 0x3c4` is now typed as `DamageGaugeController`.
+The inline exact `0x2c`-byte controller at `player + 0x3c4` is the authored
+`cRDamageGuage` owner; the shipped class and texture names preserve that
+spelling.
 
 High-confidence current fields:
 
-- `+0x00`: `state`
+- `+0x00`: `state`, a complete `DamageGuageState` graph:
+  `MONITORING (0) -> WARNING_TRANSITION (1) -> DRAINING (2) -> MONITORING`
 - `+0x04`: `pulse_progress`
 - `+0x08`: `pulse_step`
 - `+0x0c`: unknown byte gate
@@ -368,17 +371,21 @@ Current practical read:
   - `start_warning` seeds the fading phase at `1.0`, forcing the next update to
     wrap into opaque and play sample 50; opaque then advances back into the
     fading/zero-hold half-cycle until `stop_warning` returns it to inactive
-- `apply_damage_gauge_delta` ignores unforced positive damage while `state == 2`;
-  the state-2 auto-drain path is the forced caller
+- `apply_damage_gauge_delta` ignores unforced positive damage while
+  `state == DAMAGE_GUAGE_STATE_DRAINING`; the draining auto-decay path is the
+  forced caller
 - `apply_damage_gauge_delta` also ignores all unforced deltas while the sign bit
-  of `Game+0x4300b4` is set, and ignores unforced negative state-2 deltas while
+  of `Game+0x4300b4` is set, and ignores unforced negative draining deltas while
   `Game+0x42ff60 == 1`
 - `update_damage_gauge` reads several game-global gates:
   - `Game+0x74621` is the global `pause_gate` consumed by controller math and `update_warning`
-  - `Game+0x430199` and `Game+0x4301bc` block fresh state-0 full-gauge warning startup
-  - `Game+0x4301bc` also fast-forwards state 1 and applies an extra unforced `-0.0066666668` drain in state 2
-  - `Game+0x42fde8 == 0.49f` gates state-1 entry into state 2 and the fill-zero state-2 exit
-  - `Game+0x4301c0 > 0`, `Game+0x42fe08 > 0`, or `Game+0x434064 != 0` also exit state 2
+  - `Game+0x430199` and `Game+0x4301bc` block fresh full-gauge startup from
+    `MONITORING`
+  - `Game+0x4301bc` also fast-forwards `WARNING_TRANSITION` and applies an
+    extra unforced `-0.0066666668` drain while `DRAINING`
+  - `Game+0x42fde8 == 0.49f` gates entry into `DRAINING` and its fill-zero exit
+  - `Game+0x4301c0 > 0`, `Game+0x42fe08 > 0`, or `Game+0x434064 != 0` also
+    return `DRAINING` to `MONITORING`
 - the currently recovered deltas line up with collision branches:
   - ambient hazard path `+0.02`
   - salt contact `+0.15`

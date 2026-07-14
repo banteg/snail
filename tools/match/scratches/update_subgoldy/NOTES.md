@@ -519,3 +519,12 @@ active, and only flushes a non-`INACTIVE` controller after the fade completes.
 This closes the consumer side of the exact `cRCompletion` state graph. Focused
 output remains byte-identical at 74.20%, 2,075/2,087 instructions, prefix
 12/2,087, 290 clean operands, and the same bounded jump-table mismatch.
+
+## 2026-07-14 damage lifecycle ownership
+
+The player gate that suppresses the ordinary movement branch now tests
+`DAMAGE_GUAGE_STATE_DRAINING` rather than raw state 2. This is one of only two
+direct non-member state consumers recovered by Binary Ninja field xrefs; the
+other is `calc_subgame_rate`. Focused output remains byte-identical at 74.20%,
+2,075/2,087 instructions, prefix 12/2,087, 290 clean operands, and the same
+bounded jump-table mismatch.

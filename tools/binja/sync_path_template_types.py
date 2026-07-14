@@ -233,6 +233,7 @@ REQUIRED_HEADER_STRUCTS = (
     "TrackAttachmentRuntimeRow",
     "Path",
     "PathPair",
+    "DamageGuageState",
     "DamageGuage",
     "ProgressBar",
     "WarningState",
@@ -451,6 +452,10 @@ JETPACK_FIELD_UPDATES = (
 
 WARNING_FIELD_UPDATES = (
     ("0x00", "state", "WarningState"),
+)
+
+DAMAGE_GUAGE_FIELD_UPDATES = (
+    ("0x00", "state", "DamageGuageState"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -1222,6 +1227,7 @@ def main() -> int:
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),
+                ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),

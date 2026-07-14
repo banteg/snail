@@ -424,7 +424,7 @@ steering_stored:
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 16
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 18
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 19
-                || damage_gauge.state == 2
+                || damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING
                        && (slide_cell = game->get_track_grid_cell_at_world_position(p_position),
                            slide_cell->is_sub_loc_floor())) {
                 float rate = game->subgame_rate;

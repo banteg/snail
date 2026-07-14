@@ -22,8 +22,8 @@ void SubgameRuntime::calc_subgame_rate()
             subgame_rate = completion_fraction * 0.200000003f + base_rate;
         }
 
-        int damage_state = player.damage_gauge.state;
-        if (damage_state == 2) {
+        DamageGuageState damage_state = player.damage_gauge.state;
+        if (damage_state == DAMAGE_GUAGE_STATE_DRAINING) {
             float bonus;
             if (mode == 1) {
                 bonus = 0.400000006f;

@@ -1115,9 +1115,15 @@ typedef struct Cameraman {
     float smoothed_attachment_lift_envelope;
 } Cameraman;
 
+typedef enum DamageGuageState {
+    DAMAGE_GUAGE_STATE_MONITORING = 0,
+    DAMAGE_GUAGE_STATE_WARNING_TRANSITION = 1,
+    DAMAGE_GUAGE_STATE_DRAINING = 2,
+} DamageGuageState;
+
 /* Authored cRDamageGuage, exact 0x2c contact-damage owner. */
 typedef struct DamageGuage {
-    int32_t state;
+    DamageGuageState state;
     float pulse_progress;
     float pulse_step;
     uint8_t unresolved_byte_0c;

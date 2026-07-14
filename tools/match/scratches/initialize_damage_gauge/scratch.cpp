@@ -8,7 +8,7 @@ void DamageGuage::initialize_damage_gauge()
     fill = 0.0f;
     display_fill = 0.0f;
     skin_hold_ticks = 0;
-    state = 0;
+    state = DAMAGE_GUAGE_STATE_MONITORING;
     warning_transition_progress = 0.0f;
     unresolved_byte_0c = 0;
     pulse_progress = 0.0f;

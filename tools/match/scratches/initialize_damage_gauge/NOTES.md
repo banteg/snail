@@ -11,3 +11,9 @@ player +0x2750.
 2026-07-11 focused Wibo verifies an exact 100.00% match, 12/12 instructions.
 The shared source and analysis types intentionally preserve the shipped
 `Guage` spelling.
+
+## 2026-07-14 damage lifecycle ownership
+
+Initialization now seeds `DAMAGE_GUAGE_STATE_MONITORING`. Windows field xrefs
+and Android `cRDamageGuage::{Init,AI,Take}` agree on the complete three-state
+graph. Matching remains exact at 12/12 instructions.
