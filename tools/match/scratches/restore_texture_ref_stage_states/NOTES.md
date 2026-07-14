@@ -9,6 +9,7 @@ Direct3DRenderer member called only after a device reset. It walks the owned
 for both U and V. The native function deliberately binds through the member's
 device pointer but writes stage state through the shared device alias.
 
-Its narrow reset-only class view inherits the full shared renderer layout, so
-the native `ECX` receiver and `device` ownership stay explicit without adding a
-method declaration to every scratch that includes the broad renderer header.
+2026-07-14 ownership pass: this is now declared directly on the canonical
+`Direct3DRenderer` owner. The former reset-only derived class added no layout
+or behavior and merely duplicated the real receiver. The consolidated method
+remains exact at 110/110 instructions with all 15 masked operands clean.

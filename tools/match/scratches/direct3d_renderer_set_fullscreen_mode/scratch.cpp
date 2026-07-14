@@ -1,6 +1,6 @@
 // Direct3DRenderer::direct3d_renderer_set_fullscreen_mode @ 0x414270
 
-#include "direct3d_renderer_reset_view.h"
+#include "direct3d_renderer.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) BOOL __stdcall GetWindowRect(HWND window, Rect* rect);
@@ -16,7 +16,7 @@ extern int debug_report_stub(char* message); // @ 0x449c00
 extern float g_authored_view_width;  // data_4df85c
 extern float g_authored_view_height; // data_4b7760
 
-void Direct3DRendererResetView::direct3d_renderer_set_fullscreen_mode(int enabled)
+void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(int enabled)
 {
     if (device_initialized == 0) {
         return;
@@ -37,8 +37,7 @@ void Direct3DRendererResetView::direct3d_renderer_set_fullscreen_mode(int enable
     }
 
     debug_report_stub("Full Screen Reset\n");
-    Direct3DDevice8ResetView* reset_device = (Direct3DDevice8ResetView*)device;
-    reset_device->vtbl->Reset(reset_device, &present);
+    device->vtbl->Reset(device, &present);
     restore_texture_ref_stage_states();
     reset_direct3d_render_state();
 

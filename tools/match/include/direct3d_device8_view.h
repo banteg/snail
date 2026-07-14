@@ -5,6 +5,7 @@
 class Direct3DTexture8;
 struct Direct3DDevice8;
 struct Direct3DVertexBuffer8;
+struct D3DPresentParameters;
 struct ObjectIndexBufferResource;
 struct TransformMatrix;
 
@@ -35,7 +36,9 @@ typedef char Direct3DTexture8_must_be_0x04[
 struct Direct3DDevice8Vtbl {
     char unknown_000[0x08];
     int (__stdcall* Release)(Direct3DDevice8* self);
-    char unknown_00c[0x3c - 0x0c];
+    char unknown_00c[0x38 - 0x0c];
+    int (__stdcall* Reset)(
+        Direct3DDevice8* self, D3DPresentParameters* parameters);
     int (__stdcall* Present)(Direct3DDevice8* self, void* source_rect,
         void* dest_rect, int dest_window_override, void* dirty_region);
     char unknown_040[0x5c - 0x40];

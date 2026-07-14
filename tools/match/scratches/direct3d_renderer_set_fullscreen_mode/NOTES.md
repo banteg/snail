@@ -14,10 +14,9 @@ view width and height.
 The function is `void`: the early path only leaves the tested initialized byte
 in `AL`, and callers ignore the final Win32 call's live result.
 
-The matching source uses a narrow derived ABI view for the two reset-only
-member declarations. This keeps their real `ECX` receiver and inherited
-renderer layout while avoiding VC6 local-label churn in unrelated scratches
-that include the broad renderer header.
-
-The `IDirect3DDevice8::Reset` slot is likewise expressed through a reset-only
-vtable view, keeping the shared device table stable for unrelated exact code.
+2026-07-14 ownership pass: the reset path now uses the canonical
+`Direct3DRenderer` owner directly. `IDirect3DDevice8::Reset` is likewise the
+real shared device-vtable slot at `+0x38`, immediately before `Present`; the
+former reset-only derived renderer and partial device-vtable shells duplicated
+those owners. The consolidated spelling remains exact at 84/84 instructions
+with all 29 masked operands clean.

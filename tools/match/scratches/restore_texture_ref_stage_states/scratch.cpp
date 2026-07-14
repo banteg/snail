@@ -1,9 +1,9 @@
 // Direct3DRenderer::restore_texture_ref_stage_states @ 0x4143c0
 
-#include "direct3d_renderer_reset_view.h"
+#include "direct3d_renderer.h"
 #include "texture_registry.h"
 
-void Direct3DRendererResetView::restore_texture_ref_stage_states()
+void Direct3DRenderer::restore_texture_ref_stage_states()
 {
     int index = 0;
     if (g_texture_refs.count <= 0) {

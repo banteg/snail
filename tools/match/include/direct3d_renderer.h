@@ -67,6 +67,7 @@ public:
     void initialize_d3d8_device(char use_present_interval_one); // @ 0x411730
     void reset_direct3d_render_state(); // @ 0x4118b0
     void direct3d_renderer_set_fullscreen_mode(int enabled); // @ 0x414270
+    void restore_texture_ref_stage_states(); // @ 0x4143c0
     void query_direct3d_device_caps(); // @ 0x414600
 
     int vertex_buffer_count; // +0x0000
