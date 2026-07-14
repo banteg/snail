@@ -129,7 +129,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     int trampoline_counter = 0;
     char first_or_last_row = 0;
     int row_event_owner = 0;
-    player.follow_flag_3c = 0;
+    player.follow_state.flag_3c = 0;
 
     char* cell_payload_cursor = base + 0x3bfb0c;
     int* row_cursor = (int*)(base + 0x5ccb5c);

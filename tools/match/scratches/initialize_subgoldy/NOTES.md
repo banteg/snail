@@ -131,7 +131,7 @@ Latest focused result:
   of two input-controller views from the root game object.
 - The self-links at `Nuke::owner_player` and
   authored `Snail::owner_player`, plus the embedded
-  `follow_active` lane, are now expressed through shared `Player` fields in the
+  `follow_state.active` lane, are now expressed through shared `Player` fields in the
   scratch instead of raw offsets. Focused Wibo is byte-shape neutral at the
   retained `95.86%`, `276/279`, `27 ok / 0` result.
 - `Player +0xa0` is now the exact 0xac-byte embedded `ClickStart`; calling its
@@ -195,3 +195,8 @@ binds directly to `GameRoot::subgame`. The two control-source branches retain
 their byte-shaped root aliases because that source shape is required for the
 exact native register schedule. Focused Windows remains exact at 279/279 with
 all 27 operands clean.
+
+2026-07-14 follow-state ownership: `Player +0x384` now embeds the exact
+0x40-byte `FollowState` / `cRPathFollowGoldy` owner instead of exposing twelve
+flattened aliases. Initialization through `follow_state.active` remains exact
+at 279/279 instructions with all 27 operands clean.

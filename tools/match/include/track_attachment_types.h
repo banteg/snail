@@ -362,7 +362,7 @@ public:
     float vertical_offset;       // +0x14
     // slot order pinned by the update_track_attachment_follow_state scratch;
     // orientation_b (+0x1c) = player+0x3a0, cross-confirmed by
-    // begin_post_follow_carryover's follow_orientation_b read.
+    // begin_post_follow_carryover's embedded-state read.
     float orientation_a;         // +0x18 (zeroed by the swept entry)
     float orientation_b;         // +0x1c (zeroed by the swept entry)
     // Aggregate assignment from the interpolated transform's up basis is

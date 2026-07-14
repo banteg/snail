@@ -147,8 +147,8 @@ Residuals:
 - 2026-06-16 Player consolidation: `heading_roll`, `nuke_effect_progress`, and
   `interaction_max_z` now come from shared `player.h`. The final `+0x384` /
   `+0x3a0` roll-add path is the same embedded follow-state active/orientation
-  lane used by camera and attachment carryover, so it is intentionally spelled
-  `follow_active` / `follow_orientation_b`, not garbage-specific field names.
+  lane used by camera and attachment carryover, now spelled through the
+  canonical `follow_state.active` / `follow_state.orientation_b` owner.
   The focused score and masked audit remain 80.00%, `19 ok, 1 mismatch`.
 - 2026-06-16 contact-target consolidation: this scratch now uses the shared
   `EnemyManager` from `contact_target.h`. `GarbageHazardSlot` carries

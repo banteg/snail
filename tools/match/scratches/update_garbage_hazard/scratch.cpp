@@ -129,8 +129,8 @@ SubGarbage* SubGarbage::update_garbage_hazard()
 
         sprite->facing_angle = player->heading_roll + attachment_facing_angle;
         Player* roll_result = player;
-        if (roll_result->follow_active == 1)
-            sprite->facing_angle = roll_result->follow_orientation_b + sprite->facing_angle;
+        if (roll_result->follow_state.active == 1)
+            sprite->facing_angle = roll_result->follow_state.orientation_b + sprite->facing_angle;
         return (SubGarbage*)roll_result;
     }
 function_return:

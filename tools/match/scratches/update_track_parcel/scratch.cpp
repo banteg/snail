@@ -51,9 +51,9 @@ void Parcel::update_track_parcel()
             sine(bob_phase * 6.2831855f) * 0.30000001f + sprite->position.y;
 
         sprite->facing_angle = owner_player->heading_roll;
-        if (owner_player->follow_active == 1)
+        if (owner_player->follow_state.active == 1)
             sprite->facing_angle =
-                owner_player->follow_orientation_b + sprite->facing_angle;
+                owner_player->follow_state.orientation_b + sprite->facing_angle;
         return;
     }
 

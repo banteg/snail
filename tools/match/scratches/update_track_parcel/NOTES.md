@@ -10,8 +10,8 @@ Recovered relationships:
 - State `1` is the live bobbing pickup state. It culls behind
   `Player::interaction_max_z` at `subgame+0x3be0e4`, mirrors inherited
   `BodBase::position` into the sprite, and copies `Player::heading_roll` from
-  the borrowed `owner_player`, optionally adding `follow_orientation_b` when
-  `follow_active` is set.
+  the borrowed `owner_player`, optionally adding
+  `follow_state.orientation_b` when `follow_state.active` is set.
 - State `4` starts the collected-parcel home arc: it applies the final bob lift,
   computes distance from `subgame+0x3bf91c`, stores the normalized
   `travel_dir`, then falls into state `5`.
@@ -68,3 +68,9 @@ instruction count, a 237-instruction prefix, all 34 operands clean, and no
 masked mismatch. The sole residual is an equivalent scheduling swap between
 copying the vector temporary's z lane and multiplying the sprite scale; no
 barrier or dummy data flow is retained to force it.
+
+## 2026-07-14 follow-state ownership
+
+The borrowed player now exposes the authored embedded `FollowState` owner at
++0x384. The active/orientation reads remain codegen-neutral at 99.68%,
+312/312 instructions, prefix 237, and 34 clean operands.

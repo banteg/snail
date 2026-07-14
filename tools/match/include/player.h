@@ -24,6 +24,7 @@
 #include "sub_loc_fwd.h"
 #include "game_time.h"
 #include "tip_manager.h"
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 #include "warning.h"
@@ -242,24 +243,9 @@ public:
     float nuke_effect_progress_step;        // +0x378
     float last_ring_spawn_z;                // +0x37c, initialized here and maintained by update_subgame
     int player_slot;                       // +0x380
-    // +0x384..+0x3c3 is the embedded FollowState prefix (track_attachment.h):
-    // 0x42fd7c + 0x384 = 0x430100, the "shared FollowState global".
-    // Keep the fields flattened here so adjacent Player lanes remain under the
-    // Player owner instead of a child view reaching past its 0x40-byte extent.
-    unsigned char follow_active;           // +0x384
-    char unknown_385[3];
-    Path* follow_template; // +0x388
-    TrackRowCell* follow_source_cell;      // +0x38c
-    int follow_sample_index;               // +0x390
-    float follow_progress;                 // +0x394
-    float follow_vertical_offset;          // +0x398
-    float follow_orientation_a;            // +0x39c
-    float follow_orientation_b;            // +0x3a0
-    Vector3 follow_orientation_up;          // +0x3a4, interpolated transform basis_up
-    Vector3 follow_output_position;        // +0x3b0
-    Player* follow_player;                 // +0x3bc
-    unsigned char follow_flag_3c;          // +0x3c0
-    char unknown_3c1[0x3c4 - 0x3c1];
+    // Authored cRPathFollowGoldy owner. Its absolute address in the embedded
+    // player is 0x430100, previously mistaken for an independent global.
+    FollowState follow_state;              // +0x384
     DamageGuage damage_gauge;     // +0x3c4
     ProgressBar progress_bar;               // +0x3f0, empty authored cRProgressBar
     char unknown_3f1[0x3f4 - 0x3f1];
@@ -279,9 +265,9 @@ public:
     float attachment_exit_anchor_z;        // +0x424
     char unknown_428[0x42c - 0x428];
     // carryover pair written by begin_post_follow_carryover (matched 100%):
-    // +0x42c <- follow_orientation_b, consumed by update_cameraman as the
+    // +0x42c <- follow_state.orientation_b, consumed by update_cameraman as the
     // exit roll while attachment_exit_pending is set.
-    // +0x430 <- follow_template->installed_heading_bits (consumer still open)
+    // +0x430 <- follow_state.template_record->installed_heading_bits
     float post_follow_exit_roll;           // +0x42c (orientation-b carryover)
     int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_b")
     float attachment_exit_progress;        // +0x434

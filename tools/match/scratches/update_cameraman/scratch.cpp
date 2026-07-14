@@ -45,8 +45,8 @@ void Cameraman::update_cameraman()
     Player* lift_player = player;
     Path* template_record;
     int kind;
-    if (lift_player->follow_active == 1
-        && ((template_record = lift_player->follow_template,
+    if (lift_player->follow_state.active == 1
+        && ((template_record = lift_player->follow_state.template_record,
              kind = template_record->kind,
              kind == 0x10)
             || kind == 8
@@ -56,7 +56,7 @@ void Cameraman::update_cameraman()
             || kind == 0x2d
             || kind == 0x24
             || kind == 0xe)) {
-        float phase = (lift_player->position.z - lift_player->follow_source_cell->anchor_position.z)
+        float phase = (lift_player->position.z - lift_player->follow_state.source_cell->anchor_position.z)
             / template_record->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;
@@ -102,11 +102,11 @@ void Cameraman::update_cameraman()
     steer_roll = steer_roll * 0.017449999f;
     desired_matrix.rotate_matrix_world_z(lean_roll + steer_roll * 0.17f);
 
-    if (player->follow_active == 1) {
+    if (player->follow_state.active == 1) {
         set_matrix_identity(&transform);
-        transform.rotate_matrix_world_z(player->follow_orientation_a);
+        transform.rotate_matrix_world_z(player->follow_state.orientation_a);
         desired_matrix.multiply_matrix_in_place(&transform);
-        desired_matrix.rotate_matrix_world_z(player->follow_orientation_b);
+        desired_matrix.rotate_matrix_world_z(player->follow_state.orientation_b);
     }
     Player* exit_player = player;
     if (exit_player->attachment_exit_pending)
@@ -116,8 +116,8 @@ void Cameraman::update_cameraman()
     Player* worm_player = player;
     Path* worm_template;
     float desired_fov;
-    if (worm_player->follow_active == 1 && (worm_template = worm_player->follow_template, worm_template->kind == 0x18)) {
-        float phase = (worm_player->position.z - worm_player->follow_source_cell->anchor_position.z)
+    if (worm_player->follow_state.active == 1 && (worm_template = worm_player->follow_state.template_record, worm_template->kind == 0x18)) {
+        float phase = (worm_player->position.z - worm_player->follow_state.source_cell->anchor_position.z)
             / worm_template->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;

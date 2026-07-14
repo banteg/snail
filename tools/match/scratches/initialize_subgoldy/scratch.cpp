@@ -201,7 +201,7 @@ void Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x2738) = zero;
     ((DamageGuage*)(self + 0x3c4))->initialize_damage_gauge();
     progress_bar.noop_runtime_ai();
-    this->follow_active = (unsigned char)zero;
+    this->follow_state.active = (unsigned char)zero;
 
     char* transform = self + 0x614;
     int transform_count = 12;

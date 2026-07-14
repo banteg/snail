@@ -200,7 +200,7 @@ active_state_tail:
     }
 
     sprite->facing_angle = player->heading_roll + attachment_facing_angle;
-    if (player->follow_active == 1)
-        sprite->facing_angle += player->follow_orientation_b;
+    if (player->follow_state.active == 1)
+        sprite->facing_angle += player->follow_state.orientation_b;
     update_slug_voice_ai();
 }

@@ -112,7 +112,7 @@ void Player::handle_subgoldy_collisions()
                             if (!control_override_active) {
                                 SubgameRuntime* hit_game = game;
                                 control_override_active = 1;
-                                follow_active = 0;
+                                follow_state.active = 0;
                                 float rate = hit_game->subgame_rate;
                                 hit_velocity =
                                     Vector3(0.0f, 0.2f, -0.2f) * rate;

@@ -11,7 +11,7 @@ needs sequential assignments to stop VC6 folding -8*0.01745*0.17.
 **Findings from the asm:**
 - the exit roll while `attachment_exit_pending` reads player+0x42c — the
   ORIENTATION-B carryover (begin_post_follow_carryover writes
-  follow_orientation_b there; the heading carryover at +0x430 still has
+  `follow_state.orientation_b` there; the heading carryover at +0x430 still has
   no known consumer). player.h renamed semantically; the Zig camera
   already consumes the right lane (carryover_a = orientation_b phase).
 - orientation_a at player+0x39c, orientation_b at +0x3a0 — third
@@ -83,9 +83,8 @@ target.x * -8 * 0.017449999 * 0.17 world-z.
 
 The player fields at +0x384..+0x3c3 are the shared embedded 0x40-byte
 `FollowState`; velocity, exit state, and post-follow carryover are adjacent
-`Player` fields. Keep the local field spelling here for codegen stability
-until a focused pass proves that inlining `FollowState follow_state` preserves
-the current match.
+`Player` fields. The canonical embedded member is now proven codegen-neutral
+in this scratch.
 
 2026-06-16 Player header consolidation: `player.h` now documents the
 `PlayerLiveMatrixRows` view for the matrix at `Player+0x38`; `Player::position`
@@ -112,13 +111,11 @@ proxy (builder rotation scalars still unstored — checklist item).
 
 The scratch now includes shared `player.h` instead of carrying a local
 `Player` slice. The promoted fields are the lane-lean window at
-`+0x350..+0x35c`, flattened FollowState prefix fields
-`follow_template +0x388`, `follow_source_cell +0x38c`,
-`follow_orientation_a +0x39c`, `follow_orientation_b +0x3a0`, and
-`post_follow_exit_roll +0x42c`. Do not inline `FollowState` as a Player
-member in this scratch without a focused match check; the flattened prefix
-keeps the focused match at `92.55%`, `322/322`, with the same single masked
-call mismatch.
+`+0x350..+0x35c`, `follow_state.template_record +0x388`,
+`follow_state.source_cell +0x38c`, `follow_state.orientation_a +0x39c`,
+`follow_state.orientation_b +0x3a0`, and `post_follow_exit_roll +0x42c`.
+The embedded owner keeps the focused match at `92.55%`, `322/322`, with the
+same single masked call mismatch.
 
 ## Cameraman header consolidation (2026-06-16)
 

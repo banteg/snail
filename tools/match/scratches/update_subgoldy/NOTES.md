@@ -407,3 +407,13 @@ instructions, with 290 clean masked operands and one jump-table mismatch.
 The accepted cell/follow consolidation is byte-identical at 72.51%,
 2067/2087 instructions, 290 clean operands, and the same one honest follow
 jump-table mismatch.
+
+## 2026-07-14 player follow-state ownership
+
+The canonical `Player` now embeds that same 0x40-byte `FollowState` at +0x384;
+the former twelve flattened player aliases are retired. Nine independent
+callers now traverse the authored `Player::follow_state` owner, including the
+exact initializer and exit-carryover producer. All nine focused binaries are
+byte-identical to their pre-consolidation baselines; `update_subgoldy` itself
+remains 72.51%, 2067/2087 instructions, 290 clean operands, with the same one
+honest jump-table mismatch.
