@@ -13,7 +13,7 @@ Initial source-shaped scratch reconstructs the slug hazard runtime update:
 - death-toss setup using the `SDI` random signed-float tag and subgame-rate
   timing lanes at `+0x9c`, `+0xa0`, `+0xa4`, and `+0xa8`;
 - shared facing-angle/follow-orientation tail before `update_slug_voice_ai()`;
-- inline BOD-list removal through the global `g_game_base + 0x5a8` free list.
+- inline BOD-list removal through `GameRoot::active_bod_list`.
 
 2026-06-19 focused result: 66.15%, 464 target instructions vs 434 candidate
 instructions, 0-instruction prefix, 47 masked operands ok, 0 unresolved
@@ -99,3 +99,10 @@ list-string mismatches. No label, padding, or dummy-local fakematch is used.
   because the state-2 writes have no independently identified consumer.
   Focused matching is codegen-neutral at 66.15%, 434/464 instructions, with 47
   clean operands and the same two documented structural mismatches.
+
+## 2026-07-14 root graph closure
+
+The duplicated removal tails now name `GameRoot::active_bod_list`, and blink
+cadence calls `GameRoot::subgame.advance_blink_random()`. Focused output stays
+at 66.15%, 434/464 instructions, with 47 clean operands and the same two
+documented structural mismatches.

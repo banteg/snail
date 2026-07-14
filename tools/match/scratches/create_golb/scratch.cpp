@@ -15,7 +15,7 @@ typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void __fastcall set_matrix_identity(void* transform);
 int report_errorf(char* format, ...);
@@ -33,7 +33,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     if ((body->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = (BodNode**)(g_game_base + 0x5ac);
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* old_first = *first_ref;
         if (old_first) {
             old_first->list_prev = body;
@@ -210,7 +210,7 @@ after_movement_flag_source:
                 if ((node_words[1] & 0x200) != 0) {
                     report_errorf("List ADD");
                 } else {
-                    char* anchor = g_game_base + 0x5ac;
+                    char* anchor = (char*)&g_game->active_bod_list.first;
                     int head = *(int*)anchor;
                     if (head) {
                         *(DWORD*)(head + 8) = (DWORD)node;
@@ -245,8 +245,7 @@ after_movement_flag_source:
             lifetime_step = *(float*)((char*)game + 0x38) * 0.041666668f;
 
             char* node = self + 0x80;
-            BodNode* anchor =
-                &((GameRoot*)g_game_base)->subgame.golb_vapour_list_head;
+            BodNode* anchor = &g_game->subgame.golb_vapour_list_head;
             if ((words[33] & 0x200) != 0) {
                 report_errorf("List ADDafter");
             } else {

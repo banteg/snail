@@ -75,7 +75,7 @@ Type consolidation:
 - A delayed `slot_position` declaration reached 50.09%, but introduced an
   unresolved switch-table operand. Keep the 49.82% spelling because its operand
   audit is cleaner.
-- 2026-06-16 active-list branch-order pass: the shared `g_game_base + 0x5a8`
+- 2026-06-16 active-list branch-order pass: the shared root active-list
   insert now puts the empty-list case first, matching the health and jetpack
   pickup spawners' native list shape. Focused Wibo improves from `49.82%` to
   `51.23%` with the same 34 clean masked operands and the same eight known
@@ -213,3 +213,11 @@ Type consolidation:
   caller performs `fcomp dword` and `fmul dword` operations. Declaring the call
   as `double` changes those to qword operations and regresses focused matching
   to `61.13%`; it also does not remove the kind-4 compiler failure.
+
+## 2026-07-14 root-list closure
+
+The manual native-order parent splice now begins at
+`GameRoot::active_bod_list`; its local `SubRingListAnchor` view only preserves
+the authored `SubRing*` link types. Focused output remains 64.09%, 327/347
+instructions, prefix 3/347, with 48 clean operands and the same ten explicit
+switch-family mismatches.

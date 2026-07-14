@@ -1,14 +1,15 @@
 // kill_golb @ 0x414670 (thiscall, ret)
 
+#include "game_root.h"
 #include "golb.h"
 
 int report_errorf(char* format, ...);
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void GolbShot::kill_golb()
 {
-    BodList* list = (BodList*)(g_game_base + 0x5a8);
+    BodList* list = &g_game->active_bod_list;
     unsigned int flags = primary_body.list_flags;
     if ((flags & 0x200) == 0) {
         report_errorf("List remove");
@@ -42,7 +43,7 @@ void GolbShot::kill_golb()
 
         case 1: {
             BodNode* body = &secondary_body;
-            BodList* list_kind1 = (BodList*)(g_game_base + 0x5a8);
+            BodList* list_kind1 = &g_game->active_bod_list;
             unsigned int kind1_flags = body->list_flags;
             if ((kind1_flags & 0x200) == 0) {
                 report_errorf("List remove");
@@ -71,7 +72,7 @@ void GolbShot::kill_golb()
 
         case 2: {
             BodNode* body = &tertiary_body;
-            BodList* list_kind2 = (BodList*)(g_game_base + 0x5a8);
+            BodList* list_kind2 = &g_game->active_bod_list;
             unsigned int kind2_flags = body->list_flags;
             if ((kind2_flags & 0x200) == 0) {
                 report_errorf("List remove");

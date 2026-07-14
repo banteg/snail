@@ -127,3 +127,7 @@ form regressed to `83.85%`.
 Both changes are codegen-neutral at the honest 84.72%, `144/144` baseline with
 nine clean references. The residual is limited to the void full-pool epilogue
 and VC6's lane-14 constant/register schedule, not ownership.
+
+2026-07-14 root-list closure: the singleton's inherited BOD now enters
+`GameRoot::active_bod_list` directly. The honest 84.72%, 144/144 baseline and
+all nine clean references are unchanged.

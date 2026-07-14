@@ -1,5 +1,6 @@
 // spawn_track_health_pickup @ 0x43d6c0 (thiscall, ret 0x8)
 
+#include "game_root.h"
 #include "player.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
@@ -8,7 +9,7 @@
 
 typedef unsigned int DWORD;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 
@@ -40,7 +41,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     *live_position = staged_position;
 
     BodNode* node = (BodNode*)&slot->health_pickups[0];
-    ((BodList*)(g_game_base + 0x5a8))->add_bod(node);
+    g_game->active_bod_list.add_bod(node);
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 57, -1, -1);

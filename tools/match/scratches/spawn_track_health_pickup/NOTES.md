@@ -179,3 +179,7 @@ already recovered empty/non-empty splice onto the owned inline `BodList` method
 improves the honest void reconstruction from 88.43% to 90.08% while preserving
 all seven audited references. The remaining differences are the occupied-pool
 void epilogue and independent setup-tail scheduling, not list ownership.
+
+2026-07-14 root-list closure: the inherited pickup BOD is inserted through
+`GameRoot::active_bod_list`. Focused output remains 90.08%, 120/122
+instructions, prefix 6/122, with seven clean operands.

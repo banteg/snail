@@ -116,7 +116,7 @@ scratch now defines the method on `SubLazer`; matching remains 81.11%, 216/218,
 with 23 clean operands and no call-target debt.
 
 2026-07-12 shared list-removal recovery: state `2` now calls the proved inline
-`BodList::remove_bod` owner through `g_game_base + 0x5a8`. That region becomes
+`BodList::remove_bod` owner through the root active list. That region becomes
 instruction-identical to the target and raises the focused match from `81.11%`
 to `85.25%`, still `216/218` instructions with all `23` masked operands clean.
 The remaining residual begins in state `1`: commutative velocity integration
@@ -144,3 +144,8 @@ backlink. `SubgameRuntime` owns the exact 20-slot `SubLazerManager` at
 `+0x356b00`; this replaces both the stale sparse slot experiment and the
 lane-local `FrameSubLazerSlot`. The focused source remains honestly near-exact
 at 92.63% (216/218).
+
+2026-07-14 root graph closure: state-2 removal now uses
+`GameRoot::active_bod_list`, and both runtime-cell lookups use
+`GameRoot::subgame`. Focused output is unchanged at 92.63%, 216/218
+instructions, prefix 9/218, with 23 clean operands.

@@ -25,3 +25,7 @@ Type consolidation:
   is a borrowed `ContactTargetObject*`: `create_golb` sets its reservation bit
   and this teardown clears the same bit. Promoting that owner leaves the exact
   132/132 instruction body unchanged.
+
+2026-07-14 root-list closure: all three variant removals now name
+`GameRoot::active_bod_list` directly. The canonical owner graph preserves the
+exact 132/132 body and all 16 clean operands.

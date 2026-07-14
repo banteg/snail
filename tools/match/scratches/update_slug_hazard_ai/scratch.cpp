@@ -3,6 +3,7 @@
 #include "bod_list.h"
 #include "contact_target.h"
 #include "font_system.h"
+#include "game_root.h"
 #include "player.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
@@ -11,7 +12,7 @@
 
 typedef unsigned int DWORD;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value();
 int report_errorf(char* format, ...);
@@ -21,7 +22,7 @@ double random_signed_float_below(float upper_bound, const char* tag);
 #define REMOVE_SLUG_FROM_BOD_LIST_AND_KILL()                         \
     do {                                                             \
         state = 0;                                                   \
-        BodList* list = (BodList*)(g_game_base + 0x5a8);             \
+        BodList* list = &g_game->active_bod_list;                    \
         DWORD flags = list_flags;                                    \
         if ((flags & 0x200) == 0) {                                  \
             report_errorf("List remove");                           \
@@ -99,8 +100,7 @@ void Slug::update_slug_hazard_ai()
             if (blink_progress < 0.0f) {
                 blink_progress = 0.0f;
                 blink_step =
-                    (float)((SubgameRuntime*)(g_game_base + 0x74618))
-                        ->advance_blink_random();
+                    (float)g_game->subgame.advance_blink_random();
             } else if (blink_progress > 1.0f) {
                 blink_progress = 1.0f;
                 blink_step = -0.166666672f;

@@ -200,3 +200,12 @@ Residuals:
   `BodAiDispatch` ABI view; this does not add a second vptr to `GolbShot`.
 - Focused Windows output is byte-shape neutral at 36.08%, 460/582
   instructions, prefix 1/582, with all 35 masked operands clean.
+
+## 2026-07-14 root-list closure
+
+- Both primary and kind-2 active-list insertions now start at
+  `GameRoot::active_bod_list.first`; the kind-1 insertion starts at the
+  subgame-owned `golb_vapour_list_head`.
+- The source retains its existing typed/raw splice schedules, but no longer
+  invents global anchors from root offsets. Focused output is unchanged at
+  36.08%, 460/582 instructions, prefix 1/582, with 35 clean operands.

@@ -1,13 +1,14 @@
 // spawn_track_ring_or_special_effect @ 0x43df10 (thiscall, ret 0x10)
 
 #include "bod_ai_dispatch.h"
+#include "game_root.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 float random_float_below(float upper_bound, const char* tag);
 int report_errorf(const char* format, ...);
@@ -161,7 +162,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             report_errorf("List ADD");
         } else {
             SubRingListAnchor* active_list =
-                (SubRingListAnchor*)(g_game_base + 0x5a8);
+                (SubRingListAnchor*)&g_game->active_bod_list;
             SubRing** active_head = (SubRing**)&active_list->first;
             if (*active_head == 0) {
                 *active_head = slot;
