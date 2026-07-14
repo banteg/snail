@@ -15,6 +15,10 @@ import idc
 TRUSTED_NAMES = [
     (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x44C870, "initialize_global_identity_matrix_thunk"),
+    (0x44C880, "initialize_global_identity_matrix"),
+    (0x44CDE0, "initialize_uniform_scale_matrix"),
+    (0x44D920, "interpolate_matrix_rotation"),
     (0x4AC5C8, "g_default_tip_message"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
@@ -54,6 +58,18 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_player_presentation_controller",
         "Snail* __thiscall initialize_player_presentation_controller(Snail* snail);",
+    ),
+    (
+        "initialize_global_identity_matrix_thunk",
+        "void __cdecl initialize_global_identity_matrix_thunk();",
+    ),
+    (
+        "initialize_global_identity_matrix",
+        "void __cdecl initialize_global_identity_matrix();",
+    ),
+    (
+        "initialize_uniform_scale_matrix",
+        "TransformMatrix* __thiscall initialize_uniform_scale_matrix(TransformMatrix* transform, float scale);",
     ),
     (
         "noop_this_constructor",
@@ -141,7 +157,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "interpolate_matrix_rotation",
-        "TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);",
+        "void __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);",
     ),
     (
         "linear_interpolate_matrix",

@@ -2254,6 +2254,14 @@
       "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API."
     },
     {
+      "address": "0x44cde0",
+      "windows_name": "initialize_uniform_scale_matrix",
+      "android_symbol": "tMatrix::tMatrix(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Android retains both emitted single-float constructor symbols. A real Windows TransformMatrix(float) definition is exact at 21/21 instructions; its EAX receiver is the VC6 constructor ABI, while Android and iOS expose a distinct mutating tMatrix::Scale(float) member."
+    },
+    {
       "address": "0x44d280",
       "windows_name": "invert_matrix_in_place",
       "ios_symbol": "tMatrix::Invert()",
@@ -2270,6 +2278,15 @@
       "source_object": "RMaths.o",
       "confidence": "high",
       "notes": "The exact Windows void spelling remains 55/55 instructions. All ordinary Windows and Android callers discard the result register; the only tail calls are from independently void cRPlayer/cROverlay AI callbacks, and the ARM helper returns directly after its last matrix store without establishing a value."
+    },
+    {
+      "address": "0x44d920",
+      "windows_name": "interpolate_matrix_rotation",
+      "ios_symbol": "tMatrix::Interpolate(float)",
+      "android_symbol": "tMatrix::Interpolate(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The honest Windows void source remains 105/105 instructions at 96.19%. Its sole caller discards EAX and its two exits leave path-dependent helper residue; both Android callers discard r0 and all three ARM exits establish no result."
     },
     {
       "address": "0x44dcb0",

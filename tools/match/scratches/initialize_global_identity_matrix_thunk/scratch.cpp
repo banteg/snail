@@ -1,8 +1,6 @@
-// initialize_global_identity_matrix_thunk @ 0x44c870 (cdecl)
+// initialize_global_identity_matrix_thunk @ 0x44c870
+// Compiler-generated CRT registration thunk for g_identity_matrix.
 
-void initialize_global_identity_matrix();
+#include "transform_matrix.h"
 
-void initialize_global_identity_matrix_thunk()
-{
-    initialize_global_identity_matrix();
-}
+TransformMatrix g_identity_matrix(1.0f); // 0x77ff40

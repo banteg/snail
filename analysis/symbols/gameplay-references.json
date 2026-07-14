@@ -97,6 +97,31 @@
       "description": "Thiscall object-constructor thunk that calls initialize_object at 0x42f6f0, preserves the original this pointer, and returns it."
     },
     {
+      "address": "0x44c870",
+      "name": "initialize_global_identity_matrix_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored g_identity_matrix(1.0f) global."
+    },
+    {
+      "address": "0x44c880",
+      "name": "initialize_global_identity_matrix",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x10",
+      "description": "VC6 local dynamic initializer emitted for the authored g_identity_matrix(1.0f) global."
+    },
+    {
+      "address": "0x44cde0",
+      "name": "initialize_uniform_scale_matrix",
+      "kind": "function",
+      "aliases": [
+        "??0TransformMatrix@@QAE@M@Z"
+      ],
+      "description": "Stable Windows harness identity for the recovered single-float TransformMatrix constructor."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",

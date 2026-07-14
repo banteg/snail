@@ -1,8 +1,9 @@
-// initialize_uniform_scale_matrix @ 0x44cde0 (thiscall)
+// initialize_uniform_scale_matrix @ 0x44cde0
+// Authored owner: tMatrix::tMatrix(float).
 
 #include "transform_matrix.h"
 
-TransformMatrix* TransformMatrix::initialize_uniform_scale_matrix(float scale)
+TransformMatrix::TransformMatrix(float scale)
 {
     basis_right.x = scale;
     basis_right.y = 0.0f;
@@ -20,5 +21,4 @@ TransformMatrix* TransformMatrix::initialize_uniform_scale_matrix(float scale)
     position.y = 0.0f;
     position.z = 0.0f;
     position_w = 1.0f;
-    return this;
 }

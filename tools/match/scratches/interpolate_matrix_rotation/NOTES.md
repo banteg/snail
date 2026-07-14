@@ -54,3 +54,10 @@ gone. The shared 0x10-byte type now owns the folded Windows default constructor,
 the quaternion conversion method, and the angle scaled here; Android's `tAxis`
 name remains as the `Axis` compatibility alias. This preserves the real
 constructor call and does not introduce a cast-only view.
+
+2026-07-14 return ownership: Android and iOS preserve the authored member as
+`tMatrix::Interpolate(float)`. Both Android callers consume no `r0` result, and
+the ARM function's three exits restore the frame without establishing one.
+Windows' sole caller likewise ignores EAX, while its two return sites leave
+path-dependent helper residue. The shared scratch was already honestly `void`;
+the BN/IDA analysis prototypes now agree with that contract.

@@ -1617,6 +1617,12 @@ TransformMatrix* __thiscall initialize_matrix_from_values(
 void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);
 void __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);
 void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);
+void __cdecl initialize_global_identity_matrix_thunk();
+void __cdecl initialize_global_identity_matrix();
+TransformMatrix* __thiscall initialize_uniform_scale_matrix(
+    TransformMatrix* transform,
+    float scale
+);
 double __fastcall normalize_vector(Vec3* vector);
 float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
@@ -1627,7 +1633,7 @@ TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, Trans
 TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
 void __thiscall set_matrix_z_direction(TransformMatrix* transform, const Vec3* direction);
 void __thiscall look_at_point(TransformMatrix* transform, const Vec3* target);
-TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);
+void __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);
 void __thiscall linear_interpolate_matrix(
     TransformMatrix* out,
     const TransformMatrix* from,

@@ -9,7 +9,8 @@
 struct Quaternion;
 
 struct TransformMatrix {
-    TransformMatrix* initialize_uniform_scale_matrix(float scale); // @ 0x44cde0
+    TransformMatrix() {}
+    TransformMatrix(float scale); // @ 0x44cde0, tMatrix::tMatrix(float)
     TransformMatrix* initialize_matrix_from_values(
         float m00, float m01, float m02, float m03,
         float m10, float m11, float m12, float m13,

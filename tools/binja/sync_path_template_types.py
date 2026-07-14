@@ -23,7 +23,11 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
-PRESENTATION_SYMBOL_UPDATES = (
+SYMBOL_UPDATES = (
+    ("0x44c870", "initialize_global_identity_matrix_thunk"),
+    ("0x44c880", "initialize_global_identity_matrix"),
+    ("0x44cde0", "initialize_uniform_scale_matrix"),
+    ("0x44d920", "interpolate_matrix_rotation"),
     ("0x4086d0", "initialize_player_presentation_controller"),
     ("0x4ac5c8", "g_default_tip_message"),
     ("0x497354", "g_player_presentation_noop_vtable"),
@@ -599,6 +603,18 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)",
     ),
     (
+        "initialize_global_identity_matrix_thunk",
+        "void __cdecl initialize_global_identity_matrix_thunk()",
+    ),
+    (
+        "initialize_global_identity_matrix",
+        "void __cdecl initialize_global_identity_matrix()",
+    ),
+    (
+        "initialize_uniform_scale_matrix",
+        "TransformMatrix* __thiscall initialize_uniform_scale_matrix(TransformMatrix* transform, float scale)",
+    ),
+    (
         "invert_matrix_in_place",
         "void __fastcall invert_matrix_in_place(TransformMatrix* transform)",
     ),
@@ -631,7 +647,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "interpolate_matrix_rotation",
-        "TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha)",
+        "void __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha)",
     ),
     (
         "compute_kind42_attachment_transform",
@@ -978,6 +994,13 @@ def main() -> int:
                 required_structs=REQUIRED_HEADER_STRUCTS,
             )
         )
+        operations.extend(
+            apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=SYMBOL_UPDATES,
+            )
+        )
     operations.append(ensure_golb_path_follow_state(target=args.target))
     operations.extend(
         apply_struct_field_updates(
@@ -1042,13 +1065,6 @@ def main() -> int:
         )
     )
     operations.extend(report_deferred_subgame_owner_prototypes(target=args.target))
-    operations.extend(
-        apply_symbol_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=PRESENTATION_SYMBOL_UPDATES,
-        )
-    )
     operations.extend(
         apply_data_var_updates(
             REPO_ROOT,

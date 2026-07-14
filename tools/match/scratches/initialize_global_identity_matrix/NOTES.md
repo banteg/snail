@@ -2,5 +2,8 @@
 
 Exact match: 100.00%, 4/4 instructions.
 
-Startup constructor-table wrapper that initializes the shared global identity
-matrix through the exact `initialize_uniform_scale_matrix(1.0f)` helper.
+VC6 local `_$E1` initializer for the authored
+`TransformMatrix g_identity_matrix(1.0f)` global. The source-level global
+definition emits the exact four-instruction body and calls the recovered
+single-float matrix constructor directly; no synthetic pointer-returning
+wrapper API is required.
