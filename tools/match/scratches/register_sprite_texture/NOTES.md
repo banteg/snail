@@ -10,3 +10,10 @@ Registers one sprite texture id into `g_sprite_texture_table`.
 - The leading scan to the first `.` is retained by native code, but the scanned
   pointer is not consumed by this function. Treat it as source validation /
   extension probing until another texture loader uses the value directly.
+
+Windows startup and landscape-script callers load `g_sprite_manager @
+0x790f30` into `ecx` before calling this helper; iOS names the same owner
+`cRSpriteManager::Load(char*, int, int)`. Defining the exact body on
+`SpriteManager` closes that ABI relationship while preserving all 35
+instructions and six operand proofs. The receiver is legitimately unused
+because the registered texture-id table remains a separate global on Windows.
