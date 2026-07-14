@@ -13,8 +13,8 @@ TextureRef* SpriteManager::register_sprite_texture(char* texture_path, int textu
         } while (*dot != '.');
     }
 
-    if (texture_id >= 1000) {
-        report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", 1000);
+    if (texture_id >= SPRITE_TEXTURE_CAPACITY) {
+        report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", SPRITE_TEXTURE_CAPACITY);
     }
 
     TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, flags);

@@ -43,3 +43,16 @@ manager declaration and an exact-size contract for all shared prerequisites.
 It selectively restored `Sprite` (`0xb4`) and `TextureRef` (`0xa4`) without
 redeclaring the already-complete manager, field, or star layouts; the immediate
 idempotence run skipped every type, field, and prototype operation.
+
+## 2026-07-14 manager capacity closure
+
+The five embedded active-list heads and all first/middle/last pool cases now
+derive from `SPRITE_ACTIVE_LIST_COUNT` and `SPRITE_POOL_CAPACITY`. The external
+head view at `0x814c94` is exactly `g_sprite_manager + 0x83d64`, so both the
+embedded member and its field-address view share the same five-slot extent.
+
+The initializer remains byte-identical at `45/45`, with one clean operand and
+normalized hash
+`7d8c4db75e12f7f7020bc5c17555af78839c8fa7e331976238cd7b2eeee14877`;
+the exact kill path likewise retains hash
+`269f37866e3da86d8223cc44738e613d0a5728ce00cc87734bc69df6ca2e1929`.

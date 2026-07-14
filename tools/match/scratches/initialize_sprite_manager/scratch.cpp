@@ -5,7 +5,7 @@
 void SpriteManager::initialize_sprite_manager()
 {
     paused = 0;
-    for (int bucket = 0; bucket < 5; ++bucket) {
+    for (int bucket = 0; bucket < SPRITE_ACTIVE_LIST_COUNT; ++bucket) {
         active_heads[bucket] = 0;
     }
     free_head = &sprites[0];
@@ -17,7 +17,7 @@ void SpriteManager::initialize_sprite_manager()
         if (index == 0) {
             sprites[index].prev = 0;
             sprites[index].next = &sprites[index + 1];
-        } else if (index == 2999) {
+        } else if (index == SPRITE_POOL_CAPACITY - 1) {
             sprites[index].prev = &sprites[index - 1];
             sprites[index].next = 0;
         } else {
@@ -25,5 +25,5 @@ void SpriteManager::initialize_sprite_manager()
             sprites[index].next = &sprites[index + 1];
         }
         ++index;
-    } while (index < 3000);
+    } while (index < SPRITE_POOL_CAPACITY);
 }

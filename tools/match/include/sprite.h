@@ -12,6 +12,8 @@ struct TgaImageView;
 
 enum {
     SPRITE_POOL_CAPACITY = 3000,
+    SPRITE_ACTIVE_LIST_COUNT = 5,
+    SPRITE_TEXTURE_CAPACITY = 1000,
     SPRITE_DEPTH_BUCKET_COUNT = 256,
 };
 
@@ -156,17 +158,17 @@ public:
     unsigned char paused; // +0x00000
     char unknown_00001[0x04 - 0x01];
     Sprite sprites[SPRITE_POOL_CAPACITY]; // +0x00004
-    Sprite* active_heads[5]; // +0x83d64
+    Sprite* active_heads[SPRITE_ACTIVE_LIST_COUNT]; // +0x83d64
     Sprite* free_head; // +0x83d78
 };
 
 typedef char SpriteManager_must_be_0x83d7c[
     (sizeof(SpriteManager) == 0x83d7c) ? 1 : -1];
 
-extern TextureRef* g_sprite_texture_table[]; // data_78ff90
+extern TextureRef* g_sprite_texture_table[SPRITE_TEXTURE_CAPACITY]; // data_78ff90
 extern TextureRefList g_texture_refs;        // data_4b7790
 extern SpriteManager g_sprite_manager;       // data_790f30
-extern Sprite* g_sprite_active_heads[5];     // data_814c94
+extern Sprite* g_sprite_active_heads[SPRITE_ACTIVE_LIST_COUNT]; // data_814c94
 extern Sprite* g_sprite_free_head;           // data_814ca8
 extern Sprite g_sprite_sentinel;             // data_814cb0
 extern SpriteDepthNode g_sprite_depth_nodes[SPRITE_POOL_CAPACITY]; // data_4e5510
