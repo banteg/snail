@@ -16,3 +16,10 @@ The exact store order now names the shared prefix also consumed by
 argument `+0x1c`, and render-object argument `+0x20`. The `+0x08/+0x0c`
 intrusive links are not explicitly cleared here but are shared with the BOD list
 views.
+
+2026-07-14 folded-constructor ownership: the opening identity call now targets
+the embedded `Color4f` directly. The previous `NoopAiCallback` cast represented
+no object, field, or vtable boundary; it existed only to give the folded helper
+a local constructor-shaped symbol. The shared color call preserves the exact
+27/27 instruction stream and all five audited operands, so the synthetic
+callback alias has been removed from the reference manifest.

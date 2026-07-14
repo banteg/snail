@@ -5,16 +5,9 @@
 extern void* g_bod_base_vtable; // off_4974fc / data_4974fc
 extern int g_bod_base_init_count; // data_50331c
 
-class NoopAiCallback {
-public:
-    NoopAiCallback();
-};
-
 BodBase* BodBase::initialize_bod_base()
 {
-    NoopAiCallback* callback = (NoopAiCallback*)&color;
-
-    callback->NoopAiCallback::NoopAiCallback();
+    color.noop_this_constructor();
     vtable = &g_bod_base_vtable;
     list_flags = 0x2000020;
     color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);

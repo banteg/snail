@@ -6,7 +6,7 @@ surface because most recovered callers construct color temporaries or fields,
 but the native range has no single owning class.
 
 The reference manifest retains the independently observed AxisAngle,
-Quaternion, callback, and decorated-constructor aliases. Fifty-one Windows
+Quaternion, and decorated-constructor aliases. Fifty-one Windows
 xrefs also cover render temporaries and startup-owned globals, so splitting
 this body out of `linear_interpolate_matrix` restores a real shared function
 boundary without inventing per-owner copies.

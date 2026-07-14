@@ -1278,7 +1278,6 @@
       "kind": "function",
       "aliases": [
         "?0AxisAngle",
-        "?0NoopAiCallback",
         "?0Quaternion",
         "??0AxisAngle@@QAE@XZ",
         "??0Quaternion@@QAE@XZ",
