@@ -474,3 +474,25 @@ the normalized listing before and after this lane derivation again yields
 `4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`,
 with focused metrics unchanged at 29.27%, 1,208/1,245 instructions, 60 clean
 operands, and only the documented glyph jump-table mismatch.
+
+## Runtime cell lanes (2026-07-14)
+
+The glyph switch and placement tail no longer carry absolute
+`+0x3bfa.../+0x3bfb...` layout facts. Their established base-relative cursor
+now derives:
+
+- the slab base and eight-lane row extent from
+  `SubgameRuntime::runtime_cells`;
+- object list flags, position, render arguments, and color from the inherited
+  `BodBase` prefix;
+- tile id, lane flags, and all four fringe links from `SubLoc`;
+- the previous-row tile address from one owned eight-cell row stride; and
+- the fringe propagation loop's count/step and destination positions from the
+  four-pointer `SubLoc` tail and `BodBase::position`.
+
+The unusual trampoline color address remains in its native index-bias form,
+but that bias is now derived from the slab base plus `BodBase::color` divided
+by `sizeof(SubLoc)`. The pre/post normalized listing hash is still
+`4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`;
+focused Wibo therefore remains honestly unchanged at 29.27%, 1,208/1,245,
+60 clean operands, and the known glyph jump-table mismatch.
