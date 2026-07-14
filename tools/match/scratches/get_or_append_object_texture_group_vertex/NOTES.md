@@ -82,3 +82,9 @@ prefix. The source therefore retains the semantic `do`/`while` search and
 direct returns. The honest residual is one loop-exit block-placement choice
 (`jl` in native versus `jge` plus `jmp` here); no goto or volatile nudge is
 justified.
+
+2026-07-14 scratch-record ownership: the narrow loop cursor now starts from
+`ObjectGroupedVertex::y` and advances by `sizeof(ObjectGroupedVertex)` instead
+of raw `+4`/`+0x1c` constants. It preserves the same 83.14%, 128/127
+instruction frontier, prefix 25, and all 18 clean operands; the honest
+loop-exit block-placement residual is unchanged.

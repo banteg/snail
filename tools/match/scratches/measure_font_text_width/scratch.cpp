@@ -22,9 +22,11 @@ float measure_font_text_width(char* text, int font_id, float scale)
             int slot = (char)font_slot_index_for_char(*cursor);
             ++cursor;
             float glyph_width =
-                ((float*)((char*)g_font_sheets + 0x40c))[glyph_lane_base + slot];
-            glyph_width *= *(float*)((char*)g_font_sheets + sheet_lane_base + 0x818);
-            glyph_width *= *(float*)((char*)g_font_sheets + sheet_lane_base + 0x81c);
+                (&g_font_sheets[0].glyph_width[0])[glyph_lane_base + slot];
+            glyph_width *= *(float*)((char*)&g_font_sheets[0].spacing_scale
+                + sheet_lane_base);
+            glyph_width *= *(float*)((char*)&g_font_sheets[0].width_scale
+                + sheet_lane_base);
             width += glyph_width * scale;
         } while (*cursor != '\0');
     }
@@ -41,7 +43,9 @@ float measure_font_text_width(char* text, int font_id, float scale)
     glyph_lane_base <<= 1;
     sheet_lane_base <<= 3;
     return width +
-        (1.0f - *(float*)((char*)g_font_sheets + sheet_lane_base + 0x81c)) *
-            ((float*)((char*)g_font_sheets + 0x40c))[glyph_lane_base + space_slot] *
-            *(float*)((char*)g_font_sheets + sheet_lane_base + 0x818) * scale;
+        (1.0f - *(float*)((char*)&g_font_sheets[0].width_scale
+            + sheet_lane_base)) *
+            (&g_font_sheets[0].glyph_width[0])[glyph_lane_base + space_slot] *
+            *(float*)((char*)&g_font_sheets[0].spacing_scale
+                + sheet_lane_base) * scale;
 }

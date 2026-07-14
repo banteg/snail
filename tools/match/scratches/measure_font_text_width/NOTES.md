@@ -36,3 +36,9 @@ instead of immediately widening it to `int` gives VC6 the native schedule after
 while the returned glyph remains live in `al`, then it is sign-extended for the
 final glyph-width lookup. Focused Wibo is now exact: 100.00%, 60/60
 instructions, 60/60 prefix, and 9 clean masked operands.
+
+2026-07-14 FontSheet field ownership: the exact lane arithmetic remains, but
+its three bases now come from `FontSheet::glyph_width`, `spacing_scale`, and
+`width_scale` rather than raw `g_font_sheets +0x40c/+0x818/+0x81c` addresses.
+The field-owned spelling is byte-identical at 60/60 instructions with all nine
+operands clean.

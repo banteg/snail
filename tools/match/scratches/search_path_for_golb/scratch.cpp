@@ -24,7 +24,7 @@ ContactTargetEntry* EnemyManager::search_path_for_golb(
                 }
             }
             ++i;
-            cursor += 6;
+            cursor += sizeof(ContactTargetEntry) / sizeof(float);
         } while (i < count);
     }
     return found;

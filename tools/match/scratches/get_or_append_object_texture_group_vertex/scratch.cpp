@@ -21,7 +21,7 @@ int get_or_append_object_texture_group_vertex(
     int i = 0;
     int count = g_object_grouped_vertex_cursor;
     if (count > 0) {
-        char* cursor = (char*)g_object_grouped_vertex_scratch + 4;
+        char* cursor = (char*)&g_object_grouped_vertex_scratch[0].y;
         int source_vertex_only = object->flags & 4;
         do {
             if (source_vertex_only != 0) {
@@ -38,7 +38,7 @@ int get_or_append_object_texture_group_vertex(
                 return i;
             }
             ++i;
-            cursor += 0x1c;
+            cursor += sizeof(ObjectGroupedVertex);
         } while (i < count);
     }
 

@@ -11,3 +11,10 @@ divides by eight lanes. Windows performs the same operation with its `+0x40`
 lane word and `0x54` cell stride. The exact matcher scratch now defines the
 method on `SubLoc`; `TrackRowCell` remains only a compatibility alias for older
 scratch names.
+
+## 2026-07-14 cell-stride ownership
+
+The lane rewind and runtime-slab index now derive their `0x54` stride from
+`sizeof(SubLoc)`. The explicit `int` cast preserves the signed division implied
+by the pointer-difference carrier. The function remains exact at 22/22
+instructions with two clean masked operands.

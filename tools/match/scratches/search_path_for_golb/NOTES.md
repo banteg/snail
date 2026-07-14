@@ -5,7 +5,7 @@ Exact match: 100.00%, 63/63 instructions.
 The matched source keeps `cursor` as a loop-carried pointer to the sample `.z`
 field inside the `count > 0` guarded `do` loop. That preserves the original
 guard shape while making MSVC keep `esi` anchored at `.z`:
-`[esi-8] / [esi-4] / [esi]`, then `cursor += 6`.
+`[esi-8] / [esi-4] / [esi]`, then one `ContactTargetEntry` stride.
 
 Confirmed semantics: candidate selection gated on `0 < dz < 30` toward
 positive z, nearest by full 3D magnitude on a copied probe vector,
@@ -22,3 +22,8 @@ first-best-wins tie break, returns the entry base pointer or null.
 - The fixed registry extent from `+0x1270fd4` through `+0x12727d8` and the iOS
   `cREnemyManager` neighbors independently support this owner. The exact source
   shape and score are unchanged.
+
+2026-07-14 record-stride ownership: the loop-carried float cursor now advances
+by `sizeof(ContactTargetEntry) / sizeof(float)` rather than the anonymous six
+lanes. Matching remains exact at 63/63 instructions with all three operands
+clean.
