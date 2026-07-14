@@ -8,11 +8,11 @@ Recovered relationships:
   `ObjectAnimation*` `+0x0c`, completion byte `+0x10`.
 - queued animation ids begin at `+0x14`; `queue_count` is `+0x3c`.
 - borrowed `target_model +0x40` is the containing Snail or animation-channel
-  `BodBase`; bit `0x20` is its inherited `list_flags +0x04`, and `object +0x24`
+  `RenderableBod`; bit `0x20` is its inherited `list_flags +0x04`, and `object +0x24`
   receives the selected animated `Object*`;
 - borrowed `animation_slots +0x44` points at the first owned 0x80-byte
   `PresentationAnimationSlot` immediately after the manager. Each slot is a
-  `RenderableBod` plus eight tail bytes; its `body.object +0x24` points at the
+  complete 0x80-byte `RenderableBod`; its `body.object +0x24` points at the
   animated `Object`, whose retained `animation +0xbc` supplies the active
   `ObjectAnimation` and `progress_step`.
 

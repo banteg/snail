@@ -9,6 +9,7 @@
 #include "transform_matrix.h"
 
 struct Object;
+class AnimManager;
 
 class BodBase : public BodNode {
 public:
@@ -35,8 +36,12 @@ public:
     RenderableBod* initialize_noop_renderable_bod(); // @ 0x408040
 
     TransformMatrix transform; // +0x38
+    // Only valid when list_flags has 0x800: cRGame::Render borrows this
+    // manager's progress for Object::animation immediately before drawing.
+    AnimManager* render_animation_manager; // +0x78
+    char unknown_07c[0x80 - 0x7c];
 };
 
-typedef char RenderableBod_must_be_0x78[(sizeof(RenderableBod) == 0x78) ? 1 : -1];
+typedef char RenderableBod_must_be_0x80[(sizeof(RenderableBod) == 0x80) ? 1 : -1];
 
 #endif

@@ -5,7 +5,7 @@ embedded at `Player +0x2984`.
 
 Recovered ownership:
 
-- `Snail` inherits the complete `RenderableBod` prefix through `+0x77` and owns ten
+- `Snail` inherits the complete `RenderableBod` through `+0x7f` and owns ten
   `0x80`-byte cutscene visual slots beginning at `+0x14c`;
 - the three `PresentationAnimationChannel` weapon owners begin at `+0x64c`
   and the jetpack channel begins at `+0x11e0`, all at the proven `0x3dc`
@@ -29,8 +29,8 @@ The former `initialize_enemy_manager_runtime` name was stale: the sole caller
 passes `Player +0x2984`, while the actual Windows `cREnemyManager` is the
 separate `0x1804` contact-target registry at `SubgameRuntime +0x1270fd4`.
 
-Each 0x80-byte animation slot is a complete `RenderableBod` plus eight tail
-bytes. Its inherited `object +0x24` is the animated `Object*`; the AnimManager
+Each 0x80-byte animation slot is exactly one complete `RenderableBod`. Its
+inherited `object +0x24` is the animated `Object*`; the AnimManager
 stores the actual slot base, not a pointer biased 0x24 before it. The five-slot
 channel extents (`+0x150..+0x3d0`) and ten-slot Snail extent
 (`+0x14c..+0x64c`) close exactly against the next owned fields.
@@ -42,17 +42,17 @@ and 27 clean masked operands.
 
 The exact constructor now calls the inherited
 `RenderableBod::initialize_renderable_bod()` directly. `Snail` no longer
-duplicates the vtable, list flags, `Object*`, color, or transform fields in its
-own declaration; its first presentation-owned field remains the borrowed
-animation-manager pointer at `+0x78`, and the complete object remains exactly
+duplicates the vtable, list flags, `Object*`, color, transform, or conditional
+animation-manager lane in its own declaration; its first Snail-specific field
+is `previous_live_matrix +0x80`, and the complete object remains exactly
 `0x19b4` bytes. Focused Wibo is byte-identical at 100.00%, 79/79 instructions,
 full prefix, and 27 clean masked operands.
 
 ## 2026-07-14 animation-channel inheritance closure
 
 All four `PresentationAnimationChannel` owners now inherit the same complete
-`RenderableBod` prefix initialized here. Their first channel-owned field is
-the borrowed animation-manager pointer at `+0x78`; selected state remains
+`RenderableBod` initialized here, including its conditional borrowed manager
+lane at `+0x78`; selected state remains
 `+0x104`, the owned manager `+0x108`, five owned slots `+0x150`, and release
 step `+0x3d0`. The typed channel receivers leave this exact constructor
 byte-identical at 79/79 instructions with all 27 operands clean.

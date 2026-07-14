@@ -7,7 +7,6 @@
 // GamePlayer and lends it to RenderCameraSlot; the slot does not own it.
 class RenderCamera : public RenderableBod {
 public:
-    char unknown_78[0x80 - 0x78];
     TransformMatrix view_matrix; // +0x80, sprite depth/facing transform
     float fov_degrees; // +0xc0, passed through to render_camera
     union {

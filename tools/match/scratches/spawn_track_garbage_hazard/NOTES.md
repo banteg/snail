@@ -194,7 +194,7 @@ Residuals:
 ## 2026-07-14 renderable inheritance closure
 
 The shared `SubGarbage` slot now inherits `RenderableBod` instead of duplicating
-its 0x78-byte prefix. Its 0xc4 slot stride and all 16 masked operands remain
+its 0x80-byte prefix. Its 0xc4 slot stride and all 16 masked operands remain
 exact while the constructor and typed AI consumers independently prove
 `transform.position +0x68`; the later direct-member pass below retires every
 raw field cursor except the active-chain splice.

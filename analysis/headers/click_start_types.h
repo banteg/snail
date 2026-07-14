@@ -43,13 +43,14 @@ typedef struct ClickStart {
     void* object;
     Color4f color;
     TransformMatrix transform;
-    uint8_t _pad_78[0x8];
+    void* render_animation_manager;
+    uint8_t _pad_7c[0x4];
     int32_t state;
     FrontendWidget* prompt;
     float teardown_progress;
     float teardown_progress_step;
     uint8_t _pad_90[0x8];
-    Player* player;
+    Player* owner_player;
     uint8_t _pad_9c[0xc];
     uint8_t hide_prompt;
     uint8_t _pad_a9[0x3];

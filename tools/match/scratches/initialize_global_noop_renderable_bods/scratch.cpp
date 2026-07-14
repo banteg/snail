@@ -3,7 +3,7 @@
 #include "bod_types.h"
 
 struct StartupNoopRenderableBod : RenderableBod {
-    char unknown_078[0xc4 - sizeof(RenderableBod)];
+    char unknown_080[0xc4 - sizeof(RenderableBod)];
 };
 typedef char StartupNoopRenderableBod_must_be_0xc4[
     (sizeof(StartupNoopRenderableBod) == 0xc4) ? 1 : -1];

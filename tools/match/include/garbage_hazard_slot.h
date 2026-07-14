@@ -36,7 +36,6 @@ public:
     void spawn_garbage_smoke_particle(
         Vector3* position, Vector3* velocity, Player* owner_player);
 
-    char unknown_78[0x80 - 0x78];
     SubGarbage* next_active; // +0x80, borrowed link within the owning pool
     int state;               // +0x84, SubGarbageState
     int collision_side;      // +0x88, SubGarbageCollisionSide

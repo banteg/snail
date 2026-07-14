@@ -61,8 +61,11 @@ replace them with generated-frame buffers. `copied_vertices` is the separate
 base-vertex copy requested by the X-animation loader before animation build.
 
 Presentation animation adds a borrowed control layer without changing graph
-ownership. `cRSubGoldy::Init` binds each animated Snail/weapon BOD's `+0x78`
-lane to the `AnimManager` embedded in that same owner and binds the manager
+ownership. The complete Windows `RenderableBod` is 0x80 bytes: its transform
+ends at `+0x78`, `+0x78` conditionally borrows an `AnimManager` when render
+flag `0x800` is set, and the final word at `+0x7c` remains unknown.
+`cRSubGoldy::Init` binds each animated Snail/weapon BOD's manager lane to the
+`AnimManager` embedded in that same owner and binds the manager
 back to the target BOD plus its owned donor-slot bank. For BODs flagged
 `0x800`, `cRGame::Render` copies that manager's `progress` into the retained
 `ObjectAnimation::progress` immediately before drawing. Android preserves the

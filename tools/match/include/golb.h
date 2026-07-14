@@ -69,10 +69,9 @@ public:
     union {
         struct {
             RenderableBod primary_body;  // +0x000
-            char unknown_078[0x080 - 0x078];
             // Kind-1 also treats this subobject as the Vapour body prefix.
             RenderableBod secondary_body; // +0x080
-            char unknown_0f8[0x114 - 0x0f8];
+            char unknown_100[0x114 - 0x100];
             GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
             RenderableBod tertiary_body; // +0x118
         };
@@ -83,7 +82,6 @@ public:
             TransformMatrix live_matrix; // +0x150
         };
     };
-    char unknown_190[0x198 - 0x190];
     ContactTargetObject* homing_target_object; // +0x198, reserved target owner
     Vector3 homing_target;           // +0x19c
     GolbShot* rocket_owner_shot;     // +0x1a8, kind-2 embedded-body backlink

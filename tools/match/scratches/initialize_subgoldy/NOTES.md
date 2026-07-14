@@ -181,7 +181,7 @@ with all 27 operands clean.
 2026-07-13 animation render-binding closure:
 
 - Each animated presentation owner stores a borrowed pointer to its own
-  `AnimManager` in the first derived lane after `RenderableBod`: Snail `+0x78`
+  `AnimManager` in the shared conditional `RenderableBod` lane: Snail `+0x78`
   points to its manager at `+0x104`; every weapon/jetpack channel `+0x78`
   points to its manager at `+0x108`.
 - The same setup binds `AnimManager::target_model` back to the containing

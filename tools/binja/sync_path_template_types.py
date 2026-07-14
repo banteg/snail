@@ -32,14 +32,15 @@ PRESENTATION_SYMBOL_UPDATES = (
 )
 
 SNAIL_FIELD_UPDATES = (
-    ("0x00", "vtable", "void*"),
-    ("0x04", "list_flags", "uint32_t"),
-    ("0x24", "object", "Object*"),
-    ("0x78", "render_animation_manager", "AnimManager*"),
+    ("0x00", "body", "RenderableBod"),
+    ("0x80", "previous_live_matrix", "TransformMatrix"),
+    ("0xc0", "cached_cutscene_matrix", "TransformMatrix"),
+    ("0x100", "owner_player", "Player*"),
     ("0x104", "anim_manager", "AnimManager"),
     ("0x14c", "cutscene_animation_slots", "PresentationAnimationSlot[0xa]"),
     ("0x64c", "weapon_channels", "PresentationAnimationChannel[0x3]"),
     ("0x11e0", "jetpack_channel", "PresentationAnimationChannel"),
+    ("0x15cc", "snail_hotspot_source_body", "RenderableBod"),
     ("0x164c", "snail_hotspot_body", "RenderableBod"),
     ("0x1894", "invincible_shell", "Invincible"),
     ("0x1938", "snail_skin", "SnailSkin"),
@@ -47,10 +48,7 @@ SNAIL_FIELD_UPDATES = (
 )
 
 PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
-    ("0x00", "vtable", "void*"),
-    ("0x04", "list_flags", "uint32_t"),
-    ("0x24", "object", "Object*"),
-    ("0x78", "render_animation_manager", "AnimManager*"),
+    ("0x00", "body", "RenderableBod"),
     ("0x104", "selected_state", "int32_t"),
     ("0x108", "anim_manager", "AnimManager"),
     ("0x150", "animation_slots", "PresentationAnimationSlot[0x5]"),
@@ -64,21 +62,12 @@ ANIM_MANAGER_FIELD_UPDATES = (
     ("0x10", "completed", "uint8_t"),
     ("0x14", "queued_animations", "int32_t[0xa]"),
     ("0x3c", "queue_count", "int32_t"),
-    ("0x40", "target_model", "BodBase*"),
+    ("0x40", "target_model", "RenderableBod*"),
     ("0x44", "animation_slots", "PresentationAnimationSlot*"),
 )
 
 INVINCIBLE_FIELD_UPDATES = (
-    ("0x00", "vtable", "void*"),
-    ("0x04", "list_flags", "uint32_t"),
-    ("0x08", "list_prev", "BodNode*"),
-    ("0x0c", "list_next", "BodNode*"),
-    ("0x10", "position", "Vec3"),
-    ("0x1c", "render_arg_1c", "float"),
-    ("0x20", "render_arg_20", "float"),
-    ("0x24", "object", "Object*"),
-    ("0x28", "color", "Color4f"),
-    ("0x38", "transform", "TransformMatrix"),
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "int32_t"),
     ("0x84", "spin_phase", "float"),
     ("0x88", "spin_phase_step", "float"),
@@ -87,6 +76,13 @@ INVINCIBLE_FIELD_UPDATES = (
     ("0x98", "cutscene_roll_progress", "float"),
     ("0x9c", "cutscene_roll_step", "float"),
     ("0xa0", "channel_release_steps_active", "uint8_t"),
+)
+
+RENDERABLE_BOD_FIELD_UPDATES = (
+    ("0x00", "bod", "BodBase"),
+    ("0x38", "transform", "TransformMatrix"),
+    ("0x78", "render_animation_manager", "AnimManager*"),
+    ("0x7c", "unknown_7c", "uint8_t[0x4]"),
 )
 
 CUT_SCENE_FIELD_UPDATES = (
@@ -135,7 +131,7 @@ typedef struct GolbPathFollowState {
 """.strip()
 
 GOLB_SHOT_FIELD_UPDATES = (
-    # GolbShot +0x000..+0x18f is an overlapping body/vapour/live-matrix
+    # GolbShot +0x000..+0x197 is an overlapping body/vapour/live-matrix
     # union in the import header. Do not flatten it with field updates here:
     # installing the +0x118 body view would evict the +0x150 matrix view.
     ("0x198", "homing_target_object", "ContactTargetObject*"),
@@ -223,7 +219,7 @@ REQUIRED_HEADER_STRUCTS = (
 )
 
 PLAYER_FIELD_UPDATES = (
-    ("0x38", "live_matrix", "TransformMatrix"),
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "resurrect_final_loss", "int32_t"),
     ("0x84", "resurrect_active", "int32_t"),
     ("0x8c", "resurrect_progress", "float"),
@@ -1016,6 +1012,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             struct_updates=(
+                ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),

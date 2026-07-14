@@ -51,12 +51,13 @@ typedef struct TransformMatrix {
 typedef struct RenderableBod {
     BodBase bod;
     TransformMatrix transform;
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x4];
 } RenderableBod;
 
 /* Windows cRLogoLetter layout; mobile ports use a smaller BOD prefix. */
 typedef struct LogoLetter {
     RenderableBod renderable;
-    uint8_t _pad_78[0x80 - 0x78];
     Vec3 velocity;
     uint8_t glyph;
     uint8_t _pad_8d[0x90 - 0x8d];

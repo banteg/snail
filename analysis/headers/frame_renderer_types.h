@@ -120,7 +120,8 @@ struct FrameBodBase {
 typedef struct FrameRenderCamera {
     uint8_t unknown_00[0x38];
     FrameTransformMatrix transform;
-    uint8_t unknown_78[0x08];
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x04];
     FrameTransformMatrix view_matrix;
     float fov_degrees;
     uint32_t render_mask;
@@ -130,7 +131,8 @@ typedef struct GamePlayer {
     void* vtable;
     uint8_t unknown_004[0x38 - 0x004];
     FrameTransformMatrix transform;
-    uint8_t unknown_078[0x08];
+    void* render_animation_manager;
+    uint8_t unknown_07c[0x04];
     char player_name[0x14];
     int32_t frontend_state;
     int32_t saved_frontend_state;

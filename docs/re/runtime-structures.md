@@ -143,7 +143,7 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x10`: completion latch
     - `+0x14`: `queued_animations[10]`
     - `+0x3c`: `queue_count`
-    - `+0x40`: borrowed `BodBase* target_model` backlink
+    - `+0x40`: borrowed `RenderableBod* target_model` backlink
     - `+0x44`: borrowed `PresentationAnimationSlot* animation_slots`
   - `+0x14c`: ten owned 0x80-byte cutscene animation donor slots
   - `+0x64c/+0xa28/+0xe04`: repeated `PresentationAnimationChannel` weapon lanes
@@ -163,8 +163,10 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x08`: `lift_phase`
     - `+0x0c`: `lift_phase_step`
     - `initialize_cutscene` seeds the two phase-step pairs before the intro wobble branches
-  - `+0x1604`: `snail_hotspot_source_matrix_a`
-  - `+0x1684`: `snail_hotspot_source_matrix_b`
+  - `+0x15cc`: owned `snail_hotspot_source_body`
+    - inherited transform at `+0x1604` (`snail_hotspot_source_matrix_a`)
+  - `+0x164c`: owned `snail_hotspot_body`
+    - inherited transform at `+0x1684` (`snail_hotspot_source_matrix_b`)
   - `+0x16cc`: `snail_hotspots_local`
     - `19`-entry `Vec3` array
   - `+0x17b0`: `snail_hotspots_world`

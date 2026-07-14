@@ -28,7 +28,6 @@ public:
     void deactivate_sub_lazer_projectile(); // @ 0x441740
     void update_sub_lazer_projectile(); // @ 0x4417d0
 
-    char unknown_78[0x80 - 0x78];
     int state;                // +0x80, SubLazerState
     char unknown_84[0x88 - 0x84];
     SubgameRuntime* owner_game; // +0x88, borrowed containing subgame

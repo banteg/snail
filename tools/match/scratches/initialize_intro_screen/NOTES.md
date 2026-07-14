@@ -26,7 +26,7 @@ Expected residuals:
   `SubgameRuntime +0x74618`.
 - `LogoLetter` is shared across its exact constructor, pinned updater,
   intro initializer, teardown, constructor loop, and logo loader. It owns the
-  inherited `RenderableBod` through `+0x77`, velocity at `+0x80`, and the
+  inherited `RenderableBod` through `+0x7f`, velocity at `+0x80`, and the
   glyph/image marker at `+0x8c`.
 - The old starter scratch based position, color, and object reads `0x18` bytes
   too late, treated the 32-slot logo bank as a four-byte pointer array, and

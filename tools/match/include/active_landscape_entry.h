@@ -11,7 +11,6 @@ public:
     ActiveLandscapeEntry* initialize_active_landscape_entry(); // @ 0x408820
     void update_active_landscape_entry(); // @ 0x418ac0
 
-    char unknown_078[0x80 - 0x78];
     int state; // +0x80
     char unknown_084[0x88 - 0x84];
     float repeat_z_span; // +0x88

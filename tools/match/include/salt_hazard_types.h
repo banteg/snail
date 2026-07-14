@@ -16,7 +16,6 @@ public:
     float& fade_alpha() { return velocity.x; } // +0x8c overlay in update_salt_hazard
     unsigned char& collision_armed() { return *(unsigned char*)&velocity.z; } // +0x94
 
-    char unknown_78[0x80 - 0x78];
     int state;                 // +0x80
     char unknown_84[0x88 - 0x84];
     SubgameRuntime* owner_game; // +0x88

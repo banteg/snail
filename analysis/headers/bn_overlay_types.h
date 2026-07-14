@@ -19,7 +19,6 @@ typedef union RenderCameraTail {
 
 typedef struct RenderCamera {
     struct RenderableBod bod;
-    uint8_t unknown_78[0x80 - 0x78];
     struct TransformMatrix view_matrix;
     float fov_degrees;
     RenderCameraTail tail;
@@ -27,7 +26,6 @@ typedef struct RenderCamera {
 
 typedef struct Overlay {
     struct RenderableBod bod;
-    uint8_t unknown_78[0x80 - 0x78];
     RenderCamera camera;
     float rotation_step;
 } Overlay;

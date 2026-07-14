@@ -91,10 +91,8 @@ public:
 
     // build_subgame_level links this inherited renderable BOD; the intrusive
     // list only borrows the embedded presentation object.
-    // Installed only when the linked Object owns generated animation frames.
-    // cRGame::Render borrows this manager's progress for Object::animation.
-    AnimManager* render_animation_manager; // +0x78, borrowed owned manager at +0x104
-    char unknown_7c[0x80 - 0x7c];
+    // The inherited +0x78 lane borrows the owned manager at +0x104 when this
+    // linked body has the 0x800 animation-progress flag.
     TransformMatrix previous_live_matrix;   // +0x80
     TransformMatrix cached_cutscene_matrix; // +0xc0
     Player* owner_player;                   // +0x100, non-owning backlink to containing Player
@@ -112,9 +110,7 @@ public:
     // Camera/body hotspot source. Only its inherited transform is consumed,
     // but the exact constructor initializes the complete renderable owner.
     RenderableBod snail_hotspot_source_body; // +0x15cc, transform at +0x1604
-    char unknown_1644[0x164c - 0x1644];
     RenderableBod snail_hotspot_body;        // +0x164c, owns model at +0x1670 and transform at +0x1684
-    char unknown_16c4[0x16cc - 0x16c4];
     Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
     Invincible invincible_shell;                // +0x1894, authored cRInvincible
@@ -147,7 +143,6 @@ public:
 
     // Player storage is embedded in SubgameRuntime. Its inherited BOD node is
     // merely linked into the global active list; the list never owns it.
-    char unknown_78[0x80 - 0x78];
     int resurrect_final_loss;              // +0x80
     unsigned char resurrect_active;        // +0x84
     char unknown_85[0x8c - 0x85];

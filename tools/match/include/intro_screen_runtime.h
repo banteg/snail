@@ -15,7 +15,6 @@ public:
     LogoLetter* initialize_intro_logo_renderable(); // @ 0x408490
     void update_intro_logo_renderable(); // @ 0x419a90, cRLogoLetter::AI
 
-    char unknown_078[0x80 - 0x78];
     Vector3 velocity; // +0x80
     unsigned char glyph; // +0x8c, 0xff for image records
     char unknown_08d[0x90 - 0x8d];

@@ -9,11 +9,6 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-class RenderAnimatedBodView : public RenderableBod {
-public:
-    AnimManager* render_animation_manager; // +0x78, borrowed cRSnail/cRWeapon manager
-};
-
 void reset_render_counters();                // @ 0x414650
 void begin_sprite_depth_render_state();      // @ 0x413540
 void end_sprite_depth_render_state();        // @ 0x413650
@@ -25,7 +20,7 @@ int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in relea
 int draw_sprite_quad(Vector3* position, Sprite* sprite); // @ 0x4137f0
 void draw_font_text_queue(unsigned int render_mask);     // @ 0x44a730
 
-extern RenderAnimatedBodView* g_post_sprite_bods[]; // data_4dfb10
+extern RenderableBod* g_post_sprite_bods[]; // data_4dfb10
 
 void GameRoot::render_game_frame()
 {
@@ -116,9 +111,9 @@ void GameRoot::render_game_frame()
 
             post_sprite_count = 0;
             if ((slot->flags & 2) == 0) {
-                RenderAnimatedBodView* bod =
-                    (RenderAnimatedBodView*)active_bod_list.first;
-                RenderAnimatedBodView** post_cursor = g_post_sprite_bods;
+                RenderableBod* bod =
+                    (RenderableBod*)active_bod_list.first;
+                RenderableBod** post_cursor = g_post_sprite_bods;
                 while (bod != 0) {
                     if ((bod->list_flags & 0x10) != 0) {
                         debug_report_stub("DEBUG RENDER\n");
@@ -159,7 +154,7 @@ void GameRoot::render_game_frame()
                         }
                     }
 
-                    bod = (RenderAnimatedBodView*)bod->list_next;
+                    bod = (RenderableBod*)bod->list_next;
                 }
             }
 
@@ -255,11 +250,11 @@ void GameRoot::render_game_frame()
                     slot->draw_world,
                     1);
 
-                RenderAnimatedBodView** post_cursor =
+                RenderableBod** post_cursor =
                     g_post_sprite_bods + post_sprite_count;
                 do {
                     --post_cursor;
-                    RenderAnimatedBodView* bod = *post_cursor;
+                    RenderableBod* bod = *post_cursor;
                     unsigned int bod_flags = bod->list_flags;
                     if ((bod_flags & 0x400) != 0) {
                         render_object(

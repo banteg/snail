@@ -9,7 +9,6 @@ public:
     void initialize_overlay(); // @ 0x40a240
     void update_overlay(); // @ 0x40a1b0
 
-    char unknown_078[0x80 - 0x78];
     // Viewport slots 0, 2, and 3 borrow the camera subobjects from the three
     // root-owned Overlay instances. The parent transform drives its camera.
     RenderCamera camera; // +0x80, ends at +0x148

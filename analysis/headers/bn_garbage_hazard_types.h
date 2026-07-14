@@ -123,7 +123,8 @@ struct GarbageHazardSlot {
     float basis_forward_w;
     Vec3 world_position;
     float world_position_w;
-    uint8_t unknown_78[0x8];
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x4];
     GarbageHazardSlot* next_active;
     int32_t state;
     int32_t collision_side;

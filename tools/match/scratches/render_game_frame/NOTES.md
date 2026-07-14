@@ -70,11 +70,12 @@ Expected residuals:
   replay count before draining the post-sprite stack. A separately named local
   expands the candidate frame to `0x84`, so this honest partial leaves the
   unused ledger out instead of introducing explicit stack aliasing.
-- The BOD prefix through `RenderableBod +0x78` is now shared through
+- The complete BOD prefix through `RenderableBod +0x7f` is now shared through
   `bod_types.h` and the existing `BodNode`/`ContactTargetObject` prefix: signed
   flags, list links, position, render-object pass-through arguments, object,
-  color, and optional embedded transform. The cast-only renderer view adds only
-  the animation-manager binding used by flagged Snail/weapon owners at `+0x78`.
+  color, transform, the conditional animation-manager binding at `+0x78`, and
+  the still-unknown final word at `+0x7c`. No renderer-only derived view is
+  needed.
 - The five renderer state wrapper calls are named through exact standalone
   scratches; remaining work is the larger frame/register/data-owner shape.
 - The native method is void. The only caller ignores its result, the positive
@@ -147,3 +148,16 @@ The normalized candidate listing remains byte-identical
 (`df9e91e723f12aeabea17578a3fae2b3fbba67527c0495eb46e00cd56a17b8c6`)
 at the honest 45.43% focused result (`415/439`, prefix `3/439`, 26 clean
 operands).
+
+## 2026-07-14 complete RenderableBod extent
+
+The generic active-list traversal itself reads `BOD +0x78` under the `0x800`
+render-sync flag, while exact Snail and weapon setup install their self-owned
+`AnimManager` pointers in that lane. Every known Windows renderable child
+starts its own state at `+0x80`; Android preserves the same conditional lane at
+`cRBod +0x6c` and starts ClickStart state at `+0x74`, exactly 0x0c bytes earlier.
+The canonical Windows `RenderableBod` is therefore 0x80 bytes, not a 0x78-byte
+prefix followed by repeated child padding. Promoting the borrowed manager and
+unknown `+0x7c` word into the base removes the local renderer subclass and all
+known duplicated child gaps. Focused output remains byte-identical at 45.43%,
+415/439 instructions, prefix 3, with all 26 operands clean.

@@ -39,7 +39,6 @@ public:
     int initialize_ring_or_special_effect_particles(int unused_lives_snapshot); // @ 0x43e470
     void update_ring_or_special_effect_parent(); // @ 0x43e830
 
-    char unknown_078[0x80 - 0x78];
     int state; // +0x80, 0 inactive; 1 normal; 2..5 transitions
     Player* owner_player; // +0x84, borrowed Player used for slot/lives state
     int kind; // +0x88

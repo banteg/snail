@@ -39,7 +39,6 @@ public:
     void kill_slug_hazard();                              // @ 0x43f8b0
     void update_slug_hazard_ai();                         // @ 0x43f930
 
-    char unknown_78[0x80 - 0x78];
     int state;                         // +0x80, SubSlugState
     int death_toss_direction;          // +0x84, SubSlugDeathTossDirection
     SubgameRuntime* owner_game;        // +0x88, borrowed containing subgame

@@ -21,7 +21,7 @@ now correctly owned by the sub-lazer vtable.
 
 2026-06-16 BOD/renderable consolidation: the shared `SaltHazardSlot` header now
 uses the promoted `BodNode` prefix and `BodList` anchor, and records the
-BodBase/renderable rows through `+0x77`. This updater now calls
+complete `RenderableBod` through `+0x7f`. This updater now calls
 `color.set_color_alpha(...)` through the promoted `Color4f color +0x28` field
 instead of a raw cast, while spawn/initializer/collision prove the position
 row at `+0x68`. Focused Wibo remains `62.96%`, `79/83`, with the same known

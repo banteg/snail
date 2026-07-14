@@ -73,7 +73,8 @@ typedef struct TrackSpeedupRuntime {
     float basis_forward_w;
     Vec3 world_position;
     float world_position_w;
-    uint8_t unknown_78[0x08];
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x04];
     int32_t state;
     struct Player* owner;
     uint8_t unknown_88[0x04];
@@ -202,7 +203,8 @@ struct SubRing {
     float basis_forward_w;
     Vec3 world_position;
     float world_position_w;
-    uint8_t unknown_78[0x08];
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x04];
     int32_t state;
     Player* owner_player;
     int32_t kind;

@@ -272,8 +272,9 @@
 The constructor now keeps `subgoldy` as the actual embedded `Player*` and
 calls inherited `RenderableBod::initialize_renderable_bod()` directly. The
 base owns the vtable slot, intrusive node, position, render arguments,
-borrowed `Object*`, color, and transform through `+0x77`; Player's first
-derived storage remains at `+0x78`, and its complete size remains `0x4364`.
+borrowed `Object*`, color, transform, conditional manager lane, and unknown
+tail through `+0x7f`; Player's first derived storage remains at `+0x80`, and
+its complete size remains `0x4364`.
 The exact constructor is byte-identical at 227/227 instructions with all 72
 operands clean.
 

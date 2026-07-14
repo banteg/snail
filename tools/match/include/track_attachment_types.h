@@ -315,7 +315,6 @@ class RowModel : public RenderableBod {
 public:
     void update_row_model(); // @ 0x443070, cRRowModel::AI
 
-    char unknown_78[0x80 - 0x78];
     Vector3 velocity; // +0x80, outer SubRow +0x84
 };
 

@@ -7,8 +7,8 @@ Recovered layout:
 
 - `this + 0x24018`: first image-donor `LogoLetter`;
 - logo renderable stride: `0x90`;
-- each slot is a `RenderableBod` followed by 0x18 bytes of intro-logo runtime
-  state, matching the existing intro logo update scratch;
+- each slot is a 0x80-byte `RenderableBod` followed by 0x10 bytes of intro-logo
+  runtime state, matching the existing intro logo update scratch;
 - the local archive enumeration buffer stores names in 0x80-byte entries.
 
 The function uses the shared object and texture lists: each renderable receives

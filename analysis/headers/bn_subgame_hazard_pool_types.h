@@ -59,7 +59,8 @@ typedef struct SubLazer {
     float basis_forward_w;
     Vec3 position;
     float position_w;
-    uint8_t unknown_78[0x8];
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x4];
     int32_t state;
     uint8_t unknown_84[0x4];
     SubgameRuntime* owner_game;
@@ -90,7 +91,8 @@ typedef struct Salt {
     float basis_forward_w;
     Vec3 position;
     float position_w;
-    uint8_t unknown_78[0x8];
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x4];
     int32_t state;
     uint8_t unknown_84[0x4];
     SubgameRuntime* owner_game;

@@ -61,9 +61,14 @@ typedef struct BodBase {
     Color4f color;
 } BodBase;
 
+typedef struct AnimManager AnimManager;
+
 typedef struct RenderableBod {
     BodBase bod;
     uint8_t transform[0x40];
+    /* Borrowed only when BodNode.list_flags has the render-sync bit 0x800. */
+    AnimManager* render_animation_manager;
+    uint8_t unknown_7c[0x4];
 } RenderableBod;
 
 typedef struct FringeObject {
@@ -145,21 +150,7 @@ typedef struct SubTracks {
 
 /* Exact 0xb4-byte authored cRSubSpeedUp singleton. */
 typedef struct SubSpeedUp {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    Color4f color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 world_position;
-    float world_position_w;
-    uint8_t unknown_78[0x80 - 0x78];
+    RenderableBod body;
     int32_t state;
     Player* owner;
     uint8_t unknown_88[0x8c - 0x88];
@@ -540,17 +531,7 @@ typedef struct VoiceManager {
  * @ 0x441560, update_salt_hazard @ 0x441c10.
  */
 typedef struct SaltHazardSlot {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    Color4f color;
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 world_position;
-    uint8_t _pad_78[0x8];
+    RenderableBod body;
     uint32_t state;
     uint8_t _pad_84[0x4];
     SubgameRuntime* owner_game;
@@ -580,17 +561,7 @@ enum {
 };
 
 typedef struct SubLazerSlot {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    Color4f color;
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 world_position;
-    uint8_t _pad_78[0x8];
+    RenderableBod body;
     uint32_t state;
     uint8_t _pad_84[0x4];
     SubgameRuntime* owner_game;
@@ -636,7 +607,6 @@ enum {
 
 typedef struct SlugHazardRuntime {
     RenderableBod bod;
-    uint8_t _pad_78[0x80 - 0x78];
     int32_t state;
     int32_t death_toss_direction;
     SubgameRuntime* owner_game;
@@ -679,25 +649,11 @@ typedef struct SaltManager {
 
 typedef struct GarbageHazardSlot GarbageHazardSlot;
 struct GarbageHazardSlot {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    Color4f color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 world_position;
-    float world_position_w;
-    uint8_t _pad_78[0x80 - 0x78];
+    RenderableBod body;
     GarbageHazardSlot* next_active;
     int32_t state;
     int32_t collision_side;
-    SubgameRuntime* game;
+    SubgameRuntime* owner_game;
     Vec3 velocity;
     float radius;
     float attachment_facing_angle;
@@ -709,7 +665,7 @@ struct GarbageHazardSlot {
     TrackRowCell* source_cell;
     uint8_t hidden;
     uint8_t _pad_bd[0xc0 - 0xbd];
-    Player* player;
+    Player* owner_player;
 };
 
 typedef struct GarbageHazardPool {
@@ -736,21 +692,7 @@ typedef struct RingEffectRateSource {
 } RingEffectRateSource;
 
 struct RingOrSpecialEffectParent {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    Color4f color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 world_position;
-    float world_position_w;
-    uint8_t _pad_78[0x80 - 0x78];
+    RenderableBod body;
     int32_t state;
     Player* owner_player;
     int32_t kind;
@@ -797,7 +739,6 @@ typedef struct BarrierActor {
 
 typedef struct ActiveLandscapeEntry {
     RenderableBod bod;
-    uint8_t _pad_78[0x80 - 0x78];
     int32_t state;
     uint8_t _pad_84[0x88 - 0x84];
     float repeat_z_span;
@@ -872,7 +813,6 @@ typedef struct TrackRowCell {
 typedef struct TrackAttachmentRuntimeRow {
     uint32_t flags;
     RenderableBod primary_body;
-    uint8_t _pad_7c[0x8];
     Vec3 authored_object_velocity;
     Vec3 projection_payload;
     int32_t parcel_set_id;
@@ -1096,11 +1036,10 @@ typedef struct ObjectAnimation {
 /* One owned 0x80-byte Windows presentation-animation donor slot. */
 typedef struct PresentationAnimationSlot {
     RenderableBod body;
-    uint8_t _pad_78[0x8];
 } PresentationAnimationSlot;
 
 /* Authored cRAnimManager, exact 0x48-byte queued animation owner. */
-typedef struct AnimManager {
+struct AnimManager {
     int32_t state;
     float progress;
     float progress_step;
@@ -1109,19 +1048,13 @@ typedef struct AnimManager {
     uint8_t _pad_11[0x3];
     int32_t queued_animations[10];
     int32_t queue_count;
-    BodBase* target_model;
+    RenderableBod* target_model;
     PresentationAnimationSlot* animation_slots;
-} AnimManager;
+};
 
 typedef struct PresentationAnimationChannel {
-    void* vtable;
-    uint32_t list_flags;
-    uint8_t _pad_08[0x1c];
-    Object* object;
-    uint8_t _pad_28[0x10];
-    TransformMatrix live_matrix;
-    AnimManager* render_animation_manager;
-    uint8_t _pad_7c[0x88];
+    RenderableBod body;
+    uint8_t _pad_80[0x104 - 0x80];
     int32_t selected_state;
     AnimManager anim_manager;
     PresentationAnimationSlot animation_slots[5];
@@ -1143,22 +1076,11 @@ typedef struct PresentationWobbleController {
     float roll_phase_step;
     float lift_phase;
     float lift_phase_step;
-    uint8_t _pad_10[0x38];
 } PresentationWobbleController;
 
 /* Authored cRInvincible, exact 0xa4-byte spinning shell visual owner. */
 typedef struct Invincible {
-    void* vtable;
-    uint32_t list_flags;
-    BodNode* list_prev;
-    BodNode* list_next;
-    Vec3 position;
-    float render_arg_1c;
-    float render_arg_20;
-    Object* object;
-    Color4f color;
-    TransformMatrix transform;
-    uint8_t _pad_78[0x8];
+    RenderableBod body;
     int32_t state;
     float spin_phase;
     float spin_phase_step;
@@ -1173,14 +1095,7 @@ typedef struct Invincible {
 
 /* Authored cRSnail, exact 0x19b4-byte Player presentation owner. */
 typedef struct Snail {
-    void* vtable;
-    uint32_t list_flags;
-    uint8_t _pad_08[0x1c];
-    Object* object;
-    uint8_t _pad_28[0x10];
-    TransformMatrix live_matrix;
-    AnimManager* render_animation_manager;
-    uint8_t _pad_7c[0x4];
+    RenderableBod body;
     TransformMatrix previous_live_matrix;
     TransformMatrix cached_cutscene_matrix;
     Player* owner_player;
@@ -1189,10 +1104,8 @@ typedef struct Snail {
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;
     PresentationWobbleController wobble;
-    TransformMatrix snail_hotspot_source_matrix_a;
-    uint8_t _pad_1644[0x8];
+    RenderableBod snail_hotspot_source_body;
     RenderableBod snail_hotspot_body;
-    uint8_t _pad_16c4[0x8];
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
     Invincible invincible_shell;
@@ -1242,13 +1155,12 @@ typedef struct FireWork {
 /* Authored cRClickStart, exact 0xac-byte RenderableBod child. */
 typedef struct ClickStart {
     RenderableBod bod;
-    uint8_t _pad_78[0x8];
     int32_t state;
     FrontendWidget* prompt;
     float teardown_progress;
     float teardown_progress_step;
     uint8_t _pad_90[0x8];
-    Player* player;
+    Player* owner_player;
     uint8_t _pad_9c[0xc];
     uint8_t hide_prompt;
     uint8_t _pad_a9[0x3];
@@ -1442,9 +1354,9 @@ typedef struct GolbShot {
     union {
         struct {
             RenderableBod primary_body;
-            uint8_t _pad_078[0x080 - 0x078];
             RenderableBod secondary_body;
-            uint8_t _pad_0f8[0x118 - 0x0f8];
+            uint8_t _pad_100[0x114 - 0x100];
+            struct GolbShot* vapour_owner_shot;
             RenderableBod tertiary_body;
         };
         struct {
@@ -1454,7 +1366,6 @@ typedef struct GolbShot {
             TransformMatrix live_matrix;
         };
     };
-    uint8_t _pad_190[0x8];
     ContactTargetObject* homing_target_object;
     Vec3 homing_target;
     struct GolbShot* rocket_owner_shot;
@@ -1484,9 +1395,7 @@ typedef struct GolbShot {
 } GolbShot;
 
 typedef struct Player {
-    uint8_t _pad_00[0x38];
-    TransformMatrix live_matrix;
-    uint8_t _pad_78[0x8];
+    RenderableBod body;
     int32_t resurrect_final_loss;
     int32_t resurrect_active;
     uint8_t _pad_88[0x4];

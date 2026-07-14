@@ -17,7 +17,6 @@ public:
     SubSpeedUp* initialize_track_speedup_runtime(); // @ 0x4084b0
     void update_track_speedup(); // @ 0x43ee50
 
-    char unknown_78[0x80 - 0x78];
     int state; // +0x80
     Player* owner; // +0x84
     char unknown_88[0x8c - 0x88];

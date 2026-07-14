@@ -22,7 +22,6 @@ public:
     void initialize_click_start(Player* player); // @ 0x442170, cRClickStart::Init
     void update_click_start();                   // @ 0x442290, cRClickStart::AI
 
-    char unknown_78[0x80 - 0x78];
     ClickStartState state;      // +0x80
     FrontendWidget* prompt;     // +0x84
     float teardown_progress;    // +0x88
