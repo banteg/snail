@@ -408,3 +408,26 @@ the large switch; no absolute root-plus-offset expression remains here.
 The inherited-base promotion is byte-stable at the same 29.27%, 1,208/1,245
 instructions, with 60 clean operands and the one known glyph jump-table
 layout mismatch.
+
+## Runtime clear-cursor ownership (2026-07-14)
+
+The native clear pass still advances an interior cursor rooted at
+`SubLoc::fringe_front` and another rooted at `SubRow::projection_payload.y`.
+Those lifetimes are useful compiler evidence, but their former
+`+0x3bfb0c/+0x5ccb5c`, 84-byte, 61-dword, and numbered negative/positive lane
+constants no longer carry the layout themselves:
+
+- cursor bases derive from `runtime_cells[0][0]` and `runtime_rows[0]`;
+- row and lane counts derive from the owned 3200-by-8 arrays;
+- cursor strides derive from `sizeof(SubLoc)` and `sizeof(SubRow)`; and
+- every cleared row lane derives from `offsetof(SubRow, ...)`, covering flags,
+  projection payload, parcel/template state, borrowed attachment/source links,
+  heading/ring values, and the row-event id.
+
+The adjacent cell deltas likewise derive `lane_and_flags`, `tile_flags_3d`,
+the inherited list flags, and inherited color from their real owners. The
+track-texture selector and mode-3 repeated row count now read the embedded
+`SubTracks` fields directly. Focused Wibo retains the existing 29.27%,
+1,208/1,245 frontier with 60 clean operands and the sole documented glyph
+jump-table mismatch; no typed whole-row rewrite or register-forcing alias was
+introduced.

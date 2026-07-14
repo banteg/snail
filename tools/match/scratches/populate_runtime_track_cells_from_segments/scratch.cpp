@@ -1,6 +1,8 @@
 // populate_runtime_track_cells_from_segments @ 0x435eb0 (thiscall, ret)
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
+#include <stddef.h>
+
 #include "sprite.h"
 #include "game_root.h"
 #include "runtime_config.h"
@@ -86,7 +88,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     player.movement_flag_selector = 0;
     set_math_random_seed(runtime_build_seed);
     ((GameRoot*)g_game_base)->texture_set_selector.select_level_track_texture_set(
-        *(int*)(base + 0x1b01e4));
+        level_definition.track_texture_set);
 
     int segment_cursor = 0;
     mode = level_mode;
@@ -118,7 +120,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         runtime_row_count = level_definition.first_segment.row_count
             + level_definition.last_segment.row_count;
         for (int i = 0; i < 16; ++i)
-            runtime_row_count += *(int*)(base + 0xa87c);
+            runtime_row_count += level_definition.segment_slots[0].row_count;
         segment_cursor = 0;
         completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
         completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
@@ -131,45 +133,94 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     int row_event_owner = 0;
     player.follow_state.flag_3c = 0;
 
-    char* cell_payload_cursor = base + 0x3bfb0c;
-    int* row_cursor = (int*)(base + 0x5ccb5c);
-    for (int row = 0; row < 3200; ++row) {
-        row_cursor[-37] = 0;
-        row_cursor[6] = 0;
-        row_cursor[3] = 0;
-        row_cursor[21] = 0;
-        row_cursor[4] = 0;
-        row_cursor[1] = 0;
-        row_cursor[0] = 0;
-        row_cursor[-1] = 0;
-        row_cursor[2] = 0;
-        row_cursor[22] = 0;
-        row_cursor[23] = 0;
+    enum {
+        ROW_CURSOR_BASE =
+            offsetof(SubRow, projection_payload) + offsetof(Vector3, y),
+        ROW_CURSOR_TO_FLAGS =
+            ((int)offsetof(SubRow, flags) - ROW_CURSOR_BASE) / sizeof(int),
+        ROW_CURSOR_TO_PROJECTION_X =
+            ((int)offsetof(SubRow, projection_payload)
+             + (int)offsetof(Vector3, x) - ROW_CURSOR_BASE) / sizeof(int),
+        ROW_CURSOR_TO_PROJECTION_Y = 0,
+        ROW_CURSOR_TO_PROJECTION_Z =
+            ((int)offsetof(SubRow, projection_payload)
+             + (int)offsetof(Vector3, z) - ROW_CURSOR_BASE) / sizeof(int),
+        ROW_CURSOR_TO_PARCEL_SET_ID =
+            ((int)offsetof(SubRow, parcel_set_id) - ROW_CURSOR_BASE) / sizeof(int),
+        ROW_CURSOR_TO_ATTACHMENT_TEMPLATE_INDEX =
+            ((int)offsetof(SubRow, attachment_template_index) - ROW_CURSOR_BASE)
+            / sizeof(int),
+        ROW_CURSOR_TO_PRIMARY_ATTACHMENT_CELL =
+            ((int)offsetof(SubRow, primary_attachment_cell) - ROW_CURSOR_BASE)
+            / sizeof(int),
+        ROW_CURSOR_TO_INSTALLED_HEADING =
+            ((int)offsetof(SubRow, installed_heading_delta) - ROW_CURSOR_BASE)
+            / sizeof(int),
+        ROW_CURSOR_TO_RING_SPEED =
+            ((int)offsetof(SubRow, ring_speed) - ROW_CURSOR_BASE) / sizeof(int),
+        ROW_CURSOR_TO_SOURCE_SEGMENT =
+            ((int)offsetof(SubRow, source_segment) - ROW_CURSOR_BASE) / sizeof(int),
+        ROW_CURSOR_TO_ROW_EVENT_ID =
+            ((int)offsetof(SubRow, row_event_id) - ROW_CURSOR_BASE) / sizeof(int),
+        CELL_FRINGE_TO_LANE_FLAGS =
+            (int)offsetof(SubLoc, lane_and_flags)
+            - (int)offsetof(SubLoc, fringe_front),
+        CELL_LANE_FLAGS_TO_TILE_FLAGS =
+            (int)offsetof(SubLoc, tile_flags_3d)
+            - (int)offsetof(SubLoc, lane_and_flags),
+        CELL_LANE_FLAGS_TO_LIST_FLAGS =
+            (int)offsetof(ContactTargetObject, list_flags)
+            - (int)offsetof(SubLoc, lane_and_flags),
+        CELL_LANE_FLAGS_TO_COLOR =
+            (int)offsetof(BodBase, color)
+            - (int)offsetof(SubLoc, lane_and_flags),
+    };
+    char* cell_payload_cursor = (char*)&runtime_cells[0][0].fringe_front;
+    int* row_cursor = (int*)&runtime_rows[0].projection_payload.y;
+    for (int row = 0;
+         row < (int)(sizeof(runtime_rows) / sizeof(runtime_rows[0]));
+         ++row) {
+        row_cursor[ROW_CURSOR_TO_FLAGS] = 0;
+        row_cursor[ROW_CURSOR_TO_INSTALLED_HEADING] = 0;
+        row_cursor[ROW_CURSOR_TO_ATTACHMENT_TEMPLATE_INDEX] = 0;
+        row_cursor[ROW_CURSOR_TO_RING_SPEED] = 0;
+        row_cursor[ROW_CURSOR_TO_PRIMARY_ATTACHMENT_CELL] = 0;
+        row_cursor[ROW_CURSOR_TO_PROJECTION_Z] = 0;
+        row_cursor[ROW_CURSOR_TO_PROJECTION_Y] = 0;
+        row_cursor[ROW_CURSOR_TO_PROJECTION_X] = 0;
+        row_cursor[ROW_CURSOR_TO_PARCEL_SET_ID] = 0;
+        row_cursor[ROW_CURSOR_TO_SOURCE_SEGMENT] = 0;
+        row_cursor[ROW_CURSOR_TO_ROW_EVENT_ID] = 0;
 
-        char* cell_flags = cell_payload_cursor - 4;
-        for (int lane = 0; lane < 8; ++lane) {
+        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;
+        for (int lane = 0;
+             lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
+             ++lane) {
             int flags = *(int*)cell_flags;
             ((unsigned char*)&flags)[1] &= 0x5f;
             *(int*)cell_flags = flags;
-            *(cell_flags - 3) = 0;
+            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;
             *(short*)cell_flags = 0;
             *(int*)cell_flags &= 0xffffafa7;
             *(short*)cell_flags = 0;
-            *(int*)(cell_flags - 60) &= 0xffffff7f;
-            ((Color4f*)(cell_flags - 24))->set_color_white();
-            cell_flags += 84;
+            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;
+            ((Color4f*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->set_color_white();
+            cell_flags += sizeof(SubLoc);
         }
 
         char* cell_payload = cell_payload_cursor;
-        for (int lane_payload = 0; lane_payload < 8; ++lane_payload) {
+        for (int lane_payload = 0;
+             lane_payload
+                < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
+             ++lane_payload) {
             *(int*)cell_payload = 0;
             *(int*)(cell_payload + 4) = 0;
             *(int*)(cell_payload + 8) = 0;
             *(int*)(cell_payload + 12) = 0;
-            cell_payload += 84;
+            cell_payload += sizeof(SubLoc);
         }
         cell_payload_cursor = cell_payload;
-        row_cursor += 61;
+        row_cursor += sizeof(SubRow) / sizeof(int);
     }
 
     if (level_definition.random_enabled == 1) {
