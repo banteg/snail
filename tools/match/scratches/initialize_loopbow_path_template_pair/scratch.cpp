@@ -15,27 +15,6 @@ static __inline Vector3 vector_subtract(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 }
 
-struct LoopbowFaceQuad {
-    unsigned short flags;             // +0x00
-    unsigned short vertex_0;          // +0x02
-    unsigned short vertex_1;          // +0x04
-    unsigned short vertex_2;          // +0x06
-    unsigned short vertex_3;          // +0x08
-    unsigned short unknown_0a;        // +0x0a
-    TextureRef* texture_ref;          // +0x0c
-    float u0;                         // +0x10
-    float v0;                         // +0x14
-    float u1;                         // +0x18
-    float v1;                         // +0x1c
-    float u2;                         // +0x20
-    float v2;                         // +0x24
-    float u3;                         // +0x28
-    float v3;                         // +0x2c
-};
-
-typedef char LoopbowFaceQuad_must_be_0x30[
-    (sizeof(LoopbowFaceQuad) == 0x30) ? 1 : -1];
-
 // This caller tail-returns the finalizer's stale EAX flags value.
 int __fastcall finalize_path_template(Path* path);
 
@@ -253,7 +232,7 @@ int Path::initialize_loopbow_path_template_pair(
     strip_mesh->request_object_facequads(
         2 * segment_count * width_cells);
 
-    LoopbowFaceQuad* facequads = (LoopbowFaceQuad*)strip_mesh->facequads;
+    ObjectFaceQuad* facequads = strip_mesh->facequads;
     Vector3* vertices = strip_mesh->vertices;
 
     int row = 0;
@@ -319,10 +298,10 @@ int Path::initialize_loopbow_path_template_pair(
                     float u1 = (float)(cell_index + 1) * 0.125f;
                     do {
                         if (side != 0) {
-                            LoopbowFaceQuad* face =
+                            ObjectFaceQuad* face =
                                 &facequads[side + 2 *
                                     (cell_index + segment * width_cells)];
-                            face->flags = 0;
+                            face->header_word = 0;
                             face->vertex_0 =
                                 segment * (width_cells + 1) + cell_index + 1;
                             face->vertex_1 =
@@ -352,10 +331,10 @@ int Path::initialize_loopbow_path_template_pair(
                             face->u3 = u1;
                             face->v3 = v1;
                         } else {
-                            LoopbowFaceQuad* face =
+                            ObjectFaceQuad* face =
                                 &facequads[side + 2 *
                                     (cell_index + segment * width_cells)];
-                            face->flags = 0;
+                            face->header_word = 0;
                             face->vertex_0 =
                                 cell_index + segment * (width_cells + 1);
                             face->vertex_1 =

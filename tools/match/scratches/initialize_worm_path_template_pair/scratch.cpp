@@ -5,27 +5,6 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-struct WormFaceQuad {
-    unsigned short flags;                  // +0x00
-    unsigned short vertex_index_a;         // +0x02
-    unsigned short vertex_index_b;         // +0x04
-    unsigned short vertex_index_c;         // +0x06
-    unsigned short vertex_index_d;         // +0x08
-    char unknown_0a[2];
-    TextureRef* texture_ref;               // +0x0c
-    float u0;                              // +0x10
-    float v0;                              // +0x14
-    float u1;                              // +0x18
-    float v1;                              // +0x1c
-    float u2;                              // +0x20
-    float v2;                              // +0x24
-    float u3;                              // +0x28
-    float v3;                              // +0x2c
-};
-
-typedef char WormFaceQuad_must_be_0x30[
-    (sizeof(WormFaceQuad) == 0x30) ? 1 : -1];
-
 void __fastcall request_object_vertex_colours(Object* object);
 
 const int PATH_TEMPLATE_KIND_WORM = 24;
@@ -211,7 +190,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
     strip_mesh->flags |= 0x10000;
 
     Vector3* vertices = strip_mesh->vertices;
-    WormFaceQuad* facequads = (WormFaceQuad*)strip_mesh->facequads;
+    ObjectFaceQuad* facequads = strip_mesh->facequads;
     Color4f* vertex_colours = strip_mesh->vertex_colours;
 
     if (segment_count >= 0) {
@@ -277,26 +256,26 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
                     float next_column_f = (float)next_column;
                     int side = 0;
                     do {
-                        WormFaceQuad* face =
+                        ObjectFaceQuad* face =
                             &facequads[side + 2 * (face_row * width_cells + column)];
-                        face->flags = 0;
+                        face->header_word = 0;
                         if (side == 0) {
-                            face->vertex_index_a =
+                            face->vertex_0 =
                                 (unsigned short)(face_row * width_cells + column);
-                            face->vertex_index_b =
+                            face->vertex_1 =
                                 (unsigned short)(face_row * width_cells + next_column % width_cells);
-                            face->vertex_index_c =
+                            face->vertex_2 =
                                 (unsigned short)((face_row + 1) * width_cells + next_column % width_cells);
-                            face->vertex_index_d =
+                            face->vertex_3 =
                                 (unsigned short)((face_row + 1) * width_cells + column);
                         } else {
-                            face->vertex_index_a =
+                            face->vertex_0 =
                                 (unsigned short)(face_row * width_cells + next_column % width_cells);
-                            face->vertex_index_b =
+                            face->vertex_1 =
                                 (unsigned short)(face_row * width_cells + column);
-                            face->vertex_index_c =
+                            face->vertex_2 =
                                 (unsigned short)((face_row + 1) * width_cells + column);
-                            face->vertex_index_d =
+                            face->vertex_3 =
                                 (unsigned short)((face_row + 1) * width_cells + next_column % width_cells);
                         }
 

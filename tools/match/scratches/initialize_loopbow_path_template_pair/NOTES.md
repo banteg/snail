@@ -27,16 +27,28 @@ The two apparently unused arguments are retained because surrounding native
 call sites push six arguments.  The earlier four-argument skeleton could not
 reproduce the native epilogue or texture argument slots.
 
-Scratch-local overlays were kept intentionally narrow:
+The recovered shared owners are intentionally narrow:
 
 - `AttachmentSample` has stride `0xa8`.
 - Its transform is at `+0x00`, delta vector at `+0x80`, delta length at
   `+0x8c`, center value at `+0x90`, and loop-bow scalar fields through `+0xa4`.
-- `LoopbowFaceQuad` has stride `0x30`, five 16-bit vertex/header fields,
+- `ObjectFaceQuad` has stride `0x30`, five 16-bit vertex/header fields,
   a texture pointer at `+0x0c`, and eight UV floats through `+0x2c`.
-- Only the `Path` fields used by this function are overlaid.
+- `Path` exposes only the fields used across the recovered constructor family.
 
-Compile-time size checks guard both reconstructed element strides.
+Compile-time size checks guard both reconstructed element strides in their
+shared headers.
+
+2026-07-14 ownership pass: the builder now consumes
+`Object::facequads` directly. The shared facequad's flat UV view preserves the
+constructor's native source shape while its `uv[4]` view remains available to
+runtime consumers. The focused result stayed at the accepted baseline:
+
+```text
+match: 67.54%
+target: 796 insns, candidate: 800 insns
+masked operands: 60 ok, 0 unresolved, 2 mismatch
+```
 
 ## Reconstructed behavior
 

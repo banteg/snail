@@ -1,8 +1,8 @@
 # initialize_worm_path_template_pair @ 0x420170
 
 This scratch reconstructs the worm attachment-path constructor and its generated
-strip mesh using scratch-local overlays for the native `0xa8` path sample and
-`0x30` facequad layouts.
+strip mesh using the shared native `AttachmentSample`, `Path`, and
+`ObjectFaceQuad` owners.
 
 Current focused result:
 
@@ -122,8 +122,19 @@ target: 736 insns, candidate: 725 insns
 masked operands: 37 ok, 0 unresolved, 0 mismatch
 ```
 
-The local `WormFaceQuad` overlay is deliberately retained. Rewriting it to the
-shared `ObjectFaceQuad` with equivalent offsets and `header_word` stores
-regressed the matcher to `67.95%` and shortened the candidate to 724
-instructions, so the UV field-name overlay is a real source-shape constraint for
-this scratch rather than a removable duplicate.
+## 2026-07-14 facequad ownership pass
+
+The scratch now uses the `Object::facequads` element type directly instead of a
+duplicate `WormFaceQuad`. The shared `ObjectFaceQuad` exposes both its canonical
+`uv[4]` array and the native constructor's flat `u0/v0` through `u3/v3` view.
+That preserves the source shape identified by the earlier rejected indexed-UV
+experiment while recovering the real allocation owner. The 16-bit constructor
+store uses `header_word`, rather than the byte-sized runtime `flags` view.
+
+The focused result is byte-for-byte unchanged from the accepted baseline:
+
+```text
+match: 72.28%
+target: 736 insns, candidate: 725 insns
+masked operands: 37 ok, 0 unresolved, 0 mismatch
+```

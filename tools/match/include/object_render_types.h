@@ -65,7 +65,19 @@ struct ObjectFaceQuad {
     unsigned short vertex_3; // +0x08
     char unknown_0a[0x0c - 0x0a];
     TextureRef* texture_ref; // +0x0c
-    ObjectUv uv[4]; // +0x10
+    union {
+        ObjectUv uv[4]; // +0x10
+        struct {
+            float u0;
+            float v0;
+            float u1;
+            float v1;
+            float u2;
+            float v2;
+            float u3;
+            float v3;
+        };
+    };
 };
 
 typedef char ObjectFaceQuad_must_be_0x30[
