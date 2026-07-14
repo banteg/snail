@@ -43,3 +43,9 @@ Rejected follow-ups in this pass:
   game pointer in `ebp` and spilling the loop count.
 
 Final status: proof-grade. All 27 masked operands resolve and match.
+
+The 2026-07-14 ownership pass replaces all codegen-safe Player/Subgame raw
+offsets with shared fields. The retained velocity and projectile cursor shapes
+are anchored to `Player::velocity` and `GolbShot::flight_transform`; their
+remaining displacements and stride are derived from `offsetof`/`sizeof`.
+Focused output remains exactly 279/279.

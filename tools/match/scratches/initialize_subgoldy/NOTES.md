@@ -223,3 +223,29 @@ presentation object, while iOS retains the same authored class. Windows now
 calls `presentation.object->distort.initialize_object_distort()` directly;
 the stale standalone `SpringFloat` view is gone. Focused Wibo remains exact at
 279/279 instructions with all 27 operands clean.
+
+2026-07-14 initializer field-ownership closure:
+
+- Every Player/Subgame scalar reset and presentation matrix receiver now uses
+  its recovered shared member, including row-event, resurrection, completion,
+  movement, wobble, invincible, voice, damage, attachment, lane-lean, nuke,
+  hover, score, and camera-snap state. The raw constants are expressed as their
+  exact float values rather than unowned bit stores.
+- The velocity clear retains its proven z/y/x `int*` source shape, but that view
+  now starts at `&Player::velocity` instead of `Player +0x410`. This preserves
+  the native register schedule without hiding the owner.
+- Native advances a cursor over `GolbShot::flight_transform`; its state and
+  game-link displacements are now derived from `offsetof(GolbShot, ...)`, and
+  the cursor stride is `sizeof(GolbShot)`. A direct `GolbShot*` loop was
+  rejected because it regressed to 96.80% and introduced four instructions by
+  keeping separate transform/game cursors.
+- Binary Ninja's full constant search finds `Player +0x274c` only at this zero
+  store. The shared layout therefore records an honest `unused_274c` word
+  rather than inventing a semantic role.
+- The two root input-source branches remain byte-shaped because earlier typed
+  spellings changed VC6 register ownership. They are the only raw offsets left
+  in the function, and the recovered destination remains
+  `Player::control_source`.
+
+Focused Wibo remains byte-identical at 100.00%, 279/279 instructions, full
+prefix, and all 27 operands clean.

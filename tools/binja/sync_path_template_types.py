@@ -303,6 +303,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2740", "track_z_anchor", "float"),
     ("0x2744", "completion_handoff_cycle_progress", "float"),
     ("0x2748", "completion_handoff_cycle_step", "float"),
+    ("0x274c", "unused_274c", "int32_t"),
     ("0x2750", "sub_hover", "SubHover"),
     ("0x2964", "cached_camera_target_world", "Vec3"),
     ("0x2970", "steering_mode_selector", "int32_t"),

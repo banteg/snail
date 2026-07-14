@@ -261,7 +261,7 @@ public:
     float track_z_anchor;                   // +0x2740
     float completion_handoff_cycle_progress; // +0x2744
     float completion_handoff_cycle_step;    // +0x2748
-    char unknown_274c[0x2750 - 0x274c];
+    int unused_274c;                       // +0x274c, sole native access clears it
     SubHover sub_hover;                     // +0x2750, authored cRSubHover
     Vector3 cached_camera_target_world;     // +0x2964, produced by update_subgoldy camera block
     int steering_mode_selector;             // +0x2970

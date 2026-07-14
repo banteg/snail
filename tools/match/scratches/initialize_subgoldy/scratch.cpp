@@ -1,5 +1,7 @@
 // initialize_subgoldy @ 0x43a9c0 (thiscall, ret 0x4)
 
+#include <stddef.h>
+
 #include "anim_manager.h"
 #include "cameraman.h"
 #include "click_start.h"
@@ -16,44 +18,44 @@ extern GameRoot* g_game; // data_4df904
 
 void Player::initialize_subgoldy(int player_slot)
 {
-    char* self = (char*)this;
     int zero = 0;
 
     this->player_slot = player_slot;
     this->game = &g_game->subgame;
-    *(int*)(self + 0x370) = zero;
-    *(int*)(self + 0x1e8) = zero;
-    *(unsigned char*)(self + 0x2d8) = (unsigned char)zero;
+    this->heading_roll = 0.0f;
+    this->row_event.id = zero;
+    this->control_override_active = (unsigned char)zero;
     this->nuke.owner_player = this;
     this->nuke.state = zero;
-    *(unsigned char*)(self + 0x14c) = (unsigned char)zero;
-    *(int*)(self + 0x8c) = zero;
-    *(int*)(self + 0x444) = zero;
-    *(int*)(self + 0x338) = zero;
-    *(int*)(self + 0x33c) = -1;
-    *(unsigned char*)(self + 0x1e4) = (unsigned char)zero;
-    *(unsigned char*)(self + 0x42b8) = (unsigned char)zero;
-    *(int*)(*(char**)(self + 0x408) + 0x12727ec) = zero;
-    *(int*)(self + 0x3c68) = zero;
-    *(int*)(self + 0x30d4) = zero;
-    *(int*)(self + 0x34b0) = zero;
-    *(int*)(self + 0x388c) = zero;
-    *(int*)(self + 0x2dc) = zero;
-    *(int*)(self + 0x2e0) = zero;
+    this->row_event_cutscene_started = (unsigned char)zero;
+    this->resurrect_progress = 0.0f;
+    this->completion_handoff_timer = 0.0f;
+    this->movement_flags = zero;
+    this->previous_movement_flags = -1;
+    this->trampoline_bounce_active = (unsigned char)zero;
+    this->presentation.invincible_shell.channel_release_steps_active =
+        (unsigned char)zero;
+    this->game->completion.state = zero;
+    this->presentation.jetpack_channel.selected_state = zero;
+    this->presentation.weapon_channels[0].selected_state = zero;
+    this->presentation.weapon_channels[1].selected_state = zero;
+    this->presentation.weapon_channels[2].selected_state = zero;
+    this->cutscene_pitch_cycle = 0.0f;
+    this->cutscene_pitch_cycle_step = 0.0f;
 
     this->presentation.object->distort.initialize_object_distort();
-    *(int*)(self + 0x2980) = 0xc1980000;
-    *(int*)(self + 0x1cc) = zero;
-    *(int*)(self + 0x42b0) = zero;
-    *(int*)(self + 0x42b4) = 0x3c888889;
-    *(int*)(self + 0x435c) = zero;
-    *(int*)(self + 0x4360) = 0x3c888889;
+    this->interaction_max_z = -19.0f;
+    this->movement_sound_variant_sample = zero;
+    this->presentation.invincible_shell.cutscene_roll_progress = 0.0f;
+    this->presentation.invincible_shell.cutscene_roll_step = 0.0166666675f;
+    this->slow_commentary_timer = 0.0f;
+    this->slow_commentary_step = 0.0166666675f;
     this->squidge.initialize_score_stats();
     this->presentation.invincible_shell.initialize_invincible_shell();
-    *(int*)(self + 0x334) = 0x3d638e38;
-    *(int*)(self + 0x330) = 0x3d638e38;
-    *(int*)(self + 0x434) = zero;
-    *(int*)(self + 0x438) = 0x3c888889;
+    this->startup_voice_step = 0.0555555522f;
+    this->startup_voice_timer = 0.0555555522f;
+    this->attachment_exit_progress = 0.0f;
+    this->attachment_exit_progress_step = 0.0166666675f;
 
     if ((this->presentation.object->flags & 0x200000) != 0) {
         this->presentation.list_flags |= 0x800;
@@ -144,39 +146,39 @@ void Player::initialize_subgoldy(int player_slot)
 
     this->presentation.snail_skin.initialize_snail_skin();
     this->presentation.cutscene.initialize_cutscene_ai();
-    if (*(unsigned char*)(*(char**)(self + 0x408) + 0xff25d0) == 0)
-        *(int*)(self + 0x42e8) = 1;
+    if (this->game->selected_level_record_active == 0)
+        this->presentation.cutscene.state = 1;
     this->presentation.owner_player = this;
-    ((TransformMatrix*)(self + 0x29bc))->set_matrix_identity();
-    ((TransformMatrix*)(self + 0x2a44))->set_matrix_identity();
-    ((TransformMatrix*)(self + 0x2a04))->set_matrix_identity();
-    *(int*)(self + 0x4338) = zero;
+    this->presentation.transform.set_matrix_identity();
+    this->presentation.cached_cutscene_matrix.set_matrix_identity();
+    this->presentation.previous_live_matrix.set_matrix_identity();
+    this->parcels_collected = zero;
     click_start.initialize_click_start(this);
     cameraman.initialize_cameraman();
-    initialize_subgoldy_ghost(*(int*)(self + 0x380));
+    initialize_subgoldy_ghost(this->player_slot);
 
-    *(int*)(self + 0x1d8) = 0x3d4ede62;
-    *(int*)(self + 0x1e0) = 0x3d4ede62;
+    this->damage_retrigger_step = 0.0505050495f;
+    this->surface_reaction_step = 0.0505050495f;
     transform.position.x = 0.0f;
     transform.position.y = 0.0f;
     transform.position.z = 4.0f;
-    *(int*)(self + 0x37c) = zero;
-    *(int*)(self + 0x328) = zero;
-    *(int*)(self + 0x32c) = 0x3c888889;
-    *(int*)(self + 0x1d4) = zero;
-    *(int*)(self + 0x1dc) = zero;
-    *(int*)(self + 0x3f40) = zero;
-    *(int*)(self + 0x3f44) = 0x3bbc5264;
-    *(int*)(self + 0x3f48) = zero;
-    *(int*)(self + 0x3f4c) = 0x3bde0163;
-    *(unsigned char*)(self + 0x84) = (unsigned char)zero;
+    this->last_ring_spawn_z = 0.0f;
+    this->barrier_hold_progress = 0.0f;
+    this->barrier_hold_step = 0.0166666675f;
+    this->damage_retrigger_timer = 0.0f;
+    this->surface_reaction_timer = 0.0f;
+    this->presentation.wobble_roll_phase = 0.0f;
+    this->presentation.wobble_roll_phase_step = 0.00574712642f;
+    this->presentation.wobble_lift_phase = 0.0f;
+    this->presentation.wobble_lift_phase_step = 0.00677506765f;
+    this->resurrect_active = (unsigned char)zero;
     cached_camera_target_world = transform.position;
-    int* velocity_lanes = (int*)(self + 0x410);
+    int* velocity_lanes = (int*)&this->velocity;
     velocity_lanes[2] = zero;
     velocity_lanes[1] = zero;
     velocity_lanes[0] = zero;
 
-    int active_slot = *(int*)(self + 0x380);
+    int active_slot = this->player_slot;
     char* control_source;
     if (active_slot == 1) {
         char* app = (char*)g_game;
@@ -194,43 +196,49 @@ void Player::initialize_subgoldy(int player_slot)
             control_source = 0;
     }
     this->control_source = (PlayerControlSource*)control_source;
-    *(int*)(self + 0x2730) = zero;
-    *(unsigned char*)(self + 0x440) = (unsigned char)zero;
-    *(int*)(self + 0x2738) = zero;
-    ((DamageGuage*)(self + 0x3c4))->initialize_damage_gauge();
+    this->movement_fire_progress = 0.0f;
+    this->completion_handoff_active = (unsigned char)zero;
+    this->slide_extension_threshold_z = 0.0f;
+    this->damage_gauge.initialize_damage_gauge();
     progress_bar.noop_runtime_ai();
     this->follow_state.active = (unsigned char)zero;
 
-    char* transform = self + 0x614;
+    enum {
+        SHOT_TRANSFORM_TO_STATE =
+            offsetof(GolbShot, state) - offsetof(GolbShot, flight_transform),
+        SHOT_TRANSFORM_TO_GAME =
+            offsetof(GolbShot, game) - offsetof(GolbShot, flight_transform),
+    };
+    char* shot_transform = (char*)&this->golb_shots[0].flight_transform;
     int transform_count = 12;
     do {
-        *(int*)(transform + 0x80) = zero;
-        ((TransformMatrix*)transform)->set_matrix_identity();
-        *(char**)(transform + 0xac) = *(char**)(self + 0x408);
-        transform += 0x2e8;
+        *(int*)(shot_transform + SHOT_TRANSFORM_TO_STATE) = zero;
+        ((TransformMatrix*)shot_transform)->set_matrix_identity();
+        *(SubgameRuntime**)(shot_transform + SHOT_TRANSFORM_TO_GAME) = this->game;
+        shot_transform += sizeof(GolbShot);
         --transform_count;
     } while (transform_count);
 
-    int player_flags = *(int*)(self + 4);
-    int gauge_slot = *(int*)(self + 0x380);
+    int player_flags = this->list_flags;
+    int gauge_slot = this->player_slot;
     player_flags |= 0x20;
-    *(int*)(self + 4) = player_flags;
-    *(int*)(self + 0x2744) = zero;
-    *(int*)(self + 0x2748) = 0x3e555556;
-    *(int*)(self + 0x274c) = zero;
-    ((SubHover*)(self + 0x2750))->initialize_jetpack_gauge(gauge_slot);
-    *(int*)(self + 0x350) = zero;
-    *(int*)(self + 0x354) = zero;
-    *(int*)(self + 0x358) = zero;
-    *(int*)(self + 0x35c) = zero;
-    *(int*)(self + 0x360) = zero;
-    *(int*)(self + 0x364) = zero;
-    *(int*)(self + 0x368) = zero;
-    *(int*)(self + 0x36c) = zero;
-    *(int*)(self + 0x374) = zero;
-    *(int*)(self + 0x378) = zero;
-    *(unsigned char*)(self + 0x41d) = (unsigned char)zero;
-    *(unsigned char*)(self + 0x41c) = (unsigned char)zero;
-    *(int*)(self + 0x404) = zero;
-    (*(char**)(self + 0x408))[1] = 1;
+    this->list_flags = player_flags;
+    this->completion_handoff_cycle_progress = 0.0f;
+    this->completion_handoff_cycle_step = 0.208333343f;
+    this->unused_274c = zero;
+    this->sub_hover.initialize_jetpack_gauge(gauge_slot);
+    this->lane_lean_state = zero;
+    this->lane_lean_amplitude = 0.0f;
+    this->lane_lean_progress = 0.0f;
+    this->lane_lean_progress_step = 0.0f;
+    this->timer_360_state = zero;
+    this->unknown_364 = zero;
+    this->timer_360_progress = 0.0f;
+    this->timer_360_step = 0.0f;
+    this->nuke_effect_progress = 0.0f;
+    this->nuke_effect_progress_step = 0.0f;
+    this->attachment_exit_pending = (unsigned char)zero;
+    this->boost_one_tick = (unsigned char)zero;
+    this->lives = zero;
+    this->game->camera_snap_requested = 1;
 }

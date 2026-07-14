@@ -1548,7 +1548,7 @@ typedef struct Player {
     float track_z_anchor;
     float completion_handoff_cycle_progress;
     float completion_handoff_cycle_step;
-    uint8_t _pad_274c[0x4];
+    int32_t unused_274c;
     SubHover sub_hover;
     Vec3 cached_camera_target_world;
     int32_t steering_mode_selector;
