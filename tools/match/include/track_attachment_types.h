@@ -274,6 +274,37 @@ enum {
     SUBLOC_FRINGE_COUNT = 4,
 };
 
+// Cardinal openness is produced by select_track_tile_edge_variants from the
+// four adjacent cells. The lane/row names describe the stable slab topology;
+// previous/next map to left/right and back/front in the rendered track.
+enum SubLocOpenEdgeFlag {
+    SUBLOC_OPEN_PREVIOUS_ROW = 0x01,
+    SUBLOC_OPEN_NEXT_ROW = 0x02,
+    SUBLOC_OPEN_NEXT_LANE = 0x04,
+    SUBLOC_OPEN_PREVIOUS_LANE = 0x08,
+    SUBLOC_OPEN_EDGE_MASK = 0x0f,
+};
+
+// Packed runtime state at SubLoc +0x40. Keep the owning field as a dword:
+// these masks have independent producers and consumers rather than a stable
+// compiler bitfield layout.
+enum SubLocFlag {
+    SUBLOC_LANE_INDEX_MASK = 0x0007,
+    SUBLOC_FLAG_SUPPRESS_SALT_SPAWN = 0x0008,
+    SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN = 0x0010,
+    SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED = 0x0018,
+    SUBLOC_FLAG_WARNING_CACHE_FAMILY = 0x0020,
+    SUBLOC_FLAG_CACHE_FAMILY_SWAPPED = 0x0040,
+    SUBLOC_MERGED_RUN_WIDTH_ONE = 0x0100,
+    SUBLOC_MERGED_RUN_WIDTH_REMAINDER_MASK = 0x0e00,
+    SUBLOC_MERGED_RUN_WIDTH_MASK = 0x0f00,
+    SUBLOC_MERGED_RUN_WIDTH_SHIFT = 8,
+    SUBLOC_MERGED_RUN_WIDTH_VALUE_MASK = 0x000f,
+    SUBLOC_FLAG_AI_ENABLED = 0x2000,
+    SUBLOC_FLAG_UNCACHED_BODY = 0x4000,
+    SUBLOC_FLAG_CORNER_OBJECT = 0x8000,
+};
+
 // Authored runtime-grid cell owner. iOS preserves this class as cRSubLoc;
 // its cRSubLoc::Yi() accessor performs the same lane/slab row-index recovery
 // as the exact Windows helper below. Its exact constructor proves the inherited
@@ -291,9 +322,9 @@ struct SubLoc : public BodBase {
 
     Path* attachment_template_record; // +0x38, installed by P/p entry tiles
     unsigned char tile_id;              // +0x3c
-    unsigned char tile_flags_3d;        // +0x3d
+    unsigned char open_edge_mask;       // +0x3d, SubLocOpenEdgeFlag bits
     char unknown_3e[0x40 - 0x3e];
-    unsigned int lane_and_flags;        // +0x40, unsigned packed lane/variant/lifecycle flags
+    unsigned int lane_and_flags;        // +0x40, lane index plus SubLocFlag bits
     union {
         struct {
             Fringe* fringe_front; // +0x44, borrowed from FringeManager

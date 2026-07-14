@@ -70,7 +70,9 @@ the two ranges have the same size.
 
 ## Deliberate non-claims
 
-- `tile_flags_3d` stays conservative. It still behaves like a classifier/variant byte in some callers, not a closed semantic enum.
+- Superseded 2026-07-14: the former `tile_flags_3d` byte is now closed as
+  `open_edge_mask`. Its exact producer writes previous/next row and lane
+  openness, and its fringe and player-entry consumers agree on those four bits.
 - The former sparse `TrackRenderGrid` compatibility view has been retired. It
   was not separately allocated storage or a second owner; the manager backlink
   is directly typed as `SubgameRuntime*` in the source and both tool lanes.

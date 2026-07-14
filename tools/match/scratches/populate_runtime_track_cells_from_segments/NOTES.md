@@ -424,7 +424,7 @@ constants no longer carry the layout themselves:
   projection payload, parcel/template state, borrowed attachment/source links,
   heading/ring values, and the row-event id.
 
-The adjacent cell deltas likewise derive `lane_and_flags`, `tile_flags_3d`,
+The adjacent cell deltas likewise derive `lane_and_flags`, `open_edge_mask`,
 the inherited list flags, and inherited color from their real owners. The
 track-texture selector and mode-3 repeated row count now read the embedded
 `SubTracks` fields directly. Focused Wibo retains the existing 29.27%,

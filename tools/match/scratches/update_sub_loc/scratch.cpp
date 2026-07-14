@@ -23,7 +23,7 @@ inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
 
 void SubLoc::update_sub_loc()
 {
-    if ((lane_and_flags & 0x2000) == 0)
+    if ((lane_and_flags & SUBLOC_FLAG_AI_ENABLED) == 0)
         return;
     if (g_game->subgame.subgame_pause_gate)
         return;
@@ -34,8 +34,10 @@ void SubLoc::update_sub_loc()
         if (random_float_below(100.0f, "W") < 4.0f) {
             Vector3 spawn = position;
             spawn.y += 8.0f;
-            unsigned int lane = (lane_and_flags >> 8) & 0xF;
-            spawn.x = (float)lane * 0.5f + spawn.x;
+            unsigned int merged_run_width =
+                (lane_and_flags >> SUBLOC_MERGED_RUN_WIDTH_SHIFT)
+                & SUBLOC_MERGED_RUN_WIDTH_VALUE_MASK;
+            spawn.x = (float)merged_run_width * 0.5f + spawn.x;
             float jitter = random_signed_float_below(3.0f, "Wall2");
             Vector3 target = g_game->subgame.embedded_player()->transform.position;
             target.z = jitter + 8.0f + target.z;

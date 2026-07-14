@@ -792,6 +792,31 @@ typedef struct TextureRefList {
     TextureRef entries[1];
 } TextureRefList;
 
+typedef enum SubLocOpenEdgeFlag {
+    SUBLOC_OPEN_PREVIOUS_ROW = 0x01,
+    SUBLOC_OPEN_NEXT_ROW = 0x02,
+    SUBLOC_OPEN_NEXT_LANE = 0x04,
+    SUBLOC_OPEN_PREVIOUS_LANE = 0x08,
+    SUBLOC_OPEN_EDGE_MASK = 0x0f,
+} SubLocOpenEdgeFlag;
+
+typedef enum SubLocFlag {
+    SUBLOC_LANE_INDEX_MASK = 0x0007,
+    SUBLOC_FLAG_SUPPRESS_SALT_SPAWN = 0x0008,
+    SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN = 0x0010,
+    SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED = 0x0018,
+    SUBLOC_FLAG_WARNING_CACHE_FAMILY = 0x0020,
+    SUBLOC_FLAG_CACHE_FAMILY_SWAPPED = 0x0040,
+    SUBLOC_MERGED_RUN_WIDTH_ONE = 0x0100,
+    SUBLOC_MERGED_RUN_WIDTH_REMAINDER_MASK = 0x0e00,
+    SUBLOC_MERGED_RUN_WIDTH_MASK = 0x0f00,
+    SUBLOC_MERGED_RUN_WIDTH_SHIFT = 8,
+    SUBLOC_MERGED_RUN_WIDTH_VALUE_MASK = 0x000f,
+    SUBLOC_FLAG_AI_ENABLED = 0x2000,
+    SUBLOC_FLAG_UNCACHED_BODY = 0x4000,
+    SUBLOC_FLAG_CORNER_OBJECT = 0x8000,
+} SubLocFlag;
+
 typedef struct TrackRowCell {
     BodNode bod;
     Vec3 anchor_position;
@@ -801,7 +826,7 @@ typedef struct TrackRowCell {
     tColour color;
     struct Path* attachment_template_record;
     uint8_t tile_id;
-    uint8_t tile_flags_3d;
+    uint8_t open_edge_mask;
     uint8_t _pad_3e[0x2];
     uint32_t lane_and_flags;
     FringeObject* fringe_front;

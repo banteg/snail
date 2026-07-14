@@ -289,7 +289,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             (int)offsetof(SubLoc, lane_and_flags)
             - (int)offsetof(SubLoc, fringe_front),
         CELL_LANE_FLAGS_TO_TILE_FLAGS =
-            (int)offsetof(SubLoc, tile_flags_3d)
+            (int)offsetof(SubLoc, open_edge_mask)
             - (int)offsetof(SubLoc, lane_and_flags),
         CELL_LANE_FLAGS_TO_LIST_FLAGS =
             (int)offsetof(ContactTargetObject, list_flags)
@@ -528,7 +528,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 base + sizeof(SubLoc) * (lane + build_row * RUNTIME_LANE_COUNT);
             int cell_word = *(int*)(cell + CELL_LANE_FLAGS);
             ((unsigned char*)&cell_word)[0] &= 0xe0;
-            cell_word ^= lane & 7;
+            cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;
             *(int*)(cell + CELL_LANE_FLAGS) = cell_word;
 
             *(int*)(cell + CELL_FRINGE_FRONT) = 0;

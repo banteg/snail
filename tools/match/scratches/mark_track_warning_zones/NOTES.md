@@ -9,7 +9,8 @@ synthetic dependency is warranted. The pinned semantics are:
 - stamp footprint per seed at (row, col): rows row..row-5, cols
   {col-1, col}, bounds-checked `r >= 0 && r < rows-1 && 0 <= col+dc < 8`
   as signed pairs
-- effect: `cells[idx].lane_and_flags |= 0x18`
+- effect: `cells[idx].lane_and_flags |= SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED`
+  (`0x18`), suppressing both random salt (`0x08`) and garbage (`0x10`)
 - cell bank: game + 0x3bfb04, stride 84 (0x54), tile byte +0x00,
   lane/flags dword +0x04, 8 cells per row, row-major contiguous walk
 - relation to shared `TrackRowCell`: this cursor starts at the tile byte, so

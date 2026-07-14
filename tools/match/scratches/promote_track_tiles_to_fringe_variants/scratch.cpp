@@ -15,11 +15,11 @@ void SubgameRuntime::promote_track_tiles_to_fringe_variants()
     int row = 0;
     if (runtime_row_count - 1 > 0) {
         TrackRowCell* cell = &runtime_cells[0][0];
-        int promoted_flag = 0x20;
+        int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;
         do {
             int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
-                cell->lane_and_flags &= ~0x20u;
+                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;
                 if (is_sub_loc_empty(cell + SUBGAME_TRACK_LANE_COUNT) != 0) {
                     GameRoot* game = g_game;
                     int offset = 0;

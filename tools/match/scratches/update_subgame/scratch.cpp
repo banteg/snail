@@ -285,7 +285,9 @@ void SubgameRuntime::update_subgame()
                                 * (attachment_count
                                     + SUBGAME_TRACK_LANE_COUNT * cell_index));
                     if ((cell_slot->cell.list_flags & 0x200) == zero) {
-                        if ((cell_slot->cell.lane_and_flags & 0x4000) != zero) {
+                        if ((cell_slot->cell.lane_and_flags
+                                & SUBLOC_FLAG_UNCACHED_BODY)
+                            != zero) {
                             unsigned char tile = cell_slot->cell.tile_id;
                             if (tile == 29 || tile == 30) {
                                 if (cell_slot->cell.object != 0) {
@@ -382,7 +384,9 @@ void SubgameRuntime::update_subgame()
                         if (hazard_tile == 33) {
                             spawn_track_garbage_hazard(
                                 &cell_slot->cell, &player);
-                        } else if ((cell_slot->cell.lane_and_flags & 0x10) == 0
+                        } else if ((cell_slot->cell.lane_and_flags
+                                        & SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN)
+                                == 0
                                 && (hazard_tile == 1 || hazard_tile == 21)
                                 && (runtime_flags & 2) != 0
                                 && random_float_below(1.0f, "G")
@@ -419,7 +423,9 @@ void SubgameRuntime::update_subgame()
                                 salt_hazards.spawn_salt_hazard(
                                     &cell_slot->cell.position);
                             }
-                        } else if ((cell_slot->cell.lane_and_flags & 8) == 0
+                        } else if ((cell_slot->cell.lane_and_flags
+                                        & SUBLOC_FLAG_SUPPRESS_SALT_SPAWN)
+                                == 0
                             && (hazard_tile == 1 || hazard_tile == 15)
                             && player.click_start.state
                                 != CLICK_START_STATE_WAITING_FOR_START

@@ -15,7 +15,7 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
     SubgameRuntime* game_runtime = this;
     int row = 0;
     if (game_runtime->runtime_row_count - 1 > 0) {
-        int transition_flag = 0x40;
+        int transition_flag = SUBLOC_FLAG_CACHE_FAMILY_SWAPPED;
         do {
             int lane = 0;
             int row_mod = row & 7;
@@ -24,8 +24,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                     TrackRowCell* cell = &game_runtime->runtime_cells[row][lane];
                     TrackRowCell* next = cell
                         + sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
-                    if ((cell->lane_and_flags & 0x20) == 0) {
-                        if ((next->lane_and_flags & 0x20) == 0
+                    if ((cell->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
+                        if ((next->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0
                             && is_sub_loc_floor(cell) == 1
                             && (is_sub_loc_slide(next) == 1
                                 || next->tile_id == 0x1e)) {
@@ -59,8 +59,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                         }
                     }
 
-                    if ((cell->lane_and_flags & 0x20) == 0) {
-                        if ((next->lane_and_flags & 0x20) == 0
+                    if ((cell->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
+                        if ((next->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0
                             && is_sub_loc_slide(cell) == 1
                             && is_sub_loc_floor(next) == 1) {
                             GameRoot* game = g_game;
@@ -98,8 +98,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                     TrackRowCell* cell = &game_runtime->runtime_cells[row][lane];
                     TrackRowCell* previous = cell
                         - sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
-                    if ((cell->lane_and_flags & 0x20) == 0) {
-                        if ((previous->lane_and_flags & 0x20) == 0
+                    if ((cell->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
+                        if ((previous->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0
                             && is_sub_loc_floor(cell) == 1
                             && (is_sub_loc_slide(previous) == 1
                                 || previous->tile_id == 0x20)) {
@@ -133,8 +133,8 @@ void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
                         }
                     }
 
-                    if ((cell->lane_and_flags & 0x20) == 0) {
-                        if ((previous->lane_and_flags & 0x20) == 0
+                    if ((cell->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0) {
+                        if ((previous->lane_and_flags & SUBLOC_FLAG_WARNING_CACHE_FAMILY) == 0
                             && is_sub_loc_slide(cell) == 1
                             && is_sub_loc_floor(previous) == 1) {
                             GameRoot* game = g_game;

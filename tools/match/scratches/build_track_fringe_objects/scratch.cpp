@@ -32,15 +32,19 @@ int SubgameRuntime::build_track_fringe_objects()
             int lane_count =
                 sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
-                unsigned char edge_id = cell->tile_flags_3d;
+                unsigned char open_edge_mask = cell->open_edge_mask;
                 int family = 0;
-                if (edge_id == 9) {
+                if (open_edge_mask
+                    == (SUBLOC_OPEN_PREVIOUS_LANE | SUBLOC_OPEN_PREVIOUS_ROW)) {
                     family = 1;
-                } else if (edge_id == 5) {
+                } else if (open_edge_mask
+                    == (SUBLOC_OPEN_NEXT_LANE | SUBLOC_OPEN_PREVIOUS_ROW)) {
                     family = 3;
-                } else if (edge_id == 10) {
+                } else if (open_edge_mask
+                    == (SUBLOC_OPEN_PREVIOUS_LANE | SUBLOC_OPEN_NEXT_ROW)) {
                     family = 2;
-                } else if (edge_id == 6) {
+                } else if (open_edge_mask
+                    == (SUBLOC_OPEN_NEXT_LANE | SUBLOC_OPEN_NEXT_ROW)) {
                     family = 4;
                 }
 
@@ -53,7 +57,8 @@ int SubgameRuntime::build_track_fringe_objects()
                 if (tile_id == 4 || tile_id == 10 || tile_id == 7)
                     family = 7;
 
-                if ((row_record->flags & 4) != 0 || edge_id == 0 || tile_id == 0x20
+                if ((row_record->flags & 4) != 0 || open_edge_mask == 0
+                    || tile_id == 0x20
                     || (g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) == 0) {
                     cell->fringe_front = 0;
                     cell->fringe_right = 0;

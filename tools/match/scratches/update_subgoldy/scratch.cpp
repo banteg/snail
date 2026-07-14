@@ -521,14 +521,14 @@ steering_stored:
                 if ((!landing_tile || landing_tile == 35)
                     && transform.position.y < 0.49000001f && velocity.y <= 0.0f) {
                     float fraction = transform.position.z - (float)(int)transform.position.z;
-                    unsigned char flags_3d = landing_cell->tile_flags_3d;
+                    unsigned char open_edge_mask = landing_cell->open_edge_mask;
                     float fraction_high;
-                    if (!(flags_3d & 2))
+                    if (!(open_edge_mask & SUBLOC_OPEN_NEXT_ROW))
                         fraction_high = 1.0f;
                     else
                         fraction_high = 0.80000001f;
                     float fraction_low = 0.0f;
-                    if (flags_3d & 1)
+                    if (open_edge_mask & SUBLOC_OPEN_PREVIOUS_ROW)
                         fraction_low = 0.2f;
                     if (fraction < fraction_high && fraction > fraction_low
                         && !attachment_exit_pending)

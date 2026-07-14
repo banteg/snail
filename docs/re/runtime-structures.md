@@ -1251,8 +1251,11 @@ the follow helpers and the render-cache builders:
 - `+0x10..+0x18`: `anchor_position`
 - `+0x38`: `attachment_template_record`
 - `+0x3c`: `tile_id`
-- `+0x3d`: `tile_flags_3d`
-- `+0x40`: `render_flags`
+- `+0x3d`: `open_edge_mask`, with previous/next row bits `0x01/0x02` and
+  next/previous lane bits `0x04/0x08`
+- `+0x40`: `lane_and_flags`, carrying the low lane index plus the proved
+  hazard-suppression, cache-family, merged-run-width, AI, uncached-body, and
+  corner-object lanes
 - `+0x44..+0x50`: four fringe/cache object slots
 
 The checked-in header also now mirrors the narrow render-cache owner slice:

@@ -29,14 +29,14 @@ void SubgameRuntime::select_track_tile_edge_variants()
     int row = 0;
     if (runtime_row_count > 0) {
         TrackRowCellTileByteView* cell = runtime_cell_tile_views();
-        int variant_flag = 0x8000;
+        int variant_flag = SUBLOC_FLAG_CORNER_OBJECT;
         do {
             int lane = 0;
             do {
-                unsigned char* tile_flags_3d = &cell->tile_flags_3d;
+                unsigned char* open_edge_mask = &cell->open_edge_mask;
                 unsigned int* lane_and_flags = &cell->lane_and_flags;
-                *tile_flags_3d = 0;
-                *lane_and_flags &= ~0x8000u;
+                *open_edge_mask = 0;
+                *lane_and_flags &= ~SUBLOC_FLAG_CORNER_OBJECT;
 
                 unsigned char skip_tile = cell->tile_id;
                 if (skip_tile != 0 && skip_tile != 0x23 && skip_tile != 0x1c
@@ -45,29 +45,29 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         || ((SubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_LANE))
                                 ->is_sub_loc_empty()
                             != 0) {
-                        cell->tile_flags_3d |= 8;
+                        cell->open_edge_mask |= SUBLOC_OPEN_PREVIOUS_LANE;
                     }
                     if (lane == SUBGAME_TRACK_LANE_COUNT - 1
                         || ((SubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_LANE))
                                 ->is_sub_loc_empty()
                             != 0) {
-                        cell->tile_flags_3d |= 4;
+                        cell->open_edge_mask |= SUBLOC_OPEN_NEXT_LANE;
                     }
                     if (row == 0
                         || ((SubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_ROW))
                                 ->is_sub_loc_empty()
                             != 0) {
-                        cell->tile_flags_3d |= 1;
+                        cell->open_edge_mask |= SUBLOC_OPEN_PREVIOUS_ROW;
                     }
                     if (row >= runtime_row_count - 1
                         || ((SubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_ROW))
                                 ->is_sub_loc_empty()
                             != 0) {
-                        cell->tile_flags_3d |= 2;
+                        cell->open_edge_mask |= SUBLOC_OPEN_NEXT_ROW;
                     }
 
-                    switch (cell->tile_flags_3d) {
-                    case 9:
+                    switch (cell->open_edge_mask) {
+                    case SUBLOC_OPEN_PREVIOUS_LANE | SUBLOC_OPEN_PREVIOUS_ROW:
                         *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
@@ -90,7 +90,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         }
                         break;
 
-                    case 5:
+                    case SUBLOC_OPEN_NEXT_LANE | SUBLOC_OPEN_PREVIOUS_ROW:
                         *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
@@ -113,7 +113,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         }
                         break;
 
-                    case 10:
+                    case SUBLOC_OPEN_PREVIOUS_LANE | SUBLOC_OPEN_NEXT_ROW:
                         *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;
@@ -136,7 +136,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                         }
                         break;
 
-                    case 6:
+                    case SUBLOC_OPEN_NEXT_LANE | SUBLOC_OPEN_NEXT_ROW:
                         *lane_and_flags |= variant_flag;
                         {
                             unsigned char tile = cell->tile_id;

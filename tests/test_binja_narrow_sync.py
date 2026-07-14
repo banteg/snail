@@ -369,6 +369,41 @@ def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "ObjectAnimationFrame** frames;" in header
 
 
+def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    tile_view_header = (
+        repo_root / "tools/match/include/track_row_cell_tile_views.h"
+    ).read_text(encoding="utf-8")
+
+    assert '("0x3d", "open_edge_mask", "uint8_t")' in binja_source
+    assert '"SubLocOpenEdgeFlag",' in binja_source
+    assert '"SubLocFlag",' in binja_source
+    for header in (analysis_header, matcher_header):
+        assert "SUBLOC_OPEN_PREVIOUS_ROW = 0x01" in header
+        assert "SUBLOC_OPEN_NEXT_ROW = 0x02" in header
+        assert "SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED = 0x0018" in header
+        assert "SUBLOC_FLAG_WARNING_CACHE_FAMILY = 0x0020" in header
+        assert "SUBLOC_FLAG_CACHE_FAMILY_SWAPPED = 0x0040" in header
+        assert "SUBLOC_MERGED_RUN_WIDTH_MASK = 0x0f00" in header
+        assert "SUBLOC_FLAG_AI_ENABLED = 0x2000" in header
+        assert "SUBLOC_FLAG_UNCACHED_BODY = 0x4000" in header
+        assert "SUBLOC_FLAG_CORNER_OBJECT = 0x8000" in header
+        assert "open_edge_mask" in header
+        assert "tile_flags_3d" not in header
+
+    assert "open_edge_mask" in tile_view_header
+    assert "tile_flags_3d" not in tile_view_header
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

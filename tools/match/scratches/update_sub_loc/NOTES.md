@@ -11,12 +11,12 @@ The Windows `SubLoc` constructor installs the table at `0x497368`, whose entry
 is this exact address. That direct callback edge closes the owner independently
 of the cross-port symbol match.
 
-- gate: `lane_and_flags & 0x2000` plus
+- gate: `lane_and_flags & SUBLOC_FLAG_AI_ENABLED` (`0x2000`) plus
   `SubgameRuntime::subgame_pause_gate`
 - tile 14 (wall2): fires only once `first_block_row_count` is behind the
   embedded player's z; 4% per-tick roll (`random_float_below(100) < 4`);
-  spawn at the cell anchor with y+8 and a lane offset from
-  `((lane_and_flags >> 8) & 0xf) * 0.5`;
+  spawn at the cell anchor with y+8 and an offset from the encoded
+  `SUBLOC_MERGED_RUN_WIDTH_MASK` nibble (`lane_and_flags` bits 8..11);
   aimed at the player with +/-3 vertical jitter +8 z lead; fires only
   when the z delta < -4; direction normalized and scaled to 0.4/tick
   through the owned `SubLazerPool`; then the cull check

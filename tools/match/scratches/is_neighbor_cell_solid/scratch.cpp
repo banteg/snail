@@ -8,7 +8,7 @@
 bool SubgameRuntime::is_neighbor_cell_solid(SubLoc* cell, int dx, int dz)
 {
     int row = cell->get_track_cell_row_index();
-    int lane = cell->lane_and_flags & (SUBGAME_TRACK_LANE_COUNT - 1);
+    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;
     bool result = false;
     if ((unsigned int)(lane + dx) < SUBGAME_TRACK_LANE_COUNT) {
         int neighbor_row = dz + row;

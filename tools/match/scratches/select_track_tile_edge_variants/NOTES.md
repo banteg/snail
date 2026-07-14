@@ -1,7 +1,7 @@
 # select_track_tile_edge_variants
 
 - Walks the row-major `SubLoc +0x3c` tile-byte view.
-- Clears `tile_flags_3d`, clears `lane_and_flags & 0x8000`, builds open-edge
+- Clears `open_edge_mask`, clears `SUBLOC_FLAG_CORNER_OBJECT`, builds open-edge
   bits from left/right/back/front neighbors, and for edge masks `5`, `6`, `9`,
   and `10` swaps the current cell's BOD object to the matching edge variant.
 - The straight-track family branch covers tile ids `1`, `0x14`, `0x15`,
@@ -37,10 +37,24 @@ mapping. Focused output remains fully exact at 220/220 instructions with all
 ## 2026-07-14 neighborhood-delta ownership
 
 Binary Ninja's live `TrackRowCell` layout agrees with the shared `SubLoc`:
-size `0x54`, `tile_id +0x3c`, `tile_flags_3d +0x3d`, and
+size `0x54`, `tile_id +0x3c`, `open_edge_mask +0x3d`, and
 `lane_and_flags +0x40`. The exact field-first cursor deltas now derive from
 `sizeof(SubLoc)`, `sizeof(runtime_cells[0])`, and `offsetof(SubLoc, tile_id)`:
 the former `-0x90/+0x18` pair selects adjacent lanes,
 `-0x2dc/+0x264` selects adjacent rows, and `-0x3c` recovers the containing
 cell/BOD. This removes parallel layout constants while preserving the native
 pointer shape, exact 220/220 output, and all 18 clean operands.
+
+## 2026-07-14 open-edge and packed-flag ownership
+
+The exact producer closes `+0x3d` as a four-bit cardinal open-edge mask:
+previous/next lane are `0x08/0x04`, and previous/next row are `0x01/0x02`.
+`build_track_fringe_objects` consumes the same four corner combinations, while
+`update_subgoldy` consumes the row bits as its safe attachment-entry window.
+The field is therefore named `open_edge_mask`; the old `tile_flags_3d` label
+was needlessly opaque.
+
+The adjacent dword remains one packed owner rather than a C++ bitfield.
+This producer proves `SUBLOC_FLAG_CORNER_OBJECT` (`0x8000`), and the broader
+producer/consumer pass records the independently owned lane, hazard, cache,
+merged-run, AI, and uncached-body masks in `SubLocFlag`.

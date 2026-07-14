@@ -40,7 +40,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     Vector3* live_position = &slot->jetpack_pickup.position;
     *live_position = staged_position;
 
-    int lane = cell->lane_and_flags & 7;
+    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;
     if (lane == 3 && cell[-1].tile_id == 14
         && cell[2].tile_id == 14) {
         live_position->x = live_position->x + 0.5f;

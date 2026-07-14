@@ -27,13 +27,14 @@ source-level behavior:
 - dispatches warning, slide, floor, ramp, and fringe objects to the recovered
   mesh builder with the native family/color/projected-UV combinations;
 - copies the first face texture into the destination cache object and clears
-  the source cell's `0x4000` ownership bit;
+  the source cell's `SUBLOC_FLAG_UNCACHED_BODY` bit, proving that cells whose
+  geometry is batched no longer need a standalone runtime body;
 - flushes each completed row group into the shared vertex/index buffers and
   updates grouped vertex, primitive, and vertex counts; and
 - performs the final Floor/Slide/Warn/Ramp/Fringe maximum-count/name pass.
 
 The active row slab is addressed from `SubgameRuntime + 0x3bfac8`, with the
-anchor at `+0x10`, render object at `+0x24`, cache flags at `+0x40`, and the
+anchor at `+0x10`, render object at `+0x24`, `lane_and_flags` at `+0x40`, and the
 four fringe pointers at `+0x44..+0x50`.
 
 ## Recovered adjacent mesh helpers

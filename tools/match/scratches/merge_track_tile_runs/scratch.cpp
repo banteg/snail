@@ -29,7 +29,8 @@ unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
                      .lane_and_flags;                                           \
             do {                                                               \
                 CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &= ~0x20;    \
-                *clear_lane_flags &= ~0x6000u;                                 \
+                *clear_lane_flags &=                                           \
+                    ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \
                 clear_lane_flags -=                                           \
                     sizeof(TrackRowCell) / sizeof(unsigned int);               \
                 --(run_length);                                                \
@@ -45,7 +46,8 @@ void SubgameRuntime::merge_track_tile_runs()
         do {
             int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
-                *lane_flags |= 0x6000;
+                *lane_flags |=
+                    SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY;
                 lane_flags += sizeof(TrackRowCell) / sizeof(unsigned int);
                 --lane_count;
             } while (lane_count != 0);
@@ -65,8 +67,8 @@ void SubgameRuntime::merge_track_tile_runs()
             do {
                 TrackRowCell* cell = CELL_FROM_LANE_FLAGS(cell_lane_flags);
                 if (is_sub_loc_floor(cell) != 0
-                    && (*cell_lane_flags & 0x8000) == 0
-                    && (*cell_lane_flags & 0x40) == 0) {
+                    && (*cell_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
+                    && (*cell_lane_flags & SUBLOC_FLAG_CACHE_FAMILY_SWAPPED) == 0) {
                     int run_length = 0;
                     TrackRowCell* cursor = cell;
                     int lane_cursor = lane;
@@ -74,9 +76,12 @@ void SubgameRuntime::merge_track_tile_runs()
                                < (int)(sizeof(runtime_cells[0])
                                    / sizeof(runtime_cells[0][0]))
                            && IS_FLOOR_RUN_TILE(cursor->tile_id)
-                           && (cursor->lane_and_flags & 0x8000) == 0
-                           && (cursor->lane_and_flags & 0x4000) != 0
-                           && (cursor->lane_and_flags & 0x60) == 0) {
+                           && (cursor->lane_and_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
+                           && (cursor->lane_and_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0
+                           && (cursor->lane_and_flags
+                                   & (SUBLOC_FLAG_WARNING_CACHE_FAMILY
+                                       | SUBLOC_FLAG_CACHE_FAMILY_SWAPPED))
+                               == 0) {
                         ++run_length;
                         ++cursor;
                         ++lane_cursor;
@@ -91,8 +96,8 @@ void SubgameRuntime::merge_track_tile_runs()
                         CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
                     }
                 } else if (is_sub_loc_slide(cell) != 0
-                           && (*cell_lane_flags & 0x8000) == 0
-                           && (*cell_lane_flags & 0x40) == 0) {
+                           && (*cell_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
+                           && (*cell_lane_flags & SUBLOC_FLAG_CACHE_FAMILY_SWAPPED) == 0) {
                     int run_length = 0;
                     TrackRowCell* cursor = cell;
                     int lane_cursor = lane;
@@ -100,9 +105,12 @@ void SubgameRuntime::merge_track_tile_runs()
                                < (int)(sizeof(runtime_cells[0])
                                    / sizeof(runtime_cells[0][0]))
                            && is_sub_loc_slide(cursor) != 0
-                           && (cursor->lane_and_flags & 0x8000) == 0
-                           && (cursor->lane_and_flags & 0x4000) != 0
-                           && (cursor->lane_and_flags & 0x60) == 0) {
+                           && (cursor->lane_and_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
+                           && (cursor->lane_and_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0
+                           && (cursor->lane_and_flags
+                                   & (SUBLOC_FLAG_WARNING_CACHE_FAMILY
+                                       | SUBLOC_FLAG_CACHE_FAMILY_SWAPPED))
+                               == 0) {
                         ++run_length;
                         ++cursor;
                         ++lane_cursor;
@@ -120,8 +128,8 @@ void SubgameRuntime::merge_track_tile_runs()
                     unsigned char tile = cell->tile_id;
                     if (tile == 0x0e) {
                         int flags = *cell_lane_flags;
-                        flags &= ~0x0e00;
-                        flags |= 0x0100;
+                        flags &= ~SUBLOC_MERGED_RUN_WIDTH_REMAINDER_MASK;
+                        flags |= SUBLOC_MERGED_RUN_WIDTH_ONE;
                         *cell_lane_flags = flags;
 
                         int run_length = 0;
@@ -131,9 +139,12 @@ void SubgameRuntime::merge_track_tile_runs()
                                    < (int)(sizeof(runtime_cells[0])
                                        / sizeof(runtime_cells[0][0]))
                                && cursor->tile_id == 0x0e
-                               && (*cell_lane_flags & 0x4000) == 0x4000) {
+                               && (*cell_lane_flags & SUBLOC_FLAG_UNCACHED_BODY)
+                                   == SUBLOC_FLAG_UNCACHED_BODY) {
                             *cell_lane_flags =
-                                (*cell_lane_flags & ~0x0e00) | 0x0100;
+                                (*cell_lane_flags
+                                    & ~SUBLOC_MERGED_RUN_WIDTH_REMAINDER_MASK)
+                                | SUBLOC_MERGED_RUN_WIDTH_ONE;
                             ++run_length;
                             ++cursor;
                             ++lane_cursor;
@@ -145,25 +156,26 @@ void SubgameRuntime::merge_track_tile_runs()
                                     g_game->root_bod_catalog.pillars[run_length - 1]
                                         .object);
                             *cell_lane_flags =
-                                (*cell_lane_flags & ~0x0f00)
-                                | ((run_length & 0xf) << 8);
+                                (*cell_lane_flags & ~SUBLOC_MERGED_RUN_WIDTH_MASK)
+                                | ((run_length & SUBLOC_MERGED_RUN_WIDTH_VALUE_MASK)
+                                    << SUBLOC_MERGED_RUN_WIDTH_SHIFT);
                             CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
                         }
                     } else if (tile == 0 || tile == 0x23) {
-                        *cell_lane_flags &= ~0x2000u;
+                        *cell_lane_flags &= ~SUBLOC_FLAG_AI_ENABLED;
                         if (level_mode == 2) {
                             ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
                                 ->set_bod_object(
                                     g_game->root_bod_catalog.universe_hole.object);
                         } else {
-                            *cell_lane_flags &= ~0x4000u;
+                            *cell_lane_flags &= ~SUBLOC_FLAG_UNCACHED_BODY;
                         }
                     }
                 }
 
                 if ((((unsigned char*)row_attachment_flags)[-0xb4] & 4) != 0) {
                     CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &= ~0x222;
-                    *cell_lane_flags &= ~0x4000u;
+                    *cell_lane_flags &= ~SUBLOC_FLAG_UNCACHED_BODY;
                     *row_attachment_flags &= ~0x20;
                 }
 

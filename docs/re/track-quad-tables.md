@@ -72,7 +72,7 @@ assigns a fixed object (game dword index × 4 = byte offset):
 For tiles not in {0, 35, 28, 29, 30, 14}: build an open-neighbor mask
 (left=8, right=4, behind=1, ahead=2 — using `is_sub_loc_empty`
 on the 4 neighbors, with grid borders counting as open). On exact corner
-masks, set cell flag 0x8000 and install a corner quad:
+masks, set `SUBLOC_FLAG_CORNER_OBJECT` (`0x8000`) and install a corner quad:
 
 | mask | open dirs | corner id |
 |---|---|---|
@@ -87,14 +87,15 @@ other tile except {22, 14, ramp family} takes the **Slide0** corner.
 ## Pass 2: harmonize_center_lane_floor_slide_variants @ 0x4356f0
 
 Runs only on rows where `row % 8 == 3` (look ahead one row) or `row % 8 == 5`
-(look behind one row), every lane, skipping cells with flag 0x20:
+(look behind one row), every lane, skipping cells with
+`SUBLOC_FLAG_WARNING_CACHE_FAMILY` (`0x20`):
 
 - floor-family cell next to a slide-family neighbor (or neighbor tile 30 for
   the ahead case / 32 for the behind case): if the cell quad is Track0
   slice 0, swap to Slide0 slice 0; any Track0 corner swaps to the same-index
-  Slide0 corner. Set flag 0x40.
+  Slide0 corner. Set `SUBLOC_FLAG_CACHE_FAMILY_SWAPPED` (`0x40`).
 - slide-family cell next to a floor-family neighbor: the mirror swap
-  (Slide0 → Track0), flag 0x40.
+  (Slide0 → Track0), with the same cache-family-swap flag.
 
 This is the seam-alignment pass the port stubbed out in
 `buildRenderCacheSurfaceSwapGrid`; the "two recovered replacement tables"
@@ -103,8 +104,9 @@ are the Track0 and Slide0 corner banks.
 ## Pass 3: merge_track_tile_runs @ 0x435180
 
 Collapses repeated same-family quad runs into the longer slice variants
-(slices 1..7 = strip lengths). Skips cells with flag 0x8000 (corner variant)
-or 0x40 (seam-swapped). Pre-pass ORs 0x6000 into every cell's flag dword.
+(slices 1..7 = strip lengths). Skips corner-object or cache-family-swapped
+cells. The pre-pass enables both `SUBLOC_FLAG_AI_ENABLED` (`0x2000`) and
+`SUBLOC_FLAG_UNCACHED_BODY` (`0x4000`) on every cell.
 Floor-family runs select `floor_slices[run_length - 1]`; slide-family runs
 select `slide_slices[run_length - 1]`. Tile-0x0e runs use the matching
 `pillar[run_length - 1]` mesh, while empty/tile-0x23 cells in level mode 2 use
@@ -114,7 +116,7 @@ the universe-hole object.
 
 For every cell whose **next-row** cell is open-neighbor family: if the cell
 quad equals Track0 slice i or Slide0 slice i (any i in 0..7), replace it with
-**TrackWarn slice i** and set flag 0x20. This is the striped gap-warning
+**TrackWarn slice i** and set `SUBLOC_FLAG_WARNING_CACHE_FAMILY`. This is the striped gap-warning
 floor; it only fires on cells still carrying a plain floor/slide quad, which
 is the eligibility predicate the port was missing
 (`buildRenderCacheWarnSurfaceGrid`).
@@ -127,9 +129,12 @@ is the eligibility predicate the port was missing
   four passes in the native `rebuild_track_runtime_from_segments` order
   (0x437de0): edge variants → warn promotion → seam harmonize → run merge,
   followed by warning zones, fringe objects, and the render caches. The
-  skip-flag chain depends on this order: promote sets 0x20 which harmonize
-  skips; harmonize sets 0x40 which merge skips.
-- Flag bits on the cell flag dword: 0x20 = warn-promoted, 0x40 = seam-swap,
-  0x8000 = corner variant, 0x6000 = merge pre-pass mark.
+  skip-flag chain depends on this order: promote selects the warning cache
+  family which harmonize skips; harmonize records the floor/slide family swap
+  which merge skips.
+- The cell dword is now represented by `SubLocFlag`: `0x20` selects the warning
+  cache family, `0x40` records a floor/slide cache-family swap, `0x8000` marks
+  a corner object, and the old combined `0x6000` literal is the independent
+  AI-enabled plus uncached-body pair.
 - `TrackWarn.tga` (and its per-world siblings) is the texture for the
   promoted quads; the port already loads per-world texture sets.

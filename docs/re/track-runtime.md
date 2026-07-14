@@ -304,9 +304,23 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
   - `anchor_position`
   - `attachment_template_record`
   - `tile_id`
-  - `tile_flags_3d`
-  - `render_flags`
+  - `open_edge_mask`
+  - `lane_and_flags`
   - four fringe/cache object slots at `+0x44..+0x50`
+- `open_edge_mask` is produced from the four adjacent cells:
+  - `0x01` previous row/back
+  - `0x02` next row/front
+  - `0x04` next lane/right
+  - `0x08` previous lane/left
+- the independently proved `lane_and_flags` lanes are:
+  - `0x0007` lane index
+  - `0x0008/0x0010` suppress random salt/garbage spawns; warning footprints
+    stamp both as `0x0018`
+  - `0x0020` warning-cache family and `0x0040` swapped floor/slide cache family
+  - `0x0f00` merged-run width, shifted by 8
+  - `0x2000` AI enabled
+  - `0x4000` uncached standalone body; render-cache aggregation clears it
+  - `0x8000` corner object
 - runtime row `+0xe8` carries the per-row `RingSpeed` float copied from segment metadata
 
 That is the sampling path used both by player movement and by the floor-height helper.

@@ -170,8 +170,9 @@ evidence-only; its IDA typing follow-up is also resolved.
   claimed region there is a second, earlier arm: when the current cell's
   `tile_id` is 0 or 35 (void / open-neighbor), `position.y < 0.49`, and
   `velocity.y <= 0`, native begins carryover immediately, gated by a
-  row-fraction window (`frac(z)` must be above `0.2` when `tile_flags_3d & 1`
-  and below `0.8` when `tile_flags_3d & 2`, otherwise `(0.0, 1.0)`).
+  row-fraction window (`frac(z)` must be above `0.2` when
+  `open_edge_mask & SUBLOC_OPEN_PREVIOUS_ROW` and below `0.8` when
+  `open_edge_mask & SUBLOC_OPEN_NEXT_ROW`, otherwise `(0.0, 1.0)`).
 - consequence: walking off a floor edge arms `attachment.exit.pending` about
   half a ride-height later in the port. Exit-pending gates swept attachment
   entry (`try_enter_track_attachment_from_swept_motion` requires it) and the

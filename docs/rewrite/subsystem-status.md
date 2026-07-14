@@ -218,7 +218,7 @@ Still missing or approximate:
   - five clear sites inside `update_subgoldy` are now fully identified:
     - `0x43bcb3` — non-follow floor-cache/slide block, fires on runtime tiles `0x0f/0x10/0x12/0x13` or slide-family cells when `damage_gauge.state == 2`, mutually exclusive with swept-reentry path (sibling of the `_pad_41c == 0` branch)
     - `0x43bf6f` — **swept re-entry failed → grounded snap**, the common late retirement after swept re-entry: `!follow_state.active && y<0.49 && y≥-0.163 && !is_open_neighbor(cell) && cell->tile_id != 0x16 && velocity.y<-0.03 && velocity.y<0`
-    - `0x43c06d` — tile-flags grounded re-snap: `velocity.y ≥ threshold(tile_flags_3d)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`
+    - `0x43c06d` — open-edge grounded re-snap: `velocity.y ≥ threshold(open_edge_mask)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`
     - `0x43c3ea` — trampoline (tile `0x16`) bounce: `|y - cell_y| < 0.49` envelope, then squidge + velocity flip + `position.y = cell_y + 0.49` + `play_sound_effect(0x29)`
     - `0x43ce75` — jetpack altitude cap: native `sub_hover.state == 1 && position.y < 1.0`
   - `attachment_exit_progress` itself only has the one progress-update store at `0x43ce96`, which runs as the `else` of the five clear lanes (no progress-timeout clear exists in native)

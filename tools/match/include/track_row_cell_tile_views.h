@@ -11,9 +11,9 @@
 
 struct TrackRowCellTileByteView {
     unsigned char tile_id; // TrackRowCell +0x3c
-    unsigned char tile_flags_3d; // TrackRowCell +0x3d
+    unsigned char open_edge_mask; // TrackRowCell +0x3d, SubLocOpenEdgeFlag bits
     char unknown_02[0x04 - 0x02];
-    unsigned int lane_and_flags; // TrackRowCell +0x40, includes edge-variant bit 0x8000
+    unsigned int lane_and_flags; // TrackRowCell +0x40, SubLocFlag bits
     char unknown_08[0x54 - 0x08];
 };
 

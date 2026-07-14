@@ -1,7 +1,8 @@
 # merge_track_tile_runs
 
 `SubgameRuntime::merge_track_tile_runs` makes a second pass over the populated
-runtime track cells. It seeds every cell with the `0x6000` merge-candidate bits,
+runtime track cells. It seeds every cell with the independent
+`SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY` (`0x6000`) bits,
 then scans each row's eight lanes for horizontal slide, floor, and worm-tunnel
 runs. Multi-cell runs replace the first cell's object with a wider mesh and
 clear render/contact bits on the continuation cells.
@@ -18,10 +19,11 @@ That row cursor corrected a real ownership bug in the first draft. At
 current cell's embedded `BodNode::list_flags`, then clears the row's embedded
 `attachment_body.list_flags`. It does not touch `row_model.list_flags`.
 
-Important flag distinction: the first cell's start gate checks low bit `0x40`,
-but continuation cells use merge bit `0x4000`. Keeping those separate is required
-for the run counts to match the native behavior after the initial `0x6000` seed
-pass.
+Important flag distinction: the first cell's start gate excludes
+`SUBLOC_FLAG_CACHE_FAMILY_SWAPPED` (`0x40`), but continuation cells require
+`SUBLOC_FLAG_UNCACHED_BODY` (`0x4000`). Keeping those separate is required for
+the run counts to match the native behavior after the initial AI/uncached-body
+seed pass.
 
 Continuation cleanup is owned by `SubgameRuntime::runtime_cells[row][lane]`, not
 by an independently advancing borrowed cell pointer. Recomputing the indexed
@@ -29,7 +31,7 @@ field cursor matches the native row/lane address arithmetic and prevents a run
 cursor from escaping its eight-cell row.
 
 The `0x0e` wall-run path has another non-obvious ownership detail. Its tile
-cursor advances across cells, but the `0x4000` test and `0x0e00`/`0x0100`
+cursor advances across cells, but the uncached-body test and merged-run-width
 updates remain on the first cell's `lane_and_flags`. Advancing a full cell
 owner for those flag accesses changes behavior and is not equivalent.
 
