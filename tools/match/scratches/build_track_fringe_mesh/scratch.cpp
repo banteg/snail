@@ -1,11 +1,11 @@
 // build_track_fringe_mesh @ 0x4246a0 (thiscall, ret 0x8)
 
+#include "game_root.h"
 #include "object_render_types.h"
 #include "sprite.h"
-#include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
 {
@@ -28,9 +28,8 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
     Object* mesh;
     {
         Color4f skirt_color;
-        Color4f* color =
-            ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(&skirt_color);
-        mesh = (Object*)fringe_mesh_bod.object;
+        Color4f* color = g_game->subgame.get_track_skirt_color(&skirt_color);
+        mesh = fringe_mesh_bod.object;
         fringe_mesh_bod.color = *color;
     }
 

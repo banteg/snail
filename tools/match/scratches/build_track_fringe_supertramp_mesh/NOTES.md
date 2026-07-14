@@ -76,3 +76,10 @@ Binary Ninja now records the recovered prototype as
 The typed decompile resolves the generated object through the embedded fringe
 `BodBase` at `Path +0x60`, the source strip through the leading BOD, and the
 loop dimensions through `Path::segment_count` and `Path::width_cells`.
+
+## 2026-07-14 generated-mesh owner
+
+The generated `Object*` now comes directly from
+`Path::fringe_mesh_bod.object`; the former cast was a stale holdover from when
+that embedded BOD field was untyped. Focused output remains byte-identical at
+92.87%, 421/421 instructions, prefix 69/421, with all 25 operands clean.

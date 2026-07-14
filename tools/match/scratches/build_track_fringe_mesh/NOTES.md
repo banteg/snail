@@ -83,3 +83,12 @@ and loses instruction parity; narrowing the generated-object scope prevents
 the native stack-slot reuse and grows the frame to `0x74`; and no speculative
 UV setter was introduced because other recovered object paths corroborate
 scalar `ObjectUv` component assignments.
+
+## 2026-07-14 generated-mesh and skirt-colour ownership
+
+The allocated generated mesh now flows directly from the typed
+`Path::fringe_mesh_bod.object` field without recasting its owner. The skirt
+colour borrow reloads the canonical `GameRoot* g_game` and calls the embedded
+`subgame`, replacing the equivalent `char* + 0x74618` reconstruction while
+preserving the native singleton access. Focused output is byte-identical at
+89.31%, 318/318 instructions, prefix 18/318, with all 23 operands clean.

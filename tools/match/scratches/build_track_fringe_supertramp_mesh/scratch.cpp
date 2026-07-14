@@ -22,7 +22,7 @@ void Path::build_track_fringe_supertramp_mesh(char* texture_path)
 {
     fringe_mesh_bod.set_bod_object(g_object_list.add_object_to_list());
 
-    Object* mesh = (Object*)fringe_mesh_bod.object;
+    Object* mesh = fringe_mesh_bod.object;
     mesh->blend_mode = 5;
     mesh->flags |= 0x100000;
     mesh->request_object_vertices((segment_count << 2) + 6);
