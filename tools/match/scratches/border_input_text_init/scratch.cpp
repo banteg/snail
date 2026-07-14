@@ -5,7 +5,7 @@
 
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
-FrontendWidget* FrontendWidget::border_input_text_init(int arg2, char* text, int flags)
+void FrontendWidget::border_input_text_init(int capacity, char* text, int flags)
 {
     input_flags = flags;
     rstrcpy_checked_ascii(text_buffer + 0x400, text);
@@ -28,11 +28,10 @@ FrontendWidget* FrontendWidget::border_input_text_init(int arg2, char* text, int
     text_buffer[input_cursor + 1] = 0;
     input_cursor_blink_progress = 0.0f;
     input_cursor_visible = 1;
-    input_capacity = arg2;
+    input_capacity = capacity;
     *(int*)&input_cursor_blink_step = 0x3daaaaab;
 
-    FrontendWidget* result = (FrontendWidget*)layout_frontend_widget();
+    layout_frontend_widget();
     if ((flags & 0xc) != 0)
-        return input_ok_state()->initialize_input_ok();
-    return result;
+        input_ok_state()->initialize_input_ok();
 }

@@ -88,7 +88,13 @@ FRONTEND_WIDGET_FIELDS = (
     ("0x6f0", "font_scale", "float"),
     ("0x6f4", "layout_anchor_x", "float"),
     ("0x6f8", "layout_anchor_y", "float"),
-    ("0x6fc", "_pad_6fc", "uint8_t[0x1c]"),
+    ("0x6fc", "input_cursor", "int32_t"),
+    ("0x700", "input_cursor_visible", "int32_t"),
+    ("0x704", "input_cursor_blink_progress", "float"),
+    ("0x708", "input_cursor_blink_step", "float"),
+    ("0x70c", "input_flags", "uint32_t"),
+    ("0x710", "input_length", "int32_t"),
+    ("0x714", "input_capacity", "int32_t"),
     ("0x718", "slider_less_widget", "FrontendWidget*"),
     ("0x71c", "slider_more_widget", "FrontendWidget*"),
     ("0x720", "slider_value_widget", "FrontendWidget*"),
@@ -112,6 +118,10 @@ DEFERRED_PROTO_UPDATES = (
     (
         "border_sprite_extend",
         "void __thiscall border_sprite_extend(FrontendWidget* widget, int32_t sprite_a, int32_t sprite_c, int32_t sprite_b, uint8_t wobble_positive)",
+    ),
+    (
+        "border_input_text_init",
+        "void __thiscall border_input_text_init(FrontendWidget* widget, int32_t capacity, char* text, int32_t flags)",
     ),
 )
 

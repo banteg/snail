@@ -97,7 +97,8 @@
     },
     {
       "address": "0x403410",
-      "name": "border_input_text_init"
+      "name": "border_input_text_init",
+      "description": "Stable Windows harness identity for the authored void cRBorder::InputTextInit(int, char*, int) member. It initializes the complete inline editor tail through input_capacity at +0x714, relayouts the border, and optionally initializes its embedded cRInputOK overlay."
     },
     {
       "address": "0x4034d0",

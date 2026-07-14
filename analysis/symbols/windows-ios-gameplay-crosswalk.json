@@ -42,6 +42,14 @@
       "notes": "Android preserves the same hover-target raise and hot-padding selection. Windows callsites discard EAX, proving the copied padding bits are incidental; the void member remains exact at 4/4 instructions."
     },
     {
+      "address": "0x403410",
+      "windows_name": "border_input_text_init",
+      "android_symbol": "cRBorder::InputTextInit(int, char*, int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same text copy, cursor/length scan, marker append, blink/filter/capacity stores, RePosition call, and conditional cRInputOK initialization. Both Windows callers discard EAX, and the corrected void member remains exact at 46/46 instructions."
+    },
+    {
       "address": "0x404080",
       "windows_name": "update_twinkle",
       "ios_symbol": "cRTwinkle::AI()",

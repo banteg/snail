@@ -24,7 +24,8 @@ public:
     FrontendWidget* stack_widget_below(FrontendWidget* previous_widget); // @ 0x4027b0
     int layout_frontend_widget(); // @ 0x4024a0
     int set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790
-    FrontendWidget* border_input_text_init(int arg2, char* text, int flags); // @ 0x403410
+    void border_input_text_init(int capacity, char* text, int flags); // @ 0x403410,
+        // Android cRBorder::InputTextInit(int, char*, int)
     void border_input_text(); // @ 0x4035b0
     void border_add_text_number(int value); // @ 0x401030
     void border_sprite_extend(int sprite_a, int sprite_c, int sprite_b,

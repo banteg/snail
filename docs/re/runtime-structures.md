@@ -855,6 +855,13 @@ High-confidence current fields:
 - `+0x6f0`: `font_scale`
 - `+0x6f4`: `layout_anchor_x`
 - `+0x6f8`: `layout_anchor_y`
+- `+0x6fc`: `input_cursor`
+- `+0x700`: `input_cursor_visible`
+- `+0x704`: `input_cursor_blink_progress`
+- `+0x708`: `input_cursor_blink_step`
+- `+0x70c`: `input_flags`
+- `+0x710`: `input_length`
+- `+0x714`: `input_capacity`
 - `+0x718`: `slider_less_widget`
 - `+0x71c`: `slider_more_widget`
 - `+0x720`: `slider_value_widget`
@@ -864,7 +871,7 @@ Conservative current read:
 - `layout_frontend_widget` owns the authored/live/clamped rect lane plus slider hit bounds
 - `update_frontend_widget_interaction` owns the hover blend, padding interpolation, shortcut dispatch, tooltip updates, and slider child propagation
 - `initialize_frontend_widget` seeds the shared color/style banks, render inset controls, font/layout anchors, and slider child widgets
-- `+0x714` remains intentionally unresolved; `border_input_text_init` uses that tail slot directly, so it should not be merged into the slider-child lane
+- exact `border_input_text_init` initializes the seven-field editor tail at `+0x6fc..+0x714`; `border_input_text` consumes the same cursor, blink, filter, length, and capacity state
 - `text_buffer` should stay opaque for now; the full `0x420` block is consumed by widget text/layout helpers and text-input init, not just by plain C-string calls
 
 Android preserves the adjacent authored API as `cRBorder::HideInit()`,
@@ -876,6 +883,13 @@ Windows store schedules are incidental, not ownership-bearing returns.
 The narrow Binary Ninja replay applies the complete field layout but reports
 these five prototypes as deferred: the live session restores its stale scalar
 forms during verification, so the script does not force or misreport them.
+
+Android also preserves the exact `cRBorder::InputTextInit(int, char*, int)`
+body. Both Windows callers discard EAX, while each platform exits with the
+incidental result of `RePosition()` or `cRInputOK::Init()`. The shared member
+therefore uses the authored `void` contract and names the final `+0x714` lane
+as input capacity. Its Binary Ninja prototype is reported as deferred for the
+same live-session reason as the five adjacent methods.
 
 ### Frontend Widget Tooltip
 
