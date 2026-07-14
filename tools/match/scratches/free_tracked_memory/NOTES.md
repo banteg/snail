@@ -19,3 +19,7 @@ and tracked-stack removal. Exact and near-exact callers now declare the helper
 `void`; the broad filename-taking `cRLogo::Init(char*)` scratch now does as well.
 Its two Windows callers discard EAX, and the symbol-bearing ARM body likewise
 ends with `RShellMemoryFree` followed directly by its epilogue.
+
+Both size lookup and removal now dispatch through the canonical
+`g_tracked_allocation_stack` owner at `0x5108c0`. Removing the old cast from the
+depth scalar preserves the exact 43/43 body and all nine operand proofs.

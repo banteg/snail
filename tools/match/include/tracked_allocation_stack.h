@@ -18,9 +18,9 @@ public:
     void push_tracked_allocation(int unused, void* pointer, int size);
     int pop_tracked_allocation(void* pointer);
 
-    int depth;              // +0x00
-    int mark_or_unknown_04; // +0x04
-    int unknown_08;         // +0x08
+    int depth;          // +0x00
+    int bookmark_depth; // +0x04
+    int unknown_08;     // +0x08
     union {
         struct {
             int first_pointer;    // +0x0c
@@ -30,5 +30,7 @@ public:
         TrackedAllocationRecord records[15000];
     };
 };
+
+extern TrackedAllocationStack g_tracked_allocation_stack;
 
 #endif

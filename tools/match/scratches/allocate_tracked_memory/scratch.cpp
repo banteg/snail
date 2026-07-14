@@ -8,7 +8,6 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 void report_errorf(char* format, ...);
 
 extern int g_tracked_allocation_total_bytes;
-extern int g_tracked_allocation_depth;
 
 void* allocate_tracked_memory(int size, char* name)
 {
@@ -18,8 +17,7 @@ void* allocate_tracked_memory(int size, char* name)
         report_errorf("Not enough memory\n\n");
     }
 
-    ((TrackedAllocationStack*)&g_tracked_allocation_depth)
-        ->push_tracked_allocation((int)name, block, size);
+    g_tracked_allocation_stack.push_tracked_allocation((int)name, block, size);
     memset(block, 0, size);
 
     block[0] = -34;

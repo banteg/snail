@@ -4,7 +4,6 @@
 #include "tracked_allocation_stack.h"
 
 extern int g_tracked_allocation_total_bytes; // data_5108b4
-extern int g_tracked_allocation_depth;       // data_5108c0
 extern float g_text_input_repeat_accumulator; // data_5108b8
 extern float g_text_input_repeat_step;        // data_50339c
 extern unsigned char g_text_input_last_repeat_code; // data_53c7f5
@@ -23,8 +22,7 @@ char initialize_game_data_archive()
 
     g_archive_startup_flag = (unsigned char)zero;
     g_tracked_allocation_total_bytes = zero;
-    ((TrackedAllocationStack*)&g_tracked_allocation_depth)
-        ->initialize_tracked_allocation_stack();
+    g_tracked_allocation_stack.initialize_tracked_allocation_stack();
     g_text_input_repeat_accumulator = 0.0f;
     g_text_input_repeat_step = 0.0f;
     g_text_input_last_repeat_code = 0;

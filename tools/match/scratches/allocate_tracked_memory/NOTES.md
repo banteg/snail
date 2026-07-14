@@ -17,3 +17,8 @@ through `ecx`.
 iOS `RShell.o` names the public contract `RShellMemoryMalloc(int, char*)`.
 Windows adds the recovered guard bytes and allocation-stack accounting around
 that size/label interface; iOS delegates its platform body directly to malloc.
+
+The call now goes through the canonical `g_tracked_allocation_stack` owner at
+`0x5108c0`, rather than recasting its first `depth` word into an object. This is
+codegen-neutral: the focused result remains exact with all seven operands
+resolved.

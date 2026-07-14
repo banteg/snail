@@ -1,8 +1,8 @@
 // initialize_tracked_allocation_depth @ 0x430e30 (cdecl)
 
-extern int g_tracked_allocation_depth; // data_5108c0
+#include "tracked_allocation_stack.h"
 
 void initialize_tracked_allocation_depth()
 {
-    g_tracked_allocation_depth = 0;
+    g_tracked_allocation_stack.depth = 0;
 }

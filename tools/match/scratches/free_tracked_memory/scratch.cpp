@@ -7,13 +7,11 @@ extern "C" void free(void* pointer);
 void report_errorf(char* format, ...);
 
 extern int g_tracked_allocation_total_bytes;
-extern int g_tracked_allocation_depth;
 
 void free_tracked_memory(void* pointer)
 {
     pointer = (char*)pointer - 4;
-    int guarded_size =
-        ((TrackedAllocationStack*)&g_tracked_allocation_depth)->get_tracked_allocation_size(pointer);
+    int guarded_size = g_tracked_allocation_stack.get_tracked_allocation_size(pointer);
     g_tracked_allocation_total_bytes -= guarded_size;
 
     char* block = (char*)pointer;
@@ -24,5 +22,5 @@ void free_tracked_memory(void* pointer)
     }
 
     free(pointer);
-    ((TrackedAllocationStack*)&g_tracked_allocation_depth)->pop_tracked_allocation(pointer);
+    g_tracked_allocation_stack.pop_tracked_allocation(pointer);
 }

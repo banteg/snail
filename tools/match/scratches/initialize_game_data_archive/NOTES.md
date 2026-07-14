@@ -57,3 +57,7 @@
   helpers. A direct typed-loop spelling makes VC6 choose the `buttons` lane as
   its cursor and regresses to 82.47%; the retained axis-y cursor remains the
   most faithful source shape without inventing dependencies.
+- 2026-07-14 allocation-owner closure: `0x5108c0` is now the canonical
+  `g_tracked_allocation_stack` object, so the folded initializer is called
+  directly on that owner rather than through a cast from its first depth word.
+  The focused result remains 94.74%, 48/47, with all 19 operands resolved.

@@ -4012,12 +4012,14 @@
     },
     {
       "address": "0x5108c0",
-      "name": "g_tracked_allocation_depth",
+      "name": "g_tracked_allocation_stack",
       "kind": "global",
       "aliases": [
+        "g_tracked_allocation_depth",
         "data_5108c0"
       ],
-      "description": "Current tracked-allocation stack depth/base word copied by set_tracked_allocation_mark and consumed by tracked allocation helpers."
+      "size": "0xc",
+      "description": "Global tracked-allocation stack owner. Its recovered header contains the current depth at +0x00, the saved unwind bookmark at +0x04, and one still-unknown word at +0x08; allocation records follow at +0x0c. The bounded manifest size covers only that proven header because the native 15000-entry overflow edge reaches the adjacent music-buffer address."
     },
     {
       "address": "0x5108c4",
@@ -4026,7 +4028,7 @@
       "aliases": [
         "data_5108c4"
       ],
-      "description": "Saved tracked-allocation unwind mark written by set_tracked_allocation_mark and consumed by free_tracked_allocations_to_mark."
+      "description": "Legacy field-level name for g_tracked_allocation_stack.bookmark_depth at +0x04, written by set_tracked_allocation_mark and consumed by free_tracked_allocations_to_mark."
     },
     {
       "address": "0x53c7e8",
