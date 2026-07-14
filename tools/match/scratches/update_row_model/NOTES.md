@@ -10,8 +10,12 @@ Recovered owner:
   the three component stores, then reads `transform.position.z` for the cull
   compare; spelling the stores directly lets VC6 hoist `object` and keep the
   z result live on the x87 stack.
-- `object->bounds_max.z` is compared against the row/world z threshold at `g_game_base + 0x4326fc`.
-- When the model has crossed the threshold, the function removes `this` from the active BOD list at `g_game_base + 0x5a8` and pushes it onto the free list, using the same intrusive-list pattern as `update_active_bod` and `recycle_bod_to_free_list`.
+- `object->bounds_max.z` is compared against the embedded player's
+  `interaction_max_z` row/world threshold.
+- When the model has crossed the threshold, the function removes `this` from
+  `GameRoot::active_bod_list` and pushes it onto the free list, using the same
+  intrusive-list pattern as `update_active_bod` and
+  `recycle_bod_to_free_list`.
 
 Status:
 
@@ -20,3 +24,6 @@ Status:
   constructor-installed table at `0x497330` points directly to this helper,
   independently proving the callback relationship. Matching remains exact at
   60/60 instructions with six clean masked operands.
+- 2026-07-14: canonicalized the cull plane and active/free list through
+  `GameRoot -> SubgameRuntime -> Player` ownership. Matching remains exact at
+  60/60 with all six operands clean.

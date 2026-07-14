@@ -7,20 +7,20 @@
 
 int report_errorf(char* format, ...);
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Fringe::refresh_fringe_object_draw_list()
 {
     Color4f color;
     Color4f* resolved =
-        ((GameRoot*)g_game_base)->subgame.get_track_skirt_color(&color);
+        g_game->subgame.get_track_skirt_color(&color);
 
     float current_z = position.z;
     this->color = *resolved;
 
-    if (current_z < *(float*)(g_game_base + 0x4326fc)) {
+    if (current_z < g_game->subgame.embedded_player()->interaction_max_z) {
         unsigned int flags = list_flags;
-        BodList* list = &((GameRoot*)g_game_base)->active_bod_list;
+        BodList* list = &g_game->active_bod_list;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");
             return;

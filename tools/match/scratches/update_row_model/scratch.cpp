@@ -1,9 +1,10 @@
 // update_row_model @ 0x443070 (thiscall, ret)
 
+#include "game_root.h"
 #include "object_render_types.h"
 #include "track_attachment_types.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void RowModel::update_row_model()
@@ -14,9 +15,10 @@ void RowModel::update_row_model()
     position->z = velocity.z + position->z;
 
     if (((Object*)object)->bounds_max.z
-            + *(float*)(g_game_base + 0x4326fc) > transform.position.z) {
+            + g_game->subgame.embedded_player()->interaction_max_z
+        > transform.position.z) {
         unsigned int flags = list_flags;
-        BodList* list = (BodList*)(g_game_base + 0x5a8);
+        BodList* list = &g_game->active_bod_list;
         if ((flags & 0x200) == 0) {
             report_errorf("List remove");
             return;
