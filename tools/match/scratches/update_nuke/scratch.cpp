@@ -10,9 +10,9 @@ void Nuke::update_nuke()
     Nuke* self = this;
     int result = self->state;
     switch (result) {
-    case 0:
+    case NUKE_STATE_INACTIVE:
         goto done;
-    case 1:
+    case NUKE_STATE_ACTIVE:
         goto active;
     default:
         goto done;

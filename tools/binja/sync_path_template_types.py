@@ -239,6 +239,7 @@ REQUIRED_HEADER_STRUCTS = (
     "WarningState",
     "Warning",
     "SubPause",
+    "NukeState",
     "Nuke",
     "FireWork",
     "ClickStart",
@@ -458,6 +459,10 @@ WARNING_FIELD_UPDATES = (
 
 DAMAGE_GUAGE_FIELD_UPDATES = (
     ("0x00", "state", "DamageGuageState"),
+)
+
+NUKE_FIELD_UPDATES = (
+    ("0x00", "state", "NukeState"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -1230,6 +1235,7 @@ def main() -> int:
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
+                ("Nuke", NUKE_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),

@@ -27,7 +27,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->row_event.id = zero;
     this->control_override_active = (unsigned char)zero;
     this->nuke.owner_player = this;
-    this->nuke.state = zero;
+    this->nuke.state = NUKE_STATE_INACTIVE;
     this->row_event_cutscene_started = (unsigned char)zero;
     this->resurrect_progress = 0.0f;
     this->completion_handoff_timer = 0.0f;

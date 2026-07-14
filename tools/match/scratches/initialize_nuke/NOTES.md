@@ -77,3 +77,11 @@ those are the complete Windows consumers of `Nuke::sprite_slots`; Android
 independently preserves the same 0x7c-byte class layout and 25-slot walks. This
 is a derived capacity name, not a claim that the original source exposed an
 identically named constant.
+
+## 2026-07-14 lifecycle state ownership
+
+Initialization now names the only arming edge as `NUKE_STATE_ACTIVE`, while
+retaining the real zero local that owns native's `edi` register. Windows field
+xrefs and Android `cRNuke::{Init,AI,UnInit}` agree on the complete two-state
+graph. Focused output remains 93.75%, 64/64 instructions, prefix 30/64, with
+all five operands clean.

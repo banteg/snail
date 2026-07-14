@@ -279,3 +279,11 @@ Player initialization now resets the borrowed subgame controller to
 `COMPLETION_STATE_INACTIVE`. The named enum constant remains codegen-identical
 to the shared zero seed: focused matching is still exact at 279/279
 instructions with all 27 operands clean.
+
+## 2026-07-14 nuke lifecycle ownership
+
+Player initialization is the only direct producer outside `cRNuke` and now
+seeds the embedded child to `NUKE_STATE_INACTIVE`. The adjacent backlink write
+proves the complete `Player +0x150` owner rather than a generic controller
+overlay. Focused matching remains exact at 279/279 instructions with all 27
+operands clean.

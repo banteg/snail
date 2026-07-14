@@ -9,7 +9,7 @@ extern GameRoot* g_game; // data_4df904
 
 void Nuke::initialize_nuke()
 {
-    int zero = 0;
+    int zero = NUKE_STATE_INACTIVE;
     if (state == zero) {
         Sprite** slots = sprite_slots;
         int count = NUKE_SPRITE_SLOT_COUNT;
@@ -18,7 +18,7 @@ void Nuke::initialize_nuke()
         float rate = g_game->subgame.subgame_rate;
         orbit_phase = 0.0f;
         orbit_phase_step = 0.104719758f;
-        state = 1;
+        state = NUKE_STATE_ACTIVE;
         orbit_center_z_step = rate + rate;
 
         do {

@@ -15,8 +15,9 @@ leftover register state.
 Recovered source shape:
 
 - The state gate is the same label-shaped switch idiom as
-  `update_active_landscape_entry`: `case 0` and `default` jump to the shared
-  return label, while `case 1` jumps to the active body. That recovers native's
+  `update_active_landscape_entry`: `NUKE_STATE_INACTIVE` and `default` jump to
+  the shared return label, while `NUKE_STATE_ACTIVE` jumps to the active body.
+  That recovers native's
   `sub eax, 0; je; dec eax; jne` dispatch without dummy arithmetic.
 - Declaring the loop counter before the sprite-slot cursor matches native's
   stack-temp store before `lea esi, [this+0x18]`.
@@ -44,3 +45,10 @@ phase pair, then orbits the same 25 slots at +0x18; `cRSubGoldy::AI()` calls it
 through the embedded owner. The shared Windows type is now `Nuke`, and the
 decompiler prototypes are corrected from incidental `int` to `void`. Focused
 Wibo remains exact at 59/59 instructions with eight clean masked operands.
+
+## 2026-07-14 lifecycle state ownership
+
+The exact updater now dispatches on the typed inactive and active states. No
+additional values are accepted by either the Windows switch or Android
+`cRNuke::AI`. Focused output remains exact at 59/59 instructions with all
+eight operands clean.

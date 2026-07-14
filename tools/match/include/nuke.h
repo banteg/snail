@@ -10,13 +10,18 @@ enum {
     NUKE_SPRITE_SLOT_COUNT = 25,
 };
 
+enum NukeState {
+    NUKE_STATE_INACTIVE = 0,
+    NUKE_STATE_ACTIVE = 1,
+};
+
 class Nuke {
 public:
     void initialize_nuke(); // @ 0x447110, cRNuke::Init
     void update_nuke(); // @ 0x4471e0, cRNuke::AI
     void uninit_nuke(); // @ 0x4470e0, cRNuke::UnInit
 
-    int state; // +0x00
+    NukeState state; // +0x00
     Player* owner_player; // +0x04, non-owning backlink to containing Player
     float orbit_center_z_step; // +0x08
     float orbit_center_z; // +0x0c

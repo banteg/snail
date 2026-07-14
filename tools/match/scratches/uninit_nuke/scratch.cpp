@@ -4,10 +4,10 @@
 
 void Nuke::uninit_nuke()
 {
-    if (state == 1) {
+    if (state == NUKE_STATE_ACTIVE) {
         for (int i = 0; i < NUKE_SPRITE_SLOT_COUNT; i++) {
             sprite_slots[i]->kill_sprite();
         }
-        state = 0;
+        state = NUKE_STATE_INACTIVE;
     }
 }

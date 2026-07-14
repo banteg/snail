@@ -1327,9 +1327,14 @@ typedef struct Squidge {
     float z_phase;
 } Squidge;
 
+typedef enum NukeState {
+    NUKE_STATE_INACTIVE = 0,
+    NUKE_STATE_ACTIVE = 1,
+} NukeState;
+
 /* Authored cRNuke, exact 0x7c-byte collision-ring effect owner. */
 typedef struct Nuke {
-    int32_t state;
+    NukeState state;
     Player* owner_player;
     float orbit_center_z_step;
     float orbit_center_z;

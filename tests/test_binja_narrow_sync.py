@@ -849,6 +849,38 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_nuke_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/nuke.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"NukeState",' in path_sync
+    assert '("0x00", "state", "NukeState")' in path_sync
+    assert '("Nuke", NUKE_FIELD_UPDATES)' in path_sync
+    for header in (analysis_header, matcher_header):
+        assert "NUKE_STATE_INACTIVE = 0" in header
+        assert "NUKE_STATE_ACTIVE = 1" in header
+
+    consumers = {
+        "initialize_subgoldy": "NUKE_STATE_INACTIVE",
+        "initialize_nuke": "NUKE_STATE_ACTIVE",
+        "update_nuke": "NUKE_STATE_ACTIVE",
+        "uninit_nuke": "NUKE_STATE_INACTIVE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_sub_hover_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

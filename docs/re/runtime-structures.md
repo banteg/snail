@@ -26,7 +26,7 @@ The current high-confidence `Player` fields are:
   - child `+0xa8` / Player `+0x148`: `hide_prompt`, cleared by the intro cutscene handoff
 - `+0x14c`: `row_event_cutscene_started`
 - `+0x150`: `nuke`
-  - inline `NukeController`
+  - exact 0x7c-byte authored `cRNuke` collision-ring owner
 - `+0x1cc`: `movement_sound_variant_sample`
 - `+0x1d0`: exact empty one-byte `firework` child (`cRFireWork`)
   - `firework_shoot` does not read instance state, but Windows callers still pass this embedded receiver through `ecx`
@@ -239,19 +239,20 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x14`: `z_phase`
   - helper constants recovered from `update_squidge`: phase spring `0.15000001`,
     damping `0.81999999`, and terminal epsilon `0.001`
-- `player + 0x150` is an inline `NukeController`
-  - `+0x00`: `state`
+- `player + 0x150` is the exact 0x7c-byte authored `cRNuke` owner
+  - `+0x00`: `state`, the complete `NukeState` graph:
+    `INACTIVE (0) -> ACTIVE (1) -> INACTIVE`
   - `+0x04`: `owner_player`
-  - `+0x08`: `orbit_axis_step`
-  - `+0x0c`: `orbit_axis`
-  - `+0x10`: `phase`
-  - `+0x14`: `phase_step`
+  - `+0x08`: `orbit_center_z_step`
+  - `+0x0c`: `orbit_center_z`
+  - `+0x10`: `orbit_phase`
+  - `+0x14`: `orbit_phase_step`
   - `+0x18`: `sprite_slots[25]`
   - `handle_subgoldy_collisions` arms it through `initialize_nuke`
   - `update_subgoldy` either advances it through `update_nuke` or tears it down through `uninit_nuke`
-  - `initialize_nuke` seeds `orbit_axis = owner_player->position.z - 5.0`, `orbit_axis_step = track_center_x * 2`, `phase = 0`, and `phase_step = 0.10471976`
-  - `update_nuke` advances 25 sprites around the active axis with `sin/cos(index * 0.04 * tau + phase) * 7.0`; each sprite uses the native `3.0 x 3.0` size lanes
-  - `update_subgoldy` owns the lifetime gate through `player + 0x374/+0x378`, refreshing the step as `track_center_x * 0.022222223` and tearing the controller down once progress exceeds `1.0`
+  - `initialize_nuke` seeds `orbit_center_z = owner_player->position.z - 5.0`, `orbit_center_z_step = subgame_rate * 2`, `orbit_phase = 0`, and `orbit_phase_step = 0.10471976`
+  - `update_nuke` advances 25 sprites around the active axis with `sin/cos(index * 0.04 * tau + orbit_phase) * 7.0`; each sprite uses the native `3.0 x 3.0` size lanes
+  - `update_subgoldy` owns the lifetime gate through `player + 0x374/+0x378`, refreshing the step as `subgame_rate * 0.022222223` and tearing the controller down once progress exceeds `1.0`
 - `player + 0x14c` is the one-shot `row_event_cutscene_started` latch
   - `initialize_subgoldy` clears it on run start
   - `update_subgoldy` flips it the first time the row-event tip path dispatches the one-shot cutscene animation
