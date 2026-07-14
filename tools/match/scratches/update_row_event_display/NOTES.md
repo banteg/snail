@@ -155,3 +155,13 @@ parcel manager, while the zero-parcel bonus gate names `subgame.level_mode`
 and awards the same player. This removes the raw `root + 0x433f34`,
 `+0x42fd7c`, and `+0x74658` expressions without changing the exact 213/213
 body or its 38 clean operands.
+
+## 2026-07-14 root-player transform and widget closure
+
+The projection tail's raw root floats at `0x15c..0x194` are the right, up,
+forward, and position rows of `GameRoot::players[0].transform`, inherited from
+`RenderableBod`. Init independently fixes the five widget roles, so AI now
+hides, reveals, and blinks `title_widget`, `bonus_icon_widget`, and
+`bonus_summary_widget` directly. The root declaration and all traversals are
+canonical, and focused output remains byte-exact at 213/213 instructions with
+all 38 operands clean.

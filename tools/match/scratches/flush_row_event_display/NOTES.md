@@ -31,3 +31,10 @@ lowered to `inc dword [mem]`.
 `Player::total_score`; all five widget releases use the root-owned
 `BorderManager`. The complete graph remains exact at 67/67 instructions with
 19 clean operands.
+
+## 2026-07-14 five-widget role closure
+
+Teardown now releases the same five semantic fields proven by Init: the title,
+delivered count, bonus icon, bonus summary, and continue prompt. This removes
+the last generic widget aliases from the lifecycle while remaining exact at
+67/67 instructions with all 19 operands clean.

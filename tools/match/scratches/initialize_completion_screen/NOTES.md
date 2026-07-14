@@ -90,3 +90,11 @@ listing byte-for-byte
 and the honest 89.89% result (`276/278`, prefix `23/278`, 44 clean operands).
 The remaining gap is still the documented x/y register allocation, not table
 layout.
+
+## 2026-07-14 five-widget role closure
+
+Construction fixes every pointer in the shared `Completion` owner:
+`title_widget`, `delivered_count_widget`, `bonus_summary_widget`,
+`bonus_icon_widget`, and `continue_widget`. The former generic aliases are no
+longer needed by AI or teardown. Removing them preserves the initializer at
+89.89%, 276/278 instructions, prefix 23/278, with all 44 operands clean.

@@ -21,10 +21,10 @@ void Completion::flush_row_event_display()
 
         delivered_parcel_count += 1;
 
-        g_game->border_manager.kill_border(widget_a);
+        g_game->border_manager.kill_border(title_widget);
         g_game->border_manager.kill_border(delivered_count_widget);
-        g_game->border_manager.kill_border(widget_d);
-        g_game->border_manager.kill_border(bonus_widget);
+        g_game->border_manager.kill_border(bonus_icon_widget);
+        g_game->border_manager.kill_border(bonus_summary_widget);
         g_game->border_manager.kill_border(continue_widget);
 
         if (g_game->subgame.player.total_score != display_token)

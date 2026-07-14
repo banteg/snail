@@ -15,19 +15,10 @@ public:
     void update_row_event_display(); // @ 0x404cf0, cRCompletion::AI
     void register_parcel_delivery(); // @ 0x405040, cRCompletion::RegisterParcel
 
-    union {
-        FrontendWidget* widget_a;
-        FrontendWidget* title_widget;
-    }; // +0x00
+    FrontendWidget* title_widget; // +0x00, "Delivery Complete!" heading
     FrontendWidget* delivered_count_widget; // +0x04
-    union {
-        FrontendWidget* bonus_widget;
-        FrontendWidget* bonus_summary_widget;
-    }; // +0x08
-    union {
-        FrontendWidget* widget_d;
-        FrontendWidget* bonus_icon_widget;
-    }; // +0x0c
+    FrontendWidget* bonus_summary_widget; // +0x08, blinking bonus text
+    FrontendWidget* bonus_icon_widget; // +0x0c, sprite id 122
     FrontendWidget* continue_widget; // +0x10
     union {
         int state;

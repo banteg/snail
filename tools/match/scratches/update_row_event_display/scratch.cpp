@@ -9,7 +9,7 @@
 #include "track_parcel_runtime.h"
 #include "vector3.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 typedef Vector3 Vec3;
 
@@ -19,21 +19,21 @@ void Completion::update_row_event_display()
     if (controller->state == 0)
         return;
 
-    char pause_gate = ((GameRoot*)g_game_base)->subgame.subgame_pause_gate;
+    char pause_gate = g_game->subgame.subgame_pause_gate;
     if (pause_gate != 0) {
         FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
         delivered_count_widget->hide_border_init();
-        controller->widget_a->hide_border_init();
-        controller->widget_d->hide_border_init();
-        controller->bonus_widget->hide_border_init();
+        controller->title_widget->hide_border_init();
+        controller->bonus_icon_widget->hide_border_init();
+        controller->bonus_summary_widget->hide_border_init();
         controller->continue_widget->hide_border_init();
         return;
     }
 
     FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
     delivered_count_widget->unhide_border_init();
-    controller->widget_a->unhide_border_init();
-    controller->widget_d->unhide_border_init();
+    controller->title_widget->unhide_border_init();
+    controller->bonus_icon_widget->unhide_border_init();
     controller->continue_widget->unhide_border_init();
 
     switch (controller->state) {
@@ -49,11 +49,11 @@ void Completion::update_row_event_display()
             if (staged_parcel_count < parcel_target_count) {
                 ++staged_parcel_count;
                 controller->staged_parcel_count = staged_parcel_count;
-                char* game = g_game_base;
+                GameRoot* game = g_game;
                 Parcel* parcel =
-                    ((GameRoot*)game)->subgame.spawn_track_parcel(
-                        ((GameRoot*)game)->subgame.parcel_home_anchor(),
-                        &((GameRoot*)game)->subgame.player);
+                    game->subgame.spawn_track_parcel(
+                        game->subgame.parcel_home_anchor(),
+                        &game->subgame.player);
                 Sprite* sprite = parcel->sprite;
                 parcel->state = 6;
                 sprite->size_end = 0.0f;
@@ -88,11 +88,11 @@ void Completion::update_row_event_display()
         controller->gate_18 = 0;
         controller->state = 4;
         if (bonus_enabled != 0) {
-            controller->bonus_widget->unhide_border_init();
+            controller->bonus_summary_widget->unhide_border_init();
             if (controller->parcel_target_count == 0) {
-                char* game = g_game_base;
-                if (((GameRoot*)game)->subgame.level_mode == 1) {
-                    ((GameRoot*)game)->subgame.player.add_subgoldy_score(
+                GameRoot* game = g_game;
+                if (game->subgame.level_mode == 1) {
+                    game->subgame.player.add_subgoldy_score(
                         SUBGOLDY_SCORE_BONUS, controller->bonus_score);
                     g_sound_effect_manager.play_sound_effect(0x31);
                 }
@@ -101,22 +101,22 @@ void Completion::update_row_event_display()
         /* fall through */
     }
     case 4: {
-        char* game = g_game_base;
+        GameRoot* game = g_game;
         if (controller->bonus_enabled != 0) {
             float blink_progress = controller->bonus_blink_step + controller->bonus_blink_progress;
             controller->bonus_blink_progress = blink_progress;
             if (blink_progress > 1.0f) {
-                FrontendWidget* bonus_widget = controller->bonus_widget;
+                FrontendWidget* bonus_summary_widget = controller->bonus_summary_widget;
                 controller->bonus_blink_progress = 0.0f;
-                if ((bonus_widget->widget_flags & 0x1000) != 0)
-                    bonus_widget->unhide_border_init();
+                if ((bonus_summary_widget->widget_flags & 0x1000) != 0)
+                    bonus_summary_widget->unhide_border_init();
                 else
-                    bonus_widget->hide_border_init();
+                    bonus_summary_widget->hide_border_init();
             }
-            game = g_game_base;
+            game = g_game;
         }
 
-        if ((((GameRoot*)game)->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
+        if ((game->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
             controller->state = 5;
             g_sound_effect_manager.play_sound_effect(8);
         }
@@ -124,7 +124,7 @@ void Completion::update_row_event_display()
     }
     }
 
-    float* game = (float*)g_game_base;
+    TransformMatrix* player_transform = &g_game->players[0].transform;
     Vec3 camera_forward;
     Vec3 doubled_base;
     Vec3 scaled_target;
@@ -133,18 +133,18 @@ void Completion::update_row_event_display()
     Vec3 widget_world;
     Vec3* widget_world_out = &controller->widget_world;
 
-    camera_forward.x = game[95] * 6.0f;
-    camera_forward.y = game[96] * 6.0f;
-    camera_forward.z = game[97] * 6.0f;
-    doubled_base.x = game[91] + game[91];
-    doubled_base.y = game[92] + game[92];
-    doubled_base.z = game[93] + game[93];
-    scaled_target.x = game[87] * 7.30000019f;
-    scaled_target.y = game[88] * 7.30000019f;
-    scaled_target.z = game[89] * 7.30000019f;
-    target.x = scaled_target.x + game[99];
-    target.y = scaled_target.y + game[100];
-    target.z = scaled_target.z + game[101];
+    camera_forward.x = player_transform->basis_forward.x * 6.0f;
+    camera_forward.y = player_transform->basis_forward.y * 6.0f;
+    camera_forward.z = player_transform->basis_forward.z * 6.0f;
+    doubled_base.x = player_transform->basis_up.x + player_transform->basis_up.x;
+    doubled_base.y = player_transform->basis_up.y + player_transform->basis_up.y;
+    doubled_base.z = player_transform->basis_up.z + player_transform->basis_up.z;
+    scaled_target.x = player_transform->basis_right.x * 7.30000019f;
+    scaled_target.y = player_transform->basis_right.y * 7.30000019f;
+    scaled_target.z = player_transform->basis_right.z * 7.30000019f;
+    target.x = scaled_target.x + player_transform->position.x;
+    target.y = scaled_target.y + player_transform->position.y;
+    target.z = scaled_target.z + player_transform->position.z;
     base_target.x = doubled_base.x + target.x;
     base_target.y = target.y + doubled_base.y;
     base_target.z = target.z + doubled_base.z;
