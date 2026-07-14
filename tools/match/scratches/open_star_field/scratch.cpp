@@ -11,7 +11,7 @@ void StarManager::open_star_field(int star_count)
         star_count * sizeof(StarManagerEntry),
         "StarField");
     count = star_count;
-    if ((g_runtime_config.render_flags & 4) != 0) {
+    if ((g_runtime_config.render_flags & RUNTIME_RENDER_STAR_FIELD) != 0) {
         state = 1;
         initialize_star_field();
     } else {

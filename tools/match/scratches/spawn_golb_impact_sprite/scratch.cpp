@@ -8,7 +8,7 @@ void GolbShot::spawn_golb_impact_sprite(Vector3* position)
 {
     unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
 
-    if ((render_flags & 0x10) != 0) {
+    if ((render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {
         int owner = owner_player->player_slot;
         Sprite* sprite = g_sprite_manager.allocate_sprite(owner, 0x21, -1, -1);
         int flags = sprite->flags;

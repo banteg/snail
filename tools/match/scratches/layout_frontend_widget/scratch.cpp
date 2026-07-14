@@ -29,7 +29,8 @@ void FrontendWidget::layout_frontend_widget()
     int result;
 
     while (true) {
-        char text_wave_enabled = (char)((g_runtime_config.render_flags >> 8) & 1);
+        char text_wave_enabled = (char)(
+            (g_runtime_config.render_flags >> RUNTIME_RENDER_FONT_WAVE_BIT) & 1);
         result = widget->widget_flags;
 
         float* layout_left_ptr;

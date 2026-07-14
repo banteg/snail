@@ -1,6 +1,23 @@
 #ifndef RUNTIME_CONFIG_H
 #define RUNTIME_CONFIG_H
 
+enum RuntimeRenderFlag {
+    // Independently consumed by the authored cRStarManager lifecycle.
+    RUNTIME_RENDER_STAR_FIELD = 0x00000004,
+    // Gates fireworks, pickup bursts, ring showers, and Golb impact sprites.
+    RUNTIME_RENDER_PARTICLE_EFFECTS = 0x00000010,
+    // Gates the runtime row attachment bodies and built track-fringe meshes.
+    RUNTIME_RENDER_TRACK_FRINGE = 0x00000020,
+    // Selects per-character wave animation in the front-end font path.
+    RUNTIME_RENDER_FONT_WAVE = 0x00000100,
+    // Selects the 32-bit rather than 16-bit Direct3D display mode.
+    RUNTIME_RENDER_32_BIT_COLOR = 0x00000400,
+};
+
+enum RuntimeRenderFlagBit {
+    RUNTIME_RENDER_FONT_WAVE_BIT = 8,
+};
+
 struct RuntimeConfig {
     float sample_volume;                         // +0x00
     float stream_volume;                         // +0x04

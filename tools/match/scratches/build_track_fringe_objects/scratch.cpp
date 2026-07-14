@@ -54,7 +54,7 @@ int SubgameRuntime::build_track_fringe_objects()
                     family = 7;
 
                 if ((row_record->flags & 4) != 0 || edge_id == 0 || tile_id == 0x20
-                    || (g_runtime_config.render_flags & 0x20) == 0) {
+                    || (g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) == 0) {
                     cell->fringe_front = 0;
                     cell->fringe_right = 0;
                     cell->fringe_left = 0;

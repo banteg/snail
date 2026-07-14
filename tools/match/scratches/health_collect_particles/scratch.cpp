@@ -12,7 +12,7 @@ float cosine(float radians);
 void Player::health_collect_particles(SubHealth* pickup)
 {
     char render_flags = (char)g_runtime_config.render_flags;
-    if ((render_flags & 0x10) != 0) {
+    if ((render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {
         int index = 0;
         do {
             Sprite* sprite =

@@ -11,7 +11,7 @@ float cosine(float radians);
 
 void SubRingStar::emit_ring_star_shower(Player* owner)
 {
-    if ((g_runtime_config.render_flags & 0x10) != 0) {
+    if ((g_runtime_config.render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {
         Vector3 velocity;
         Vector3 orbit_velocity;
         velocity.z = 0.0f;

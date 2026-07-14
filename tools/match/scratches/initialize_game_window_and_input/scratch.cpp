@@ -47,7 +47,8 @@ int set_cull_mode(int cull_front); // @ 0x4129f0
 
 int initialize_game_window_and_input(char* window_name)
 {
-    int bits_per_pixel = ((g_runtime_config.render_flags & 0x400) != 0) ? 32 : 16;
+    int bits_per_pixel =
+        ((g_runtime_config.render_flags & RUNTIME_RENDER_32_BIT_COLOR) != 0) ? 32 : 16;
 
     int width;
     int height;

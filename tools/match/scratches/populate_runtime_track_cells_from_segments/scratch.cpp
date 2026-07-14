@@ -848,7 +848,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 row_anchor_z = (float)build_row + 0.5f;
                 *(int*)(cell + CELL_POSITION_X) = 0;
                 *(float*)(cell + CELL_POSITION_Z) = row_anchor_z - 0.5f;
-                if ((g_runtime_config.render_flags & 0x20) != 0) {
+                if ((g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) != 0) {
                     *(int*)(row_record + ROW_ATTACHMENT_POSITION_X) = 0;
                     *(float*)(row_record + ROW_ATTACHMENT_POSITION_Z) =
                         row_anchor_z - 0.5f;

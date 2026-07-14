@@ -42,3 +42,24 @@ metrics of all 25 affected scratches are unchanged, including every exact
 consumer. Naming the landscape selector in the still-sparse world initializer
 also converts one raw-symbol mismatch into a resolved operand: 74 clean and 17
 expected mismatches, versus 73/18 before the ownership pass.
+
+## 2026-07-14 render-feature flag ownership
+
+Five bits in the persisted `RuntimeConfig::render_flags` word now have named,
+independent consumers rather than scratch-local magic masks:
+
+- `0x004` owns the complete `cRStarManager` open/update lifecycle;
+- `0x010` gates fireworks, pickup bursts, ring showers, and Golb impacts;
+- `0x020` owns runtime row attachments and generated track-fringe meshes;
+- `0x100` enables the front-end font-wave path; and
+- `0x400` selects 32-bit rather than 16-bit Direct3D display setup.
+
+The remaining bits keep their numeric spelling because current Windows
+consumers do not justify stronger names. The ten affected callers retain their
+pre-change focused results. In particular, the five exact star/particle
+consumers remain exact, while `firework_shoot` (94.17%),
+`spawn_golb_impact_sprite` (63.64%), `build_track_fringe_objects` (60.39%),
+`populate_runtime_track_cells_from_segments` (29.67%),
+`layout_frontend_widget` (84.18%), and
+`initialize_game_window_and_input` (92.48%) preserve their honest residuals.
+The exact 36/36 default initializer is unchanged.

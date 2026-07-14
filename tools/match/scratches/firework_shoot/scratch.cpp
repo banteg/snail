@@ -11,7 +11,8 @@ int next_math_random_value();
 void FireWork::firework_shoot(
     Vector3* position, int owner, int texture_id, int count)
 {
-    if ((g_runtime_config.render_flags & 0x10) == 0 || count <= 0)
+    if ((g_runtime_config.render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) == 0
+        || count <= 0)
         return;
 
     int remaining = count;
