@@ -1,6 +1,7 @@
 // add_time_trial_high_score @ 0x4178b0 (thiscall, ret 0xc)
 
 #include "sub_high_score.h"
+#include <stddef.h>
 
 void SubHighScore::add_time_trial_high_score(
     SubSolution* record,
@@ -19,10 +20,16 @@ void SubHighScore::add_time_trial_high_score(
     if (route_active) {
         int route_offset = route_index * SUB_SOLUTION_STRIDE;
         if (record->total_seconds
-                < *(float*)((char*)this + route_offset + 0x2b8c90)
-            || *(float*)((char*)this + route_offset + 0x2b8c90) == 0.0f) {
+                < *(float*)((char*)this + route_offset
+                    + offsetof(SubHighScore, time_trial_route_records)
+                    + offsetof(SubSolution, total_seconds))
+            || *(float*)((char*)this + route_offset
+                    + offsetof(SubHighScore, time_trial_route_records)
+                    + offsetof(SubSolution, total_seconds))
+                == 0.0f) {
             SubSolution* route_record =
-                (SubSolution*)((char*)this + route_offset + 0x2b8c88);
+                (SubSolution*)((char*)this + route_offset
+                    + offsetof(SubHighScore, time_trial_route_records));
             *route_record = *record;
             route_record->route_or_rank_index = route_index;
         }

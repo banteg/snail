@@ -14,15 +14,15 @@ Behavior:
   `route_or_rank_index`, and clears the replay cursor field.
 - Failed/inactive route writes zero the record's timer total before copying it
   into the `current_result_record` slot at `this + 0x9080c8`.
-- Successful route writes also inspect the per-route record at
-  `this + 0x2b8c88 + route_index * 0x1fac0`; the persistent route record is
+- Successful route writes also inspect
+  `time_trial_route_records[route_index]`; the persistent route record is
   replaced only when the new time is lower than the stored time or the stored
   time is zero.
 - After a persistent replacement, the route-index field is written again at
   `route_record + 0x40`.
 
-Match status: 84.85% (50 candidate instructions versus 49 target, 20/49 exact
-prefix).
+Match status: 89.80% (49/49 instructions, 29/49 exact prefix, one clean masked
+operand).
 
 Residual:
 
@@ -83,3 +83,15 @@ Rejected source-shape probes:
   83.67%, while the typed shifted-bank form drops to 55.10%. Keep the named
   route-offset source; the remaining `add ebp, ecx` versus folded address is a
   register-scheduler residual.
+
+2026-07-14 owner-derived route window:
+
+- The byte-base spelling remains necessary to preserve the best-known VC6
+  register schedule, but its former `+0x2b8c88/+0x2b8c90` literals now derive
+  from `offsetof(SubHighScore, time_trial_route_records)` and
+  `offsetof(SubSolution, total_seconds)`.
+- This records the already-proven bank and field ownership directly in the
+  matching source without changing codegen: focused matching remains 89.80%,
+  49/49 instructions, 29/49 prefix, with the masked operand clean. The only
+  residual is still native's `add ebp, ecx` owner-base mutation versus VC6's
+  equivalent folded indexed address.
