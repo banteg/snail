@@ -16,3 +16,14 @@ regresses the focused match and is not a more faithful source shape.
 2026-07-14 parent-owner closure: the retained local now borrows
 `SubgameRuntime::player.presentation` directly. Matching stays exact at 6/6
 with both operands clean.
+
+## 2026-07-14 material-slot role closure
+
+The three-entry material bank now has derived role constants: default, damage,
+and invincible. Startup binds those indices to `snail-turbo.tga`,
+`snail-turbo-damage.tga`, and `snail-turbo-invincible.tga`; both damage-gauge
+paths select the damage slot, while the invincible-shell lifecycle selects the
+invincible slot and restores default on teardown. Binary Ninja finds those
+five complete `Change` callsites and types the bank as `TextureRef*[3]`.
+`change_snail_skin` deliberately retains its authored cross-port `int` formal,
+so these constants document proven values without inventing an enum ABI.

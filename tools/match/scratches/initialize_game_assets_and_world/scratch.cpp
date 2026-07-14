@@ -2845,13 +2845,16 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.weapon_channels[2].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[2].object->distort.xyz_scale = 0.0f;
 
-    subgame.player.presentation.snail_skin.material_overrides[0] =
+    subgame.player.presentation.snail_skin
+        .material_overrides[SNAIL_SKIN_SLOT_DEFAULT] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"x/snail-turbo.tga", 0, 0);
-    subgame.player.presentation.snail_skin.material_overrides[1] =
+    subgame.player.presentation.snail_skin
+        .material_overrides[SNAIL_SKIN_SLOT_DAMAGE] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"x/snail-turbo-damage.tga", 0, 0);
-    subgame.player.presentation.snail_skin.material_overrides[2] =
+    subgame.player.presentation.snail_skin
+        .material_overrides[SNAIL_SKIN_SLOT_INVINCIBLE] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"x/snail-turbo-invincible.tga", 0, 0);
 

@@ -40,7 +40,7 @@ void Invincible::update_invincible_shell()
             fade_progress = 0.0f;
             state = 0;
             g_game->subgame.player.presentation.snail_skin.change_snail_skin(
-                0, 0.0f);
+                SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
             return;
         }
         if ((g_game->subgame.player.movement_flags & 0x80) != 0)
@@ -52,7 +52,8 @@ void Invincible::update_invincible_shell()
     if (spin_phase > 1.0f)
         spin_phase -= 1.0f;
 
-    g_game->subgame.player.presentation.snail_skin.change_snail_skin(2, 0.0f);
+    g_game->subgame.player.presentation.snail_skin.change_snail_skin(
+        SNAIL_SKIN_SLOT_INVINCIBLE, 0.0f);
     color.set_color_white();
     color.a = fade_progress * 0.80000001f;
 

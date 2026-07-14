@@ -12,7 +12,7 @@ void SnailSkin::update_snail_skin_transition()
         if (progress > 1.0f) {
             progress = 0.0f;
             active = 0;
-            selected_slot = 0;
+            selected_slot = SNAIL_SKIN_SLOT_DEFAULT;
         }
         break;
     }

@@ -73,7 +73,8 @@ void DamageGuage::update_damage_gauge()
         case 2: {
             GameRoot* skin_game = g_game;
             skin_game->subgame.embedded_player()
-                ->presentation.snail_skin.change_snail_skin(1, 0.2f);
+                ->presentation.snail_skin.change_snail_skin(
+                    SNAIL_SKIN_SLOT_DAMAGE, 0.2f);
             apply_damage_gauge_delta(-0.0016666667f, 1);
             skin_hold_ticks = 5;
             game = g_game;

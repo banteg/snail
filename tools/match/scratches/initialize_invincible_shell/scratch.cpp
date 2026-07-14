@@ -9,5 +9,5 @@ void Invincible::initialize_invincible_shell()
 {
     state = 0;
     g_game->subgame.embedded_player()->presentation.snail_skin
-        .change_snail_skin(0, 0.0f);
+        .change_snail_skin(SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
 }
