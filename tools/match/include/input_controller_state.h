@@ -35,9 +35,9 @@ extern float g_input_slot0_authored_x[];   // data_503350
 extern float g_input_slot0_authored_y[];   // data_503354
 extern float g_input_slot0_pointer_value[]; // data_503358
 
-extern int g_input_region_top[2];          // data_508890
-extern int g_input_region_bottom[2];       // data_508898
-extern int g_input_region_left[2];         // data_5088a0
-extern int g_input_region_right[2];        // data_5088a8
+extern int g_input_region_top[INPUT_CONTROLLER_SLOT_COUNT];    // data_508890
+extern int g_input_region_bottom[INPUT_CONTROLLER_SLOT_COUNT]; // data_508898
+extern int g_input_region_left[INPUT_CONTROLLER_SLOT_COUNT];   // data_5088a0
+extern int g_input_region_right[INPUT_CONTROLLER_SLOT_COUNT];  // data_5088a8
 
 #endif

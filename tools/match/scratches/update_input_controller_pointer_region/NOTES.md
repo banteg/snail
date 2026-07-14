@@ -55,3 +55,13 @@ and `slot`.
   `fld`/`fstp`, while VC6 emits a bit-preserving integer load/store for the
   equivalent recovered source. A `double` temporary regressed to 94.81%, and
   no-op arithmetic or artificial volatility is not retained.
+
+## 2026-07-14 pointer-region sidecar ownership
+
+The top, bottom, left, and right region arrays now use
+`INPUT_CONTROLLER_SLOT_COUNT` rather than four independent literal extents.
+Binary Ninja finds exactly two consumers for every array: this routine writes
+the selected rectangle, and exact `set_input_controller_pointer_authored_xy`
+reads the same slot to reverse-map authored coordinates. Both index the paired
+`g_input_controller_slots` owner with that slot, independently proving that
+all four arrays are two-entry sidecars rather than unrelated globals.
