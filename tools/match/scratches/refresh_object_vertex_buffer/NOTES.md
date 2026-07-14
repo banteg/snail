@@ -10,7 +10,8 @@ Recovered relationships:
 
 - Called only by `render_object`.
 - `Object +0x10` is the render/object flags word.
-- `flags & 0x200000` selects the animated/distorted vertex source path.
+- `OBJECT_FLAG_HAS_ANIMATION` selects the generated animation-frame vertex
+  source path.
 - `Object +0xbc` points at the 0x14-byte `ObjectAnimation` produced by
   `request_object_animation`: generated frame count at `+0x04`, frame pointer
   table at `+0x08`, playback progress at `+0x0c`, and progress step at `+0x10`.

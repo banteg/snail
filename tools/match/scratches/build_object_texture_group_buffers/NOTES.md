@@ -11,8 +11,9 @@ Recovered relationships:
 - Called only by `build_all_objects`.
 - If `Object +0x2c` vertex count is zero, native clears `+0xcc/+0xd0/+0xd4`,
   `+0xc0`, and `+0xc8`, then returns.
-- Non-empty objects set `flags |= 0x80000`, which is the same tint-rewrite gate
-  consumed by exact `set_object_color`.
+- Non-empty objects set `OBJECT_FLAG_RENDER_BUFFERS_READY`, which is the same
+  readiness gate consumed by exact `render_object`, `set_object_color`, and
+  `replace_object_group_texture_refs`.
 - Allocates three per-texture-group arrays:
   - `Object +0xcc`: index-buffer start offset per texture group.
   - `Object +0xd0`: texture reference per texture group.
@@ -27,7 +28,8 @@ Recovered relationships:
   receives the D3D index-buffer wrapper.
 - Facequad flag `0x80` selects the three-index form; otherwise native emits six
   indices by reusing indices 0 and 2 plus the fourth corner.
-- Toon/secondary index buffer allocation is gated by `flags & 0x4000`
+- Toon/secondary index buffer allocation is gated by
+  `OBJECT_FLAG_TOON_ENABLED` (`flags & 0x4000`)
   (`test ah, 0x40`), not by `flags & 0x40`.
 - The vertex-buffer pool is the first `0x8ca4` bytes of
   `g_direct3d_renderer` at `0x4f7458`: one count followed by 3000 0xc-byte

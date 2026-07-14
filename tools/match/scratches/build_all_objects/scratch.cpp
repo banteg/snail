@@ -20,7 +20,8 @@ void ObjectList::build_all_objects()
                 sort_object_faces_by_texture_group((Object*)((char*)objects + object_offset));
                 ((Object*)((char*)objects + object_offset))->calc_object_texture_groups();
 
-                if ((((Object*)((char*)objects + object_offset))->flags & 0x4000) != 0) {
+                if ((((Object*)((char*)objects + object_offset))->flags
+                        & OBJECT_FLAG_TOON_ENABLED) != 0) {
                     ((Object*)((char*)objects + object_offset))->calc_object_facequad_normals();
                     ((Object*)((char*)objects + object_offset))->calc_object_edges();
                 }

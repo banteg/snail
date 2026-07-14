@@ -57,7 +57,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->attachment_exit_progress = 0.0f;
     this->attachment_exit_progress_step = 0.0166666675f;
 
-    if ((this->presentation.object->flags & 0x200000) != 0) {
+    if ((this->presentation.object->flags & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         this->presentation.list_flags |= BOD_FLAG_SYNC_ANIMATION;
         this->presentation.render_animation_manager =
             &this->presentation.anim_manager;
@@ -72,7 +72,7 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.anim_manager.state = zero;
     }
 
-    if ((this->presentation.jetpack_channel.object->flags & 0x200000) != 0) {
+    if ((this->presentation.jetpack_channel.object->flags & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         this->presentation.jetpack_channel.list_flags =
             (this->presentation.jetpack_channel.list_flags
                 & ~BOD_FLAG_RENDER_ENABLED)
@@ -92,7 +92,8 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.jetpack_channel.anim_manager.state = zero;
     }
 
-    if ((this->presentation.weapon_channels[0].object->flags & 0x200000) != 0) {
+    if ((this->presentation.weapon_channels[0].object->flags
+            & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         this->presentation.weapon_channels[0].list_flags =
             (this->presentation.weapon_channels[0].list_flags
                 & ~BOD_FLAG_RENDER_ENABLED)
@@ -112,7 +113,8 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.weapon_channels[0].anim_manager.state = zero;
     }
 
-    if ((this->presentation.weapon_channels[1].object->flags & 0x200000) != 0) {
+    if ((this->presentation.weapon_channels[1].object->flags
+            & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         this->presentation.weapon_channels[1].list_flags =
             (this->presentation.weapon_channels[1].list_flags
                 & ~BOD_FLAG_RENDER_ENABLED)
@@ -132,7 +134,8 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.weapon_channels[1].anim_manager.state = zero;
     }
 
-    if ((this->presentation.weapon_channels[2].object->flags & 0x200000) != 0) {
+    if ((this->presentation.weapon_channels[2].object->flags
+            & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         this->presentation.weapon_channels[2].list_flags =
             (this->presentation.weapon_channels[2].list_flags
                 & ~BOD_FLAG_RENDER_ENABLED)

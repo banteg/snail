@@ -27,7 +27,7 @@ void build_object_texture_group_buffers(Object* object)
         return;
     }
 
-    object->flags |= 0x80000;
+    object->flags |= OBJECT_FLAG_RENDER_BUFFERS_READY;
     object->group_index_starts =
         (int*)allocate_tracked_memory(
             object->texture_group_count * sizeof(*object->group_index_starts),
@@ -171,7 +171,7 @@ void build_object_texture_group_buffers(Object* object)
         index_count * sizeof(unsigned short));
     object->index_buffer->buffer->vtbl->Unlock(object->index_buffer->buffer);
 
-    if ((object->flags & 0x4000) != 0) {
+    if ((object->flags & OBJECT_FLAG_TOON_ENABLED) != 0) {
         object->toon_index_buffer =
             g_direct3d_renderer.index_buffer_factory.create_index_buffer(index_count);
     }

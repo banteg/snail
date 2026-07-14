@@ -4,7 +4,7 @@
 
 void SnailSkin::update_snail_skin_transition()
 {
-    owner_snail->object->flags |= 8;
+    owner_snail->object->flags |= OBJECT_FLAG_USE_OVERRIDE_TEXTURE;
     owner_snail->object->override_texture_ref = material_overrides[selected_slot];
     switch (active) {
     case 1:

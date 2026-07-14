@@ -20,7 +20,7 @@ void bind_texture_ref(TextureRef* texture); // @ 0x414500
 int render_object_toon(Object* object, TransformMatrix* matrix)
 {
     unsigned int flags = object->flags;
-    if ((flags & 0x4000) == 0) {
+    if ((flags & OBJECT_FLAG_TOON_ENABLED) == 0) {
         return flags;
     }
 

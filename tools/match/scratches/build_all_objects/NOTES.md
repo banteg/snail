@@ -7,8 +7,8 @@ ObjectList build pass at `0x42f9e0`.
 - Walks `ObjectList::objects` with the established `0xdc` stride and skips
   objects with zero `vertex_count`.
 - Proves the build order: bounding box, texture-ref sort, texture-group
-  calculation, optional toon normals/edges for `flags & 0x4000`, then the
-  cdecl D3D texture-group buffer build.
+  calculation, optional toon normals/edges for `OBJECT_FLAG_TOON_ENABLED`,
+  then the cdecl D3D texture-group buffer build.
 
 2026-07-10 global-owner closure: `g_object_list` is now a typed `ObjectList`
 data variable in Binary Ninja. This exact method proves that the list owns one

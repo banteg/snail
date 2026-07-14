@@ -43,7 +43,7 @@ void* SegmentCache::initialize_track_render_cache_manager()
                     + (slot_base + i) * sizeof(TrackRenderCacheSlot));
             slot->bod.set_bod_object(g_object_list.add_object_to_list());
 
-            slot->bod.object->flags = 0x80000;
+            slot->bod.object->flags = OBJECT_FLAG_RENDER_BUFFERS_READY;
             slot->bod.object->vertex_count = 0;
             slot->bod.object->vertices = 0;
             slot->bod.object->facequad_count = 0;

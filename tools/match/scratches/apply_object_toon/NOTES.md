@@ -6,9 +6,9 @@ Object toon setup at `0x42fa80`.
   `12 * vertex_count`.
 - Confirms `Object +0x0c` is the toon facequad-normal support storage allocated
   at `24 * facequad_count`.
-- Marks toon support with caller flags plus `0x4001`; the later build pass uses
-  `0x4000` to decide whether to generate normals, edges, and the toon index
-  buffer.
+- Marks toon support with caller flags plus `OBJECT_FLAG_TOON_ENABLED | 1`;
+  the later build pass consumes the named bit to decide whether to generate
+  normals, edges, and the toon index buffer. Low bit `1` remains numeric.
 
 2026-07-14 void ABI closure: every Windows callsite discards EAX, and the
 cross-port owner is the side-effecting `cRObject::ApplyToon(int)` method. The

@@ -11,8 +11,8 @@ Recovered relationships:
   the asset/world initialization loop.
 - Packs the incoming `tColour` into a local `tColourSmall` through the same
   no-op constructor and `pack_color_rgba_u8` helper used by sprite rendering.
-- `Object +0x10` flag `0x80000` enables rewriting diffuse colours in the
-  grouped render vertex stream.
+- `Object +0x10` flag `OBJECT_FLAG_RENDER_BUFFERS_READY` enables rewriting
+  diffuse colours in the grouped render vertex stream.
 - `Object +0xc0` is the render-buffer owner and `+0x08` inside it is the D3D
   vertex buffer, matching `refresh_object_vertex_buffer`.
 - The diffuse write loop uses `Object +0xc4` as the grouped vertex count.

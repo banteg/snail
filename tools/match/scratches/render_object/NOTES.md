@@ -19,17 +19,17 @@ Recovered relationships:
   `post_sprite_pass=0` for the normal world/sprite/text pass and
   `post_sprite_pass=1` immediately before replaying the staged post-sprite BOD
   stack.
-- Early exit requires `flags & 0x80000`, rejects `flags & 0x40000`, and rejects
-  zero `Object +0x2c` vertex count.
+- Early exit requires `OBJECT_FLAG_RENDER_BUFFERS_READY`, rejects
+  `OBJECT_FLAG_RENDER_DISABLED`, and rejects zero `Object +0x2c` vertex count.
 - Always calls `refresh_object_vertex_buffer` before setting the world transform
   when those gates pass.
 - `flags & 0x100000` controls the cull-mode argument through exact
   `set_cull_mode`.
 - Iterates `Object +0x64` texture groups and consumes the builder-owned arrays:
   `+0xcc` index starts, `+0xd0` texture refs, and `+0xd4` primitive counts.
-- `flags & 8` selects `Object +0x18` as an override texture ref; otherwise the
-  group texture ref is bound.
-- `flags & 0x80` enables a texture transform: float texture-U argument 3 is
+- `OBJECT_FLAG_USE_OVERRIDE_TEXTURE` selects `Object +0x18` as an override
+  texture ref; otherwise the group texture ref is bound.
+- `OBJECT_FLAG_TEXTURE_TRANSFORM` enables a texture transform: float texture-U argument 3 is
   stored into `g_object_texture_transform_matrix.basis_forward.x`, and
   `1.0f - argument4` into `.basis_forward.y`, then Direct3D transform state
   `0x10` and texture-stage state `0x18 = 2` are applied.

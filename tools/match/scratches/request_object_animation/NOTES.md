@@ -7,8 +7,8 @@ Semantics pinned:
 - caller-provided keyframe records are 0x80 bytes, with object pointer at
   `+0x24` and authored frame number at `+0x7c`;
 - every keyframe object's `+0x2c` vertex count must match the target object;
-- the target object raises flag `0x200000` and stores an `ObjectAnimation*` at
-  `+0xbc`;
+- the target object raises `OBJECT_FLAG_HAS_ANIMATION` and stores an
+  `ObjectAnimation*` at `+0xbc`;
 - `ObjectAnimation` is 0x14 bytes: flags at `+0x00`, generated frame count
   at `+0x04`, frame pointer array at `+0x08`, playback/progress at `+0x0c`,
   and progress step at `+0x10`;

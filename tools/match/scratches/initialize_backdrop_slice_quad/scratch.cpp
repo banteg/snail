@@ -11,7 +11,7 @@ void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_
     float left_x = x_offset + 0.5f;
     unsigned int flags = object->flags;
     Vector3* vertices = object->vertices;
-    flags |= 0x80;
+    flags |= OBJECT_FLAG_TEXTURE_TRANSFORM;
     object->flags = flags;
     ObjectFaceQuad* quad = object->facequads;
 

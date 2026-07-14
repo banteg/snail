@@ -182,7 +182,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
     secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
     secondary_samples[segment_count - 1].delta_length = width_or_scale;
 
-    strip_mesh->flags |= 0x80;
+    strip_mesh->flags |= OBJECT_FLAG_TEXTURE_TRANSFORM;
     strip_mesh->request_object_vertices((segment_count + 1) * width_cells);
     strip_mesh->request_object_facequads(2 * segment_count * width_cells);
     request_object_vertex_colours(strip_mesh);

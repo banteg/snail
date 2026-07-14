@@ -4,5 +4,5 @@
 
 void disable_object_rendering(Object* object)
 {
-    object->flags |= 0x40000;
+    object->flags |= OBJECT_FLAG_RENDER_DISABLED;
 }

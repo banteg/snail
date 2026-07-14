@@ -7,7 +7,9 @@ Initial shape:
   runtime begins at `game+0x74618`.
 - Initializes the 143 x 5 cache BOD slots by allocating an `Object` for each
   slot, attaching it through `set_bod_object`, clearing the object geometry
-  counters, and allocating per-object D3D/index/texture-group resources.
+  counters, marking its directly constructed buffers with
+  `OBJECT_FLAG_RENDER_BUFFERS_READY`, and allocating per-object
+  D3D/index/texture-group resources.
 - The fifth slot in each row uses `blend_mode = 5`, matching the skirt/cache
   lane used by `update_track_render_cache_rows`.
 - Allocates the five shared GDX cache vertex/index buffers from the recovered

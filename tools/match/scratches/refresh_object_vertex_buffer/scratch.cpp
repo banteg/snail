@@ -6,7 +6,7 @@
 void refresh_object_vertex_buffer(Object* object)
 {
     unsigned int flags = object->flags;
-    if ((flags & 0x200000) != 0) {
+    if ((flags & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         ObjectAnimation* animation = object->animation;
         int frame_index = (int)((float)animation->generated_frame_count * animation->progress);
         object->vertices = animation->frames[frame_index]->vertices;

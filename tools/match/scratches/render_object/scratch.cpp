@@ -24,7 +24,8 @@ int render_object(
     char after_sprites)
 {
     int result = object->flags;
-    if ((result & 0x80000) != 0 && (result & 0x40000) == 0) {
+    if ((result & OBJECT_FLAG_RENDER_BUFFERS_READY) != 0
+        && (result & OBJECT_FLAG_RENDER_DISABLED) == 0) {
         result = object->vertex_count;
         if (result != 0) {
             refresh_object_vertex_buffer(object);
@@ -54,12 +55,12 @@ int render_object(
                 if (object->group_texture_refs[i] == 0)
                     continue;
 
-                if ((object->flags & 8) != 0)
+                if ((object->flags & OBJECT_FLAG_USE_OVERRIDE_TEXTURE) != 0)
                     bind_texture_ref(object->override_texture_ref);
                 else
                     bind_texture_ref(object->group_texture_refs[i]);
 
-                if ((object->flags & 0x80) != 0) {
+                if ((object->flags & OBJECT_FLAG_TEXTURE_TRANSFORM) != 0) {
                     g_object_texture_transform_matrix.basis_forward.x = texture_u;
                     g_object_texture_transform_matrix.basis_forward.y = 1.0f - texture_v;
                     g_d3d_device->vtbl->SetTransform(

@@ -6,7 +6,7 @@ void* allocate_tracked_memory(int size, char* name);
 
 void Object::apply_object_toon(int toon_flags)
 {
-    toon_flags |= 0x4001;
+    toon_flags |= OBJECT_FLAG_TOON_ENABLED | 1;
     flags |= toon_flags;
     toon_vertices =
         (Vector3*)allocate_tracked_memory(vertex_count * 12, "Object Toon Vertices");

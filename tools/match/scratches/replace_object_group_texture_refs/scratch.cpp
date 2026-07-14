@@ -6,7 +6,7 @@
 void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
     TextureRef* old_texture)
 {
-    if ((object->flags & 0x80000) == 0) {
+    if ((object->flags & OBJECT_FLAG_RENDER_BUFFERS_READY) == 0) {
         return;
     }
 

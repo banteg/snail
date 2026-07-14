@@ -9,7 +9,8 @@ clean masked operands and no unresolved or mismatched operands.
 Recovered relationships:
 
 - Called only by `render_object`.
-- The gate is `flags & 0x4000` (`test ah, 0x40`), not low bit `0x40`.
+- The gate is `OBJECT_FLAG_TOON_ENABLED` (`flags & 0x4000`, emitted as
+  `test ah, 0x40`), not low bit `0x40`.
 - Temporarily expands the perspective projection by using
   `near_z + 0.00400000019f` and `far_z + 30.0f`, then restores the original
   projection at exit.

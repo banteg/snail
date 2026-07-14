@@ -39,7 +39,7 @@ void Object::request_object_animation(
         }
     }
 
-    this->flags |= 0x200000;
+    this->flags |= OBJECT_FLAG_HAS_ANIMATION;
 
     int generated_frame_count = (int)(1.0f / progress_step);
     animation = (ObjectAnimation*)allocate_tracked_memory(

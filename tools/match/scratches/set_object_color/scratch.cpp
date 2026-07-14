@@ -13,7 +13,7 @@ void set_object_color(Object* object, tColour color)
     out.noop_this_constructor();
     out.pack_color_rgba_u8(&color);
 
-    if ((object->flags & 0x80000) != 0) {
+    if ((object->flags & OBJECT_FLAG_RENDER_BUFFERS_READY) != 0) {
         object->render_buffers->vertex_buffer->vtbl->Lock(
             object->render_buffers->vertex_buffer, 0, g_object_grouped_vertex_cursor * 0x18,
             (void**)&vertices, 0);

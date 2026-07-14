@@ -14,6 +14,9 @@ Recovered structure:
 - initializes the visual-root spring, Squidge oscillator, invincible shell, animation
   managers, snail skin, authored cRInvincible, cutscene AI, click-start prompt, cameraman, ghost, and
   damage gauge;
+- binds presentation animation-manager targets only when their borrowed
+  objects carry `OBJECT_FLAG_HAS_ANIMATION`, matching the allocation owner in
+  `Object::request_object_animation`;
 - seeds the live position, cached camera target, wobble timers, control source,
   follow state, completion handoff cycle, and jetpack gauge;
 - clears the twelve 0x2e8-byte follow/attachment matrix records and points
