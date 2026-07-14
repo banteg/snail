@@ -17,9 +17,6 @@ struct JoystickState {
 typedef char JoystickState_must_be_0x110[
     (sizeof(JoystickState) == 0x110) ? 1 : -1];
 
-extern int g_joystick_count; // data_777b2c
-extern DirectInputDevice* g_joystick_devices[4]; // data_777b34
-
 int update_input_controller_slot_button_axes(int slot, int buttons, float axis_x, float axis_y);
 
 int update_joystick_input()

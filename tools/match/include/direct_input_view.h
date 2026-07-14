@@ -54,4 +54,10 @@ struct DirectInput {
         unsigned int flags) = 0;
 };
 
+// Process-owned joystick enumeration state. The callback appends into the
+// fixed device bank; the remaining DirectInput helpers borrow those entries.
+extern int g_joystick_count; // data_777b2c
+extern DirectInput* g_joystick_input; // data_777b30
+extern DirectInputDevice* g_joystick_devices[4]; // data_777b34
+
 #endif

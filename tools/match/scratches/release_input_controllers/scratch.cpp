@@ -2,10 +2,6 @@
 
 #include "direct_input_view.h"
 
-extern int g_joystick_count; // data_777b2c
-extern DirectInput* g_joystick_input; // data_777b30
-extern DirectInputDevice* g_joystick_devices[4]; // data_777b34
-
 int release_input_controllers()
 {
     int index = 0;

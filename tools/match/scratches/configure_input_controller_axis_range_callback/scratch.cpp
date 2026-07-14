@@ -16,8 +16,6 @@ struct DirectInputRangeProperty {
     int max; // +0x14
 };
 
-extern int g_joystick_count; // data_777b2c
-extern DirectInputDevice* g_joystick_devices[4]; // data_777b34
 int __stdcall configure_input_controller_axis_range_callback(
     DirectInputObjectInstance* instance,
     void* context)
