@@ -181,3 +181,17 @@ Binary Ninja preview verifies `FringeManager == 0x5fb44` and keeps the
 enclosing `SubgameRuntime == 0x1272838`, then reverts. The exact two-instruction
 manager initializer remains proof-grade; this builder remains honestly partial
 at 60.39%, 492/495 instructions, with all 48 operands clean.
+
+## 2026-07-14 canonical root ownership
+
+All required singleton reloads now preserve their recovered owners. The four
+directional render-object selections read
+`g_game->root_bod_catalog.fringe_catalog`, while manager reset, allocation,
+and the final used-count report read `g_game->subgame.fringe_manager`. The old
+`char* g_game_base + 0x44db0/+0x3d01d4/+0x42fd14` expressions reached those
+same embedded objects but discarded the root, catalog, subgame, and pool
+boundaries.
+
+This is byte-identical at 60.39%, 492/495 instructions, prefix 3/495, with all
+48 operands clean. The remaining partial is still the documented receiver and
+edge-selector register scheduling; no register-shaped construct is introduced.

@@ -3,15 +3,16 @@
 
 #include "track_attachment_types.h"
 #include "fringe_object.h"
+#include "game_root.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "track_fringe_bod_catalog.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 #define FRINGE_BOD(direction, family, edge_a, edge_b) \
-    (((TrackFringeBodCatalog*)(g_game_base + TRACK_FRINGE_BOD_CATALOG_GAME_OFFSET)) \
-            ->entries[family][direction][edge_a][edge_b].object)
+    (g_game->root_bod_catalog.fringe_catalog \
+            .entries[family][direction][edge_a][edge_b].object)
 
 struct Vec3Bits {
     int x;
@@ -24,8 +25,7 @@ extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
 int SubgameRuntime::build_track_fringe_objects()
 {
-    ((SubgameRuntime*)(g_game_base + 0x74618))
-        ->fringe_manager.initialize_fringe_manager();
+    g_game->subgame.fringe_manager.initialize_fringe_manager();
 
     int edge_a = 0;
     int row = 0;
@@ -75,8 +75,7 @@ int SubgameRuntime::build_track_fringe_objects()
                             edge_b = (is_neighbor_cell_solid(cell, -1, 0) != 1) + 1;
 
                         Fringe* object =
-                            ((SubgameRuntime*)(g_game_base + 0x74618))
-                                ->fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_front = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
@@ -100,8 +99,7 @@ int SubgameRuntime::build_track_fringe_objects()
                             edge_b = (is_neighbor_cell_solid(cell, 0, 1) != 1) + 1;
 
                         Fringe* object =
-                            ((SubgameRuntime*)(g_game_base + 0x74618))
-                                ->fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_right = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
@@ -125,8 +123,7 @@ int SubgameRuntime::build_track_fringe_objects()
                             edge_b = (is_neighbor_cell_solid(cell, 0, -1) != 1) + 1;
 
                         Fringe* object =
-                            ((SubgameRuntime*)(g_game_base + 0x74618))
-                                ->fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_left = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
@@ -150,8 +147,7 @@ int SubgameRuntime::build_track_fringe_objects()
                             edge_b = (is_neighbor_cell_solid(cell, 1, 0) != 1) + 1;
 
                         Fringe* object =
-                            ((SubgameRuntime*)(g_game_base + 0x74618))
-                                ->fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_back = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
@@ -194,5 +190,5 @@ int SubgameRuntime::build_track_fringe_objects()
 
     return debug_report_stub(
         g_used_fringe_bods_format,
-        ((SubgameRuntime*)(g_game_base + 0x74618))->fringe_manager.count);
+        g_game->subgame.fringe_manager.count);
 }
