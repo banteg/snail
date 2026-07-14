@@ -335,3 +335,17 @@ guarded by the decompile health checks. Its own receiver remains an honestly
 reported deferred `Game*` correction because Binary Ninja restores a pinned
 parameter local. Matching source is unchanged at the 77.67% no-fakematch
 frontier above.
+
+## 2026-07-14 canonical root services and active list
+
+The level builder now reloads the canonical `GameRoot* g_game` for the
+starfield, four random landscape loads, backdrop flip, render-skip gate,
+player mouse cursor, and all seven active-list insertions. Those insertions
+borrow `GameRoot::active_bod_list`; ownership remains with the embedded Player
+and presentation subobjects. The old `char* +0x5a8` anchor obscured that list
+boundary but described the same native address.
+
+The Banner setup intentionally retains its receiver-relative byte cursor, and
+the byte at root `+0x4f2e0` remains offset-named because its authored member
+identity is not yet proven. Focused output is byte-identical at 77.67%,
+560/555 instructions, prefix 177/555, with all 101 operands clean.

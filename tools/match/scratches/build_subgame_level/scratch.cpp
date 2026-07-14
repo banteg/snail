@@ -18,7 +18,7 @@
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
 
-extern char* g_game_base;
+extern GameRoot* g_game;
 extern VoiceManager g_voice_manager;
 extern char g_blank_text[];
 
@@ -33,7 +33,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
 {
     char* game = (char*)this;
 
-    ((GameRoot*)g_game_base)->star_manager.unhide_star_field();
+    g_game->star_manager.unhide_star_field();
     if (level_mode == 7)
         hide_gameplay_scores();
     else
@@ -122,7 +122,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     }
 
     parcel_manager.initialize_track_parcel_slots();
-    if (*(unsigned char*)(g_game_base + 0x4f2e0) == 1) {
+    if (*(unsigned char*)((char*)g_game + 0x4f2e0) == 1) {
         top_score_widget->hide_border_init();
         bottom_score_widget->hide_border_init();
     }
@@ -134,22 +134,22 @@ void SubgameRuntime::build_subgame_level(int level_index)
         switch ((unsigned int)random_float_below(4.0f, 0)) {
         case 0:
             landscape_index =
-                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                g_game->subgame.landscape_manager
                     .load_landscape_script_by_name("SpaceBluesWhorl.txt");
             break;
         case 1:
             landscape_index =
-                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                g_game->subgame.landscape_manager
                     .load_landscape_script_by_name("SpaceGreenWarp.txt");
             break;
         case 2:
             landscape_index =
-                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                g_game->subgame.landscape_manager
                     .load_landscape_script_by_name("SpacePurple.txt");
             break;
         case 3:
             landscape_index =
-                ((GameRoot*)g_game_base)->subgame.landscape_manager
+                g_game->subgame.landscape_manager
                     .load_landscape_script_by_name("SpaceRed.txt");
             break;
         default:
@@ -159,9 +159,9 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
         landscape_manager.activate_landscape_entry(landscape_index);
         if (random_float_below(1.0f, 0) > 0.5f)
-            ((GameRoot*)g_game_base)->backdrop.pending_flip = 1;
+            g_game->backdrop.pending_flip = 1;
         else
-            ((GameRoot*)g_game_base)->backdrop.pending_flip = (unsigned char)zero;
+            g_game->backdrop.pending_flip = (unsigned char)zero;
     } else {
         landscape_manager.activate_landscape_entry(level_definition.landscape_script_index);
     }
@@ -221,8 +221,8 @@ void SubgameRuntime::build_subgame_level(int level_index)
     subgame_state = 2;
 
     int one = 1;
-    ((GameRoot*)g_game_base)->render_skip_count = one;
-    ((GameRoot*)g_game_base)->players[0].mouse_cursor.release_mouse_cursor();
+    g_game->render_skip_count = one;
+    g_game->players[0].mouse_cursor.release_mouse_cursor();
     player.movement_mode_selector = one;
     player.steering_mode_selector = zero;
     player.initialize_subgoldy(one);
@@ -232,7 +232,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = node;
@@ -252,7 +252,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = node;
@@ -272,7 +272,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = node;
@@ -292,7 +292,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = node;
@@ -312,7 +312,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = node;
@@ -335,7 +335,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = node;
@@ -355,7 +355,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     if ((player_node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
-        BodNode** first_ref = &((BodList*)(g_game_base + 0x5a8))->first;
+        BodNode** first_ref = &g_game->active_bod_list.first;
         BodNode* first = *first_ref;
         if (first == 0) {
             *first_ref = player_node;
