@@ -53,7 +53,7 @@ void SubGarbage::update_garbage_hazard()
             Vector3 random_velocity;
             random_velocity.x = (float)random_signed_float_below(0.1f, "GDI");
             random_velocity.y = (float)random_float_below(0.2f, 0) + 0.1f;
-            double random_z = random_float_below(0.30000001f, 0);
+            random_velocity.z = (float)random_float_below(0.30000001f, 0);
             SubgameRuntime* rate_game = owner_game;
             Vector3* burst_velocity = &velocity;
             float rate = rate_game->subgame_rate;
@@ -62,20 +62,24 @@ void SubGarbage::update_garbage_hazard()
             staged_velocity.x = rate * random_velocity.x;
             double wide_rate = rate;
             staged_velocity.y = float(random_velocity.y * wide_rate);
-            staged_velocity.z = float(random_z * wide_rate);
+            staged_velocity.z = float(random_velocity.z * wide_rate);
             *burst_velocity = staged_velocity;
 
             int side = collision_side;
+            double adjusted_x;
             if (side == SUB_GARBAGE_COLLISION_SIDE_RIGHT) {
-                double adjusted_x = burst_velocity->x < 0.0f
+                adjusted_x = burst_velocity->x < 0.0f
                     ? -(double)burst_velocity->x
                     : (double)burst_velocity->x;
-                burst_velocity->x = (float)adjusted_x;
             } else if (side == SUB_GARBAGE_COLLISION_SIDE_LEFT) {
-                burst_velocity->x = -(burst_velocity->x < 0.0f
+                adjusted_x = -(burst_velocity->x < 0.0f
                     ? -burst_velocity->x
                     : burst_velocity->x);
+            } else {
+                goto side_adjustment_complete;
             }
+            burst_velocity->x = (float)adjusted_x;
+side_adjustment_complete:
 
             int sign;
             if (burst_velocity->x < 0.0f) {
@@ -97,8 +101,8 @@ void SubGarbage::update_garbage_hazard()
             // fall through
 
         case SUB_GARBAGE_STATE_BURST: {
-            Vector3* position = &transform.position;
             Vector3* movement = &velocity;
+            Vector3* position = &transform.position;
             float next_x = movement->x + position->x;
             position->x = next_x;
             position->y = movement->y + position->y;

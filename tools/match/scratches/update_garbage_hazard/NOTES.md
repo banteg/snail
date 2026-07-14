@@ -278,3 +278,25 @@ commutative z-scale `fxch` and the equivalent positive side-bias store schedule
 remain. The shared type now names the borrowed `owner_game` and `owner_player`
 backlinks and records the inactive, active, burst-pending, and burst states;
 the unexplained `+0xa4` word remains deliberately unnamed.
+
+## 2026-07-14 exact vector and integration closure
+
+The burst draw is one real `Vector3 random_velocity`, including its z lane.
+Android independently retains all three draws as float values before scaling,
+and the Windows optimizer keeps the z result live in x87 rather than forcing
+an intermediate store. Naming `random_velocity.z` therefore recovers the
+native z-scale `fxch` without a scheduling aid.
+
+Both recognized collision sides compute one `adjusted_x` value and flow to a
+shared `velocity.x` assignment; the unrecognized/default side skips that
+assignment. This recovers the native shared store while preserving the actual
+side semantics. In the fallthrough integration block, declaring the borrowed
+movement pointer before the body-position pointer and spelling the ordinary
+`movement->x + position->x` expression recovers the native load/add and `lea`
+order.
+
+Focused matching is now exact: **100.00%, 217/217 instructions, full 217/217
+prefix, and 22 clean masked operands**. An explicit double cast on the x
+integration was briefly tested because it also emitted the target schedule,
+but was rejected as an unsupported precision coercion; the retained exact
+source uses only the recovered float fields and ordinary arithmetic.
