@@ -34,6 +34,16 @@ struct BodNode {
     BodNode* list_next;
 };
 
+enum SubLazerState {
+    SUB_LAZER_STATE_INACTIVE = 0,
+    SUB_LAZER_STATE_ACTIVE = 1,
+    SUB_LAZER_STATE_RECYCLE_PENDING = 2,
+};
+
+enum {
+    SUB_LAZER_SLOT_CAPACITY = 20,
+};
+
 typedef struct SubLazer {
     BodNode bod;
     Vec3 bod_position;
@@ -62,7 +72,7 @@ typedef struct SubLazer {
 typedef SubLazer SubLazerSlot;
 
 typedef struct SubLazerManager {
-    SubLazer slots[20];
+    SubLazer slots[SUB_LAZER_SLOT_CAPACITY];
 } SubLazerManager;
 
 typedef struct Salt {

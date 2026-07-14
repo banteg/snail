@@ -73,3 +73,8 @@ with four clean operands.
 `SubLazer*` through the manager-owned array instead of adding 44 integer lanes.
 The function remains byte-identical at 48/48 instructions with all four
 operands clean.
+
+2026-07-14 lifecycle extent: the free test and loop bound now use
+`SUB_LAZER_STATE_INACTIVE` and the proved `SUB_LAZER_SLOT_CAPACITY`. This keeps
+the authored manager-owned 20-slot extent visible without changing the exact
+48/48-instruction output.

@@ -81,3 +81,8 @@ forward-axis reconstruction now use the inherited `SubLazer::transform`
 directly. The former field-by-field prefix is retired; zero-offset BOD linkage
 continues through `RenderableBod -> BodBase -> BodNode`. Matching remains exact
 at 63/63 with six clean operands.
+
+2026-07-14 lifecycle naming: the slot now enters
+`SUB_LAZER_STATE_ACTIVE` rather than an anonymous state 1. The manager's exact
+20-record constructor pass and free-slot scan prove the complementary inactive
+state and owned `SUB_LAZER_SLOT_CAPACITY`; spawn remains exact at 63/63.

@@ -1262,7 +1262,7 @@
       "android_symbol": "cRSubLazerManager::Init()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both walk the manager's 20 inline slots and clear each SubLazer state at +0x80."
+      "notes": "Both walk the manager's 20 owned inline slots and clear each SubLazer state at +0x80. Windows' exact body remains byte-identical when declared void; the apparent end-pointer result is only the loop cursor left in EAX."
     },
     {
       "address": "0x441670",
@@ -1279,22 +1279,25 @@
       "android_symbol": "cRSubLazer::Kill()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Both clear the live state and unlink the inherited BOD node; the Windows helper is exact at 43 instructions."
+      "notes": "Both clear the active state and unlink the inherited BOD node. The Windows helper remains exact at 43 instructions when declared void; Android's apparent result is the list-removal call value left in r0."
     },
     {
       "address": "0x4417d0",
       "windows_name": "update_sub_lazer_projectile",
       "ios_symbol": "cRSubLazer::AI()",
+      "android_symbol": "cRSubLazer::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows cRSubLazer constructor table at 0x49733c points directly to this helper."
+      "notes": "The Windows cRSubLazer constructor table at 0x49733c points directly to this helper. Native Windows control flow also preserves distinct primary and secondary attachment-hit debug markers before Kill."
     },
     {
       "address": "0x441ad0",
       "windows_name": "shoot_subgoldy",
       "ios_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
+      "android_symbol": "cRSubLazerManager::Shoot(tVector, tVector)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All ports scan the manager's 20 owned SubLazer slots, dispatch the slot-level Shoot method, and play the positional fire cue."
     },
     {
       "address": "0x441b70",

@@ -59,3 +59,9 @@ it remains 43/43 instructions with five clean operands.
 `GameRoot::active_bod_list`. The exact 43-instruction object is unchanged,
 proving the former `SubLazerListAnchor` was only a duplicate view of the one
 root intrusive list, not storage owned by the projectile pool.
+
+2026-07-14 void ABI recovery: `cRSubLazer::Kill()` is a lifecycle transition,
+not an integer query. Its only Windows caller discards EAX, while Android's
+apparent result is the value left by the list-removal call before the state
+store. Removing the synthetic result variable and return keeps the Windows
+body exact at 43/43 instructions with all five references clean.

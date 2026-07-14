@@ -11,17 +11,27 @@
 
 class SubgameRuntime;
 
+enum SubLazerState {
+    SUB_LAZER_STATE_INACTIVE = 0,
+    SUB_LAZER_STATE_ACTIVE = 1,
+    SUB_LAZER_STATE_RECYCLE_PENDING = 2,
+};
+
+enum {
+    SUB_LAZER_SLOT_CAPACITY = 20,
+};
+
 class SubLazer : public RenderableBod {
 public:
     SubLazer* initialize_sub_lazer_runtime(); // @ 0x408610
     void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // @ 0x441670
-    int deactivate_sub_lazer_projectile(); // @ 0x441740
+    void deactivate_sub_lazer_projectile(); // @ 0x441740
     void update_sub_lazer_projectile(); // @ 0x4417d0
 
     char unknown_78[0x80 - 0x78];
-    int state;                // +0x80, pool free/live state
+    int state;                // +0x80, SubLazerState
     char unknown_84[0x88 - 0x84];
-    SubgameRuntime* owner_game; // +0x88
+    SubgameRuntime* owner_game; // +0x88, borrowed containing subgame
     Vector3 velocity;         // +0x8c
     float sprite_bob_phase;   // +0x98
     float sprite_bob_phase_step; // +0x9c
@@ -34,10 +44,10 @@ typedef char SubLazer_must_be_0xb0[(sizeof(SubLazer) == 0xb0) ? 1 : -1];
 
 class SubLazerManager {
 public:
-    int* initialize_sub_lazer_pool(); // @ 0x441650
+    void initialize_sub_lazer_pool(); // @ 0x441650
     void shoot_subgoldy(Vector3* origin, const Vector3* direction); // @ 0x441ad0
 
-    SubLazer slots[20];
+    SubLazer slots[SUB_LAZER_SLOT_CAPACITY]; // owned storage
 };
 
 typedef SubLazerManager SubLazerPool;

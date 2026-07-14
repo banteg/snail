@@ -98,7 +98,8 @@ void Player::handle_subgoldy_collisions()
              j < (int)sizeof(game->sub_lazers.slots);
              j += (int)sizeof(SubLazer)) {
             char* slot = (char*)game + j;
-            if (*(int*)(slot + SUB_LAZER_STATE_FROM_SUBGAME) == 1) {
+            if (*(int*)(slot + SUB_LAZER_STATE_FROM_SUBGAME)
+                == SUB_LAZER_STATE_ACTIVE) {
                 delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME
                                    + offsetof(Vector3, x))
                         - cached_camera_target_world.x;
@@ -110,7 +111,8 @@ void Player::handle_subgoldy_collisions()
                         - cached_camera_target_world.z;
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {
-                    *(int*)((char*)game + j + SUB_LAZER_STATE_FROM_SUBGAME) = 2;
+                    *(int*)((char*)game + j + SUB_LAZER_STATE_FROM_SUBGAME) =
+                        SUB_LAZER_STATE_RECYCLE_PENDING;
                     damage_gauge.apply_damage_gauge_delta(0.02f, 0);
                 }
             }

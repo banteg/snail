@@ -9,8 +9,8 @@ void SubLazerManager::shoot_subgoldy(Vector3* origin, const Vector3* direction)
 {
     int index = 0;
     SubLazer* scan = slots;
-    while (index < 20) {
-        if (scan->state == 0)
+    while (index < SUB_LAZER_SLOT_CAPACITY) {
+        if (scan->state == SUB_LAZER_STATE_INACTIVE)
             goto found_slot;
         index++;
         ++scan;

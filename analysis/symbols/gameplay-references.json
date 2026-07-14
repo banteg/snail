@@ -2698,10 +2698,13 @@
       "address": "0x4a4f40",
       "name": "g_lazer_path2_kill_format",
       "kind": "string",
-      "aliases": [
-        "g_debug_report_arg"
-      ],
-      "description": "Salt-hazard attachment rejection debug-report string used before deactivation."
+      "description": "Debug marker emitted when a SubLazer hits a track row's secondary attachment before deactivation."
+    },
+    {
+      "address": "0x4a4f54",
+      "name": "g_lazer_path_kill_format",
+      "kind": "string",
+      "description": "Debug marker emitted when a SubLazer hits a track row's primary attachment before deactivation."
     },
     {
       "address": "0x4a4fb4",

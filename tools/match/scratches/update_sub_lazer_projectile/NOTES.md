@@ -1,7 +1,7 @@
 # update_sub_lazer_projectile @ 0x4417d0
 
-Current best is `92.63%`, `216/218` candidate/target instructions, masked
-operands `23 ok / 0 mismatch`. The scratch was originally pinned at `48.39%`
+Current best is `97.25%`, `218/218` candidate/target instructions, masked
+operands `24 ok / 0 mismatch`. The scratch was originally pinned at `48.39%`
 with `17 ok / 0 mismatch`.
 
 2026-06-16 vtable correction: this is the sub-lazer projectile updater, not
@@ -155,3 +155,18 @@ now use `SubLazer::transform.position`, completing the inheritance proved by
 the exact constructor and spawner. Focused output is byte-stable at 92.63%,
 216/218 instructions, with all 23 operands clean; the remaining gap is still
 the documented commutative x87/tail-merge scheduling, not layout ambiguity.
+
+2026-07-14 attachment-hit branch recovery: native strings and control flow
+prove that primary and secondary attachment hits are separate authored paths.
+The primary hit reports `"lazer path kill\n"`; the secondary hit reports
+`g_lazer_path2_kill_format`. Restoring those two branches recovers native's
+partial tail merge, raises the match from 92.63% to **97.25%**, restores the
+exact 218/218 instruction count, moves the prefix from 9 to 82, and leaves all
+24 references clean. The three remaining instruction pairs are only
+commutative x87 load/add orderings.
+
+The same pass names the proved slot lifecycle: state 0 is inactive, state 1 is
+active, and state 2 is recycle-pending. State 2 is written both by the bob
+expiry and by player collision, then consumed here to return the inherited BOD
+node through `GameRoot::active_bod_list`. The unused Windows word at +0x84 has
+no independent reader and remains deliberately unnamed.

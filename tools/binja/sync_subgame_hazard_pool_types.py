@@ -76,7 +76,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_sub_lazer_pool",
-        "int32_t* __thiscall initialize_sub_lazer_pool(SubLazerManager* manager)",
+        "void __thiscall initialize_sub_lazer_pool(SubLazerManager* manager)",
     ),
     (
         "initialize_salt_hazard_pool",
@@ -88,7 +88,7 @@ PROTO_UPDATES = (
     ),
     (
         "deactivate_sub_lazer_projectile",
-        "int32_t __thiscall deactivate_sub_lazer_projectile(SubLazer* slot)",
+        "void __thiscall deactivate_sub_lazer_projectile(SubLazer* slot)",
     ),
     (
         "update_sub_lazer_projectile",

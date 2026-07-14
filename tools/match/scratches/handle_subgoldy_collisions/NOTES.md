@@ -491,3 +491,12 @@ Focused output remains 53.93% (651/673 instructions, prefix 8, 86 clean
 operands). Saved pre-change and rebuilt normalized candidate listings have the
 same SHA-256,
 `e1e032120cb1016572a143f75cd82849fe408b46dab7c7d9818668a012b67db2`.
+
+## 2026-07-14 sub-lazer collision transition
+
+The collision sweep now names its state-1 test as
+`SUB_LAZER_STATE_ACTIVE` and its state-2 write as
+`SUB_LAZER_STATE_RECYCLE_PENDING`. The updater independently consumes that
+pending state to recycle the inherited BOD node, closing the player-to-pool
+lifecycle edge. Focused output remains byte-stable at 53.93%, 651/673
+instructions, with all 86 operands clean.

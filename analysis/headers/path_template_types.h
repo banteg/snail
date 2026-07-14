@@ -561,13 +561,24 @@ typedef struct SaltHazardSlot {
 } SaltHazardSlot;
 
 /*
- * SubLazer projectile runtime slot. Pool lives at `game + 0x356b00` with 20
- * slots and stride 0xb0. Each slot is a live projectile fired by Wall2 tile
- * emitters via `shoot_subgoldy`. Native functions: initialize_sub_lazer_pool
+ * SubLazer projectile runtime slot. Pool lives at `SubgameRuntime +0x356b00`
+ * with 20 owned slots and stride 0xb0. Each slot borrows its containing
+ * subgame and is fired by Wall2 tile emitters through cRSubLazerManager::Shoot.
+ * Native functions: initialize_sub_lazer_pool
  * @ 0x441650, spawn_sub_lazer_projectile @ 0x441670,
  * deactivate_sub_lazer_projectile @ 0x441740, update_sub_lazer_projectile
  * @ 0x4417d0.
  */
+enum SubLazerState {
+    SUB_LAZER_STATE_INACTIVE = 0,
+    SUB_LAZER_STATE_ACTIVE = 1,
+    SUB_LAZER_STATE_RECYCLE_PENDING = 2,
+};
+
+enum {
+    SUB_LAZER_SLOT_CAPACITY = 20,
+};
+
 typedef struct SubLazerSlot {
     BodNode bod;
     Vec3 bod_position;
@@ -659,7 +670,7 @@ typedef struct SlugPool {
 } SlugPool;
 
 typedef struct SubLazerManager {
-    SubLazerSlot slots[20];
+    SubLazerSlot slots[SUB_LAZER_SLOT_CAPACITY];
 } SubLazerManager;
 
 typedef struct SaltManager {

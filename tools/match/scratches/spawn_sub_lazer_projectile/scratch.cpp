@@ -7,7 +7,7 @@ int report_errorf(char* format, ...);
 
 void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)
 {
-    state = 1;
+    state = SUB_LAZER_STATE_ACTIVE;
     TransformMatrix* live_matrix = &transform;
     live_matrix->set_matrix_identity();
     Vector3* position = &transform.position;

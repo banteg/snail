@@ -2586,7 +2586,7 @@
     {
       "address": "0x441650",
       "name": "initialize_sub_lazer_pool",
-      "description": "Exact Windows `cRSubLazerManager::Init()`: clears the 20 inline SubLazer records at `game + 0x356b00` by zeroing each slot state at +0x80 before a level build. Android preserves the same manager method and loop."
+      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 20 owned inline SubLazer records at `SubgameRuntime +0x356b00` by setting each slot inactive before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental."
     },
     {
       "address": "0x441670",
@@ -2596,12 +2596,12 @@
     {
       "address": "0x441740",
       "name": "deactivate_sub_lazer_projectile",
-      "description": "Exact Windows `cRSubLazer::Kill()`: marks one SubLazer inactive and unlinks its inherited BOD node after collision or path exit. Android preserves the authored method name."
+      "description": "Exact void Windows `cRSubLazer::Kill()`: marks one SubLazer inactive and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register."
     },
     {
       "address": "0x4417d0",
       "name": "update_sub_lazer_projectile",
-      "description": "Windows `cRSubLazer::AI()`: returns state-2 projectiles through GameRoot's shared active BOD list, integrates one active SubLazer, tests track attachment intersection, and dispatches Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and cross-port iOS preserves the authored owner."
+      "description": "Windows `cRSubLazer::AI()`: returns recycle-pending projectiles through GameRoot's shared active BOD list, integrates one active SubLazer, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ."
     },
     {
       "address": "0x441ad0",
