@@ -10,14 +10,14 @@ TrackRowCell* SubgameRuntime::get_track_grid_cell_at_world_position(Vector3* pos
 
     if (lane < 0) {
         lane = 0;
-    } else if (lane > 7) {
-        lane = 7;
+    } else if (lane > SUBGAME_TRACK_LANE_COUNT - 1) {
+        lane = SUBGAME_TRACK_LANE_COUNT - 1;
     }
 
     if (row < 0) {
         row = 0;
-    } else if (row > 3199) {
-        row = 3199;
+    } else if (row > SUBGAME_RUNTIME_ROW_CAPACITY - 1) {
+        row = SUBGAME_RUNTIME_ROW_CAPACITY - 1;
     }
 
     return &runtime_cells[row][lane];

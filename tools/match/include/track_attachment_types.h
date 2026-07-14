@@ -269,6 +269,8 @@ typedef char PathPair_must_be_0x150[
 enum {
     PATH_PAIR_COUNT = 63,
     PATH_COUNT = PATH_PAIR_COUNT * 2,
+    SUBGAME_RUNTIME_ROW_CAPACITY = 3200,
+    SUBGAME_TRACK_LANE_COUNT = 8,
     SUBLOC_FRINGE_COUNT = 4,
 };
 

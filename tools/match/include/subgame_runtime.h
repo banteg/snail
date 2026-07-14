@@ -186,10 +186,11 @@ public:
     Player player; // +0x3bb764, ends at +0x3bfac8
     // Fixed row-major runtime grid owned by SubgameRuntime. Gameplay actors
     // retain pointers into this slab only for the lifetime of the built track.
-    SubLoc runtime_cells[3200][8]; // +0x3bfac8, ends at +0x5ccac8
+    SubLoc runtime_cells[SUBGAME_RUNTIME_ROW_CAPACITY][SUBGAME_TRACK_LANE_COUNT];
+    // +0x3bfac8, ends at +0x5ccac8
     // Fixed row records owned by SubgameRuntime. Their body objects are
     // embedded; source_segment and attachment-cell fields are borrowed links.
-    SubRow runtime_rows[3200]; // +0x5ccac8, ends at +0x68b4c8
+    SubRow runtime_rows[SUBGAME_RUNTIME_ROW_CAPACITY]; // +0x5ccac8, ends at +0x68b4c8
     // Both objects are embedded in SubgameRuntime. complete_subgame snapshots
     // into current_high_score_record, then lends that record to sub_high_score
     // for in-place normalization and value-copy persistence.

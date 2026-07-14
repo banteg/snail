@@ -41,8 +41,8 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
     debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \
     debug_report_stub("   Size of cRSubGoldy %i\n", sizeof(Player)); \
-    debug_report_stub("   Size of cRSubLoc %i\n", sizeof(SubLoc) * 3200 * 8); \
-    debug_report_stub("   Size of cRSubRow %i\n", sizeof(SubRow) * 3200); \
+    debug_report_stub("   Size of cRSubLoc %i\n", sizeof(((SubgameRuntime*)0)->runtime_cells)); \
+    debug_report_stub("   Size of cRSubRow %i\n", sizeof(((SubgameRuntime*)0)->runtime_rows)); \
     debug_report_stub("   Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
     debug_report_stub("   Size of cRSubSolution %i\n", sizeof(SubSolution)); \
     debug_report_stub("   Size of cRTimeTrial %i\n", sizeof(TimeTrial)); \

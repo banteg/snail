@@ -277,11 +277,13 @@ void SubgameRuntime::update_subgame()
                     &player);
 
             attachment_count = zero;
-            while (attachment_count < 8) {
+            while (attachment_count < SUBGAME_TRACK_LANE_COUNT) {
                 if (cell_index >= zero && cell_index < runtime_row_count) {
                     RuntimeCellSlotBase* cell_slot =
                         (RuntimeCellSlotBase*)(game
-                            + sizeof(TrackRowCell) * (attachment_count + 8 * cell_index));
+                            + sizeof(TrackRowCell)
+                                * (attachment_count
+                                    + SUBGAME_TRACK_LANE_COUNT * cell_index));
                     if ((cell_slot->cell.list_flags & 0x200) == zero) {
                         if ((cell_slot->cell.lane_and_flags & 0x4000) != zero) {
                             unsigned char tile = cell_slot->cell.tile_id;
@@ -301,7 +303,8 @@ void SubgameRuntime::update_subgame()
                                 }
 
                                 cell_slot->cell.render_arg_20 =
-                                    (float)(cell_index % 8) * 0.125f;
+                                    (float)(cell_index % SUBGAME_TRACK_LANE_COUNT)
+                                    * 0.125f;
                                 node = &runtime_rows[cell_index].attachment_body;
                                 active_list = &fringe_attachment_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
@@ -390,7 +393,7 @@ void SubgameRuntime::update_subgame()
                                     || (&cell_slot->cell)[-1].tile_id == 20
                                     || (&cell_slot->cell)[-1].tile_id == 21
                                     || (&cell_slot->cell)[-1].tile_id == 32)
-                                && (attachment_count == 7
+                                && (attachment_count == SUBGAME_TRACK_LANE_COUNT - 1
                                     || (&cell_slot->cell)[1].tile_id == 1
                                     || (&cell_slot->cell)[1].tile_id == 20
                                     || (&cell_slot->cell)[1].tile_id == 21
@@ -469,25 +472,34 @@ after_authored_ring:
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & 0x2000) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &(&cell_slot->cell)[6 * 8],
+                                        &(&cell_slot->cell)[
+                                            6 * SUBGAME_TRACK_LANE_COUNT],
                                         8, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[6 * 8].position.z;
+                                        (&cell_slot->cell)[
+                                            6 * SUBGAME_TRACK_LANE_COUNT]
+                                            .position.z;
                                 } else if ((ring_flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &(&cell_slot->cell)[6 * 8],
+                                        &(&cell_slot->cell)[
+                                            6 * SUBGAME_TRACK_LANE_COUNT],
                                         6, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[6 * 8].position.z;
+                                        (&cell_slot->cell)[
+                                            6 * SUBGAME_TRACK_LANE_COUNT]
+                                            .position.z;
                                 } else if ((ring_flags & 0x1000) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &(&cell_slot->cell)[6 * 8],
+                                        &(&cell_slot->cell)[
+                                            6 * SUBGAME_TRACK_LANE_COUNT],
                                         7, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[6 * 8].position.z;
+                                        (&cell_slot->cell)[
+                                            6 * SUBGAME_TRACK_LANE_COUNT]
+                                            .position.z;
                                 } else if ((runtime_flags & 8) != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
                                         || level_mode == 7)

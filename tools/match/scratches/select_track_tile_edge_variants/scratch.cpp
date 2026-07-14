@@ -47,7 +47,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             != 0) {
                         cell->tile_flags_3d |= 8;
                     }
-                    if (lane == 7
+                    if (lane == SUBGAME_TRACK_LANE_COUNT - 1
                         || ((SubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_LANE))
                                 ->is_sub_loc_empty()
                             != 0) {

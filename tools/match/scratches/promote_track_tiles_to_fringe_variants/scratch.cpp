@@ -20,7 +20,7 @@ void SubgameRuntime::promote_track_tiles_to_fringe_variants()
             int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
                 cell->lane_and_flags &= ~0x20u;
-                if (is_sub_loc_empty(cell + 8) != 0) {
+                if (is_sub_loc_empty(cell + SUBGAME_TRACK_LANE_COUNT) != 0) {
                     GameRoot* game = g_game;
                     int offset = 0;
                     do {

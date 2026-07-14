@@ -29,7 +29,8 @@ int SubgameRuntime::build_track_fringe_objects()
         SubRow* row_record_head = row_record;
 
         do {
-            int lane_count = 8;
+            int lane_count =
+                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
                 unsigned char edge_id = cell->tile_flags_3d;
                 int family = 0;
