@@ -26,6 +26,9 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 SYMBOL_UPDATES = (
     ("0x44c870", "initialize_global_identity_matrix_thunk"),
     ("0x44c880", "initialize_global_identity_matrix"),
+    ("0x44cac0", "multiply_vector_by_matrix_copy"),
+    ("0x44cb90", "multiply_vector_by_matrix"),
+    ("0x44cc20", "rotate_vector_by_matrix"),
     ("0x44cde0", "initialize_uniform_scale_matrix"),
     ("0x44cfe0", "initialize_matrix_from_values"),
     ("0x44d530", "initialize_quaternion_from_axis"),
@@ -636,6 +639,18 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_uniform_scale_matrix",
         "TransformMatrix* __thiscall initialize_uniform_scale_matrix(TransformMatrix* transform, float scale)",
+    ),
+    (
+        "multiply_vector_by_matrix_copy",
+        "Vec3* __thiscall multiply_vector_by_matrix_copy(const Vec3* vector, Vec3* out, const TransformMatrix* matrix)",
+    ),
+    (
+        "multiply_vector_by_matrix",
+        "void __thiscall multiply_vector_by_matrix(Vec3* vector, TransformMatrix matrix)",
+    ),
+    (
+        "rotate_vector_by_matrix",
+        "Vec3* __thiscall rotate_vector_by_matrix(Vec3* vector, const TransformMatrix* matrix)",
     ),
     (
         "invert_matrix_in_place",

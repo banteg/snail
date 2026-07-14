@@ -17,6 +17,9 @@ TRUSTED_NAMES = [
     (0x4086D0, "initialize_player_presentation_controller"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
+    (0x44CAC0, "multiply_vector_by_matrix_copy"),
+    (0x44CB90, "multiply_vector_by_matrix"),
+    (0x44CC20, "rotate_vector_by_matrix"),
     (0x44CDE0, "initialize_uniform_scale_matrix"),
     (0x44CFE0, "initialize_matrix_from_values"),
     (0x44D530, "initialize_quaternion_from_axis"),
@@ -75,6 +78,18 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_uniform_scale_matrix",
         "TransformMatrix* __thiscall initialize_uniform_scale_matrix(TransformMatrix* transform, float scale);",
+    ),
+    (
+        "multiply_vector_by_matrix_copy",
+        "Vec3* __thiscall multiply_vector_by_matrix_copy(const Vec3* vector, Vec3* out, const TransformMatrix* matrix);",
+    ),
+    (
+        "multiply_vector_by_matrix",
+        "void __thiscall multiply_vector_by_matrix(Vec3* vector, TransformMatrix matrix);",
+    ),
+    (
+        "rotate_vector_by_matrix",
+        "Vec3* __thiscall rotate_vector_by_matrix(Vec3* vector, const TransformMatrix* matrix);",
     ),
     (
         "noop_this_constructor",

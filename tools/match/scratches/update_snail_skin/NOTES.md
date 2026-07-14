@@ -34,3 +34,7 @@ the same authored texture ordering used by extraction and cutscene consumers.
 the complete `RenderableBod` initialized at Snail `+0x15cc`, matching the
 already-owned body at `+0x164c`. Focused Wibo remains exact at 44/44
 instructions with its masked operand clean.
+
+2026-07-14 vector operator ownership: the hotspot transform now uses the real
+void by-value `Vector3::operator*=` directly. The caller remains exact at 44/44;
+the decorated operator alias keeps its sole call operand audited.

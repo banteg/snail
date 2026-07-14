@@ -23,3 +23,9 @@ bit-punning is needed here.
 owner directly for `vertex_count` and `vertices`; the scratch-local
 `ObjectGeometry` prefix overlay was redundant. The result remains 39/39 exact
 with its matrix-helper operand clean.
+
+2026-07-14 operator ownership: the callee definition is now the real
+value-returning matrix `operator*`, but this exact consumer retains its explicit
+hidden-sret compatibility call. Natural named-value and const-reference
+spellings both make VC6 stop dereferencing the returned EAX pointer and regress
+this loop to 76.92%, so they are rejected rather than normalized away.

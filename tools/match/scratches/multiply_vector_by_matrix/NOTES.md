@@ -2,9 +2,11 @@
 
 Near-exact match: 85.00%, 40/40 instructions.
 
-In-place affine vector transform with the matrix passed by value. The scratch
-matches the native ABI (`thiscall`, 0x40-byte stack cleanup) and preserves the
-source vector through a stack `Vec3` before writing x/y/z.
+This is the Windows void `Vector3::operator*=(TransformMatrix)` affine
+transform, retained by iOS as `tVector::operator*=(tMatrix)`. The full matrix is
+passed by value (`thiscall`, 0x40-byte stack cleanup), and the body preserves the
+source vector through a stack `Vec3` before writing x/y/z. Native establishes no
+EAX result and both callers discard it.
 
 Residual: VC6 schedules the first matrix-column load before the native
 source-vector copy and then uses the same arithmetic in a different x87 load
@@ -33,3 +35,10 @@ caller/local scheduler debt: native copies the source vector before the first
 matrix-column `fld`, while VC6 hoists that `fld` ahead of the copy under all
 source-plausible shapes tried so far. Keep the by-value matrix ABI and aggregate
 source copy pinned.
+
+2026-07-14 operator ownership: the real void operator definition and both
+direct `vector *= matrix` callsites preserve the existing 85.00%, 40/40 body and
+both caller baselines. Android exposes the analogous operation under
+`tVector::Multiply(const tMatrix&)`; Windows' by-value ABI agrees with the iOS
+operator instead. The remaining body differences are still honest x87
+scheduling debt.

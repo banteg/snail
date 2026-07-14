@@ -1639,6 +1639,19 @@ TransformMatrix* __thiscall initialize_uniform_scale_matrix(
     TransformMatrix* transform,
     float scale
 );
+Vec3* __thiscall multiply_vector_by_matrix_copy(
+    const Vec3* vector,
+    Vec3* out,
+    const TransformMatrix* matrix
+);
+void __thiscall multiply_vector_by_matrix(
+    Vec3* vector,
+    TransformMatrix matrix
+);
+Vec3* __thiscall rotate_vector_by_matrix(
+    Vec3* vector,
+    const TransformMatrix* matrix
+);
 double __fastcall normalize_vector(Vec3* vector);
 float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);

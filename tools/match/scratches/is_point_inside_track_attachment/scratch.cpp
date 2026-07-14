@@ -24,7 +24,7 @@ bool Path::is_point_inside_track_attachment(
         TransformMatrix* inverse_matrix = &secondary_samples[idx].inverse_matrix;
         sample_origin.z = anchor_z + secondary_samples[idx].transform.position.z;
         local = probe - sample_origin;
-        local.rotate_vector_by_matrix(inverse_matrix);
+        local.rotate_vector_by_matrix(*inverse_matrix);
 
         if ((float)(width_cells / -2) - 0.300000012f < local.x
             && (float)(width_cells / 2) + 0.300000012f > local.x

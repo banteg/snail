@@ -16,7 +16,7 @@ void Sprite::update_sprite_facing_angle(const TransformMatrix* matrix)
             delta_source.y = position.y - previous_position.y;
             delta_source.z = position.z - previous_position.z;
             delta = delta_source;
-            rotated = *delta.rotate_vector_by_matrix(matrix);
+            rotated = delta.rotate_vector_by_matrix(*matrix);
             float angle = atan2_positive(rotated.x, rotated.y) + 7.0685835f;
             facing_refresh_progress = 0.001f;
             facing_angle = angle;
@@ -33,7 +33,7 @@ void Sprite::update_sprite_facing_angle(const TransformMatrix* matrix)
         delta_source.y = position.y - previous_position.y;
         delta_source.z = position.z - previous_position.z;
         delta = delta_source;
-        rotated = *delta.rotate_vector_by_matrix(matrix);
+        rotated = delta.rotate_vector_by_matrix(*matrix);
         facing_angle = atan2_positive(rotated.x, rotated.y) + 7.0685835f;
     }
 }

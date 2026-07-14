@@ -161,3 +161,10 @@ prefix followed by repeated child padding. Promoting the borrowed manager and
 unknown `+0x7c` word into the base removes the local renderer subclass and all
 known duplicated child gaps. Focused output remains byte-identical at 45.43%,
 415/439 instructions, prefix 3, with all 26 operands clean.
+
+## 2026-07-14 vector operator ownership
+
+Sprite depth projection now spells the existing by-value affine call as the
+recovered void `Vector3::operator*=`. Focused output remains at the prior honest
+45.43% baseline; only the decorated call identity changes, and the function
+reference alias keeps all 26 operands clean.

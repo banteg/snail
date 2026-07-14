@@ -2,9 +2,10 @@
 
 Exact match: 100.00%, 38/38 instructions.
 
-In-place vector rotation through the 3x3 matrix basis only, leaving translation
-out. The native source shape copies `this` to a stack `Vec3` before overwriting
-the destination vector.
+Exact reference-returning in-place vector rotation through the 3x3 matrix basis
+only, leaving translation out. Android and iOS retain
+`tVector::Rotate(const tMatrix&)`. The native source shape copies `this` to a
+stack `Vec3` before overwriting the destination vector.
 
 2026-06-20 ABI cleanup:
 
@@ -19,3 +20,8 @@ the destination vector.
   `finalize_path_template` 69.41%, `update_sprite_facing_angle` 97.67%, and
   `render_object_toon` 57.76%. The header-only `Vector3` ABI-conflict row is
   gone from `uv run snail match types --paths`.
+
+2026-07-14 reference ownership: the real const-reference argument and
+receiver-reference return preserve the exact 38/38 body and every direct caller
+baseline. Native keeps `this` in EAX, and both sprite-facing callsites
+immediately dereference that result; the other callers simply ignore it.

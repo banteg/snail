@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-void Vector3::multiply_vector_by_matrix(TransformMatrix matrix)
+void Vector3::operator*=(TransformMatrix matrix)
 {
     Vector3 source = *this;
 

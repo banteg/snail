@@ -28,6 +28,9 @@ struct Vector3 {
         return *this;
     }
 
+    Vector3 operator*(const TransformMatrix& matrix) const; // @ 0x44cac0
+    void operator*=(TransformMatrix matrix); // @ 0x44cb90, matrix by value
+
     Vector3& operator+=(const Vector3& rhs)
     {
         x += rhs.x;
@@ -44,9 +47,10 @@ struct Vector3 {
     float dot_vector(const Vector3* rhs); // @ 0x44cb70
     void cross_vectors(const Vector3* lhs, const Vector3* rhs); // @ 0x44cd40
     float vector_magnitude(); // @ 0x44ccf0, thiscall, returns st0
-    void multiply_vector_by_matrix(TransformMatrix matrix); // @ 0x44cb90, matrix by value
+    // ABI compatibility view for the exact Bod caller that dereferences the
+    // hidden-return EAX pointer. The owned definition is operator* above.
     Vector3* multiply_vector_by_matrix_copy(Vector3* out, const TransformMatrix* matrix) const; // @ 0x44cac0
-    Vector3* rotate_vector_by_matrix(const TransformMatrix* matrix); // @ 0x44cc20
+    Vector3& rotate_vector_by_matrix(const TransformMatrix& matrix); // @ 0x44cc20
 };
 
 #endif

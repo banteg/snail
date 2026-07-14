@@ -43,7 +43,7 @@ void Path::try_enter_track_attachment_from_swept_motion(
                 v20 + sample->transform.position.y,
                 v21 + sample->transform.position.z);
             local = Vector3(px, py, pz) - sample_origin;
-            local.rotate_vector_by_matrix(&sample->inverse_matrix);
+            local.rotate_vector_by_matrix(sample->inverse_matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
                 && local.y >= -0.2
@@ -57,7 +57,7 @@ void Path::try_enter_track_attachment_from_swept_motion(
                     swept_position =
                         Vector3(px, py, pz) + Vector3(sweep_x, sweep_y, sweep_z);
                     probe = swept_position - hit_origin;
-                    probe.rotate_vector_by_matrix(&hit->inverse_matrix);
+                    probe.rotate_vector_by_matrix(hit->inverse_matrix);
                     if (probe.y <= 0.001f)
                         goto seed;
                 }

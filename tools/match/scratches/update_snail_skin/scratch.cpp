@@ -10,7 +10,7 @@ void Snail::update_snail_skin()
         if (index >= SNAIL_HOTSPOT_PARCEL_POINT)
             source_matrix = &snail_hotspot_source_body.transform;
 
-        hotspot.multiply_vector_by_matrix(*source_matrix);
+        hotspot *= *source_matrix;
         snail_hotspots_world[index] = hotspot;
     }
 }

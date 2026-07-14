@@ -171,7 +171,7 @@ void GameRoot::render_game_frame()
                         (sprite_flags & 0x200) == 0) {
                         Vector3 projected = sprite->position;
                         TransformMatrix camera_matrix = source->view_matrix;
-                        projected.multiply_vector_by_matrix(camera_matrix);
+                        projected *= camera_matrix;
                         projected.x = -projected.x;
                         projected.z = -projected.z;
 

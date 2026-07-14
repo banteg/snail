@@ -1289,6 +1289,24 @@
       "description": "Small jump thunk that dispatches random_float_below and random_signed_float_below to the statically linked CRT rand body at 0x48bfe5."
     },
     {
+      "address": "0x44cac0",
+      "name": "multiply_vector_by_matrix_copy",
+      "kind": "function",
+      "aliases": [
+        "??DVector3@@QBE?AU0@ABUTransformMatrix@@@Z"
+      ],
+      "description": "Exact value-returning Vector3 affine matrix operator with a hidden VC6 output pointer."
+    },
+    {
+      "address": "0x44cb90",
+      "name": "multiply_vector_by_matrix",
+      "kind": "function",
+      "aliases": [
+        "??XVector3@@QAEXUTransformMatrix@@@Z"
+      ],
+      "description": "Void in-place Vector3 matrix operator; Windows passes the complete TransformMatrix by value."
+    },
+    {
       "address": "0x44cdd0",
       "name": "destroy_cross_vectors_static_result",
       "kind": "function",

@@ -2254,6 +2254,33 @@
       "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API."
     },
     {
+      "address": "0x44cac0",
+      "windows_name": "multiply_vector_by_matrix_copy",
+      "ios_symbol": "tVector::operator*(tMatrix const&) const",
+      "android_symbol": "tVector::operator*(tMatrix const&) const",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The real Windows value-returning operator is exact at 49/49 instructions. Its stack output pointer and eight-byte callee cleanup are the VC6 hidden-sret ABI; the exact Bod consumer retains an explicit compatibility view because natural temporary spellings stop dereferencing the returned EAX pointer."
+    },
+    {
+      "address": "0x44cb90",
+      "windows_name": "multiply_vector_by_matrix",
+      "ios_symbol": "tVector::operator*=(tMatrix)",
+      "android_symbol": "tVector::Multiply(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Windows callee cleanup proves the complete matrix is passed by value, matching iOS. Native establishes no EAX result and both callers discard it, so the honest Windows source is a void operator*=; this preserves the current 85.00% scheduling-only partial and both caller baselines."
+    },
+    {
+      "address": "0x44cc20",
+      "windows_name": "rotate_vector_by_matrix",
+      "ios_symbol": "tVector::Rotate(tMatrix const&)",
+      "android_symbol": "tVector::Rotate(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 38/38 Windows member accepts a const matrix reference and preserves its receiver in EAX. Two sprite-facing callsites immediately dereference that result, proving a receiver reference/pointer contract rather than void; all direct const-reference spellings preserve their caller baselines."
+    },
+    {
       "address": "0x44cde0",
       "windows_name": "initialize_uniform_scale_matrix",
       "android_symbol": "tMatrix::tMatrix(float)",

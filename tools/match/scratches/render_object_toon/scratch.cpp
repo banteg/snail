@@ -41,7 +41,7 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
 
     TransformMatrix inverse = *matrix;
     inverse.invert_matrix_in_place();
-    view_vector.rotate_vector_by_matrix(&inverse);
+    view_vector.rotate_vector_by_matrix(inverse);
     view_vector.vector_magnitude();
 
     g_d3d_device->vtbl->SetIndices(g_d3d_device, object->toon_index_buffer->buffer, 0);

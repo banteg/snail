@@ -3495,7 +3495,7 @@
     {
       "address": "0x44cac0",
       "name": "multiply_vector_by_matrix_copy",
-      "description": "Writes an out-of-place affine vector-by-matrix transform into a destination output. Android symbols match this helper to `tVector::operator*(const tMatrix&) const`."
+      "description": "Stable Windows harness identity for the exact value-returning `Vector3::operator*(const TransformMatrix&) const`. Its hidden output pointer exposes the ordinary VC6 aggregate-return ABI. Android and iOS retain `tVector::operator*(const tMatrix&) const`."
     },
     {
       "address": "0x44cb50",
@@ -3510,12 +3510,12 @@
     {
       "address": "0x44cb90",
       "name": "multiply_vector_by_matrix",
-      "description": "Applies one affine matrix to a vector in place, including translation. Android symbols match this helper to `tVector::Multiply(const tMatrix&)`."
+      "description": "Stable Windows harness identity for the void by-value `Vector3::operator*=(TransformMatrix)` retained by iOS as `tVector::operator*=(tMatrix)`. It applies the affine basis and translation in place; Android exposes the analogous operation as `tVector::Multiply(const tMatrix&)`."
     },
     {
       "address": "0x44cc20",
       "name": "rotate_vector_by_matrix",
-      "description": "Applies only the 3x3 rotational basis of a matrix to a vector in place, leaving translation out. Android symbols match this helper to `tVector::Rotate(const tMatrix&)`."
+      "description": "Exact reference-returning `Vector3::rotate_vector_by_matrix(const TransformMatrix&)` harness for Android/iOS `tVector::Rotate(const tMatrix&)`. It applies only the 3x3 rotational basis in place; sprite-facing callers consume the returned receiver."
     },
     {
       "address": "0x44cca0",
