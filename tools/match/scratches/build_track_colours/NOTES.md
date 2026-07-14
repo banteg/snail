@@ -8,9 +8,10 @@ The exact source shape has two useful idioms:
 - `Color4f::set_color_white` is a void mutator at callsites. Declaring it as a
   float-returning helper made VC6 pop the ignored x87 return after each call,
   which native does not do.
-- The loop cursor is a byte offset from `0` to `0x330`, advanced by `0x10`.
-  An element-index loop emitted the right calls but kept the wrong `inc/cmp`
-  loop shape.
+- The loop cursor is a byte offset across one 51-entry bank, advanced by one
+  `Color4f`. Those constants now derive from the declared bank extent and
+  `sizeof(Color4f)`; an element-index loop emitted the right calls but kept the
+  wrong `inc/cmp` loop shape.
 
 Native intentionally calls bank J twice and bank K twice for each slot. Keep
 those duplicate mutator calls; removing either breaks the exact call sequence.
@@ -25,3 +26,8 @@ function's exact instruction stream.
 `SubgameRuntime::build_track_colours` instead of a scratch-local `Game` owner.
 Focused Wibo remains exact at `100.00%`, `37/37` instructions, with `24` clean
 masked operands.
+
+2026-07-14 bank-extent ownership: both the loop bound and the B-to-C bank
+boundary derive from `sizeof(g_track_colour_bank_a)`, while the byte cursor
+step derives from `sizeof(Color4f)`. The compiler retains the native byte-loop
+shape, so the function remains exact at 37/37 with all 24 operands clean.

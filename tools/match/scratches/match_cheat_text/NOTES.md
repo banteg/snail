@@ -25,3 +25,8 @@ Rejected source-shape probes:
   length local, and `register` on the length were all codegen-neutral or worse.
 - An IDA-style equality loop and a `do` loop both regressed sharply by changing
   saved-register ownership.
+
+2026-07-14 rolling-buffer ownership: the reverse-compare cursor now starts
+from `CheatState::recent_text + length - 1` rather than rebuilding the same
+address from raw `this + length + 7`. The field-relative spelling remains
+exact at 42/42 instructions with both operands clean.

@@ -12,11 +12,11 @@ char CheatState::update_cheat()
     if (key >= 'A' && key <= 'Z') {
         int index = 7;
         do {
-            ((char*)this)[index + 8] = ((char*)this)[index + 7];
+            recent_text[index] = recent_text[index - 1];
             --index;
         } while (index > 0);
 
-        ((char*)this)[8] = key;
+        recent_text[0] = key;
 
         if (match_cheat_text("NEWTON") != 0) {
             flags |= 1;

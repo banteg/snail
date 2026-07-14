@@ -15,7 +15,7 @@ int TwinkleManager::update_twinkle_manager()
                 twinkle->update_twinkle();
                 result = twinkle_count;
                 ++index;
-                twinkle = (Twinkle*)((char*)twinkle + 0x30);
+                ++twinkle;
             } while (index < result);
         }
     }

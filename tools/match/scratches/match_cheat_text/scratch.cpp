@@ -17,8 +17,7 @@ char CheatState::match_cheat_text(const char* text)
 
     int index = 0;
     if (0 < length) {
-        char* cursor = (char*)this;
-        cursor += length + 7;
+        char* cursor = recent_text + length - 1;
         for (; index < length;) {
             char expected = text[index];
             char actual = *cursor;

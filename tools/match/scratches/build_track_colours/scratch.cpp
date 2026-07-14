@@ -6,10 +6,13 @@
 
 void SubgameRuntime::build_track_colours()
 {
-    for (int offset = 0; offset < 0x330; offset += 0x10) {
+    for (int offset = 0;
+         offset < (int)sizeof(g_track_colour_bank_a);
+         offset += sizeof(Color4f)) {
         ((Color4f*)((char*)g_track_colour_bank_a + offset))->set_color_white();
         ((Color4f*)((char*)g_track_colour_banks_b_c + offset))->set_color_white();
-        ((Color4f*)((char*)g_track_colour_banks_b_c + 0x330 + offset))
+        ((Color4f*)((char*)g_track_colour_banks_b_c
+            + sizeof(g_track_colour_bank_a) + offset))
             ->set_color_white();
         ((Color4f*)((char*)g_track_colour_bank_d + offset))->set_color_white();
         ((Color4f*)((char*)g_track_colour_bank_e + offset))->set_color_white();

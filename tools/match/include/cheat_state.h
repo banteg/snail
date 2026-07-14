@@ -9,8 +9,13 @@ public:
 
     int flags; // +0x00
     int unused_04; // +0x04
-    int recent_text_0; // +0x08
-    int recent_text_4; // +0x0c
+    union {
+        struct {
+            int recent_text_0; // +0x08, constructor-width zeroing view
+            int recent_text_4; // +0x0c
+        };
+        char recent_text[8]; // +0x08, rolling uppercase input buffer
+    };
 };
 
 typedef char CheatState_must_be_0x10[

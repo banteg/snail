@@ -33,3 +33,9 @@ copying the low byte back into `key`; that preserves the native
 load/`or al, 4`/store tail instead of collapsing to `or dword [this], 4`.
 Focused matcher result is now 100.00%, 52/52 instructions, full 52/52 prefix,
 and seven clean masked operands.
+
+2026-07-14 rolling-buffer ownership: `CheatState` now exposes the eight bytes
+at `+0x08` as `recent_text[8]` alongside the constructor's two-dword clearing
+view. The shift and insertion use that owned array directly, removing raw
+receiver indexing while preserving the exact 52/52 function and all seven
+clean operands.

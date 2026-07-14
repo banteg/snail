@@ -16,3 +16,8 @@ manager now types the inline storage as `Twinkle twinkles[5]`. The local
 `int update_twinkle()` stub was replaced by the shared `void update_twinkle()`
 declaration. Focused matcher stayed exact at 23/23 instructions with 1 clean
 masked operand.
+
+2026-07-14 inline-array ownership: the manager now advances its typed
+`Twinkle*` with ordinary pointer increment instead of reconstructing the
+proved `0x30` record stride. Focused output remains exact at 23/23 instructions
+with its masked operand clean.
