@@ -7,6 +7,11 @@ float cosine(float radians); // @ 0x44c980
 
 int Backdrop::update_backdrop()
 {
+    enum {
+        GRID_ROW_COUNT = sizeof(distort_grid) / sizeof(distort_grid[0]),
+        GRID_COLUMN_COUNT = sizeof(distort_grid[0]) / sizeof(distort_grid[0][0]),
+    };
+
     float phase;
     int phase_bits;
 
@@ -16,10 +21,10 @@ int Backdrop::update_backdrop()
     }
 
     BackdropDistortCell* column = distort_cells;
-    int column_count = 8;
+    int column_count = GRID_COLUMN_COUNT;
     do {
         BackdropDistortCell* cell = column;
-        int row_count = 8;
+        int row_count = GRID_ROW_COUNT;
         do {
             phase = cell->phase_step;
             phase += cell->phase;
@@ -32,7 +37,7 @@ int Backdrop::update_backdrop()
 
             cell->current_x_offset = sine(cell->phase) * cell->x_offset;
             cell->current_y_offset = cosine(cell->phase) * cell->y_offset;
-            cell += 8;
+            cell += GRID_COLUMN_COUNT;
             row_count--;
         } while (row_count != 0);
 

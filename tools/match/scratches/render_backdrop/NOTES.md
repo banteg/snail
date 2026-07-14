@@ -44,5 +44,12 @@
   UV/color locals and share one corner calculation plus one
   `queue_textured_quad_corners` call matches the IDA shape conceptually, but
   VC6 over-optimizes the source into a different frame/register layout. The
-  common-tail variants score only 41.46% and 38.53%, so the intentionally
-  duplicated branch calls remain the better compiler-shape evidence.
+common-tail variants score only 41.46% and 38.53%, so the intentionally
+duplicated branch calls remain the better compiler-shape evidence.
+
+## 2026-07-14 distortion-grid extent derivation
+
+The 7x7 quad bounds and cell-row multiplier now derive from the owned 8x8
+distortion grid. The normalized listing remains byte-identical
+(`112316678a1762b5135e27a350402ae953dd0d86d18baf2ffff2ac820acc2c40`)
+at the honest 86.61% result (`189/192`, prefix `12/192`, 26 clean operands).

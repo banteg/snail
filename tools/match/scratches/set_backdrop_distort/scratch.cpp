@@ -7,15 +7,24 @@ int next_math_random_value(); // @ 0x44c900
 
 void Backdrop::set_backdrop_distort(float distort)
 {
+    enum {
+        GRID_ROW_COUNT = sizeof(distort_grid) / sizeof(distort_grid[0]),
+        GRID_COLUMN_COUNT = sizeof(distort_grid[0]) / sizeof(distort_grid[0][0]),
+        GRID_CELL_COUNT = sizeof(distort_cells) / sizeof(distort_cells[0]),
+        GRID_LAST_COLUMN = GRID_COLUMN_COUNT - 1,
+        GRID_LAST_ROW_BASE = (GRID_ROW_COUNT - 1) * GRID_COLUMN_COUNT,
+    };
+
     int i;
     int j;
     int border;
     float* result;
     float* cell;
 
-    for (i = 0; i < 64; i += 8) {
-        for (j = 0; j < 8; j++) {
-            border = j == 0 || i == 0 || j == 7 || i == 56;
+    for (i = 0; i < GRID_CELL_COUNT; i += GRID_COLUMN_COUNT) {
+        for (j = 0; j < GRID_COLUMN_COUNT; j++) {
+            border =
+                j == 0 || i == 0 || j == GRID_LAST_COLUMN || i == GRID_LAST_ROW_BASE;
             if (border) {
                 result = (float*)this + (i + j) * 6;
                 result[22] = 0.0f;

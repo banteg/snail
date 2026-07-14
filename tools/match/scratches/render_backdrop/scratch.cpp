@@ -7,6 +7,11 @@
 
 void Backdrop::render_backdrop()
 {
+    enum {
+        GRID_COLUMN_COUNT = sizeof(distort_grid[0]) / sizeof(distort_grid[0][0]),
+        GRID_QUAD_COUNT = GRID_COLUMN_COUNT - 1,
+    };
+
     Color4f normal_color;
     Color4f flipped_color;
 
@@ -17,7 +22,7 @@ void Backdrop::render_backdrop()
             int row_index = (int)row;
             int column_index = (int)column;
             unsigned char flip = active_flip;
-            int cell_index = row_index + (column_index << 3);
+            int cell_index = row_index + column_index * GRID_COLUMN_COUNT;
             float* cell = (float*)this + cell_index * 6;
             float next_column;
 
@@ -78,8 +83,8 @@ void Backdrop::render_backdrop()
             }
 
             column = next_column;
-        } while (column < 7.0f);
+        } while (column < GRID_QUAD_COUNT);
 
         row += 1.0f;
-    } while (row < 7.0f);
+    } while (row < GRID_QUAD_COUNT);
 }
