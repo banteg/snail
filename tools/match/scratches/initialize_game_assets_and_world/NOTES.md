@@ -583,3 +583,11 @@ aggregate match. Neither experiment is retained. The semantic source keeps the
 existing typed matrix until the preceding path/animation register allocation
 can recover the native stack layout without padding, undersized storage, or
 other score-only scaffolding.
+
+## 2026-07-14 replay-suppression owner closure
+
+The startup clear at root `+0x4f2e0` now names
+`GameRoot::intro.hide_for_replay_latch`. Exact `Intro::update_new_game_menu`
+proves the owning controller and `update_subgame` proves the downstream HUD
+suppression lifecycle. The broad initializer remains byte-identical at 80.49%,
+5,391/5,411 instructions, with 1,542 clean operands.

@@ -214,7 +214,7 @@ void SubgameRuntime::initialize_subgame()
         break;
     }
 
-    if (*(unsigned char*)((char*)g_game + 0x4f2e0) != 0 || this->level_mode == 7) {
+    if (g_game->intro.hide_for_replay_latch != 0 || this->level_mode == 7) {
         bottom_score_widget->hide_border_init();
         top_score_widget->hide_border_init();
     }

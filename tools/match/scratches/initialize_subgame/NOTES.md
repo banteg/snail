@@ -384,14 +384,22 @@ aliases respectively and restore the 85 clean operands.
 
 Landscape loading, backdrop selection, border allocation, and center
 justification now use the canonical `GameRoot* g_game` and its embedded
-owners. The unknown bytes at root `+0x4f2e0`, `+0x30d`, and `+0x310` remain
-raw because their authored member identities are not yet established.
+owners. The bytes at root `+0x30d` and `+0x310` remain raw because their
+authored member identities are not yet established.
 
 The grid reset derives its 3,200-row and eight-lane bounds from
 `runtime_cells`; the four borrowed fringe handles are cleared through the
 field-first view up to `next_cell`; and the HUD life-stock loop derives its
 nine handles from `life_stock_widgets`. The complete method remains exact at
 396/396 instructions with all 85 operands clean.
+
+## 2026-07-14 replay-suppression owner closure
+
+The root byte at `+0x4f2e0` is `GameRoot::intro.hide_for_replay_latch`, not an
+anonymous startup flag. Exact `Intro::update_new_game_menu` owns both writes,
+and `update_subgame` consumes the same member while releasing attract-mode HUD
+suppression. Naming that path here preserves the exact 396-instruction method
+and all 85 clean operands.
 
 2026-07-13 root BOD-list owner refresh:
 

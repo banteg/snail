@@ -345,7 +345,14 @@ borrow `GameRoot::active_bod_list`; ownership remains with the embedded Player
 and presentation subobjects. The old `char* +0x5a8` anchor obscured that list
 boundary but described the same native address.
 
-The Banner setup intentionally retains its receiver-relative byte cursor, and
-the byte at root `+0x4f2e0` remains offset-named because its authored member
-identity is not yet proven. Focused output is byte-identical at 77.67%,
-560/555 instructions, prefix 177/555, with all 101 operands clean.
+The Banner setup intentionally retains its receiver-relative byte cursor.
+Focused output is byte-identical at 77.67%, 560/555 instructions, prefix
+177/555, with all 101 operands clean.
+
+## 2026-07-14 replay-suppression owner closure
+
+The score-HUD gate now follows
+`GameRoot::intro.hide_for_replay_latch`. Exact `Intro::update_new_game_menu`
+owns the latch and `update_subgame` independently consumes it, closing the
+former raw root `+0x4f2e0` access without changing this builder's focused
+output.

@@ -98,7 +98,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.subgame_pause_gate = 0;
 
     g_cheat_state.initialize_cheat();
-    *(unsigned char*)(game + 0x4f2e0) = 0;
+    intro.hide_for_replay_latch = 0;
     subgame.initialize_blink_random();
     subgame.set_subgame_rate(1.1f);
     *(int*)(game + 0x56c) = 2;

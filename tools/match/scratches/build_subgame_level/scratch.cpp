@@ -122,7 +122,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     }
 
     parcel_manager.initialize_track_parcel_slots();
-    if (*(unsigned char*)((char*)g_game + 0x4f2e0) == 1) {
+    if (g_game->intro.hide_for_replay_latch == 1) {
         top_score_widget->hide_border_init();
         bottom_score_widget->hide_border_init();
     }
