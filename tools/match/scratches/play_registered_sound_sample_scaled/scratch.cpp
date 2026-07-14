@@ -1,4 +1,6 @@
-// play_registered_sound_sample_scaled @ 0x4499a0 (stdcall, ret 0x8)
+// AudioBackend::play_registered_sound_sample_scaled @ 0x4499a0
+
+#include "audio_system.h"
 
 typedef int (__stdcall* BassSamplePlayExFn)(
     int sample_handle, int start, int frequency, int volume, int pan, int loop);
@@ -6,7 +8,7 @@ typedef int (__stdcall* BassSamplePlayExFn)(
 extern int g_registered_sound_sample_handles[]; // 0x7537e0
 extern BassSamplePlayExFn g_bass_sample_play_ex; // 0x7527b4
 
-void __stdcall play_registered_sound_sample_scaled(int sample_id, float volume)
+void AudioBackend::play_registered_sound_sample_scaled(int sample_id, float volume)
 {
     if (volume >= 0.0f) {
         if (volume > 1.0f) {

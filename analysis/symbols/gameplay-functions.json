@@ -3138,7 +3138,7 @@
     {
       "address": "0x4499a0",
       "name": "play_registered_sound_sample_scaled",
-      "description": "Plays one registered runtime sample through the BASS sample backend with the supplied normalized gain scale and the default extra playback parameters."
+      "description": "AudioBackend method that plays one registered runtime sample through BASS with the supplied normalized gain scale and the default pitch and pan parameters."
     },
     {
       "address": "0x449a10",
@@ -3148,12 +3148,12 @@
     {
       "address": "0x449a20",
       "name": "stop_registered_sound_sample",
-      "description": "Stops playback for one registered runtime sample index by resolving it through the shared sound-bank table before forwarding into the lower audio backend."
+      "description": "AudioBackend method that stops one registered runtime sample index by resolving it through the shared sound-bank table before calling BASS."
     },
     {
       "address": "0x449a40",
       "name": "is_registered_sound_sample_playing",
-      "description": "Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend."
+      "description": "AudioBackend method that reports whether one registered runtime sample index is active by querying its shared sound-bank table entry through BASS."
     },
     {
       "address": "0x449a60",
@@ -3163,12 +3163,12 @@
     {
       "address": "0x449a80",
       "name": "play_registered_sound_sample_backend",
-      "description": "Forwards one registered runtime sample index plus normalized playback scalars into the raw `BASS_SamplePlayEx` lane that the SFX and voice wrappers share."
+      "description": "AudioBackend method that forwards one registered runtime sample index plus normalized volume and pitch into the `BASS_SamplePlayEx` lane shared by the SFX and voice wrappers."
     },
     {
       "address": "0x449ae0",
       "name": "play_registered_sound_sample_scaled_panned",
-      "description": "Plays one registered runtime sample through the BASS sample backend with the supplied normalized gain scale and explicit pan override."
+      "description": "AudioBackend method that plays one registered runtime sample through BASS with normalized volume plus explicit pitch and pan overrides."
     },
     {
       "address": "0x449b50",
