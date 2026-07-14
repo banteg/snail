@@ -2,7 +2,7 @@
 
 #include "object_render_types.h"
 
-int Object::initialize_object()
+void Object::initialize_object()
 {
     flags = 0;
     blend_mode = 0;
@@ -11,5 +11,4 @@ int Object::initialize_object()
     vertex_normals = 0;
     field_40 = 0;
     texture_group_count = 0;
-    return 0;
 }

@@ -4,13 +4,11 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void* Object::request_object_edges(int edge_count)
+void Object::request_object_edges(int requested_count)
 {
-    void* result = (void*)this->edge_count;
-    if (result == 0) {
-        this->edge_count = edge_count;
-        result = allocate_tracked_memory(edge_count * 0x24, "Object Edges");
-        edges = (ObjectToonEdge*)result;
+    if (edge_count == 0) {
+        edge_count = requested_count;
+        edges = (ObjectToonEdge*)allocate_tracked_memory(
+            requested_count * sizeof(ObjectToonEdge), "Object Edges");
     }
-    return result;
 }

@@ -234,10 +234,12 @@ typedef struct DirectXLoader {
 } DirectXLoader;
 
 void* __thiscall noop_this_constructor(void* self);
-int32_t __thiscall initialize_object(Object* object);
+void __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
 void __thiscall build_all_objects(ObjectList* object_list);
 Object* __thiscall add_object_to_list(ObjectList* object_list);
+void __thiscall apply_object_toon(Object* object, int32_t toon_flags);
+void __thiscall request_object_edges(Object* object, int32_t edge_count);
 void __cdecl load_object_definition(char* path, Object* object);
 
 void __thiscall initialize_directx_loader(DirectXLoader* loader);

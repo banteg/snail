@@ -9,3 +9,10 @@ Object toon setup at `0x42fa80`.
 - Marks toon support with caller flags plus `0x4001`; the later build pass uses
   `0x4000` to decide whether to generate normals, edges, and the toon index
   buffer.
+
+2026-07-14 void ABI closure: every Windows callsite discards EAX, and the
+cross-port owner is the side-effecting `cRObject::ApplyToon(int)` method. The
+Windows tail happens to leave the second tracked allocation in EAX, but that
+buffer is already retained by `Object::toon_facequad_normals`; it is not a
+second ownership transfer. Modeling the method as `void` keeps the exact 24/24
+instruction stream and all four masked operands clean.

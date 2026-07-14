@@ -116,20 +116,20 @@ struct ObjectIndexBuffer {
 
 struct Object {
     Object* initialize_object_constructor_thunk(); // @ 0x42f6e0
-    int initialize_object(); // @ 0x42f6f0
+    void initialize_object(); // @ 0x42f6f0
     void request_object_vertices(int vertex_count); // @ 0x42f710
     void request_object_vertices_copy(); // @ 0x42f7d0
     void copy_object_vertices(); // @ 0x42f790
     void* request_object_facequad_normals(); // @ 0x42f800
     void request_object_facequads(int facequad_count); // @ 0x42f8c0
     void request_object_texture_groups(int group_count); // @ 0x42f930
-    void* apply_object_toon(int toon_flags); // @ 0x42fa80
+    void apply_object_toon(int toon_flags); // @ 0x42fa80
     void calc_object_bounding_box(); // @ 0x42fb10
     void calc_object_facequad_normals(); // @ 0x42fcb0
     int calc_object_facequad_normals_simple(); // @ 0x430230
     void calc_object_texture_groups(); // @ 0x4303f0
     void add_object_edge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0
-    void* request_object_edges(int edge_count); // @ 0x430570
+    void request_object_edges(int edge_count); // @ 0x430570
     void calc_object_edges(); // @ 0x4308b0
     void request_object_animation(
         int keyframe_count, XAnimationKeyframe* keyframes,

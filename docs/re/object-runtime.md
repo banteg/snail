@@ -23,6 +23,12 @@ render resources. It walks `ObjectList::objects` at the `0xdc` stride, skips
 empty slots, calculates bounds and texture groups, optionally builds toon data,
 then calls `build_object_texture_group_buffers`.
 
+The object constructor body, `ApplyToon`, and the one-time edge allocator are
+side-effecting `void` methods. Their Windows exit registers contain assignment
+or allocation residue, while the actual products remain owned by the Object;
+no caller receives those values. The separate constructor adapter is the layer
+that deliberately returns the original Object receiver.
+
 `initialize_font3d_objects` is a second concrete consumer of the same chain:
 each glyph BOD borrows a global-list slot, loads `Objects/Font3D`, rewrites its
 first facequad/vertices, then sets `Object::blend_mode` at `+0x14` to `1`. The
