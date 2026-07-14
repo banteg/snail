@@ -1,5 +1,7 @@
 // initialize_track_render_cache_manager @ 0x433060 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "direct3d_renderer.h"
 #include "game_root.h"
 #include "object_render_types.h"
@@ -10,8 +12,8 @@ void* allocate_tracked_memory(int size, char* name);
 extern GameRoot* g_game; // data_4df904
 
 struct TrackRenderCacheSlotCursor {
-    char unknown_00[0x58];
-    BodBase bod; // +0x58
+    char manager_prefix[offsetof(SegmentCache, slots)];
+    BodBase bod; // SegmentCache::slots[0][0].bod
 };
 
 void* SegmentCache::initialize_track_render_cache_manager()
@@ -70,13 +72,18 @@ void* SegmentCache::initialize_track_render_cache_manager()
     void* result;
     do {
         void* vertex_buffer =
-            allocate_tracked_memory((*(int*)((char*)vertex_buffers - 0x28) * 3) << 3,
+            allocate_tracked_memory((*(int*)((char*)vertex_buffers
+                + (int)offsetof(SegmentCache, max_vertex_counts)
+                - (int)offsetof(SegmentCache, shared_vertex_buffers)) * 3) << 3,
                 "GDX Cache Vertex Buffer");
         vertex_buffers[0] = vertex_buffer;
-        int* index_buffer_count = (int*)((char*)vertex_buffers - 0x14);
+        int* index_buffer_count = (int*)((char*)vertex_buffers
+            + (int)offsetof(SegmentCache, max_index_counts)
+            - (int)offsetof(SegmentCache, shared_vertex_buffers));
         result = allocate_tracked_memory((*index_buffer_count) << 1,
             "GDX Cache Index Buffer");
-        vertex_buffers[5] = result;
+        vertex_buffers[sizeof(shared_vertex_buffers) / sizeof(shared_vertex_buffers[0])] =
+            result;
         ++vertex_buffers;
         --count;
     } while (count != 0);

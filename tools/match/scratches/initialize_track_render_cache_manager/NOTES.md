@@ -121,3 +121,15 @@ The cursor's inherited `BodBase::object` is now consumed as the canonical
 `Object*` handle throughout allocation. The old per-access casts predated that
 shared field type and falsely suggested a generic or overlaid payload; each
 cache slot retains one ObjectList-owned render object for the manager lifetime.
+
+## 2026-07-14 staging-lane ownership
+
+The compiler-sensitive manager-relative slot cursor now derives its prefix
+from `offsetof(SegmentCache, slots)`. Likewise, the shared allocation loop's
+backward count lanes derive from `max_vertex_counts`, `max_index_counts`, and
+`shared_vertex_buffers`, while the parallel index-buffer lane derives from the
+shared-buffer array extent. This preserves native pointer induction without
+repeating `+0x58`, `-0x28`, `-0x14`, or `[5]` as unexplained layout facts.
+
+Focused output remains at the honest 99.18%, 122/122 baseline with all 18
+operands clean; the sole residual is the equivalent slot-index SIB ordering.

@@ -1,6 +1,7 @@
 // build_track_render_caches @ 0x433220 (thiscall-shaped member, ret 0x10)
 
 #include <string.h>
+#include <stddef.h>
 
 #include "audio_system.h"
 #include "fringe_object.h"
@@ -15,8 +16,24 @@ unsigned char __fastcall is_sub_loc_ramp(TrackRowCell* cell);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 
+#define RUNTIME_CELL_BASE_OFFSET ((int)offsetof(SubgameRuntime, runtime_cells))
+#define RUNTIME_CELL_OFFSET(field) \
+    ((int)offsetof(SubgameRuntime, runtime_cells[0][0].field))
+
 int SegmentCache::build_track_render_caches(Color4f skirt_color)
 {
+    enum {
+        MAX_INDEX_COUNT_LANE =
+            ((int)offsetof(SegmentCache, max_index_counts)
+                - (int)offsetof(SegmentCache, max_vertex_counts)) / sizeof(int),
+        SHARED_VERTEX_BUFFER_LANE =
+            ((int)offsetof(SegmentCache, shared_vertex_buffers)
+                - (int)offsetof(SegmentCache, max_vertex_counts)) / sizeof(int),
+        SHARED_INDEX_BUFFER_LANE =
+            ((int)offsetof(SegmentCache, shared_index_buffers)
+                - (int)offsetof(SegmentCache, max_vertex_counts)) / sizeof(int),
+    };
+
     int row_index;
     ColorBGRA8 white_color;
     int work_value;
@@ -57,9 +74,11 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                 } while (work_value != 0);
             }
 
-            cells_remaining = 8;
+            cells_remaining =
+                sizeof(owner_subgame->runtime_cells[0])
+                / sizeof(owner_subgame->runtime_cells[0][0]);
             do {
-                int fringe_offset = cell_offset + 0x3bfb0c;
+                int fringe_offset = cell_offset + RUNTIME_CELL_OFFSET(fringe_front);
                 work_value = 4;
                 do {
                     Fringe* fringe_object =
@@ -88,11 +107,11 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                     --work_value;
                 } while (work_value != 0);
 
-                int flags = *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08);
+                int flags = *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags));
                 if ((flags & 0x20) != 0 && (flags & 0x4000) == 0x4000) {
                     append_track_cache_object(
                         row_index,
-                        *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
+                        *(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)),
                         (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                             + cell_offset),
                         (ObjectRenderVertex*)shared_vertex_buffers[2],
@@ -105,18 +124,19 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         1);
 
                     slots[cache_row][2].bod.object->group_texture_refs[0] =
-                        (*(Object**)((char*)owner_subgame + cell_offset +
-                            0x3bfaec))->facequads[0].texture_ref;
-                    *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08) &= ~0x4000;
+                        (*(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)))
+                            ->facequads[0].texture_ref;
+                    *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
+                        &= ~0x4000;
                 } else if (is_sub_loc_floor(
-                    (TrackRowCell*)((char*)owner_subgame + cell_offset + 0x3bfac8))
-                    && ((*(int*)((char*)owner_subgame + cell_offset + 0x3bfb08)
+                    (TrackRowCell*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
+                    && ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & 0x4000) == 0x4000)) {
-                    if ((*(int*)((char*)owner_subgame + cell_offset + 0x3bfb08)
+                    if ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & 0x40) == 0x40) {
                         append_track_cache_object(
                             row_index,
-                            *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
+                            *(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)),
                             (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[1],
@@ -129,12 +149,12 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             1);
 
                         slots[cache_row][1].bod.object->group_texture_refs[0] =
-                            (*(Object**)((char*)owner_subgame + cell_offset +
-                                0x3bfaec))->facequads[0].texture_ref;
+                            (*(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)))
+                                ->facequads[0].texture_ref;
                     } else {
                         append_track_cache_object(
                             row_index,
-                            *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
+                            *(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)),
                             (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[0],
@@ -147,19 +167,20 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             1);
 
                         slots[cache_row][0].bod.object->group_texture_refs[0] =
-                            (*(Object**)((char*)owner_subgame + cell_offset +
-                                0x3bfaec))->facequads[0].texture_ref;
+                            (*(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)))
+                                ->facequads[0].texture_ref;
                     }
-                    *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08) &= ~0x4000;
+                    *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
+                        &= ~0x4000;
                 } else if (is_sub_loc_slide(
-                    (TrackRowCell*)((char*)owner_subgame + cell_offset + 0x3bfac8))
-                    && ((*(int*)((char*)owner_subgame + cell_offset + 0x3bfb08)
+                    (TrackRowCell*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
+                    && ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & 0x4000) == 0x4000)) {
-                    if ((*(int*)((char*)owner_subgame + cell_offset + 0x3bfb08)
+                    if ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & 0x40) == 0x40) {
                         append_track_cache_object(
                             row_index,
-                            *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
+                            *(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)),
                             (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[0],
@@ -172,12 +193,12 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             1);
 
                         slots[cache_row][0].bod.object->group_texture_refs[0] =
-                            (*(Object**)((char*)owner_subgame + cell_offset +
-                                0x3bfaec))->facequads[0].texture_ref;
+                            (*(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)))
+                                ->facequads[0].texture_ref;
                     } else {
                         append_track_cache_object(
                             row_index,
-                            *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
+                            *(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)),
                             (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[1],
@@ -190,17 +211,18 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             1);
 
                         slots[cache_row][1].bod.object->group_texture_refs[0] =
-                            (*(Object**)((char*)owner_subgame + cell_offset +
-                                0x3bfaec))->facequads[0].texture_ref;
+                            (*(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)))
+                                ->facequads[0].texture_ref;
                     }
-                    *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08) &= ~0x4000;
+                    *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
+                        &= ~0x4000;
                 } else if (is_sub_loc_ramp(
-                    (TrackRowCell*)((char*)owner_subgame + cell_offset + 0x3bfac8))
-                    && ((*(int*)((char*)owner_subgame + cell_offset + 0x3bfb08)
+                    (TrackRowCell*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
+                    && ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & 0x4000) == 0x4000)) {
                     append_track_cache_object(
                         row_index,
-                        *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
+                        *(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)),
                         (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                             + cell_offset),
                         (ObjectRenderVertex*)shared_vertex_buffers[3],
@@ -213,9 +235,10 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         0);
 
                     slots[cache_row][3].bod.object->group_texture_refs[0] =
-                        (*(Object**)((char*)owner_subgame + cell_offset +
-                            0x3bfaec))->facequads[0].texture_ref;
-                    *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08) &= ~0x4000;
+                        (*(Object**)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(object)))
+                            ->facequads[0].texture_ref;
+                    *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
+                        &= ~0x4000;
                 }
 
                 cell_offset += sizeof(TrackRowCell);
@@ -238,12 +261,14 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                     (*object_ref)->index_buffer->buffer->vtbl->Lock(
                         (*object_ref)->index_buffer->buffer,
                         0,
-                        max_vertices[5] << 1,
+                        max_vertices[MAX_INDEX_COUNT_LANE] << 1,
                         &locked_indices,
                         0);
 
-                    memcpy(locked_vertices, (void*)max_vertices[10], (*max_vertices * 3) << 3);
-                    memcpy(locked_indices, (void*)max_vertices[15], max_vertices[5] << 1);
+                    memcpy(locked_vertices, (void*)max_vertices[SHARED_VERTEX_BUFFER_LANE],
+                        (*max_vertices * 3) << 3);
+                    memcpy(locked_indices, (void*)max_vertices[SHARED_INDEX_BUFFER_LANE],
+                        max_vertices[MAX_INDEX_COUNT_LANE] << 1);
 
                     (*object_ref)->render_buffers->vertex_buffer->vtbl->Unlock(
                         (*object_ref)->render_buffers->vertex_buffer);
@@ -287,7 +312,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                 if (index_count > max_indices_seen)
                     max_indices_seen = index_count;
 
-                object_ref += 75;
+                object_ref += sizeof(slots[0]) / sizeof(*object_ref);
                 --cache_rows;
             } while (cache_rows != 0);
         }

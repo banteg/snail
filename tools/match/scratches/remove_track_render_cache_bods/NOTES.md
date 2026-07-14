@@ -109,3 +109,11 @@ The borrowed unlink target also uses the canonical `GameRoot* g_game` global
 instead of reconstructing the same root through a `char*` alias. These are
 ownership-only source improvements; focused output remains byte-identical at
 70.59%, 61/58 instructions, prefix 5/58, with all five operands clean.
+
+## 2026-07-14 intrusive-node offset closure
+
+The native cursor remains anchored at `BodNode::list_next`, which is required
+for its loop shape. Its backward reach to `list_flags` and to the containing
+node now derives from the shared `BodNode` member offsets instead of repeating
+`-8` and `-0xc`. Focused output is byte-identical at the honest 70.59%, 61/58
+baseline with all five operands clean.

@@ -147,3 +147,17 @@ exact cell constructor and full dependency sweep preserve this near-match at
 This removes stale per-use `Object*` casts without changing the ownership
 boundary: `ObjectList` owns the objects, while `SegmentCache` and `Fringe`
 retain typed handles and borrow texture references from their facequads.
+
+2026-07-14 runtime-cell and staging-lane closure: native keeps a byte-offset
+induction variable across the 3200-by-8 `SubLoc` slab. Directly changing that
+to a typed pointer perturbs register allocation across the function, so the
+native induction shape remains; its cell base, render object, lifecycle flags,
+and four fringe links now derive with `offsetof` from
+`SubgameRuntime::runtime_cells` and the shared `SubLoc` fields. The eight-lane
+row bound derives from the array extent.
+
+The flush cursor's adjacent index-count, vertex-buffer, and index-buffer lanes
+now derive from the `SegmentCache` field offsets, and its 75-pointer row step
+derives from `sizeof(slots[0])`. The readable ownership rewrite preserves the
+honest 99.79%, 475/475 result with all 20 operands clean; the sole residual is
+still the equivalent position-address SIB ordering.
