@@ -1,5 +1,28 @@
 # calc_path_length_z
 
+## 2026-07-14 Traverse vector-expression recovery
+
+The independent Android `cRPathFollowGolb::Traverse(float, tVector*,
+tVector*)` body and Windows native stack schedule close the ordinary-path
+source shape. The secondary sample bank is reloaded through its owning `Path`
+when the next matrix is copied instead of being hoisted across the whole
+branch. The lateral contribution is the shared `Vector3` expression
+`basis_right * local_x`, added to the anchored path base and copied as one
+result vector. Output pointers now begin inside the kind-specific branches,
+and the terminal side-exit mirror is the same aggregate `Vector3` transfer as
+the overflow exit.
+
+Together these changes restore the native 0xf4-byte frame and 32-instruction
+prefix, raise focused matching from 55.52% (400/425) to 71.82% (416/425), and
+keep all seven masked operands clean. The recovered `Path` and
+`TransformMatrix` calls also use their shared member surfaces directly.
+
+Measured rejected neighbors are kept out: retaining the hoisted secondary
+bank left a 0xf8 frame and reached only 55.62%; scalar ordinary output stores
+with the direct bank reload reached 61.56% but lost the native aggregate-copy
+shape; and rebuilding the terminal supertramp calculation from extra named
+vectors overgrew the candidate to 442 instructions and regressed to 57.21%.
+
 ## 2026-07-13 flight-transform ownership closure
 
 The three formerly separate basis scratch vectors and raw shot position are
@@ -37,15 +60,15 @@ Recovered semantics covered by this scratch:
 
 Residuals:
 
-- Current matcher result: 55.52% (`uv run snail match scratch
+- Current matcher result: 71.82% (`uv run snail match scratch
   tools/match/scratches/calc_path_length_z`).
 - The shared `golb.h` path-follow names were corrected while keeping
   `initialize_path_follow_golb` exact: this state stores the attachment
   template at `+0x04` and source cell at `+0x08`, not an independent Golb path
   bank/count pair.
-- Remaining diff is dominated by source-shape and stack layout, not missing
-  lanes: native reserves `0xf4` bytes while the scratch reserves `0xec`, and
-  native keeps more float staging locals for the scalar lerps and matrix copies.
+- Remaining diff is dominated by the terminal supertramp expression and
+  matrix/result register scheduling, not missing semantic lanes. The native
+  and candidate frames are now both `0xf4` bytes.
 - The overflow loop and normal advance block are semantically equivalent but
   laid out differently; native falls through into a shared advance head while
   the scratch lets VC6 place part of that path later in the function.

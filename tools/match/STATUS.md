@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.39%**.
+**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.47%**.
 
 ## Proof Grade (617)
 
@@ -747,7 +747,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
-| 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 400/425 | 55.52% | 0/425 | 7 ok |  |
+| 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 2 mismatch, 60 ok |  |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 629/648 | 56.54% | 0/648 | 1 mismatch, 39 ok |  |
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 231/227 | 73.36% | 1/227 | 29 ok |  |

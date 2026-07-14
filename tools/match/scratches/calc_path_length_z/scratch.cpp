@@ -1,13 +1,11 @@
 // calc_path_length_z @ 0x4217b0 (thiscall, ret 0xc)
-// cRPathFollow::CalcPathLengthZ(float, Vec3*, Vec3*): advance the Golb
+// cRPathFollowGolb::Traverse(float, Vec3*, Vec3*): advance the Golb
 // projectile path-follow state and return the mode consumed by update_golb_ai.
 #include "transform_matrix.h"
 #include "golb.h"
 #include "track_attachment_types.h"
 
 typedef Vector3 Vec3;
-
-void __fastcall set_matrix_identity(TransformMatrix* transform);
 
 int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, Vec3* velocity)
 {
@@ -114,11 +112,10 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     TransformMatrix to;
     Vec3* motion = velocity;
     Vec3* input_position = position;
-    Vec3* output = &output_position;
 
     if (current_template->kind == 42) {
         float local_x = input_position->x - center_x;
-        ((Path*)current_template)->compute_kind42_attachment_transform(
+        current_template->compute_kind42_attachment_transform(
             special_scalar,
             local_x,
             0.49000001f,
@@ -135,12 +132,12 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         transform.basis_right.y *= lateral_scale;
         transform.basis_right.z *= lateral_scale;
         vertical_offset = motion->y + vertical_offset;
+        Vec3* output = &output_position;
         output->x = transform.position.x;
         output->y = transform.position.y;
         output->z = z;
     } else {
-        AttachmentSample* secondary = current_template->secondary_samples;
-        AttachmentSample* sample = &secondary[sample_index];
+        AttachmentSample* sample = &current_template->secondary_samples[sample_index];
         Vec3* anchor = &source_cell->position;
         float base_x =
             advanced * sample->delta_dir_to_next.x * lateral_scale
@@ -156,10 +153,10 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
             + anchor->z;
 
         if (sample_index == terminal_index) {
-            set_matrix_identity(&transform);
+            transform.set_matrix_identity();
         } else {
             from = sample->transform;
-            to = secondary[sample_index + 1].transform;
+            to = current_template->secondary_samples[sample_index + 1].transform;
             from.position.z = 0.0f;
             from.position.y = 0.0f;
             from.position.x = 0.0f;
@@ -176,14 +173,13 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
         transform.basis_right.z *= lateral_scale;
         vertical_offset = motion->y + vertical_offset;
 
+        Vec3* output = &output_position;
         float local_x = input_position->x - center_x;
-        Vec3 result(
-            local_x * transform.basis_right.x + base_x,
-            transform.basis_right.y * local_x + base_y,
-            local_x * transform.basis_right.z + base_z);
-        output->x = result.x;
-        output->y = result.y;
-        output->z = result.z;
+        Vec3 result = transform.basis_right * local_x;
+        result.x += base_x;
+        result.y += base_y;
+        result.z += base_z;
+        *output = result;
     }
 
     Vec3* basis_right = &shot->flight_transform.basis_right;
@@ -213,9 +209,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     float exit_threshold = (float)exit_template->width_cells * 0.5f + 0.30000001f;
     if (abs_lateral > exit_threshold) {
         active = 0;
-        shot->flight_transform.position.x = output_position.x;
-        shot->flight_transform.position.y = output_position.y;
-        shot->flight_transform.position.z = output_position.z;
+        shot->flight_transform.position = output_position;
         return template_record->side_exit_mode == 0;
     }
 
