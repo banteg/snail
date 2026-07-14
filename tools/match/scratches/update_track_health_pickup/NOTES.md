@@ -130,3 +130,7 @@ Android spells both teardown paths as `cLinkedList<cRBod>::Remove`, followed by
 VC6 inline the body independently at the state-1 and state-2 callsites, exactly
 explaining the duplicated Windows error/unlink blocks without a synthetic
 saved `Sprite*`. Focused Windows matching is now exact at `128/128`.
+
+2026-07-14 root-list closure: both removal arms now borrow
+`GameRoot::active_bod_list` directly. The updater remains exact at 128/128
+with all 21 operands clean.

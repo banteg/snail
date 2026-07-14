@@ -1,11 +1,12 @@
 // update_track_speedup @ 0x43ee50 (thiscall, ret)
 
 #include "bod_list.h"
+#include "game_root.h"
 #include "player.h"
 #include "subgame_runtime.h"
 #include "track_speedup.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 
@@ -32,7 +33,7 @@ void SubSpeedUp::update_track_speedup()
 
 state_two:
     state = zero;
-    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
+    g_game->active_bod_list.remove_bod(this);
     sprite->kill_sprite();
     return;
 
@@ -42,6 +43,6 @@ state_one:
     }
 
     state = zero;
-    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
+    g_game->active_bod_list.remove_bod(this);
     sprite->kill_sprite();
 }

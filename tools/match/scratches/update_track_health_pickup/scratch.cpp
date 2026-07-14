@@ -1,11 +1,12 @@
 // update_track_health_pickup @ 0x43ecc0 (thiscall, ret)
 
+#include "game_root.h"
 #include "player.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "track_health_pickup.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 float sine(float radians);
@@ -33,14 +34,14 @@ void SubHealth::update_track_health_pickup()
 
 state_two:
     state = zero;
-    ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
+    g_game->active_bod_list.remove_bod(this);
     sprite->kill_sprite();
     return;
 
 state_one:
     if (world_position.z < owner->interaction_max_z) {
         state = zero;
-        ((BodList*)(g_game_base + 0x5a8))->remove_bod(this);
+        g_game->active_bod_list.remove_bod(this);
         sprite->kill_sprite();
         return;
     }

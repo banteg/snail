@@ -1,9 +1,10 @@
 // destroy_intro_screen @ 0x419920 (thiscall, ret)
 
+#include "game_root.h"
 #include "intro_screen_runtime.h"
 #include "runtime_config.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 
@@ -11,11 +12,11 @@ int Logo::destroy_intro_screen()
 {
     g_runtime_config.render_flags = saved_render_flags;
 
-    char* game = g_game_base;
-    if (*(unsigned char*)(game + 0x30d) == 1)
-        *(int*)(game + 0x1b8) = 20;
+    GameRoot* game = g_game;
+    if (game->players[0].high_score_entry_pending == 1)
+        game->players[0].frontend_state = 20;
     else
-        *(int*)(game + 0x1b8) = 3;
+        game->players[0].frontend_state = 3;
 
     int result = renderable_count;
     int index = 0;
@@ -24,7 +25,7 @@ int Logo::destroy_intro_screen()
         do {
             unsigned int* flags_ref = (unsigned int*)((char*)next_ref - 8);
             unsigned int flags = *flags_ref;
-            BodList* list = (BodList*)(g_game_base + 0x5a8);
+            BodList* list = &g_game->active_bod_list;
             BodNode* next;
             BodNode* prev;
             int updated;

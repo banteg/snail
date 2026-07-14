@@ -34,3 +34,9 @@ active-letter list teardown. Windows factors it into this exact 61/61 helper.
 Its count-shaped EAX value is retained in the Windows declaration because the
 mobile symbol does not encode return type; every known Windows caller discards
 it.
+
+2026-07-14 root-owner closure: root `+0x30d` is player 0's
+`high_score_entry_pending` latch and root `+0x1b8` is the same player's
+`frontend_state`. The crawl slots borrow `GameRoot::active_bod_list` for
+teardown. Naming all three owners preserves the exact 61/61 instructions and
+all seven operands.

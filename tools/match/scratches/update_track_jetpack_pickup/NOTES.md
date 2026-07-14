@@ -68,3 +68,7 @@ inline the body separately at both callsites and reproduces the Windows
 diagnostic, neighbor-patch, free-stack, and flag-clear blocks exactly. The
 synthetic state-one `Sprite*` snapshot is gone; focused matching is now exact
 at `127/127`.
+
+2026-07-14 root-list closure: both removal arms now borrow
+`GameRoot::active_bod_list` directly. Matching remains exact at 127/127 with
+all 20 operands clean.

@@ -52,3 +52,7 @@ instructions with all 15 masked operands clean.
 2026-07-12 shared-list consolidation: replacing both hand-expanded unlink
 bodies with the owned inline `BodList::remove_bod` keeps the function exact at
 `103/103`, proving the same abstraction across speedup, health, and JetPack AI.
+
+2026-07-14 root-list closure: both removal arms now borrow
+`GameRoot::active_bod_list` directly. Matching remains exact at 103/103 with
+all 15 operands clean.
