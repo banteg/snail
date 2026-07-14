@@ -453,3 +453,24 @@ normalized candidate listings (SHA-256
 Focused matching therefore remains exactly 29.27%, 1,208/1,245 instructions,
 60 clean operands, and the one documented glyph jump-table mismatch without
 using a typed-expression regression or any match-only forcing.
+
+## Authored/runtime row lanes (2026-07-14)
+
+The row-copy phase now derives both sides of its byte-shaped transfer:
+
+- the glyph grid, authored-row array, row stride, object id, local position,
+  object position/velocity, path index, ring speed, and segment angle come from
+  `SubSegment` and `AuthoredSegmentRow`;
+- the destination model transform/position/velocity come from
+  `SubRow::row_model` and its `RowModel`/`RenderableBod` bases;
+- parcel projection lanes come from `SubRow::projection_payload`; and
+- the installed attachment body's flags, position, render object, and color,
+  plus the row's heading, ring speed, source-segment link, and event id, all
+  derive from the complete `SubRow` owner.
+
+This deliberately does not replace the established row pointers with aggregate
+assignments: that spelling already has a measured codegen regression. Hashing
+the normalized listing before and after this lane derivation again yields
+`4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`,
+with focused metrics unchanged at 29.27%, 1,208/1,245 instructions, 60 clean
+operands, and only the documented glyph jump-table mismatch.

@@ -154,6 +154,77 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         PATH_36_PRIMARY_SAMPLES =
             PATH_PAIRS_BASE + 36 * sizeof(PathPair)
             + offsetof(PathPair, primary) + offsetof(Path, primary_samples),
+        SEGMENT_GLYPH_ROWS_BASE = offsetof(SubSegment, glyph_rows),
+        SEGMENT_GLYPH_ROW_STRIDE =
+            sizeof(((SubSegment*)0)->glyph_rows[0]),
+        SEGMENT_AUTHORED_ROWS_BASE = offsetof(SubSegment, rows),
+        SEGMENT_ANGLE_RADIANS = offsetof(SubSegment, angle_radians),
+        AUTHORED_ROW_PARCEL_SET_ID =
+            offsetof(AuthoredSegmentRow, parcel_set_id),
+        AUTHORED_ROW_LOCAL_X =
+            offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, x),
+        AUTHORED_ROW_LOCAL_Y =
+            offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, y),
+        AUTHORED_ROW_LOCAL_Z =
+            offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, z),
+        AUTHORED_ROW_OBJECT_ID = offsetof(AuthoredSegmentRow, object_id),
+        AUTHORED_ROW_OBJECT_POSITION_X =
+            offsetof(AuthoredSegmentRow, object_position) + offsetof(Vector3, x),
+        AUTHORED_ROW_OBJECT_POSITION_Y =
+            offsetof(AuthoredSegmentRow, object_position) + offsetof(Vector3, y),
+        AUTHORED_ROW_OBJECT_POSITION_Z =
+            offsetof(AuthoredSegmentRow, object_position) + offsetof(Vector3, z),
+        AUTHORED_ROW_OBJECT_VELOCITY_X =
+            offsetof(AuthoredSegmentRow, object_velocity) + offsetof(Vector3, x),
+        AUTHORED_ROW_OBJECT_VELOCITY_Y =
+            offsetof(AuthoredSegmentRow, object_velocity) + offsetof(Vector3, y),
+        AUTHORED_ROW_OBJECT_VELOCITY_Z =
+            offsetof(AuthoredSegmentRow, object_velocity) + offsetof(Vector3, z),
+        AUTHORED_ROW_PATH_TEMPLATE_INDEX =
+            offsetof(AuthoredSegmentRow, path_template_index),
+        AUTHORED_ROW_RING_SPEED = offsetof(AuthoredSegmentRow, ring_speed),
+        ROW_MODEL_TRANSFORM =
+            offsetof(SubRow, row_model) + offsetof(RenderableBod, transform),
+        ROW_MODEL_POSITION_X =
+            ROW_MODEL_TRANSFORM + offsetof(TransformMatrix, position)
+            + offsetof(Vector3, x),
+        ROW_MODEL_POSITION_Y =
+            ROW_MODEL_TRANSFORM + offsetof(TransformMatrix, position)
+            + offsetof(Vector3, y),
+        ROW_MODEL_POSITION_Z =
+            ROW_MODEL_TRANSFORM + offsetof(TransformMatrix, position)
+            + offsetof(Vector3, z),
+        ROW_MODEL_VELOCITY_X =
+            offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
+            + offsetof(Vector3, x),
+        ROW_MODEL_VELOCITY_Y =
+            offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
+            + offsetof(Vector3, y),
+        ROW_MODEL_VELOCITY_Z =
+            offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
+            + offsetof(Vector3, z),
+        ROW_PROJECTION_X =
+            offsetof(SubRow, projection_payload) + offsetof(Vector3, x),
+        ROW_PROJECTION_Y =
+            offsetof(SubRow, projection_payload) + offsetof(Vector3, y),
+        ROW_PROJECTION_Z =
+            offsetof(SubRow, projection_payload) + offsetof(Vector3, z),
+        ROW_ATTACHMENT_LIST_FLAGS =
+            offsetof(SubRow, attachment_body)
+            + offsetof(ContactTargetObject, list_flags),
+        ROW_ATTACHMENT_POSITION_X =
+            offsetof(SubRow, attachment_body) + offsetof(BodBase, position)
+            + offsetof(Vector3, x),
+        ROW_ATTACHMENT_POSITION_Y =
+            offsetof(SubRow, attachment_body) + offsetof(BodBase, position)
+            + offsetof(Vector3, y),
+        ROW_ATTACHMENT_POSITION_Z =
+            offsetof(SubRow, attachment_body) + offsetof(BodBase, position)
+            + offsetof(Vector3, z),
+        ROW_ATTACHMENT_OBJECT =
+            offsetof(SubRow, attachment_body) + offsetof(BodBase, object),
+        ROW_ATTACHMENT_COLOR =
+            offsetof(SubRow, attachment_body) + offsetof(BodBase, color),
         ROW_CURSOR_BASE =
             offsetof(SubRow, projection_payload) + offsetof(Vector3, y),
         ROW_CURSOR_TO_FLAGS =
@@ -339,51 +410,64 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         if (base[TRACK_MIRROR_FLAG_OFFSET])
             *(int*)row_record |= 0x20;
 
-        int authored_flags = *(int*)(active_segment + 0x814 + 0x38 * segment_row);
+        int authored_flags = *(int*)(
+            active_segment + SEGMENT_AUTHORED_ROWS_BASE
+            + sizeof(AuthoredSegmentRow) * segment_row);
         if ((authored_flags & 0x100) != 0)
             *(int*)row_record |= 0x100;
         if ((authored_flags & 0x8000) != 0)
             *(int*)row_record |= 0x8000;
 
-        *(char**)(row_record + 0xec) = active_segment;
-        *(int*)(row_record + 0xf0) = row_event_owner;
+        *(char**)(row_record + offsetof(SubRow, source_segment)) = active_segment;
+        *(int*)(row_record + offsetof(SubRow, row_event_id)) = row_event_owner;
 
-        char* authored_row = active_segment + 0x814 + 0x38 * segment_row;
+        char* authored_row = active_segment + SEGMENT_AUTHORED_ROWS_BASE
+            + sizeof(AuthoredSegmentRow) * segment_row;
         if ((authored_flags & 0x2) != 0) {
             *(int*)row_record |= 0x2;
-            int object_id = *(int*)(authored_row + 0x14);
+            int object_id = *(int*)(authored_row + AUTHORED_ROW_OBJECT_ID);
             void* object = ((GameRoot*)g_game_base)
                 ->directx_loader.cached_x_mesh_slots[object_id].object;
             ((SubRow*)row_record)->row_model.set_bod_object(object);
-            set_matrix_identity(row_record + 0x3c);
-            *(int*)(row_record + 0x6c) = *(int*)(authored_row + 0x18);
-            *(int*)(row_record + 0x70) = *(int*)(authored_row + 0x1c);
-            *(int*)(row_record + 0x74) = *(int*)(authored_row + 0x20);
-            *(float*)(row_record + 0x74) += (float)build_row;
+            set_matrix_identity(row_record + ROW_MODEL_TRANSFORM);
+            *(int*)(row_record + ROW_MODEL_POSITION_X) =
+                *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_X);
+            *(int*)(row_record + ROW_MODEL_POSITION_Y) =
+                *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_Y);
+            *(int*)(row_record + ROW_MODEL_POSITION_Z) =
+                *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_Z);
+            *(float*)(row_record + ROW_MODEL_POSITION_Z) += (float)build_row;
 
             if ((authored_flags & 0x8) != 0) {
                 *(int*)row_record |= 0x8;
-                *(int*)(row_record + 0x84) = *(int*)(authored_row + 0x24);
-                *(int*)(row_record + 0x88) = *(int*)(authored_row + 0x28);
-                *(int*)(row_record + 0x8c) = *(int*)(authored_row + 0x2c);
+                *(int*)(row_record + ROW_MODEL_VELOCITY_X) =
+                    *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_X);
+                *(int*)(row_record + ROW_MODEL_VELOCITY_Y) =
+                    *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_Y);
+                *(int*)(row_record + ROW_MODEL_VELOCITY_Z) =
+                    *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_Z);
             } else {
-                *(int*)(row_record + 0x84) = 0;
-                *(int*)(row_record + 0x88) = 0;
-                *(int*)(row_record + 0x8c) = 0;
+                *(int*)(row_record + ROW_MODEL_VELOCITY_X) = 0;
+                *(int*)(row_record + ROW_MODEL_VELOCITY_Y) = 0;
+                *(int*)(row_record + ROW_MODEL_VELOCITY_Z) = 0;
             }
         }
 
         if ((authored_flags & 0x1) != 0) {
             *(int*)row_record |= 0x4001;
-            ((SubRow*)row_record)->parcel_set_id = *(int*)(authored_row + 4);
-            *(int*)(row_record + 0x90) = *(int*)(authored_row + 8);
-            *(int*)(row_record + 0x94) = *(int*)(authored_row + 12);
-            *(int*)(row_record + 0x98) = *(int*)(authored_row + 16);
+            ((SubRow*)row_record)->parcel_set_id =
+                *(int*)(authored_row + AUTHORED_ROW_PARCEL_SET_ID);
+            *(int*)(row_record + ROW_PROJECTION_X) =
+                *(int*)(authored_row + AUTHORED_ROW_LOCAL_X);
+            *(int*)(row_record + ROW_PROJECTION_Y) =
+                *(int*)(authored_row + AUTHORED_ROW_LOCAL_Y);
+            *(int*)(row_record + ROW_PROJECTION_Z) =
+                *(int*)(authored_row + AUTHORED_ROW_LOCAL_Z);
         }
         if ((authored_flags & 0x8) != 0) {
             *(int*)row_record |= 0x8;
             ((SubRow*)row_record)->attachment_template_index =
-                *(int*)(authored_row + 0x30);
+                *(int*)(authored_row + AUTHORED_ROW_PATH_TEMPLATE_INDEX);
         }
         if ((authored_flags & 0x4) != 0)
             *(int*)row_record |= 0x4;
@@ -397,7 +481,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)row_record |= 0x800;
         if ((authored_flags & 0x1000) != 0)
             *(int*)row_record |= 0x1000;
-        *(int*)(row_record + 0xe8) = *(int*)(authored_row + 0x34);
+        *(int*)(row_record + offsetof(SubRow, ring_speed)) =
+            *(int*)(authored_row + AUTHORED_ROW_RING_SPEED);
 
         char attachment_entry_installed = 0;
         for (int lane = 0; lane < 8; ++lane) {
@@ -431,7 +516,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             // keep the raw cursor so the large VC6 switch retains its shape.
             ((BodBase*)(cell + 0x3bfac8))->set_bod_object(0);
 
-            char* glyph_ptr = active_segment + (authored_lane << 8) + lane + 0x14;
+            char* glyph_ptr = active_segment
+                + authored_lane * SEGMENT_GLYPH_ROW_STRIDE + lane
+                + SEGMENT_GLYPH_ROWS_BASE;
             char glyph = *glyph_ptr;
             char normalized =
                 normalize_segment_glyph_for_track_flags(glyph, build_row, edge_row);
@@ -498,11 +585,13 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 if (level_mode == 1) {
                     *(int*)row_record = (*(int*)row_record & 0xffffbfff) | 1;
                     ((SubRow*)row_record)->parcel_set_id = 0;
-                    *(float*)(row_record + 0x90) = (float)lane - 3.5f;
-                    *(int*)(row_record + 0x94) = *(int*)(cell + 0x3bfadc);
-                    *(float*)(row_record + 0x98) = (float)build_row + 0.5f;
+                    *(float*)(row_record + ROW_PROJECTION_X) = (float)lane - 3.5f;
+                    *(int*)(row_record + ROW_PROJECTION_Y) =
+                        *(int*)(cell + 0x3bfadc);
+                    *(float*)(row_record + ROW_PROJECTION_Z) =
+                        (float)build_row + 0.5f;
                     if (base[TRACK_MIRROR_FLAG_OFFSET])
-                        *(float*)(row_record + 0x90) *= -1.0f;
+                        *(float*)(row_record + ROW_PROJECTION_X) *= -1.0f;
                 }
             case '1':
             case '2':
@@ -608,8 +697,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     *(int*)(cell + 0x3bfacc) |= 0x20;
                     ((SubRow*)row_record)->attachment_body.set_bod_object(
                         template_record->fringe_mesh_bod.object);
-                    *(int*)(row_record + 0xb4) |= 0x20;
-                    *(int*)(row_record + 0xac) = *(int*)(active_segment + 0x4014);
+                    *(int*)(row_record + ROW_ATTACHMENT_LIST_FLAGS) |= 0x20;
+                    *(int*)(row_record + offsetof(SubRow, installed_heading_delta)) =
+                        *(int*)(active_segment + SEGMENT_ANGLE_RADIANS);
 
                     SubRow* stamped_row = (SubRow*)row_record;
                     int span_index = 0;
@@ -697,9 +787,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)(cell + 0x3bfae0) = 0;
             *(int*)(cell + 0x3bfadc) = 0;
             *(int*)(cell + 0x3bfad8) = 0;
-            *(int*)(row_record + 0xc8) = 0;
-            *(int*)(row_record + 0xc4) = 0;
-            *(int*)(row_record + 0xc0) = 0;
+            *(int*)(row_record + ROW_ATTACHMENT_POSITION_Z) = 0;
+            *(int*)(row_record + ROW_ATTACHMENT_POSITION_Y) = 0;
+            *(int*)(row_record + ROW_ATTACHMENT_POSITION_X) = 0;
 
             unsigned char tile = *(unsigned char*)(cell + 0x3bfb04);
             float row_anchor_z;
@@ -708,17 +798,20 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfad8) = 0;
                 *(float*)(cell + 0x3bfae0) = row_anchor_z - 0.5f;
                 if ((g_runtime_config.render_flags & 0x20) != 0) {
-                    *(int*)(row_record + 0xc0) = 0;
-                    *(float*)(row_record + 0xc8) = row_anchor_z - 0.5f;
+                    *(int*)(row_record + ROW_ATTACHMENT_POSITION_X) = 0;
+                    *(float*)(row_record + ROW_ATTACHMENT_POSITION_Z) =
+                        row_anchor_z - 0.5f;
 
                     Color4f skirt_color;
                     Color4f* resolved_color =
                         ((GameRoot*)g_game_base)->subgame.get_track_skirt_color(
                             &skirt_color);
-                    *(Color4f*)(row_record + 0xd8) = *resolved_color;
-                    set_object_color(*(void**)(row_record + 0xd4), *resolved_color);
+                    *(Color4f*)(row_record + ROW_ATTACHMENT_COLOR) = *resolved_color;
+                    set_object_color(
+                        *(void**)(row_record + ROW_ATTACHMENT_OBJECT),
+                        *resolved_color);
                 } else {
-                    *(int*)(row_record + 0xb4) &= 0xffffffdf;
+                    *(int*)(row_record + ROW_ATTACHMENT_LIST_FLAGS) &= 0xffffffdf;
                 }
             } else {
                 *(float*)(cell + 0x3bfad8) = (float)lane - 4.0f + 0.5f;
