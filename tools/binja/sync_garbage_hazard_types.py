@@ -102,7 +102,7 @@ GARBAGE_HAZARD_SLOT_FIELD_UPDATES = (
     ("0x80", "next_active", "GarbageHazardSlot*"),
     ("0x84", "state", "int32_t"),
     ("0x88", "collision_side", "int32_t"),
-    ("0x8c", "game", "SubgameRuntime*"),
+    ("0x8c", "owner_game", "SubgameRuntime*"),
     ("0x90", "velocity", "Vec3"),
     ("0x9c", "radius", "float"),
     ("0xa0", "attachment_facing_angle", "float"),
@@ -113,7 +113,7 @@ GARBAGE_HAZARD_SLOT_FIELD_UPDATES = (
     ("0xb4", "sprite", "Sprite*"),
     ("0xb8", "source_cell", "TrackRowCell*"),
     ("0xbc", "hidden", "uint8_t"),
-    ("0xc0", "player", "Player*"),
+    ("0xc0", "owner_player", "Player*"),
 )
 
 GARBAGE_HAZARD_POOL_FIELD_UPDATES = (
@@ -164,7 +164,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_garbage_hazard",
-        "GarbageHazardSlot* __thiscall update_garbage_hazard(GarbageHazardSlot* slot)",
+        "void __thiscall update_garbage_hazard(GarbageHazardSlot* slot)",
     ),
     (
         "destroy_garbage_hazard",
@@ -172,11 +172,11 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_garbage_smoke_particle",
-        "void __thiscall spawn_garbage_smoke_particle(GarbageHazardSlot* slot, Vec3* position, Vec3* velocity, Player* player)",
+        "void __thiscall spawn_garbage_smoke_particle(GarbageHazardSlot* slot, Vec3* position, Vec3* velocity, Player* owner_player)",
     ),
     (
         "spawn_track_garbage_hazard",
-        "Vec3* __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
     ),
 )
 

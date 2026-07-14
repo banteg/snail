@@ -562,7 +562,8 @@
       "windows_name": "spawn_track_garbage_hazard",
       "ios_symbol": "cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The sole direct Windows call overwrites EAX immediately, and the exact void reconstruction preserves all 143 instructions. Android leaves unrelated sprite or warning results in r0 on its success and exhaustion paths, confirming those values are incidental rather than a stable return contract."
     },
     {
       "address": "0x43dc80",
@@ -596,7 +597,7 @@
       "android_symbol": "cRSubGarbage::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The exact Windows constructor table at 0x497328 points directly to this callback; both mobile ports retain the authored class and AI member."
+      "notes": "The exact Windows constructor table at 0x497328 points directly to this slot-zero callback, which the active-BOD dispatcher invokes through a virtual void method. Both mobile ports retain the authored cRSubGarbage::AI member."
     },
     {
       "address": "0x4404c0",

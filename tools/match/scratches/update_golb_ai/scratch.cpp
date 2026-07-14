@@ -207,7 +207,7 @@ void GolbShot::update_golb_ai()
             && bounds_player->transform.position.z + 46.0f >= flight_transform.position.z) {
             SubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
-                if (garbage->state == 1) {
+                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
                     probe.x = garbage->transform.position.x - new_output->x;
                     probe.y = garbage->transform.position.y - new_output->y;
                     probe.z = garbage->transform.position.z - new_output->z;
@@ -216,8 +216,10 @@ void GolbShot::update_golb_ai()
                         dz = -dz;
                     if (dz < 3.0f
                         && normalize_vector(&probe) < garbage->radius + 0.49000001f) {
-                        garbage->state = 2;
-                        garbage->collision_side = probe.x >= 0.0f ? 1 : 2;
+                        garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
+                        garbage->collision_side = probe.x >= 0.0f
+                            ? SUB_GARBAGE_COLLISION_SIDE_RIGHT
+                            : SUB_GARBAGE_COLLISION_SIDE_LEFT;
                         player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         if (kind != 1)
                             goto garbage_hit;
@@ -294,16 +296,16 @@ garbage_hit:
                 for (SubGarbage* splash = game->garbage_hazards.active_head;
                     splash;
                     splash = splash->next_active) {
-                    if (splash->state == 1) {
+                    if (splash->state == SUB_GARBAGE_STATE_ACTIVE) {
                         probe.x = splash->transform.position.x - new_output->x;
                         probe.y = splash->transform.position.y - new_output->y;
                         probe.z = splash->transform.position.z - new_output->z;
                         if (normalize_vector(&probe) < 3.0f) {
-                            splash->state = 2;
+                            splash->state = SUB_GARBAGE_STATE_BURST_PENDING;
                             if (probe.x >= 0.0f)
-                                splash->collision_side = 1;
+                                splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                             else
-                                splash->collision_side = 2;
+                                splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                             player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                         }
                     }

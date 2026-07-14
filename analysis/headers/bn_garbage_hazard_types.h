@@ -89,6 +89,22 @@ typedef struct SpriteManager {
 } SpriteManager;
 
 typedef struct GarbageHazardSlot GarbageHazardSlot;
+enum SubGarbageState {
+    SUB_GARBAGE_STATE_INACTIVE = 0,
+    SUB_GARBAGE_STATE_ACTIVE = 1,
+    SUB_GARBAGE_STATE_BURST_PENDING = 2,
+    SUB_GARBAGE_STATE_BURST = 3,
+};
+
+enum SubGarbageCollisionSide {
+    SUB_GARBAGE_COLLISION_SIDE_RIGHT = 1,
+    SUB_GARBAGE_COLLISION_SIDE_LEFT = 2,
+};
+
+enum {
+    SUB_GARBAGE_SLOT_CAPACITY = 50,
+};
+
 struct GarbageHazardSlot {
     void* vtable;
     uint32_t list_flags;
@@ -111,7 +127,7 @@ struct GarbageHazardSlot {
     GarbageHazardSlot* next_active;
     int32_t state;
     int32_t collision_side;
-    SubgameRuntime* game;
+    SubgameRuntime* owner_game;
     Vec3 velocity;
     float radius;
     float attachment_facing_angle;
@@ -123,12 +139,12 @@ struct GarbageHazardSlot {
     struct TrackRowCell* source_cell;
     uint8_t hidden;
     uint8_t unknown_bd[0x3];
-    struct Player* player;
+    struct Player* owner_player;
 };
 
 typedef struct GarbageHazardPool {
     GarbageHazardSlot* active_head;
-    GarbageHazardSlot slots[50];
+    GarbageHazardSlot slots[SUB_GARBAGE_SLOT_CAPACITY];
 } GarbageHazardPool;
 
 void __thiscall initialize_sprite_manager(SpriteManager* manager);
@@ -147,14 +163,14 @@ uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t pau
 struct TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id);
 
 GarbageHazardSlot* __thiscall initialize_garbage_hazard(GarbageHazardSlot* slot);
-GarbageHazardSlot* __thiscall update_garbage_hazard(GarbageHazardSlot* slot);
+void __thiscall update_garbage_hazard(GarbageHazardSlot* slot);
 GarbageHazardSlot* __thiscall destroy_garbage_hazard(GarbageHazardSlot* slot);
 void __thiscall spawn_garbage_smoke_particle(
     GarbageHazardSlot* slot,
     Vec3* position,
     Vec3* velocity,
-    struct Player* player);
-Vec3* __thiscall spawn_track_garbage_hazard(
+    struct Player* owner_player);
+void __thiscall spawn_track_garbage_hazard(
     SubgameRuntime* game,
     struct TrackRowCell* cell,
     struct Player* player);

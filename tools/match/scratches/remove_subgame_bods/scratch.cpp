@@ -90,7 +90,8 @@ void SubgameRuntime::remove_subgame_bods()
         sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
         if ((BOD_NEXT_LINK_FLAGS(garbage_next) & 0x200) != 0) {
-            ((SubGarbage*)BOD_NODE_FROM_NEXT_LINK(garbage_next))->state = 0;
+            ((SubGarbage*)BOD_NODE_FROM_NEXT_LINK(garbage_next))->state =
+                SUB_GARBAGE_STATE_INACTIVE;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(garbage_next);
         }
         garbage_next = (BodNode**)((char*)garbage_next + sizeof(SubGarbage));

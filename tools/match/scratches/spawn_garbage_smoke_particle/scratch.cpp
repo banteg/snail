@@ -9,20 +9,20 @@
 void SubGarbage::spawn_garbage_smoke_particle(
     Vector3* position,
     Vector3* velocity,
-    Player* player)
+    Player* owner_player)
 {
     char result = (char)g_runtime_config.render_flags;
     if ((result & 0x10) != 0) {
         Sprite* sprite = g_sprite_manager.allocate_sprite(
-            player->player_slot,
+            owner_player->player_slot,
             33,
             -1,
             -1);
         sprite->progress = 0.0f;
         sprite->flags |= 0x800;
-        sprite->progress_step = game->subgame_rate * 0.033333335f;
+        sprite->progress_step = owner_game->subgame_rate * 0.033333335f;
         sprite->lifetime = 0.0f;
-        sprite->lifetime_step = game->subgame_rate * 0.41666669f;
+        sprite->lifetime_step = owner_game->subgame_rate * 0.41666669f;
 
         Color4f color;
         sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);

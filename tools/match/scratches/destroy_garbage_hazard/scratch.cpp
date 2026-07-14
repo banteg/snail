@@ -12,7 +12,7 @@ int report_errorf(char* format, ...);
 
 SubGarbage* SubGarbage::destroy_garbage_hazard()
 {
-    state = 0;
+    state = SUB_GARBAGE_STATE_INACTIVE;
 
     BodList* anchor = &((GameRoot*)g_game_base)->active_bod_list;
     int flags = list_flags;
@@ -43,21 +43,22 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
 
     sprite->kill_sprite();
 
-    SubGarbage* result = game->garbage_hazards.active_head;
-    if (result == this) {
-        result = next_active;
-        game->garbage_hazards.active_head = result;
-        return result;
-    } else if (result) {
+    SubGarbage* cursor = owner_game->garbage_hazards.active_head;
+    if (cursor == this) {
+        cursor = next_active;
+        owner_game->garbage_hazards.active_head = cursor;
+        return cursor;
+    } else if (cursor) {
         while (1) {
-            if (result->next_active == this)
+            if (cursor->next_active == this)
                 break;
-            result = result->next_active;
-            if (!result)
-                return result;
+            cursor = cursor->next_active;
+            if (cursor)
+                continue;
+            return cursor;
         }
-        result->next_active = next_active;
+        cursor->next_active = next_active;
         next_active = 0;
     }
-    return result;
+    return cursor;
 }

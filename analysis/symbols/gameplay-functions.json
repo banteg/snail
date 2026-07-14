@@ -2397,7 +2397,7 @@
     {
       "address": "0x43da80",
       "name": "spawn_track_garbage_hazard",
-      "description": "Exact allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records after the pool's borrowed active-chain head; cross-port Android and iOS symbols identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records after the pool's borrowed active-chain head; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43dc80",
@@ -2452,7 +2452,7 @@
     {
       "address": "0x43f200",
       "name": "update_garbage_hazard",
-      "description": "Advances one live `SubGarbage` through its hover, impact-burst, bounce, smoke, and teardown states. The exact Windows constructor table at 0x497328 points directly here, while Android and iOS retain the authored member as `cRSubGarbage::AI()`."
+      "description": "Void `cRSubGarbage::AI()` callback advancing one owned pool slot through inactive, active, burst-pending, and burst states before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member."
     },
     {
       "address": "0x43f520",

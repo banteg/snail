@@ -9,36 +9,38 @@
 double random_signed_float_below(float upper_bound, const char* tag);
 double random_float_below(float upper_bound, const char* tag);
 
-SubGarbage* SubGarbage::update_garbage_hazard()
+void SubGarbage::update_garbage_hazard()
 {
-    SubgameRuntime* pause_game = game;
-    SubGarbage* result = (SubGarbage*)pause_game;
+    SubgameRuntime* pause_game = owner_game;
     if (!pause_game->subgame_pause_gate) {
-        result = (SubGarbage*)state;
-        switch ((unsigned int)result) {
-        case 0:
+        int current_state = state;
+        switch ((unsigned int)current_state) {
+        case SUB_GARBAGE_STATE_INACTIVE:
             goto function_return;
 
-        case 1: {
+        case SUB_GARBAGE_STATE_ACTIVE: {
             Vector3* position = &transform.position;
             Vector3* visual_position = &sprite->position;
             *visual_position = *position;
 
-            Player* owner = player;
+            Player* owner = owner_player;
             if (transform.position.z < owner->interaction_max_z)
-                return destroy_garbage_hazard();
+            {
+                destroy_garbage_hazard();
+                return;
+            }
 
             if (owner->nuke_effect_progress > 0.0f) {
                 float x = position->x;
-                state = 2;
+                state = SUB_GARBAGE_STATE_BURST_PENDING;
                 if (x > 0.0f)
-                    collision_side = 1;
+                    collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                 else
-                    collision_side = 2;
+                    collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                 owner->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
             }
 
-            game->enemy_manager.append_subgame_contact_target(
+            owner_game->enemy_manager.append_subgame_contact_target(
                 &transform.position,
                 radius,
                 0,
@@ -46,13 +48,13 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             break;
         }
 
-        case 2: {
-            state = 3;
+        case SUB_GARBAGE_STATE_BURST_PENDING: {
+            state = SUB_GARBAGE_STATE_BURST;
             Vector3 random_velocity;
             random_velocity.x = (float)random_signed_float_below(0.1f, "GDI");
             random_velocity.y = (float)random_float_below(0.2f, 0) + 0.1f;
             double random_z = random_float_below(0.30000001f, 0);
-            SubgameRuntime* rate_game = game;
+            SubgameRuntime* rate_game = owner_game;
             Vector3* burst_velocity = &velocity;
             float rate = rate_game->subgame_rate;
             Vector3 staged_velocity;
@@ -64,12 +66,12 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             *burst_velocity = staged_velocity;
 
             int side = collision_side;
-            if (side == 1) {
+            if (side == SUB_GARBAGE_COLLISION_SIDE_RIGHT) {
                 double adjusted_x = burst_velocity->x < 0.0f
                     ? -(double)burst_velocity->x
                     : (double)burst_velocity->x;
                 burst_velocity->x = (float)adjusted_x;
-            } else if (side == 2) {
+            } else if (side == SUB_GARBAGE_COLLISION_SIDE_LEFT) {
                 burst_velocity->x = -(burst_velocity->x < 0.0f
                     ? -burst_velocity->x
                     : burst_velocity->x);
@@ -94,7 +96,7 @@ SubGarbage* SubGarbage::update_garbage_hazard()
         }
             // fall through
 
-        case 3: {
+        case SUB_GARBAGE_STATE_BURST: {
             Vector3* position = &transform.position;
             Vector3* movement = &velocity;
             float next_x = movement->x + position->x;
@@ -104,17 +106,19 @@ SubGarbage* SubGarbage::update_garbage_hazard()
 
             sprite->position = *position;
 
-            SubgameRuntime* owner_game = game;
-            float gravity_step = owner_game->subgame_rate
-                * owner_game->subgame_rate
+            SubgameRuntime* gravity_game = owner_game;
+            float gravity_step = gravity_game->subgame_rate
+                * gravity_game->subgame_rate
                 * -0.0099999998f;
             velocity.y = gravity_step + velocity.y;
 
             if (transform.position.y < -10.0f
-                || transform.position.z < player->interaction_max_z)
-                return destroy_garbage_hazard();
+                || transform.position.z < owner_player->interaction_max_z) {
+                destroy_garbage_hazard();
+                return;
+            }
 
-            Player* owner = player;
+            Player* owner = owner_player;
             float next_smoke_timer = smoke_timer_step + smoke_timer;
             smoke_timer = next_smoke_timer;
             if (next_smoke_timer > 1.0f) {
@@ -128,12 +132,13 @@ SubGarbage* SubGarbage::update_garbage_hazard()
             break;
         }
 
-        sprite->facing_angle = player->heading_roll + attachment_facing_angle;
-        Player* roll_result = player;
+        sprite->facing_angle =
+            owner_player->heading_roll + attachment_facing_angle;
+        Player* roll_result = owner_player;
         if (roll_result->follow_state.active == 1)
             sprite->facing_angle = roll_result->follow_state.orientation_b + sprite->facing_angle;
-        return (SubGarbage*)roll_result;
+        return;
     }
 function_return:
-    return result;
+    return;
 }

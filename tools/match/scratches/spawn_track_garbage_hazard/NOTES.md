@@ -237,3 +237,13 @@ similarly produces 144 instructions and 76.66%. Both probes were reverted.
 The retained mixed form is still byte-identical at 143/143 instructions with
 all 16 operands clean, while every field outside that optimizer-sensitive
 three-word splice now belongs to `SubGarbage` directly.
+
+## 2026-07-14 void allocator contract
+
+The sole direct Windows call at `0x43949f` overwrites EAX with the next tile id
+immediately after `AddGarbage`. Android leaves a sprite pointer on success but
+the unrelated warning result on pool exhaustion, so neither port exposes a
+stable return value. Modeling `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`
+as `void` keeps the Windows body byte-identical at 143/143 instructions with
+all 16 operands clean. The owned 50-slot capacity and active/inactive state
+roles now come from the shared `SubGarbagePool` contract.

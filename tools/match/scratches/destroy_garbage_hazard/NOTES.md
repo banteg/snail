@@ -57,3 +57,13 @@ base-plus-displacement loads and remains exact at 62/62 instructions with all
 six masked operands clean. Together with the root-list cleanup, the destroyer
 now distinguishes both owners explicitly: `GameRoot` owns BOD membership and
 `SubgameRuntime::SubGarbagePool` owns garbage-chain membership.
+
+## 2026-07-14 backlink and teardown-state naming
+
+The teardown now follows `owner_game` to the pool and clears the explicit
+inactive state while remaining exact at 62/62 instructions with all six
+operands clean. A `void` spelling was tested because the sole Windows caller
+does not consume EAX, but it changed the final assign-then-test loop to 61
+instructions. Unlike the slot-zero AI callback, no independent ABI evidence
+proves `Kill()` void, so the exact pointer-returning contract is retained
+rather than forcing an ownership claim from an unused register.

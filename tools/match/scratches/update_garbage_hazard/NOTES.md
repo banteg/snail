@@ -262,3 +262,19 @@ and Android retains the equivalent additions in both authored classes. The old
 `sprite_y_offset` label described neither its producer nor its consumer.
 Focused matching remains codegen-neutral at 93.55%, 217/217 instructions,
 13/217 prefix, and 22 clean masked operands.
+
+## 2026-07-14 void callback and lifecycle roles
+
+The constructor-installed entry at `0x497328` is slot zero of the active-BOD
+dispatch surface, whose call site invokes `virtual void update_active_bod()`
+and discards EAX. Android and iOS independently retain the authored
+`cRSubGarbage::AI()` name. The scratch therefore no longer exports its former
+incidental `SubGarbage*` accumulator as a method result.
+
+That ABI correction also recovers the native register lifetimes in the active
+state: focused matching rises from 93.55% (13/217 prefix) to 98.62% (90/217
+prefix), still 217/217 instructions with all 22 masked operands clean. Only the
+commutative z-scale `fxch` and the equivalent positive side-bias store schedule
+remain. The shared type now names the borrowed `owner_game` and `owner_player`
+backlinks and records the inactive, active, burst-pending, and burst states;
+the unexplained `+0xa4` word remains deliberately unnamed.

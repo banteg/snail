@@ -28,8 +28,8 @@ void SubgameRuntime::reset_subgame()
     int garbage_count =
         sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
-        garbage->state = 0;
-        garbage->game = this;
+        garbage->state = SUB_GARBAGE_STATE_INACTIVE;
+        garbage->owner_game = this;
         garbage->next_active = 0;
         ++garbage;
         --garbage_count;

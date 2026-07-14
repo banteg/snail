@@ -14,7 +14,6 @@
 typedef unsigned int DWORD;
 
 enum {
-    GARBAGE_SLOT_COUNT = 50,
     GARBAGE_SLOT_WORD_STRIDE = 49,
     GARBAGE_POOL_ACTIVE_HEAD_WORD = 877648,
     GARBAGE_SLOT_BASE_WORD = 877649,
@@ -28,19 +27,20 @@ int next_math_random_value();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);
 
-DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
+void SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;
     SubGarbage* scan = garbage_hazards.slots;
     while (1) {
-        if (scan->state == 0)
+        if (scan->state == SUB_GARBAGE_STATE_INACTIVE)
             break;
         ++slot_index;
         ++scan;
-        if (slot_index < GARBAGE_SLOT_COUNT)
+        if (slot_index < SUB_GARBAGE_SLOT_CAPACITY)
             continue;
-        return (DWORD*)report_warningf("Run Out of Garbage Slots");
+        report_warningf("Run Out of Garbage Slots");
+        return;
     }
 
     float* slot_base_words =
@@ -49,10 +49,10 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     DWORD* slot = (DWORD*)(slot_base_words + GARBAGE_SLOT_BASE_WORD);
     self_words[GARBAGE_POOL_ACTIVE_HEAD_WORD] = (DWORD)slot;
 
-    garbage_hazards.slots[slot_index].player = player;
+    garbage_hazards.slots[slot_index].owner_player = player;
     float* radius = &garbage_hazards.slots[slot_index].radius;
     *radius = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
-    garbage_hazards.slots[slot_index].state = 1;
+    garbage_hazards.slots[slot_index].state = SUB_GARBAGE_STATE_ACTIVE;
     garbage_hazards.slots[slot_index].transform.set_matrix_identity();
 
     Vector3 staged_position;
@@ -88,7 +88,7 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     }
 
     Sprite* sprite = g_sprite_manager.allocate_sprite(
-        garbage_hazards.slots[slot_index].player->player_slot,
+        garbage_hazards.slots[slot_index].owner_player->player_slot,
         114 - (int)((float)next_math_random_value() * -0.00012207031f),
         -1,
         -1);
@@ -108,5 +108,4 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     SubGarbage* slot_view = &garbage_hazards.slots[slot_index];
     slot_view->source_cell = cell;
     slot_view->hidden = 0;
-    return result;
 }

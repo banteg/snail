@@ -118,7 +118,7 @@ void Player::handle_subgoldy_collisions()
         for (SubGarbage* garbage = game->garbage_hazards.active_head;
              garbage;
              garbage = garbage->next_active) {
-            if (garbage->state == 1) {
+            if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
                 delta.x = garbage->transform.position.x - cached_camera_target_world.x;
                 delta.y = garbage->transform.position.y - cached_camera_target_world.y;
                 delta.z = garbage->transform.position.z - cached_camera_target_world.z;
@@ -128,11 +128,11 @@ void Player::handle_subgoldy_collisions()
                         velocity.x = velocity.x - probe_b.x * velocity.z * 0.18000001f;
                         velocity.z = velocity.z - probe_b.z * velocity.z * 0.1f;
                     }
-                    garbage->state = 2;
+                    garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
                     if (probe_b.x >= 0.0f)
-                        garbage->collision_side = 1;
+                        garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                     else
-                        garbage->collision_side = 2;
+                        garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                     add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
                     g_sound_effect_manager.play_sound_effect(39 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
