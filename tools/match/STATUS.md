@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**616/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **93354/325144** bytes (**28.71%**) are proof-grade, and overall fuzzy is **71.63%**.
+**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **93721/325144** bytes (**28.82%**) are proof-grade, and overall fuzzy is **71.64%**.
 
-## Proof Grade (616)
+## Proof Grade (617)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -581,6 +581,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_quaternion_from_axis | 0x44d530 | 74 | 26/26 | 100.00% | 26/26 | 4 ok |  |
 | ✅ | initialize_axis_from_quaternion | 0x44d580 | 78 | 30/30 | 100.00% | 30/30 | 4 ok |  |
 | ✅ | initialize_matrix_from_quaternion | 0x44d820 | 247 | 82/82 | 100.00% | 82/82 | 3 ok |  |
+| ✅ | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 100.00% | 105/105 | 17 ok |  |
 | ✅ | linear_interpolate_matrix | 0x44da90 | 189 | 61/61 | 100.00% | 61/61 | 6 ok |  |
 | ✅ | noop_this_constructor | 0x44db50 | 3 | 2/2 | 100.00% | 2/2 | - |  |
 | ✅ | set_color_rgba | 0x44db60 | 32 | 10/10 | 100.00% | 10/10 | - |  |
@@ -625,7 +626,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (32)
+## Near Match (95-99.99%) (31)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -659,7 +660,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 19 ok |  |
-| 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
 ## High Progress (80-94.99%) (61)

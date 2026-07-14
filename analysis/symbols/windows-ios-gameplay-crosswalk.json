@@ -2495,7 +2495,7 @@
       "android_symbol": "tMatrix::Interpolate(float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "The honest Windows void source remains 105/105 instructions at 96.19%. Its sole caller discards EAX and its two exits leave path-dependent helper residue; both Android callers discard r0 and all three ARM exits establish no result."
+      "notes": "The exact 105/105 Windows body uses an implicit Quaternion copy assignment between extraction and lane snapping, then converts through the owned AxisAngle assignments and matrix constructor. Its sole Windows caller discards EAX; both Android callers discard r0 and all three ARM exits establish no result, proving the authored member returns void."
     },
     {
       "address": "0x44da90",

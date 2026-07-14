@@ -12,10 +12,7 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
     Quaternion working;
     AxisAngle axis;
     Quaternion extracted(*this);
-    working.x = extracted.x;
-    working.y = extracted.y;
-    working.z = extracted.z;
-    working.w = extracted.w;
+    working = extracted;
     if (working.x > -0.001f && working.x < 0.001f)
         working.x = 0.0f;
     if (working.y > -0.001f && working.y < 0.001f)

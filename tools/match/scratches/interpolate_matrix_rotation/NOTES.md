@@ -1,4 +1,4 @@
-# Honest constructor-family match — 96.19%, 105/105 insns
+# Exact constructor-family match — 100.00%, 105/105 insns
 
 Semantics complete: extract quaternion from the 3x3 (matrix-arg ctor),
 copy to a working quat, snap |x|,|y|,|z| < 0.001 to zero (w untouched),
@@ -7,10 +7,10 @@ convert to axis-angle, scale the ANGLE by alpha, recompose
 quat -> matrix. Quirk preserved: when the extracted angle is exactly
 zero the matrix is left untouched (no rebuild on that path).
 
-The instruction count remains exact and the first 30 target instructions match.
-The retained source uses the recovered `Axis`/`Quaternion`/`TransformMatrix`
-member and constructor surfaces, preserving the native `thiscall` ABI without
-copy-propagation barriers.
+The complete body is exact. The retained source uses the recovered
+`Axis`/`Quaternion`/`TransformMatrix` member, assignment, and constructor
+surfaces, preserving the native `thiscall` ABI without copy-propagation
+barriers.
 
 All 17 masked operands audit cleanly. The calls at target `0x44d5d0` and
 `0x44d820` resolve from the candidate object's exact const-reference constructor
@@ -54,14 +54,23 @@ Windows' sole caller likewise ignores EAX, while its two return sites leave
 path-dependent helper residue. The shared scratch was already honestly `void`;
 the BN/IDA analysis prototypes now agree with that contract.
 
-2026-07-14 constructor-family ownership: the extract and rebuild calls now use
+2026-07-14 constructor-family ownership: the extract and rebuild calls adopted
 the real `Quaternion(const TransformMatrix&)` and
 `TransformMatrix(const Quaternion&)` definitions recovered from Android. This
-keeps the current honest 96.19% score, 105/105 instruction parity, 30-instruction
-prefix, and 17 clean operands while removing both synthetic initializer APIs.
+kept the honest 96.19% score, 105/105 instruction parity, 30-instruction prefix,
+and 17 clean operands while removing both synthetic initializer APIs.
 
 2026-07-14 conversion-assignment ownership: `axis = working` and
 `working = axis` recover the exact Windows void assignment operators at
-0x44d580 and 0x44d530. Both direct spellings preserve this scratch's current
-instruction stream; decorated-symbol aliases keep all 17 call operands audited
+0x44d580 and 0x44d530. Both direct spellings preserved that pass's instruction
+stream; decorated-symbol aliases keep all 17 call operands audited
 without pretending Android's quaternion constructor ABI applies to Windows.
+
+2026-07-14 copy-assignment closure: spelling the four-field transfer as the
+implicit `working = extracted` Quaternion copy assignment recovers the missing
+value-ownership boundary. VC6 emits the same aggregate dword copy, then reads
+all three snapped lanes from `working` as native does instead of propagating the
+unchanged y/z values from the constructor temporary. This closes the body from
+96.19% to 100.00%, 105/105 instructions and 17 clean operands without volatile,
+dummy aliases, or other codegen barriers. The exact
+`linear_interpolate_matrix` caller remains 61/61 with six clean operands.

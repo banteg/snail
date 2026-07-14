@@ -3657,7 +3657,7 @@
     {
       "address": "0x44d920",
       "name": "interpolate_matrix_rotation",
-      "description": "Implements the authored void `tMatrix::Interpolate(float)` member retained by Android and iOS. It extracts the current rotation as a quaternion, scales its axis angle, and rebuilds the matrix when the rotation is nonzero."
+      "description": "Exact void `TransformMatrix::interpolate_matrix_rotation(float)` implementation of the authored mobile `tMatrix::Interpolate(float)` member. It extracts and copy-assigns the current rotation as a quaternion, scales its axis angle, and rebuilds the matrix when the rotation is nonzero."
     },
     {
       "address": "0x44da90",
