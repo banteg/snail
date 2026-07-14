@@ -1,6 +1,7 @@
 # activate_landscape_entry @ 0x418870
 
-Exact match: 123/123 instructions, clean masks.
+Near-exact source: 123/123 instructions with all masks clean; the sole residual
+is the ordinary state-store/load schedule documented below.
 
 Selects one cached landscape script and activates the ten repeated landscape
 slices owned by the same `LandscapeManager` receiver.
@@ -56,3 +57,20 @@ manager, and fog color directly. The cached slot's `Object*` already exposes
 Focused output remains at the honest 99.19%, 123/123 frontier with all 20
 operands clean. The sole residual is still the ordinary `state`/flag-load
 scheduling swap documented above.
+
+## 2026-07-14 fixed landscape bank extents
+
+The exact manager layout proves ten `0x90` active entries through `+0x5a0`,
+followed by `script_count` and 128 `0x124` parsed script records through the
+`0x97a4` manager end. The active-entry sweep now shares
+`LANDSCAPE_ACTIVE_ENTRY_COUNT` with the owned array, while the parsed bank is
+bounded by `LANDSCAPE_SCRIPT_CAPACITY`; no synthetic load-time capacity check
+was added where the native has none.
+
+All five owner/consumer listings remain byte-identical:
+
+- reset: `f447a0d71bb0043dea4d8ad6c6f702fff401d5d70ccce08c1959c02af273243f`
+- script loader: `189bde097668c3e56a2767b90c9b333a518f6641f19ec9451abc50d7f4a1f950`
+- activator: `613ba51711ebb72a5edce6f185f9bb72c835a3fd95c02686784fa704efd04be2`
+- active-entry clear: `a663ed2ee953e6f01b4857d201b800bc443ea2d205c28751ee62c5fecbe956f0`
+- runtime constructor: `755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`

@@ -67,7 +67,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
         index++;
         entry++;
         staged_index = index;
-    } while (index < 10);
+    } while (index < LANDSCAPE_ACTIVE_ENTRY_COUNT);
 
     g_game->backdrop.change_backdrop(&scripts[script_index], flip);
     g_game->border_manager.set_border_justify_centre(0);
