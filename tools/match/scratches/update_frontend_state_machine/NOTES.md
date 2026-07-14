@@ -84,3 +84,14 @@ Historical recovery notes:
   Its `input.authored_x/y` fields at owner `+0x60/+0x64` feed the cRMouse saved
   coordinates before the camera transform snapshot.
 - The corrected ownership remains exact at 180/180 with 69 clean operands.
+
+2026-07-14 cRPlayer::AI return-contract closure:
+
+- `run_frame_update` dispatches both Windows player records through the shared
+  `BodAiDispatch::update_bod_ai()` void slot. Android `cRGame::AI()` uses the
+  same void virtual-call shape for its embedded player callback.
+- Android `cRPlayer::AI()` restores its frame and tail-branches to
+  `tMatrix::Invert(tMatrix const&)`; that matrix helper is independently void.
+  The decompiler's integer result was therefore only propagated register state.
+- Spelling both members `void` removes the synthetic tail return while keeping
+  this Windows scratch byte-exact at 180/180 with all 69 masked operands clean.

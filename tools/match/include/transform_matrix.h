@@ -22,9 +22,9 @@ struct TransformMatrix {
     TransformMatrix* premultiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1e0
     TransformMatrix* premultiply_matrix_in_place(const TransformMatrix* rhs); // const-callsite view
     TransformMatrix* multiply_matrices(const TransformMatrix* lhs, const TransformMatrix* rhs);
-    TransformMatrix* invert_matrix_in_place(); // @ 0x44d280
-    TransformMatrix* invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330
-    TransformMatrix* invert_matrix_from_source(const TransformMatrix* source); // const-callsite view
+    void invert_matrix_in_place(); // @ 0x44d280, tMatrix::Invert()
+    void invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330, tMatrix::Invert(tMatrix const&)
+    void invert_matrix_from_source(const TransformMatrix* source); // const-callsite view
     TransformMatrix* initialize_matrix_from_quaternion(const Quaternion* quaternion); // @ 0x44d820
     void linear_interpolate_matrix(
         const TransformMatrix* from,

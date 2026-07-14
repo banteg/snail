@@ -8,7 +8,7 @@ extern GameRoot* g_game; // data_4df904
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
 
-int GamePlayer::update_frontend_state_machine()
+void GamePlayer::update_frontend_state_machine()
 {
     redispatch_requested = 1;
     do {
@@ -188,5 +188,5 @@ int GamePlayer::update_frontend_state_machine()
     TransformMatrix* snapshot_matrix = &camera.transform;
     *snapshot_matrix = *live_matrix;
     mouse_cursor.saved_y = anchor_y;
-    return (int)camera.view_matrix.invert_matrix_from_source(live_matrix);
+    camera.view_matrix.invert_matrix_from_source(live_matrix);
 }

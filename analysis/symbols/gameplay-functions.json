@@ -3593,12 +3593,12 @@
     {
       "address": "0x44d280",
       "name": "invert_matrix_in_place",
-      "description": "Inverts one orthonormal transform matrix in place by transposing the basis and recomputing the negated translated origin. Android symbols match this helper to `tMatrix::Invert()`."
+      "description": "Void `tMatrix::Invert()` implementation: inverts one orthonormal transform matrix in place by transposing the basis and recomputing the negated translated origin. Windows and Android callers discard the incidental receiver register."
     },
     {
       "address": "0x44d330",
       "name": "invert_matrix_from_source",
-      "description": "Writes the inverse of a source orthonormal transform into a destination matrix. Android symbols match this helper to `tMatrix::Invert(const tMatrix&)`."
+      "description": "Void `tMatrix::Invert(tMatrix const&)` implementation: writes the inverse of a source orthonormal transform into a destination matrix. Its ordinary callers discard the result register, while cRPlayer/cROverlay AI only tail-call it under their independently void callback contracts."
     },
     {
       "address": "0x44d3d0",

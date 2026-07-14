@@ -59,23 +59,23 @@ DATA_VAR_UPDATES = (
 
 PROTO_UPDATES = (
     (
-        "0x408000",
+        "initialize_game_player",
         "GamePlayer* __thiscall initialize_game_player(GamePlayer* player)",
     ),
     (
-        "0x4107d0",
-        "int32_t __thiscall update_frontend_state_machine(GamePlayer* player)",
+        "update_frontend_state_machine",
+        "void __thiscall update_frontend_state_machine(GamePlayer* player)",
     ),
     (
-        "0x44c3b0",
+        "is_mouse_captured",
         "uint8_t __thiscall is_mouse_captured(MouseCursorState* mouse)",
     ),
     (
-        "0x44c3c0",
+        "capture_mouse_cursor",
         "void __thiscall capture_mouse_cursor(MouseCursorState* mouse)",
     ),
     (
-        "0x44c400",
+        "release_mouse_cursor",
         "void __thiscall release_mouse_cursor(MouseCursorState* mouse)",
     ),
     (

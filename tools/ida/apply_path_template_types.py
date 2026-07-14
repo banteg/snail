@@ -116,8 +116,12 @@ TRUSTED_DECLARATIONS = [
         "int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);",
     ),
     (
+        "invert_matrix_in_place",
+        "void __fastcall invert_matrix_in_place(TransformMatrix* transform);",
+    ),
+    (
         "invert_matrix_from_source",
-        "TransformMatrix* __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);",
+        "void __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);",
     ),
     (
         "multiply_matrix_in_place",

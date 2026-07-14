@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-TransformMatrix* TransformMatrix::invert_matrix_in_place()
+void TransformMatrix::invert_matrix_in_place()
 {
     TransformMatrix source = *this;
 
@@ -15,5 +15,4 @@ TransformMatrix* TransformMatrix::invert_matrix_in_place()
     basis_forward.y = source.basis_up.z;
     position.y = -(source.basis_up.z * position.z + source.basis_up.y * source.position.y + source.basis_up.x * source.position.x);
     position.z = -(source.basis_forward.z * position.z + source.basis_forward.x * source.position.x + source.basis_forward.y * source.position.y);
-    return this;
 }

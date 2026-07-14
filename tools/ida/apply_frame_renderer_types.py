@@ -29,7 +29,7 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     ),
     (
         "update_frontend_state_machine",
-        "int __thiscall update_frontend_state_machine(GamePlayer *player);",
+        "void __thiscall update_frontend_state_machine(GamePlayer *player);",
     ),
     (
         "is_mouse_captured",

@@ -290,9 +290,10 @@
       "address": "0x4107d0",
       "windows_name": "update_frontend_state_machine",
       "ios_symbol": "cRPlayer::AI()",
+      "android_symbol": "cRPlayer::AI()",
       "source_object": "Game.o",
       "confidence": "high",
-      "notes": "The Windows root constructs two 0x1f8-byte cRPlayer records and installs this exact function as their first callback; the method owns front-end dispatch plus the player camera, cursor, and overlay lanes."
+      "notes": "The Windows root constructs two 0x1f8-byte cRPlayer records and installs this exact function as their first callback; the method owns front-end dispatch plus the player camera, cursor, and overlay lanes. Both Windows and Android invoke the slot through a void cRBod callback, and Android tail-branches to the independently void tMatrix::Invert(tMatrix const&) helper after restoring its frame."
     },
     {
       "address": "0x410c30",
@@ -2251,6 +2252,24 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API."
+    },
+    {
+      "address": "0x44d280",
+      "windows_name": "invert_matrix_in_place",
+      "ios_symbol": "tMatrix::Invert()",
+      "android_symbol": "tMatrix::Invert()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact Windows void spelling remains 54/54 instructions, and its sole caller discards EAX. Both Android callers likewise ignore r0; the ARM body ends immediately after its final position store, leaving only the incidental receiver register rather than constructing a result."
+    },
+    {
+      "address": "0x44d330",
+      "windows_name": "invert_matrix_from_source",
+      "ios_symbol": "tMatrix::Invert(tMatrix const&)",
+      "android_symbol": "tMatrix::Invert(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact Windows void spelling remains 55/55 instructions. All ordinary Windows and Android callers discard the result register; the only tail calls are from independently void cRPlayer/cROverlay AI callbacks, and the ARM helper returns directly after its last matrix store without establishing a value."
     },
     {
       "address": "0x44dcb0",

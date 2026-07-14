@@ -8,3 +8,13 @@ the original position against each original basis axis.
 
 The expression order on `position.x` matters for VC6's x87 schedule. The final
 source keeps the source-shaped matrix inverse and does not rely on alias tricks.
+
+2026-07-14 return-contract closure:
+
+- iOS `RMaths.o` and both Android libraries preserve the authored
+  `tMatrix::Invert()` member name. Both Android callsites discard `r0`, and the
+  ARM body returns immediately after its final position store without
+  constructing a result.
+- The sole Windows caller, `render_object_toon`, also discards EAX. Declaring
+  the member `void` and removing the synthetic `return this` remains byte-exact
+  at 54/54 instructions, so the receiver value is only incidental ABI state.
