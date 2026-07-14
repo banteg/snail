@@ -91,8 +91,8 @@ char AudioBackend::initialize_bass_audio_backend(void* hwnd)
     g_bass_sample_is_active =
         (BassProcFn)GetProcAddress(g_bass_module, "BASS_ChannelIsActive");
 
-    *(int*)((char*)this + 4) = 0;
-    *(float*)((char*)this + 8) = 0.0500000007f;
+    unknown_04 = 0;
+    unknown_08 = 0.0500000007f;
     music_stream_active = 0;
 
     if (g_bass_init(1, 44100, 0, hwnd, 0) == 0) {

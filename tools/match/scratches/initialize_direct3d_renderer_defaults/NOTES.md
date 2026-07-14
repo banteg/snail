@@ -11,5 +11,7 @@ Initializes the process renderer before Direct3D device creation.
   format `0x50`, and creation flags `0x20`.
 - The dwords at `+0xbcb0/+0xbcb4` remain explicitly unknown: this function
   writes `0` and `0x17`, but no other native consumer proves their semantics.
+  Their shared owner now records them as individual typed dwords rather than
+  one anonymous eight-byte padding range.
 
 Focused match is exact: 38/38 instructions with all 15 masked operands clean.

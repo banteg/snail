@@ -105,12 +105,12 @@ void Galaxy::initialize_galaxy()
 
     int index = 0;
     if (record_count > 0) {
-        int* clear_cursor = (int*)((char*)this + 0x2c);
+        int* clear_cursor = &route_slots[0].record.highlight_target_bits;
         do {
             clear_cursor[-1] = 0;
             clear_cursor[0] = 0;
             ++index;
-            clear_cursor += 168;
+            clear_cursor += sizeof(GalaxyRouteSlot) / sizeof(int);
         } while (index < record_count);
     }
 

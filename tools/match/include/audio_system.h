@@ -38,7 +38,9 @@ public:
     int play_registered_sound_sample_default(int sample_id); // @ 0x449a60
 
     unsigned char music_stream_active; // +0x00
-    char unknown_01[0x0c - 0x01];
+    char unknown_01[0x04 - 0x01];
+    int unknown_04; // +0x04, cleared during backend initialization
+    float unknown_08; // +0x08, initialized to 0.05f
     float music_normalization_scale; // +0x0c
     float sfx_normalization_scale;   // +0x10
     float voice_normalization_scale; // +0x14

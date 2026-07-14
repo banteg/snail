@@ -5,5 +5,5 @@
 
 void GameRoot::initialize_game_last()
 {
-    ((Backdrop*)((char*)this + 0x4ec10))->initialize_backdrop(1);
+    backdrop.initialize_backdrop(1);
 }

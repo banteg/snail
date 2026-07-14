@@ -32,10 +32,10 @@ void Direct3DRenderer::initialize_direct3d_renderer_defaults()
     device = 0;
     requested_width = 640;
     requested_height = 480;
-    *(unsigned int*)((char*)this + 0xbcb4) = 0x17;
+    unknown_bcb4 = 0x17;
     depth_stencil_format = 0x50;
     create_device_flags = 0x20;
     multisample_type = 0;
-    *(unsigned int*)((char*)this + 0xbcb0) = 0;
+    unknown_bcb0 = 0;
     device_initialized = 0;
 }

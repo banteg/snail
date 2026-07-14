@@ -55,3 +55,10 @@ Windows members to void is codegen-neutral and keeps this initializer exact at
 pool, player-zero mouse, and render-skip countdown now use their canonical
 `GameRoot` members. The screen-local `GalaxyBorderManager` pseudo-type is
 removed. Exact output remains 338/338 with all 74 operands clean.
+
+2026-07-14 route-slot ownership: the two-dword reset cursor now starts at
+`GalaxyRouteSlot::record.highlight_target_bits`; its preceding dword is the
+adjacent `route_tint_alpha_bits`, and its step derives from
+`sizeof(GalaxyRouteSlot)`. This removes the raw `this + 0x2c` base and literal
+168-dword stride while preserving the exact 338/338 function and all 74 clean
+operands.

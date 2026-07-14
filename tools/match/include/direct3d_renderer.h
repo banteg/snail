@@ -81,7 +81,8 @@ public:
     unsigned int requested_width;    // +0xbca4
     unsigned int requested_height;   // +0xbca8
     unsigned int create_device_flags; // +0xbcac
-    char unknown_bcb0[0xbcb8 - 0xbcb0];
+    unsigned int unknown_bcb0; // +0xbcb0, initialized to zero
+    unsigned int unknown_bcb4; // +0xbcb4, initialized to 0x17
     unsigned int depth_stencil_format; // +0xbcb8
     unsigned int multisample_type;   // +0xbcbc
 };
