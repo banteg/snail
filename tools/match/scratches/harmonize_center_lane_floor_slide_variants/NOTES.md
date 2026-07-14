@@ -54,3 +54,17 @@ call across the still-unresolved typed-cell/base-offset block. Direct target
 addresses and the Android body prove the corrected call order; retaining the
 reversed semantics merely to make those four aligned references green would
 be fakematching.
+
+## 2026-07-14 canonical grid and catalog ownership
+
+Both row-phase cursors now name `runtime_cells[row][lane]` directly, and the
+forward/backward neighbor stride plus lane bound derive from the embedded
+eight-cell row. Each reloadable catalog local is the canonical
+`GameRoot* g_game`; slice replacements and the four corner scans retain the
+root catalog owner across `set_bod_object` calls. Corner strides and bounds now
+derive from `BodBase` and the recovered corner-bank arrays.
+
+All substitutions are byte-identical at 58.98%, 225/226 instructions, prefix
+9/226. The audit remains 20 clean plus the four documented alignment
+mismatches caused by retaining the evidence-backed floor/slide predicate
+semantics; those calls are not reversed for a greener report.
