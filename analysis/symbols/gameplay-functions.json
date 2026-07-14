@@ -16,11 +16,13 @@
     },
     {
       "address": "0x4010e0",
-      "name": "hide_border_init"
+      "name": "hide_border_init",
+      "description": "Stable Windows harness identity for the authored void cRBorder::HideInit() member. It starts the 0x1000 hide transition once, clears hide_blend, and tail-calls the owned cRToolTip reset."
     },
     {
       "address": "0x401110",
-      "name": "unhide_border_init"
+      "name": "unhide_border_init",
+      "description": "Stable Windows harness identity for the authored void cRBorder::UnHideInit() member. It restores hide_blend to one and clears the 0x1000 hide-transition flag."
     },
     {
       "address": "0x401130",
@@ -55,12 +57,12 @@
     {
       "address": "0x4027e0",
       "name": "unhighlight_border",
-      "description": "Clears the active highlight state on one frontend border/widget and restores its non-highlighted visual bits."
+      "description": "Stable Windows harness identity for the authored void cRBorder::UnHighlight() member. It clears the hover blend target and restores idle padding; the copied float bits left in EAX are incidental."
     },
     {
       "address": "0x402800",
       "name": "highlight_border",
-      "description": "Sets the active highlight state on one frontend border/widget so hover/selection visuals render in the highlighted style."
+      "description": "Stable Windows harness identity for the authored void cRBorder::Highlight() member. It raises the hover blend target and selects hot padding; the copied float bits left in EAX are incidental."
     },
     {
       "address": "0x402820",
@@ -157,7 +159,8 @@
     },
     {
       "address": "0x404540",
-      "name": "border_sprite_extend"
+      "name": "border_sprite_extend",
+      "description": "Stable Windows harness identity for the authored void cRBorder::SpriteExtend(int, int, int, bool) member. It owns the three-texture contextual sprite lane, wobble direction, and zeroed padding targets."
     },
     {
       "address": "0x404580",

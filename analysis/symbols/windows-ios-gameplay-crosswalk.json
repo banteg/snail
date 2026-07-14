@@ -10,6 +10,38 @@
   ],
   "entries": [
     {
+      "address": "0x4010e0",
+      "windows_name": "hide_border_init",
+      "android_symbol": "cRBorder::HideInit()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same flag guard, hide-blend clear, and tail call into the owned cRToolTip reset. Every Windows caller discards EAX, and the void member remains exact at 9/9 instructions."
+    },
+    {
+      "address": "0x401110",
+      "windows_name": "unhide_border_init",
+      "android_symbol": "cRBorder::UnHideInit()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same hide-blend restore and 0x1000 flag clear. Every Windows caller discards EAX, and the void member remains exact at 5/5 instructions."
+    },
+    {
+      "address": "0x4027e0",
+      "windows_name": "unhighlight_border",
+      "android_symbol": "cRBorder::UnHighlight()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same hover-target clear and idle-padding selection. Windows callsites discard EAX, proving the copied padding bits are incidental; the void member remains exact at 4/4 instructions."
+    },
+    {
+      "address": "0x402800",
+      "windows_name": "highlight_border",
+      "android_symbol": "cRBorder::Highlight()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same hover-target raise and hot-padding selection. Windows callsites discard EAX, proving the copied padding bits are incidental; the void member remains exact at 4/4 instructions."
+    },
+    {
       "address": "0x404080",
       "windows_name": "update_twinkle",
       "ios_symbol": "cRTwinkle::AI()",
@@ -17,6 +49,14 @@
       "source_object": "Border.o",
       "confidence": "high",
       "notes": "The exact Windows record and Android member share the 0x30-byte twinkle layout. Android cRTwinkleManager::Init(cRBorder*) stores the borrowed border pointer at +0x2c; Windows consumes the corresponding FrontendWidget flags and layout rectangle through that link."
+    },
+    {
+      "address": "0x404540",
+      "windows_name": "border_sprite_extend",
+      "android_symbol": "cRBorder::SpriteExtend(int, int, int, bool)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same three texture slots, enable byte, wobble-direction byte, and three cleared padding controls. Both Windows callers discard EAX, and the void member remains exact at 14/14 instructions."
     },
     {
       "address": "0x404580",

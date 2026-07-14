@@ -2,10 +2,9 @@
 
 #include "frontend_widget.h"
 
-int FrontendWidget::unhighlight_border()
+void FrontendWidget::unhighlight_border()
 {
     int result = *(int*)&idle_padding;
     hover_blend_target = 0.0f;
     *(int*)&target_padding = result;
-    return result;
 }

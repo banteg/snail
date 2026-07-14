@@ -53,10 +53,12 @@ typedef struct FrontendWidget {
     float authored_width;
     float authored_height;
     uint8_t texture_hit_test_enabled;
-    uint8_t _pad_5d[0x3];
+    uint8_t sprite_wobble_positive;
+    uint8_t _pad_5e[0x2];
     int32_t background_texture_id;
     int32_t texture_hit_test_sprite;
-    uint8_t _pad_68[0x14];
+    int32_t sprite_extend_texture_c;
+    uint8_t _pad_6c[0x10];
     int32_t widget_type;
     TwinkleManager twinkle_manager;
     float sprite_shadow_offset;

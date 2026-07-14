@@ -8,6 +8,7 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    current_prototypes,
     emit_summary,
     types_declare,
 )
@@ -29,8 +30,10 @@ FRONTEND_WIDGET_FIELDS = (
     ("0x54", "authored_width", "float"),
     ("0x58", "authored_height", "float"),
     ("0x5c", "texture_hit_test_enabled", "uint8_t"),
+    ("0x5d", "sprite_wobble_positive", "uint8_t"),
     ("0x60", "background_texture_id", "int32_t"),
     ("0x64", "texture_hit_test_sprite", "int32_t"),
+    ("0x68", "sprite_extend_texture_c", "int32_t"),
     ("0x7c", "widget_type", "int32_t"),
     ("0x80", "twinkle_manager", "TwinkleManager"),
     ("0x178", "sprite_shadow_offset", "float"),
@@ -101,6 +104,17 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
     ("0x38", "owner_widget_38", "FrontendWidget*"),
 )
 
+DEFERRED_PROTO_UPDATES = (
+    ("hide_border_init", "void __thiscall hide_border_init(FrontendWidget* widget)"),
+    ("unhide_border_init", "void __thiscall unhide_border_init(FrontendWidget* widget)"),
+    ("unhighlight_border", "void __thiscall unhighlight_border(FrontendWidget* widget)"),
+    ("highlight_border", "void __thiscall highlight_border(FrontendWidget* widget)"),
+    (
+        "border_sprite_extend",
+        "void __thiscall border_sprite_extend(FrontendWidget* widget, int32_t sprite_a, int32_t sprite_c, int32_t sprite_b, uint8_t wobble_positive)",
+    ),
+)
+
 PROTO_UPDATES = (
     (
         "border_mouse_test",
@@ -109,8 +123,6 @@ PROTO_UPDATES = (
     ("initialize_frontend_widget", "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x)"),
     ("layout_frontend_widget", "int32_t __thiscall layout_frontend_widget(FrontendWidget* widget)"),
     ("0x402790", "int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)"),
-    ("unhighlight_border", "int32_t __thiscall unhighlight_border(FrontendWidget* widget)"),
-    ("highlight_border", "int32_t __thiscall highlight_border(FrontendWidget* widget)"),
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
@@ -122,12 +134,34 @@ SYMBOL_UPDATES = (
 )
 
 
+def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
+    observed_prototypes = current_prototypes(
+        REPO_ROOT,
+        target=target,
+        identifiers=(
+            identifier for identifier, _prototype in DEFERRED_PROTO_UPDATES
+        ),
+    )
+    return [
+        {
+            "op": "proto_owner_deferred",
+            "status": "deferred",
+            "reason": "Binary Ninja restores the stale scalar prototype during live verification",
+            "identifier": identifier,
+            "desired_prototype": prototype,
+            "observed_prototype": observed_prototypes.get(identifier),
+        }
+        for identifier, prototype in DEFERRED_PROTO_UPDATES
+    ]
+
+
 def main() -> int:
     operations = [
         types_declare(REPO_ROOT, target=TARGET, header_path=HEADER_PATH),
         *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidget", updates=FRONTEND_WIDGET_FIELDS),
         *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidgetTooltip", updates=FRONTEND_WIDGET_TOOLTIP_FIELDS),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *report_deferred_prototypes(target=TARGET),
         *apply_symbol_updates(REPO_ROOT, target=TARGET, updates=SYMBOL_UPDATES, kind="function"),
     ]
     return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)

@@ -798,8 +798,11 @@ High-confidence current fields:
 - `+0x50`: `authored_top`
 - `+0x54`: `authored_width`
 - `+0x58`: `authored_height`
-- `+0x5c`: `state_5c`
+- `+0x5c`: `texture_hit_test_enabled` / `sprite_extend_enabled`
+- `+0x5d`: `sprite_wobble_positive`
 - `+0x60`: `background_texture_id`
+- `+0x64`: `texture_hit_test_sprite` / `sprite_hit_mask_texture_id`
+- `+0x68`: `sprite_extend_texture_c`
 - `+0x7c`: `widget_type`
 - `+0x17c`: `slider_position_target`
 - `+0x180`: `slider_position_current`
@@ -829,18 +832,21 @@ High-confidence current fields:
 - `+0x234`: `render_inset_dynamic`
 - `+0x238`: `layout_left`
 - `+0x23c`: `layout_top`
-- `+0x240`: `clamped_left`
-- `+0x244`: `clamped_top`
+- `+0x240`: `texture_hit_x`
+- `+0x244`: `texture_hit_y`
 - `+0x248`: `layout_width`
 - `+0x24c`: `layout_height`
+- `+0x250`: `texture_hit_width`
+- `+0x254`: `texture_hit_height`
 - `+0x258`: `border_edge`
 - `+0x25c`: `text_alignment`
 - `+0x260`: `anchor_x`
-- `+0x264`: `aux_progress`
-- `+0x268`: `aux_step`
+- `+0x264`: `teardown_progress`
+- `+0x268`: `teardown_progress_step`
 - `+0x26c`: `stack_gap`
-- `+0x270`: `texture_id_270`
-- `+0x278`: `mouse_settle_frames`
+- `+0x270`: `texture_id`
+- `+0x274`: `texture_layer`
+- `+0x278`: `mouse_history_warmup_frames`
 - `+0x27c`: `previous_mouse_x`
 - `+0x280`: `previous_mouse_y`
 - `+0x28c`: `tooltip`
@@ -860,6 +866,16 @@ Conservative current read:
 - `initialize_frontend_widget` seeds the shared color/style banks, render inset controls, font/layout anchors, and slider child widgets
 - `+0x714` remains intentionally unresolved; `border_input_text_init` uses that tail slot directly, so it should not be merged into the slider-child lane
 - `text_buffer` should stay opaque for now; the full `0x420` block is consumed by widget text/layout helpers and text-input init, not just by plain C-string calls
+
+Android preserves the adjacent authored API as `cRBorder::HideInit()`,
+`UnHideInit()`, `Highlight()`, `UnHighlight()`, and
+`SpriteExtend(int, int, int, bool)`. Their complete mobile bodies match the
+Windows state transitions, and every Windows callsite discards EAX. The shared
+members therefore use the real `void` contracts; values left in EAX by the
+Windows store schedules are incidental, not ownership-bearing returns.
+The narrow Binary Ninja replay applies the complete field layout but reports
+these five prototypes as deferred: the live session restores its stale scalar
+forms during verification, so the script does not force or misreport them.
 
 ### Frontend Widget Tooltip
 

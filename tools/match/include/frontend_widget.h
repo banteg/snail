@@ -17,17 +17,18 @@ class InputOkState;
 class FrontendWidget : public BodBase {
 public:
     void draw_frontend_widget(); // @ 0x401130
-    int hide_border_init(); // @ 0x4010e0
-    int unhide_border_init(); // @ 0x401110
-    int highlight_border(); // @ 0x402800
-    int unhighlight_border(); // @ 0x4027e0
+    void hide_border_init(); // @ 0x4010e0, Android cRBorder::HideInit()
+    void unhide_border_init(); // @ 0x401110, Android cRBorder::UnHideInit()
+    void highlight_border(); // @ 0x402800, Android cRBorder::Highlight()
+    void unhighlight_border(); // @ 0x4027e0, Android cRBorder::UnHighlight()
     FrontendWidget* stack_widget_below(FrontendWidget* previous_widget); // @ 0x4027b0
     int layout_frontend_widget(); // @ 0x4024a0
     int set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790
     FrontendWidget* border_input_text_init(int arg2, char* text, int flags); // @ 0x403410
     void border_input_text(); // @ 0x4035b0
     void border_add_text_number(int value); // @ 0x401030
-    int border_sprite_extend(int sprite_a, int sprite_c, int sprite_b, char flag); // @ 0x404540
+    void border_sprite_extend(int sprite_a, int sprite_c, int sprite_b,
+        char flag); // @ 0x404540, Android cRBorder::SpriteExtend(int, int, int, bool)
     unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
     void update_frontend_widget_interaction(); // @ 0x402820
     int initialize_frontend_widget(int flags, char* text, int widget_type,

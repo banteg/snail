@@ -15,3 +15,9 @@ sprite lane.
 - Promoting the method from a duplicate scratch-local class to the shared
   `FrontendWidget` owner remains instruction-exact at `14/14` with no masked
   operands.
+- Android preserves this owner as
+  `cRBorder::SpriteExtend(int, int, int, bool)` and performs the same three
+  texture stores, enable/wobble byte stores, and three zero clears. Both
+  Windows callers discard EAX; the zero retained there is the source for the
+  three stores, not a result contract. The corrected `void` member remains
+  exact at 14/14 instructions.
