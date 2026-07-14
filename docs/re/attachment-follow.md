@@ -139,6 +139,13 @@ The current high-confidence follow-state layout is:
 
 That same stable layout is now checked in as [`FollowState`](../../analysis/headers/path_template_types.h) and mirrored into IDA through the narrow typed-header sync lane. Windows emits a three-component copy into `+0x20`, while iOS `cRPathFollowGoldy::Traverse` emits the corresponding `ldm/stm` aggregate copy; together they close that range as one `Vec3` rather than three anonymous floats. The two preceding scalars remain conservatively named `orientation_a` and `orientation_b`.
 
+The matching source now defines the canonical `FollowState` member directly
+and traverses its borrowed `Path`, borrowed `SubLoc` source cell, and the
+path-owned `AttachmentSample` banks. The former matrix and anchor prefix views
+were duplicate type shells and have been retired. Only the field-first
+`SubRow +0xa4` cursor remains where the native code forms a row-stride address
+from the attachment-cell lane rather than from the enclosing row base.
+
 Recovered begin-state behavior from `begin_track_attachment_follow_state`:
 
 - sets the active flag to `1`

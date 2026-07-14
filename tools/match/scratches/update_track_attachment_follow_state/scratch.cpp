@@ -7,55 +7,23 @@
 
 typedef Vector3 Vec3;
 
-#include "track_attachment_matrix_path_view.h"
-#include "track_row_cell_anchor_view.h"
-
 struct AttachmentFollowRuntimeRowSlot {
     TrackRowCell* primary_attachment_cell;
     char unknown_04[0xf4 - 0x04];
-};
-
-struct PathKind42CallView {
-    int compute_kind42_attachment_transform(
-        float radius,
-        float x,
-        float y,
-        TransformMatrix* transform,
-        float* out_angle);
-};
-
-class AttachmentFollowStateMatrixView {
-public:
-    int update_track_attachment_follow_state(float path_factor, Vec3* out_position, Vec3* motion);
-
-    unsigned char active;
-    char unknown_01[0x04 - 0x01];
-    PathMatrixView* template_record;
-    TrackRowCellAnchorView* source_cell;
-    int sample_index;
-    float progress;
-    float vertical_offset;
-    float orientation_a;
-    float orientation_b;
-    Vec3 orientation_up;
-    Vec3 output_position;
-    Player* player;
-    unsigned char flag_3c;
-    char unknown_3d[3];
 };
 
 extern char* g_game_base; // data_4df904
 extern AttachmentFollowRuntimeRowSlot g_track_runtime_rows[]; // 0x641184
 
 void __fastcall set_matrix_identity(TransformMatrix* transform);
-int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
+int FollowState::update_track_attachment_follow_state(
     float path_factor,
     Vec3* out_position,
     Vec3* motion)
 {
     int index = sample_index;
-    PathMatrixView* initial_template = this->template_record;
-    AttachmentSampleMatrixView* secondary_samples = initial_template->secondary_samples;
+    Path* initial_template = this->template_record;
+    AttachmentSample* secondary_samples = initial_template->secondary_samples;
     float* p_delta_length = &secondary_samples[index].delta_length;
     float delta = path_factor * *p_delta_length;
     float alpha;
@@ -80,7 +48,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
     TransformMatrix to;
 
     unsigned int current_index;
-    PathMatrixView* current_template;
+    Path* current_template;
     int terminal_index;
     while (delta + progress > *p_delta_length) {
         delta -= *p_delta_length - progress;
@@ -92,7 +60,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
             g_voice_manager.play_voice_manager(4, 1, -1);
         }
 
-        PathMatrixView* runtime_template = this->template_record;
+        Path* runtime_template = this->template_record;
         if (runtime_template->has_entry_mesh_transition) {
             int count = (int)runtime_template->segment_count;
             int current_index = (int)this->sample_index;
@@ -110,7 +78,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
             }
         }
 
-        PathMatrixView* loop_template = this->template_record;
+        Path* loop_template = this->template_record;
         index = this->sample_index;
         if (index == loop_template->segment_count)
             goto terminal_path;
@@ -151,7 +119,7 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
 
         if (current_template->kind == 42) {
             arg2 = out_position->x - v85;
-            ((PathKind42CallView*)current_template)->compute_kind42_attachment_transform(
+            current_template->compute_kind42_attachment_transform(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
             unsigned int active_index = sample_index;
             if (active_index == 0 || active_index == (unsigned int)(this->template_record->segment_count - 1)) {
@@ -186,8 +154,8 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
             *(Vec3*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up;
             *(Vec3*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward;
         } else {
-            AttachmentSampleMatrixView* secondary = current_template->secondary_samples;
-            AttachmentSampleMatrixView* sample = &secondary[current_index];
+            AttachmentSample* secondary = current_template->secondary_samples;
+            AttachmentSample* sample = &secondary[current_index];
             Vec3* anchor = &source_cell->anchor_position;
             float path_x = out_angle * sample->delta_dir_to_next.x;
             float path_y = out_angle * sample->delta_dir_to_next.y;
@@ -244,12 +212,12 @@ int AttachmentFollowStateMatrixView::update_track_attachment_follow_state(
         orientation_up.y = transform.basis_up.y;
         orientation_up.z = transform.basis_up.z;
 
-        PathMatrixView* orient_template = this->template_record;
+        Path* orient_template = this->template_record;
         unsigned int orient_index = sample_index;
         int offset = 0xa8 * orient_index;
         if (orient_index == (unsigned int)(orient_template->segment_count - 1)) {
-            AttachmentSampleMatrixView* last_sample =
-                (AttachmentSampleMatrixView*)((char*)orient_template->primary_samples + offset);
+            AttachmentSample* last_sample =
+                (AttachmentSample*)((char*)orient_template->primary_samples + offset);
             orientation_b = last_sample->rotation_scalar_98;
             orientation_a = last_sample->rotation_scalar_94;
         } else {
@@ -319,22 +287,22 @@ terminal_path:
         if (delta >= 1.0f)
             delta = 0.99900001f;
 
-        PathMatrixView* exhaust_template = this->template_record;
+        Path* exhaust_template = this->template_record;
         float launch_speed =
             path_factor * exhaust_template->secondary_samples[exhaust_template->segment_count - 1].delta_length;
         motion->z = launch_speed;
         if (launch_speed > 1.0f)
             motion->z = 1.0f;
 
-        PathMatrixView* final_template = this->template_record;
+        Path* final_template = this->template_record;
         if (final_template->kind == 31) {
             motion->y = motion->z * 0.69999999f;
-            PathMatrixView* supertramp_template = this->template_record;
+            Path* supertramp_template = this->template_record;
             float old_x = out_position->x;
             unsigned int count = supertramp_template->segment_count;
             float carry = delta + supertramp_template->width_or_scale;
-            AttachmentSampleMatrixView* samples = supertramp_template->secondary_samples;
-            AttachmentSampleMatrixView* terminal = &samples[count];
+            AttachmentSample* samples = supertramp_template->secondary_samples;
+            AttachmentSample* terminal = &samples[count];
             Vec3* anchor = &source_cell->anchor_position;
             Vec3 forward_offset;
             forward_offset.x = carry * terminal[-1].transform.basis_forward.x;

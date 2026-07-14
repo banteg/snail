@@ -251,3 +251,18 @@ side-exit output copy improves the focused Windows candidate from `69.38%`,
 assigned because a single aggregate expression perturbs unrelated VC6 register
 allocation and regresses to `67.19%`; the shared layout still records the real
 vector owner, with no padding, volatile qualifier, or synthetic scheduling aid.
+
+## 2026-07-14 canonical follow ownership
+
+The updater now defines the shared `FollowState` method directly. Its borrowed
+`Path*` and `SubLoc*`, plus the path-owned `AttachmentSample` banks, replace the
+old `AttachmentFollowStateMatrixView`, `PathMatrixView`,
+`TrackRowCellAnchorView`, `AttachmentSampleMatrixView`, and
+`PathKind42CallView`. The kind-42 call now goes through canonical `Path`.
+
+The three now-unused private view headers were removed.
+`AttachmentFollowRuntimeRowSlot` remains intentionally as a field-first stride
+view at `SubRow +0xa4`; it does not claim ownership of the enclosing row.
+
+This consolidation is codegen neutral: focused matching remains `70.28%`,
+`694/726`, with the exact `122/726` prefix and `51/0/0` masked operands.
