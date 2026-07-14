@@ -1,4 +1,4 @@
-# update_subgoldy @ 0x43b120 — 72.51%, 2067/2087 insns, structure complete
+# update_subgoldy @ 0x43b120 — 74.20%, 2075/2087 insns, structure complete
 
 The boss of bosses (2091 insns, 8456 bytes) has a full scratch: every block
 of the function is transcribed and the diff is dominated by
@@ -7,9 +7,10 @@ track-mode slice (steering, replay record/playback, completion handoff,
 ghost marking, emitters) is now pinned.
 
 2026-06-13 matcher padding rebaseline: terminal object-padding normalization
-removes untargeted bytes after final `ret` instructions. Current Wibo status
-reports 72.51%, 2067/2087 normalized instructions. This is a measurement
-correction, not a source-shape change.
+removes untargeted bytes after final `ret` instructions. The post-rebaseline
+baseline was 72.51%, 2067/2087 normalized instructions. This was a measurement
+correction, not a source-shape change; the current camera-lifetime recovery is
+documented below.
 
 ## Semantics recovered beyond the old dossier
 
@@ -179,6 +180,14 @@ source-shape issue is solved.
 - The position stash around the camera block is a Vector3 struct copy
   (dead y/z stores survive), and the camera writes go through a
   `Vector3*` local (lea-reused base).
+- The tile-14 wall probe and camera wobble offset are separate lexical
+  `Vector3` owners. Their lifetimes do not overlap, so VC6 coalesces them into
+  the same stack slot; decompilers consequently show one reused `position`
+  local. Keeping the wall probe scoped restores the native 0x40-byte frame.
+- Camera wobble is one ordinary vector expression:
+  `right*wobble_x + up*wobble_y + forward*wobble_alpha`, accumulated into the
+  cached camera target. VC6 evaluates the terms forward, up, right and then
+  performs `(right + up) + forward`, matching the native x87 sequence.
 - The steering lerp needs `pull` and `steer_delta` locals to force the
   fxch evaluation order.
 - 2026-06-15 type-consolidation probe: replacing the local `Vector3`
@@ -447,3 +456,26 @@ lateral steering basis is `presentation.transform.basis_up`, not a separately
 owned matrix with the same offset. The large focused partial remains
 byte-identical at 72.51%, 2067/2087 instructions, 290 clean operands, and the
 same one honest jump-table mismatch.
+
+## 2026-07-14 wall-probe and camera-offset lifetimes
+
+The former scalar camera transcription is replaced by the authored vector
+shape. Native assembly computes three scaled render-basis vectors, combines
+`(basis_right * wobble_x + basis_up * wobble_y) + basis_forward * wobble_alpha`,
+and adds that aggregate to `cached_camera_target_world`. The wall collision
+probe is now confined to its collision block, while the later wobble result is
+a distinct `camera_offset`. Those two owners have disjoint lifetimes and VC6
+reuses their stack storage, explaining why IDA presents both as one `position`
+variable without requiring source-level aliasing.
+
+This ownership/lifetime recovery raises the focused match from 72.51%,
+2067/2087 instructions to 74.20%, 2075/2087. It also restores the exact native
+0x40-byte stack frame and a 12-instruction exact prefix. The operand audit
+remains 290 clean operands and the same one honest follow jump-table mismatch.
+
+Rejected probes were retained only as measurements, not source: leaving the
+wall probe live through the camera expression produced a 0x4c frame and at
+best 73.54%; explicit component constructors reached 73.32% or 72.87% with the
+same oversized frame; and a purely sequential `operator+=` chain shrank the
+frame to 0x34 and fell to 72.37%. No padding, volatile storage, fake fields, or
+register-shaped adapters were introduced.

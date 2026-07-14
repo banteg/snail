@@ -37,6 +37,11 @@ float convert_math_type16_to_32(unsigned short value, float scale);
 short convert_math_type32_to_16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+}
+
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 
@@ -609,27 +614,29 @@ steering_stored:
 
     warning.update_warning();
 
-    Vector3 wall_probe;
-    float probe_y;
-    float probe_z;
-    if (boost_one_tick || follow_state.active
-        || (probe_y = p_position->y, probe_z = p_position->z + 0.49000001f,
-            wall_probe.x = p_position->x, wall_probe.z = probe_z, wall_probe.y = probe_y,
-            game->get_track_grid_cell_at_world_position(&wall_probe)->tile_id != 14)
-        || transform.position.y >= 6.5f) {
-        barrier_hold_progress = 0.0f;
-    } else {
-        velocity.z = 0.0f;
-        transform.position.z = (float)(int)(transform.position.z + 0.49000001f) - 0.5f;
-        if (squidge.z_output == 0.0f)
-            g_sound_effect_manager.play_sound_effect(47);
-        squidge.start_squidge_z(-0.33000001f);
-        float advanced = barrier_hold_step + barrier_hold_progress;
-        barrier_hold_progress = advanced;
-        if (advanced > 1.0f) {
+    {
+        Vector3 wall_probe;
+        float probe_y;
+        float probe_z;
+        if (boost_one_tick || follow_state.active
+            || (probe_y = p_position->y, probe_z = p_position->z + 0.49000001f,
+                wall_probe.x = p_position->x, wall_probe.z = probe_z, wall_probe.y = probe_y,
+                game->get_track_grid_cell_at_world_position(&wall_probe)->tile_id != 14)
+            || transform.position.y >= 6.5f) {
             barrier_hold_progress = 0.0f;
-            if (!attachment_exit_pending)
-                begin_post_follow_carryover();
+        } else {
+            velocity.z = 0.0f;
+            transform.position.z = (float)(int)(transform.position.z + 0.49000001f) - 0.5f;
+            if (squidge.z_output == 0.0f)
+                g_sound_effect_manager.play_sound_effect(47);
+            squidge.start_squidge_z(-0.33000001f);
+            float advanced = barrier_hold_step + barrier_hold_progress;
+            barrier_hold_progress = advanced;
+            if (advanced > 1.0f) {
+                barrier_hold_progress = 0.0f;
+                if (!attachment_exit_pending)
+                    begin_post_follow_carryover();
+            }
         }
     }
 
@@ -792,26 +799,12 @@ steering_stored:
     progress_bar.update_progress_bar();
 
     Vector3* camera_target = &cached_camera_target_world;
-    float wobble_alpha = sub_hover.wobble_alpha;
     *camera_target = *p_position;
-    float forward_x = wobble_alpha * transform.basis_forward.x;
-    float forward_y = wobble_alpha * transform.basis_forward.y;
-    float forward_z = wobble_alpha * transform.basis_forward.z;
-    float wobble_y = sub_hover.wobble_y;
-    float up_x = wobble_y * transform.basis_up.x;
-    float up_y = wobble_y * transform.basis_up.y;
-    float up_z = wobble_y * transform.basis_up.z;
-    float wobble_x = sub_hover.wobble_x;
-    wall_probe.x = wobble_x * transform.basis_right.x;
-    wall_probe.y = wobble_x * transform.basis_right.y;
-    float right_z = wobble_x * transform.basis_right.z;
-    float lateral_x = wall_probe.x + up_x;
-    float lateral_y = wall_probe.y + up_y;
-    wall_probe.x = lateral_x + forward_x;
-    wall_probe.y = lateral_y + forward_y;
-    camera_target->x = wall_probe.x + camera_target->x;
-    camera_target->y = wall_probe.y + camera_target->y;
-    camera_target->z = forward_z + up_z + right_z + camera_target->z;
+    Vector3 camera_offset =
+        transform.basis_right * sub_hover.wobble_x
+        + transform.basis_up * sub_hover.wobble_y
+        + transform.basis_forward * sub_hover.wobble_alpha;
+    *camera_target += camera_offset;
 
     int hold_ticks = damage_gauge.skin_hold_ticks;
     if (hold_ticks > 0)
