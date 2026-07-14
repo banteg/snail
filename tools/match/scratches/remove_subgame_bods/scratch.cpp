@@ -154,6 +154,6 @@ void SubgameRuntime::remove_subgame_bods()
         ((GameRoot*)g_game_base)->active_bod_list.recycle_bod_to_free_list(
             (BodNode*)&player.click_start);
 
-    player.click_start.state = 0;
+    player.click_start.state = CLICK_START_STATE_INACTIVE;
     g_sprite_manager.kill_game_sprites();
 }

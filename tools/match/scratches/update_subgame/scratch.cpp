@@ -184,7 +184,7 @@ void SubgameRuntime::update_subgame()
 
         int two = 2;
         if (player.completion_handoff_active == zero
-            && player.click_start.state != two)
+            && player.click_start.state != CLICK_START_STATE_WAITING_FOR_START)
             player.stopwatch.Add(1.0f);
 
         if (level_mode == 7)
@@ -209,7 +209,7 @@ void SubgameRuntime::update_subgame()
             *(unsigned char*)(game + offsetof(SubgameRuntime, subgame_pause_gate)) = one;
             subgame_state = three;
             g_sprite_manager.set_sprite_manager_paused((char)one);
-            if (player.click_start.state == two)
+            if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
                 player.click_start.prompt->hide_border_init();
             return;
         }
@@ -219,7 +219,7 @@ void SubgameRuntime::update_subgame()
             pause_fade = fade;
             if (fade > 1.0f)
                 pause_fade = 0.0f;
-            if (player.click_start.state == two)
+            if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
                 player.click_start.prompt->unhide_border_init();
         }
 
@@ -400,7 +400,8 @@ void SubgameRuntime::update_subgame()
                                     || (&cell_slot->cell)[1].tile_id == 32)
                                 && cell_index >= first_block_row_count
                                 && cell_index < completion_row_start
-                                && player.click_start.state != 2
+                                && player.click_start.state
+                                    != CLICK_START_STATE_WAITING_FOR_START
                                 && (level_mode != 4
                                     || random_float_below(1.0f, "G2")
                                         <= base_subgame_rate * 0.3f + 0.7f)
@@ -420,7 +421,8 @@ void SubgameRuntime::update_subgame()
                             }
                         } else if ((cell_slot->cell.lane_and_flags & 8) == 0
                             && (hazard_tile == 1 || hazard_tile == 15)
-                            && player.click_start.state != 2
+                            && player.click_start.state
+                                != CLICK_START_STATE_WAITING_FOR_START
                             && (runtime_flags & 0x10000) != 0
                             && random_float_below(1.0f, "S")
                                 > (1.0f - salt_frequency) * 0.02f

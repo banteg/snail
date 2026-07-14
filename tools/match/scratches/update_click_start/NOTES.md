@@ -2,14 +2,18 @@
 
 First structured scratch for `update_click_start` @ `0x442290`.
 
-Match status: 27.18%, 138 target instructions, 149 candidate instructions, 13
-masked operands all resolved. No fakematching.
+Match status: 84.06%, 138 target instructions, 138 candidate instructions,
+prefix 5/138, with 23 masked operands resolved and the candidate-local jump
+table symbol left honestly unresolved. No fakematching.
 
 Recovered relationships:
 
 - `ClickStart` is the exact authored `cRClickStart` RenderableBod owner with state at `+0x80`,
   prompt widget at `+0x84`, teardown progress/step at `+0x88/+0x8c`, owner
   player at `+0x98`, and prompt-hide latch at `+0xa8`;
+- the state lane is now closed as inactive `0`, unknown/reserved `1`, waiting
+  for start `2`, accepted/pending `3`, and teardown `4`; no Windows or mobile
+  writer gives state `1` a stronger semantic name;
 - state `2` accepts either the app replay-launch scratch at `game+0x1066be8`
   or a live input confirm edge (`input.pressed_buttons & 0x4000`);
 - accepted startup writes `Player+0x304`, recenters authored input pointers for
@@ -19,11 +23,15 @@ Recovered relationships:
 
 Residual mismatch:
 
-- native uses a direct jump table for states `0..4`; this scratch still lowers
-  the state dispatch as a compare chain and saves extra callee registers;
+- native and candidate now use the same five-entry jump-table dispatch and the
+  same 138-instruction budget; the remaining state-2 differences are register
+  allocation around the replay-record test and the byte flag update;
+- the candidate jump table is a local compiler symbol, so the matcher cannot
+  yet prove it is the native table even though the dispatch entries and case
+  order agree;
 - `GameRoot::backdrop.unknown_660` is the exact owner of the byte raised on
-  state-2 entry, but this is its sole Windows reference, so its role remains
-  deliberately unnamed.
+  waiting-state entry, but this is its sole Windows reference, so its role
+  remains deliberately unnamed.
 
 2026-07-11 pause-owner closure: the prompt-hide gate now reads
 `GameRoot::subgame.subgame_pause_gate`; removing the synthetic `GamePauseView`
@@ -50,6 +58,27 @@ ORed with `0x20`, the intentional 16-bit view clears bit zero, and
 RNG from `current_high_score_record.runtime_build_seed`. Prompt teardown and
 BOD recycling now use `GameRoot::border_manager` and `active_bod_list`.
 
-All substitutions are codegen-neutral at 27.18% (149/138, prefix 1, 13 clean
-masks). The native jump-table lowering remains the honest structural blocker;
-no register-shaped adapter or synthetic state arm is retained.
+At that stage all substitutions were codegen-neutral at 27.18% (149/138,
+prefix 1, 13 clean masks), and the native jump-table lowering remained the
+honest structural blocker. The pass below supersedes that source shape.
+
+## 2026-07-14 state-machine and lifecycle recovery
+
+The authored five-state control flow is now expressed with named labels behind
+the source `switch`. MSVC emits the native `cmp`/`ja`/five-entry jump-table
+dispatch, preserving the observed state-2, state-3, and state-4 address order.
+The acceptance path is expressed positively: replay launch accepts record flag
+`0x20`, while live launch requires the visible prompt and the input edge.
+
+State-4 recycling now uses the shared `BodList::remove_bod` owner instead of a
+second handwritten transcription. Independent cursor reads for the byte and
+word replay-flag updates recover the native 138-instruction budget. The result
+moves from 27.18% (149/138) to 84.06% (138/138), with prefix 5/138 and no
+masked-reference mismatch.
+
+`ClickStartState` records the four proven roles and deliberately retains
+`CLICK_START_STATE_UNKNOWN_1`. The back-pointer at `+0x98` is now
+`owner_player`, and all known player/subgame consumers use
+`CLICK_START_STATE_WAITING_FOR_START` rather than a bare `2`. Exact
+`initialize_click_start` remains 79/79. No volatile qualifier, synthetic
+branch, register-shaped helper, or other fakematch was retained.

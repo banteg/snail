@@ -17,7 +17,7 @@ void ClickStart::initialize_click_start(Player* new_player)
 
     int flags = list_flags;
     hide_prompt = 1;
-    player = new_player;
+    owner_player = new_player;
     if ((flags & 0x200) != 0) {
         report_errorf("List ADD");
     } else {
@@ -39,8 +39,8 @@ void ClickStart::initialize_click_start(Player* new_player)
         list_flags |= 0x200;
     }
 
-    state = 2;
-    player->startup_track_index = 0;
+    state = CLICK_START_STATE_WAITING_FOR_START;
+    owner_player->startup_track_index = 0;
     render_arg_1c = 0;
     render_arg_20 = 0.0f;
 

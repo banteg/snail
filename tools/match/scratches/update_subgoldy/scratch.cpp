@@ -138,7 +138,7 @@ void Player::update_subgoldy()
     if (replay_game->selected_level_record_active
         && replay_game->replay_update_cursor
                < replay_game->selected_level_record->replay_sample_count
-        && click_start.state != 2) {
+        && click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
         p_position = &transform.position;
         transform.position.x = convert_math_type16_to_32(
             replay_game
@@ -208,7 +208,7 @@ steering_stored:
                 steer_target = -3.7f;
             else if (steer_target > 3.7f)
                 steer_target = 3.7f;
-            if (click_start.state != 2) {
+            if (click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
                 float pull = game->subgame_rate * 0.2f;
                 float steer_delta = steer_target - transform.position.x;
                 transform.position.x = pull * steer_delta + transform.position.x;
@@ -364,7 +364,7 @@ steering_stored:
                        + velocity.z;
         if (velocity.z > 1.0f)
             velocity.z = 1.0f;
-        if (click_start.state == 2)
+        if (click_start.state == CLICK_START_STATE_WAITING_FOR_START)
             velocity.z = 0.0f;
     }
 
@@ -956,7 +956,8 @@ steering_stored:
     float window_floor = commentary_game->subgame_rate * 0.17f;
     if ((commentary_game->subgame_rate * 0.5f - window_floor) * 0.1f + window_floor
             <= velocity.z
-        || window_floor >= velocity.z || attachment_exit_pending || click_start.state == 2) {
+        || window_floor >= velocity.z || attachment_exit_pending
+        || click_start.state == CLICK_START_STATE_WAITING_FOR_START) {
         slow_commentary_timer = 0.0f;
     } else {
         float advanced = slow_commentary_step + slow_commentary_timer;
@@ -983,7 +984,8 @@ steering_stored:
     SubgameRuntime* emitter_game = game;
     if ((emitter_game->runtime_flags & 0x400000) != 0 && !completion_handoff_active
         && !control_override_active
-        && (click_start.state == 0 || click_start.state == 4)) {
+        && (click_start.state == CLICK_START_STATE_INACTIVE
+            || click_start.state == CLICK_START_STATE_TEARDOWN)) {
         if (movement_fire_progress > 0.0f) {
             float advanced = movement_fire_progress_step + movement_fire_progress;
             movement_fire_progress = advanced;
