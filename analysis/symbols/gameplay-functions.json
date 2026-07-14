@@ -2535,15 +2535,18 @@
     },
     {
       "address": "0x440600",
-      "name": "uninit_pause_menu"
+      "name": "uninit_pause_menu",
+      "description": "Destroys the three widgets owned by the embedded cRSubPause and releases the gameplay mouse cursor. Cross-port iOS and Android symbols identify the side-effect-only method as cRSubPause::UnInit(); the Windows reconstruction is exact at 22/22 instructions."
     },
     {
       "address": "0x440660",
-      "name": "initialize_pause_menu"
+      "name": "initialize_pause_menu",
+      "description": "Allocates and configures the Options, End Game, and Resume widgets on the embedded cRSubPause owner. Cross-port iOS and Android symbols identify the void method as cRSubPause::Init(); the Windows reconstruction is exact at 88/88 instructions."
     },
     {
       "address": "0x4407a0",
-      "name": "update_pause_menu"
+      "name": "update_pause_menu",
+      "description": "Dispatches Options, Resume, and End Game clicks from the embedded cRSubPause owner. Cross-port iOS and Android symbols identify the side-effect-only method as cRSubPause::AI(); the Windows reconstruction is exact at 55/55 instructions."
     },
     {
       "address": "0x4408a0",

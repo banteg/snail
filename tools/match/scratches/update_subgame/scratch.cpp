@@ -65,10 +65,10 @@ void SubgameRuntime::update_subgame()
         subgame_state = 4;
         subgame_pause_gate = (unsigned char)one;
         pause_fade = pause_fade_step;
-        pause_menu.initialize_pause_menu();
+        sub_pause.initialize_pause_menu();
         // Native fallthrough: initialization immediately receives one update.
     case 4:
-        pause_menu.update_pause_menu();
+        sub_pause.update_pause_menu();
         return;
 
     case 7:

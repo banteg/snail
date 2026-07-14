@@ -696,6 +696,33 @@
       "confidence": "high"
     },
     {
+      "address": "0x440600",
+      "windows_name": "uninit_pause_menu",
+      "ios_symbol": "cRSubPause::UnInit()",
+      "android_symbol": "cRSubPause::UnInit()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android destroys the same three widget pointers at +0x00, +0x04, and +0x08 before releasing the mouse cursor. Its authored void contract agrees with every Windows caller discarding EAX; the Windows member remains exact at 22/22 instructions."
+    },
+    {
+      "address": "0x440660",
+      "windows_name": "initialize_pause_menu",
+      "ios_symbol": "cRSubPause::Init()",
+      "android_symbol": "cRSubPause::Init()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android independently confirms the 0x0c-byte owner layout as Options +0x00, End Game +0x04, and Resume +0x08, then captures the mouse cursor. The side-effect-only Windows member remains exact at 88/88 instructions."
+    },
+    {
+      "address": "0x4407a0",
+      "windows_name": "update_pause_menu",
+      "ios_symbol": "cRSubPause::AI()",
+      "android_symbol": "cRSubPause::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android consumes the same three widget click bits and follows the Options, Resume, and End Game transitions without constructing a stable result. The honest void Windows member remains exact at 55/55 instructions."
+    },
+    {
       "address": "0x440910",
       "windows_name": "remove_subgame_bods",
       "ios_symbol": "cRSubGame::RemoveBods()",

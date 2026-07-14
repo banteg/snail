@@ -106,7 +106,7 @@ public:
     char unknown_00000a[0x0c - 0x0a];
     float pause_fade; // +0x0c
     float pause_fade_step; // +0x10
-    PauseMenu pause_menu; // +0x14
+    SubPause sub_pause; // +0x14, authored cRSubPause
     int runtime_row_scan_begin; int runtime_row_scan_end; // +0x20/+0x24, rolling row-window [begin, end)
     int completion_bonus_x_source; // +0x28, raw result snapshot lane
     int completion_bonus_y_source; // +0x2c, raw result snapshot lane

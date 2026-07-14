@@ -310,3 +310,11 @@ derives `subgame_pause_gate` the same way. This retains the late cell-base
 displacement and byte-store scheduling documented above without repeating
 `0x3bfac8` or `+9` as unowned layout facts. Focused metrics and audited
 operands remain unchanged.
+
+## 2026-07-14 cRSubPause owner closure
+
+The state-3/4 pause branch now enters the authored `SubPause` embedded at
+`SubgameRuntime +0x14`. Cross-port `cRSubPause::Init()` and
+`cRSubPause::AI()` symbols, plus Android's three-pointer body layout, close the
+0x0c-byte owner without changing the honest partial baseline: 79.75%,
+1036/1033 instructions, 117 clean operands, and the same two table mismatches.

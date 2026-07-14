@@ -222,6 +222,7 @@ REQUIRED_HEADER_STRUCTS = (
     "DamageGuage",
     "ProgressBar",
     "Warning",
+    "SubPause",
     "Nuke",
     "FireWork",
     "ClickStart",
@@ -243,6 +244,12 @@ REQUIRED_HEADER_STRUCTS = (
     "Tip",
     "TipManager",
     "Tutorial",
+)
+
+SUB_PAUSE_FIELD_UPDATES = (
+    ("0x00", "options_widget", "FrontendWidget*"),
+    ("0x04", "end_game_widget", "FrontendWidget*"),
+    ("0x08", "resume_widget", "FrontendWidget*"),
 )
 
 PLAYER_FIELD_UPDATES = (
@@ -339,6 +346,7 @@ PLAYER_FIELD_UPDATES = (
 
 SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x09", "subgame_pause_gate", "uint8_t"),
+    ("0x14", "sub_pause", "SubPause"),
     ("0x34", "challenge_difficulty_scalar", "float"),
     ("0x38", "subgame_rate", "float"),
     ("0x3c", "subgame_state", "int32_t"),
@@ -597,6 +605,18 @@ GOLB_PROTO_UPDATES = (
 )
 
 PROTO_UPDATES = GOLB_PROTO_UPDATES + (
+    (
+        "uninit_pause_menu",
+        "void __thiscall uninit_pause_menu(SubPause* pause)",
+    ),
+    (
+        "initialize_pause_menu",
+        "void __thiscall initialize_pause_menu(SubPause* pause)",
+    ),
+    (
+        "update_pause_menu",
+        "void __thiscall update_pause_menu(SubPause* pause)",
+    ),
     (
         "initialize_sub_loc",
         "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell)",
@@ -1122,6 +1142,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             struct_updates=(
+                ("SubPause", SUB_PAUSE_FIELD_UPDATES),
                 ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),

@@ -4,7 +4,7 @@
 
 extern char* g_game_base; // data_4df904
 
-void* PauseMenu::update_pause_menu()
+void SubPause::update_pause_menu()
 {
     unsigned int flags = options_widget->widget_flags;
     if ((flags & 0x20) != 0) {
@@ -14,7 +14,7 @@ void* PauseMenu::update_pause_menu()
         game->options.previous_frontend_state =
             game->players[0].frontend_state;
         ((GameRoot*)g_game_base)->players[0].frontend_state = 6;
-        return game;
+        return;
     }
 
     FrontendWidget* resume = resume_widget;
@@ -25,13 +25,13 @@ void* PauseMenu::update_pause_menu()
         GameRoot* game = (GameRoot*)g_game_base;
         game->subgame.subgame_state = 2;
         ((GameRoot*)g_game_base)->subgame.resume_requested = 1;
-        return game;
+        return;
     }
 
     FrontendWidget* end_game = end_game_widget;
-    void* result = (void*)end_game->widget_flags;
-    if (((unsigned int)result & 0x20) != 0) {
-        end_game->widget_flags = (unsigned int)result & ~0x20u;
+    flags = end_game->widget_flags;
+    if ((flags & 0x20) != 0) {
+        end_game->widget_flags = flags & ~0x20u;
         GameRoot* game = (GameRoot*)g_game_base;
         game->exit_controller.previous_frontend_state =
             game->players[0].frontend_state;
@@ -46,7 +46,5 @@ void* PauseMenu::update_pause_menu()
         GameRoot* result_game = (GameRoot*)g_game_base;
         result_game->subgame.subgame_rebuild_selector = 2;
         ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
-        result = result_game;
     }
-    return result;
 }

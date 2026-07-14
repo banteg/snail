@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-void PauseMenu::uninit_pause_menu()
+void SubPause::uninit_pause_menu()
 {
     g_game->border_manager.kill_border(options_widget);
     g_game->border_manager.kill_border(end_game_widget);

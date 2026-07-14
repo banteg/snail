@@ -444,6 +444,13 @@ typedef struct FrontendWidget {
     FrontendWidget* slider_value_widget;
 } FrontendWidget;
 
+/* Authored cRSubPause owner embedded in SubgameRuntime at +0x14. */
+typedef struct SubPause {
+    FrontendWidget* options_widget;
+    FrontendWidget* end_game_widget;
+    FrontendWidget* resume_widget;
+} SubPause;
+
 typedef struct TextureRef {
     uint32_t flags;
     uint8_t _pad_04[0x8];
@@ -1524,7 +1531,9 @@ typedef struct Player {
 typedef struct SubgameRuntime {
     uint8_t _pad_00[0x09];
     uint8_t subgame_pause_gate;
-    uint8_t _pad_0a[0x34 - 0x0a];
+    uint8_t _pad_0a[0x14 - 0x0a];
+    SubPause sub_pause;
+    uint8_t _pad_20[0x34 - 0x20];
     float challenge_difficulty_scalar;
     float subgame_rate;
     int32_t subgame_state;
@@ -1714,6 +1723,9 @@ void __thiscall compute_kind42_attachment_transform(
     TransformMatrix* transform,
     float* out_angle
 );
+void __thiscall uninit_pause_menu(SubPause* pause);
+void __thiscall initialize_pause_menu(SubPause* pause);
+void __thiscall update_pause_menu(SubPause* pause);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);

@@ -63,13 +63,13 @@ void Exit::update_completion_screen()
             if (g_game->players[0].high_score_entry_pending == 1) {
                 previous_frontend_state = g_game->players[0].frontend_state;
                 destroy_completion_screen();
-                g_game->subgame.pause_menu.uninit_pause_menu();
+                g_game->subgame.sub_pause.uninit_pause_menu();
                 g_game->subgame.subgame_pause_gate = 0;
                 g_sprite_manager.set_sprite_manager_paused(0);
                 g_game->subgame.destroy_subgame();
             } else {
                 destroy_completion_screen();
-                g_game->subgame.pause_menu.uninit_pause_menu();
+                g_game->subgame.sub_pause.uninit_pause_menu();
                 g_game->subgame.subgame_pause_gate = 0;
                 g_sprite_manager.set_sprite_manager_paused(0);
                 g_game->subgame.destroy_subgame();
@@ -88,7 +88,7 @@ void Exit::update_completion_screen()
         if ((flags & 0x20) != 0) {
             button->widget_flags = flags & ~0x20;
             destroy_completion_screen();
-            g_game->subgame.pause_menu.uninit_pause_menu();
+            g_game->subgame.sub_pause.uninit_pause_menu();
             g_game->subgame.subgame_pause_gate = 0;
             g_sprite_manager.set_sprite_manager_paused(0);
             g_game->subgame.destroy_subgame();
@@ -102,7 +102,7 @@ void Exit::update_completion_screen()
         if ((flags & 0x20) != 0) {
             button->widget_flags = flags & ~0x20;
             destroy_completion_screen();
-            g_game->subgame.pause_menu.uninit_pause_menu();
+            g_game->subgame.sub_pause.uninit_pause_menu();
             g_game->subgame.subgame_pause_gate = 0;
             g_sprite_manager.set_sprite_manager_paused(0);
             g_game->subgame.destroy_subgame();

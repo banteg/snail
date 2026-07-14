@@ -53,6 +53,18 @@ TRUSTED_DATA_DECLARATIONS = [
 
 TRUSTED_DECLARATIONS = [
     (
+        "uninit_pause_menu",
+        "void __thiscall uninit_pause_menu(SubPause* pause);",
+    ),
+    (
+        "initialize_pause_menu",
+        "void __thiscall initialize_pause_menu(SubPause* pause);",
+    ),
+    (
+        "update_pause_menu",
+        "void __thiscall update_pause_menu(SubPause* pause);",
+    ),
+    (
         "initialize_sub_loc",
         "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell);",
     ),

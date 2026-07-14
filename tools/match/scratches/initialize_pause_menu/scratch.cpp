@@ -10,7 +10,7 @@ extern char g_resume_text[]; // 0x4a4f2c
 extern char g_end_game_text[]; // 0x4a4f34
 extern char g_options_text[]; // 0x4a3b60
 
-void PauseMenu::initialize_pause_menu()
+void SubPause::initialize_pause_menu()
 {
     Color4f color;
 

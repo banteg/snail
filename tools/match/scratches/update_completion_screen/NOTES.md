@@ -51,3 +51,8 @@ Android/iOS retain this lifecycle edge as `cRExit::AI()`. The trailing button
 test and teardown call merely leak incidental register values on their paths;
 modeling the method as `void` preserves the exact 207/207 stream and all 69
 operands while removing a fabricated API result.
+
+The four teardown paths now reach the authored `SubPause` embedded at
+`SubgameRuntime +0x14`. Mobile `cRSubPause::UnInit()` provenance and Android's
+matching three-pointer layout close that child owner while preserving the
+exact 207/207 stream and all 69 clean operands.
