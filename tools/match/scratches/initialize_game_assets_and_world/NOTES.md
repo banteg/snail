@@ -77,13 +77,17 @@ barrier, and render-cache handoff at `0x40fb46..0x40ffd6`:
   rejected by the three direct `get_or_create_texture_ref` stores.
 - `Invincible` is a real `RenderableBod` child, not a flattened
   vtable/padding view. Its inherited object at `+0x24` owns
-  `invincible-base-000.x`; startup clears the object's `0x100000` flag after
-  loading it.
+  `invincible-base-000.x`; startup clears
+  `OBJECT_FLAG_DISABLE_CULLING` after loading it.
 - Each `GolbShot` overlays a `Vapour` at `+0x080` with its secondary render
   body, while the tertiary rocket body at `+0x118` overlaps the live matrix at
   `+0x150`. The shared rocket mesh is owned by shot zero and borrowed by all
   twelve shots. The checked C and C++ layouts retain this as a union; the
   Binary Ninja projection deliberately does not flatten the overlapping views.
+- The animation donors and their live presentation objects raise
+  `OBJECT_FLAG_DYNAMIC_VERTICES`; vapour output combines that bit with
+  `OBJECT_FLAG_DISABLE_CULLING`. These are shared render-object policies, not
+  startup-local magic masks.
 - `GameRoot +0xb24` is the exact `TextureSetSelector`: four primary track
   textures, four secondary slide textures, and the current set at `+0x20`.
   Startup also applies the recovered texture flags and two-level mip policy.

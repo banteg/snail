@@ -23,8 +23,9 @@ Recovered relationships:
   `OBJECT_FLAG_RENDER_DISABLED`, and rejects zero `Object +0x2c` vertex count.
 - Always calls `refresh_object_vertex_buffer` before setting the world transform
   when those gates pass.
-- `flags & 0x100000` controls the cull-mode argument through exact
-  `set_cull_mode`.
+- `OBJECT_FLAG_DISABLE_CULLING` selects `set_cull_mode(0)`, which exact
+  `direct3d_renderer_set_cull_mode` maps to D3D cull state `1`; the clear path
+  selects state `3`.
 - Iterates `Object +0x64` texture groups and consumes the builder-owned arrays:
   `+0xcc` index starts, `+0xd0` texture refs, and `+0xd4` primitive counts.
 - `OBJECT_FLAG_USE_OVERRIDE_TEXTURE` selects `Object +0x18` as an override

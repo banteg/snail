@@ -49,7 +49,7 @@ void build_object_texture_group_buffers(Object* object)
     int face_index = 0;
     int index_count = 0;
 
-    if ((flags_byte & 4) != 0) {
+    if ((flags_byte & OBJECT_FLAG_DYNAMIC_VERTICES) != 0) {
         for (int vertex_index = 0; vertex_index < object->vertex_count; ++vertex_index) {
             for (int scan_face_index = 0; scan_face_index < object->facequad_count; ++scan_face_index) {
                 if (object->facequads[scan_face_index].vertex_0 == vertex_index)

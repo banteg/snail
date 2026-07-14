@@ -35,7 +35,7 @@ Recovered relationships:
   `g_direct3d_renderer` at `0x4f7458`: one count followed by 3000 0xc-byte
   wrappers. Its 3000-entry index-buffer factory is the embedded subobject at
   renderer `+0x8ca4` (`0x5000fc`), not an unrelated neighboring global.
-- The `flags & 4` warm-up scan is an `else if` chain. For each source
+- The `OBJECT_FLAG_DYNAMIC_VERTICES` warm-up scan is an `else if` chain. For each source
   vertex/face pair, native appends only the first matching corner, matching the
   IDA control flow rather than four independent corner tests.
 - The known caller ignores this helper's return value. Modeling the scratch as

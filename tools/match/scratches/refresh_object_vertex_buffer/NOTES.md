@@ -17,13 +17,13 @@ Recovered relationships:
   table at `+0x08`, playback progress at `+0x0c`, and progress step at `+0x10`.
 - Animated refresh writes `Object +0x38` from frame `+0x00` vertices and
   `Object +0x60` from frame `+0x04` facequad normals.
-- `flags & 0x800000` dispatches `apply_distort_to_object` on the embedded
-  distort state at `Object +0x80`.
+- `OBJECT_FLAG_DISTORT_ENABLED` dispatches `apply_distort_to_object` on the
+  embedded distort state at `Object +0x80`.
 - `Object +0xc0` owns grouped-render buffers; its `+0x08` member is the D3D
   vertex buffer locked with `Object +0xc4 * 0x18` bytes.
 - Both refresh paths rewrite vertex positions in the locked 0x18-byte render
   vertex stream.
-- The non-animated `flags & 4` path also copies UVs from `Object +0x5c`
+- The non-animated `OBJECT_FLAG_DYNAMIC_VERTICES` path also copies UVs from `Object +0x5c`
   facequad data, using `quad = i / 4` and `corner = i & 3`.
 
 Corrected assumptions:

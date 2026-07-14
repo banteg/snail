@@ -2,9 +2,9 @@
 
 `build_track_fringe_supertramp_mesh` creates the generated supertramp fringe
 mesh for an attachment path template. It allocates an `Object` into the
-template's second `BodBase` slot at `+0x60`, marks it as imported/generated,
-then requests four vertices per segment plus two cap vertices and two side
-facequads per segment plus one terminal cap face.
+template's second `BodBase` slot at `+0x60`, disables culling with
+`OBJECT_FLAG_DISABLE_CULLING`, then requests four vertices per segment plus two
+cap vertices and two side facequads per segment plus one terminal cap face.
 
 Important type notes:
 

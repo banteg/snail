@@ -22,7 +22,7 @@ int get_or_append_object_texture_group_vertex(
     int count = g_object_grouped_vertex_cursor;
     if (count > 0) {
         char* cursor = (char*)&g_object_grouped_vertex_scratch[0].y;
-        int source_vertex_only = object->flags & 4;
+        int source_vertex_only = object->flags & OBJECT_FLAG_DYNAMIC_VERTICES;
         do {
             if (source_vertex_only != 0) {
                 if (*(int*)(cursor + 0x14) == vertex_index &&
@@ -48,7 +48,7 @@ int get_or_append_object_texture_group_vertex(
     g_object_grouped_vertex_scratch[i].u = u;
     g_object_grouped_vertex_scratch[i].v = 1.0f - v;
 
-    if ((object->flags & 0x10000) != 0) {
+    if ((object->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
         ((tColourSmall*)&g_object_grouped_vertex_scratch[i].diffuse)->pack_color_rgba_u8(
             &object->vertex_colours[vertex_index]);
     } else {

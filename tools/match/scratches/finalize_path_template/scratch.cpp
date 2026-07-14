@@ -5,9 +5,6 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-const int PATH_TEMPLATE_STRIP_MESH_FLAG_RUNTIME_READY = 0x80;
-const int PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH = 0x100000;
-
 void __fastcall Path::finalize_path_template()
 {
     int segment_count = this->segment_count;
@@ -76,6 +73,6 @@ void __fastcall Path::finalize_path_template()
     }
 
     (this->primary_samples + this->segment_count - 1)->lateral_source = 0.0f;
-    this->strip_mesh->flags |= PATH_TEMPLATE_STRIP_MESH_FLAG_RUNTIME_READY;
-    this->strip_mesh->flags &= ~PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH;
+    this->strip_mesh->flags |= OBJECT_FLAG_TEXTURE_TRANSFORM;
+    this->strip_mesh->flags &= ~OBJECT_FLAG_DISABLE_CULLING;
 }

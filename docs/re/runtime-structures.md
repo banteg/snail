@@ -1275,9 +1275,9 @@ High-confidence `PathTemplateStripMesh` fields:
 - `+0x58`: `facequad_capacity`
 - `+0x5c`: `facequads`
 
-One strip-mesh flag is now safely named from the constructor-family and mirror-helper readback:
-
-- `0x10000`: `PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS`
+The former path-local strip-mesh flags are now owned by the shared `ObjectFlag`
+word. In particular, `0x10000` is `OBJECT_FLAG_USE_VERTEX_COLOURS` and
+`0x100000` is `OBJECT_FLAG_DISABLE_CULLING`; neither meaning is path-specific.
 
 `PathTemplate.kind` is now also carried as a conservative enum in the checked-in
 header. Most constructor values are uniquely named from their builders, while a

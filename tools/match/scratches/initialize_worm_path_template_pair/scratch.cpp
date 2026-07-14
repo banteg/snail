@@ -187,7 +187,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
     strip_mesh->request_object_facequads(2 * segment_count * width_cells);
     request_object_vertex_colours(strip_mesh);
     int row = 0;
-    strip_mesh->flags |= 0x10000;
+    strip_mesh->flags |= OBJECT_FLAG_USE_VERTEX_COLOURS;
 
     Vector3* vertices = strip_mesh->vertices;
     ObjectFaceQuad* facequads = strip_mesh->facequads;

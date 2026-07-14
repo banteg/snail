@@ -32,7 +32,8 @@ function:
 - computes and normalizes primary and secondary deltas, then supplies the
   terminal `(0, 0, 1)` direction and four-unit length;
 - allocates a 25-by-16 vertex grid, 768 double-sided facequads, and per-vertex
-  colours on the strip mesh, with `OBJECT_FLAG_TEXTURE_TRANSFORM` selecting
+  colours on the strip mesh, with `OBJECT_FLAG_USE_VERTEX_COLOURS` selecting
+  their grouped diffuse values and `OBJECT_FLAG_TEXTURE_TRANSFORM` selecting
   the renderer's authored U/V offset path;
 - generates each tube row from the sample position and basis using sine/cosine,
   a radius of `4 * lateral_scale`, and an alpha wave of

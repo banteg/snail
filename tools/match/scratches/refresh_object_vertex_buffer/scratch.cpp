@@ -14,7 +14,7 @@ void refresh_object_vertex_buffer(Object* object)
         frame_index = (int)((float)animation->generated_frame_count * animation->progress);
         object->facequad_normals = animation->frames[frame_index]->facequad_normals;
 
-        if ((flags & 0x800000) != 0) {
+        if ((flags & OBJECT_FLAG_DISTORT_ENABLED) != 0) {
             object->distort.apply_distort_to_object(object);
         }
 
@@ -29,7 +29,7 @@ void refresh_object_vertex_buffer(Object* object)
         }
 
         object->render_buffers->vertex_buffer->vtbl->Unlock(object->render_buffers->vertex_buffer);
-    } else if ((flags & 4) != 0) {
+    } else if ((flags & OBJECT_FLAG_DYNAMIC_VERTICES) != 0) {
         ObjectRenderVertex* vertices;
         object->render_buffers->vertex_buffer->vtbl->Lock(
             object->render_buffers->vertex_buffer, 0,

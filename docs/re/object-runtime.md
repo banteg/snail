@@ -23,6 +23,25 @@ render resources. It walks `ObjectList::objects` at the `0xdc` stride, skips
 empty slots, calculates bounds and texture groups, optionally builds toon data,
 then calls `build_object_texture_group_buffers`.
 
+## Flag ownership
+
+`Object +0x10` is one shared `ObjectFlag` word, not a collection of
+subsystem-local mesh flags. The named bits below each have an independent
+producer and consumer; the remaining colour/tint bits stay numeric.
+
+| Bit | Name | Ownership evidence |
+|---|---|---|
+| `0x000004` | `OBJECT_FLAG_DYNAMIC_VERTICES` | Animation, logo, and vapour setup opt in; grouped-buffer construction preserves source-vertex order and frame refresh rewrites the locked stream. |
+| `0x000008` | `OBJECT_FLAG_USE_OVERRIDE_TEXTURE` | Snail-skin transitions install `override_texture_ref`; `render_object` binds it instead of the group texture. |
+| `0x000080` | `OBJECT_FLAG_TEXTURE_TRANSFORM` | Backdrop/path builders enable it; `render_object` installs the authored U/V texture transform. |
+| `0x004000` | `OBJECT_FLAG_TOON_ENABLED` | `apply_object_toon` sets it; the object builder and toon renderer consume it. |
+| `0x010000` | `OBJECT_FLAG_USE_VERTEX_COLOURS` | Path construction/mirroring preserves the colour bank; grouped-vertex construction packs it into diffuse values. |
+| `0x040000` | `OBJECT_FLAG_RENDER_DISABLED` | `disable_object_rendering` sets it; `render_object` rejects the object. |
+| `0x080000` | `OBJECT_FLAG_RENDER_BUFFERS_READY` | Both render-buffer construction paths set it; rendering, tinting, and texture replacement require it. |
+| `0x100000` | `OBJECT_FLAG_DISABLE_CULLING` | X/fringe mesh producers set it and path finalization clears it; the renderer maps it to D3D cull state `1` rather than `3`. |
+| `0x200000` | `OBJECT_FLAG_HAS_ANIMATION` | `request_object_animation` allocates the retained graph and sets it; presentation binding and frame refresh consume it. |
+| `0x800000` | `OBJECT_FLAG_DISTORT_ENABLED` | X-animation loading retains a base-vertex copy and sets it; animated refresh dispatches the embedded `ObjectDistort`. |
+
 The object constructor body, `ApplyToon`, and the one-time edge allocator are
 side-effecting `void` methods. Their Windows exit registers contain assignment
 or allocation residue, while the actual products remain owned by the Object;

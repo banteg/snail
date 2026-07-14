@@ -7,6 +7,10 @@ requests a destination strip mesh, mirrors strip vertices, copies optional
 vertex colours, flips face winding/UV U coordinates, then finalizes the path
 template.
 
+The optional colour copy is governed by shared
+`OBJECT_FLAG_USE_VERTEX_COLOURS`; the old path-local flag name duplicated the
+generic `Object` owner used by the grouped-vertex builder.
+
 Current focused result:
 
 - match: 97.45%

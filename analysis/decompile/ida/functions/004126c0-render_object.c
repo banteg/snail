@@ -15,7 +15,7 @@ int __cdecl render_object(
   tColour *v7; // edi
   int32_t v8; // esi
   char v9; // cl
-  uint32_t flags; // eax
+  ObjectFlag flags; // eax
   int v11; // [esp+Ch] [ebp-50h]
   float *v12; // [esp+10h] [ebp-4Ch]
   _BYTE v13[64]; // [esp+1Ch] [ebp-40h] BYREF

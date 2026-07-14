@@ -7,6 +7,9 @@ requests four vertices and two facequads per segment, extrudes the outer edge by
 0.4 units along the normalized edge direction, optionally clamps X by side, and
 builds the two textured facequads for each segment.
 
+The generated mesh raises `OBJECT_FLAG_DISABLE_CULLING`; the remaining low
+`0x40` tint bit is still numeric because its ownership has not closed.
+
 Current focused result:
 
 - match: 89.31%

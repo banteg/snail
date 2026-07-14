@@ -23,7 +23,7 @@ int Logo::open_logo()
         Object* object = image_donors[logo_index].object;
         load_object_definition("Objects/Font3D", object);
         object = image_donors[logo_index].object;
-        object->flags |= 4;
+        object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
     }
 
     int texture_count;

@@ -4,6 +4,9 @@ Starter semantic scratch for the X animation clip loader.
 
 - `this` is the DirectX/X-loader state used by `initialize_directx_loader`: `animation_bytes` at `+0x00` and the authored `cRDuplicateVertices` owner at `+0x5e08`.
 - The per-frame keyframe record is 0x80 bytes. It embeds `BodBase` at `+0x00`, so the loaded frame object pointer is `+0x24`; the parsed frame number is at `+0x7c`, matching `request_object_animation`.
+- After retaining a base-vertex copy, the destination raises
+  `OBJECT_FLAG_DISTORT_ENABLED`; animated refresh consumes that bit to dispatch
+  the embedded `ObjectDistort` before uploading the frame.
 - The Windows missing-script path really reloads the aligned keyframe-array
   pointer and ORs bit zero before passing the low animation-flag word. The
   retained `mode_flags |= 1` records that original uninitialized-local bug;

@@ -145,11 +145,14 @@ That is the cleanup behind `get_or_create_texture_ref` returning:
 
 rather than a raw `&texture_list[i * 0x29 + 2]` style pointer.
 
-One named mesh flag is now safe:
+Follow-up ownership closure moved these flags out of the path-local namespace:
 
-- `0x10000`: `PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS`
+- `0x10000`: `OBJECT_FLAG_USE_VERTEX_COLOURS`
+- `0x100000`: `OBJECT_FLAG_DISABLE_CULLING`
 
-That name is justified by the mirror path and constructor-family readback. Other strip-mesh bits still stay numeric until they close cleanly.
+The first is justified by mirror/constructor readback and the grouped-vertex
+colour packer. The second is proved by X/fringe producers, path finalization,
+and the renderer's D3D cull-state selection.
 
 Recovered `ObjectFaceQuad` shape:
 

@@ -826,11 +826,6 @@ typedef struct TrackAttachmentRuntimeRow {
     int32_t row_event_id;
 } TrackAttachmentRuntimeRow;
 
-typedef enum PathTemplateStripMeshFlags {
-    PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS = 0x10000,
-    PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH = 0x100000,
-} PathTemplateStripMeshFlags;
-
 typedef enum PathTemplateKind {
     PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00,
     PATH_TEMPLATE_KIND_LOOPTHELOOPW = 0x06,

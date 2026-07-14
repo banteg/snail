@@ -4,8 +4,8 @@
   "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 679,
-  "ida_exported": 678,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,11 +15,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_star_field",
-      "address": "0x434310"
+      "name": "render_object",
+      "address": "0x4126c0"
     }
   ],
-  "health_check_count": 77,
+  "health_check_count": 91,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -22,6 +22,10 @@ Notable shape details:
 - The native exit register is incidental: error paths leave `report_errorf`
   and the success path leaves `free_tracked_memory` in `eax`; the void ABI
   closure below proves neither is an authored result.
+- Every loaded mesh raises `OBJECT_FLAG_DISABLE_CULLING`. Exact
+  `render_object` and `direct3d_renderer_set_cull_mode` prove this selects D3D
+  cull state `1`; the old path-local “imported X mesh” name described the
+  producer rather than the bit's render meaning.
 - Keeping separate early/later material cursors is important. Reusing one
   cursor collapses a native stack slot and drops the scratch to 21.92%.
 

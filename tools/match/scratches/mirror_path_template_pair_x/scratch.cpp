@@ -62,7 +62,7 @@ void Path::mirror_path_template_pair_x(Path* source)
 
     Object* destination_mesh = strip_mesh;
     tColour* destination_colours = 0;
-    if ((destination_mesh->flags & 0x10000) != 0) {
+    if ((destination_mesh->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
         request_object_vertex_colours((Object*)destination_mesh);
         destination_mesh = strip_mesh;
         destination_colours = destination_mesh->vertex_colours;
@@ -84,7 +84,7 @@ void Path::mirror_path_template_pair_x(Path* source)
                     destination_vertices[column + row * (width_cells + 1)].z =
                         source->strip_mesh->vertices[column + row * (width_cells + 1)].z;
 
-                    if ((strip_mesh->flags & 0x10000) != 0) {
+                    if ((strip_mesh->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
                         destination_colours[column + row * (width_cells + 1)] =
                             source->strip_mesh->vertex_colours[column + row * (width_cells + 1)];
                     }

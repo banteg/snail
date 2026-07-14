@@ -33,7 +33,7 @@ int render_object(
             TransformMatrix world = *matrix;
             g_d3d_device->vtbl->SetTransform(g_d3d_device, 0x100, &world);
 
-            if ((object->flags & 0x100000) != 0)
+            if ((object->flags & OBJECT_FLAG_DISABLE_CULLING) != 0)
                 set_cull_mode(0);
             else
                 set_cull_mode(1);

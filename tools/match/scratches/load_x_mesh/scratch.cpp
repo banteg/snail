@@ -138,7 +138,7 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
         object->facequads[i].vertex_3 = (unsigned short)vertex_3;
     }
 
-    object->flags |= 0x100000;
+    object->flags |= OBJECT_FLAG_DISABLE_CULLING;
     free_tracked_memory(texture_coords);
     free_tracked_memory(vertex_remap);
 

@@ -12,11 +12,14 @@ Recovered behavior:
   forward vectors dotted against the current right vector;
 - mirrors and clamps the lateral source into the native `[-0.1, 0]` range;
 - clears the terminal sample's lateral source;
-- marks the strip mesh runtime-ready and clears the imported-X-mesh flag.
+- enables the strip mesh texture transform and clears
+  `OBJECT_FLAG_DISABLE_CULLING` so the finalized path uses the normal culled
+  render path.
 
-This promotes `Path +0x24` as `strip_mesh`, widens
-`AttachmentSample::inverse_matrix` to the full 16-float transform window, and
-names the strip mesh flag lane at `+0x10`.
+This promotes `Path +0x24` as `strip_mesh` and widens
+`AttachmentSample::inverse_matrix` to the full 16-float transform window. Its
+flag writes now use the shared `ObjectFlag` owner at `Object +0x10` rather than
+path-local producer names.
 
 2026-06-20 follow-up: `AttachmentSample::inverse_matrix` now uses the shared
 `TransformMatrix` type directly. The source can call

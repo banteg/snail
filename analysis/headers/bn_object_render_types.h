@@ -36,6 +36,19 @@ typedef struct TextureRef {
     int32_t mip_levels;
 } TextureRef;
 
+typedef enum ObjectFlag {
+    OBJECT_FLAG_DYNAMIC_VERTICES = 0x00000004,
+    OBJECT_FLAG_USE_OVERRIDE_TEXTURE = 0x00000008,
+    OBJECT_FLAG_TEXTURE_TRANSFORM = 0x00000080,
+    OBJECT_FLAG_TOON_ENABLED = 0x00004000,
+    OBJECT_FLAG_USE_VERTEX_COLOURS = 0x00010000,
+    OBJECT_FLAG_RENDER_DISABLED = 0x00040000,
+    OBJECT_FLAG_RENDER_BUFFERS_READY = 0x00080000,
+    OBJECT_FLAG_DISABLE_CULLING = 0x00100000,
+    OBJECT_FLAG_HAS_ANIMATION = 0x00200000,
+    OBJECT_FLAG_DISTORT_ENABLED = 0x00800000,
+} ObjectFlag;
+
 typedef struct ObjectUv {
     float u;
     float v;
@@ -165,7 +178,7 @@ typedef struct Object {
     uint8_t _pad_00[0x08];
     Vec3* toon_vertices;
     ObjectToonFaceQuadNormal* toon_facequad_normals;
-    uint32_t flags;
+    ObjectFlag flags;
     int32_t blend_mode;
     TextureRef* override_texture_ref;
     uint8_t _pad_1c[0x2c - 0x1c];

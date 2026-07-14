@@ -12,8 +12,9 @@ Recovered layout:
 - the local archive enumeration buffer stores names in 0x80-byte entries.
 
 The function uses the shared object and texture lists: each renderable receives
-an object from `g_object_list`, loads `Objects/Font3D`, marks object flag `0x4`,
-then sets texture flag `0x400` on every loaded `Intro/%s` texture.
+an object from `g_object_list`, loads `Objects/Font3D`, marks
+`OBJECT_FLAG_DYNAMIC_VERTICES`, then sets texture flag `0x400` on every loaded
+`Intro/%s` texture.
 
 The retained source uses the renderable/BOD slot cursor at `this + 0x24018`
 and reads the object field at `slot + 0x24`. That removes VC6's earlier

@@ -24,7 +24,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 OBJECT_FIELDS = (
     ("0x08", "toon_vertices", "Vec3*"),
     ("0x0c", "toon_facequad_normals", "ObjectToonFaceQuadNormal*"),
-    ("0x10", "flags", "uint32_t"),
+    ("0x10", "flags", "ObjectFlag"),
     ("0x14", "blend_mode", "int32_t"),
     ("0x18", "override_texture_ref", "TextureRef*"),
     ("0x2c", "vertex_count", "int32_t"),

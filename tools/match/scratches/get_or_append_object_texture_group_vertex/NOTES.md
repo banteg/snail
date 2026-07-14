@@ -17,12 +17,13 @@ Recovered relationships:
   position `+0x00..+0x08`, packed diffuse `+0x0c`, UV `+0x10/+0x14`, and source
   vertex index `+0x18`.
 - Source V is stored flipped as `1.0f - v`.
-- `flags & 0x10000` enables per-vertex colour packing from `Object +0x48`;
-  otherwise diffuse is `0xffffffff`.
+- `OBJECT_FLAG_USE_VERTEX_COLOURS` enables per-vertex colour packing from
+  `Object +0x48`; otherwise diffuse is `0xffffffff`.
 
 Corrected assumptions:
 
-- The de-duplication key is flag-dependent. With `flags & 4`, native matches
+- The de-duplication key is flag-dependent. With
+  `OBJECT_FLAG_DYNAMIC_VERTICES`, native matches
   on source vertex index plus UV only; without that flag, it matches on full
   position plus UV.
 - The native source-position local is better represented as a semantic
@@ -30,9 +31,9 @@ Corrected assumptions:
   address-then-load sequence for `object->vertices[vertex_index]` and moves the
   first mismatch from the source copy to the loop-entry branch.
 - The de-duplication loop uses a byte cursor starting at
-  `g_object_grouped_vertex_scratch + 4`, so the no-`flags & 4` comparisons are
+  `g_object_grouped_vertex_scratch + 4`, so the static comparisons are
   naturally `cursor - 4`, `cursor`, and `cursor + 4` for x/y/z, while the
-  `flags & 4` source-vertex comparison is `cursor + 0x14`.
+  dynamic source-vertex comparison is `cursor + 0x14`.
 
 Rejected probes:
 

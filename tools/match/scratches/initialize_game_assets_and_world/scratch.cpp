@@ -2621,7 +2621,7 @@ char GameRoot::initialize_game_assets_and_world()
         &subgame.player.presentation.cutscene_animation_slots[0];
     do {
         Object* animation_object = animation_slot->body.object;
-        animation_object->flags |= 4;
+        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_object->apply_object_toon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
@@ -2629,7 +2629,7 @@ char GameRoot::initialize_game_assets_and_world()
         ++animation_slot;
     } while (--animation_count != 0);
 
-    subgame.player.presentation.object->flags |= 4;
+    subgame.player.presentation.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.object->apply_object_toon(0);
     subgame.player.presentation.object->distort.z_wave = 0.0f;
     subgame.player.presentation.object->distort.y_squash = 0.0f;
@@ -2660,7 +2660,7 @@ char GameRoot::initialize_game_assets_and_world()
         &subgame.player.presentation.jetpack_channel.animation_slots[0];
     do {
         Object* animation_object = animation_slot->body.object;
-        animation_object->flags |= 4;
+        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_object->apply_object_toon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
@@ -2668,7 +2668,8 @@ char GameRoot::initialize_game_assets_and_world()
         ++animation_slot;
     } while (--animation_count != 0);
 
-    subgame.player.presentation.jetpack_channel.object->flags |= 4;
+    subgame.player.presentation.jetpack_channel.object->flags |=
+        OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.jetpack_channel.object->apply_object_toon(0);
     subgame.player.presentation.jetpack_channel.object->distort.z_wave = 0.0f;
     subgame.player.presentation.jetpack_channel.object->distort.y_squash = 0.0f;
@@ -2717,7 +2718,7 @@ char GameRoot::initialize_game_assets_and_world()
         &subgame.player.presentation.weapon_channels[0].animation_slots[0];
     do {
         Object* animation_object = animation_slot->body.object;
-        animation_object->flags |= 4;
+        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_object->apply_object_toon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
@@ -2725,7 +2726,8 @@ char GameRoot::initialize_game_assets_and_world()
         ++animation_slot;
     } while (--animation_count != 0);
 
-    subgame.player.presentation.weapon_channels[0].object->flags |= 4;
+    subgame.player.presentation.weapon_channels[0].object->flags |=
+        OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.weapon_channels[0].object->apply_object_toon(0);
     subgame.player.presentation.weapon_channels[0].object->distort.z_wave = 0.0f;
     subgame.player.presentation.weapon_channels[0].object->distort.y_squash = 0.0f;
@@ -2774,7 +2776,7 @@ char GameRoot::initialize_game_assets_and_world()
         &subgame.player.presentation.weapon_channels[1].animation_slots[0];
     do {
         Object* animation_object = animation_slot->body.object;
-        animation_object->flags |= 4;
+        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_object->apply_object_toon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
@@ -2782,7 +2784,8 @@ char GameRoot::initialize_game_assets_and_world()
         ++animation_slot;
     } while (--animation_count != 0);
 
-    subgame.player.presentation.weapon_channels[1].object->flags |= 4;
+    subgame.player.presentation.weapon_channels[1].object->flags |=
+        OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.weapon_channels[1].object->apply_object_toon(0);
     subgame.player.presentation.weapon_channels[1].object->distort.z_wave = 0.0f;
     subgame.player.presentation.weapon_channels[1].object->distort.y_squash = 0.0f;
@@ -2831,7 +2834,7 @@ char GameRoot::initialize_game_assets_and_world()
         &subgame.player.presentation.weapon_channels[2].animation_slots[0];
     do {
         Object* animation_object = animation_slot->body.object;
-        animation_object->flags |= 4;
+        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_object->apply_object_toon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
@@ -2839,7 +2842,8 @@ char GameRoot::initialize_game_assets_and_world()
         ++animation_slot;
     } while (--animation_count != 0);
 
-    subgame.player.presentation.weapon_channels[2].object->flags |= 4;
+    subgame.player.presentation.weapon_channels[2].object->flags |=
+        OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.weapon_channels[2].object->apply_object_toon(0);
     subgame.player.presentation.weapon_channels[2].object->distort.z_wave = 0.0f;
     subgame.player.presentation.weapon_channels[2].object->distort.y_squash = 0.0f;
@@ -2864,7 +2868,8 @@ char GameRoot::initialize_game_assets_and_world()
         (char*)"invincible-base-000.x",
         subgame.player.presentation.invincible_shell.object,
         1);
-    subgame.player.presentation.invincible_shell.object->flags &= 0xffefffff;
+    subgame.player.presentation.invincible_shell.object->flags &=
+        ~OBJECT_FLAG_DISABLE_CULLING;
 
     GolbShot* golb_shot = &subgame.player.golb_shots[0];
     golb_shot->tertiary_body.set_bod_object(
@@ -2877,7 +2882,8 @@ char GameRoot::initialize_game_assets_and_world()
         golb_shot->secondary_body.set_bod_object(
             g_object_list.add_object_to_list());
         Object* vapour_object = golb_shot->secondary_body.object;
-        vapour_object->flags |= 0x100004;
+        vapour_object->flags |=
+            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;
         vapour_object->blend_mode = 9;
         load_object_definition((char*)"Objects/VapourLazer", vapour_object);
         golb_shot->vapour.initialize_vapour(vapour_object, 0.159999996f);

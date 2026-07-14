@@ -16,15 +16,19 @@ struct ObjectAnimation;
 struct XAnimationKeyframe;
 
 // Shared cRObject state word. Only bits with independent producer/consumer
-// evidence are named; the remaining mesh, colour, and distortion bits stay
-// numeric until their ownership closes.
+// evidence are named; the remaining tint bits stay numeric until their
+// ownership closes.
 enum ObjectFlag {
+    OBJECT_FLAG_DYNAMIC_VERTICES = 0x00000004,
     OBJECT_FLAG_USE_OVERRIDE_TEXTURE = 0x00000008,
     OBJECT_FLAG_TEXTURE_TRANSFORM = 0x00000080,
     OBJECT_FLAG_TOON_ENABLED = 0x00004000,
+    OBJECT_FLAG_USE_VERTEX_COLOURS = 0x00010000,
     OBJECT_FLAG_RENDER_DISABLED = 0x00040000,
     OBJECT_FLAG_RENDER_BUFFERS_READY = 0x00080000,
+    OBJECT_FLAG_DISABLE_CULLING = 0x00100000,
     OBJECT_FLAG_HAS_ANIMATION = 0x00200000,
+    OBJECT_FLAG_DISTORT_ENABLED = 0x00800000,
 };
 
 struct ObjectRenderBuffers {

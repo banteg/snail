@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: render_object @ 0x4126c0 */
 
-004126cb        uint32_t result = object->flags
-004126de        if ((result & 0x80000) != 0 && (result & 0x40000) == 0)
+004126cb        enum ObjectFlag result = object->flags
+004126de        if ((result & OBJECT_FLAG_RENDER_BUFFERS_READY) != 0 && (result & OBJECT_FLAG_RENDER_DISABLED) == 0)
 004126e4        result = object->vertex_count
 004126e9        if (result != 0)
 004126f0        refresh_object_vertex_buffer(object)
@@ -13,7 +13,7 @@
 0041270e        __builtin_memcpy(&var_40, matrix, 0x40)
 00412719        (*(*eax + 0x94))(eax, 0x100, &var_40)
 00412726        char var_54_3
-00412726        if ((object->flags & 0x100000) == 0)
+00412726        if ((object->flags & OBJECT_FLAG_DISABLE_CULLING) == 0)
 0041272c        var_54_3 = 1
 00412728        var_54_3 = 0
 0041272e        set_cull_mode(var_54_3)
@@ -43,7 +43,7 @@
 0041286f        int32_t* eax_11 = data_502fec
 0041287b        (*(*eax_11 + 0xc8))(eax_11, 0x1b, 0)
 00412833        set_blend_mode(object->blend_mode)
-00412838        uint32_t flags = object->flags
+00412838        enum ObjectFlag flags = object->flags
 00412840        if ((flags.b & 0x50) != 0)
 00412842        flags.b &= 0xbf
 00412849        object->flags = flags
