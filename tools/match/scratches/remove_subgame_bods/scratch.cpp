@@ -102,7 +102,8 @@ void SubgameRuntime::remove_subgame_bods()
     int slug_count = sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {
         if ((BOD_NEXT_LINK_FLAGS(slug_next) & 0x200) != 0) {
-            ((Slug*)BOD_NODE_FROM_NEXT_LINK(slug_next))->state = 0;
+            ((Slug*)BOD_NODE_FROM_NEXT_LINK(slug_next))->state =
+                SUB_SLUG_STATE_INACTIVE;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(slug_next);
         }
         slug_next = (BodNode**)((char*)slug_next + sizeof(Slug));

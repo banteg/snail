@@ -106,3 +106,19 @@ The duplicated removal tails now name `GameRoot::active_bod_list`, and blink
 cadence calls `GameRoot::subgame.advance_blink_random()`. Focused output stays
 at 66.15%, 434/464 instructions, with 47 clean operands and the same two
 documented structural mismatches.
+
+## 2026-07-14 lifecycle and backlink closure
+
+The native jump table and Android `cRSlug::AI()` agree on five roles: inactive
+zero, active one, death-toss-pending two, teardown-pending three, and the
+sine-driven lateral-active state four. `Kill()` independently establishes the
+right/left death-toss selector values one/two. The shared record now also names
+its borrowed `owner_player`, distinct from the containing `owner_game`; its
+sprite and source-cell pointers are borrowed handles, while `SlugPool::slots`
+is the owned 0x760-byte Windows storage.
+
+Only these independently observed roles are promoted. The four state-two
+writes at `+0x9c..+0xa8` still have no reader before teardown in either Windows
+or Android and remain deliberately unnamed. The focused result is codegen
+neutral at 66.15%, 434/464 instructions, with the same 47 clean operands and
+two documented structural mismatches.

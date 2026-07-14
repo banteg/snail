@@ -233,7 +233,8 @@ void GolbShot::update_golb_ai()
                 for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {
                     char* slot = (char*)game + m;
                     int slug_state = *(int*)(slot + SLUG_STATE_FROM_SUBGAME);
-                    if (slug_state == 1 || slug_state == 4) {
+                    if (slug_state == SUB_SLUG_STATE_ACTIVE
+                        || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
                         probe.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
                                            + offsetof(Vector3, x))
                                 - new_output->x;

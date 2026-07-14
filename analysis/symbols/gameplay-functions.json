@@ -2402,7 +2402,7 @@
     {
       "address": "0x43dc80",
       "name": "spawn_slug_hazard",
-      "description": "Exact allocator for one live `Slug`: scans the eight owned 0xec-byte records, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning caller as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`."
+      "description": "Exact allocator for one live `Slug`: scans the eight owned 0xec-byte records, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning caller as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`. The Windows result shape remains intentionally unresolved: its sole caller discards EAX, but a void probe removes two native instructions."
     },
     {
       "address": "0x43df10",
@@ -2487,12 +2487,12 @@
     {
       "address": "0x43f8b0",
       "name": "kill_slug_hazard",
-      "description": "Exact `Slug` kill transition: plays the death voice, records the toss side, awards the slug score event, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
+      "description": "Exact `Slug` kill transition from active to death-toss-pending: plays the death voice, records the right/left toss side, awards the slug score event through the containing SubgameRuntime's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
     },
     {
       "address": "0x43f930",
       "name": "update_slug_hazard_ai",
-      "description": "Runs one live `Slug` through active, lateral, death-toss, and teardown states. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
+      "description": "Void slot-zero callback running one owned `SlugPool` record through inactive, active, lateral-active, death-toss-pending, and teardown-pending states. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
     },
     {
       "address": "0x440020",

@@ -144,7 +144,8 @@ void Player::handle_subgoldy_collisions()
              m += (int)sizeof(Slug)) {
             Slug* slug = (Slug*)((char*)game->slug_hazards.slots + m);
             int state = slug->state;
-            if (state == 1 || state == 4) {
+            if (state == SUB_SLUG_STATE_ACTIVE
+                || state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
                 delta.x = slug->transform.position.x - cached_camera_target_world.x;
                 delta.y = slug->transform.position.y - cached_camera_target_world.y;
                 delta.z = slug->transform.position.z - cached_camera_target_world.z;

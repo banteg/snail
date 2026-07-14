@@ -572,7 +572,7 @@
       "android_symbol": "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Android body independently proves the component-wise `(0, 0, -0.2) * subgame_rate` vector operation that makes the Windows allocator exact."
+      "notes": "The Android body independently proves the component-wise `(0, 0, -0.2) * subgame_rate` vector operation that makes the Windows allocator exact. The sole Windows caller discards EAX, while Android leaves the receiver on exhaustion and a blink-step value on success; however, changing Windows to void removes two real instructions, so the exact non-void spelling is retained without assigning a semantic result role."
     },
     {
       "address": "0x43df10",
@@ -1201,7 +1201,8 @@
       "ios_symbol": "cRSlug::Kill()",
       "android_symbol": "cRSlug::Kill()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Windows and Android both gate on active state 1, transition through death-toss-pending state 2, and select right/left toss direction 1/2 from the slug's world x coordinate."
     },
     {
       "address": "0x43f930",
@@ -1210,7 +1211,7 @@
       "android_symbol": "cRSlug::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The exact Windows constructor table at 0x497324 points directly to this callback; both mobile ports retain the authored class and AI member."
+      "notes": "The exact Windows constructor table at 0x497324 points directly to this void callback; both mobile ports retain the authored class and AI member. Windows and Android agree on inactive 0, active 1, death-toss-pending 2, teardown-pending 3, and lateral-active 4 behavior."
     },
     {
       "address": "0x441540",

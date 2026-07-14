@@ -13,7 +13,7 @@ Recovered relationships:
 - inserts the slot's zero-offset `BodNode` before the shared BOD-list tail;
 - allocates sprite texture `118`, forces white color, size `2.0f`, and mirrors
   the projected position into `Sprite::position`;
-- confirms `SlugHazardRuntime::player +0xc0`, `sprite +0xac`,
+- confirms `SlugHazardRuntime::owner_player +0xc0`, `sprite +0xac`,
   `source_cell +0xb0`, `passed_player +0xb4`,
   `player_encounter_latched +0xd9`, and the blink/voice progress tail.
 
@@ -137,3 +137,18 @@ than float lane 14.
 This is the source shape VC6's native biased-index addressing was hiding; it
 does not introduce a long-lived slot pointer. The complete rewrite remains
 byte-identical at 160/160 instructions, full prefix, and all 18 operands clean.
+
+## 2026-07-14 pool ownership and return-contract audit
+
+The shared pool now records eight owned Windows `Slug` slots and each live
+record's borrowed `owner_player` backlink. State zero is the allocator's free
+sentinel and state one is the active record installed by this exact method.
+The Android port uses 16 records, so the named capacity is deliberately the
+Windows allocation proven by the native 0x760 extent, not a cross-port claim.
+
+The sole Windows caller discards EAX. Android leaves the receiver on pool
+exhaustion but a computed blink-step value on success, so its register residue
+does not define a coherent semantic result. A Windows `void` probe was still
+rejected: it removed the direct exhaustion epilogue and one tail instruction,
+falling to 94.34% at 158/160 instructions. The byte-identical non-void spelling
+therefore remains until stronger ABI evidence identifies its result role.

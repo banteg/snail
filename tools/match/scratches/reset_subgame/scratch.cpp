@@ -39,7 +39,7 @@ void SubgameRuntime::reset_subgame()
     int slug_count =
         sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {
-        slug->state = 0;
+        slug->state = SUB_SLUG_STATE_INACTIVE;
         slug->owner_game = this;
         ++slug;
         --slug_count;

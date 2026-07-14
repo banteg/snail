@@ -121,6 +121,23 @@ typedef struct TrackHealthPickup {
     float bob_phase_step;
 } TrackHealthPickup;
 
+enum SubSlugState {
+    SUB_SLUG_STATE_INACTIVE = 0,
+    SUB_SLUG_STATE_ACTIVE = 1,
+    SUB_SLUG_STATE_DEATH_TOSS_PENDING = 2,
+    SUB_SLUG_STATE_TEARDOWN_PENDING = 3,
+    SUB_SLUG_STATE_LATERAL_ACTIVE = 4,
+};
+
+enum SubSlugDeathTossDirection {
+    SUB_SLUG_DEATH_TOSS_RIGHT = 1,
+    SUB_SLUG_DEATH_TOSS_LEFT = 2,
+};
+
+enum {
+    SUB_SLUG_SLOT_CAPACITY = 8,
+};
+
 typedef struct SlugHazardRuntime {
     uint8_t unknown_00[0x68];
     Vec3 world_position;
@@ -137,7 +154,7 @@ typedef struct SlugHazardRuntime {
     uint8_t unknown_b5[0x03];
     float lateral_phase;
     float lateral_phase_step;
-    struct Player* player;
+    struct Player* owner_player;
     int32_t engagement_voice_gate;
     int32_t hit_points;
     uint8_t hit_flash_pending;
@@ -154,7 +171,7 @@ typedef struct SlugHazardRuntime {
 } SlugHazardRuntime;
 
 typedef struct SlugPool {
-    SlugHazardRuntime slots[8];
+    SlugHazardRuntime slots[SUB_SLUG_SLOT_CAPACITY];
 } SlugPool;
 
 typedef struct SubRing SubRing;

@@ -76,13 +76,50 @@ TRACK_HEALTH_PICKUP_FIELD_UPDATES = (
 )
 
 SLUG_HAZARD_FIELD_UPDATES = (
+    ("0x80", "state", "int32_t"),
+    ("0x84", "death_toss_direction", "int32_t"),
     ("0x88", "owner_game", "SubgameRuntime*"),
     ("0x98", "attachment_facing_angle", "float"),
     ("0x9c", "unknown_9c", "uint8_t[0x10]"),
+    ("0xac", "sprite", "Sprite*"),
+    ("0xb0", "source_cell", "TrackRowCell*"),
+    ("0xc0", "owner_player", "Player*"),
 )
 
 PROTO_UPDATES = (
     ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
+    (
+        "initialize_slug_hazard_runtime",
+        "SlugHazardRuntime* __thiscall initialize_slug_hazard_runtime(SlugHazardRuntime* slug)",
+    ),
+    (
+        "spawn_slug_hazard",
+        "int32_t __thiscall spawn_slug_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* owner_player)",
+    ),
+    (
+        "update_slug_voice_ai",
+        "void __thiscall update_slug_voice_ai(SlugHazardRuntime* slug)",
+    ),
+    (
+        "play_slug_voice",
+        "void __thiscall play_slug_voice(SlugHazardRuntime* slug, int32_t sample_index)",
+    ),
+    (
+        "hit_slug_hazard",
+        "void __thiscall hit_slug_hazard(SlugHazardRuntime* slug, int32_t damage)",
+    ),
+    (
+        "explode_slug_hazard",
+        "void __thiscall explode_slug_hazard(SlugHazardRuntime* slug)",
+    ),
+    (
+        "kill_slug_hazard",
+        "void __thiscall kill_slug_hazard(SlugHazardRuntime* slug)",
+    ),
+    (
+        "update_slug_hazard_ai",
+        "void __thiscall update_slug_hazard_ai(SlugHazardRuntime* slug)",
+    ),
     (
         "initialize_track_health_pickup_runtime",
         "TrackHealthPickup* __thiscall initialize_track_health_pickup_runtime(TrackHealthPickup* pickup)",

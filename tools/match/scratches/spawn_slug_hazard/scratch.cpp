@@ -16,24 +16,24 @@ extern GameRoot* g_game; // data_4df904
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
+int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
 {
     int slot_index = 0;
     Slug* scan = slug_hazards.slots;
     while (1) {
-        if (scan->state == 0)
+        if (scan->state == SUB_SLUG_STATE_INACTIVE)
             break;
         ++slot_index;
         ++scan;
-        if (slot_index < 8)
+        if (slot_index < SUB_SLUG_SLOT_CAPACITY)
             continue;
         return slot_index;
     }
 
     int* state_ref = &slug_hazards.slots[slot_index].state;
-    Player** player_ref = &slug_hazards.slots[slot_index].player;
-    *state_ref = 1;
-    *player_ref = player;
+    Player** player_ref = &slug_hazards.slots[slot_index].owner_player;
+    *state_ref = SUB_SLUG_STATE_ACTIVE;
+    *player_ref = owner_player;
     slug_hazards.slots[slot_index].transform.set_matrix_identity();
 
     Vector3 staged_position;
@@ -70,7 +70,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     }
 
     Sprite* sprite =
-        g_sprite_manager.allocate_sprite(player->player_slot, 118, -1, -1);
+        g_sprite_manager.allocate_sprite(owner_player->player_slot, 118, -1, -1);
     slug_hazards.slots[slot_index].sprite = sprite;
     unsigned int flags = sprite->flags;
     flags |= 0x800;

@@ -21,7 +21,7 @@ double random_signed_float_below(float upper_bound, const char* tag);
 
 #define REMOVE_SLUG_FROM_BOD_LIST_AND_KILL()                         \
     do {                                                             \
-        state = 0;                                                   \
+        state = SUB_SLUG_STATE_INACTIVE;                             \
         BodList* list = &g_game->active_bod_list;                    \
         DWORD flags = list_flags;                                    \
         if ((flags & 0x200) == 0) {                                  \
@@ -61,10 +61,10 @@ void Slug::update_slug_hazard_ai()
     Vector3 random_velocity;
 
     switch (state) {
-    case 0:
+    case SUB_SLUG_STATE_INACTIVE:
         return;
 
-    case 1:
+    case SUB_SLUG_STATE_ACTIVE:
         if (hit_flash_pending != 0 && g_render_queue_active != 0) {
             hit_flash_pending = 0;
             hit_flash_progress = hit_flash_progress_step;
@@ -108,7 +108,7 @@ void Slug::update_slug_hazard_ai()
         }
 
 active_state_tail:
-        if (player->transform.position.z + 1.0f > transform.position.z
+        if (owner_player->transform.position.z + 1.0f > transform.position.z
             && player_encounter_latched == 0) {
             player_encounter_latched = 1;
             random_value = next_math_random_value();
@@ -119,21 +119,21 @@ active_state_tail:
             }
         }
 
-        if (transform.position.z < player->transform.position.z && passed_player == 0)
+        if (transform.position.z < owner_player->transform.position.z && passed_player == 0)
             passed_player = 1;
 
         if (engagement_voice_gate == 1
-            && player->transform.position.z + 16.0f > transform.position.z) {
+            && owner_player->transform.position.z + 16.0f > transform.position.z) {
             engagement_voice_gate = 0;
             g_voice_manager.play_voice_manager(
                 VOICE_SET_ENEMIES, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
         }
 
         sprite->position = transform.position;
-        if (transform.position.z < player->interaction_max_z) {
+        if (transform.position.z < owner_player->interaction_max_z) {
             REMOVE_SLUG_FROM_BOD_LIST_AND_KILL();
         }
-        if (player->nuke_effect_progress > 0.0f)
+        if (owner_player->nuke_effect_progress > 0.0f)
             kill_slug_hazard();
         owner_game->enemy_manager.append_subgame_contact_target(
             &transform.position,
@@ -142,18 +142,18 @@ active_state_tail:
             (ContactTargetObject*)this);
         break;
 
-    case 4:
+    case SUB_SLUG_STATE_LATERAL_ACTIVE:
         lateral_phase = lateral_phase_step + lateral_phase;
         if (lateral_phase > 6.28318548f)
             lateral_phase = lateral_phase - 6.28318548f;
         transform.position.x = sine(lateral_phase) * 3.0f;
-        if (transform.position.z < player->transform.position.z && passed_player == 0)
+        if (transform.position.z < owner_player->transform.position.z && passed_player == 0)
             passed_player = 1;
         sprite->position = transform.position;
-        if (transform.position.z < player->interaction_max_z) {
+        if (transform.position.z < owner_player->interaction_max_z) {
             REMOVE_SLUG_FROM_BOD_LIST_AND_KILL();
         }
-        if (player->nuke_effect_progress > 0.0f)
+        if (owner_player->nuke_effect_progress > 0.0f)
             kill_slug_hazard();
         owner_game->enemy_manager.append_subgame_contact_target(
             &transform.position,
@@ -162,8 +162,8 @@ active_state_tail:
             (ContactTargetObject*)this);
         break;
 
-    case 2: {
-        state = 3;
+    case SUB_SLUG_STATE_DEATH_TOSS_PENDING: {
+        state = SUB_SLUG_STATE_TEARDOWN_PENDING;
         random_velocity.z = (float)random_float_below(0.300000012f, 0);
         random_velocity.y =
             (float)random_float_below(0.200000003f, 0) + 0.100000001f;
@@ -171,10 +171,10 @@ active_state_tail:
             (float)random_signed_float_below(0.100000001f, "SDI");
         velocity = random_velocity;
 
-        if (death_toss_direction == 1) {
+        if (death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT) {
             if (velocity.x < 0.0f)
                 velocity.x = -velocity.x;
-        } else if (death_toss_direction == 2) {
+        } else if (death_toss_direction == SUB_SLUG_DEATH_TOSS_LEFT) {
             if (velocity.x > 0.0f)
                 velocity.x = -velocity.x;
         }
@@ -193,15 +193,15 @@ active_state_tail:
         REMOVE_SLUG_FROM_BOD_LIST_AND_KILL();
     }
 
-    case 3:
+    case SUB_SLUG_STATE_TEARDOWN_PENDING:
         REMOVE_SLUG_FROM_BOD_LIST_AND_KILL();
 
     default:
         break;
     }
 
-    sprite->facing_angle = player->heading_roll + attachment_facing_angle;
-    if (player->follow_state.active == 1)
-        sprite->facing_angle += player->follow_state.orientation_b;
+    sprite->facing_angle = owner_player->heading_roll + attachment_facing_angle;
+    if (owner_player->follow_state.active == 1)
+        sprite->facing_angle += owner_player->follow_state.orientation_b;
     update_slug_voice_ai();
 }

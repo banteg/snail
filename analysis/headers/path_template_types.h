@@ -606,6 +606,23 @@ typedef struct TrackHealthPickup {
 } TrackHealthPickup;
 
 /* Exact 0xec-byte authored cRSlug hazard slot. */
+enum SubSlugState {
+    SUB_SLUG_STATE_INACTIVE = 0,
+    SUB_SLUG_STATE_ACTIVE = 1,
+    SUB_SLUG_STATE_DEATH_TOSS_PENDING = 2,
+    SUB_SLUG_STATE_TEARDOWN_PENDING = 3,
+    SUB_SLUG_STATE_LATERAL_ACTIVE = 4,
+};
+
+enum SubSlugDeathTossDirection {
+    SUB_SLUG_DEATH_TOSS_RIGHT = 1,
+    SUB_SLUG_DEATH_TOSS_LEFT = 2,
+};
+
+enum {
+    SUB_SLUG_SLOT_CAPACITY = 8,
+};
+
 typedef struct SlugHazardRuntime {
     RenderableBod bod;
     uint8_t _pad_78[0x80 - 0x78];
@@ -621,7 +638,7 @@ typedef struct SlugHazardRuntime {
     uint8_t _pad_b5[0xb8 - 0xb5];
     float lateral_phase;
     float lateral_phase_step;
-    Player* player;
+    Player* owner_player;
     int32_t engagement_voice_gate;
     int32_t hit_points;
     uint8_t hit_flash_pending;
@@ -638,7 +655,7 @@ typedef struct SlugHazardRuntime {
 } SlugHazardRuntime;
 
 typedef struct SlugPool {
-    SlugHazardRuntime slots[8];
+    SlugHazardRuntime slots[SUB_SLUG_SLOT_CAPACITY];
 } SlugPool;
 
 typedef struct SubLazerManager {

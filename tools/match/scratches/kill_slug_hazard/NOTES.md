@@ -25,3 +25,11 @@ never part of the caller contract.
 from the exact slug kill path and makes the lifetime explicit: each inline
 `Slug` borrows its enclosing `SubgameRuntime`, which owns the scoring Player.
 Focused Wibo remains exact at 35/35 with all seven masked operands clean.
+
+## 2026-07-14 lifecycle roles
+
+Windows and Android agree on the transition from active state one to
+death-toss-pending state two and on direction one/two selecting the positive-x
+right side or non-positive-x left side. Those roles now come from shared enums
+rather than isolated literals. The exact 35-instruction body and all seven
+masked operands remain byte-identical.
