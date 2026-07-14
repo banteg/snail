@@ -729,6 +729,15 @@ def _resolve_object_relocation(
             key = _format_reference_key(reference_symbol)
         return text, key, explained
 
+    # VC6 gives compiler-generated local initializer/destructor helpers names
+    # such as _$E1. They are real function symbols, and their leading opcode
+    # can otherwise be misread as a one-character C string (for example,
+    # push imm32 starts with ASCII 'h'). Keep the symbol identity here; the
+    # masked-operand audit verifies bounded local helpers by normalized code.
+    if _is_function_symbol(symbol):
+        text, key = _format_symbol_reference(symbol.name, addend or 0)
+        return text, key, bool(_canonical_symbol_name(symbol.name))
+
     if symbol.section_number > 0:
         section = obj.sections[symbol.section_number - 1]
         candidates = [symbol.value]
@@ -852,7 +861,11 @@ def extract_object_function(
             if symbol_section is not None
             else None
         )
-        retain_local_symbol = symbol.name.startswith("$L") and symbol_end is not None
+        canonical_symbol_name = _canonical_symbol_name(symbol.name)
+        retain_local_symbol = (
+            canonical_symbol_name.startswith(("$L", "$E"))
+            and symbol_end is not None
+        )
         relocation_references.append(
             ObjectRelocationReference(
                 offset=offset,
@@ -1241,7 +1254,12 @@ def disassemble_normalized_function(
                 reference.symbol_name,
                 kind="jump_table",
             )
-        if reference is not None and reference.symbol_name.startswith("$L"):
+        local_symbol_name = (
+            _canonical_symbol_name(reference.symbol_name)
+            if reference is not None
+            else ""
+        )
+        if reference is not None and local_symbol_name.startswith(("$L", "$E")):
             symbol_addend = reference.addend or 0
             local_offset = (
                 reference.symbol_offset + symbol_addend
@@ -1266,7 +1284,7 @@ def disassemble_normalized_function(
                     if size is not None
                 )
             )
-            if local_offset is not None:
+            if local_offset is not None and local_symbol_name.startswith("$L"):
                 table_options: list[tuple[int, ...]] = []
                 for table_size in table_sizes:
                     entries = _read_object_jump_table_entries(
@@ -1553,7 +1571,7 @@ def _reference_status(
         return (
             target.text.startswith("function_alias:")
             and candidate.source == "reloc"
-            and candidate.text.startswith("sym:$L")
+            and candidate.text.startswith(("sym:$L", "sym:$E"))
         )
 
     def jump_table_entries_match(

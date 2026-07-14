@@ -40,6 +40,15 @@ def test_normalize_type_name_canonicalizes_array_dimensions() -> None:
     ) == _narrow_sync.normalize_type_name("PathPair[63]")
 
 
+def test_normalize_prototype_treats_default_cdecl_as_equivalent() -> None:
+    assert _narrow_sync.normalize_prototype(
+        "void()", identifier="initialize_global_identity_matrix"
+    ) == _narrow_sync.normalize_prototype(
+        "void __cdecl initialize_global_identity_matrix()",
+        identifier="initialize_global_identity_matrix",
+    )
+
+
 def test_current_struct_size_reads_layout(monkeypatch) -> None:
     monkeypatch.setattr(
         _narrow_sync,

@@ -680,6 +680,11 @@ def normalize_prototype(prototype: str, *, identifier: str) -> str:
     # orthogonal to the ABI/type comparison so repeatable syncs do not try to
     # overwrite an already-correct pure function.
     normalized = re.sub(r"\s+__pure\b", "", normalized)
+    # Binary Ninja omits the platform-default cdecl convention when rendering
+    # a function type. Explicit __cdecl and no printed convention are the same
+    # x86 ABI, so treating them as distinct makes an otherwise idempotent sync
+    # reapply every ordinary C helper on each replay.
+    normalized = re.sub(r"\s+__cdecl\b", "", normalized)
     normalized = normalized.replace(f" {identifier}(", "(")
     return normalize_type_name(normalized)
 

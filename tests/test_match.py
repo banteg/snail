@@ -622,7 +622,23 @@ def test_extract_object_function_resolves_audited_local_function_alias() -> None
     assert reference.explained
 
 
-def test_masked_operand_audit_accepts_cross_section_local_function_alias_by_code() -> None:
+def test_extract_object_function_preserves_vc6_local_initializer_code() -> None:
+    code = bytes.fromhex("e900000000") + bytes.fromhex("6800000000c3")
+    obj = parse_coff_object(
+        build_object(code, [("_foo", 0), ("_$E1", 5)], [(1, 1)])
+    )
+    function = extract_object_function(obj, "foo")
+    reference = function.relocation_references[0]
+
+    assert reference.text == "sym:$E1"
+    assert reference.key == "name:$E1"
+    assert reference.symbol_data == bytes.fromhex("6800000000c3")
+
+
+@pytest.mark.parametrize("local_symbol", ["$Lnew", "$E1"])
+def test_masked_operand_audit_accepts_cross_section_local_function_alias_by_code(
+    local_symbol: str,
+) -> None:
     handler_address = 0x402000
     mapped = bytearray(b"\x00" * 0x3000)
     mapped[0x2000 : 0x200A] = bytes.fromhex("b800214000e9f6efffff")
@@ -633,9 +649,9 @@ def test_masked_operand_audit_accepts_cross_section_local_function_alias_by_code
         relocation_references=(
             ObjectRelocationReference(
                 offset=1,
-                symbol_name="$Lnew",
-                text="sym:$Lnew",
-                key="name:$Lnew",
+                symbol_name=local_symbol,
+                text=f"sym:{local_symbol}",
+                key=f"name:{local_symbol}",
                 explained=True,
                 addend=0,
                 symbol_offset=None,
