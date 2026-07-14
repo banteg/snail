@@ -1,6 +1,6 @@
 // Shared BodBase/RenderableBod initializer-family views.
 // iOS RObject.o names these owners cRBod and cRBodPos.
-// More runtime-specific object geometry and AI fields stay scratch-local.
+// More runtime-specific AI fields stay scratch-local.
 #ifndef BOD_TYPES_H
 #define BOD_TYPES_H
 
@@ -8,7 +8,6 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-struct ObjectGeometry;
 struct Object;
 
 class BodBase : public BodNode {
@@ -16,7 +15,7 @@ public:
     BodBase* initialize_bod_base();       // @ 0x42f5f0
     bool is_bod_after_sprites();          // @ 0x42f5c0
     int set_bod_object(void* object);     // @ 0x42f5d0
-    ObjectGeometry* apply_bod_position(TransformMatrix* matrix); // @ 0x42f680
+    Object* apply_bod_position(TransformMatrix* matrix); // @ 0x42f680
 
     Vector3 position;   // +0x10, copied into temporary render matrices
     float render_arg_1c; // +0x1c, forwarded to render_object texture-u offset
