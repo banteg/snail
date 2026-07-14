@@ -1,9 +1,6 @@
 // initialize_font_wave_state @ 0x449c70 (cdecl, ret)
 
-extern float g_font_wave_phase_a; // data_7772e8
-extern float g_font_wave_step_a;  // data_777b28
-extern float g_font_wave_phase_b; // data_7772ec
-extern float g_font_wave_step_b;  // data_7772f4
+#include "font_system.h"
 
 void initialize_font_wave_state()
 {

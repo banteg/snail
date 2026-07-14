@@ -14,7 +14,7 @@ int register_font_texture_sheet(
     float height_scale)
 {
     int split_x = 0;
-    if (g_registered_font_count == 1)
+    if (g_registered_font_count == FONT_SHEET_CAPACITY)
         report_errorf("Too many Fonts RFONT_FONT_MAX in font.h");
 
     TgaImageView* image = (TgaImageView*)load_file_bytes(texture_path, 0);
@@ -94,7 +94,7 @@ int register_font_texture_sheet(
             }
 
             ++slot;
-            if (slot == 0x80)
+            if (slot == FONT_GLYPH_CAPACITY)
                 report_errorf("Too many Font letters increase RFONT_LETTERS_MAX in font.h");
         }
 

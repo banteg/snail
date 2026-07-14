@@ -17,7 +17,7 @@ void queue_font_text_instance(
 {
     if (g_render_queue_active != 0) {
         int index = g_font_queue_count;
-        if (index != 0x400) {
+        if (index != FONT_QUEUE_CAPACITY) {
             int offset = index * sizeof(FontQueueEntry);
             ((FontQueueEntry*)((char*)g_font_queue + offset))->flags = flags | 1;
             ((FontQueueEntry*)((char*)g_font_queue + offset))->font_id = font_id;
@@ -34,7 +34,7 @@ void queue_font_text_instance(
 
             register char* source = text;
             while (*source != '\0') {
-                if (cursor - g_font_text_buffer > 0x7fe) {
+                if (cursor - g_font_text_buffer > FONT_TEXT_BUFFER_CAPACITY - 2) {
                     *cursor = '\0';
                     char* next = g_font_text_cursor + 1;
                     g_font_text_cursor = next;

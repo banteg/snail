@@ -6,6 +6,8 @@
 #include "sprite.h"
 
 enum {
+    FONT_SHEET_CAPACITY = 1,
+    FONT_TEXT_BUFFER_CAPACITY = 0x800,
     FONT_QUEUE_CAPACITY = 1024,
 };
 
@@ -66,13 +68,16 @@ struct FontQueueEntry {
 typedef char FontQueueEntry_must_be_0x84[
     (sizeof(FontQueueEntry) == 0x84) ? 1 : -1];
 
-extern FontSheet g_font_sheets[];        // data_7772f8
+extern FontSheet g_font_sheets[FONT_SHEET_CAPACITY]; // data_7772f8
 extern FontQueueEntry g_font_queue[FONT_QUEUE_CAPACITY]; // data_7544e8
 extern int g_registered_font_count;       // data_777b20
 extern int g_font_queue_count;           // data_777b24
-extern char g_font_text_buffer[];         // data_753ce8
+extern char g_font_text_buffer[FONT_TEXT_BUFFER_CAPACITY]; // data_753ce8
 extern char* g_font_text_cursor;          // data_7772f0
 extern float g_font_wave_phase_a;         // data_7772e8
+extern float g_font_wave_phase_b;         // data_7772ec
+extern float g_font_wave_step_b;          // data_7772f4
+extern float g_font_wave_step_a;          // data_777b28
 int report_errorf(const char* format, ...);
 int font_slot_index_for_char(char value); // @ 0x449d20
 float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90

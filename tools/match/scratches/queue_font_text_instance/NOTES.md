@@ -31,3 +31,15 @@ the saved `esi` lifetime to the `Color4f` aggregate copy like native. The plain
 `while (*text)` spelling improved to 75.68% but still saved `esi` across the
 whole function; a `for` update was codegen-neutral with that shape, while an
 explicit `goto` loop regressed to the old duplicated-loop family.
+
+## 2026-07-14 fixed text and queue bank extents
+
+`g_font_text_buffer` starts at `0x753ce8` and ends exactly at the
+`g_font_queue` base `0x7544e8`, proving its `0x800`-byte capacity. The 1024
+`0x84`-byte queue entries then end exactly at `g_font3d_bods` (`0x7754e8`).
+The producer now derives both its queue-full test and its two-byte
+terminator/advance reserve from those shared capacities.
+
+The exact function remains byte-identical (`73/73`, 24 clean operands), with
+normalized candidate hash
+`8259fdafd19a39e9657714750580a1474f2bc296f9b84087f797edf5c14597d7`.

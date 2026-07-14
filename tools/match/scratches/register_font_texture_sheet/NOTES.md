@@ -55,3 +55,17 @@ neighbors included a count snapshot, late `FontSheet*` declarations,
   slot on the stack, while VC6 assigns those two owners oppositely in the
   candidate, adding one four-byte local. No forced spill or dummy dependency is
   used to hide that residual.
+
+## 2026-07-14 fixed font-bank extents
+
+The native globals close the remaining fixed capacities without inference:
+one `0x828`-byte `FontSheet` starts at `0x7772f8` and ends exactly at
+`g_registered_font_count` (`0x777b20`), while each sheet owns 128 entries in
+all four glyph lanes. The registrar now checks `FONT_SHEET_CAPACITY` and
+`FONT_GLYPH_CAPACITY`, and `g_font_sheets` carries its real one-element extent.
+
+The source-only ownership change preserves the normalized candidate listing
+byte-for-byte
+(`35f3e3abff48d6ec831ea4e200f079034f640ba6b4e0c16d6668f4af4ed09e49`)
+and the honest 75.41% result (`275/274`, prefix `0/274`, 51 clean operands and
+the existing `slot_count`/`font_kind` owner mismatch).
