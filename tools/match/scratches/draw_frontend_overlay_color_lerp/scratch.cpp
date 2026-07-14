@@ -2,6 +2,7 @@
 
 #include "font_system.h"
 #include "frontend_overlay_color_lerp.h"
+#include "render_scene.h"
 
 void FrontendOverlayColorLerp::draw_frontend_overlay_color_lerp()
 {
@@ -17,7 +18,7 @@ void FrontendOverlayColorLerp::draw_frontend_overlay_color_lerp()
             0.0f,
             640.0f,
             480.0f,
-            state & 0xff000000,
+            state & RENDER_SCENE_MASK,
             &current,
             5);
     }

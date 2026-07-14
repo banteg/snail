@@ -114,7 +114,7 @@ char GameRoot::initialize_game_assets_and_world()
     memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
 
     render_camera_slots[0].sort_key = 0;
-    render_camera_slots[0].flags = 0x1000003;
+    render_camera_slots[0].flags = RENDER_SCENE_OVERLAY_0 | 3;
     render_camera_slots[0].source = &overlay_0.camera;
     render_camera_slots[0].viewport_x = 0.0f;
     render_camera_slots[0].viewport_y = 0.0f;
@@ -150,17 +150,17 @@ char GameRoot::initialize_game_assets_and_world()
         g_builtin_segment_definitions);
 
     render_camera_slots[1].sort_key = 1;
-    render_camera_slots[1].flags = 0x2000001;
+    render_camera_slots[1].flags = RENDER_SCENE_PLAYER_0 | 1;
     render_camera_slots[1].attach_render_camera_source(&players[0].camera);
-    players[0].camera.render_mask = 0x2000000;
+    players[0].camera.render_mask = RENDER_SCENE_PLAYER_0;
 
     render_camera_slots[4].sort_key = 1;
-    render_camera_slots[4].flags = 0x10000003;
+    render_camera_slots[4].flags = RENDER_SCENE_PLAYER_1 | 3;
     render_camera_slots[4].attach_render_camera_source(&players[1].camera);
-    players[1].camera.render_mask = 0x10000000;
+    players[1].camera.render_mask = RENDER_SCENE_PLAYER_1;
 
     render_camera_slots[3].sort_key = 3;
-    render_camera_slots[3].flags = 0x8000003;
+    render_camera_slots[3].flags = RENDER_SCENE_OVERLAY_2 | 3;
     render_camera_slots[3].source = &overlay_2.camera;
     render_camera_slots[3].viewport_x = 0.0f;
     render_camera_slots[3].viewport_y = 0.0f;
@@ -169,7 +169,7 @@ char GameRoot::initialize_game_assets_and_world()
     initialize_overlay_slot(&overlay_2);
 
     render_camera_slots[2].sort_key = 2;
-    render_camera_slots[2].flags = 0x4000003;
+    render_camera_slots[2].flags = RENDER_SCENE_OVERLAY_1 | 3;
     render_camera_slots[2].source = &overlay_1.camera;
     render_camera_slots[2].viewport_x = 0.0f;
     render_camera_slots[2].viewport_y = 0.0f;

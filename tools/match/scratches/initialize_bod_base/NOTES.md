@@ -20,7 +20,7 @@ views.
 ## 2026-07-14 shared BOD flag ownership
 
 The default `0x02000020` store is now the named combination
-`BOD_FLAG_VIEWPORT_1 | BOD_FLAG_RENDER_ENABLED`. The render traversal proves
+`RENDER_SCENE_PLAYER_0 | BOD_FLAG_RENDER_ENABLED`. The render traversal proves
 the high byte is intersected with `render_camera_slots[1].flags`, while banner,
 landscape, animation, and subgame lifecycles independently toggle the low
 visibility bit. `RenderableBod` adds `BOD_FLAG_USE_TRANSFORM`, matching the

@@ -2,6 +2,7 @@
 #define RENDER_CAMERA_SLOT_H
 
 #include "bod_types.h"
+#include "render_scene.h"
 
 // iOS names this render-camera owner cRCamera. Windows embeds one in each
 // GamePlayer and lends it to RenderCameraSlot; the slot does not own it.

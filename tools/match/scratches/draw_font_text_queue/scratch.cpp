@@ -1,6 +1,7 @@
 // draw_font_text_queue @ 0x44a730 (cdecl)
 
 #include "font_system.h"
+#include "render_scene.h"
 
 void draw_font_text_queue(unsigned int render_mask)
 {
@@ -11,7 +12,7 @@ void draw_font_text_queue(unsigned int render_mask)
         do {
             --entry;
             unsigned int flags = entry->flags;
-            if ((flags & render_mask & 0xff000000) != 0) {
+            if ((flags & render_mask & RENDER_SCENE_MASK) != 0) {
                 if ((flags & 1) != 0)
                     draw_font_text_instance(entry);
                 else

@@ -58,7 +58,8 @@ void GameRoot::render_game_frame()
         }
     }
 
-    slots[1].flags = (slots[1].flags & 0x00ffffff) | 0x02000000;
+    slots[1].flags =
+        (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;
 
     int ordered_count = 0;
     for (i = 0; i < CAMERA_SLOT_COUNT; ++i) {
@@ -120,7 +121,7 @@ void GameRoot::render_game_frame()
 
                     if ((bod->list_flags & BOD_FLAG_HAS_OBJECT) != 0 &&
                         (bod->list_flags & BOD_FLAG_RENDER_ENABLED) != 0 &&
-                        (slot->flags & bod->list_flags & BOD_VIEWPORT_MASK) != 0) {
+                        (slot->flags & bod->list_flags & RENDER_SCENE_MASK) != 0) {
                         if ((bod->list_flags & BOD_FLAG_AFTER_SPRITES) != 0) {
                             *post_cursor = bod;
                             ++post_cursor;
@@ -164,7 +165,7 @@ void GameRoot::render_game_frame()
             while (sprite != 0) {
                 ++rendered_sprite_count;
                 unsigned int sprite_flags = sprite->flags;
-                if ((slot->flags & sprite_flags & 0xff000000) != 0) {
+                if ((slot->flags & sprite_flags & RENDER_SCENE_MASK) != 0) {
                     if ((sprite_flags & 1) != 0 &&
                         (sprite_flags & 0x40) != 0 &&
                         (sprite_flags & 0x200) == 0) {

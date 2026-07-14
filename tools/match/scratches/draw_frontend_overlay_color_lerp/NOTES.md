@@ -8,6 +8,9 @@ Small front-end overlay fade update/draw helper.
   update.
 - The overlay quad is only queued while the current alpha is above `0.01f`.
   The state word contributes the high-byte render flags through
-  `state & 0xff000000`.
+  `state & RENDER_SCENE_MASK`.
 - Full Wibo result: 2026-06-18, 100.00%, 38/38 instructions, 6 masked operands
   ok.
+
+The shared name is codegen-neutral and ties this producer to the same scene
+selection used by camera slots, BODs, sprites, and queued font entries.

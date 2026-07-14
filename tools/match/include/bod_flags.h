@@ -2,6 +2,8 @@
 #ifndef BOD_FLAGS_H
 #define BOD_FLAGS_H
 
+#include "render_scene.h"
+
 enum BodFlag {
     // Set by cRBod::SetObject and required by the render traversal.
     BOD_FLAG_HAS_OBJECT = 0x00000002,
@@ -21,10 +23,6 @@ enum BodFlag {
     BOD_FLAG_SYNC_ANIMATION = 0x00000800,
     // Prevents the BOD from entering the per-frame contact-target registry.
     BOD_FLAG_SUPPRESS_CONTACT = 0x00001000,
-    // Default cRBod scene bit, consumed by render_camera_slots[1].
-    BOD_FLAG_VIEWPORT_1 = 0x02000000,
 };
-
-const unsigned int BOD_VIEWPORT_MASK = 0xff000000u;
 
 #endif

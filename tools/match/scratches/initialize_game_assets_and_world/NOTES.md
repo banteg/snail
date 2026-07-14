@@ -719,3 +719,16 @@ but no longer discard its `active_bod_list`, `subgame`, or
 
 This is byte-stable at the existing 80.50%, 5,392/5,411 instruction frontier,
 with 1,550 clean operands and the same 101 broad alignment mismatches.
+
+## 2026-07-14 render-scene ownership
+
+The five camera-slot high bits are now one shared `RenderSceneFlag` contract:
+slots 0, 2, and 3 own overlay scenes 0, 1, and 2; slot 1 owns player 0; and
+slot 4 owns player 1. The two embedded player cameras receive the same scene
+bits as their borrowing slots. `render_game_frame`, the exact font queue drain,
+the exact front-end overlay draw, and BOD construction independently consume
+the same high-byte mask.
+
+Replacing the seven startup literals with those named owners is codegen-neutral
+at the existing 80.50% frontier (5,392/5,411 instructions, 1,550 clean operands,
+101 known broad mismatches).

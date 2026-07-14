@@ -172,10 +172,16 @@ reference alias keeps all 26 operands clean.
 ## 2026-07-14 BOD render-flag ownership
 
 The render traversal now names the independently proved BOD flag contract:
-`HAS_OBJECT`, `RENDER_ENABLED`, and the high-byte viewport mask gate entry;
+`HAS_OBJECT`, `RENDER_ENABLED`, and the shared high-byte scene mask gate entry;
 `AFTER_SPRITES` stages the replay pass; `SYNC_ANIMATION` borrows the embedded
 manager; and `USE_TRANSFORM` selects the full matrix path. The same shared word
 also carries the diagnostic bit consumed by both `cRGame::AI()` and
 `cRGame::Render()`. Exact constructors/setters and the exact after-sprites
 helper prove the producer side. Focused output remains the honest 45.43%,
 415/439 result with all 26 masked operands clean.
+
+The high byte is now owned separately as `RenderSceneFlag`: startup binds the
+five bits to three overlays and two player camera slots, while this method uses
+`RENDER_SCENE_MASK` identically for BOD, sprite, and queued-text selection.
+This broader owner replaces the temporary BOD-local viewport naming without
+changing the focused result.
