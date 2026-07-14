@@ -451,3 +451,17 @@ verified structurally rather than whitelisted.
   (`bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`)
   and the honest 88.89% focused result (`299/268`, prefix `2/268`, 120 clean
   operands).
+
+## 2026-07-14 runtime size-ledger array owners
+
+The remaining aggregate entries for cRSubHealth, cRSlug, cRSubGarbage, and
+cRPath now derive from the actual `SubgameRuntime` members instead of detached
+`sizeof(type) * literal` expressions. This preserves an important native
+distinction: the cRSubGarbage ledger entry covers the 50 owned slots but not
+the adjacent borrowed active-list head in `SubGarbagePool`.
+
+The member-derived sizes preserve the normalized candidate listing
+byte-for-byte
+(`bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`)
+and the honest 88.89% focused result (`299/268`, prefix `2/268`, 120 clean
+operands).

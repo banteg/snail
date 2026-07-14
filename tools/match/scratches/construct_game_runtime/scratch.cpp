@@ -33,11 +33,11 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSubTracks %i\n", sizeof(SubTracks)); \
     debug_report_stub("   Size of cRSubSpeedUp %i\n", sizeof(SubSpeedUp)); \
     debug_report_stub("   Size of cRJetPack %i\n", sizeof(JetPack)); \
-    debug_report_stub("   Size of cRSubHealth %i\n", sizeof(SubHealth) * 8); \
-    debug_report_stub("   Size of cRSlug %i\n", sizeof(Slug) * 8); \
+    debug_report_stub("   Size of cRSubHealth %i\n", sizeof(((SubgameRuntime*)0)->health_pickups)); \
+    debug_report_stub("   Size of cRSlug %i\n", sizeof(((SubgameRuntime*)0)->slug_hazards.slots)); \
     debug_report_stub("   Size of cRSubLazerManager %i\n", sizeof(SubLazerManager)); \
     debug_report_stub("   Size of cRSaltManager %i\n", sizeof(SaltManager)); \
-    debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(SubGarbage) * 50); \
+    debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(((SubgameRuntime*)0)->garbage_hazards.slots)); \
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
     debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \
     debug_report_stub("   Size of cRSubGoldy %i\n", sizeof(Player)); \
@@ -47,7 +47,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
     debug_report_stub("   Size of cRSubSolution %i\n", sizeof(SubSolution)); \
     debug_report_stub("   Size of cRTimeTrial %i\n", sizeof(TimeTrial)); \
     debug_report_stub("   Size of cRPathManager %i\n", sizeof(PathManager)); \
-    debug_report_stub("   Size of cRPath %i\n", sizeof(Path) * PATH_COUNT); \
+    debug_report_stub("   Size of cRPath %i\n", sizeof(((SubgameRuntime*)0)->path_pairs)); \
     debug_report_stub("   Size of cRLandscapeManager %i\n", sizeof(LandscapeManager)); \
     debug_report_stub("   Size of cRSMTracks %i\n", sizeof(SMTracks)); \
     debug_report_stub("   Size of cRParcelManager %i\n", sizeof(ParcelManager)); \
