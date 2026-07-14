@@ -811,7 +811,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 105/99 | 36.27% | 0/99 | - |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1208/1245 | 29.27% | 2/1245 | 1 mismatch, 60 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 30.93% | 0/639 | 2 mismatch, 40 ok |  |
-| 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
+| 🚧 | draw_font_text_instance | 0x44a360 | 867 | 221/272 | 35.70% | 1/272 | 19 ok |  |
 
 ## Reference Only (third-party) (3)
 

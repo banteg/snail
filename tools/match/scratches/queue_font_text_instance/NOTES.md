@@ -12,14 +12,14 @@ Recovered relationships:
 
 - Uses the same `g_render_queue_active` gate and `g_font_queue_count` maximum
   as the queued quad helpers.
-- Appends a text entry (`flags | 1`) into the shared `FontQueueEntry` array.
+- Appends a text entry (`flags | 1`) into the shared `cFontPrintBuffer` array.
 - Stores font id (`+0x3c`), scale (`+0x40`), x/y (`+0x04/+0x08`), horizontal
   alignment (`+0x48`), anchor x (`+0x4c`), text-wave amplitude (`+0x34`), and
   text-wave enable byte (`+0x38`).
 - Copies the input text into `g_font_text_buffer` through `g_font_text_cursor`,
   capped at `0x7fe` bytes before forcing a terminator and advancing the cursor.
 
-2026-06-17 cleanup: the queue writes now use the shared `FontQueueEntry` fields
+2026-06-17 cleanup: the queue writes now use the shared `cFontPrintBuffer` fields
 instead of re-spelling the same offsets through local byte-pointer casts.
 
 2026-06-21 text-copy owner pass: focused Wibo is now proof-grade at 100.00%,

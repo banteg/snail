@@ -31,7 +31,7 @@ struct FontSheet {
 typedef char FontSheet_must_be_0x828[
     (sizeof(FontSheet) == 0x828) ? 1 : -1];
 
-struct FontQueueEntry {
+struct cFontPrintBuffer {
     unsigned int flags;     // +0x00
     float x0;               // +0x04
     float y0;               // +0x08
@@ -65,11 +65,11 @@ struct FontQueueEntry {
     int blend;              // +0x80
 };
 
-typedef char FontQueueEntry_must_be_0x84[
-    (sizeof(FontQueueEntry) == 0x84) ? 1 : -1];
+typedef char cFontPrintBuffer_must_be_0x84[
+    (sizeof(cFontPrintBuffer) == 0x84) ? 1 : -1];
 
 extern FontSheet g_font_sheets[FONT_SHEET_CAPACITY]; // data_7772f8
-extern FontQueueEntry g_font_queue[FONT_QUEUE_CAPACITY]; // data_7544e8
+extern cFontPrintBuffer g_font_queue[FONT_QUEUE_CAPACITY]; // data_7544e8
 extern int g_registered_font_count;       // data_777b20
 extern int g_font_queue_count;           // data_777b24
 extern char g_font_text_buffer[FONT_TEXT_BUFFER_CAPACITY]; // data_753ce8
@@ -79,6 +79,8 @@ extern float g_font_wave_phase_b;         // data_7772ec
 extern float g_font_wave_step_b;          // data_7772f4
 extern float g_font_wave_step_a;          // data_777b28
 int report_errorf(const char* format, ...);
+void initialize_font_wave_state(); // @ 0x449c70
+void update_font_wave_state(); // @ 0x449ca0
 int font_slot_index_for_char(char value); // @ 0x449d20
 float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
 int register_font_texture_sheet(char* texture_path, int font_kind,
@@ -98,8 +100,9 @@ int draw_textured_quad_immediate(
     Color4f* color,
     int layer,
     int blend); // @ 0x413030
-int draw_font_text_instance(FontQueueEntry* entry); // @ 0x44a360
-int draw_queued_font_quad_instance(FontQueueEntry* entry); // @ 0x44a6d0
+void draw_font_text_instance(cFontPrintBuffer* entry); // @ 0x44a360
+void draw_queued_font_quad_instance(cFontPrintBuffer* entry); // @ 0x44a6d0
+void draw_font_text_queue(unsigned int render_mask); // @ 0x44a730
 int queue_axis_aligned_textured_quad(
     int texture_id,
     float x,

@@ -23,8 +23,8 @@ int queue_axis_aligned_textured_quad_uv(
             return report_errorf("Font print buffer overflow Increase RFONT_PRINT_MAX in font.h");
         if (width != 0.0f) {
             if (height != 0.0f) {
-                int offset = index * sizeof(FontQueueEntry);
-                FontQueueEntry* entry = (FontQueueEntry*)((char*)g_font_queue + offset);
+                int offset = index * sizeof(cFontPrintBuffer);
+                cFontPrintBuffer* entry = (cFontPrintBuffer*)((char*)g_font_queue + offset);
                 entry->flags = flags | 2;
                 entry->texture_id = texture_id;
                 entry->color = *color;

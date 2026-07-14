@@ -1035,6 +1035,94 @@
       "notes": "Both gate playback by the current voice and global frequency, optionally stop the active sample, and dispatch through the selected inline VoiceSet. The Windows member is exact; its recovered mode formal remains unsigned because that spelling preserves the observed Windows comparison."
     },
     {
+      "address": "0x449c70",
+      "windows_name": "initialize_font_wave_state",
+      "android_symbol": "FontInit()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the same two zeroed font-wave phases and two fixed phase increments. The exact Windows routine is void."
+    },
+    {
+      "address": "0x449ca0",
+      "windows_name": "update_font_wave_state",
+      "android_symbol": "FontAI()",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both reset the font text cursor and queue counters, advance the two wave phases, and wrap them at 2pi. Both Android callers and the sole Windows caller discard the incidental result, and the exact Windows routine remains void."
+    },
+    {
+      "address": "0x449d20",
+      "windows_name": "font_slot_index_for_char",
+      "android_symbol": "FontASCIIRemap(char)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the authored font remapper name and the same alphabet, digit, punctuation, icon-token, and fallback slot families."
+    },
+    {
+      "address": "0x449e90",
+      "windows_name": "measure_font_text_width",
+      "android_symbol": "FontGetStringX(char*, int, float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both accumulate per-glyph atlas widths through the remapper and append the scaled trailing-space adjustment."
+    },
+    {
+      "address": "0x449f50",
+      "windows_name": "register_font_texture_sheet",
+      "android_symbol": "FontLoad(char*, int, float, float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the atlas registrar, per-glyph delimiter scan, font count, scale parameters, and returned post-increment font index; texture container details differ by platform."
+    },
+    {
+      "address": "0x44a360",
+      "windows_name": "draw_font_text_instance",
+      "android_symbol": "FontPrintReal(cFontPrintBuffer*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both bodies align text, map glyphs, apply wave offsets, and submit atlas quads; their queue drains discard the incidental terminating-byte result, proving a void source contract."
+    },
+    {
+      "address": "0x44a6d0",
+      "windows_name": "draw_queued_font_quad_instance",
+      "android_symbol": "OSDPrintReal(cFontPrintBuffer*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both forward the explicit quad coordinates, texture, UVs, color, layer, and blend fields; the only Windows caller discards EAX, and the exact forwarder remains byte-identical as void."
+    },
+    {
+      "address": "0x44a730",
+      "windows_name": "draw_font_text_queue",
+      "android_symbol": "FontPrintRender(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both walk the cFontPrintBuffer queue backward, filter high-byte render flags, and dispatch text versus explicit-quad entries. The sole Windows caller discards EAX, and the exact routine remains void."
+    },
+    {
+      "address": "0x44a790",
+      "windows_name": "queue_font_text_instance",
+      "android_symbol": "FontPrint(char*, int, float, float, float, int, float, int, tColour, float, bool)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Android preserves the same queue gate, 0x84-byte cFontPrintBuffer stride, text-buffer cursor and cap, field layout, and queue-count increment."
+    },
+    {
+      "address": "0x44abe0",
+      "windows_name": "layout_and_queue_wrapped_font_text",
+      "android_symbol": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both split authored text into line runs, measure and optionally queue each run, apply alignment, and publish the block origin and bounds through four output floats."
+    },
+    {
+      "address": "0x44ae10",
+      "windows_name": "initialize_font3d_objects",
+      "android_symbol": "FontMake3D(short)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both materialize one 3D object per registered glyph from the font atlas and cache its width scale. Windows callers discard EAX and the recovered routine is void."
+    },
+    {
       "address": "0x43a9c0",
       "windows_name": "initialize_subgoldy",
       "ios_symbol": "cRSubGoldy::Init(int)",

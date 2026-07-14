@@ -13,7 +13,7 @@ Recovered relationships:
 
 - Uses the shared `g_render_queue_active` gate and `g_font_queue_count` maximum
   as the other 2D queue producers.
-- Appends a quad entry (`flags | 2`) into the shared `FontQueueEntry` array.
+- Appends a quad entry (`flags | 2`) into the shared `cFontPrintBuffer` array.
 - Stores texture id (`+0x50`), all four authored corner pairs (`+0x04/+0x08`,
   `+0x10/+0x14`, `+0x1c/+0x20`, `+0x28/+0x2c`), explicit UV bounds
   (`+0x5c..+0x68`), `Color4f` (`+0x6c`), layer (`+0x7c`), and blend

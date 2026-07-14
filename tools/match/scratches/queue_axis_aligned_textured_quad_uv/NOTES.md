@@ -12,7 +12,7 @@ Recovered relationships:
 
 - The active byte at `data_4b7236` is the broader render queue gate, not a
   font-only flag.
-- Shares the same `FontQueueEntry` layout and validation gates as
+- Shares the same `cFontPrintBuffer` layout and validation gates as
   `queue_axis_aligned_textured_quad`.
 - Stores caller-provided UV bounds at `+0x5c..+0x68`.
 - Used by front-end widgets, progress bars, damage gauge, galaxy display, and

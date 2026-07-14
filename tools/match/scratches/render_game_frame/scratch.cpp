@@ -18,7 +18,6 @@ void noop_runtime_ai();                      // @ 0x407b50
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in release
 int draw_sprite_quad(Vector3* position, Sprite* sprite); // @ 0x4137f0
-void draw_font_text_queue(unsigned int render_mask);     // @ 0x44a730
 
 extern RenderableBod* g_post_sprite_bods[]; // data_4dfb10
 

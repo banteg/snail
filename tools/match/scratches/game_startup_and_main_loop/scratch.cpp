@@ -1,6 +1,7 @@
 // game_startup_and_main_loop @ 0x406dc0 (stdcall, ret 0x10)
 
 #include "frontend_fade.h"
+#include "font_system.h"
 #include "game_root.h"
 #include "sub_high_score.h"
 #include "display_mode_state.h"
@@ -51,7 +52,6 @@ int present_backbuffer(); // @ 0x413520
 int update_keyboard_input(); // @ 0x44b870
 int update_joystick_input(); // @ 0x44b570
 int update_mouse(HWND hwnd); // @ 0x44bc50
-int update_font_wave_state(); // @ 0x449ca0
 int shutdown_bass_audio_window(); // @ 0x407b00
 int free_tracked_allocations_to_mark(); // @ 0x431c70
 void scalar_delete(void* pointer); // @ 0x48ba34

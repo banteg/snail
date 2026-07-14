@@ -4728,7 +4728,7 @@
         "data_7544e8"
       ],
       "size": "0x21000",
-      "description": "Shared 0x400-entry FontQueueEntry array populated by queued text and quad helpers before draw_font_text_queue drains it."
+      "description": "Shared 0x400-entry cFontPrintBuffer array populated by queued text and quad helpers before draw_font_text_queue drains it. The Android FontPrintBuffer symbol and adjacent FontPrintBufferIndex boundary independently preserve the authored class name, 0x84-byte stride, and complete extent."
     },
     {
       "address": "0x75cfff",

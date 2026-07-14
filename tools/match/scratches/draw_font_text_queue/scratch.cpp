@@ -6,7 +6,7 @@ void draw_font_text_queue(unsigned int render_mask)
 {
     int count = g_font_queue_count;
     if (count != 0) {
-        FontQueueEntry* entry = &g_font_queue[count];
+        cFontPrintBuffer* entry = &g_font_queue[count];
         int remaining = count;
         do {
             --entry;

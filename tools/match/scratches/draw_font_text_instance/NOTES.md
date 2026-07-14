@@ -4,7 +4,7 @@ Initial relationship scratch for the text queue renderer at `0x44a360`.
 
 Recovered relationships:
 
-- The native argument is a `FontQueueEntry*`; the old `float arg1` decompiler
+- The native argument is a `cFontPrintBuffer*`; the old `float arg1` decompiler
   type is wrong.
 - `horizontal_align` values `1/2/3` adjust the local x cursor from `anchor_x +
   320.0f`, with value `2` centering by half the measured width.
@@ -33,9 +33,13 @@ unresolved or mismatched in the initial run.
   with the direct atlas reads stays there. Delaying the sheet pointer past the
   direct reads was not a valid source shape because later advance code still
   needs the sheet outside the draw block.
-- Register hints, a copied `FontQueueEntry*`, a copied or volatile text cursor,
+- Register hints, a copied `cFontPrintBuffer*`, a copied or volatile text cursor,
   and register/copy combinations are all codegen-neutral at 35.67%; they do not
   move the top-level entry pointer from candidate `edi` to native `esi`.
 - Returning zero regresses to 35.34%, and explicit byte/int return locals are
-  neutral. The retained `return *cursor` keeps the best score even though the
-  remaining tail still has extra return-value materialization.
+  neutral. The independent Android symbol is
+  `FontPrintReal(cFontPrintBuffer*)`; its incidental terminating-byte result is
+  ignored by `FontPrintRender`, exactly as the Windows queue drain ignores EAX.
+  Recovering the authored `void` contract removes the synthetic return and
+  moves the honest focused result marginally from 35.67% (227/272) to 35.70%
+  (221/272), with the same 19 clean masked operands.

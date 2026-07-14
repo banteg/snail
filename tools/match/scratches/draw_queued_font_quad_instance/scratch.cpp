@@ -2,9 +2,9 @@
 
 #include "font_system.h"
 
-int draw_queued_font_quad_instance(FontQueueEntry* entry)
+void draw_queued_font_quad_instance(cFontPrintBuffer* entry)
 {
-    return draw_textured_quad_immediate(
+    draw_textured_quad_immediate(
         g_sprite_texture_table[entry->texture_id],
         entry->x0,
         entry->y0,

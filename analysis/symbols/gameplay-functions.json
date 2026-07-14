@@ -3230,12 +3230,12 @@
     {
       "address": "0x449c40",
       "name": "initialize_global_font_queue_colors_thunk",
-      "description": "CRT constructor-table thunk that tail-forwards to the FontQueueEntry color-subobject initializer."
+      "description": "CRT constructor-table thunk that tail-forwards to the cFontPrintBuffer color-subobject initializer."
     },
     {
       "address": "0x449c50",
       "name": "initialize_global_font_queue_colors",
-      "description": "Runs the folded trivial Color4f constructor over the +0x6c color member of all 1024 global font-queue entries at a 0x84-byte stride."
+      "description": "Runs the folded trivial Color4f constructor over the +0x6c color member of all 1024 global cFontPrintBuffer entries at a 0x84-byte stride. Android independently preserves the authored cFontPrintBuffer class name, identical stride, and color-member offset."
     },
     {
       "address": "0x449c70",
@@ -3245,7 +3245,7 @@
     {
       "address": "0x449ca0",
       "name": "update_font_wave_state",
-      "description": "Advances the shared sine-wave text animation phases, wraps them into `[0, 2pi)`, and resets the transient font-wave bookkeeping lanes each frame."
+      "description": "Void FontAI counterpart: advances the shared sine-wave text animation phases, wraps them into `[0, 2pi)`, and resets the transient font-wave bookkeeping lanes each frame. Its sole Windows caller discards EAX."
     },
     {
       "address": "0x449d20",
@@ -3265,22 +3265,22 @@
     {
       "address": "0x44a360",
       "name": "draw_font_text_instance",
-      "description": "Draws one queued font text instance by mapping each byte through the atlas slot table and submitting textured glyph quads."
+      "description": "Void FontPrintReal counterpart over one cFontPrintBuffer: maps each byte through the atlas slot table and submits textured glyph quads. The queue drain discards EAX on every path."
     },
     {
       "address": "0x44a6d0",
       "name": "draw_queued_font_quad_instance",
-      "description": "Draws one queued explicit font-quad record by forwarding its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper."
+      "description": "Void OSDPrintReal counterpart over one cFontPrintBuffer: forwards its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper. The queue drain discards EAX."
     },
     {
       "address": "0x44a730",
       "name": "draw_font_text_queue",
-      "description": "Iterates the live font text queue, retires dead entries, and draws the ones matching the supplied render mask."
+      "description": "Void FontPrintRender counterpart: iterates the live cFontPrintBuffer queue backward and draws entries matching the supplied render mask. Its sole Windows caller discards EAX."
     },
     {
       "address": "0x44a790",
       "name": "queue_font_text_instance",
-      "description": "Copies one text run into the shared font print string buffer and appends the matching queued font-text instance record with its font, position, alignment, colors, and render flags."
+      "description": "FontPrint counterpart: copies one text run into the shared font print string buffer and appends the matching cFontPrintBuffer record with its font, position, alignment, colors, and render flags."
     },
     {
       "address": "0x44a8b0",

@@ -2,7 +2,7 @@
 
 #include "font_system.h"
 
-int draw_font_text_instance(FontQueueEntry* entry)
+void draw_font_text_instance(cFontPrintBuffer* entry)
 {
     float cursor_x = entry->x0;
     int alignment = entry->horizontal_align;
@@ -96,5 +96,4 @@ int draw_font_text_instance(FontQueueEntry* entry)
             * entry->text_scale + cursor_x;
     }
 
-    return *cursor;
 }

@@ -13,7 +13,7 @@ Recovered relationships:
 
 - The active byte at `data_4b7236` is the broader render queue gate, not a
   font-only flag.
-- Appends records into the shared `FontQueueEntry` array at `data_7544e8`.
+- Appends records into the shared `cFontPrintBuffer` array at `data_7544e8`.
 - Record stride is `0x84`; the helper leaves the byte offset in `eax`.
 - Skips when the queue is inactive, full, or width/height compare equal to
   zero.
