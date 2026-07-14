@@ -64,3 +64,17 @@ initializer while preserving 157/157 instructions and ten clean operands.
 through the `BodNode` inherited by `FrontendWidget`'s proved `BodBase`, instead
 of a widget-local duplicate prefix. The exact 157/157 result and all ten clean
 operands are unchanged.
+
+## 2026-07-14 complete initializer ownership
+
+Every recovered widget lane now uses the shared `FrontendWidget` owner
+directly: border and hit-test setup, the embedded `FrontendWidgetTooltip`
+backlinks, render inset and shadow state, font/layout values, all six colour
+records, hover/padding interpolation, sprite identity, and teardown state.
+The one store at `+0x38` remains raw because both constructors only seed it to
+one and no independent reader gives it a semantic role.
+
+The source-order-sensitive `idle_fill_color` pointer remains an ordinary typed
+alias and still explains the native shrink-wrapped `ebp` lifetime. Focused
+matching stays proof-grade at 100.00%, 157/157 instructions, full prefix, and
+ten clean operands; the ownership promotion changes no generated instruction.

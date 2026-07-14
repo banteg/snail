@@ -124,12 +124,12 @@ void FrontendWidget::initialize_frontend_widget(
     slider_position_current = 0.5f;
     *(int*)(self + 0x38) = 1;
     unhide_border_init();
-    rstrcpy_checked_ascii(self + 0x2cc, text);
+    rstrcpy_checked_ascii(text_buffer, text);
     layout_anchor_x = x;
     layout_anchor_y = y;
     hover_blend_target = 1.0f;
 
-    if ((*(unsigned char*)(self + 0x1a0) & 2) != 0)
+    if (((unsigned char)widget_flags & 2) != 0)
         highlight_border();
     else
         unhighlight_border();
@@ -144,11 +144,11 @@ void FrontendWidget::initialize_frontend_widget(
         anchor_x + g_game->border_manager.justify_centre;
     mouse_history_warmup_frames = 1;
 
-    if ((*(unsigned int*)(self + 0x1a0) & 0x100000) != 0) {
+    if ((widget_flags & 0x100000) != 0) {
         slider_more_widget = g_game->border_manager.allocate_border();
         float slider_y = y + 40.0f;
         slider_more_widget->initialize_frontend_sprite_button(
-            (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
+            (widget_flags & 0x800000) | 0x20400814,
             42,
             g_game->border_manager.justify_centre + 458.0f,
             slider_y,
@@ -159,7 +159,7 @@ void FrontendWidget::initialize_frontend_widget(
 
         slider_less_widget = g_game->border_manager.allocate_border();
         slider_less_widget->initialize_frontend_sprite_button(
-            (*(unsigned int*)(self + 0x1a0) & 0x800000) | 0x20400814,
+            (widget_flags & 0x800000) | 0x20400814,
             38,
             g_game->border_manager.justify_centre + 118.0f,
             slider_y,

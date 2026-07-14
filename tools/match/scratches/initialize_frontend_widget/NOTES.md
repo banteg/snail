@@ -122,3 +122,17 @@ through the void `RePosition()` member. All 83 Windows callsites discard EAX;
 the former Exit/HighScore tail returns only propagated incidental call state.
 The shared method is now `void`. Focused matching remains 99.30%, 429/429,
 prefix 55, with 49 clean operands and the same bounded jump-table mismatch.
+
+## 2026-07-14 final raw-lane cleanup
+
+Text copying, all flag tests, and both slider-child flag derivations now use
+the shared `FrontendWidget::text_buffer` and `widget_flags` members instead of
+reconstructing `this +0x2cc/+0x1a0`. Together with the exact sprite initializer
+pass, both authored constructors now exercise every semantically recovered
+widget field through the canonical owner. The constructor-only dword at
+`+0x38` remains deliberately unnamed because neither Windows constructor nor
+the available consumers establish its role.
+
+The rewrite is codegen-neutral: focused matching remains 99.30%, 429/429
+instructions, prefix 55, with 49 clean operands and the one documented
+jump-table layout mismatch.
