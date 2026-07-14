@@ -227,7 +227,7 @@ void SubgameRuntime::initialize_subgame()
     level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
     Player* player = embedded_player();
-    set_matrix_identity(player->live_transform());
+    player->live_transform()->set_matrix_identity();
     player->movement_mode_selector = 0;
     player->game = this;
     player->cached_camera_target_world = player->transform.position;

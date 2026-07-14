@@ -15,7 +15,7 @@ void SubgameRuntime::update_subgame_camera()
 
     TransformMatrix target;
     if (state == 1) {
-        set_matrix_identity(&target);
+        target.set_matrix_identity();
         target.position.y = 3.0f;
         g_game->players[0].camera.fov_degrees = 110.0f;
     } else {

@@ -75,7 +75,7 @@ void Snail::initialize_cutscene()
         wobble_lift_phase = wobble_lift_phase - 1.0f;
 
     base_matrix = transform;
-    set_matrix_identity(&roll_matrix);
+    roll_matrix.set_matrix_identity();
     roll_matrix.rotate_matrix_world_z(
         sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f);
 

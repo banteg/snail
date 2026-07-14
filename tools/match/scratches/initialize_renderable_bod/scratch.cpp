@@ -9,6 +9,6 @@ RenderableBod* RenderableBod::initialize_renderable_bod()
     initialize_bod_base();
     vtable = &g_renderable_bod_vtable;
     list_flags = 0x2000420;
-    set_matrix_identity(&transform);
+    transform.set_matrix_identity();
     return this;
 }

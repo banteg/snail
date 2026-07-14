@@ -9,9 +9,9 @@ void Cameraman::initialize_cameraman()
     player = g_game->subgame.embedded_player();
     game = &g_game->subgame;
     force_camera_update = 0;
-    set_matrix_identity(&previous_desired_matrix);
-    set_matrix_identity(&desired_matrix);
-    set_matrix_identity(&live_matrix);
+    previous_desired_matrix.set_matrix_identity();
+    desired_matrix.set_matrix_identity();
+    live_matrix.set_matrix_identity();
     attachment_lift_envelope = 0.0f;
     smoothed_attachment_lift_envelope = 0.0f;
     fov_degrees = 110.0f;

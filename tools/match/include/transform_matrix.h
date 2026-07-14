@@ -32,6 +32,7 @@ struct TransformMatrix {
         float alpha); // @ 0x44da90
     void interpolate_matrix_rotation(float alpha);     // @ 0x44d920
     void orthogonalize_matrix();                       // @ 0x44d3d0
+    void set_matrix_identity();                       // @ 0x44d210, tMatrix::Identity()
     void set_matrix_rotation_identity();              // @ 0x44d250, tMatrix::RotIdentity()
     void rotate_matrix_world_x(float angle);          // @ 0x44ce30
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0
@@ -51,6 +52,8 @@ struct TransformMatrix {
 
 typedef char TransformMatrix_must_be_0x40[(sizeof(TransformMatrix) == 0x40) ? 1 : -1];
 
+// Compatibility surface for partial scratches not yet converted to the
+// authored member spelling. The ABI is identical: transform is passed in ECX.
 void __fastcall set_matrix_identity(TransformMatrix* transform); // @ 0x44d210
 
 #endif

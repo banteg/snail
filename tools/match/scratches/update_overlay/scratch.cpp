@@ -11,7 +11,7 @@ void Overlay::update_overlay()
         camera.overlay_rotation_angle += 6.2831855f;
     }
 
-    set_matrix_identity(&transform);
+    transform.set_matrix_identity();
     transform.rotate_matrix_world_z(camera.overlay_rotation_angle);
     camera.transform = transform;
     camera.view_matrix.invert_matrix_from_source(&transform);

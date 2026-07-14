@@ -148,9 +148,9 @@ void Player::initialize_subgoldy(int player_slot)
     if (*(unsigned char*)(*(char**)(self + 0x408) + 0xff25d0) == 0)
         *(int*)(self + 0x42e8) = 1;
     this->presentation.owner_player = this;
-    set_matrix_identity((TransformMatrix*)(self + 0x29bc));
-    set_matrix_identity((TransformMatrix*)(self + 0x2a44));
-    set_matrix_identity((TransformMatrix*)(self + 0x2a04));
+    ((TransformMatrix*)(self + 0x29bc))->set_matrix_identity();
+    ((TransformMatrix*)(self + 0x2a44))->set_matrix_identity();
+    ((TransformMatrix*)(self + 0x2a04))->set_matrix_identity();
     *(int*)(self + 0x4338) = zero;
     click_start.initialize_click_start(this);
     cameraman.initialize_cameraman();
@@ -206,7 +206,7 @@ void Player::initialize_subgoldy(int player_slot)
     int transform_count = 12;
     do {
         *(int*)(transform + 0x80) = zero;
-        set_matrix_identity((TransformMatrix*)transform);
+        ((TransformMatrix*)transform)->set_matrix_identity();
         *(char**)(transform + 0xac) = *(char**)(self + 0x408);
         transform += 0x2e8;
         --transform_count;

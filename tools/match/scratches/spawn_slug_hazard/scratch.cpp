@@ -38,7 +38,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     DWORD* player_ref = (DWORD*)(slot_base + 0x356460);
     *state_ref = 1;
     *player_ref = (DWORD)player;
-    set_matrix_identity((TransformMatrix*)(slot_base + 0x3563d8));
+    ((TransformMatrix*)(slot_base + 0x3563d8))->set_matrix_identity();
 
     Vector3 staged_position;
     staged_position.y = cell->position.y + 1.7f;

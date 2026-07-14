@@ -3579,7 +3579,7 @@
     {
       "address": "0x44d210",
       "name": "set_matrix_identity",
-      "description": "Resets one full 4x4 transform matrix to identity, including translation. Android symbols match this helper to `tMatrix::Identity()`."
+      "description": "Exact `TransformMatrix::set_matrix_identity` method: resets the complete 4x4 transform including translation, matching Android `tMatrix::Identity()`."
     },
     {
       "address": "0x44d250",

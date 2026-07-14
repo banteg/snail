@@ -60,7 +60,8 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     float* radius = (float*)(self_words + GARBAGE_SLOT_WORD_STRIDE * slot_index + GARBAGE_SLOT_RADIUS_WORD);
     *radius = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
     ((DWORD*)slot_base_words)[GARBAGE_SLOT_STATE_WORD] = 1;
-    set_matrix_identity((TransformMatrix*)((DWORD*)slot_base_words + GARBAGE_SLOT_MATRIX_WORD));
+    ((TransformMatrix*)((DWORD*)slot_base_words + GARBAGE_SLOT_MATRIX_WORD))
+        ->set_matrix_identity();
 
     Vector3 staged_position;
     float& staged_y = staged_position.y;
