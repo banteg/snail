@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**619/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **95646/317040** bytes (**30.17%**) are proof-grade, and overall fuzzy is **72.94%**.
+**620/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96377/317040** bytes (**30.40%**) are proof-grade, and overall fuzzy is **72.95%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (619)
+## Proof Grade (620)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -191,6 +191,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | destroy_help_screen | 0x4168c0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  |
 | ✅ | update_help_screen | 0x4168d0 | 54 | 12/12 | 100.00% | 12/12 | 3 ok |  |
 | ✅ | destroy_high_score_screen | 0x417220 | 52 | 11/11 | 100.00% | 11/11 | 5 ok |  |
+| ✅ | update_high_score_screen | 0x417260 | 731 | 205/205 | 100.00% | 205/205 | 40 ok |  |
 | ✅ | initialize_high_score_tables | 0x417540 | 155 | 58/58 | 100.00% | 58/58 | 4 ok |  |
 | ✅ | load_high_scores_from_file | 0x4175e0 | 184 | 71/71 | 100.00% | 71/71 | 4 ok |  |
 | ✅ | add_arcade_high_score | 0x4176a0 | 222 | 70/70 | 100.00% | 70/70 | 4 ok |  |
@@ -630,7 +631,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (29)
+## Near Match (95-99.99%) (28)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -640,7 +641,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  |
 | 🚧 | initialize_challenge_setup_screen | 0x415f50 | 662 | 167/167 | 96.41% | 14/167 | 36 ok |  |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 600/600 | 98.00% | 80/600 | 137 ok |  |
-| 🚧 | update_high_score_screen | 0x417260 | 731 | 205/205 | 98.05% | 191/205 | 39 ok |  |
 | 🚧 | activate_landscape_entry | 0x418870 | 442 | 123/123 | 99.19% | 65/123 | 20 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 197/197 | 95.43% | 58/197 | 26 ok |  |
 | 🚧 | mirror_path_template_pair_x | 0x421dc0 | 1058 | 314/314 | 97.45% | 273/314 | 15 ok |  |

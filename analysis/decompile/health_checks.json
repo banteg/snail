@@ -109,6 +109,40 @@
       ]
     },
     {
+      "name": "ida_high_score_initialize_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00416910-initialize_high_score_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_high_score_screen(",
+        "HighScore *high_score",
+        "high_score->selected_bank",
+        "high_score->selected_rank",
+        "high_score->name_row_widgets"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_high_score_screen",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_high_score_update_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00417260-update_high_score_screen.c",
+      "required_substrings": [
+        "void __thiscall update_high_score_screen(",
+        "HighScore *high_score",
+        "high_score->replay_row_widgets",
+        "destroy_high_score_screen(high_score)",
+        "exit_high_score_screen(high_score)"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall update_high_score_screen",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_path_template_fields_intact",
       "artifact": "analysis/decompile/binja/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
       "required_substrings": [

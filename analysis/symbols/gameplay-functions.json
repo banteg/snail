@@ -1064,7 +1064,7 @@
     {
       "address": "0x417260",
       "name": "update_high_score_screen",
-      "description": "Void Windows `cRHighScore::AI()`: runs replay launch, bank toggling, inline name submission, and exit actions while borrowing row widgets and the separate persistent cRSubHighScore bank. Android directly tail-branches to Init, UnInit, and Exit; the honest void transcription is 205/205 instructions at 98.05%."
+      "description": "Exact void Windows `cRHighScore::AI()`: runs replay launch, bank toggling, inline name submission, and exit actions while borrowing row widgets and the separate persistent cRSubHighScore bank. Android directly tail-branches to Init, UnInit, and Exit; the Windows transcription is proof-grade at 205/205 instructions."
     },
     {
       "address": "0x417540",

@@ -3,15 +3,15 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: exit_high_score_screen @ 0x417b50 */
 
-00417b50        void* result = data_4df904
-00417b68        if (*(result + 0x74658) == 0)
-00417b6a        *(result + 0x1b8) = 2
-00417b75        *(data_4df904 + 0x12e55e0) = 2
-00417b80        *(data_4df904 + 0x30c) = 1
-00417b86        result = data_4df904
-00417b94        if (*(result + 0x74658) == 1)
-00417b96        *(result + 0x1b8) = 0xa
-00417ba0        result = data_4df904
-00417ba5        *(result + 0x12e55e0) = 2
-00417bb1        *(data_4df904 + 0x30c) = 1
-00417bb7        return result
+00417b50        char* game_base_1 = g_game_base
+00417b68        if (*(game_base_1 + 0x74658) == 0)
+00417b6a        *(game_base_1 + 0x1b8) = 2
+00417b75        *(g_game_base + 0x12e55e0) = 2
+00417b80        g_game_base[0x30c] = 1
+00417b86        game_base_1 = g_game_base
+00417b94        if (*(game_base_1 + 0x74658) != 1)
+00417b94        return
+00417b96        *(game_base_1 + 0x1b8) = 0xa
+00417ba5        *(g_game_base + 0x12e55e0) = 2
+00417bb1        g_game_base[0x30c] = 1
+00417bb7        return

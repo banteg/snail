@@ -65,6 +65,21 @@ Android `cRHighScore::AI()` directly tail-branches to `UnInit()`, `Exit()`, and
 `Init(int, int)`, proving one void lifecycle; both external Windows callers
 discard EAX. Removing the synthetic result leaves an honest 98.05%, 205/205
 instructions, prefix 191, with 39 clean operands. The only drift is final-loop
-register allocation formerly constrained by the fake scalar return. Binary
-Ninja accepts the void preview but restores the stale scalar form during live
-verification, so the sync reports it as deferred.
+register allocation formerly constrained by the fake scalar return. At that
+point Binary Ninja restored the stale scalar form during live verification,
+so the prototype sync remained deferred until the exact closure below.
+
+## 2026-07-14 exact replay-cursor closure
+
+The replay loop advances three independent real owners: the displayed rank,
+the `replay_row_widgets` cursor, and the byte offset into the borrowed
+`SubSolution` bank. Advancing them in that source order lets VC6 retain the
+widget cursor in EAX through its `+4` step before reloading the active-record
+count, matching the native loop tail.
+
+The truthful void lifecycle method is now exact: **100.00%, 205/205
+instructions, full 205/205 prefix, and 40 clean masked operands**. No scalar
+return, register hint, dummy dependency, or volatile state is reintroduced.
+The exact proof also allows the repeatable Binary Ninja and IDA lifecycle
+prototype syncs to carry `void` instead of preserving their stale scalar
+fallback.

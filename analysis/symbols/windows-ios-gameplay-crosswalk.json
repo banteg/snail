@@ -3116,7 +3116,7 @@
       "android_symbol": "cRHighScore::AI()",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The ports share the void cRHighScore name-entry, bank-toggle, replay-launch, and exit state machine. Android directly tail-branches among Init, UnInit, and Exit; the honest Windows void transcription is 205/205 instructions at 98.05%."
+      "notes": "The ports share the void cRHighScore name-entry, bank-toggle, replay-launch, and exit state machine. Android directly tail-branches among Init, UnInit, and Exit; the Windows void transcription is proof-grade at 205/205 instructions."
     },
     {
       "address": "0x417b50",

@@ -137,8 +137,8 @@ void HighScore::update_high_score_screen()
                 }
 
                 ++i;
-                record_offset += SUB_SOLUTION_STRIDE;
                 ++replay_widget;
+                record_offset += SUB_SOLUTION_STRIDE;
                 result = g_game->subgame.sub_high_score.active_record_count;
             } while (i < result);
         }
