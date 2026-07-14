@@ -539,6 +539,113 @@
       ]
     },
     {
+      "name": "bn_object_render_owner_and_float_abi",
+      "artifact": "analysis/decompile/binja/functions/004126c0-render_object.c",
+      "required_substrings": [
+        "object->flags",
+        "object->vertex_count",
+        "object->texture_group_count",
+        "texture_u",
+        "texture_v",
+        "object->render_buffers->vertex_buffer"
+      ],
+      "forbidden_substrings": [
+        "arg1->",
+        "texture_scroll_bits",
+        "__offset(Object",
+        "_pad_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_object_render_owner_and_float_abi",
+      "artifact": "analysis/decompile/ida/functions/004126c0-render_object.c",
+      "required_substrings": [
+        "Object *object",
+        "TransformMatrix *matrix",
+        "float texture_u",
+        "float texture_v",
+        "object->vertex_count",
+        "object->render_buffers->vertex_buffer"
+      ],
+      "forbidden_substrings": [
+        "texture_scroll_bits",
+        "a1 + 16",
+        "__offset(Object",
+        "_pad_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_cache_colour_and_backlink_owner",
+      "artifact": "analysis/decompile/binja/functions/00433220-build_track_render_caches.c",
+      "required_substrings": [
+        "manager->owner_subgame->runtime_row_count",
+        "struct SubgameRuntime* owner_subgame",
+        "struct tColourSmall color_2",
+        "manager->skirt_color_bgra",
+        "owner_subgame->runtime_cells"
+      ],
+      "forbidden_substrings": [
+        "TrackRenderGrid* owner_subgame",
+        "struct ColorBGRA8 color_2",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_set_object_color_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004141d0-set_object_color.c",
+      "required_substrings": [
+        "pack_color_rgba_u8(&out, &color)",
+        "object->flags",
+        "object->render_buffers->vertex_buffer",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return result",
+        "return pack_color_rgba_u8",
+        "arg1 + 0x10",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_set_object_color_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004141d0-set_object_color.c",
+      "required_substrings": [
+        "void __cdecl set_object_color(Object *object, Color4f color)",
+        "pack_color_rgba_u8((tColourSmall *)&out, &color)",
+        "object->flags",
+        "object->render_buffers->vertex_buffer"
+      ],
+      "forbidden_substrings": [
+        "ColorBGRA8 *set_object_color",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_pack_color_authored_owner",
+      "artifact": "analysis/decompile/ida/functions/0044dbf0-pack_color_rgba_u8.c",
+      "required_substrings": [
+        "tColourSmall *__thiscall pack_color_rgba_u8",
+        "tColourSmall *out",
+        "out->r",
+        "out->g",
+        "out->b",
+        "out->a"
+      ],
+      "forbidden_substrings": [
+        "ColorBGRA8 *__thiscall pack_color_rgba_u8",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "ida_noop_constructor_generic_identity",
       "artifact": "analysis/decompile/ida/functions/00408410-initialize_border_record.c",
       "required_substrings": [

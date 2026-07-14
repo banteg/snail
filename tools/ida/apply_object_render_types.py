@@ -99,8 +99,16 @@ TRUSTED_DECLARATIONS = [
         "void __cdecl refresh_object_vertex_buffer(Object* object);",
     ),
     (
+        "pack_color_rgba_u8",
+        "tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, Color4f* color);",
+    ),
+    (
+        "set_object_color",
+        "void __cdecl set_object_color(Object* object, Color4f color);",
+    ),
+    (
         "render_object",
-        "int __cdecl render_object(Object* object, TransformMatrix* matrix, int texture_scroll_bits, float texture_v, Color4f* color, char after_sprites);",
+        "int __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, Color4f* color, char after_sprites);",
     ),
 ]
 

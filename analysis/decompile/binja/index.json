@@ -1,19 +1,19 @@
 {
   "tool": "binary_ninja",
   "target": {
-    "active": true,
+    "active": false,
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
     "selector": "SnailMail_unwrapped.exe.bndb",
-    "session_id": "16290292767711005250",
-    "target_id": "89651:1:16290292767711005250",
+    "session_id": "15057295535118565369",
+    "target_id": "63333:1:15057295535118565369",
     "view_id": "1",
     "view_name": "PE"
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 679,
-  "function_count": 679,
+  "selected_count": 678,
+  "function_count": 678,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -302,11 +302,6 @@
       "address": "0x4067e0",
       "name": "update_completion_screen",
       "artifact": "analysis/decompile/binja/functions/004067e0-update_completion_screen.c"
-    },
-    {
-      "address": "0x406c10",
-      "name": "initialize_default_runtime_config",
-      "artifact": "analysis/decompile/binja/functions/00406c10-initialize_default_runtime_config.c"
     },
     {
       "address": "0x406d30",

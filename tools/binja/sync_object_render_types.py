@@ -188,9 +188,17 @@ PROTO_UPDATES = (
         "refresh_object_vertex_buffer",
         "void __cdecl refresh_object_vertex_buffer(Object* object)",
     ),
+    # `pack_color_rgba_u8` is declared with the recovered tColourSmall owner in
+    # the header, but the live database restores its pinned ColorBGRA8 user
+    # type after a successful preview. Keep that one direct prototype update
+    # deferred instead of making this repeatable sync fail verification.
+    (
+        "set_object_color",
+        "void __cdecl set_object_color(Object* object, Color4f color)",
+    ),
     (
         "render_object",
-        "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, int32_t texture_scroll_bits, float texture_v, Color4f* color, char after_sprites)",
+        "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, Color4f* color, char after_sprites)",
     ),
 )
 

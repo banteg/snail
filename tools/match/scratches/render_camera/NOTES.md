@@ -31,7 +31,7 @@ projection transform.
 - Enables fog only when the caller's draw-world flag and
   `GameRoot::fog_enabled` are set. The root-owned start/end/density floats feed
   render states `36/37/38`; its fog color is packed through
-  `ColorBGRA8::pack_color_rgba_u8`, then alpha is forced to zero before render
+  `tColourSmall::pack_color_rgba_u8`, then alpha is forced to zero before render
   state `34`.
 - Stores the active camera source matrix at `g_render_camera_source_matrix`,
   stores the active view matrix pointer at the newly named

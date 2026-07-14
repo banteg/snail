@@ -36,15 +36,21 @@ struct Color4f {
 // Windows counterpart of the symbol-preserving iOS `GTempColour` owner.
 extern Color4f g_temp_colour; // data_503308
 
-struct ColorBGRA8 {
-    ColorBGRA8* noop_this_constructor();
-    ColorBGRA8* pack_color_rgba_u8(Color4f* color); // @ 0x44dbf0
+// Authored packed-colour owner. Android's symbol-preserving build names this
+// class `tColourSmall` and independently proves the same Windows BGRA byte
+// order through operator=(tColour const&) and G0SetColour.
+struct tColourSmall {
+    tColourSmall* noop_this_constructor();
+    tColourSmall* pack_color_rgba_u8(Color4f* color); // @ 0x44dbf0; tColourSmall::operator=
 
     unsigned char b; // +0x00
     unsigned char g; // +0x01
     unsigned char r; // +0x02
     unsigned char a; // +0x03
 };
+
+typedef char tColourSmall_must_be_0x04[
+    (sizeof(tColourSmall) == 0x04) ? 1 : -1];
 
 enum TextureRefFlags {
     TEXTURE_REF_RETAIN_SOURCE_BYTES = 0x20,

@@ -16,6 +16,13 @@ typedef struct Color4f {
     float a;
 } Color4f;
 
+typedef struct tColourSmall {
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
+    uint8_t a;
+} tColourSmall;
+
 typedef struct TextureRef {
     uint32_t flags;
     int32_t loaded_width;
@@ -266,6 +273,9 @@ void __thiscall request_object_animation(
     float progress_step, int32_t flags);
 void __cdecl build_object_texture_group_buffers(Object* object);
 void __cdecl refresh_object_vertex_buffer(Object* object);
+tColourSmall* __thiscall pack_color_rgba_u8(
+    tColourSmall* out, Color4f* color);
+void __cdecl set_object_color(Object* object, Color4f color);
 int32_t __cdecl render_object(
     Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, Color4f* color, char after_sprites);

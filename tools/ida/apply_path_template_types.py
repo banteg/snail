@@ -386,7 +386,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "pack_color_rgba_u8",
-        "ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);",
+        "tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, Color4f* color);",
     ),
     (
         "kill_tip_widgets",

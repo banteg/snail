@@ -31,7 +31,7 @@ Open matching issues:
   helper. The Direct3D device no longer does: its recovered vtable slots are
   shared through `direct3d_device8_view.h`.
 - The no-op color constructor at `0x44db50` is modeled locally as
-  `ColorBGRA8::noop_this_constructor`; it is a real identity helper
+  `tColourSmall::noop_this_constructor`; it is a real identity helper
   (`mov eax, ecx; ret`) already curated as a shared reference symbol.
 
 2026-06-18 vector alias cleanup: the draw-position argument now aliases the

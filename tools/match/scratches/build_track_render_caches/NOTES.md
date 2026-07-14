@@ -179,3 +179,14 @@ normalized listings remain byte-identical:
 - row activator: `7a3d44e214754537db62089ab05276774f460bee564f1661ed1ea7d41df99fda`
 - teardown: `cf075f6f16abd639d3d16cffaaa2142e1fab47167fb39ec470d5a090059dac39`
 - runtime constructor: `755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`
+
+## 2026-07-14 packed-colour owner
+
+Android's symbol-preserving `tColourSmall` class proves the four-byte BGRA
+owner stored at `SegmentCache +0x00`; its assignment operator uses the same
+`+2/+1/+0/+3` stores as Windows `pack_color_rgba_u8`. The manager field and
+local all-white value now use that authored type, while the fringe builder
+still passes the same four packed bytes by value. Focused Wibo remains at the
+honest 99.79%, 475/475 instructions, with all 20 operands clean and only the
+equivalent SIB base/index ordering unresolved. Binary Ninja readback also
+retains the borrowed `SubgameRuntime*` backlink alongside `tColourSmall`.

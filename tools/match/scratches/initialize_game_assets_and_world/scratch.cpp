@@ -43,7 +43,7 @@ void initialize_backdrop_tile_quad(
     int row_selector,
     int column_selector,
     char* texture_path); // @ 0x41a4d0
-ColorBGRA8* set_object_color(Object* object, Color4f color); // @ 0x4141d0
+void set_object_color(Object* object, Color4f color); // @ 0x4141d0
 void set_input_controller_pointer_authored_xy(
     int controller,
     float authored_x,

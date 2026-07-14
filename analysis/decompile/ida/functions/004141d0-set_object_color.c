@@ -3,39 +3,36 @@
 /* selector: set_object_color */
 
 // Packs one object RGBA tint and, when grouped vertex buffers exist, rewrites the per-vertex diffuse colour lane so the next object draw uses that colour. Cross-port Android symbols match this helper's role to `G0SetColour(tColourSmall*)`.
-ColorBGRA8 *set_object_color(_DWORD *a1, ...)
+void __cdecl set_object_color(Object *object, Color4f color)
 {
-  ColorBGRA8 *result; // eax
-  int v2; // eax
+  int32_t v2; // eax
   int v3; // ecx
-  ColorBGRA8 v4; // [esp+14h] [ebp-8h] BYREF
+  ColorBGRA8 out; // [esp+14h] [ebp-8h] BYREF
   int v5; // [esp+18h] [ebp-4h] BYREF
-  Color4f v6; // [esp+24h] [ebp+8h] BYREF
 
-  Iostream_init::Iostream_init((#93 *)&v4);
-  result = pack_color_rgba_u8(&v4, &v6);
-  if ( (a1[4] & 0x80000) != 0 )
+  noop_this_constructor(&out);
+  pack_color_rgba_u8((tColourSmall *)&out, &color);
+  if ( (object->flags & 0x80000) != 0 )
   {
-    (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD))(**(_DWORD **)(a1[48] + 8) + 44))(
-      *(_DWORD *)(a1[48] + 8),
+    object->render_buffers->vertex_buffer->vtbl->Lock(
+      object->render_buffers->vertex_buffer,
       0,
-      24 * LODWORD(flt_4DFAFC[36272]),
-      &v5,
+      24 * g_object_grouped_vertex_cursor,
+      (void **)&v5,
       0);
     v2 = 0;
-    if ( (int)a1[49] > 0 )
+    if ( object->grouped_vertex_count > 0 )
     {
       v3 = 0;
       do
       {
         ++v2;
-        *(ColorBGRA8 *)(v3 + v5 + 12) = v4;
+        *(ColorBGRA8 *)(v3 + v5 + 12) = out;
         v3 += 24;
       }
-      while ( v2 < a1[49] );
+      while ( v2 < object->grouped_vertex_count );
     }
-    return (ColorBGRA8 *)(*(_BYTE *(__stdcall **)(_DWORD))(**(_DWORD **)(a1[48] + 8) + 48))(*(_DWORD *)(a1[48] + 8));
+    object->render_buffers->vertex_buffer->vtbl->Unlock(object->render_buffers->vertex_buffer);
   }
-  return result;
 }
 

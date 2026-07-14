@@ -38,12 +38,13 @@ typedef struct TwinkleManager {
     int32_t twinkle_count;
 } TwinkleManager;
 
-typedef struct ColorBGRA8 {
+/* Authored packed-colour owner; Android proves the same BGRA byte order. */
+typedef struct tColourSmall {
     uint8_t b;
     uint8_t g;
     uint8_t r;
     uint8_t a;
-} ColorBGRA8;
+} tColourSmall;
 
 typedef struct BodNode {
     void* vtable;
@@ -939,7 +940,7 @@ typedef struct TrackRenderCacheSlot {
 } TrackRenderCacheSlot;
 
 typedef struct SegmentCache {
-    ColorBGRA8 skirt_color_bgra;
+    tColourSmall skirt_color_bgra;
     int32_t max_vertex_counts[5];
     int32_t max_index_counts[5];
     ObjectRenderVertex* shared_vertex_buffers[5];
@@ -958,7 +959,7 @@ typedef struct SegmentCache {
  * coincidentally same-sized stack range.
  */
 typedef struct TrackRenderCacheBuildLocals {
-    ColorBGRA8 white_color;
+    tColourSmall white_color;
     int32_t work_value;
     int32_t cache_row;
     int32_t cells_remaining_or_family_index;
@@ -1755,7 +1756,7 @@ void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int3
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
-ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
+tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, Color4f* color);
 void __thiscall kill_tip_widgets(Tip* tip);
 void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button);
 void __thiscall update_tip(Tip* tip);

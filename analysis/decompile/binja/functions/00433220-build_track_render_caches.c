@@ -51,10 +51,10 @@
 004332ff        void* ebp_1 = edi_1 + 0x3bfb0c
 00433305        int32_t var_44_1 = 4
 0043338b        bool cond:2_1
-0043330d        struct TrackRenderGrid* owner_subgame = manager->owner_subgame
+0043330d        struct SubgameRuntime* owner_subgame = manager->owner_subgame
 00433310        void* edx_7 = *(owner_subgame + ebp_1)
 00433315        if (edx_7 != 0)
-00433317        struct ColorBGRA8 color_2
+00433317        struct tColourSmall color_2
 00433317        color_2.b = manager->skirt_color_bgra.b
 00433317        color_2.g = manager->skirt_color_bgra.g
 00433317        color_2.r = manager->skirt_color_bgra.r
@@ -66,7 +66,7 @@
 00433386        cond:2_1 = var_44_1 != 1
 00433387        var_44_1 -= 1
 0043338b        do while (cond:2_1)
-0043338d        struct TrackRenderGrid* owner_subgame_2 = manager->owner_subgame
+0043338d        struct SubgameRuntime* owner_subgame_2 = manager->owner_subgame
 00433390        int32_t ecx_13 = *(&owner_subgame_2->runtime_cells[0][0].lane_and_flags + edi_1)
 00433397        void* eax_18 = edi_1 + owner_subgame_2
 004333ab        void* eax_23
@@ -76,7 +76,7 @@
 00433417        void* eax_25
 00433417        int32_t ebp_2
 00433417        if (eax_24 != 0)
-0043341d        struct TrackRenderGrid* owner_subgame_3 = manager->owner_subgame
+0043341d        struct SubgameRuntime* owner_subgame_3 = manager->owner_subgame
 00433420        ebp_2 = *(&owner_subgame_3->runtime_cells[0][0].lane_and_flags + edi_1)
 00433427        eax_25 = edi_1 + owner_subgame_3
 00433438        uint32_t color
@@ -117,7 +117,7 @@
 004333fe        eax_23 = (&manager->slots[0][2].bod.object)[esi_1 * 0x4b]
 004335d0        label_4335d0:
 004335d0        **(eax_23 + 0xd0) = *(ecx_21 + 0xc)
-004335d2        struct TrackRenderGrid* owner_subgame_1 = manager->owner_subgame
+004335d2        struct SubgameRuntime* owner_subgame_1 = manager->owner_subgame
 004335dc        int32_t ecx_47 = *(&owner_subgame_1->runtime_cells[0][0].lane_and_flags + edi_1)
 004335e3        ecx_47:1.b &= 0xbf
 004335e6        *(&owner_subgame_1->runtime_cells[0][0].lane_and_flags + edi_1) = ecx_47

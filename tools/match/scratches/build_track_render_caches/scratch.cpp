@@ -35,7 +35,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
     };
 
     int row_index;
-    ColorBGRA8 white_color;
+    tColourSmall white_color;
     int work_value;
     int cache_row;
     int cells_remaining;
@@ -47,7 +47,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
     int index_counts[TRACK_RENDER_CACHE_FAMILY_COUNT];
 
     white_color.noop_this_constructor();
-    ((ColorBGRA8*)&skirt_color_bgra)->pack_color_rgba_u8(&skirt_color);
+    skirt_color_bgra.pack_color_rgba_u8(&skirt_color);
     *(int*)&white_color = -1;
     ((AudioBackend*)this)->noop_runtime_ai();
 
@@ -98,7 +98,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             &index_counts[TRACK_RENDER_CACHE_FRINGE],
                             max_vertex_counts[TRACK_RENDER_CACHE_FRINGE],
                             max_index_counts[TRACK_RENDER_CACHE_FRINGE],
-                            skirt_color_bgra,
+                            *(unsigned int*)&skirt_color_bgra,
                             0);
 
                         slots[cache_row][TRACK_RENDER_CACHE_FRINGE]

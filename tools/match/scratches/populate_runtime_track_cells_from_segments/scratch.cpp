@@ -14,8 +14,6 @@
 
 void __fastcall set_matrix_identity(void* transform);
 
-struct ColorBGRA8;
-
 extern char* g_game_base; // data_4df904
 
 #define ROOT_BOD_OBJECT(slot) \
@@ -25,7 +23,7 @@ double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
-ColorBGRA8* set_object_color(void* object, Color4f color);
+void set_object_color(void* object, Color4f color);
 
 void SubgameRuntime::populate_runtime_track_cells_from_segments()
 {

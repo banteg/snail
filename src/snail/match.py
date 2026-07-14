@@ -3791,7 +3791,7 @@ _KNOWN_TYPE_SIZES = {
     "AttachmentTransform": 0x40,
     "BodNode": 0x10,
     "Color4f": 0x10,
-    "ColorBGRA8": 0x04,
+    "tColourSmall": 0x04,
     "HighScoreRecord": 0x1FAC0,
     "ObjectUv": 0x08,
     "ReplayRunRecord": 0x06,

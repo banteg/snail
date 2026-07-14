@@ -87,6 +87,8 @@ intentional.
 - `uv run python tools/binja/sync_backdrop_types.py`
 - `bn_frame_renderer_types.h`
 - `uv run python tools/binja/sync_frame_renderer_types.py`
+- `bn_object_render_types.h`
+- `uv run python tools/binja/sync_object_render_types.py`
 - `bn_input_state_types.h`
 - `uv run python tools/binja/sync_input_state_types.py`
 - `path_template_types.h`
@@ -114,6 +116,13 @@ The presentation BN sync lane selectively replays the authoritative camera/rende
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
 - the dependent `SnailVisual` / `PathTemplate` fields that keep those callers from falling back to raw offsets again
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
+
+The object-render lane owns the complete shared `Object`, `tColourSmall`, and
+grouped-buffer layouts plus the trusted render contracts. The live database
+currently pins `pack_color_rgba_u8` to the retired `ColorBGRA8` tag: its
+`tColourSmall` update previews correctly but is restored during live
+verification, so that one prototype is intentionally deferred while the
+checked-in header and IDA lane carry the recovered owner.
 
 It also retains the complete canonical `SubgameRuntime` field map accumulated
 by the path, player, hazard, landscape, and lifecycle slices. The stable

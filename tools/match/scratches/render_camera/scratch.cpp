@@ -93,7 +93,7 @@ TransformMatrix* render_camera(
         float fog_end = g_game->fog_end;
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 1);
 
-        ColorBGRA8 packed_fog;
+        tColourSmall packed_fog;
         packed_fog.noop_this_constructor();
         packed_fog.pack_color_rgba_u8(&g_game->fog_color);
         packed_fog.a = 0;

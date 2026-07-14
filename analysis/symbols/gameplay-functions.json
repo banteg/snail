@@ -941,7 +941,7 @@
     {
       "address": "0x4141d0",
       "name": "set_object_color",
-      "description": "Packs one object RGBA tint and, when grouped vertex buffers exist, rewrites the per-vertex diffuse colour lane so the next object draw uses that colour. Cross-port Android symbols match this helper's role to `G0SetColour(tColourSmall*)`."
+      "description": "Void object-colour helper: converts the incoming float tint to the authored four-byte `tColourSmall` owner and, when grouped vertex buffers exist, rewrites every per-vertex diffuse lane for the next draw. Android preserves the same BGRA byte layout and names the corresponding renderer operation `G0SetColour(tColourSmall*)`; all 26 Windows callsites discard EAX."
     },
     {
       "address": "0x414260",
@@ -3700,7 +3700,7 @@
     {
       "address": "0x44dbf0",
       "name": "pack_color_rgba_u8",
-      "description": "Converts one four-float RGBA tuple in `[0,1]` into one packed BGRA8 color record for sprite and mesh draw paths."
+      "description": "Exact Windows implementation of the authored `tColourSmall::operator=(tColour const&)` role: converts one four-float RGBA tuple in `[0,1]` into the four-byte BGRA record used by sprite and mesh draw paths. Android independently preserves the same `+2/+1/+0/+3` stores."
     },
     {
       "address": "0x44dc50",

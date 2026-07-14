@@ -213,7 +213,7 @@ Applied in the live BN database:
 - `set_color_alpha(Color4f* color, float alpha)`
 - `set_color_grayscale(Color4f* color, float intensity)`
 - `store_color4f(Color4f* color, float r, float g, float b, float a)`
-- `pack_color_rgba_u8(ColorBGRA8* out, Color4f* color)`
+- `pack_color_rgba_u8(tColourSmall* out, Color4f* color)`
 - `allocate_path_template_samples(PathTemplate* self)` now reads back as a pure allocator for the primary and secondary sample arrays, which matches how the constructor family actually uses it
 - `request_object_vertices(...)` and `request_object_vertex_colours(...)` now stay `void`, which matches all current callers and avoids pretending their tail-end allocation helpers are meaningful values
 
@@ -262,7 +262,14 @@ The remaining rough edges in this family are presentation-level, not structural:
 The current helper split is intentionally broader than the path-template family:
 
 - `TransformMatrix`, `normalize_vector_from_source`, `set_matrix_z_direction`, and `orthogonalize_matrix` are now modeled as shared math helpers because their xrefs span cameraman, overlay, gameplay, and path code
-- the color-writer helpers are now explicitly typed on `Color4f` / `ColorBGRA8`, which cleans up frontend, hazard, galaxy, worm-path, and track-render callsites at once
+- the color-writer helpers are now explicitly typed on `Color4f` / `tColourSmall`, which cleans up frontend, hazard, galaxy, worm-path, and track-render callsites at once
+
+2026-07-14 ownership closure: Android's symbol-preserving build names the
+four-byte packed owner `tColourSmall`. Its float assignment stores RGBA at
+`+2/+1/+0/+3`, exactly matching Windows `pack_color_rgba_u8`, and
+`G0SetColour` reads the same BGRA memory order. The temporary descriptive
+`ColorBGRA8` name is therefore retired across the matcher and both decompiler
+sync lanes.
 
 The checked-in header now also carries the stable `FollowState` slice used by the attachment-follow helpers:
 

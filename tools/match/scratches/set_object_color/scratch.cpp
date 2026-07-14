@@ -5,13 +5,13 @@
 
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 
-ColorBGRA8* set_object_color(Object* object, Color4f color)
+void set_object_color(Object* object, Color4f color)
 {
-    ColorBGRA8 out;
+    tColourSmall out;
     ObjectRenderVertex* vertices;
 
     out.noop_this_constructor();
-    ColorBGRA8* result = out.pack_color_rgba_u8(&color);
+    out.pack_color_rgba_u8(&color);
 
     if ((object->flags & 0x80000) != 0) {
         object->render_buffers->vertex_buffer->vtbl->Lock(
@@ -26,9 +26,7 @@ ColorBGRA8* set_object_color(Object* object, Color4f color)
             } while (i < object->grouped_vertex_count);
         }
 
-        return (ColorBGRA8*)object->render_buffers->vertex_buffer->vtbl->Unlock(
+        object->render_buffers->vertex_buffer->vtbl->Unlock(
             object->render_buffers->vertex_buffer);
     }
-
-    return result;
 }

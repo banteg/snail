@@ -42,7 +42,7 @@ void draw_textured_quad_immediate(
     bind_texture_ref(texture);
     set_immediate_blend_mode(blend_mode);
 
-    ColorBGRA8 packed;
+    tColourSmall packed;
     packed.noop_this_constructor();
     packed.pack_color_rgba_u8(color);
 

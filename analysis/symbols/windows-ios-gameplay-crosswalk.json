@@ -3174,6 +3174,22 @@
       "source_object": "GUI.o",
       "confidence": "high",
       "notes": "For the GUI callsite, the exact four-instruction Windows helper is cRGUI::Open: it stores the root-owned cRSubGame pointer at GUI +0x00. The linker folded the identical ThanksScreen owner-binding body into the same address, so the stable Windows harness name remains generic."
+    },
+    {
+      "address": "0x4141d0",
+      "windows_name": "set_object_color",
+      "android_symbol": "G0SetColour(tColourSmall*)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "This is the Windows Direct3D variant of the same per-object render-colour operation: it packs the float tint into tColourSmall and rewrites grouped diffuse vertices instead of updating OpenGL state. Android proves the authored packed owner and void contract; all 26 Windows callsites discard EAX, and the void source remains exact at 47/47 instructions."
+    },
+    {
+      "address": "0x44dbf0",
+      "windows_name": "pack_color_rgba_u8",
+      "android_symbol": "tColourSmall::operator=(tColour const&)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The bodies agree exactly on the class layout and conversion role: float RGBA is multiplied by 255 and stored at byte offsets +2, +1, +0, and +3. Android G0SetColour reads the same record as red, green, blue, and alpha, proving the shared four-byte BGRA owner; the Windows harness keeps its stable descriptive function name."
     }
   ]
 }

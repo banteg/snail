@@ -2,8 +2,8 @@
 /* function: build_track_render_caches @ 0x433220 */
 /* selector: build_track_render_caches */
 
-// Builds the Floor, Slide, Warn, Ramp, and Fringe caches from the owning SubgameRuntime's fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position.
-int32_t __thiscall build_track_render_caches(TrackRenderCacheManager *manager, Color4f skirt_color)
+// Builds the cRSegmentCache Floor, Slide, Warn, Ramp, and Fringe families from the owning SubgameRuntime’s fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position.
+int32_t __thiscall build_track_render_caches(SegmentCache *manager, Color4f skirt_color)
 {
   int32_t v3; // ecx
   int32_t saved_cell_offset; // edi
@@ -11,13 +11,13 @@ int32_t __thiscall build_track_render_caches(TrackRenderCacheManager *manager, C
   float *p_cache_row_base; // eax
   int v7; // ecx
   int v8; // ebp
-  TrackRenderGrid *owner_subgame; // eax
+  SubgameRuntime *owner_subgame; // eax
   int v10; // edx
-  TrackRenderGrid *v11; // edx
+  SubgameRuntime *v11; // edx
   uint8_t *v12; // eax
   int v13; // ecx
   _DWORD **object; // eax
-  TrackRenderGrid *v15; // edx
+  SubgameRuntime *v15; // edx
   int v16; // ebp
   uint8_t *v17; // eax
   int v18; // ebp
@@ -57,7 +57,7 @@ int32_t __thiscall build_track_render_caches(TrackRenderCacheManager *manager, C
 
   noop_this_constructor(&locals);
   pack_color_rgba_u8(&manager->skirt_color_bgra, &skirt_color);
-  locals.white_color = (ColorBGRA8)-1;
+  locals.white_color = (tColourSmall)-1;
   noop_runtime_ai();
   v3 = 0;
   v45 = 0;
@@ -179,7 +179,7 @@ LABEL_24:
         }
       }
       if ( (unsigned __int8)is_sub_loc_slide((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
-                                                                      + saved_cell_offset)) )
+                                                            + saved_cell_offset)) )
       {
         v17 = &manager->owner_subgame->_pad_00[saved_cell_offset];
         v18 = *((_DWORD *)v17 + 982722);
@@ -214,7 +214,7 @@ LABEL_28:
         }
       }
       if ( (unsigned __int8)is_sub_loc_ramp((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
-                                                                     + saved_cell_offset)) )
+                                                           + saved_cell_offset)) )
       {
         v19 = &manager->owner_subgame->_pad_00[saved_cell_offset];
         if ( (*((_DWORD *)v19 + 982722) & 0x4000) == 0x4000 )

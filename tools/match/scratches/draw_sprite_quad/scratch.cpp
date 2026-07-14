@@ -57,7 +57,7 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
         alpha = (1.0f - sprite->progress) * sprite->color.a;
     }
 
-    ColorBGRA8 packed;
+    tColourSmall packed;
     packed.noop_this_constructor();
     packed.pack_color_rgba_u8(&sprite->color);
     packed.a = (unsigned char)(int)(alpha * 255.0f);

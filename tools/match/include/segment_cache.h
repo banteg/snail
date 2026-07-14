@@ -66,7 +66,7 @@ public:
         unsigned int color,
         unsigned char project_uv); // @ 0x433960
 
-    unsigned int skirt_color_bgra; // +0x00, packed from the level fringe color
+    tColourSmall skirt_color_bgra; // +0x00, packed from the level fringe color
     int max_vertex_counts[TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x04
     int max_index_counts[TRACK_RENDER_CACHE_FAMILY_COUNT];  // +0x18
     ObjectRenderVertex*

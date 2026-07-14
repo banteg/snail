@@ -98,3 +98,14 @@ masked operands.
 all occupy their canonical shared vtable slots through `+0x154`. Retiring the
 `RenderObjectDevice` projection leaves this helper exact at 196/196 with 25
 clean operands.
+
+## Cross-tool ABI replay (2026-07-14)
+
+The object-render sync scripts now preserve the already-proved float
+`texture_u` / `texture_v` arguments. Their older `int texture_scroll_bits`
+prototype was stale and could undo the recovered source ABI during database
+replay. Reapplying the complete object-render lane also restored Binary
+Ninja's zero-sized `Object` shell to the shared `0xdc` layout; the refreshed
+snapshot again exposes the flags, grouped arrays, and render buffers rather
+than raw offsets. Narrow decompile health checks now guard both the owner and
+the float ABI.
