@@ -13,6 +13,10 @@ float sine(float radians);
 
 void SubRing::update_ring_or_special_effect_parent()
 {
+    enum {
+        PARTICLE_COUNT = sizeof(particles) / sizeof(particles[0]),
+    };
+
     SubgameRuntime* rate = rate_source;
     if (rate->subgame_pause_gate != 0)
         return;
@@ -43,7 +47,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
         {
         SubRingStar* particle = particles;
-        int count = 10;
+        int count = PARTICLE_COUNT;
         do {
             particle->update_ring_or_special_effect_particle();
             particle++;
@@ -57,7 +61,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
             SubRingStar* particle =
                 particles;
-            int count = 10;
+            int count = PARTICLE_COUNT;
             do {
                 particle->sprite->kill_sprite();
                 particle++;
@@ -80,7 +84,7 @@ void SubRing::update_ring_or_special_effect_parent()
     case 3:
         {
         SubRingStar* particle = particles;
-        int count = 10;
+        int count = PARTICLE_COUNT;
         do {
             particle->update_ring_or_special_effect_particle();
             particle++;
@@ -95,7 +99,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
             SubRingStar* particle =
                 particles;
-            int count = 10;
+            int count = PARTICLE_COUNT;
             do {
                 particle->sprite->kill_sprite();
                 particle++;
@@ -127,7 +131,7 @@ void SubRing::update_ring_or_special_effect_parent()
                 particles[count].radius *= 0.939999998f;
                 particles[count].base_position = *current_position;
                 count++;
-            } while (count < 10);
+            } while (count < PARTICLE_COUNT);
             return;
         }
 
@@ -140,7 +144,7 @@ void SubRing::update_ring_or_special_effect_parent()
     case 5:
         {
         SubRingStar* particle = particles;
-        int count = 10;
+        int count = PARTICLE_COUNT;
         do {
             particle->update_ring_or_special_effect_particle();
             particle++;
@@ -155,7 +159,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
             SubRingStar* particle =
                 particles;
-            int count = 10;
+            int count = PARTICLE_COUNT;
             do {
                 particle->sprite->kill_sprite();
                 particle++;
@@ -168,7 +172,7 @@ void SubRing::update_ring_or_special_effect_parent()
                 particles[count].radius *= 1.10000002f;
                 particles[count].base_position = transform.position;
                 count++;
-            } while (count < 10);
+            } while (count < PARTICLE_COUNT);
             return;
         }
 

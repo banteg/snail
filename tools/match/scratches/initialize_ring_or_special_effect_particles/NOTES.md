@@ -92,4 +92,11 @@ Type consolidation:
 - The same repair restores typed `Sprite` velocity/position ownership in
   `emit_ring_star_shower` and the position owner in the child updater.
 - These are analysis-only ownership gains: the exact 153/153 initializer
-  source and its native bytes are unchanged.
+source and its native bytes are unchanged.
+
+## 2026-07-14 particle extent derivation
+
+The child initializer now derives its terminal bound from the owned
+`SubRing::particles` array. Its normalized listing remains byte-identical
+(`a8c10dd83dfdc6db3bc0dd25b8b9709dd1e0c0b973e1f28ebabb14d9482adcc4`)
+and exact at 153/153 instructions with ten clean operands.

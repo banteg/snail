@@ -176,3 +176,10 @@ same owner's `subgame_pause_gate +0x09` and `subgame_rate +0x38`. The former
 is retired. Focused matching remains 98.21%, 336/336, with 37 clean operands.
 The scratch now names `subgame_runtime.h` as a direct dependency rather than
 depending on `game_root.h` to expose the complete owner transitively.
+
+## 2026-07-14 particle extent derivation
+
+All six update/kill loops and both indexed radius loops now derive their bound
+from `SubRing::particles`. The normalized listing remains byte-identical
+(`0940726eee8e7a0a108d1a2d58301241c610d08414c729dc7685b0f5f9950488`)
+at the honest 98.21% result (`336/336`, prefix `193/336`, 37 clean operands).
