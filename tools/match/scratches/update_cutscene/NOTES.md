@@ -147,3 +147,16 @@ uses the `Snail` presentation's inherited `RenderableBod::transform`. The
 CutScene's own `live_matrix` and the Cameraman matrix remain separate owned
 fields. Focused output is byte-identical at 93.25%, 503/505 instructions, with
 57 clean operands and the existing jump-table mismatch.
+
+## 2026-07-14 parcel-count owner derivation
+
+The mode-0 perfect-delivery comparison retains its direct `g_game_base` load
+to preserve the native register lifetime, but the former `0x2247f8`
+displacement now derives from `GameRoot::subgame`,
+`SubgameRuntime::level_definition`, and `SubTracks::parcel_count`. This keeps
+the accepted schedule while making all three ownership links executable in
+the source rather than only documented in notes.
+The normalized candidate listing remains byte-identical
+(`ac2818cb9cec3fb82bc12e15964317fc5118566892f6b5c9f1d9283206771c61`),
+with the honest 93.25% focused result (`503/505`, prefix `0/505`, 57 clean
+operands and one bounded jump-table mismatch).

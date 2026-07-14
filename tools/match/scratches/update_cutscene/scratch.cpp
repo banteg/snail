@@ -1,5 +1,7 @@
 // update_cutscene @ 0x4466d0 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "audio_system.h"
 #include "completion.h"
 #include "font_system.h"
@@ -8,6 +10,13 @@
 #include "voice_manager.h"
 
 extern GameRoot* g_game; // data_4df904
+
+enum {
+    LEVEL_PARCEL_COUNT_FROM_GAME_ROOT =
+        offsetof(GameRoot, subgame)
+        + offsetof(SubgameRuntime, level_definition)
+        + offsetof(SubTracks, parcel_count),
+};
 
 inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
 {
@@ -177,7 +186,8 @@ void CutScene::update_cutscene()
         if (game->subgame.level_mode == 0) {
             int delivered_count = player->parcels_collected;
             unsigned char perfect_delivery =
-                delivered_count == *(int*)(g_game_base + 0x2247f8);
+                delivered_count
+                == *(int*)(g_game_base + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);
             game->subgame.completion.initialize_completion_screen(
                 delivered_count,
                 perfect_delivery);
