@@ -1,5 +1,7 @@
 // remove_sub_loc @ 0x439bc0 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "fringe_object.h"
 #include "game_root.h"
 #include "track_attachment_types.h"
@@ -10,7 +12,13 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-#define OUTER_RUNTIME_ROW(cursor_expr) ((SubRow*)((cursor_expr) + 0x6410e0))
+enum {
+    ROOT_RUNTIME_ROWS_BASE =
+        offsetof(GameRoot, subgame) + offsetof(SubgameRuntime, runtime_rows),
+};
+
+#define OUTER_RUNTIME_ROW(cursor_expr) \
+    ((SubRow*)((cursor_expr) + ROOT_RUNTIME_ROWS_BASE))
 
 #define REMOVE_BOD_NODE(node_expr, unlink_mask_expr)              \
     do {                                                          \

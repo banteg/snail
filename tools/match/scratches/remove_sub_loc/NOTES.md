@@ -143,3 +143,14 @@ The receiver's own active-node precheck/removal now uses inherited
 slab stride fix that base independently of this near-match. Focused teardown is
 byte-stable at 91.19%, 130/131 instructions, with its 87-instruction prefix and
 all 17 operands clean.
+
+## 2026-07-14 runtime-row owner derivation
+
+The native outer cursor is retained, but its former `0x6410e0` displacement
+now derives from `offsetof(GameRoot, subgame) +
+offsetof(SubgameRuntime, runtime_rows)`. This binds the row lookup to both
+recovered owners without changing the loop or register-lifetime shape.
+The normalized candidate listing remains byte-identical
+(`f51aff1164e0396a262f4ec1ccf1058c96410873dea5e39c400c49317e720897`),
+with the honest 91.19% focused result (`130/131`, prefix `87/131`, 17 clean
+operands).
