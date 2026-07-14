@@ -31,3 +31,9 @@ scratch and shared audio header keep the callee `void`, so changing the ABI
 would be source-false. No canned `snail match idioms` clamp case exists; keep
 the clearer `if/else if` clamp until a real VC6 tail-merge source idiom is
 identified.
+
+2026-07-14 camera owner closure: root `+0x18c..+0x194` is
+`GameRoot::players[0].transform.position`, the inherited renderable transform
+of the front-end `GamePlayer`. The attachment-exit volume therefore measures
+from that camera/player presentation position to the gameplay Goldy position.
+Naming the aggregate owner is codegen-neutral at the retained 89.13% baseline.

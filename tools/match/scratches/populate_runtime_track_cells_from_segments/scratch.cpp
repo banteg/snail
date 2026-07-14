@@ -17,7 +17,7 @@ struct ColorBGRA8;
 extern char* g_game_base; // data_4df904
 
 #define ROOT_BOD_OBJECT(slot) \
-    (((RootBodCatalog*)(g_game_base + ROOT_BOD_CATALOG_GAME_OFFSET))->slot.object)
+    (((GameRoot*)g_game_base)->root_bod_catalog.slot.object)
 
 double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
@@ -85,7 +85,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     player.score_tail = 0;
     player.movement_flag_selector = 0;
     set_math_random_seed(runtime_build_seed);
-    ((TextureSetSelector*)(g_game_base + 0xb24))->select_level_track_texture_set(
+    ((GameRoot*)g_game_base)->texture_set_selector.select_level_track_texture_set(
         *(int*)(base + 0x1b01e4));
 
     int segment_cursor = 0;
@@ -271,7 +271,8 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         if ((authored_flags & 0x2) != 0) {
             *(int*)row_record |= 0x2;
             int object_id = *(int*)(authored_row + 0x14);
-            void* object = *(void**)(g_game_base + 0x48e2c + 0xbc * object_id);
+            void* object = ((GameRoot*)g_game_base)
+                ->directx_loader.cached_x_mesh_slots[object_id].object;
             ((SubRow*)row_record)->row_model.set_bod_object(object);
             set_matrix_identity(row_record + 0x3c);
             *(int*)(row_record + 0x6c) = *(int*)(authored_row + 0x18);

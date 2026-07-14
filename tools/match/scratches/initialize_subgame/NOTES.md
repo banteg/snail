@@ -384,8 +384,10 @@ aliases respectively and restore the 85 clean operands.
 
 Landscape loading, backdrop selection, border allocation, and center
 justification now use the canonical `GameRoot* g_game` and its embedded
-owners. The bytes at root `+0x30d` and `+0x310` remain raw because their
-authored member identities are not yet established.
+owners. Root `+0x30d` and `+0x310` are now the established
+`players[0].high_score_entry_pending` latch and
+`players[0].selected_high_score_rank`, matching their exact initialization,
+high-score producer, and teardown siblings.
 
 The grid reset derives its 3,200-row and eight-lane bounds from
 `runtime_cells`; the four borrowed fringe handles are cleared through the

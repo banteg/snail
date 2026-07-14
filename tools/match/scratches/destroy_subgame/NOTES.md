@@ -79,3 +79,8 @@ lands in `players[0].saved_frontend_state`. The mode-3 teardown write now names
 native game-base reload and regresses the object, proving the root-owned alias
 is part of the original source shape. The retained form stays exact at 246/246
 with all 41 operands clean.
+
+The opening teardown latch at root `+0x4f26c` is also inside the exact
+`GameRoot::backdrop` extent, at `Backdrop +0x65c`. Its semantics remain
+unproven, so the shared field stays honestly named `unknown_65c`; naming the
+owner is codegen-neutral and does not invent a role.

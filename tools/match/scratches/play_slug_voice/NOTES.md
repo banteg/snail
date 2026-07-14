@@ -6,6 +6,6 @@ gate: the per-slug cooldown and shared `cRSlugVoiceManager` must both be idle;
 success latches both, resets progress, and calls the voice backend.
 
 The Windows shared manager lives at root `+0x3d0194`, exactly
-`GameRoot::subgame +0x35bb7c`. The raw root reloads remain in this exact scratch
-because they reproduce the native access schedule; ownership is recorded by
-the shared `SubgameRuntime::slug_voice_manager` field.
+`GameRoot::subgame.slug_voice_manager` at subgame `+0x35bb7c`. Typed local and
+global root reloads reproduce the native access schedule while naming its
+`active`, `progress`, and `step` fields directly. The helper remains exact.

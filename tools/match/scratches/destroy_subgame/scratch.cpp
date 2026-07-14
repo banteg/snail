@@ -73,7 +73,7 @@ int report_errorf(char* format, ...);
 void SubgameRuntime::destroy_subgame()
 {
     debug_report_stub("-SubGame::UnInit()\n");
-    *(DWORD*)((char*)g_game + 0x4f26c) = 1;
+    g_game->backdrop.unknown_65c = 1;
 
     if (level_mode == 7)
         tutorial.uninit_tutorial();

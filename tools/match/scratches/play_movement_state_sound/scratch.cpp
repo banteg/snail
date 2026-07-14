@@ -1,9 +1,10 @@
 // play_movement_state_sound @ 0x43afd0 (thiscall, ret)
 
 #include "audio_system.h"
+#include "game_root.h"
 #include "player.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value();
 double __fastcall normalize_vector(Vector3* vector);
@@ -34,9 +35,9 @@ void Player::play_movement_state_sound()
             Vector3 vector;
             Vector3 normalized_vector;
 
-            vector.x = *(float*)(g_game_base + 0x18c) - position.x;
-            vector.y = *(float*)(g_game_base + 0x190) - position.y;
-            vector.z = *(float*)(g_game_base + 0x194) - position.z;
+            vector.x = g_game->players[0].transform.position.x - position.x;
+            vector.y = g_game->players[0].transform.position.y - position.y;
+            vector.z = g_game->players[0].transform.position.z - position.z;
 
             normalized_vector = vector;
             float distance = (float)normalize_vector(&normalized_vector);

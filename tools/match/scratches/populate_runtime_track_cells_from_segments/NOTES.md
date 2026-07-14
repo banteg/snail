@@ -383,6 +383,12 @@ ownership consolidation is codegen neutral at `29.27%`, `1,208/1,245`, prefix
 `2/1,245`, with `60` clean masked operands and the one known glyph jump-table
 layout mismatch.
 
-The skirt-color query now names `GameRoot::subgame` while retaining the raw
-root byte pointer needed by the texture selector, root BOD catalog, and large
-switch source shape. Focused metrics remain unchanged.
+The skirt-color query now names `GameRoot::subgame` while retaining the root
+pointer form needed by the large switch source shape. Focused metrics remain
+unchanged.
+
+The remaining root services in the builder now name their complete owners:
+`GameRoot::texture_set_selector` chooses the level texture pair, and authored
+row object ids index `GameRoot::directx_loader.cached_x_mesh_slots[].object`.
+The root byte pointer remains only as the established source-shape carrier for
+the large switch; no absolute root-plus-offset expression remains here.

@@ -219,11 +219,11 @@ void SubgameRuntime::initialize_subgame()
         top_score_widget->hide_border_init();
     }
 
-    if (*(unsigned char*)((char*)g_game + 0x30d) != 0)
+    if (g_game->players[0].high_score_entry_pending != 0)
         return;
 
-    *(unsigned char*)((char*)g_game + 0x30d) = 0;
-    *(int*)((char*)g_game + 0x310) = 0;
+    g_game->players[0].high_score_entry_pending = 0;
+    g_game->players[0].selected_high_score_rank = 0;
     level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
     Player* player = embedded_player();
