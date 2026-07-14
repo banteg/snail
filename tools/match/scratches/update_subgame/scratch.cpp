@@ -1,5 +1,7 @@
 // update_subgame @ 0x438b90 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "bod_list.h"
 #include "bod_ai_dispatch.h"
 #include "fringe_object.h"
@@ -22,7 +24,7 @@
 #include "vector3.h"
 
 struct RuntimeCellSlotBase {
-    char before_cell[0x3bfac8];
+    char before_cell[offsetof(SubgameRuntime, runtime_cells)];
     TrackRowCell cell;
 };
 
@@ -204,7 +206,7 @@ void SubgameRuntime::update_subgame()
 
         if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == one)
             && g_game->fade.state == zero) {
-            *(unsigned char*)(game + 9) = one;
+            *(unsigned char*)(game + offsetof(SubgameRuntime, subgame_pause_gate)) = one;
             subgame_state = three;
             g_sprite_manager.set_sprite_manager_paused((char)one);
             if (player.click_start.state == two)

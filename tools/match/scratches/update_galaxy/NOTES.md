@@ -169,3 +169,11 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
   is kept as an honest residual: direct native-style reloads of the card edge
   or click input shrink the candidate frame to `0x38`, and retaining a
   function-scoped `GameRoot*` regresses the whole-function score.
+
+## 2026-07-14 route-zero coordinate ownership
+
+The overview marker's former raw `this +0x1c/+0x20` reads are exactly
+`route_slots[0].record.map_x/map_y`: the slot array begins at `Galaxy +0x10`,
+its record at slot `+0x04`, and the coordinates at record `+0x08/+0x0c`.
+The scratch now uses that complete owner chain. Focused Wibo is unchanged at
+71.01%, 569/566 instructions, prefix 48, with all 52 operands clean.

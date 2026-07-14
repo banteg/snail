@@ -303,3 +303,10 @@ list insertion use inherited `BodNode`, object/render fields stay on the same
 base, and all anchor reads use `SubLoc::position`. The exact constructor and
 0x54 stride preserve the main-loop scratch byte-for-byte at 79.75%, 1036/1033
 instructions, with 117 clean operands and the same two honest table mismatches.
+
+The native-shape `RuntimeCellSlotBase` now derives its leading extent from
+`offsetof(SubgameRuntime, runtime_cells)`, and the one pause-path byte store
+derives `subgame_pause_gate` the same way. This retains the late cell-base
+displacement and byte-store scheduling documented above without repeating
+`0x3bfac8` or `+9` as unowned layout facts. Focused metrics and audited
+operands remain unchanged.

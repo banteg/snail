@@ -86,8 +86,8 @@ int Galaxy::update_galaxy()
 
                 if (!route_index) {
                     queue_axis_aligned_textured_quad_uv(
-                        151, *(float*)((char*)this + 0x1c) - 16.0f,
-                        *(float*)((char*)this + 0x20) - 16.0f, 32.0f, 32.0f, 0x1000000,
+                        151, route_slots[0].record.map_x - 16.0f,
+                        route_slots[0].record.map_y - 16.0f, 32.0f, 32.0f, 0x1000000,
                         route_zero_color.set_color_rgba(1.0f, 0.0f, 0.0f, 0.99000001f), 0.0f, 0.0f,
                         1.0f, 1.0f, 15, 0);
                 } else {
