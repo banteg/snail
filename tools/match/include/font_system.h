@@ -1,6 +1,7 @@
 #ifndef FONT_SYSTEM_H
 #define FONT_SYSTEM_H
 
+#include "font3d_runtime.h"
 #include "main_loop_state.h"
 #include "sprite.h"
 
@@ -12,10 +13,10 @@ struct FontSheet {
     int slot_count;             // +0x000
     TextureRef* texture_ref_a;  // +0x004
     TextureRef* texture_ref_b;  // +0x008
-    float u0[128];              // +0x00c
-    float v0[128];              // +0x20c
-    float glyph_width[128];     // +0x40c
-    int texture_page[128];      // +0x60c
+    float u0[FONT_GLYPH_CAPACITY];          // +0x00c
+    float v0[FONT_GLYPH_CAPACITY];          // +0x20c
+    float glyph_width[FONT_GLYPH_CAPACITY]; // +0x40c
+    int texture_page[FONT_GLYPH_CAPACITY];  // +0x60c
     float line_marker_y;        // +0x80c
     float line_step;            // +0x810
     float line_marker_fraction; // +0x814
@@ -72,8 +73,6 @@ extern int g_font_queue_count;           // data_777b24
 extern char g_font_text_buffer[];         // data_753ce8
 extern char* g_font_text_cursor;          // data_7772f0
 extern float g_font_wave_phase_a;         // data_7772e8
-extern float g_font3d_scales[128];        // data_7770e8
-
 int report_errorf(const char* format, ...);
 int font_slot_index_for_char(char value); // @ 0x449d20
 float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
