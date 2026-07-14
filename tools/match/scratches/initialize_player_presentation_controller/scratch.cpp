@@ -17,7 +17,9 @@ Snail* Snail::initialize_player_presentation_controller()
     initialize_renderable_bod();
 
     PresentationAnimationSlot* visible_bods = cutscene_animation_slots;
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0;
+         i < sizeof(cutscene_animation_slots) / sizeof(cutscene_animation_slots[0]);
+         ++i) {
         visible_bods[i].body.initialize_renderable_bod();
     }
 
@@ -27,7 +29,7 @@ Snail* Snail::initialize_player_presentation_controller()
     initialize_array_with_constructor(
         group_a->animation_slots,
         sizeof(PresentationAnimationSlot),
-        5,
+        sizeof(group_a->animation_slots) / sizeof(group_a->animation_slots[0]),
         &RenderableBod::initialize_renderable_bod);
     group_a->vtable = &g_presentation_animation_channel_noop_vtable;
 
@@ -37,7 +39,7 @@ Snail* Snail::initialize_player_presentation_controller()
     initialize_array_with_constructor(
         group_b->animation_slots,
         sizeof(PresentationAnimationSlot),
-        5,
+        sizeof(group_b->animation_slots) / sizeof(group_b->animation_slots[0]),
         &RenderableBod::initialize_renderable_bod);
     group_b->vtable = &g_presentation_animation_channel_noop_vtable;
 
@@ -47,7 +49,7 @@ Snail* Snail::initialize_player_presentation_controller()
     initialize_array_with_constructor(
         group_c->animation_slots,
         sizeof(PresentationAnimationSlot),
-        5,
+        sizeof(group_c->animation_slots) / sizeof(group_c->animation_slots[0]),
         &RenderableBod::initialize_renderable_bod);
     group_c->vtable = &g_presentation_animation_channel_noop_vtable;
 
@@ -56,7 +58,9 @@ Snail* Snail::initialize_player_presentation_controller()
     ((RuntimeSlot*)((char*)group_d + 0x80))->noop_runtime_slot_constructor();
     ((RuntimeSlot*)((char*)group_d + 0xc0))->noop_runtime_slot_constructor();
     PresentationAnimationSlot* group_d_children = group_d->animation_slots;
-    for (int j = 0; j < 5; ++j) {
+    for (int j = 0;
+         j < sizeof(group_d->animation_slots) / sizeof(group_d->animation_slots[0]);
+         ++j) {
         group_d_children[j].body.initialize_renderable_bod();
     }
     group_d->vtable = &g_presentation_animation_channel_noop_vtable;

@@ -81,3 +81,12 @@ The authored `Invincible` at `+0x1894` now inherits the same complete
 member directly. Removing the raw `+0x14c`, `+0x150`, `+0x15cc`, `+0x164c`, and
 `+0x1894` address expressions leaves focused Wibo byte-identical at 79/79
 instructions with all 27 masked operands clean.
+
+## 2026-07-14 presentation-slot extent derivation
+
+The ten-child Snail constructor loop and all four five-child channel
+constructor loops now derive their bounds from the owned
+`PresentationAnimationSlot` arrays. The normalized listing remains
+byte-identical
+(`778a1842100ba2dd19cc4f47d86ee7b31199cb7ae1ac3d0bbd068e0ca088f808`)
+and exact at 79/79 instructions with 27 clean operands.
