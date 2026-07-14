@@ -15,3 +15,9 @@ matcher stays exact at 23/23 instructions with 3 clean masked operands.
 2026-07-11 root-owner pass: the timestamp load now uses the shared typed root
 field. This independently proves `frame_counter` outside the main frame loop;
 the allocator stays exact at 23/23.
+
+2026-07-14 base ownership closure: `BorderRecord` and its returned
+`FrontendWidget` semantic view now share the same inherited `BodBase`. This is
+the storage relationship already proved by the exact record constructor and
+the allocator's unchanged 0x724-byte stride. The allocator remains exact at
+23/23 instructions with three clean operands.

@@ -25,7 +25,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
         list_prev = head;
         list_next = head->list_next;
         head->list_next = this;
-        FrontendWidget* next = list_next;
+        BodNode* next = list_next;
         if (next != 0)
             next->list_prev = this;
         list_flags |= 0x200;

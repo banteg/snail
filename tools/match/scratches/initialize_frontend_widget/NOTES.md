@@ -105,3 +105,14 @@ scalar, and three slider-child allocations now all traverse
 `GameRoot::border_manager`. The ownership-only rewrite leaves the honest
 temporary-slot/jump-table residual byte-for-byte unchanged at 99.30%, 429/429
 instructions, 49 clean operands, and one mismatch.
+
+2026-07-14 base ownership closure: `FrontendWidget` is now the semantic
+`cRBorder` view of the same storage that `BorderManager` owns as
+`BorderRecord`. The exact 21/21 `initialize_border_record` constructor first
+initializes `BodBase`, constructs its color members, and then installs the
+front-end widget vtable; `allocate_border` subsequently returns that record
+through the widget view. The shared type therefore inherits the actual
+`BodBase` prefix and begins widget-specific semantics at `+0x38`, rather than
+duplicating only its intrusive-list lanes. This ownership-only change preserves
+the honest 99.30%, 429/429 result, 55-instruction prefix, 49 clean operands,
+and one bounded jump-table mismatch.

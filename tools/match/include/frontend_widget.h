@@ -4,16 +4,17 @@
 #ifndef FRONTEND_WIDGET_H
 #define FRONTEND_WIDGET_H
 
+#include "bod_types.h"
 #include "sprite.h"
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
 class InputOkState;
 
-// Semantic cRBorder view over BorderRecord storage. Its first 0x10 bytes are
-// the exact BodNode intrusive-list prefix; later front-end fields deliberately
-// overlay generic BodBase lanes whose gameplay names do not apply here.
-class FrontendWidget {
+// Semantic cRBorder view over BorderRecord storage. The exact record
+// constructor initializes the inherited BodBase; widget-specific semantics
+// begin at +0x38.
+class FrontendWidget : public BodBase {
 public:
     void draw_frontend_widget(); // @ 0x401130
     int hide_border_init(); // @ 0x4010e0
@@ -35,11 +36,7 @@ public:
         Color4f* color, float z, int layer);
     InputOkState* input_ok_state();
 
-    unsigned int list_kind; // +0x00, BodNode::list_kind view
-    unsigned int list_flags; // +0x04, BodNode::list_flags view
-    FrontendWidget* list_prev; // +0x08, BodNode::list_prev view
-    FrontendWidget* list_next; // +0x0c, BodNode::list_next view
-    char unknown_010[0x44 - 0x10];
+    char unknown_038[0x44 - 0x38];
     float hide_blend; // +0x44
     int border_texture_id; // +0x48, nine-slice frame texture
     union {

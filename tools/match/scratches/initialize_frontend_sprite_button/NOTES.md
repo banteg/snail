@@ -59,3 +59,8 @@ alias-sensitive raw stores that preserve VC6's exact `ebp` lifetime and remains
 final `justify_centre` adjustment now name `GameRoot::border_manager`
 directly. This removes the last raw root-base reconstruction from the exact
 initializer while preserving 157/157 instructions and ten clean operands.
+
+2026-07-14 base ownership closure: the initializer now reaches its list links
+through the `BodNode` inherited by `FrontendWidget`'s proved `BodBase`, instead
+of a widget-local duplicate prefix. The exact 157/157 result and all ten clean
+operands are unchanged.

@@ -81,11 +81,12 @@ audit from `70 ok / 3 mismatch` to `71 ok / 2 mismatch`. Both remaining
 mismatches are now earlier intrusive-list teardown scheduling, not audio ABI.
 
 2026-07-12 intrusive-list owner recovery: all three widget teardown paths now
-inline the proved `GameRoot::active_bod_list.remove_bod((BodNode*)this)` owner.
+inline the proved `GameRoot::active_bod_list.remove_bod(this)` owner.
 The zero-flags path, explicit-kill `0x200` path, and expired-transition `0x400`
 path are three native copies of the same `cLinkedList<cRBod>::Remove` template,
-not a scratch-local widget-unlink helper. The cast is an exact shared-prefix
-view: `FrontendWidget`/`cRBorder` storage begins with the 0x10-byte `BodNode`.
+not a scratch-local widget-unlink helper. `FrontendWidget`/`cRBorder` now
+inherits the exact `BodBase` initialized by its record constructor, so the
+intrusive `BodNode` links have one owner rather than a cast-only prefix view.
 
 This lifts the focused result from `55.62%` (`572/647`) to `64.35%`
 (`646/647`) and improves the masked audit from `71 ok / 2 mismatch` to
@@ -145,3 +146,10 @@ The preview-verified Binary Ninja layout now carries the complete 0x724-byte
 `FrontendWidget`, including the 0x40-byte tooltip/`InputOkState` overlay at
 `+0x28c`. This replaces the previous zero-sized forward declaration and makes
 all border-manager pointers use the recovered concrete record view.
+
+2026-07-14 base ownership closure: the semantic `FrontendWidget` and backing
+`BorderRecord` views now share their actual inherited `BodBase`. Exact
+`initialize_border_record` constructs that base before installing the widget
+vtable, and `allocate_border` returns the same record storage through the
+widget view. The interaction scratch remains the honest 68.32%, 644/647
+partial with a one-instruction prefix and all 93 masked operands clean.
