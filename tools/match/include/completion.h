@@ -81,9 +81,13 @@ public:
 typedef char Completion_must_be_0x50[
     (sizeof(Completion) == 0x50) ? 1 : -1];
 
+enum {
+    COMPLETION_BONUS_TABLE_CAPACITY = 6,
+};
+
 // cRCompletion-owned reference tables and prompt text used by Init.
-extern int g_completion_bonus_y_table[]; // data_4a1194
-extern int g_completion_bonus_x_table[]; // data_4a11ac
+extern int g_completion_bonus_y_table[COMPLETION_BONUS_TABLE_CAPACITY]; // data_4a1194
+extern int g_completion_bonus_x_table[COMPLETION_BONUS_TABLE_CAPACITY]; // data_4a11ac
 extern char g_click_to_continue_text[]; // aClickToContinu
 
 #endif

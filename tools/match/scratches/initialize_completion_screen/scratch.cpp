@@ -32,13 +32,14 @@ void Completion::initialize_completion_screen(
         x_source /= 20;
         if (y_index < 0)
             y_index = 0;
-        else if (y_index > 5)
-            y_index = 5;
+        else if (y_index > COMPLETION_BONUS_TABLE_CAPACITY - 1)
+            y_index = COMPLETION_BONUS_TABLE_CAPACITY - 1;
         if (x_source < 0)
             x_source = 0;
-        else if (x_source > 5)
-            x_source = 5;
-        if (y_index == 5 && x_source == 5)
+        else if (x_source > COMPLETION_BONUS_TABLE_CAPACITY - 1)
+            x_source = COMPLETION_BONUS_TABLE_CAPACITY - 1;
+        if (y_index == COMPLETION_BONUS_TABLE_CAPACITY - 1
+            && x_source == COMPLETION_BONUS_TABLE_CAPACITY - 1)
             bonus_score = 500000;
         else
             bonus_score =

@@ -75,3 +75,18 @@ all 34 operands clean.
   Focused Wibo remains codegen-neutral at 89.89%, 276/278 instructions,
   prefix 23, with all 44 masked operands clean; the documented challenge-bonus
   register allocation remains the honest residual.
+
+## 2026-07-14 challenge bonus table extents
+
+Both challenge inputs are divided into 20-point bands, clamped to indices
+`0..5`, and used only against the adjacent tables at `0x4a1194` and
+`0x4a11ac`. The six dwords between those addresses close the Y table, and the
+same shared six-entry capacity now owns the X table and all clamp/perfect-cell
+tests rather than repeating the terminal index literal.
+
+This source-only ownership recovery preserves the normalized candidate
+listing byte-for-byte
+(`03523667ddb744274769571200084df1e3be01036f1cd98d61b8d5c89c0fbea7`)
+and the honest 89.89% result (`276/278`, prefix `23/278`, 44 clean operands).
+The remaining gap is still the documented x/y register allocation, not table
+layout.
