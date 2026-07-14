@@ -21,15 +21,15 @@ void SubRing::update_ring_or_special_effect_parent()
     if (star_shower_counter == 3)
         star_shower_counter = 0;
 
-    int current_state = state;
-    if ((unsigned int)current_state > 5)
+    SubRingState current_state = state;
+    if ((unsigned int)current_state > SUB_RING_STATE_EXPANDING)
         return;
 
     switch (current_state) {
-    case 0:
+    case SUB_RING_STATE_INACTIVE:
         return;
 
-    case 1:
+    case SUB_RING_STATE_ACTIVE:
         if (oscillate_x != 0) {
             float phase = active_phase + active_phase_step;
             active_phase = phase;
@@ -52,7 +52,7 @@ void SubRing::update_ring_or_special_effect_parent()
         }
 
         if (transform.position.z < owner_player->interaction_max_z) {
-            state = 0;
+            state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 
             SubRingStar* particle =
@@ -67,17 +67,17 @@ void SubRing::update_ring_or_special_effect_parent()
         } else {
             int current_lives = owner_player->lives;
             if (current_lives < owner_lives_snapshot)
-                state = 4;
+                state = SUB_RING_STATE_EXPAND_PENDING;
             return;
         }
 
-    case 2:
-        state = 3;
+    case SUB_RING_STATE_COLLECT_PENDING:
+        state = SUB_RING_STATE_COLLECTING;
         transition_progress = 0.0f;
         transition_step = rate->subgame_rate * 0.0694444478f;
         // fall through
 
-    case 3:
+    case SUB_RING_STATE_COLLECTING:
         {
         SubRingStar* particle = particles;
         int count = SUB_RING_PARTICLE_COUNT;
@@ -90,7 +90,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
-            state = 0;
+            state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 
             SubRingStar* particle =
@@ -131,13 +131,13 @@ void SubRing::update_ring_or_special_effect_parent()
             return;
         }
 
-    case 4:
-        state = 5;
+    case SUB_RING_STATE_EXPAND_PENDING:
+        state = SUB_RING_STATE_EXPANDING;
         transition_progress = 0.0f;
         transition_step = rate->subgame_rate * 0.0694444478f;
         // fall through
 
-    case 5:
+    case SUB_RING_STATE_EXPANDING:
         {
         SubRingStar* particle = particles;
         int count = SUB_RING_PARTICLE_COUNT;
@@ -150,7 +150,7 @@ void SubRing::update_ring_or_special_effect_parent()
 
         transition_progress += transition_step;
         if (transition_progress > 1.0f) {
-            state = 0;
+            state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 
             SubRingStar* particle =

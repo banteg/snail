@@ -10,7 +10,7 @@ float cosine(float radians);
 void SubRingStar::update_ring_or_special_effect_particle()
 {
     SubRing* source_parent = parent;
-    if (source_parent->kind != 3)
+    if (source_parent->kind != SUB_RING_KIND_SLOW_DEFAULT)
         phase += phase_step;
 
     if (phase > 6.2831855f)

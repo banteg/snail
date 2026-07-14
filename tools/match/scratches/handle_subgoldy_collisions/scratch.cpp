@@ -289,18 +289,19 @@ void Player::handle_subgoldy_collisions()
          jj < (int)sizeof(game->ring_effects.slots);
          jj += (int)sizeof(SubRing)) {
         SubRing* effect = (SubRing*)((char*)game->ring_effects.slots + jj);
-        if (effect->state == 1) {
+        if (effect->state == SUB_RING_STATE_ACTIVE) {
             probe_salt.x = effect->transform.position.x - cached_camera_target_world.x;
             probe_salt.y = effect->transform.position.y - cached_camera_target_world.y;
             probe_salt.z = effect->transform.position.z - cached_camera_target_world.z;
             probe_fx = probe_salt;
             if (probe_salt.z < 1.0f) {
                 if (normalize_vector(&probe_fx) < 0.98000002f) {
-                    effect->state = 2;
+                    effect->state = SUB_RING_STATE_COLLECT_PENDING;
                     if (!completion_handoff_active) {
                         SubgameRuntime* effect_game = game;
-                        int kind = effect->kind;
-                        if (kind == 3 || kind == 7) {
+                        SubRingKind kind = effect->kind;
+                        if (kind == SUB_RING_KIND_SLOW_DEFAULT
+                            || kind == SUB_RING_KIND_SLOW_AUTHORED) {
                             velocity.z = -0.1f;
                             g_sound_effect_manager.play_sound_effect(43);
                         } else {
@@ -308,8 +309,9 @@ void Player::handle_subgoldy_collisions()
                         }
                     }
                     SubgameRuntime* ladder_game = game;
-                    int effect_kind = effect->kind;
-                    if (effect_kind == 4 || effect_kind == 5) {
+                    SubRingKind effect_kind = effect->kind;
+                    if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT
+                        || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED) {
                         int current_lives = lives;
                         if (current_lives < 10) {
                             if ((ladder_game->runtime_flags
@@ -336,7 +338,7 @@ void Player::handle_subgoldy_collisions()
                         add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
-                    if (effect_kind == 8) {
+                    if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED) {
                         int selector = movement_flag_selector;
                         if (selector >= 8) {
                             if (selector == 8)
@@ -351,10 +353,11 @@ void Player::handle_subgoldy_collisions()
                         add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
-                    if (effect_kind == 1) {
+                    if (effect_kind == SUB_RING_KIND_UNKNOWN_1) {
                         add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.play_sound_effect(1);
-                    } else if (effect_kind == 2 || effect_kind == 6) {
+                    } else if (effect_kind == SUB_RING_KIND_EXPLODE_RAMP
+                        || effect_kind == SUB_RING_KIND_EXPLODE_AUTHORED) {
                         add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;

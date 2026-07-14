@@ -8,7 +8,7 @@
 int SubRing::initialize_ring_or_special_effect_particles(int)
 {
     int i = 0;
-    state = 1;
+    state = SUB_RING_STATE_ACTIVE;
     star_shower_counter = 0;
 
     Vector3* parent_position = &transform.position;
@@ -22,8 +22,10 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
         *base_position = *parent_position;
         particle->radius = 1.2f;
 
-        int effect_kind = kind;
-        if (effect_kind == 4 || effect_kind == 5 || effect_kind == 8) {
+        SubRingKind effect_kind = kind;
+        if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT
+            || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED
+            || effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED) {
             particle->sprite = g_sprite_manager.allocate_sprite(
                 owner_player->player_slot,
                 0x87,
@@ -31,7 +33,8 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
                 -1);
             star_sprite_id = 0x88;
             particle->sprite->draw_mode = 9;
-        } else if (effect_kind == 2 || effect_kind == 6) {
+        } else if (effect_kind == SUB_RING_KIND_EXPLODE_RAMP
+            || effect_kind == SUB_RING_KIND_EXPLODE_AUTHORED) {
             particle->sprite = g_sprite_manager.allocate_sprite(
                 owner_player->player_slot,
                 0x83,
@@ -39,7 +42,8 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
                 -1);
             star_sprite_id = 0x84;
             particle->sprite->draw_mode = 0xd;
-        } else if (effect_kind == 3 || effect_kind == 7) {
+        } else if (effect_kind == SUB_RING_KIND_SLOW_DEFAULT
+            || effect_kind == SUB_RING_KIND_SLOW_AUTHORED) {
             particle->sprite = g_sprite_manager.allocate_sprite(
                 owner_player->player_slot,
                 0x85,
@@ -63,8 +67,9 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
         particle->sprite->position = *parent_position;
         particle->sprite->facing_angle = particle->phase;
 
-        int spin_kind = kind;
-        if (spin_kind == 3 || spin_kind == 6)
+        SubRingKind spin_kind = kind;
+        if (spin_kind == SUB_RING_KIND_SLOW_DEFAULT
+            || spin_kind == SUB_RING_KIND_EXPLODE_AUTHORED)
             particle->sprite->facing_angle_step = 0.0f;
         else
             particle->sprite->facing_angle_step = -particle->phase_step;

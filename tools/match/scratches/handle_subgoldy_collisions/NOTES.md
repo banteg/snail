@@ -508,3 +508,13 @@ proved effect: adding one life below ten outside mode 3. It is therefore the
 game-wide ring-life-reward bit, independent of the per-row ring-kind bits.
 Focused output remains byte-stable at 53.93%, 651/673 instructions, prefix 8,
 with all 86 operands clean.
+
+## 2026-07-14 ring kind and lifecycle ownership
+
+The collision sweep now consumes `SubRingState` and `SubRingKind` directly:
+active effects enter the collecting transition; slow kinds apply the negative
+impulse, normal kinds own the optional life/voice ladder, power-up owns the
+selector-only ladder, and explode kinds arm the nuke. Kind `1` stays explicitly
+unknown despite its proved score + `PW1` behavior because its producer is not
+recovered. Focused output remains 53.93%, 651/673 instructions, prefix 8/673,
+with all 86 operands clean.

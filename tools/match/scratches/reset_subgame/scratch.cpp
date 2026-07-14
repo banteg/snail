@@ -49,7 +49,7 @@ void SubgameRuntime::reset_subgame()
     int ring_count =
         sizeof(ring_effects.slots) / sizeof(ring_effects.slots[0]);
     do {
-        ring->state = 0;
+        ring->state = SUB_RING_STATE_INACTIVE;
         ring->rate_source = this;
         ++ring;
         --ring_count;

@@ -122,3 +122,9 @@ the exact arrays owned by `SubgameRuntime`. The normalized listing is
 byte-identical
 (`5400e59084b4ded03fa3af9eb7a3db57020f9698f18ba8bcc60b2624bb96a008`)
 and remains exact at 75/75 instructions with two clean operands.
+
+## 2026-07-14 ring lifecycle ownership
+
+Reset now clears each owned `SubRing` with `SUB_RING_STATE_INACTIVE` rather
+than raw zero. The scratch remains exact at 75/75 instructions with two clean
+operands.

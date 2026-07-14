@@ -193,3 +193,10 @@ and presentation storage stays embedded in `SubgameRuntime`; only each
 `BodNode` membership crosses into the root list. Focused output remains 67.67%,
 495/501 instructions, prefix 6/501, with 63 clean operands and the same two
 documented string-order mismatches.
+
+## 2026-07-14 ring lifecycle ownership
+
+The remover now tests and clears the embedded ring slots through
+`SUB_RING_STATE_INACTIVE`. Focused output remains 67.67%, 495/501 instructions,
+prefix 6/501, with 63 clean operands and the same two documented string-order
+mismatches.

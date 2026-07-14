@@ -335,3 +335,11 @@ health pickups, ambient garbage and salt, slug hazards, and default ramp
 rings. These are `SubgameRuntime::runtime_flags` bits, not `SubRow` metadata.
 Focused output remains byte-identical at 79.75%, 1,036/1,033 instructions,
 prefix 9/1,033, 117 clean operands, and the same two table mismatches.
+
+## 2026-07-14 ring kind producers
+
+The row scanner now passes `SubRingKind` values instead of raw integers:
+authored normal/power-up/explode/slow rows map to kinds `5/8/6/7`, ordinary
+ramp rings map to default normal `4`, and explosive ramps map to kind `2`.
+Focused output remains 79.75%, 1,036/1,033 instructions, prefix 9/1,033, 117
+clean operands, and the same two table-identity mismatches.

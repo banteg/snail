@@ -1069,9 +1069,9 @@ The authored ring and special-effect pickups line up on a dedicated `2`-slot run
 High-confidence current fields:
 
 - `+0x68`: `effect_position`
-- `+0x80`: `state`
+- `+0x80`: `state` (`SubRingState`)
 - `+0x84`: `owner`
-- `+0x88`: `kind`
+- `+0x88`: `kind` (`SubRingKind`)
 - `+0x8c`: `owner_snapshot`
 - `+0x90`: `halo_particles[10]`
 - `+0x1d4`: `effect_progress`
@@ -1087,28 +1087,29 @@ Current practical read:
 - `initialize_runtime_pools_and_path_template_bank` seeds both slots through `initialize_track_ring_or_special_effect_runtime`
 - `update_subgame` dispatches authored `0x23` ring rows plus the ramp families `0x02..0x0a` into `spawn_track_ring_or_special_effect`
 - `spawn_track_ring_or_special_effect` seeds the slot kind, owner selector snapshot, world position, and the child particle family (`ParticleRing`, `ParticleExplode`, `ParticleSlow`)
-  - explicit authored ring rows (`kind 5/6/7/8`) use `RingSpeed` from the runtime row record at `game + 0x5ccac8 + row * 0xf4 + 0xe8`:
+  - explicit authored ring rows use `SUB_RING_KIND_NORMAL_AUTHORED` (`5`), `POWER_UP_AUTHORED` (`8`), `EXPLODE_AUTHORED` (`6`), or `SLOW_AUTHORED` (`7`) and consume `RingSpeed` from the runtime row record at `game + 0x5ccac8 + row * 0xf4 + 0xe8`:
     - `phase_step = 1 / (ring_speed * 60) * track_center_x * tau`
-  - default ramp-generated kinds (`0/1/2/3/4`) use the shared base-rate path instead:
+  - the default ramp family uses `EXPLODE_RAMP` (`2`), randomized `SLOW_DEFAULT` (`3`), or `NORMAL_DEFAULT` (`4`) and the shared base-rate path instead:
     - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * movement_flag_selector * 0.125 * track_center_x * tau`
-  - after a default kind-`4` ramp spawn, `update_subgame` advances the spacing cursor to the source row during early startup movement modes, otherwise to `source + 35`; the live Zig scanner mirrors the non-startup `source + 35` branch
+  - values `0` and `1` remain explicit `UNKNOWN_0`/`UNKNOWN_1` tokens because no live Windows producer is recovered; the spawner still preserves their distinct placement/RNG paths and the collision consumer preserves kind `1`'s score + `PW1` behavior
+  - after a `NORMAL_DEFAULT` (`4`) ramp spawn, `update_subgame` advances the spacing cursor to the source row during early startup movement modes, otherwise to `source + 35`; the live Zig scanner mirrors the non-startup `source + 35` branch
   - the active slot position is the mutable vector at `+0x68/+0x6c/+0x70`
   - default ramp families `0/1/2/3/4` randomize `x` directly into that live slot vector at spawn
   - child particles orbit around the same live slot vector instead of around an independent hidden anchor
 - `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
-- on hit, the slot does not die immediately: `handle_subgoldy_collisions` flips it into the shared post-hit lane, and the slot's `update_ring_or_special_effect_parent` vtable advances the recovered `2 -> 3` follow/collapse animation before teardown
-- the post-hit `2 -> 3` follow and `4 -> 5` miss-expand lanes seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
-- the same vtable also owns the missed-pickup `4 -> 5` expand-and-teardown lane keyed from `movement_flag_selector_snapshot`
+- on hit, the slot does not die immediately: `handle_subgoldy_collisions` moves `ACTIVE -> COLLECT_PENDING`, and the slot's `update_ring_or_special_effect_parent` vtable advances `COLLECT_PENDING -> COLLECTING` before teardown
+- the collect transition (`2 -> 3`) and expand transition (`4 -> 5`) seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
+- the same vtable owns the `EXPAND_PENDING -> EXPANDING` teardown lane keyed from `movement_flag_selector_snapshot`
 - the collision switch owns the ring-kind ladder:
-  - `1` -> score + `PW1`
-  - `2/6` -> score + `EXPLODERING` + `initialize_nuke`
-  - `3/7` -> negative motion-lane impulse + `SLOWRING`
-  - `4/5` -> optional voice + weapon-selector increment + `PW1..PW7`
-  - `8` -> weapon-selector increment + `PW1..PW7`
+  - `UNKNOWN_1` (`1`) -> score + `PW1`
+  - `EXPLODE_RAMP`/`EXPLODE_AUTHORED` (`2/6`) -> score + `EXPLODERING` + `initialize_nuke`
+  - `SLOW_DEFAULT`/`SLOW_AUTHORED` (`3/7`) -> negative motion-lane impulse + `SLOWRING`
+  - `NORMAL_DEFAULT`/`NORMAL_AUTHORED` (`4/5`) -> optional voice + weapon-selector increment + `PW1..PW7`
+  - `POWER_UP_AUTHORED` (`8`) -> weapon-selector increment + `PW1..PW7`
 - the same pre-ladder collision block writes the live forward-motion lane:
-  - `3/7`: `velocity.z = -0.1`
+  - `SLOW_DEFAULT`/`SLOW_AUTHORED`: `velocity.z = -0.1`
   - other live ring-effect kinds: `velocity.z = track_center_x * 0.5`
 - the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula, seeds the post-hit progress step from `track_center_x` instead of from runner speed, and writes both the negative and positive live-ring `velocity.z` impulses into the runner motion lane
 - the remaining Zig gap is that collisions still use the older lower proxy anchor while the player-height parity gap remains open, and the active `+0x1dc` oscillation gate is still conservative because its writer is still unresolved

@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     current_prototypes,
+    current_type_widths,
     emit_summary,
     struct_exists,
     types_declare_missing_only,
@@ -31,7 +32,14 @@ REQUIRED_HEADER_STRUCTS = (
     "SubRingPool",
 )
 
+REQUIRED_RING_TYPES = (
+    "SubRingState",
+    "SubRingKind",
+)
+
 RING_TYPE_REPLACEMENTS = (
+    "SubRingState",
+    "SubRingKind",
     "SubRingStar",
     "RingOrSpecialEffectParticle",
     "SubRing",
@@ -85,6 +93,11 @@ SLUG_HAZARD_FIELD_UPDATES = (
     ("0xac", "sprite", "Sprite*"),
     ("0xb0", "source_cell", "TrackRowCell*"),
     ("0xc0", "owner_player", "Player*"),
+)
+
+SUB_RING_FIELD_UPDATES = (
+    ("0x80", "state", "SubRingState"),
+    ("0x88", "kind", "SubRingKind"),
 )
 
 PROTO_UPDATES = (
@@ -146,7 +159,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_ring_or_special_effect",
-        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, int32_t requested_kind, Player* player, float ring_speed)",
+        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, SubRingKind requested_kind, Player* player, float ring_speed)",
     ),
     (
         "initialize_ring_or_special_effect_particles",
@@ -220,6 +233,14 @@ def main() -> int:
         struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name)
         for struct_name in REQUIRED_HEADER_STRUCTS
     )
+    ring_type_widths = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=REQUIRED_RING_TYPES,
+    )
+    ring_types_present = all(
+        ring_type_widths.get(type_name) == 4 for type_name in REQUIRED_RING_TYPES
+    )
     type_operation = (
         {
             "op": "types_declare_missing_only",
@@ -227,8 +248,9 @@ def main() -> int:
             "reason": "canonical subgame pool structs already present",
             "header": str(header_path),
             "required_structs": REQUIRED_HEADER_STRUCTS,
+            "required_types": REQUIRED_RING_TYPES,
         }
-        if types_present
+        if types_present and ring_types_present
         else types_declare_missing_only(
             REPO_ROOT,
             target=args.target,
@@ -244,6 +266,7 @@ def main() -> int:
         ("JetPack", JETPACK_FIELD_UPDATES),
         ("TrackHealthPickup", TRACK_HEALTH_PICKUP_FIELD_UPDATES),
         ("SlugHazardRuntime", SLUG_HAZARD_FIELD_UPDATES),
+        ("SubRing", SUB_RING_FIELD_UPDATES),
     ]
     if struct_exists(REPO_ROOT, target=args.target, struct_name="FrameSubgameRuntime"):
         struct_updates.insert(0, ("FrameSubgameRuntime", SUBGAME_FIELD_UPDATES))

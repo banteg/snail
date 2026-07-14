@@ -113,9 +113,11 @@ void SubgameRuntime::remove_subgame_bods()
     BodNode** ring_next = &ring_effects.slots[0].list_next;
     int ring_count = sizeof(ring_effects.slots) / sizeof(ring_effects.slots[0]);
     do {
-        if (((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state != 0) {
+        if (((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state
+            != SUB_RING_STATE_INACTIVE) {
             REMOVE_BOD_NODE_FROM_NEXT_LINK(ring_next);
-            ((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state = 0;
+            ((SubRing*)BOD_NODE_FROM_NEXT_LINK(ring_next))->state =
+                SUB_RING_STATE_INACTIVE;
         }
         ring_next = (BodNode**)((char*)ring_next + sizeof(SubRing));
         --ring_count;

@@ -100,3 +100,9 @@ The child initializer now derives its terminal bound from the owned
 `SubRing::particles` array. Its normalized listing remains byte-identical
 (`a8c10dd83dfdc6db3bc0dd25b8b9709dd1e0c0b973e1f28ebabb14d9482adcc4`)
 and exact at 153/153 instructions with ten clean operands.
+
+## 2026-07-14 ring kind and lifecycle ownership
+
+The initializer now consumes `SubRingKind` for its normal, explode, and slow
+sprite-family dispatch and writes `SUB_RING_STATE_ACTIVE`. This is type-only:
+the scratch remains exact at 153/153 instructions with ten clean operands.

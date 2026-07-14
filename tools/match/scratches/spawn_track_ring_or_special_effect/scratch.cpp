@@ -16,7 +16,7 @@ int report_errorf(const char* format, ...);
 
 void SubgameRuntime::spawn_track_ring_or_special_effect(
     TrackRowCell* cell,
-    int requested_kind,
+    SubRingKind requested_kind,
     Player* player,
     float ring_speed)
 {
@@ -24,7 +24,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     SubRing* scan = (SubRing*)((char*)this
         + offsetof(SubgameRuntime, ring_effects));
     while (1) {
-        if (scan->state == 0)
+        if (scan->state == SUB_RING_STATE_INACTIVE)
             break;
         slot_index++;
         scan = (SubRing*)((char*)scan + sizeof(SubRing));
@@ -44,19 +44,19 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     Vector3* slot_position;
     set_matrix_identity(&slot->transform);
 
-    int kind = requested_kind;
+    SubRingKind kind = requested_kind;
     slot->owner_player = player;
-    if (kind == 4) {
+    if (kind == SUB_RING_KIND_NORMAL_DEFAULT) {
         if (random_float_below(1.0f, "RT") > 0.930000007f ||
             (random_float_below(1.0f, "RT2") > 0.5f && level_mode == kind)) {
-            kind = 3;
+            kind = SUB_RING_KIND_SLOW_DEFAULT;
         }
     }
 
     slot_position = &slot->transform.position;
     switch (kind) {
-    case 0:
-    case 4: {
+    case SUB_RING_KIND_UNKNOWN_0:
+    case SUB_RING_KIND_NORMAL_DEFAULT: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -68,7 +68,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         slot->active_phase_step = default_phase_step;
         break;
     }
-    case 1: {
+    case SUB_RING_KIND_UNKNOWN_1: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -79,7 +79,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         slot->active_phase = random_float_below(1.0f, "RR3") * 6.28318548f;
         break;
     }
-    case 2: {
+    case SUB_RING_KIND_EXPLODE_RAMP: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 3.5f;
@@ -91,7 +91,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         slot->active_phase_step = default_phase_step;
         break;
     }
-    case 3: {
+    case SUB_RING_KIND_SLOW_DEFAULT: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -103,7 +103,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         slot->active_phase_step = default_phase_step;
         break;
     }
-    case 5: {
+    case SUB_RING_KIND_NORMAL_AUTHORED: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -114,7 +114,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
         break;
     }
-    case 6: {
+    case SUB_RING_KIND_EXPLODE_AUTHORED: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -125,7 +125,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
         break;
     }
-    case 7: {
+    case SUB_RING_KIND_SLOW_AUTHORED: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -136,7 +136,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
         break;
     }
-    case 8: {
+    case SUB_RING_KIND_POWER_UP_AUTHORED: {
         Vector3 staged_position;
         staged_position.x = cell->position.x;
         staged_position.y = cell->position.y + 2.5f;
@@ -149,14 +149,14 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     }
 
-    if (kind == 1)
+    if (kind == SUB_RING_KIND_UNKNOWN_1)
         slot->active_phase_step = default_phase_step;
 
     TrackRowCell* result = get_track_grid_cell_at_world_position(slot_position);
     if (result->tile_id != 14) {
         slot->kind = kind;
         slot->owner_lives_snapshot = player->lives;
-        slot->state = 1;
+        slot->state = SUB_RING_STATE_ACTIVE;
         if (random_float_below(1.0f, "RT1") > 0.5f)
             slot->active_phase_step = slot->active_phase_step * -1.0f;
 

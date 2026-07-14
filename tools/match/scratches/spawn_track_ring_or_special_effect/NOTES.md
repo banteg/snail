@@ -246,3 +246,12 @@ All five dependent normalized listings remain byte-identical:
 - parent updater: `0940726eee8e7a0a108d1a2d58301241c610d08414c729dc7685b0f5f9950488`
 - parent constructor: `a02f4e5d58e4322ce0393c0db796f2d37ae5cc9bb63372a84ae6c8c25f7c3bf1`
 - runtime constructor: `755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`
+
+## 2026-07-14 ring kind and lifecycle ownership
+
+The spawner now accepts and stores `SubRingKind`, and its free-slot/activation
+stores use `SubRingState`. Producer-backed values distinguish default normal,
+randomized slow, explosive-ramp, and the four authored row kinds. Values `0`
+and `1` remain explicit unknown tokens because no live Windows producer is
+recovered. Focused output remains 64.09%, 327/347 instructions, prefix 3/347,
+with 48 clean operands and the same ten documented switch-grouping mismatches.

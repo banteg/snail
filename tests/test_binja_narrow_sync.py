@@ -515,6 +515,63 @@ def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> N
         assert constant in scratch
 
 
+def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_subgame_pool_types.h", "path_template_types.h")
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/ring_special_effect_types.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"SubRingState",' in pool_sync
+    assert '"SubRingKind",' in pool_sync
+    assert '("0x80", "state", "SubRingState")' in pool_sync
+    assert '("0x88", "kind", "SubRingKind")' in pool_sync
+    assert "SubRingKind requested_kind" in pool_sync
+    assert '"SubRingState",' in path_sync
+    assert '"SubRingKind",' in path_sync
+
+    for header in (*analysis_headers, matcher_header):
+        assert "SUB_RING_STATE_INACTIVE = 0" in header
+        assert "SUB_RING_STATE_COLLECT_PENDING = 2" in header
+        assert "SUB_RING_STATE_EXPANDING = 5" in header
+        assert "SUB_RING_KIND_UNKNOWN_0 = 0" in header
+        assert "SUB_RING_KIND_UNKNOWN_1 = 1" in header
+        assert "SUB_RING_KIND_EXPLODE_RAMP = 2" in header
+        assert "SUB_RING_KIND_SLOW_DEFAULT = 3" in header
+        assert "SUB_RING_KIND_NORMAL_DEFAULT = 4" in header
+        assert "SUB_RING_KIND_NORMAL_AUTHORED = 5" in header
+        assert "SUB_RING_KIND_EXPLODE_AUTHORED = 6" in header
+        assert "SUB_RING_KIND_SLOW_AUTHORED = 7" in header
+        assert "SUB_RING_KIND_POWER_UP_AUTHORED = 8" in header
+
+    consumers = {
+        "spawn_track_ring_or_special_effect": "SUB_RING_KIND_NORMAL_DEFAULT",
+        "initialize_ring_or_special_effect_particles": (
+            "SUB_RING_KIND_POWER_UP_AUTHORED"
+        ),
+        "update_ring_or_special_effect_particle": "SUB_RING_KIND_SLOW_DEFAULT",
+        "update_ring_or_special_effect_parent": "SUB_RING_STATE_EXPANDING",
+        "handle_subgoldy_collisions": "SUB_RING_STATE_COLLECT_PENDING",
+        "update_subgame": "SUB_RING_KIND_EXPLODE_RAMP",
+        "reset_subgame": "SUB_RING_STATE_INACTIVE",
+        "remove_subgame_bods": "SUB_RING_STATE_INACTIVE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

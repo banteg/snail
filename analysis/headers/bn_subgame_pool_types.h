@@ -175,6 +175,28 @@ typedef struct SlugPool {
     SlugHazardRuntime slots[SUB_SLUG_SLOT_CAPACITY];
 } SlugPool;
 
+typedef enum SubRingState {
+    SUB_RING_STATE_INACTIVE = 0,
+    SUB_RING_STATE_ACTIVE = 1,
+    SUB_RING_STATE_COLLECT_PENDING = 2,
+    SUB_RING_STATE_COLLECTING = 3,
+    SUB_RING_STATE_EXPAND_PENDING = 4,
+    SUB_RING_STATE_EXPANDING = 5,
+} SubRingState;
+
+typedef enum SubRingKind {
+    /* No live Windows producer has been recovered for kinds 0 or 1 yet. */
+    SUB_RING_KIND_UNKNOWN_0 = 0,
+    SUB_RING_KIND_UNKNOWN_1 = 1,
+    SUB_RING_KIND_EXPLODE_RAMP = 2,
+    SUB_RING_KIND_SLOW_DEFAULT = 3,
+    SUB_RING_KIND_NORMAL_DEFAULT = 4,
+    SUB_RING_KIND_NORMAL_AUTHORED = 5,
+    SUB_RING_KIND_EXPLODE_AUTHORED = 6,
+    SUB_RING_KIND_SLOW_AUTHORED = 7,
+    SUB_RING_KIND_POWER_UP_AUTHORED = 8,
+} SubRingKind;
+
 typedef struct SubRing SubRing;
 
 typedef struct SubRingStar {
@@ -205,9 +227,9 @@ struct SubRing {
     float world_position_w;
     void* render_animation_manager;
     uint8_t unknown_7c[0x04];
-    int32_t state;
+    SubRingState state;
     Player* owner_player;
-    int32_t kind;
+    SubRingKind kind;
     int32_t owner_lives_snapshot;
     SubRingStar particles[10];
     SubgameRuntime* rate_source;
@@ -234,7 +256,7 @@ SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* rin
 void __thiscall spawn_track_ring_or_special_effect(
     SubgameRuntime* game,
     TrackRowCell* cell,
-    int32_t requested_kind,
+    SubRingKind requested_kind,
     Player* player,
     float ring_speed);
 int32_t __thiscall initialize_ring_or_special_effect_particles(

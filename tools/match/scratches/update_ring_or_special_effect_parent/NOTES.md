@@ -184,3 +184,11 @@ All six update/kill loops and both indexed radius loops now share the
 listing remains byte-identical
 (`0940726eee8e7a0a108d1a2d58301241c610d08414c729dc7685b0f5f9950488`)
 at the honest 98.21% result (`336/336`, prefix `193/336`, 37 clean operands).
+
+## 2026-07-14 ring lifecycle ownership
+
+The parent state word is now `SubRingState`: inactive/active, collision-pending
+and collecting, then expansion-pending and expanding. Those names follow the
+proved writers and transition behavior rather than guessing an original enum.
+Focused output remains 98.21%, 336/336 instructions, prefix 193/336, with 37
+clean operands.

@@ -139,3 +139,9 @@ Rejected source-shape probe:
   hoisting `fmul [this+0x1c]` before the parent/sprite reloads. The promoted
   parent layout is still accepted; no tested source spelling explains native's
   single X-lane materialization order while preserving y/z pointer use.
+
+## 2026-07-14 ring kind ownership
+
+The stationary-orbit exception now names `SUB_RING_KIND_SLOW_DEFAULT` instead
+of comparing the parent kind to raw `3`. Focused output remains 96.36%, 55/55
+instructions, prefix 28/55, with all five operands clean.

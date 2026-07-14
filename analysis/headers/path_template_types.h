@@ -718,6 +718,28 @@ typedef struct GarbageHazardPool {
     GarbageHazardSlot slots[50];
 } GarbageHazardPool;
 
+typedef enum SubRingState {
+    SUB_RING_STATE_INACTIVE = 0,
+    SUB_RING_STATE_ACTIVE = 1,
+    SUB_RING_STATE_COLLECT_PENDING = 2,
+    SUB_RING_STATE_COLLECTING = 3,
+    SUB_RING_STATE_EXPAND_PENDING = 4,
+    SUB_RING_STATE_EXPANDING = 5,
+} SubRingState;
+
+typedef enum SubRingKind {
+    /* No live Windows producer has been recovered for kinds 0 or 1 yet. */
+    SUB_RING_KIND_UNKNOWN_0 = 0,
+    SUB_RING_KIND_UNKNOWN_1 = 1,
+    SUB_RING_KIND_EXPLODE_RAMP = 2,
+    SUB_RING_KIND_SLOW_DEFAULT = 3,
+    SUB_RING_KIND_NORMAL_DEFAULT = 4,
+    SUB_RING_KIND_NORMAL_AUTHORED = 5,
+    SUB_RING_KIND_EXPLODE_AUTHORED = 6,
+    SUB_RING_KIND_SLOW_AUTHORED = 7,
+    SUB_RING_KIND_POWER_UP_AUTHORED = 8,
+} SubRingKind;
+
 typedef struct RingOrSpecialEffectParent RingOrSpecialEffectParent;
 
 typedef struct RingOrSpecialEffectParticle {
@@ -738,9 +760,9 @@ typedef struct RingEffectRateSource {
 
 struct RingOrSpecialEffectParent {
     RenderableBod body;
-    int32_t state;
+    SubRingState state;
     Player* owner_player;
-    int32_t kind;
+    SubRingKind kind;
     int32_t owner_lives_snapshot;
     RingOrSpecialEffectParticle particles[10];
     RingEffectRateSource* rate_source;

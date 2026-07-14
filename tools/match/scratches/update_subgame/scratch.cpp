@@ -459,19 +459,19 @@ void SubgameRuntime::update_subgame()
                             if (cell_slot->cell.tile_id == 35) {
                                 if ((ring_flags & SUBROW_FLAG_RING_NORMAL) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 5, &player,
+                                        &cell_slot->cell, SUB_RING_KIND_NORMAL_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 8, &player,
+                                        &cell_slot->cell, SUB_RING_KIND_POWER_UP_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 6, &player,
+                                        &cell_slot->cell, SUB_RING_KIND_EXPLODE_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 7, &player,
+                                        &cell_slot->cell, SUB_RING_KIND_SLOW_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else {
                                     goto after_authored_ring;
@@ -490,7 +490,7 @@ after_authored_ring:
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
-                                        8, &player,
+                                        SUB_RING_KIND_POWER_UP_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
                                         (&cell_slot->cell)[
@@ -500,7 +500,7 @@ after_authored_ring:
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
-                                        6, &player,
+                                        SUB_RING_KIND_EXPLODE_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
                                         (&cell_slot->cell)[
@@ -510,7 +510,7 @@ after_authored_ring:
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
-                                        7, &player,
+                                        SUB_RING_KIND_SLOW_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
                                         (&cell_slot->cell)[
@@ -524,7 +524,8 @@ after_authored_ring:
                                     && cell_slot->cell.tile_id != 5 && cell_slot->cell.tile_id != 6
                                     && cell_slot->cell.tile_id != 7) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 4, &player, 0.0f);
+                                        &cell_slot->cell, SUB_RING_KIND_NORMAL_DEFAULT,
+                                        &player, 0.0f);
                                     if (player.lives < 10)
                                         player.last_ring_spawn_z =
                                             cell_slot->cell.position.z;
@@ -539,7 +540,7 @@ after_authored_ring:
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 2, &player,
+                                        &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;
                                 } else if (random_float_below(1.0f, "R2") > 0.7f
@@ -548,7 +549,8 @@ after_authored_ring:
                                             & SUBROW_FLAG_RING_EXPLODE)
                                         != 0)) {
                                     spawn_track_ring_or_special_effect(
-                                        &cell_slot->cell, 2, &player, 0.0f);
+                                        &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP,
+                                        &player, 0.0f);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;
                                 }
                             }

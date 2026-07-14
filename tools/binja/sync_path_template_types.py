@@ -200,6 +200,8 @@ REQUIRED_HEADER_STRUCTS = (
     "RuntimeRateOrLevelArg",
     "SubgameRuntimeFlag",
     "SubgameRuntimeFlagPreset",
+    "SubRingState",
+    "SubRingKind",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
