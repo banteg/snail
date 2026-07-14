@@ -136,3 +136,14 @@ matching the existing Snail path. Their inherited transform/object/color and
 derived animation-manager backlink form one typed chain. Focused output remains
 byte-identical at 45.43%, 415/439 instructions, prefix 3, with all 26 operands
 clean.
+
+## 2026-07-14 camera-slot extent derivation
+
+The two viewport scans, local order buffer, and insertion-sort tail now derive
+their capacity and final index from `GameRoot::render_camera_slots`. The
+manual five-store buffer initialization remains intact because it is part of
+the accepted VC6 source shape; only duplicated extent literals are removed.
+The normalized candidate listing remains byte-identical
+(`df9e91e723f12aeabea17578a3fae2b3fbba67527c0495eb46e00cd56a17b8c6`)
+at the honest 45.43% focused result (`415/439`, prefix `3/439`, 26 clean
+operands).

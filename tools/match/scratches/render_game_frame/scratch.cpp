@@ -29,6 +29,12 @@ extern RenderAnimatedBodView* g_post_sprite_bods[]; // data_4dfb10
 
 void GameRoot::render_game_frame()
 {
+    enum {
+        CAMERA_SLOT_COUNT =
+            sizeof(render_camera_slots) / sizeof(render_camera_slots[0]),
+        CAMERA_LAST_INDEX = CAMERA_SLOT_COUNT - 1,
+    };
+
     int skip_count = render_skip_count;
     if (skip_count > 0) {
         --skip_count;
@@ -42,17 +48,17 @@ void GameRoot::render_game_frame()
     TransformMatrix transform;
     set_matrix_identity(&transform);
 
-    int camera_order[5];
+    int camera_order[CAMERA_SLOT_COUNT];
     camera_order[0] = -1;
     camera_order[1] = -1;
     camera_order[2] = -1;
     camera_order[3] = -1;
-    camera_order[4] = -1;
+    camera_order[CAMERA_LAST_INDEX] = -1;
 
     int active_camera_count = 0;
     RenderCameraSlot* slots = render_camera_slots;
     int i;
-    for (i = 0; i < 5; ++i) {
+    for (i = 0; i < CAMERA_SLOT_COUNT; ++i) {
         if ((slots[i].flags & 1) != 0) {
             ++active_camera_count;
         }
@@ -61,7 +67,7 @@ void GameRoot::render_game_frame()
     slots[1].flags = (slots[1].flags & 0x00ffffff) | 0x02000000;
 
     int ordered_count = 0;
-    for (i = 0; i < 5; ++i) {
+    for (i = 0; i < CAMERA_SLOT_COUNT; ++i) {
         if ((slots[i].flags & 1) != 0) {
             if (ordered_count == 0) {
                 camera_order[0] = i;
@@ -69,9 +75,9 @@ void GameRoot::render_game_frame()
             } else {
                 for (int insert = 0; insert < ordered_count; ++insert) {
                     if (slots[i].sort_key > slots[camera_order[insert]].sort_key) {
-                        if (insert < 4) {
-                            int* shift = &camera_order[4];
-                            int shift_count = 4 - insert;
+                        if (insert < CAMERA_LAST_INDEX) {
+                            int* shift = &camera_order[CAMERA_LAST_INDEX];
+                            int shift_count = CAMERA_LAST_INDEX - insert;
                             do {
                                 *shift = shift[-1];
                                 --shift;
