@@ -9,7 +9,7 @@
 
 typedef unsigned int DWORD;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 int report_errorf(char* format, ...);
@@ -21,7 +21,7 @@ int report_errorf(char* format, ...);
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr, linked_flag_expr) \
     do {                                                          \
         BodNode** next_link = (next_link_expr);                   \
-        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
+        BodList* list = &g_game->active_bod_list;                 \
         DWORD flags = BOD_NEXT_LINK_FLAGS(next_link);             \
         if ((flags & (linked_flag_expr)) == 0) {                  \
             report_errorf("List remove");                        \
@@ -46,7 +46,7 @@ int report_errorf(char* format, ...);
 
 #define REMOVE_INLINE_BOD_NODE(node_expr, linked_flag_expr)       \
     do {                                                          \
-        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
+        BodList* list = &g_game->active_bod_list;                 \
         BodNode* node = (node_expr);                              \
         DWORD flags = node->list_flags;                           \
         if ((flags & (linked_flag_expr)) == 0) {                  \
@@ -73,7 +73,7 @@ int report_errorf(char* format, ...);
 void SubgameRuntime::destroy_subgame()
 {
     debug_report_stub("-SubGame::UnInit()\n");
-    *(DWORD*)(g_game_base + 0x4f26c) = 1;
+    *(DWORD*)((char*)g_game + 0x4f26c) = 1;
 
     if (level_mode == 7)
         tutorial.uninit_tutorial();
@@ -116,24 +116,24 @@ void SubgameRuntime::destroy_subgame()
         REMOVE_INLINE_BOD_NODE(&barrier, linked_flag);
     }
 
-    BorderManager* borders = &((GameRoot*)g_game_base)->border_manager;
+    BorderManager* borders = &g_game->border_manager;
     borders->kill_border(top_score_widget);
-    ((GameRoot*)g_game_base)->border_manager.kill_border(bottom_score_widget);
+    g_game->border_manager.kill_border(bottom_score_widget);
 
     if (selected_level_record_persistent != 0) {
-        ((GameRoot*)g_game_base)->players[0].saved_frontend_state = 0x12;
+        g_game->players[0].saved_frontend_state = 0x12;
         selected_level_record_persistent = 0;
     }
 
     if (level_mode == 3)
-        *(DWORD*)(g_game_base + 0x74658) = 2;
+        g_game->subgame.level_mode = 2;
 
     if (level_mode == 0) {
-        ((GameRoot*)g_game_base)->border_manager.kill_border(lives_icon_widget);
-        ((GameRoot*)g_game_base)->border_manager.kill_border(lives_text_widget);
+        g_game->border_manager.kill_border(lives_icon_widget);
+        g_game->border_manager.kill_border(lives_text_widget);
 
         FrontendWidget** widget = life_stock_widgets;
         for (int n = 0; n < 9; ++n)
-            ((GameRoot*)g_game_base)->border_manager.kill_border(widget[n]);
+            g_game->border_manager.kill_border(widget[n]);
     }
 }

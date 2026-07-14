@@ -18,7 +18,7 @@ Recovered shape:
 - terminates at `sample_index == template->segment_count`, clears `active`, returns `3`, and handles the Supertramp launch special case
 - normal path interpolates the path center/lateral/special scalars, builds either kind-42 nonlinear transform or ordinary interpolated secondary-sample transform, stores output position and camera basis scratch vectors, then checks side exits
 - special-runtime row updates use the typed row-slot table at `g_game_base + 0x641184 + 0xf4 * row_index`
-- Supertramp launch path reloads the subgame rate from `g_game_base + 0x74650`
+- Supertramp launch path reloads `GameRoot::subgame.subgame_rate`
 
 Known residuals after the current source shape:
 

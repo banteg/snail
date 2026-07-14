@@ -3,9 +3,10 @@
 #include "object_animation_types.h"
 #include "object_render_types.h"
 #include "anim_manager.h"
+#include "game_root.h"
 #include "presentation_animation_channel.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void AnimManager::update_anim_manager()
 {
@@ -14,7 +15,7 @@ void AnimManager::update_anim_manager()
     case 0:
         return;
     case 1: {
-        float delta = (*(float*)(g_game_base + 0x74648) * 2.0f - 0.200000003f + 1.0f)
+        float delta = (g_game->subgame.base_rate * 2.0f - 0.200000003f + 1.0f)
             * progress_step;
         float next_progress = progress + delta;
         progress = next_progress;

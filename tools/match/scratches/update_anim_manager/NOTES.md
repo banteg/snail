@@ -69,3 +69,7 @@ until a source shape recovers native's `edx` zero lane without extra saves.
   `Object**` for the slot link, and staging the selected `ObjectAnimation*`
   reproduce the native two link reads and install order. Focused matching moves
   from 61.65% to exact 100.00% without volatile state, padding, or fake flow.
+
+The frame delta now reads the root-owned `GameRoot::subgame.base_rate` field
+instead of spelling its absolute `root + 0x74648` address. The exact 134/134
+code shape and all 13 clean operands are unchanged.

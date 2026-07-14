@@ -13,3 +13,6 @@ The exact source shape has two important call ownership details:
 - `get_track_skirt_color` returns the filled `Color4f*`; passing
   `*resolved_color` by value into `build_track_render_caches` reproduces the
   native 16-byte stack argument copy before the render-cache call.
+
+The color query now names the root-owned `GameRoot::subgame` receiver rather
+than reconstructing it from `root + 0x74618`. Focused matching remains exact.

@@ -74,8 +74,8 @@ wrapper padding. The teardown remains exact.
 
 The inlined unlink blocks now borrow `GameRoot::active_bod_list`, HUD handles
 return through `GameRoot::border_manager`, and the persistent-replay exit state
-lands in `players[0].saved_frontend_state`. The mode-3 teardown write remains
-spelled through root `+0x74658`: changing it to `this->level_mode` removes a
-native game-base reload and regresses the object, proving the root alias is
-part of the original source shape. The retained form stays exact at 246/246
+lands in `players[0].saved_frontend_state`. The mode-3 teardown write now names
+`g_game->subgame.level_mode`: changing it to `this->level_mode` removes a
+native game-base reload and regresses the object, proving the root-owned alias
+is part of the original source shape. The retained form stays exact at 246/246
 with all 41 operands clean.

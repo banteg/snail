@@ -189,3 +189,9 @@ with all 27 operands clean.
 - Android `cRSubGoldy::Init(int)` independently stores the same self-owned
   manager pointers on the matching `cRSnail` and `cRWeapon` BODs before
   `cRGame::Render()` consumes manager progress.
+
+2026-07-14 root backlink ownership: the player's borrowed `game` pointer now
+binds directly to `GameRoot::subgame`. The two control-source branches retain
+their byte-shaped root aliases because that source shape is required for the
+exact native register schedule. Focused Windows remains exact at 279/279 with
+all 27 operands clean.

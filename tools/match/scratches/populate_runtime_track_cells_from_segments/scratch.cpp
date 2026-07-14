@@ -2,6 +2,7 @@
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
 #include "sprite.h"
+#include "game_root.h"
 #include "runtime_config.h"
 #include "subgame_runtime.h"
 #include "game_time.h"
@@ -627,7 +628,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
                     Color4f skirt_color;
                     Color4f* resolved_color =
-                        ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(
+                        ((GameRoot*)g_game_base)->subgame.get_track_skirt_color(
                             &skirt_color);
                     *(Color4f*)(row_record + 0xd8) = *resolved_color;
                     set_object_color(*(void**)(row_record + 0xd4), *resolved_color);

@@ -382,3 +382,7 @@ instead of its historical `TrackAttachmentRuntimeRow` alias. No distinct
 ownership consolidation is codegen neutral at `29.27%`, `1,208/1,245`, prefix
 `2/1,245`, with `60` clean masked operands and the one known glyph jump-table
 layout mismatch.
+
+The skirt-color query now names `GameRoot::subgame` while retaining the raw
+root byte pointer needed by the texture selector, root BOD catalog, and large
+switch source shape. Focused metrics remain unchanged.

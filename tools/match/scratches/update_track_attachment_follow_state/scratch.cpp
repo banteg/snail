@@ -1,4 +1,5 @@
 // update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
+#include "game_root.h"
 #include "player.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
@@ -318,7 +319,8 @@ terminal_path:
             launch_position.z = base_position.z + forward_offset.z;
             *out_position = launch_position;
             out_position->x = old_x;
-            player->cutscene_pitch_cycle_step = *(float*)(g_game_base + 0x74650) * 0.013888888f;
+            player->cutscene_pitch_cycle_step =
+                ((GameRoot*)g_game_base)->subgame.subgame_rate * 0.013888888f;
             player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step;
             g_voice_manager.play_voice_manager(15, 0, -1);
         } else {

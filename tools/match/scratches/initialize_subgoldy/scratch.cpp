@@ -4,6 +4,7 @@
 #include "cameraman.h"
 #include "click_start.h"
 #include "damage_guage.h"
+#include "game_root.h"
 #include "invincible.h"
 #include "object_render_types.h"
 #include "sub_hover.h"
@@ -12,7 +13,7 @@
 #include "spring_float.h"
 #include "transform_matrix.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void Player::initialize_subgoldy(int player_slot)
 {
@@ -20,7 +21,7 @@ void Player::initialize_subgoldy(int player_slot)
     int zero = 0;
 
     this->player_slot = player_slot;
-    this->game = (SubgameRuntime*)(g_game_base + 0x74618);
+    this->game = &g_game->subgame;
     *(int*)(self + 0x370) = zero;
     *(int*)(self + 0x1e8) = zero;
     *(unsigned char*)(self + 0x2d8) = (unsigned char)zero;
@@ -180,14 +181,14 @@ void Player::initialize_subgoldy(int player_slot)
     int active_slot = *(int*)(self + 0x380);
     char* control_source;
     if (active_slot == 1) {
-        char* app = g_game_base;
+        char* app = (char*)g_game;
         char* control_check = app + 0x44;
         if (control_check != 0)
             control_source = app + 0x7c;
         else
             control_source = 0;
     } else {
-        char* app = g_game_base;
+        char* app = (char*)g_game;
         char* control_check = app + 0xb4;
         if (control_check != 0)
             control_source = app + 0xec;
