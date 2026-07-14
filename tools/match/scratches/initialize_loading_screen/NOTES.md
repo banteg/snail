@@ -33,12 +33,11 @@ codegen-neutral at 83.00%. These forms keep the same inverted register split:
 candidate `edi=this` / `ebx=archive_base`, native `ebx=this` /
 `edi=archive_base`.
 
-2026-07-11 renderer-owner closure: both loading-screen vertex resources now
-use the recovered `Direct3DRenderer::create_vertex_buffer` owner directly. The
-renderer prefix contains the 3000-entry vertex-wrapper pool, while the
-renderer-state and device globals used by adjacent draw paths are proven
-interior fields at `+0xbb88/+0xbb94`. Focused output remains 83.00%, 253/253,
- with 47 clean operands and the same register-allocation residual.
+2026-07-14 factory-owner closure: both loading-screen vertex resources use the
+embedded `Direct3DRenderer::vertex_buffer_factory`. That complete `0x8ca4`
+owner contains its count and 3000-entry vertex-wrapper pool; the renderer-state
+and device fields remain at `+0xbb88/+0xbb94`. Focused output remains 83.00%,
+253/253, with 47 clean operands and the same register-allocation residual.
 
 2026-07-11 cRLoadingBar ownership: Android and iOS name this initializer
 `cRLoadingBar::Init()` and preserve the `gLoadingBar` global. Promoting the

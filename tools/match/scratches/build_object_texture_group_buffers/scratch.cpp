@@ -137,8 +137,8 @@ void build_object_texture_group_buffers(Object* object)
     }
 
     object->grouped_vertex_count = g_object_grouped_vertex_cursor;
-    object->render_buffers =
-        g_direct3d_renderer.create_vertex_buffer(g_object_grouped_vertex_cursor, 0x142);
+    object->render_buffers = g_direct3d_renderer.vertex_buffer_factory
+        .create_vertex_buffer(g_object_grouped_vertex_cursor, 0x142);
     object->index_buffer =
         g_direct3d_renderer.index_buffer_factory.create_index_buffer(index_count);
 

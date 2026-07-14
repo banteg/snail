@@ -46,8 +46,8 @@ void* SegmentCache::initialize_track_render_cache_manager()
             slot->bod.object->facequad_count = 0;
             slot->bod.object->facequads = 0;
             slot->bod.object->texture_group_count = 1;
-            slot->bod.object->render_buffers =
-                g_direct3d_renderer.create_vertex_buffer(max_vertex_counts[i], 0x142);
+            slot->bod.object->render_buffers = g_direct3d_renderer.vertex_buffer_factory
+                .create_vertex_buffer(max_vertex_counts[i], 0x142);
             slot->bod.object->index_buffer = g_direct3d_renderer
                 .index_buffer_factory.create_index_buffer(max_index_counts[i]);
             slot->bod.object->group_index_starts =

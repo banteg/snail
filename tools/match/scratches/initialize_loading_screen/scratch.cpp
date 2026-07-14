@@ -78,8 +78,9 @@ int LoadingBar::initialize_loading_screen()
     g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 17, 3);
 
     g_loading_background_vertex_buffer =
-        g_direct3d_renderer.create_vertex_buffer(4, 0x102);
-    g_loading_bar_vertex_buffer = g_direct3d_renderer.create_vertex_buffer(4, 0x102);
+        g_direct3d_renderer.vertex_buffer_factory.create_vertex_buffer(4, 0x102);
+    g_loading_bar_vertex_buffer =
+        g_direct3d_renderer.vertex_buffer_factory.create_vertex_buffer(4, 0x102);
 
     LoadingVertex* vertices;
     g_loading_background_vertex_buffer->vertex_buffer->vtbl->Lock(

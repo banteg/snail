@@ -1,6 +1,6 @@
 # create_vertex_buffer @ 0x4114b0
 
-Direct3DRenderer's fixed-pool vertex-buffer factory.
+The renderer's embedded fixed-pool vertex-buffer factory.
 
 - The factory-owned `ObjectRenderBuffers` slot is recovered as a 12-byte
   record: requested FVF at `+0x00`, one still-unknown dword at `+0x04`, and the
@@ -12,6 +12,14 @@ Direct3DRenderer's fixed-pool vertex-buffer factory.
   all use D3D usage `8` and pool `1`.
 - The function preserves native HRESULT diagnostics and the deliberate infinite
   trap after reporting that the 3000-slot vertex-buffer pool overflowed.
+
+2026-07-14 owner recovery: Binary Ninja's receiver, the exact callsites, and
+the adjacent index-buffer factory agree that renderer `+0x0000..+0x8ca3` is a
+complete `VertexBufferFactory`: a count followed by 3000 12-byte slots. The
+next `IndexBufferFactory` begins at `+0x8ca4`, exactly
+`4 + 3000 * sizeof(ObjectRenderBuffers)`. The method and all five callers now
+use that embedded owner instead of flattening its fields onto
+`Direct3DRenderer`.
 
 Focused result: 76.68%, 92 candidate instructions versus 101 target, with all
 10 masked operands resolved. Native emits three complete D3D call blocks in

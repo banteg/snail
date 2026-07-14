@@ -58,8 +58,6 @@ struct Direct3D8 {
 
 class Direct3DRenderer {
 public:
-    ObjectRenderBuffers* create_vertex_buffer(
-        int vertex_count, int fvf); // @ 0x4114b0
     void initialize_direct3d_renderer_defaults(); // @ 0x411630
     void release_direct3d_renderer_resources(); // @ 0x4116f0
     void release_direct3d_device_interfaces(); // @ 0x411960
@@ -70,8 +68,7 @@ public:
     void restore_texture_ref_stage_states(); // @ 0x4143c0
     void query_direct3d_device_caps(); // @ 0x414600
 
-    int vertex_buffer_count; // +0x0000
-    ObjectRenderBuffers vertex_buffers[0xbb8]; // +0x0004, 3000 entries
+    VertexBufferFactory vertex_buffer_factory; // +0x0000, 3000 entries
     IndexBufferFactory index_buffer_factory; // +0x8ca4, 3000 entries
     RendererState* renderer_state; // +0xbb88
     unsigned char device_initialized; // +0xbb8c
