@@ -2289,6 +2289,22 @@
       "notes": "The exact Windows void spelling remains 55/55 instructions. All ordinary Windows and Android callers discard the result register; the only tail calls are from independently void cRPlayer/cROverlay AI callbacks, and the ARM helper returns directly after its last matrix store without establishing a value."
     },
     {
+      "address": "0x44d530",
+      "windows_name": "initialize_quaternion_from_axis",
+      "android_symbol": "tQuaternian::tQuaternian(tAxis const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 26/26 Windows body is a void Quaternion::operator=(const AxisAngle&) conversion: constructor syntax adds a required receiver return absent from native, while assignment syntax preserves the body and its sole Interpolate callsite exactly. Android moved the analogous conversion to a constructor."
+    },
+    {
+      "address": "0x44d580",
+      "windows_name": "initialize_axis_from_quaternion",
+      "android_symbol": "tAxis::operator=(tQuaternian const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 30/30 Windows body and its sole Interpolate callsite match void AxisAngle::operator=(const Quaternion&). Android retains the same operator name; the Itanium symbol does not encode its return type, while Windows establishes no EAX result."
+    },
+    {
       "address": "0x44d5d0",
       "windows_name": "initialize_quaternion_from_matrix",
       "android_symbol": "tQuaternian::tQuaternian(tMatrix const&)",

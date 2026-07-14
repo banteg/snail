@@ -28,6 +28,8 @@ SYMBOL_UPDATES = (
     ("0x44c880", "initialize_global_identity_matrix"),
     ("0x44cde0", "initialize_uniform_scale_matrix"),
     ("0x44cfe0", "initialize_matrix_from_values"),
+    ("0x44d530", "initialize_quaternion_from_axis"),
+    ("0x44d580", "initialize_axis_from_quaternion"),
     ("0x44d5d0", "initialize_quaternion_from_matrix"),
     ("0x44d820", "initialize_matrix_from_quaternion"),
     ("0x44d920", "interpolate_matrix_rotation"),
@@ -190,6 +192,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Banner",
     "Vapour",
     "JetPack",
+    "AxisAngle",
     "Quaternion",
     "RenderableBod",
     "FringeObject",
@@ -605,6 +608,14 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_matrix_from_values",
         "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)",
+    ),
+    (
+        "initialize_quaternion_from_axis",
+        "void __thiscall initialize_quaternion_from_axis(Quaternion* out, const AxisAngle* axis)",
+    ),
+    (
+        "initialize_axis_from_quaternion",
+        "void __thiscall initialize_axis_from_quaternion(AxisAngle* out, const Quaternion* quaternion)",
     ),
     (
         "initialize_quaternion_from_matrix",

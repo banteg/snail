@@ -6,12 +6,12 @@
 float sine(float angle);
 float cosine(float angle);
 
-void Quaternion::initialize_quaternion_from_axis(const AxisAngle* axis)
+void Quaternion::operator=(const AxisAngle& axis)
 {
-    double scale = sine(axis->angle * 0.5f);
-    x = (float)scale * axis->x;
-    y = (float)scale * axis->y;
-    z = (float)scale * axis->z;
+    double scale = sine(axis.angle * 0.5f);
+    x = (float)scale * axis.x;
+    y = (float)scale * axis.y;
+    z = (float)scale * axis.z;
 
-    w = cosine(axis->angle * 0.5f);
+    w = cosine(axis.angle * 0.5f);
 }

@@ -7,9 +7,8 @@ struct TransformMatrix;
 
 struct Quaternion {
     Quaternion(); // out-of-line default constructor used by interpolation
+    void operator=(const AxisAngle& axis); // @ 0x44d530
     Quaternion(const TransformMatrix& matrix); // @ 0x44d5d0
-
-    void initialize_quaternion_from_axis(const AxisAngle* axis); // @ 0x44d530
 
     float x; // +0x00
     float y; // +0x04

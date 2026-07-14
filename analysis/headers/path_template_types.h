@@ -891,6 +891,14 @@ typedef struct TransformMatrix {
     Vec4 position;
 } TransformMatrix;
 
+/* Authored four-float Windows AxisAngle value; Android calls it tAxis. */
+typedef struct AxisAngle {
+    float x;
+    float y;
+    float z;
+    float angle;
+} AxisAngle;
+
 /* Authored four-float tQuaternian value retained by the Android symbols. */
 typedef struct Quaternion {
     float x;
@@ -1641,6 +1649,14 @@ TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, Trans
 TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
 void __thiscall set_matrix_z_direction(TransformMatrix* transform, const Vec3* direction);
 void __thiscall look_at_point(TransformMatrix* transform, const Vec3* target);
+void __thiscall initialize_quaternion_from_axis(
+    Quaternion* out,
+    const AxisAngle* axis
+);
+void __thiscall initialize_axis_from_quaternion(
+    AxisAngle* out,
+    const Quaternion* quaternion
+);
 Quaternion* __thiscall initialize_quaternion_from_matrix(
     Quaternion* out,
     const TransformMatrix* matrix

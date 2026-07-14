@@ -1308,6 +1308,24 @@
       "description": "Small thiscall forwarder that pushes the rhs matrix argument and calls multiply_matrix_in_place at 0x44d1a0."
     },
     {
+      "address": "0x44d530",
+      "name": "initialize_quaternion_from_axis",
+      "kind": "function",
+      "aliases": [
+        "??4Quaternion@@QAEXABUAxisAngle@@@Z"
+      ],
+      "description": "Exact Windows void Quaternion assignment from AxisAngle; Android uses a constructor for the analogous conversion."
+    },
+    {
+      "address": "0x44d580",
+      "name": "initialize_axis_from_quaternion",
+      "kind": "function",
+      "aliases": [
+        "??4AxisAngle@@QAEXABUQuaternion@@@Z"
+      ],
+      "description": "Exact Windows void AxisAngle assignment from Quaternion, retained by Android as tAxis::operator=(const tQuaternian&)."
+    },
+    {
       "address": "0x44d5d0",
       "name": "initialize_quaternion_from_matrix",
       "kind": "function",

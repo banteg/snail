@@ -26,10 +26,10 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
         TransformMatrix rebuilt(working);
         *this = rebuilt;
     } else {
-        axis.initialize_axis_from_quaternion(&working);
+        axis = working;
         if (axis.angle != 0.0f) {
             axis.angle = axis.angle * alpha;
-            working.initialize_quaternion_from_axis(&axis);
+            working = axis;
             TransformMatrix rebuilt(working);
             *this = rebuilt;
         }

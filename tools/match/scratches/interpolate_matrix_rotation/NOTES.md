@@ -59,3 +59,9 @@ the real `Quaternion(const TransformMatrix&)` and
 `TransformMatrix(const Quaternion&)` definitions recovered from Android. This
 keeps the current honest 96.19% score, 105/105 instruction parity, 30-instruction
 prefix, and 17 clean operands while removing both synthetic initializer APIs.
+
+2026-07-14 conversion-assignment ownership: `axis = working` and
+`working = axis` recover the exact Windows void assignment operators at
+0x44d580 and 0x44d530. Both direct spellings preserve this scratch's current
+instruction stream; decorated-symbol aliases keep all 17 call operands audited
+without pretending Android's quaternion constructor ABI applies to Windows.
