@@ -92,8 +92,8 @@ shorter `test al` variant.
 
 ## 2026-06-17 row-record cursor pass
 
-The builder now scans the suppress/marked-row flag through the shared
-`TrackAttachmentRuntimeRow` view instead of a raw byte cursor at
+The builder now scans the suppress/marked-row flag through the shared `SubRow`
+owner instead of a raw byte cursor at
 `game+0x5ccac8`. Focused Wibo is codegen-neutral at `53.76%`, `476/495`, with
 the same `47 ok` masked operands. This ties the fringe suppression bit back to
 the row table built by `populate_runtime_track_cells_from_segments` and reused

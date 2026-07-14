@@ -10,7 +10,7 @@ extern char* g_game_base; // data_4df904
 
 int report_errorf(char* format, ...);
 
-#define OUTER_RUNTIME_ROW(cursor_expr) ((TrackAttachmentRuntimeRow*)((cursor_expr) + 0x6410e0))
+#define OUTER_RUNTIME_ROW(cursor_expr) ((SubRow*)((cursor_expr) + 0x6410e0))
 
 #define REMOVE_BOD_NODE(node_expr, unlink_mask_expr)              \
     do {                                                          \
@@ -65,7 +65,7 @@ void SubLoc::remove_sub_loc()
     DWORD unlink_mask = 0xfffffdffu;
 
     if (tile == 0x1d || tile == 0x1e) {
-        char* row_record = g_game_base + row_index * sizeof(TrackAttachmentRuntimeRow);
+        char* row_record = g_game_base + row_index * sizeof(SubRow);
         if ((OUTER_RUNTIME_ROW(row_record)->flags & 0x08) != 0) {
             if ((OUTER_RUNTIME_ROW(row_record)->attachment_body.list_flags & 0x200) != 0)
                 REMOVE_BOD_NODE(&OUTER_RUNTIME_ROW(row_record)->attachment_body, unlink_mask);

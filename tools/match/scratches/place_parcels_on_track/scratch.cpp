@@ -210,7 +210,7 @@ int SubgameRuntime::place_parcels_on_track()
     TransformMatrix transform;
     float out_angle;
     int result = runtime_row_count;
-    TrackAttachmentRuntimeRow* row_record = runtime_rows;
+    SubRow* row_record = runtime_rows;
     for (int row = 0; row < runtime_row_count; ++row, ++row_record) {
         if ((row_record->flags & 1) != 0 && (row_record->flags & 0x40) != 0) {
             TrackRowCell* cell = row_record->primary_attachment_cell;

@@ -47,7 +47,7 @@ void SubHover::update_jetpack_gauge()
             }
         } else {
             warning_intensity = 1.0f;
-            TrackAttachmentRuntimeRow* runtime_cell =
+            SubRow* runtime_cell =
                 g_game->subgame.get_track_runtime_cell_at_world_z(
                     &g_game->subgame.embedded_player()->position);
             if ((runtime_cell->flags & 0x8000) != 0) {

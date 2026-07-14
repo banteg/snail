@@ -10,7 +10,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 
 void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, float* out_angle)
 {
-    TrackAttachmentRuntimeRow* row = &runtime_rows[(int)position->z];
+    SubRow* row = &runtime_rows[(int)position->z];
     *out_angle = 0.0f;
     if ((row->flags & 0x40) != 0) {
         TrackRowCell* cell = row->primary_attachment_cell;

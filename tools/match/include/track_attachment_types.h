@@ -322,7 +322,7 @@ typedef char RowModel_must_be_0x8c[(sizeof(RowModel) == 0x8c) ? 1 : -1];
 
 // Authored per-track-row runtime owner. The Windows constructor ledger names
 // the complete 3200-entry slab cRSubRow and reports 0xbea00 bytes, fixing one
-// SubRow at 0xf4 bytes. The historical matcher name remains an alias below.
+// SubRow at 0xf4 bytes. Live match sources use this authored owner directly.
 struct SubRow {                          // stride 0xf4
     SubRow* initialize_track_row_runtime(); // @ 0x408590
 
@@ -343,8 +343,6 @@ struct SubRow {                          // stride 0xf4
     SubSegment* source_segment;           // +0xec, borrowed embedded subsegment
     int row_event_id;                     // +0xf0, completed-segment event-definition index
 };
-
-typedef SubRow TrackAttachmentRuntimeRow;
 
 typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 

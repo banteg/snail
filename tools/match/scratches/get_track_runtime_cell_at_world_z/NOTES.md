@@ -32,7 +32,13 @@ masked operands, proving the fixed 3200-row slab without raw offset math.
 The Windows constructor size ledger labels the complete runtime-row slab
 `cRSubRow` and reports `0xbea00` bytes. The builder and this exact accessor
 independently prove 3200 rows, so each authored `SubRow` is exactly `0xf4`
-bytes. `SubRow` is now the primary shared type; `TrackAttachmentRuntimeRow` is
-retained only as a compatibility alias for older scratch terminology. The
-focused accessor remains exact at 23/23 instructions with three clean masked
-operands.
+bytes. `SubRow` is the primary shared type. The focused accessor remains exact
+at 23/23 instructions with three clean masked operands.
+
+## 2026-07-14 legacy alias retirement
+
+All live row consumers now name the authored `SubRow` owner directly, so the
+historical `TrackAttachmentRuntimeRow` compatibility alias has been removed.
+The nine affected focused targets retained their prior instruction counts,
+similarity, prefixes, and masked-operand results; the two exact consumers
+remain exact.

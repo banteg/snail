@@ -16,8 +16,8 @@ void FollowState::begin_track_attachment_follow_state(
     player = owning_player;
     vertical_offset = height;
     int row_index = cell->get_track_cell_row_index();
-    TrackAttachmentRuntimeRow* runtime_rows =
-        (TrackAttachmentRuntimeRow*)(
+    SubRow* runtime_rows =
+        (SubRow*)(
             g_runtime_row_installed_heading_fields + (int)g_game_base
             - 0xac);
     template_record->installed_heading_delta =

@@ -38,7 +38,7 @@ void SubLazer::update_sub_lazer_projectile()
         if (position.y >= 0.0f && position.z >= owner_game->player.interaction_max_z) {
             TrackRowCell* grid =
                 ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_grid_cell_at_world_position(live_position);
-            TrackAttachmentRuntimeRow* cell =
+            SubRow* cell =
                 ((SubgameRuntime*)(g_game_base + 0x74618))->get_track_runtime_cell_at_world_z(live_position);
             if (grid->tile_id != 14 || position.y >= 7.0f) {
                 if ((cell->flags & 0x40) == 0

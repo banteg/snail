@@ -27,7 +27,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     int candidate_count = 0;
     int row_index = 0;
     if (runtime_row_count > 0) {
-        TrackAttachmentRuntimeRow* row = runtime_rows;
+        SubRow* row = runtime_rows;
         do {
             if ((row->flags & 1) != 0 && row->parcel_set_id == 0) {
                 g_parcel_group_survival_0[candidate_count] = row_index;

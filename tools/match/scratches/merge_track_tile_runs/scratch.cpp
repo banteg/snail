@@ -170,7 +170,7 @@ void SubgameRuntime::merge_track_tile_runs()
 
             ++row_index;
             row_attachment_flags +=
-                sizeof(TrackAttachmentRuntimeRow) / sizeof(int);
+                sizeof(SubRow) / sizeof(int);
         } while (row_index < runtime_row_count);
     }
 }

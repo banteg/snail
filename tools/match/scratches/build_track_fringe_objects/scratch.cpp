@@ -30,9 +30,9 @@ int SubgameRuntime::build_track_fringe_objects()
     int edge_a = 0;
     int row = 0;
     if (runtime_row_count > 0) {
-        TrackAttachmentRuntimeRow* row_record = runtime_rows;
+        SubRow* row_record = runtime_rows;
         TrackRowCell* cell = &runtime_cells[0][0];
-        TrackAttachmentRuntimeRow* row_record_head = row_record;
+        SubRow* row_record_head = row_record;
 
         do {
             int lane_count = 8;
