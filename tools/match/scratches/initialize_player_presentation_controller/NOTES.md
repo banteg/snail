@@ -47,3 +47,12 @@ own declaration; its first presentation-owned field remains the borrowed
 animation-manager pointer at `+0x78`, and the complete object remains exactly
 `0x19b4` bytes. Focused Wibo is byte-identical at 100.00%, 79/79 instructions,
 full prefix, and 27 clean masked operands.
+
+## 2026-07-14 animation-channel inheritance closure
+
+All four `PresentationAnimationChannel` owners now inherit the same complete
+`RenderableBod` prefix initialized here. Their first channel-owned field is
+the borrowed animation-manager pointer at `+0x78`; selected state remains
+`+0x104`, the owned manager `+0x108`, five owned slots `+0x150`, and release
+step `+0x3d0`. The typed channel receivers leave this exact constructor
+byte-identical at 79/79 instructions with all 27 operands clean.

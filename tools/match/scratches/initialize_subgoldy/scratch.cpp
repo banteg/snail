@@ -81,7 +81,7 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.jetpack_channel.anim_manager.initialize_anim_manager();
         this->presentation.jetpack_channel.anim_manager.state = 1;
         this->presentation.jetpack_channel.anim_manager.target_model =
-            (BodBase*)&this->presentation.jetpack_channel;
+            &this->presentation.jetpack_channel;
         this->presentation.jetpack_channel.anim_manager.animation_slots =
             this->presentation.jetpack_channel.animation_slots;
         this->presentation.jetpack_channel.anim_manager.queue_count = zero;
@@ -99,7 +99,7 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.weapon_channels[0].anim_manager.initialize_anim_manager();
         this->presentation.weapon_channels[0].anim_manager.state = 1;
         this->presentation.weapon_channels[0].anim_manager.target_model =
-            (BodBase*)&this->presentation.weapon_channels[0];
+            &this->presentation.weapon_channels[0];
         this->presentation.weapon_channels[0].anim_manager.animation_slots =
             this->presentation.weapon_channels[0].animation_slots;
         this->presentation.weapon_channels[0].anim_manager.queue_count = zero;
@@ -117,7 +117,7 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.weapon_channels[1].anim_manager.initialize_anim_manager();
         this->presentation.weapon_channels[1].anim_manager.state = 1;
         this->presentation.weapon_channels[1].anim_manager.target_model =
-            (BodBase*)&this->presentation.weapon_channels[1];
+            &this->presentation.weapon_channels[1];
         this->presentation.weapon_channels[1].anim_manager.animation_slots =
             this->presentation.weapon_channels[1].animation_slots;
         this->presentation.weapon_channels[1].anim_manager.queue_count = zero;
@@ -135,7 +135,7 @@ void Player::initialize_subgoldy(int player_slot)
         this->presentation.weapon_channels[2].anim_manager.initialize_anim_manager();
         this->presentation.weapon_channels[2].anim_manager.state = 1;
         this->presentation.weapon_channels[2].anim_manager.target_model =
-            (BodBase*)&this->presentation.weapon_channels[2];
+            &this->presentation.weapon_channels[2];
         this->presentation.weapon_channels[2].anim_manager.animation_slots =
             this->presentation.weapon_channels[2].animation_slots;
         this->presentation.weapon_channels[2].anim_manager.queue_count = zero;

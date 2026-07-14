@@ -76,3 +76,9 @@ real native reload without coercion and preserves the 48-instruction exact
 prefix. The plain queue append remains an honest register-owner residual at
 94.55%; no dummy alias or compiler barrier is retained to recover the old
 98.18% score.
+
+2026-07-14 renderable-owner closure: `PresentationAnimationChannel` now
+inherits the complete `RenderableBod` prefix. Its five slot bodies remain
+owned children and its first derived field remains the render-manager backlink
+at `+0x78`. Focused output is byte-identical at the honest 94.55%, 55/55
+instructions, prefix 48, with three clean operands.

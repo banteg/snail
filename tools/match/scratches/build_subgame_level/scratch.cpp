@@ -228,7 +228,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     player.initialize_subgoldy(one);
 
     BodNode* node =
-        (BodNode*)&embedded_player()->presentation.jetpack_channel;
+        &embedded_player()->presentation.jetpack_channel;
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -248,7 +248,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)&embedded_player()->presentation.weapon_channels[0];
+    node = &embedded_player()->presentation.weapon_channels[0];
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -268,7 +268,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)&embedded_player()->presentation.weapon_channels[1];
+    node = &embedded_player()->presentation.weapon_channels[1];
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {
@@ -288,7 +288,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         node->list_flags |= 0x200;
     }
 
-    node = (BodNode*)&embedded_player()->presentation.weapon_channels[2];
+    node = &embedded_player()->presentation.weapon_channels[2];
     if ((node->list_flags & 0x200) != zero) {
         report_errorf("List ADD");
     } else {

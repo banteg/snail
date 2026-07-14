@@ -6,7 +6,8 @@ This function ties together the fields promoted on the exact authored `Snail`:
 - exact authored `cRSnailSkin` child `snail_skin` at `+0x1938`
 - inherited `RenderableBod::transform` at `+0x38` and
   `cached_cutscene_matrix` at `+0xc0`
-- channel `live_matrix` at `+0x38` and `release_step` at `+0x3d0`
+- inherited channel `RenderableBod::transform` at `+0x38` and
+  `release_step` at `+0x3d0`
 - `snail_hotspot_source_matrix_a`/`b`, then `update_snail_skin`
 - embedded authored `cRCutScene` at `+0x1958`
 

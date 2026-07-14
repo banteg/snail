@@ -120,15 +120,15 @@ void SubgameRuntime::remove_subgame_bods()
     REMOVE_INLINE_BOD_NODE(
         (BodNode*)&embedded_player()->presentation);
     REMOVE_INLINE_BOD_NODE(
-        (BodNode*)&embedded_player()->presentation.jetpack_channel);
+        &embedded_player()->presentation.jetpack_channel);
     REMOVE_INLINE_BOD_NODE(
-        (BodNode*)&embedded_player()->presentation.weapon_channels[0]);
+        &embedded_player()->presentation.weapon_channels[0]);
 
     BodList* list = &((GameRoot*)g_game_base)->active_bod_list;
     list->recycle_bod_to_free_list(
-        (BodNode*)&embedded_player()->presentation.weapon_channels[1]);
+        &embedded_player()->presentation.weapon_channels[1]);
     ((GameRoot*)g_game_base)->active_bod_list.recycle_bod_to_free_list(
-        (BodNode*)&embedded_player()->presentation.weapon_channels[2]);
+        &embedded_player()->presentation.weapon_channels[2]);
     ((GameRoot*)g_game_base)->active_bod_list.recycle_bod_to_free_list(
         (BodNode*)&embedded_player()->presentation.invincible_shell);
 

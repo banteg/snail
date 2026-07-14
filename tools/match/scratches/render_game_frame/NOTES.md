@@ -129,3 +129,10 @@ declared as an actual `RenderableBod` subclass. The renderer's borrowed
 transform, object, flags, color, and animation-manager chain therefore traverse
 one canonical owner. Focused output remains byte-identical at 45.43%, 415/439
 instructions, prefix 3, with all 26 operands clean.
+
+2026-07-14 animation-channel renderable inheritance: weapon and jetpack
+channels now reach the renderer through canonical `RenderableBod` inheritance,
+matching the existing Snail path. Their inherited transform/object/color and
+derived animation-manager backlink form one typed chain. Focused output remains
+byte-identical at 45.43%, 415/439 instructions, prefix 3, with all 26 operands
+clean.

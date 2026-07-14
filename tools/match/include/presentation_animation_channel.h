@@ -3,7 +3,6 @@
 
 #include "anim_manager.h"
 #include "bod_types.h"
-#include "transform_matrix.h"
 #include "vector3.h"
 
 struct PresentationAnimationSlot {
@@ -14,18 +13,12 @@ struct PresentationAnimationSlot {
 typedef char PresentationAnimationSlot_must_be_0x80[
     (sizeof(PresentationAnimationSlot) == 0x80) ? 1 : -1];
 
-class PresentationAnimationChannel {
+class PresentationAnimationChannel : public RenderableBod {
 public:
     void set_weapon_animation(int animation_id, bool immediate, int initial_frame);
 
-    // BOD-node-compatible prefix linked by build_subgame_level. The channel
-    // remains embedded in the authored Snail owner.
-    void* vtable; // +0x00, shared no-op animation-channel callback
-    unsigned int list_flags; // +0x04, inherited BOD render/list flags
-    char unknown_008[0x24 - 0x08];
-    Object* object; // +0x24, borrowed animated cRObject
-    char unknown_028[0x38 - 0x28];
-    TransformMatrix live_matrix; // +0x38
+    // build_subgame_level links this inherited renderable BOD. The channel
+    // remains embedded in the authored Snail owner; the list only borrows it.
     // Installed only when the linked Object owns generated animation frames.
     // cRGame::Render borrows this manager's progress for Object::animation.
     AnimManager* render_animation_manager; // +0x78, borrowed owned manager at +0x108

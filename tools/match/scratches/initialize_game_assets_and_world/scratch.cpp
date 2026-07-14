@@ -2623,8 +2623,8 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.object->distort.y_squash = 0.0f;
     subgame.player.presentation.object->distort.xyz_scale = 0.0f;
 
-    ((BodBase*)&subgame.player.presentation.jetpack_channel)
-        ->set_bod_object(g_object_list.add_object_to_list());
+    subgame.player.presentation.jetpack_channel.set_bod_object(
+        g_object_list.add_object_to_list());
     loader->load_x_animation_clip(
         (char*)"jetpack-base-000.x",
         subgame.player.presentation.jetpack_channel.object);
@@ -2662,8 +2662,8 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.jetpack_channel.object->distort.y_squash = 0.0f;
     subgame.player.presentation.jetpack_channel.object->distort.xyz_scale = 0.0f;
 
-    ((BodBase*)&subgame.player.presentation.weapon_channels[0])
-        ->set_bod_object(g_object_list.add_object_to_list());
+    subgame.player.presentation.weapon_channels[0].set_bod_object(
+        g_object_list.add_object_to_list());
     loader->load_x_animation_clip(
         (char*)"blasterleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].object);
@@ -2717,8 +2717,8 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.weapon_channels[0].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[0].object->distort.xyz_scale = 0.0f;
 
-    ((BodBase*)&subgame.player.presentation.weapon_channels[1])
-        ->set_bod_object(g_object_list.add_object_to_list());
+    subgame.player.presentation.weapon_channels[1].set_bod_object(
+        g_object_list.add_object_to_list());
     loader->load_x_animation_clip(
         (char*)"blasterRight-base-000.x",
         subgame.player.presentation.weapon_channels[1].object);
@@ -2772,8 +2772,8 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.weapon_channels[1].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[1].object->distort.xyz_scale = 0.0f;
 
-    ((BodBase*)&subgame.player.presentation.weapon_channels[2])
-        ->set_bod_object(g_object_list.add_object_to_list());
+    subgame.player.presentation.weapon_channels[2].set_bod_object(
+        g_object_list.add_object_to_list());
     loader->load_x_animation_clip(
         (char*)"blasterTop-base-000.x",
         subgame.player.presentation.weapon_channels[2].object);

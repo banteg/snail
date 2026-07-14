@@ -617,3 +617,11 @@ members replace duplicated prefix lanes while each manager retains its exact
 inline array extent. The large initializer remains at its prior 80.49%,
 5,391/5,411 baseline; exact constructors, spawners, and Salt updater remain
 byte-identical, and the near-exact SubLazer updater is byte-stable.
+
+## 2026-07-14 animation-channel object ownership
+
+Jetpack and all three weapon channels now install their animated `Object*`
+through inherited `BodBase::set_bod_object`, without cast-only prefix views.
+Their slot banks remain separately owned by each channel. The broad initializer
+is byte-identical at 80.49%, 5,391/5,411 instructions, with 1,542 clean
+operands.

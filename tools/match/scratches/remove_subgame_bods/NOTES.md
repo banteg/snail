@@ -158,3 +158,11 @@ from the complete embedded owners: `SubRow[3200]`, `SubLoc[3200][8]`,
 parallel magic counts and strides without pretending the cursors own storage.
 Focused matching is byte-identical at 67.67%, 495/501 instructions, 63 clean
 operands, and the same two honest string-order mismatches.
+
+## 2026-07-14 animation-channel teardown inheritance
+
+The jetpack and weapon channels are now recycled through their inherited
+`BodNode` directly. Teardown transfers only intrusive-list membership; the
+embedded Snail continues to own all four channel objects. Focused output stays
+byte-identical at 67.67%, 495/501 instructions, 63 clean operands, and the same
+two honest string-order mismatches.

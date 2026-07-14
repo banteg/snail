@@ -31,28 +31,28 @@ Snail* Snail::initialize_player_presentation_controller()
         ((RenderableBod*)((char*)visible_bods + 0x80 * i))->initialize_renderable_bod();
     }
 
-    RenderableBod* group_a = (RenderableBod*)(self + 0x64c);
+    PresentationAnimationChannel* group_a = &weapon_channels[0];
     group_a->initialize_renderable_bod();
     ((IostreamInit*)((char*)group_a + 0xc0))->initialize_iostream();
     initialize_array_with_constructor(
         (char*)group_a + 0x150, 0x80, 5, &RenderableBod::initialize_renderable_bod);
     group_a->vtable = &g_presentation_animation_channel_noop_vtable;
 
-    RenderableBod* group_b = (RenderableBod*)(self + 0xa28);
+    PresentationAnimationChannel* group_b = &weapon_channels[1];
     group_b->initialize_renderable_bod();
     ((IostreamInit*)((char*)group_b + 0xc0))->initialize_iostream();
     initialize_array_with_constructor(
         (char*)group_b + 0x150, 0x80, 5, &RenderableBod::initialize_renderable_bod);
     group_b->vtable = &g_presentation_animation_channel_noop_vtable;
 
-    RenderableBod* group_c = (RenderableBod*)(self + 0xe04);
+    PresentationAnimationChannel* group_c = &weapon_channels[2];
     group_c->initialize_renderable_bod();
     ((IostreamInit*)((char*)group_c + 0xc0))->initialize_iostream();
     initialize_array_with_constructor(
         (char*)group_c + 0x150, 0x80, 5, &RenderableBod::initialize_renderable_bod);
     group_c->vtable = &g_presentation_animation_channel_noop_vtable;
 
-    RenderableBod* group_d = (RenderableBod*)(self + 0x11e0);
+    PresentationAnimationChannel* group_d = &jetpack_channel;
     group_d->initialize_renderable_bod();
     ((IostreamInit*)((char*)group_d + 0x80))->initialize_iostream();
     ((IostreamInit*)((char*)group_d + 0xc0))->initialize_iostream();

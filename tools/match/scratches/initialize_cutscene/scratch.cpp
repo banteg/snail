@@ -103,38 +103,38 @@ void Snail::initialize_cutscene()
     }
 
     if (invincible_shell.channel_release_steps_active != 0) {
-        jetpack_channel.live_matrix.position.x =
-            jetpack_channel.release_step.x + jetpack_channel.live_matrix.position.x;
-        jetpack_channel.live_matrix.position.y =
-            jetpack_channel.release_step.y + jetpack_channel.live_matrix.position.y;
-        jetpack_channel.live_matrix.position.z =
-            jetpack_channel.release_step.z + jetpack_channel.live_matrix.position.z;
+        jetpack_channel.transform.position.x =
+            jetpack_channel.release_step.x + jetpack_channel.transform.position.x;
+        jetpack_channel.transform.position.y =
+            jetpack_channel.release_step.y + jetpack_channel.transform.position.y;
+        jetpack_channel.transform.position.z =
+            jetpack_channel.release_step.z + jetpack_channel.transform.position.z;
 
-        weapon_channels[0].live_matrix.position.x =
-            weapon_channels[0].release_step.x + weapon_channels[0].live_matrix.position.x;
-        weapon_channels[0].live_matrix.position.y =
-            weapon_channels[0].release_step.y + weapon_channels[0].live_matrix.position.y;
-        weapon_channels[0].live_matrix.position.z =
-            weapon_channels[0].release_step.z + weapon_channels[0].live_matrix.position.z;
+        weapon_channels[0].transform.position.x =
+            weapon_channels[0].release_step.x + weapon_channels[0].transform.position.x;
+        weapon_channels[0].transform.position.y =
+            weapon_channels[0].release_step.y + weapon_channels[0].transform.position.y;
+        weapon_channels[0].transform.position.z =
+            weapon_channels[0].release_step.z + weapon_channels[0].transform.position.z;
 
-        weapon_channels[2].live_matrix.position.x =
-            weapon_channels[2].release_step.x + weapon_channels[2].live_matrix.position.x;
-        weapon_channels[2].live_matrix.position.y =
-            weapon_channels[2].release_step.y + weapon_channels[2].live_matrix.position.y;
-        weapon_channels[2].live_matrix.position.z =
-            weapon_channels[2].release_step.z + weapon_channels[2].live_matrix.position.z;
+        weapon_channels[2].transform.position.x =
+            weapon_channels[2].release_step.x + weapon_channels[2].transform.position.x;
+        weapon_channels[2].transform.position.y =
+            weapon_channels[2].release_step.y + weapon_channels[2].transform.position.y;
+        weapon_channels[2].transform.position.z =
+            weapon_channels[2].release_step.z + weapon_channels[2].transform.position.z;
 
-        weapon_channels[1].live_matrix.position.x =
-            weapon_channels[1].release_step.x + weapon_channels[1].live_matrix.position.x;
-        weapon_channels[1].live_matrix.position.y =
-            weapon_channels[1].release_step.y + weapon_channels[1].live_matrix.position.y;
-        weapon_channels[1].live_matrix.position.z =
-            weapon_channels[1].release_step.z + weapon_channels[1].live_matrix.position.z;
+        weapon_channels[1].transform.position.x =
+            weapon_channels[1].release_step.x + weapon_channels[1].transform.position.x;
+        weapon_channels[1].transform.position.y =
+            weapon_channels[1].release_step.y + weapon_channels[1].transform.position.y;
+        weapon_channels[1].transform.position.z =
+            weapon_channels[1].release_step.z + weapon_channels[1].transform.position.z;
     } else {
-        jetpack_channel.live_matrix = transform;
-        weapon_channels[0].live_matrix = transform;
-        weapon_channels[2].live_matrix = transform;
-        weapon_channels[1].live_matrix = transform;
+        jetpack_channel.transform = transform;
+        weapon_channels[0].transform = transform;
+        weapon_channels[2].transform = transform;
+        weapon_channels[1].transform = transform;
     }
 
     snail_hotspot_source_matrix_a = transform;
