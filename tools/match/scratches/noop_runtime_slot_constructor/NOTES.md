@@ -10,3 +10,8 @@ spelled as a member while keeping the slot type neutral because callers use the
 same callback for several distinct array shapes. Keep this distinct from the
 parcel bucket callsites: those buckets merely reuse the shared constructor
 callback.
+
+Direct calls also construct opaque subobjects inside the exact Snail
+presentation constructor: weapon channels call it at `+0xc0`, while the
+jetpack channel calls it at `+0x80` and `+0xc0`. Those calls prove only trivial
+construction, not the historical `IostreamInit` ownership guess.

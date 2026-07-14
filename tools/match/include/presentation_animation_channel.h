@@ -22,6 +22,9 @@ public:
     // Installed only when the linked Object owns generated animation frames.
     // cRGame::Render borrows this manager's progress for Object::animation.
     AnimManager* render_animation_manager; // +0x78, borrowed owned manager at +0x108
+    // Exact construction calls the shared no-op slot constructor at +0x80 and
+    // +0xc0 for the jetpack channel, and at +0xc0 for weapon channels. No
+    // consumer yet proves the concrete types of those channel-owned lanes.
     char unknown_07c[0x104 - 0x7c];
     int selected_state; // +0x104
     AnimManager anim_manager; // +0x108

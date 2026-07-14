@@ -56,3 +56,12 @@ the borrowed animation-manager pointer at `+0x78`; selected state remains
 `+0x104`, the owned manager `+0x108`, five owned slots `+0x150`, and release
 step `+0x3d0`. The typed channel receivers leave this exact constructor
 byte-identical at 79/79 instructions with all 27 operands clean.
+
+## 2026-07-14 trivial channel-subobject constructor identity
+
+The calls at weapon-channel `+0xc0` and jetpack-channel `+0x80/+0xc0` target
+the exact shared `noop_runtime_slot_constructor` at `0x408600` (`mov eax, ecx;
+ret`). The old scratch-local `IostreamInit` name asserted an owner the binary
+does not support; these lanes remain opaque channel-owned subobjects until a
+consumer gives them semantics. The constructor now uses the canonical neutral
+call surface and remains exact.
