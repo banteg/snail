@@ -3510,7 +3510,7 @@
     {
       "address": "0x44cb90",
       "name": "multiply_vector_by_matrix",
-      "description": "Stable Windows harness identity for the void by-value `Vector3::operator*=(TransformMatrix)` retained by iOS as `tVector::operator*=(tMatrix)`. It applies the affine basis and translation in place; Android exposes the analogous operation as `tVector::Multiply(const tMatrix&)`."
+      "description": "Exact void by-value `Vector3::operator*=(TransformMatrix)` retained by iOS as `tVector::operator*=(tMatrix)`. It applies the affine basis and translation in place; Android exposes the analogous operation as `tVector::Multiply(const tMatrix&)`."
     },
     {
       "address": "0x44cc20",

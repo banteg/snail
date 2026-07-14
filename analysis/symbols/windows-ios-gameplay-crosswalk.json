@@ -2286,7 +2286,7 @@
       "android_symbol": "tVector::Multiply(tMatrix const&)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Windows callee cleanup proves the complete matrix is passed by value, matching iOS. Native establishes no EAX result and both callers discard it, so the honest Windows source is a void operator*=; this preserves the current 85.00% scheduling-only partial and both caller baselines."
+      "notes": "Windows callee cleanup proves the complete matrix is passed by value, matching iOS. Native establishes no EAX result and both callers discard it, so the honest Windows source is a void operator*=. Consistent matrix-times-source product spelling closes the body to an exact 40/40 instructions while preserving both caller baselines."
     },
     {
       "address": "0x44cc20",
