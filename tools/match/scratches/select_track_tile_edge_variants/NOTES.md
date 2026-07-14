@@ -23,3 +23,13 @@
   through `GameRoot::root_bod_catalog`. The explicit authored-id-to-storage
   mapping preserves the physical `0, 1, 3, 2` bank order and keeps the function
   exact at 220/220 with all 18 operands clean.
+
+## 2026-07-14 exact canonical-owner proof
+
+The field-first cursor now comes from
+`SubgameRuntime::runtime_cell_tile_views()`, its lane bound derives from the
+owned runtime-cell row, and every floor/slide corner selection loads through
+the canonical `GameRoot* g_game` plus `root_bod_catalog`. The compiler retains
+the intentional field-relative neighbor offsets and authored corner storage
+mapping. Focused output remains fully exact at 220/220 instructions with all
+18 operands clean.

@@ -1,12 +1,12 @@
 // select_track_tile_edge_variants @ 0x435a80 (thiscall)
 
 #include "bod_types.h"
-#include "root_bod_catalog.h"
+#include "game_root.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "track_row_cell_tile_views.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 #define IS_STRAIGHT_TRACK_FAMILY(tile) \
     ((tile) == 1 || (tile) == 0x14 || (tile) == 0x15 || (tile) == 0x1b \
@@ -16,8 +16,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
 {
     int row = 0;
     if (runtime_row_count > 0) {
-        TrackRowCellTileByteView* cell =
-            (TrackRowCellTileByteView*)((char*)this + 0x3bfb04);
+        TrackRowCellTileByteView* cell = runtime_cell_tile_views();
         int variant_flag = 0x8000;
         do {
             int lane = 0;
@@ -63,9 +62,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->floor_corners.storage[
+                                        g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_0_STORAGE_INDEX]
                                             .object);
                             } else if (tile != 0x16 && tile != 0x0e
@@ -74,9 +71,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->slide_corners.storage[
+                                        g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_0_STORAGE_INDEX]
                                             .object);
                             }
@@ -90,9 +85,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->floor_corners.storage[
+                                        g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_1_STORAGE_INDEX]
                                             .object);
                             } else if (tile != 0x16 && tile != 0x0e
@@ -101,9 +94,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->slide_corners.storage[
+                                        g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_1_STORAGE_INDEX]
                                             .object);
                             }
@@ -117,9 +108,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->floor_corners.storage[
+                                        g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_3_STORAGE_INDEX]
                                             .object);
                             } else if (tile != 0x16 && tile != 0x0e
@@ -128,9 +117,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->slide_corners.storage[
+                                        g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_3_STORAGE_INDEX]
                                             .object);
                             }
@@ -144,9 +131,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->floor_corners.storage[
+                                        g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_2_STORAGE_INDEX]
                                             .object);
                             } else if (tile != 0x16 && tile != 0x0e
@@ -155,9 +140,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                     == 0) {
                                 ((BodBase*)((char*)cell - 0x3c))
                                     ->set_bod_object(
-                                        ((RootBodCatalog*)(g_game_base
-                                            + ROOT_BOD_CATALOG_GAME_OFFSET))
-                                            ->slide_corners.storage[
+                                        g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_2_STORAGE_INDEX]
                                             .object);
                             }
@@ -167,7 +150,8 @@ void SubgameRuntime::select_track_tile_edge_variants()
                 }
                 ++lane;
                 ++cell;
-            } while (lane < 8);
+            } while (lane
+                < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0])));
 
             ++row;
         } while (row < runtime_row_count);
