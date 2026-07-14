@@ -284,11 +284,17 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
 - world `x` is quantized with `floor(x + 4.0)` and clamped to lane `0..7`
 - world `z` is quantized with `floor(z)` and clamped to row `0..0xc7f`
 - runtime track rows are stored at `game + 0x5ccac8 + row * 0xf4`
-  - the narrow checked-in type lane now treats that row as `TrackRuntimeRow`
+  - the canonical checked-in owner is `SubRow` (`cRSubRow` in symbol-preserving builds)
   - `+0x00`: `flags`
+  - `+0x04`: embedded `RowModel`, including the authored 3D row body
+  - `+0xb0`: embedded `BodBase attachment_body` used by path strips and fringe
   - `+0xe8`: `ring_speed`
 - gameplay grid cells are stored at `game + 0x3bfac8 + (lane + row * 8) * 0x54`
-- the checked-in typed slice for one gameplay/render cell now also exposes:
+- the canonical cell owner is `SubLoc` (`cRSubLoc`); its constructor runs the
+  shared `cRBod` initializer over the `+0x00..+0x37` body prefix, and the grid
+  builder routes object selection through the shared `BodBase::set_bod_object`
+  method rather than a separate cell-only object slot
+- the checked-in typed slice for one gameplay/render cell also exposes:
   - `anchor_position`
   - `attachment_template_record`
   - `tile_id`

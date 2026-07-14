@@ -362,3 +362,23 @@ latch for the selected segment and restoring the native tail condition recovers
 the 0x44-byte native frame and improves focused Wibo from 28.25% (1,190/1,245)
 to 29.27% (1,208/1,245). The only masked-operand mismatch remains the visible
 glyph jump-table layout difference.
+
+## Runtime BOD ownership (2026-07-14)
+
+The scratch-local `TrackRowBodSlot` did not own any storage. The exact
+`initialize_sub_loc` constructor runs the shared `cRBod` initializer over each
+0x54-byte `SubLoc`, so glyph-selected object writes now call
+`BodBase::set_bod_object` through that proven base prefix while retaining the
+raw cell cursor needed by the large VC6 switch.
+
+The other two receivers are complete embedded owners, not prefix views:
+
+- `SubRow::row_model +0x04` receives authored 3D row objects;
+- `SubRow::attachment_body +0xb0` receives the installed path strip body.
+
+The row field casts and attachment-span cursor now use canonical `SubRow`
+instead of its historical `TrackAttachmentRuntimeRow` alias. No distinct
+`SubLoc::set_bod_object` symbol or replacement shell was introduced. The
+ownership consolidation is codegen neutral at `29.27%`, `1,208/1,245`, prefix
+`2/1,245`, with `60` clean masked operands and the one known glyph jump-table
+layout mismatch.

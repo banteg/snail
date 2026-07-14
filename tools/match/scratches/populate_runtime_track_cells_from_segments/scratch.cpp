@@ -13,11 +13,6 @@ void __fastcall set_matrix_identity(void* transform);
 
 struct ColorBGRA8;
 
-class TrackRowBodSlot {
-public:
-    int set_bod_object(void* object);
-};
-
 extern char* g_game_base; // data_4df904
 
 #define ROOT_BOD_OBJECT(slot) \
@@ -276,7 +271,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)row_record |= 0x2;
             int object_id = *(int*)(authored_row + 0x14);
             void* object = *(void**)(g_game_base + 0x48e2c + 0xbc * object_id);
-            ((TrackRowBodSlot*)(row_record + 4))->set_bod_object(object);
+            ((SubRow*)row_record)->row_model.set_bod_object(object);
             set_matrix_identity(row_record + 0x3c);
             *(int*)(row_record + 0x6c) = *(int*)(authored_row + 0x18);
             *(int*)(row_record + 0x70) = *(int*)(authored_row + 0x1c);
@@ -297,14 +292,14 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
         if ((authored_flags & 0x1) != 0) {
             *(int*)row_record |= 0x4001;
-            ((TrackAttachmentRuntimeRow*)row_record)->parcel_set_id = *(int*)(authored_row + 4);
+            ((SubRow*)row_record)->parcel_set_id = *(int*)(authored_row + 4);
             *(int*)(row_record + 0x90) = *(int*)(authored_row + 8);
             *(int*)(row_record + 0x94) = *(int*)(authored_row + 12);
             *(int*)(row_record + 0x98) = *(int*)(authored_row + 16);
         }
         if ((authored_flags & 0x8) != 0) {
             *(int*)row_record |= 0x8;
-            ((TrackAttachmentRuntimeRow*)row_record)->attachment_template_index =
+            ((SubRow*)row_record)->attachment_template_index =
                 *(int*)(authored_row + 0x30);
         }
         if ((authored_flags & 0x4) != 0)
@@ -349,7 +344,9 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 edge_row = 1;
             }
 
-            ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(0);
+            // initialize_sub_loc proves this is the shared cRBod base prefix;
+            // keep the raw cursor so the large VC6 switch retains its shape.
+            ((BodBase*)(cell + 0x3bfac8))->set_bod_object(0);
 
             char* glyph_ptr = active_segment + (authored_lane << 8) + lane + 0x14;
             char glyph = *glyph_ptr;
@@ -365,13 +362,13 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
                 break;
             case '$':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x17;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '&':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x22;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
@@ -382,7 +379,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 if (trampoline_counter == 15)
                     trampoline_counter = 0;
                 if (trampoline_counter == 8) {
-                    ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ((BodBase*)(cell + 0x3bfac8))
                         ->set_bod_object(ROOT_BOD_OBJECT(trampoline));
                     *(int*)(cell + 0x3bfacc) |= 0x20;
                     ((Color4f*)(base + 0x54 * (lane + build_row * 8 + 0xb6cc)))
@@ -391,25 +388,25 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(unsigned char*)(cell + 0x3bfb04) = 0x16;
                 break;
             case '+':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x18;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case ',':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(universe_hole));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x1c;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '-':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x15;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '.':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 1;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
@@ -417,7 +414,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             case '0':
                 if (level_mode == 1) {
                     *(int*)row_record = (*(int*)row_record & 0xffffbfff) | 1;
-                    ((TrackAttachmentRuntimeRow*)row_record)->parcel_set_id = 0;
+                    ((SubRow*)row_record)->parcel_set_id = 0;
                     *(float*)(row_record + 0x90) = (float)lane - 3.5f;
                     *(int*)(row_record + 0x94) = *(int*)(cell + 0x3bfadc);
                     *(float*)(row_record + 0x98) = (float)build_row + 0.5f;
@@ -434,7 +431,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             case '8':
             case '9':
                 if ((*(int*)row_record & 0xc0) == 0) {
-                    ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                    ((BodBase*)(cell + 0x3bfac8))
                         ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                     *(unsigned char*)(cell + 0x3bfb04) = 0xf;
                     *(int*)(cell + 0x3bfacc) |= 0x20;
@@ -444,7 +441,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 }
                 break;
             case '<':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
@@ -453,13 +450,13 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 break;
             case '=':
             case '|':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(pillars[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0xe;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '>':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
@@ -477,25 +474,25 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 switch_track_mirror();
                 break;
             case 'F':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x13;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'G':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x11;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'J':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x19;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'M':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x12;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
@@ -509,7 +506,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     *(unsigned char*)(cell + 0x3bfb04) = 0x1d;
 
                 int template_index =
-                    ((TrackAttachmentRuntimeRow*)row_record)->attachment_template_index;
+                    ((SubRow*)row_record)->attachment_template_index;
                 Path* template_record;
                 if (base[2] == 0) // track_mirror_enabled
                     template_record = (Path*)(base + 0xff2914 + template_index * 0x150);
@@ -520,15 +517,15 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
                 if (attachment_entry_installed == 0) {
                     attachment_entry_installed = 1;
-                    ((TrackRowBodSlot*)(cell + 0x3bfac8))->set_bod_object(
+                    ((BodBase*)(cell + 0x3bfac8))->set_bod_object(
                         *(void**)((char*)template_record + 0x24));
                     *(int*)(cell + 0x3bfacc) |= 0x20;
-                    ((TrackRowBodSlot*)(row_record + 0xb0))->set_bod_object(
+                    ((SubRow*)row_record)->attachment_body.set_bod_object(
                         *(void**)((char*)template_record + 0x84));
                     *(int*)(row_record + 0xb4) |= 0x20;
                     *(int*)(row_record + 0xac) = *(int*)(active_segment + 0x4014);
 
-                    TrackAttachmentRuntimeRow* stamped_row = (TrackAttachmentRuntimeRow*)row_record;
+                    SubRow* stamped_row = (SubRow*)row_record;
                     int span_index = 0;
                     if (template_record->row_span_count > 0) {
                         do {
@@ -552,7 +549,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) &= 0xffffffdf;
                 break;
             case '[':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
@@ -560,19 +557,19 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '_':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0xf;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 'o':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x10;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '{':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
@@ -585,7 +582,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case '}':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[2]));
                 *(int*)(cell + 0x3bfae4) = 0;
                 *(int*)(cell + 0x3bfae8) = 0;
@@ -598,7 +595,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + 0x3bfacc) |= 0x20;
                 break;
             case 's':
-                ((TrackRowBodSlot*)(cell + 0x3bfac8))
+                ((BodBase*)(cell + 0x3bfac8))
                     ->set_bod_object(ROOT_BOD_OBJECT(floor_slices.storage[0]));
                 *(unsigned char*)(cell + 0x3bfb04) = 0x21;
                 *(int*)(cell + 0x3bfacc) |= 0x20;
