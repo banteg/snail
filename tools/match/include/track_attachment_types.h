@@ -269,6 +269,7 @@ typedef char PathPair_must_be_0x150[
 enum {
     PATH_PAIR_COUNT = 63,
     PATH_COUNT = PATH_PAIR_COUNT * 2,
+    SUBLOC_FRINGE_COUNT = 4,
 };
 
 // Authored runtime-grid cell owner. iOS preserves this class as cRSubLoc;
@@ -291,10 +292,15 @@ struct SubLoc : public BodBase {
     unsigned char tile_flags_3d;        // +0x3d
     char unknown_3e[0x40 - 0x3e];
     unsigned int lane_and_flags;        // +0x40, unsigned packed lane/variant/lifecycle flags
-    Fringe* fringe_front;               // +0x44, borrowed from FringeManager
-    Fringe* fringe_right;               // +0x48
-    Fringe* fringe_left;                // +0x4c
-    Fringe* fringe_back;                // +0x50
+    union {
+        struct {
+            Fringe* fringe_front; // +0x44, borrowed from FringeManager
+            Fringe* fringe_right; // +0x48
+            Fringe* fringe_left;  // +0x4c
+            Fringe* fringe_back;  // +0x50
+        };
+        Fringe* fringes[SUBLOC_FRINGE_COUNT]; // +0x44, directional scan view
+    };
 
     int get_track_cell_row_index(); // @ 0x447040, cRSubLoc::Yi
 };

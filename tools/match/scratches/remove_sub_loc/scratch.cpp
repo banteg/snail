@@ -83,8 +83,8 @@ void SubLoc::remove_sub_loc()
     if ((list_flags & 0x200) != 0)
         REMOVE_PRECHECKED_BOD_NODE(this, unlink_mask);
 
-    Fringe** fringe = &fringe_front;
-    for (int i = 0; i < 4; ++i) {
+    Fringe** fringe = fringes;
+    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {
         Fringe* object = fringe[i];
         if (object != 0 && (object->list_flags & 0x200) != 0)
             REMOVE_BOD_NODE(object, unlink_mask);

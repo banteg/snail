@@ -154,3 +154,18 @@ The normalized candidate listing remains byte-identical
 (`f51aff1164e0396a262f4ec1ccf1058c96410873dea5e39c400c49317e720897`),
 with the honest 91.19% focused result (`130/131`, prefix `87/131`, 17 clean
 operands).
+
+## 2026-07-14 fringe-array ownership
+
+The directional `fringe_front/right/left/back` tail is now also exposed as the
+four-entry `SubLoc::fringes` array. Directional builder code keeps its semantic
+field names, while teardown, subgame activation, and runtime-cell population
+derive their scan count and first cursor from the owned array. This closes the
+contiguous tail without erasing the four independently proven directions.
+
+The affected normalized listings remain byte-identical: teardown
+`f51aff1164e0396a262f4ec1ccf1058c96410873dea5e39c400c49317e720897`,
+`update_subgame`
+`e1887d3b83450fded5caa113d3c715e21e8b95836047df3cb9a6fc6f81eca4bd`,
+and runtime-cell population
+`4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`.

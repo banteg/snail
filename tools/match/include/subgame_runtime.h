@@ -278,7 +278,7 @@ inline TrackRowCellTileByteView* SubgameRuntime::runtime_cell_tile_views()
 
 inline TrackRowCellFringeLinkView* SubgameRuntime::runtime_cell_fringe_links()
 {
-    return (TrackRowCellFringeLinkView*)&runtime_cells[0][0].fringe_front;
+    return (TrackRowCellFringeLinkView*)&runtime_cells[0][0].fringes[0];
 }
 
 #endif

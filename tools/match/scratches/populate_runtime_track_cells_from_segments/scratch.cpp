@@ -184,7 +184,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         CELL_FRINGE_BACK =
             RUNTIME_CELLS_BASE + offsetof(SubLoc, fringe_back),
         CELL_FRINGE_COUNT =
-            (sizeof(SubLoc) - offsetof(SubLoc, fringe_front)) / sizeof(Fringe*),
+            sizeof(((SubLoc*)0)->fringes) / sizeof(((SubLoc*)0)->fringes[0]),
         BOD_POSITION_X = offsetof(BodBase, position) + offsetof(Vector3, x),
         BOD_POSITION_Y = offsetof(BodBase, position) + offsetof(Vector3, y),
         BOD_POSITION_Z = offsetof(BodBase, position) + offsetof(Vector3, z),
@@ -308,7 +308,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             offsetof(AttachmentSample, transform)
             + offsetof(TransformMatrix, position) + offsetof(Vector3, y),
     };
-    char* cell_payload_cursor = (char*)&runtime_cells[0][0].fringe_front;
+    char* cell_payload_cursor = (char*)&runtime_cells[0][0].fringes[0];
     int* row_cursor = (int*)&runtime_rows[0].projection_payload.y;
     for (int row = 0;
          row < (int)(sizeof(runtime_rows) / sizeof(runtime_rows[0]));

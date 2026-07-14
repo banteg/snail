@@ -333,8 +333,9 @@ void SubgameRuntime::update_subgame()
                             ((BodAiDispatch*)&cell_slot->cell)->update_bod_ai();
                         }
 
-                        Fringe** fringe = &cell_slot->cell.fringe_front;
-                        int fringe_count = 4;
+                        Fringe** fringe = cell_slot->cell.fringes;
+                        int fringe_count = (int)(sizeof(cell_slot->cell.fringes)
+                            / sizeof(cell_slot->cell.fringes[0]));
                         do {
                             Fringe* object = *fringe;
                             if (object != 0) {
