@@ -26,3 +26,10 @@ Earlier volatile-Game-base and flat-float-table experiments are rejected. The
 exact candidate now traverses the ordinary relocatable `GameRoot`, its embedded
 `SubgameRuntime`, and the recovered row array directly, with no field-first
 global alias or source-only scheduling barrier.
+
+## 2026-07-14 root declaration closure
+
+The process root itself is now declared as the canonical `GameRoot*`, so the
+initializer no longer begins from a byte pointer and immediately casts back to
+the recovered owner. This is codegen-neutral: focused matching remains exact at
+100.00%, 27/27 instructions, with all four masked operands clean.

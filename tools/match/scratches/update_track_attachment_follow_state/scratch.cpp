@@ -8,7 +8,7 @@
 
 typedef Vector3 Vec3;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int FollowState::update_track_attachment_follow_state(
     float path_factor,
@@ -61,15 +61,15 @@ int FollowState::update_track_attachment_follow_state(
             int current_index = (int)this->sample_index;
             if (current_index == count - 1) {
                 Path* attached =
-                    ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
-                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
-                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
+                    g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
+                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
+                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
             } else if (current_index == (3 * count) / 7) {
-                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->list_flags |= 0x80;
+                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->list_flags |= 0x80;
                 Path* attached =
-                    ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
-                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
-                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
+                    g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
+                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
+                g_game->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
             }
         }
 
@@ -145,9 +145,9 @@ int FollowState::update_track_attachment_follow_state(
             output->y = y;
             vertical_offset = vertical;
             output->z = z;
-            ((GameRoot*)g_game_base)->subgame.player.transform.basis_right = transform.basis_right;
-            ((GameRoot*)g_game_base)->subgame.player.transform.basis_up = transform.basis_up;
-            ((GameRoot*)g_game_base)->subgame.player.transform.basis_forward = transform.basis_forward;
+            g_game->subgame.player.transform.basis_right = transform.basis_right;
+            g_game->subgame.player.transform.basis_up = transform.basis_up;
+            g_game->subgame.player.transform.basis_forward = transform.basis_forward;
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
@@ -198,9 +198,9 @@ int FollowState::update_track_attachment_follow_state(
             output->y = v83;
             v84 = right_z + up_offset.z;
             output->z = v84;
-            ((GameRoot*)g_game_base)->subgame.player.transform.basis_right = transform.basis_right;
-            ((GameRoot*)g_game_base)->subgame.player.transform.basis_up = transform.basis_up;
-            ((GameRoot*)g_game_base)->subgame.player.transform.basis_forward = transform.basis_forward;
+            g_game->subgame.player.transform.basis_right = transform.basis_right;
+            g_game->subgame.player.transform.basis_up = transform.basis_up;
+            g_game->subgame.player.transform.basis_forward = transform.basis_forward;
         }
 
         orientation_up.x = transform.basis_up.x;
@@ -314,7 +314,7 @@ terminal_path:
             *out_position = launch_position;
             out_position->x = old_x;
             player->cutscene_pitch_cycle_step =
-                ((GameRoot*)g_game_base)->subgame.subgame_rate * 0.013888888f;
+                g_game->subgame.subgame_rate * 0.013888888f;
             player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step;
             g_voice_manager.play_voice_manager(
                 VOICE_SET_SUPERTRAMP, VOICE_PLAY_IF_IDLE, -1);

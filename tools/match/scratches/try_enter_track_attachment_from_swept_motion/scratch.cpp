@@ -15,8 +15,8 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 }
 
 // The follow state is embedded in the fixed player owned by SubgameRuntime.
-extern char* g_game_base;
-#define PLAYER (&((GameRoot*)g_game_base)->subgame.player)
+extern GameRoot* g_game;
+#define PLAYER (&g_game->subgame.player)
 
 void Path::try_enter_track_attachment_from_swept_motion(
     float px, float py, float pz,
@@ -81,8 +81,7 @@ seed:
     PLAYER->velocity.y = 0;
     PLAYER->follow_state.player = PLAYER;
     PLAYER->follow_state.template_record->installed_heading_delta =
-        ((GameRoot*)g_game_base)
-            ->subgame.runtime_rows[cell->get_track_cell_row_index()]
+        g_game->subgame.runtime_rows[cell->get_track_cell_row_index()]
             .installed_heading_delta;
     PLAYER->follow_state.orientation_b = 0;
     PLAYER->follow_state.orientation_a = 0;

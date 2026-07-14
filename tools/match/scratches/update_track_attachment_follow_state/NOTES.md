@@ -304,3 +304,12 @@ native-sized `0x180` frame to `0x17c`, loses the full prefix, and regresses to
 regresses to `63.66%`; spelling either rotated contribution through the inline
 vector multiply operator scores `72.61%`. Those shapes were rejected rather
 than retained as scheduling aids.
+
+## 2026-07-14 root declaration closure
+
+The entry-mesh milestones, published player transform, and terminal subgame
+rate now all begin from the canonical `GameRoot*` declaration rather than a
+byte pointer repeatedly cast at each use. This closes the shared process-root
+edge without changing code generation: focused matching remains 72.89%,
+698/726 instructions, with the 122-instruction prefix and all 63 operands
+clean.

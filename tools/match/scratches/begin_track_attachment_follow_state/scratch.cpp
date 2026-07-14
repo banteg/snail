@@ -2,7 +2,7 @@
 // Exact cRPathFollowGoldy::Init: void initializer on Player::FollowState.
 #include "game_root.h"
 
-extern char* g_game_base;
+extern GameRoot* g_game;
 
 void FollowState::begin_track_attachment_follow_state(
     TrackRowCell* cell, const Vector3* world_position, Player* owning_player)
@@ -16,7 +16,7 @@ void FollowState::begin_track_attachment_follow_state(
     player = owning_player;
     vertical_offset = height;
     int row_index = cell->get_track_cell_row_index();
-    SubRow* runtime_rows = ((GameRoot*)g_game_base)->subgame.runtime_rows;
+    SubRow* runtime_rows = g_game->subgame.runtime_rows;
     template_record->installed_heading_delta =
         runtime_rows[row_index].installed_heading_delta;
 }

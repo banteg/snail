@@ -69,3 +69,10 @@ honest deltas are one commutative swept-X addition order and VC6's placement of
 the exhausted-loop epilogue: native duplicates the epilogue before the seed
 block, while the current source branches to the shared tail. Volatile aliases,
 dummy reloads, and neutral arithmetic remain rejected as fakematching.
+
+## 2026-07-14 root declaration closure
+
+The implementation now carries the recovered process root as `GameRoot*`
+instead of retaining a byte pointer around otherwise canonical player and
+runtime-row traversals. Focused output is unchanged at 95.78%, 199/204
+instructions, with the 16-instruction prefix and all 47 operands clean.
