@@ -1,8 +1,8 @@
 # `initialize_runtime_pools_and_path_template_bank` notes
 
-- This scratch intentionally uses byte offsets into the subgame runtime blob.
-  The function is a constructor pass over many unrelated pools; promoting a
-  monolithic shared type would obscure more than it clarifies.
+- This scratch walks the canonical embedded owners in `SubgameRuntime`. The
+  constructor pass spans many unrelated pools, so a few neutral callback casts
+  remain where VC6 folded distinct authored constructors to one helper.
 - The call at +0x10013dc targets the small object-constructor thunk at
   0x42f6e0 on the embedded height-field animator's `FrameSequence`, not
   `initialize_object` directly.
@@ -24,6 +24,26 @@
   initializes the inherited leading `BodBase` and `fringe_mesh_bod` at `+0x60`.
   Walking the typed flat bank as 126 adjacent `Path` records preserves this
   constructor exactly at 227/227 instructions with all 72 operands clean.
+
+## 2026-07-14 SegmentCache and barrier constructor ownership
+
+- The opening no-op constructor receiver is the embedded
+  `SubgameRuntime::segment_cache`, not an anonymous color at `this +0x5c`.
+  Windows folds that authored constructor to the same three-byte helper used
+  by trivial value objects, so the narrow `Color4f*` call view remains only to
+  preserve the merged relocation; its address now derives from
+  `offsetof(SubgameRuntime, segment_cache)`.
+- Native retains that receiver in `edi`, then advances it by
+  `offsetof(SegmentCache, slots)`. The slot stride and complete `143 * 5`
+  count now derive from `TrackRenderCacheSlot` and `segment_cache.slots`
+  instead of literals `0x3c` and `0x2cb`.
+- A direct `&segment_cache.slots[0][0]` spelling was rejected: it made VC6
+  rematerialize the slot address, changed the constructor-wide register
+  schedule, and fell to 76.38%. The derived retained-receiver spelling is exact
+  at 227/227 with all 72 operands clean.
+- The later path-bank boundary now constructs the canonical embedded
+  `BarrierActor barrier` directly and installs its callback table through the
+  inherited `BodBase::vtable`; the raw `this +0xff7bc4` slot view is retired.
 
 ## 2026-07-11 live-list sentinels
 

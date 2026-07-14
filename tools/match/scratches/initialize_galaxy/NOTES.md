@@ -4,9 +4,9 @@ First structural scratch for the galaxy/star-map screen initializer. This uses
 the shared `Galaxy` layout while reusing established frontend-widget,
 color, star-field, backdrop, landscape-bank, and mouse cursor helpers.
 
-The scratch is intentionally relationship-first. The widget post-init lane at
-`+0x6f0` is now the shared `FrontendWidget::font_scale` field; lanes without
-equally strong cross-screen agreement remain raw.
+The scratch is intentionally relationship-first. Widget post-init lanes use
+the shared `FrontendWidget` owner wherever exact sibling consumers establish
+their meaning.
 
 2026-06-20 proof result: 100.00%, 338/338 candidate/target instructions,
 prefix 338/338, and 74 masked operands clean.
@@ -26,9 +26,10 @@ Recovered ownership:
   `subgame_rebuild_selector` directly through that owner; it does not consult
   a separate progress allocation.
 - `data_4a20f4` and `data_4a20ec` are the Exit and Back widget labels.
-- The bounds frame writes an integer left edge at widget `+0x48`, followed by
-  raw float-bit bounds at `+0x4c`, `+0x50`, `+0x54`, and `+0x58`; the shared
-  frontend-widget field names do not describe that frame block cleanly yet.
+- The bounds frame selects border texture `152`, seeds its `frame_x`,
+  `frame_y`, `frame_width`, and `frame_height`, and forces its hot fill color
+  to opaque white. `open_galaxy_route` later recomputes those same four frame
+  fields from the selected widgets' measured bounds.
 
 Scoped-color proof:
 
@@ -67,3 +68,9 @@ operands.
 scale stores now use `FrontendWidget::font_scale`. The field is independently
 used by frontend-widget initialization, subgame HUD setup, text layout, and the
 thanks screen; exact output remains 338/338 with all 74 operands clean.
+
+2026-07-14 bounds-frame ownership: the final six raw widget offsets now use
+`FrontendWidget::hot_fill_color`, `border_texture_id`, and the four `frame_*`
+members. The exact `open_galaxy_route` consumer independently overwrites and
+reads the same bounds fields after measuring the route-card stack. Focused Wibo
+remains exact at 338/338 instructions with all 74 operands clean.

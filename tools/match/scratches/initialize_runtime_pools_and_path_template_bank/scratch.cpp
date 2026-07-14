@@ -1,5 +1,7 @@
 // initialize_runtime_pools_and_path_template_bank @ 0x408060 (thiscall, ret)
 
+#include <stddef.h>
+
 #include "player.h"
 #include "runtime_slot.h"
 #include "sprite.h"
@@ -10,18 +12,20 @@ extern void* g_subgoldy_callback_table;      // data_497300
 extern void* g_barrier_actor_callback_table; // data_4972fc
 extern void* g_smtracks_callback_table;      // data_4972f8
 
-#define SLOT(offset) ((RuntimeSlot*)(self + (offset)))
-#define COLOR(offset) ((Color4f*)(self + (offset)))
-
 SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank()
 {
     char* self = (char*)this;
 
-    Color4f* first_buffer_color = COLOR(0x5c);
-    first_buffer_color->noop_this_constructor();
-    RuntimeSlot* active_bods = (RuntimeSlot*)((char*)first_buffer_color + 0x58);
+    Color4f* segment_cache_constructor_receiver =
+        (Color4f*)(self + offsetof(SubgameRuntime, segment_cache));
+    segment_cache_constructor_receiver->noop_this_constructor();
+    RuntimeSlot* active_bods = (RuntimeSlot*)((char*)segment_cache_constructor_receiver
+        + offsetof(SegmentCache, slots));
     initialize_array_with_constructor(
-        active_bods, 0x3c, 0x2cb, &RuntimeSlot::initialize_active_bod);
+        active_bods,
+        sizeof(TrackRenderCacheSlot),
+        sizeof(segment_cache.slots) / sizeof(TrackRenderCacheSlot),
+        &RuntimeSlot::initialize_active_bod);
 
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition.segment_slots,
@@ -165,9 +169,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         --path_template_count;
     } while (path_template_count);
 
-    RuntimeSlot* barrier = SLOT(0xff7bc4);
-    barrier->initialize_bod_base();
-    barrier->vtable = &g_barrier_actor_callback_table;
+    barrier.initialize_bod_base();
+    barrier.vtable = &g_barrier_actor_callback_table;
 
     RuntimeSlot* landscape = (RuntimeSlot*)landscape_manager.active_entries;
     initialize_array_with_constructor(
@@ -216,6 +219,3 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
 
     return this;
 }
-
-#undef SLOT
-#undef COLOR

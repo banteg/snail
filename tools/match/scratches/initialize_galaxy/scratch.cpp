@@ -126,17 +126,17 @@ void Galaxy::initialize_galaxy()
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
-        ((Color4f*)((char*)bounds_frame_widget + 0x1cc))->store_color4f(
+        bounds_frame_widget->hot_fill_color.store_color4f(
             1.0f,
             1.0f,
             1.0f,
             1.0f);
         bounds_frame_widget->hide_border_init();
-        *(int*)((char*)bounds_frame_widget + 0x48) = 152;
-        *(int*)((char*)bounds_frame_widget + 0x4c) = 0x43a00000;
-        *(int*)((char*)bounds_frame_widget + 0x50) = 0x43700000;
-        *(int*)((char*)bounds_frame_widget + 0x54) = 0x43480000;
-        *(int*)((char*)bounds_frame_widget + 0x58) = 0x42c80000;
+        bounds_frame_widget->border_texture_id = 152;
+        bounds_frame_widget->frame_x = 320.0f;
+        bounds_frame_widget->frame_y = 240.0f;
+        bounds_frame_widget->frame_width = 200.0f;
+        bounds_frame_widget->frame_height = 100.0f;
 
         selected_title_widget = g_game->border_manager.allocate_border();
         selected_title_widget->initialize_frontend_widget(
