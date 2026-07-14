@@ -1652,9 +1652,12 @@ Vec3* __thiscall rotate_vector_by_matrix(
     Vec3* vector,
     const TransformMatrix* matrix
 );
-double __fastcall normalize_vector(Vec3* vector);
+double __stdcall dot_vectors(const Vec3* lhs, const Vec3* rhs);
+float __thiscall dot_vector(const Vec3* vector, const Vec3* rhs);
+float __thiscall normalize_vector(Vec3* vector);
+float __thiscall vector_magnitude(const Vec3* vector);
 float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);
-int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
+void __thiscall cross_vectors(Vec3* out, const Vec3* lhs, const Vec3* rhs);
 int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);
 void __fastcall invert_matrix_in_place(TransformMatrix* transform);
 void __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);

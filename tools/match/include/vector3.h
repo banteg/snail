@@ -41,12 +41,15 @@ struct Vector3 {
 
     int zero_vector3(); // @ 0x410710, thiscall
     static double __stdcall dot_vectors(
-        const Vector3* lhs, const Vector3* rhs); // @ 0x44cb50, static tVector::Dot
+        const Vector3& lhs, const Vector3& rhs); // @ 0x44cb50, static tVector::Dot
     float normalize_vector(); // @ 0x44cca0, tVector::Normalize()
-    float normalize_vector_from_source(const Vector3* source); // callsite view for @ 0x44cd20
-    float dot_vector(const Vector3* rhs); // @ 0x44cb70
-    void cross_vectors(const Vector3* lhs, const Vector3* rhs); // @ 0x44cd40
-    float vector_magnitude(); // @ 0x44ccf0, thiscall, returns st0
+    float normalize_vector_from_source(const Vector3& source); // @ 0x44cd20
+    float dot_vector(const Vector3& rhs); // @ 0x44cb70
+    void cross_vectors(const Vector3& lhs, const Vector3& rhs); // @ 0x44cd40
+    // Compatibility view for low-progress path-template callers. The owned
+    // definition is the const-reference overload above.
+    void cross_vectors(const Vector3* lhs, const Vector3* rhs);
+    float vector_magnitude() const; // @ 0x44ccf0, tVector::Magnitude() const
     // ABI compatibility view for the exact Bod caller that dereferences the
     // hidden-return EAX pointer. The owned definition is operator* above.
     Vector3* multiply_vector_by_matrix_copy(Vector3* out, const TransformMatrix* matrix) const; // @ 0x44cac0

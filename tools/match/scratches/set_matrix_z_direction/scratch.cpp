@@ -8,7 +8,7 @@ void TransformMatrix::set_matrix_z_direction(const Vector3* direction)
     Vector3 forward;
     Vector3* up = &basis_up;
 
-    if (forward.normalize_vector_from_source(direction) != 0.0f) {
+    if (forward.normalize_vector_from_source(*direction) != 0.0f) {
         basis_forward.x = forward.x;
         basis_forward.y = forward.y;
         basis_forward.z = forward.z;

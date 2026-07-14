@@ -18,8 +18,14 @@ TRUSTED_NAMES = [
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
     (0x44CAC0, "multiply_vector_by_matrix_copy"),
+    (0x44CB50, "dot_vectors"),
+    (0x44CB70, "dot_vector"),
     (0x44CB90, "multiply_vector_by_matrix"),
     (0x44CC20, "rotate_vector_by_matrix"),
+    (0x44CCA0, "normalize_vector"),
+    (0x44CCF0, "vector_magnitude"),
+    (0x44CD20, "normalize_vector_from_source"),
+    (0x44CD40, "cross_vectors"),
     (0x44CDE0, "initialize_uniform_scale_matrix"),
     (0x44CFE0, "initialize_matrix_from_values"),
     (0x44D530, "initialize_quaternion_from_axis"),
@@ -92,6 +98,30 @@ TRUSTED_DECLARATIONS = [
         "Vec3* __thiscall rotate_vector_by_matrix(Vec3* vector, const TransformMatrix* matrix);",
     ),
     (
+        "dot_vectors",
+        "double __stdcall dot_vectors(const Vec3* lhs, const Vec3* rhs);",
+    ),
+    (
+        "dot_vector",
+        "float __thiscall dot_vector(const Vec3* vector, const Vec3* rhs);",
+    ),
+    (
+        "normalize_vector",
+        "float __thiscall normalize_vector(Vec3* vector);",
+    ),
+    (
+        "vector_magnitude",
+        "float __thiscall vector_magnitude(const Vec3* vector);",
+    ),
+    (
+        "normalize_vector_from_source",
+        "float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);",
+    ),
+    (
+        "cross_vectors",
+        "void __thiscall cross_vectors(Vec3* out, const Vec3* lhs, const Vec3* rhs);",
+    ),
+    (
         "noop_this_constructor",
         "void* __thiscall noop_this_constructor(void* self);",
     ),
@@ -150,18 +180,6 @@ TRUSTED_DECLARATIONS = [
     (
         "rotate_matrix_world_z",
         "void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);",
-    ),
-    (
-        "normalize_vector",
-        "double __fastcall normalize_vector(Vec3* vector);",
-    ),
-    (
-        "normalize_vector_from_source",
-        "float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);",
-    ),
-    (
-        "cross_vectors",
-        "int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);",
     ),
     (
         "orthogonalize_matrix",

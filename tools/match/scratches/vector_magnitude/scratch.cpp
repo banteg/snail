@@ -4,7 +4,7 @@
 
 float square_root(float value);
 
-float Vector3::vector_magnitude()
+float Vector3::vector_magnitude() const
 {
     float magnitude = square_root(x * x + y * y + z * z);
     return magnitude;

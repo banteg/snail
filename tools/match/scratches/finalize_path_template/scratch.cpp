@@ -54,7 +54,7 @@ void __fastcall Path::finalize_path_template()
             *(float*)((char*)this->primary_samples + sample_offset
                 + offsetof(AttachmentSample, lateral_source)) =
                 (float)cross.dot_vector(
-                    (Vector3*)((char*)this->primary_samples + sample_offset));
+                    *(Vector3*)((char*)this->primary_samples + sample_offset));
 
             if (this->is_mirrored_x)
                 *(float*)((char*)this->primary_samples + sample_offset

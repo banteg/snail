@@ -11,3 +11,8 @@ steering, sprite-facing math, and presentation systems.
 method directly. Windows passes the vector in `ECX`, exact neighboring math
 callers use member syntax, and Android independently retains
 `tVector::Normalize()`.
+
+The analysis contract is now the actual float-returning `__thiscall` member,
+not the stale double `__fastcall` prototype. ECX receiver setup, four-byte
+consumer stores, and the mobile symbol agree; the exact body remains 29/29
+with all five masked operands clean.

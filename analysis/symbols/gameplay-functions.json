@@ -3500,12 +3500,12 @@
     {
       "address": "0x44cb50",
       "name": "dot_vectors",
-      "description": "Exact static `Vector3::dot_vectors` overload: computes the 3D dot product of two vectors, matching Android `tVector::Dot(const tVector&, const tVector&)`."
+      "description": "Exact static `Vector3::dot_vectors(const Vector3&, const Vector3&)` overload: computes the 3D dot product of two const-reference operands and returns it as double, matching Android `tVector::Dot(const tVector&, const tVector&)`."
     },
     {
       "address": "0x44cb70",
       "name": "dot_vector",
-      "description": "Computes the 3D dot product of one vector against another through the member-style overload `tVector::Dot(const tVector&)`."
+      "description": "Exact float-returning `Vector3::dot_vector(const Vector3&)` member: computes the 3D dot product against one const-reference operand, matching iOS and Android `tVector::Dot(const tVector&)`."
     },
     {
       "address": "0x44cb90",
@@ -3520,21 +3520,22 @@
     {
       "address": "0x44cca0",
       "name": "normalize_vector",
-      "description": "Exact `Vector3::normalize_vector` method: normalizes the vector in place and returns its prior magnitude, matching Android `tVector::Normalize()`."
+      "description": "Exact float-returning `Vector3::normalize_vector()` member: normalizes its receiver in place and returns the prior magnitude, matching iOS and Android `tVector::Normalize()`."
     },
     {
       "address": "0x44ccf0",
-      "name": "vector_magnitude"
+      "name": "vector_magnitude",
+      "description": "Exact const `Vector3::vector_magnitude()` member: returns sqrt(x*x + y*y + z*z) as float without mutating its receiver, matching iOS and Android `tVector::Magnitude() const`."
     },
     {
       "address": "0x44cd20",
       "name": "normalize_vector_from_source",
-      "description": "Copies a source vector and normalizes it in place. Android symbols match this helper to `tVector::Normalize(const tVector&)`."
+      "description": "Exact float-returning `Vector3::normalize_vector_from_source(const Vector3&)` member: copies a const-reference source into its receiver, normalizes it, and returns the prior magnitude. Android retains `tVector::Normalize(const tVector&)`."
     },
     {
       "address": "0x44cd40",
       "name": "cross_vectors",
-      "description": "Computes the 3D cross product of two vectors into a destination output. Android symbols match this helper to `tVector::Cross(const tVector&, const tVector&)`."
+      "description": "Exact void `Vector3::cross_vectors(const Vector3&, const Vector3&)` member: computes the 3D cross product of two const-reference operands through a function-local static temporary and copies it into its receiver, matching iOS and Android `tVector::Cross(const tVector&, const tVector&)`."
     },
     {
       "address": "0x44cdd0",

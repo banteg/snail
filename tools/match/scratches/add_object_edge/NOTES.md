@@ -72,3 +72,8 @@ No caller consumes a result. BN's old fourth `float*` argument was a stack
 recovery error, not a hidden vector input; the shared analysis slice now uses
 the source-shaped void Object method while leaving the 73.36% block-layout
 residual visible.
+
+The merge-path dot operand now uses the recovered const-reference member
+surface directly. VC6 emits the same 231/227 candidate/target instructions,
+73.36% score, and 29 clean operands, so the ownership clarification introduces
+no new matching scaffolding.

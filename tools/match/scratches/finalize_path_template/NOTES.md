@@ -77,3 +77,8 @@ variable, but every terminal `+0xa4` access now derives from
 owned primary-sample array without extending a typed sample pointer's live
 range. Focused output is byte-identical at 81.78%, 112/113 instructions,
 prefix 24/113, with all nine operands clean.
+
+The current-right dot operand now uses the recovered const-reference member
+surface directly. The compiler-critical byte-offset lifetime is unchanged:
+focused output remains 81.78%, 112/113 instructions, prefix 24/113, with all
+nine operands clean.

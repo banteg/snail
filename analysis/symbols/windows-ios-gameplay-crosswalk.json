@@ -2263,6 +2263,23 @@
       "notes": "The real Windows value-returning operator is exact at 49/49 instructions. Its stack output pointer and eight-byte callee cleanup are the VC6 hidden-sret ABI; the exact Bod consumer retains an explicit compatibility view because natural temporary spellings stop dereferencing the returned EAX pointer."
     },
     {
+      "address": "0x44cb50",
+      "windows_name": "dot_vectors",
+      "android_symbol": "tVector::Dot(tVector const&, tVector const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 11/11 Windows static stdcall body takes two const-reference operands and returns the dot product in x87 ST0 as double. Android independently preserves the authored static overload; iOS exports only the adjacent member overload."
+    },
+    {
+      "address": "0x44cb70",
+      "windows_name": "dot_vector",
+      "ios_symbol": "tVector::Dot(tVector const&)",
+      "android_symbol": "tVector::Dot(tVector const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 10/10 Windows member takes one const-reference operand. Exact and partial consumers spill or compare a four-byte result, proving the source return is float even though the x87 callee body alone cannot distinguish float from double."
+    },
+    {
       "address": "0x44cb90",
       "windows_name": "multiply_vector_by_matrix",
       "ios_symbol": "tVector::operator*=(tMatrix)",
@@ -2279,6 +2296,41 @@
       "source_object": "RMaths.o",
       "confidence": "high",
       "notes": "The exact 38/38 Windows member accepts a const matrix reference and preserves its receiver in EAX. Two sprite-facing callsites immediately dereference that result, proving a receiver reference/pointer contract rather than void; all direct const-reference spellings preserve their caller baselines."
+    },
+    {
+      "address": "0x44cca0",
+      "windows_name": "normalize_vector",
+      "ios_symbol": "tVector::Normalize()",
+      "android_symbol": "tVector::Normalize()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 29/29 Windows member mutates its ECX receiver and returns the prior magnitude as float. This corrects the old analysis-only double fastcall declaration without changing generated code."
+    },
+    {
+      "address": "0x44ccf0",
+      "windows_name": "vector_magnitude",
+      "ios_symbol": "tVector::Magnitude() const",
+      "android_symbol": "tVector::Magnitude() const",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 19/19 Windows member only reads its receiver and returns a float magnitude, establishing the same const ownership exported by both mobile binaries."
+    },
+    {
+      "address": "0x44cd20",
+      "windows_name": "normalize_vector_from_source",
+      "android_symbol": "tVector::Normalize(tVector const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 12/12 Windows member copies one const-reference source into its receiver and tail-calls the no-argument normalize member. Android preserves the authored overload; no corresponding iOS export is present."
+    },
+    {
+      "address": "0x44cd40",
+      "windows_name": "cross_vectors",
+      "ios_symbol": "tVector::Cross(tVector const&, tVector const&)",
+      "android_symbol": "tVector::Cross(tVector const&, tVector const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 40/40 Windows member takes two const-reference operands and copies a function-local static result into its ECX receiver. Native establishes no EAX result, proving the source return is void; the reference signature also reproduces the VC6 local-static mangling exactly."
     },
     {
       "address": "0x44cde0",

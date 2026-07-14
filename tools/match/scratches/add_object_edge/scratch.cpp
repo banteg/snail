@@ -70,7 +70,7 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
             cross.cross_vectors(&lhs, &rhs);
             float cross_length = cross.vector_magnitude();
             if (cross_length <= 0.050000001f
-                || cross.dot_vector(&g_object_edge_build_edges[index].direction)
+                || cross.dot_vector(g_object_edge_build_edges[index].direction)
                     > 0.0020000001f) {
                 int shift_index = index;
                 if (index < g_object_edge_build_count - 1) {

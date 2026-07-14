@@ -6,7 +6,7 @@ float square_root(float value);
 
 float Vector3::normalize_vector()
 {
-    float length = square_root((float)Vector3::dot_vectors(this, this));
+    float length = square_root((float)Vector3::dot_vectors(*this, *this));
     if (length == 0.0f) {
         return 0.0f;
     }

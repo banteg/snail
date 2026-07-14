@@ -15,3 +15,12 @@ static `result` storage itself is named as a 12-byte range at `data_77ff80`.
 
 It is used by path-template basis construction, matrix orthogonalization, object
 normals, and track/fringe geometry.
+
+2026-07-14 owner pass: the recovered source surface is the void member
+`Vector3::cross_vectors(const Vector3&, const Vector3&)`, matching both mobile
+exports. Windows receives the destination in ECX, pops the two reference
+arguments, and establishes no EAX result. Changing the operands from pointers
+to references preserves all 40 instructions; only VC6's mangled names for the
+function-local static result and guard change, so both proven spellings are
+tracked as aliases and all ten masked operands remain clean. A pointer overload
+is retained only as an explicit compatibility view for low-progress callers.
