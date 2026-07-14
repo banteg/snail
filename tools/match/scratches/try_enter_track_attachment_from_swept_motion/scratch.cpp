@@ -2,7 +2,7 @@
 // WIP: real vector expressions and owner fields recovered; see NOTES.md for
 // the remaining standard-flags compiler deltas.
 #include "track_attachment.h"
-#include "player.h"
+#include "game_root.h"
 
 inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
 {
@@ -16,8 +16,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 
 // The follow state is embedded in the fixed player owned by SubgameRuntime.
 extern char* g_game_base;
-#define FOLLOW ((FollowState*)(g_follow_state_block + (int)g_game_base))
-#define PLAYER ((Player*)(g_player_block + (int)g_game_base))
+#define PLAYER (&((GameRoot*)g_game_base)->subgame.player)
 
 void Path::try_enter_track_attachment_from_swept_motion(
     float px, float py, float pz,
@@ -70,25 +69,25 @@ void Path::try_enter_track_attachment_from_swept_motion(
 seed:
     // The follow child is embedded at player+0x384; velocity and exit state
     // are adjacent Player fields, not FollowState tail fields.
-    *(unsigned char*)(g_player_attachment_exit_pending_offset + (int)g_game_base) = 0;
-    ((Squidge*)(g_player_squidge_offset + (int)g_game_base))->start_squidge_y(
-        ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->y);
-    FOLLOW->active = 1;
-    FOLLOW->template_record = this;
-    FOLLOW->source_cell = cell;
-    FOLLOW->sample_index = idx;
-    FOLLOW->progress = local.z;
-    FOLLOW->vertical_offset = 0;
+    PLAYER->attachment_exit_pending = 0;
+    PLAYER->squidge.start_squidge_y(PLAYER->velocity.y);
+    PLAYER->follow_state.active = 1;
+    PLAYER->follow_state.template_record = this;
+    PLAYER->follow_state.source_cell = cell;
+    PLAYER->follow_state.sample_index = idx;
+    PLAYER->follow_state.progress = local.z;
+    PLAYER->follow_state.vertical_offset = 0;
     PLAYER->live_matrix.position.y = local.y;
-    ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->y = 0;
-    FOLLOW->player = PLAYER;
-    FOLLOW->template_record->installed_heading_delta =
-        *(float*)(g_runtime_row_installed_heading_fields + (int)g_game_base
-                  + 4 * (61 * cell->get_track_cell_row_index()));
-    FOLLOW->orientation_b = 0;
-    FOLLOW->orientation_a = 0;
-    FOLLOW->update_track_attachment_follow_state(
-        ((Vector3*)(g_player_velocity_offset + (int)g_game_base))->z,
-        (Vector3*)(g_player_position_offset + (int)g_game_base),
-        (Vector3*)(g_player_velocity_offset + (int)g_game_base));
+    PLAYER->velocity.y = 0;
+    PLAYER->follow_state.player = PLAYER;
+    PLAYER->follow_state.template_record->installed_heading_delta =
+        ((GameRoot*)g_game_base)
+            ->subgame.runtime_rows[cell->get_track_cell_row_index()]
+            .installed_heading_delta;
+    PLAYER->follow_state.orientation_b = 0;
+    PLAYER->follow_state.orientation_a = 0;
+    PLAYER->follow_state.update_track_attachment_follow_state(
+        PLAYER->velocity.z,
+        &PLAYER->live_matrix.position,
+        &PLAYER->velocity);
 }

@@ -245,6 +245,7 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     assert "data_4df9b8" in by_name["g_highest_galaxy_route_index"].aliases
     assert by_name["update_galaxy_route_record"].kind == "function"
     assert by_name["ftol"].kind == "function"
+    assert by_name["g_player_block"].size == 0x4364
     assert by_name["g_math_random_table"].size == 0x7FFC
     assert by_name["g_math_random_table"].allow_one_past is True
 

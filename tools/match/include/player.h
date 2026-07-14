@@ -37,10 +37,6 @@ class Sprite;
 class SubgameRuntime;
 class SubHealth;
 
-extern char g_player_live_matrix_basis_right[];   // 0x42fdb4 = g_player_block + 0x38
-extern char g_player_live_matrix_basis_up[];      // 0x42fdc4 = g_player_block + 0x48
-extern char g_player_live_matrix_basis_forward[]; // 0x42fdd4 = g_player_block + 0x58
-
 class Snail;
 
 class PlayerControlSource {

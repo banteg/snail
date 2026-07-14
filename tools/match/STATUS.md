@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.34%**.
+**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **94612/325144** bytes (**29.10%**) are proof-grade, and overall fuzzy is **71.39%**.
 
 ## Proof Grade (617)
 
@@ -626,7 +626,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (27)
+## Near Match (95-99.99%) (28)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -638,6 +638,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | activate_landscape_entry | 0x418870 | 442 | 123/123 | 99.19% | 65/123 | 20 ok |  |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 197/197 | 95.43% | 58/197 | 26 ok |  |
 | 🚧 | mirror_path_template_pair_x | 0x421dc0 | 1058 | 314/314 | 97.45% | 273/314 | 15 ok |  |
+| 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 119/119 | 99.16% | 28/119 | 1 ok |  |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  |
 | 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 134/134 | 98.51% | 131/134 | 30 ok |  |
@@ -658,7 +659,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | interpolate_matrix_rotation | 0x44d920 | 367 | 105/105 | 96.19% | 30/105 | 17 ok |  |
 | 🚧 | update_sprite_facing_angle | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  |
 
-## High Progress (80-94.99%) (64)
+## High Progress (80-94.99%) (63)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -667,7 +668,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 39 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5391/5411 | 80.49% | 0/5411 | 33 mismatch, 75 unresolved, 1542 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5391/5411 | 80.49% | 0/5411 | 101 mismatch, 1549 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 1 mismatch, 56 ok |  |
@@ -684,7 +685,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 89.31% | 18/318 | 23 ok |  |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 92.87% | 69/421 | 25 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 112/113 | 81.78% | 24/113 | 9 ok |  |
-| 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 188/204 | 84.69% | 16/204 | 1 mismatch, 24 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 19 ok |  |
 | 🚧 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 189/188 | 92.84% | 9/188 | 32 ok |  |
@@ -746,7 +746,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |
-| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 694/726 | 70.28% | 122/726 | 51 ok |  |
+| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 400/425 | 55.52% | 0/425 | 7 ok |  |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 800/796 | 67.54% | 10/796 | 2 mismatch, 60 ok |  |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 629/648 | 56.54% | 0/648 | 1 mismatch, 39 ok |  |

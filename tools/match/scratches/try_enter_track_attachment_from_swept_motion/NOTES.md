@@ -1,4 +1,4 @@
-# WIP — 84.69% score, 188/204 instructions on standard flags
+# Near match — 95.78% score, 199/204 instructions on standard flags
 
 The candidate uses the project-standard `msvc6.5 /O2 /G5 /W3`. Current
 source-shape recoveries:
@@ -12,8 +12,9 @@ source-shape recoveries:
   recovers both native sample-base calculations and raises the honest focused
   score from 75.63% to 84.69%.
 - `do { ... } while (--idx >= 0); return;` plus the accepted-probe jump keeps
-  the native seed-after-return layout. A structured `break`/exhaustion form
-  introduced an extra check and regressed to 84.26%, so it was rejected.
+  the closest honest seed-after-return layout. A structured
+  `break`/exhaustion form introduces an extra index check and regresses the
+  current candidate to 95.31%, so it remains rejected.
 
 Recovered behavior and ownership:
 
@@ -47,9 +48,24 @@ stale `int PathTemplate::*` view. iOS names the broader family
 `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)`; the Windows
 split keeps only seven stack dwords for position, sweep, and the borrowed cell.
 
-Remaining honest deltas are one commutative swept-X addition order, the loop
-branch polarity, and the seed block. Native repeatedly reloads the relocatable
-Game base and uses x87 stores for two float fields, while VC6 coalesces the
-direct owner expressions and uses integer copies. Volatile aliases, dummy
-reloads, and neutral arithmetic were rejected as fakematching; these residuals
-remain until a real authored owner/source expression explains them.
+## 2026-07-14 canonical root ownership
+
+The fixed player is now reached through
+`GameRoot::subgame.player`; every accepted-entry write traverses canonical
+`Player` fields, including the embedded `follow_state`, live matrix, velocity,
+exit gate, and `Squidge`. The installed heading likewise comes from the real
+`SubgameRuntime::runtime_rows[row]` owner. Seven field-first absolute globals
+are no longer needed by matching sources.
+
+This ownership recovery improves the focused candidate from 84.69%, 188/204
+instructions, 24 clean operands plus one mismatch to 95.78%, 199/204,
+47 clean operands, with no unresolved or mismatched masked references. The
+reference manifest now bounds `g_player_block` to the proven 0x4364-byte
+`Player`, allowing canonical base-plus-field relocations to audit against older
+narrow field aliases.
+
+The entire accepted-entry seed block is instruction-identical. Remaining
+honest deltas are one commutative swept-X addition order and VC6's placement of
+the exhausted-loop epilogue: native duplicates the epilogue before the seed
+block, while the current source branches to the shared tail. Volatile aliases,
+dummy reloads, and neutral arithmetic remain rejected as fakematching.

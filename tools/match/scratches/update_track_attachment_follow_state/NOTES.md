@@ -4,11 +4,11 @@ Best current source-shaped reconstruction for the native attachment-follow updat
 
 Current matcher result:
 
-- 70.28% match
+- 72.89% match
 - target: 726 instructions
-- candidate: 694 instructions
+- candidate: 698 instructions
 - exact prefix: 122 instructions
-- masked operands: 51 ok, 0 unresolved, 0 mismatch
+- masked operands: 63 ok, 0 unresolved, 0 mismatch
 
 Recovered shape:
 
@@ -16,15 +16,15 @@ Recovered shape:
 - advances `progress` by `path_factor * secondary_samples[sample_index].delta_length`
 - consumes sample overflows until the active sample can hold the remaining delta
 - terminates at `sample_index == template->segment_count`, clears `active`, returns `3`, and handles the Supertramp launch special case
-- normal path interpolates the path center/lateral/special scalars, builds either kind-42 nonlinear transform or ordinary interpolated secondary-sample transform, stores output position and camera basis scratch vectors, then checks side exits
-- special-runtime row updates use the typed row-slot table at `g_game_base + 0x641184 + 0xf4 * row_index`
+- normal path interpolates the path center/lateral/special scalars, builds either kind-42 nonlinear transform or ordinary interpolated secondary-sample transform, stores output position and publishes the basis rows into `GameRoot::subgame.player.live_matrix`, then checks side exits
+- special-runtime row updates traverse `GameRoot::subgame.runtime_rows[row_index].primary_attachment_cell`
 - Supertramp launch path reloads `GameRoot::subgame.subgame_rate`
 
 Known residuals after the current source shape:
 
 - the stack frame now matches exactly at `sub esp, 0x180`; the first mismatch is the destination of the branch at target instruction 122 (`je L240` versus candidate `je L23e`)
 - the ordinary and kind-42 transform regions still differ in local stack-slot placement, x87 scheduling, and the amount of duplicated basis-copy code
-- the candidate remains 32 instructions shorter, with most of the deficit concentrated after the scalar interpolation prefix
+- the candidate remains 28 instructions shorter, with most of the deficit concentrated after the scalar interpolation prefix
 - the side-exit clamp tails use semantic C++ returns but do not reproduce the target's x87 constant-store schedule
 - `orientation_b` is intentionally overwritten by the installed-heading lane, matching the native semantic result; some dead/intermediate stores remain layout-only mismatches
 
@@ -260,9 +260,23 @@ old `AttachmentFollowStateMatrixView`, `PathMatrixView`,
 `TrackRowCellAnchorView`, `AttachmentSampleMatrixView`, and
 `PathKind42CallView`. The kind-42 call now goes through canonical `Path`.
 
-The three now-unused private view headers were removed.
-`AttachmentFollowRuntimeRowSlot` remains intentionally as a field-first stride
-view at `SubRow +0xa4`; it does not claim ownership of the enclosing row.
+The three now-unused private view headers and the final field-first runtime-row
+slot were removed. Entry-mesh milestone writes now traverse
+`GameRoot::subgame.runtime_rows[row].primary_attachment_cell` directly.
 
 This consolidation is codegen neutral: focused matching remains `70.28%`,
 `694/726`, with the exact `122/726` prefix and `51/0/0` masked operands.
+
+## 2026-07-14 canonical root publication
+
+Both traversal branches now publish the interpolated right, up, and forward
+rows through `GameRoot::subgame.player.live_matrix`. The former three
+field-first matrix-row globals described the same storage but obscured the
+complete root, subgame, player, and transform ownership chain. The two
+entry-mesh milestones use the same canonical root to reach the owned `SubRow`
+array and its borrowed primary attachment cell.
+
+The direct owner spelling improves the focused candidate from `70.28%`,
+`694/726`, `51/0/0` masks to `72.89%`, `698/726`, with the exact `122/726`
+prefix retained and `63/0/0` masked operands. No volatile or scheduling-only
+source was introduced.

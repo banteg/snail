@@ -8,13 +8,7 @@
 
 typedef Vector3 Vec3;
 
-struct AttachmentFollowRuntimeRowSlot {
-    TrackRowCell* primary_attachment_cell;
-    char unknown_04[0xf4 - 0x04];
-};
-
 extern char* g_game_base; // data_4df904
-extern AttachmentFollowRuntimeRowSlot g_track_runtime_rows[]; // 0x641184
 
 void __fastcall set_matrix_identity(TransformMatrix* transform);
 int FollowState::update_track_attachment_follow_state(
@@ -67,15 +61,15 @@ int FollowState::update_track_attachment_follow_state(
             int current_index = (int)this->sample_index;
             if (current_index == count - 1) {
                 Path* attached =
-                    ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
+                    ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
+                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
+                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
             } else if (current_index == (3 * count) / 7) {
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->bod.list_flags |= 0x80;
+                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->bod.list_flags |= 0x80;
                 Path* attached =
-                    ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
-                ((AttachmentFollowRuntimeRowSlot*)((char*)g_track_runtime_rows + (int)g_game_base))[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
+                    ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
+                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
+                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 0.6f;
             }
         }
 
@@ -151,9 +145,9 @@ int FollowState::update_track_attachment_follow_state(
             output->y = y;
             vertical_offset = vertical;
             output->z = z;
-            *(Vec3*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right;
-            *(Vec3*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up;
-            *(Vec3*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward;
+            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_right = transform.basis_right;
+            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_up = transform.basis_up;
+            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_forward = transform.basis_forward;
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
@@ -204,9 +198,9 @@ int FollowState::update_track_attachment_follow_state(
             output->y = v83;
             v84 = right_z + up_offset.z;
             output->z = v84;
-            *(Vec3*)(g_player_live_matrix_basis_right + (int)g_game_base) = transform.basis_right;
-            *(Vec3*)(g_player_live_matrix_basis_up + (int)g_game_base) = transform.basis_up;
-            *(Vec3*)(g_player_live_matrix_basis_forward + (int)g_game_base) = transform.basis_forward;
+            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_right = transform.basis_right;
+            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_up = transform.basis_up;
+            ((GameRoot*)g_game_base)->subgame.player.live_matrix.basis_forward = transform.basis_forward;
         }
 
         orientation_up.x = transform.basis_up.x;

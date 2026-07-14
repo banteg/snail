@@ -9,10 +9,10 @@ Recovered `cRPathFollowGoldy::Init` ownership and behavior:
 - Initialization sets `active`, stores the Path and source cell, resets the
   sample index, seeds `progress = world_position.z - cell.anchor_position.z`,
   and seeds `vertical_offset = world_position.y - 0.49f` without clamping.
-- Root-relative `0x64118c` is the field-first address of
-  `SubgameRuntime::runtime_rows[0].installed_heading_delta`, not a standalone
-  float table. Indexing a real `TrackAttachmentRuntimeRow[]` explains the
-  native 0xf4-byte row stride and folded field displacement exactly.
+- Root-relative `0x64118c` is
+  `GameRoot::subgame.runtime_rows[0].installed_heading_delta`, not a standalone
+  float table. Indexing the canonical `SubRow[]` owner explains the native
+  0xf4-byte row stride and folded field displacement exactly.
 
 The final ownership correction was the return type. The only caller at
 `update_subgoldy +0x77b` discards EAX and immediately reads
@@ -23,5 +23,6 @@ byte-identical. The Path pointer left in EAX by the final field store is an
 incidental compiler value, not an authored return contract.
 
 Earlier volatile-Game-base and flat-float-table experiments are rejected. The
-exact candidate uses the ordinary relocatable Game owner, the recovered row
-struct, and no source-only scheduling barriers.
+exact candidate now traverses the ordinary relocatable `GameRoot`, its embedded
+`SubgameRuntime`, and the recovered row array directly, with no field-first
+global alias or source-only scheduling barrier.

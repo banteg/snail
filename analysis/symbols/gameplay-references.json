@@ -641,7 +641,8 @@
       "aliases": [
         "loc_42FD7C"
       ],
-      "description": "Relocatable player block offset added to the live game root."
+      "size": "0x4364",
+      "description": "Relocatable complete Player block offset added to the live game root; the bounded size lets canonical Player field relocations audit against narrower historical field aliases."
     },
     {
       "address": "0x42fde4",

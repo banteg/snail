@@ -4,14 +4,14 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 46.44% | **70.28%** |
+| Match | 46.44% | **72.89%** |
 | Target instructions | 726 | 726 |
-| Candidate instructions | 678 | 694 |
+| Candidate instructions | 678 | 698 |
 | Exact prefix | 0 / 726 | **122 / 726** |
 | Stack frame | `0x160` | **`0x180`** |
-| Masked operands | 45 ok, 0 unresolved, 0 mismatch | **51 ok, 0 unresolved, 0 mismatch** |
+| Masked operands | 45 ok, 0 unresolved, 0 mismatch | **63 ok, 0 unresolved, 0 mismatch** |
 
-The measured improvement is **+23.84 percentage points**. The first remaining mismatch is target instruction 122, where both sides emit `je` but branch to differently laid-out blocks.
+The measured improvement is **+26.45 percentage points**. The first remaining mismatch is target instruction 122, where both sides emit `je` but branch to differently laid-out blocks.
 
 ## Accepted source-shape changes
 
@@ -23,6 +23,7 @@ The measured improvement is **+23.84 percentage points**. The first remaining mi
 - Added semantic `Vec3` staging for ordinary offsets and the Supertramp terminal launch result.
 - Added ordinary-path x/y/z component intermediates to improve x87 scheduling.
 - Recovered aggregate `Vec3` publication into the embedded Player live-matrix rows.
+- Replaced the final field-first row and matrix globals with canonical `GameRoot`, `SubgameRuntime`, `SubRow`, and `Player` ownership paths.
 - Recovered `FollowState +0x20..+0x28` as one `orientation_up` vector and the side-exit output as a whole-vector copy.
 - Kept separate semantic clamp returns for the side-exit path.
 
@@ -40,4 +41,4 @@ The measured improvement is **+23.84 percentage points**. The first remaining mi
 
 - Fixed toolchain: `msvc6.5 /O2 /G5 /W3`.
 - No inline assembly, volatile padding, fake globals, dummy externs, or normalizer-specific tricks.
-- Final matcher output: `70.28%`, target `726`, candidate `694`, prefix `122`, masks `51/0/0`.
+- Final matcher output: `72.89%`, target `726`, candidate `698`, prefix `122`, masks `63/0/0`.
