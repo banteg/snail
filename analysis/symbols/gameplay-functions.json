@@ -3709,12 +3709,12 @@
     {
       "address": "0x44de20",
       "name": "play_warning_sample_backend",
-      "description": "Warning-system wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle."
+      "description": "Exact SoundEffectManager warning wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle."
     },
     {
       "address": "0x44de30",
       "name": "stop_warning_sample_handle",
-      "description": "Warning-system wrapper that stops one live warning-sample handle through the shared registered-sample backend."
+      "description": "Exact SoundEffectManager warning wrapper that stops one live warning-sample handle through the shared registered-sample backend."
     },
     {
       "address": "0x44de40",
