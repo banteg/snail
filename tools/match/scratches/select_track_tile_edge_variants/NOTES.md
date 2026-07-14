@@ -33,3 +33,14 @@ the canonical `GameRoot* g_game` plus `root_bod_catalog`. The compiler retains
 the intentional field-relative neighbor offsets and authored corner storage
 mapping. Focused output remains fully exact at 220/220 instructions with all
 18 operands clean.
+
+## 2026-07-14 neighborhood-delta ownership
+
+Binary Ninja's live `TrackRowCell` layout agrees with the shared `SubLoc`:
+size `0x54`, `tile_id +0x3c`, `tile_flags_3d +0x3d`, and
+`lane_and_flags +0x40`. The exact field-first cursor deltas now derive from
+`sizeof(SubLoc)`, `sizeof(runtime_cells[0])`, and `offsetof(SubLoc, tile_id)`:
+the former `-0x90/+0x18` pair selects adjacent lanes,
+`-0x2dc/+0x264` selects adjacent rows, and `-0x3c` recovers the containing
+cell/BOD. This removes parallel layout constants while preserving the native
+pointer shape, exact 220/220 output, and all 18 clean operands.

@@ -1,7 +1,9 @@
 // Track row-cell tile-byte view, partial.
 //
-// This view starts at TrackRowCell +0x3c and walks with the full 0x54 row-cell
-// stride. It is not the full anchor-bearing TrackRowCell base view.
+// This view starts at TrackRowCell/SubLoc::tile_id (+0x3c) and walks with the
+// full sizeof(SubLoc) == 0x54 stride. It is not the full anchor-bearing cell
+// base view; callers that must preserve field-first pointer induction derive
+// the containing or neighboring SubLoc from those two layout facts.
 #ifndef TRACK_ROW_CELL_TILE_VIEWS_H
 #define TRACK_ROW_CELL_TILE_VIEWS_H
 
