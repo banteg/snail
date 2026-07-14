@@ -387,3 +387,23 @@ instructions, with 290 clean masked operands and one jump-table mismatch.
 4. NEW (this scratch): the per-tick 16-bit lateral quantization and the
    replay z-delta accumulator are not modeled in the port — audit
    `stepActivePhase`/the oracle harness for codec parity on x.
+
+## 2026-07-14 cell and follow ownership consolidation
+
+- The scratch-local runtime-cell shell is gone. Grid lookup, row-event,
+  slide, landing, and trampoline paths now use the complete authored `SubLoc`
+  owner, including the primary/secondary attachment cells borrowed from
+  canonical `SubRow` records.
+- The duplicate 0x40-byte follow shell is replaced by the shared `FollowState`
+  (`cRPathFollowGoldy`) owner. Its exact `Path*`, `SubLoc*`, and `Player*`
+  relationships now cover both begin and update calls.
+- A full promotion of the remaining caller-local `SubgoldyPathView` was
+  tested and rejected: spelling the swept-entry call through the shared
+  scalar-argument `Path` surface changed the VC6 aggregate push sequence,
+  regressing the target to 70.41%, 2043/2087 instructions and 282 clean
+  operands. The compact path prefix therefore remains explicitly documented
+  as a source-shape view of the shared owner, not a second owner.
+
+The accepted cell/follow consolidation is byte-identical at 72.51%,
+2067/2087 instructions, 290 clean operands, and the same one honest follow
+jump-table mismatch.

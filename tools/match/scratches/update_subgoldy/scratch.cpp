@@ -40,8 +40,9 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 
-struct SubgoldyTrackRowCellView;
-
+// Caller-local cRPath prefix. This aggregate-argument declaration preserves
+// the native VC6 push sequence in this large caller; the shared Path owner has
+// the same fields and callee address with a scalar spelling.
 struct SubgoldyPathView {
     char unknown_00[0x38];
     int kind; // +0x38: 15 DETOUR, 24 WORM
@@ -50,42 +51,8 @@ struct SubgoldyPathView {
     char unknown_48[0x58 - 0x48];
     AttachmentSample* primary_samples; // +0x58
 
-    void try_enter_track_attachment_from_swept_motion(Vector3 position, Vector3 sweep,
-                                                      SubgoldyTrackRowCellView* cell);
-};
-
-struct SubgoldyTrackRowCellView {
-    char unknown_00[0x10];
-    Vector3 anchor_position; // +0x10
-    char unknown_1c[0x38 - 0x1c];
-    SubgoldyPathView* attachment_template_record; // +0x38
-    unsigned char tile_id;       // +0x3c
-    unsigned char tile_flags_3d; // +0x3d
-
-    int get_track_cell_row_index();
-    unsigned char is_sub_loc_empty();
-    unsigned char is_sub_loc_floor();
-};
-
-struct SubgoldyPlayerView;
-
-struct SubgoldyFollowStateView {
-    unsigned char active; // +0x00
-    char unknown_01[3];
-    SubgoldyPathView* template_record; // +0x04
-    SubgoldyTrackRowCellView* source_cell;               // +0x08
-    int sample_index;                        // +0x0c
-    char unknown_10[0x2c - 0x10];
-    Vector3 output_position; // +0x2c
-    SubgoldyPlayerView* player; // +0x38
-    unsigned char flag_3c;   // +0x3c
-    char unknown_3d[3];
-
-    void begin_track_attachment_follow_state(
-        SubgoldyTrackRowCellView* cell, const Vector3* position,
-        SubgoldyPlayerView* player);
-    int update_track_attachment_follow_state(float advance, Vector3* position,
-                                             Vector3* velocity);
+    void try_enter_track_attachment_from_swept_motion(
+        Vector3 position, Vector3 sweep, SubLoc* cell);
 };
 
 struct SubgoldyGameView {
@@ -102,7 +69,7 @@ struct SubgoldyGameView {
     int runtime_row_count;      // +0x54
     int completion_row_start;   // +0x58
 
-    SubgoldyTrackRowCellView* get_track_grid_cell_at_world_position(Vector3* position);
+    SubLoc* get_track_grid_cell_at_world_position(Vector3* position);
     float sample_track_floor_height_at_position(Vector3* position);
     void complete_subgame(unsigned char completed);
 };
@@ -149,7 +116,7 @@ struct SubgoldyPlayerView {
     float nuke_effect_progress;      // +0x374
     float nuke_effect_progress_step; // +0x378
     char unknown_37c[0x384 - 0x37c];
-    SubgoldyFollowStateView follow_state; // +0x384
+    FollowState follow_state; // +0x384, authored cRPathFollowGoldy owner
     DamageGuage damage_gauge; // +0x3c4, authored cRDamageGuage owner
     ProgressBar progress_bar; // +0x3f0
     Warning warning; // +0x3f4, authored cRWarning owner
@@ -224,7 +191,7 @@ void SubgoldyPlayerView::update_subgoldy()
     }
 
     if (follow_state.active == 1) {
-        SubgoldyPathView* template_record = follow_state.template_record;
+        Path* template_record = follow_state.template_record;
         int sample = follow_state.sample_index + 3;
         int segment_count = template_record->segment_count;
         if (sample >= segment_count)
@@ -410,7 +377,7 @@ steering_stored:
     if (resurrect_active)
         update_subgoldy_resurrect();
 
-    SubgoldyTrackRowCellView* source_cell = game->get_track_grid_cell_at_world_position(p_position);
+    SubLoc* source_cell = game->get_track_grid_cell_at_world_position(p_position);
     SubgoldyGameView* event_game = game;
     SubRow* row_record = &((SubgameRuntime*)event_game)
                               ->runtime_rows[source_cell->get_track_cell_row_index()];
@@ -462,7 +429,8 @@ steering_stored:
     if (!attachment_exit_pending) {
         unsigned char tile_id = source_cell->tile_id;
         if ((tile_id == 29 || tile_id == 30) && !follow_state.active) {
-            follow_state.begin_track_attachment_follow_state(source_cell, p_position, this);
+            follow_state.begin_track_attachment_follow_state(
+                source_cell, p_position, (Player*)this);
             if (follow_state.template_record->kind == 24)
                 g_voice_manager.play_voice_manager(12, 0, -1);
         }
@@ -539,7 +507,7 @@ steering_stored:
             velocity.x = 0.0f;
         }
         if (!completion_handoff_active) {
-            SubgoldyTrackRowCellView* slide_cell;
+            SubLoc* slide_cell;
             if (game->get_track_grid_cell_at_world_position(p_position)->tile_id == 15
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 16
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id == 18
@@ -571,7 +539,7 @@ steering_stored:
             velocity.z = quantum + quantum + velocity.z;
             attachment_exit_pending = 0;
         } else {
-            SubgoldyTrackRowCellView* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
+            SubLoc* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
             if (attachment_exit_pending) {
                 SubgoldyGameView* drag_game = game;
                 if ((((SubgameRuntime*)drag_game)
@@ -590,13 +558,13 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    ((SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                    ((SubgoldyPathView*)((SubgameRuntime*)game)
                          ->runtime_rows[landing_cell->get_track_cell_row_index()]
-                         .primary_attachment_cell)
-                        ->attachment_template_record
+                         .primary_attachment_cell
+                         ->attachment_template_record)
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
-                            (SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                            ((SubgameRuntime*)game)
                                 ->runtime_rows[landing_cell->get_track_cell_row_index()]
                                 .primary_attachment_cell);
                 }
@@ -609,13 +577,13 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    ((SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                    ((SubgoldyPathView*)((SubgameRuntime*)game)
                          ->runtime_rows[landing_cell->get_track_cell_row_index()]
-                         .secondary_attachment_cell)
-                        ->attachment_template_record
+                         .secondary_attachment_cell
+                         ->attachment_template_record)
                         ->try_enter_track_attachment_from_swept_motion(
                             *p_position, swept,
-                            (SubgoldyTrackRowCellView*)((SubgameRuntime*)game)
+                            ((SubgameRuntime*)game)
                                 ->runtime_rows[landing_cell->get_track_cell_row_index()]
                                 .secondary_attachment_cell);
                 }
@@ -730,7 +698,7 @@ steering_stored:
                 float gravity = rate * rate * -0.0099999998f;
                 velocity.y = gravity + velocity.y;
             }
-            SubgoldyTrackRowCellView* trampoline_cell =
+            SubLoc* trampoline_cell =
                 game->get_track_grid_cell_at_world_position(p_position);
             if (trampoline_cell->tile_id == 22
                 && trampoline_cell->anchor_position.y + 0.49000001f > live_matrix.position.y
