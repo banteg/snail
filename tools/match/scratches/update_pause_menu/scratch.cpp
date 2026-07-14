@@ -2,18 +2,18 @@
 
 #include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void SubPause::update_pause_menu()
 {
     unsigned int flags = options_widget->widget_flags;
     if ((flags & 0x20) != 0) {
         options_widget->widget_flags = flags & ~0x20u;
-        ((GameRoot*)g_game_base)->options.active = 0;
-        GameRoot* game = (GameRoot*)g_game_base;
+        g_game->options.active = 0;
+        GameRoot* game = g_game;
         game->options.previous_frontend_state =
             game->players[0].frontend_state;
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 6;
+        g_game->players[0].frontend_state = 6;
         return;
     }
 
@@ -22,9 +22,9 @@ void SubPause::update_pause_menu()
     if ((flags & 0x20) != 0) {
         resume->widget_flags = flags & ~0x20u;
         uninit_pause_menu();
-        GameRoot* game = (GameRoot*)g_game_base;
+        GameRoot* game = g_game;
         game->subgame.subgame_state = 2;
-        ((GameRoot*)g_game_base)->subgame.resume_requested = 1;
+        g_game->subgame.resume_requested = 1;
         return;
     }
 
@@ -32,10 +32,10 @@ void SubPause::update_pause_menu()
     flags = end_game->widget_flags;
     if ((flags & 0x20) != 0) {
         end_game->widget_flags = flags & ~0x20u;
-        GameRoot* game = (GameRoot*)g_game_base;
+        GameRoot* game = g_game;
         game->exit_controller.previous_frontend_state =
             game->players[0].frontend_state;
-        game = (GameRoot*)g_game_base;
+        game = g_game;
         if (game->subgame.level_mode == 7) {
             game->exit_controller.state = 7;
         } else if (game->subgame.replay_launch_from_frontend == 1) {
@@ -43,8 +43,8 @@ void SubPause::update_pause_menu()
         } else {
             game->exit_controller.state = 2;
         }
-        GameRoot* result_game = (GameRoot*)g_game_base;
+        GameRoot* result_game = g_game;
         result_game->subgame.subgame_rebuild_selector = 2;
-        ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
+        g_game->players[0].frontend_state = 8;
     }
 }

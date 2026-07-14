@@ -10,7 +10,7 @@
 #include "subgame_runtime.h"
 #include "vector3.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 inline Vector3 subtract_screen_xy(const Vector3& lhs, float screen_x, float screen_y)
 {
@@ -148,7 +148,7 @@ int Galaxy::update_galaxy()
 
     int hovered_route_index = -1;
     int probe_index = 1;
-    GameInput* mouse_state = ((GameRoot*)g_game_base)->players[0].game_input;
+    GameInput* mouse_state = g_game->players[0].game_input;
     float mouse_x = mouse_state->input.authored_x;
     float mouse_y = mouse_state->input.authored_y;
 
@@ -210,17 +210,17 @@ int Galaxy::update_galaxy()
         }
     }
 
-    if (((GameRoot*)g_game_base)->border_manager.delayed_widget_active != 0)
+    if (g_game->border_manager.delayed_widget_active != 0)
         return 0;
 
     unsigned int flags = exit_or_back_widget->widget_flags;
     if ((flags & 0x20) != 0) {
         exit_or_back_widget->widget_flags = flags & ~0x20;
         if (route_mode == 1) {
-            ((GameRoot*)g_game_base)->exit_controller.previous_frontend_state =
-                ((GameRoot*)g_game_base)->players[0].frontend_state;
-            ((GameRoot*)g_game_base)->exit_controller.state = 11;
-            ((GameRoot*)g_game_base)->players[0].frontend_state = 8;
+            g_game->exit_controller.previous_frontend_state =
+                g_game->players[0].frontend_state;
+            g_game->exit_controller.state = 11;
+            g_game->players[0].frontend_state = 8;
             return 0;
         }
 
@@ -262,7 +262,7 @@ int Galaxy::update_galaxy()
         return 1;
     }
 
-    if (((GameRoot*)g_game_base)->fade.state == 0 && route_mode != 1) {
+    if (g_game->fade.state == 0 && route_mode != 1) {
         int current_hover_state = hover_state;
         if (current_hover_state != 1) {
             unsigned int mouse_flags = mouse_state->input.pressed_buttons;

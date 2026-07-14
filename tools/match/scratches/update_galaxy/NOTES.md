@@ -177,3 +177,12 @@ The overview marker's former raw `this +0x1c/+0x20` reads are exactly
 its record at slot `+0x04`, and the coordinates at record `+0x08/+0x0c`.
 The scratch now uses that complete owner chain. Focused Wibo is unchanged at
 71.01%, 569/566 instructions, prefix 48, with all 52 operands clean.
+
+## 2026-07-14 canonical root transitions
+
+Mouse input, delayed-widget gating, the mode-1 Exit handoff, and the fade gate
+now start from a typed `GameRoot*` and traverse `players[0]`, `border_manager`,
+`exit_controller`, and `fade` directly. No function-scoped root borrow was
+introduced, preserving the short lifetimes required by the current source
+shape. Focused output remains 71.01%, 569/566 instructions, prefix 48/566,
+with all 52 operands clean.

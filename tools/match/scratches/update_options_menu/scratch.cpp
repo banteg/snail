@@ -5,7 +5,7 @@
 #include "options.h"
 #include "runtime_config.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_fullscreen_on_text[]; // 0x4a3d5c
 extern char g_fullscreen_off_text[]; // 0x4a3d4c
 
@@ -42,9 +42,9 @@ void Options::update_options_menu()
     if ((flags & 0x20) != 0) {
         back_widget->widget_flags = flags & ~0x20u;
         destroy_options_menu();
-        GameRoot* game = (GameRoot*)g_game_base;
+        GameRoot* game = g_game;
         game->frontend_link_latch = 0;
-        game = (GameRoot*)g_game_base;
+        game = g_game;
         game->players[0].frontend_state = previous_frontend_state;
     }
 

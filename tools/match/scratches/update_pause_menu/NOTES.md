@@ -40,3 +40,9 @@ embeds it at `SubgameRuntime +0x14`, and reads all three Windows functions back
 as `void __thiscall(SubPause*)`. A second filtered replay reports no
 non-idempotent mutation; only the six already-known pinned `Game*` owner
 prototypes remain deferred.
+
+2026-07-14 canonical root transition: Options, Resume, and End Game keep their
+native short root reloads, but every reload now has the recovered `GameRoot*`
+type. The state handoffs remain owned by `options`, `exit_controller`,
+`subgame`, and `players[0]`; focused output stays exact at 55/55 instructions
+with all ten operands clean.
