@@ -11,7 +11,7 @@ struct BodNode : public ContactTargetObject {
     // and their live members.
     void add_bod_after(BodNode* previous)
     {
-        if ((list_flags & 0x200) != 0) {
+        if ((list_flags & BOD_FLAG_LINKED) != 0) {
             report_errorf("List ADDafter");
         } else {
             list_prev = previous;
@@ -19,7 +19,7 @@ struct BodNode : public ContactTargetObject {
             previous->list_next = this;
             if (list_next != 0)
                 list_next->list_prev = this;
-            list_flags |= 0x200;
+            list_flags |= BOD_FLAG_LINKED;
         }
     }
 
@@ -37,7 +37,7 @@ public:
     // Inlined cLinkedList<cRBod>::Add used by pickup allocators.
     void add_bod(BodNode* node)
     {
-        if ((node->list_flags & 0x200) != 0) {
+        if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
             report_errorf("List ADD");
         } else {
             if (first == 0) {
@@ -50,7 +50,7 @@ public:
                 first = first->list_prev;
                 first->list_prev = 0;
             }
-            node->list_flags |= 0x200;
+            node->list_flags |= BOD_FLAG_LINKED;
         }
     }
 
@@ -59,9 +59,9 @@ public:
     {
         int result = (int)node;
         unsigned int flags = node->list_flags;
-        if ((flags & 0x200) == 0)
+        if ((flags & BOD_FLAG_LINKED) == 0)
             return report_errorf("List remove");
-        if ((flags & 0x40) != 0)
+        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0)
             return report_errorf("List remove NEXTBOD");
 
         BodNode* next = node->list_next;
@@ -76,7 +76,7 @@ public:
 
         node->list_next = free_top;
         free_top = node;
-        node->list_flags &= ~0x200;
+        node->list_flags &= ~BOD_FLAG_LINKED;
         return result;
     }
 

@@ -61,13 +61,13 @@ int GameRoot::run_frame_update()
             ActiveBod* bod = (ActiveBod*)active_bod_list.first;
             if (bod != 0) {
                 do {
-                    if ((bod->list_flags & 0x10) != 0) {
+                    if ((bod->list_flags & BOD_FLAG_DEBUG) != 0) {
                         report_errorf("Debug Bod AI");
                     }
 
                     ActiveBod* next_bod = bod->list_next;
                     if (next_bod != 0) {
-                        next_bod->list_flags |= 0x40;
+                        next_bod->list_flags |= BOD_FLAG_NEXT_UPDATE_GUARD;
                     }
 
                     bod->update_active_bod();
@@ -77,7 +77,7 @@ int GameRoot::run_frame_update()
                         break;
                     }
 
-                    next_bod->list_flags &= ~0x40;
+                    next_bod->list_flags &= ~BOD_FLAG_NEXT_UPDATE_GUARD;
                 } while (true);
             }
 

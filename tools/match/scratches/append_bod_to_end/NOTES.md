@@ -8,6 +8,9 @@ The function walks `list_next` to the tail, installs both directional links,
 clears the new tail's `list_next`, and marks `list_flags & 0x200`. Duplicate
 ownership reports the distinct `"List ADDend"` diagnostic.
 
+The source now spells that membership bit as `BOD_FLAG_LINKED`; focused output
+remains exact at 33/33 instructions.
+
 ## 2026-07-14 canonical list ownership
 
 The tail insertion is another operation on the complete root-owned `BodList`,

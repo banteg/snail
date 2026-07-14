@@ -4,7 +4,7 @@
 
 void BodList::add_bod_to_front(BodNode* node)
 {
-    if ((node->list_flags & 0x200) != 0) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADD");
     } else {
         if (first == 0) {
@@ -17,6 +17,6 @@ void BodList::add_bod_to_front(BodNode* node)
             first = first->list_prev;
             first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 }

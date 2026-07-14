@@ -17,6 +17,16 @@ argument `+0x1c`, and render-object argument `+0x20`. The `+0x08/+0x0c`
 intrusive links are not explicitly cleared here but are shared with the BOD list
 views.
 
+## 2026-07-14 shared BOD flag ownership
+
+The default `0x02000020` store is now the named combination
+`BOD_FLAG_VIEWPORT_1 | BOD_FLAG_RENDER_ENABLED`. The render traversal proves
+the high byte is intersected with `render_camera_slots[1].flags`, while banner,
+landscape, animation, and subgame lifecycles independently toggle the low
+visibility bit. `RenderableBod` adds `BOD_FLAG_USE_TRANSFORM`, matching the
+renderer branch that selects its embedded matrix instead of the position-only
+base path. Both constructors remain exact.
+
 2026-07-14 folded-constructor ownership: the opening identity call now targets
 the embedded `tColour` directly. The previous `NoopAiCallback` cast represented
 no object, field, or vtable boundary; it existed only to give the folded helper

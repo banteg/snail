@@ -4,7 +4,7 @@
 
 bool BodBase::is_bod_after_sprites()
 {
-    if ((list_flags & 0x80) != 0)
+    if ((list_flags & BOD_FLAG_AFTER_SPRITES) != 0)
         return true;
     return false;
 }

@@ -168,3 +168,14 @@ Sprite depth projection now spells the existing by-value affine call as the
 recovered void `Vector3::operator*=`. Focused output remains at the prior honest
 45.43% baseline; only the decorated call identity changes, and the function
 reference alias keeps all 26 operands clean.
+
+## 2026-07-14 BOD render-flag ownership
+
+The render traversal now names the independently proved BOD flag contract:
+`HAS_OBJECT`, `RENDER_ENABLED`, and the high-byte viewport mask gate entry;
+`AFTER_SPRITES` stages the replay pass; `SYNC_ANIMATION` borrows the embedded
+manager; and `USE_TRANSFORM` selects the full matrix path. The same shared word
+also carries the diagnostic bit consumed by both `cRGame::AI()` and
+`cRGame::Render()`. Exact constructors/setters and the exact after-sprites
+helper prove the producer side. Focused output remains the honest 45.43%,
+415/439 result with all 26 masked operands clean.

@@ -2,13 +2,14 @@
 #ifndef CONTACT_TARGET_H
 #define CONTACT_TARGET_H
 
+#include "bod_flags.h"
 #include "vector3.h"
 
 const int CONTACT_TARGET_CAPACITY = 256;
 
 struct ContactTargetObject {
     void* vtable;            // +0x00, renderable/contact objects share this prefix
-    int list_flags;          // +0x04, 0x1000 suppresses contact appends
+    int list_flags;          // +0x04, BodFlag word
 };
 
 struct ContactTargetEntry {

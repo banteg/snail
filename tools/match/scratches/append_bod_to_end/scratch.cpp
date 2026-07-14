@@ -4,7 +4,7 @@
 
 void BodList::append_bod_to_end(BodNode* node)
 {
-    if ((node->list_flags & 0x200) != 0) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDend");
     } else {
         BodNode* tail = first;
@@ -20,6 +20,6 @@ void BodList::append_bod_to_end(BodNode* node)
             node->list_prev = tail;
             node->list_next = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 }

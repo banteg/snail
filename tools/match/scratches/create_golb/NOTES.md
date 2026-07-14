@@ -211,8 +211,9 @@ Residuals:
   that the kind-2 lookup reads the subgame's `EnemyManager`, not a
   Golb-specific sample bank. The hit is now a `ContactTargetEntry*`; its object
   pointer is retained at `GolbShot +0x198`, kind zero reserves that object with
-  flag `0x1000`, and its position is copied into the homing target. This keeps
-  the existing honest `36.08%`, `460/582`, with 35 clean masked operands.
+  `BOD_FLAG_SUPPRESS_CONTACT`, and its position is copied into the homing
+  target. This keeps the existing honest `36.08%`, `460/582`, with 35 clean
+  masked operands.
 
 ## 2026-07-13 void AI-dispatch contract
 

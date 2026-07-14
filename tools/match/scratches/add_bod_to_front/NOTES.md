@@ -7,7 +7,8 @@ renderable bodies embedded in the same root owner.
 
 The exact body confirms the existing intrusive layout: `BodList::first` at
 `+0x04`, and `BodNode::list_flags/list_prev/list_next` at `+0x04/+0x08/+0x0c`.
-Flag `0x200` is list ownership; duplicate insertion reports `"List ADD"`.
+`BOD_FLAG_LINKED` (`0x200`) is list ownership; duplicate insertion reports
+`"List ADD"`.
 
 ## 2026-07-14 canonical list ownership
 

@@ -263,3 +263,9 @@ prefix, and all 27 operands clean.
   through `GameRoot`, `GameInput`, and `InputState`; the last two raw root
   offset blocks are gone. Focused Wibo remains exact at 279/279 instructions
   with all 27 audited operands clean.
+
+2026-07-14 animation flag ownership: the five self-owned manager bindings now
+set `BOD_FLAG_SYNC_ANIMATION`, while the four detachable presentation channels
+also clear `BOD_FLAG_RENDER_ENABLED`. This names the producer side consumed by
+`cRGame::Render()` without changing the exact 279/279 instruction stream or
+its 27 clean operands.

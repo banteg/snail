@@ -1,6 +1,8 @@
 #ifndef ACTIVE_BOD_H
 #define ACTIVE_BOD_H
 
+#include "bod_flags.h"
+
 class ActiveBod {
 public:
     virtual void update_active_bod(); // vtable slot 0, default @ 0x433e80

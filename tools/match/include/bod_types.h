@@ -36,7 +36,7 @@ public:
     RenderableBod* initialize_noop_renderable_bod(); // @ 0x408040
 
     TransformMatrix transform; // +0x38
-    // Only valid when list_flags has 0x800: cRGame::Render borrows this
+    // Only valid with BOD_FLAG_SYNC_ANIMATION: cRGame::Render borrows this
     // manager's progress for Object::animation immediately before drawing.
     AnimManager* render_animation_manager; // +0x78
     char unknown_07c[0x80 - 0x7c];

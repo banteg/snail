@@ -114,26 +114,26 @@ void GameRoot::render_game_frame()
                     (RenderableBod*)active_bod_list.first;
                 RenderableBod** post_cursor = g_post_sprite_bods;
                 while (bod != 0) {
-                    if ((bod->list_flags & 0x10) != 0) {
+                    if ((bod->list_flags & BOD_FLAG_DEBUG) != 0) {
                         debug_report_stub("DEBUG RENDER\n");
                     }
 
-                    if ((bod->list_flags & 2) != 0 &&
-                        (bod->list_flags & 0x20) != 0 &&
-                        (slot->flags & bod->list_flags & 0xff000000) != 0) {
-                        if ((bod->list_flags & 0x80) != 0) {
+                    if ((bod->list_flags & BOD_FLAG_HAS_OBJECT) != 0 &&
+                        (bod->list_flags & BOD_FLAG_RENDER_ENABLED) != 0 &&
+                        (slot->flags & bod->list_flags & BOD_VIEWPORT_MASK) != 0) {
+                        if ((bod->list_flags & BOD_FLAG_AFTER_SPRITES) != 0) {
                             *post_cursor = bod;
                             ++post_cursor;
                             ++post_sprite_count;
                         }
-                        if ((bod->list_flags & 0x800) != 0) {
+                        if ((bod->list_flags & BOD_FLAG_SYNC_ANIMATION) != 0) {
                             Object* animated_object = bod->object;
                             AnimManager* animation_manager =
                                 bod->render_animation_manager;
                             animated_object->animation->progress =
                                 animation_manager->progress;
                         }
-                        if ((bod->list_flags & 0x400) != 0) {
+                        if ((bod->list_flags & BOD_FLAG_USE_TRANSFORM) != 0) {
                             render_object(
                                 bod->object,
                                 &bod->transform,

@@ -58,7 +58,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->attachment_exit_progress_step = 0.0166666675f;
 
     if ((this->presentation.object->flags & 0x200000) != 0) {
-        this->presentation.list_flags |= 0x800;
+        this->presentation.list_flags |= BOD_FLAG_SYNC_ANIMATION;
         this->presentation.render_animation_manager =
             &this->presentation.anim_manager;
         this->presentation.anim_manager.initialize_anim_manager();
@@ -74,7 +74,9 @@ void Player::initialize_subgoldy(int player_slot)
 
     if ((this->presentation.jetpack_channel.object->flags & 0x200000) != 0) {
         this->presentation.jetpack_channel.list_flags =
-            (this->presentation.jetpack_channel.list_flags & 0xffffffdf) | 0x800;
+            (this->presentation.jetpack_channel.list_flags
+                & ~BOD_FLAG_RENDER_ENABLED)
+            | BOD_FLAG_SYNC_ANIMATION;
         this->presentation.jetpack_channel.selected_state = zero;
         this->presentation.jetpack_channel.render_animation_manager =
             &this->presentation.jetpack_channel.anim_manager;
@@ -92,7 +94,9 @@ void Player::initialize_subgoldy(int player_slot)
 
     if ((this->presentation.weapon_channels[0].object->flags & 0x200000) != 0) {
         this->presentation.weapon_channels[0].list_flags =
-            (this->presentation.weapon_channels[0].list_flags & 0xffffffdf) | 0x800;
+            (this->presentation.weapon_channels[0].list_flags
+                & ~BOD_FLAG_RENDER_ENABLED)
+            | BOD_FLAG_SYNC_ANIMATION;
         this->presentation.weapon_channels[0].selected_state = zero;
         this->presentation.weapon_channels[0].render_animation_manager =
             &this->presentation.weapon_channels[0].anim_manager;
@@ -110,7 +114,9 @@ void Player::initialize_subgoldy(int player_slot)
 
     if ((this->presentation.weapon_channels[1].object->flags & 0x200000) != 0) {
         this->presentation.weapon_channels[1].list_flags =
-            (this->presentation.weapon_channels[1].list_flags & 0xffffffdf) | 0x800;
+            (this->presentation.weapon_channels[1].list_flags
+                & ~BOD_FLAG_RENDER_ENABLED)
+            | BOD_FLAG_SYNC_ANIMATION;
         this->presentation.weapon_channels[1].selected_state = zero;
         this->presentation.weapon_channels[1].render_animation_manager =
             &this->presentation.weapon_channels[1].anim_manager;
@@ -128,7 +134,9 @@ void Player::initialize_subgoldy(int player_slot)
 
     if ((this->presentation.weapon_channels[2].object->flags & 0x200000) != 0) {
         this->presentation.weapon_channels[2].list_flags =
-            (this->presentation.weapon_channels[2].list_flags & 0xffffffdf) | 0x800;
+            (this->presentation.weapon_channels[2].list_flags
+                & ~BOD_FLAG_RENDER_ENABLED)
+            | BOD_FLAG_SYNC_ANIMATION;
         this->presentation.weapon_channels[2].selected_state = zero;
         this->presentation.weapon_channels[2].render_animation_manager =
             &this->presentation.weapon_channels[2].anim_manager;

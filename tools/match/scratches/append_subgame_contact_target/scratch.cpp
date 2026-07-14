@@ -1,6 +1,6 @@
 // append_subgame_contact_target @ 0x415ef0 (thiscall, ret 0x10)
 // Appends one `{kind, position, radius, object}` entry to the per-frame
-// subgame contact registry unless the target object is hidden by flag 0x1000.
+// subgame contact registry unless the target suppresses contact registration.
 
 #include "contact_target.h"
 
@@ -11,7 +11,7 @@ void EnemyManager::append_subgame_contact_target(
     ContactTargetObject* object
 )
 {
-    if ((object->list_flags & 0x1000) != 0)
+    if ((object->list_flags & BOD_FLAG_SUPPRESS_CONTACT) != 0)
         return;
 
     entries[count].kind = kind;

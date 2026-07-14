@@ -125,3 +125,12 @@ prefix 18/135, with all 23 operands clean.
 - Final focused Wibo is exact: 100.00% (`135/135`, full prefix), with all 23
   masked operands resolved and equal. No register hints, volatile state, dummy
   control flow, or flag changes are used.
+
+## 2026-07-14 active-list flag ownership
+
+The active BOD walk now names `BOD_FLAG_DEBUG` and
+`BOD_FLAG_NEXT_UPDATE_GUARD`. The latter is set only on the saved successor
+while the current node's virtual AI runs, then cleared before advancing;
+`BodList::remove_bod` independently rejects removal of that protected node with
+the native `List remove NEXTBOD` diagnostic. The shared names preserve the
+exact 135/135 instruction stream and all 23 audited operands.

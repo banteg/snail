@@ -45,3 +45,8 @@ Residuals:
   `Init()` is the exact one-store registry reset at `0x415e20`. The Windows
   harness name remains descriptive, and both decompiler lanes now carry the
   shared `EnemyManager`/`ContactTargetEntry` fields.
+- 2026-07-14 shared flag ownership: the skip bit is now
+  `BOD_FLAG_SUPPRESS_CONTACT`. The kind-zero Golb homing path sets that flag on
+  its selected target, and this exact registry helper consumes it before any
+  count or entry write. The producer/consumer relationship remains honest and
+  codegen-neutral; this helper stays exact at 34/34 instructions.

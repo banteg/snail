@@ -237,7 +237,7 @@ after_movement_flag_source:
                 if (found) {
                     homing_target_object = found->object;
                     if (!found->kind)
-                        found->object->list_flags |= 0x1000;
+                        found->object->list_flags |= BOD_FLAG_SUPPRESS_CONTACT;
                     Vec3* homing_target = &this->homing_target;
                     *homing_target = found->position;
                     homing_blend = 0.0f;
