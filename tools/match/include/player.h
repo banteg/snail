@@ -115,8 +115,9 @@ public:
     float wobble_roll_phase_step;       // +0x15c0
     float wobble_lift_phase;            // +0x15c4
     float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
-    char unknown_15cc[0x1604 - 0x15cc];
-    TransformMatrix snail_hotspot_source_matrix_a; // +0x1604
+    // Camera/body hotspot source. Only its inherited transform is consumed,
+    // but the exact constructor initializes the complete renderable owner.
+    RenderableBod snail_hotspot_source_body; // +0x15cc, transform at +0x1604
     char unknown_1644[0x164c - 0x1644];
     RenderableBod snail_hotspot_body;        // +0x164c, owns model at +0x1670 and transform at +0x1684
     char unknown_16c4[0x16cc - 0x16c4];

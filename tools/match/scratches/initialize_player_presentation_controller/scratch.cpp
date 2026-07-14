@@ -14,50 +14,57 @@ void __stdcall initialize_array_with_constructor(
 
 Snail* Snail::initialize_player_presentation_controller()
 {
-    char* self = (char*)this;
     initialize_renderable_bod();
 
-    RenderableBod* visible_bods = (RenderableBod*)(self + 0x14c);
+    PresentationAnimationSlot* visible_bods = cutscene_animation_slots;
     for (int i = 0; i < 10; ++i) {
-        ((RenderableBod*)((char*)visible_bods + 0x80 * i))->initialize_renderable_bod();
+        visible_bods[i].body.initialize_renderable_bod();
     }
 
     PresentationAnimationChannel* group_a = &weapon_channels[0];
     group_a->initialize_renderable_bod();
     ((RuntimeSlot*)((char*)group_a + 0xc0))->noop_runtime_slot_constructor();
     initialize_array_with_constructor(
-        (char*)group_a + 0x150, 0x80, 5, &RenderableBod::initialize_renderable_bod);
+        group_a->animation_slots,
+        sizeof(PresentationAnimationSlot),
+        5,
+        &RenderableBod::initialize_renderable_bod);
     group_a->vtable = &g_presentation_animation_channel_noop_vtable;
 
     PresentationAnimationChannel* group_b = &weapon_channels[1];
     group_b->initialize_renderable_bod();
     ((RuntimeSlot*)((char*)group_b + 0xc0))->noop_runtime_slot_constructor();
     initialize_array_with_constructor(
-        (char*)group_b + 0x150, 0x80, 5, &RenderableBod::initialize_renderable_bod);
+        group_b->animation_slots,
+        sizeof(PresentationAnimationSlot),
+        5,
+        &RenderableBod::initialize_renderable_bod);
     group_b->vtable = &g_presentation_animation_channel_noop_vtable;
 
     PresentationAnimationChannel* group_c = &weapon_channels[2];
     group_c->initialize_renderable_bod();
     ((RuntimeSlot*)((char*)group_c + 0xc0))->noop_runtime_slot_constructor();
     initialize_array_with_constructor(
-        (char*)group_c + 0x150, 0x80, 5, &RenderableBod::initialize_renderable_bod);
+        group_c->animation_slots,
+        sizeof(PresentationAnimationSlot),
+        5,
+        &RenderableBod::initialize_renderable_bod);
     group_c->vtable = &g_presentation_animation_channel_noop_vtable;
 
     PresentationAnimationChannel* group_d = &jetpack_channel;
     group_d->initialize_renderable_bod();
     ((RuntimeSlot*)((char*)group_d + 0x80))->noop_runtime_slot_constructor();
     ((RuntimeSlot*)((char*)group_d + 0xc0))->noop_runtime_slot_constructor();
-    RenderableBod* group_d_children = (RenderableBod*)((char*)group_d + 0x150);
+    PresentationAnimationSlot* group_d_children = group_d->animation_slots;
     for (int j = 0; j < 5; ++j) {
-        ((RenderableBod*)((char*)group_d_children + 0x80 * j))->initialize_renderable_bod();
+        group_d_children[j].body.initialize_renderable_bod();
     }
     group_d->vtable = &g_presentation_animation_channel_noop_vtable;
 
-    ((RenderableBod*)(self + 0x15cc))->initialize_renderable_bod();
-    ((RenderableBod*)(self + 0x164c))->initialize_renderable_bod();
-    RenderableBod* child = (RenderableBod*)(self + 0x1894);
-    child->initialize_renderable_bod();
-    child->vtable = &g_invincible_shell_update_vtable;
+    snail_hotspot_source_body.initialize_renderable_bod();
+    snail_hotspot_body.initialize_renderable_bod();
+    invincible_shell.initialize_renderable_bod();
+    invincible_shell.vtable = &g_invincible_shell_update_vtable;
     vtable = &g_player_presentation_noop_vtable;
     return this;
 }

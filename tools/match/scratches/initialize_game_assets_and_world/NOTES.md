@@ -75,9 +75,10 @@ barrier, and render-cache handoff at `0x40fb46..0x40ffd6`:
 - `SnailSkin +0x04` owns three `TextureRef*` material overrides for the base,
   damage, and invincible snail skins. The former integer-slot spelling was
   rejected by the three direct `get_or_create_texture_ref` stores.
-- `Invincible` is a real `BodBase` child, not a flattened vtable/padding view.
-  Its inherited object at `+0x24` owns `invincible-base-000.x`; startup clears
-  the object's `0x100000` flag after loading it.
+- `Invincible` is a real `RenderableBod` child, not a flattened
+  vtable/padding view. Its inherited object at `+0x24` owns
+  `invincible-base-000.x`; startup clears the object's `0x100000` flag after
+  loading it.
 - Each `GolbShot` overlays a `Vapour` at `+0x080` with its secondary render
   body, while the tertiary rocket body at `+0x118` overlaps the live matrix at
   `+0x150`. The shared rocket mesh is owned by shot zero and borrowed by all

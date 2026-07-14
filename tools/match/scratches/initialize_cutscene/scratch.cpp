@@ -137,7 +137,7 @@ void Snail::initialize_cutscene()
         weapon_channels[1].transform = transform;
     }
 
-    snail_hotspot_source_matrix_a = transform;
+    snail_hotspot_source_body.transform = transform;
     snail_hotspot_body.transform = *owner_player->live_transform();
     camera_target = &owner_player->cached_camera_target_world;
     snail_hotspot_body.transform.position = *camera_target;

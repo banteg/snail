@@ -8,7 +8,7 @@ This function ties together the fields promoted on the exact authored `Snail`:
   `cached_cutscene_matrix` at `+0xc0`
 - inherited channel `RenderableBod::transform` at `+0x38` and
   `release_step` at `+0x3d0`
-- `snail_hotspot_source_matrix_a`/`b`, then `update_snail_skin`
+- the two hotspot-source renderable transforms, then `update_snail_skin`
 - embedded authored `cRCutScene` at `+0x1958`
 
 The first version is meant to be an honest source-shaped baseline for matching
@@ -90,3 +90,8 @@ matrix through inherited `Snail::transform`; the distinct Player, Cameraman,
 weapon-channel, and jetpack-channel matrices retain their own owners. Removing
 the duplicated Snail prefix is byte-identical at 100.00%, 339/339 instructions,
 full prefix, and 44 clean masked operands.
+
+2026-07-14 hotspot-source owner closure: the matrix at Snail `+0x1604` now
+belongs to the complete `snail_hotspot_source_body` renderable initialized at
+`+0x15cc`. The matrix assignment remains byte-identical at 339/339 instructions
+with all 44 operands clean.

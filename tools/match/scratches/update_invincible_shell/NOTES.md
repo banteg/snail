@@ -36,3 +36,8 @@ exact.
 2026-07-14 renderable-owner closure: the copied presentation matrix is now
 explicitly `Snail`'s inherited `RenderableBod::transform`. Focused Wibo remains
 exact at 100.00%, 98/98 instructions, full prefix, and 28 clean operands.
+
+2026-07-14 shell inheritance closure: the destination matrix and inherited
+render fields now come from `Invincible`'s complete `RenderableBod` base rather
+than a manually duplicated prefix. Focused Wibo remains byte-identical at
+98/98 instructions with all 28 operands clean.

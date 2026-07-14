@@ -4,8 +4,8 @@ Exact Windows counterpart of Android `cRSnail::BuildHotSpots()`. The stable
 Windows name predates cross-port ownership recovery; this promotes the
 cross-confirmed Snail hotspot fields:
 
-- `snail_hotspot_source_matrix_a` at `+0x1604`;
-- `snail_hotspot_source_matrix_b` at `+0x1684`;
+- `snail_hotspot_source_body.transform` at `+0x1604`;
+- `snail_hotspot_body.transform` at `+0x1684`;
 - `snail_hotspots_local[19]` at `+0x16cc`;
 - `snail_hotspots_world[19]` at `+0x17b0`.
 
@@ -29,3 +29,8 @@ changed the prologue.
 `SNAIL_HOTSPOT_PARCEL_POINT`, the first body/camera anchor after the eleven
 weapon hotspots. This is codegen-neutral and ties the transform-bank split to
 the same authored texture ordering used by extraction and cutscene consumers.
+
+2026-07-14 source-body ownership: the `+0x1604` matrix is now reached through
+the complete `RenderableBod` initialized at Snail `+0x15cc`, matching the
+already-owned body at `+0x164c`. Focused Wibo remains exact at 44/44
+instructions with its masked operand clean.

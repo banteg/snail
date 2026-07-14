@@ -19,3 +19,8 @@ operands.
 2026-07-14 sibling-owner closure: the skin reset now follows the owned
 `Player::presentation.snail_skin` path instead of root `+0x434038`. The helper
 remains exact at 7/7 with all three operands clean.
+
+2026-07-14 renderable inheritance closure: `Invincible` now inherits its
+complete `RenderableBod` prefix, including the live shell transform at `+0x38`,
+instead of repeating that matrix after a `BodBase`. Focused Wibo remains exact
+at 7/7 with all three operands clean.

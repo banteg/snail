@@ -10,8 +10,8 @@ Recovered ownership:
 - the three `PresentationAnimationChannel` weapon owners begin at `+0x64c`
   and the jetpack channel begins at `+0x11e0`, all at the proven `0x3dc`
   stride;
-- two renderable-compatible hotspot sources begin at `+0x15cc/+0x164c`, with
-  their transforms already exposed at `+0x1604/+0x1684`;
+- two complete renderable hotspot sources begin at `+0x15cc/+0x164c`, with
+  their inherited transforms at `+0x1604/+0x1684`;
 - authored `cRInvincible` begins at `+0x1894` and receives the callback
   whose sole target is exact `update_invincible_shell`;
 - the Snail and animation-channel callback slots both resolve to
@@ -65,3 +65,19 @@ ret`). The old scratch-local `IostreamInit` name asserted an owner the binary
 does not support; these lanes remain opaque channel-owned subobjects until a
 consumer gives them semantics. The constructor now uses the canonical neutral
 call surface and remains exact.
+
+## 2026-07-14 owned render-subobject closure
+
+Binary Ninja's native address formation and the exact constructor calls agree
+on the full owner graph: the ten Snail slots and each five-slot channel bank
+are arrays of `PresentationAnimationSlot`, while `+0x15cc` and `+0x164c` are
+complete `RenderableBod` children. The first child owns the source transform at
+`+0x1604`; it is no longer represented as anonymous bytes plus a detached
+matrix.
+
+The authored `Invincible` at `+0x1894` now inherits the same complete
+`RenderableBod` prefix instead of manually repeating its transform after a
+`BodBase`. Its constructor call and callback store therefore use the embedded
+member directly. Removing the raw `+0x14c`, `+0x150`, `+0x15cc`, `+0x164c`, and
+`+0x1894` address expressions leaves focused Wibo byte-identical at 79/79
+instructions with all 27 masked operands clean.
