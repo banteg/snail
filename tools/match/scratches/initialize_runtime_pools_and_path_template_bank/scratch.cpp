@@ -16,8 +16,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
 {
     char* self = (char*)this;
 
-    Color4f* segment_cache_constructor_receiver =
-        (Color4f*)(self + offsetof(SubgameRuntime, segment_cache));
+    tColour* segment_cache_constructor_receiver =
+        (tColour*)(self + offsetof(SubgameRuntime, segment_cache));
     segment_cache_constructor_receiver->noop_this_constructor();
     RuntimeSlot* active_bods = (RuntimeSlot*)((char*)segment_cache_constructor_receiver
         + offsetof(SegmentCache, slots));

@@ -19,12 +19,12 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct BodNode BodNode;
 struct BodNode {
@@ -53,7 +53,7 @@ struct Sprite {
     struct TextureRef* texture_ref_a;
     struct TextureRef* texture_ref_b;
     int32_t draw_mode;
-    Color4f color;
+    tColour color;
     Vec3 previous_position;
     Vec3 position;
     Vec3 velocity;
@@ -114,7 +114,7 @@ struct GarbageHazardSlot {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    Color4f color;
+    tColour color;
     Vec3 basis_right;
     float basis_right_w;
     Vec3 basis_up;

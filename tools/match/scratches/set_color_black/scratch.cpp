@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void Color4f::set_color_black()
+void tColour::set_color_black()
 {
     set_color_grayscale(0.0f);
 }

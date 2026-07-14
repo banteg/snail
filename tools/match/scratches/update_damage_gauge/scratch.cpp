@@ -18,7 +18,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,
@@ -117,7 +117,7 @@ render:
     if (pulse_progress > 1.0f)
         pulse_progress = pulse_progress - 1.0f;
 
-    Color4f color;
+    tColour color;
     if (display_fill > 0.89999998f || state) {
         if (display_fill > 0.89999998f) {
             if (!state)

@@ -25,12 +25,12 @@ typedef struct Vec4 {
     float w;
 } Vec4;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct TwinkleManager {
     uint8_t twinkles[0xf0];
@@ -59,7 +59,7 @@ typedef struct BodBase {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    Color4f color;
+    tColour color;
 } BodBase;
 
 typedef struct AnimManager AnimManager;
@@ -78,7 +78,7 @@ typedef struct FringeObject {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    Color4f color;
+    tColour color;
 } FringeObject;
 
 typedef struct Player Player;
@@ -135,7 +135,7 @@ typedef struct SubTracks {
     int32_t random_length;
     uint8_t random_enabled;
     uint8_t unknown_1a58c9[0x1a58cc - 0x1a58c9];
-    Color4f fringe_color;
+    tColour fringe_color;
     char level_display_name[0x80];
     union {
         float selected_speed;
@@ -209,14 +209,6 @@ typedef struct JetPack {
     Vapour vapour_a;
     Vapour vapour_b;
 } JetPack;
-
-typedef struct Sprite {
-    uint8_t _pad_00[0x04];
-    uint32_t flags;
-    uint8_t _pad_08[0x48 - 0x08];
-    Vec3 position;
-    uint8_t _pad_54[0xb4 - 0x54];
-} Sprite;
 
 typedef struct Parcel {
     BodBase bod;
@@ -298,7 +290,7 @@ typedef struct GalaxyRouteSlot {
 typedef struct GalaxyRouteNameRecord {
     char name[0x80];
     int32_t star_count;
-    Color4f color;
+    tColour color;
     float map_x;
     float map_y;
     float map_z;
@@ -395,12 +387,12 @@ typedef struct FrontendWidget {
     uint32_t widget_flags;
     uint32_t previous_widget_flags;
     uint8_t _pad_1a8[0x4];
-    Color4f current_fill_color;
-    Color4f idle_fill_color;
-    Color4f hot_fill_color;
-    Color4f current_text_color;
-    Color4f idle_text_color;
-    Color4f hot_text_color;
+    tColour current_fill_color;
+    tColour idle_fill_color;
+    tColour hot_fill_color;
+    tColour current_text_color;
+    tColour idle_text_color;
+    tColour hot_text_color;
     float hover_blend_target;
     float hover_blend_current;
     float idle_padding;
@@ -760,7 +752,7 @@ typedef struct LandscapeScriptRecord {
     uint8_t split_backdrop_texture_pair;
     char backdrop_texture_path[0x10c - 0x89];
     int32_t object_index;
-    Color4f fog_color;
+    tColour fog_color;
     float distort;
 } LandscapeScriptRecord;
 
@@ -806,7 +798,7 @@ typedef struct TrackRowCell {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    Color4f color;
+    tColour color;
     struct Path* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
@@ -1730,9 +1722,9 @@ void __thiscall update_pause_menu(SubPause* pause);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);
-Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);
-float __thiscall set_color_alpha(Color4f* color, float alpha);
-float __thiscall set_color_grayscale(Color4f* color, float intensity);
+tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a);
+void __thiscall set_color_alpha(tColour* color, float alpha);
+void __thiscall set_color_grayscale(tColour* color, float intensity);
 void __thiscall initialize_score_stats(Squidge* squidge);
 void __thiscall start_squidge_y(Squidge* squidge, float value);
 void __thiscall start_squidge_z(Squidge* squidge, float value);
@@ -1755,8 +1747,8 @@ void __thiscall update_anim_manager(AnimManager* manager);
 void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
-float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
-tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, Color4f* color);
+void __thiscall store_color4f(tColour* color, float r, float g, float b, float a);
+tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, tColour* color);
 void __thiscall kill_tip_widgets(Tip* tip);
 void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button);
 void __thiscall update_tip(Tip* tip);
@@ -2047,7 +2039,7 @@ void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 
 int32_t __thiscall build_track_render_caches(
     SegmentCache* manager,
-    Color4f skirt_color
+    tColour skirt_color
 );
 
 int32_t __thiscall add_track_cache_vertex(

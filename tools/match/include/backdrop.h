@@ -17,7 +17,7 @@ typedef char BackdropDistortCell_must_be_0x18[
     (sizeof(BackdropDistortCell) == 0x18) ? 1 : -1];
 
 struct BackdropWorldBlend {
-    Color4f color; // +0x00, constructed as a Color4f at startup
+    tColour color; // +0x00, constructed as a tColour at startup
     float blend; // +0x10
     float blend_step; // +0x14
     int previous_world; // +0x18

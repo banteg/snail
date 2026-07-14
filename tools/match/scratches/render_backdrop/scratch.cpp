@@ -12,8 +12,8 @@ void Backdrop::render_backdrop()
         GRID_QUAD_COUNT = GRID_COLUMN_COUNT - 1,
     };
 
-    Color4f normal_color;
-    Color4f flipped_color;
+    tColour normal_color;
+    tColour flipped_color;
 
     float row = 0.0f;
     do {

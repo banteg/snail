@@ -2,9 +2,9 @@
 /* function: set_color_white @ 0x44dc50 */
 /* selector: set_color_white */
 
-// Thin wrapper around `set_color_grayscale` that initializes one destination color slot to opaque white.
-int __thiscall sub_44DC50(_DWORD *this)
+// Exact void `tColour::White()` role: tail-calls the recovered Grey helper with `1.0f`, producing opaque white. Android retains the same method.
+void __thiscall set_color_white(tColour *color)
 {
-  return set_color_grayscale(this, 1065353216);
+  set_color_grayscale(color, 1.0);
 }
 

@@ -1,7 +1,7 @@
 # initialize_galaxy_route_name_record @ 0x408880
 
 Exact 7-instruction constructor for one `0xa0`-byte
-`GalaxyRouteNameRecord`. It runs the folded no-op `Color4f` constructor at
+`GalaxyRouteNameRecord`. It runs the folded no-op `tColour` constructor at
 record `+0x84` and returns the original receiver.
 
 The constructor pass calls it ten times beginning at

@@ -23,7 +23,7 @@ candidate/target instructions, `35/157` prefix, and `7 ok` masked operands.
 owners and lifted the scratch to `100.00%`, `157/157` candidate/target
 instructions, `157/157` prefix, and `10 ok` masked operands:
 
-- keeping a `Color4f* idle_fill` alias live from immediately after the
+- keeping a `tColour* idle_fill` alias live from immediately after the
   `font_id` store recovers the native shrink-wrapped `push ebp`;
 - storing the flag pair and text terminator before the authored x/y anchors
   lets the color-copy block use the native source/destination registers;

@@ -60,7 +60,7 @@ paths still expose different validated windows into the larger object layout.
 The allocation, load, animation, build, refresh, and render paths now use one
 shared `Object` layout; the earlier scratch-local qualification above is
 superseded. The live Binary Ninja prototype now types the borrowed world
-`TransformMatrix*` and `Color4f*` instead of `void*` / `int32_t*`, while the
+`TransformMatrix*` and `tColour*` instead of `void*` / `int32_t*`, while the
 object itself retains every grouped buffer and per-texture-group array consumed
 here.
 
@@ -83,7 +83,7 @@ texture-U value, not opaque integer bits. Expressing the matrix assignment as
 `basis_forward.x = texture_u` removes the false integer lifetime: VC6 leaves
 texture-U in its stack argument slot, gives `bl` to `after_sprites`, and gives
 `edi` to the borrowed color pointer. The pass-filter branches, float texture
-transform, `Color4f` by-value copy, and D3D call scheduling then all align
+transform, `tColour` by-value copy, and D3D call scheduling then all align
 naturally.
 
 The same correction is propagated to `BodBase +0x1c` and every shared BOD view;

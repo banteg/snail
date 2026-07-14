@@ -17,15 +17,17 @@ enum {
     SPRITE_DEPTH_BUCKET_COUNT = 256,
 };
 
-struct Color4f {
-    Color4f* noop_this_constructor();
-    Color4f* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60
-    void store_color4f(float r, float g, float b, float a);       // @ 0x44dbb0
-    void set_color_rgb(float r, float g, float b);                // @ 0x44dbd0
-    int set_color_alpha(int alpha_bits);                         // @ 0x44db80, raw-bit alpha
-    void set_color_grayscale(float intensity);                    // @ 0x44db90
-    void set_color_white();                                      // @ 0x44dc50
-    void set_color_black();                                      // @ 0x44dc60
+// Authored four-float colour owner. Android retains this class and its
+// Set/Alpha/Grey/White/Black family with the same RGBA field order.
+struct tColour {
+    tColour* noop_this_constructor();
+    tColour* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60; Set
+    void store_color4f(float r, float g, float b, float a); // @ 0x44dbb0; constructor role
+    void set_color_rgb(float r, float g, float b); // @ 0x44dbd0; Set
+    void set_color_alpha(float alpha); // @ 0x44db80; Alpha
+    void set_color_grayscale(float intensity); // @ 0x44db90; Grey
+    void set_color_white(); // @ 0x44dc50; White
+    void set_color_black(); // @ 0x44dc60; Black
 
     float r; // +0x00
     float g; // +0x04
@@ -33,15 +35,17 @@ struct Color4f {
     float a; // +0x0c
 };
 
+typedef char tColour_must_be_0x10[(sizeof(tColour) == 0x10) ? 1 : -1];
+
 // Windows counterpart of the symbol-preserving iOS `GTempColour` owner.
-extern Color4f g_temp_colour; // data_503308
+extern tColour g_temp_colour; // data_503308
 
 // Authored packed-colour owner. Android's symbol-preserving build names this
 // class `tColourSmall` and independently proves the same Windows BGRA byte
 // order through operator=(tColour const&) and G0SetColour.
 struct tColourSmall {
     tColourSmall* noop_this_constructor();
-    tColourSmall* pack_color_rgba_u8(Color4f* color); // @ 0x44dbf0; tColourSmall::operator=
+    tColourSmall* pack_color_rgba_u8(tColour* color); // @ 0x44dbf0; tColourSmall::operator=
 
     unsigned char b; // +0x00
     unsigned char g; // +0x01
@@ -106,7 +110,7 @@ public:
     TextureRef* texture_ref_a; // +0x20
     TextureRef* texture_ref_b; // +0x24
     int draw_mode; // +0x28
-    Color4f color; // +0x2c
+    tColour color; // +0x2c
     Vector3 previous_position; // +0x3c
     Vector3 position; // +0x48
     Vector3 velocity; // +0x54

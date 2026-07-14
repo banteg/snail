@@ -5,7 +5,7 @@ five render-cache families: Floor, Slide, Warn, Ramp, and Fringe. The retained
 scratch keeps the committed by-value member signature:
 
 ```cpp
-int SegmentCache::build_track_render_caches(Color4f skirt_color);
+int SegmentCache::build_track_render_caches(tColour skirt_color);
 ```
 
 That signature agrees with the exact caller in

@@ -12,7 +12,7 @@ extern char g_music_volume_text[]; // 0x4a3d14
 extern char g_back_text[]; // 0x4a20ec
 void Options::initialize_options_menu()
 {
-    Color4f color;
+    tColour color;
 
     g_game->border_manager.hide_all_borders();
     g_game->frontend_link_latch = 1;

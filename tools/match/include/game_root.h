@@ -73,7 +73,7 @@ public:
     float fog_start; // +0x08, D3DRS_FOGSTART
     float fog_end; // +0x0c, D3DRS_FOGEND
     float fog_density; // +0x10, D3DRS_FOGDENSITY
-    Color4f fog_color; // +0x14, packed for D3DRS_FOGCOLOR
+    tColour fog_color; // +0x14, packed for D3DRS_FOGCOLOR
     FrontendFade fade; // +0x24, root-owned transition controller
     union {
         int frontend_quit_requested; // +0x38, nonzero run-loop exit request

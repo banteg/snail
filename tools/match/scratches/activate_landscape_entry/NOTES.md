@@ -14,7 +14,7 @@ Recovered layout evidence:
 - `record +0x10c` is the landscape object index, or `-1` for no object.
 - `record +0x110..+0x11c` is the 16-byte `fog_color` block copied to
   `Game+0x14` after backdrop activation. `load_landscape_script_by_name` writes
-  RGB from `Fog:` and the missing-Fog fallback writes the full `Color4f`.
+  RGB from `Fog:` and the missing-Fog fallback writes the full `tColour`.
 - active slots are inserted after
   `SubgameRuntime::landscape_slice_list_head +0x355c44`
   (`GameRoot +0x3ca25c`).

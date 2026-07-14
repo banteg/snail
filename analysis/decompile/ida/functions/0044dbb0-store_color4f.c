@@ -2,15 +2,12 @@
 /* function: store_color4f @ 0x44dbb0 */
 /* selector: store_color4f */
 
-// Stores one four-float tuple into the destination `Color4f` slot and returns the third component register value left live by the helper epilogue. Callers treat it as a write-only color helper.
-float __thiscall store_color4f(Color4f *color, float r, float g, float b, float a)
+// Stable Windows harness identity for the authored `tColour::tColour(float, float, float, float)` constructor role. It stores RGBA at `+0/+4/+8/+12`; all callers treat it as write-only, so the final component register left live by the epilogue is not a return value.
+void __thiscall store_color4f(tColour *color, float r, float g, float b, float a)
 {
-  float result; // st7
-
   color->r = r;
   color->g = g;
   color->b = b;
   color->a = a;
-  return result;
 }
 

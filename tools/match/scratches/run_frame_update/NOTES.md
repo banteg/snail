@@ -47,7 +47,7 @@ argument scheduling residuals and 23 clean masked operands.
 above the frame-accumulator temporary is codegen-neutral and keeps the early
 `fstp [base+0x518]` before `lea ecx, [base+0x290]`. Naming the cursor draw
 layer as a local `int layer = 7` is also codegen-neutral; the layer push still
-lands after `Color4f::set_color_rgba`. The residual remains argument/store
+lands after `tColour::set_color_rgba`. The residual remains argument/store
 scheduling, not a missing local name.
 
 2026-06-20 ActiveBod ABI cleanup: the frame loop now uses
@@ -118,7 +118,7 @@ prefix 18/135, with all 23 operands clean.
   back later. VC6 consequently keeps the x87 sum live across the mouse-owner
   `lea` and quit-latch clear, matching the native store schedule.
 - The captured-cursor quad is one source-level call expression. Keeping the
-  saved x/y offsets and `Color4f::set_color_rgba` expression directly in the
+  saved x/y offsets and `tColour::set_color_rgba` expression directly in the
   call lets VC6 evaluate the final layer argument first, construct the tint,
   and then materialize y/x without spill slots. Inlining only the tint while
   retaining precomputed mouse locals grows the frame and remains rejected.

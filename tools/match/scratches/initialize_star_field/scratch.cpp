@@ -76,7 +76,7 @@ int StarManager::initialize_star_field()
             entries[index].sprite->progress_step = 0.0f;
             entries[index].sprite->gravity_step = 0.0f;
 
-            Color4f color;
+            tColour color;
             entries[index].sprite->color =
                 *color.set_color_rgba(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);
             entries[index].sprite->size_start = 0.800000012f;

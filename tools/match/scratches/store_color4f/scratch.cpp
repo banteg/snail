@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void Color4f::store_color4f(float r_, float g_, float b_, float a_)
+void tColour::store_color4f(float r_, float g_, float b_, float a_)
 {
     r = r_;
     g = g_;

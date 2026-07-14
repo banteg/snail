@@ -34,7 +34,7 @@ void draw_textured_quad_immediate(
     float v0,
     float u1,
     float v1,
-    Color4f* color,
+    tColour* color,
     int blend_mode,
     float rotation)
 {

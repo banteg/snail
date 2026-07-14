@@ -2,9 +2,9 @@
 
 #include "subgame_runtime.h"
 
-Color4f* SubgameRuntime::get_track_skirt_color(Color4f* out)
+tColour* SubgameRuntime::get_track_skirt_color(tColour* out)
 {
-    Color4f color;
+    tColour color;
     *out = *color.set_color_rgba(
         level_definition.fringe_color.r,
         level_definition.fringe_color.g,

@@ -90,6 +90,25 @@
       ]
     },
     {
+      "name": "ida_frontend_widget_tcolour_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00401d30-initialize_frontend_widget.c",
+      "required_substrings": [
+        "void __thiscall initialize_frontend_widget(",
+        "tColour *color",
+        "tColour *p_hot_text_color",
+        "widget->border_texture_id",
+        "widget->hot_text_color",
+        "widget->idle_fill_color"
+      ],
+      "forbidden_substrings": [
+        "Color4f",
+        "int32_t __thiscall initialize_frontend_widget",
+        "_pad_10[56]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_path_template_fields_intact",
       "artifact": "analysis/decompile/binja/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
       "required_substrings": [
@@ -125,11 +144,13 @@
         "manager->entries",
         "travel_distance",
         "alpha_scale",
+        "tColour color",
         "sprite->progress",
         "sprite->corner_scale",
         "sprite->facing_refresh_progress"
       ],
       "forbidden_substrings": [
+        "Color4f",
         "_pad_",
         "__offset(",
         "__asm",
@@ -524,7 +545,7 @@
       "name": "ida_track_cache_builder_local_view",
       "artifact": "analysis/decompile/ida/functions/00433220-build_track_render_caches.c",
       "required_substrings": [
-        "Color4f skirt_color",
+        "tColour skirt_color",
         "TrackRenderCacheBuildLocals locals",
         "manager->owner_subgame",
         "locals.vertex_counts",
@@ -616,7 +637,7 @@
       "name": "ida_set_object_color_void_owner",
       "artifact": "analysis/decompile/ida/functions/004141d0-set_object_color.c",
       "required_substrings": [
-        "void __cdecl set_object_color(Object *object, Color4f color)",
+        "void __cdecl set_object_color(Object *object, tColour color)",
         "pack_color_rgba_u8((tColourSmall *)&out, &color)",
         "object->flags",
         "object->render_buffers->vertex_buffer"
@@ -624,6 +645,140 @@
       "forbidden_substrings": [
         "ColorBGRA8 *set_object_color",
         "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_set_rgba_owner",
+      "artifact": "analysis/decompile/ida/functions/0044db60-set_color_rgba.c",
+      "required_substrings": [
+        "tColour *__thiscall set_color_rgba(tColour *color",
+        "color->r = r",
+        "color->g = g",
+        "color->b = b",
+        "color->a = a",
+        "return color"
+      ],
+      "forbidden_substrings": [
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_alpha_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044db80-set_color_alpha.c",
+      "required_substrings": [
+        "void __thiscall set_color_alpha(tColour *color, float alpha)",
+        "color->a = alpha"
+      ],
+      "forbidden_substrings": [
+        "float __thiscall set_color_alpha",
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_grey_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044db90-set_color_grayscale.c",
+      "required_substrings": [
+        "void __thiscall set_color_grayscale(tColour *color, float intensity)",
+        "color->a = 1.0",
+        "color->r = intensity",
+        "color->g = intensity",
+        "color->b = intensity"
+      ],
+      "forbidden_substrings": [
+        "float __thiscall set_color_grayscale",
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_constructor_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044dbb0-store_color4f.c",
+      "required_substrings": [
+        "void __thiscall store_color4f(tColour *color",
+        "color->r = r",
+        "color->g = g",
+        "color->b = b",
+        "color->a = a"
+      ],
+      "forbidden_substrings": [
+        "float __thiscall store_color4f",
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_set_rgb_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044dbd0-set_color_rgb.c",
+      "required_substrings": [
+        "void __thiscall set_color_rgb(tColour *color, float r, float g, float b)",
+        "color->r = r",
+        "color->g = g",
+        "color->b = b"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall set_color_rgb",
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_white_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044dc50-set_color_white.c",
+      "required_substrings": [
+        "void __thiscall set_color_white(tColour *color)",
+        "set_color_grayscale(color, 1.0)"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall set_color_white",
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_black_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0044dc60-set_color_black.c",
+      "required_substrings": [
+        "void __thiscall set_color_black(tColour *color)",
+        "set_color_grayscale(color, 0.0)"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall set_color_black",
+        "Color4f",
+        "_DWORD",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_tcolour_skirt_owner",
+      "artifact": "analysis/decompile/ida/functions/00442120-get_track_skirt_color.c",
+      "required_substrings": [
+        "tColour *__thiscall get_track_skirt_color(SubgameRuntime *game, tColour *out)",
+        "struct tColour color",
+        "game->level_definition.fringe_color.r",
+        "game->level_definition.fringe_color.g",
+        "game->level_definition.fringe_color.b",
+        "return out"
+      ],
+      "forbidden_substrings": [
+        "Color4f",
+        "_DWORD",
         "__asm",
         "_ET1"
       ]
@@ -866,6 +1021,70 @@
       "forbidden_substrings": [
         "sub_415EF0",
         "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_slug_hazard_ai_body_available",
+      "artifact": "analysis/decompile/binja/functions/0043f930-update_slug_hazard_ai.c",
+      "required_substrings": [
+        "slot->state",
+        "update_slug_voice_ai(slot)",
+        "slot->player_encounter_latched",
+        "slot->engagement_voice_gate",
+        "play_voice_manager"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_subgame_garbage_pool_owner",
+      "artifact": "analysis/decompile/binja/functions/0043da80-spawn_track_garbage_hazard.c",
+      "required_substrings": [
+        "game->garbage_hazards.slots[0].state",
+        "game->garbage_hazards.active_head",
+        "game->player.body.bod.bod.list_prev",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return result",
+        "__offset(SubgameRuntime, 0x3591c8)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_subgame_garbage_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0043da80-spawn_track_garbage_hazard.c",
+      "required_substrings": [
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "game->garbage_hazards.slots[0].state",
+        "game->garbage_hazards.active_head",
+        "game->player"
+      ],
+      "forbidden_substrings": [
+        "Vec3 *__thiscall spawn_track_garbage_hazard",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_salt_hazard_typed_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00441c10-update_salt_hazard.c",
+      "required_substrings": [
+        "void __thiscall update_salt_hazard(SaltHazardSlot *slot)",
+        "slot->owner_game",
+        "slot->state",
+        "set_color_alpha(&slot->body.bod.color, 0.89999998)",
+        "slot->body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *this",
+        "return result",
         "__asm",
         "_ET1"
       ]

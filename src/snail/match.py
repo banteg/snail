@@ -3790,7 +3790,7 @@ _KNOWN_TYPE_SIZES = {
     "ArchiveEntry": 0x0C,
     "AttachmentTransform": 0x40,
     "BodNode": 0x10,
-    "Color4f": 0x10,
+    "tColour": 0x10,
     "tColourSmall": 0x04,
     "HighScoreRecord": 0x1FAC0,
     "ObjectUv": 0x08,

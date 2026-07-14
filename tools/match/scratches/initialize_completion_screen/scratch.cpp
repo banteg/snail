@@ -53,7 +53,7 @@ void Completion::initialize_completion_screen(
         + new_delivered_count * 100 + bonus;
 
     title_widget = g_game->border_manager.allocate_border();
-    Color4f color;
+    tColour color;
     title_widget->initialize_frontend_widget(0x20400002, "Delivery Complete!",
         20, 0.0f, 80.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);

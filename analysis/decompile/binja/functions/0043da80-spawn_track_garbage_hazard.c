@@ -10,12 +10,12 @@
 0043da94        ecx = &ecx[0x31]
 0043da9d        if (eax s>= 0x32)
 0043daa4        report_warningf("Run Out of Garbage Slots")
-0043dab0        return 0
-0043dac4        void* esi = &game->_pad_00[eax * 0xc4]
+0043dab0        return
+0043dac4        void* esi = &game->unknown_000000[eax * 0xc4]
 0043dad0        char* var_24 = "Gadd"
 0043dad5        *(esi + 0x3591c4) = game->garbage_hazards.active_head
 0043dae9        game->garbage_hazards.active_head = esi + 0x359144
-0043daf4        float* ebx = &game->_pad_00[(eax + 0x45f8) * 0xc4]
+0043daf4        float* ebx = &game->unknown_000000[(eax + 0x45f8) * 0xc4]
 0043daf7        *(esi + 0x359204) = player
 0043db1b        *ebx = fconvert.s((random_float_below(0.400000006f) + fconvert.t(1f)) * fconvert.t(0.600000024f))
 0043db1d        *(esi + 0x3591c8) = 1
@@ -28,19 +28,19 @@
 0043db59        *(esi + 0x3591b0) = var_8
 0043db64        *(esi + 0x3591b4) = z
 0043db69        int16_t x87control = project_position_onto_track_attachment(game, esi + 0x3591ac, esi + 0x3591e4)
-0043db81        void* eax_5 = g_game_base + 0x5a8
-0043db88        if ((0x200 & *(esi + 0x359148)) == 0)
-0043db9b        *(esi + 0x359150) = &game->__offset(0x3bb764).d
-0043dba3        if (*(eax_5 + 4) != &game->__offset(0x3bb764).d)
-0043dbb5        *(esi + 0x35914c) = game->__offset(0x3bb76c).d
-0043dbb8        game->__offset(0x3bb76c).d = esi + 0x359144
-0043dbc0        *(*(esi + 0x35914c) + 0xc) = esi + 0x359144
-0043dba5        game->__offset(0x3bb76c).d = esi + 0x359144
+0043db81        void* eax_5 = &g_game_base[0x5a8]
+0043db88        if ((0x200 & (esi + 0x359144)->list_flags) == 0)
+0043db9b        (esi + 0x359144)->list_next = &game->player
+0043dba3        if (*(eax_5 + 4) != &game->player)
+0043dbb5        (esi + 0x359144)->list_prev = game->player.body.bod.bod.list_prev
+0043dbb8        game->player.body.bod.bod.list_prev = esi + 0x359144
+0043dbc0        (esi + 0x359144)->list_prev->list_next = esi + 0x359144
+0043dba5        game->player.body.bod.bod.list_prev = esi + 0x359144
 0043dbaa        *(eax_5 + 4) = esi + 0x359144
-0043dbad        *(esi + 0x35914c) = 0
-0043dbc3        *(esi + 0x359148) |= 0x200
+0043dbad        (esi + 0x359144)->list_prev = nullptr
+0043dbc3        (esi + 0x359144)->list_flags |= 0x200
 0043db8f        report_errorf("List ADDbefore")
-0043dbdd        int32_t eax_8 = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-0.000122070312f))
+0043dbdd        int32_t eax_8 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-0.000122070312f))
 0043dbfc        struct Sprite* eax_10 = allocate_sprite(&g_sprite_manager, *(*(esi + 0x359204) + 0x380), 0x72 - eax_8, 0xffffffff, 0xffffffff)
 0043dc01        *(esi + 0x3591f8) = eax_10
 0043dc07        uint32_t flags = eax_10->flags
@@ -51,10 +51,10 @@
 0043dc28        *(*(esi + 0x3591f8) + 0x6c) = 0
 0043dc37        *(*(esi + 0x3591f8) + 0x60) = *ebx
 0043dc42        *(*(esi + 0x3591f8) + 0x64) = *ebx
-0043dc4d        float* result = *(esi + 0x3591f8) + 0x48
-0043dc50        *result = *(esi + 0x3591ac)
-0043dc55        result[1] = *(esi + 0x3591b0)
-0043dc5f        result[2] = *(esi + 0x3591b4)
+0043dc4d        float* eax_14 = *(esi + 0x3591f8) + 0x48
+0043dc50        *eax_14 = *(esi + 0x3591ac)
+0043dc55        eax_14[1] = *(esi + 0x3591b0)
+0043dc5f        eax_14[2] = *(esi + 0x3591b4)
 0043dc62        *(esi + 0x3591fc) = cell
 0043dc68        *(esi + 0x359200) = 0
-0043dc76        return result
+0043dc76        return

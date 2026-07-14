@@ -16,7 +16,7 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 
 void Help::initialize_help_screen()
 {
-    Color4f color;
+    tColour color;
 
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index = g_game->subgame.landscape_manager

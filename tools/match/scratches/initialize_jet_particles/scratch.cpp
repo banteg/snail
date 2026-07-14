@@ -26,7 +26,7 @@ void SubHover::initialize_jet_particles()
             velocity->x = 0.0f;
             slot->sprite->gravity_step = 0.0f;
 
-            Color4f color;
+            tColour color;
             slot->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.999000013f);
             float* wobble_x = &slot->wobble_x;
             *wobble_x = 0.0f;

@@ -1,6 +1,6 @@
 # pack_color_rgba_u8 @ 0x44dbf0
 
-Exact thiscall match. Converts a `Color4f` record to the packed BGRA byte
+Exact thiscall match. Converts a `tColour` record to the packed BGRA byte
 record used by sprite and mesh draw paths: float `r/g/b/a` are multiplied by
 `255.0f`, converted through the native `__ftol` path, and stored as
 `tColourSmall::{r,g,b,a}` at byte offsets `+2/+1/+0/+3`.

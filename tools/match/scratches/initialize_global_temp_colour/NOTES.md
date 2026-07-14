@@ -1,7 +1,7 @@
 # initialize_global_temp_colour
 
 CRT constructor body `0x42f8b0` passes the 16-byte global at `0x503308` to the
-folded `Color4f::noop_this_constructor` at `0x44db50`. No other Windows
+folded `tColour::noop_this_constructor` at `0x44db50`. No other Windows
 instruction addresses its four lanes.
 
 The symbol-preserving iOS v1.9 executable independently names the corresponding

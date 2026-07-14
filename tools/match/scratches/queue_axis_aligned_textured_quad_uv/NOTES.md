@@ -28,7 +28,7 @@ extra epilogue without entering the warning path.
 2026-06-21 color-copy split retry: replacing `entry->color = *color` with
 integer-lane copies, including variants that write RGB, update
 `g_font_queue_count`, then write alpha, regresses this helper to the mid-40%
-range and adds/moves masked queue-offset mismatches. The aggregate `Color4f`
+range and adds/moves masked queue-offset mismatches. The aggregate `tColour`
 copy remains the only source-plausible shape that preserves the saved-register
 copy sequence.
 

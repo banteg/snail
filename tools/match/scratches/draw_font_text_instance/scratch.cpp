@@ -45,7 +45,7 @@ void draw_font_text_instance(cFontPrintBuffer* entry)
             float glyph_height = sheet->line_marker_y * entry->text_scale * sheet->spacing_scale;
 
             if (entry->text_wave_enabled != 0 && sheet->font_kind > 0) {
-                Color4f shadow_color;
+                tColour shadow_color;
                 shadow_color.set_color_rgba(0.0f, 0.0f, 0.0f, 0.800000012f);
                 float shadow_offset = (float)sheet->font_kind;
                 draw_textured_quad_immediate(

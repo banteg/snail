@@ -11,7 +11,7 @@ scratches.
 The broader `GameRoot` remains sparse, but its renderer ownership window is now
 shared: the skip counter, borrowed active-BOD head, and owned five-entry
 viewport array are typed alongside `RenderCamera`, `Sprite`, `TransformMatrix`,
-`Color4f`, and the font queue.
+`tColour`, and the font queue.
 
 Recovered relationships:
 

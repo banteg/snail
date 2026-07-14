@@ -554,7 +554,7 @@
     {
       "address": "0x408840",
       "name": "initialize_landscape_script_record",
-      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `Color4f` constructor for its `fog_color` field at `+0x110`; used for `LandscapeManager::scripts[128]` at subgame `+0xff81a4` (manager `+0x5a4`)."
+      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `tColour` constructor for its `fog_color` field at `+0x110`; used for `LandscapeManager::scripts[128]` at subgame `+0xff81a4` (manager `+0x5a4`)."
     },
     {
       "address": "0x408860",
@@ -564,7 +564,7 @@
     {
       "address": "0x408880",
       "name": "initialize_galaxy_route_name_record",
-      "description": "Constructs one 0xa0-byte GalaxyRouteNameRecord by running the no-op Color4f constructor on its color field at +0x84."
+      "description": "Constructs one 0xa0-byte GalaxyRouteNameRecord by running the no-op tColour constructor on its color field at +0x84."
     },
     {
       "address": "0x4088a0",
@@ -707,12 +707,12 @@
     {
       "address": "0x410c00",
       "name": "initialize_global_color4f_bank_32_thunk",
-      "description": "CRT startup thunk for the adjacent 32-entry Color4f constructor loop; `.CRT$XCU` entry 0x4a1014 points here."
+      "description": "CRT startup thunk for the adjacent 32-entry tColour constructor loop; `.CRT$XCU` entry 0x4a1014 points here."
     },
     {
       "address": "0x410c10",
       "name": "initialize_global_color4f_bank_32",
-      "description": "Runs the folded no-op Color4f constructor across the exact 32-entry global allocation at `data_4f6e50`. No runtime consumer or cross-port symbol supports a more specific semantic owner."
+      "description": "Runs the folded no-op tColour constructor across the exact 32-entry global allocation at `data_4f6e50`. No runtime consumer or cross-port symbol supports a more specific semantic owner."
     },
     {
       "address": "0x410c30",
@@ -1590,7 +1590,7 @@
     {
       "address": "0x42f8b0",
       "name": "initialize_global_temp_colour",
-      "description": "Runs the folded no-op Color4f constructor for the 16-byte global at `data_503308`. The matching symbol-preserving iOS owner is `GTempColour`, also exactly 16 bytes before its next global."
+      "description": "Runs the folded no-op tColour constructor for the 16-byte global at `data_503308`. The matching symbol-preserving iOS owner is `GTempColour`, also exactly 16 bytes before its next global."
     },
     {
       "address": "0x42f8c0",
@@ -2046,7 +2046,7 @@
     {
       "address": "0x434990",
       "name": "initialize_track_colour_bank_a",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry track colour bank A before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry track colour bank A before build_track_colours seeds authored white values."
     },
     {
       "address": "0x4349b0",
@@ -2056,7 +2056,7 @@
     {
       "address": "0x4349c0",
       "name": "initialize_track_colour_banks_b_c",
-      "description": "Runs the folded no-op Color4f constructor across the 102-entry contiguous B/C allocation before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 102-entry contiguous B/C allocation before build_track_colours seeds authored white values."
     },
     {
       "address": "0x4349e0",
@@ -2066,7 +2066,7 @@
     {
       "address": "0x4349f0",
       "name": "initialize_track_colour_bank_d",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank D before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank D before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434a10",
@@ -2076,7 +2076,7 @@
     {
       "address": "0x434a20",
       "name": "initialize_track_colour_bank_e",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank E before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank E before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434a40",
@@ -2086,7 +2086,7 @@
     {
       "address": "0x434a50",
       "name": "initialize_track_colour_bank_f",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank F before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank F before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434a70",
@@ -2096,7 +2096,7 @@
     {
       "address": "0x434a80",
       "name": "initialize_track_colour_bank_g",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank G before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank G before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434aa0",
@@ -2106,7 +2106,7 @@
     {
       "address": "0x434ab0",
       "name": "initialize_track_colour_bank_h",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank H before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank H before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434ad0",
@@ -2116,7 +2116,7 @@
     {
       "address": "0x434ae0",
       "name": "initialize_track_colour_bank_i",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank I before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank I before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434b00",
@@ -2126,7 +2126,7 @@
     {
       "address": "0x434b10",
       "name": "initialize_track_colour_bank_j",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank J before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank J before build_track_colours seeds authored white values."
     },
     {
       "address": "0x434b30",
@@ -2136,7 +2136,7 @@
     {
       "address": "0x434b40",
       "name": "initialize_track_colour_bank_k",
-      "description": "Runs the folded no-op Color4f constructor across the 51-entry bank K before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry bank K before build_track_colours seeds authored white values."
     },
 
     {
@@ -3235,7 +3235,7 @@
     {
       "address": "0x449c50",
       "name": "initialize_global_font_queue_colors",
-      "description": "Runs the folded trivial Color4f constructor over the +0x6c color member of all 1024 global cFontPrintBuffer entries at a 0x84-byte stride. Android independently preserves the authored cFontPrintBuffer class name, identical stride, and color-member offset."
+      "description": "Runs the folded trivial tColour constructor over the +0x6c color member of all 1024 global cFontPrintBuffer entries at a 0x84-byte stride. Android independently preserves the authored cFontPrintBuffer class name, identical stride, and color-member offset."
     },
     {
       "address": "0x449c70",
@@ -3670,32 +3670,32 @@
     {
       "address": "0x44db50",
       "name": "noop_this_constructor",
-      "description": "Exact three-byte identity body shared by compiler-folded trivial default constructors. Windows has 51 xrefs spanning Color4f, axis-angle/quaternion temporaries, callback objects, and startup globals; the body establishes no unique owning class."
+      "description": "Exact three-byte identity body shared by compiler-folded trivial default constructors. Android independently retains trivial `tColour::tColour()` and `tColourSmall::tColourSmall()` bodies, while the 51 Windows xrefs also span axis-angle/quaternion temporaries, callback objects, and startup globals; the folded address therefore establishes several real aliases but no unique owner."
     },
     {
       "address": "0x44db60",
       "name": "set_color_rgba",
-      "description": "Stores one four-float RGBA color tuple into the destination color/vector slot and returns the same destination pointer."
+      "description": "Exact Windows `tColour::Set(float, float, float, float)` role: stores the four RGBA floats at `+0/+4/+8/+12` and returns the same destination pointer. Android preserves the class, method name, field order, and four stores."
     },
     {
       "address": "0x44db80",
       "name": "set_color_alpha",
-      "description": "Stores one float alpha value into the destination color slot's alpha lane and returns that same alpha value."
+      "description": "Exact void `tColour::Alpha(float)` role: stores one float at the alpha lane `+0x0c`. Both Windows callers discard EAX, and the honest float/void source remains exact at 3/3 instructions without a synthetic integer return."
     },
     {
       "address": "0x44db90",
       "name": "set_color_grayscale",
-      "description": "Stores one uniform grayscale RGB value into the destination color slot, forces alpha to `1.0`, and returns the grayscale input."
+      "description": "Exact void `tColour::Grey(float)` role: stores one uniform RGB value and forces alpha to `1.0`. Its callers treat it as a write-only method; the value left in EAX is incidental."
     },
     {
       "address": "0x44dbb0",
       "name": "store_color4f",
-      "description": "Stores one four-float tuple into the destination `Color4f` slot and returns the third component register value left live by the helper epilogue. Callers treat it as a write-only color helper."
+      "description": "Stable Windows harness identity for the authored `tColour::tColour(float, float, float, float)` constructor role. It stores RGBA at `+0/+4/+8/+12`; all callers treat it as write-only, so the final component register left live by the epilogue is not a return value."
     },
     {
       "address": "0x44dbd0",
       "name": "set_color_rgb",
-      "description": "Stores RGB on one Color4f while preserving its existing alpha channel."
+      "description": "Exact void `tColour::Set(float, float, float)` role: stores RGB at `+0/+4/+8` while preserving the existing alpha lane. Android retains the same overload."
     },
     {
       "address": "0x44dbf0",
@@ -3705,12 +3705,12 @@
     {
       "address": "0x44dc50",
       "name": "set_color_white",
-      "description": "Thin wrapper around `set_color_grayscale` that initializes one destination color slot to opaque white."
+      "description": "Exact void `tColour::White()` role: tail-calls the recovered Grey helper with `1.0f`, producing opaque white. Android retains the same method."
     },
     {
       "address": "0x44dc60",
       "name": "set_color_black",
-      "description": "Thin wrapper around `set_color_grayscale` that initializes one destination color slot to opaque black."
+      "description": "Exact void `tColour::Black()` role: tail-calls the recovered Grey helper with `0.0f`, producing opaque black. Android retains the same method."
     },
     {
       "address": "0x44dc70",
@@ -3760,7 +3760,7 @@
     {
       "address": "0x44de50",
       "name": "initialize_global_sprite_pool_colors",
-      "description": "Runs the folded trivial Color4f constructor over the +0x2c color member of all 3000 sprites embedded in the global SpriteManager at a 0xb4-byte stride."
+      "description": "Runs the folded trivial tColour constructor over the +0x2c color member of all 3000 sprites embedded in the global SpriteManager at a 0xb4-byte stride."
     },
     {
       "address": "0x44de70",
@@ -3770,7 +3770,7 @@
     {
       "address": "0x44de80",
       "name": "initialize_global_sprite_sentinel_color",
-      "description": "Runs the folded trivial Color4f constructor for the +0x2c color member of the standalone global sprite-allocation sentinel."
+      "description": "Runs the folded trivial tColour constructor for the +0x2c color member of the standalone global sprite-allocation sentinel."
     },
     {
       "address": "0x44de90",

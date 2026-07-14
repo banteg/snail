@@ -76,7 +76,7 @@ now the exact 0x10-byte `Warning` owner rather than a generic actor label.
 Focused Wibo remains an honest 98.08%, 52/52 instructions, with seven clean
 masked operands and the same source-shape `sub`/`cmp` residual.
 
-2026-07-12 cRBorder layout closure: the six contiguous `Color4f` blocks run
+2026-07-12 cRBorder layout closure: the six contiguous `tColour` blocks run
 from +0x1ac through +0x20b, so +0x208 is `hot_text_color.a`, not a standalone
 warning-overlay field. The source now writes that owned color lane directly;
 focused Wibo remains 98.08%, 52/52 instructions, with the same honest

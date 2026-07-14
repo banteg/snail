@@ -7,7 +7,7 @@ extern GameRoot* g_game; // data_4df904
 
 void Warning::initialize_warning()
 {
-    Color4f color;
+    tColour color;
 
     border = g_game->border_manager.allocate_border();
     border->initialize_frontend_sprite_button(0x400802, 0x5e, 288.0f, 64.0f,

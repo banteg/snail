@@ -8,8 +8,8 @@ void* allocate_tracked_memory(int size, char* name);
 void __fastcall request_object_vertex_colours(Object* mesh)
 {
     mesh->vertex_colours =
-        (Color4f*)allocate_tracked_memory(
-            mesh->vertex_count * sizeof(Color4f), "Object Vertex Colours List");
+        (tColour*)allocate_tracked_memory(
+            mesh->vertex_count * sizeof(tColour), "Object Vertex Colours List");
     int i = 0;
     int colour_index = 0;
     while (i < mesh->vertex_count) {

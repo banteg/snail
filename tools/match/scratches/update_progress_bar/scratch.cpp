@@ -15,7 +15,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,
@@ -40,7 +40,7 @@ void ProgressBar::update_progress_bar()
     float remaining_height = (1.0f - progress) * 232.0f + 12.0f;
     float lit_y = remaining_height + 150.0f;
 
-    Color4f color;
+    tColour color;
     queue_axis_aligned_textured_quad_uv(
         0x9d,
         12.0f,

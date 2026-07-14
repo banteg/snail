@@ -61,7 +61,7 @@ void Path::mirror_path_template_pair_x(Path* source)
     ((Object*)strip_mesh)->request_object_facequads(2 * width_cells * segment_count);
 
     Object* destination_mesh = strip_mesh;
-    Color4f* destination_colours = 0;
+    tColour* destination_colours = 0;
     if ((destination_mesh->flags & 0x10000) != 0) {
         request_object_vertex_colours((Object*)destination_mesh);
         destination_mesh = strip_mesh;

@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-tColourSmall* tColourSmall::pack_color_rgba_u8(Color4f* color)
+tColourSmall* tColourSmall::pack_color_rgba_u8(tColour* color)
 {
     r = (unsigned char)(color->r * 255.0f);
     g = (unsigned char)(color->g * 255.0f);

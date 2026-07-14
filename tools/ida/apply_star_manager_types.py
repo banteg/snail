@@ -6,8 +6,10 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_pro
+import ida_typeinf
 import idc
 
 
@@ -62,8 +64,56 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _sync_initialize_color_lvar() -> dict[str, object]:
+    selector = "initialize_star_field"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_stk_var() and "Color4f" in str(lvar.type())
+    ]
+    if not candidates:
+        return {"status": "unchanged", "updated_count": 0, "selector": selector}
+
+    local_type = ida_typeinf.tinfo_t()
+    if not local_type.get_named_type(None, "tColour", ida_typeinf.BTF_STRUCT):
+        return {
+            "status": "failed",
+            "reason": "missing_tColour_type",
+            "selector": selector,
+        }
+
+    updated = []
+    for lvar in candidates:
+        info = ida_hexrays.lvar_saved_info_t()
+        info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+        info.type = local_type
+        if not ida_hexrays.modify_user_lvar_info(address, ida_hexrays.MLI_TYPE, info):
+            return {
+                "status": "failed",
+                "reason": "modify_user_lvar_info_failed",
+                "local": lvar.name,
+                "selector": selector,
+            }
+        updated.append(lvar.name)
+
+    return {
+        "status": "applied",
+        "updated_count": len(updated),
+        "locals": updated,
+        "type": "tColour",
+        "selector": selector,
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
-    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    # Sprite is shared by several narrow ownership lanes. Replace any earlier
+    # partial declaration so this full 0xb4-byte owner remains authoritative.
+    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE | idc.PT_REPLACE)
     applied = 0
     unchanged = 0
     missing = []
@@ -96,6 +146,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             continue
         applied += 1
 
+    color_lvar = _sync_initialize_color_lvar()
+    if color_lvar.get("status") == "failed":
+        failed.append({"selector": "initialize_star_field", "color_lvar": color_lvar})
+
     print(
         json.dumps(
             {
@@ -104,6 +158,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "color_lvar": color_lvar,
                 "missing": missing,
                 "failed": failed,
             },

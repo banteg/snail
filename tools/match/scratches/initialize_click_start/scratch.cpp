@@ -10,7 +10,7 @@ int report_errorf(char* format, ...);
 void ClickStart::initialize_click_start(Player* new_player)
 {
     prompt = g_game->border_manager.allocate_border();
-    Color4f color;
+    tColour color;
     prompt->initialize_frontend_widget(0x400002, "Click to Start", 0x14, 0.0f,
         200.0f, color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
     prompt->hide_border_init();

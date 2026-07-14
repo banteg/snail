@@ -619,7 +619,7 @@ remain raw.
 ## 2026-07-14 inline hazard renderable inheritance
 
 The SubLazer and Salt bootstrap loops now consume the shared inherited
-`RenderableBod` prefix: typed `Object*`, `Color4f`, and `TransformMatrix`
+`RenderableBod` prefix: typed `Object*`, `tColour`, and `TransformMatrix`
 members replace duplicated prefix lanes while each manager retains its exact
 inline array extent. The large initializer remains at its prior 80.49%,
 5,391/5,411 baseline; exact constructors, spawners, and Salt updater remain

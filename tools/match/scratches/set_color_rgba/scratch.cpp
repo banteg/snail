@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-Color4f* Color4f::set_color_rgba(float r_, float g_, float b_, float a_)
+tColour* tColour::set_color_rgba(float r_, float g_, float b_, float a_)
 {
     r = r_;
     g = g_;

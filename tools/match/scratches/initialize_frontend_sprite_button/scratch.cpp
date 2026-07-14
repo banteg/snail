@@ -12,7 +12,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     int sprite,
     float x,
     float y,
-    Color4f* color,
+    tColour* color,
     float anchor_x,
     int layer)
 {
@@ -42,7 +42,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(unsigned char*)(self + 0x234) = 0;
     *(int*)(self + 0x178) = 0x40800000;
     *(int*)(self + 0x6ec) = 0;
-    Color4f* idle_fill = (Color4f*)(self + 0x1bc);
+    tColour* idle_fill = (tColour*)(self + 0x1bc);
     *(int*)(self + 0x6f0) = 0x3f800000;
     *(int*)(self + 0x214) = 0x41200000;
     *(int*)(self + 0x218) = 0x41700000;
@@ -59,11 +59,11 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(float*)(self + 0x6f8) = y;
 
     *idle_fill = *color;
-    *(Color4f*)(self + 0x1cc) = *color;
+    *(tColour*)(self + 0x1cc) = *color;
 
-    Color4f white;
-    *(Color4f*)(self + 0x1ec) = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-    *(Color4f*)(self + 0x1fc) = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+    tColour white;
+    *(tColour*)(self + 0x1ec) = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+    *(tColour*)(self + 0x1fc) = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
     if ((*(unsigned char*)(self + 0x1a0) & 2) != 0) {
         *(int*)(self + 0x20c) = 0x3f800000;

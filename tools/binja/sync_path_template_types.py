@@ -49,6 +49,7 @@ SYMBOL_UPDATES = (
     ("0x44d5d0", "initialize_quaternion_from_matrix"),
     ("0x44d820", "initialize_matrix_from_quaternion"),
     ("0x44d920", "interpolate_matrix_rotation"),
+    ("0x44dbd0", "set_color_rgb"),
     ("0x4086d0", "initialize_player_presentation_controller"),
     ("0x4ac5c8", "g_default_tip_message"),
     ("0x497354", "g_player_presentation_noop_vtable"),
@@ -443,7 +444,7 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x1c", "render_arg_1c", "int32_t"),
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "void*"),
-    ("0x28", "color", "Color4f"),
+    ("0x28", "color", "tColour"),
     ("0x38", "attachment_template_record", "Path*"),
     ("0x3c", "tile_id", "uint8_t"),
     ("0x3d", "tile_flags_3d", "uint8_t"),
@@ -605,6 +606,32 @@ GOLB_PROTO_UPDATES = (
 )
 
 PROTO_UPDATES = GOLB_PROTO_UPDATES + (
+    (
+        "set_color_rgba",
+        "tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a)",
+    ),
+    (
+        "set_color_alpha",
+        "void __thiscall set_color_alpha(tColour* color, float alpha)",
+    ),
+    (
+        "set_color_grayscale",
+        "void __thiscall set_color_grayscale(tColour* color, float intensity)",
+    ),
+    (
+        "store_color4f",
+        "void __thiscall store_color4f(tColour* color, float r, float g, float b, float a)",
+    ),
+    (
+        "set_color_rgb",
+        "void __thiscall set_color_rgb(tColour* color, float r, float g, float b)",
+    ),
+    ("set_color_white", "void __thiscall set_color_white(tColour* color)"),
+    ("set_color_black", "void __thiscall set_color_black(tColour* color)"),
+    (
+        "get_track_skirt_color",
+        "tColour* __thiscall get_track_skirt_color(SubgameRuntime* game, tColour* out)",
+    ),
     (
         "uninit_pause_menu",
         "void __thiscall uninit_pause_menu(SubPause* pause)",

@@ -9,7 +9,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,

@@ -20,7 +20,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
     int definition_flags = definition->flags;
     unsigned int alignment = (int)(char)~definition_flags;
     alignment &= 4;
-    Color4f color;
+    tColour color;
     widget_main->initialize_frontend_widget(
         2,
         definition->text,

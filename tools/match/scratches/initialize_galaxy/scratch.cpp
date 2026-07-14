@@ -54,7 +54,7 @@ void Galaxy::initialize_galaxy()
     }
 
     {
-        Color4f color;
+        tColour color;
         route_title_widget = g_game->border_manager.allocate_border();
         route_title_widget->initialize_frontend_widget(
             0x400000,
@@ -80,7 +80,7 @@ void Galaxy::initialize_galaxy()
 
     exit_or_back_widget = g_game->border_manager.allocate_border();
     if (route_mode == 1) {
-        Color4f color;
+        tColour color;
         exit_or_back_widget->initialize_frontend_widget(
             0x20000014,
             g_exit_text,
@@ -91,7 +91,7 @@ void Galaxy::initialize_galaxy()
             0,
             0.0f);
     } else {
-        Color4f color;
+        tColour color;
         exit_or_back_widget->initialize_frontend_widget(
             0x60000014,
             g_back_text,
@@ -115,7 +115,7 @@ void Galaxy::initialize_galaxy()
     }
 
     {
-        Color4f color;
+        tColour color;
         bounds_frame_widget = g_game->border_manager.allocate_border();
         bounds_frame_widget->initialize_frontend_widget(
             0x20010002,
@@ -183,7 +183,7 @@ void Galaxy::initialize_galaxy()
 
     play_or_deliver_widget = g_game->border_manager.allocate_border();
     if (level_progress_base->level_mode == 0) {
-        Color4f color;
+        tColour color;
         play_or_deliver_widget->initialize_frontend_widget(
             0x60000014,
             "Deliver!",
@@ -194,7 +194,7 @@ void Galaxy::initialize_galaxy()
             2,
             100.0f);
     } else {
-        Color4f color;
+        tColour color;
         play_or_deliver_widget->initialize_frontend_widget(
             0x60000014,
             "Play",
@@ -209,7 +209,7 @@ void Galaxy::initialize_galaxy()
     play_or_deliver_widget->stack_gap = 20.0f;
 
     {
-        Color4f color;
+        tColour color;
         replay_widget = g_game->border_manager.allocate_border();
         replay_widget->initialize_frontend_widget(
             0x60000014,

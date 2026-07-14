@@ -3,7 +3,7 @@
 /* selector: set_object_color */
 
 // Packs one object RGBA tint and, when grouped vertex buffers exist, rewrites the per-vertex diffuse colour lane so the next object draw uses that colour. Cross-port Android symbols match this helper's role to `G0SetColour(tColourSmall*)`.
-void __cdecl set_object_color(Object *object, Color4f color)
+void __cdecl set_object_color(Object *object, tColour color)
 {
   int32_t v2; // eax
   int v3; // ecx

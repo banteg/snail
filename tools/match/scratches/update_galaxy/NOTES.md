@@ -46,8 +46,8 @@ selected-level/replay launch handoff back to the subgame state machine.
   with slot ownership.
 - The native route icon loop starts at `route_index = 1` but still retains an
   apparently unreachable `route_index == 0` branch that draws a red-ish route
-  zero icon with a second stack `Color4f`.
-- The native function constructs one no-op `Color4f` at entry with the shared
+  zero icon with a second stack `tColour`.
+- The native function constructs one no-op `tColour` at entry with the shared
   `0x44db50` thunk. Modeling the second stack color and the route-zero branch
   recovers the native `0x3c` frame.
 - Mouse coordinates and click flags belong to

@@ -28,7 +28,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,
@@ -37,10 +37,10 @@ int queue_axis_aligned_textured_quad_uv(
     int blend); // @ 0x44a9b0
 int Galaxy::update_galaxy()
 {
-    Color4f color;
+    tColour color;
     // Windows folds the mobile cRGalaxy::Render() phase into this update.
     {
-        Color4f route_zero_color;
+        tColour route_zero_color;
         color.noop_this_constructor();
 
         level_progress_base->hide_gameplay_scores();

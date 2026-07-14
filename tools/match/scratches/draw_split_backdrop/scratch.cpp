@@ -11,7 +11,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,
@@ -21,7 +21,7 @@ int queue_axis_aligned_textured_quad_uv(
 
 int Backdrop::draw_split_backdrop()
 {
-    Color4f color;
+    tColour color;
     queue_axis_aligned_textured_quad_uv(
         active_primary_texture_id,
         0.0f,

@@ -9,12 +9,12 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct tColourSmall {
     uint8_t b;
@@ -175,7 +175,7 @@ typedef struct Object {
     Vec3* copied_vertices;
     int32_t field_40;
     Vec3* vertex_normals;
-    Color4f* vertex_colours;
+    tColour* vertex_colours;
     uint8_t _pad_4c[0x54 - 0x4c];
     int32_t facequad_count;
     int32_t facequad_capacity;
@@ -273,11 +273,11 @@ void __thiscall request_object_animation(
 void __cdecl build_object_texture_group_buffers(Object* object);
 void __cdecl refresh_object_vertex_buffer(Object* object);
 tColourSmall* __thiscall pack_color_rgba_u8(
-    tColourSmall* out, Color4f* color);
-void __cdecl set_object_color(Object* object, Color4f color);
+    tColourSmall* out, tColour* color);
+void __cdecl set_object_color(Object* object, tColour color);
 int32_t __cdecl render_object(
     Object* object, TransformMatrix* matrix, float texture_u,
-    float texture_v, Color4f* color, char after_sprites);
+    float texture_v, tColour* color, char after_sprites);
 ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
 ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(

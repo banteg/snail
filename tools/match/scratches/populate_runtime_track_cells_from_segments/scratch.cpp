@@ -23,7 +23,7 @@ double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
-void set_object_color(void* object, Color4f color);
+void set_object_color(void* object, tColour color);
 
 void SubgameRuntime::populate_runtime_track_cells_from_segments()
 {
@@ -335,7 +335,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)cell_flags &= 0xffffafa7;
             *(short*)cell_flags = 0;
             *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;
-            ((Color4f*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->set_color_white();
+            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->set_color_white();
             cell_flags += sizeof(SubLoc);
         }
 
@@ -590,7 +590,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     ((BodBase*)(cell + CELL_BOD_BASE))
                         ->set_bod_object(ROOT_BOD_OBJECT(trampoline));
                     *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
-                    ((Color4f*)(
+                    ((tColour*)(
                         base + sizeof(SubLoc)
                             * (lane + build_row * RUNTIME_LANE_COUNT
                                + CELL_COLOR_INDEX_BIAS)))
@@ -843,11 +843,11 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                     *(float*)(row_record + ROW_ATTACHMENT_POSITION_Z) =
                         row_anchor_z - 0.5f;
 
-                    Color4f skirt_color;
-                    Color4f* resolved_color =
+                    tColour skirt_color;
+                    tColour* resolved_color =
                         ((GameRoot*)g_game_base)->subgame.get_track_skirt_color(
                             &skirt_color);
-                    *(Color4f*)(row_record + ROW_ATTACHMENT_COLOR) = *resolved_color;
+                    *(tColour*)(row_record + ROW_ATTACHMENT_COLOR) = *resolved_color;
                     set_object_color(
                         *(void**)(row_record + ROW_ATTACHMENT_OBJECT),
                         *resolved_color);

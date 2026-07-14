@@ -21,18 +21,18 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 {
     // VC6 gives the short-lived color values distinct stack objects. Several
     // slots are reused after their title or row branch has ended.
-    Color4f color_43;
-    Color4f color_44;
-    Color4f color_45;
-    Color4f color_46;
-    Color4f color_47;
-    Color4f color_48;
-    Color4f color_49;
-    Color4f color_50;
-    Color4f color_51;
-    Color4f color_52;
-    Color4f color_53;
-    Color4f color_54;
+    tColour color_43;
+    tColour color_44;
+    tColour color_45;
+    tColour color_46;
+    tColour color_47;
+    tColour color_48;
+    tColour color_49;
+    tColour color_50;
+    tColour color_51;
+    tColour color_52;
+    tColour color_53;
+    tColour color_54;
 
     selected_bank = mode_;
     selected_rank = rank;

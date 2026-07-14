@@ -56,7 +56,7 @@ void Salt::update_salt_hazard()
             alpha = 1.0f;
         }
         fade_alpha() = alpha;
-        color.set_color_alpha(0x3f666666);
+        color.set_color_alpha(0.899999976f);
         if (transform.position.z < owner_game->player.interaction_max_z)
             state = 2;
         return;

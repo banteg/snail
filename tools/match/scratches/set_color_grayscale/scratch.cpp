@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void Color4f::set_color_grayscale(float intensity)
+void tColour::set_color_grayscale(float intensity)
 {
     a = 1.0f;
     r = intensity;

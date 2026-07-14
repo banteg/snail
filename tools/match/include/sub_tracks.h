@@ -22,7 +22,7 @@ public:
     int random_length;                   // +0x1a58c4
     unsigned char random_enabled;        // +0x1a58c8
     char unknown_1a58c9[0x1a58cc - 0x1a58c9];
-    Color4f fringe_color;                // +0x1a58cc
+    tColour fringe_color;                // +0x1a58cc
     char level_display_name[0x80];       // +0x1a58dc
     union {
         float selected_speed;            // +0x1a595c

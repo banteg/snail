@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-Color4f* Color4f::noop_this_constructor()
+tColour* tColour::noop_this_constructor()
 {
     return this;
 }

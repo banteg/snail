@@ -15,7 +15,7 @@ int queue_textured_quad_corners(
     int unused_28,
     int unused_2c,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,

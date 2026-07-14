@@ -85,7 +85,7 @@ candidate/target instructions, prefix 26/187, with 34 clean masked operands.
 
 The live Binary Ninja prototypes now agree: this function is a void thiscall on
 `TrackRowCell`, `get_track_skirt_color` is a `SubgameRuntime` method returning
-`Color4f*`, and `shoot_subgoldy` is a `SubLazerPool` method over two vectors.
+`tColour*`, and `shoot_subgoldy` is a `SubLazerPool` method over two vectors.
 
 2026-07-12 authored lifecycle name: the Windows constructor callback and the
 high-confidence iOS `cRSubLoc::AI()` crosswalk make the former

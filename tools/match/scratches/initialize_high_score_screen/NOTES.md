@@ -58,7 +58,7 @@ Expected residuals:
 - Restoring that source shape raises the focused match from 43.24%
   (`436/600`, prefix 1, 57 clean masks and 14 mismatches) to 98.00%
   (`600/600`, prefix 80, 137 clean masks and no relocation mismatches).
-  The only residuals are twelve `Color4f` temporary stack-slot permutations;
+  The only residuals are twelve `tColour` temporary stack-slot permutations;
   no artificial padding, volatile aliases, or other fakematching is used.
 - `bn_high_score_screen_types.h` and its narrow sync helper apply the exact
   0xf4-byte owner plus all four lifecycle prototypes without replacing the
@@ -78,7 +78,7 @@ Expected residuals:
   stride and reloads that pointer after widget callbacks.
 - This removes the false global-blob ownership view without changing codegen:
   focused Wibo remains 98.00%, 600/600 instructions, prefix 80, with all 137
-  masked operands clean. The twelve honest `Color4f` stack-slot permutations
+  masked operands clean. The twelve honest `tColour` stack-slot permutations
   remain the only residuals.
 
 ## 2026-07-14 displayed-rank ownership

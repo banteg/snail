@@ -27,8 +27,8 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
 
     Object* mesh;
     {
-        Color4f skirt_color;
-        Color4f* color = g_game->subgame.get_track_skirt_color(&skirt_color);
+        tColour skirt_color;
+        tColour* color = g_game->subgame.get_track_skirt_color(&skirt_color);
         mesh = fringe_mesh_bod.object;
         fringe_mesh_bod.color = *color;
     }

@@ -427,7 +427,7 @@ verified structurally rather than whitelisted.
 
 ## 2026-07-14 backdrop world-blend ownership
 
-- `construct_game_runtime` invokes `Color4f::noop_this_constructor()` on the
+- `construct_game_runtime` invokes `tColour::noop_this_constructor()` on the
   exact 16-byte `Backdrop` ranges at `+0x67c` and `+0x69c`, proving that both
   ranges begin owned `BackdropWorldBlend` subobjects.
 - Android's authored `cRBackdrop::SetWorld(int)` independently proves the

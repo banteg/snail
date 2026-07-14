@@ -100,15 +100,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "pack_color_rgba_u8",
-        "tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, Color4f* color);",
+        "tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, tColour* color);",
     ),
     (
         "set_object_color",
-        "void __cdecl set_object_color(Object* object, Color4f color);",
+        "void __cdecl set_object_color(Object* object, tColour color);",
     ),
     (
         "render_object",
-        "int __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, Color4f* color, char after_sprites);",
+        "int __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites);",
     ),
 ]
 

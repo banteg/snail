@@ -10,7 +10,7 @@ The exact source shape has two important call ownership details:
 
 - `build_track_colours` is a `Game` member call, so VC6 reloads `ecx` with
   the saved game pointer between the first two rebuild calls.
-- `get_track_skirt_color` returns the filled `Color4f*`; passing
+- `get_track_skirt_color` returns the filled `tColour*`; passing
   `*resolved_color` by value into `build_track_render_caches` reproduces the
   native 16-byte stack argument copy before the render-cache call.
 

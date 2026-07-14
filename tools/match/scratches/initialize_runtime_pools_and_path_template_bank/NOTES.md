@@ -30,7 +30,7 @@
 - The opening no-op constructor receiver is the embedded
   `SubgameRuntime::segment_cache`, not an anonymous color at `this +0x5c`.
   Windows folds that authored constructor to the same three-byte helper used
-  by trivial value objects, so the narrow `Color4f*` call view remains only to
+  by trivial value objects, so the narrow `tColour*` call view remains only to
   preserve the merged relocation; its address now derives from
   `offsetof(SubgameRuntime, segment_cache)`.
 - Native retains that receiver in `edi`, then advances it by
@@ -75,7 +75,7 @@
   `SubgameRuntime +0xa874` and `+0x1b01ec`. Each is exactly `0x1a5978`, the
   independently reported size of `cRSubTracks`/`SubTracks`.
 - Both regions construct 100 `0x4220` segment slots, the 256 authored-row
-  arrays inside their `First:` and `Last:` slots, and their tail `Color4f`.
+  arrays inside their `First:` and `Last:` slots, and their tail `tColour`.
   The second extent ends exactly at the BodBase sentinel at `+0x355b64`.
 - The first object is the selected gameplay level. The second is reused as a
   startup level-enumeration receiver and then seeded from the built-in segment

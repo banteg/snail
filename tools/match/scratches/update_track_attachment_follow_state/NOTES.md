@@ -213,7 +213,7 @@ The old local `AttachmentFollowRuntimeRow` / scalar overlay was misleading.
 `g_game_base +0x641184 + row*0xf4` is a field-first view of
 `TrackAttachmentRuntimeRow::primary_attachment_cell` at subgame row `+0xa4`.
 The pointed object is a `TrackRowCell`, so its `+0x24` and `+0x34` writes are
-`BodBase.object` and `Color4f.a`, not anonymous runtime scalars.
+`BodBase.object` and `tColour.a`, not anonymous runtime scalars.
 
 For templates with `has_entry_mesh_transition` (`+0x9c`):
 

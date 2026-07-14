@@ -5,7 +5,7 @@
 
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 
-void set_object_color(Object* object, Color4f color)
+void set_object_color(Object* object, tColour color)
 {
     tColourSmall out;
     ObjectRenderVertex* vertices;

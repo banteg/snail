@@ -83,7 +83,7 @@ public:
 
     char name[0x80]; // +0x00
     int star_count; // +0x80
-    Color4f color; // +0x84
+    tColour color; // +0x84
     union {
         int map_x_bits; // +0x94
         float map_x;   // +0x94
@@ -116,7 +116,7 @@ public:
         float x1,
         float y1,
         float width,
-        Color4f* color); // @ 0x409b00
+        tColour* color); // @ 0x409b00
     void galaxy_border_bound(
         float* min_x,
         float* max_x,

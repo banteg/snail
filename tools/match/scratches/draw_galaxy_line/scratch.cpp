@@ -11,7 +11,7 @@ int Galaxy::draw_galaxy_line(
     float x1,
     float y1,
     float width,
-    Color4f* color)
+    tColour* color)
 {
     Vector3 normal;
     normal.x = x1 - x0;

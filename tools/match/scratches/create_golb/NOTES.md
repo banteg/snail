@@ -113,7 +113,7 @@ Residuals:
   the scratch to 28.57%, but still emitted a null-source guard; the shared-label
   spelling removes that guard and improves the scratch to 28.63%, 445/582
   instructions.
-- 2026-06-15 type cleanup: `SpriteManager` and `Color4f` now come from the
+- 2026-06-15 type cleanup: `SpriteManager` and `tColour` now come from the
   shared sprite header, including the float-shaped `store_color4f` callsite
   declaration. This is score-neutral at 28.63% and removes the final
   scratch-local `SpriteManager` copy.

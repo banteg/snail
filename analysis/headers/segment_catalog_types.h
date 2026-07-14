@@ -10,12 +10,12 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef union AuthoredFloatBits {
     int32_t bits;
@@ -71,7 +71,7 @@ typedef struct SubTracks {
     int32_t random_length;
     uint8_t random_enabled;
     uint8_t unknown_1a58c9[0x1a58cc - 0x1a58c9];
-    Color4f fringe_color;
+    tColour fringe_color;
     char level_display_name[0x80];
     union {
         float selected_speed;

@@ -20,7 +20,7 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 
 void Intro::initialize_new_game_menu()
 {
-    Color4f color;
+    tColour color;
 
     g_game->star_manager.hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);

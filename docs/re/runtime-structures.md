@@ -775,7 +775,7 @@ The Windows root owns one exact `0x6cc`-byte `cRBackdrop`-compatible object at
 - `BackdropDistortCell distort_grid[8][8]` owns the full `+0x58..+0x657`
   animated warp grid.
 - `+0x67c` and `+0x69c` begin two parallel 0x20-byte
-  `BackdropWorldBlend` records. Each owns a constructed `Color4f`, blend
+  `BackdropWorldBlend` records. Each owns a constructed `tColour`, blend
   fraction, blend step, previous world, and current world.
 - Android's symbolized `cRBackdrop::SetWorld(int)` performs the same state
   transition as Windows `0x410f40`: invert both blend fractions, shift current

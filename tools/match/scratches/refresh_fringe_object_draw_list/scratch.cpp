@@ -11,8 +11,8 @@ extern GameRoot* g_game; // data_4df904
 
 void Fringe::refresh_fringe_object_draw_list()
 {
-    Color4f color;
-    Color4f* resolved =
+    tColour color;
+    tColour* resolved =
         g_game->subgame.get_track_skirt_color(&color);
 
     float current_z = position.z;

@@ -11,7 +11,7 @@ void queue_font_text_instance(
     int horizontal_align,
     float anchor_x,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float text_wave_amplitude,
     char text_wave_enabled)
 {

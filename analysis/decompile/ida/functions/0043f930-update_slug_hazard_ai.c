@@ -2,7 +2,8 @@
 /* function: update_slug_hazard_ai @ 0x43f930 */
 /* selector: update_slug_hazard_ai */
 
-void __thiscall sub_43F930(int this)
+// Runs one live `Slug` through active, lateral, death-toss, and teardown states. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
+void __thiscall update_slug_hazard_ai(int this)
 {
   int v2; // ecx
   double v3; // st7
@@ -52,7 +53,7 @@ void __thiscall sub_43F930(int this)
       case 0:
         return;
       case 1:
-        if ( *(_BYTE *)(this + 204) && unk_4B7236 )
+        if ( *(_BYTE *)(this + 204) && g_render_queue_active )
         {
           v2 = *(_DWORD *)(this + 212);
           *(_BYTE *)(this + 204) = 0;
@@ -66,7 +67,7 @@ void __thiscall sub_43F930(int this)
           else
             set_sprite_texture_ref(*(_DWORD **)(this + 172), 118, 0);
           *(_DWORD *)(*(_DWORD *)(this + 172) + 40) = 0;
-          store_color4f((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 1065353216, 1065353216, 1065353216);
+          store_color4f((tColour *)(*(_DWORD *)(this + 172) + 44), 1.0, 1.0, 1.0, 1.0);
           if ( *(float *)(this + 228) >= 0.0 )
           {
             if ( *(float *)(this + 228) > 1.0 )
@@ -78,7 +79,7 @@ void __thiscall sub_43F930(int this)
           else
           {
             *(_DWORD *)(this + 228) = 0;
-            *(float *)(this + 232) = advance_blink_random((float *)MEMORY[0x4DF904] + 119174);
+            *(float *)(this + 232) = advance_blink_random((float *)g_game_base + 119174);
           }
         }
         else
@@ -89,7 +90,7 @@ void __thiscall sub_43F930(int this)
           {
             *(_DWORD *)(*(_DWORD *)(this + 172) + 40) = 5;
             set_sprite_texture_ref(*(_DWORD **)(this + 172), 120, 0);
-            store_color4f((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 0, 0, 1065185444);
+            store_color4f((tColour *)(*(_DWORD *)(this + 172) + 44), 1.0, 0.0, 0.0, 0.99000001);
           }
           else
           {
@@ -98,7 +99,7 @@ void __thiscall sub_43F930(int this)
             *(_DWORD *)(this + 228) = 1065353216;
             *(_DWORD *)(this + 232) = -1104500053;
             *(_DWORD *)(v4 + 40) = 0;
-            store_color4f((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 1065353216, 1065353216, 1065353216);
+            store_color4f((tColour *)(*(_DWORD *)(this + 172) + 44), 1.0, 1.0, 1.0, 1.0);
             set_sprite_texture_ref(*(_DWORD **)(this + 172), 119, 0);
           }
         }
@@ -117,7 +118,7 @@ void __thiscall sub_43F930(int this)
         if ( *(_DWORD *)(this + 196) == 1 && *(float *)(v6 + 112) + 16.0 > *(float *)(this + 112) )
         {
           *(_DWORD *)(this + 196) = 0;
-          play_voice_manager((int)unk_751498, 2, 1u, -1);
+          play_voice_manager((int)g_voice_manager, 2, 1u, -1);
         }
         v7 = (_DWORD *)(*(_DWORD *)(this + 172) + 72);
         *v7 = *(_DWORD *)(this + 104);
@@ -128,12 +129,17 @@ void __thiscall sub_43F930(int this)
         {
           if ( *(float *)(v8 + 884) > 0.0 )
             kill_slug_hazard(this);
-          sub_415EF0((float *)(*(_DWORD *)(this + 136) + 19337172), (float *)(this + 104), 2.0, 1, this);
+          append_subgame_contact_target(
+            (ContactTargetRegistry *)(*(_DWORD *)(this + 136) + 19337172),
+            (const Vec3 *)(this + 104),
+            2.0,
+            1,
+            (ContactTargetObject *)this);
           goto LABEL_39;
         }
         v9 = *(_DWORD *)(this + 4);
         *(_DWORD *)(this + 128) = 0;
-        v10 = (char *)MEMORY[0x4DF904] + 1448;
+        v10 = (char *)g_game_base + 1448;
         if ( (v9 & 0x200) == 0 )
           goto LABEL_70;
         if ( (v9 & 0x40) != 0 )
@@ -190,7 +196,7 @@ LABEL_65:
 LABEL_69:
         v36 = *(_DWORD *)(this + 4);
         *(_DWORD *)(this + 128) = 0;
-        v10 = (char *)MEMORY[0x4DF904] + 1448;
+        v10 = (char *)g_game_base + 1448;
         if ( (v36 & 0x200) == 0 )
           goto LABEL_70;
         if ( (v36 & 0x40) != 0 )
@@ -236,7 +242,7 @@ LABEL_39:
         {
           v22 = *(_DWORD *)(this + 4);
           *(_DWORD *)(this + 128) = 0;
-          v10 = (char *)MEMORY[0x4DF904] + 1448;
+          v10 = (char *)g_game_base + 1448;
           if ( (v22 & 0x200) != 0 )
           {
             if ( (v22 & 0x40) != 0 )

@@ -1,6 +1,6 @@
 # Exact match
 
-`get_track_skirt_color` @ 0x442120 fills an output `Color4f` with the current
+`get_track_skirt_color` @ 0x442120 fills an output `tColour` with the current
 track skirt RGB and alpha `0.400000006f`, then returns the same output pointer.
 
 The exact source shape is the direct aggregate expression:

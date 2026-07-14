@@ -21,7 +21,7 @@ void GolbShot::spawn_golb_smoke(Vector3* position)
     sprite->progress_step = rate * 0.16666667f;
     sprite->lifetime_step = game->subgame_rate * 0.41666669f;
 
-    Color4f color;
+    tColour color;
     sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
     float* sprite_words = (float*)sprite;
     sprite_words[24] = 0.1f;

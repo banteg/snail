@@ -8,25 +8,25 @@ extern GameRoot* g_game; // data_4df904
 
 void Exit::initialize_exit_prompt()
 {
-    Color4f color_2;
-    Color4f color_3;
-    Color4f color_4;
-    Color4f color_5;
-    Color4f color_6;
-    Color4f color_7;
-    Color4f color_8;
-    Color4f color_9;
-    Color4f color_10;
-    Color4f color_11;
-    Color4f color_12;
-    Color4f color_13;
-    Color4f color_14;
-    Color4f color_15;
-    Color4f color_16;
-    Color4f color_17;
-    Color4f color_18;
-    Color4f color_19;
-    Color4f color_20;
+    tColour color_2;
+    tColour color_3;
+    tColour color_4;
+    tColour color_5;
+    tColour color_6;
+    tColour color_7;
+    tColour color_8;
+    tColour color_9;
+    tColour color_10;
+    tColour color_11;
+    tColour color_12;
+    tColour color_13;
+    tColour color_14;
+    tColour color_15;
+    tColour color_16;
+    tColour color_17;
+    tColour color_18;
+    tColour color_19;
+    tColour color_20;
 
     g_game->border_manager.hide_all_borders();
 

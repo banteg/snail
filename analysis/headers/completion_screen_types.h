@@ -5,12 +5,12 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct Vec3 {
     float x;
@@ -76,12 +76,12 @@ typedef struct FrontendWidget {
     uint32_t widget_flags;
     uint32_t previous_widget_flags;
     uint8_t _pad_1a8[0x4];
-    Color4f current_fill_color;
-    Color4f idle_fill_color;
-    Color4f hot_fill_color;
-    Color4f current_text_color;
-    Color4f idle_text_color;
-    Color4f hot_text_color;
+    tColour current_fill_color;
+    tColour idle_fill_color;
+    tColour hot_fill_color;
+    tColour current_text_color;
+    tColour idle_text_color;
+    tColour hot_text_color;
     float hover_blend_target;
     float hover_blend_current;
     float idle_padding;

@@ -18,7 +18,7 @@ clears, and the final `open_galaxy_route(selected_index)` call.
 Remaining residuals are source-shape/codegen only:
 
 - The Exit/Back widget branch and Play/Deliver widget branch both match
-  semantics and operands, but native emits `Color4f::set_color_rgba` receiver
+  semantics and operands, but native emits `tColour::set_color_rgba` receiver
   setup separately in each branch. This scratch compiles the same receiver as a
   common `lea` before the branch.
 - The two branch-layout residuals shift local labels and leave the candidate
@@ -26,5 +26,5 @@ Remaining residuals are source-shape/codegen only:
 
 Rejected shape probe:
 
-- Adding explicit branch-local `Color4f*` aliases generated the same 97.92%
+- Adding explicit branch-local `tColour*` aliases generated the same 97.92%
   layout, so the scratch keeps direct `color.set_color_rgba(...)` calls.

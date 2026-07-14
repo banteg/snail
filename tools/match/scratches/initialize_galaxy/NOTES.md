@@ -13,7 +13,7 @@ prefix 338/338, and 74 masked operands clean.
 
 2026-06-19 retained result: 97.92%, 336/338 candidate/target instructions,
 prefix 113/338, and 74 masked operands clean. The residual was two branch
-families where VC6 hoisted the `Color4f` stack receiver setup before the
+families where VC6 hoisted the `tColour` stack receiver setup before the
 Exit/Back and Play/Deliver branches.
 
 Recovered ownership:
@@ -33,11 +33,11 @@ Recovered ownership:
 
 Scoped-color proof:
 
-- Branch-local `Color4f*` aliases and `Color4f&` references are codegen-neutral
+- Branch-local `tColour*` aliases and `tColour&` references are codegen-neutral
   and still hoist `lea ecx, [esp+0x24]` before the branch.
-- True branch-local `Color4f` objects fix the branch-local receiver setup but
+- True branch-local `tColour` objects fix the branch-local receiver setup but
   grow the frame to `0x20`, so that shape is not native.
-- Splitting the one long-lived `Color4f color` into short non-overlapping
+- Splitting the one long-lived `tColour color` into short non-overlapping
   scopes lets VC6 reuse the same 0x10 stack slot while keeping the receiver
 setup inside the Exit/Back and Play/Deliver arms. This matches the native
 duplicated branch receivers and proves the initializer.

@@ -2,29 +2,27 @@
 /* function: update_salt_hazard @ 0x441c10 */
 /* selector: update_salt_hazard */
 
-// Advances one live salt hazard's fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff.
-// owner_game +0x09 is subgame_pause_gate; owner_game +0x3bb7d4/+0x3be0e4 are
-// the fade and kill-plane z thresholds.
-void __thiscall update_salt_hazard(int this)
+// Exact Windows `cRSalt::AI()`: advances one live Salt fade state from the shared track z thresholds, updates its alpha tint, and retires the inherited BOD node at the far cutoff. The constructor table at 0x497340 points directly here; cross-port iOS preserves the owner.
+void __thiscall update_salt_hazard(SaltHazardSlot *slot)
 {
-  int v2; // eax
-  int v3; // ecx
+  SubgameRuntime *owner_game; // eax
+  uint32_t v3; // ecx
   char *v4; // ecx
-  int v5; // eax
-  int v6; // eax
-  int v7; // eax
-  int v8; // eax
+  uint32_t list_flags; // eax
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v8; // eax
   double v9; // st7
   char v11; // c0
 
-  v2 = *(_DWORD *)(this + 136);
-  if ( !*(_BYTE *)(v2 + 9) )
+  owner_game = slot->owner_game;
+  if ( !owner_game->subgame_pause_gate )
   {
-    v3 = *(_DWORD *)(this + 128) - 1;
-    if ( *(_DWORD *)(this + 128) == 1 )
+    v3 = slot->state - 1;
+    if ( slot->state == 1 )
     {
-      v9 = 1.0 - (*(float *)(this + 112) - *(float *)(v2 + 3913684)) * 0.021739131;
-      *(float *)(this + 140) = v9;
+      v9 = 1.0 - (*(float *)&slot->body.transform[56] - *(float *)&owner_game->player.body.transform[56]) * 0.021739131;
+      slot->fade_alpha = v9;
       if ( v11 )
       {
         v9 = 0.0;
@@ -33,44 +31,44 @@ void __thiscall update_salt_hazard(int this)
       {
         v9 = 1.0;
       }
-      *(float *)(this + 140) = v9;
-      set_color_alpha((_DWORD *)(this + 40), 1063675494);
-      if ( *(float *)(this + 112) < (double)*(float *)(*(_DWORD *)(this + 136) + 3924196) )
-        *(_DWORD *)(this + 128) = 2;
+      slot->fade_alpha = v9;
+      set_color_alpha(&slot->body.bod.color, 0.89999998);
+      if ( *(float *)&slot->body.transform[56] < (double)slot->owner_game->player.interaction_max_z )
+        slot->state = 2;
     }
     else if ( v3 == 1 )
     {
-      v4 = (char *)MEMORY[0x4DF904] + 1448;
-      v5 = *(_DWORD *)(this + 4);
-      if ( (v5 & 0x200) != 0 )
+      v4 = (char *)g_game_base + 1448;
+      list_flags = slot->body.bod.bod.list_flags;
+      if ( (list_flags & 0x200) != 0 )
       {
-        if ( (v5 & 0x40) != 0 )
+        if ( (list_flags & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
-          *(_DWORD *)(this + 128) = 0;
+          slot->state = 0;
         }
         else
         {
-          v6 = *(_DWORD *)(this + 12);
-          if ( v6 )
-            *(_DWORD *)(v6 + 8) = *(_DWORD *)(this + 8);
-          v7 = *(_DWORD *)(this + 8);
-          if ( v7 )
-            *(_DWORD *)(v7 + 12) = *(_DWORD *)(this + 12);
+          list_next = slot->body.bod.bod.list_next;
+          if ( list_next )
+            list_next->list_prev = slot->body.bod.bod.list_prev;
+          list_prev = slot->body.bod.bod.list_prev;
+          if ( list_prev )
+            list_prev->list_next = slot->body.bod.bod.list_next;
           else
-            *((_DWORD *)v4 + 1) = *(_DWORD *)(this + 12);
-          *(_DWORD *)(this + 12) = *((_DWORD *)v4 + 2);
-          *((_DWORD *)v4 + 2) = this;
-          v8 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 128) = 0;
+            *((_DWORD *)v4 + 1) = slot->body.bod.bod.list_next;
+          slot->body.bod.bod.list_next = *((struct BodNode **)v4 + 2);
+          *((_DWORD *)v4 + 2) = slot;
+          v8 = slot->body.bod.bod.list_flags;
+          slot->state = 0;
           BYTE1(v8) &= ~2u;
-          *(_DWORD *)(this + 4) = v8;
+          slot->body.bod.bod.list_flags = v8;
         }
       }
       else
       {
         report_errorf(aListRemove);
-        *(_DWORD *)(this + 128) = 0;
+        slot->state = 0;
       }
     }
   }

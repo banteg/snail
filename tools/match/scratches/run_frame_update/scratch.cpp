@@ -16,7 +16,7 @@ int queue_axis_aligned_textured_quad(
     float width,
     float height,
     unsigned int color,
-    Color4f* tint,
+    tColour* tint,
     int layer);
 
 int GameRoot::run_frame_update()
@@ -40,7 +40,7 @@ int GameRoot::run_frame_update()
         if (players[0].mouse_cursor.suppress_next_draw != 0) {
             players[0].mouse_cursor.suppress_next_draw = 0;
         } else {
-            Color4f color;
+            tColour color;
             queue_axis_aligned_textured_quad(
                 22,
                 players[0].mouse_cursor.saved_x - 8.0f,

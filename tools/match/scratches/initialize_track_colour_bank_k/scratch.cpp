@@ -4,7 +4,7 @@
 
 void initialize_track_colour_bank_k()
 {
-    Color4f* colour = g_track_colour_bank_k;
+    tColour* colour = g_track_colour_bank_k;
     int count = TRACK_COLOUR_BANK_CAPACITY;
     do {
         colour->noop_this_constructor();

@@ -17,11 +17,11 @@ float* layout_and_queue_wrapped_font_text(
     int horizontal_align,
     float anchor_x,
     unsigned int flags,
-    Color4f* color_arg,
+    tColour* color_arg,
     char measure_only,
     char pulse_alpha)
 {
-    Color4f color;
+    tColour color;
     color.noop_this_constructor();
     color = *color_arg;
 

@@ -43,7 +43,7 @@ void initialize_backdrop_tile_quad(
     int row_selector,
     int column_selector,
     char* texture_path); // @ 0x41a4d0
-void set_object_color(Object* object, Color4f color); // @ 0x4141d0
+void set_object_color(Object* object, tColour color); // @ 0x4141d0
 void set_input_controller_pointer_authored_xy(
     int controller,
     float authored_x,
@@ -82,7 +82,7 @@ static __forceinline void initialize_overlay_slot(Overlay* overlay)
 char GameRoot::initialize_game_assets_and_world()
 {
     char* game = (char*)this;
-    Color4f asset_color;
+    tColour asset_color;
     asset_color.noop_this_constructor();
 
     fog_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -425,7 +425,7 @@ char GameRoot::initialize_game_assets_and_world()
         (*sub_lazer_object)->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
         *(SubgameRuntime**)(
             (char*)sub_lazer_object + SUB_LAZER_OWNER_FROM_OBJECT) = &subgame;
-        ((Color4f*)(sub_lazer_object + 1))
+        ((tColour*)(sub_lazer_object + 1))
             ->store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
         (*sub_lazer_object)->blend_mode = 9;
         sub_lazer_object = (Object**)((char*)sub_lazer_object + sizeof(SubLazer));
@@ -2056,7 +2056,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[50].secondary.fringe_mesh_bod.position.y = 0.0f;
     subgame.path_pairs[50].secondary.fringe_mesh_bod.position.x = 0.0f;
 
-    Color4f path_transition_color;
+    tColour path_transition_color;
     path_transition_color.noop_this_constructor();
     path_transition_color.store_color4f(1.0f, 1.0f, 1.0f, 0.60000002f);
 

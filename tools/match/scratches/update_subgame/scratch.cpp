@@ -38,7 +38,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,
@@ -53,9 +53,9 @@ void SubgameRuntime::update_subgame()
     char* game = (char*)this;
     int cell_index;
     int attachment_count;
-    Color4f replay_color;
-    Color4f replay_color_alt;
-    Color4f skirt_color;
+    tColour replay_color;
+    tColour replay_color_alt;
+    tColour skirt_color;
 
     calc_subgame_rate();
     int one = 1;
@@ -354,7 +354,7 @@ void SubgameRuntime::update_subgame()
                                         node->list_next->list_prev = node;
                                     node->list_flags |= 0x200;
                                 }
-                                Color4f* color =
+                                tColour* color =
                                     g_game->subgame.get_track_skirt_color(&skirt_color);
                                 (*fringe)->color = *color;
                             }

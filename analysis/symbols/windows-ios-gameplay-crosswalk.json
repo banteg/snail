@@ -2648,6 +2648,62 @@
       "notes": "The exact 61/61 Windows void member takes two const-reference matrices, interpolates relative rotation, re-orthogonalizes, and blends translation. Both mobile symbol tables preserve the complete authored signature."
     },
     {
+      "address": "0x44db60",
+      "windows_name": "set_color_rgba",
+      "android_symbol": "tColour::Set(float, float, float, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Both bodies store the four float lanes at +0/+4/+8/+12. Windows additionally establishes eax as the receiver before the stores; the pointer-returning tColour method remains exact at 10/10 instructions and is consumed directly by many callsites."
+    },
+    {
+      "address": "0x44db80",
+      "windows_name": "set_color_alpha",
+      "android_symbol": "tColour::Alpha(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 3/3 Windows body stores the float argument at tColour +0x0c. Both Windows callers discard eax, and void float source produces the native mov/mov/ret sequence without a synthetic integer return."
+    },
+    {
+      "address": "0x44db90",
+      "windows_name": "set_color_grayscale",
+      "android_symbol": "tColour::Grey(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Windows and Android store one intensity into r/g/b and force alpha to 1.0f. The exact 7/7 Windows helper is void; callers do not consume the incidental argument bits left in eax."
+    },
+    {
+      "address": "0x44dbb0",
+      "windows_name": "store_color4f",
+      "android_symbol": "tColour::tColour(float, float, float, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "This is the stable Windows harness name for the four-float constructor role. Both implementations write RGBA at +0/+4/+8/+12; the exact 9/9 Windows source is a void write and all covered callers ignore the final component register."
+    },
+    {
+      "address": "0x44dbd0",
+      "windows_name": "set_color_rgb",
+      "android_symbol": "tColour::Set(float, float, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 7/7 Windows body and Android overload store r/g/b at +0/+4/+8 while preserving alpha. The sole Windows caller uses it as a void mutator."
+    },
+    {
+      "address": "0x44dc50",
+      "windows_name": "set_color_white",
+      "android_symbol": "tColour::White()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Both ports implement White through the grayscale helper with 1.0f. The Windows wrapper is exact at 3/3 instructions with its call target resolved."
+    },
+    {
+      "address": "0x44dc60",
+      "windows_name": "set_color_black",
+      "android_symbol": "tColour::Black()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "Both ports implement Black through the grayscale helper with 0.0f. The Windows wrapper is exact at 3/3 instructions with its call target resolved."
+    },
+    {
       "address": "0x44dcb0",
       "windows_name": "initialize_sound_bank",
       "ios_symbol": "cRSound::Init(cRSoundBank*)",

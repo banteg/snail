@@ -12,7 +12,7 @@
 00439d70        return
 00439d76        eax_1.b = cell->tile_id
 00439d7b        struct Vec3 var_34
-00439d7b        struct Color4f out
+00439d7b        struct tColour out
 00439d7b        if (eax_1.b == 0xe)
 00439d81        long double x87_r7_1 = float.t(*(game_base_1 + 0x74668))
 00439d87        long double temp0_1 = fconvert.t(*(game_base_1 + 0x42fdec))
@@ -64,28 +64,20 @@
 00439f13        if ((((x87_r7_21 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp1_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp1_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00439f1b        remove_sub_loc(cell)
 00439f2b        if (eax_1.b == 0x1d || eax_1.b == 0x1e)
-00439f73        int16_t top
 00439f73        if (cell->attachment_template_record->kind == PATH_TEMPLATE_KIND_WORM)
 00439f8c        cell->render_arg_20 = fconvert.s(fconvert.t(cell->render_arg_20) - fconvert.t(*(game_base_1 + 0x74650)) * fconvert.t(0.0333333351f))
 00439f8f        set_color_alpha(&cell->color, 0.800000012f)
-00439f8f        top = 0xffff
 00439f94        game_base_1 = g_game_base
-00439fa6        struct Color4f* eax_11 = get_track_skirt_color(&game_base_1[0x74618], &out)
+00439fa6        struct tColour* eax_11 = get_track_skirt_color(&game_base_1[0x74618], &out)
 00439fc2        int32_t* ecx_12 = &g_game_base[get_track_cell_row_index(cell) * 0xf4 + 0x6411b8]
 00439fcb        *ecx_12 = eax_11->r
 00439fd0        ecx_12[1] = eax_11->g
 00439fd6        ecx_12[2] = eax_11->b
 00439fdd        ecx_12[3] = eax_11->a
-00439fe9        unimplemented  {fild st0, dword [ecx+0x48]}
-00439fec        unimplemented  {fadd dword [0x497288]}
-00439ff2        unimplemented  {fsubr st0, dword [edx+0x4326fc]}
+00439ff2        long double x87_r7_29 = fconvert.t(*(g_game_base + 0x4326fc)) - (float.t(cell->attachment_template_record->row_span_count) + fconvert.t(5f))
 00439ff8        long double temp5_1 = fconvert.t(cell->anchor_position.z)
-00439ff8        unimplemented  {fcomp st0, dword [esi+0x18]} f- temp5_1
-00439ff8        bool c0_8 = unimplemented  {fcomp st0, dword [esi+0x18]} f< temp5_1
-00439ff8        bool c2_8 = is_unordered.t(unimplemented  {fcomp st0, dword [esi+0x18]}, temp5_1)
-00439ff8        bool c3_8 = unimplemented  {fcomp st0, dword [esi+0x18]} f== temp5_1
-00439ff8        unimplemented  {fcomp st0, dword [esi+0x18]}
-0043a000        if ((((c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top & 7) << 0xb):1.b & 0x41) == 0)
+00439ff8        x87_r7_29 - temp5_1
+0043a000        if ((((x87_r7_29 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_29, temp5_1) ? 1 : 0) << 0xa | (x87_r7_29 == temp5_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0043a004        remove_sub_loc(cell)
 00439f2d        long double x87_r7_22 = fconvert.t(cell->anchor_position.z)
 00439f30        long double temp6_1 = fconvert.t(*(game_base_1 + 0x4326fc))

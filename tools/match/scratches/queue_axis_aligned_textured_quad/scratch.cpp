@@ -9,7 +9,7 @@ int queue_axis_aligned_textured_quad(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     int layer)
 {
     if (g_render_queue_active != 0) {

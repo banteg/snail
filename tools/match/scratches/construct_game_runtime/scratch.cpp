@@ -63,7 +63,7 @@ extern void* g_noop_runtime_callback_table;     // data_4972b0
 } while (0)
 
 #define SLOT(offset) ((RuntimeSlot*)(game + (offset)))
-#define COLOR(offset) ((Color4f*)(game + (offset)))
+#define COLOR(offset) ((tColour*)(game + (offset)))
 
 class GameRootAllocation {
 public:

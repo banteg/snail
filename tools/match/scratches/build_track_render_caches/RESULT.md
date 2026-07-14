@@ -55,7 +55,7 @@ scratches instead of counting adjacent functions as unmatched builder bytes.
 - Implemented the final five-family maximum-count and cache-name pass.
 - Split and typed the real vertex-deduplication and face-to-index helpers at
   `0x433830` and `0x433960`.
-- Retained the by-value `Color4f` signature required by the exact caller.
+- Retained the by-value `tColour` signature required by the exact caller.
 
 ## Rejected trials
 

@@ -9,7 +9,7 @@ Recovered relationships:
 
 - Called by `render_object`, `populate_runtime_track_cells_from_segments`, and
   the asset/world initialization loop.
-- Packs the incoming `Color4f` into a local `tColourSmall` through the same
+- Packs the incoming `tColour` into a local `tColourSmall` through the same
   no-op constructor and `pack_color_rgba_u8` helper used by sprite rendering.
 - `Object +0x10` flag `0x80000` enables rewriting diffuse colours in the
   grouped render vertex stream.

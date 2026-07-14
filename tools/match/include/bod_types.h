@@ -25,7 +25,7 @@ public:
         Object* object;     // +0x24, borrowed render-object slot
         Object* strip_mesh; // cRPath provenance alias for the same render body
     };
-    Color4f color;      // +0x28
+    tColour color;      // +0x28
 };
 
 typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];

@@ -16,7 +16,7 @@ Recovered relationships:
 - Appends a quad entry (`flags | 2`) into the shared `cFontPrintBuffer` array.
 - Stores texture id (`+0x50`), all four authored corner pairs (`+0x04/+0x08`,
   `+0x10/+0x14`, `+0x1c/+0x20`, `+0x28/+0x2c`), explicit UV bounds
-  (`+0x5c..+0x68`), `Color4f` (`+0x6c`), layer (`+0x7c`), and blend
+  (`+0x5c..+0x68`), `tColour` (`+0x6c`), layer (`+0x7c`), and blend
   (`+0x80`).
 - Both known callers pass two zero stack slots after the corner pairs and
   before the flags/color arguments; the helper does not consume them.
@@ -41,7 +41,7 @@ scored lower at 81.43%. Keep the corner-coordinate placement as the retained
 shape for now.
 
 2026-06-21 color/count split retry: native publishes the queue count between
-the RGB and alpha lanes of the aggregate `Color4f` copy, but spelling that
+the RGB and alpha lanes of the aggregate `tColour` copy, but spelling that
 split in source is much worse. RGB/count/alpha, earlier split points, explicit
 RGBA then count, and delayed alpha variants all collapse to the 20-45% family
 with a different prologue and many offset mismatches. The aggregate color copy

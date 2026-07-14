@@ -191,7 +191,7 @@ void Path::initialize_worm_path_template_pair(char* texture_path)
 
     Vector3* vertices = strip_mesh->vertices;
     ObjectFaceQuad* facequads = strip_mesh->facequads;
-    Color4f* vertex_colours = strip_mesh->vertex_colours;
+    tColour* vertex_colours = strip_mesh->vertex_colours;
 
     if (segment_count >= 0) {
         do {

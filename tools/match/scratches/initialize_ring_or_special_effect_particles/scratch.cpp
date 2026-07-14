@@ -49,7 +49,7 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
             particle->sprite->draw_mode = 0xd;
         }
 
-        Color4f color;
+        tColour color;
         particle->sprite->color =
             *color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.800000012f);
         unsigned int flags = particle->sprite->flags;

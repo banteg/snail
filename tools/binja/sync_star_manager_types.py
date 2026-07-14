@@ -20,7 +20,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
 
 EXPECTED_STRUCT_SIZES = {
     "Vec3": 0xC,
-    "Color4f": 0x10,
+    "tColour": 0x10,
     "BodNode": 0x10,
     "BodBase": 0x38,
     "TextureRef": 0xA4,
@@ -54,7 +54,7 @@ SPRITE_FIELD_UPDATES = (
     ("0x20", "texture_ref_a", "TextureRef*"),
     ("0x24", "texture_ref_b", "TextureRef*"),
     ("0x28", "draw_mode", "int32_t"),
-    ("0x2c", "color", "Color4f"),
+    ("0x2c", "color", "tColour"),
     ("0x3c", "previous_position", "Vec3"),
     ("0x48", "position", "Vec3"),
     ("0x54", "velocity", "Vec3"),

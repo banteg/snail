@@ -8,7 +8,7 @@ extern GameRoot* g_game; // data_4df904
 void TimesUp::show_times_up_message()
 {
     if (state == 0) {
-        Color4f color;
+        tColour color;
 
         border = g_game->border_manager.allocate_border();
         border->initialize_frontend_widget(0x400002, "Time's Up", 0x14, 0.0f, 200.0f,

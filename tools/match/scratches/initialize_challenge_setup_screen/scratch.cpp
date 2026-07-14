@@ -24,11 +24,11 @@ void GUI::initialize_challenge_setup_screen()
     if (mode != 0)
         return;
 
-    Color4f difficulty_color;
-    Color4f speed_color;
-    Color4f play_color;
-    Color4f replay_color;
-    Color4f back_color;
+    tColour difficulty_color;
+    tColour speed_color;
+    tColour play_color;
+    tColour replay_color;
+    tColour back_color;
 
     difficulty_slider = g_game->border_manager.allocate_border();
     difficulty_slider->initialize_frontend_widget(

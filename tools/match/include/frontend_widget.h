@@ -36,9 +36,9 @@ public:
     unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
     void update_frontend_widget_interaction(); // @ 0x402820
     void initialize_frontend_widget(int flags, char* text, int widget_type,
-        float x, float y, Color4f* color, int alignment, float anchor_x);
+        float x, float y, tColour* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
-        Color4f* color, float z, int layer);
+        tColour* color, float z, int layer);
     InputOkState* input_ok_state();
 
     char unknown_038[0x44 - 0x38];
@@ -96,12 +96,12 @@ public:
     unsigned int widget_flags; // +0x1a0
     unsigned int previous_widget_flags; // +0x1a4
     char unknown_1a8[0x1ac - 0x1a8];
-    Color4f current_fill_color; // +0x1ac
-    Color4f idle_fill_color; // +0x1bc
-    Color4f hot_fill_color; // +0x1cc
-    Color4f current_text_color; // +0x1dc
-    Color4f idle_text_color; // +0x1ec
-    Color4f hot_text_color; // +0x1fc; warning animation drives its alpha lane
+    tColour current_fill_color; // +0x1ac
+    tColour idle_fill_color; // +0x1bc
+    tColour hot_fill_color; // +0x1cc
+    tColour current_text_color; // +0x1dc
+    tColour idle_text_color; // +0x1ec
+    tColour hot_text_color; // +0x1fc; warning animation drives its alpha lane
     float hover_blend_target; // +0x20c
     float hover_blend_current; // +0x210
     float idle_padding; // +0x214

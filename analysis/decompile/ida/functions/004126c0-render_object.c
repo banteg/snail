@@ -8,11 +8,11 @@ int __cdecl render_object(
         TransformMatrix *matrix,
         float texture_u,
         float texture_v,
-        Color4f *color,
+        tColour *color,
         char after_sprites)
 {
   int result; // eax
-  Color4f *v7; // edi
+  tColour *v7; // edi
   int32_t v8; // esi
   char v9; // cl
   uint32_t flags; // eax
@@ -29,7 +29,7 @@ int __cdecl render_object(
     {
       refresh_object_vertex_buffer(object);
       qmemcpy(v13, matrix, sizeof(v13));
-      v7 = (Color4f *)&retaddr;
+      v7 = (tColour *)&retaddr;
       (*(void (__stdcall **)(int, int, _BYTE *))(*(_DWORD *)g_d3d_device + 148))(g_d3d_device, 256, v13);
       set_cull_mode((object->flags & 0x100000) == 0);
       v8 = 0;

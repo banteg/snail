@@ -17,7 +17,7 @@ Parcel* SubgameRuntime::spawn_track_parcel(Vector3* world_position, Player*)
         parcel->sprite->progress_step = 0.0f;
         parcel->sprite->gravity_step = 0.0f;
 
-        Color4f color;
+        tColour color;
         parcel->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
         parcel->sprite->size_start = 1.0f;
         parcel->sprite->size_end = 1.0f;

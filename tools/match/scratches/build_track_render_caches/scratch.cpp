@@ -20,7 +20,7 @@ int debug_report_stub(const char* format, ...);
 #define RUNTIME_CELL_OFFSET(field) \
     ((int)offsetof(SubgameRuntime, runtime_cells[0][0].field))
 
-int SegmentCache::build_track_render_caches(Color4f skirt_color)
+int SegmentCache::build_track_render_caches(tColour skirt_color)
 {
     enum {
         MAX_INDEX_COUNT_LANE =

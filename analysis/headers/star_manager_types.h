@@ -21,12 +21,12 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct BodNode {
     void* vtable;
@@ -41,7 +41,7 @@ typedef struct BodBase {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    Color4f color;
+    tColour color;
 } BodBase;
 
 typedef struct TextureRef {
@@ -69,7 +69,7 @@ struct Sprite {
     TextureRef* texture_ref_a;
     TextureRef* texture_ref_b;
     int32_t draw_mode;
-    Color4f color;
+    tColour color;
     Vec3 previous_position;
     Vec3 position;
     Vec3 velocity;

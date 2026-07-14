@@ -12,7 +12,7 @@ extern char g_options_text[]; // 0x4a3b60
 
 void SubPause::initialize_pause_menu()
 {
-    Color4f color;
+    tColour color;
 
     end_game_widget = g_game->border_manager.allocate_border();
     end_game_widget->initialize_frontend_widget(

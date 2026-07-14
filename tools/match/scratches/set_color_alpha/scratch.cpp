@@ -2,8 +2,7 @@
 
 #include "sprite.h"
 
-int Color4f::set_color_alpha(int alpha_bits)
+void tColour::set_color_alpha(float alpha)
 {
-    a = *(float*)&alpha_bits;
-    return alpha_bits;
+    a = alpha;
 }

@@ -78,7 +78,7 @@ raises the scratch to 93.08%, 267/268 insns, prefix 122/268, with 63 masked
 operands OK and no unresolved or mismatched operands.
 
 Rejected in this pass: swapping the `alpha`/`mask_height` declarations, moving
-`Color4f color`, and splitting `mask_v` into a separate render local were all
+`tColour color`, and splitting `mask_v` into a separate render local were all
 neutral after the accepted branch order. The remaining first mismatch is still
 a stack-slot allocation residual (`mask_height` at candidate `esp+4` versus
 native `esp+8`, with `alpha` mirrored), followed by x87/render scheduling.
@@ -89,7 +89,7 @@ matches the decompiler-backed native intermediate `(sine(pulse * tau) + 1) *
 122/268, with 65 masked operands OK. This recovers instruction-count parity and
 removes the earlier branch-label drift around the flash quad, but the first
 residual remains the same mirrored `mask_height`/`alpha` stack-slot allocation.
-Retested `alpha`/`mask_height` declaration order, `mask_v` hoisting, `Color4f`
+Retested `alpha`/`mask_height` declaration order, `mask_v` hoisting, `tColour`
 hoisting, and an initialized `alpha` local; all were neutral at 94.03%, so keep
 only the `flash_pulse` source split.
 

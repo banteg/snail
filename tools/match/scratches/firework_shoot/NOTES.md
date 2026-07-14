@@ -15,7 +15,7 @@ Recovered behavior:
 - randomizes duration, red/yellow tint, and velocity;
 - copies the supplied position into each spawned sprite.
 
-This also identifies `0x44dbd0` as `Color4f::set_color_rgb(float,float,float)`,
+This also identifies `0x44dbd0` as `tColour::set_color_rgb(float,float,float)`,
 a three-channel setter used here after randomizing the red component.
 
 Source-shape notes:

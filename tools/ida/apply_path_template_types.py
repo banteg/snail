@@ -262,7 +262,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_color_rgba",
-        "Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);",
+        "tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a);",
     ),
     (
         "parse_next_int32",
@@ -282,7 +282,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "build_track_render_caches",
-        "int32_t __thiscall build_track_render_caches(SegmentCache* manager, Color4f skirt_color);",
+        "int32_t __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color);",
     ),
     (
         "add_track_cache_vertex",
@@ -318,11 +318,35 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_color_alpha",
-        "float __thiscall set_color_alpha(Color4f* color, float alpha);",
+        "void __thiscall set_color_alpha(tColour* color, float alpha);",
     ),
     (
         "set_color_grayscale",
-        "float __thiscall set_color_grayscale(Color4f* color, float intensity);",
+        "void __thiscall set_color_grayscale(tColour* color, float intensity);",
+    ),
+    (
+        "set_color_rgb",
+        "void __thiscall set_color_rgb(tColour* color, float r, float g, float b);",
+    ),
+    (
+        "set_color_white",
+        "void __thiscall set_color_white(tColour* color);",
+    ),
+    (
+        "set_color_black",
+        "void __thiscall set_color_black(tColour* color);",
+    ),
+    (
+        "get_track_skirt_color",
+        "tColour* __thiscall get_track_skirt_color(SubgameRuntime* game, tColour* out);",
+    ),
+    (
+        "spawn_track_garbage_hazard",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+    ),
+    (
+        "update_salt_hazard",
+        "void __thiscall update_salt_hazard(SaltHazardSlot* slot);",
     ),
     (
         "initialize_score_stats",
@@ -382,11 +406,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "store_color4f",
-        "float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);",
+        "void __thiscall store_color4f(tColour* color, float r, float g, float b, float a);",
     ),
     (
         "pack_color_rgba_u8",
-        "tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, Color4f* color);",
+        "tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, tColour* color);",
     ),
     (
         "kill_tip_widgets",
@@ -430,7 +454,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_frontend_widget",
-        "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x);",
+        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x);",
     ),
     (
         "layout_frontend_widget",
@@ -815,6 +839,51 @@ def _sync_build_track_render_cache_lvar() -> dict[str, object]:
     return {"status": "applied", "name": "locals", "type": "TrackRenderCacheBuildLocals"}
 
 
+def _sync_color_lvars(selector: str) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_stk_var() and "Color4f" in str(lvar.type())
+    ]
+    if not candidates:
+        return {"status": "unchanged", "updated_count": 0, "selector": selector}
+
+    local_type = ida_typeinf.tinfo_t()
+    if not local_type.get_named_type(None, "tColour", ida_typeinf.BTF_STRUCT):
+        return {
+            "status": "failed",
+            "reason": "missing_tColour_type",
+            "selector": selector,
+        }
+
+    updated = []
+    for lvar in candidates:
+        info = ida_hexrays.lvar_saved_info_t()
+        info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+        info.type = local_type
+        if not ida_hexrays.modify_user_lvar_info(address, ida_hexrays.MLI_TYPE, info):
+            return {
+                "status": "failed",
+                "reason": "modify_user_lvar_info_failed",
+                "local": lvar.name,
+                "selector": selector,
+            }
+        updated.append(lvar.name)
+
+    return {
+        "status": "applied",
+        "updated_count": len(updated),
+        "locals": updated,
+        "type": "tColour",
+        "selector": selector,
+    }
+
+
 def _resolve_function(selector: str) -> tuple[int | None, str]:
     if selector.startswith("0x"):
         address = int(selector, 16)
@@ -948,6 +1017,30 @@ def _sync_types(header_path: pathlib.Path) -> int:
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
         failed.append({"selector": "build_track_render_caches", "lvar_view": lvar_view})
+    frontend_color_lvars = _sync_color_lvars("initialize_frontend_widget")
+    if frontend_color_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_frontend_widget",
+                "color_lvars": frontend_color_lvars,
+            }
+        )
+    update_sub_loc_color_lvars = _sync_color_lvars("update_sub_loc")
+    if update_sub_loc_color_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "update_sub_loc",
+                "color_lvars": update_sub_loc_color_lvars,
+            }
+        )
+    get_track_skirt_color_lvars = _sync_color_lvars("get_track_skirt_color")
+    if get_track_skirt_color_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "get_track_skirt_color",
+                "color_lvars": get_track_skirt_color_lvars,
+            }
+        )
 
     print(
         json.dumps(
@@ -962,6 +1055,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
                 "lvar_view": lvar_view,
+                "frontend_color_lvars": frontend_color_lvars,
+                "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
+                "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "missing": missing,
                 "failed": failed,
             },

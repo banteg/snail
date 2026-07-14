@@ -35,6 +35,10 @@ GAME_FIELD_UPDATES = (
     ("0x359140", "garbage_hazards", "GarbageHazardPool"),
 )
 
+SUBGAME_FIELD_UPDATES = (
+    ("0x359140", "garbage_hazards", "GarbageHazardPool"),
+)
+
 SPRITE_FIELD_UPDATES = (
     ("0x00", "object_ref", "void*"),
     ("0x04", "flags", "uint32_t"),
@@ -47,7 +51,7 @@ SPRITE_FIELD_UPDATES = (
     ("0x20", "texture_ref_a", "TextureRef*"),
     ("0x24", "texture_ref_b", "TextureRef*"),
     ("0x28", "draw_mode", "int32_t"),
-    ("0x2c", "color", "Color4f"),
+    ("0x2c", "color", "tColour"),
     ("0x3c", "previous_position", "Vec3"),
     ("0x48", "position", "Vec3"),
     ("0x54", "velocity", "Vec3"),
@@ -90,7 +94,7 @@ GARBAGE_HAZARD_SLOT_FIELD_UPDATES = (
     ("0x1c", "render_arg_1c", "int32_t"),
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "void*"),
-    ("0x28", "color", "Color4f"),
+    ("0x28", "color", "tColour"),
     ("0x38", "basis_right", "Vec3"),
     ("0x44", "basis_right_w", "float"),
     ("0x48", "basis_up", "Vec3"),
@@ -213,6 +217,17 @@ def main() -> int:
         *apply_data_var_updates(REPO_ROOT, target=TARGET, updates=SPRITE_DATA_VAR_UPDATES),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]
+
+    for struct_name in ("SubgameRuntime", "FrameSubgameRuntime"):
+        if struct_exists(REPO_ROOT, target=TARGET, struct_name=struct_name):
+            operations.extend(
+                apply_struct_field_updates(
+                    REPO_ROOT,
+                    target=TARGET,
+                    struct_name=struct_name,
+                    updates=SUBGAME_FIELD_UPDATES,
+                )
+            )
 
     if struct_exists(REPO_ROOT, target=TARGET, struct_name="GarbageHazardRuntime"):
         operations.extend(

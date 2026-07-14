@@ -46,12 +46,12 @@ FRONTEND_WIDGET_FIELDS = (
     ("0x194", "shortcut_key_code", "int32_t"),
     ("0x1a0", "widget_flags", "uint32_t"),
     ("0x1a4", "previous_widget_flags", "uint32_t"),
-    ("0x1ac", "current_fill_color", "Color4f"),
-    ("0x1bc", "idle_fill_color", "Color4f"),
-    ("0x1cc", "hot_fill_color", "Color4f"),
-    ("0x1dc", "current_text_color", "Color4f"),
-    ("0x1ec", "idle_text_color", "Color4f"),
-    ("0x1fc", "hot_text_color", "Color4f"),
+    ("0x1ac", "current_fill_color", "tColour"),
+    ("0x1bc", "idle_fill_color", "tColour"),
+    ("0x1cc", "hot_fill_color", "tColour"),
+    ("0x1dc", "current_text_color", "tColour"),
+    ("0x1ec", "idle_text_color", "tColour"),
+    ("0x1fc", "hot_text_color", "tColour"),
     ("0x20c", "hover_blend_target", "float"),
     ("0x210", "hover_blend_current", "float"),
     ("0x214", "idle_padding", "float"),
@@ -113,7 +113,7 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
 DEFERRED_PROTO_UPDATES = (
     (
         "initialize_frontend_widget",
-        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x)",
+        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
     ),
     (
         "layout_frontend_widget",

@@ -8,11 +8,11 @@ int report_errorf(char* format, ...);
 
 void FrontendWidgetTooltip::update_tooltip()
 {
-    Color4f color;
-    Color4f color_above;
-    Color4f color_below;
-    Color4f color_above_left;
-    Color4f color_below_left;
+    tColour color;
+    tColour color_above;
+    tColour color_below;
+    tColour color_above_left;
+    tColour color_below_left;
     float progress;
     unsigned int flags;
     FrontendWidget* border;

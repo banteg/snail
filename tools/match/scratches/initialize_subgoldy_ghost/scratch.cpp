@@ -5,7 +5,7 @@
 
 int Player::initialize_subgoldy_ghost(int owner)
 {
-    Color4f color;
+    tColour color;
 
     ghost_sprite_a = g_sprite_manager.allocate_sprite(owner, 159, -1, -1);
     ghost_sprite_a->flags |= 0x800;

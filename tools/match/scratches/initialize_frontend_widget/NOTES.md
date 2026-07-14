@@ -61,7 +61,7 @@ progress lane.
 initializer close the Windows object at 0x724 bytes, now verified by the live
 Binary Ninja `FrontendWidget` type. The constructor/draw/update family owns
 `border_texture_id +0x48`, `background_texture_id +0x60`, hit-test sprite
-`+0x64`, style `+0x7c`, sprite shadow offset `+0x178`, six contiguous `Color4f`
+`+0x64`, style `+0x7c`, sprite shadow offset `+0x178`, six contiguous `tColour`
 blocks at `+0x1ac..+0x20b`, sprite texture/layer `+0x270/+0x274`, and the three
 slider children at `+0x718..+0x720`. In particular, warning AI writes
 `hot_text_color.a +0x208`; it does not own a separate overlay field.
@@ -80,7 +80,7 @@ recover durable ownership or evaluation order visible in native code:
   was removed rather than treating sprite-button setup as shared state;
 - the active-list head is acquired after the initial cRBorder field stores,
   reproducing the native prologue through the switch dispatch;
-- the native style-body order is `20, 22, 23, 21`, with direct `Color4f`
+- the native style-body order is `20, 22, 23, 21`, with direct `tColour`
   assignments rather than an aliasing copy helper;
 - `current_padding = target_padding = idle_padding` restores the native x87
   chained stores;

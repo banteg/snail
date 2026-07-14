@@ -12,7 +12,7 @@ Recovered layout:
   `Backdrop` because initialization writes them, but they deliberately remain
   `unknown_<offset>` until another user proves semantics.
 - `+0x67c..+0x69b` and `+0x69c..+0x6bb` are two owned
-  `BackdropWorldBlend` records. Each contains a constructed `Color4f`, blend
+  `BackdropWorldBlend` records. Each contains a constructed `tColour`, blend
   fraction, blend step, previous world, and current world.
 
 Open evidence: the only known caller passes `last_mode == 1`, but native still

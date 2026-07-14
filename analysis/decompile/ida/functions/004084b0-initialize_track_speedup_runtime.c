@@ -2,11 +2,11 @@
 /* function: initialize_track_speedup_runtime @ 0x4084b0 */
 /* selector: initialize_track_speedup_runtime */
 
-// Constructs the shared speed-up runtime record by running the shared renderable-body constructor and installing the speed-up vtable. Even though `spawn_track_speedup` is an empty stub in this build, the same `0x355db0` runtime lane is still consumed by `update_jetpack_gauge`, `handle_subgoldy_collisions`, and `remove_subgame_bods`, and its `0xb4` footprint matches the native `cRSubSpeedUp` size ledger.
-_DWORD *__thiscall sub_4084B0(_DWORD *this)
+// Exact Windows constructor for the authored `SubSpeedUp` (`cRSubSpeedUp` cross-port) singleton: constructs the inherited renderable BOD and installs the table whose entry is the exact `update_track_speedup`. Its 0xb4 extent exactly matches the native `Size of cRSubSpeedUp` ledger.
+_DWORD *__thiscall initialize_track_speedup_runtime(_DWORD *this)
 {
   initialize_renderable_bod(this);
-  *this = &off_497314;
+  *this = g_track_speedup_vtable;
   return this;
 }
 

@@ -9,7 +9,7 @@
 
 struct TextureRef;
 struct TransformMatrix;
-struct Color4f;
+struct tColour;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
 struct ObjectAnimation;
@@ -169,7 +169,7 @@ struct Object {
     Vector3* copied_vertices; // +0x3c, retained base-vertex copy
     int field_40; // +0x40
     Vector3* vertex_normals; // +0x44
-    Color4f* vertex_colours; // +0x48
+    tColour* vertex_colours; // +0x48
     char unknown_4c[0x54 - 0x4c];
     int facequad_count; // +0x54
     int facequad_capacity; // +0x58
@@ -215,7 +215,7 @@ void load_object_definition(char* path, Object* object); // @ 0x44c420
 void build_object_texture_group_buffers(Object* object); // @ 0x413d50
 void refresh_object_vertex_buffer(Object* object); // @ 0x412250
 int render_object(Object* object, TransformMatrix* matrix, float texture_u,
-    float texture_v, Color4f* color, char after_sprites); // @ 0x4126c0
+    float texture_v, tColour* color, char after_sprites); // @ 0x4126c0
 
 extern ObjectList g_object_list; // data_4b7648
 extern ObjectToonEdge* g_object_edge_build_edges; // data_503300

@@ -14,19 +14,19 @@ The retained candidate is sixteen instructions shorter than the target. The
 route limit and route-record tick helper are both curated; there are no
 unresolved operands or masked mismatches.
 
-The first remaining mismatch is the no-op `Color4f` constructor receiver:
+The first remaining mismatch is the no-op `tColour` constructor receiver:
 
 ```text
 target[6]    lea ecx, [esp+0x3c]
 candidate[6] lea ecx, [esp+0x2c]
 ```
 
-Both sides now use the native `0x3c` frame, but the two stack `Color4f` slots
+Both sides now use the native `0x3c` frame, but the two stack `tColour` slots
 are assigned in the opposite order.
 
 ## Accepted source-shape changes
 
-- Modeled the opening `Color4f::noop_this_constructor` call and the second
+- Modeled the opening `tColour::noop_this_constructor` call and the second
   stack color used by the route-zero `set_color_rgba` path.
 - Corrected the route-record tick call to a `thiscall` on the view at
   `this + 0x10`, stepping by the native `0x2a0` record stride.
@@ -41,7 +41,7 @@ are assigned in the opposite order.
 
 ## Remaining work
 
-- The primary/secondary `Color4f` stack slots are still reversed, keeping the
+- The primary/secondary `tColour` stack slots are still reversed, keeping the
   common prefix at six instructions.
 - The route-card connector and hit-test blocks still schedule x87 locals
   differently from native.

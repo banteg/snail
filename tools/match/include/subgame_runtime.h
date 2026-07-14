@@ -75,7 +75,7 @@ public:
     void hide_gameplay_scores(); // @ 0x445f10
     void unhide_gameplay_scores(); // @ 0x445f40
     void update_subgame_camera(); // @ 0x446020
-    Color4f* get_track_skirt_color(Color4f* out); // @ 0x442120
+    tColour* get_track_skirt_color(tColour* out); // @ 0x442120
     Parcel* spawn_track_parcel(
         Vector3* world_position,
         Player* ignored_player); // @ 0x443730, native binds embedded_player()

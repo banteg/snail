@@ -5,6 +5,6 @@
 
 void Twinkle::draw_twinkle()
 {
-    Color4f color;
+    tColour color;
     color.noop_this_constructor();
 }

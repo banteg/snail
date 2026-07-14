@@ -65,10 +65,10 @@ cull_check:
         if (attachment_template_record->kind == 24) {
             render_arg_20 =
                 render_arg_20 - g_game->subgame.subgame_rate * 0.033333335f;
-            color.set_color_alpha(1061997773);
+            color.set_color_alpha(0.800000012f);
         }
-        Color4f scratch;
-        Color4f* skirt = g_game->subgame.get_track_skirt_color(&scratch);
+        tColour scratch;
+        tColour* skirt = g_game->subgame.get_track_skirt_color(&scratch);
         g_game->subgame.runtime_rows[get_track_cell_row_index()]
             .attachment_body.color = *skirt;
         if (g_game->subgame.embedded_player()->interaction_max_z

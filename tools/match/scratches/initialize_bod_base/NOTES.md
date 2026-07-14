@@ -5,7 +5,7 @@ Exact match: 100.00%, 27/27 instructions.
 Initializes the shared BOD base vtable, default flags, color lane, constructor
 counter, and zeroed render/list fields. The first call targets the no-op `this`
 constructor thunk at `0x44db50` (`mov eax, ecx; ret`) before the same storage is
-written as a `Color4f`.
+written as a `tColour`.
 
 `BodBase` now inherits the already-proven `BodNode`/`ContactTargetObject`
 prefix, so the default flag store writes inherited `list_flags +0x04` rather
@@ -18,7 +18,7 @@ intrusive links are not explicitly cleared here but are shared with the BOD list
 views.
 
 2026-07-14 folded-constructor ownership: the opening identity call now targets
-the embedded `Color4f` directly. The previous `NoopAiCallback` cast represented
+the embedded `tColour` directly. The previous `NoopAiCallback` cast represented
 no object, field, or vtable boundary; it existed only to give the folded helper
 a local constructor-shaped symbol. The shared color call preserves the exact
 27/27 instruction stream and all five audited operands, so the synthetic

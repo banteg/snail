@@ -60,14 +60,14 @@ Rejected source-shape probes:
   value is not part of the gameplay contract.
 - 2026-06-16 smoke velocity retry: hoisting `out_velocity` before the size writes
   compiled identically and did not fix native's delayed `sprite += 0x48`
-  schedule. Replacing the reused `Color4f` lanes with explicit
+  schedule. Replacing the reused `tColour` lanes with explicit
   `scaled_x/scaled_y/scaled_z` locals regressed the focused score to `68.03%`.
   Keep the color-local velocity staging.
 - 2026-06-19 sprite-base/velocity staging audit: making the `set_color_rgba`
   result explicit and saving alpha bits until after the size fields recovers a
   longer sprite-base lifetime, but breaks the native aggregate color-copy shape
   and regresses to 67.57%. Direct `sprite->velocity`/`sprite->position` field
-  stores are codegen-neutral at 84.56%, and reading the reused `Color4f` lanes
+  stores are codegen-neutral at 84.56%, and reading the reused `tColour` lanes
   through a local pointer optimizes back to the same candidate. Copying the lanes
   into named scaled-velocity locals regresses to 81.33% with extra x87 churn.
   Keep the existing aggregate color copy plus `out_velocity`/`out_position`
@@ -100,14 +100,14 @@ Rejected source-shape probes:
 - 2026-06-20 larger-chunk audit: a standalone `scaled_x` local for the first
   velocity component regresses to 81.08%. It makes VC6 load/scale X after Y/Z,
   which is the opposite of native's stack-spilled `v15 = x * 0.2` order. Keep
-  the reused `Color4f` lanes for the velocity staging.
+  the reused `tColour` lanes for the velocity staging.
 - 2026-06-20 larger garbage-family retry: focused Wibo still reports 85.14%,
   72/76 candidate instructions, 5/76 prefix, and 9 clean masked operands. A
   separate `Vector3* input_velocity` alias before the accepted raw output tail
   is codegen-neutral: VC6 still optimizes away the native-looking
   `lea velocity; add position-base` output setup and streams the x velocity
   lane directly to `sprite + 0x54`. Keep the raw sprite-word tail plus reused
-  `Color4f` velocity lanes; the residual is output lifetime/stack-reload
+  `tColour` velocity lanes; the residual is output lifetime/stack-reload
   scheduling, not an input velocity ownership issue.
 - 2026-06-20 shared smoke-tail audit: focused Wibo still reports 85.14%,
   72/76 candidate instructions, 5/76 prefix, and nine clean masked operands.
@@ -120,7 +120,7 @@ Rejected source-shape probes:
   `scaled_x` local immediately after the x velocity multiply is codegen-neutral
   at 85.14%. VC6 still keeps x on the x87 stack and emits the same direct
   `sprite + 0x54` store instead of native's stack-spilled `v15` reload. Keep
-  the current raw sprite-word tail and reused `Color4f` lanes.
+  the current raw sprite-word tail and reused `tColour` lanes.
 - 2026-06-21 garbage owner cleanup: `GarbageHazardSlot::game` is now a shared
   `SubgameRuntime*`, removing this scratch's generic owner `Game` shell without
   changing codegen. Focused Wibo remains at 85.14%, 72/76 candidate

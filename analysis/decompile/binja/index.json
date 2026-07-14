@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 678,
-  "function_count": 678,
+  "selected_count": 679,
+  "function_count": 679,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -3247,6 +3247,11 @@
       "address": "0x44dbb0",
       "name": "store_color4f",
       "artifact": "analysis/decompile/binja/functions/0044dbb0-store_color4f.c"
+    },
+    {
+      "address": "0x44dbd0",
+      "name": "set_color_rgb",
+      "artifact": "analysis/decompile/binja/functions/0044dbd0-set_color_rgb.c"
     },
     {
       "address": "0x44dbf0",

@@ -24,7 +24,7 @@ void SubGarbage::spawn_garbage_smoke_particle(
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = owner_game->subgame_rate * 0.41666669f;
 
-        Color4f color;
+        tColour color;
         sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
         float* sprite_words = (float*)sprite;
         sprite_words[24] = 0.30000001f;

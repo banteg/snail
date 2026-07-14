@@ -56,8 +56,8 @@
 0043458f        *(*(&manager->entries->sprite + edi_1) + 0x68) = 0
 00434599        *(*(&manager->entries->sprite + edi_1) + 0x6c) = 0
 004345a7        *(*(&manager->entries->sprite + edi_1) + 0x78) = 0
-004345aa        struct Color4f color
-004345aa        struct Color4f* eax_23 = set_color_rgba(&color, 0.800000012f, 0.800000012f, 1f, 0.400000006f)
+004345aa        struct tColour color
+004345aa        struct tColour* eax_23 = set_color_rgba(&color, 0.800000012f, 0.800000012f, 1f, 0.400000006f)
 004345b8        float* edx_13 = *(&manager->entries->sprite + edi_1) + 0x2c
 004345bb        *edx_13 = eax_23->r
 004345c0        edx_13[1] = eax_23->g

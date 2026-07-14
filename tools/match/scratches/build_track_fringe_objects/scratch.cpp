@@ -76,8 +76,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
                         cell->fringe_front->list_flags |= 0x20;
                         cell->fringe_front->position = cell->position;
-                        Color4f color0;
-                        Color4f* skirt_color = get_track_skirt_color(&color0);
+                        tColour color0;
+                        tColour* skirt_color = get_track_skirt_color(&color0);
                         edge_a = 0;
                         cell->fringe_front->color = *skirt_color;
                     } else {
@@ -100,8 +100,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
                         cell->fringe_right->list_flags |= 0x20;
                         cell->fringe_right->position = cell->position;
-                        Color4f color1;
-                        Color4f* skirt_color = get_track_skirt_color(&color1);
+                        tColour color1;
+                        tColour* skirt_color = get_track_skirt_color(&color1);
                         edge_a = 0;
                         cell->fringe_right->color = *skirt_color;
                     } else {
@@ -124,8 +124,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
                         cell->fringe_left->list_flags |= 0x20;
                         cell->fringe_left->position = cell->position;
-                        Color4f color2;
-                        Color4f* skirt_color = get_track_skirt_color(&color2);
+                        tColour color2;
+                        tColour* skirt_color = get_track_skirt_color(&color2);
                         edge_a = 0;
                         cell->fringe_left->color = *skirt_color;
                     } else {
@@ -148,8 +148,8 @@ int SubgameRuntime::build_track_fringe_objects()
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
                         cell->fringe_back->list_flags |= 0x20;
                         cell->fringe_back->position = cell->position;
-                        Color4f color3;
-                        Color4f* skirt_color = get_track_skirt_color(&color3);
+                        tColour color3;
+                        tColour* skirt_color = get_track_skirt_color(&color3);
                         edge_a = 0;
                         cell->fringe_back->color = *skirt_color;
                     } else {

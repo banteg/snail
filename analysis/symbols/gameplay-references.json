@@ -47,7 +47,7 @@
         "sub_408880",
         "initialize_solution_record"
       ],
-      "description": "Constructs one GalaxyRouteNameRecord by running the no-op Color4f constructor on its color field at +0x84 and returning the record."
+      "description": "Constructs one GalaxyRouteNameRecord by running the no-op tColour constructor on its color field at +0x84 and returning the record."
     },
     {
       "address": "0x409bd0",
@@ -434,7 +434,7 @@
         "data_503308"
       ],
       "size": "0x10",
-      "description": "Exact 16-byte Color4f owner constructed during CRT startup. Symbol-preserving iOS builds retain the corresponding `GTempColour` global at the same exact extent before `gEdgeStore`; neither port exposes a stronger semantic consumer."
+      "description": "Exact 16-byte tColour owner constructed during CRT startup. Symbol-preserving iOS builds retain the corresponding `GTempColour` global at the same exact extent before `gEdgeStore`; neither port exposes a stronger semantic consumer."
     },
     {
       "address": "0x503290",
@@ -1379,10 +1379,9 @@
       "name": "set_color_rgb",
       "kind": "function",
       "aliases": [
-        "sub_44dbd0",
-        "?set_color_rgb@Color4f@@QAEXMMM@Z"
+        "sub_44dbd0"
       ],
-      "description": "Color4f three-channel RGB setter used by firework_shoot; stores r/g/b and leaves alpha unchanged."
+      "description": "tColour three-channel RGB setter used by firework_shoot; stores r/g/b and leaves alpha unchanged."
     },
     {
       "address": "0x44ebc1",
@@ -3676,7 +3675,7 @@
         "data_4f6e50"
       ],
       "size": "0x200",
-      "description": "Exact 32-entry Color4f allocation proven by its CRT constructor loop and by the contiguous bounds between `g_sprite_depth_nodes` and `g_sprite_depth_buckets`. No instruction outside the constructor addresses any lane, so its semantic role remains deliberately unnamed."
+      "description": "Exact 32-entry tColour allocation proven by its CRT constructor loop and by the contiguous bounds between `g_sprite_depth_nodes` and `g_sprite_depth_buckets`. No instruction outside the constructor addresses any lane, so its semantic role remains deliberately unnamed."
     },
     {
       "address": "0x4f7050",
@@ -4301,7 +4300,7 @@
         "data_6437f8"
       ],
       "size": "0x660",
-      "description": "Contiguous 102-entry Color4f allocation exposed to build_track_colours as 51-entry banks B and C. Its CRT constructor loop independently proves the combined extent."
+      "description": "Contiguous 102-entry tColour allocation exposed to build_track_colours as 51-entry banks B and C. Its CRT constructor loop independently proves the combined extent."
     },
     {
       "address": "0x643b28",

@@ -10,7 +10,7 @@ fringe threshold at `Player::interaction_max_z`.
 
 The exact source shape has two useful details:
 
-- keep `world_z` in a `float` local before copying the returned `Color4f`;
+- keep `world_z` in a `float` local before copying the returned `tColour`;
   a `double` local preserves the value semantically but emits an extra x87
   threshold load and regresses the match;
 - spell the list removal as the same typed intrusive-list logic as exact

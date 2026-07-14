@@ -9,7 +9,7 @@ Ownership evidence:
 - the outer record inherits `RenderableBod`;
 - the owned `RenderCamera`/cross-port `cRCamera` subobject begins at player
   `+0xa0` and also inherits `RenderableBod`;
-- the target/current `Color4f` values of the embedded
+- the target/current `tColour` values of the embedded
   `FrontendOverlayColorLerp +0x184` are constructed at `+0x188/+0x198`; and
 - the outer callback at 0x4972f4 points to exact
   `update_frontend_state_machine`, independently identified as

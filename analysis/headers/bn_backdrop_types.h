@@ -4,12 +4,12 @@
 typedef unsigned char uint8_t;
 typedef int int32_t;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct BackdropDistortCell {
     float phase;
@@ -21,7 +21,7 @@ typedef struct BackdropDistortCell {
 } BackdropDistortCell;
 
 typedef struct BackdropWorldBlend {
-    Color4f color;
+    tColour color;
     float blend;
     float blend_step;
     int32_t previous_world;

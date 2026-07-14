@@ -10,12 +10,12 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct Color4f {
+typedef struct tColour {
     float r;
     float g;
     float b;
     float a;
-} Color4f;
+} tColour;
 
 typedef struct TransformMatrix {
     Vec3 basis_right;
@@ -41,7 +41,7 @@ typedef struct ClickStart {
     float render_arg_1c;
     float render_arg_20;
     void* object;
-    Color4f color;
+    tColour color;
     TransformMatrix transform;
     void* render_animation_manager;
     uint8_t _pad_7c[0x4];

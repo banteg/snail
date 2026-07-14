@@ -1,7 +1,7 @@
 # noop_this_constructor @ 0x44db50
 
 Exact three-byte identity body (`eax = ecx; ret`) shared by compiler-folded
-trivial default constructors. The scratch uses the already proven `Color4f`
+trivial default constructors. The scratch uses the already proven `tColour`
 surface because most recovered callers construct color temporaries or fields,
 but the native range has no single owning class.
 

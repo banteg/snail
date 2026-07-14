@@ -16,28 +16,28 @@ void FrontendWidget::initialize_frontend_widget(
     int widget_type,
     float x,
     float y,
-    Color4f* color,
+    tColour* color,
     int alignment,
     float anchor_x)
 {
     char* self = (char*)this;
     FrontendWidget* head;
-    Color4f tmp0;
-    Color4f tmp1;
-    Color4f tmp2;
-    Color4f tmp3;
-    Color4f tmp4;
-    Color4f tmp5;
-    Color4f tmp6;
-    Color4f tmp7;
-    Color4f tmp8;
-    Color4f tmp9;
-    Color4f tmp10;
-    Color4f tmp11;
-    Color4f tmp12;
-    Color4f tmp13;
-    Color4f tmp14;
-    Color4f tmp15;
+    tColour tmp0;
+    tColour tmp1;
+    tColour tmp2;
+    tColour tmp3;
+    tColour tmp4;
+    tColour tmp5;
+    tColour tmp6;
+    tColour tmp7;
+    tColour tmp8;
+    tColour tmp9;
+    tColour tmp10;
+    tColour tmp11;
+    tColour tmp12;
+    tColour tmp13;
+    tColour tmp14;
+    tColour tmp15;
 
     this->widget_type = widget_type;
     border_texture_id = 5;

@@ -32,7 +32,7 @@ OBJECT_FIELDS = (
     ("0x3c", "copied_vertices", "Vec3*"),
     ("0x40", "field_40", "int32_t"),
     ("0x44", "vertex_normals", "Vec3*"),
-    ("0x48", "vertex_colours", "Color4f*"),
+    ("0x48", "vertex_colours", "tColour*"),
     ("0x54", "facequad_count", "int32_t"),
     ("0x58", "facequad_capacity", "int32_t"),
     ("0x5c", "facequads", "ObjectFaceQuad*"),
@@ -194,11 +194,11 @@ PROTO_UPDATES = (
     # deferred instead of making this repeatable sync fail verification.
     (
         "set_object_color",
-        "void __cdecl set_object_color(Object* object, Color4f color)",
+        "void __cdecl set_object_color(Object* object, tColour color)",
     ),
     (
         "render_object",
-        "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, Color4f* color, char after_sprites)",
+        "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites)",
     ),
 )
 

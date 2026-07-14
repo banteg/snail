@@ -40,7 +40,7 @@ projection transform.
 ## Exact fog ownership and source shape (2026-07-10)
 
 The write-side game initializer proves `GameRoot +0x04..+0x23` is an embedded
-fog-settings block: enabled byte, start/end/density floats, and `Color4f`.
+fog-settings block: enabled byte, start/end/density floats, and `tColour`.
 Direct3D render states 36 and 37 consume the raw DWORD encodings of local float
 copies of `fog_start` and `fog_end`. Spelling that standard D3D address-taking
 idiom naturally produces the native stack frame and scheduling.

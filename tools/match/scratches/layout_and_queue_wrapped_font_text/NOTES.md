@@ -11,7 +11,7 @@ Recovered relationships:
   it through `queue_font_text_instance`, and returns the computed x/y/width/
   height through four output pointers.
 - `measure_only` suppresses queueing. `pulse_alpha` overwrites the copied
-  `Color4f::a` with `sine(cursor_y * 0.00654498488f)` before queueing.
+  `tColour::a` with `sine(cursor_y * 0.00654498488f)` before queueing.
 - The line step uses `FontSheet::height_scale * spacing_scale * line_marker_y *
   text_scale`.
 

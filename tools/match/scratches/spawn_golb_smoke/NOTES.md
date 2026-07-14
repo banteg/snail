@@ -61,7 +61,7 @@ Rejected source-shaped probes:
   68/72 candidate instructions, 43/72 prefix, and eight clean masked operands.
   Deriving `out_position` from `out_velocity - 3`, spelling the same view as
   `Vector3* output_velocity` / `output_position`, adding a compact
-  `SpriteMotionTail` overlay, and writing the reused `Color4f` lanes through a
+  `SpriteMotionTail` overlay, and writing the reused `tColour` lanes through a
   `float* color_words` view all compile back to the same direct `sprite + offset`
   tail. The overlay variant even schedules the gravity store before the delayed
   x-velocity store. Keep the raw float-lane source; the remaining gap is VC6

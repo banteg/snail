@@ -5,7 +5,7 @@
 
 void FrontendFade::update_frontend_transition_overlay()
 {
-    Color4f color;
+    tColour color;
 
     switch (state) {
     case 0:

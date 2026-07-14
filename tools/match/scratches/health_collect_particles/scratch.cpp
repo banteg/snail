@@ -23,7 +23,7 @@ void Player::health_collect_particles(SubHealth* pickup)
             sprite->progress_step = 0.041666668f;
             sprite->gravity_step = -0.00019999999f;
 
-            Color4f color;
+            tColour color;
             sprite->color = *color.set_color_rgba(1.0f, 0.75f, 0.75f, 1.0f);
             Vector3* position = &sprite->position;
             sprite->size_start = 0.1f;

@@ -284,7 +284,7 @@ after_movement_flag_source:
         sprite->progress_step = 0.0f;
         sprite->gravity_step = 0.0f;
 
-        Color4f color;
+        tColour color;
         sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
         sprite->size_start = 0.49000001f;
         sprite->size_end = 0.49000001f;

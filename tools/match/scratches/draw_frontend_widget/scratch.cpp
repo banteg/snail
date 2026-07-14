@@ -15,7 +15,7 @@ int queue_axis_aligned_textured_quad_uv(
     float width,
     float height,
     unsigned int flags,
-    Color4f* color,
+    tColour* color,
     float u0,
     float v0,
     float u1,
@@ -25,10 +25,10 @@ int queue_axis_aligned_textured_quad_uv(
 
 void FrontendWidget::draw_frontend_widget()
 {
-    Color4f white;
-    Color4f slider_color;
-    Color4f reserved_color_0; // native prologue object; alpha is initialized below
-    Color4f reserved_color_1; // native constructor-only prologue object
+    tColour white;
+    tColour slider_color;
+    tColour reserved_color_0; // native prologue object; alpha is initialized below
+    tColour reserved_color_1; // native constructor-only prologue object
 
     white.noop_this_constructor();
     slider_color.noop_this_constructor();
@@ -59,7 +59,7 @@ void FrontendWidget::draw_frontend_widget()
 
     if ((flags & 0x100000) != 0) {
         slider_color = current_text_color;
-        Color4f* color = &slider_color;
+        tColour* color = &slider_color;
         float slider = slider_position_current;
         if (slider > 0.0f) {
             queue_axis_aligned_textured_quad_uv(
@@ -146,7 +146,7 @@ void FrontendWidget::draw_frontend_widget()
             0);
 
         if (sprite_shadow_offset > 0.0f) {
-            Color4f shadow_color;
+            tColour shadow_color;
             queue_axis_aligned_textured_quad_uv(
                 texture_id,
                 texture_hit_x + sprite_shadow_offset - pad,
@@ -214,7 +214,7 @@ void FrontendWidget::draw_frontend_widget()
 
     if (((GameRoot*)g_game_base)->border_manager.delayed_widget_active != 0
         && this == ((GameRoot*)g_game_base)->border_manager.delayed_widget) {
-        Color4f glow_color;
+        tColour glow_color;
         glow_color.noop_this_constructor();
         white.set_color_white();
         glow_color.store_color4f(

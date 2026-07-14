@@ -6,7 +6,7 @@ Wibo result: 61.84%, 73 target instructions versus 79 candidate instructions,
 masked operands 19 ok. The queue entry writes are pinned; remaining residual is
 register ownership and return-label layout in the text-copy loop. Native keeps
 the source pointer in `eax`, uses scratch `edx` for the buffer-bound check, and
-only saves `esi` around the `Color4f` copy.
+only saves `esi` around the `tColour` copy.
 
 Recovered relationships:
 
@@ -27,7 +27,7 @@ instead of re-spelling the same offsets through local byte-pointer casts.
 copy loop from `if (*text) do { ... } while (*text)` to a plain
 `while (*source != '\0')` over a `register char* source = text` local keeps the
 source pointer in `eax`, lets the buffer-bound check use `edx`, and confines
-the saved `esi` lifetime to the `Color4f` aggregate copy like native. The plain
+the saved `esi` lifetime to the `tColour` aggregate copy like native. The plain
 `while (*text)` spelling improved to 75.68% but still saved `esi` across the
 whole function; a `for` update was codegen-neutral with that shape, while an
 explicit `goto` loop regressed to the old duplicated-loop family.

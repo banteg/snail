@@ -20,7 +20,7 @@ Expected residuals:
   recovers the native multiply form instead of VC6's `fchs`, removing the
   `-1.0f` masked constant mismatch and improving the focused match from
   `39.42%` to `39.71%`.
-- Explicitly no-op constructing the four local `Color4f` temporaries matches
+- Explicitly no-op constructing the four local `tColour` temporaries matches
   the native prologue constructor calls and moves the focused match to
   `40.34%`, `686/712` candidate/target instructions, with masked operands at
   `46 ok / 2 mismatch`.
@@ -46,7 +46,7 @@ progress at root `+0x440ec/+0x440f8/+0x440f0` are now typed as the embedded
   ownership, not a borrowed pointer; the current scratch still keeps the
   pointer form because introducing the copy before recovering the surrounding
   lifetimes destabilizes the whole register schedule.
-- The native frame contains four `Color4f` objects constructed in the prologue
+- The native frame contains four `tColour` objects constructed in the prologue
   plus a fifth branch-local slot. The latter is written directly for the
   shadow and then reused as a newly constructed delayed-glow color. Its
   constructor at the delayed-glow gate is now represented explicitly, moving
@@ -74,7 +74,7 @@ progress at root `+0x440ec/+0x440f8/+0x440f0` are now typed as the embedded
 - Live Binary Ninja disassembly proves the complete native extent ends at
   `0x401a60`, immediately after the delayed-glow quads. The earlier note about
   an unrecovered text/special-widget tail was stale.
-- The native frame has five distinct 16-byte `Color4f` slots: white and slider
+- The native frame has five distinct 16-byte `tColour` slots: white and slider
   objects, two additional prologue-constructed objects, and one branch-local
   slot shared by the shadow constructor and the later delayed-glow default
   constructor. The slider now truthfully owns a value copy of

@@ -5,7 +5,7 @@ padding and a following uncurated thunk.
 
 Semantics:
 
-- allocates `vertex_count * sizeof(Color4f)` for `vertex_colours` at `+0x48`;
+- allocates `vertex_count * sizeof(tColour)` for `vertex_colours` at `+0x48`;
 - initializes the RGB lanes of every colour record to `1.0f`;
 - intentionally leaves alpha untouched, matching native.
 
@@ -15,5 +15,5 @@ native loop-counter zeroing before the empty-count branch. The equivalent
 one-instruction ordering residual.
 
 2026-07-14 allocation ownership: the color bank now derives its 16-byte stride
-from `Color4f`. Matching remains exact at 30/30 instructions with both operands
+from `tColour`. Matching remains exact at 30/30 instructions with both operands
 clean.

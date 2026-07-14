@@ -11,9 +11,9 @@ the same two parallel transitions as Windows:
 - shift its current world to previous world and install the argument;
 - repeat the same operation for the second world-blend lane.
 
-Those accesses, together with the two exact `Color4f` constructor calls in
+Those accesses, together with the two exact `tColour` constructor calls in
 `construct_game_runtime`, prove two repeated 0x20-byte `BackdropWorldBlend`
-owners at Windows `+0x67c` and `+0x69c`. Each record contains `Color4f`, blend,
+owners at Windows `+0x67c` and `+0x69c`. Each record contains `tColour`, blend,
 blend step, previous world, and current world.
 
 Binary Ninja finds only the two calls in `initialize_backdrop`; both discard
