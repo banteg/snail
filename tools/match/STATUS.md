@@ -2,7 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**617/785** mapped gameplay functions matched, **785/785** mapped gameplay functions have a scratch, **93721/325144** bytes (**28.82%**) are proof-grade, and overall fuzzy is **71.64%**.
+**617/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **93721/317040** bytes (**29.56%**) are proof-grade, and overall fuzzy is **72.94%**.
+
+**3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
 ## Proof Grade (617)
 
@@ -774,7 +776,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
-## Early Progress (>0-49.99%) (35)
+## Early Progress (>0-49.99%) (32)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -810,9 +812,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1208/1245 | 29.27% | 2/1245 | 1 mismatch, 60 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 30.93% | 0/639 | 2 mismatch, 40 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 227/272 | 35.67% | 1/272 | 19 ok |  |
-| 🚧 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
-| 🚧 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
-| 🚧 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
+
+## Reference Only (third-party) (3)
+
+| | function | address | bytes | insns | match | prefix | masked | build |
+|---|---|---|---|---|---|---|---|---|
+| 📚 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  |
+| 📚 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 |
+| 📚 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  |
 
 ## Type Consolidation
 

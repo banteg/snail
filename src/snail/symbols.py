@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 import re
-from typing import Any
+from typing import Any, Literal
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +17,8 @@ AUTO_FUNCTION_NAME_RE = re.compile(
 FUNCTION_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 HEX_VALUE_RE = re.compile(r"^0x[0-9a-fA-F]+$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+FUNCTION_MATCH_SCOPES = frozenset(("gameplay", "reference-only"))
+FunctionMatchScope = Literal["gameplay", "reference-only"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,6 +27,7 @@ class FunctionSymbol:
     name: str
     description: str | None = None
     aliases: tuple[str, ...] = ()
+    match_scope: FunctionMatchScope = "gameplay"
 
     @property
     def address_hex(self) -> str:
@@ -105,6 +108,12 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                     f"functions[{index}].description must be a non-empty string when present"
                 )
             description = description.strip()
+        match_scope = raw_symbol.get("match_scope", "gameplay")
+        if match_scope not in FUNCTION_MATCH_SCOPES:
+            allowed = ", ".join(sorted(FUNCTION_MATCH_SCOPES))
+            raise ValueError(
+                f"functions[{index}].match_scope must be one of: {allowed}"
+            )
         if address in seen_addresses:
             raise ValueError(f"duplicate function address: 0x{address:x}")
         for symbol_name in names:
@@ -119,6 +128,7 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                 name=name,
                 description=description,
                 aliases=tuple(aliases_value),
+                match_scope=match_scope,
             )
         )
         seen_addresses.add(address)
@@ -137,6 +147,10 @@ def validate_function_symbol_manifest(
         raise ValueError("unwrapped_sha256 must be a lowercase SHA-256 hex digest")
     if not manifest.functions:
         raise ValueError("manifest must contain at least one function symbol")
+    for function in manifest.functions:
+        if function.match_scope not in FUNCTION_MATCH_SCOPES:
+            allowed = ", ".join(sorted(FUNCTION_MATCH_SCOPES))
+            raise ValueError(f"match_scope must be one of: {allowed}")
     if manifest.functions[0].address < manifest.image_base:
         raise ValueError("function addresses must be within the image address space")
     return manifest
@@ -195,6 +209,11 @@ def normalize_function_symbol_manifest(
                 **{"address": function.address_hex, "name": function.name},
                 **({"aliases": list(function.aliases)} if function.aliases else {}),
                 **(
+                    {"match_scope": function.match_scope}
+                    if function.match_scope != "gameplay"
+                    else {}
+                ),
+                **(
                     {"description": function.description}
                     if function.description is not None
                     else {}
@@ -229,6 +248,13 @@ def summarize_function_symbol_manifest(
     summary: dict[str, object] = {
         "name": manifest.name,
         "function_count": len(manifest.functions),
+        "gameplay_function_count": sum(
+            function.match_scope == "gameplay" for function in manifest.functions
+        ),
+        "reference_only_function_count": sum(
+            function.match_scope == "reference-only"
+            for function in manifest.functions
+        ),
         "described_function_count": sum(
             1 for function in manifest.functions if function.description is not None
         ),
@@ -245,6 +271,11 @@ def summarize_function_symbol_manifest(
             {
                 **{"address": symbol.address_hex, "name": symbol.name},
                 **({"aliases": list(symbol.aliases)} if symbol.aliases else {}),
+                **(
+                    {"match_scope": symbol.match_scope}
+                    if symbol.match_scope != "gameplay"
+                    else {}
+                ),
                 **(
                     {"description": symbol.description}
                     if symbol.description is not None

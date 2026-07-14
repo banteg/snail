@@ -24,6 +24,7 @@ from snail.match import (
     load_default_reference_symbol_manifest,
     load_image,
     load_reference_symbol_manifest,
+    manifest_cluster_totals,
     match_function,
     normalize_function,
     parse_coff_object,
@@ -1976,6 +1977,102 @@ def test_render_status_rows_include_missing_manifest_functions() -> None:
     assert "| ⬜ | missing | 0x1002 | 2 | 0/2 | 0.00% | 0/2 | - |  |" in markdown
 
 
+def test_reference_only_functions_stay_visible_but_do_not_affect_gameplay_totals(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import snail.match as match_module
+
+    exact_config = ScratchConfig(
+        directory=Path("scratch/exact"),
+        function="exact",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    reference_config = ScratchConfig(
+        directory=Path("scratch/reference"),
+        function="library_body",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    statuses = [
+        ScratchStatus(
+            config=exact_config,
+            address=0x1000,
+            target_size=2,
+            ratio=1.0,
+            prefix_instructions=2,
+            target_instructions=2,
+            candidate_instructions=2,
+            error=None,
+        ),
+        ScratchStatus(
+            config=reference_config,
+            address=0x1002,
+            target_size=4,
+            ratio=0.5,
+            prefix_instructions=1,
+            target_instructions=4,
+            candidate_instructions=4,
+            error=None,
+        ),
+    ]
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="test.exe",
+        reference_target="test.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="exact"),
+            FunctionSymbol(
+                address=0x1002,
+                name="library_body",
+                match_scope="reference-only",
+            ),
+            FunctionSymbol(address=0x1006, name="missing"),
+        ),
+    )
+    image = LoadedImage(
+        mapped=b"\x90\xc3\x90\x90\x90\xc3\x90\xc3\xcc",
+        image_base=0x1000,
+        size_of_image=9,
+    )
+    monkeypatch.setattr(match_module, "load_image", lambda *_args: image)
+
+    totals = manifest_cluster_totals(manifest, tmp_path / "test.exe", statuses)
+
+    assert totals == ClusterTotals(
+        function_count=2,
+        byte_total=4,
+        matched_functions=1,
+        matched_bytes=2,
+        scratched_functions=1,
+        fuzzy_weighted_bytes=2.0,
+        reference_only_functions=1,
+        reference_only_bytes=4,
+    )
+    rows = render_status_rows(statuses, manifest=manifest, image=image)
+    assert [row[1] for row in rows] == ["exact", "library_body", "missing"]
+    assert rows[1][0] == "📚"
+    assert rows[1][9] == "third-party reference only"
+
+    table = render_status_table(statuses, totals, manifest=manifest, image=image)
+    assert "Reference Only (third-party) (1)" in table
+    assert "1/1 scratches at proof-grade 100%" in table
+    assert "1 reference-only functions (4 curated-extent bytes) excluded" in table
+
+    markdown = render_status_markdown(statuses, totals, manifest=manifest, image=image)
+    assert "**1/2** mapped gameplay functions matched" in markdown
+    assert "**1** reference-only library functions" in markdown
+    assert "(**4** curated-extent bytes)" in markdown
+    assert "## Reference Only (third-party) (1)" in markdown
+
+
 def test_render_status_markdown_splits_progress_sections() -> None:
     def make_status(name: str, address: int, ratio: float) -> ScratchStatus:
         config = ScratchConfig(
@@ -2473,6 +2570,24 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         ),
     )
     assert load_status(candidate_manifest=changed_manifest) is None
+
+    changed_scope_manifest = FunctionSymbolManifest(
+        name=manifest.name,
+        primary_target=manifest.primary_target,
+        reference_target=manifest.reference_target,
+        image_base=manifest.image_base,
+        unwrapped_sha256=manifest.unwrapped_sha256,
+        source_database=manifest.source_database,
+        functions=(
+            FunctionSymbol(
+                address=0x1000,
+                name="foo",
+                match_scope="reference-only",
+            ),
+            manifest.functions[1],
+        ),
+    )
+    assert load_status(candidate_manifest=changed_scope_manifest) is None
 
     changed_flags = ScratchConfig(
         directory=scratch_dir,

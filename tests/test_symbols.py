@@ -28,11 +28,14 @@ def test_default_function_symbol_manifest_loads() -> None:
     assert manifest.functions[8].description is not None
     assert any(function.name == "get_or_create_texture_ref" for function in manifest.functions)
     assert summary["function_count"] == len(manifest.functions)
+    assert summary["gameplay_function_count"] == len(manifest.functions) - 3
+    assert summary["reference_only_function_count"] == 3
     assert summary["described_function_count"] >= 1
     assert summary["alias_count"] >= 2
     assert summary["address_range"]["start"] == f"0x{min_address:x}"
     by_name = {function.name: function for function in manifest.functions}
     assert by_name["update_intro_logo_renderable"].aliases == ("update_logo_row",)
+    assert by_name["initialize_translation_matrix"].match_scope == "reference-only"
 
 
 def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Path) -> None:
@@ -49,6 +52,39 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     assert "description" in raw["functions"][8]
     aliased = next(function for function in raw["functions"] if "aliases" in function)
     assert aliased["aliases"]
+    reference_only = next(
+        function
+        for function in raw["functions"]
+        if function["name"] == "initialize_translation_matrix"
+    )
+    assert reference_only["match_scope"] == "reference-only"
+    assert "match_scope" not in raw["functions"][0]
+
+
+def test_unknown_function_match_scope_is_rejected(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "unknown-match-scope.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "name": "bad manifest",
+                "primary_target": "artifacts/bin/SnailMail_unwrapped.exe",
+                "reference_target": "artifacts/bin/SnailMail.RWG",
+                "image_base": "0x400000",
+                "unwrapped_sha256": "0" * 64,
+                "functions": [
+                    {
+                        "address": "0x405140",
+                        "name": "file_exists",
+                        "match_scope": "ignore",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="match_scope must be one of"):
+        load_function_symbol_manifest(manifest_path)
 
 
 def test_duplicate_symbol_addresses_are_rejected(tmp_path: Path) -> None:

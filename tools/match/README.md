@@ -121,6 +121,13 @@ Useful analysis helpers:
   older scratch name retained during an ownership rename. Aliases resolve
   scratch configs, function extents, and masked call operands without creating
   another function or changing cluster totals; duplicate names are rejected.
+- Set `"match_scope": "reference-only"` on proven third-party library bodies
+  that must remain addressable for semantic scratches, call resolution, and
+  neighboring function extents but are not authored gameplay matching targets.
+  Status keeps their scratch results in a separate reference-only section and
+  excludes their functions, bytes, and fuzzy scores from gameplay totals. The
+  default scope is `"gameplay"`; do not use this field to hide difficult game
+  code.
 - `uv run snail match dump <obj> <function> --side target --start-offset 0x20`
   prints addressed normalized listings. Use this when a region involves jump
   tables, duplicated tails, or branch labels and the side-by-side diff is too

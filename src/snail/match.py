@@ -2793,7 +2793,12 @@ def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
     payload = {
         "image_base": manifest.image_base,
         "functions": [
-            [symbol.address, symbol.name, list(symbol.aliases)]
+            [
+                symbol.address,
+                symbol.name,
+                list(symbol.aliases),
+                symbol.match_scope,
+            ]
             for symbol in manifest.functions
         ],
     }
@@ -3310,6 +3315,8 @@ class ClusterTotals:
     matched_bytes: int
     scratched_functions: int = 0
     fuzzy_weighted_bytes: float = 0.0
+    reference_only_functions: int = 0
+    reference_only_bytes: int = 0
 
     @property
     def byte_percentage(self) -> float:
@@ -3336,20 +3343,27 @@ def manifest_cluster_totals(
     """
     image = load_image(image_path, manifest.image_base)
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
-    addresses = [symbol.address for symbol in functions]
     functions_by_name = _function_symbols_by_name(manifest)
     byte_total = 0
-    for start, end in zip(addresses, addresses[1:]):
-        byte_total += len(image.function_bytes(start, end))
-    last = addresses[-1]
-    padding_index = image.mapped.find(b"\xcc", last - image.image_base)
-    if padding_index != -1:
-        byte_total += len(image.function_bytes(last, image.image_base + padding_index))
+    reference_only_bytes = 0
+    for index, symbol in enumerate(functions):
+        start = symbol.address
+        if index + 1 < len(functions):
+            end = functions[index + 1].address
+        else:
+            padding_index = image.mapped.find(b"\xcc", start - image.image_base)
+            end = image.image_base + padding_index if padding_index != -1 else start
+        target_size = len(image.function_bytes(start, end))
+        if symbol.match_scope == "gameplay":
+            byte_total += target_size
+        else:
+            reference_only_bytes += target_size
 
     scratched_functions = {
         functions_by_name[status.config.function].name
         for status in statuses
         if status.config.function in functions_by_name
+        and functions_by_name[status.config.function].match_scope == "gameplay"
     }
     matched_bytes_by_function: dict[str, int] = {}
     fuzzy_bytes_by_function: dict[str, float] = {}
@@ -3357,7 +3371,10 @@ def manifest_cluster_totals(
         requested_function = status.config.function
         if requested_function not in functions_by_name:
             continue
-        function = functions_by_name[requested_function].name
+        symbol = functions_by_name[requested_function]
+        if symbol.match_scope != "gameplay":
+            continue
+        function = symbol.name
         if status.state == "match":
             matched_bytes_by_function[function] = max(
                 status.target_size,
@@ -3369,17 +3386,24 @@ def manifest_cluster_totals(
                 fuzzy_bytes_by_function.get(function, 0.0),
             )
     return ClusterTotals(
-        function_count=len(addresses),
+        function_count=sum(
+            symbol.match_scope == "gameplay" for symbol in manifest.functions
+        ),
         byte_total=byte_total,
         matched_functions=len(matched_bytes_by_function),
         matched_bytes=sum(matched_bytes_by_function.values()),
         scratched_functions=len(scratched_functions),
         fuzzy_weighted_bytes=sum(fuzzy_bytes_by_function.values()),
+        reference_only_functions=sum(
+            symbol.match_scope == "reference-only" for symbol in manifest.functions
+        ),
+        reference_only_bytes=reference_only_bytes,
     )
 
 
 STATE_ICONS = {"match": "✅", "audit": "⚠", "wip": "🚧", "error": "❌"}
 MISSING_SCRATCH_ICON = "⬜"
+REFERENCE_ONLY_ICON = "📚"
 STATUS_SECTION_ORDER = (
     "Proof Grade",
     "Audit Needed",
@@ -3390,6 +3414,7 @@ STATUS_SECTION_ORDER = (
     "Zero Match (0%)",
     "No Scratch (0%)",
     "Errors",
+    "Reference Only (third-party)",
 )
 # build column stays empty unless a scratch deviates from the project-wide
 # toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
@@ -3464,7 +3489,9 @@ def _missing_scratch_status_rows(
         if status.config.function in functions_by_name
     }
     missing_functions = {
-        symbol.name for symbol in manifest.functions if symbol.name not in scratched_functions
+        symbol.name
+        for symbol in manifest.functions
+        if symbol.match_scope == "gameplay" and symbol.name not in scratched_functions
     }
     if not missing_functions:
         return []
@@ -3504,6 +3531,7 @@ def render_status_rows(
     image: LoadedImage | None = None,
 ) -> list[tuple[str, ...]]:
     rows = []
+    functions_by_name = _function_symbols_by_name(manifest) if manifest is not None else {}
     for status in sorted(statuses, key=lambda item: item.address):
         ratio = f"{status.ratio:.2%}" if status.ratio is not None else "-"
         insns = (
@@ -3518,9 +3546,14 @@ def render_status_rows(
         )
         build = f"{status.config.compiler} {status.config.cflags}"
         default_build = f"{DEFAULT_SCRATCH_COMPILER} {DEFAULT_SCRATCH_CFLAGS}"
+        symbol = functions_by_name.get(status.config.function)
+        reference_only = symbol is not None and symbol.match_scope == "reference-only"
+        note = status.error or ""
+        if reference_only:
+            note = "third-party reference only" + (f"; {note}" if note else "")
         rows.append(
             (
-                STATE_ICONS[status.state],
+                REFERENCE_ONLY_ICON if reference_only else STATE_ICONS[status.state],
                 status.config.function,
                 f"0x{status.address:x}",
                 str(status.target_size),
@@ -3529,7 +3562,7 @@ def render_status_rows(
                 prefix,
                 _format_masked_counts(status),
                 "" if build == default_build else build,
-                status.error or "",
+                note,
             )
         )
     rows.extend(_missing_scratch_status_rows(statuses, manifest, image_path, image))
@@ -3549,6 +3582,8 @@ def _row_match_ratio(row: tuple[str, ...]) -> float | None:
 
 def _status_row_section(row: tuple[str, ...]) -> str:
     icon = row[0]
+    if icon == REFERENCE_ONLY_ICON:
+        return "Reference Only (third-party)"
     if icon == "✅":
         return "Proof Grade"
     if icon == "⚠":
@@ -3587,16 +3622,35 @@ def _section_status_rows(rows: list[tuple[str, ...]]) -> list[tuple[str, list[tu
     return sections
 
 
-def _cluster_summary(totals: ClusterTotals, statuses: list[ScratchStatus]) -> str:
-    exact_scratches = sum(status.state == "match" for status in statuses)
-    return (
+def _cluster_summary(
+    totals: ClusterTotals,
+    statuses: list[ScratchStatus],
+    manifest: FunctionSymbolManifest | None = None,
+) -> str:
+    tracked_statuses = statuses
+    if manifest is not None:
+        functions_by_name = _function_symbols_by_name(manifest)
+        tracked_statuses = [
+            status
+            for status in statuses
+            if (symbol := functions_by_name.get(status.config.function)) is None
+            or symbol.match_scope == "gameplay"
+        ]
+    exact_scratches = sum(status.state == "match" for status in tracked_statuses)
+    summary = (
         f"cluster: {totals.matched_functions}/{totals.function_count} functions proof-grade, "
         f"{totals.matched_bytes}/{totals.byte_total} bytes "
         f"({totals.byte_percentage:.2%}) proof-grade; "
         f"{totals.scratched_functions}/{totals.function_count} functions have scratches; "
         f"overall fuzzy {totals.fuzzy_percentage:.2%}; "
-        f"{exact_scratches}/{len(statuses)} scratches at proof-grade 100%"
+        f"{exact_scratches}/{len(tracked_statuses)} scratches at proof-grade 100%"
     )
+    if totals.reference_only_functions:
+        summary += (
+            f"; {totals.reference_only_functions} reference-only functions "
+            f"({totals.reference_only_bytes} curated-extent bytes) excluded"
+        )
+    return summary
 
 
 def render_status_table(
@@ -3619,7 +3673,7 @@ def render_status_table(
             "  ".join(cell.ljust(width) for cell, width in zip(row, widths)).rstrip()
             for row in rows
         )
-    lines.append(f"\n{_cluster_summary(totals, statuses)}")
+    lines.append(f"\n{_cluster_summary(totals, statuses, manifest)}")
     if type_findings is not None:
         lines.append(_type_consolidation_console_summary(type_findings))
     return "\n".join(lines)
@@ -3644,6 +3698,16 @@ def render_status_markdown(
         f"{totals.byte_total}** bytes (**{totals.byte_percentage:.2%}**) are "
         f"proof-grade, and overall fuzzy is **{totals.fuzzy_percentage:.2%}**.",
     ]
+    if totals.reference_only_functions:
+        lines.extend(
+            [
+                "",
+                f"**{totals.reference_only_functions}** reference-only library functions "
+                f"(**{totals.reference_only_bytes}** curated-extent bytes) remain "
+                "available for semantic and extent context but are excluded from "
+                "gameplay totals.",
+            ]
+        )
     rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
     for title, section_rows in _section_status_rows(rendered_rows):
         lines.extend(

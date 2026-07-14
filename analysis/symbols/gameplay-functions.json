@@ -3892,17 +3892,20 @@
     {
       "address": "0x44fd90",
       "name": "initialize_translation_matrix",
-      "description": "Builds a 4x4 identity matrix with the supplied xyz translation in slots `+0x30/+0x34/+0x38`. `draw_sprite_quad` uses this helper to place one sprite quad in world space before submission."
+      "match_scope": "reference-only",
+      "description": "DirectX 8 SDK `D3DXMatrixTranslation` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for game callsites, but excluded from authored gameplay matching totals."
     },
     {
       "address": "0x450314",
       "name": "build_perspective_projection_matrix",
-      "description": "Builds the renderer's D3D-style perspective projection matrix from vertical FOV in radians, viewport aspect ratio, near plane, and far plane. Called by both `render_camera` and toon-outline setup."
+      "match_scope": "reference-only",
+      "description": "DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from authored gameplay matching totals."
     },
     {
       "address": "0x451ad9",
       "name": "build_camera_view_matrix",
-      "description": "Builds the view matrix from camera eye, target, and up vectors by normalizing the look, right, and up axes and storing translated dot products. Called by `render_camera`."
+      "match_scope": "reference-only",
+      "description": "DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera`, but excluded from authored gameplay matching totals."
     }
   ],
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb"
