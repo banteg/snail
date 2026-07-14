@@ -62,7 +62,8 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
             color_44.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.postal_records;
-        g_game->subgame.sub_high_score.active_record_count = 10;
+        g_game->subgame.sub_high_score.active_record_count =
+            SUB_HIGH_SCORE_TOP_TEN_COUNT;
         row_step = 27.0f;
         break;
     case 1:
@@ -71,7 +72,8 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
             color_45.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.survival_records;
-        g_game->subgame.sub_high_score.active_record_count = 10;
+        g_game->subgame.sub_high_score.active_record_count =
+            SUB_HIGH_SCORE_TOP_TEN_COUNT;
         row_step = 27.0f;
         break;
     }
@@ -220,9 +222,10 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
         }
         ++row_index;
         record_offset += SUB_SOLUTION_STRIDE;
-    } while (record_offset < SUB_SOLUTION_STRIDE * 10);
+    } while (record_offset
+        < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);
 
-    y = row_step * 10.0f + 111.0f;
+    y = row_step * (float)SUB_HIGH_SCORE_TOP_TEN_COUNT + 111.0f;
     if (entering_name != 0) {
         cancel_name_button = g_game->border_manager.allocate_border();
         cancel_name_button->initialize_frontend_widget(

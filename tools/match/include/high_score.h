@@ -6,7 +6,7 @@
 
 #include "frontend_widget.h"
 #include "game_base.h"
-#include "sub_solution.h"
+#include "sub_high_score.h"
 #include "runtime_config.h"
 #include "sprite.h"
 
@@ -29,11 +29,12 @@ public:
     FrontendWidget* bank_toggle_button; // +0x20
     FrontendWidget* cancel_name_button; // +0x24, Cancel/Escape
     FrontendWidget* submit_name_button; // +0x28, Submit/Enter
-    FrontendWidget* row_background_widgets[10]; // +0x2c, full-row hit/tint strips
-    FrontendWidget* rank_row_widgets[10]; // +0x54, displayed 1..10 ranks
-    FrontendWidget* name_row_widgets[10]; // +0x7c, editable player names
-    FrontendWidget* score_row_widgets[10]; // +0xa4, score/time values
-    FrontendWidget* replay_row_widgets[10]; // +0xcc, replay actions
+    FrontendWidget*
+        row_background_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x2c
+    FrontendWidget* rank_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x54
+    FrontendWidget* name_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x7c
+    FrontendWidget* score_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xa4
+    FrontendWidget* replay_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xcc
 };
 
 typedef char HighScore_known_extent_must_be_0xf4[

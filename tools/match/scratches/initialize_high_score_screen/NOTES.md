@@ -80,3 +80,23 @@ Expected residuals:
   focused Wibo remains 98.00%, 600/600 instructions, prefix 80, with all 137
   masked operands clean. The twelve honest `Color4f` stack-slot permutations
   remain the only residuals.
+
+## 2026-07-14 displayed-rank ownership
+
+The controller's five ten-handle row banks, its two active-record count stores,
+and the `10 * sizeof(SubSolution)` traversal all describe the displayed top-ten
+window borrowed from `SubHighScore`. They now derive from
+`SUB_HIGH_SCORE_TOP_TEN_COUNT`; the persistent postal and survival owners still
+retain eleven records because their extra insertion slot is storage, not a
+displayed row.
+
+The initializer and all six other `high_score.h` consumers remain
+byte-identical. Their normalized hashes are:
+
+- screen initializer: `0bd39df55b25c241ad994edecd5954938f282ed8556f066717dd0a6e55cc1f5e`
+- screen update: `6e0cd1a0d6d6d15df6961385f03773f5bed35411db0fa5290b6d65143c4985a6`
+- screen teardown: `c03b27ab14b4b1ce8adf08e13231c6b0de84dd3ba6ebf412d9c84e5293e51b71`
+- screen exit: `1a66ead55fa149798bec6e6f9975f7c82b6098b498364f67c5c945eee70b2b2f`
+- entry initializer: `a75572ab1c999e728b3bf9356515c35b99667c5991e253bcb5826e50e91b3b5d`
+- compact serializer: `42e7a54dd829b5591e8c6fbad3179da8ad3ec37584c975207a0fdb73cd1d8445`
+- compact deserializer: `61da5c69624b6c1ceacbaf10df68a57e4605bed0c22aa580090a32b06fe52f93`
