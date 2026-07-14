@@ -1,5 +1,7 @@
 // load_galaxy_layout @ 0x4088e0 (thiscall)
 
+#include <stddef.h>
+
 #include "game_root.h"
 
 int sprintf(char* buffer, char* format, ...);
@@ -51,7 +53,29 @@ void Galaxy::load_galaxy_layout()
     int star_group_offset = 0;
     int star_index = 0;
     float* current_galaxy_point = &g_galaxy_group_points[0].y;
-    int* route_name_cursor = (int*)((char*)route_names + 0x84);
+    enum {
+        ROUTE_NAME_COLOR_TO_NAME =
+            offsetof(GalaxyRouteNameRecord, name)
+            - offsetof(GalaxyRouteNameRecord, color),
+        ROUTE_NAME_COLOR_TO_STAR_COUNT =
+            (offsetof(GalaxyRouteNameRecord, star_count)
+             - offsetof(GalaxyRouteNameRecord, color))
+            / sizeof(int),
+        ROUTE_NAME_COLOR_TO_MAP_X =
+            (offsetof(GalaxyRouteNameRecord, map_x_bits)
+             - offsetof(GalaxyRouteNameRecord, color))
+            / sizeof(int),
+        ROUTE_NAME_COLOR_TO_MAP_Y =
+            (offsetof(GalaxyRouteNameRecord, map_y_bits)
+             - offsetof(GalaxyRouteNameRecord, color))
+            / sizeof(int),
+        ROUTE_NAME_COLOR_TO_MAP_Z =
+            (offsetof(GalaxyRouteNameRecord, map_z_bits)
+             - offsetof(GalaxyRouteNameRecord, color))
+            / sizeof(int),
+        ROUTE_NAME_COLOR_STRIDE = sizeof(GalaxyRouteNameRecord) / sizeof(int),
+    };
+    int* route_name_cursor = (int*)&route_names[0].color;
 
     while (1) {
         char marker[64];
@@ -66,7 +90,7 @@ void Galaxy::load_galaxy_layout()
             goto missing_quote;
 
         cursor += 1;
-        char* name_cursor = (char*)(route_name_cursor - 33);
+        char* name_cursor = (char*)route_name_cursor + ROUTE_NAME_COLOR_TO_NAME;
         while (*cursor != '"') {
             *name_cursor++ = *cursor;
             cursor += 1;
@@ -75,23 +99,32 @@ void Galaxy::load_galaxy_layout()
 
         cursor = find_case_insensitive_substring("StarNumber=", cursor);
         cursor = find_case_insensitive_substring("=", cursor) + 1;
-        route_name_cursor[-1] = parse_next_signed_int(&cursor);
+        route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT] =
+            parse_next_signed_int(&cursor);
         route_name_cursor[0] = 0x3f800000;
         route_name_cursor[1] = 0x3f800000;
         route_name_cursor[2] = 0x3f800000;
         route_name_cursor[3] = 0x3f4ccccd;
-        route_name_cursor[4] = *(int*)&current_galaxy_point[-1];
-        route_name_cursor[5] = *(int*)&current_galaxy_point[0];
-        route_name_cursor[6] = star_index;
+        route_name_cursor[ROUTE_NAME_COLOR_TO_MAP_X] =
+            *(int*)&current_galaxy_point[-1];
+        route_name_cursor[ROUTE_NAME_COLOR_TO_MAP_Y] =
+            *(int*)&current_galaxy_point[0];
+        route_name_cursor[ROUTE_NAME_COLOR_TO_MAP_Z] = star_index;
 
-        for (int step = 0; star_index < route_name_cursor[-1]; step += 10) {
+        for (int step = 0;
+             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];
+             step += 10) {
             route_slots[record_count].record.route_name_index = galaxy_index;
             route_slots[record_count].record.map_x_bits =
                 g_galaxy_route_points[
-                    star_group_offset + step / route_name_cursor[-1] + 1].x_bits;
+                    star_group_offset
+                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]
+                    + 1].x_bits;
             route_slots[record_count].record.map_y_bits =
                 g_galaxy_route_points[
-                    star_group_offset + step / route_name_cursor[-1] + 1].y_bits;
+                    star_group_offset
+                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]
+                    + 1].y_bits;
             route_slots[record_count].record.map_z_bits = 0;
 
             char missing_label[128];
@@ -110,7 +143,7 @@ void Galaxy::load_galaxy_layout()
         current_galaxy_point += 2;
         ++galaxy_index;
         star_group_offset += 10;
-        route_name_cursor += 40;
+        route_name_cursor += ROUTE_NAME_COLOR_STRIDE;
         if ((int)current_galaxy_point < 0x4a1ca0)
             continue;
 

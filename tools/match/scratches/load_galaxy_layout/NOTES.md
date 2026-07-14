@@ -112,3 +112,18 @@ instructions, prefix 62/233, and 39 clean masked operands. A scoped marker
 match temporary regressed to 87.85%, while direct terminal error returns
 regressed to 86.14%; both were reverted. The retained out-of-line error tails
 and cursor assignment remain the best evidence-backed Windows source shape.
+
+## 2026-07-14 route-name cursor ownership
+
+The retained interior cursor now starts at `route_names[0].color`, and every
+backward/forward lane plus its record stride is derived with `offsetof` and
+`sizeof(GalaxyRouteNameRecord)`. This removes the raw `route_names +0x84`,
+`-33`-dword name recovery, and literal 40-dword stride while preserving the
+native cursor lifetime. Focused Wibo remains byte-shape neutral at 88.27%,
+236/233 instructions, prefix 62, with all 39 masked operands clean.
+
+Binary Ninja independently shows `0x4a2040` as both the sole code-referenced
+route-point y-cursor terminus and the start of a 25-byte string. A derived
+`g_galaxy_route_points +0x32c` relocation is byte-identical but becomes
+audit-ambiguous against that real string owner, so the overlapping terminal
+literal is intentionally retained rather than inventing a second global.
