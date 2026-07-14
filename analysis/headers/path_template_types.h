@@ -524,6 +524,12 @@ typedef struct ProgressBar {
     uint8_t _empty;
 } ProgressBar;
 
+typedef enum WarningState {
+    WARNING_STATE_INACTIVE = 0,
+    WARNING_STATE_OPAQUE = 1,
+    WARNING_STATE_FADING = 2,
+} WarningState;
+
 /*
  * Authored cRWarning, exact 0x10-byte Windows owner at Player +0x3f4.
  * Native functions: initialize_warning @ 0x446e80, uninit_warning @ 0x446f10,
@@ -532,7 +538,7 @@ typedef struct ProgressBar {
  * Mobile variants retain the owner and lifecycle but add fields before border.
  */
 typedef struct Warning {
-    int32_t state;
+    WarningState state;
     float phase;
     float phase_step;
     FrontendWidget* border;

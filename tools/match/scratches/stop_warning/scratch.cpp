@@ -4,6 +4,6 @@
 
 void Warning::stop_warning()
 {
-    state = 0;
+    state = WARNING_STATE_INACTIVE;
     border->hide_border_init();
 }

@@ -16,5 +16,5 @@ void Warning::initialize_warning()
     border->hide_border_init();
     phase_step = 0.0833333358f;
     phase = 0.0f;
-    state = 0;
+    state = WARNING_STATE_INACTIVE;
 }

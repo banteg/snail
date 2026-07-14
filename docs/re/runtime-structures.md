@@ -361,7 +361,13 @@ Current practical read:
 
 - `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
 - `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
-- the controller owns a separate warning actor through `start_warning` / `update_warning` / `stop_warning`
+- the controller drives the exact `0x10`-byte authored `cRWarning` at
+  `player + 0x3f4` through `start_warning` / `update_warning` / `stop_warning`
+  - `WarningState` is a complete three-state graph: `INACTIVE (0)`,
+    `OPAQUE (1)`, and `FADING (2)`
+  - `start_warning` seeds the fading phase at `1.0`, forcing the next update to
+    wrap into opaque and play sample 50; opaque then advances back into the
+    fading/zero-hold half-cycle until `stop_warning` returns it to inactive
 - `apply_damage_gauge_delta` ignores unforced positive damage while `state == 2`;
   the state-2 auto-drain path is the forced caller
 - `apply_damage_gauge_delta` also ignores all unforced deltas while the sign bit

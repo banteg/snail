@@ -5,6 +5,12 @@
 
 #include "frontend_widget.h"
 
+enum WarningState {
+    WARNING_STATE_INACTIVE = 0,
+    WARNING_STATE_OPAQUE = 1,
+    WARNING_STATE_FADING = 2,
+};
+
 class Warning {
 public:
     void initialize_warning(); // @ 0x446e80, cRWarning::Init
@@ -14,7 +20,7 @@ public:
     void stop_warning_sample(); // @ 0x446f60, cRWarning::StopSample
     void update_warning(); // @ 0x446f80, cRWarning::AI
 
-    int state; // +0x00: 0 idle, 1 fill, 2 fade
+    WarningState state; // +0x00
     float phase; // +0x04
     float phase_step; // +0x08
     FrontendWidget* border; // +0x0c

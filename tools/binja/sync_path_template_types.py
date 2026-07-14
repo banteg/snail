@@ -235,6 +235,7 @@ REQUIRED_HEADER_STRUCTS = (
     "PathPair",
     "DamageGuage",
     "ProgressBar",
+    "WarningState",
     "Warning",
     "SubPause",
     "Nuke",
@@ -446,6 +447,10 @@ JETPACK_FIELD_UPDATES = (
     ("0x44", "owner_game", "SubgameRuntime*"),
     ("0x74", "vapour_a", "Vapour"),
     ("0x108", "vapour_b", "Vapour"),
+)
+
+WARNING_FIELD_UPDATES = (
+    ("0x00", "state", "WarningState"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -1216,6 +1221,7 @@ def main() -> int:
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
+                ("Warning", WARNING_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),

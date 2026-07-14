@@ -81,3 +81,13 @@ from +0x1ac through +0x20b, so +0x208 is `hot_text_color.a`, not a standalone
 warning-overlay field. The source now writes that owned color lane directly;
 focused Wibo remains 98.08%, 52/52 instructions, with the same honest
 `sub`/`cmp` residual.
+
+## 2026-07-14 warning lifecycle ownership
+
+The two live arms now name the recovered graph as
+`WARNING_STATE_OPAQUE <-> WARNING_STATE_FADING`; zero remains the inactive
+state owned by `Init` and `Stop`. Binary Ninja reports nine field references:
+the six direct reads/writes are confined to `Init`, `Start`, `Stop`, and `AI`,
+while the remaining three are whole-owner references from subgame/player
+clients. Focused output remains byte-stable at 98.08%, 52/52 instructions,
+prefix 8, with all seven operands clean and the same `sub`/`cmp` residual.

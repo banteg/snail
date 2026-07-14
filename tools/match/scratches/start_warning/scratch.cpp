@@ -5,6 +5,6 @@
 void Warning::start_warning()
 {
     phase = 1.0f;
-    state = 2;
+    state = WARNING_STATE_FADING;
     border->unhide_border_init();
 }

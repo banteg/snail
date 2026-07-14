@@ -27,3 +27,10 @@ instructions with six clean masked operands.
 to +0x178 and the draw path uses it as the optional second-sprite offset, so
 the field is now `sprite_shadow_offset`, not warning state. Warning setup clears
 that presentation effect. Focused Wibo remains exact at 32/32 instructions.
+
+## 2026-07-14 warning lifecycle ownership
+
+Initialization now names the authored controller's reset state as
+`WARNING_STATE_INACTIVE`. The complete Windows field-xref set and Android
+`cRWarning` methods expose only states 0, 1, and 2. Focused output remains exact
+at 32/32 instructions with six clean operands.

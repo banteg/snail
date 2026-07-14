@@ -784,6 +784,38 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
         assert constant in scratch
 
 
+def test_warning_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/warning.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"WarningState",' in path_sync
+    assert '("0x00", "state", "WarningState")' in path_sync
+    for header in (analysis_header, matcher_header):
+        assert "WARNING_STATE_INACTIVE = 0" in header
+        assert "WARNING_STATE_OPAQUE = 1" in header
+        assert "WARNING_STATE_FADING = 2" in header
+
+    consumers = {
+        "initialize_warning": "WARNING_STATE_INACTIVE",
+        "start_warning": "WARNING_STATE_FADING",
+        "stop_warning": "WARNING_STATE_INACTIVE",
+        "update_warning": "WARNING_STATE_OPAQUE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

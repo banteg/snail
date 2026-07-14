@@ -14,7 +14,7 @@ void Warning::update_warning()
     if (!g_game->subgame.subgame_pause_gate && state) {
         float advanced;
         switch (state) {
-        case 2:
+        case WARNING_STATE_FADING:
             if (phase < 0.5f)
                 border->hot_text_color.a = 1.0f - (phase + phase);
             else
@@ -23,17 +23,17 @@ void Warning::update_warning()
             phase = advanced;
             if (advanced > 1.0f) {
                 phase = 0.0f;
-                state = 1;
+                state = WARNING_STATE_OPAQUE;
                 g_sound_effect_manager.play_sound_effect(50);
             }
             break;
-        case 1:
+        case WARNING_STATE_OPAQUE:
             border->hot_text_color.a = 0.99900001f;
             advanced = phase_step + phase;
             phase = advanced;
             if (advanced > 1.0f) {
                 phase = 0.0f;
-                state = 2;
+                state = WARNING_STATE_FADING;
             }
             break;
         }
