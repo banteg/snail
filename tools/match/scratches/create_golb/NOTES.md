@@ -234,3 +234,17 @@ Residuals:
 - The source retains its existing typed/raw splice schedules, but no longer
   invents global anchors from root offsets. Focused output is unchanged at
   36.08%, 460/582 instructions, prefix 1/582, with 35 clean operands.
+
+## 2026-07-14 complete projectile receiver ownership
+
+The final byte-shaped `self` alias is gone. The two creation latches are the
+shared `GolbShot::skip_one_tick` and `slug_bounce_armed` fields, including the
+attachment-family arm that raises the skip latch. The tail virtual dispatch
+now borrows the zero-offset `primary_body` explicitly, which is the
+`RenderableBod` that owns the installed callback word; it does not invent a
+second vptr on `GolbShot`.
+
+This promotion is byte-stable at the honest 36.08%, 460/582 instruction
+frontier, prefix 1/582, with all 35 masked operands clean. The deliberately
+raw kind-2 list splice remains unchanged because its word-slice schedule is a
+measured source-shape improvement, not missing projectile ownership.

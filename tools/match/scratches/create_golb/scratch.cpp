@@ -22,10 +22,8 @@ int next_math_random_value();
 
 void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
 {
-    char* self = (char*)this;
-
-    self[0x1bc] = 0;
-    self[0x1bd] = 0;
+    skip_one_tick = 0;
+    slug_bounce_armed = 0;
 
     BodNode* body = &primary_body;
     if ((body->list_flags & 0x200) != 0) {
@@ -109,7 +107,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
                     SNAIL_HOTSPOT_LASER_LEFT].z;
             else
                 spawn_selector = 0;
-            self[0x1bc] = 1;
+            skip_one_tick = 1;
             velocity.x = 0.0f;
             velocity.y = 0.0f;
             velocity.z = player->velocity.z + 1.0f;
@@ -314,5 +312,5 @@ after_movement_flag_source:
     Vec3* previous_output = &previous_flight_transform.position;
     *previous_output = *position;
 
-    ((BodAiDispatch*)self)->update_bod_ai();
+    ((BodAiDispatch*)&primary_body)->update_bod_ai();
 }
