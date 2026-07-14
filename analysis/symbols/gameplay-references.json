@@ -69,6 +69,16 @@
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetZoom(float) member."
     },
     {
+      "address": "0x410f40",
+      "name": "set_backdrop_texture_target",
+      "kind": "function",
+      "aliases": [
+        "set_backdrop_world",
+        "sub_410f40"
+      ],
+      "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
+    },
+    {
       "address": "0x42f0a0",
       "name": "load_png_image",
       "kind": "function",

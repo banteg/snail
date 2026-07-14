@@ -767,6 +767,24 @@ Current practical read:
   - the hide-release lane is now modeled as the recovered `+0x8` accumulator and `+0xc = 1/3600` step reset after each probe pass; the remaining static gap is the dormant launch-step producer at `+0x14`
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
+## Backdrop
+
+The Windows root owns one exact `0x6cc`-byte `cRBackdrop`-compatible object at
+`GameRoot +0x4ec10`.
+
+- `BackdropDistortCell distort_grid[8][8]` owns the full `+0x58..+0x657`
+  animated warp grid.
+- `+0x67c` and `+0x69c` begin two parallel 0x20-byte
+  `BackdropWorldBlend` records. Each owns a constructed `Color4f`, blend
+  fraction, blend step, previous world, and current world.
+- Android's symbolized `cRBackdrop::SetWorld(int)` performs the same state
+  transition as Windows `0x410f40`: invert both blend fractions, shift current
+  to previous, and install the new world in both records.
+- Windows' only two callers discard EAX, and the 14-instruction exact scratch
+  remains byte-identical with a `void` contract. The old
+  `set_backdrop_texture_target` spelling remains only as the stable Windows
+  harness identity.
+
 ## Frontend Widget
 
 The shared front-end widget runtime now has a checked-in conservative type lane.

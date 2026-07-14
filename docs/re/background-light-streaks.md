@@ -11,7 +11,7 @@ The key result is:
 
 The backdrop renderer itself is still the same `8 x 8` warped quad pass already ported in Zig:
 
-- `change_backdrop_real` and `set_backdrop_texture_target` only swap or fade backdrop textures and refresh the distortion state
+- `change_backdrop_real` and the authored `cRBackdrop::SetWorld(int)` transition only swap/fade backdrop worlds and refresh the distortion state
 - `update_backdrop` advances the distortion grid, chooses the split-vs-single draw path, and calls `render_backdrop`
 - `render_backdrop` walks the warped grid and submits textured quads through `sub_44aac0`
 

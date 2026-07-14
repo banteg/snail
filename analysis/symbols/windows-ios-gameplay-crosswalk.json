@@ -232,6 +232,14 @@
       "notes": "All ports seed the owned backdrop distortion grid from one amplitude; Windows uses a fixed 8x8 BackdropDistortCell matrix while mobile sizes the equivalent grid from its active subdivision count."
     },
     {
+      "address": "0x410f40",
+      "windows_name": "set_backdrop_texture_target",
+      "android_symbol": "cRBackdrop::SetWorld(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "The Android member has the same two parallel state transitions as Windows: invert blend, shift current world to previous world, and install the argument as current world. Both Windows callers discard the incidental return register, and the exact Windows source remains 14/14 when declared void."
+    },
+    {
       "address": "0x411040",
       "windows_name": "render_backdrop",
       "ios_symbol": "cRBackdrop::Render()",

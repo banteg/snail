@@ -83,6 +83,8 @@ intentional.
 
 - `bn_frontend_widget_types.h`
 - `uv run python tools/binja/sync_frontend_widget_types.py`
+- `bn_backdrop_types.h`
+- `uv run python tools/binja/sync_backdrop_types.py`
 - `bn_frame_renderer_types.h`
 - `uv run python tools/binja/sync_frame_renderer_types.py`
 - `bn_input_state_types.h`

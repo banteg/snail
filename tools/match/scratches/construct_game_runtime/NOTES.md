@@ -425,14 +425,15 @@ __CxxFrameHandler` body with native `0x496a7b`. The accumulated
 `$L6041/$L6044/$L6050/$L6079` aliases are removed; the current label remains
 verified structurally rather than whitelisted.
 
-## 2026-07-14 backdrop color ownership
+## 2026-07-14 backdrop world-blend ownership
 
 - `construct_game_runtime` invokes `Color4f::noop_this_constructor()` on the
   exact 16-byte `Backdrop` ranges at `+0x67c` and `+0x69c`, proving that both
-  former byte gaps are owned `Color4f` subobjects.
-- Binary Ninja constant-reference sweeps found no semantic consumer that would
-  justify stronger names. They remain offset-named `unknown_color_67c` and
-  `unknown_color_69c` instead of guessing their role.
+  ranges begin owned `BackdropWorldBlend` subobjects.
+- Android's authored `cRBackdrop::SetWorld(int)` independently proves the
+  repeated 0x20-byte grouping: each color is followed by blend, blend step,
+  previous world, and current world lanes. The two records remain generically
+  primary/secondary because no port proves a stronger role for either lane.
 - Direct member construction preserves the normalized candidate listing
   byte-for-byte (`bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`)
   and the honest 88.89% focused result (`299/268`, prefix `2/268`, 120 clean

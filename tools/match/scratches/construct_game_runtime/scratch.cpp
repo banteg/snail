@@ -155,8 +155,8 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         Backdrop* backdrop = &root->backdrop;
         backdrop->initialize_bod_base();
-        backdrop->unknown_color_67c.noop_this_constructor();
-        backdrop->unknown_color_69c.noop_this_constructor();
+        backdrop->primary_world_blend.color.noop_this_constructor();
+        backdrop->secondary_world_blend.color.noop_this_constructor();
         backdrop->vtable = &g_backdrop_callback_table;
 
         StarManager* star_manager = &root->star_manager;

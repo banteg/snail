@@ -738,7 +738,7 @@
     {
       "address": "0x410f40",
       "name": "set_backdrop_texture_target",
-      "description": "Captures the current and next backdrop texture ids and resets the internal crossfade counters inside the shared backdrop renderer."
+      "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member. It flips both owned world-blend fractions, shifts each current world into its previous slot, and installs the new world in both 0x20-byte BackdropWorldBlend records."
     },
     {
       "address": "0x410f90",

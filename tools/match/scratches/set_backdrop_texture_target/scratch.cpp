@@ -1,15 +1,15 @@
 // set_backdrop_texture_target @ 0x410f40 (thiscall, ret 0x4)
+// Cross-port authored name: cRBackdrop::SetWorld(int).
 
 #include "backdrop.h"
 
-int Backdrop::set_backdrop_texture_target(int texture_id)
+void Backdrop::set_backdrop_world(int world)
 {
-    primary_blend = 1.0f - primary_blend;
-    previous_primary_texture = current_primary_texture;
-    int old_secondary = current_secondary_texture;
-    current_primary_texture = texture_id;
-    previous_secondary_texture = old_secondary;
-    secondary_blend = 1.0f - secondary_blend;
-    current_secondary_texture = texture_id;
-    return texture_id;
+    primary_world_blend.blend = 1.0f - primary_world_blend.blend;
+    primary_world_blend.previous_world = primary_world_blend.current_world;
+    int old_secondary = secondary_world_blend.current_world;
+    primary_world_blend.current_world = world;
+    secondary_world_blend.previous_world = old_secondary;
+    secondary_world_blend.blend = 1.0f - secondary_world_blend.blend;
+    secondary_world_blend.current_world = world;
 }

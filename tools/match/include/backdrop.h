@@ -16,6 +16,16 @@ struct BackdropDistortCell {
 typedef char BackdropDistortCell_must_be_0x18[
     (sizeof(BackdropDistortCell) == 0x18) ? 1 : -1];
 
+struct BackdropWorldBlend {
+    Color4f color; // +0x00, constructed as a Color4f at startup
+    float blend; // +0x10
+    float blend_step; // +0x14
+    int previous_world; // +0x18
+    int current_world; // +0x1c
+};
+typedef char BackdropWorldBlend_must_be_0x20[
+    (sizeof(BackdropWorldBlend) == 0x20) ? 1 : -1];
+
 class Backdrop : public BodBase {
 public:
     void set_backdrop_zoom(float zoom); // @ 0x410c30, iOS cRBackdrop::SetZoom(float)
@@ -23,7 +33,7 @@ public:
     void change_backdrop(LandscapeScriptRecord* record, char flip); // @ 0x410d50
     void change_backdrop_real(); // @ 0x410dc0
     void initialize_backdrop(int last_mode); // @ 0x410e20
-    int set_backdrop_texture_target(int texture_id); // @ 0x410f40
+    void set_backdrop_world(int world); // @ 0x410f40, Android cRBackdrop::SetWorld(int)
     int draw_split_backdrop(); // @ 0x410f90
 #ifdef BACKDROP_RENDER_BACKDROP_RETURNS_VOID
 #define BACKDROP_RENDER_BACKDROP_RESULT void
@@ -66,16 +76,8 @@ public:
     float unknown_670; // +0x670
     float unknown_674; // +0x674
     float unknown_678; // +0x678
-    Color4f unknown_color_67c; // +0x67c, constructed as a Color4f at startup
-    float primary_blend; // +0x68c
-    float primary_blend_step; // +0x690
-    int previous_primary_texture; // +0x694
-    int current_primary_texture; // +0x698
-    Color4f unknown_color_69c; // +0x69c, constructed as a Color4f at startup
-    float secondary_blend; // +0x6ac
-    float secondary_blend_step; // +0x6b0
-    int previous_secondary_texture; // +0x6b4
-    int current_secondary_texture; // +0x6b8
+    BackdropWorldBlend primary_world_blend; // +0x67c
+    BackdropWorldBlend secondary_world_blend; // +0x69c
     float unknown_6bc; // +0x6bc
     float unknown_6c0; // +0x6c0
     int unknown_6c4; // +0x6c4

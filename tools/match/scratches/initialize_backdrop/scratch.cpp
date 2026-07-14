@@ -15,7 +15,7 @@ void Backdrop::initialize_backdrop(int last_mode)
     unknown_6bc = 0.0f;
     unknown_6c0 = 0.003333333414f;
 
-    set_backdrop_texture_target(5);
+    set_backdrop_world(5);
 
     unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
     if ((render_flags & 1) != 0) {
@@ -41,20 +41,20 @@ void Backdrop::initialize_backdrop(int last_mode)
         unknown_678 = -0.003490658710f;
         break;
     default:
-        set_backdrop_texture_target(0);
+        set_backdrop_world(0);
         set_backdrop_distort(0.0f);
         return;
     }
 
-    previous_primary_texture = 0;
-    current_primary_texture = 0;
-    primary_blend = 1.0f;
-    primary_blend_step = 0.005555555690f;
-    previous_secondary_texture = 0;
-    current_secondary_texture = 0;
-    secondary_blend = 1.0f;
-    secondary_blend_step = 0.004166666884f;
+    primary_world_blend.previous_world = 0;
+    primary_world_blend.current_world = 0;
+    primary_world_blend.blend = 1.0f;
+    primary_world_blend.blend_step = 0.005555555690f;
+    secondary_world_blend.previous_world = 0;
+    secondary_world_blend.current_world = 0;
+    secondary_world_blend.blend = 1.0f;
+    secondary_world_blend.blend_step = 0.004166666884f;
 
-    set_backdrop_texture_target(0);
+    set_backdrop_world(0);
     set_backdrop_distort(0.0f);
 }
