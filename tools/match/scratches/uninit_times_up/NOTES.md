@@ -7,3 +7,9 @@ allocation itself.
 
 The primary 0x10-byte `TimesUp` owner remains exact at 8/8 instructions with
 both operands clean.
+
+## 2026-07-14 times-up lifecycle ownership
+
+Teardown now tests `TIMES_UP_STATE_INACTIVE` explicitly. Both active states
+still release the borrowed border through the root manager, and focused
+matching remains exact at 8/8 instructions with both operands clean.

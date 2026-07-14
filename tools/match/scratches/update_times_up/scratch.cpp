@@ -9,18 +9,18 @@ extern GameRoot* g_game; // data_4df904
 void TimesUp::update_times_up()
 {
     switch (state) {
-        case 0:
+        case TIMES_UP_STATE_INACTIVE:
             return;
-        case 1:
+        case TIMES_UP_STATE_DISPLAYING:
             progress = progress_step + progress;
             if (progress > 1.0f) {
-                state = 2;
+                state = TIMES_UP_STATE_EXPIRED;
             }
             break;
-        case 2:
+        case TIMES_UP_STATE_EXPIRED:
             uninit_times_up();
             g_game->subgame.player.kill_subgoldy();
-            state = 0;
+            state = TIMES_UP_STATE_INACTIVE;
             break;
     }
 }

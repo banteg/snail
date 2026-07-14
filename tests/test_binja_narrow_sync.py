@@ -669,6 +669,48 @@ def test_completion_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_times_up_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (repo_root / "tools/match/include/times_up.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"TimesUpState",' in runtime_sync
+    assert '("0x00", "state", "TimesUpState")' in runtime_sync
+    assert '"TimesUpState",' in path_sync
+    for header in (*analysis_headers, matcher_header):
+        assert "TIMES_UP_STATE_INACTIVE = 0" in header
+        assert "TIMES_UP_STATE_DISPLAYING = 1" in header
+        assert "TIMES_UP_STATE_EXPIRED = 2" in header
+
+    consumers = {
+        "update_times_up": "TIMES_UP_STATE_EXPIRED",
+        "uninit_times_up": "TIMES_UP_STATE_INACTIVE",
+        "show_times_up_message": "TIMES_UP_STATE_DISPLAYING",
+        "initialize_subgame": "TIMES_UP_STATE_INACTIVE",
+        "build_subgame_level": "TIMES_UP_STATE_INACTIVE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

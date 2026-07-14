@@ -216,6 +216,7 @@ REQUIRED_HEADER_STRUCTS = (
     "JetPack",
     "ParcelState",
     "CompletionState",
+    "TimesUpState",
     "AxisAngle",
     "Quaternion",
     "RenderableBod",

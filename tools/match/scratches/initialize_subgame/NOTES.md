@@ -480,3 +480,9 @@ embedded Player's inherited transform and copies its position into the
 Player-owned cached camera target. The separate Snail, Cameraman, and CutScene
 matrices keep their established owners. This method remains exact at 396/396
 instructions with all 85 operands clean.
+
+## 2026-07-14 times-up lifecycle ownership
+
+Subgame initialization now resets the adjacent tail owner through
+`TIMES_UP_STATE_INACTIVE`. The direct enum constant is codegen-identical and
+the function remains exact at 396/396 instructions with all 85 operands clean.

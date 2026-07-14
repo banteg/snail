@@ -16,6 +16,7 @@
 #include "subgame_runtime.h"
 #include "sub_lazer_types.h"
 #include "track_parcel_runtime.h"
+#include "times_up.h"
 #include "voice_manager.h"
 
 extern GameRoot* g_game;
@@ -214,7 +215,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     track_state_latch = (unsigned char)zero;
     replay_update_cursor = zero;
-    times_up.state = zero;
+    times_up.state = TIMES_UP_STATE_INACTIVE;
     subgame_state = 2;
 
     int one = 1;

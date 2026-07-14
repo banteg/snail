@@ -404,3 +404,10 @@ discard twelve bytes afterward. Canonicalizing `cache_music_file` as
 `char(char* path, int32_t unused, char* unused_default_path)` preserves that
 exact caller ABI; the former one-argument decompiler prototype caused IDA's
 call analysis to reject this otherwise healthy outer function.
+
+## 2026-07-14 times-up lifecycle ownership
+
+Level start now clears the exact `TimesUp` tail owner through
+`TIMES_UP_STATE_INACTIVE`, pairing this reset with Init, AI, and UnInit. Focused
+output remains byte-identical at 77.67%, 560/555 instructions, prefix 177/555,
+with all 101 operands clean.

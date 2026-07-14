@@ -12,6 +12,7 @@
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
 #include "time_trial.h"
+#include "times_up.h"
 #include "game_time.h"
 #include "transform_matrix.h"
 #include "subgame_runtime.h"
@@ -92,7 +93,7 @@ void SubgameRuntime::initialize_subgame()
     pause_fade_step = 0.0333333351f;
     sub_high_score.noop_runtime_ai();
     subgame_state = 0;
-    times_up.state = 0;
+    times_up.state = TIMES_UP_STATE_INACTIVE;
 
     top_score_widget = g_game->border_manager.allocate_border();
     top_score_widget->initialize_frontend_widget(

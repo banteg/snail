@@ -549,6 +549,9 @@ The current high-confidence `Game` fields are:
     and the final result screen
 - `+0x1272828`: `times_up`
   - exact adjacent `0x10`-byte authored `cRTimesUp` tail owner
+  - `show_times_up_message` moves `INACTIVE -> DISPLAYING` and seeds its
+    progress pair; AI advances to `EXPIRED`, tears down the borrowed widget,
+    kills the embedded player on the following tick, and returns to `INACTIVE`
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`

@@ -11,3 +11,10 @@ progress, and marks the controller active.
 It owns the final 0x10 bytes of `SubgameRuntime`; the border at +0x04 is a
 borrowed `FrontendWidget*`. This scratch remains exact at 31/31 with all six
 operands clean.
+
+## 2026-07-14 times-up lifecycle ownership
+
+Init now accepts only `TIMES_UP_STATE_INACTIVE` and enters
+`TIMES_UP_STATE_DISPLAYING` after constructing the message. This closes the
+producer edge into exact AI while preserving 31/31 instructions and all six
+clean operands.

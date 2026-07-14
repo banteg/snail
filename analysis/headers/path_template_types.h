@@ -536,8 +536,14 @@ typedef struct Warning {
  * Authored cRTimesUp countdown actor at SubgameRuntime +0x1272828. Native
  * functions: update_times_up @ 0x445e20, uninit_times_up @ 0x445e70.
  */
+typedef enum TimesUpState {
+    TIMES_UP_STATE_INACTIVE = 0,
+    TIMES_UP_STATE_DISPLAYING = 1,
+    TIMES_UP_STATE_EXPIRED = 2,
+} TimesUpState;
+
 typedef struct TimesUp {
-    int32_t state;
+    TimesUpState state;
     FrontendWidget* border;
     float progress;
     float progress_step;

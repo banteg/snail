@@ -7,7 +7,7 @@ extern GameRoot* g_game; // data_4df904
 
 void TimesUp::show_times_up_message()
 {
-    if (state == 0) {
+    if (state == TIMES_UP_STATE_INACTIVE) {
         tColour color;
 
         border = g_game->border_manager.allocate_border();
@@ -15,6 +15,6 @@ void TimesUp::show_times_up_message()
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
         progress = 0.0f;
         progress_step = 0.00555555569f;
-        state = 1;
+        state = TIMES_UP_STATE_DISPLAYING;
     }
 }

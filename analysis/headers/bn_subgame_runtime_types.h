@@ -146,9 +146,15 @@ typedef struct Completion {
     int32_t display_token;
 } Completion;
 
+typedef enum TimesUpState {
+    TIMES_UP_STATE_INACTIVE = 0,
+    TIMES_UP_STATE_DISPLAYING = 1,
+    TIMES_UP_STATE_EXPIRED = 2,
+} TimesUpState;
+
 /* Exact 0x10-byte Windows cRTimesUp tail owner. */
 typedef struct TimesUp {
-    int32_t state;
+    TimesUpState state;
     FrontendWidget* border;
     float progress;
     float progress_step;

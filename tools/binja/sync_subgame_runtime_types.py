@@ -62,6 +62,10 @@ PARCEL_FIELD_UPDATES = (
     ("0x38", "state", "ParcelState"),
 )
 
+TIMES_UP_FIELD_UPDATES = (
+    ("0x00", "state", "TimesUpState"),
+)
+
 PROTO_UPDATES = (
     (
         "zero_timer_counters",
@@ -254,6 +258,7 @@ def main() -> int:
                 "ParcelManager",
                 "CompletionState",
                 "Completion",
+                "TimesUpState",
                 "TimesUp",
             ),
         ),
@@ -296,6 +301,14 @@ def main() -> int:
             target=args.target,
             struct_name="Parcel",
             updates=PARCEL_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="TimesUp",
+            updates=TIMES_UP_FIELD_UPDATES,
         )
     )
     # Several legacy analysis aliases (Stopwatch, ContactTargetRegistry,
