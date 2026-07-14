@@ -8,8 +8,6 @@
 double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
 
-extern char g_zero_parcel_bucket_count_lane_end; // 0x643390
-
 int SubgameRuntime::place_challenge_parcels_on_track()
 {
     float source_scaled = (float)completion_bonus_x_source * 50.0f;
@@ -21,7 +19,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     int* bucket_count = &g_zero_parcel_buckets[0].candidate_count;
     while ((int)bucket_count < (int)&g_zero_parcel_bucket_count_lane_end) {
         *bucket_count = 0;
-        bucket_count = (int*)((char*)bucket_count + 0x20c);
+        bucket_count = (int*)((char*)bucket_count + sizeof(ParcelBucket));
     }
 
     int candidate_count = 0;

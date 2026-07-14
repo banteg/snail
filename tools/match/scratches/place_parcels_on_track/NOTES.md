@@ -189,3 +189,12 @@ tested and rejected: it expands the candidate to 641 instructions, loses the
 native helper-call alignment, and regresses to 27.19%. The cached borrowed cell
 and path views therefore remain the best honest expression of that part of the
 tail.
+
+## Parcel-pool extent closure (2026-07-14)
+
+The dual reset preserves native's byte-offset induction variable, but the
+pool byte extent, bucket stride, and `candidate_count` lane now derive from the
+complete `g_zero_parcel_buckets` array and `ParcelBucket` layout. This removes
+the repeated raw `0x106000 / 0x20c / 0x200` geometry without changing codegen:
+focused Wibo remains 30.93%, 635/639 instructions, with 40 clean operands and
+the same two honest address-shape mismatches in later compaction code.

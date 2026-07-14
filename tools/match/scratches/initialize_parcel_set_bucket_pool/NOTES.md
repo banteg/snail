@@ -16,3 +16,8 @@ post-`ret` padding and a jump into `initialize_zero_parcel_bucket_pool`.
 The exact loop source is a pointer cursor plus explicit `0x800` countdown.
 An indexed `for` loop compiled to a pointer-end compare instead of native's
 `edi` counter.
+
+2026-07-14 extent cleanup: the retained countdown source shape now derives its
+pool count and nested candidate geometry from the shared capacities and
+`sizeof(ParcelCandidate)`. The constructor remains exact at 15/15 instructions
+with all three operands clean.

@@ -11,3 +11,8 @@ initializer.
 
 The exact loop source is a pointer cursor plus explicit `0x800` countdown,
 matching native's `esi` bucket pointer and `edi` counter.
+
+2026-07-14 extent cleanup: the emitted countdown, candidate stride, and
+candidate count now come from `PARCEL_BUCKET_CAPACITY`,
+`sizeof(ParcelCandidate)`, and `PARCEL_CANDIDATE_CAPACITY`. The constructor
+remains exact at 15/15 instructions with all three operands clean.

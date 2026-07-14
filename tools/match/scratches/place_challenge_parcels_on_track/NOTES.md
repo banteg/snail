@@ -90,3 +90,12 @@ focused result improves from 73.68% (171/171, prefix 22, 29 clean operands) to
 81.40% (171 target versus 173 candidate instructions, 33 clean operands, no
 masked mismatch). The remaining two instructions are honest source-lifetime
 debt in the typed row scan and reused source-cell borrow, not forced scheduling.
+
+## Parcel-pool extent closure (2026-07-14)
+
+The zero-bank reset still uses native's interior `candidate_count` cursor and
+signed sentinel comparison, but its increment now comes from
+`sizeof(ParcelBucket)`. The one-past count-lane sentinel is declared with the
+two parcel pools in `parcel_bucket.h`, rather than as scratch-local global
+state. Focused Wibo remains 81.40%, 173/171 instructions, with all 33 operands
+clean.

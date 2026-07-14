@@ -5,6 +5,8 @@
 // singles for the rest, compacting the banks per draw, and finally project
 // flagged rows onto their attachments.
 
+#include <stddef.h>
+
 #include "track_attachment.h"
 #include "transform_matrix.h"
 #include "parcel_bucket.h"
@@ -25,9 +27,13 @@ int SubgameRuntime::place_parcels_on_track()
     if (level_mode != 0 && level_mode != 7)
         return level_mode;
 
-    for (int reset = 0; reset < 0x106000; reset += 0x20c) {
-        *(int*)((char*)g_zero_parcel_buckets + reset + 0x200) = 0;
-        *(int*)((char*)g_parcel_set_buckets + reset + 0x200) = 0;
+    for (int reset = 0;
+         reset < (int)sizeof(g_zero_parcel_buckets);
+         reset += sizeof(ParcelBucket)) {
+        *(int*)((char*)g_zero_parcel_buckets + reset
+               + offsetof(ParcelBucket, candidate_count)) = 0;
+        *(int*)((char*)g_parcel_set_buckets + reset
+               + offsetof(ParcelBucket, candidate_count)) = 0;
     }
 
     int min_set_sizes[100];
