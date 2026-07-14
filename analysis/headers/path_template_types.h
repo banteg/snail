@@ -1661,8 +1661,23 @@ void __thiscall cross_vectors(Vec3* out, const Vec3* lhs, const Vec3* rhs);
 int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);
 void __fastcall invert_matrix_in_place(TransformMatrix* transform);
 void __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);
-TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
-TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
+void __thiscall multiply_matrices(
+    TransformMatrix* out,
+    const TransformMatrix* lhs,
+    const TransformMatrix* rhs
+);
+void __thiscall multiply_matrix(
+    TransformMatrix* matrix,
+    const TransformMatrix* rhs
+);
+void __thiscall multiply_matrix_in_place_forward_thunk(
+    TransformMatrix* matrix,
+    const TransformMatrix* rhs
+);
+void __thiscall premultiply_matrix_in_place(
+    TransformMatrix* matrix,
+    const TransformMatrix* lhs
+);
 void __thiscall set_matrix_z_direction(TransformMatrix* transform, const Vec3* direction);
 void __thiscall look_at_point(TransformMatrix* transform, const Vec3* target);
 void __thiscall initialize_quaternion_from_axis(

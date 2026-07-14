@@ -80,11 +80,11 @@ void Snail::initialize_cutscene()
         sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f);
 
     inverse_live.invert_matrix_from_source(&transform);
-    transform.multiply_matrix_in_place(&inverse_live);
+    transform.multiply_matrix(inverse_live);
     transform.position.y = transform.position.y + 1.29999995f;
-    transform.multiply_matrix_in_place(&roll_matrix);
+    transform.multiply_matrix(roll_matrix);
     transform.position.y = transform.position.y - 1.29999995f;
-    transform.multiply_matrix_in_place(&base_matrix);
+    transform.multiply_matrix(base_matrix);
 
     float lift_sine = sine(wobble_lift_phase * 6.28318548f);
     transform.position +=

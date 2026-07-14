@@ -95,3 +95,8 @@ full prefix, and 44 clean masked operands.
 belongs to the complete `snail_hotspot_source_body` renderable initialized at
 `+0x15cc`. The matrix assignment remains byte-identical at 339/339 instructions
 with all 44 operands clean.
+
+2026-07-14 matrix-multiply owner pass: all three composition calls now use the
+void const-reference `TransformMatrix::multiply_matrix` member retained by the
+mobile builds as `tMatrix::Multiply(const tMatrix&)`. The complete cutscene
+initializer remains 339/339 exact with all 44 operands clean.

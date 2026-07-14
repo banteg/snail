@@ -150,3 +150,10 @@ tools/match/match.sh \
   tools/match/scratches/initialize_loopbow_path_template_pair \
   --regions --max-regions 20 --region-context 6
 ```
+
+2026-07-14 matrix-multiply owner pass: both local-Y rotation compositions now
+pass the temporary matrix through the recovered const-reference
+`TransformMatrix::multiply_matrix` member, eliminating the old casts. The
+honest partial remains byte-identical at 67.54%, 800/796 candidate/target
+instructions, prefix 10/796, with its existing two mismatches and 60 clean
+operands.

@@ -2,8 +2,8 @@
 
 #include "transform_matrix.h"
 
-TransformMatrix* TransformMatrix::multiply_matrix_in_place_forward_thunk(
-    TransformMatrix* rhs)
+void TransformMatrix::multiply_matrix_in_place_forward_thunk(
+    const TransformMatrix& rhs)
 {
-    return multiply_matrix_in_place(rhs);
+    multiply_matrix(rhs);
 }

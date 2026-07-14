@@ -31,6 +31,10 @@ TRUSTED_NAMES = [
     (0x44CEC0, "rotate_matrix_local_y"),
     (0x44CF50, "rotate_matrix_local_z"),
     (0x44CFE0, "initialize_matrix_from_values"),
+    (0x44D060, "multiply_matrices"),
+    (0x44D1A0, "multiply_matrix"),
+    (0x44D1D0, "multiply_matrix_in_place_forward_thunk"),
+    (0x44D1E0, "premultiply_matrix_in_place"),
     (0x44D530, "initialize_quaternion_from_axis"),
     (0x44D580, "initialize_axis_from_quaternion"),
     (0x44D5D0, "initialize_quaternion_from_matrix"),
@@ -197,12 +201,20 @@ TRUSTED_DECLARATIONS = [
         "void __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);",
     ),
     (
-        "multiply_matrix_in_place",
-        "TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);",
+        "multiply_matrices",
+        "void __thiscall multiply_matrices(TransformMatrix* out, const TransformMatrix* lhs, const TransformMatrix* rhs);",
+    ),
+    (
+        "multiply_matrix",
+        "void __thiscall multiply_matrix(TransformMatrix* matrix, const TransformMatrix* rhs);",
+    ),
+    (
+        "multiply_matrix_in_place_forward_thunk",
+        "void __thiscall multiply_matrix_in_place_forward_thunk(TransformMatrix* matrix, const TransformMatrix* rhs);",
     ),
     (
         "premultiply_matrix_in_place",
-        "TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);",
+        "void __thiscall premultiply_matrix_in_place(TransformMatrix* matrix, const TransformMatrix* lhs);",
     ),
     (
         "set_matrix_z_direction",

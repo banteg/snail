@@ -2377,6 +2377,23 @@
       "notes": "The real Windows 16-float constructor is exact at 34/34 instructions. Its EAX result is the ordinary VC6 constructor receiver ABI; large partial callers retain a documented initializer compatibility view only where direct temporary syntax changes stack and register allocation."
     },
     {
+      "address": "0x44d060",
+      "windows_name": "multiply_matrices",
+      "android_symbol": "tMatrix::Multiply(tMatrix const&, tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 114/114 Windows member takes two const-reference operands and writes their affine product into its receiver. Its last live EAX value is merely the right operand; both wrappers discard it, and a void definition remains instruction-identical."
+    },
+    {
+      "address": "0x44d1a0",
+      "windows_name": "multiply_matrix_in_place",
+      "ios_symbol": "tMatrix::Multiply(tMatrix const&)",
+      "android_symbol": "tMatrix::Multiply(tMatrix const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 18/18 Windows member snapshots its receiver and delegates to the two-reference multiply core, matching the mobile one-argument Multiply method. It returns void: native only inherits the core's incidental rhs register, and every direct caller discards it."
+    },
+    {
       "address": "0x44d280",
       "windows_name": "invert_matrix_in_place",
       "ios_symbol": "tMatrix::Invert()",

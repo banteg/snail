@@ -105,7 +105,7 @@ void Cameraman::update_cameraman()
     if (player->follow_state.active == 1) {
         set_matrix_identity(&transform);
         transform.rotate_matrix_local_z(player->follow_state.orientation_a);
-        desired_matrix.multiply_matrix_in_place(&transform);
+        desired_matrix.multiply_matrix(transform);
         desired_matrix.rotate_matrix_local_z(player->follow_state.orientation_b);
     }
     Player* exit_player = player;

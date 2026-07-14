@@ -178,10 +178,8 @@ int Path::initialize_loopbow_path_template_pair(
 
             primary_samples[sample_index].transform.position.z -= 7.0f;
             secondary_samples[sample_index].transform.position.z -= 7.0f;
-            primary_samples[sample_index].transform.multiply_matrix_in_place(
-                (const TransformMatrix*)&rotation);
-            secondary_samples[sample_index].transform.multiply_matrix_in_place(
-                (const TransformMatrix*)&rotation);
+            primary_samples[sample_index].transform.multiply_matrix(rotation);
+            secondary_samples[sample_index].transform.multiply_matrix(rotation);
             primary_samples[sample_index].transform.position.z += 7.0f;
             secondary_samples[sample_index].transform.position.z += 7.0f;
 

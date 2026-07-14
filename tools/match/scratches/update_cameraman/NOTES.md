@@ -151,3 +151,8 @@ branch copies `CutScene::force_camera_update` into that gate. This Cameraman AI
 clears the request at entry in the Windows build. The rename preserves the
 focused 92.55%, 322/322 instruction result and its existing single call-name
 mismatch.
+
+The follow-state composition now calls the recovered void const-reference
+matrix multiply member directly. Focused output remains 92.55%, 322/322
+instructions, prefix 36/322, with the same 72 clean operands and unrelated
+pre-existing call mismatch.

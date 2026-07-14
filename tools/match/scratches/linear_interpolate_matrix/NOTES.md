@@ -17,3 +17,8 @@ clean masked operands.
 Consequence recorded in the invalidation ledger: native sample-pose
 interpolation is rotation-space with re-orthogonalization, NOT the
 per-basis-vector lerp+normalize the runner uses.
+
+2026-07-14 multiplication-owner pass: the call chain now uses the recovered
+void const-reference matrix APIs directly: invert from `from`, multiply by
+`to`, premultiply by `from`, and orthogonalize. The natural member spellings
+remain exact at 61/61 instructions with all six operands clean.

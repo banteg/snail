@@ -24,13 +24,13 @@ struct TransformMatrix {
         float m10, float m11, float m12, float m13,
         float m20, float m21, float m22, float m23,
         float m30, float m31, float m32, float m33); // @ 0x44cfe0
-    TransformMatrix* multiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1a0
-    TransformMatrix* multiply_matrix_in_place(const TransformMatrix* rhs); // const-callsite view
-    TransformMatrix* multiply_matrix_in_place_forward_thunk(
-        TransformMatrix* rhs); // @ 0x44d1d0
-    TransformMatrix* premultiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1e0
-    TransformMatrix* premultiply_matrix_in_place(const TransformMatrix* rhs); // const-callsite view
-    TransformMatrix* multiply_matrices(const TransformMatrix* lhs, const TransformMatrix* rhs);
+    void multiply_matrix(const TransformMatrix& rhs); // @ 0x44d1a0, tMatrix::Multiply
+    void multiply_matrix_in_place_forward_thunk(
+        const TransformMatrix& rhs); // @ 0x44d1d0
+    void premultiply_matrix_in_place(const TransformMatrix& lhs); // @ 0x44d1e0
+    void multiply_matrices(
+        const TransformMatrix& lhs,
+        const TransformMatrix& rhs); // @ 0x44d060
     void invert_matrix_in_place(); // @ 0x44d280, tMatrix::Invert()
     void invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330, tMatrix::Invert(tMatrix const&)
     void invert_matrix_from_source(const TransformMatrix* source); // const-callsite view

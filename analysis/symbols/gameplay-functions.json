@@ -3579,20 +3579,25 @@
     {
       "address": "0x44d060",
       "name": "multiply_matrices",
-      "description": "Core affine matrix multiply that writes `out = lhs * rhs` for the 3x3 basis and translated origin row. Android symbols match this helper to `tMatrix::Multiply(const tMatrix&, const tMatrix&)`."
+      "description": "Exact void `TransformMatrix::multiply_matrices(const TransformMatrix&, const TransformMatrix&)` member: writes `this = lhs * rhs` for the 3x3 basis and translated origin row. Android retains `tMatrix::Multiply(const tMatrix&, const tMatrix&)`; the right operand left in EAX is incidental."
     },
     {
       "address": "0x44d1a0",
-      "name": "multiply_matrix_in_place"
+      "name": "multiply_matrix_in_place",
+      "aliases": [
+        "multiply_matrix"
+      ],
+      "description": "Stable Windows harness identity for the exact void `TransformMatrix::multiply_matrix(const TransformMatrix&)` member retained by iOS and Android as `tMatrix::Multiply(const tMatrix&)`. It snapshots its receiver and delegates to the two-reference multiply core."
     },
     {
       "address": "0x44d1d0",
       "name": "multiply_matrix_in_place_forward_thunk",
-      "description": "Small thiscall forwarder that passes one rhs matrix to multiply_matrix_in_place while preserving the receiver."
+      "description": "Exact void thiscall forwarder that passes one const-reference rhs matrix to the owned `TransformMatrix::multiply_matrix` member. Its source-level operator identity remains deliberately unresolved."
     },
     {
       "address": "0x44d1e0",
-      "name": "premultiply_matrix_in_place"
+      "name": "premultiply_matrix_in_place",
+      "description": "Exact void `TransformMatrix::premultiply_matrix_in_place(const TransformMatrix&)` member: snapshots its receiver and writes `this = lhs * saved_this`. The core's incidental EAX points at the dead stack snapshot, proving no meaningful return contract."
     },
     {
       "address": "0x44d210",
