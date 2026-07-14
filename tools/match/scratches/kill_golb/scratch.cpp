@@ -38,7 +38,7 @@ void GolbShot::kill_golb()
     state = 0;
     switch (live_kind) {
         case 0:
-            ((Sprite*)render_body_owner)->kill_sprite();
+            render_sprite->kill_sprite();
             break;
 
         case 1: {

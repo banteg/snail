@@ -72,7 +72,8 @@ public:
             char unknown_078[0x080 - 0x078];
             // Kind-1 also treats this subobject as the Vapour body prefix.
             RenderableBod secondary_body; // +0x080
-            char unknown_0f8[0x118 - 0x0f8];
+            char unknown_0f8[0x114 - 0x0f8];
+            GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
             RenderableBod tertiary_body; // +0x118
         };
         struct {
@@ -102,7 +103,7 @@ public:
     int state;                   // +0x244
     union {
         void* render_body_owner; // +0x248, kind-specific body/sprite owner
-        void* owner_body;        // +0x248, update_golb_ai body-position view
+        Sprite* render_sprite;   // +0x248, kind-0 sprite owner
     };
     Vector3 velocity;            // +0x24c
     Vector3 direction;           // +0x258

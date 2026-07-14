@@ -29,3 +29,7 @@ Type consolidation:
 2026-07-14 root-list closure: all three variant removals now name
 `GameRoot::active_bod_list` directly. The canonical owner graph preserves the
 exact 132/132 body and all 16 clean operands.
+
+The kind-0 `+0x248` owner is now shared as `GolbShot::render_sprite` across
+creation, per-tick position updates, and this exact teardown. Replacing the
+last local cast preserves the exact 132/132 body and all 16 clean operands.

@@ -148,7 +148,7 @@ void GolbShot::update_golb_ai()
         vapour.add_vapour_point(&source_matrix);
         break;
     case 0: {
-        Vec3* body_position = (Vec3*)((char*)owner_body + 72);
+        Vec3* body_position = &render_sprite->position;
         *body_position = source_matrix.position;
         spawn_golb_trail_sprite(&source_matrix.position);
         Vec3 third_offset;

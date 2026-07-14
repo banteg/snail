@@ -1,5 +1,30 @@
 # create_golb
 
+## 2026-07-14 spawn-source ownership closure
+
+The Goldy input is now carried as a `Player*` throughout the movement selector.
+The inherited render transform supplies the initial position and forward basis,
+`movement_flags` selects the projectile family, and `velocity.z` supplies every
+launch-speed base. The six raw `+0x4134..+0x41ac` anchors are now the authored
+`Snail::snail_hotspots_world` entries for left/right/top blaster fire,
+left/right laser, and the rocket base. Windows `0x41554d..0x4155b9` and the
+independent Android `cRSubGolb::Create` body agree that the optional vapour
+z-floor is specifically the address of the left-laser hotspot's z component.
+
+Kind 1 now names its enclosing-shot backlink at `GolbShot +0x114`, directly
+after the exact 0x94-byte `Vapour` owner, and uses the shared secondary-body
+list links and colour owner. Kind 0's `+0x248` slot is now a `Sprite*` across
+creation, update, and exact teardown. Matrix identity and all lifetime/facing
+steps use the recovered `TransformMatrix` and `SubgameRuntime::subgame_rate`
+member surfaces.
+
+These ownership substitutions are codegen-neutral: focused output remains
+36.08%, 460/582 instructions, prefix 1/582, with 35 clean operands. Directly
+spelling the two `+0x1bc/+0x1bd` initial clears through their named fields was
+also tested, but changed VC6's opening register schedule and regressed to
+35.70%; the raw stores are retained while the fields remain named in the
+shared layout.
+
 ## 2026-07-13 flight-transform ownership closure
 
 The old `basis_*_scratch`, `position`, padding, and `previous_output` window is

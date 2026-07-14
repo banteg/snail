@@ -1,5 +1,13 @@
 # WIP scratch — 73.34%, 645/694 insns (2026-06-21)
 
+## 2026-07-14 kind-0 sprite ownership
+
+The variant owner at `GolbShot +0x248` is now a shared `Sprite*` for kind 0.
+The updater writes `Sprite::position +0x48` directly, matching the same owner
+allocated by `create_golb` and killed by exact `kill_golb`. This removes the
+last `void* + 72` body-position view without changing focused output: 73.34%,
+645/694 instructions, prefix 9/694, with 68 clean operands.
+
 ## 2026-07-14 path-cell and garbage-chain ownership
 
 The projectile follow state now borrows the shared authored `Path*` and

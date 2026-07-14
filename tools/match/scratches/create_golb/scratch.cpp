@@ -17,14 +17,12 @@ typedef Vector3 Vec3;
 
 extern GameRoot* g_game; // data_4df904
 
-void __fastcall set_matrix_identity(void* transform);
 int report_errorf(char* format, ...);
 int next_math_random_value();
 
 void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
 {
     char* self = (char*)this;
-    DWORD* words = (DWORD*)self;
 
     self[0x1bc] = 0;
     self[0x1bd] = 0;
@@ -61,30 +59,32 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
         kind = 2;
     }
 
-    set_matrix_identity(&source_matrix);
+    source_matrix.set_matrix_identity();
     state = 1;
 
     Vec3* position = &flight_transform.position;
-    char* player = (char*)owner_player;
-    Vec3* player_position = (Vec3*)(player + 0x68);
+    Player* player = owner_player;
+    Vec3* player_position = &player->transform.position;
     position->x = player_position->x;
     position->y = player_position->y;
     position->z = player_position->z;
-    position->x = *(float*)(player + 0x58) * 0.5f + position->x;
-    position->y = *(float*)(player + 0x5c) * 0.5f + position->y;
-    position->z = *(float*)(player + 0x60) * 0.5f + position->z;
+    position->x = player->transform.basis_forward.x * 0.5f + position->x;
+    position->y = player->transform.basis_forward.y * 0.5f + position->y;
+    position->z = player->transform.basis_forward.z * 0.5f + position->z;
 
-    DWORD movement_flags = *(DWORD*)(player + 0x338);
+    DWORD movement_flags = player->movement_flags;
     if ((movement_flags & 5) == 0) {
         if ((movement_flags & 2) != 0) {
             if (spawn_selector == 2) {
-                Vec3* source = (Vec3*)(player + 0x4134);
+                Vec3* source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
                 position->x = source->x;
                 position->y = source->y;
                 position->z = source->z;
                 position->x += 0.5f;
             } else if (spawn_selector == 1) {
-                Vec3* source = (Vec3*)(player + 0x414c);
+                Vec3* source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
                 position->x = source->x;
                 position->y = source->y;
                 position->z = source->z;
@@ -92,40 +92,44 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
             }
             velocity.x = 0.0f;
             velocity.y = 0.0f;
-            velocity.z = *(float*)(player + 0x418) + 1.0f;
+            velocity.z = player->velocity.z + 1.0f;
         } else if ((movement_flags & 0x18) != 0) {
             Vec3* source;
             if (spawn_selector == 2)
-                source = (Vec3*)(player + 0x417c);
+                source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_LASER_LEFT];
             else
-                source = (Vec3*)(player + 0x4188);
+                source = &player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_LASER_RIGHT];
             position->x = source->x;
             position->y = source->y;
             position->z = source->z;
-            if (*(float*)(player + 0x60) > 0.0f)
-                spawn_selector = (int)(player + 0x4184);
+            if (player->transform.basis_forward.z > 0.0f)
+                spawn_selector = (int)&player->presentation.snail_hotspots_world[
+                    SNAIL_HOTSPOT_LASER_LEFT].z;
             else
                 spawn_selector = 0;
             self[0x1bc] = 1;
             velocity.x = 0.0f;
             velocity.y = 0.0f;
-            velocity.z = *(float*)(player + 0x418) + 1.0f;
+            velocity.z = player->velocity.z + 1.0f;
         } else if ((movement_flags & 0x60) != 0) {
-            Vec3* source = (Vec3*)(player + 0x41ac);
+            Vec3* source = &player->presentation.snail_hotspots_world[
+                SNAIL_HOTSPOT_ROCKET_BASE];
             position->x = source->x;
             position->y = source->y;
             position->z = source->z;
             velocity.x = 0.0f;
             velocity.y = 0.0f;
-            velocity.z = *(float*)(player + 0x418) + 0.60000002f;
+            velocity.z = player->velocity.z + 0.60000002f;
         } else if ((movement_flags & 0x29) != 0) {
             velocity.x = 0.0f;
             velocity.y = 0.0f;
-            velocity.z = *(float*)(player + 0x418) + 1.0f;
+            velocity.z = player->velocity.z + 1.0f;
         } else if ((movement_flags & 0x52) != 0) {
             velocity.x = 0.0f;
             velocity.y = 0.0f;
-            velocity.z = *(float*)(player + 0x418) + 1.0f;
+            velocity.z = player->velocity.z + 1.0f;
             if (spawn_selector == 2)
                 position->x += 0.5f;
             else
@@ -134,15 +138,18 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     } else {
         Vec3* source;
         if (spawn_selector == 3) {
-            source = (Vec3*)(player + 0x4134);
+            source = &player->presentation.snail_hotspots_world[
+                SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
             goto copy_movement_flag_source;
         }
         if (spawn_selector == 2) {
-            source = (Vec3*)(player + 0x414c);
+            source = &player->presentation.snail_hotspots_world[
+                SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
             goto copy_movement_flag_source;
         }
         if (spawn_selector == 1) {
-            source = (Vec3*)(player + 0x4164);
+            source = &player->presentation.snail_hotspots_world[
+                SNAIL_HOTSPOT_BLASTER_TOP_FIRE];
             goto copy_movement_flag_source;
         }
         goto after_movement_flag_source;
@@ -154,26 +161,26 @@ copy_movement_flag_source:
 
 after_movement_flag_source:
 
-        if ((*(unsigned char*)(player + 0x338) & 4) != 0) {
+        if ((player->movement_flags & 4) != 0) {
             if (spawn_selector == 3) {
                 velocity.x = 0.1f;
                 velocity.y = 0.0f;
-                velocity.z = *(float*)(player + 0x418) + 1.0f;
+                velocity.z = player->velocity.z + 1.0f;
                 position->x += 0.5f;
             } else if (spawn_selector == 2) {
                 velocity.x = -0.1f;
                 velocity.y = 0.0f;
-                velocity.z = *(float*)(player + 0x418) + 1.0f;
+                velocity.z = player->velocity.z + 1.0f;
                 position->x -= 0.5f;
             } else {
                 velocity.x = 0.0f;
                 velocity.y = 0.0f;
-                velocity.z = *(float*)(player + 0x418) + 1.0f;
+                velocity.z = player->velocity.z + 1.0f;
             }
         } else {
             velocity.x = 0.0f;
             velocity.y = 0.0f;
-            velocity.z = *(float*)(player + 0x418) + 1.0f;
+            velocity.z = player->velocity.z + 1.0f;
         }
     }
 
@@ -199,13 +206,13 @@ after_movement_flag_source:
         if (adjusted_kind) {
             if (adjusted_kind == 1) {
                 lifetime = 0.0f;
-                lifetime_step = *(float*)((char*)game + 0x38) * 0.027777776f;
+                lifetime_step = game->subgame_rate * 0.027777776f;
                 rocket_owner_shot = this;
                 spin = 0.0f;
                 spin_step = 0.20943952f;
                 homing_target_object = 0;
 
-                char* node = self + 0x118;
+                char* node = (char*)&tertiary_body;
                 DWORD* node_words = (DWORD*)node;
                 if ((node_words[1] & 0x200) != 0) {
                     report_errorf("List ADD");
@@ -233,7 +240,7 @@ after_movement_flag_source:
                     homing_target_object = found->object;
                     if (!found->kind)
                         found->object->list_flags |= 0x1000;
-                    Vec3* homing_target = (Vec3*)(self + 0x19c);
+                    Vec3* homing_target = &this->homing_target;
                     *homing_target = found->position;
                     homing_blend = 0.0f;
                     homing_blend_step = 0.033333335f;
@@ -241,37 +248,37 @@ after_movement_flag_source:
             }
         } else {
             lifetime = 0.0f;
-            words[69] = (DWORD)self;
-            lifetime_step = *(float*)((char*)game + 0x38) * 0.041666668f;
+            vapour_owner_shot = this;
+            lifetime_step = game->subgame_rate * 0.041666668f;
 
-            char* node = self + 0x80;
+            BodNode* node = &secondary_body;
             BodNode* anchor = &g_game->subgame.golb_vapour_list_head;
-            if ((words[33] & 0x200) != 0) {
+            if ((secondary_body.list_flags & 0x200) != 0) {
                 report_errorf("List ADDafter");
             } else {
-                words[34] = (DWORD)anchor;
-                words[35] = (DWORD)anchor->list_next;
-                anchor->list_next = (BodNode*)node;
-                if (words[35])
-                    *(DWORD*)(words[35] + 8) = (DWORD)node;
-                words[33] |= 0x200;
+                secondary_body.list_prev = anchor;
+                secondary_body.list_next = anchor->list_next;
+                anchor->list_next = node;
+                if (secondary_body.list_next)
+                    secondary_body.list_next->list_prev = node;
+                secondary_body.list_flags |= 0x200;
             }
 
-            ((Vapour*)(self + 0x80))->reset_vapour((float*)spawn_selector);
-            ((Color4f*)(self + 0xa8))->store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
+            vapour.reset_vapour((float*)spawn_selector);
+            secondary_body.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->emitter_index = emitter_index;
-            ((Vapour*)(self + 0x80))->add_vapour_point(&flight_transform);
-            ((Vapour*)node)->update_vapour();
+            vapour.add_vapour_point(&flight_transform);
+            vapour.update_vapour();
         }
     } else {
         lifetime = 0.0f;
-        lifetime_step = *(float*)((char*)game + 0x38) * 0.041666668f;
+        lifetime_step = game->subgame_rate * 0.041666668f;
         Sprite* sprite = g_sprite_manager.allocate_sprite(
             owner_player->player_slot,
             130,
             -1,
             -1);
-        render_body_owner = sprite;
+        render_sprite = sprite;
         sprite->flags |= 0x800;
         sprite->progress = 0.0f;
         sprite->progress_step = 0.0f;
@@ -284,7 +291,7 @@ after_movement_flag_source:
         Vec3* sprite_position = (Vec3*)&sprite->position;
         *sprite_position = *position;
         sprite->facing_angle = ((float)next_math_random_value() - 16384.0f) * 0.0001917476f;
-        sprite->facing_angle_step = *(float*)((char*)game + 0x38) * 0.58177644f;
+        sprite->facing_angle_step = game->subgame_rate * 0.58177644f;
         this->emitter_index = emitter_index;
     }
 
