@@ -6,7 +6,7 @@
 
 class PauseMenu {
 public:
-    int uninit_pause_menu(); // @ 0x440600
+    void uninit_pause_menu(); // @ 0x440600
     void initialize_pause_menu(); // @ 0x440660
     void* update_pause_menu(); // @ 0x4407a0
 

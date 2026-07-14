@@ -12,16 +12,11 @@ mouse-cursor operands resolved.
 `options_widget +0x00`, `end_game_widget +0x04`, and `resume_widget +0x08`.
 The earlier local names `title/resume/quit` were misleading but codegen-neutral.
 
-2026-06-20 local view naming: direct inclusion of the shared pause-menu header is
-rejected here because this exact tail-return shape needs a release call view
-whose `release_mouse_cursor()` returns `int`; `mouse_cursor_state.h` models the
-shared helper as `void`. The teardown now names that call surface
-`PauseMenuMouseCursorReleaseView` instead of overloading `MouseCursorState`,
-keeps its local `PauseMenuTeardownView`, remains `100.00%`, `22/22`, with `8
-ok` masked operands, and no longer appears as a promotable `PauseMenu` or
-`MouseCursorState` duplicate in the type report.
-
-2026-07-14 root-client consolidation: the exact tail call now traverses the
-canonical root/player/cursor graph while retaining the local return-value view
-needed by native codegen. Focused matching remains 22/22 with eight clean
-operands.
+2026-07-14 ownership correction: the function is a side-effect-only `void`
+member on the canonical `PauseMenu`. Every recovered caller ignores a result,
+and the final 8-instruction `MouseCursorState::release_mouse_cursor()` helper
+does not establish `EAX`; any apparent integer return was incidental register
+state. Expressing both real owners directly preserves VC6's native final-call
+sequence at 22/22 instructions with all eight masked operands clean, so the former
+`PauseMenuTeardownView` and `PauseMenuMouseCursorReleaseView` shells were
+removed.
