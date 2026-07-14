@@ -249,3 +249,17 @@ the stale standalone `SpringFloat` view is gone. Focused Wibo remains exact at
 
 Focused Wibo remains byte-identical at 100.00%, 279/279 instructions, full
 prefix, and all 27 operands clean.
+
+2026-07-14 root input-state ownership closure:
+
+- The old `PlayerControlSource` slice duplicated three lanes from the complete
+  root-owned `InputState`: `control_flags_a` is `pressed_buttons +0x04`,
+  `control_flags_b` is `previous_buttons +0x0c`, and `steering_x` is
+  `authored_x +0x28`.
+- The selected addresses at root `+0x7c/+0xec` are exactly the trailing
+  `InputState` subobjects in `GameRoot::game_inputs[0/1]`. `Player` therefore
+  borrows that shared owner rather than pointing at a distinct control object.
+- The initializer now derives both candidate owners and borrowed subobjects
+  through `GameRoot`, `GameInput`, and `InputState`; the last two raw root
+  offset blocks are gone. Focused Wibo remains exact at 279/279 instructions
+  with all 27 audited operands clean.

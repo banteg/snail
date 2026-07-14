@@ -14,6 +14,7 @@
 #include "damage_guage.h"
 #include "firework.h"
 #include "golb.h"
+#include "input_state.h"
 #include "invincible.h"
 #include "sub_hover.h"
 #include "nuke.h"
@@ -40,17 +41,10 @@ class SubHealth;
 
 class Snail;
 
-class PlayerControlSource {
-public:
-    char unknown_00[0x04];
-    unsigned int control_flags_a; // +0x04
-    char unknown_08[0x0c - 0x08];
-    unsigned int control_flags_b; // +0x0c
-    char unknown_10[0x28 - 0x10];
-    float steering_x; // +0x28
-};
-typedef char PlayerControlSource_must_cover_0x2c[
-    (sizeof(PlayerControlSource) == 0x2c) ? 1 : -1];
+// Goldy borrows the trailing InputState subobject from one of the root-owned
+// GameInput records. These aliases retain the gameplay vocabulary while the
+// shared owner fixes the complete 0x38-byte layout.
+typedef InputState PlayerControlSource;
 
 struct PlayerRowEventState {
     int id;                         // +0x00
@@ -243,7 +237,7 @@ public:
     int post_follow_heading_carryover;     // +0x430 (was "post_follow_value_b")
     float attachment_exit_progress;        // +0x434
     float attachment_exit_progress_step;    // +0x438
-    // Borrowed input view inside the root game object, selected by player_slot.
+    // Borrowed InputState inside a root-owned GameInput, selected by player_slot.
     PlayerControlSource* control_source;    // +0x43c
     unsigned char completion_handoff_active; // +0x440
     char unknown_441[0x444 - 0x441];

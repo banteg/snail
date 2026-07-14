@@ -179,23 +179,23 @@ void Player::initialize_subgoldy(int player_slot)
     velocity_lanes[0] = zero;
 
     int active_slot = this->player_slot;
-    char* control_source;
+    PlayerControlSource* control_source;
     if (active_slot == 1) {
-        char* app = (char*)g_game;
-        char* control_check = app + 0x44;
+        GameRoot* app = g_game;
+        GameInput* control_check = &app->game_inputs[0];
         if (control_check != 0)
-            control_source = app + 0x7c;
+            control_source = &app->game_inputs[0].input;
         else
             control_source = 0;
     } else {
-        char* app = (char*)g_game;
-        char* control_check = app + 0xb4;
+        GameRoot* app = g_game;
+        GameInput* control_check = &app->game_inputs[1];
         if (control_check != 0)
-            control_source = app + 0xec;
+            control_source = &app->game_inputs[1].input;
         else
             control_source = 0;
     }
-    this->control_source = (PlayerControlSource*)control_source;
+    this->control_source = control_source;
     this->movement_fire_progress = 0.0f;
     this->completion_handoff_active = (unsigned char)zero;
     this->slide_extension_threshold_z = 0.0f;
