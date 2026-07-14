@@ -13,25 +13,26 @@ extern GameRoot* g_game; // data_4df904
 
 struct TrackRenderCacheSlotCursor {
     char manager_prefix[offsetof(SegmentCache, slots)];
-    BodBase bod; // SegmentCache::slots[0][0].bod
+    BodBase bod; // SegmentCache::slots[0][TRACK_RENDER_CACHE_FLOOR].bod
 };
 
 void* SegmentCache::initialize_track_render_cache_manager()
 {
-    max_vertex_counts[0] = 560;
-    max_index_counts[0] = 1280;
-    max_vertex_counts[1] = 560;
-    max_index_counts[1] = 1280;
-    max_vertex_counts[2] = 160;
-    max_index_counts[2] = 240;
-    max_vertex_counts[3] = 80;
-    max_index_counts[3] = 160;
-    max_vertex_counts[4] = 800;
-    max_index_counts[4] = 1280;
+    max_vertex_counts[TRACK_RENDER_CACHE_FLOOR] = 560;
+    max_index_counts[TRACK_RENDER_CACHE_FLOOR] = 1280;
+    max_vertex_counts[TRACK_RENDER_CACHE_SLIDE] = 560;
+    max_index_counts[TRACK_RENDER_CACHE_SLIDE] = 1280;
+    max_vertex_counts[TRACK_RENDER_CACHE_WARNING] = 160;
+    max_index_counts[TRACK_RENDER_CACHE_WARNING] = 240;
+    max_vertex_counts[TRACK_RENDER_CACHE_RAMP] = 80;
+    max_index_counts[TRACK_RENDER_CACHE_RAMP] = 160;
+    max_vertex_counts[TRACK_RENDER_CACHE_FRINGE] = 800;
+    max_index_counts[TRACK_RENDER_CACHE_FRINGE] = 1280;
     owner_subgame = &g_game->subgame;
 
     int slot_base = 0;
-    Object** skirt_object_ref = &slots[0][4].bod.object;
+    Object** skirt_object_ref =
+        &slots[0][TRACK_RENDER_CACHE_FRINGE].bod.object;
     int i;
     do {
         for (i = 0;
@@ -60,7 +61,7 @@ void* SegmentCache::initialize_track_render_cache_manager()
             slot->bod.object->group_primitive_counts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroupsTexture Primcount");
 
-            if (i == 4)
+            if (i == TRACK_RENDER_CACHE_FRINGE)
                 (*skirt_object_ref)->blend_mode = 5;
         }
         slot_base += sizeof(slots[0]) / sizeof(slots[0][0]);

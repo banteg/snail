@@ -27,51 +27,57 @@ void SegmentCache::update_track_render_cache_rows()
 
     do {
         BodNode* active_list = &g_game->subgame.fringe_attachment_list_head;
-        TrackRenderCacheSlot* slot = &slots[next_cache_row_index][4];
+        TrackRenderCacheSlot* slot =
+            &slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        Vector3* position = &slots[next_cache_row_index][4].bod.position;
+        Vector3* position =
+            &slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].bod.position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
         Color4f skirt_color;
-        slots[next_cache_row_index][4].bod.color =
+        slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].bod.color =
             *g_game->subgame.get_track_skirt_color(&skirt_color);
 
         active_list = &g_game->subgame.track_body_list_head;
-        slot = &slots[next_cache_row_index][0];
+        slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][0].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR].bod.position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
-        slots[next_cache_row_index][0].bod.color.set_color_white();
+        slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR]
+            .bod.color.set_color_white();
 
         active_list = &g_game->subgame.track_body_list_head;
-        slot = &slots[next_cache_row_index][1];
+        slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][1].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE].bod.position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
-        slots[next_cache_row_index][1].bod.color.set_color_white();
+        slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE]
+            .bod.color.set_color_white();
 
         active_list = &g_game->subgame.track_body_list_head;
-        slot = &slots[next_cache_row_index][3];
+        slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][3].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP].bod.position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
-        slots[next_cache_row_index][3].bod.color.set_color_white();
+        slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP]
+            .bod.color.set_color_white();
 
         active_list = &g_game->subgame.track_body_list_head;
-        slot = &slots[next_cache_row_index][2];
+        slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING];
         ACTIVATE_CACHE_SLOT(slot, active_list);
-        position = &slots[next_cache_row_index][2].bod.position;
+        position = &slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING].bod.position;
         position->z = 0.0f;
         position->y = 0.0f;
         position->x = 0.0f;
-        slots[next_cache_row_index][2].bod.color.set_color_white();
+        slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING]
+            .bod.color.set_color_white();
 
         next_cache_row_z += 24.0f;
         next_cache_row_index++;

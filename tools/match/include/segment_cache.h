@@ -11,6 +11,20 @@ class SubgameRuntime;
 struct ObjectRenderVertex;
 struct Object;
 
+// Native debug names and all five dispatch arms agree on this family order.
+enum TrackRenderCacheFamily {
+    TRACK_RENDER_CACHE_FLOOR = 0,
+    TRACK_RENDER_CACHE_SLIDE = 1,
+    TRACK_RENDER_CACHE_WARNING = 2,
+    TRACK_RENDER_CACHE_RAMP = 3,
+    TRACK_RENDER_CACHE_FRINGE = 4,
+    TRACK_RENDER_CACHE_FAMILY_COUNT = 5,
+};
+
+enum {
+    TRACK_RENDER_CACHE_ROW_COUNT = 0x8f,
+};
+
 struct TrackRenderCacheSlot {
     // The manager owns the BOD node. BodBase::object is a handle allocated
     // from the global ObjectList and retained for the manager lifetime.
@@ -53,12 +67,15 @@ public:
         unsigned char project_uv); // @ 0x433960
 
     unsigned int skirt_color_bgra; // +0x00, packed from the level fringe color
-    int max_vertex_counts[5]; // +0x04
-    int max_index_counts[5];  // +0x18
-    ObjectRenderVertex* shared_vertex_buffers[5]; // +0x2c, owned tracked allocations
-    unsigned short* shared_index_buffers[5]; // +0x40, owned tracked allocations
+    int max_vertex_counts[TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x04
+    int max_index_counts[TRACK_RENDER_CACHE_FAMILY_COUNT];  // +0x18
+    ObjectRenderVertex*
+        shared_vertex_buffers[TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x2c
+    unsigned short*
+        shared_index_buffers[TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x40
     SubgameRuntime* owner_subgame; // +0x54, borrowed enclosing runtime
-    TrackRenderCacheSlot slots[0x8f][5]; // +0x58
+    TrackRenderCacheSlot
+        slots[TRACK_RENDER_CACHE_ROW_COUNT][TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x58
     float build_cache_row_base; // +0xa7ec
     float next_cache_row_z; // +0xa7f0
     int next_cache_row_index; // +0xa7f4

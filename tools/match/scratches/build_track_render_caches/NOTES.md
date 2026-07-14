@@ -22,7 +22,7 @@ source-level behavior:
 - scans `owner_subgame->runtime_row_count`, using `% 24` and `/ 24` to select a
   row within a cache group and a cache-row index;
 - clears five vertex and index counters and writes the row-base value into the
-  five `TrackRenderCacheSlot::unknown_38` fields at each 24-row boundary;
+  five `TrackRenderCacheSlot::cache_row_base` fields at each 24-row boundary;
 - scans eight row cells and four fringe-object slots per cell;
 - dispatches warning, slide, floor, ramp, and fringe objects to the recovered
   mesh builder with the native family/color/projected-UV combinations;
@@ -161,3 +161,21 @@ now derive from the `SegmentCache` field offsets, and its 75-pointer row step
 derives from `sizeof(slots[0])`. The readable ownership rewrite preserves the
 honest 99.79%, 475/475 result with all 20 operands clean; the sole residual is
 still the equivalent position-address SIB ordering.
+
+## 2026-07-14 cache-family ownership
+
+The five dispatch arms, the final native debug-name switch, the manager's four
+parallel capacity/buffer arrays, and every activated row agree on one stable
+family order: Floor, Slide, Warn, Ramp, Fringe. `TrackRenderCacheFamily` now
+owns those indices across construction, staging, activation, and reporting;
+`TRACK_RENDER_CACHE_FAMILY_COUNT` and the independently proved 143-row extent
+own the complete `SegmentCache::slots` grid.
+
+This is semantic recovery rather than a score probe. All five affected
+normalized listings remain byte-identical:
+
+- manager initializer: `a421b1ebfce7d01a2f78bc5793fcdb89ae051d66b7d23f759e89e3918cbb513f`
+- cache builder: `d4e28c9273db5fff1162899d9d9fd47aef5f85c3bf6a85a6903134086ba3d6cb`
+- row activator: `7a3d44e214754537db62089ab05276774f460bee564f1661ed1ea7d41df99fda`
+- teardown: `cf075f6f16abd639d3d16cffaaa2142e1fab47167fb39ec470d5a090059dac39`
+- runtime constructor: `755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`

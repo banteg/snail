@@ -10,7 +10,8 @@ int report_errorf(char* format, ...);
 
 void SegmentCache::remove_track_render_cache_bods()
 {
-    BodNode** next_ref = &slots[0][0].bod.list_next;
+    BodNode** next_ref =
+        &slots[0][TRACK_RENDER_CACHE_FLOOR].bod.list_next;
     int rows = sizeof(slots) / sizeof(slots[0]);
 
     do {
