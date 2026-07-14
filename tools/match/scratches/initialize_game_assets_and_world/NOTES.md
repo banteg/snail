@@ -697,3 +697,14 @@ constructor independently walks two complete 0x70-byte input owners and two
 complete 0x1f8-byte player owners. Binary Ninja also pins the arrays at
 `+0x44` and `+0x124` and the runtime count at `+0x40`. This is a derived paired
 capacity, not a guessed limit or an original-symbol spelling claim.
+
+## 2026-07-14 presentation animation bank extents
+
+The startup post-load passes now derive the ten-slot cutscene extent and each
+five-slot weapon-channel extent from their owned
+`PresentationAnimationSlot` arrays. The exact Snail constructor independently
+walks those same full banks, and Binary Ninja types them as `[10]` at
+`Snail +0x14c` and `[5]` at every channel `+0x150`. The jetpack pass
+intentionally remains a count of two: its channel owns five slots, but startup
+loads and post-processes only the base and draw clips. Keeping that subset
+separate avoids falsely equating populated assets with storage capacity.

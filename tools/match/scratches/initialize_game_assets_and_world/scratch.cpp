@@ -2614,7 +2614,9 @@ char GameRoot::initialize_game_assets_and_world()
         2);
     subgame.player.presentation.build_snail_hotspots();
 
-    int animation_count = 10;
+    int animation_count =
+        sizeof(subgame.player.presentation.cutscene_animation_slots)
+        / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);
     PresentationAnimationSlot* animation_slot =
         &subgame.player.presentation.cutscene_animation_slots[0];
     do {
@@ -2708,7 +2710,9 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.player.presentation.weapon_channels[0].animation_slots[4]
             .body.object);
 
-    animation_count = 5;
+    animation_count =
+        sizeof(subgame.player.presentation.weapon_channels[0].animation_slots)
+        / sizeof(subgame.player.presentation.weapon_channels[0].animation_slots[0]);
     animation_slot =
         &subgame.player.presentation.weapon_channels[0].animation_slots[0];
     do {
@@ -2763,7 +2767,9 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.player.presentation.weapon_channels[1].animation_slots[4]
             .body.object);
 
-    animation_count = 5;
+    animation_count =
+        sizeof(subgame.player.presentation.weapon_channels[1].animation_slots)
+        / sizeof(subgame.player.presentation.weapon_channels[1].animation_slots[0]);
     animation_slot =
         &subgame.player.presentation.weapon_channels[1].animation_slots[0];
     do {
@@ -2818,7 +2824,9 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.player.presentation.weapon_channels[2].animation_slots[4]
             .body.object);
 
-    animation_count = 5;
+    animation_count =
+        sizeof(subgame.player.presentation.weapon_channels[2].animation_slots)
+        / sizeof(subgame.player.presentation.weapon_channels[2].animation_slots[0]);
     animation_slot =
         &subgame.player.presentation.weapon_channels[2].animation_slots[0];
     do {
