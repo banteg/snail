@@ -1,5 +1,7 @@
 // finalize_path_template @ 0x42c600 (thiscall)
 
+#include <stddef.h>
+
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
@@ -49,18 +51,24 @@ void __fastcall Path::finalize_path_template()
                 &primary->transform.basis_forward,
                 &next->transform.basis_forward);
 
-            *(float*)((char*)this->primary_samples + sample_offset + 0xa4) =
+            *(float*)((char*)this->primary_samples + sample_offset
+                + offsetof(AttachmentSample, lateral_source)) =
                 (float)cross.dot_vector(
                     (Vector3*)((char*)this->primary_samples + sample_offset));
 
             if (this->is_mirrored_x)
-                *(float*)((char*)this->primary_samples + sample_offset + 0xa4) *= -1.0f;
+                *(float*)((char*)this->primary_samples + sample_offset
+                    + offsetof(AttachmentSample, lateral_source)) *= -1.0f;
 
-            if (*(float*)((char*)this->primary_samples + sample_offset + 0xa4) > 0.0f)
-                *(float*)((char*)this->primary_samples + sample_offset + 0xa4) = 0.0f;
+            if (*(float*)((char*)this->primary_samples + sample_offset
+                    + offsetof(AttachmentSample, lateral_source)) > 0.0f)
+                *(float*)((char*)this->primary_samples + sample_offset
+                    + offsetof(AttachmentSample, lateral_source)) = 0.0f;
 
-            if (*(float*)((char*)this->primary_samples + sample_offset + 0xa4) < -0.1f)
-                *(float*)((char*)this->primary_samples + sample_offset + 0xa4) = -0.1f;
+            if (*(float*)((char*)this->primary_samples + sample_offset
+                    + offsetof(AttachmentSample, lateral_source)) < -0.1f)
+                *(float*)((char*)this->primary_samples + sample_offset
+                    + offsetof(AttachmentSample, lateral_source)) = -0.1f;
 
             ++segment_index;
             sample_offset += sizeof(AttachmentSample);

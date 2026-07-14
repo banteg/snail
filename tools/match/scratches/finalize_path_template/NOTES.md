@@ -68,3 +68,12 @@ retaining a current-sample pointer across the calls; explicit base-pointer
 locals regress to 71.11%, and indexing the dot source separately by
 `segment_index` adds a second strength-reduced induction variable at 81.06%.
 Those variants are rejected rather than retained as matching scaffolding.
+
+## 2026-07-14 lateral-source member ownership
+
+The cross/dot/clamp loop retains its compiler-critical byte-offset induction
+variable, but every terminal `+0xa4` access now derives from
+`offsetof(AttachmentSample, lateral_source)`. This ties the scalar back to the
+owned primary-sample array without extending a typed sample pointer's live
+range. Focused output is byte-identical at 81.78%, 112/113 instructions,
+prefix 24/113, with all nine operands clean.
