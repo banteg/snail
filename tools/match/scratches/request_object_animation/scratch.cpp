@@ -40,13 +40,15 @@ void Object::request_object_animation(
     this->flags |= 0x200000;
 
     int generated_frame_count = (int)(1.0f / progress_step);
-    animation = (ObjectAnimation*)allocate_tracked_memory(0x14, "Object Animation");
+    animation = (ObjectAnimation*)allocate_tracked_memory(
+        sizeof(ObjectAnimation), "Object Animation");
     animation->generated_frame_count = generated_frame_count;
     animation->flags = flags;
     animation->progress = 0.0f;
     animation->progress_step = progress_step;
     animation->frames = (ObjectAnimationFrame**)allocate_tracked_memory(
-        generated_frame_count << 2, "Object Animation Frame array");
+        generated_frame_count * sizeof(*animation->frames),
+        "Object Animation Frame array");
 
     int current_keyframe = 0;
     int current_time = keyframes[0].frame_number;
@@ -63,12 +65,14 @@ void Object::request_object_animation(
         Object** keyframe_object_cursor = &keyframes->object;
         do {
             animation->frames[frame] =
-                (ObjectAnimationFrame*)allocate_tracked_memory(8, "Object Animation Frame");
+                (ObjectAnimationFrame*)allocate_tracked_memory(
+                    sizeof(ObjectAnimationFrame), "Object Animation Frame");
             animation->frames[frame]->vertices =
-                (Vector3*)allocate_tracked_memory(vertex_count * 0xc,
+                (Vector3*)allocate_tracked_memory(vertex_count * sizeof(Vector3),
                     "Object Animation Frame Vertices");
             animation->frames[frame]->facequad_normals =
-                (Vector3*)allocate_tracked_memory(facequad_count * 0x18,
+                (Vector3*)allocate_tracked_memory(
+                    facequad_count * sizeof(Vector3) * 2,
                     "Object Animation Frame FaceQuad Normals");
 
             float frame_time_float =

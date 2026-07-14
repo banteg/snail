@@ -22,7 +22,8 @@ void Object::request_object_vertices(int requested_count)
 
     if (vertex_count == 0) {
         vertex_count = requested_count;
-        vertices = (Vector3*)allocate_tracked_memory(requested_count * 0xc, "Object Vertex List");
+        vertices = (Vector3*)allocate_tracked_memory(
+            requested_count * sizeof(Vector3), "Object Vertex List");
         request_object_vertex_colours(this);
     }
 }

@@ -87,3 +87,9 @@ through `Direct3DRenderer`. The index receiver compiles as
 extent resolves that interior relocation against the existing `0x5000fc`
 reference without an alias or operand waiver. Focused matching remains exact at
 373/373 with all 29 operands clean.
+
+2026-07-14 typed allocation extents: the three texture-group arrays now size
+from their destination element types; vertex and index uploads use
+`sizeof(ObjectRenderVertex)` and `sizeof(unsigned short)`. This removes the
+duplicated 4/0x18/2 representation widths while preserving the exact 373/373
+instructions and all 29 operands.

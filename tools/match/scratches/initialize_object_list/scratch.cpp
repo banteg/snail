@@ -8,7 +8,8 @@ void ObjectList::initialize_object_list(int object_capacity)
 {
     count = 0;
     capacity = object_capacity;
-    objects = (Object*)allocate_tracked_memory(20 * (11 * object_capacity), "Object List");
+    objects = (Object*)allocate_tracked_memory(
+        sizeof(Object) * object_capacity, "Object List");
 
     if (object_capacity > 0) {
         int offset = 0;

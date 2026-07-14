@@ -4,7 +4,7 @@ Exact match at 100%.
 
 Semantics:
 
-- first request allocates `requested_count * 4` bytes for facequad texture
+- first request allocates `requested_count * sizeof(*texture_group_ends)` for facequad texture
   groups at `+0x6c`;
 - records live count at `+0x64` and fixed capacity at `+0x68`;
 - later requests reuse the fixed buffer and report
@@ -21,3 +21,7 @@ leftover register states rather than a coherent API result.
 clean masked operands. The previous `void*` declaration forced VC6 to load
 `texture_group_capacity` before the requested count in the fixed-buffer branch;
 the source-shaped `void` helper preserves the native argument-first load order.
+
+2026-07-14 allocation ownership: the fixed texture-group bank now derives its
+four-byte stride from the owned `int* texture_group_ends` member. Matching
+remains exact at 29/29 instructions with all four operands clean.

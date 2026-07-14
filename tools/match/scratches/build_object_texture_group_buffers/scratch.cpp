@@ -29,12 +29,16 @@ void build_object_texture_group_buffers(Object* object)
 
     object->flags |= 0x80000;
     object->group_index_starts =
-        (int*)allocate_tracked_memory(object->texture_group_count << 2, "DX TextureGroups");
+        (int*)allocate_tracked_memory(
+            object->texture_group_count * sizeof(*object->group_index_starts),
+            "DX TextureGroups");
     object->group_texture_refs =
-        (TextureRef**)allocate_tracked_memory(object->texture_group_count << 2,
+        (TextureRef**)allocate_tracked_memory(
+            object->texture_group_count * sizeof(*object->group_texture_refs),
             "DX TextureGroupsTexture Ref");
     object->group_primitive_counts =
-        (int*)allocate_tracked_memory(object->texture_group_count << 2,
+        (int*)allocate_tracked_memory(
+            object->texture_group_count * sizeof(*object->group_primitive_counts),
             "DX TextureGroupsTexture Primcount");
 
     g_object_grouped_vertex_scratch = (ObjectGroupedVertex*)get_archive_data_base();
@@ -144,7 +148,8 @@ void build_object_texture_group_buffers(Object* object)
 
     ObjectRenderVertex* locked_vertices;
     object->render_buffers->vertex_buffer->vtbl->Lock(
-        object->render_buffers->vertex_buffer, 0, g_object_grouped_vertex_cursor * 0x18,
+        object->render_buffers->vertex_buffer, 0,
+        g_object_grouped_vertex_cursor * sizeof(ObjectRenderVertex),
         (void**)&locked_vertices, 0);
 
     for (int i = 0; i < g_object_grouped_vertex_cursor; ++i) {
@@ -159,8 +164,11 @@ void build_object_texture_group_buffers(Object* object)
 
     void* locked_indices;
     object->index_buffer->buffer->vtbl->Lock(
-        object->index_buffer->buffer, 0, index_count * 2, &locked_indices, 0);
-    memcpy(locked_indices, index_scratch, index_count * 2);
+        object->index_buffer->buffer, 0,
+        index_count * sizeof(unsigned short), &locked_indices, 0);
+    memcpy(
+        locked_indices, index_scratch,
+        index_count * sizeof(unsigned short));
     object->index_buffer->buffer->vtbl->Unlock(object->index_buffer->buffer);
 
     if ((object->flags & 0x4000) != 0) {

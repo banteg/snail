@@ -6,6 +6,7 @@ void* allocate_tracked_memory(int size, char* name);
 
 void Object::request_object_vertices_copy()
 {
-    copied_vertices = (Vector3*)allocate_tracked_memory(vertex_count * 0xc, "Object Vertex List");
+    copied_vertices = (Vector3*)allocate_tracked_memory(
+        vertex_count * sizeof(Vector3), "Object Vertex List");
     copy_object_vertices();
 }

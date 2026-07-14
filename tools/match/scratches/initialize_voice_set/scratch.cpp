@@ -8,8 +8,9 @@ int VoiceSet::initialize_voice_set(int count)
 {
     sample_count = count;
     next_index = 0;
-    playlist = (int*)allocate_tracked_memory(count << 2, "Playlist");
-    bites = (int*)allocate_tracked_memory(sample_count << 2, "VoiceBite");
+    playlist = (int*)allocate_tracked_memory(count * sizeof(*playlist), "Playlist");
+    bites = (int*)allocate_tracked_memory(
+        sample_count * sizeof(*bites), "VoiceBite");
     int current_count = sample_count;
     cooldown = 0.0f;
     cooldown_step = 0.0041666669f;

@@ -21,7 +21,8 @@ void Object::request_object_facequads(int requested_count)
     }
     if (facequad_count == 0) {
         facequads =
-            (ObjectFaceQuad*)allocate_tracked_memory(requested_count * 0x30, "Object FaceQuad List");
+            (ObjectFaceQuad*)allocate_tracked_memory(
+                requested_count * sizeof(ObjectFaceQuad), "Object FaceQuad List");
         if (requested_count > facequad_capacity)
             facequad_capacity = requested_count;
     }

@@ -133,3 +133,8 @@ are not retained.
 - The void member compiles proof-grade at **100.00%**, `231/231`, with all 17
   masked operands clean. The exact animation loader remains `228/228`, proving
   the ABI correction across the whole handoff rather than only this callee.
+
+2026-07-14 animation allocation ownership: `ObjectAnimation` itself, the frame
+pointer bank, each `ObjectAnimationFrame`, its `Vector3` vertex bank, and its
+two-normal-per-face bank now derive allocation extents from their shared types.
+Matching remains exact at 231/231 instructions with all 17 operands clean.

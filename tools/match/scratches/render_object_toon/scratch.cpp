@@ -46,7 +46,8 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
 
     g_d3d_device->vtbl->SetIndices(g_d3d_device, object->toon_index_buffer->buffer, 0);
     g_d3d_device->vtbl->SetStreamSource(
-        g_d3d_device, 0, object->render_buffers->vertex_buffer, 0x18);
+        g_d3d_device, 0, object->render_buffers->vertex_buffer,
+        sizeof(ObjectRenderVertex));
 
     int edge_index = 0;
     if (object->edge_count > 0) {
@@ -55,7 +56,8 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
             int emitted = 0;
             unsigned short* indices;
             object->toon_index_buffer->buffer->vtbl->Lock(
-                object->toon_index_buffer->buffer, 0, object->vertex_count << 1,
+                object->toon_index_buffer->buffer, 0,
+                object->vertex_count * sizeof(unsigned short),
                 (void**)&indices, 0);
 
             if ((((ObjectToonEdge*)((char*)object->edges + edge_offset))->flags & 1) != 0) {

@@ -4,12 +4,15 @@ Exact match.
 
 Semantics:
 
-- allocates `vertex_count * 0xc` bytes for accumulated vertex normals at
+- allocates `vertex_count * sizeof(Vector3)` bytes for accumulated vertex normals at
   `+0x44` when absent;
-- allocates `facequad_count * 0x18` bytes for facequad-normal pairs at `+0x60`
-  when absent;
+- allocates two `Vector3` normals per facequad at `+0x60` when absent;
 - leaves existing buffers untouched and returns the facequad-normal buffer.
 
 This completes the toon-normal allocation side of the object mesh helper group
 alongside exact `request_object_vertices`, `request_object_vertex_colours`, and
 `request_object_facequads`.
+
+2026-07-14 allocation ownership: both banks now derive their extents from the
+shared `Vector3` element type. Matching remains exact at 26/26 instructions
+with all four operands clean.

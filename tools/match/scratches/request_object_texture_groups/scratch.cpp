@@ -8,7 +8,9 @@ int report_errorf(char* format, ...);
 void Object::request_object_texture_groups(int requested_count)
 {
     if (texture_group_count == 0) {
-        void* result = allocate_tracked_memory(requested_count << 2, "Object FaceQuad Texture Groups");
+        void* result = allocate_tracked_memory(
+            requested_count * sizeof(*texture_group_ends),
+            "Object FaceQuad Texture Groups");
         texture_group_capacity = requested_count;
         texture_group_count = requested_count;
         texture_group_ends = (int*)result;
