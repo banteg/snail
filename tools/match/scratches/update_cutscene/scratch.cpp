@@ -116,7 +116,8 @@ void CutScene::update_cutscene()
         progress = 0.0f;
         progress_step = 0.00833333377f;
         force_camera_update = 1;
-        g_voice_manager.play_voice_manager(3, 2, -1);
+        g_voice_manager.play_voice_manager(
+            VOICE_SET_FALL, VOICE_PLAY_INTERRUPT, -1);
         presentation->owner_player->attachment_exit_gate_a = 1;
         presentation->release_snail_weapons();
         // fall through
@@ -160,7 +161,8 @@ void CutScene::update_cutscene()
         if (player->resurrect_active != 0 || (player->initialize_subgoldy_death(), player->attachment_exit_gate_b != 0)) {
             progress = progress_step + progress;
         } else {
-            g_voice_manager.play_voice_manager(11, 2, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_SLUGGED, VOICE_PLAY_INTERRUPT, -1);
             player->attachment_exit_gate_b = 1;
             player->attachment_exit_gate_a = 1;
             progress = progress_step + progress;

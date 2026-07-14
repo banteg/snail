@@ -325,7 +325,7 @@ steering_stored:
                     .message_sample_id
                 != -1)
                 g_voice_manager.play_voice_manager(
-                    13, 2,
+                    VOICE_SET_TUTORIAL, VOICE_PLAY_INTERRUPT,
                     voice_game
                         ->level_definition
                         .segment_slots[definition - 1]
@@ -341,7 +341,8 @@ steering_stored:
             follow_state.begin_track_attachment_follow_state(
                 source_cell, p_position, this);
             if (follow_state.template_record->kind == 24)
-                g_voice_manager.play_voice_manager(12, 0, -1);
+                g_voice_manager.play_voice_manager(
+                    VOICE_SET_WORM_TUNNEL, VOICE_PLAY_IF_IDLE, -1);
         }
     }
 
@@ -738,7 +739,8 @@ steering_stored:
         display_game->subgame_rebuild_selector = 2;
         if (completion_handoff_timer > 2.0f && !completion_handoff_voice_gate) {
             completion_handoff_voice_gate = 1;
-            g_voice_manager.play_voice_manager(8, 2, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_VICTORY, VOICE_PLAY_INTERRUPT, -1);
         }
         if (completion_handoff_timer > 2.0f) {
             SubgameRuntime* skip_game = game;
@@ -918,14 +920,16 @@ steering_stored:
         float advanced = attachment_exit_progress_step + attachment_exit_progress;
         attachment_exit_progress = advanced;
         if (advanced > 0.69999999f && !attachment_exit_gate_a) {
-            g_voice_manager.play_voice_manager(3, 0, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_FALL, VOICE_PLAY_IF_IDLE, -1);
             unsigned char override_active = control_override_active;
             attachment_exit_gate_a = 1;
             if (!override_active && transform.position.y < -6.0f)
                 presentation.dispatch_cutscene_animation(5, 1, -1);
         }
         if (transform.position.y < -7.0f && !attachment_exit_gate_b) {
-            g_voice_manager.play_voice_manager(1, 2, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_DYING, VOICE_PLAY_INTERRUPT, -1);
             attachment_exit_gate_b = 1;
             attachment_exit_gate_a = 1;
         }
@@ -935,7 +939,8 @@ steering_stored:
         float advanced = startup_voice_step + startup_voice_timer;
         startup_voice_timer = advanced;
         if (advanced > 1.0f) {
-            g_voice_manager.play_voice_manager(7, 2, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_START, VOICE_PLAY_INTERRUPT, -1);
             startup_voice_timer = 0.0f;
         }
     }
@@ -951,7 +956,8 @@ steering_stored:
         slow_commentary_timer = advanced;
         if (advanced > 1.0f) {
             slow_commentary_timer = 0.0f;
-            g_voice_manager.play_voice_manager(6, 1, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_SLOW, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
         }
     }
 

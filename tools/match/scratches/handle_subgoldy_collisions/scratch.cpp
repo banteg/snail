@@ -203,7 +203,8 @@ void Player::handle_subgoldy_collisions()
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
                     add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
-                    g_voice_manager.play_voice_manager(10, 1, -1);
+                    g_voice_manager.play_voice_manager(
+                        VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
                     g_sound_effect_manager.play_sound_effect(27);
                     parcel->state = 4;
                     SubgameRuntime* parcel_game = game;
@@ -310,7 +311,10 @@ void Player::handle_subgoldy_collisions()
                         if (current_lives < 10) {
                             if ((ladder_game->runtime_flags & 0x10) != 0 && ladder_game->level_mode != 3)
                                 lives = current_lives + 1;
-                            g_voice_manager.play_voice_manager(5, 1, -1);
+                            g_voice_manager.play_voice_manager(
+                                VOICE_SET_POWER_UP,
+                                VOICE_PLAY_AFTER_GLOBAL_COOLDOWN,
+                                -1);
                         }
                         int selector = movement_flag_selector;
                         if (selector >= 8) {

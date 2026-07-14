@@ -64,7 +64,8 @@ void DamageGuage::update_damage_gauge()
                 if (*(int*)&game->subgame.embedded_player()->transform.position.y != 0x3efae148)
                     goto render;
                 state = 2;
-                g_voice_manager.play_voice_manager(14, 0, -1);
+                g_voice_manager.play_voice_manager(
+                    VOICE_SET_POSTAL, VOICE_PLAY_IF_IDLE, -1);
             }
             goto render_after_refresh;
         }

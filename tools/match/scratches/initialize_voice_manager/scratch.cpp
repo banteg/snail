@@ -29,56 +29,56 @@ void VoiceManager::initialize_voice_manager()
     load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", file_text, (int*)zero);
 
     char* cursor;
-    for (int set_index = zero; set_index < 16; ++set_index) {
+    for (int set_index = zero; set_index < VOICE_SET_COUNT; ++set_index) {
         rstrcpy_checked_ascii(set_tag, "Set:");
 
         switch (set_index) {
-        case 0:
+        case VOICE_SET_DAMAGE:
             strcat(set_tag, "Damage");
             break;
-        case 1:
+        case VOICE_SET_DYING:
             strcat(set_tag, "Dying");
             break;
-        case 2:
+        case VOICE_SET_ENEMIES:
             strcat(set_tag, "Enemies");
             break;
-        case 3:
+        case VOICE_SET_FALL:
             strcat(set_tag, "Fall");
             break;
-        case 4:
+        case VOICE_SET_MISC:
             strcat(set_tag, "Misc");
             break;
-        case 5:
+        case VOICE_SET_POWER_UP:
             strcat(set_tag, "PowerUp");
             break;
-        case 6:
+        case VOICE_SET_SLOW:
             strcat(set_tag, "Slow");
             break;
-        case 7:
+        case VOICE_SET_START:
             strcat(set_tag, "Start");
             break;
-        case 8:
+        case VOICE_SET_VICTORY:
             strcat(set_tag, "Victory");
             break;
-        case 9:
+        case VOICE_SET_OUCH:
             strcat(set_tag, "Ouch");
             break;
-        case 10:
+        case VOICE_SET_PACKAGE:
             strcat(set_tag, "Package");
             break;
-        case 11:
+        case VOICE_SET_SLUGGED:
             strcat(set_tag, "Slugged");
             break;
-        case 12:
+        case VOICE_SET_WORM_TUNNEL:
             strcat(set_tag, "WormTunnel");
             break;
-        case 13:
+        case VOICE_SET_TUTORIAL:
             strcat(set_tag, g_tutorial_text);
             break;
-        case 14:
+        case VOICE_SET_POSTAL:
             strcat(set_tag, "Postal");
             break;
-        case 15:
+        case VOICE_SET_SUPERTRAMP:
             strcat(set_tag, "SuperTramp");
             break;
         }

@@ -7,7 +7,7 @@ int VoiceManager::is_voice_playing()
 {
     int set_index = 0;
     int* set = (int*)this;
-    while (set_index < 16) {
+    while (set_index < VOICE_SET_COUNT) {
         int bite_index = 0;
         if (*set > 0) {
             while (!g_audio_backend.is_registered_sound_sample_playing(*(int*)(set[3] + 4 * bite_index))) {

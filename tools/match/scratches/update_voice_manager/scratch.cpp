@@ -5,7 +5,7 @@
 void VoiceManager::update_voice_manager()
 {
     VoiceSet* set = sets;
-    int count = 16;
+    int count = VOICE_SET_COUNT;
     do {
         set->update_voice_set();
         ++set;

@@ -19,7 +19,6 @@
 #include "voice_manager.h"
 
 extern GameRoot* g_game;
-extern VoiceManager g_voice_manager;
 extern char g_blank_text[];
 
 int next_math_random_value();

@@ -51,7 +51,8 @@ int FollowState::update_track_attachment_follow_state(
         sample_index = index;
 
         if (index == 2 * this->template_record->segment_count) {
-            g_voice_manager.play_voice_manager(4, 1, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_MISC, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
         }
 
         Path* runtime_template = this->template_record;
@@ -315,7 +316,8 @@ terminal_path:
             player->cutscene_pitch_cycle_step =
                 ((GameRoot*)g_game_base)->subgame.subgame_rate * 0.013888888f;
             player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step;
-            g_voice_manager.play_voice_manager(15, 0, -1);
+            g_voice_manager.play_voice_manager(
+                VOICE_SET_SUPERTRAMP, VOICE_PLAY_IF_IDLE, -1);
         } else {
             out_position->z =
                 final_template->secondary_samples[final_template->segment_count - 1].transform.position.z
