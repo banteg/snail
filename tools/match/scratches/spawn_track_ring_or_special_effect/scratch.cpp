@@ -7,6 +7,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
+#include <stddef.h>
 
 extern GameRoot* g_game; // data_4df904
 
@@ -20,12 +21,13 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     float ring_speed)
 {
     int slot_index = 0;
-    SubRing* scan = (SubRing*)((char*)this + 0x35b78c);
+    SubRing* scan = (SubRing*)((char*)this
+        + offsetof(SubgameRuntime, ring_effects));
     while (1) {
         if (scan->state == 0)
             break;
         slot_index++;
-        scan = (SubRing*)((char*)scan + 0x1f8);
+        scan = (SubRing*)((char*)scan + sizeof(SubRing));
         if (slot_index < 2)
             continue;
         return;

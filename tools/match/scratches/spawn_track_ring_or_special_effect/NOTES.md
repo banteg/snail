@@ -4,8 +4,8 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `52.86%`, `247/347` candidate/target instructions, prefix `3/347`, with
-  `45` masked operands ok, `6` known switch-grouping/table mismatches, and no
+- `64.09%`, `327/347` candidate/target instructions, prefix `3/347`, with
+  `48` masked operands ok, `10` known switch-grouping/table mismatches, and no
   unresolved operands.
 - The scratch is evidence-first rather than close-match source. The remaining
   mismatch is dominated by switch scheduling and grouped equivalent cases, not
@@ -221,3 +221,12 @@ The manual native-order parent splice now begins at
 the authored `SubRing*` link types. Focused output remains 64.09%, 327/347
 instructions, prefix 3/347, with 48 clean operands and the same ten explicit
 switch-family mismatches.
+
+## 2026-07-14 pool-scan ownership
+
+The compiler-sensitive free-slot scan still advances a byte pointer, but its
+base now derives from `offsetof(SubgameRuntime, ring_effects)` and its step from
+`sizeof(SubRing)`. This removes the final hard-coded `+0x35b78c` pool address
+and `0x1f8` parent stride without changing the emitted code. Focused output
+remains honestly at 64.09%, 327/347 instructions, with 48 clean operands and
+the same ten explicit kind-switch mismatches.

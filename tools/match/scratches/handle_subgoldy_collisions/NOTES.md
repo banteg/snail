@@ -455,3 +455,21 @@ instead of duplicate `world_position` fields. Their exact constructors prove
 the zero-offset base initializer, their exact updaters consume y/z, and this
 collision body consumes all three lanes. Focused output remains byte-stable at
 53.93%, 651/673 instructions, with all 86 operands clean.
+
+## 2026-07-14 embedded-pool cursor extents
+
+The six byte-strided fixed-pool sweeps now derive both their bounds and steps
+from the owners they traverse:
+
+- `SaltManager::slots` / `sizeof(Salt)`;
+- `SubLazerManager::slots` / `sizeof(SubLazer)`;
+- `SlugPool::slots` / `sizeof(Slug)`;
+- `ParcelManager::slots` / `sizeof(Parcel)`;
+- `SubgameRuntime::health_pickups` / `sizeof(SubHealth)`; and
+- `SubRingPool::slots` / `sizeof(SubRing)`.
+
+The byte cursors remain intentional because typed iterator spellings rotate
+VC6's long-lived registers in this 673-instruction function. Replacing the
+duplicated decimal extents and strides with compile-time owner facts is
+codegen-neutral: focused output remains 53.93%, 651/673 instructions, with all
+86 operands clean.
