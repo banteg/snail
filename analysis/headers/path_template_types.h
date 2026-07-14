@@ -2035,7 +2035,22 @@ char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);
 
 double __cdecl parse_next_float32(char** cursor);
 
+char __cdecl cache_music_file(
+    char* path,
+    int32_t unused,
+    char* unused_default_path
+);
+
 void* __thiscall noop_this_constructor(void* self);
+
+void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);
+
+int32_t __thiscall rebuild_track_runtime_from_segments(
+    SubgameRuntime* game,
+    int32_t level_index
+);
+
+void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);
 
 void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 

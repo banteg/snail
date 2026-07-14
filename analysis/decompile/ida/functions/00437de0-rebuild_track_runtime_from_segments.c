@@ -2,13 +2,14 @@
 /* function: rebuild_track_runtime_from_segments @ 0x437de0 */
 /* selector: rebuild_track_runtime_from_segments */
 
-// Normalizes the generated runtime grid, copies authored metadata into runtime cells, and runs the post-build render passes.
-int32_t __thiscall rebuild_track_runtime_from_segments(Game *game, int32_t level_index)
+// Exact Windows implementation of authored `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes.
+int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)
 {
   int v4[4]; // [esp+4h] [ebp-10h] BYREF
+  tColour v5; // 0:^0.16
 
   game->level_mode_arg = level_index;
-  set_subgame_features((int)game);
+  set_subgame_features(game);
   build_track_colours();
   populate_runtime_track_cells_from_segments(game);
   place_parcels_on_track(game);
@@ -18,7 +19,7 @@ int32_t __thiscall rebuild_track_runtime_from_segments(Game *game, int32_t level
   merge_track_tile_runs(game);
   mark_track_warning_zones(game);
   build_track_fringe_objects(game);
-  get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v4);
-  return build_track_render_caches((TrackRenderCacheManager *)game->_pad_5c);
+  v5 = *get_track_skirt_color((SubgameRuntime *)((char *)g_game_base + 476696), (tColour *)v4);
+  return build_track_render_caches(&game->segment_cache, v5);
 }
 

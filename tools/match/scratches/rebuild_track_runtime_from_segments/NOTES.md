@@ -16,3 +16,14 @@ The exact source shape has two important call ownership details:
 
 The color query now names the root-owned `GameRoot::subgame` receiver rather
 than reconstructing it from `root + 0x74618`. Focused matching remains exact.
+
+## Authored owner hierarchy (2026-07-14)
+
+Cross-port symbol and body evidence identifies this exact Windows dispatcher as
+`cRSubGame::GenerateLevel(int)`, not an unnamed normalization helper. Android
+stores the incoming level argument and calls `SetFeatures`, `BuildColours`,
+`BuildLevel`, `PlaceParcels`, `SmoothTrack`, `WarnTrack`, `SlideSmoothTrack`,
+`CondenseTrack`, and `FringeEdgeTrack` in the same nested order. Windows adds
+its platform-specific tile-promotion and render-cache calls around that shared
+pipeline. The callee at `0x435eb0` is therefore authored `BuildLevel()`, while
+the outer caller at `0x437eb0` is authored `StartLevel(int)`.

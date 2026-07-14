@@ -424,6 +424,15 @@
       "confidence": "high"
     },
     {
+      "address": "0x435eb0",
+      "windows_name": "populate_runtime_track_cells_from_segments",
+      "ios_symbol": "cRSubGame::BuildLevel()",
+      "android_symbol": "cRSubGame::BuildLevel()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android preserves the full seed, selected-record, row-count, segment-selection, row-copy, and glyph-construction body, including the Segdif and Negative Segment Length diagnostics seen in Windows."
+    },
+    {
       "address": "0x4374b0",
       "windows_name": "initialize_subgame",
       "ios_symbol": "cRSubGame::Init()",
@@ -440,12 +449,22 @@
       "notes": "All ports ignore the receiver and render progress from containing-game state. Windows embeds the authored empty class at Player +0x3f0; cRWarning alignment accounts for the following three bytes."
     },
     {
-      "address": "0x437eb0",
-      "windows_name": "build_subgame_level",
-      "ios_symbol": "cRSubGame::BuildLevel()",
+      "address": "0x437de0",
+      "windows_name": "rebuild_track_runtime_from_segments",
+      "ios_symbol": "cRSubGame::GenerateLevel(int)",
+      "android_symbol": "cRSubGame::GenerateLevel(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Windows call to the shared one-byte stub with receiver SubgameRuntime +0x3bbb54 is the empty cRProgressBar::Init lifecycle edge; Android cRSubGame::StartLevel() independently calls that Init."
+      "notes": "The mobile dispatcher stores the level argument and calls SetFeatures, BuildColours, BuildLevel, PlaceParcels, SmoothTrack, WarnTrack, SlideSmoothTrack, CondenseTrack, and FringeEdgeTrack in the same nested rebuild order. Windows adds its platform-specific promotion and render-cache passes."
+    },
+    {
+      "address": "0x437eb0",
+      "windows_name": "build_subgame_level",
+      "ios_symbol": "cRSubGame::StartLevel(int)",
+      "android_symbol": "cRSubGame::StartLevel(int)",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "Android preserves the outer level-load, manager-reset, GenerateLevel, landscape, player, HUD, and music lifecycle. The Windows call to the shared one-byte stub with receiver SubgameRuntime +0x3bbb54 is the empty cRProgressBar::Init lifecycle edge also called by Android StartLevel."
     },
     {
       "address": "0x438700",

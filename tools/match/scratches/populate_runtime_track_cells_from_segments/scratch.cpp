@@ -669,17 +669,22 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 break;
             case '>':
-                ((BodBase*)(cell + CELL_BOD_BASE))
-                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
-                *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                 if (build_row > 0 && *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) == 3) {
+                    ((BodBase*)(cell + CELL_BOD_BASE))
+                        ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
+                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
+                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = 9;
+                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                     *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) = 0xc;
                 } else {
+                    ((BodBase*)(cell + CELL_BOD_BASE))
+                        ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[1]));
+                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
+                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = 3;
+                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 }
-                *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 break;
             case '@':
                 *(unsigned char*)(cell + CELL_TILE_ID) = 0;
@@ -786,30 +791,40 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 break;
             case '{':
-                ((BodBase*)(cell + CELL_BOD_BASE))
-                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
-                *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                 if (build_row > 0 && *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) == 3) {
+                    ((BodBase*)(cell + CELL_BOD_BASE))
+                        ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
+                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
+                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = 8;
+                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                     *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) = 0xb;
                 } else {
+                    ((BodBase*)(cell + CELL_BOD_BASE))
+                        ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[0]));
+                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
+                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = 2;
+                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 }
-                *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 break;
             case '}':
-                ((BodBase*)(cell + CELL_BOD_BASE))
-                    ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[2]));
-                *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                 if (build_row > 0 && *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) == 3) {
+                    ((BodBase*)(cell + CELL_BOD_BASE))
+                        ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[2]));
+                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
+                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = 0xa;
+                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                     *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) = 0xd;
                 } else {
+                    ((BodBase*)(cell + CELL_BOD_BASE))
+                        ->set_bod_object(ROOT_BOD_OBJECT(ramp_edges[2]));
+                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
+                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = 4;
+                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 }
-                *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                 break;
             case 's':
                 ((BodBase*)(cell + CELL_BOD_BASE))

@@ -1190,6 +1190,67 @@
       ]
     },
     {
+      "name": "ida_music_cache_caller_abi",
+      "artifact": "analysis/decompile/ida/functions/00432d50-cache_music_file.c",
+      "required_substrings": [
+        "char __cdecl cache_music_file(char *path, int32_t unused, char *unused_default_path)",
+        "load_file_bytes_from_archive_or_fs",
+        "&path"
+      ],
+      "forbidden_substrings": [
+        "sub_432D50",
+        "char *ArgList",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_build_level_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)",
+        "game->runtime_row_count",
+        "game->completion_row_start",
+        "game->runtime_cells[0][0].fringe_front"
+      ],
+      "forbidden_substrings": [
+        "populate_runtime_track_cells_from_segments(Game *game)",
+        "_pad_74622",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_generate_level_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/00437de0-rebuild_track_runtime_from_segments.c",
+      "required_substrings": [
+        "int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)",
+        "populate_runtime_track_cells_from_segments(game)",
+        "mark_track_warning_zones(game)",
+        "build_track_fringe_objects(game)"
+      ],
+      "forbidden_substrings": [
+        "rebuild_track_runtime_from_segments(Game *game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_start_level_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/00437eb0-build_subgame_level.c",
+      "required_substrings": [
+        "void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)",
+        "cache_music_file(aMusic1Ogg, 0, (char *)g_blank_text)",
+        "rebuild_track_runtime_from_segments(game, level_index)",
+        "game->banners.slots"
+      ],
+      "forbidden_substrings": [
+        "build_subgame_level(Game *game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_subring_constructor_owner",
       "artifact": "analysis/decompile/binja/functions/00408570-initialize_track_ring_or_special_effect_runtime.c",
       "required_substrings": [
@@ -1316,6 +1377,7 @@
       "name": "bn_build_subgame_nested_owners",
       "artifact": "analysis/decompile/binja/functions/00437eb0-build_subgame_level.c",
       "required_substrings": [
+        "cache_music_file(path, 0, &g_blank_text)",
         "runtime->player.presentation.weapon_channels",
         "runtime->slug_voice_manager",
         "runtime->level_definition.parcel_count",

@@ -2190,7 +2190,7 @@
     {
       "address": "0x435eb0",
       "name": "populate_runtime_track_cells_from_segments",
-      "description": "Copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Runtime cell object selection reuses each `SubLoc` cell's shared `cRBod`/`BodBase` prefix, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner."
+      "description": "Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Runtime cell object selection reuses each `SubLoc` cell's shared `cRBod`/`BodBase` prefix, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner."
     },
     {
       "address": "0x437270",
@@ -2213,7 +2213,7 @@
     {
       "address": "0x437de0",
       "name": "rebuild_track_runtime_from_segments",
-      "description": "Normalizes the generated runtime grid, copies authored metadata into runtime cells, and runs the post-build render passes."
+      "description": "Exact Windows implementation of authored `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes."
     },
     {
       "address": "0x437e80",
@@ -2223,7 +2223,7 @@
     {
       "address": "0x437eb0",
       "name": "build_subgame_level",
-      "description": "Builds the active subgame course, including level-file load, runtime track rebuild, mode-specific HUD setup, backdrop selection, and the first gameplay object lists. Cross-port Android and iOS symbols match this helper to `cRSubGame::BuildLevel()`."
+      "description": "Windows implementation of authored `cRSubGame::StartLevel(int)`. It performs the outer level-file load and manager resets, invokes `GenerateLevel(int)` for the runtime track rebuild, then sets up mode-specific HUD state, backdrop and landscape selection, player state, music, and the first gameplay object lists."
     },
     {
       "address": "0x438700",

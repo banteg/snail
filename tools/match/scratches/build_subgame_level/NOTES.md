@@ -2,8 +2,11 @@
 
 ## Scope
 
-This scratch reconstructs `Game::build_subgame_level(int level_index)` at
-`0x437eb0` through the shared `SubgameRuntime` and `GameRoot` owner graphs.
+This scratch reconstructs Windows-local
+`SubgameRuntime::build_subgame_level(int level_index)` at `0x437eb0` through
+the shared `SubgameRuntime` and `GameRoot` owner graphs. Cross-port symbol and
+body evidence identifies the authored method as `cRSubGame::StartLevel(int)`,
+not `BuildLevel()`.
 
 The source shape was recovered from both decompile exports:
 
@@ -385,3 +388,19 @@ This completes the same `BannerPool` ownership used by exact teardown and the
 exact constructor/update pair without reshaping the compiler-sensitive store
 schedule. Focused output remains byte-identical at 77.67%, 560/555
 instructions, prefix 177, with all 101 masked operands clean.
+
+## Authored owner hierarchy (2026-07-14)
+
+Android `cRSubGame::StartLevel(int)` preserves this outer function's starfield
+and HUD setup, music selection, subsystem resets, level load, nested
+`GenerateLevel(int)` call, landscape activation, and player setup. The exact
+Windows callee at `0x437de0` is the nested authored `GenerateLevel(int)`, and
+its population callee at `0x435eb0` is authored `BuildLevel()`. This corrects
+the old crosswalk that assigned `BuildLevel()` to this outer lifecycle method;
+the matching source and honest 77.67% frontier are otherwise unchanged.
+
+The music loader callsites push three cdecl arguments in every switch arm and
+discard twelve bytes afterward. Canonicalizing `cache_music_file` as
+`char(char* path, int32_t unused, char* unused_default_path)` preserves that
+exact caller ABI; the former one-argument decompiler prototype caused IDA's
+call analysis to reject this otherwise healthy outer function.

@@ -607,6 +607,10 @@ GOLB_PROTO_UPDATES = (
 
 PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
+        "cache_music_file",
+        "char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path)",
+    ),
+    (
         "set_color_rgba",
         "tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a)",
     ),
@@ -1026,7 +1030,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
 )
 
 # The full SubgameRuntime field map above is the canonical owner view consumed
-# by these lifecycle functions. These prototypes have stable receiver
+# by these lifecycle and level-builder functions. These prototypes have stable receiver
 # overrides in the live database and are safe to replay with the fields.
 CORE_SUBGAME_PROTO_UPDATES = (
     ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
@@ -1037,6 +1041,10 @@ CORE_SUBGAME_PROTO_UPDATES = (
     (
         "mark_track_warning_zones",
         "void __thiscall mark_track_warning_zones(SubgameRuntime* game)",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game)",
     ),
 )
 

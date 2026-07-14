@@ -496,3 +496,27 @@ by `sizeof(SubLoc)`. The pre/post normalized listing hash is still
 `4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`;
 focused Wibo therefore remains honestly unchanged at 29.27%, 1,208/1,245,
 60 clean operands, and the known glyph jump-table mismatch.
+
+## Authored BuildLevel and ramp branches (2026-07-14)
+
+Cross-port symbol and full-body evidence identifies this Windows function as
+authored `cRSubGame::BuildLevel()`. Android preserves the same seed and
+selected-record setup, row-count construction, runtime-grid clear, `Segdif`
+and `Negative Segment Length` diagnostics, segment selection, row copy, and
+glyph construction. The exact wrapper at `0x437de0` is authored
+`GenerateLevel(int)`, while the outer level lifecycle at `0x437eb0` is
+`StartLevel(int)`.
+
+That Android body also preserves the original branch-local shape for ramp
+glyphs `>`, `{`, and `}`: each prior-row/non-prior-row arm repeats the
+`set_bod_object`, render-argument clears, tile assignment, and list-flag update.
+Restoring those duplicated operations instead of keeping a refactored common
+tail raises focused Wibo from 29.27% to 29.67%, candidate instructions from
+1,208 to 1,229 of 1,245, and clean operands from 60 to 66. The remaining two
+reported operand mismatches are alignment artifacts (the glyph jump-table
+label and a shifted call correspondence), not masked or fabricated matches.
+
+`SubSegment::visited` is the byte at `+0x08`. Both Windows and Android clear it
+for every eligible slot and set it after choosing a random segment, but neither
+builder reads it during that selection loop. It is therefore owned selection
+bookkeeping in this method, not evidence for a no-repeat rule here.

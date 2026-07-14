@@ -69,6 +69,12 @@ Known stages:
 
 The practical read is that the game does not play directly on the authored text grid. It first builds and normalizes a runtime grid, then applies gameplay and render passes on top of that generated state.
 
+The cross-port symbols also recover the authored builder hierarchy:
+
+- Windows `populate_runtime_track_cells_from_segments` is `cRSubGame::BuildLevel()`; it chooses segments and materializes their rows and glyphs into the runtime slabs
+- exact Windows `rebuild_track_runtime_from_segments` is `cRSubGame::GenerateLevel(int)`; it wraps `BuildLevel()` with feature, colour, parcel, normalization, warning, fringe, and cache passes
+- outer Windows `build_subgame_level` is `cRSubGame::StartLevel(int)`; it loads the level and managers, calls `GenerateLevel(int)`, and then establishes landscape, player, HUD, music, and active-list state
+
 Current high-confidence render-normalization read:
 
 - `select_track_tile_edge_variants` is the main edge/corner swap pass

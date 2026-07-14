@@ -3,22 +3,25 @@
 /* selector: cache_music_file */
 
 // Ensures one `music/*.ogg` payload is resident in the shared music-file cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward.
-char __cdecl sub_432D50(char *ArgList)
+char __cdecl cache_music_file(char *path, int32_t unused, char *unused_default_path)
 {
-  char *v1; // esi
+  char *v3; // esi
   char result; // al
-  _BYTE *v3; // edi
+  _BYTE *file_bytes_from_archive_or_fs; // edi
 
-  if ( !MEMORY[0x53C7F8] )
-    return ensure_music_stream_from_path(unk_753C58, ArgList, 1);
-  v1 = ArgList;
-  result = prepare_music_stream_reload_if_path_changed(unk_753C58, ArgList);
+  if ( !g_archive_index_records )
+    return ensure_music_stream_from_path(g_audio_backend, path, 1);
+  v3 = path;
+  result = prepare_music_stream_reload_if_path_changed(g_audio_backend, path);
   if ( result )
   {
-    v3 = load_file_bytes_from_archive_or_fs(v1, MEMORY[0x53C7E8], (#83 *)&ArgList);
-    if ( (int)ArgList >= 409600 )
+    file_bytes_from_archive_or_fs = load_file_bytes_from_archive_or_fs(
+                                      v3,
+                                      g_music_memory_buffer,
+                                      (CompletionResultScreen *)&path);
+    if ( (int)path >= 409600 )
       report_errorf(aMusicBufferOve);
-    return play_music_stream_from_bytes(unk_753C58, v1, (int)v3, (int)ArgList, 1);
+    return play_music_stream_from_bytes(g_audio_backend, v3, (int)file_bytes_from_archive_or_fs, (int)path, 1);
   }
   return result;
 }

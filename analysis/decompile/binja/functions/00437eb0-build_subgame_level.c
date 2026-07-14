@@ -11,25 +11,25 @@
 00437eef        int16_t x87control
 00437eef        int32_t eax_3 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(0.000122070312f))
 00437ef9        if (eax_3 u<= 4)
-00437efb        char* var_1c_1
+00437efb        char* path
 00437efb        switch (eax_3)
 00437f02        case 0
 00437f02        void* __saved_ebp_1 = &g_blank_text
 00437f07        int32_t var_18_1 = 0
-00437f08        var_1c_1 = "music/1.ogg"
+00437f08        path = "music/1.ogg"
 00437f0f        case 1
 00437f0f        void* __saved_ebp_2 = &g_blank_text
 00437f14        int32_t var_18_2 = 0
-00437f15        var_1c_1 = "music/2.ogg"
+00437f15        path = "music/2.ogg"
 00437f29        case 2, 4
 00437f29        void* __saved_ebp_4 = &g_blank_text
 00437f2e        int32_t var_18_4 = 0
-00437f2f        var_1c_1 = "music/3.ogg"
+00437f2f        path = "music/3.ogg"
 00437f1c        case 3
 00437f1c        void* __saved_ebp_3 = &g_blank_text
 00437f21        int32_t var_18_3 = 0
-00437f22        var_1c_1 = "music/4.ogg"
-00437f34        cache_music_file(var_1c_1)
+00437f22        path = "music/4.ogg"
+00437f34        cache_music_file(path, 0, &g_blank_text)
 00437f3c        game->__offset(0x1270fcc).d = 0x42480000
 00437f4c        game->__offset(0x1270fd0).d = 0x42c80000
 00437f56        initialize_enemy_manager(&game->__offset(0x1270fd4).d)
@@ -192,7 +192,7 @@
 0043839d        struct SubgameRuntime* runtime
 0043839d        struct Player* edi_3
 0043839d        runtime, edi_3 = initialize_subgoldy(&game->__offset(0x3bb764).d, 1)
-004383b5        if ((0x200 & runtime->player.presentation.jetpack_channel.list_flags) == 0)
+004383b5        if ((0x200 & runtime->player.presentation.jetpack_channel.body.bod.bod.list_flags) == 0)
 004383cc        char* ecx_35 = &g_game_base[0x5ac]
 004383d2        void* edx_10
 004383d2        edx_10.b = *ecx_35
@@ -222,19 +222,16 @@
 004383d8        ecx_35[1] = (&runtime->player.presentation.jetpack_channel):1.b
 004383d8        ecx_35[2] = (&runtime->player.presentation.jetpack_channel):2.b
 004383d8        ecx_35[3] = (&runtime->player.presentation.jetpack_channel):3.b
-004383da        runtime->player.presentation.jetpack_channel._pad_08[0] = 0
-004383da        runtime->player.presentation.jetpack_channel._pad_08[1] = 0
-004383da        runtime->player.presentation.jetpack_channel._pad_08[2] = 0
-004383da        runtime->player.presentation.jetpack_channel._pad_08[3] = 0
+004383da        runtime->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr
 004383dd        void* edx_11
 004383dd        edx_11.b = *ecx_35
 004383dd        edx_11:1.b = ecx_35[1]
 004383dd        edx_11:2.b = ecx_35[2]
 004383dd        edx_11:3.b = ecx_35[3]
 004383df        *(edx_11 + 0xc) = 0
-004383fe        runtime->player.presentation.jetpack_channel.list_flags |= 0x200
+004383fe        runtime->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200
 004383bc        report_errorf("List ADD")
-0043840f        if ((0x200 & runtime->player.presentation.weapon_channels[0].list_flags) == 0)
+0043840f        if ((0x200 & runtime->player.presentation.weapon_channels[0].body.bod.bod.list_flags) == 0)
 00438425        void** eax_20 = &g_game_base[0x5ac]
 0043842a        void* edx_15 = *eax_20
 0043842e        if (edx_15 != 0)
@@ -245,14 +242,14 @@
 00438451        *eax_20 = edx_19
 00438453        *(edx_19 + 8) = 0
 00438430        *eax_20 = &runtime->player.presentation.weapon_channels
-00438432        runtime->player.__offset(0x2fd8).b = 0
+00438432        runtime->player.__offset(0x2fd8).b = nullptr
 00438432        runtime->player.__offset(0x2fd9).b = 0
 00438432        runtime->player.__offset(0x2fda).b = 0
 00438432        runtime->player.__offset(0x2fdb).b = 0
 00438437        *(*eax_20 + 0xc) = 0
-00438456        runtime->player.presentation.weapon_channels[0].list_flags |= 0x200
+00438456        runtime->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200
 00438416        report_errorf("List ADD")
-00438467        if ((0x200 & runtime->player.presentation.weapon_channels[1].list_flags) == 0)
+00438467        if ((0x200 & runtime->player.presentation.weapon_channels[1].body.bod.bod.list_flags) == 0)
 0043847d        void** eax_23 = &g_game_base[0x5ac]
 00438482        void* edx_20 = *eax_23
 00438486        if (edx_20 != 0)
@@ -263,14 +260,14 @@
 004384a9        *eax_23 = edx_24
 004384ab        *(edx_24 + 8) = 0
 00438488        *eax_23 = &runtime->player.presentation.weapon_channels[1]
-0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[0] = 0
-0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[1] = 0
-0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[2] = 0
-0043848a        runtime->player.presentation.weapon_channels[1]._pad_08[3] = 0
+0043848a        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_prev.b = nullptr
+0043848a        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_prev:1.b = 0
+0043848a        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_prev:2.b = 0
+0043848a        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_prev:3.b = 0
 0043848f        *(*eax_23 + 0xc) = 0
-004384ae        runtime->player.presentation.weapon_channels[1].list_flags |= 0x200
+004384ae        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200
 0043846e        report_errorf("List ADD")
-004384bf        if ((0x200 & runtime->player.presentation.weapon_channels[2].list_flags) == 0)
+004384bf        if ((0x200 & runtime->player.presentation.weapon_channels[2].body.bod.bod.list_flags) == 0)
 004384d5        void** eax_26 = &g_game_base[0x5ac]
 004384da        void* edx_25 = *eax_26
 004384de        if (edx_25 != 0)
@@ -281,14 +278,14 @@
 00438501        *eax_26 = edx_29
 00438503        *(edx_29 + 8) = 0
 004384e0        *eax_26 = &runtime->player.presentation.weapon_channels[2]
-004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[0] = 0
-004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[1] = 0
-004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[2] = 0
-004384e2        runtime->player.presentation.weapon_channels[2]._pad_08[3] = 0
+004384e2        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_prev.b = nullptr
+004384e2        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_prev:1.b = 0
+004384e2        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_prev:2.b = 0
+004384e2        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_prev:3.b = 0
 004384e7        *(*eax_26 + 0xc) = 0
-00438506        runtime->player.presentation.weapon_channels[2].list_flags |= 0x200
+00438506        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200
 004384c6        report_errorf("List ADD")
-00438517        if ((0x200 & runtime->player.presentation.invincible_shell.list_flags) == 0)
+00438517        if ((0x200 & runtime->player.presentation.invincible_shell.body.bod.bod.list_flags) == 0)
 0043852d        void** eax_29 = &g_game_base[0x5ac]
 00438532        void* edx_30 = *eax_29
 00438536        if (edx_30 != 0)
@@ -299,17 +296,17 @@
 00438559        *eax_29 = edx_34
 0043855b        *(edx_34 + 8) = 0
 00438538        *eax_29 = &runtime->player.presentation.invincible_shell
-0043853a        runtime->player.presentation.invincible_shell.list_prev.b = nullptr
-0043853a        runtime->player.presentation.invincible_shell.list_prev:1.b = 0
-0043853a        runtime->player.presentation.invincible_shell.list_prev:2.b = 0
-0043853a        runtime->player.presentation.invincible_shell.list_prev:3.b = 0
+0043853a        runtime->player.presentation.invincible_shell.body.bod.bod.list_prev.b = nullptr
+0043853a        runtime->player.presentation.invincible_shell.body.bod.bod.list_prev:1.b = 0
+0043853a        runtime->player.presentation.invincible_shell.body.bod.bod.list_prev:2.b = 0
+0043853a        runtime->player.presentation.invincible_shell.body.bod.bod.list_prev:3.b = 0
 0043853f        *(*eax_29 + 0xc) = 0
-0043855e        runtime->player.presentation.invincible_shell.list_flags |= 0x200
+0043855e        runtime->player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x200
 0043851e        report_errorf("List ADD")
-00438561        uint32_t list_flags_1 = runtime->player.presentation.invincible_shell.list_flags
+00438561        uint32_t list_flags_1 = runtime->player.presentation.invincible_shell.body.bod.bod.list_flags
 00438567        list_flags_1.b |= 0x80
-0043856a        runtime->player.presentation.invincible_shell.list_flags = list_flags_1
-0043857e        if ((0x200 & runtime->player.presentation.list_flags) == 0)
+0043856a        runtime->player.presentation.invincible_shell.body.bod.bod.list_flags = list_flags_1
+0043857e        if ((0x200 & runtime->player.presentation.body.bod.bod.list_flags) == 0)
 00438594        void** eax_32 = &g_game_base[0x5ac]
 00438599        void* edx_36 = *eax_32
 0043859d        if (edx_36 != 0)
@@ -320,14 +317,14 @@
 004385c0        *eax_32 = edx_40
 004385c2        *(edx_40 + 8) = 0
 0043859f        *eax_32 = &runtime->player.presentation
-004385a1        runtime->player.presentation._pad_08[0] = 0
-004385a1        runtime->player.presentation._pad_08[1] = 0
-004385a1        runtime->player.presentation._pad_08[2] = 0
-004385a1        runtime->player.presentation._pad_08[3] = 0
+004385a1        runtime->player.presentation.body.bod.bod.list_prev.b = nullptr
+004385a1        runtime->player.presentation.body.bod.bod.list_prev:1.b = 0
+004385a1        runtime->player.presentation.body.bod.bod.list_prev:2.b = 0
+004385a1        runtime->player.presentation.body.bod.bod.list_prev:3.b = 0
 004385a6        *(*eax_32 + 0xc) = 0
-004385c5        runtime->player.presentation.list_flags |= 0x200
+004385c5        runtime->player.presentation.body.bod.bod.list_flags |= 0x200
 00438585        report_errorf("List ADD")
-004385cb        if ((edi_3->_pad_00[4].d & 0x200) == 0)
+004385cb        if ((edi_3->body.bod.bod.list_flags & 0x200) == 0)
 004385e1        void** eax_34 = &g_game_base[0x5ac]
 004385e6        void* ecx_41 = *eax_34
 004385ea        if (ecx_41 != 0)
@@ -354,16 +351,13 @@
 0043860a        *(ecx_45 + 0xa) = 0
 0043860a        *(ecx_45 + 0xb) = 0
 004385ec        *eax_34 = edi_3
-004385ee        edi_3->_pad_00[8] = 0
-004385ee        edi_3->_pad_00[9] = 0
-004385ee        edi_3->_pad_00[0xa] = 0
-004385ee        edi_3->_pad_00[0xb] = 0
+004385ee        edi_3->body.bod.bod.list_prev = nullptr
 004385f1        void* ecx_42 = *eax_34
 004385f3        *(ecx_42 + 0xc) = 0
 004385f3        *(ecx_42 + 0xd) = 0
 004385f3        *(ecx_42 + 0xe) = 0
 004385f3        *(ecx_42 + 0xf) = 0
-0043860d        edi_3->_pad_00[4].d |= 0x200
+0043860d        edi_3->body.bod.bod.list_flags |= 0x200
 004385d2        report_errorf("List ADD")
 00438616        initialize_slug_voice_manager(&runtime->slug_voice_manager.active)
 0043862f        if ((0x200 & runtime->barrier.bod.bod.list_flags) == 0)
@@ -389,7 +383,7 @@
 0043865c        runtime->barrier.owner_player = edi_3
 00438665        if (runtime->level_mode == 0)
 00438673        int32_t __saved_ebp_15 = runtime->level_definition.parcel_count
-00438680        sprintf(&runtime->lives_text_widget->text_buffer, "0/%i")
+00438680        sprintf(&runtime->lives_text_widget->text_buffer.raw, "0/%i")
 0043868e        unhide_border_init(runtime->lives_icon_widget)
 00438699        unhide_border_init(runtime->lives_text_widget)
 004386aa        set_input_controller_pointer_authored_xy(0, 320f, 240f)
