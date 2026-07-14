@@ -11,7 +11,7 @@ int report_errorf(char* format, ...);
 void LandscapeManager::clear_active_landscape_entries()
 {
     ActiveLandscapeEntry* entry = active_entries;
-    int count = 10;
+    int count = sizeof(active_entries) / sizeof(active_entries[0]);
     do {
         unsigned int flags = entry->list_flags;
         if ((flags & 0x200) != 0) {

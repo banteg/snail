@@ -9,3 +9,8 @@ shared typed version remains 100% (16/16) with the common 4-byte
 adding a second C++ vptr to the explicit `BodNode` layout. This retires the
 former parcel-local virtual shell and shares the same ABI fact with SubRing,
 SubLoc, LogoLetter, GolbShot, and Player consumers.
+
+The 2026-07-14 extent pass derives the update bound from
+`ParcelManager::slots`. Its normalized listing remains byte-identical
+(`068d76a8897514e58d677a360937f96f428a740632fd7ce8ec6919de7d0e62ca`)
+and exact at 16/16 instructions.

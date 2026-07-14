@@ -25,3 +25,9 @@ operands.
 2026-07-14 root-list closure: the manager-owned entries now borrow the
 canonical root active/free list instead of reconstructing it from `+0x5a8`.
 The lifecycle remains exact at 49/49 with all five operands clean.
+
+2026-07-14 extent ownership: the teardown loop now derives its bound from
+`LandscapeManager::active_entries`. The normalized listing remains
+byte-identical
+(`a663ed2ee953e6f01b4857d201b800bc443ea2d205c28751ee62c5fecbe956f0`)
+and exact at 49/49 instructions with five clean operands.

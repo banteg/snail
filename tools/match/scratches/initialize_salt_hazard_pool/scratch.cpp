@@ -5,7 +5,7 @@
 int* SaltManager::initialize_salt_hazard_pool()
 {
     int* state = &slots[0].state;
-    int count = 40;
+    int count = sizeof(slots) / sizeof(slots[0]);
     do {
         *state = 0;
         state += sizeof(Salt) / sizeof(int);

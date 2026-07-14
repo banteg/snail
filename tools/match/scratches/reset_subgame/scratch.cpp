@@ -10,7 +10,7 @@ extern "C" void* memcpy(void* dest, const void* src, unsigned int count);
 
 void SubgameRuntime::reset_subgame()
 {
-    int health_count = 8;
+    int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     SubHealth* health = health_pickups;
     do {
         health->state = 0;
@@ -25,7 +25,8 @@ void SubgameRuntime::reset_subgame()
     jetpack_pickup.owner_game = this;
 
     SubGarbage* garbage = garbage_hazards.slots;
-    int garbage_count = 50;
+    int garbage_count =
+        sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
         garbage->state = 0;
         garbage->game = this;
@@ -35,7 +36,8 @@ void SubgameRuntime::reset_subgame()
     } while (garbage_count);
 
     Slug* slug = slug_hazards.slots;
-    int slug_count = 8;
+    int slug_count =
+        sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {
         slug->state = 0;
         slug->owner_game = this;
@@ -44,7 +46,8 @@ void SubgameRuntime::reset_subgame()
     } while (slug_count);
 
     SubRing* ring = ring_effects.slots;
-    int ring_count = 2;
+    int ring_count =
+        sizeof(ring_effects.slots) / sizeof(ring_effects.slots[0]);
     do {
         ring->state = 0;
         ring->rate_source = this;

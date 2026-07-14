@@ -292,3 +292,14 @@ addresses no longer recreate either Player subobject with literal offsets.
 This is also byte-identical. Directly typing the later barrier cursor or script
 array cursor perturbed VC6 scheduling after instruction 173, so those neutral
 constructor cursors remain unchanged rather than trading away the exact match.
+
+## 2026-07-14 fixed-pool extent derivation
+
+Every fixed constructor count now comes from its owning array: both level
+definitions, health/slug/lazer/salt/banner/garbage/ring/fringe/projectile
+pools, the runtime cell and row slabs, landscape/script banks, SMTracks,
+parcels, galaxy records, and contact targets. The two-dimensional segment
+cache intentionally divides by the leaf `[0][0]` slot so all `143 * 5`
+records are constructed. The normalized listing remains byte-identical
+(`755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`)
+and exact at 227/227 instructions with 72 clean operands.

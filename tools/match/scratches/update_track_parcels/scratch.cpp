@@ -6,7 +6,7 @@
 void ParcelManager::update_track_parcels()
 {
     Parcel* slot = slots;
-    int count = 50;
+    int count = sizeof(slots) / sizeof(slots[0]);
     do {
         if (slot->state != 0) {
             ((BodAiDispatch*)slot)->update_bod_ai();

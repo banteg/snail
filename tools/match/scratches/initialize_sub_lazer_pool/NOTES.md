@@ -14,3 +14,8 @@ Matching remains exact at 7/7.
 2026-07-14 stride ownership: the exact state cursor now advances by
 `sizeof(SubLazer) / sizeof(int)` rather than the anonymous 44-word stride. The
 seven instructions remain byte-identical.
+
+2026-07-14 extent ownership: the loop bound now derives from
+`SubLazerManager::slots`; the normalized listing remains byte-identical
+(`2c769d1700c81e135c4320c653f20b53b1a243b203de9269f9361066722c61b1`)
+and exact at 7/7 instructions.

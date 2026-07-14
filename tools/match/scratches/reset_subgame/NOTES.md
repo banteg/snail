@@ -114,3 +114,11 @@ directly:
 The intrinsic `memcpy` is retained because it is the source-plausible form that
 produces the native six-dword `Time` copy. All ownership substitutions remain
 byte-exact at 75/75 instructions with both masked operands clean.
+
+## 2026-07-14 reset-pool extent derivation
+
+The health, garbage, slug, and ring reset loops now derive their bounds from
+the exact arrays owned by `SubgameRuntime`. The normalized listing is
+byte-identical
+(`5400e59084b4ded03fa3af9eb7a3db57020f9698f18ba8bcc60b2624bb96a008`)
+and remains exact at 75/75 instructions with two clean operands.

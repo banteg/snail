@@ -24,40 +24,46 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     initialize_array_with_constructor(
         active_bods,
         sizeof(TrackRenderCacheSlot),
-        sizeof(segment_cache.slots) / sizeof(TrackRenderCacheSlot),
+        sizeof(segment_cache.slots) / sizeof(segment_cache.slots[0][0]),
         &RuntimeSlot::initialize_active_bod);
 
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition.segment_slots,
         sizeof(SubSegment),
-        0x64,
+        sizeof(level_definition.segment_slots)
+            / sizeof(level_definition.segment_slots[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition.first_segment.rows,
         sizeof(AuthoredSegmentRow),
-        0x100,
+        sizeof(level_definition.first_segment.rows)
+            / sizeof(level_definition.first_segment.rows[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition.last_segment.rows,
         sizeof(AuthoredSegmentRow),
-        0x100,
+        sizeof(level_definition.last_segment.rows)
+            / sizeof(level_definition.last_segment.rows[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
 
     level_definition.fringe_color.noop_this_constructor();
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition_scratch.segment_slots,
         sizeof(SubSegment),
-        0x64,
+        sizeof(level_definition_scratch.segment_slots)
+            / sizeof(level_definition_scratch.segment_slots[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition_scratch.first_segment.rows,
         sizeof(AuthoredSegmentRow),
-        0x100,
+        sizeof(level_definition_scratch.first_segment.rows)
+            / sizeof(level_definition_scratch.first_segment.rows[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)level_definition_scratch.last_segment.rows,
         sizeof(AuthoredSegmentRow),
-        0x100,
+        sizeof(level_definition_scratch.last_segment.rows)
+            / sizeof(level_definition_scratch.last_segment.rows[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
 
     level_definition_scratch.fringe_color.noop_this_constructor();
@@ -75,7 +81,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     jetpack_pickup.initialize_track_jetpack_pickup_runtime();
 
     SubHealth* health_pickup = health_pickups;
-    int health_count = 8;
+    int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     do {
         health_pickup->initialize_track_health_pickup_runtime();
         ++health_pickup;
@@ -83,7 +89,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     } while (health_count);
 
     Slug* slug = slug_hazards.slots;
-    int slug_count = 8;
+    int slug_count =
+        sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {
         slug->initialize_slug_hazard_runtime();
         ++slug;
@@ -93,16 +100,16 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     initialize_array_with_constructor(
         (RuntimeSlot*)sub_lazers.slots,
         sizeof(SubLazer),
-        20,
+        sizeof(sub_lazers.slots) / sizeof(sub_lazers.slots[0]),
         &RuntimeSlot::initialize_sub_lazer_runtime);
     initialize_array_with_constructor(
         (RuntimeSlot*)salt_hazards.slots,
         sizeof(Salt),
-        40,
+        sizeof(salt_hazards.slots) / sizeof(salt_hazards.slots[0]),
         &RuntimeSlot::initialize_salt_hazard_runtime);
 
     Banner* banner = banners.slots;
-    int banner_count = 2;
+    int banner_count = sizeof(banners.slots) / sizeof(banners.slots[0]);
     do {
         banner->initialize_bod_base();
         banner->vtable = &g_banner_callback_table;
@@ -111,7 +118,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     } while (banner_count);
 
     SubGarbage* garbage = garbage_hazards.slots;
-    int garbage_count = 0x32;
+    int garbage_count =
+        sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
         garbage->initialize_garbage_hazard();
         ++garbage;
@@ -119,7 +127,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     } while (garbage_count);
 
     SubRing* ring = ring_effects.slots;
-    int ring_count = 2;
+    int ring_count =
+        sizeof(ring_effects.slots) / sizeof(ring_effects.slots[0]);
     do {
         ring->initialize_track_ring_or_special_effect_runtime();
         ++ring;
@@ -129,7 +138,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     initialize_array_with_constructor(
         (RuntimeSlot*)fringe_manager.objects,
         sizeof(Fringe),
-        7000,
+        sizeof(fringe_manager.objects) / sizeof(fringe_manager.objects[0]),
         &RuntimeSlot::initialize_fringe_object);
 
     Player* subgoldy = &player;
@@ -140,13 +149,13 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     initialize_array_with_constructor(
         (RuntimeSlot*)subgoldy->golb_shots,
         sizeof(GolbShot),
-        0xc,
+        sizeof(subgoldy->golb_shots) / sizeof(subgoldy->golb_shots[0]),
         &RuntimeSlot::initialize_golb_shot);
     subgoldy->presentation.initialize_player_presentation_controller();
     subgoldy->vtable = &g_subgoldy_callback_table;
 
     SubLoc* loc = &runtime_cells[0][0];
-    int loc_count = 0x6400;
+    int loc_count = sizeof(runtime_cells) / sizeof(runtime_cells[0][0]);
     do {
         loc->initialize_sub_loc();
         ++loc;
@@ -154,7 +163,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     } while (loc_count);
 
     SubRow* row = runtime_rows;
-    int row_count = 0xc80;
+    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);
     do {
         row->initialize_track_row_runtime();
         ++row;
@@ -176,14 +185,15 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     initialize_array_with_constructor(
         landscape,
         sizeof(ActiveLandscapeEntry),
-        0xa,
+        sizeof(landscape_manager.active_entries)
+            / sizeof(landscape_manager.active_entries[0]),
         &RuntimeSlot::initialize_active_landscape_entry);
     landscape = (RuntimeSlot*)((char*)landscape +
         sizeof(landscape_manager.active_entries) + sizeof(landscape_manager.script_count));
     initialize_array_with_constructor(
         landscape,
         sizeof(LandscapeScriptRecord),
-        0x80,
+        sizeof(landscape_manager.scripts) / sizeof(landscape_manager.scripts[0]),
         &RuntimeSlot::initialize_landscape_script_record);
 
     SmtrackHeightfieldAnimator* smtracks_owner = &smtrack_heightfield;
@@ -194,27 +204,27 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     initialize_array_with_constructor(
         (RuntimeSlot*)sm_tracks.entries,
         sizeof(SegmentCatalogEntry),
-        0x96,
+        sizeof(sm_tracks.entries) / sizeof(sm_tracks.entries[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)parcel_manager.slots,
         sizeof(Parcel),
-        0x32,
+        sizeof(parcel_manager.slots) / sizeof(parcel_manager.slots[0]),
         &RuntimeSlot::initialize_track_parcel_runtime);
     initialize_array_with_constructor(
         (RuntimeSlot*)galaxy.route_slots,
         sizeof(GalaxyRouteSlot),
-        0x65,
+        sizeof(galaxy.route_slots) / sizeof(galaxy.route_slots[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)galaxy.route_names,
         sizeof(GalaxyRouteNameRecord),
-        0xa,
+        sizeof(galaxy.route_names) / sizeof(galaxy.route_names[0]),
         &RuntimeSlot::initialize_galaxy_route_name_record);
     initialize_array_with_constructor(
         (RuntimeSlot*)enemy_manager.entries,
         sizeof(ContactTargetEntry),
-        CONTACT_TARGET_CAPACITY,
+        sizeof(enemy_manager.entries) / sizeof(enemy_manager.entries[0]),
         &RuntimeSlot::noop_runtime_slot_constructor);
 
     return this;

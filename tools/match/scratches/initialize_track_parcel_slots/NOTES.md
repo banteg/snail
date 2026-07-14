@@ -9,3 +9,8 @@ clean operand).
 
 The 2026-07-14 canonical root path is codegen-identical at the same exact
 13/13 baseline.
+
+The 2026-07-14 extent pass derives the loop bound from
+`ParcelManager::slots`. Its normalized listing remains byte-identical
+(`764ab79c9a5d43f9013f4ec2996b4c288e80374c3d7d455e45359d914adc70ac`)
+and exact at 13/13 instructions with one clean operand.
