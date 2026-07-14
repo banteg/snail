@@ -107,3 +107,26 @@ The forward basis now follows `Snail`'s inherited
 `RenderableBod::transform`; no separate presentation matrix owner exists at
 that offset. The focused partial is byte-identical at 52.96%, 174/181
 instructions, with all 16 masked operands clean.
+
+## 2026-07-14 authored expression and lifetime cleanup
+
+The scratch now limits row, column, position, offset, colour, and detached-puff
+velocity temporaries to the lexical regions that own them. None escapes the
+update. Android `cRSubHover::Jets()` independently expresses the row fraction
+as `row / 14.0f`; VC6 folds that authored division to the native
+`0.0714285746f` multiply. The projected nozzle position now uses the shared
+in-place `Vector3::operator+=`, and the sprite flag update is the ordinary
+`flags |= 0x800` member expression. These source-shaped changes are
+byte-identical at 52.96%, 174/181 instructions, a 0x44 candidate frame, and 16
+clean masked operands.
+
+The remaining native 0x50 frame was audited without adding synthetic storage.
+A borrowed pointer to the persistent grid sprite position regressed to 45.20%
+and introduced two masked-constant misalignments. Whole-vector grid assignment
+reached 49.30%; post-tested outer-loop spelling reached 52.39%; member and
+free-function scaled-vector expressions reached 51.83%. A real detached-puff
+`Vector3` velocity owner grew the candidate frame only to 0x4c and regressed to
+50.14%; combining it with aggregate grid assignment fell to 44.82%. All were
+reverted. Native's stack-spilled column and saved-register x/y ownership remain
+honest compiler-allocation debt, not a reason to add padding, volatile locals,
+or address-taking without a semantic owner.

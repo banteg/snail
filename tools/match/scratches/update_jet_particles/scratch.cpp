@@ -20,31 +20,20 @@ void SubHover::update_jet_particles()
         return;
     }
 
-    int row;
-    int column;
-    float row_fraction;
-    float sprite_size;
-    float size_scale;
-    float forward_scale;
-    Vector3 base_position;
-    float velocity_x;
-    float velocity_y;
-    float velocity_z;
-    Vector3 offset_position;
-    Color4f color;
-
-    forward_scale =
+    float forward_scale =
         (float)next_math_random_value() * 0.00000152587893f + 0.400000006f;
-    size_scale =
+    float size_scale =
         (float)next_math_random_value() * 0.00000152587893f + 0.119999997f;
-    row = 0;
+    int row = 0;
 
     for (; row < 15; ++row) {
-        column = 0;
-        row_fraction = (float)row * 0.0714285746f;
-        sprite_size = (1.0f - row_fraction) * size_scale * warning_intensity;
+        int column = 0;
+        float row_fraction = (float)row / 14.0f;
+        float sprite_size =
+            (1.0f - row_fraction) * size_scale * warning_intensity;
 
         do {
+            Vector3 base_position;
             if (column == 0) {
                 Vector3* source =
                     &game->embedded_player()->presentation.snail_hotspots_world[
@@ -59,12 +48,11 @@ void SubHover::update_jet_particles()
             Vector3* forward = &player->presentation.transform.basis_forward;
             float forward_offset =
                 -(row_fraction * forward_scale * warning_intensity);
+            Vector3 offset_position;
             offset_position.x = forward_offset * forward->x;
             offset_position.y = forward_offset * forward->y;
             offset_position.z = forward_offset * forward->z;
-            base_position.x = base_position.x + offset_position.x;
-            base_position.y = base_position.y + offset_position.y;
-            base_position.z = base_position.z + offset_position.z;
+            base_position += offset_position;
 
             JetParticleSlot* slot = &particle_slots[row][column];
             slot->sprite->size_end = sprite_size;
@@ -79,14 +67,13 @@ void SubHover::update_jet_particles()
                 Sprite* sprite =
                     g_sprite_manager.allocate_sprite(
                         game->embedded_player()->player_slot, 0x21, -1, -1);
-                unsigned int flags = sprite->flags;
-                flags |= 0x800;
-                sprite->flags = flags;
+                sprite->flags |= 0x800;
                 sprite->progress = 0.0f;
                 sprite->progress_step = 0.138888896f;
                 sprite->lifetime = 0.0f;
                 sprite->lifetime_step = 0.0f;
 
+                Color4f color;
                 sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
                 sprite->size_start = 0.1f;
                 sprite->size_end = 0.300000012f;
@@ -94,9 +81,9 @@ void SubHover::update_jet_particles()
                 Vector3* velocity = &sprite->velocity;
                 Vector3* out_position = &sprite->position;
                 Vector3* trail_source = &game->embedded_player()->velocity;
-                velocity_x = trail_source->x * 0.850000024f;
-                velocity_y = trail_source->y * 0.850000024f;
-                velocity_z = trail_source->z * 0.850000024f;
+                float velocity_x = trail_source->x * 0.850000024f;
+                float velocity_y = trail_source->y * 0.850000024f;
+                float velocity_z = trail_source->z * 0.850000024f;
                 sprite->gravity_step = 0.00100000005f;
                 velocity->x = velocity_x;
                 velocity->y = velocity_y;
