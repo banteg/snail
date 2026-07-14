@@ -520,3 +520,19 @@ label and a shifted call correspondence), not masked or fabricated matches.
 for every eligible slot and set it after choosing a random segment, but neither
 builder reads it during that selection loop. It is therefore owned selection
 bookkeeping in this method, not evidence for a no-repeat rule here.
+
+## Build-level service ownership (2026-07-14)
+
+The remaining root-service accesses now use the recovered `GameRoot* g_game`
+owner directly: level texture selection, cached DirectX mesh lookup, the root
+BOD catalog, and track-skirt color resolution. Cached meshes and installed row
+attachments are carried as their real `Object*` type through
+`set_object_color`, rather than being weakened to `void*` at this call site.
+
+The authored row-model reset likewise resolves through
+`SubRow::row_model.transform.set_matrix_identity()`, and the skirt object
+through `SubRow::attachment_body.object`. These two promotions remove local
+service and offset aliases without converting the surrounding byte cursor that
+VC6 schedules differently. Tested independently and together, the focused
+result remains 29.67%, 1,229/1,245 candidate instructions, 66 clean operands,
+and the same two documented alignment mismatches.

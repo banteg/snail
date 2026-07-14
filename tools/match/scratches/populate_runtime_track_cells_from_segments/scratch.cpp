@@ -12,18 +12,15 @@
 #include "track_attachment_types.h"
 #include "texture_set_selector.h"
 
-void __fastcall set_matrix_identity(void* transform);
+extern GameRoot* g_game; // data_4df904
 
-extern char* g_game_base; // data_4df904
-
-#define ROOT_BOD_OBJECT(slot) \
-    (((GameRoot*)g_game_base)->root_bod_catalog.slot.object)
+#define ROOT_BOD_OBJECT(slot) (g_game->root_bod_catalog.slot.object)
 
 double random_float_below(float upper_bound, const char* tag);
 void set_math_random_seed(int seed);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
-void set_object_color(void* object, tColour color);
+void set_object_color(Object* object, tColour color);
 
 void SubgameRuntime::populate_runtime_track_cells_from_segments()
 {
@@ -85,7 +82,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     player.score_tail = 0;
     player.movement_flag_selector = 0;
     set_math_random_seed(runtime_build_seed);
-    ((GameRoot*)g_game_base)->texture_set_selector.select_level_track_texture_set(
+    g_game->texture_set_selector.select_level_track_texture_set(
         level_definition.track_texture_set);
 
     int segment_cursor = 0;
@@ -258,8 +255,6 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         ROW_ATTACHMENT_POSITION_Z =
             offsetof(SubRow, attachment_body) + offsetof(BodBase, position)
             + offsetof(Vector3, z),
-        ROW_ATTACHMENT_OBJECT =
-            offsetof(SubRow, attachment_body) + offsetof(BodBase, object),
         ROW_ATTACHMENT_COLOR =
             offsetof(SubRow, attachment_body) + offsetof(BodBase, color),
         ROW_CURSOR_BASE =
@@ -463,10 +458,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         if ((authored_flags & 0x2) != 0) {
             *(int*)row_record |= 0x2;
             int object_id = *(int*)(authored_row + AUTHORED_ROW_OBJECT_ID);
-            void* object = ((GameRoot*)g_game_base)
-                ->directx_loader.cached_x_mesh_slots[object_id].object;
+            Object* object =
+                g_game->directx_loader.cached_x_mesh_slots[object_id].object;
             ((SubRow*)row_record)->row_model.set_bod_object(object);
-            set_matrix_identity(row_record + ROW_MODEL_TRANSFORM);
+            ((SubRow*)row_record)->row_model.transform.set_matrix_identity();
             *(int*)(row_record + ROW_MODEL_POSITION_X) =
                 *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_X);
             *(int*)(row_record + ROW_MODEL_POSITION_Y) =
@@ -860,11 +855,10 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
                     tColour skirt_color;
                     tColour* resolved_color =
-                        ((GameRoot*)g_game_base)->subgame.get_track_skirt_color(
-                            &skirt_color);
+                        g_game->subgame.get_track_skirt_color(&skirt_color);
                     *(tColour*)(row_record + ROW_ATTACHMENT_COLOR) = *resolved_color;
                     set_object_color(
-                        *(void**)(row_record + ROW_ATTACHMENT_OBJECT),
+                        ((SubRow*)row_record)->attachment_body.object,
                         *resolved_color);
                 } else {
                     *(int*)(row_record + ROW_ATTACHMENT_LIST_FLAGS) &= 0xffffffdf;
