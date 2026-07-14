@@ -160,3 +160,12 @@ The normalized candidate listing remains byte-identical
 (`ac2818cb9cec3fb82bc12e15964317fc5118566892f6b5c9f1d9283206771c61`),
 with the honest 93.25% focused result (`503/505`, prefix `0/505`, 57 clean
 operands and one bounded jump-table mismatch).
+
+## 2026-07-14 canonical process root
+
+The completion branch now loads the canonical `GameRoot* g_game` symbol for
+both its typed owner and the compiler-sensitive parcel-count access. The latter
+still uses the mechanically derived byte displacement because spelling the
+complete member chain changes VC6's local lifetime; only the stale
+`g_game_base` symbol is removed. Focused output remains 93.25%, 503/505
+instructions, with 57 clean operands and the same bounded jump-table mismatch.

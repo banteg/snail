@@ -3,6 +3,8 @@
 #include "game_root.h"
 #include "high_score.h"
 
+extern GameRoot* g_game; // data_4df904
+
 void SubSolution::initialize_high_score_entry(
     int runtime_build_seed_value,
     int replay_level_index_value,
@@ -17,7 +19,7 @@ void SubSolution::initialize_high_score_entry(
     timer.Zero();
     replay_level_index = replay_level_index_value;
     replay_speed_scalar_bits = replay_speed_scalar_bits_value;
-    rstrcpy_checked_ascii(player_name, ((GameRoot*)g_game_base)->players[0].player_name);
+    rstrcpy_checked_ascii(player_name, g_game->players[0].player_name);
     active = 0;
     runtime_build_flags = runtime_build_flags_value;
     high_score_mode_tag = high_score_mode_value;

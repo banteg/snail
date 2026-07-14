@@ -25,3 +25,11 @@ Recovered layout corrections:
   `HighScoreRecord` name to the authored `SubSolution` owner. The scratch stays
   exact at 40/40 instructions; the change is provenance and ownership, not a
   code-shape adjustment.
+
+2026-07-14 process-root ownership:
+
+- The default player name now comes through the canonical `GameRoot* g_game`
+  owner and `GameRoot::players[0].player_name`. The former `g_game_base` cast
+  duplicated an ownership boundary already proven by the root player array.
+  Focused matching remains exact at 40/40 instructions with all three masked
+  operands clean.

@@ -191,12 +191,12 @@ void CutScene::update_cutscene()
             presentation->invincible_shell.cutscene_roll_step;
         force_camera_update = 1;
 
-        GameRoot* game = (GameRoot*)g_game_base;
+        GameRoot* game = g_game;
         if (game->subgame.level_mode == 0) {
             int delivered_count = player->parcels_collected;
             unsigned char perfect_delivery =
                 delivered_count
-                == *(int*)(g_game_base + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);
+                == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);
             game->subgame.completion.initialize_completion_screen(
                 delivered_count,
                 perfect_delivery);
