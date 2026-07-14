@@ -12,7 +12,7 @@ class Intro {
 public:
     void initialize_new_game_menu(); // @ 0x417bc0, cRIntro::Init
     void update_new_game_menu(); // @ 0x417eb0, cRIntro::AI
-    void destroy_main_menu();    // @ 0x419b30, callsite member spelling
+    void destroy_new_game_menu(); // @ 0x419b30, cRIntro::UnInit, folded body
 
     int replay_attract_bank_cursor; // +0x00, cycles 0..4
     unsigned char hide_for_replay_latch; // +0x04

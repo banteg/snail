@@ -27,7 +27,7 @@ void Intro::update_new_game_menu()
     flags = postal_button->widget_flags;
     if ((flags & 0x20) != 0) {
         postal_button->widget_flags = flags & ~0x20;
-        destroy_main_menu();
+        destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 0;
@@ -38,7 +38,7 @@ void Intro::update_new_game_menu()
     flags = time_trial_button->widget_flags;
     if ((flags & 0x20) != 0) {
         time_trial_button->widget_flags = flags & ~0x20;
-        destroy_main_menu();
+        destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 4;
@@ -48,7 +48,7 @@ void Intro::update_new_game_menu()
     flags = tutorial_button->widget_flags;
     if ((flags & 0x20) != 0) {
         tutorial_button->widget_flags = flags & ~0x20;
-        destroy_main_menu();
+        destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 7;
@@ -60,7 +60,7 @@ void Intro::update_new_game_menu()
     flags = challenge_button->widget_flags;
     if ((flags & 0x20) != 0) {
         challenge_button->widget_flags = flags & ~0x20;
-        destroy_main_menu();
+        destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 1;
@@ -70,14 +70,14 @@ void Intro::update_new_game_menu()
     flags = back_button->widget_flags;
     if ((flags & 0x20) != 0) {
         back_button->widget_flags = flags & ~0x20;
-        destroy_main_menu();
+        destroy_new_game_menu();
         g_game->players[0].frontend_state = 4;
         g_game->players[0].redispatch_requested = 1;
     } else {
         flags = help_button->widget_flags;
         if ((flags & 0x20) != 0) {
             help_button->widget_flags = flags & ~0x20;
-            destroy_main_menu();
+            destroy_new_game_menu();
             g_game->players[0].frontend_state = 31;
             g_game->players[0].redispatch_requested = 1;
         }
@@ -143,7 +143,7 @@ void Intro::update_new_game_menu()
         g_game->subgame.replay_launch_from_frontend = 1;
         attract_reset_progress = 0.0f;
         attract_reset_step = 0.000277777784f;
-        destroy_main_menu();
+        destroy_new_game_menu();
         return;
     }
 

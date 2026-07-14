@@ -13,9 +13,9 @@ Source-shape notes:
   `0x406b90`.
 - VC6 only matched after the case bodies were ordered by native block layout:
   states `9, 10, 11, 2, 7, 3, 4, 8`.
-- `destroy_main_menu` still wants member-call spelling at this callsite so that
-  `ecx` is prepared with the main-menu owner even though the helper itself
-  ignores `this`.
+- `destroy_main_menu` uses the recovered `MainMenu` member spelling so this
+  callsite prepares the embedded main-menu owner in `ECX`. The body ignores
+  `this` and is linker-folded with `Intro::destroy_new_game_menu`.
 
 Recovered relationships:
 

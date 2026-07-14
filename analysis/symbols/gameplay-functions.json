@@ -1186,7 +1186,10 @@
     {
       "address": "0x419b30",
       "name": "destroy_main_menu",
-      "description": "Clears the active menu shell-font scene and tears down the current main-menu widget set before control leaves the front-end. Cross-port Android and iOS symbols match the owning flow to `cRMainMenu::UnInit()`."
+      "aliases": [
+        "destroy_new_game_menu"
+      ],
+      "description": "Exact body shared by linker-folded `MainMenu::destroy_main_menu` and `Intro::destroy_new_game_menu`: both clear the global border and game-sprite scene. Windows callers pass the distinct embedded owners, while Android retains separate byte-identical `cRMainMenu::UnInit()` and `cRIntro::UnInit()` methods."
     },
     {
       "address": "0x419b50",

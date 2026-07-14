@@ -6,7 +6,7 @@
 
 class MainMenu {
 public:
-    void destroy_main_menu(); // @ 0x419b30, helper ignores this
+    void destroy_main_menu(); // @ 0x419b30, cRMainMenu::UnInit, folded body
     void initialize_main_menu(); // @ 0x419b50
     void update_main_menu(); // @ 0x419e00
 

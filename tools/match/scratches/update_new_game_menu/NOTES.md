@@ -22,9 +22,10 @@ Recovered relationships:
 - the launch return state is `2` from the new-game attract path and `18` from
   the high-score browser path.
 
-Source-shape note: `destroy_main_menu` itself still matches as a no-arg helper,
-but this caller is spelled as an `Intro` member call because native sets
-`ecx = this` before the call.
+Source-shape note: the seven teardown calls now use the recovered
+`Intro::destroy_new_game_menu` name. Native passes `this` in `ECX`, and Android
+independently names the authored method `cRIntro::UnInit()`. Its body is folded
+with `MainMenu::destroy_main_menu` at the same Windows address.
 
 The earlier residual came from spelling the replay-attract cases as an
 `if/else` chain and retaining one root pointer across each button dispatch.
