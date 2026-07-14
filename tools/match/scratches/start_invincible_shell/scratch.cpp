@@ -8,15 +8,15 @@ extern GameRoot* g_game; // data_4df904
 
 void Invincible::start_invincible_shell()
 {
-    int current_state = state;
-    if (current_state != 0) {
-        if (current_state == 3) {
-            state = 1;
+    InvincibleState current_state = state;
+    if (current_state != INVINCIBLE_STATE_INACTIVE) {
+        if (current_state == INVINCIBLE_STATE_FADING_OUT) {
+            state = INVINCIBLE_STATE_FADING_IN;
         }
         return;
     }
 
-    state = 1;
+    state = INVINCIBLE_STATE_FADING_IN;
     spin_phase = 0.0f;
     spin_phase_step = 0.0333333351f;
     fade_progress = 0.0f;

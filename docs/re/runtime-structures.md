@@ -175,7 +175,9 @@ Two `update_subgoldy` corrections from the latest static audit:
     - exact 0xa4-byte authored `cRInvincible` visual owner
     - `+0x28`: shell color
     - `+0x38`: live shell transform
-    - `+0x80`: `state`
+    - `+0x80`: `state`, a complete `InvincibleState` graph:
+      `INACTIVE (0) -> FADING_IN (1) -> ACTIVE (2) -> FADING_OUT (3)`;
+      reactivation while fading out returns directly to `FADING_IN`
     - `+0x84`: `spin_phase`
     - `+0x88`: `spin_phase_step`
     - `+0x8c`: `fade_progress`

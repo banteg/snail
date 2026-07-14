@@ -24,3 +24,11 @@ remains exact at 7/7 with all three operands clean.
 complete `RenderableBod` prefix, including the live shell transform at `+0x38`,
 instead of repeating that matrix after a `BodBase`. Focused Wibo remains exact
 at 7/7 with all three operands clean.
+
+## 2026-07-14 lifecycle state ownership
+
+Initialization now names state zero as `INVINCIBLE_STATE_INACTIVE`. Live
+Binary Ninja field xrefs show that only `cRInvincible::{Init,Start,AI}` access
+the exact four-byte state at owner `+0x80`, and Android confirms the same
+four-state graph. Focused output remains exact at 7/7 instructions with all
+three operands clean.

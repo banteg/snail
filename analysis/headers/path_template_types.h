@@ -1257,10 +1257,17 @@ typedef struct PresentationWobbleController {
     float lift_phase_step;
 } PresentationWobbleController;
 
+typedef enum InvincibleState {
+    INVINCIBLE_STATE_INACTIVE = 0,
+    INVINCIBLE_STATE_FADING_IN = 1,
+    INVINCIBLE_STATE_ACTIVE = 2,
+    INVINCIBLE_STATE_FADING_OUT = 3,
+} InvincibleState;
+
 /* Authored cRInvincible, exact 0xa4-byte spinning shell visual owner. */
 typedef struct Invincible {
     RenderableBod body;
-    int32_t state;
+    InvincibleState state;
     float spin_phase;
     float spin_phase_step;
     float fade_progress;

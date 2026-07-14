@@ -849,6 +849,38 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_invincible_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/invincible.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"InvincibleState",' in path_sync
+    assert '("0x80", "state", "InvincibleState")' in path_sync
+    for header in (analysis_header, matcher_header):
+        assert "INVINCIBLE_STATE_INACTIVE = 0" in header
+        assert "INVINCIBLE_STATE_FADING_IN = 1" in header
+        assert "INVINCIBLE_STATE_ACTIVE = 2" in header
+        assert "INVINCIBLE_STATE_FADING_OUT = 3" in header
+
+    consumers = {
+        "initialize_invincible_shell": "INVINCIBLE_STATE_INACTIVE",
+        "start_invincible_shell": "INVINCIBLE_STATE_FADING_IN",
+        "update_invincible_shell": "INVINCIBLE_STATE_ACTIVE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

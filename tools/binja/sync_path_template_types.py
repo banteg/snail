@@ -94,7 +94,7 @@ ANIM_MANAGER_FIELD_UPDATES = (
 
 INVINCIBLE_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
-    ("0x80", "state", "int32_t"),
+    ("0x80", "state", "InvincibleState"),
     ("0x84", "spin_phase", "float"),
     ("0x88", "spin_phase_step", "float"),
     ("0x8c", "fade_progress", "float"),
@@ -244,6 +244,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ClickStart",
     "Cameraman",
     "Squidge",
+    "InvincibleState",
     "Invincible",
     "SnailSkin",
     "Snail",

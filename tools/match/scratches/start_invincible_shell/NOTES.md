@@ -20,3 +20,10 @@ The render-bit write now names
 `GameRoot::subgame.player.presentation.invincible_shell.list_flags`; retaining
 the root path preserves native's global reload while proving the embedded
 owner rather than substituting the equivalent `this->list_flags` alias.
+
+## 2026-07-14 lifecycle state ownership
+
+Start now names the native transition from `INACTIVE` to `FADING_IN` and the
+re-entry edge from `FADING_OUT` back to `FADING_IN`. The typed local preserves
+the four-byte enum representation and the exact authored control flow. Focused
+output remains exact at 21/21 instructions with all four operands clean.

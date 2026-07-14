@@ -41,3 +41,12 @@ exact at 100.00%, 98/98 instructions, full prefix, and 28 clean operands.
 render fields now come from `Invincible`'s complete `RenderableBod` base rather
 than a manually duplicated prefix. Focused Wibo remains byte-identical at
 98/98 instructions with all 28 operands clean.
+
+## 2026-07-14 lifecycle state ownership
+
+The complete controller graph is now explicit as `INACTIVE -> FADING_IN ->
+ACTIVE -> FADING_OUT -> INACTIVE`, with the native reactivation edge from
+`FADING_OUT` back to `FADING_IN`. Live Windows field xrefs and Android
+`cRInvincible::AI` agree that these are the only four states of the exact
+owner. Focused output remains exact at 98/98 instructions with all 28 operands
+clean.

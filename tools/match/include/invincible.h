@@ -5,6 +5,13 @@
 #include "bod_types.h"
 #include "transform_matrix.h"
 
+enum InvincibleState {
+    INVINCIBLE_STATE_INACTIVE = 0,
+    INVINCIBLE_STATE_FADING_IN = 1,
+    INVINCIBLE_STATE_ACTIVE = 2,
+    INVINCIBLE_STATE_FADING_OUT = 3,
+};
+
 class Invincible : public RenderableBod {
 public:
     void initialize_invincible_shell(); // @ 0x444ac0, cRInvincible::Init
@@ -14,7 +21,7 @@ public:
     // The complete inherited renderable BOD is linked by build_subgame_level
     // and owns the invincible shell render object. This child remains embedded
     // in the authored Snail owner.
-    int state; // +0x80
+    InvincibleState state; // +0x80
     float spin_phase; // +0x84
     float spin_phase_step; // +0x88
     float fade_progress; // +0x8c

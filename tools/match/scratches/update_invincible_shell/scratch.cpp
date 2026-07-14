@@ -10,7 +10,7 @@ extern GameRoot* g_game; // data_4df904
 void Invincible::update_invincible_shell()
 {
     switch (state) {
-    case 0:
+    case INVINCIBLE_STATE_INACTIVE:
         if ((g_game->subgame.player.movement_flags & 0x80) != 0) {
             start_invincible_shell();
         } else {
@@ -19,32 +19,32 @@ void Invincible::update_invincible_shell()
         }
         return;
 
-    case 1:
+    case INVINCIBLE_STATE_FADING_IN:
         fade_progress += fade_step;
         if (fade_progress > 1.0f) {
             fade_progress = 1.0f;
-            state = 2;
+            state = INVINCIBLE_STATE_ACTIVE;
         }
         if ((g_game->subgame.player.movement_flags & 0x80) == 0)
-            state = 3;
+            state = INVINCIBLE_STATE_FADING_OUT;
         break;
 
-    case 2:
+    case INVINCIBLE_STATE_ACTIVE:
         if ((g_game->subgame.player.movement_flags & 0x80) == 0)
-            state = 3;
+            state = INVINCIBLE_STATE_FADING_OUT;
         break;
 
-    case 3:
+    case INVINCIBLE_STATE_FADING_OUT:
         fade_progress -= fade_step;
         if (fade_progress < 0.0f) {
             fade_progress = 0.0f;
-            state = 0;
+            state = INVINCIBLE_STATE_INACTIVE;
             g_game->subgame.player.presentation.snail_skin.change_snail_skin(
                 SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
             return;
         }
         if ((g_game->subgame.player.movement_flags & 0x80) != 0)
-            state = 1;
+            state = INVINCIBLE_STATE_FADING_IN;
         break;
     }
 
