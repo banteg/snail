@@ -20,3 +20,13 @@ receiver setup proves the Windows ABI is also a `SoundEffectManager` member,
 even though its body needs no receiver fields. Android additionally stores the
 bank address in `gRSound` before walking it. Promoting the body and startup call
 to the shared owner leaves this function exact at 21/21 instructions.
+
+## 2026-07-14 live entries versus sentinel storage
+
+The global declaration now distinguishes `SOUND_BANK_LIVE_ENTRY_COUNT` (51
+registered samples) from `SOUND_BANK_ENTRY_COUNT` (those records plus the
+terminating entry). Binary Ninja confirms the final 12-byte record begins at
+`0x4a23a4`; its path pointer targets the shared empty string and its remaining
+words are zero. The exact initializer deliberately remains sentinel-driven,
+so the derived storage capacity documents ownership without manufacturing a
+counted-loop contract that native does not have.

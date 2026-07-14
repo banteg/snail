@@ -13,6 +13,11 @@ struct SoundBankEntry {
     int normalization_class;  // +0x08
 };
 
+enum {
+    SOUND_BANK_LIVE_ENTRY_COUNT = 51,
+    SOUND_BANK_ENTRY_COUNT = SOUND_BANK_LIVE_ENTRY_COUNT + 1,
+};
+
 class SoundEffectManager {
 public:
     char* initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
@@ -25,7 +30,8 @@ public:
 };
 
 extern SoundEffectManager g_sound_effect_manager;
-extern SoundBankEntry g_sound_bank_entries[52]; // 0x4a2140, Android gSFXBank
+extern SoundBankEntry
+    g_sound_bank_entries[SOUND_BANK_ENTRY_COUNT]; // 0x4a2140, Android gSFXBank
 
 typedef char SoundBankEntry_must_be_0x0c[
     (sizeof(SoundBankEntry) == 0x0c) ? 1 : -1];
