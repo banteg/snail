@@ -28,3 +28,15 @@ Match status:
 - 2026-07-11: promoted the exact 0xa7f8-byte receiver to the authored
   `SegmentCache` / cRSegmentCache owner. The method remains exact at 227/227
   with all 27 operands clean.
+
+## 2026-07-14 draw-list and player owner closure
+
+The two root-relative list anchors are embedded `SubgameRuntime` owners:
+`+0x355b64` is `fringe_attachment_list_head`, used only by the Fringe cache
+family, and `+0x355b9c` is `track_body_list_head`, used by Floor, Slide, Ramp,
+and Warn. The row activation threshold at root `+0x42fdec` is the embedded
+player's `position.z`, and the skirt color comes from the same subgame owner.
+
+All accesses retain the native independent `g_game` reloads while following
+the canonical `GameRoot -> SubgameRuntime` graph. The method remains exact at
+227/227 instructions with all 27 operands clean.

@@ -1,9 +1,10 @@
 // update_track_render_cache_rows @ 0x433b30 (thiscall, ret)
 
+#include "game_root.h"
 #include "subgame_runtime.h"
 #include "segment_cache.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 #define ACTIVATE_CACHE_SLOT(slot, active_list)                                      \
@@ -21,11 +22,11 @@ int report_errorf(char* format, ...);
 void SegmentCache::update_track_render_cache_rows()
 {
     int live_mask = 0x200;
-    if (*(float*)(g_game_base + 0x42fdec) + 46.0f <= next_cache_row_z)
+    if (g_game->subgame.embedded_player()->position.z + 46.0f <= next_cache_row_z)
         return;
 
     do {
-        BodNode* active_list = (BodNode*)(g_game_base + 0x3ca17c);
+        BodNode* active_list = &g_game->subgame.fringe_attachment_list_head;
         TrackRenderCacheSlot* slot = &slots[next_cache_row_index][4];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         Vector3* position = &slots[next_cache_row_index][4].bod.position;
@@ -34,9 +35,9 @@ void SegmentCache::update_track_render_cache_rows()
         position->x = 0.0f;
         Color4f skirt_color;
         slots[next_cache_row_index][4].bod.color =
-            *((SubgameRuntime*)(g_game_base + 0x74618))->get_track_skirt_color(&skirt_color);
+            *g_game->subgame.get_track_skirt_color(&skirt_color);
 
-        active_list = (BodNode*)(g_game_base + 0x3ca1b4);
+        active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][0];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][0].bod.position;
@@ -45,7 +46,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->x = 0.0f;
         slots[next_cache_row_index][0].bod.color.set_color_white();
 
-        active_list = (BodNode*)(g_game_base + 0x3ca1b4);
+        active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][1];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][1].bod.position;
@@ -54,7 +55,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->x = 0.0f;
         slots[next_cache_row_index][1].bod.color.set_color_white();
 
-        active_list = (BodNode*)(g_game_base + 0x3ca1b4);
+        active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][3];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][3].bod.position;
@@ -63,7 +64,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->x = 0.0f;
         slots[next_cache_row_index][3].bod.color.set_color_white();
 
-        active_list = (BodNode*)(g_game_base + 0x3ca1b4);
+        active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][2];
         ACTIVATE_CACHE_SLOT(slot, active_list);
         position = &slots[next_cache_row_index][2].bod.position;
@@ -74,5 +75,5 @@ void SegmentCache::update_track_render_cache_rows()
 
         next_cache_row_z += 24.0f;
         next_cache_row_index++;
-    } while (*(float*)(g_game_base + 0x42fdec) + 46.0f > next_cache_row_z);
+    } while (g_game->subgame.embedded_player()->position.z + 46.0f > next_cache_row_z);
 }
