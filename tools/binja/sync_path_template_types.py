@@ -197,6 +197,7 @@ REQUIRED_HEADER_STRUCTS = (
     "GalaxyPoint",
     "Galaxy",
     "EnemyManager",
+    "RuntimeRateOrLevelArg",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -348,6 +349,11 @@ PLAYER_FIELD_UPDATES = (
 SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x09", "subgame_pause_gate", "uint8_t"),
     ("0x14", "sub_pause", "SubPause"),
+    ("0x20", "runtime_row_scan_begin", "int32_t"),
+    ("0x24", "runtime_row_scan_end", "int32_t"),
+    ("0x28", "completion_bonus_x_source", "int32_t"),
+    ("0x2c", "completion_bonus_y_source", "int32_t"),
+    ("0x30", "rate_or_level_arg", "RuntimeRateOrLevelArg"),
     ("0x34", "challenge_difficulty_scalar", "float"),
     ("0x38", "subgame_rate", "float"),
     ("0x3c", "subgame_state", "int32_t"),
@@ -1045,6 +1051,14 @@ CORE_SUBGAME_PROTO_UPDATES = (
     (
         "populate_runtime_track_cells_from_segments",
         "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game)",
+    ),
+    (
+        "place_parcels_on_track",
+        "int32_t __thiscall place_parcels_on_track(SubgameRuntime* game)",
+    ),
+    (
+        "place_challenge_parcels_on_track",
+        "int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime* game)",
     ),
 )
 

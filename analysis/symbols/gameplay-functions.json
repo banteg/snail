@@ -2758,12 +2758,12 @@
     {
       "address": "0x4438e0",
       "name": "place_parcels_on_track",
-      "description": "Places parcels for the current course and projects flagged parcel offsets onto generated track rows. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcels()`."
+      "description": "Implements `cRSubGame::PlaceParcels()` on the verified SubgameRuntime receiver: scans the embedded SubTracks definition into two global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments."
     },
     {
       "address": "0x444240",
       "name": "place_challenge_parcels_on_track",
-      "description": "Scans parcel-capable runtime rows whose copied parcel id is zero, records their row indices in the global survival scratch bank, and randomly places from that filtered set while compacting the bank in place. Cross-port Android and iOS preserve `cRSubGame::PlaceParcelsSurvival()` and the bank symbol `gParcelGroupSurvival0`."
+      "description": "Implements `cRSubGame::PlaceParcelsSurvival()` on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place."
     },
     {
       "address": "0x4444b0",

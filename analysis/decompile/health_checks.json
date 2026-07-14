@@ -1446,6 +1446,63 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_normal_parcel_placement_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004438e0-place_parcels_on_track.c",
+      "required_substrings": [
+        "game->level_definition.segment_count",
+        "game->level_definition.parcel_count",
+        "game->runtime_rows"
+      ],
+      "forbidden_substrings": [
+        "struct Game* game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_survival_parcel_placement_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00444240-place_challenge_parcels_on_track.c",
+      "required_substrings": [
+        "game->completion_bonus_x_source",
+        "game->level_definition.parcel_count",
+        "game->runtime_rows"
+      ],
+      "forbidden_substrings": [
+        "*(arg1 + 0x28)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_normal_parcel_placement_receiver",
+      "artifact": "analysis/decompile/ida/functions/004438e0-place_parcels_on_track.c",
+      "required_substrings": [
+        "place_parcels_on_track(SubgameRuntime *game)",
+        "game->level_definition.segment_count",
+        "game->level_definition.segment_slots"
+      ],
+      "forbidden_substrings": [
+        "place_parcels_on_track(Game *game)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_survival_parcel_placement_receiver",
+      "artifact": "analysis/decompile/ida/functions/00444240-place_challenge_parcels_on_track.c",
+      "required_substrings": [
+        "place_challenge_parcels_on_track(SubgameRuntime *game)",
+        "game->completion_bonus_x_source",
+        "game->level_definition.parcel_count"
+      ],
+      "forbidden_substrings": [
+        "place_challenge_parcels_on_track(void *arg1)",
+        "game->_pad_20[8]",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

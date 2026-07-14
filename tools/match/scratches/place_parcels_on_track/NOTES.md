@@ -198,3 +198,26 @@ complete `g_zero_parcel_buckets` array and `ParcelBucket` layout. This removes
 the repeated raw `0x106000 / 0x20c / 0x200` geometry without changing codegen:
 focused Wibo remains 30.93%, 635/639 instructions, with 40 clean operands and
 the same two honest address-shape mismatches in later compaction code.
+
+## Receiver and early-runtime owner closure (2026-07-14)
+
+The Windows and Android bodies both preserve the `cRSubGame` receiver across
+the normal/survival dispatch, while the iOS object symbols name both methods on
+that same owner. Binary Ninja prototype previews independently accepted
+`SubgameRuntime*` for the normal and survival functions, so the canonical
+header and both decompiler sync paths now replay the two `__thiscall`
+receivers. The tracked exports consequently expose `level_definition`,
+`runtime_rows`, and the global parcel pools without the old `Game*` shell.
+
+This pass also closes `SubgameRuntime +0x20..+0x33`: the rolling runtime-row
+scan begin/end pair, completion-bonus x/y sources, and the shared
+`RuntimeRateOrLevelArg` union. Those lanes are independently consumed by
+`update_subgame`, `complete_subgame`, the level builders, rate calculation,
+and survival parcel placement. They are owned runtime state; the two 2048-slot
+parcel banks and 4096-entry survival row bank remain global scratch.
+
+A persistent local `SubgameRuntime* game = this` spelling was tested because
+Windows spills the receiver and Android retains a receiver alias. It left the
+candidate at 635 instructions but regressed the focused score from 30.93% to
+30.46% and did not recover the native prologue, so it was rejected rather than
+retained as register-allocation matching.

@@ -99,3 +99,19 @@ signed sentinel comparison, but its increment now comes from
 two parcel pools in `parcel_bucket.h`, rather than as scratch-local global
 state. Focused Wibo remains 81.40%, 173/171 instructions, with all 33 operands
 clean.
+
+## Verified `cRSubGame` receiver closure (2026-07-14)
+
+The Windows caller passes its live receiver unchanged, and Android/iOS both
+name this method `cRSubGame::PlaceParcelsSurvival()`. A Binary Ninja prototype
+preview then verified that replacing the stale `__fastcall(void*)` shell with
+`__thiscall(SubgameRuntime*)` preserves analysis and reveals
+`completion_bonus_x_source`, `challenge_difficulty_scalar`,
+`level_definition`, and `runtime_rows`. The canonical header, Binary Ninja
+replay, and IDA replay now carry that same receiver contract.
+
+Promoting the adjacent early-runtime fields into the canonical owner also
+removes IDA's `_pad_20[8]` access for the quota source. This is a type/ownership
+recovery only: the focused source remains at 81.40%, 173/171 instructions, and
+all 33 masked operands clean; no scheduling or container-of construct was
+added.

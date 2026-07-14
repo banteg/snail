@@ -3,25 +3,25 @@
 /* selector: place_parcels_on_track */
 
 // Places parcels for the current course and projects flagged parcel offsets onto generated track rows. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcels()`.
-int32_t __thiscall place_parcels_on_track(Game *game)
+int32_t __thiscall place_parcels_on_track(SubgameRuntime *game)
 {
   int32_t result; // eax
-  float v2; // esi
+  int v2; // esi
   int i; // eax
-  int32_t level_segment_count; // eax
+  int32_t segment_count; // eax
   int v5; // ebp
-  int *v6; // ebx
+  int32_t *p_row_count; // ebx
   int v7; // eax
   int v8; // ecx
-  float v9; // edx
-  float *v10; // edi
+  int v9; // edx
+  int *v10; // edi
   int v11; // eax
-  float *v12; // ebx
+  int *v12; // ebx
   int v13; // ebp
-  _DWORD *v14; // eax
+  int *v14; // eax
   int v15; // eax
   double v16; // st7
-  float *v17; // edi
+  int *v17; // edi
   char *v18; // edi
   bool v19; // cc
   int v20; // eax
@@ -29,12 +29,12 @@ int32_t __thiscall place_parcels_on_track(Game *game)
   int v22; // edi
   int *v23; // edx
   int32_t v24; // ecx
-  int v25; // edi
+  int32_t parcel_count; // edi
   int v26; // eax
   int v27; // esi
-  float *v28; // eax
+  int *v28; // eax
   _DWORD *v29; // edx
-  int v30; // ebx
+  int32_t v30; // ebx
   int v31; // eax
   int v32; // edi
   int v33; // eax
@@ -44,7 +44,7 @@ int32_t __thiscall place_parcels_on_track(Game *game)
   double v37; // st7
   float v38; // ecx
   float *v39; // ecx
-  float *v40; // edi
+  char *v40; // edi
   int *v41; // edx
   int *v42; // esi
   int *v43; // eax
@@ -54,23 +54,23 @@ int32_t __thiscall place_parcels_on_track(Game *game)
   int *v47; // edi
   int v48; // ebx
   int v49; // esi
-  float v50; // eax
+  int v50; // eax
   float *v51; // edi
-  float *v52; // edx
+  _DWORD *v52; // edx
   float v53; // eax
   char *v54; // edx
-  int v55; // ecx
-  Game *v56; // ebp
-  int v57; // eax
-  int v58; // ecx
+  int32_t v55; // ecx
+  SubgameRuntime *v56; // ebp
+  int32_t v57; // eax
+  int32_t parcel_quota; // ecx
   char *v59; // esi
   int v60; // edi
-  _DWORD *v61; // ecx
+  SubLoc *v61; // ecx
   float y; // edx
-  int track_cell_row_index; // eax
+  int32_t track_cell_row_index; // eax
   float v64; // [esp+0h] [ebp-22Ch]
   float v65; // [esp+0h] [ebp-22Ch]
-  uint8_t *v66; // [esp+18h] [ebp-214h]
+  int32_t *v66; // [esp+18h] [ebp-214h]
   int v67; // [esp+18h] [ebp-214h]
   int v68; // [esp+18h] [ebp-214h]
   char *v69; // [esp+18h] [ebp-214h]
@@ -78,11 +78,11 @@ int32_t __thiscall place_parcels_on_track(Game *game)
   int32_t v71; // [esp+18h] [ebp-214h]
   float v72; // [esp+1Ch] [ebp-210h]
   int v73; // [esp+1Ch] [ebp-210h]
-  float *out_angle; // [esp+20h] [ebp-20Ch] BYREF
+  int *out_angle; // [esp+20h] [ebp-20Ch] BYREF
   float *v75; // [esp+24h] [ebp-208h]
   int v76; // [esp+28h] [ebp-204h]
   int v77; // [esp+2Ch] [ebp-200h]
-  Game *v78; // [esp+30h] [ebp-1FCh]
+  SubgameRuntime *v78; // [esp+30h] [ebp-1FCh]
   int v79; // [esp+34h] [ebp-1F8h]
   int *v80; // [esp+38h] [ebp-1F4h]
   char *v81; // [esp+3Ch] [ebp-1F0h]
@@ -99,25 +99,25 @@ int32_t __thiscall place_parcels_on_track(Game *game)
   result = game->level_mode;
   v78 = game;
   if ( result == 1 )
-    return place_challenge_parcels_on_track((int)game);
-  v2 = 0.0;
+    return place_challenge_parcels_on_track(game);
+  v2 = 0;
   if ( !result || result == 7 )
   {
     for ( i = 0; i < 268288; i += 131 )
     {
-      flt_4DFAFC[i + 95781] = 0.0;
+      g_zero_parcel_buckets[i + 128] = 0;
       unk_6489E8[i] = 0;
     }
-    level_segment_count = game->level_segment_count;
+    segment_count = game->level_definition.segment_count;
     v5 = 0;
     v72 = 0.0;
     v76 = 0;
     v79 = 0;
-    if ( level_segment_count > 0 )
+    if ( segment_count > 0 )
     {
-      v6 = (int *)&game->_pad_a878[4];
+      p_row_count = &game->level_definition.segment_slots[0].row_count;
       v80 = v90;
-      v66 = &game->_pad_a878[4];
+      v66 = &game->level_definition.segment_slots[0].row_count;
       do
       {
         v7 = 0;
@@ -127,40 +127,40 @@ int32_t __thiscall place_parcels_on_track(Game *game)
         v8 = 131 * v79;
         while ( 1 )
         {
-          v9 = 0.0;
-          if ( *v6 > 0 )
+          v9 = 0;
+          if ( *p_row_count > 0 )
           {
-            v81 = (char *)(v6 + 4);
-            v10 = (float *)(v6 + 518);
-            out_angle = (float *)(v6 + 518);
+            v81 = (char *)(p_row_count + 4);
+            v10 = p_row_count + 518;
+            out_angle = p_row_count + 518;
             while ( 1 )
             {
-              if ( (*(_BYTE *)(v10 - 2) & 1) != 0 && *((_DWORD *)v10 - 1) == v7 )
+              if ( (*(_BYTE *)(v10 - 2) & 1) != 0 && *(v10 - 1) == v7 )
               {
                 if ( v7 )
                 {
-                  *(float *)&unk_6489F0[v8] = v2;
-                  *(float *)&unk_6487E8[4 * unk_6489E8[v8] + v8] = v9;
-                  v14 = (_DWORD *)((char *)&unk_6487EC + 16 * unk_6489E8[v8] + v8 * 4);
-                  *v14 = *(_DWORD *)v10;
-                  v14[1] = *((_DWORD *)v10 + 1);
-                  v14[2] = *((_DWORD *)v10 + 2);
+                  unk_6489F0[v8] = v2;
+                  g_parcel_set_buckets[4 * unk_6489E8[v8] + v8] = v9;
+                  v14 = (int *)((char *)&unk_6487EC + 16 * unk_6489E8[v8] + v8 * 4);
+                  *v14 = *v10;
+                  v14[1] = v10[1];
+                  v14[2] = v10[2];
                   unk_6489EC[v8] = v77;
                   ++unk_6489E8[v8];
                 }
                 else
                 {
                   v11 = 131 * v5;
-                  flt_4DFAFC[v11 + 95783] = v2;
-                  flt_4DFAFC[4 * LODWORD(flt_4DFAFC[131 * v5 + 95781]) + 95653 + v11] = v9;
-                  v12 = &flt_4DFAFC[131 * v5 + 95654 + 4 * LODWORD(flt_4DFAFC[131 * v5 + 95781])];
+                  g_zero_parcel_buckets[v11 + 130] = v2;
+                  g_zero_parcel_buckets[4 * g_zero_parcel_buckets[131 * v5 + 128] + v11] = v9;
+                  v12 = &g_zero_parcel_buckets[131 * v5 + 1 + 4 * g_zero_parcel_buckets[131 * v5 + 128]];
                   *v12 = *v10;
                   v12[1] = v10[1];
                   v13 = v76;
                   v12[2] = v10[2];
-                  flt_4DFAFC[v11 + 95782] = 0.0;
+                  g_zero_parcel_buckets[v11 + 129] = 0;
                   v5 = v13 + 1;
-                  ++LODWORD(flt_4DFAFC[v11 + 95781]);
+                  ++g_zero_parcel_buckets[v11 + 128];
                   v76 = v5;
                   ++LODWORD(v72);
                 }
@@ -175,8 +175,8 @@ int32_t __thiscall place_parcels_on_track(Game *game)
                   v16 = (double)v76;
                   if ( v77 )
                   {
-                    *(float *)&unk_6489F0[v8] = v2;
-                    *(float *)&unk_6487E8[4 * unk_6489E8[v8] + v8] = v9;
+                    unk_6489F0[v8] = v2;
+                    g_parcel_set_buckets[4 * unk_6489E8[v8] + v8] = v9;
                     v18 = (char *)&unk_6487EC + 16 * unk_6489E8[v8] + v8 * 4;
                     v87 = 0;
                     v88 = 0;
@@ -189,19 +189,19 @@ int32_t __thiscall place_parcels_on_track(Game *game)
                   }
                   else
                   {
-                    flt_4DFAFC[v15 + 95783] = v2;
-                    flt_4DFAFC[4 * LODWORD(flt_4DFAFC[v15 + 95781]) + 95653 + v15] = v9;
-                    v17 = &flt_4DFAFC[4 * LODWORD(flt_4DFAFC[v15 + 95781]) + 95654 + v15];
+                    g_zero_parcel_buckets[v15 + 130] = v2;
+                    g_zero_parcel_buckets[4 * g_zero_parcel_buckets[v15 + 128] + v15] = v9;
+                    v17 = &g_zero_parcel_buckets[4 * g_zero_parcel_buckets[v15 + 128] + 1 + v15];
                     v84 = 0;
                     v85 = 0;
                     v15 += 131;
                     v83 = v16 - 4.0 + 0.5;
-                    *v17 = v83;
-                    *((_DWORD *)v17 + 1) = v84;
-                    *((_DWORD *)v17 + 2) = v85;
-                    flt_4DFAFC[v15 + 95651] = 0.0;
+                    *(float *)v17 = v83;
+                    v17[1] = v84;
+                    v17[2] = v85;
+                    unk_53D188[v15] = 0;
                     ++v5;
-                    ++LODWORD(flt_4DFAFC[v15 + 95650]);
+                    ++unk_53D184[v15];
                     ++LODWORD(v72);
                   }
                 }
@@ -209,13 +209,13 @@ int32_t __thiscall place_parcels_on_track(Game *game)
                 v82 += 256;
               }
               while ( v19 );
-              ++LODWORD(v9);
+              ++v9;
               v10 = out_angle + 14;
               v76 = v5;
               ++v81;
-              v6 = (int *)v66;
+              p_row_count = v66;
               out_angle += 14;
-              if ( SLODWORD(v9) >= *(_DWORD *)v66 )
+              if ( v9 >= *v66 )
                 break;
               v7 = v77;
             }
@@ -237,17 +237,17 @@ int32_t __thiscall place_parcels_on_track(Game *game)
             break;
           v7 = v77;
         }
-        ++LODWORD(v2);
-        v24 = v78->level_segment_count;
-        v6 += 4232;
+        ++v2;
+        v24 = v78->level_definition.segment_count;
+        p_row_count += 4232;
         ++v80;
-        v66 = (uint8_t *)v6;
+        v66 = p_row_count;
       }
-      while ( SLODWORD(v2) < v24 );
+      while ( v2 < v24 );
     }
-    v25 = *(_DWORD *)&v78->_pad_74622[1293246];
-    v26 = v78->level_segment_count;
-    v27 = 80 * v25 / 100 - (_DWORD)v75;
+    parcel_count = v78->level_definition.parcel_count;
+    v26 = v78->level_definition.segment_count;
+    v27 = 80 * parcel_count / 100 - (_DWORD)v75;
     v77 = v27;
     *(float *)&out_angle = v72;
     if ( v26 <= 0 )
@@ -262,18 +262,18 @@ int32_t __thiscall place_parcels_on_track(Game *game)
       do
       {
         if ( *v29 != 10000 )
-          v28 = (float *)((char *)v28 + *v29);
+          v28 = (int *)((char *)v28 + *v29);
         ++v29;
         --v67;
       }
       while ( v67 );
     }
-    if ( (int)v28 < v25 )
+    if ( (int)v28 < parcel_count )
       report_errorf(
         "Parcel Allocation could fail in %s.  Add more parcel Sets",
-        (const char *)&v78->_pad_74622[1293102]);
-    if ( *(_DWORD *)&v78->_pad_74622[1293246] - v27 > SLODWORD(v72) )
-      report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ", (const char *)&v78->_pad_74622[1293102]);
+        v78->level_definition.level_display_name);
+    if ( v78->level_definition.parcel_count - v27 > SLODWORD(v72) )
+      report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ", v78->level_definition.level_display_name);
     v30 = 0;
     v73 = 0;
     if ( v27 > 0 )
@@ -293,10 +293,10 @@ int32_t __thiscall place_parcels_on_track(Game *game)
           v34 = (float *)((char *)&unk_6487EC + v32 * 4);
           do
           {
-            out_angle = (float *)(*((_DWORD *)v34 - 1) + *(_DWORD *)&v78->_pad_a878[16928 * unk_6489F0[v32]]);
+            out_angle = (int *)(*((_DWORD *)v34 - 1) + v78->level_definition.segment_slots[unk_6489F0[v32]].row_base);
             v35 = (float *)&v78->_pad_00[244 * (_DWORD)out_angle];
             if ( (byte_5CCAC8[(_DWORD)v35] & 0x10) != 0 )
-              report_errorf("Duplicate Parcel Request in %s.", (const char *)&v78->_pad_74622[1293102]);
+              report_errorf("Duplicate Parcel Request in %s.", v78->level_definition.level_display_name);
             v36 = (float *)((char *)&unk_5CCB58 + (_DWORD)v35);
             v37 = (double)(int)out_angle;
             *(_DWORD *)&byte_5CCAC8[(_DWORD)v35] |= 0x11u;
@@ -320,10 +320,10 @@ int32_t __thiscall place_parcels_on_track(Game *game)
         v75 = nullptr;
         if ( v79 > 0 )
         {
-          v40 = (float *)(v79 - 1);
+          v40 = (char *)(v79 - 1);
           v41 = (int *)&unk_648BF4;
           v42 = unk_6489F0;
-          out_angle = (float *)(v79 - 1);
+          out_angle = (int *)(v79 - 1);
           v81 = (char *)&unk_648BF4;
           v80 = unk_6489F0;
           do
@@ -333,7 +333,7 @@ int32_t __thiscall place_parcels_on_track(Game *game)
               if ( (int)v39 < (int)v40 )
               {
                 v43 = v41;
-                v69 = (char *)((char *)v40 - (char *)v39);
+                v69 = (char *)(v40 - (char *)v39);
                 do
                 {
                   v44 = 0;
@@ -361,16 +361,16 @@ int32_t __thiscall place_parcels_on_track(Game *game)
                   --v69;
                 }
                 while ( v69 );
-                v40 = out_angle;
+                v40 = (char *)out_angle;
                 v41 = (int *)v81;
                 v42 = v80;
               }
               v39 = (float *)((char *)v39 - 1);
               v42 -= 131;
               v41 -= 131;
-              v40 = (float *)((char *)v40 - 1);
+              --v40;
               --v79;
-              out_angle = v40;
+              out_angle = (int *)v40;
               v31 = v79;
             }
             v39 = (float *)((char *)v39 + 1);
@@ -386,7 +386,7 @@ int32_t __thiscall place_parcels_on_track(Game *game)
       }
       while ( v73 < v77 );
     }
-    if ( v30 < *(_DWORD *)&v78->_pad_74622[1293246] )
+    if ( v30 < v78->level_definition.parcel_count )
     {
       v75 = (float *)(v5 - 1);
       do
@@ -396,18 +396,18 @@ int32_t __thiscall place_parcels_on_track(Game *game)
         v65 = (float)v76;
         v48 = (__int64)random_float_below(v65);
         v49 = 131 * v48;
-        v50 = flt_4DFAFC[131 * v48 + 95783];
-        v73 += LODWORD(flt_4DFAFC[131 * v48 + 95781]);
-        out_angle = &flt_4DFAFC[131 * v48 + 95653];
-        v70 = *(_DWORD *)out_angle + *(_DWORD *)&v78->_pad_a878[16928 * LODWORD(v50)];
+        v50 = g_zero_parcel_buckets[131 * v48 + 130];
+        v73 += g_zero_parcel_buckets[131 * v48 + 128];
+        out_angle = &g_zero_parcel_buckets[131 * v48];
+        v70 = *out_angle + v78->level_definition.segment_slots[v50].row_base;
         v51 = (float *)&v78->_pad_00[244 * v70];
         if ( (byte_5CCAC8[(_DWORD)v51] & 0x10) != 0 )
-          report_errorf("Duplicate Parcel Request in %s.", (const char *)&v78->_pad_74622[1293102]);
+          report_errorf("Duplicate Parcel Request in %s.", v78->level_definition.level_display_name);
         *(_DWORD *)&byte_5CCAC8[(_DWORD)v51] |= 0x11u;
-        v52 = (float *)((char *)&unk_5CCB58 + (_DWORD)v51);
-        *v52 = flt_4DFAFC[131 * v48 + 95654];
-        v52[1] = flt_4DFAFC[v49 + 95655];
-        v52[2] = flt_4DFAFC[v49 + 95656];
+        v52 = (_DWORD *)((char *)&unk_5CCB58 + (_DWORD)v51);
+        *v52 = g_zero_parcel_buckets[131 * v48 + 1];
+        v52[1] = g_zero_parcel_buckets[v49 + 2];
+        v52[2] = g_zero_parcel_buckets[v49 + 3];
         v51[1520344] = (double)v70 + v51[1520344] + 0.5;
         v51[1520343] = v51[1520343] + 1.0;
         if ( (byte_5CCAC8[(_DWORD)v51] & 0x20) != 0 )
@@ -431,22 +431,22 @@ int32_t __thiscall place_parcels_on_track(Game *game)
           while ( v54 );
         }
         --v5;
-        v55 = *(_DWORD *)&v78->_pad_74622[1293246];
+        v55 = v78->level_definition.parcel_count;
         v75 = (float *)((char *)v75 - 1);
         v76 = v5;
       }
       while ( v73 < v55 );
     }
     v56 = v78;
-    v57 = *(_DWORD *)&v78->_pad_74622[1293246];
+    v57 = v78->level_definition.parcel_count;
     if ( v73 != v57 )
     {
-      report_errorf("Did not generate required Parcels(%i) in %s", v57, (const char *)&v78->_pad_74622[1293102]);
-      v58 = *(_DWORD *)&v78->_pad_74622[1293254];
-      if ( v58 )
-        *(_DWORD *)&v78->_pad_74622[1293254] = v73 * *(_DWORD *)&v78->_pad_74622[1293246] / v58;
+      report_errorf("Did not generate required Parcels(%i) in %s", v57, v78->level_definition.level_display_name);
+      parcel_quota = v78->level_definition.parcel_quota;
+      if ( parcel_quota )
+        v78->level_definition.parcel_quota = v73 * v78->level_definition.parcel_count / parcel_quota;
     }
-    *(_DWORD *)&v56->_pad_74622[1293246] = v73;
+    v56->level_definition.parcel_count = v73;
     result = v56->runtime_row_count;
     v71 = 0;
     if ( result > 0 )
@@ -456,14 +456,15 @@ int32_t __thiscall place_parcels_on_track(Game *game)
       {
         if ( (*(_DWORD *)v59 & 1) != 0 && (*(_DWORD *)v59 & 0x40) != 0 )
         {
-          v60 = (__int64)*((float *)v59 + 38) - get_track_cell_row_index(*((_DWORD **)v59 + 41));
+          v60 = (__int64)*((float *)v59 + 38) - get_track_cell_row_index(*((SubLoc **)v59 + 41));
           if ( v60 < 0 )
             v60 = 0;
-          v61 = *((_DWORD **)v59 + 41);
-          if ( *(_DWORD *)(v61[14] + 56) == 42 )
+          v61 = *((SubLoc **)v59 + 41);
+          if ( v61->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
           {
             compute_kind42_attachment_transform(
-              *(float *)(*(_DWORD *)(v61[14] + 88) + 168 * v60 + 160),
+              v61->attachment_template_record,
+              v61->attachment_template_record->primary_samples[v60].special_scalar,
               *((float *)v59 + 36),
               *((float *)v59 + 37),
               &transform,

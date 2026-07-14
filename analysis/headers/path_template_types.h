@@ -1516,6 +1516,11 @@ typedef struct Player {
     float slow_commentary_step;
 } Player;
 
+typedef union RuntimeRateOrLevelArg {
+    float base_rate;
+    int32_t level_arg_tail;
+} RuntimeRateOrLevelArg;
+
 /*
  * Authored cRSubGame owner embedded in the root runtime. This campaign keeps
  * the broad object sparse, but the complete Player child at +0x3bb764 is now
@@ -1526,7 +1531,11 @@ typedef struct SubgameRuntime {
     uint8_t subgame_pause_gate;
     uint8_t _pad_0a[0x14 - 0x0a];
     SubPause sub_pause;
-    uint8_t _pad_20[0x34 - 0x20];
+    int32_t runtime_row_scan_begin;
+    int32_t runtime_row_scan_end;
+    int32_t completion_bonus_x_source;
+    int32_t completion_bonus_y_source;
+    RuntimeRateOrLevelArg rate_or_level_arg;
     float challenge_difficulty_scalar;
     float subgame_rate;
     int32_t subgame_state;
@@ -2051,6 +2060,9 @@ int32_t __thiscall rebuild_track_runtime_from_segments(
 );
 
 void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);
+
+int32_t __thiscall place_parcels_on_track(SubgameRuntime* game);
+int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);
 
 void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 
