@@ -501,3 +501,17 @@ Windows hit helper. The raw pool address arithmetic remains deliberate because
 it preserves this large function's current register allocation. Focused Wibo
 is byte-stable at 73.34%, 645/694 instructions, with 68 clean masked operands
 and no unresolved or mismatched operands.
+
+## 2026-07-14 derived slug-pool lanes
+
+The raw slug scan remains byte-indexed to preserve the measured VC6 register
+schedule, but its pool extent, 0xec stride, root-relative base, state lane,
+inherited render position, and both `hit_slug_hazard` receivers now derive from
+`SubgameRuntime::slug_hazards`, `SlugPool::slots`, and the primary `Slug`
+layout. This removes the absolute `0x3563a0`/`0x3564xx` address family and the
+duplicated decimal `1888`/`236` constants without promoting the loop to the
+already-rejected typed iterator spelling.
+
+Focused output remains 73.34% (645/694 instructions, prefix 9, 68 clean
+operands). Saved pre-change and rebuilt normalized candidate listings share
+SHA-256 `7595f3ce942ff8bd3b221494ebff32aadd992ea6fdaf74a71fa2b13a0e50ea8d`.

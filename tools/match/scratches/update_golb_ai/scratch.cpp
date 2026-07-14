@@ -2,6 +2,8 @@
 // Straight or path-follow flight, homing blend (kind 2), per-kind trail
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
+#include <stddef.h>
+
 #include "golb.h"
 #include "player.h"
 #include "score_buckets.h"
@@ -15,6 +17,19 @@ float __fastcall normalize_vector(Vec3* vector);
 
 void GolbShot::update_golb_ai()
 {
+    enum {
+        SLUG_POOL_FROM_SUBGAME =
+            offsetof(SubgameRuntime, slug_hazards) + offsetof(SlugPool, slots),
+        SLUG_POOL_EXTENT = sizeof(((SlugPool*)0)->slots),
+        SLUG_SLOT_STRIDE = sizeof(Slug),
+        SLUG_STATE_FROM_SUBGAME =
+            SLUG_POOL_FROM_SUBGAME + offsetof(Slug, state),
+        SLUG_POSITION_FROM_SUBGAME =
+            SLUG_POOL_FROM_SUBGAME
+            + offsetof(Slug, transform)
+            + offsetof(TransformMatrix, position)
+    };
+
     float speed;
     float deflect_speed;
     float lived;
@@ -213,13 +228,19 @@ void GolbShot::update_golb_ai()
 
             {
                 int slug_index = 0;
-                for (int m = 0; m < 1888; m += 236) {
+                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {
                     char* slot = (char*)game + m;
-                    int slug_state = *(int*)(slot + 0x356420);
+                    int slug_state = *(int*)(slot + SLUG_STATE_FROM_SUBGAME);
                     if (slug_state == 1 || slug_state == 4) {
-                        probe.x = *(float*)(slot + 0x356408) - new_output->x;
-                        probe.y = *(float*)(slot + 0x35640c) - new_output->y;
-                        probe.z = *(float*)(slot + 0x356410) - new_output->z;
+                        probe.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
+                                           + offsetof(Vector3, x))
+                                - new_output->x;
+                        probe.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
+                                           + offsetof(Vector3, y))
+                                - new_output->y;
+                        probe.z = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
+                                           + offsetof(Vector3, z))
+                                - new_output->z;
                         float dz = probe.z;
                         if (dz < 0.0f)
                             dz = -dz;
@@ -237,13 +258,17 @@ void GolbShot::update_golb_ai()
                             if (kind == 1) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
-                                ((Slug*)((char*)game + 236 * slug_index + 0x3563a0))->hit_slug_hazard(2);
+                                ((Slug*)((char*)game
+                                    + SLUG_SLOT_STRIDE * slug_index
+                                    + SLUG_POOL_FROM_SUBGAME))->hit_slug_hazard(2);
                                 return;
                             }
                             if (kind == 2) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
-                                ((Slug*)((char*)game + 236 * slug_index + 0x3563a0))->hit_slug_hazard(4);
+                                ((Slug*)((char*)game
+                                    + SLUG_SLOT_STRIDE * slug_index
+                                    + SLUG_POOL_FROM_SUBGAME))->hit_slug_hazard(4);
                                 return;
                             }
                             if (kind == 0) {
