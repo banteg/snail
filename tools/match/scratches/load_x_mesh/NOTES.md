@@ -97,7 +97,7 @@ Notable shape details:
   slot restores native right-hand-side evaluation and reaches 96.75% (494/492
   instructions, 238/492 prefix, 94 clean masks, no unresolved operands or
   mismatches).
-- The sole instruction-count residual is the non-quad flag update: the target
+- The sole instruction-count residual is the triangle-flag update: the target
   emits one direct byte `or`, while VC6 expands the typed field spelling into a
   byte load/`or`/store. Pointer and raw-byte probes perturb the otherwise native
   owner/register schedule, so the typed `ObjectFaceQuad::flags` update remains
@@ -109,6 +109,17 @@ guard loses the native index ownership; storing the parsed material index as a
 standalone `short` changes the final assignment schedule; and an explicit
 pointer to the face flag byte regresses the broader face-loop register
 allocation. None are retained.
+
+2026-07-14 face-kind ownership closure:
+
+- The parser raises `OBJECT_FACEQUAD_FLAG_TRIANGLE` only when the authored X
+  face reports three vertex indices. Normal generation, edge generation,
+  grouped-buffer construction, and track-cache construction independently
+  consume the same bit by omitting vertex 3 and the second triangle.
+- The member remains an unsigned byte in `ObjectFaceQuad`; the enum supplies
+  symbolic bit values without falsely widening the recovered 0x30-byte record.
+- Face bits `0x02`, `0x04`, and `0x10` remain numeric because their complete
+  producer/consumer ownership has not closed.
 
 ## 2026-07-12 DirectX loader ABI and owner closure
 

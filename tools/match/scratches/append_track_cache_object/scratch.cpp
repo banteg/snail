@@ -41,7 +41,8 @@ int SegmentCache::append_track_cache_object(
                 source->facequads[face_index].uv[2].v,
                 vertices, vertex_count, max_vertices, max_indices, color, project_uv);
 
-            if ((source->facequads[face_index].flags & 0x80) == 0) {
+            if ((source->facequads[face_index].flags
+                    & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                 indices[*index_count + 3] = indices[*index_count];
                 indices[*index_count + 4] = indices[*index_count + 2];
                 indices[*index_count + 5] = (unsigned short)add_track_cache_vertex(

@@ -26,7 +26,7 @@ void Object::calc_object_edges()
             add_object_edge(face->vertex_2, face->vertex_0, normal_index);
             add_object_edge(face->vertex_1, face->vertex_2, normal_index);
 
-            if ((face->flags & 0x80) == 0) {
+            if ((face->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                 add_object_edge(face->vertex_0, face->vertex_2, normal_index + 1);
                 add_object_edge(face->vertex_3, face->vertex_0, normal_index + 1);
                 add_object_edge(face->vertex_2, face->vertex_3, normal_index + 1);

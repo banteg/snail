@@ -8,7 +8,7 @@ Semantics:
 - uses the archive-data base as a temporary `ObjectToonEdge` array at
   `data_503300` and tracks the live count at `data_503318`;
 - emits three directed edges for the first triangle of every facequad, plus the
-  second triangle when the quad is not marked with `0x80`;
+  second triangle when `OBJECT_FACEQUAD_FLAG_TRIANGLE` is clear;
 - when `flags & 0x8000` is set, removes boundary-only edges before requesting
   and copying the final edge array.
 

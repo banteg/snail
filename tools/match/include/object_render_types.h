@@ -67,11 +67,17 @@ struct ObjectUv {
     float v;
 };
 
+// Byte-sized ObjectFaceQuad flags. Keep the struct member unsigned char so
+// the recovered 0x30-byte record layout does not inherit enum width.
+enum ObjectFaceQuadFlag {
+    OBJECT_FACEQUAD_FLAG_TRIANGLE = 0x80,
+};
+
 struct ObjectFaceQuad {
     union {
         unsigned short header_word; // +0x00, constructor word store
         struct {
-            unsigned char flags; // +0x00; 0x80 marks three-index form, 0x10 starts a texture group
+            unsigned char flags; // +0x00, ObjectFaceQuadFlag bit owner
             unsigned char secondary_flags; // +0x01
         };
     };

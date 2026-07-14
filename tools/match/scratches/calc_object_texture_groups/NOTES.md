@@ -15,6 +15,9 @@ Semantics pinned:
   split, and object flag `0x400` sets facequad flag `0x02` plus texture flag
   `0x20` on every visited facequad.
 
+Those `0x10` and `0x02` face bits remain numeric: this function proves their
+local effects but not a complete independent producer/consumer contract.
+
 This is the missing producer for the cumulative `+0x6c` ends consumed by
 `build_object_texture_group_buffers`; do not promote a full `Object` layout
 from this alone.

@@ -75,6 +75,10 @@ typedef struct TransformMatrix {
     float position_w;
 } TransformMatrix;
 
+typedef enum ObjectFaceQuadFlag {
+    OBJECT_FACEQUAD_FLAG_TRIANGLE = 0x80,
+} ObjectFaceQuadFlag;
+
 typedef struct ObjectFaceQuad {
     union {
         uint16_t header_word;

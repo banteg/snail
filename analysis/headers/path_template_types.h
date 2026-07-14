@@ -853,9 +853,9 @@ typedef enum PathTemplateKind {
     PATH_TEMPLATE_KIND_TWISTER2 = 0x2d,
 } PathTemplateKind;
 
-typedef enum ObjectFaceQuadFlags {
-    OBJECT_FACEQUAD_FLAG_NON_QUAD = 0x80,
-} ObjectFaceQuadFlags;
+typedef enum ObjectFaceQuadFlag {
+    OBJECT_FACEQUAD_FLAG_TRIANGLE = 0x80,
+} ObjectFaceQuadFlag;
 
 typedef struct ObjectUv {
     float u;

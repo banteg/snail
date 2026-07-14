@@ -39,7 +39,8 @@ int Object::calc_object_facequad_normals_simple()
 
             *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;
 
-            if ((((ObjectFaceQuad*)((char*)facequads + face_offset))->flags & 0x80) == 0) {
+            if ((((ObjectFaceQuad*)((char*)facequads + face_offset))->flags
+                    & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                 base_a = &vertices[
                     ((ObjectFaceQuad*)((char*)facequads + face_offset))->vertex_0];
                 Vector3* base_d = &vertices[

@@ -64,7 +64,8 @@ void build_object_texture_group_buffers(Object* object)
                     get_or_append_object_texture_group_vertex(
                         object, vertex_index, object->facequads[scan_face_index].uv[2].u,
                         object->facequads[scan_face_index].uv[2].v);
-                else if ((object->facequads[scan_face_index].flags & 0x80) == 0
+                else if ((object->facequads[scan_face_index].flags
+                             & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0
                     && object->facequads[scan_face_index].vertex_3 == vertex_index)
                     get_or_append_object_texture_group_vertex(
                         object, vertex_index, object->facequads[scan_face_index].uv[3].u,
@@ -105,7 +106,7 @@ void build_object_texture_group_buffers(Object* object)
                     ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[2].v);
 
                 if ((((ObjectFaceQuad*)((char*)object->facequads + face_offset))->flags
-                        & 0x80) == 0) {
+                        & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                     *index_3 = *index_0;
                     *index_4 = *index_2;
                     *index_5 = (unsigned short)get_or_append_object_texture_group_vertex(

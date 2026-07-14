@@ -118,7 +118,7 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
             vertex_3 = parse_next_signed_int(&mesh_cursor);
         } else {
             vertex_3 = 0;
-            object->facequads[i].flags |= 0x80;
+            object->facequads[i].flags |= OBJECT_FACEQUAD_FLAG_TRIANGLE;
         }
 
         object->facequads[i].uv[2].u = texture_coords[vertex_2].u;

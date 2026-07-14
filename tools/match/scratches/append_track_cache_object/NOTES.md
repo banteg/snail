@@ -34,3 +34,8 @@ temporaries, reversed comparison spelling, and explicit limit/result locals
 did not improve those regions; the float-temporary form also introduced x87
 traffic. None is retained, and no register-shaped or synthetic construct is
 used.
+
+The triangle/quad branch now uses `OBJECT_FACEQUAD_FLAG_TRIANGLE`. The X mesh
+loader sets that bit only for three-index authored faces, and this cache helper
+consumes it by emitting three rather than six indices; it does not own or
+mutate the borrowed face record.

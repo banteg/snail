@@ -1300,6 +1300,8 @@ High-confidence `ObjectFaceQuad` fields:
 
 - `+0x00`: `flags`
   - 16-bit storage field; do not model this as a C enum-backed struct member or the facequad record stops matching the recovered `0x30` allocation size
+  - low-byte `OBJECT_FACEQUAD_FLAG_TRIANGLE` (`0x80`) selects the authored
+    three-index form; the fourth vertex and second triangle are omitted
 - `+0x02/+0x04/+0x06/+0x08`: four vertex indices
 - `+0x0c`: `texture_ref`
 - `+0x10..+0x2c`: four `(u, v)` pairs

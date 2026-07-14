@@ -12,6 +12,10 @@ distortion. It:
   vertices `0, 1, 3`;
 - writes two 12-byte normals per face into `Object +0x60`.
 
+The fourth-corner branch is now spelled through
+`OBJECT_FACEQUAD_FLAG_TRIANGLE`, whose X-loader producer and independent
+normal/edge/index consumers close the bit's ownership.
+
 The scratch uses the shared `Object`, `ObjectFaceQuad`, and `Vector3` layouts.
 It intentionally keeps the byte-offset loop for faces and output normals because
 native also walks facequads by 0x30 bytes and normal pairs by 0x18 bytes.

@@ -26,8 +26,8 @@ Recovered relationships:
   by the append helper, then copied into `Object +0xc4`.
 - `Object +0xc0` receives the D3D vertex-buffer wrapper and `Object +0xc8`
   receives the D3D index-buffer wrapper.
-- Facequad flag `0x80` selects the three-index form; otherwise native emits six
-  indices by reusing indices 0 and 2 plus the fourth corner.
+- `OBJECT_FACEQUAD_FLAG_TRIANGLE` selects the three-index form; otherwise
+  native emits six indices by reusing indices 0 and 2 plus the fourth corner.
 - Toon/secondary index buffer allocation is gated by
   `OBJECT_FLAG_TOON_ENABLED` (`flags & 0x4000`)
   (`test ah, 0x40`), not by `flags & 0x40`.

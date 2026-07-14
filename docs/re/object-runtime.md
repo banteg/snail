@@ -42,6 +42,15 @@ producer and consumer; the remaining colour/tint bits stay numeric.
 | `0x200000` | `OBJECT_FLAG_HAS_ANIMATION` | `request_object_animation` allocates the retained graph and sets it; presentation binding and frame refresh consume it. |
 | `0x800000` | `OBJECT_FLAG_DISTORT_ENABLED` | X-animation loading retains a base-vertex copy and sets it; animated refresh dispatches the embedded `ObjectDistort`. |
 
+`ObjectFaceQuad +0x00` is a separate byte-sized flag owner inside each
+0x30-byte face record. `OBJECT_FACEQUAD_FLAG_TRIANGLE` (`0x80`) is set by the X
+loader exactly for three-index authored faces. Normal and edge construction,
+grouped render-buffer construction, and track-cache construction all consume
+it by omitting the fourth corner and second triangle. The struct member stays
+`uint8_t`; using the C enum as its storage type would corrupt the recovered
+layout. Bits `0x02`, `0x04`, and `0x10` remain numeric until their complete
+producer/consumer contracts are recovered.
+
 The object constructor body, `ApplyToon`, and the one-time edge allocator are
 side-effecting `void` methods. Their Windows exit registers contain assignment
 or allocation residue, while the actual products remain owned by the Object;

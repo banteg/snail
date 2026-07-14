@@ -226,7 +226,8 @@ High-confidence fields on the pointed-to `strip_mesh` object:
 
 High-confidence facequad record shape:
 
-- `+0x00`: face flags
+- `+0x00`: face flags; low-byte `OBJECT_FACEQUAD_FLAG_TRIANGLE` (`0x80`)
+  selects the three-index form
 - `+0x02/+0x04/+0x06/+0x08`: four vertex indices
 - `+0x0c`: texture reference pointer
 - `+0x10..+0x2c`: four `(u, v)` pairs

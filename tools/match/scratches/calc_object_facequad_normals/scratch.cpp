@@ -59,7 +59,7 @@ void Object::calc_object_facequad_normals()
             *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;
 
             Vector3 normal_b;
-            if ((CURRENT_FACE->flags & 0x80) == 0) {
+            if ((CURRENT_FACE->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                 base_a = &vertices[CURRENT_FACE->vertex_0];
                 Vector3* base_d = &vertices[CURRENT_FACE->vertex_2];
                 Vector3 quad_lhs_value;
@@ -83,7 +83,7 @@ void Object::calc_object_facequad_normals()
                     normal_b;
             }
 
-            if ((CURRENT_FACE->flags & 0x80) == 0) {
+            if ((CURRENT_FACE->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                 ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_0, normal_b);
                 ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_1, normal_b);
                 ACCUM_VERTEX_NORMAL(CURRENT_FACE->vertex_2, normal_b);

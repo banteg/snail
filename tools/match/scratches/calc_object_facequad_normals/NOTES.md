@@ -38,6 +38,10 @@ shape with per-vertex normal accumulation:
 - the same source counter is reset between face and vertex phases, and tally
   access remains the natural `normal_tally[index]` expression.
 
+`OBJECT_FACEQUAD_FLAG_TRIANGLE` is the owned face-kind discriminator: this
+builder omits the second face normal and fourth-corner accumulation when it is
+set, matching the X-loader producer and the edge/index consumers.
+
 Focused Wibo rises from 17.13% (392/437, one masked mismatch) to 90.03%,
 436/437 candidate/target instructions, prefix 27/437, and 22 clean masked
 operands with no unresolved or mismatched operands. Native now agrees on the

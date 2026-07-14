@@ -143,3 +143,8 @@ array expressions regressed the focused score. A do-loop spelling for the
 already recovered two-face writer was byte-identical and was not retained.
 Those loops remain explicit future ownership work rather than being forced to
 share the supertramp spelling.
+
+The paired strip faces still write low-byte flag values `0` and `0x04`.
+`0x04` is not promoted to `ObjectFaceQuadFlag`: this constructor proves an
+authoring distinction but no independent runtime consumer or stable semantic
+name.

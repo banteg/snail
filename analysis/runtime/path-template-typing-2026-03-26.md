@@ -158,7 +158,11 @@ Recovered `ObjectFaceQuad` shape:
 
 - size: `0x30`
 - `+0x00`: `flags`
-  - 16-bit storage field; keep `OBJECT_FACEQUAD_FLAG_*` as symbolic constants instead of using a C enum-backed member
+  - 16-bit constructor storage word split into byte flags; keep
+    `OBJECT_FACEQUAD_FLAG_*` as symbolic constants instead of using a C
+    enum-backed member
+  - `OBJECT_FACEQUAD_FLAG_TRIANGLE` (`0x80`) is set by the X loader for
+    three-index faces and consumed by the normal, edge, and index builders
 - `+0x02/+0x04/+0x06/+0x08`: four vertex indices
 - `+0x0c`: `texture_ref`
 - `+0x10..+0x2c`: four `(u, v)` pairs
