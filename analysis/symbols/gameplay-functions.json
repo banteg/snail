@@ -328,7 +328,8 @@
     },
     {
       "address": "0x406dc0",
-      "name": "game_startup_and_main_loop"
+      "name": "game_startup_and_main_loop",
+      "description": "WinMain startup and fixed-step frame loop. It constructs and initializes the global cRGame root, drives its owned fade and render/update gates, then persists the embedded cRSubHighScore bank before releasing the root and process subsystems."
     },
     {
       "address": "0x4072f0",

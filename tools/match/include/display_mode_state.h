@@ -28,6 +28,11 @@ struct DisplayModeState {
     char update_display_mode_view_state(); // @ 0x412940
 };
 
+// Process-owned display dimensions sampled before the authored 640x480 view
+// is installed during startup.
+extern int g_current_display_width;  // data_4df858
+extern int g_current_display_height; // data_4b775c
+
 typedef char DisplayModeRecord_must_be_0x10[
     (sizeof(DisplayModeRecord) == 0x10) ? 1 : -1];
 typedef char DisplayModeViewSample_must_be_0x10[

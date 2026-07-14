@@ -159,3 +159,20 @@ its six existing structural mismatches unchanged.
 tracked `shutdown_bass_audio_window` owner by name. Its native body proves the
 hidden window handle is zeroed only on the fatal destroy-failure path; successful
 window destruction jumps directly to class unregistration.
+
+2026-07-14 root-owner promotion:
+
+- Startup now holds `data_4df904` as the proven `GameRoot*` and reaches the
+  owned `FrontendFade +0x24`, `render_skip_count +0x56c`, and fixed-update
+  state through that owner instead of byte arithmetic.
+- The shutdown record at root `+0x6ffae0` is
+  `GameRoot::subgame.sub_high_score`: root `+0x74618` plus
+  `SubgameRuntime::sub_high_score +0x68b4c8` closes the address exactly.
+- Calling `GameRoot::initialize_game_assets_and_world()` with its recovered
+  thiscall ABI removes the scratch's false pushed argument and stack cleanup.
+  Focused matching improves from 63.65%, 338/325 instructions and 125 clean
+  masked operands to 63.84%, 336/325 and 126 clean masked operands, with the
+  same six honest structural mismatches.
+- The sampled display dimensions and minimized-window helper now use their
+  curated names and exact types; these ownership/name promotions are
+  codegen-neutral.

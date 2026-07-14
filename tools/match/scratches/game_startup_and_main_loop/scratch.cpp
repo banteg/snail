@@ -3,6 +3,7 @@
 #include "frontend_fade.h"
 #include "game_root.h"
 #include "sub_high_score.h"
+#include "display_mode_state.h"
 #include "loading_bar.h"
 #include "main_loop_state.h"
 #include "runtime_config.h"
@@ -19,12 +20,9 @@ extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
-extern char* g_game_base;                    // data_4df904
+extern GameRoot* g_game;                     // data_4df904
 extern float g_authored_view_width;          // data_4df85c
 extern float g_authored_view_height;         // data_4b7760
-
-extern int data_4df858;
-extern int data_4b775c;
 
 int query_directx_runtime_version(); // @ 0x44afc0
 char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0
@@ -36,7 +34,7 @@ char initialize_game_data_archive(); // @ 0x430e40
 int snapshot_current_display_mode(); // @ 0x407850
 int initialize_mouse_authored_scale_from_clip_rect(); // @ 0x44bbb0
 int probe_display_mode_count(); // @ 0x407880
-int read_current_display_resolution(void* width, void* height); // @ 0x4078b0
+int* read_current_display_resolution(int* width, int* height); // @ 0x4078b0
 int log_startup_timestamp(); // @ 0x406d30
 char initialize_audio_subsystem(); // @ 0x407a10
 int initialize_game_window_and_input_wrapper(char* window_name); // @ 0x4119c0
@@ -45,10 +43,9 @@ int set_fullscreen_mode(int enabled); // @ 0x414260
 void initialize_main_loop_display_state(); // @ 0x406d70
 int construct_game_runtime(); // @ 0x407b60
 int set_tracked_allocation_mark(); // @ 0x431cb0
-char initialize_game_assets_and_world(GameRoot* game); // @ 0x40acf0
 void load_registered_texture_refs(int debug_fallback); // @ 0x412a00
 int show_and_focus_game_window(); // @ 0x4073b0
-BOOL sub_407490(); // @ 0x407490
+void minimize_game_window(); // @ 0x407490
 int render_game_frame_scene(); // @ 0x4134c0
 int present_backbuffer(); // @ 0x413520
 int update_keyboard_input(); // @ 0x44b870
@@ -66,7 +63,7 @@ double random_float_below(float limit, int unused); // @ 0x44dc90 caller shape
 int next_math_random_value(); // @ 0x44c900
 
 int __stdcall game_startup_and_main_loop(
-    int hInstance, int hPrevInstance, char* lpCmdLine, int nShowCmd)
+    HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nShowCmd)
 {
     int quit_requested = 0;
 
@@ -91,7 +88,8 @@ int __stdcall game_startup_and_main_loop(
     snapshot_current_display_mode();
     initialize_mouse_authored_scale_from_clip_rect();
     probe_display_mode_count();
-    read_current_display_resolution(&data_4df858, &data_4b775c);
+    read_current_display_resolution(
+        &g_current_display_width, &g_current_display_height);
     g_authored_view_width = 640.0f;
     g_authored_view_height = 480.0f;
     g_game_initialization_pending = 1;
@@ -129,22 +127,22 @@ int __stdcall game_startup_and_main_loop(
             construct_game_runtime();
             set_tracked_allocation_mark();
 
-            GameRoot* game = (GameRoot*)g_game_base;
-            if (initialize_game_assets_and_world(game) == 0)
+            GameRoot* game = g_game;
+            if (game->initialize_game_assets_and_world() == 0)
                 quit_requested = 1;
 
             load_registered_texture_refs(1);
-            ((GameRoot*)g_game_base)->initialize_game_last();
+            g_game->initialize_game_last();
             g_game_initialization_pending = 0;
             g_frame_render_requested = 0;
             g_loading_bar.destroy_loading_screen();
-            ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_in();
+            g_game->fade.begin_frontend_fade_in();
             show_and_focus_game_window();
         }
 
         if (g_frame_render_requested != 0) {
             render_game_frame_scene();
-            if (*(int*)(g_game_base + 0x56c) == 0)
+            if (g_game->render_skip_count == 0)
                 present_backbuffer();
             g_frame_render_requested = 0;
         }
@@ -192,27 +190,27 @@ int __stdcall game_startup_and_main_loop(
             if (g_window_deactivated != 0) {
 update_game:
                 int update_index = 0;
-                if (((GameRoot*)g_game_base)->fixed_update_count > 0) {
+                if (g_game->fixed_update_count > 0) {
                     do {
                         update_keyboard_input();
                         update_joystick_input();
                         update_mouse(g_main_window);
                         update_font_wave_state();
-                        int frame_result = ((GameRoot*)g_game_base)->run_frame_update();
+                        int frame_result = g_game->run_frame_update();
                         g_frame_render_requested = 1;
                         if (frame_result == 1 || frame_result == 2 || frame_result == 3) {
                             quit_requested = 1;
                             break;
                         }
                         ++update_index;
-                    } while (update_index < ((GameRoot*)g_game_base)->fixed_update_count);
+                    } while (update_index < g_game->fixed_update_count);
                 }
             } else {
                 ClipCursor(0);
                 g_render_queue_active = 1;
                 g_frame_render_requested = 1;
                 if (g_runtime_config.fullscreen_enabled != 0)
-                    sub_407490();
+                    minimize_game_window();
             }
         }
 
@@ -225,14 +223,14 @@ update_game:
 
     g_audio_backend.stop_audio_backend();
     shutdown_bass_audio_window();
-    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(1);
-    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(2);
-    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(4);
-    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(8);
-    ((SubHighScore*)(g_game_base + 0x6ffae0))->save_high_scores_and_config(16);
+    g_game->subgame.sub_high_score.save_high_scores_and_config(1);
+    g_game->subgame.sub_high_score.save_high_scores_and_config(2);
+    g_game->subgame.sub_high_score.save_high_scores_and_config(4);
+    g_game->subgame.sub_high_score.save_high_scores_and_config(8);
+    g_game->subgame.sub_high_score.save_high_scores_and_config(16);
     noop_runtime_ai();
     free_tracked_allocations_to_mark();
-    scalar_delete(g_game_base);
+    scalar_delete(g_game);
     uninitialize_game_data_archive();
     save_config_file("SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
     uninitialize_input_devices();
