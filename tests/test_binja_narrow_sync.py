@@ -477,20 +477,26 @@ def test_previewed_mutation_rejects_failed_apply(monkeypatch) -> None:
         raise AssertionError("failed mutation apply was accepted")
 
 
-def test_previewed_batch_uses_one_preview_and_apply(monkeypatch) -> None:
-    manifests = []
+def test_previewed_batch_uses_one_transactional_python_preview_and_apply(monkeypatch) -> None:
+    calls = []
 
     def fake_run_bn(_repo_root, *args):
-        manifest_path = Path(args[3] if args[2] == "--preview" else args[2])
-        manifests.append(json.loads(manifest_path.read_text()))
-        preview = "--preview" in args
+        calls.append(args)
+        code = args[args.index("--code") + 1]
+        preview = "preview = True" in code
         return {
-            "success": True,
-            "preview": preview,
-            "committed": not preview,
-            "message": "Preview verified and reverted." if preview else "Mutation committed.",
-            "affected_types": [],
-            "affected_functions": [],
+            "result": {
+                "success": True,
+                "preview": preview,
+                "committed": not preview,
+                "message": (
+                    "Preview verified and reverted." if preview else "Mutation committed."
+                ),
+                "affected_types": [],
+                "affected_functions": [],
+            },
+            "stdout": "",
+            "warnings": [],
         }
 
     monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
@@ -506,7 +512,50 @@ def test_previewed_batch_uses_one_preview_and_apply(monkeypatch) -> None:
         Path("."), target="snail-mail.exe", operations=operations
     )
 
-    assert len(manifests) == 2
-    assert manifests[0] == manifests[1]
-    assert manifests[0]["ops"] == operations
+    assert len(calls) == 2
+    assert all(call[:2] == ("py", "exec") for call in calls)
+    assert all("update_sub_lazer_projectile" in call[call.index("--code") + 1] for call in calls)
+    assert "preview = True" in calls[0][calls[0].index("--code") + 1]
+    assert "preview = False" in calls[1][calls[1].index("--code") + 1]
     assert result["apply"]["committed"] is True
+
+
+def test_apply_proto_updates_batches_only_stale_prototypes(monkeypatch) -> None:
+    captured = []
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_prototypes",
+        lambda *_args, **_kwargs: {
+            "current": "void __thiscall(struct Owner* owner)",
+            "stale": "int32_t __thiscall(struct Owner* owner)",
+        },
+    )
+
+    def fake_previewed_batch(_repo_root, *, target, operations):
+        captured.append((target, operations))
+        return {"preview": {"success": True}, "apply": {"committed": True}}
+
+    monkeypatch.setattr(_narrow_sync, "run_previewed_bn_batch", fake_previewed_batch)
+    result = _narrow_sync.apply_proto_updates(
+        Path("."),
+        target="snail-mail.exe",
+        updates=(
+            ("current", "void __thiscall current(Owner* owner)"),
+            ("stale", "void __thiscall stale(Owner* owner)"),
+        ),
+    )
+
+    assert result[0]["status"] == "skipped"
+    assert result[1]["op"] == "proto_set_batch"
+    assert captured == [
+        (
+            "snail-mail.exe",
+            [
+                {
+                    "op": "set_prototype",
+                    "identifier": "stale",
+                    "prototype": "void __thiscall stale(Owner* owner)",
+                }
+            ],
+        )
+    ]

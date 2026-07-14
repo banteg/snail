@@ -5,7 +5,6 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-import tempfile
 from typing import Iterable
 
 
@@ -139,6 +138,165 @@ def run_previewed_bn_mutation(repo_root: Path, *args: str) -> dict[str, object]:
     }
 
 
+def _batch_python_code(
+    operations: list[dict[str, object]], *, preview: bool
+) -> str:
+    template = """
+import json
+
+operations = json.loads(__OPERATIONS_JSON__)
+preview = __PREVIEW__
+
+
+def find_function(identifier):
+    text = str(identifier)
+    try:
+        address = int(text, 0)
+    except ValueError:
+        functions = list(bv.get_functions_by_name(text))
+        if len(functions) != 1:
+            raise RuntimeError(
+                f"expected one function named {text}, found {len(functions)}"
+            )
+        return functions[0]
+    function = bv.get_function_at(address)
+    if function is None:
+        raise RuntimeError(f"function not found at {address:#x}")
+    return function
+
+
+def find_member(type_obj, offset):
+    for member in list(getattr(type_obj, "members", ())):
+        if int(getattr(member, "offset", -1)) == offset:
+            return member
+    return None
+
+
+state = bv.begin_undo_actions()
+undo_closed = False
+results = []
+affected_functions = []
+affected_types = []
+snapshot_saved = False
+try:
+    for operation in operations:
+        kind = operation["op"]
+        if kind == "set_prototype":
+            function = find_function(operation["identifier"])
+            expected_type, _ = bv.parse_type_string(str(operation["prototype"]))
+            before = str(function.type)
+            expected = str(expected_type)
+            if before != expected:
+                try:
+                    function.set_user_type(expected_type)
+                except TypeError:
+                    function.set_user_type(expected)
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(int(function.start)),
+                "before": before,
+                "expected": expected,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
+        if kind == "struct_field_set":
+            struct_name = str(operation["struct_name"])
+            type_obj = bv.get_type_by_name(struct_name)
+            if type_obj is None:
+                raise RuntimeError(f"struct not found: {struct_name}")
+            builder = type_obj.mutable_copy()
+            field_type, _ = bv.parse_type_string(str(operation["field_type"]))
+            offset = int(str(operation["offset"]), 0)
+            before_member = find_member(type_obj, offset)
+            before = None
+            if before_member is not None:
+                before = {
+                    "name": str(getattr(before_member, "name", "")),
+                    "type": str(getattr(before_member, "type", "")),
+                }
+            builder.add_member_at_offset(
+                str(operation["field_name"]), field_type, offset, True
+            )
+            try:
+                builder.width = max(int(builder.width), offset + int(field_type.width))
+            except Exception:
+                pass
+            bv.define_user_type(struct_name, builder)
+            results.append({
+                "op": kind,
+                "struct_name": struct_name,
+                "offset": hex(offset),
+                "field_name": str(operation["field_name"]),
+                "field_type": str(field_type),
+                "before": before,
+            })
+            affected_types.append(struct_name)
+            continue
+
+        raise RuntimeError(f"unsupported batch operation: {kind}")
+
+    bv.update_analysis_and_wait()
+    for entry in results:
+        if entry["op"] == "set_prototype":
+            function = find_function(entry["identifier"])
+            observed = str(function.type)
+            entry["observed"] = observed
+            entry["verified"] = observed == entry["expected"]
+        else:
+            type_obj = bv.get_type_by_name(entry["struct_name"])
+            member = (
+                find_member(type_obj, int(entry["offset"], 0))
+                if type_obj is not None
+                else None
+            )
+            observed = None
+            if member is not None:
+                observed = {
+                    "name": str(getattr(member, "name", "")),
+                    "type": str(getattr(member, "type", "")),
+                }
+            entry["observed"] = observed
+            entry["verified"] = observed == {
+                "name": entry["field_name"],
+                "type": entry["field_type"],
+            }
+        if not entry["verified"]:
+            raise RuntimeError(f"batch verification failed: {entry!r}")
+        entry["status"] = "verified"
+
+    if preview:
+        bv.revert_undo_actions(state)
+        undo_closed = True
+        bv.update_analysis_and_wait()
+    else:
+        bv.commit_undo_actions(state)
+        undo_closed = True
+        snapshot_saved = bv.file.save_auto_snapshot()
+except Exception:
+    if not undo_closed:
+        bv.revert_undo_actions(state)
+        bv.update_analysis_and_wait()
+    raise
+
+result = {
+    "success": True,
+    "preview": preview,
+    "committed": not preview,
+    "message": "Preview verified and reverted." if preview else "Mutation committed.",
+    "affected_types": sorted(set(affected_types)),
+    "affected_functions": sorted(set(affected_functions)),
+    "results": results,
+    "snapshot_saved": snapshot_saved,
+}
+"""
+    return template.replace(
+        "__OPERATIONS_JSON__", repr(json.dumps(operations))
+    ).replace("__PREVIEW__", repr(preview))
+
+
 def run_bn_batch(
     repo_root: Path,
     *,
@@ -146,15 +304,27 @@ def run_bn_batch(
     operations: list[dict[str, object]],
     preview: bool,
 ) -> dict[str, object]:
-    manifest = {"target": target, "ops": operations}
-    with tempfile.TemporaryDirectory(prefix="snail-bn-batch-") as temp_dir:
-        manifest_path = Path(temp_dir) / "manifest.json"
-        manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-        args = ["batch", "apply"]
-        if preview:
-            args.append("--preview")
-        args.extend((str(manifest_path), "--format", "json"))
-        result = run_bn(repo_root, *args)
+    # `bn batch apply` was removed from the 0.14 CLI. Keep one transactional
+    # bridge round trip by replaying the two narrow mutation kinds used by the
+    # ownership sync scripts through `bn py exec` instead of regressing to one
+    # process and analysis pass per field.
+    result = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        _batch_python_code(operations, preview=preview),
+    )
+    if (
+        isinstance(result, dict)
+        and isinstance(result.get("result"), dict)
+        and "success" not in result
+    ):
+        result = result["result"]
     if (
         not isinstance(result, dict)
         or result.get("success") is not True
@@ -774,7 +944,8 @@ def apply_proto_updates(
     updates: Iterable[ProtoUpdate],
 ) -> list[dict[str, object]]:
     update_list = list(updates)
-    operations: list[dict[str, object]] = []
+    skipped: list[dict[str, object]] = []
+    pending: list[dict[str, object]] = []
     existing_prototypes = current_prototypes(
         repo_root,
         target=target,
@@ -787,7 +958,7 @@ def apply_proto_updates(
         )
         requested_normalized = normalize_prototype(prototype, identifier=identifier)
         if existing_normalized == requested_normalized:
-            operations.append(
+            skipped.append(
                 {
                     "op": "proto_set",
                     "status": "skipped",
@@ -798,23 +969,28 @@ def apply_proto_updates(
             )
             continue
 
-        operations.append(
+        pending.append(
             {
-                "op": "proto_set",
+                "op": "set_prototype",
                 "identifier": identifier,
                 "prototype": prototype,
-                "result": run_previewed_bn_mutation(
-                    repo_root,
-                    "proto",
-                    "set",
-                    identifier,
-                    prototype,
-                    "--target",
-                    target,
-                ),
             }
         )
-    return operations
+    if not pending:
+        return skipped
+    return [
+        *skipped,
+        {
+            "op": "proto_set_batch",
+            "operation_count": len(pending),
+            "operations": pending,
+            "result": run_previewed_bn_batch(
+                repo_root,
+                target=target,
+                operations=pending,
+            ),
+        },
+    ]
 
 
 def apply_struct_and_proto_updates(
