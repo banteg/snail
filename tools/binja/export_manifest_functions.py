@@ -229,6 +229,24 @@ def _merge_focused_exports(
     return merged
 
 
+def _command_summary(
+    index: dict[str, object],
+    *,
+    refreshed: list[dict[str, object]],
+    index_path: Path,
+    focused: bool,
+) -> dict[str, object]:
+    summary = dict(index)
+    summary["refreshed_count"] = len(refreshed)
+    if focused:
+        summary["selected_count"] = len(refreshed)
+        summary["function_count"] = len(refreshed)
+        summary["index_function_count"] = len(index.get("exports", []))
+        summary["exports"] = refreshed
+        summary["index"] = _display_path(index_path)
+    return summary
+
+
 def _load_live_function_map(target_selector: str) -> dict[int, dict[str, object]]:
     payload = _run_bn_json("function", "list", "--target", target_selector)
     if not isinstance(payload, list):
@@ -394,7 +412,17 @@ def main() -> int:
         "exports": indexed_exports,
     }
     index_path.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(index, indent=2))
+    print(
+        json.dumps(
+            _command_summary(
+                index,
+                refreshed=exported,
+                index_path=index_path,
+                focused=bool(args.only),
+            ),
+            indent=2,
+        )
+    )
     return 0
 
 

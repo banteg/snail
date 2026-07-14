@@ -199,6 +199,24 @@ def _merge_focused_exports(
     return merged
 
 
+def _command_summary(
+    index: dict[str, object],
+    *,
+    refreshed: list[dict[str, object]],
+    index_path: Path,
+    focused: bool,
+) -> dict[str, object]:
+    summary = dict(index)
+    summary["refreshed_count"] = len(refreshed)
+    if focused:
+        summary["selected_count"] = len(refreshed)
+        summary["function_count"] = len(refreshed)
+        summary["index_function_count"] = len(index.get("exported", []))
+        summary["exported"] = refreshed
+    summary["index"] = _display_path(index_path)
+    return summary
+
+
 def _build_mismatches(manifest, exported_entries: list[dict[str, object]]) -> list[dict[str, object]]:
     manifest_by_name = {function.name: function for function in manifest.functions}
     mismatches: list[dict[str, object]] = []
@@ -332,18 +350,24 @@ def main() -> int:
     if args.index is not None:
         index_path = args.index.resolve()
         index_path.parent.mkdir(parents=True, exist_ok=True)
+        index_summary = dict(summary)
         if args.only:
-            exported_entries = _merge_focused_exports(
+            indexed_entries = _merge_focused_exports(
                 manifest.functions,
                 exported_entries,
                 out_dir=out_dir,
                 existing_index=_load_existing_index(index_path),
             )
-            summary["selected_count"] = len(exported_entries)
-            summary["function_count"] = len(exported_entries)
-            summary["exported"] = exported_entries
-        index_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-        summary["index"] = _display_path(index_path)
+            index_summary["selected_count"] = len(indexed_entries)
+            index_summary["function_count"] = len(indexed_entries)
+            index_summary["exported"] = indexed_entries
+        index_path.write_text(json.dumps(index_summary, indent=2) + "\n", encoding="utf-8")
+        summary = _command_summary(
+            index_summary,
+            refreshed=exported_entries,
+            index_path=index_path,
+            focused=bool(args.only),
+        )
     sys.stdout.write(json.dumps(summary, indent=2))
     return 0
 
