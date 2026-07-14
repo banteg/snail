@@ -766,7 +766,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "mark_track_warning_zones",
-        "int32_t __thiscall mark_track_warning_zones(SubgameRuntime* game);",
+        "void __thiscall mark_track_warning_zones(SubgameRuntime* game);",
     ),
     (
         "select_track_tile_edge_variants",

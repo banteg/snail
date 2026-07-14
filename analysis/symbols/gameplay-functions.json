@@ -2157,7 +2157,7 @@
     {
       "address": "0x4354f0",
       "name": "mark_track_warning_zones",
-      "description": "Marks warning-zone footprints around hazard-bearing runtime tiles before the fringe-object and cache builders run. Cross-port Android symbols match this pass to `cRSubGame::WarnTrack()`."
+      "description": "Void Windows `cRSubGame::WarnTrack()`: stamps each hazard tile's six-row by two-lane warning footprint through the owned `SubLoc` runtime grid before fringe and cache construction. The source-shaped transcription is 98.99% at 99/99 instructions."
     },
     {
       "address": "0x4355f0",

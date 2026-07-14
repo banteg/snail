@@ -2,31 +2,30 @@
 /* function: mark_track_warning_zones @ 0x4354f0 */
 /* selector: mark_track_warning_zones */
 
-// Marks warning-zone footprints around hazard-bearing runtime tiles before the fringe-object and cache builders run. Cross-port Android symbols match this pass to `cRSubGame::WarnTrack()`.
-int32_t __thiscall mark_track_warning_zones(Game *game)
+// Void Windows `cRSubGame::WarnTrack()`: stamps each hazard tile's six-row by two-lane warning footprint through the owned `SubLoc` runtime grid before fringe and cache construction. The source-shaped transcription is 98.99% at 99/99 instructions.
+void __thiscall mark_track_warning_zones(SubgameRuntime *game)
 {
   int v1; // ebx
-  int32_t result; // eax
-  char *v3; // edx
+  uint8_t *p_tile_id; // eax
+  uint8_t *v3; // edx
   int v4; // ebp
-  char v5; // al
+  uint8_t v5; // al
   int v6; // edi
   int v7; // esi
   int v8; // [esp+4h] [ebp-Ch]
-  int32_t v9; // [esp+8h] [ebp-8h]
+  uint8_t *v9; // [esp+8h] [ebp-8h]
   int v10; // [esp+Ch] [ebp-4h]
 
   v1 = 0;
-  result = game->runtime_row_count - 1;
   v10 = 0;
-  if ( result > 0 )
+  if ( game->runtime_row_count - 1 > 0 )
   {
-    result = (int32_t)&game->_pad_74622[3454178];
+    p_tile_id = &game->runtime_cells[0][0].tile_id;
     do
     {
-      v3 = (char *)result;
+      v3 = p_tile_id;
       v4 = 0;
-      v9 = result;
+      v9 = p_tile_id;
       do
       {
         v5 = *v3;
@@ -55,7 +54,7 @@ int32_t __thiscall mark_track_warning_zones(Game *game)
             do
             {
               if ( v1 >= 0 && v1 < game->runtime_row_count - 1 && (unsigned int)(v7 + v4) < 8 )
-                *(_DWORD *)&game->_pad_74622[84 * v6 + 3454182 + 84 * v7] |= 0x18u;
+                game->runtime_cells[0][v6 + v7].lane_and_flags |= 0x18u;
               ++v7;
             }
             while ( v7 < 1 );
@@ -64,19 +63,18 @@ int32_t __thiscall mark_track_warning_zones(Game *game)
             --v8;
           }
           while ( v8 );
-          v3 = (char *)v9;
+          v3 = v9;
           v1 = v10;
         }
         ++v4;
         v3 += 84;
-        v9 = (int32_t)v3;
+        v9 = v3;
       }
       while ( v4 < 8 );
-      result = (int32_t)v3;
+      p_tile_id = v3;
       v10 = ++v1;
     }
     while ( v1 < game->runtime_row_count - 1 );
   }
-  return result;
 }
 

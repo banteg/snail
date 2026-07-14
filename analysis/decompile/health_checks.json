@@ -156,6 +156,40 @@
       ]
     },
     {
+      "name": "bn_track_warning_grid_owner",
+      "artifact": "analysis/decompile/binja/functions/004354f0-mark_track_warning_zones.c",
+      "required_substrings": [
+        "game->runtime_row_count",
+        "game->runtime_cells[0][0].tile_id",
+        "game->runtime_cells[0][0].lane_and_flags",
+        "|= 0x18"
+      ],
+      "forbidden_substrings": [
+        "struct Game",
+        "__offset(Game",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_warning_grid_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/004354f0-mark_track_warning_zones.c",
+      "required_substrings": [
+        "void __thiscall mark_track_warning_zones(SubgameRuntime *game)",
+        "game->runtime_row_count",
+        "game->runtime_cells[0][0].tile_id",
+        "game->runtime_cells[0][v6 + v7].lane_and_flags"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall mark_track_warning_zones",
+        "_pad_",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_star_manager_fields_intact",
       "artifact": "analysis/decompile/binja/functions/00434310-initialize_star_field.c",
       "required_substrings": [

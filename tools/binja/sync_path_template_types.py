@@ -1034,6 +1034,10 @@ CORE_SUBGAME_PROTO_UPDATES = (
         "complete_subgame",
         "void __thiscall complete_subgame(SubgameRuntime* game, uint8_t completed)",
     ),
+    (
+        "mark_track_warning_zones",
+        "void __thiscall mark_track_warning_zones(SubgameRuntime* game)",
+    ),
 )
 
 # These five lifecycle receivers are already SubgameRuntime methods in the

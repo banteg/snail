@@ -1,10 +1,9 @@
-# Pinned — 36.27%, register allocation diverges
+# Source-shaped — 98.99%, 99/99 instructions
 
-Control flow, constants, and operations all line up in the diff; our
-build moves `this` out of ecx and spills differently, so the score is
-low despite structural agreement. Needs more layout iteration if a full
-match is ever wanted; the semantics below are already pinned by the asm
-read and are what blind spot #6 needs:
+The recovered source now keeps the native `SubgameRuntime` receiver in `ecx`
+and names the complete runtime-cell owner. The sole remaining byte drift is
+the independent cell-cursor/saved-row reload order documented below; no
+synthetic dependency is warranted. The pinned semantics are:
 
 - seed tile set: {2..14, 23, 25, 33} (literal 16-way compare chain)
 - stamp footprint per seed at (row, col): rows row..row-5, cols
@@ -42,3 +41,29 @@ lateral-offset loop both regressed, so the prior pointer scan remains.
 through `SubgameRuntime::runtime_cell_tile_views()`, an inline field-first view
 of the owned `TrackRowCell[3200][8]` slab. This preserves the 0x54 cursor
 stride without pretending the tile-byte view owns separate storage.
+
+## 2026-07-14 cell-owner and cursor recovery
+
+- The warning write now names the complete owned cell directly as
+  `runtime_cells[row][col + dc].lane_and_flags`. This keeps the outer tile-byte
+  scan as a field-first view while making the stamped destination a real
+  `SubLoc`, and stops VC6 from strength-reducing the six-by-two footprint into
+  a synthetic moving lane pointer.
+- Native keeps two distinct scan cursors: an EAX next-row cursor and an EDX
+  current-cell cursor. Each outer iteration borrows the row cursor, advances
+  the cell cursor across eight lanes, then returns the advanced pointer to the
+  row cursor. Preserving `row_cells` and `cell` separately recovers that owner
+  split and the otherwise unexplained `mov eax, edx` at the row boundary.
+- The saved outer row is live for the whole row scan, not created anew for each
+  hazard. Hoisting that real owner and removing the now-dead linear `idx`
+  restores the native 0x0c frame and all three stack lanes.
+- Focused matching rises from 36.27% (105/99) to **98.99%, 99/99
+  instructions, prefix 79/99, with no masked operands**. The sole residual is
+  an independent reload order after a stamped hazard: native reloads the cell
+  cursor before the saved row, while VC6 schedules the same two loads in the
+  opposite order. No barrier or dummy dependency is retained.
+- The only Windows caller discards EAX. The early exit leaves
+  `runtime_row_count - 1`, while the populated exit leaves the advanced cell
+  pointer, so those incompatible incidental values cannot form a semantic
+  result. The shared method contract is therefore the cross-port
+  `void cRSubGame::WarnTrack()` mutator.

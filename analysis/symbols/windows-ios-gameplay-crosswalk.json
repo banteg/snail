@@ -368,7 +368,7 @@
       "ios_symbol": "cRSubGame::WarnTrack()",
       "source_object": null,
       "confidence": "cross-port-neighborhood",
-      "notes": "Android carried this name first; the iOS SubGame.o grouping brackets the same track-normalization family."
+      "notes": "Android carried this name first; the iOS SubGame.o grouping brackets the same track-normalization family. Windows stamps the owned SubLoc grid and has a void contract: its sole caller discards EAX, while the empty and populated exits leave incompatible incidental values."
     },
     {
       "address": "0x4356f0",
