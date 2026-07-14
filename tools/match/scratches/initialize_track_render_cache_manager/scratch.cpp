@@ -1,12 +1,13 @@
 // initialize_track_render_cache_manager @ 0x433060 (thiscall, ret)
 
 #include "direct3d_renderer.h"
+#include "game_root.h"
 #include "object_render_types.h"
 #include "segment_cache.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 struct TrackRenderCacheSlotCursor {
     char unknown_00[0x58];
@@ -25,15 +26,18 @@ void* SegmentCache::initialize_track_render_cache_manager()
     max_index_counts[3] = 160;
     max_vertex_counts[4] = 800;
     max_index_counts[4] = 1280;
-    owner_subgame = (SubgameRuntime*)(g_game_base + 0x74618);
+    owner_subgame = &g_game->subgame;
 
     int slot_base = 0;
     Object** skirt_object_ref = (Object**)&slots[0][4].bod.object;
     int i;
     do {
-        for (i = 0; i < 5; ++i) {
+        for (i = 0;
+             i < (int)(sizeof(slots[0]) / sizeof(slots[0][0]));
+             ++i) {
             TrackRenderCacheSlotCursor* slot =
-                (TrackRenderCacheSlotCursor*)((char*)this + (slot_base + i) * 0x3c);
+                (TrackRenderCacheSlotCursor*)((char*)this
+                    + (slot_base + i) * sizeof(TrackRenderCacheSlot));
             slot->bod.set_bod_object(g_object_list.add_object_to_list());
 
             ((Object*)slot->bod.object)->flags = 0x80000;
@@ -57,12 +61,12 @@ void* SegmentCache::initialize_track_render_cache_manager()
             if (i == 4)
                 (*skirt_object_ref)->blend_mode = 5;
         }
-        slot_base += 5;
-        skirt_object_ref += 75;
-    } while (slot_base < 0x2cb);
+        slot_base += sizeof(slots[0]) / sizeof(slots[0][0]);
+        skirt_object_ref += sizeof(slots[0]) / sizeof(*skirt_object_ref);
+    } while (slot_base < (int)(sizeof(slots) / sizeof(slots[0][0])));
 
     void** vertex_buffers = (void**)shared_vertex_buffers;
-    int count = 5;
+    int count = sizeof(shared_vertex_buffers) / sizeof(shared_vertex_buffers[0]);
     void* result;
     do {
         void* vertex_buffer =

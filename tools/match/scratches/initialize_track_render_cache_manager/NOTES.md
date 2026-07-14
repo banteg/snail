@@ -99,3 +99,20 @@ The interior relocation is manifest-resolved through the renderer's proven
   Its owned 143x5 BOD grid, five vertex/index staging pairs, and borrowed
   enclosing-runtime backlink already account for the full extent. The rename
   is codegen-neutral at 99.18%, 122/122, with 18 clean operands.
+
+## 2026-07-14 root backlink and grid extents
+
+The enclosing-runtime backlink now comes from the canonical root owner as
+`&g_game->subgame`; the old `char* g_game_base + 0x74618` expression described
+the same address without its ownership. The initializer's family bound, total
+slot bound, slot stride, cache-row stride, and shared-buffer count now derive
+from `slots` and `shared_vertex_buffers` rather than repeating `5`, `0x2cb`,
+`0x3c`, and `75`. Signed casts on the two loop bounds retain the native signed
+`jl` comparisons that VC6 emitted for the original integer counters.
+
+The manager-relative `TrackRenderCacheSlotCursor` remains intentional: a
+direct pointer to `slots[0][0]` regressed focused matching from 99.18% to
+87.70% by folding `+0x58` into the cursor. Native instead keeps the manager
+base plus `slot_index * sizeof(TrackRenderCacheSlot)` and applies the field
+offsets at each access. The accepted ownership cleanup is byte-identical at
+99.18%, 122/122 instructions, prefix 29/122, with all 18 operands clean.
