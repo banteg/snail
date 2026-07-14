@@ -4,7 +4,7 @@
 
 void BorderManager::activate_all_borders()
 {
-    for (int i = 0; i < 150; ++i) {
+    for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         int flags = borders[i].flags;
         if ((flags & 0x80000000) == 0) {
             flags &= 0xffff7fff;

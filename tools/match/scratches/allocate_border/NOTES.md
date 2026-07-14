@@ -21,3 +21,15 @@ the allocator stays exact at 23/23.
 the storage relationship already proved by the exact record constructor and
 the allocator's unchanged 0x724-byte stride. The allocator remains exact at
 23/23 instructions with three clean operands.
+
+## 2026-07-14 border-pool extent closure
+
+The allocator and the exact activate/kill-all scans now share
+`BORDER_RECORD_COUNT` with `BorderManager::borders`, removing three duplicated
+150-slot bounds. All normalized listings remain byte-identical: allocator
+`22df531ae201743dcba1c461f4f47578bfa8b59c6919e2f4b91f54894d96cafd`,
+activate-all
+`6f12f20db62b189b1c58331a3c45c84e60e5b9af7f22c1fe6006159e23e7b6c1`,
+and kill-all
+`4123e57ea4d70b7c33052dd34434df1aaa5d0cb7730d44752fd3d0da3a0d9503`.
+They remain exact at 23/23, 19/19, and 14/14 instructions respectively.
