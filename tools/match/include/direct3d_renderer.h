@@ -38,7 +38,9 @@ struct D3DDisplayMode {
 };
 
 struct Direct3D8Vtbl {
-    char unknown_00[0x20];
+    char unknown_00[0x08];
+    int (__stdcall* Release)(Direct3D8* self);
+    char unknown_0c[0x20 - 0x0c];
     int (__stdcall* GetAdapterDisplayMode)(
         Direct3D8* self, unsigned int adapter, D3DDisplayMode* mode);
     char unknown_24[0x34 - 0x24];

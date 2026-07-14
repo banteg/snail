@@ -19,7 +19,9 @@ struct D3DViewport8 {
 typedef Direct3DVertexBuffer8 VertexBuffer;
 
 struct Direct3DDevice8Vtbl {
-    char unknown_000[0x3c];
+    char unknown_000[0x08];
+    int (__stdcall* Release)(Direct3DDevice8* self);
+    char unknown_00c[0x3c - 0x0c];
     int (__stdcall* Present)(Direct3DDevice8* self, void* source_rect,
         void* dest_rect, int dest_window_override, void* dirty_region);
     char unknown_040[0x5c - 0x40];
