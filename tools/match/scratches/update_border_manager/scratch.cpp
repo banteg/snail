@@ -1,9 +1,9 @@
 // update_border_manager @ 0x403fc0 (thiscall)
 
 #include "border_manager.h"
-#include "frontend_fade.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void BorderManager::update_border_manager()
 {
@@ -15,7 +15,7 @@ void BorderManager::update_border_manager()
             delayed_widget_progress = 1.0f;
             unsigned int widget_flags = widget->widget_flags;
             if ((widget_flags & 0x40000000) == 0 ||
-                ((FrontendFade*)(g_game_base + 0x24))->state == 4) {
+                g_game->fade.state == 4) {
                 widget->widget_flags = widget_flags | delayed_widget_flags;
                 delayed_widget_active = 0;
             }

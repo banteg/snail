@@ -1,23 +1,23 @@
 // update_intro_screen @ 0x4199e0 (thiscall)
 
-#include "frontend_fade.h"
+#include "game_root.h"
 #include "intro_screen_runtime.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 char read_pressed_text_input_key_code();
 
 void Logo::update_intro_screen()
 {
-    char* game = g_game_base;
-    if (*(int*)(game + 0x24) == 0) {
-        int flags = *(int*)(*(char**)(game + 0x28c) + 0x3c);
+    GameRoot* game = g_game;
+    if (game->fade.state == 0) {
+        int flags = game->players[0].game_input->input.pressed_buttons;
         if ((flags & 0x4000) != 0 || read_pressed_text_input_key_code() == 0xb) {
-            ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_out(0);
+            g_game->fade.begin_frontend_fade_out(0);
         }
     }
 
-    if (*(int*)(g_game_base + 0x24) == 4) {
+    if (g_game->fade.state == 4) {
         destroy_intro_screen();
     }
 
@@ -32,7 +32,7 @@ void Logo::update_intro_screen()
     case 1:
         progress = progress_step + progress;
         if (progress > 1.0f) {
-            ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_out(0);
+            g_game->fade.begin_frontend_fade_out(0);
             ++state;
         }
         break;

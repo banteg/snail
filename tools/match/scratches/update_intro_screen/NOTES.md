@@ -23,3 +23,9 @@ masked operands: 11 ok, 0 unresolved, 0 mismatch
 active-letter teardown. The old cRIntro association was false; cRIntro::AI is
 a separate border-driven screen. Promoting the receiver to `Logo` preserves the
 exact 51/51 Windows body and all 11 clean operands.
+
+2026-07-14 root graph closure: fade state and transitions now traverse
+`GameRoot::fade`, while the skip bit comes from
+`GameRoot::players[0].game_input->input.pressed_buttons`. This resolves both
+root +0x24 and the pointer at root +0x28c without disturbing the exact 51/51
+body or its 11 clean operands.

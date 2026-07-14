@@ -1,9 +1,9 @@
 // queue_frontend_widget_flag_after_delay @ 0x403f60 (thiscall, ret 0x8)
 
 #include "border_manager.h"
-#include "frontend_fade.h"
+#include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 char BorderManager::queue_frontend_widget_flag_after_delay(
     FrontendWidget* widget, int queued_flags)
@@ -11,7 +11,7 @@ char BorderManager::queue_frontend_widget_flag_after_delay(
     char result = delayed_widget_active;
     if (result == 0) {
         if ((widget->widget_flags & 0x40000000) != 0)
-            result = ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_out(0);
+            result = g_game->fade.begin_frontend_fade_out(0);
         delayed_widget = widget;
         delayed_widget_active = 1;
         delayed_widget_progress = 0.0f;

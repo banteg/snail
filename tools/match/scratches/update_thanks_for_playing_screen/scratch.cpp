@@ -1,10 +1,10 @@
 // update_thanks_for_playing_screen @ 0x4340f0 (thiscall)
 
 #include "audio_system.h"
-#include "frontend_fade.h"
+#include "game_root.h"
 #include "thanks_screen.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 extern char g_click_to_continue_text[]; // 0x4a11c4
 
 char read_pressed_text_input_key_code(); // @ 0x432440
@@ -12,15 +12,15 @@ void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5
 
 void ThanksScreen::update_thanks_for_playing_screen()
 {
-    int flags = *(int*)(*(char**)(g_game_base + 0x28c) + 0x3c);
+    int flags = g_game->players[0].game_input->input.pressed_buttons;
     if (((flags & 0x4000) != 0 || read_pressed_text_input_key_code() == 0xb)
         && message_state >= 2
-        && *(int*)(g_game_base + 0x24) == 0) {
+        && g_game->fade.state == 0) {
         g_sound_effect_manager.play_sound_effect(8);
-        ((FrontendFade*)(g_game_base + 0x24))->begin_frontend_fade_out(0);
+        g_game->fade.begin_frontend_fade_out(0);
     }
 
-    if (*(int*)(g_game_base + 0x24) == 4) {
+    if (g_game->fade.state == 4) {
         uninit_thanks_screen();
     }
 
