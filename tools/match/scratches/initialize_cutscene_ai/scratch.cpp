@@ -9,5 +9,5 @@ void CutScene::initialize_cutscene_ai()
 {
     presentation = &g_game->subgame.embedded_player()->presentation;
     player = g_game->subgame.embedded_player();
-    state = 0;
+    state = CUT_SCENE_STATE_INACTIVE;
 }

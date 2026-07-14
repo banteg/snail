@@ -202,19 +202,24 @@ Two `update_subgoldy` corrections from the latest static audit:
     - raw code at `0x4428ef` confirms `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition`; there is no separate `weapon_release_active` byte ahead of this state
   - `+0x1958`: exact 0x5c-byte `cutscene` (`cRCutScene`)
     - `+0x00/+0x04`: presentation and Player backlinks
-    - `+0x08/+0x0c`: camera mode and state
+    - `+0x08`: `camera_mode`; Windows only writes `1` or `-1`, so the value
+      semantics remain intentionally unnamed
+    - `+0x0c`: complete observed `CutSceneState` graph:
+      - intro: `INTRO_PENDING (1) -> INTRO_ACTIVE (2) ->
+        INTRO_RETURN_BLEND (8) -> INTRO_FINISH (9) -> INACTIVE (0)`
+      - completion: `COMPLETION_PENDING (5) -> COMPLETION_BLEND (6) ->
+        COMPLETION_HOLD (7)`
+      - death: `DEATH_PENDING (10) -> DEATH_BLEND (11) -> DEATH_HOLD (12)`
+      - states `3` and `4` have no producer or handler in the Windows image and
+        are deliberately left unassigned
     - `+0x10`: live camera matrix
     - `+0x50/+0x54`: progress and progress step
     - `+0x58`: force-camera-update gate
     - the owner ends at `+0x5c`; the following `Player +0x4338` word is
       `parcels_collected`, not CutScene tail storage
-    - `+0x00`: `presentation`
-    - `+0x04`: `player`
-    - `+0x0c`: `state`
-    - `+0x10`: `live_matrix`
-    - `+0x50`: `progress`
-  - `+0x54`: `progress_step`
-  - `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on this same embedded root
+    - `initialize_cutscene_ai` and `update_cutscene` own this controller;
+      `initialize_subgoldy`, `update_subgoldy`, and collision handling enter its
+      intro, completion, and death families through the same embedded field
 - `player + 0x435c/+0x4360` is the current safe slow-commentary timer pair
   - `slow_commentary_timer`
   - `slow_commentary_step`

@@ -115,7 +115,7 @@ CUT_SCENE_FIELD_UPDATES = (
     ("0x00", "presentation", "Snail*"),
     ("0x04", "player", "Player*"),
     ("0x08", "camera_mode", "int32_t"),
-    ("0x0c", "state", "int32_t"),
+    ("0x0c", "state", "CutSceneState"),
     ("0x10", "live_matrix", "TransformMatrix"),
     ("0x50", "progress", "float"),
     ("0x54", "progress_step", "float"),
@@ -252,6 +252,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Invincible",
     "SnailSkin",
     "Snail",
+    "CutSceneState",
     "CutScene",
     "ObjectAnimation",
     "PresentationAnimationSlot",
@@ -657,6 +658,17 @@ GOLB_PROTO_UPDATES = (
     ),
 )
 
+CUT_SCENE_PROTO_UPDATES = (
+    (
+        "initialize_cutscene_ai",
+        "void __thiscall initialize_cutscene_ai(CutScene* cutscene)",
+    ),
+    (
+        "update_cutscene",
+        "void __thiscall update_cutscene(CutScene* cutscene)",
+    ),
+)
+
 PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "cache_music_file",
@@ -863,14 +875,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "initialize_cutscene",
         "void __thiscall initialize_cutscene(Snail* snail)",
     ),
-    (
-        "initialize_cutscene_ai",
-        "void __thiscall initialize_cutscene_ai(CutScene* cutscene)",
-    ),
-    (
-        "update_cutscene",
-        "void __thiscall update_cutscene(CutScene* cutscene)",
-    ),
+    *CUT_SCENE_PROTO_UPDATES,
     (
         "dispatch_cutscene_animation",
         "int32_t __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
@@ -1176,10 +1181,16 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_HEADER_PATH,
         help="Path to the authoritative ownership type-import header.",
     )
-    parser.add_argument(
+    focused_group = parser.add_mutually_exclusive_group()
+    focused_group.add_argument(
         "--golb-only",
         action="store_true",
         help="Replay only the GolbShot/path-follow ownership slice.",
+    )
+    focused_group.add_argument(
+        "--cut-scene-only",
+        action="store_true",
+        help="Replay only the CutScene state owner and its two method prototypes.",
     )
     return parser.parse_args()
 
@@ -1191,6 +1202,37 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.cut_scene_only:
+        operations.append(
+            types_declare_if_missing(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                required_structs=("CutSceneState", "CutScene"),
+            )
+        )
+        operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="CutScene",
+                updates=CUT_SCENE_FIELD_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=CUT_SCENE_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if not args.golb_only:
         operations.append(
             types_declare_if_missing(

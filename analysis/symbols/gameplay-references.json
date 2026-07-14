@@ -1246,7 +1246,7 @@
         "$L2639"
       ],
       "size": "0x30",
-      "description": "Compiler-emitted cutscene-state switch jump table used by update_cutscene."
+      "description": "Compiler-emitted 12-entry switch table for CutSceneState values 1..12; states 3 and 4 route to the default return and have no Windows producer."
     },
     {
       "address": "0x446e60",

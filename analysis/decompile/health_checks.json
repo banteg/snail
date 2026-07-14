@@ -1016,11 +1016,38 @@
       "name": "bn_update_cutscene_camera_helpers_named",
       "artifact": "analysis/decompile/binja/functions/004466d0-update_cutscene.c",
       "required_substrings": [
+        "enum CutSceneState",
+        "CUT_SCENE_STATE_INTRO_PENDING",
+        "CUT_SCENE_STATE_COMPLETION_PENDING",
+        "CUT_SCENE_STATE_DEATH_PENDING",
+        "cutscene->force_camera_update",
         "look_at_point",
         "linear_interpolate_matrix",
         "snail_hotspots_world"
       ],
       "forbidden_substrings": [
+        "CutsceneAI",
+        "cutscene_ai->",
+        "unresolved_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_update_cutscene_state_owner",
+      "artifact": "analysis/decompile/ida/functions/004466d0-update_cutscene.c",
+      "required_substrings": [
+        "void __thiscall update_cutscene(CutScene *cutscene)",
+        "CutSceneState state",
+        "CUT_SCENE_STATE_INTRO_PENDING",
+        "CUT_SCENE_STATE_COMPLETION_PENDING",
+        "CUT_SCENE_STATE_DEATH_PENDING",
+        "cutscene->force_camera_update"
+      ],
+      "forbidden_substrings": [
+        "CutsceneAI",
+        "cutscene_ai->",
+        "int32_t __thiscall update_cutscene",
         "__asm",
         "_ET1"
       ]

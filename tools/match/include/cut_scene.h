@@ -7,6 +7,21 @@
 class Player;
 class Snail;
 
+enum CutSceneState {
+    CUT_SCENE_STATE_INACTIVE = 0,
+    CUT_SCENE_STATE_INTRO_PENDING = 1,
+    CUT_SCENE_STATE_INTRO_ACTIVE = 2,
+    // States 3 and 4 have no producer or handler in the Windows image.
+    CUT_SCENE_STATE_COMPLETION_PENDING = 5,
+    CUT_SCENE_STATE_COMPLETION_BLEND = 6,
+    CUT_SCENE_STATE_COMPLETION_HOLD = 7,
+    CUT_SCENE_STATE_INTRO_RETURN_BLEND = 8,
+    CUT_SCENE_STATE_INTRO_FINISH = 9,
+    CUT_SCENE_STATE_DEATH_PENDING = 10,
+    CUT_SCENE_STATE_DEATH_BLEND = 11,
+    CUT_SCENE_STATE_DEATH_HOLD = 12,
+};
+
 class CutScene {
 public:
     void initialize_cutscene_ai(); // @ 0x446130, cRCutScene::Init
@@ -15,7 +30,7 @@ public:
     Snail* presentation; // +0x00, non-owning parent cRSnail
     Player* player; // +0x04, non-owning Goldy owner
     int camera_mode; // +0x08
-    int state; // +0x0c
+    CutSceneState state; // +0x0c
     TransformMatrix live_matrix; // +0x10
     float progress; // +0x50
     float progress_step; // +0x54

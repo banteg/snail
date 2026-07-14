@@ -20,7 +20,7 @@ void SubgameRuntime::update_subgame_camera()
         g_game->players[0].camera.fov_degrees = 110.0f;
     } else {
         player.cameraman.update_cameraman();
-        if (player.presentation.cutscene.state != 0) {
+        if (player.presentation.cutscene.state != CUT_SCENE_STATE_INACTIVE) {
             camera_snap_requested = player.presentation.cutscene.force_camera_update;
             target = player.presentation.cutscene.live_matrix;
             g_game->players[0].camera.fov_degrees = 110.0f;

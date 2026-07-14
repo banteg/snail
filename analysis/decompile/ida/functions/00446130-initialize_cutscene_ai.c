@@ -2,17 +2,13 @@
 /* function: initialize_cutscene_ai @ 0x446130 */
 /* selector: initialize_cutscene_ai */
 
-// Constructs the embedded player-side cutscene AI/controller at `player + 0x42dc`, seeding its shared pointers and clearing the live cutscene state before `initialize_subgoldy` selects the startup leg.
-int32_t __fastcall initialize_cutscene_ai(CutsceneAI *cutscene_ai)
+// Authored `cRCutScene::Init()`: initializes the exact 0x5c-byte CutScene embedded at `Snail + 0x1958` (`Player + 0x42dc`), wiring its Snail/Player backlinks and clearing state.
+void __thiscall initialize_cutscene_ai(CutScene *cutscene)
 {
-  int32_t result; // eax
-  char *v2; // edx
+  Player *v1; // edx
 
-  result = (int32_t)MEMORY[0x4DF904] + 4400896;
-  cutscene_ai->presentation = (char *)MEMORY[0x4DF904] + 4400896;
-  v2 = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
-  cutscene_ai->state = 0;
-  cutscene_ai->player = v2;
-  return result;
+  cutscene->presentation = (Snail *)&g_game_base->subgame.unknown_000044[3924132];
+  v1 = (Player *)((char *)&g_player_block + (_DWORD)g_game_base);
+  cutscene->state = CUT_SCENE_STATE_INACTIVE;
+  cutscene->player = v1;
 }
-

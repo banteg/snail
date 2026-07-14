@@ -1200,12 +1200,26 @@ typedef struct SnailVisual {
     float squidge_secondary;
 } SnailVisual;
 
+typedef enum CutSceneState {
+    CUT_SCENE_STATE_INACTIVE = 0,
+    CUT_SCENE_STATE_INTRO_PENDING = 1,
+    CUT_SCENE_STATE_INTRO_ACTIVE = 2,
+    CUT_SCENE_STATE_COMPLETION_PENDING = 5,
+    CUT_SCENE_STATE_COMPLETION_BLEND = 6,
+    CUT_SCENE_STATE_COMPLETION_HOLD = 7,
+    CUT_SCENE_STATE_INTRO_RETURN_BLEND = 8,
+    CUT_SCENE_STATE_INTRO_FINISH = 9,
+    CUT_SCENE_STATE_DEATH_PENDING = 10,
+    CUT_SCENE_STATE_DEATH_BLEND = 11,
+    CUT_SCENE_STATE_DEATH_HOLD = 12,
+} CutSceneState;
+
 /* Authored cRCutScene, exact 0x5c-byte camera state-machine owner. */
 typedef struct CutScene {
     Snail* presentation;
     Player* player;
     int32_t camera_mode;
-    int32_t state;
+    CutSceneState state;
     TransformMatrix live_matrix;
     float progress;
     float progress_step;

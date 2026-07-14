@@ -144,7 +144,7 @@ void Snail::initialize_cutscene()
 
     update_snail_skin();
 
-    if (cutscene.state != 0) {
+    if (cutscene.state != CUT_SCENE_STATE_INACTIVE) {
         cutscene.update_cutscene();
     } else if (anim_manager.queue_count == 0 && owner_player->control_override_active == 0) {
         dispatch_cutscene_animation(1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);

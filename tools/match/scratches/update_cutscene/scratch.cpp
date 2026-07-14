@@ -38,7 +38,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 
 void CutScene::update_cutscene()
 {
-    int current_state = state;
+    CutSceneState current_state = state;
     force_camera_update = 0;
 
     TransformMatrix camera_matrix_a;
@@ -47,8 +47,8 @@ void CutScene::update_cutscene()
     Vector3 completion_delta;
 
     switch (current_state) {
-    case 1:
-        state = 2;
+    case CUT_SCENE_STATE_INTRO_PENDING:
+        state = CUT_SCENE_STATE_INTRO_ACTIVE;
         progress = 0.0f;
         progress_step = 0.00833333377f;
         force_camera_update = 1;
@@ -60,7 +60,7 @@ void CutScene::update_cutscene()
             1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         // fall through
 
-    case 2:
+    case CUT_SCENE_STATE_INTRO_ACTIVE:
         camera_mode = 1;
         set_matrix_identity(&live_matrix);
         live_matrix.position = presentation->snail_hotspots_world[
@@ -69,12 +69,12 @@ void CutScene::update_cutscene()
         progress = progress + progress_step;
         if (progress > 1.0f) {
             progress_step = 0.00833333377f;
-            state = 8;
+            state = CUT_SCENE_STATE_INTRO_RETURN_BLEND;
             progress = 0.0f;
         }
         return;
 
-    case 8: {
+    case CUT_SCENE_STATE_INTRO_RETURN_BLEND: {
         g_game->subgame.embedded_player()->click_start.hide_prompt = 0;
         camera_mode = 1;
 
@@ -100,23 +100,23 @@ void CutScene::update_cutscene()
 
         progress = progress + progress_step;
         if (progress > 1.0f) {
-            state = 9;
+            state = CUT_SCENE_STATE_INTRO_FINISH;
             progress = 0.0f;
             progress_step = 0.00833333377f;
         }
         return;
     }
 
-    case 9:
+    case CUT_SCENE_STATE_INTRO_FINISH:
         live_matrix = presentation->owner_player->cameraman.live_matrix;
-        state = 0;
+        state = CUT_SCENE_STATE_INACTIVE;
         return;
 
-    case 10:
+    case CUT_SCENE_STATE_DEATH_PENDING:
         camera_mode = -1;
         presentation->dispatch_cutscene_animation(
             7, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
-        state = 11;
+        state = CUT_SCENE_STATE_DEATH_BLEND;
         progress = 0.0f;
         progress_step = 0.00833333377f;
         force_camera_update = 1;
@@ -126,7 +126,7 @@ void CutScene::update_cutscene()
         presentation->release_snail_weapons();
         // fall through
 
-    case 11: {
+    case CUT_SCENE_STATE_DEATH_BLEND: {
         camera_mode = -1;
         set_matrix_identity(&camera_matrix_b);
         camera_matrix_b.position = presentation->snail_hotspots_world[
@@ -145,14 +145,14 @@ void CutScene::update_cutscene()
 
         progress = progress + progress_step;
         if (progress > 1.0f) {
-            state = 12;
+            state = CUT_SCENE_STATE_DEATH_HOLD;
             progress = 0.0f;
             progress_step = 0.0166666675f;
         }
         break;
     }
 
-    case 12:
+    case CUT_SCENE_STATE_DEATH_HOLD:
         camera_mode = -1;
         force_camera_update = 1;
         set_matrix_identity(&live_matrix);
@@ -173,8 +173,8 @@ void CutScene::update_cutscene()
         }
         break;
 
-    case 5: {
-        state = 7;
+    case CUT_SCENE_STATE_COMPLETION_PENDING: {
+        state = CUT_SCENE_STATE_COMPLETION_HOLD;
         camera_mode = -1;
         presentation->dispatch_cutscene_animation(
             8, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
@@ -183,7 +183,7 @@ void CutScene::update_cutscene()
         presentation->dispatch_cutscene_animation(
             9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
 
-        state = 6;
+        state = CUT_SCENE_STATE_COMPLETION_BLEND;
         progress = 0.0f;
         progress_step = 0.00833333377f;
         presentation->invincible_shell.cutscene_roll_step = 0.0166666675f;
@@ -208,7 +208,7 @@ void CutScene::update_cutscene()
         // fall through
     }
 
-    case 6: {
+    case CUT_SCENE_STATE_COMPLETION_BLEND: {
         camera_mode = -1;
         set_matrix_identity(&camera_matrix_b);
 
@@ -235,14 +235,14 @@ void CutScene::update_cutscene()
 
         progress = progress + progress_step;
         if (progress > 1.0f) {
-            state = 7;
+            state = CUT_SCENE_STATE_COMPLETION_HOLD;
             progress = 0.0f;
             progress_step = 0.0166666675f;
         }
         return;
     }
 
-    case 7:
+    case CUT_SCENE_STATE_COMPLETION_HOLD:
         camera_mode = -1;
         force_camera_update = 1;
         set_matrix_identity(&live_matrix);

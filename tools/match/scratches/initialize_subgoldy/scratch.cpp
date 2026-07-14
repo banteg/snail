@@ -159,7 +159,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->presentation.snail_skin.initialize_snail_skin();
     this->presentation.cutscene.initialize_cutscene_ai();
     if (this->game->selected_level_record_active == 0)
-        this->presentation.cutscene.state = 1;
+        this->presentation.cutscene.state = CUT_SCENE_STATE_INTRO_PENDING;
     this->presentation.owner_player = this;
     this->presentation.transform.set_matrix_identity();
     this->presentation.cached_cutscene_matrix.set_matrix_identity();

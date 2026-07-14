@@ -723,7 +723,7 @@ steering_stored:
             velocity.z = window;
             g_voice_manager.reset_voice_manager();
             sub_hover.end_jetpack_hover();
-            presentation.cutscene.state = 5;
+            presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
             g_sound_effect_manager.play_sound_effect(0);
             boost_one_tick = 0;
         }

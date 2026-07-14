@@ -169,3 +169,16 @@ still uses the mechanically derived byte displacement because spelling the
 complete member chain changes VC6's local lifetime; only the stale
 `g_game_base` symbol is removed. Focused output remains 93.25%, 503/505
 instructions, with 57 clean operands and the same bounded jump-table mismatch.
+
+## 2026-07-14 state owner closure
+
+The `+0x0c` word is now the shared `CutSceneState` across every producer and
+consumer. Startup enters `INTRO_PENDING (1)`, successful completion enters
+`COMPLETION_PENDING (5)`, and fatal collision handling enters
+`DEATH_PENDING (10)`; `update_cutscene` proves each complete transition family.
+States 3 and 4 have neither producers nor handlers and remain deliberately
+unnamed. The `camera_mode +0x08` word also stays an integer because this Windows
+image writes `1/-1` but never consumes it. All focused candidates are
+byte-identical after the enum propagation, including exact initializer,
+presentation, and camera consumers; `update_cutscene` retains its honest 93.25%
+result and bounded jump-table mismatch.

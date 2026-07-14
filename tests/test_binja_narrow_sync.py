@@ -1063,6 +1063,55 @@ def test_runtime_config_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_cut_scene_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (repo_root / "tools/match/include/cut_scene.h").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    constants = (
+        "CUT_SCENE_STATE_INACTIVE = 0",
+        "CUT_SCENE_STATE_INTRO_PENDING = 1",
+        "CUT_SCENE_STATE_INTRO_ACTIVE = 2",
+        "CUT_SCENE_STATE_COMPLETION_PENDING = 5",
+        "CUT_SCENE_STATE_COMPLETION_BLEND = 6",
+        "CUT_SCENE_STATE_COMPLETION_HOLD = 7",
+        "CUT_SCENE_STATE_INTRO_RETURN_BLEND = 8",
+        "CUT_SCENE_STATE_INTRO_FINISH = 9",
+        "CUT_SCENE_STATE_DEATH_PENDING = 10",
+        "CUT_SCENE_STATE_DEATH_BLEND = 11",
+        "CUT_SCENE_STATE_DEATH_HOLD = 12",
+    )
+    for header in (matcher_header, analysis_header):
+        assert "CutSceneState state" in header
+        for constant in constants:
+            assert constant in header
+    assert '"CutSceneState",' in binja_sync
+    assert '("0x0c", "state", "CutSceneState")' in binja_sync
+    assert '"--cut-scene-only"' in binja_sync
+    assert "updates=CUT_SCENE_PROTO_UPDATES" in binja_sync
+
+    consumers = {
+        "initialize_cutscene_ai": "CUT_SCENE_STATE_INACTIVE",
+        "initialize_subgoldy": "CUT_SCENE_STATE_INTRO_PENDING",
+        "update_subgame_camera": "CUT_SCENE_STATE_INACTIVE",
+        "initialize_cutscene": "CUT_SCENE_STATE_INACTIVE",
+        "handle_subgoldy_collisions": "CUT_SCENE_STATE_DEATH_PENDING",
+        "update_subgoldy": "CUT_SCENE_STATE_COMPLETION_PENDING",
+        "update_cutscene": "CUT_SCENE_STATE_DEATH_HOLD",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_damage_guage_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

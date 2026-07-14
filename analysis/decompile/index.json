@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,12 +15,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_default_runtime_config_thunk",
-      "address": "0x406c10"
+      "name": "update_subgame_camera",
+      "address": "0x446020"
     },
     {
-      "name": "initialize_default_runtime_config",
-      "address": "0x406c20"
+      "name": "initialize_cutscene_ai",
+      "address": "0x446130"
+    },
+    {
+      "name": "update_cutscene",
+      "address": "0x4466d0"
     }
   ],
   "health_check_count": 91,
