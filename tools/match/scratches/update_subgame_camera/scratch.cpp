@@ -39,5 +39,5 @@ void SubgameRuntime::update_subgame_camera()
     }
 
     g_game->players[0].transform.linear_interpolate_matrix(
-        &from, &target, 0.89999998f);
+        from, target, 0.89999998f);
 }

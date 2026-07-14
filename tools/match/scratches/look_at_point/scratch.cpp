@@ -17,8 +17,8 @@ inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
     return result;
 }
 
-void TransformMatrix::look_at_point(const Vector3* target)
+void TransformMatrix::look_at_point(const Vector3& target)
 {
-    Vector3 delta = *target - position;
-    set_matrix_z_direction(&delta);
+    Vector3 delta = target - position;
+    set_matrix_z_direction(delta);
 }

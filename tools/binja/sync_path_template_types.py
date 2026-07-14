@@ -683,10 +683,17 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "cross_vectors",
         "void __thiscall cross_vectors(Vec3* out, const Vec3* lhs, const Vec3* rhs)",
     ),
-    ("invert_matrix_in_place", "void __fastcall invert_matrix_in_place(TransformMatrix* transform)"),
+    (
+        "orthogonalize_matrix",
+        "void __thiscall orthogonalize_matrix(TransformMatrix* transform)",
+    ),
+    (
+        "invert_matrix_in_place",
+        "void __thiscall invert_matrix_in_place(TransformMatrix* transform)",
+    ),
     (
         "invert_matrix_from_source",
-        "void __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source)",
+        "void __thiscall invert_matrix_from_source(TransformMatrix* out, const TransformMatrix* source)",
     ),
     (
         "multiply_matrices",
@@ -704,8 +711,11 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "premultiply_matrix_in_place",
         "void __thiscall premultiply_matrix_in_place(TransformMatrix* matrix, const TransformMatrix* lhs)",
     ),
-    ("set_matrix_identity", "void __fastcall set_matrix_identity(TransformMatrix* transform)"),
-    ("set_matrix_rotation_identity", "void __fastcall set_matrix_rotation_identity(TransformMatrix* transform)"),
+    ("set_matrix_identity", "void __thiscall set_matrix_identity(TransformMatrix* transform)"),
+    (
+        "set_matrix_rotation_identity",
+        "void __thiscall set_matrix_rotation_identity(TransformMatrix* transform)",
+    ),
     ("rotate_matrix_local_x", "void __thiscall rotate_matrix_local_x(TransformMatrix* transform, float angle)"),
     ("rotate_matrix_local_y", "void __thiscall rotate_matrix_local_y(TransformMatrix* transform, float angle)"),
     ("rotate_matrix_local_z", "void __thiscall rotate_matrix_local_z(TransformMatrix* transform, float angle)"),

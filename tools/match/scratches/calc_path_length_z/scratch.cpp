@@ -165,7 +165,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
             to.position.x = 0.0f;
             float alpha =
                 advanced / current_template->secondary_samples[sample_index].delta_length;
-            transform.linear_interpolate_matrix(&from, &to, alpha);
+            transform.linear_interpolate_matrix(from, to, alpha);
         }
 
         transform.basis_right.x *= lateral_scale;

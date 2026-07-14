@@ -21,3 +21,9 @@ stores, not from an authored return contract.
 - Declaring the helper `void` and removing the synthetic `return 0` remains
   byte-exact at 55/55 instructions; VC6 still zeroes EAX to write the three
   homogeneous zero lanes.
+
+2026-07-14 ownership metadata closure: the source, analysis header, Binary
+Ninja replay, and IDA replay now agree on a void destination-member thiscall
+with one `const TransformMatrix&` source. Converting all owned callers from
+pointer syntax to that const-reference surface preserves every exact baseline
+and the existing `finalize_path_template` partial baseline.

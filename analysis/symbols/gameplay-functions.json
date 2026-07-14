@@ -3602,12 +3602,12 @@
     {
       "address": "0x44d210",
       "name": "set_matrix_identity",
-      "description": "Exact `TransformMatrix::set_matrix_identity` method: resets the complete 4x4 transform including translation, matching Android `tMatrix::Identity()`."
+      "description": "Exact void `TransformMatrix::set_matrix_identity()` method: resets the complete 4x4 transform including translation, matching mobile `tMatrix::Identity()`."
     },
     {
       "address": "0x44d250",
       "name": "set_matrix_rotation_identity",
-      "description": "Exact `TransformMatrix::set_matrix_rotation_identity` method: resets the rotational basis and homogeneous row while preserving translation, matching Android `tMatrix::RotIdentity()`."
+      "description": "Exact void `TransformMatrix::set_matrix_rotation_identity()` method: resets the rotational basis and homogeneous row while preserving translation, matching mobile `tMatrix::RotIdentity()`."
     },
     {
       "address": "0x44d280",
@@ -3621,15 +3621,18 @@
     },
     {
       "address": "0x44d3d0",
-      "name": "orthogonalize_matrix"
+      "name": "orthogonalize_matrix",
+      "description": "Exact void `TransformMatrix::orthogonalize_matrix()` method: normalizes the three basis vectors and rebuilds an orthogonal frame through cross products, matching mobile `tMatrix::Orthoganalize()`."
     },
     {
       "address": "0x44d410",
-      "name": "set_matrix_z_direction"
+      "name": "set_matrix_z_direction",
+      "description": "Exact void `TransformMatrix::set_matrix_z_direction(const Vector3&)` method: normalizes a requested forward direction and rebuilds the right/up basis, matching mobile `tMatrix::SetZDir(tVector const&)`."
     },
     {
       "address": "0x44d4e0",
-      "name": "look_at_point"
+      "name": "look_at_point",
+      "description": "Exact void `TransformMatrix::look_at_point(const Vector3&)` method: subtracts the matrix position from a world-space target and forwards the resulting direction to SetZDir, matching mobile `tMatrix::LookAt(tVector const&)`."
     },
     {
       "address": "0x44d530",
@@ -3659,7 +3662,7 @@
     {
       "address": "0x44da90",
       "name": "linear_interpolate_matrix",
-      "description": "Interpolates one transform toward another by blending rotation in matrix space and linearly blending translation. Android symbols match this helper to `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)`."
+      "description": "Exact void `TransformMatrix::linear_interpolate_matrix(const TransformMatrix&, const TransformMatrix&, float)` method: blends rotation in matrix space and translation linearly, matching mobile `tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)`."
     },
     {
       "address": "0x44db50",

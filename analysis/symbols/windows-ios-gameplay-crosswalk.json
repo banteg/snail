@@ -2394,6 +2394,24 @@
       "notes": "The exact 18/18 Windows member snapshots its receiver and delegates to the two-reference multiply core, matching the mobile one-argument Multiply method. It returns void: native only inherits the core's incidental rhs register, and every direct caller discards it."
     },
     {
+      "address": "0x44d210",
+      "windows_name": "set_matrix_identity",
+      "ios_symbol": "tMatrix::Identity()",
+      "android_symbol": "tMatrix::Identity()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 19/19 Windows thiscall member resets all four matrix rows, including translation. Both mobile symbol tables preserve the authored no-argument Identity method."
+    },
+    {
+      "address": "0x44d250",
+      "windows_name": "set_matrix_rotation_identity",
+      "ios_symbol": "tMatrix::RotIdentity()",
+      "android_symbol": "tMatrix::RotIdentity()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 16/16 Windows thiscall member resets the basis and homogeneous lanes while preserving translation. Both mobile symbol tables preserve the authored RotIdentity name."
+    },
+    {
       "address": "0x44d280",
       "windows_name": "invert_matrix_in_place",
       "ios_symbol": "tMatrix::Invert()",
@@ -2410,6 +2428,33 @@
       "source_object": "RMaths.o",
       "confidence": "high",
       "notes": "The exact Windows void spelling remains 55/55 instructions. All ordinary Windows and Android callers discard the result register; the only tail calls are from independently void cRPlayer/cROverlay AI callbacks, and the ARM helper returns directly after its last matrix store without establishing a value."
+    },
+    {
+      "address": "0x44d3d0",
+      "windows_name": "orthogonalize_matrix",
+      "ios_symbol": "tMatrix::Orthoganalize()",
+      "android_symbol": "tMatrix::Orthoganalize()",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 26/26 Windows void thiscall member normalizes each basis row and rebuilds the right and forward axes through cross products. Both mobile symbol tables retain the authored Orthoganalize spelling."
+    },
+    {
+      "address": "0x44d410",
+      "windows_name": "set_matrix_z_direction",
+      "ios_symbol": "tMatrix::SetZDir(tVector const&)",
+      "android_symbol": "tMatrix::SetZDir(tVector const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 57/57 Windows member takes one const-reference direction, normalizes it into the forward row, and rebuilds the other basis rows. The signature and behavior agree with both mobile symbols."
+    },
+    {
+      "address": "0x44d4e0",
+      "windows_name": "look_at_point",
+      "ios_symbol": "tMatrix::LookAt(tVector const&)",
+      "android_symbol": "tMatrix::LookAt(tVector const&)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 22/22 Windows member takes a const-reference target, forms target minus position, and delegates to SetZDir. Both mobile symbol tables preserve the same method and parameter ownership."
     },
     {
       "address": "0x44d530",
@@ -2451,6 +2496,15 @@
       "source_object": "RMaths.o",
       "confidence": "high",
       "notes": "The honest Windows void source remains 105/105 instructions at 96.19%. Its sole caller discards EAX and its two exits leave path-dependent helper residue; both Android callers discard r0 and all three ARM exits establish no result."
+    },
+    {
+      "address": "0x44da90",
+      "windows_name": "linear_interpolate_matrix",
+      "ios_symbol": "tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)",
+      "android_symbol": "tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 61/61 Windows void member takes two const-reference matrices, interpolates relative rotation, re-orthogonalizes, and blends translation. Both mobile symbol tables preserve the complete authored signature."
     },
     {
       "address": "0x44dcb0",

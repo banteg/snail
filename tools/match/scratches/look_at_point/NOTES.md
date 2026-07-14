@@ -10,15 +10,15 @@ exact thiscall member `set_matrix_z_direction` (`0x44d410`), which rebuilds the
 forward basis (and right/up) from that direction:
 
 ```cpp
-void TransformMatrix::look_at_point(const Vector3* target)
+void TransformMatrix::look_at_point(const Vector3& target)
 {
-    Vector3 delta = *target - position;
-    set_matrix_z_direction(&delta);
+    Vector3 delta = target - position;
+    set_matrix_z_direction(delta);
 }
 ```
 
-`position` is the shared `TransformMatrix::position` lane at `+0x30`. The call
-passes `&delta` on the stack (`ret 0x4` callee cleanup is owned by
+`position` is the shared `TransformMatrix::position` lane at `+0x30`. The
+reference lowers to `&delta` on the stack (`ret 0x4` callee cleanup is owned by
 `set_matrix_z_direction`).
 
 ## Source-shape evidence: the two-object frame
@@ -57,3 +57,7 @@ Six call sites (`0x44676c`, `0x44680a`, `0x446a19`, `0x446aee`, `0x446d1b`,
 `0x446dce`) — all in the cameraman/update-camera family, consistent with
 `look_at_point` being the shared "aim a transform's forward axis at a world
 point" helper.
+
+2026-07-14 ownership closure: both mobile ports preserve
+`tMatrix::LookAt(tVector const&)`. The shared method and all owned cutscene
+callers now use the const-reference surface directly while remaining exact.

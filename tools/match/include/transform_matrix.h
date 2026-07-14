@@ -32,11 +32,11 @@ struct TransformMatrix {
         const TransformMatrix& lhs,
         const TransformMatrix& rhs); // @ 0x44d060
     void invert_matrix_in_place(); // @ 0x44d280, tMatrix::Invert()
-    void invert_matrix_from_source(TransformMatrix* source); // @ 0x44d330, tMatrix::Invert(tMatrix const&)
-    void invert_matrix_from_source(const TransformMatrix* source); // const-callsite view
+    void invert_matrix_from_source(
+        const TransformMatrix& source); // @ 0x44d330, tMatrix::Invert(tMatrix const&)
     void linear_interpolate_matrix(
-        const TransformMatrix* from,
-        const TransformMatrix* to,
+        const TransformMatrix& from,
+        const TransformMatrix& to,
         float alpha); // @ 0x44da90
     void interpolate_matrix_rotation(float alpha);     // @ 0x44d920
     void orthogonalize_matrix();                       // @ 0x44d3d0
@@ -45,8 +45,8 @@ struct TransformMatrix {
     void rotate_matrix_local_x(float angle);          // @ 0x44ce30, tMatrix::RotLocalX
     void rotate_matrix_local_y(float angle);          // @ 0x44cec0, tMatrix::RotLocalY
     void rotate_matrix_local_z(float angle);          // @ 0x44cf50, tMatrix::RotLocalZ
-    void set_matrix_z_direction(const Vector3* direction); // @ 0x44d410
-    void look_at_point(const Vector3* target);             // @ 0x44d4e0
+    void set_matrix_z_direction(const Vector3& direction); // @ 0x44d410
+    void look_at_point(const Vector3& target);             // @ 0x44d4e0
 
     Vector3 basis_right;   // +0x00
     float basis_right_w;   // +0x0c

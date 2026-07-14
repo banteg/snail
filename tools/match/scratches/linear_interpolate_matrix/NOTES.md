@@ -22,3 +22,9 @@ per-basis-vector lerp+normalize the runner uses.
 void const-reference matrix APIs directly: invert from `from`, multiply by
 `to`, premultiply by `from`, and orthogonalize. The natural member spellings
 remain exact at 61/61 instructions with all six operands clean.
+
+2026-07-14 interface closure: iOS and Android preserve the complete authored
+`tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)` signature.
+The shared method and all owned callers now use two const references directly;
+the helper and all exact callers remain byte-identical, while the six affected
+partial callers retain their prior scores and operand state.

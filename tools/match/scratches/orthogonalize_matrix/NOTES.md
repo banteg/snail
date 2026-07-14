@@ -30,3 +30,8 @@ matching native byte-for-byte; the free `__fastcall` spelling emits
 recovered `Vector3::normalize_vector()` method directly. The ABI remains
 `ECX = vector`, each returned length is discarded with `fstp st(0)`, and the
 complete helper stays exact.
+
+2026-07-14 ownership metadata closure: mobile retains the authored misspelling
+`tMatrix::Orthoganalize()`. The analysis and replay prototypes now match the
+exact source as a void `__thiscall` member instead of the stale inferred
+`int32_t __fastcall` view.

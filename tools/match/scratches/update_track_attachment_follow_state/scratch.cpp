@@ -128,7 +128,7 @@ int FollowState::update_track_attachment_follow_state(
                     blend = progress;
                 else
                     blend = 1.0f - progress;
-                transform.linear_interpolate_matrix(&from, &to, blend);
+                transform.linear_interpolate_matrix(from, to, blend);
             }
 
             Vec3* output = &output_position;
@@ -170,7 +170,7 @@ int FollowState::update_track_attachment_follow_state(
                 v96.position.y = 0.0f;
                 v96.position.x = 0.0f;
                 alpha = out_angle / current_template->secondary_samples[current_index].delta_length;
-                transform.linear_interpolate_matrix(&v95, &v96, alpha);
+                transform.linear_interpolate_matrix(v95, v96, alpha);
             }
 
             Vec3* output = &output_position;

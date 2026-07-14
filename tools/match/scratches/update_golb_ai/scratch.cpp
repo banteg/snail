@@ -195,7 +195,7 @@ void GolbShot::update_golb_ai()
     new_direction->y = direction_y;
     new_direction->z = direction_z;
     if (kind == 2) {
-        live_matrix.set_matrix_z_direction(&direction);
+        live_matrix.set_matrix_z_direction(direction);
         live_matrix.rotate_matrix_local_z(spin);
     }
     lived = lifetime_step + lifetime;

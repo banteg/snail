@@ -9,5 +9,5 @@ void Overlay::initialize_overlay()
     transform.set_matrix_identity();
     camera.fov_degrees = 38.0f;
     camera.transform.set_matrix_identity();
-    camera.view_matrix.invert_matrix_from_source(&transform);
+    camera.view_matrix.invert_matrix_from_source(transform);
 }

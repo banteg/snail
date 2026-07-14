@@ -150,11 +150,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_matrix_identity",
-        "void __fastcall set_matrix_identity(TransformMatrix* transform);",
+        "void __thiscall set_matrix_identity(TransformMatrix* transform);",
     ),
     (
         "set_matrix_rotation_identity",
-        "void __fastcall set_matrix_rotation_identity(TransformMatrix* transform);",
+        "void __thiscall set_matrix_rotation_identity(TransformMatrix* transform);",
     ),
     (
         "initialize_matrix_from_values",
@@ -190,15 +190,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "orthogonalize_matrix",
-        "int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);",
+        "void __thiscall orthogonalize_matrix(TransformMatrix* transform);",
     ),
     (
         "invert_matrix_in_place",
-        "void __fastcall invert_matrix_in_place(TransformMatrix* transform);",
+        "void __thiscall invert_matrix_in_place(TransformMatrix* transform);",
     ),
     (
         "invert_matrix_from_source",
-        "void __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);",
+        "void __thiscall invert_matrix_from_source(TransformMatrix* out, const TransformMatrix* source);",
     ),
     (
         "multiply_matrices",

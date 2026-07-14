@@ -29,5 +29,5 @@ void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* 
         list_flags |= 0x200;
     }
 
-    live_matrix->set_matrix_z_direction(&velocity);
+    live_matrix->set_matrix_z_direction(velocity);
 }

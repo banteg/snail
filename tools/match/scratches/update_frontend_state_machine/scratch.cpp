@@ -188,5 +188,5 @@ void GamePlayer::update_frontend_state_machine()
     TransformMatrix* snapshot_matrix = &camera.transform;
     *snapshot_matrix = *live_matrix;
     mouse_cursor.saved_y = anchor_y;
-    camera.view_matrix.invert_matrix_from_source(live_matrix);
+    camera.view_matrix.invert_matrix_from_source(*live_matrix);
 }

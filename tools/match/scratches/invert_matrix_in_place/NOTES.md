@@ -18,3 +18,8 @@ source keeps the source-shaped matrix inverse and does not rely on alias tricks.
 - The sole Windows caller, `render_object_toon`, also discards EAX. Declaring
   the member `void` and removing the synthetic `return this` remains byte-exact
   at 54/54 instructions, so the receiver value is only incidental ABI state.
+
+2026-07-14 ownership metadata closure: the analysis header and both decompiler
+replay scripts now describe the exact source owner as a void `__thiscall`
+member. The previous `__fastcall` prototype happened to use the same ECX ABI,
+but obscured that mobile preserves this helper as `tMatrix::Invert()`.

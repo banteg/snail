@@ -36,14 +36,14 @@ void Snail::initialize_cutscene()
             angle = -6.28318548f;
         scratch_matrix.rotate_matrix_local_x(angle);
         owner_player->live_transform()->linear_interpolate_matrix(
-            &scratch_matrix, &source_matrix, 0.939999998f);
+            scratch_matrix, source_matrix, 0.939999998f);
     } else {
         if (owner_player->attachment_exit_pending != 0) {
             scratch_matrix = *owner_player->live_transform();
             source_matrix = *owner_player->live_transform();
             scratch_matrix.set_matrix_rotation_identity();
             owner_player->live_transform()->linear_interpolate_matrix(
-                &scratch_matrix, &source_matrix, 0.970000029f);
+                scratch_matrix, source_matrix, 0.970000029f);
         }
     }
 
@@ -54,8 +54,8 @@ void Snail::initialize_cutscene()
 
     scratch_matrix = transform;
     transform.linear_interpolate_matrix(
-        &scratch_matrix,
-        &cached_cutscene_matrix,
+        scratch_matrix,
+        cached_cutscene_matrix,
         0.699999988f);
     float up_y = transform.basis_up.y;
     transform.position = scratch_matrix.position;
@@ -79,7 +79,7 @@ void Snail::initialize_cutscene()
     roll_matrix.rotate_matrix_local_z(
         sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f);
 
-    inverse_live.invert_matrix_from_source(&transform);
+    inverse_live.invert_matrix_from_source(transform);
     transform.multiply_matrix(inverse_live);
     transform.position.y = transform.position.y + 1.29999995f;
     transform.multiply_matrix(roll_matrix);

@@ -20,7 +20,7 @@ names the strip mesh flag lane at `+0x10`.
 
 2026-06-20 follow-up: `AttachmentSample::inverse_matrix` now uses the shared
 `TransformMatrix` type directly. The source can call
-`sample->inverse_matrix.invert_matrix_from_source(&sample->transform)` without
+`sample->inverse_matrix.invert_matrix_from_source(sample->transform)` without
 the old cast, and the matcher stays at the existing 69.41% baseline.
 
 2026-06-21 segment-loop pass: keeping the dot source as a `Vector3* right`
