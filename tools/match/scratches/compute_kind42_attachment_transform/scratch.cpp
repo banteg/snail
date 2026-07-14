@@ -1,5 +1,6 @@
 // compute_kind42_attachment_transform @ 0x42b920 (thiscall, ret 0x14)
 
+#include "track_attachment_types.h"
 #include "transform_matrix.h"
 
 double square_root(float value);
@@ -7,13 +8,7 @@ float atan2_positive(float y, float x);
 float sine(float angle);
 float cosine(float angle);
 
-class PathKind42View {
-public:
-    void compute_kind42_attachment_transform(
-        float radius, float x, float y, TransformMatrix* transform, float* out_angle);
-};
-
-void PathKind42View::compute_kind42_attachment_transform(
+void Path::compute_kind42_attachment_transform(
     float radius, float x, float y, TransformMatrix* transform, float* out_angle)
 {
     float root = (float)square_root(radius * radius - 16.0f);

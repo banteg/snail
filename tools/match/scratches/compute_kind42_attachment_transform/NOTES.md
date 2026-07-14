@@ -13,8 +13,9 @@ The source shape matters: keeping the `atan2_positive` result as a named
 incoming x parameter. Inlining the full assignment is semantically identical but
 leaves one x87 scheduling mismatch.
 
-2026-06-15 type consolidation: the scratch-local member view is named
-`PathKind42View` instead of generic `Path`. Defining
-the helper directly as the shared `Path` member would require
-the header's non-void declaration; suppressing that mismatch is not worth a
-pragma here, and adding an explicit return emits an extra `mov eax` instruction.
+2026-07-14 ownership correction: the helper is now the canonical `Path::`
+member with its real `void` signature. Every recovered caller ignores a result,
+and the body does not establish `EAX`; the prior non-void declaration only
+modeled stale register state and forced a scratch-local `PathKind42View` owner.
+The direct owner remains exact at 48/48 instructions with all eight masked
+operands clean.
