@@ -25,8 +25,9 @@ void Intro::update_new_game_menu()
     }
 
     flags = postal_button->widget_flags;
-    if ((flags & 0x20) != 0) {
-        postal_button->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        postal_button->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
@@ -36,8 +37,9 @@ void Intro::update_new_game_menu()
     }
 
     flags = time_trial_button->widget_flags;
-    if ((flags & 0x20) != 0) {
-        time_trial_button->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        time_trial_button->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
@@ -46,8 +48,9 @@ void Intro::update_new_game_menu()
     }
 
     flags = tutorial_button->widget_flags;
-    if ((flags & 0x20) != 0) {
-        tutorial_button->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        tutorial_button->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
@@ -58,8 +61,9 @@ void Intro::update_new_game_menu()
     }
 
     flags = challenge_button->widget_flags;
-    if ((flags & 0x20) != 0) {
-        challenge_button->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        challenge_button->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_new_game_menu();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
@@ -68,15 +72,17 @@ void Intro::update_new_game_menu()
     }
 
     flags = back_button->widget_flags;
-    if ((flags & 0x20) != 0) {
-        back_button->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        back_button->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_new_game_menu();
         g_game->players[0].frontend_state = 4;
         g_game->players[0].redispatch_requested = 1;
     } else {
         flags = help_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            help_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            help_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_new_game_menu();
             g_game->players[0].frontend_state = 31;
             g_game->players[0].redispatch_requested = 1;

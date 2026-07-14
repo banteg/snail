@@ -102,8 +102,8 @@ void Intro::initialize_new_game_menu()
     back_button->stack_widget_below(challenge_button);
 
     if (g_runtime_config.new_game_tutorial_started == 0) {
-        postal_button->widget_flags |= 0x8000;
-        time_trial_button->widget_flags |= 0x8000;
-        challenge_button->widget_flags |= 0x8000;
+        postal_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
+        time_trial_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
+        challenge_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
     }
 }

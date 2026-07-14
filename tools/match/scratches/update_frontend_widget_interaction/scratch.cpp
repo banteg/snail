@@ -36,7 +36,7 @@ float* layout_and_queue_wrapped_font_text(
 void FrontendWidget::update_frontend_widget_interaction()
 {
     previous_widget_flags = widget_flags;
-    widget_flags &= 0xfffdffff;
+    widget_flags &= ~FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
 
     if ((widget_flags & 0x100000) != 0) {
         slider_hit_left = layout_width * 0.1f + layout_x + 4.0f - 12.0f;
@@ -54,15 +54,15 @@ void FrontendWidget::update_frontend_widget_interaction()
         tooltip.reset_tooltip();
         return;
     }
-    if ((flags & 0x200) != 0) {
-        widget_flags = flags & ~0x200u;
+    if ((flags & FRONTEND_WIDGET_FLAG_KILL_PENDING) != 0) {
+        widget_flags = flags & ~FRONTEND_WIDGET_FLAG_KILL_PENDING;
         g_game->active_bod_list.remove_bod(this);
         tooltip.reset_tooltip();
         widget_flags = 0;
         return;
     }
 
-    if ((flags & 0x400) != 0) {
+    if ((flags & FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE) != 0) {
         teardown_progress = teardown_progress_step + teardown_progress;
         if (teardown_progress > 1.0f) {
             g_game->active_bod_list.remove_bod(this);
@@ -73,10 +73,10 @@ void FrontendWidget::update_frontend_widget_interaction()
         goto update_after_input;
     }
 
-    if ((flags & 0x1000) != 0)
+    if ((flags & FRONTEND_WIDGET_FLAG_HIDDEN) != 0)
         return;
 
-    if ((flags & 0x8000) != 0) {
+    if ((flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
         text_effect_target = 0.0f;
         widget_flags &= ~2u;
         goto update_after_input;
@@ -92,21 +92,22 @@ void FrontendWidget::update_frontend_widget_interaction()
         widget_flags |= 0x4000000;
     }
 
-    if ((widget_flags & 0x80000) != 0
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED) != 0
         && g_game->players[0].mouse_cursor.is_mouse_captured()
         && read_pressed_text_input_key_code() == shortcut_key_code) {
         tooltip.reset_tooltip();
         if ((widget_flags & 0x1000000) != 0)
-            widget_flags |= 0x20;
+            widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         else
             g_game->border_manager
-                .queue_frontend_widget_flag_after_delay(this, 0x20);
+                .queue_frontend_widget_flag_after_delay(
+                    this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
     }
 
     if (g_game->players[0].mouse_cursor.is_mouse_captured() == 0
         || border_mouse_test() == 0) {
         widget_flags &= 0xffdfffff;
-        if (((widget_flags & 0x2000) == 0)
+        if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
             && ((widget_flags & 4) != 0)) {
             unhighlight_border();
         }
@@ -116,7 +117,7 @@ void FrontendWidget::update_frontend_widget_interaction()
         goto update_after_input;
     }
 
-    widget_flags |= 0x20000;
+    widget_flags |= FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
     if ((widget_flags & 4) != 0) {
         hover_blend_target = 1.0f;
         target_padding = hot_padding;
@@ -135,10 +136,11 @@ void FrontendWidget::update_frontend_widget_interaction()
         if (g_game->border_manager.delayed_widget_active == 0
             && (input->input.pressed_buttons & 0x4000) != 0) {
             if ((widget_flags & 0x1000000) != 0) {
-                widget_flags |= 0x20;
+                widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             } else {
                 g_game->border_manager
-                    .queue_frontend_widget_flag_after_delay(this, 0x20);
+                    .queue_frontend_widget_flag_after_delay(
+                        this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
             }
             if ((widget_flags & 0x800000) == 0)
                 g_sound_effect_manager.play_sound_effect(8);
@@ -162,7 +164,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     }
 
 update_after_input:
-    if ((widget_flags & 0x8000) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
         widget_flags &= 0xffdfffff;
         unhighlight_border();
     }
@@ -182,10 +184,10 @@ update_after_input:
             text_effect_current = text_effect_target;
     }
 
-    if ((widget_flags & 0x2000) != 0
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) != 0
         && g_game->players[0].mouse_cursor.is_mouse_captured() != 0) {
         border_input_text();
-        if ((widget_flags & 0x2000) == 0)
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
             g_game->border_manager.activate_all_borders();
     }
 
@@ -194,7 +196,7 @@ update_after_input:
     char render_hot_text = (char)((widget_flags >> 8) & 1);
     layout_frontend_widget();
 
-    if ((widget_flags & 0x1000) == 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_HIDDEN) == 0) {
         float cold = 1.0f - hover_blend_current;
         current_fill_color.store_color4f(
             hover_blend_current * hot_fill_color.r + cold * idle_fill_color.r,
@@ -208,7 +210,7 @@ update_after_input:
             hover_blend_current * hot_text_color.b + cold * idle_text_color.b,
             hover_blend_current * hot_text_color.a + cold * idle_text_color.a);
 
-        if ((widget_flags & 0x8000) != 0) {
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
             current_text_color.r *= 0.5f;
             current_text_color.g *= 0.5f;
             current_text_color.b *= 0.5f;
@@ -256,30 +258,30 @@ update_after_input:
 
     if ((widget_flags & 0x100000) != 0) {
         FrontendWidget* more = slider_more_widget;
-        if ((more->widget_flags & 0x20) != 0) {
-            more->widget_flags &= ~0x20u;
+        if ((more->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             slider_value += 0.2f;
             if (slider_value >= 0.89999998f)
                 slider_value = 1.0f;
         }
 
         FrontendWidget* less = slider_less_widget;
-        if ((less->widget_flags & 0x20) != 0) {
-            less->widget_flags &= ~0x20u;
+        if ((less->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             slider_value -= 0.2f;
             if (slider_value <= 0.1f)
                 slider_value = 0.0f;
         }
 
         if (slider_value == 0.0f)
-            less->widget_flags |= 0x8000;
+            less->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         else
-            less->widget_flags &= ~0x8000u;
+            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
 
         if (slider_value == 1.0f)
-            more->widget_flags |= 0x8000;
+            more->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         else
-            more->widget_flags &= ~0x8000u;
+            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
 
         FrontendWidget* value = slider_value_widget;
         value->current_text_color = current_text_color;

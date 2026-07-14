@@ -14,7 +14,7 @@ void BorderManager::update_border_manager()
             FrontendWidget* widget = delayed_widget;
             delayed_widget_progress = 1.0f;
             unsigned int widget_flags = widget->widget_flags;
-            if ((widget_flags & 0x40000000) == 0 ||
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION) == 0 ||
                 g_game->fade.state == 4) {
                 widget->widget_flags = widget_flags | delayed_widget_flags;
                 delayed_widget_active = 0;

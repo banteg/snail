@@ -21,7 +21,7 @@ void FrontendWidgetTooltip::update_tooltip()
     switch (state) {
     case 3: {
         FrontendWidget* owner = owner_widget;
-        if ((owner->widget_flags & 0x20000) == 0) {
+        if ((owner->widget_flags & FRONTEND_WIDGET_FLAG_POINTER_INSIDE) == 0) {
             FrontendWidget* border = tooltip_widget;
             state = 1;
             g_game->border_manager.kill_border(border);
@@ -32,7 +32,7 @@ void FrontendWidgetTooltip::update_tooltip()
 
     case 2: {
         FrontendWidget* owner = owner_widget;
-        if ((owner->widget_flags & 0x20000) != 0) {
+        if ((owner->widget_flags & FRONTEND_WIDGET_FLAG_POINTER_INSIDE) != 0) {
             progress = delay_step + delay_progress;
             delay_progress = progress;
             if (progress <= 1.0f)
@@ -113,7 +113,7 @@ void FrontendWidgetTooltip::update_tooltip()
 
     case 1: {
         FrontendWidget* owner = owner_widget;
-        if ((owner->widget_flags & 0x20000) != 0) {
+        if ((owner->widget_flags & FRONTEND_WIDGET_FLAG_POINTER_INSIDE) != 0) {
             delay_progress = 0.0f;
             state = 2;
         }

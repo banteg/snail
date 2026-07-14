@@ -4,6 +4,9 @@
 - The borrowed owner is the containing `FrontendWidget`/authored `cRBorder`:
   `widget_flags` at +0x1a0, layout position at +0x238/+0x23c, and layout size
   at +0x248/+0x24c.
+- Twinkles advance only while the owner is highlighted and does not carry
+  `FRONTEND_WIDGET_FLAG_DISABLED`, matching the interaction update's dimmed,
+  non-interactive disabled state.
 - The function is modeled as `void`; native exits leave state-dependent scratch
   registers in `eax`.
 - 2026-06-20 ABI cleanup: the `Twinkle` record now lives in

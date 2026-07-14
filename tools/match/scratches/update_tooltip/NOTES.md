@@ -5,12 +5,13 @@ First source-shaped scratch for `update_tooltip @ 0x403c20`.
 This recovers the tooltip state machine using the shared frontend widget and
 tooltip-state headers:
 
-- state `1` arms the delay when the owner has `0x20000` set;
+- state `1` arms the delay when the owner has
+  `FRONTEND_WIDGET_FLAG_POINTER_INSIDE` set;
 - state `2` advances `delay_progress` by `delay_step`, allocates the tooltip
   border once the delay exceeds `1.0f`, and positions it according to
   `mode_flags`;
-- state `3` kills the allocated tooltip border after the owner clears
-  `0x20000`;
+- state `3` kills the allocated tooltip border after the owner clears the
+  pointer-inside flag;
 - the final layout clamp adjusts the tooltip's anchor against the left and
   right screen edges before calling `layout_frontend_widget`.
 

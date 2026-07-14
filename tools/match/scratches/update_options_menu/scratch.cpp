@@ -23,8 +23,9 @@ void Options::update_options_menu()
         rstrcpy_checked_ascii(fullscreen_widget->text_buffer, g_fullscreen_off_text);
 
     unsigned int flags = fullscreen_widget->widget_flags;
-    if ((flags & 0x20) != 0) {
-        fullscreen_widget->widget_flags = flags & ~0x20u;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        fullscreen_widget->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         if (g_runtime_config.fullscreen_enabled != 0) {
             set_fullscreen_mode(0);
             g_runtime_config.fullscreen_enabled = 0;
@@ -35,12 +36,14 @@ void Options::update_options_menu()
     }
 
     flags = sound_volume_widget->widget_flags;
-    if ((flags & 0x20) != 0)
-        sound_volume_widget->widget_flags = flags & ~0x20u;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0)
+        sound_volume_widget->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
 
     flags = back_widget->widget_flags;
-    if ((flags & 0x20) != 0) {
-        back_widget->widget_flags = flags & ~0x20u;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        back_widget->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_options_menu();
         GameRoot* game = g_game;
         game->frontend_link_latch = 0;

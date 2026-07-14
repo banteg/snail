@@ -39,7 +39,7 @@ void FrontendWidget::draw_frontend_widget()
         return;
 
     unsigned int flags = widget_flags;
-    if ((flags & 0x1000) != 0)
+    if ((flags & FRONTEND_WIDGET_FLAG_HIDDEN) != 0)
         return;
 
     int layer;

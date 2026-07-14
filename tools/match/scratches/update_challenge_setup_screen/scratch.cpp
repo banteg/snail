@@ -18,8 +18,9 @@ int GUI::update_challenge_setup_screen()
     switch (game->level_mode) {
     case 4: {
         unsigned int flags = next_level_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            next_level_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            next_level_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             ++game->level_mode_arg;
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
@@ -37,8 +38,9 @@ int GUI::update_challenge_setup_screen()
         }
 
         flags = previous_level_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            previous_level_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            previous_level_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             --game->level_mode_arg;
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
@@ -56,15 +58,15 @@ int GUI::update_challenge_setup_screen()
         }
 
         if (game->level_mode_arg == 0) {
-            previous_level_button->widget_flags |= 0x8000;
+            previous_level_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         } else {
-            previous_level_button->widget_flags &= 0xffff7fff;
+            previous_level_button->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
         }
 
         if (game->level_mode_arg == g_runtime_config.highest_galaxy_route_index) {
-            next_level_button->widget_flags |= 0x8000;
+            next_level_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         } else {
-            next_level_button->widget_flags &= 0xffff7fff;
+            next_level_button->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
         }
 
         int replay_active = game->sub_high_score
@@ -79,22 +81,25 @@ int GUI::update_challenge_setup_screen()
         }
 
         flags = back_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            back_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            back_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             return 3;
         }
 
         flags = play_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            play_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            play_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             return 1;
         }
 
         flags = replay_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            replay_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            replay_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             game->selected_level_record_active = 1;
             game->selected_level_record =
@@ -107,15 +112,17 @@ int GUI::update_challenge_setup_screen()
 
     case 1: {
         unsigned int flags = back_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            back_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            back_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             return 3;
         }
 
         flags = play_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            play_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            play_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             return 1;
         }
@@ -126,8 +133,9 @@ int GUI::update_challenge_setup_screen()
             (int)(difficulty_slider->slider_value * 100.0f + 0.100000001f);
 
         flags = replay_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            replay_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            replay_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             game->selected_level_record_active = 1;
             game->selected_level_record =
@@ -139,8 +147,9 @@ int GUI::update_challenge_setup_screen()
 
     case 0: {
         unsigned int flags = next_level_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            next_level_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            next_level_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             ++game->level_mode_arg;
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
@@ -152,8 +161,9 @@ int GUI::update_challenge_setup_screen()
         }
 
         flags = previous_level_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            previous_level_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            previous_level_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             --game->level_mode_arg;
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
@@ -165,27 +175,29 @@ int GUI::update_challenge_setup_screen()
         }
 
         if (game->level_mode_arg == 0) {
-            previous_level_button->widget_flags |= 0x8000;
+            previous_level_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         } else {
-            previous_level_button->widget_flags &= 0xffff7fff;
+            previous_level_button->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
         }
 
         if (game->level_mode_arg == g_runtime_config.highest_galaxy_route_index) {
-            next_level_button->widget_flags |= 0x8000;
+            next_level_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         } else {
-            next_level_button->widget_flags &= 0xffff7fff;
+            next_level_button->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
         }
 
         flags = back_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            back_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            back_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             return 3;
         }
 
         flags = play_button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            play_button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            play_button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_challenge_setup_screen();
             return 1;
         }

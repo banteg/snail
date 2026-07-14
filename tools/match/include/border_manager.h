@@ -15,7 +15,7 @@ public:
     tColour color_06c; // +0x06c, constructor-proven color/style block
     char unknown_07c[0x19c - 0x07c];
     int created_time; // +0x19c
-    int flags; // +0x1a0
+    int flags; // +0x1a0, FrontendWidgetFlag word in backing storage
     char unknown_1a4[0x1ac - 0x1a4];
     tColour color_1ac; // +0x1ac
     tColour color_1bc; // +0x1bc

@@ -15,7 +15,9 @@ void FrontendWidget::border_input_text()
 
     if ((input_flags & 0x0c) != 0) {
         input_ok_state()->update_input_ok();
-        if ((input_ok_state()->ok_widget->widget_flags & 0x20) != 0)
+        if ((input_ok_state()->ok_widget->widget_flags
+                & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
+            != 0)
             goto finish_input;
     }
 
@@ -270,7 +272,8 @@ finish_input:
         *remove = remove[1];
         ++remove;
     }
-    unsigned int cleared_flags = widget_flags & 0xffffdfff;
+    unsigned int cleared_flags =
+        widget_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
     unsigned int closing_flags = cleared_flags | 0x4000;
     int remaining_length = input_length - 1;
     widget_flags = cleared_flags;

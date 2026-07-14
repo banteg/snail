@@ -125,7 +125,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 if (row_index == selected_rank) {
                     name_row_widgets[row_index]->border_input_text_init(
                         16, g_runtime_config.last_entered_player_name, 16);
-                    name_row_widgets[row_index]->widget_flags |= 0x2000;
+                    name_row_widgets[row_index]->widget_flags |=
+                        FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
                 }
                 name_row_widgets[row_index]->layout_frontend_widget();
 
@@ -184,7 +185,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 if (row_index == selected_rank) {
                     name_row_widgets[row_index]->border_input_text_init(
                         16, g_runtime_config.last_entered_player_name, 16);
-                    name_row_widgets[row_index]->widget_flags |= 0x2000;
+                    name_row_widgets[row_index]->widget_flags |=
+                        FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
                 }
                 name_row_widgets[row_index]->layout_frontend_widget();
 

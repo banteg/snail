@@ -3,8 +3,9 @@
 Consumes the delayed frontend-widget flag lane armed by
 `queue_frontend_widget_flag_after_delay`. While active, it advances the progress
 timer by the fixed step, clamps progress to `1.0f` after expiry, and ORs the
-queued flag mask into the target widget once either the widget does not require
-the frontend fade bit or the root-owned `GameRoot::fade.state` has
+queued flag mask into the target widget once either the widget does not carry
+`FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION` or the root-owned
+`GameRoot::fade.state` has
 reached state `4`.
 
 Focused match: 100%, 28/28 instructions, with two clean masked operands.

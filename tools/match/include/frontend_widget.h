@@ -11,6 +11,20 @@
 
 class InputOkState;
 
+// Shared cRBorder state word. Only bits with independent producer/consumer
+// evidence are named; the remaining interaction/style bits stay numeric.
+enum FrontendWidgetFlag {
+    FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED = 0x00000020,
+    FRONTEND_WIDGET_FLAG_KILL_PENDING = 0x00000200,
+    FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE = 0x00000400,
+    FRONTEND_WIDGET_FLAG_HIDDEN = 0x00001000,
+    FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE = 0x00002000,
+    FRONTEND_WIDGET_FLAG_DISABLED = 0x00008000,
+    FRONTEND_WIDGET_FLAG_POINTER_INSIDE = 0x00020000,
+    FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED = 0x00080000,
+    FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION = 0x40000000,
+};
+
 // Semantic cRBorder view over BorderRecord storage. The exact record
 // constructor initializes the inherited BodBase; widget-specific semantics
 // begin at +0x38.
@@ -93,7 +107,7 @@ public:
     float slider_hit_bottom; // +0x190
     int shortcut_key_code; // +0x194
     char unknown_198[0x1a0 - 0x198];
-    unsigned int widget_flags; // +0x1a0
+    unsigned int widget_flags; // +0x1a0, FrontendWidgetFlag word
     unsigned int previous_widget_flags; // +0x1a4
     char unknown_1a8[0x1ac - 0x1a8];
     tColour current_fill_color; // +0x1ac

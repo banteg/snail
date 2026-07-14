@@ -108,7 +108,9 @@ void Completion::update_row_event_display()
             if (blink_progress > 1.0f) {
                 FrontendWidget* bonus_summary_widget = controller->bonus_summary_widget;
                 controller->bonus_blink_progress = 0.0f;
-                if ((bonus_summary_widget->widget_flags & 0x1000) != 0)
+                if ((bonus_summary_widget->widget_flags
+                        & FRONTEND_WIDGET_FLAG_HIDDEN)
+                    != 0)
                     bonus_summary_widget->unhide_border_init();
                 else
                     bonus_summary_widget->hide_border_init();

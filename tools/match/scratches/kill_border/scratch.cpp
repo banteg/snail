@@ -12,8 +12,8 @@ int BorderManager::kill_border(FrontendWidget* border)
     if (border != 0) {
         int flags = border->widget_flags;
         if (flags != 0) {
-            if ((flags & 0x400) == 0) {
-                flags = (flags & 0xffffff01) | 0x200;
+            if ((flags & FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE) == 0) {
+                flags = (flags & 0xffffff01) | FRONTEND_WIDGET_FLAG_KILL_PENDING;
                 border->widget_flags = flags;
                 if ((flags & 0x100000) != 0) {
                     kill_border(border->child_widget_0);

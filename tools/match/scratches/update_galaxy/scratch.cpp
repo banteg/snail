@@ -55,7 +55,9 @@ int Galaxy::update_galaxy()
             } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
         }
 
-        if (route_state == 1 && (bounds_frame_widget->widget_flags & 0x1000) == 0) {
+        if (route_state == 1
+            && (bounds_frame_widget->widget_flags & FRONTEND_WIDGET_FLAG_HIDDEN)
+                == 0) {
             color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
             GalaxyRouteIndexedSlotView* selected_record =
                 (GalaxyRouteIndexedSlotView*)((char*)this +
@@ -214,8 +216,9 @@ int Galaxy::update_galaxy()
         return 0;
 
     unsigned int flags = exit_or_back_widget->widget_flags;
-    if ((flags & 0x20) != 0) {
-        exit_or_back_widget->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        exit_or_back_widget->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         if (route_mode == 1) {
             g_game->exit_controller.previous_frontend_state =
                 g_game->players[0].frontend_state;
@@ -231,8 +234,9 @@ int Galaxy::update_galaxy()
     int state = route_state;
     if (state == 1) {
         flags = play_or_deliver_widget->widget_flags;
-        if ((flags & 0x20) != 0) {
-            play_or_deliver_widget->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            play_or_deliver_widget->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_galaxy();
             level_progress_base->level_mode_arg = selected_index;
             level_progress_base->level_definition
@@ -248,8 +252,9 @@ int Galaxy::update_galaxy()
     }
 
     flags = replay_widget->widget_flags;
-    if ((flags & 0x20) != 0) {
-        replay_widget->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        replay_widget->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         destroy_galaxy();
         level_progress_base->level_mode_arg = selected_index;
         level_progress_base->level_definition.load_frontend_level_by_mode_and_index(

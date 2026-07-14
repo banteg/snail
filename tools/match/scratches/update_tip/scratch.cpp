@@ -20,8 +20,11 @@ void Tip::update_tip()
     unsigned int flags;
     if (button != 0) {
         flags = button->widget_flags;
-        if (((unsigned char)flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if (((unsigned char)flags
+                & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
+            != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->players[0].frontend_state = previous_outer_owner;
             kill_tip_widgets();
             g_game->border_manager.unhide_all_borders();
@@ -33,8 +36,11 @@ void Tip::update_tip()
     button = widget_disable;
     if (button != 0) {
         flags = button->widget_flags;
-        if (((unsigned char)flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if (((unsigned char)flags
+                & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
+            != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->players[0].frontend_state = previous_outer_owner;
             kill_tip_widgets();
             g_game->border_manager.unhide_all_borders();

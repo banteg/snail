@@ -8,8 +8,12 @@ void BorderStack::apply_all_border_visibility_mode(int mode)
     case 0: {
         for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
             int flags = owner->borders[i].flags;
-            if (flags != 0 && (flags & 0x10001400) == 0) {
-                owner->borders[i].flags = flags | 0x1000;
+            if (flags != 0
+                && (flags
+                        & (0x10000000 | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE
+                            | FRONTEND_WIDGET_FLAG_HIDDEN))
+                    == 0) {
+                owner->borders[i].flags = flags | FRONTEND_WIDGET_FLAG_HIDDEN;
                 entries[entry_count].widget =
                     (FrontendWidget*)&owner->borders[i];
                 entries[entry_count].generation = generation;
@@ -33,7 +37,7 @@ void BorderStack::apply_all_border_visibility_mode(int mode)
             if (entries[entry_count].generation != generation) {
                 break;
             }
-            entries[entry_count].widget->widget_flags &= 0xffffefff;
+            entries[entry_count].widget->widget_flags &= ~FRONTEND_WIDGET_FLAG_HIDDEN;
             entries[entry_count].widget->target_padding =
                 entries[entry_count].widget->idle_padding;
             entries[entry_count].widget->current_padding =
@@ -48,8 +52,13 @@ void BorderStack::apply_all_border_visibility_mode(int mode)
     case 3: {
         for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
             int flags = owner->borders[i].flags;
-            if (flags != 0 && (flags & 0x10009400) == 0) {
-                owner->borders[i].flags = flags | 0x8000;
+            if (flags != 0
+                && (flags
+                        & (0x10000000 | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE
+                            | FRONTEND_WIDGET_FLAG_HIDDEN
+                            | FRONTEND_WIDGET_FLAG_DISABLED))
+                    == 0) {
+                owner->borders[i].flags = flags | FRONTEND_WIDGET_FLAG_DISABLED;
                 entries[entry_count].widget =
                     (FrontendWidget*)&owner->borders[i];
                 entries[entry_count].generation = generation;
@@ -73,7 +82,7 @@ void BorderStack::apply_all_border_visibility_mode(int mode)
             if (entries[entry_count].generation != generation) {
                 break;
             }
-            entries[entry_count].widget->widget_flags &= 0xffff7fff;
+            entries[entry_count].widget->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
             --entry_count;
         }
         ++entry_count;

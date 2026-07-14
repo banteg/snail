@@ -158,6 +158,17 @@ The three active-list removals now rely on that proven public inheritance
 directly. No `BodNode*` prefix cast remains to obscure that the list borrows
 the widget's inherited node rather than a separate overlay object.
 
+## 2026-07-14 widget flag ownership
+
+Independent exact helpers now close the shared state word around this dense
+consumer: hide/unhide own `HIDDEN`, `kill_border` produces `KILL_PENDING`, the
+text editor clears `TEXT_INPUT_ACTIVE`, `SetKeyLeft` produces
+`SHORTCUT_KEY_ENABLED`, the tooltip consumes `POINTER_INSIDE`, and the delayed
+manager pair owns `FADE_BEFORE_ACTION`. Menu/screen updaters consume and clear
+`PRIMARY_ACTION_TRIGGERED`; slider endpoints, the border stack, and twinkles
+independently establish `DISABLED`. Bits without comparable external evidence
+remain numeric.
+
 ## 2026-07-14 root ownership closure
 
 The interaction method now holds the process global as `GameRoot*` throughout.

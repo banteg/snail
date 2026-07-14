@@ -3,7 +3,7 @@
 Exact authored `cRBorder::HideInit()` transition on the shared
 `FrontendWidget` owner.
 
-- It returns immediately when widget flag `0x1000` is already set.
+- It returns immediately when `FRONTEND_WIDGET_FLAG_HIDDEN` is already set.
 - Otherwise it sets that flag, clears `hide_blend`, and tail-calls
   `cRToolTip::ReSet()` on the owned tooltip at `+0x28c`.
 - Android preserves the authored member and the same complete control flow.

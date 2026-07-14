@@ -1,7 +1,8 @@
 # queue_frontend_widget_flag_after_delay @ 0x403f60
 
 Arms the border-manager delayed-widget flag lane. If the target widget carries
-the front-end fade bit, it starts the root-owned `GameRoot::fade`,
+`FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION`, it starts the root-owned
+`GameRoot::fade`,
 then stores the widget, active byte, zero progress, fixed `1/12` progress step,
 and queued flag mask.
 

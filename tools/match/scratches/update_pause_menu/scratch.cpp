@@ -7,8 +7,9 @@ extern GameRoot* g_game; // data_4df904
 void SubPause::update_pause_menu()
 {
     unsigned int flags = options_widget->widget_flags;
-    if ((flags & 0x20) != 0) {
-        options_widget->widget_flags = flags & ~0x20u;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        options_widget->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         g_game->options.active = 0;
         GameRoot* game = g_game;
         game->options.previous_frontend_state =
@@ -19,8 +20,9 @@ void SubPause::update_pause_menu()
 
     FrontendWidget* resume = resume_widget;
     flags = resume->widget_flags;
-    if ((flags & 0x20) != 0) {
-        resume->widget_flags = flags & ~0x20u;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        resume->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         uninit_pause_menu();
         GameRoot* game = g_game;
         game->subgame.subgame_state = 2;
@@ -30,8 +32,9 @@ void SubPause::update_pause_menu()
 
     FrontendWidget* end_game = end_game_widget;
     flags = end_game->widget_flags;
-    if ((flags & 0x20) != 0) {
-        end_game->widget_flags = flags & ~0x20u;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        end_game->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         GameRoot* game = g_game;
         game->exit_controller.previous_frontend_state =
             game->players[0].frontend_state;

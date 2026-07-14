@@ -14,8 +14,9 @@ void Exit::update_completion_screen()
     case 9:
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_completion_screen();
             g_game->frontend_quit_mode = 3;
         }
@@ -25,8 +26,9 @@ void Exit::update_completion_screen()
         g_game->main_menu.update_main_menu();
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_completion_screen();
             g_game->main_menu.destroy_main_menu();
             if (g_game->frontend_quit_mode == 0)
@@ -38,8 +40,9 @@ void Exit::update_completion_screen()
         g_game->subgame.galaxy.update_galaxy();
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->subgame.galaxy.destroy_galaxy();
             g_game->subgame.complete_subgame(1);
             if (g_game->players[0].high_score_entry_pending == 1) {
@@ -57,8 +60,9 @@ void Exit::update_completion_screen()
     case 2:
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->subgame.complete_subgame(1);
             if (g_game->players[0].high_score_entry_pending == 1) {
                 previous_frontend_state = g_game->players[0].frontend_state;
@@ -85,8 +89,9 @@ void Exit::update_completion_screen()
     case 7:
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_completion_screen();
             g_game->subgame.sub_pause.uninit_pause_menu();
             g_game->subgame.subgame_pause_gate = 0;
@@ -99,8 +104,9 @@ void Exit::update_completion_screen()
     case 3:
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_completion_screen();
             g_game->subgame.sub_pause.uninit_pause_menu();
             g_game->subgame.subgame_pause_gate = 0;
@@ -114,8 +120,9 @@ void Exit::update_completion_screen()
     case 4:
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             destroy_completion_screen();
             g_game->subgame.destroy_subgame();
             g_game->players[0].frontend_state = 2;
@@ -126,8 +133,9 @@ void Exit::update_completion_screen()
         g_game->intro.update_new_game_menu();
         button = yes_button;
         flags = button->widget_flags;
-        if ((flags & 0x20) != 0) {
-            button->widget_flags = flags & ~0x20;
+        if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            button->widget_flags =
+                flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             launch_alpha72_url("Alpha72.url");
             g_game->players[0].frontend_state = 0;
             g_game->frontend_link_latch = 0;
@@ -138,8 +146,9 @@ void Exit::update_completion_screen()
 
     button = no_button;
     flags = button->widget_flags;
-    if ((flags & 0x20) != 0) {
-        button->widget_flags = flags & ~0x20;
+    if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+        button->widget_flags =
+            flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         g_game->players[0].frontend_state = previous_frontend_state;
         g_game->frontend_link_latch = 0;
         destroy_completion_screen();

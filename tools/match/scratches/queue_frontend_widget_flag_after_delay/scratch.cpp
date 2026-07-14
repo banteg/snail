@@ -10,7 +10,7 @@ char BorderManager::queue_frontend_widget_flag_after_delay(
 {
     char result = delayed_widget_active;
     if (result == 0) {
-        if ((widget->widget_flags & 0x40000000) != 0)
+        if ((widget->widget_flags & FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION) != 0)
             result = g_game->fade.begin_frontend_fade_out(0);
         delayed_widget = widget;
         delayed_widget_active = 1;

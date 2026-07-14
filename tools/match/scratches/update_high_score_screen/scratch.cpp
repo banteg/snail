@@ -36,16 +36,16 @@ void HighScore::update_high_score_screen()
 
         FrontendWidget* submit = submit_name_button;
         unsigned int submit_flags = submit->widget_flags;
-        if ((submit_flags & 0x20) != 0) {
-            submit_flags &= ~0x20;
+        if ((submit_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            submit_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             submit->widget_flags = submit_flags;
             name_row_widgets[selected_rank]->widget_flags |= 0x8000000;
         }
 
         FrontendWidget* cancel = cancel_name_button;
         result = cancel->widget_flags;
-        if ((result & 0x20) != 0) {
-            result &= ~0x20;
+        if ((result & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            result &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             cancel->widget_flags = result;
 
             destroy_high_score_screen();
@@ -58,8 +58,8 @@ void HighScore::update_high_score_screen()
     } else {
         FrontendWidget* toggle = bank_toggle_button;
         unsigned int toggle_flags = toggle->widget_flags;
-        if ((toggle_flags & 0x20) != 0) {
-            toggle_flags &= ~0x20;
+        if ((toggle_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            toggle_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             toggle->widget_flags = toggle_flags;
 
             destroy_high_score_screen();
@@ -80,8 +80,8 @@ void HighScore::update_high_score_screen()
 
         FrontendWidget* back = back_button;
         unsigned int back_flags = back->widget_flags;
-        if ((back_flags & 0x20) != 0) {
-            back_flags &= ~0x20;
+        if ((back_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+            back_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             back->widget_flags = back_flags;
 
             int current_mode = mode;
@@ -112,8 +112,11 @@ void HighScore::update_high_score_screen()
                     FrontendWidget* widget = *replay_widget;
                     if (widget != 0) {
                         unsigned int widget_flags = widget->widget_flags;
-                        if ((widget_flags & 0x20) != 0) {
-                            widget_flags &= ~0x20;
+                        if ((widget_flags
+                                & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
+                            != 0) {
+                            widget_flags &=
+                                ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
                             widget->widget_flags = widget_flags;
 
                             g_game->players[0].frontend_state = 10;

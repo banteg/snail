@@ -17,7 +17,8 @@ void Twinkle::update_twinkle()
     switch (state) {
     case 1: {
         int flags = owner_widget->widget_flags;
-        if ((flags & 2) != 0 && (flags & 0x8000) == 0) {
+        if ((flags & 2) != 0
+            && (flags & FRONTEND_WIDGET_FLAG_DISABLED) == 0) {
             float next_delay = delay_progress;
             next_delay += delay_step;
             delay_progress = next_delay;

@@ -5,10 +5,10 @@
 void FrontendWidget::hide_border_init()
 {
     int result = widget_flags;
-    if ((result & 0x1000) != 0)
+    if ((result & FRONTEND_WIDGET_FLAG_HIDDEN) != 0)
         return;
 
-    result |= 0x1000;
+    result |= FRONTEND_WIDGET_FLAG_HIDDEN;
     hide_blend = 0.0f;
     widget_flags = result;
     tooltip.reset_tooltip();

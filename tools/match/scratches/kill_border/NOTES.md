@@ -1,8 +1,10 @@
 # kill_border
 
-`kill_border` marks one frontend widget for teardown unless it is already dead
-or protected by flag `0x400`. Widgets with flag `0x100000` own three child
-widgets at `+0x718..+0x720`, which are killed recursively.
+`kill_border` sets `FRONTEND_WIDGET_FLAG_KILL_PENDING` unless the widget is
+already dead or owns a `FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE` transition. The
+interaction update consumes the pending bit and advances `teardown_progress`
+for the transition bit. Widgets with flag `0x100000` own three child widgets at
+`+0x718..+0x720`, which are killed recursively.
 
 The shared `BorderManager` declaration now models the helper as returning
 `int`, matching callers such as `reset_tooltip` that preserve the result. The

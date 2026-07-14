@@ -7,7 +7,7 @@ void BorderManager::activate_all_borders()
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         int flags = borders[i].flags;
         if ((flags & 0x80000000) == 0) {
-            flags &= 0xffff7fff;
+            flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
             borders[i].flags = flags;
         }
         borders[i].flags &= 0x7fffffff;
