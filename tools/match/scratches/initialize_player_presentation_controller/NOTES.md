@@ -5,7 +5,7 @@ embedded at `Player +0x2984`.
 
 Recovered ownership:
 
-- the Snail begins with a renderable-compatible body and owns ten
+- `Snail` inherits the complete `RenderableBod` prefix through `+0x77` and owns ten
   `0x80`-byte cutscene visual slots beginning at `+0x14c`;
 - the three `PresentationAnimationChannel` weapon owners begin at `+0x64c`
   and the jetpack channel begins at `+0x11e0`, all at the proven `0x3dc`
@@ -37,3 +37,13 @@ channel extents (`+0x150..+0x3d0`) and ten-slot Snail extent
 
 Focused Wibo remains proof-grade at 100.00%, 79/79 instructions, full prefix,
 and 27 clean masked operands.
+
+## 2026-07-14 RenderableBod inheritance closure
+
+The exact constructor now calls the inherited
+`RenderableBod::initialize_renderable_bod()` directly. `Snail` no longer
+duplicates the vtable, list flags, `Object*`, color, or transform fields in its
+own declaration; its first presentation-owned field remains the borrowed
+animation-manager pointer at `+0x78`, and the complete object remains exactly
+`0x19b4` bytes. Focused Wibo is byte-identical at 100.00%, 79/79 instructions,
+full prefix, and 27 clean masked operands.

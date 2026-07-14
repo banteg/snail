@@ -24,7 +24,7 @@ public:
 Snail* Snail::initialize_player_presentation_controller()
 {
     char* self = (char*)this;
-    ((RenderableBod*)self)->initialize_renderable_bod();
+    initialize_renderable_bod();
 
     RenderableBod* visible_bods = (RenderableBod*)(self + 0x14c);
     for (int i = 0; i < 10; ++i) {

@@ -22,7 +22,7 @@ scratch additionally pins:
   is called for its side effect each tick; selector 1 maps `steering_x`
   absolutely; steer target = `(320 - offset) * 0.0125` clamped ±3.7;
   `x += rate*0.2 * (target - x)` unless `click_start.state == 2`. Under control
-  override the offset is pulled by `-2 * presentation.live_matrix.basis_up.x`.
+  override the offset is pulled by `-2 * presentation.transform.basis_up.x`.
 - **Lateral quantization EVERY tick**: `position.x =
   convert_math_type16_to_32(convert_math_type32_to_16(x, 16.0), 16.0)` —
   live x snaps to the 16-bit replay codec grid each frame before being
@@ -430,3 +430,11 @@ without duplicating runtime storage or inventing data ownership.
 
 The full promotion is byte-identical at 72.51%, 2067/2087 instructions, 290
 clean operands, and the same one honest follow jump-table mismatch.
+
+## 2026-07-14 presentation renderable inheritance
+
+`Player::presentation` now inherits the complete `RenderableBod` prefix; its
+lateral steering basis is `presentation.transform.basis_up`, not a separately
+owned matrix with the same offset. The large focused partial remains
+byte-identical at 72.51%, 2067/2087 instructions, 290 clean operands, and the
+same one honest jump-table mismatch.

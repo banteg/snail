@@ -158,8 +158,8 @@ void Player::update_subgoldy()
             float resolved;
             if (control_override_active) {
                 float pulled = track_z_offset
-                             - (presentation.live_matrix.basis_up.x
-                                + presentation.live_matrix.basis_up.x);
+                             - (presentation.transform.basis_up.x
+                                + presentation.transform.basis_up.x);
                 track_z_offset = pulled;
                 track_z_anchor = pulled;
                 if (track_z_offset < 0.0f)

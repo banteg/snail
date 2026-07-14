@@ -7,6 +7,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "bod_types.h"
 #include "cameraman.h"
 #include "click_start.h"
 #include "cut_scene.h"
@@ -83,7 +84,7 @@ enum SnailHotspotIndex {
     SNAIL_HOTSPOT_COUNT = 19,
 };
 
-class Snail {
+class Snail : public RenderableBod {
 public:
     Snail* initialize_player_presentation_controller(); // @ 0x4086d0
     void release_snail_weapons();          // @ 0x442e40
@@ -94,14 +95,8 @@ public:
     void update_snail_skin();               // @ 0x445cd0
     void build_snail_hotspots();            // @ 0x445d50
 
-    // The first 0x10 bytes are an intrusive BOD-list node. build_subgame_level
-    // links this embedded presentation object; the list does not own it.
-    void* vtable;                          // +0x00, noop presentation callback
-    unsigned int list_flags;               // +0x04, inherited BOD render/list flags
-    char unknown_08[0x24 - 0x08];
-    Object* object;                            // +0x24, borrowed animated cRObject
-    char unknown_28[0x38 - 0x28];
-    TransformMatrix live_matrix;            // +0x38
+    // build_subgame_level links this inherited renderable BOD; the intrusive
+    // list only borrows the embedded presentation object.
     // Installed only when the linked Object owns generated animation frames.
     // cRGame::Render borrows this manager's progress for Object::animation.
     AnimManager* render_animation_manager; // +0x78, borrowed owned manager at +0x104

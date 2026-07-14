@@ -15,7 +15,7 @@ Recovered relationships under test:
   position projected backward along the owning player's forward vector.
 - `game+0x3bf934` and `game+0x3bf940` are the world-space authored
   `JetpackLeft` and `JetpackRight` hotspots (indices 13 and 14).
-  `player+0x29dc` is `presentation.live_matrix.basis_forward`.
+  `player+0x29dc` is inherited `presentation.transform.basis_forward`.
 - On the final row, the helper occasionally emits a sprite `0x21` puff owned by
   `game+0x3bbae4`, using the same shared `Sprite` fields as the other particle
   producers: flags, progress, lifetime, color, size, velocity, gravity, and
@@ -23,7 +23,8 @@ Recovered relationships under test:
 
 The owner chain is now closed through the shared types: the gauge borrows its
 containing `Player` and `SubgameRuntime`; the runtime embeds that same player,
-whose presentation owns the animation channel, live matrix, and hotspot banks.
+whose presentation owns the animation channel and hotspot banks while
+inheriting its render transform.
 
 Focused Wibo status:
 
@@ -99,3 +100,10 @@ honest 52.96% Windows partial.
   stores were codegen-neutral. Those source-shape probes were reverted. The
   remaining `0x50` target versus `0x44` candidate frame is still honest loop
   counter and x87-temporary allocation debt, not missing storage ownership.
+
+## 2026-07-14 presentation transform inheritance
+
+The forward basis now follows `Snail`'s inherited
+`RenderableBod::transform`; no separate presentation matrix owner exists at
+that offset. The focused partial is byte-identical at 52.96%, 174/181
+instructions, with all 16 masked operands clean.

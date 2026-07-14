@@ -123,3 +123,9 @@ operands.
 - Replacing three opaque texture views with `AnimManager`, `Object`, and
   `ObjectAnimation` is codegen-neutral. Focused Windows remains the honest
   45.43%, 415/439 instructions, prefix 3, with all 26 operands clean.
+
+2026-07-14 Snail renderable inheritance: the flagged presentation node is now
+declared as an actual `RenderableBod` subclass. The renderer's borrowed
+transform, object, flags, color, and animation-manager chain therefore traverse
+one canonical owner. Focused output remains byte-identical at 45.43%, 415/439
+instructions, prefix 3, with all 26 operands clean.

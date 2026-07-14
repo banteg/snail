@@ -4,7 +4,8 @@ First structural scratch for the per-frame presentation/cutscene setup path.
 This function ties together the fields promoted on the exact authored `Snail`:
 
 - exact authored `cRSnailSkin` child `snail_skin` at `+0x1938`
-- `live_matrix` at `+0x38` and `cached_cutscene_matrix` at `+0xc0`
+- inherited `RenderableBod::transform` at `+0x38` and
+  `cached_cutscene_matrix` at `+0xc0`
 - channel `live_matrix` at `+0x38` and `release_step` at `+0x3d0`
 - `snail_hotspot_source_matrix_a`/`b`, then `update_snail_skin`
 - embedded authored `cRCutScene` at `+0x1958`
@@ -31,7 +32,7 @@ Remaining known shape issues:
   lifetimes in source raises the match from 64.05% to 73.95% and clears the
   previous masked constant mismatch.
 - A destination-position pointer probe compiled identically at 73.95%, so the
-  scratch keeps the simpler direct `live_matrix.position` and
+  scratch keeps the simpler direct inherited `transform.position` and
   `snail_hotspot_source_matrix_b.position` assignments.
 
 2026-07-11 pause-owner closure: the early pause gate now reads
@@ -68,12 +69,12 @@ incidental exit register.
 
 2026-07-12 value-snapshot closure:
 
-- Native snapshots `live_matrix.basis_up.y` before restoring the interpolated
+- Native snapshots inherited `transform.basis_up.y` before restoring the interpolated
   matrix position from `scratch_matrix`. A named `up_y` captures that value
   lifetime and lets VC6 overlap the comparison with the independent three-word
   position copy exactly.
 - Native likewise snapshots `invincible_shell.cutscene_roll_progress` before
-  caching `live_matrix`. The snapshot is used only for the positive gate; the
+  caching the inherited `transform`. The snapshot is used only for the positive gate; the
   yaw expression reloads the owned field. That distinction reproduces the
   native pop-and-reload x87 lifetime while the matrix copy fills the comparison
   latency.
@@ -81,3 +82,9 @@ incidental exit register.
   Focused Wibo closes from 98.82% (339/339, prefix 110, 43 clean operands) to
   exact 100.00% (339/339, full prefix, 44 clean operands), completing the
   per-frame `Snail::AIGoldy` presentation/cutscene setup path.
+
+2026-07-14 renderable-owner closure: this exact member now reaches its primary
+matrix through inherited `Snail::transform`; the distinct Player, Cameraman,
+weapon-channel, and jetpack-channel matrices retain their own owners. Removing
+the duplicated Snail prefix is byte-identical at 100.00%, 339/339 instructions,
+full prefix, and 44 clean masked operands.

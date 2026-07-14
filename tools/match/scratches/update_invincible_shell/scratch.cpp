@@ -57,6 +57,6 @@ void Invincible::update_invincible_shell()
     color.a = fade_progress * 0.80000001f;
 
     float angle = spin_phase * 6.2831855f;
-    transform = g_game->subgame.player.presentation.live_matrix;
+    transform = g_game->subgame.player.presentation.transform;
     transform.rotate_matrix_world_y(angle);
 }

@@ -356,3 +356,11 @@ The score-HUD gate now follows
 owns the latch and `update_subgame` independently consumes it, closing the
 former raw root `+0x4f2e0` access without changing this builder's focused
 output.
+
+## 2026-07-14 Snail active-list inheritance
+
+The presentation node linked into `GameRoot::active_bod_list` is now the
+embedded `Snail`'s inherited `RenderableBod`, rather than a manually duplicated
+prefix. Player retains storage ownership and the list only borrows it. Focused
+output is byte-identical at 77.67%, 560/555 instructions, prefix 177, with 101
+clean operands and the existing state-table mismatch.

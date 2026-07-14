@@ -14,7 +14,7 @@ Recovered behavior:
   state 0 once the fade goes below zero;
 - active states advance `spin_phase`, apply invincible skin slot 2, write white
   color with alpha `fade_progress * 0.80000001`, copy
-  `Player::presentation.live_matrix`, then rotate it around world Y by
+  inherited `Player::presentation.transform`, then rotate it around world Y by
   `spin_phase * 6.2831855`.
 
 Focused Wibo result: exact 100%, 98/98 insns, 98/98 prefix, and 28 clean masked
@@ -32,3 +32,7 @@ All shared accesses now follow the complete
 the embedded shell render node, `SnailSkin`, and the live presentation matrix.
 The former five absolute root expressions disappear while the body stays
 exact.
+
+2026-07-14 renderable-owner closure: the copied presentation matrix is now
+explicitly `Snail`'s inherited `RenderableBod::transform`. Focused Wibo remains
+exact at 100.00%, 98/98 instructions, full prefix, and 28 clean operands.

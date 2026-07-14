@@ -56,7 +56,7 @@ void SubHover::update_jet_particles()
                         SNAIL_HOTSPOT_JETPACK_RIGHT];
                 base_position = *source;
             }
-            Vector3* forward = &player->presentation.live_matrix.basis_forward;
+            Vector3* forward = &player->presentation.transform.basis_forward;
             float forward_offset =
                 -(row_fraction * forward_scale * warning_intensity);
             offset_position.x = forward_offset * forward->x;

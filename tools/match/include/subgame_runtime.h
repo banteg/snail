@@ -53,7 +53,7 @@ public:
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void build_subgame_level(int level_index); // @ 0x437eb0
     Player* embedded_player(); // borrowed pointer to owned player at +0x3bb764
-    Vector3* parcel_delivery_arc_basis(); // Player.presentation.live_matrix.basis_up
+    Vector3* parcel_delivery_arc_basis(); // Player.presentation.transform.basis_up
     Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
     TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
     TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
@@ -262,7 +262,7 @@ inline Player* SubgameRuntime::embedded_player()
 
 inline Vector3* SubgameRuntime::parcel_delivery_arc_basis()
 {
-    return &embedded_player()->presentation.live_matrix.basis_up;
+    return &embedded_player()->presentation.transform.basis_up;
 }
 
 inline Vector3* SubgameRuntime::parcel_home_anchor()

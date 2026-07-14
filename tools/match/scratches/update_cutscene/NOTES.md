@@ -141,3 +141,9 @@ to a nonexistent CutScene tail.
 world-space transform loop, this proves the named anchors across the complete
 producer-to-consumer chain. Focused code generation remains 93.25%, 503/505,
 with 57 clean masked operands and the existing jump-table mismatch.
+
+2026-07-14 presentation renderable inheritance: every camera target read now
+uses the `Snail` presentation's inherited `RenderableBod::transform`. The
+CutScene's own `live_matrix` and the Cameraman matrix remain separate owned
+fields. Focused output is byte-identical at 93.25%, 503/505 instructions, with
+57 clean operands and the existing jump-table mismatch.
