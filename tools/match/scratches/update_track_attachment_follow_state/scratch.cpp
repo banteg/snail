@@ -10,7 +10,6 @@ typedef Vector3 Vec3;
 
 extern char* g_game_base; // data_4df904
 
-void __fastcall set_matrix_identity(TransformMatrix* transform);
 int FollowState::update_track_attachment_follow_state(
     float path_factor,
     Vec3* out_position,
@@ -118,7 +117,7 @@ int FollowState::update_track_attachment_follow_state(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
             unsigned int active_index = sample_index;
             if (active_index == 0 || active_index == (unsigned int)(this->template_record->segment_count - 1)) {
-                set_matrix_identity(&from);
+                from.set_matrix_identity();
                 from.position.x = transform.position.x;
                 from.position.y = transform.position.y;
                 from.position.z = transform.position.z;
@@ -159,7 +158,7 @@ int FollowState::update_track_attachment_follow_state(
             v83 = path_y * v79 + anchor->y + sample->transform.position.y;
             v84 = path_z + anchor->z + sample->transform.position.z;
             if (current_index == (unsigned int)terminal_index) {
-                set_matrix_identity(&transform);
+                transform.set_matrix_identity();
             } else {
                 v95 = sample->transform;
                 v96 = secondary[current_index + 1].transform;

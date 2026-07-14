@@ -288,3 +288,19 @@ directly. Entry-mesh milestone writes therefore reach the primary attachment
 cell's inherited `BodNode` without a synthetic embedded `bod` owner. Focused
 output is byte-stable at 72.89%, 698/726 instructions, with the 122-instruction
 prefix and all 63 operands clean.
+
+## 2026-07-14 matrix-owner follow-up
+
+The endpoint blend and ordinary terminal branch now invoke
+`TransformMatrix::set_matrix_identity()` on their owned local matrices. This
+removes the scratch-local free-function declaration and keeps the focused
+candidate byte-identical at `72.89%`, `698/726`, prefix `122/726`, with
+`63/0/0` masked operands.
+
+The sibling Golb traversal's sample-bank reload does not transfer to this
+larger Goldy traversal: removing the branch-local `secondary` owner shrinks the
+native-sized `0x180` frame to `0x17c`, loses the full prefix, and regresses to
+`68.87%`. A four-vector ordinary result chain grows the frame to `0x18c` and
+regresses to `63.66%`; spelling either rotated contribution through the inline
+vector multiply operator scores `72.61%`. Those shapes were rejected rather
+than retained as scheduling aids.
