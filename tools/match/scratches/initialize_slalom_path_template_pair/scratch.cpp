@@ -91,7 +91,7 @@ static inline void orient_previous_with_fixed_up(
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
-    previous->transform.rotate_matrix_world_z(roll);
+    previous->transform.rotate_matrix_local_z(roll);
 }
 
 void Path::PATH_FUNCTION(PATH_SIGNATURE)
@@ -195,8 +195,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
 
 #if PATH_VARIANT == 1
             float roll = sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f;
-            primary_samples[sample_index].transform.rotate_matrix_world_z(roll);
-            secondary_samples[sample_index].transform.rotate_matrix_world_z(roll);
+            primary_samples[sample_index].transform.rotate_matrix_local_z(roll);
+            secondary_samples[sample_index].transform.rotate_matrix_local_z(roll);
 #endif
         }
     }
@@ -584,8 +584,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     &secondary_previous->transform.basis_up,
                     &secondary_previous->transform.basis_forward);
 
-                primary_previous->transform.rotate_matrix_world_z(roll);
-                secondary_previous->transform.rotate_matrix_world_z(roll);
+                primary_previous->transform.rotate_matrix_local_z(roll);
+                secondary_previous->transform.rotate_matrix_local_z(roll);
             }
         }
     }

@@ -5,7 +5,7 @@
 float cosine(float angle);
 float sine(float angle);
 
-void TransformMatrix::rotate_matrix_world_x(float angle)
+void TransformMatrix::rotate_matrix_local_x(float angle)
 {
     float cos_angle = cosine(angle);
     float sin_angle = sine(angle);

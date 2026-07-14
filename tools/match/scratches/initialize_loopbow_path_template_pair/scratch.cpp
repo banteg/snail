@@ -173,7 +173,7 @@ int Path::initialize_loopbow_path_template_pair(
             TransformMatrix rotation;
             set_matrix_identity(&rotation);
             float half_sine = sine(half_angle);
-            rotation.rotate_matrix_world_y(
+            rotation.rotate_matrix_local_y(
                 sine(half_angle) * half_sine * 0.52359879f);
 
             primary_samples[sample_index].transform.position.z -= 7.0f;

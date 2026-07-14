@@ -67,7 +67,7 @@ static __forceinline void orient_current_with_previous(Path* path, int index, fl
     sample->transform.basis_forward.normalize_vector();
     sample->transform.basis_right.cross_vectors(
         &sample->transform.basis_up, &sample->transform.basis_forward);
-    sample->transform.rotate_matrix_world_z(angle);
+    sample->transform.rotate_matrix_local_z(angle);
 }
 
 static __forceinline void compute_path_deltas(Path* path)

@@ -33,7 +33,7 @@ static __forceinline void orient_previous_with_up(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
     if (roll_angle != 0.0f)
-        previous->transform.rotate_matrix_world_z(roll_angle);
+        previous->transform.rotate_matrix_local_z(roll_angle);
 }
 
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)

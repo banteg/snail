@@ -34,7 +34,7 @@ void Snail::initialize_cutscene()
             * 1.39999998f;
         if (angle < -6.28318548f)
             angle = -6.28318548f;
-        scratch_matrix.rotate_matrix_world_x(angle);
+        scratch_matrix.rotate_matrix_local_x(angle);
         owner_player->live_transform()->linear_interpolate_matrix(
             &scratch_matrix, &source_matrix, 0.939999998f);
     } else {
@@ -63,7 +63,7 @@ void Snail::initialize_cutscene()
     if (up_y > 0.0f) {
         float yaw = (transform.position.x - cached_cutscene_matrix.position.x)
             * 0.800000012f;
-        transform.rotate_matrix_world_y(yaw);
+        transform.rotate_matrix_local_y(yaw);
     }
 
     wobble_roll_phase = wobble_roll_phase_step + wobble_roll_phase;
@@ -76,7 +76,7 @@ void Snail::initialize_cutscene()
 
     base_matrix = transform;
     roll_matrix.set_matrix_identity();
-    roll_matrix.rotate_matrix_world_z(
+    roll_matrix.rotate_matrix_local_z(
         sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f);
 
     inverse_live.invert_matrix_from_source(&transform);
@@ -95,7 +95,7 @@ void Snail::initialize_cutscene()
 
     if (shell_roll_progress > 0.0f) {
         float shell_yaw = invincible_shell.cutscene_roll_progress * -2.09439516f;
-        transform.rotate_matrix_world_y(shell_yaw);
+        transform.rotate_matrix_local_y(shell_yaw);
         invincible_shell.cutscene_roll_progress =
             invincible_shell.cutscene_roll_step + invincible_shell.cutscene_roll_progress;
         if (invincible_shell.cutscene_roll_progress > 1.0f)

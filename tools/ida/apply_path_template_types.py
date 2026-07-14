@@ -27,6 +27,9 @@ TRUSTED_NAMES = [
     (0x44CD20, "normalize_vector_from_source"),
     (0x44CD40, "cross_vectors"),
     (0x44CDE0, "initialize_uniform_scale_matrix"),
+    (0x44CE30, "rotate_matrix_local_x"),
+    (0x44CEC0, "rotate_matrix_local_y"),
+    (0x44CF50, "rotate_matrix_local_z"),
     (0x44CFE0, "initialize_matrix_from_values"),
     (0x44D530, "initialize_quaternion_from_axis"),
     (0x44D580, "initialize_axis_from_quaternion"),
@@ -170,16 +173,16 @@ TRUSTED_DECLARATIONS = [
         "TransformMatrix* __thiscall initialize_matrix_from_quaternion(TransformMatrix* out, const Quaternion* quaternion);",
     ),
     (
-        "rotate_matrix_world_x",
-        "void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);",
+        "rotate_matrix_local_x",
+        "void __thiscall rotate_matrix_local_x(TransformMatrix* transform, float angle);",
     ),
     (
-        "rotate_matrix_world_y",
-        "void __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);",
+        "rotate_matrix_local_y",
+        "void __thiscall rotate_matrix_local_y(TransformMatrix* transform, float angle);",
     ),
     (
-        "rotate_matrix_world_z",
-        "void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);",
+        "rotate_matrix_local_z",
+        "void __thiscall rotate_matrix_local_z(TransformMatrix* transform, float angle);",
     ),
     (
         "orthogonalize_matrix",

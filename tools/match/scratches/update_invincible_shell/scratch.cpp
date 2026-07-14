@@ -59,5 +59,5 @@ void Invincible::update_invincible_shell()
 
     float angle = spin_phase * 6.2831855f;
     transform = g_game->subgame.player.presentation.transform;
-    transform.rotate_matrix_world_y(angle);
+    transform.rotate_matrix_local_y(angle);
 }

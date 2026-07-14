@@ -17,7 +17,7 @@ void Path::compute_kind42_attachment_transform(
     float angle = atan2_positive(4.0f, root);
     *angle_out = angle * x * 0.25f;
     target->set_matrix_rotation_identity();
-    target->rotate_matrix_world_z(*angle_out);
+    target->rotate_matrix_local_z(*angle_out);
 
     x = radius - y;
     target->position.x = sine(*angle_out) * x;

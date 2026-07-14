@@ -2341,6 +2341,33 @@
       "notes": "Android retains both emitted single-float constructor symbols. A real Windows TransformMatrix(float) definition is exact at 21/21 instructions; its EAX receiver is the VC6 constructor ABI, while Android and iOS expose a distinct mutating tMatrix::Scale(float) member."
     },
     {
+      "address": "0x44ce30",
+      "windows_name": "rotate_matrix_world_x",
+      "ios_symbol": "tMatrix::RotLocalX(float)",
+      "android_symbol": "tMatrix::RotLocalX(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 50/50 Windows member mixes the matrix's up and forward basis rows in place, which is rotation about its local X axis. Both mobile symbol tables preserve the authored RotLocalX name; all direct Windows callers remain byte-identical under the corrected alias."
+    },
+    {
+      "address": "0x44cec0",
+      "windows_name": "rotate_matrix_world_y",
+      "ios_symbol": "tMatrix::RotLocalY(float)",
+      "android_symbol": "tMatrix::RotLocalY(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 50/50 Windows member mixes the matrix's right and forward basis rows in place, proving local-Y rotation. Both mobile symbol tables preserve the authored RotLocalY name; the old world-axis label was only an analysis guess."
+    },
+    {
+      "address": "0x44cf50",
+      "windows_name": "rotate_matrix_world_z",
+      "ios_symbol": "tMatrix::RotLocalZ(float)",
+      "android_symbol": "tMatrix::RotLocalZ(float)",
+      "source_object": "RMaths.o",
+      "confidence": "high",
+      "notes": "The exact 50/50 Windows member mixes the matrix's right and up basis rows in place, proving local-Z rotation. Both mobile symbol tables preserve the authored RotLocalZ name, and the path/camera callsites retain identical machine code after adopting it."
+    },
+    {
       "address": "0x44cfe0",
       "windows_name": "initialize_matrix_from_values",
       "ios_symbol": "tMatrix::tMatrix(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)",

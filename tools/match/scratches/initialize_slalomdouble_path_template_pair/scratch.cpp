@@ -55,7 +55,7 @@ static __forceinline void orient_previous_with_up(
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
-    previous->transform.rotate_matrix_world_z(roll_angle);
+    previous->transform.rotate_matrix_local_z(roll_angle);
 }
 
 static __forceinline void compute_terminal_deltas(Path* path)

@@ -42,9 +42,9 @@ struct TransformMatrix {
     void orthogonalize_matrix();                       // @ 0x44d3d0
     void set_matrix_identity();                       // @ 0x44d210, tMatrix::Identity()
     void set_matrix_rotation_identity();              // @ 0x44d250, tMatrix::RotIdentity()
-    void rotate_matrix_world_x(float angle);          // @ 0x44ce30
-    void rotate_matrix_world_y(float angle);          // @ 0x44cec0
-    void rotate_matrix_world_z(float angle);          // @ 0x44cf50
+    void rotate_matrix_local_x(float angle);          // @ 0x44ce30, tMatrix::RotLocalX
+    void rotate_matrix_local_y(float angle);          // @ 0x44cec0, tMatrix::RotLocalY
+    void rotate_matrix_local_z(float angle);          // @ 0x44cf50, tMatrix::RotLocalZ
     void set_matrix_z_direction(const Vector3* direction); // @ 0x44d410
     void look_at_point(const Vector3* target);             // @ 0x44d4e0
 

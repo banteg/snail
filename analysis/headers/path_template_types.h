@@ -1630,9 +1630,9 @@ TransformMatrix* __thiscall initialize_matrix_from_values(
     float m32,
     float m33
 );
-void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);
-void __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);
-void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);
+void __thiscall rotate_matrix_local_x(TransformMatrix* transform, float angle);
+void __thiscall rotate_matrix_local_y(TransformMatrix* transform, float angle);
+void __thiscall rotate_matrix_local_z(TransformMatrix* transform, float angle);
 void __cdecl initialize_global_identity_matrix_thunk();
 void __cdecl initialize_global_identity_matrix();
 TransformMatrix* __thiscall initialize_uniform_scale_matrix(

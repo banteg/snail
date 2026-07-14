@@ -92,7 +92,7 @@ static inline void orient_previous_with_fixed_up(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
     if (roll != 0.0f)
-        previous->transform.rotate_matrix_world_z(roll);
+        previous->transform.rotate_matrix_local_z(roll);
 }
 
 void Path::PATH_FUNCTION(PATH_SIGNATURE)
@@ -198,8 +198,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 7.0f - secondary_samples[sample_index].transform.position.z);
 
 #if PATH_VARIANT == 1
-            primary_samples[sample_index].transform.rotate_matrix_world_z(roll);
-            secondary_samples[sample_index].transform.rotate_matrix_world_z(roll);
+            primary_samples[sample_index].transform.rotate_matrix_local_z(roll);
+            secondary_samples[sample_index].transform.rotate_matrix_local_z(roll);
 #endif
         }
     }
