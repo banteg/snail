@@ -30,3 +30,11 @@ before consuming the resulting camera state. The scratch now also declares its
 global game base directly instead of relying on a stale transitive include.
 Focused Wibo remains exact at 70/70 instructions with nine clean masked
 operands.
+
+2026-07-14 camera-bridge ownership recovery: the shared matrix at root +0x15c
+is `GameRoot::players[0].transform`, while the rendered FOV at root +0x284 is
+`GameRoot::players[0].camera.fov_degrees`. These fields belong to the root
+front-end `GamePlayer`; they are deliberately distinct from the gameplay
+`SubgameRuntime::player.cameraman` that supplies the target matrix and FOV.
+Replacing the raw root offsets with that complete owner graph remains exact at
+70/70 instructions with all nine masked operands clean.
