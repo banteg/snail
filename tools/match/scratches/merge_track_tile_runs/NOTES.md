@@ -70,3 +70,16 @@ These typed substitutions compile to the same honest frontier: 54.77%,
 `290/276` instructions, with all ten masked operands clean. They replace
 duplicate address arithmetic with producer/consumer ownership without changing
 the pinned register/scheduling residual.
+
+## 2026-07-14 canonical catalog and grid bounds
+
+The four replacement objects now load through the canonical
+`GameRoot* g_game` and its embedded `root_bod_catalog`: floor and slide slice
+banks, the pillar bank, and the universe-hole fallback all retain their real
+root owner across the native call boundaries. Every eight-lane bound derives
+from `runtime_cells[0]`, and the field-first `lane_and_flags` cursor recovers
+its containing `SubLoc` through `offsetof` rather than a duplicated `0x40`.
+
+Focused output is byte-identical at 54.77%, 290/276 instructions, prefix
+0/276, with all ten operands clean. The native/candidate frame and induction
+variable schedule remain the same documented honest residual.
