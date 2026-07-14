@@ -1,6 +1,7 @@
 // initialize_game_assets_and_world @ 0x40acf0 (thiscall)
 
 #include <string.h>
+#include <stddef.h>
 
 #include "backdrop.h"
 #include "bod_types.h"
@@ -404,13 +405,26 @@ char GameRoot::initialize_game_assets_and_world()
     lazer->set_bod_object(g_object_list.add_object_to_list());
     load_object_definition((char*)"Objects/Lazer", lazer->object);
 
+    enum {
+        BOD_OBJECT_OFFSET = offsetof(BodBase, object),
+        SUB_LAZER_OWNER_FROM_OBJECT =
+            offsetof(SubLazer, owner_game) - offsetof(BodBase, object),
+        SUB_LAZER_SLOT_COUNT =
+            sizeof(((SubLazerManager*)0)->slots)
+            / sizeof(((SubLazerManager*)0)->slots[0]),
+        BANNER_POOL_FROM_ROOT =
+            offsetof(GameRoot, subgame) + offsetof(SubgameRuntime, banners),
+        BANNER_SLOT_COUNT =
+            sizeof(((BannerPool*)0)->slots) / sizeof(((BannerPool*)0)->slots[0])
+    };
     Object** sub_lazer_object = &subgame.sub_lazers.slots[0].object;
-    int sub_lazer_count = 20;
+    int sub_lazer_count = SUB_LAZER_SLOT_COUNT;
     do {
-        ((BodBase*)((char*)sub_lazer_object - 0x24))
+        ((BodBase*)((char*)sub_lazer_object - BOD_OBJECT_OFFSET))
             ->set_bod_object(lazer->object);
         (*sub_lazer_object)->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
-        *(SubgameRuntime**)((char*)sub_lazer_object + 0x64) = &subgame;
+        *(SubgameRuntime**)(
+            (char*)sub_lazer_object + SUB_LAZER_OWNER_FROM_OBJECT) = &subgame;
         ((Color4f*)(sub_lazer_object + 1))
             ->store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
         (*sub_lazer_object)->blend_mode = 9;
@@ -438,7 +452,7 @@ char GameRoot::initialize_game_assets_and_world()
     int banner_index = 0;
     do {
         char* banner_cursor = game + banner_index * sizeof(Banner);
-        ((Banner*)(banner_cursor + 0x3cd698))
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))
             ->set_bod_object(g_object_list.add_object_to_list());
         if (banner_index == 0) {
             loader->load_x_mesh(
@@ -452,15 +466,15 @@ char GameRoot::initialize_game_assets_and_world()
                 subgame.banners.slots[1].object,
                 banner_index);
         }
-        ((Banner*)(banner_cursor + 0x3cd698))->position.z = 0.0f;
-        ((Banner*)(banner_cursor + 0x3cd698))->position.y = 0.0f;
-        ((Banner*)(banner_cursor + 0x3cd698))->position.x = 0.0f;
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->position.z = 0.0f;
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->position.y = 0.0f;
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->position.x = 0.0f;
         subgame.banners.slots[banner_index].owner_game = &subgame;
-        ((Banner*)(banner_cursor + 0x3cd698))->visibility_mode = banner_index;
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->visibility_mode = banner_index;
         ++banner_index;
-        ((Banner*)(banner_cursor + 0x3cd698))->phase = 0.0f;
-        ((Banner*)(banner_cursor + 0x3cd698))->phase_step = 0.006944444f;
-    } while (banner_index < 2);
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->phase = 0.0f;
+        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->phase_step = 0.006944444f;
+    } while (banner_index < BANNER_SLOT_COUNT);
 
     BodNode* track_bod_list = &subgame.track_body_list_head;
     active_bod_list.add_bod(track_bod_list);

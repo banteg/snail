@@ -670,3 +670,19 @@ stack-frame displacements and the other `0xb48` hit is unrelated data. That is
 enough evidence to distinguish owned four-byte storage from padding, but not to
 assign gameplay semantics. The initializer now writes
 `unknown_000514`/`unknown_000b48` directly with no guessed name or fake owner.
+
+## 2026-07-14 derived field-first pool cursors
+
+The two deliberately field-first startup loops retain their native induction
+shape while deriving every remaining owner-sensitive constant. The SubLazer
+cursor now gets its 20-slot extent, `BodBase::object` backtrack, and
+`SubLazer::owner_game` delta from the recovered manager and inherited layouts.
+The banner cursor similarly derives its root-relative pool base from
+`GameRoot::subgame` plus `SubgameRuntime::banners`, and its two-slot extent from
+`BannerPool::slots`. No pointer was promoted to a whole-record iterator because
+that would discard the native source shape encoded by the generated loop.
+
+The focused result remains 80.50% (5,392/5,411 instructions, 1,550 clean
+operands, 101 known broad mismatches). A separately saved pre-change object and
+the rebuilt object produce the same normalized candidate-listing SHA-256,
+`df7a171903be7dac262a2012d9000dfb6d1df49b3764539fae538cfd6486efd3`.
