@@ -56,3 +56,11 @@ the blend value in a register (`mov ecx, 5; jmp`) instead of native's
 `push 5; mov edx,[eax]; jmp`. Fully expanded case bodies and immediate-valued
 shared labels still regress to 81.52%. Do not add `$L###` aliases to clear the
 audit while the table contents diverge.
+
+2026-07-14 cross-port contract closure: iOS and Android export the shared
+responsibility as `G0SetBlend(int)`, whose authored contract is void. Windows
+splits it into this object-rendering helper and the immediate-quad variant at
+`0x412e50`. The sole Windows caller discards EAX, and replacing synthetic
+Direct3D return forwarding with ordinary calls plus `return;` is byte-identical:
+92.39%, 92/92 instructions, fifteen clean operands, and the existing honest
+jump-table mismatch.

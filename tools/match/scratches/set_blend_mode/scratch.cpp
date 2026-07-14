@@ -4,7 +4,7 @@
 
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 
-int set_blend_mode(int blend_mode)
+void set_blend_mode(int blend_mode)
 {
     Direct3DDevice8* device;
     int source_blend;
@@ -20,7 +20,8 @@ int set_blend_mode(int blend_mode)
         device = g_d3d_device;
         device->vtbl->SetRenderState(device, 0x13, 5);
         device = g_d3d_device;
-        return device->vtbl->SetRenderState(device, 0x14, 6);
+        device->vtbl->SetRenderState(device, 0x14, 6);
+        return;
     }
     case 1:
     case 8:
@@ -33,11 +34,13 @@ int set_blend_mode(int blend_mode)
     case 13:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
-        return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);
+        return;
     case 7:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 2);
-        return g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);
+        return;
     case 19:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         device = g_d3d_device;
@@ -45,8 +48,7 @@ int set_blend_mode(int blend_mode)
 set_source_then_dest_six:
         device->vtbl->SetRenderState(device, 0x13, source_blend);
         device = g_d3d_device;
-        return device->vtbl->SetRenderState(device, 0x14, 6);
+        device->vtbl->SetRenderState(device, 0x14, 6);
+        return;
     }
-
-    return blend_mode;
 }

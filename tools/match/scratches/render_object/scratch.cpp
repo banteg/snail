@@ -12,7 +12,7 @@ extern unsigned char g_object_render_pass_filter; // data_503260
 extern TransformMatrix g_object_texture_transform_matrix; // data_5031d8
 
 int set_cull_mode(char cull_front); // @ 0x4129f0
-int set_blend_mode(int blend_mode); // @ 0x412d00
+void set_blend_mode(int blend_mode); // @ 0x412d00
 ColorBGRA8* set_object_color(Object* object, Color4f color); // @ 0x4141d0
 void bind_texture_ref(TextureRef* texture); // @ 0x414500
 int render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0

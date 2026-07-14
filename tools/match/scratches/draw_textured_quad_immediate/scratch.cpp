@@ -12,7 +12,7 @@ extern int g_render_successful_primitive_count; // data_4f7454
 extern int g_draw_primitive_call_count;    // data_503170
 
 void bind_texture_ref(TextureRef* texture);
-int set_immediate_blend_mode(int blend_mode);
+void set_immediate_blend_mode(int blend_mode);
 float square_root(float value);
 float sine(float angle);
 float cosine(float angle);

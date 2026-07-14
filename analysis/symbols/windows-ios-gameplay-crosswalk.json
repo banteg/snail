@@ -1051,6 +1051,24 @@
       "notes": "Both build and submit one immediate textured UI quad from explicit corners, axis-aligned dimensions, or a rotation angle. All three Windows callsites discard EAX, and the 98.34% Windows reconstruction already has a void body."
     },
     {
+      "address": "0x412d00",
+      "windows_name": "set_blend_mode",
+      "ios_symbol": "G0SetBlend(int)",
+      "android_symbol": "G0SetBlend(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows splits the cross-port G0SetBlend responsibility into object and immediate-quad Direct3D variants. This object variant is called only by render_object; the caller discards EAX, and recovering the void contract is codegen-neutral at 92.39%."
+    },
+    {
+      "address": "0x412e50",
+      "windows_name": "set_immediate_blend_mode",
+      "ios_symbol": "G0SetBlend(int)",
+      "android_symbol": "G0SetBlend(int)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Windows splits the cross-port G0SetBlend responsibility into object and immediate-quad Direct3D variants. This immediate variant is called only by G0RenderFont; the caller discards EAX, and recovering the void contract is codegen-neutral at 85.50%."
+    },
+    {
       "address": "0x449ca0",
       "windows_name": "update_font_wave_state",
       "android_symbol": "FontAI()",

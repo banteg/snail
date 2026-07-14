@@ -57,3 +57,11 @@ Source-shape notes:
 `source_blend` dest=6 suffix (as in `set_blend_mode`), and if-ladder mode
 dispatch all fail to recover native's fully expanded mode-1 block. Best remains
 85.50% with the jump-table content mismatch.
+
+2026-07-14 cross-port contract closure: iOS and Android export the shared
+responsibility as `G0SetBlend(int)`, whose authored contract is void. Windows
+splits it into this immediate-quad helper and the object-rendering variant at
+`0x412d00`. The sole Windows caller is the recovered `G0RenderFont` counterpart
+and discards EAX. Replacing synthetic Direct3D return forwarding with ordinary
+calls plus `return;` is byte-identical: 85.50%, 126/136 instructions, nineteen
+clean operands, and the existing honest jump-table mismatch.

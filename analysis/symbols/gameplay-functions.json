@@ -886,12 +886,12 @@
     {
       "address": "0x412d00",
       "name": "set_blend_mode",
-      "description": "Maps one render blend preset through the shared lookup table and programs the matching alpha-blend state. Cross-port Android symbols match this helper to `G0SetBlend(int)`."
+      "description": "Void object-rendering half of the Windows G0SetBlend split: maps one render blend preset through the shared lookup table and programs the matching alpha-blend state. Its sole caller discards EAX."
     },
     {
       "address": "0x412e50",
       "name": "set_immediate_blend_mode",
-      "description": "Programs the immediate 2D quad alpha-blend render state selected by draw_textured_quad_immediate."
+      "description": "Void immediate-quad half of the Windows G0SetBlend split: programs the alpha-blend render state selected by draw_textured_quad_immediate. Its sole caller discards EAX."
     },
     {
       "address": "0x413030",
