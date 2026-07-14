@@ -22,8 +22,9 @@ Recovered layout evidence:
   random challenge modes.
 - `record +0x120` is the script `Distort:` scalar consumed by
   `change_backdrop`.
-- object slots at `Game+0x48e2c` have a `0xbc` stride and provide the
-  `LandscapeObjectBounds*` used for each repeated slice.
+- object slots at `Game+0x48e2c` are
+  `DirectXLoader::cached_x_mesh_slots[0].object`; their `0xbc` stride provides
+  the retained `Object*` used for each repeated slice.
 - each live slice records `repeat_z_span = max_z - min_z`, resets its inherited
   transform to identity, places its local z at `(index - 0.5) * repeat_z_span`,
   and uses the shared reference BOD at `Game+0x42fd7c` for later wrapping.
@@ -43,3 +44,15 @@ store ahead of a list-flag reload. It is now the ordinary typed
 `ActiveLandscapeEntry::state` assignment. Ownership and instruction parity are
 unchanged; focused matching is honestly 99.19%, 123/123, prefix 65, with all
 20 operands clean and only the independent load/store schedule swapped.
+
+## 2026-07-14 canonical landscape owner graph
+
+The method now follows the root-owned level mode, landscape slice list,
+DirectX cached-mesh bank, embedded player reference BOD, backdrop, border
+manager, and fog color directly. The cached slot's `Object*` already exposes
+`bounds_min.z/+0xac` and `bounds_max.z/+0xb8`, so the two synthetic
+`LandscapeObjectSlotRef` and `LandscapeObjectBounds` views are retired.
+
+Focused output remains at the honest 99.19%, 123/123 frontier with all 20
+operands clean. The sole residual is still the ordinary `state`/flag-load
+scheduling swap documented above.

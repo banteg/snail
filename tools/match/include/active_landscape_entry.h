@@ -6,18 +6,6 @@
 #include "bod_types.h"
 #include "landscape_script.h"
 
-struct LandscapeObjectBounds {
-    char unknown_000[0xac];
-    float min_z; // +0xac
-    char unknown_0b0[0xb8 - 0xb0];
-    float max_z; // +0xb8
-};
-
-struct LandscapeObjectSlotRef {
-    LandscapeObjectBounds* object; // +0x00
-    char unknown_004[0xbc - 0x04];
-};
-
 class ActiveLandscapeEntry : public RenderableBod {
 public:
     ActiveLandscapeEntry* initialize_active_landscape_entry(); // @ 0x408820

@@ -14,7 +14,8 @@ Recovered layout:
 - `+0x88` repeat z span
 - `+0x8c` reference BOD pointer; `reference_bod->transform.position.z` is the
   live source z used for wrapping and visibility.
-- object bounds use object `+0xac` / `+0xb8` as min/max z.
+- object bounds are `Object::bounds_min.z` / `Object::bounds_max.z` at
+  `+0xac/+0xb8`.
 
 The visibility bit is `list_flags & 0x20`.
 
@@ -29,3 +30,8 @@ label, `case 1` to the active body). That preserves VC6's native
 2026-07-11 pause-owner closure: removing the synthetic root-wide pause view is
 codegen-neutral. Focused Wibo remains exact at 41/41 instructions with clean
 masks.
+
+2026-07-14 object/root closure: the updater now borrows the retained `Object*`
+directly, reads the canonical bounds members, and reaches the pause gate and
+fog-end plane through `GameRoot`. Retiring the duplicate bounds type preserves
+the exact 41/41 instructions and all four operands.

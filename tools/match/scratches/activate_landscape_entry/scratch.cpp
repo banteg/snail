@@ -7,7 +7,7 @@
 #include "game_root.h"
 #include "runtime_config.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);
@@ -15,7 +15,7 @@ int report_errorf(char* format, ...);
 void LandscapeManager::activate_landscape_entry(int script_index)
 {
     char flip;
-    int mode = *(int*)(g_game_base + 0x74658);
+    int mode = g_game->subgame.level_mode;
     if (mode == 7) {
         flip = 0;
     } else if (mode == 1) {
@@ -35,8 +35,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
             entry->list_flags &= ~0x20;
             entry->set_bod_object(0);
         } else {
-            BodNode* head =
-                &((GameRoot*)g_game_base)->subgame.landscape_slice_list_head;
+            BodNode* head = &g_game->subgame.landscape_slice_list_head;
             if ((entry->list_flags & 0x200) != 0) {
                 report_errorf("List ADDafter");
             } else {
@@ -53,30 +52,27 @@ void LandscapeManager::activate_landscape_entry(int script_index)
             flags |= 0x20;
             entry->list_flags = flags;
 
-            LandscapeObjectSlotRef* objects =
-                (LandscapeObjectSlotRef*)(g_game_base + 0x48e2c);
+            CachedXMeshSlot* objects =
+                &g_game->directx_loader.cached_x_mesh_slots[0];
             entry->set_bod_object(objects[scripts[script_index].object_index].object);
-            LandscapeObjectBounds* landscape_object =
-                (LandscapeObjectBounds*)entry->object;
+            Object* landscape_object = entry->object;
             entry->repeat_z_span =
-                landscape_object->max_z - landscape_object->min_z;
+                landscape_object->bounds_max.z - landscape_object->bounds_min.z;
             set_matrix_identity(&entry->transform);
             entry->transform.position.z =
                 ((float)staged_index - 0.5f) * entry->repeat_z_span;
             entry->reference_bod =
-                (RenderableBod*)(g_game_base + 0x42fd7c);
+                (RenderableBod*)g_game->subgame.embedded_player();
         }
         index++;
         entry++;
         staged_index = index;
     } while (index < 10);
 
-    ((Backdrop*)(g_game_base + 0x4ec10))->change_backdrop(
-        &scripts[script_index],
-        flip);
-    ((BorderManager*)(g_game_base + 0xb4c))->set_border_justify_centre(0);
+    g_game->backdrop.change_backdrop(&scripts[script_index], flip);
+    g_game->border_manager.set_border_justify_centre(0);
 
     Color4f* source = &scripts[script_index].fog_color;
-    Color4f* destination = (Color4f*)(g_game_base + 0x14);
+    Color4f* destination = &g_game->fog_color;
     *destination = *source;
 }
