@@ -88,7 +88,7 @@ int register_font_texture_sheet(char* texture_path, int font_kind,
 void initialize_font3d_objects(short font_id); // @ 0x44ae10
 float sine(float angle); // @ 0x44c9d0
 float cosine(float angle); // @ 0x44c980
-int draw_textured_quad_immediate(
+void draw_textured_quad_immediate(
     TextureRef* texture,
     float x0, float y0,
     float x1, float y1,

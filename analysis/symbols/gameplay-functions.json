@@ -896,7 +896,7 @@
     {
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
-      "description": "Builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive."
+      "description": "Void G0RenderFont counterpart: builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive. All three Windows callers discard EAX."
     },
     {
       "address": "0x4134c0",

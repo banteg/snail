@@ -1043,6 +1043,14 @@
       "notes": "Android preserves the same two zeroed font-wave phases and two fixed phase increments. The exact Windows routine is void."
     },
     {
+      "address": "0x413030",
+      "windows_name": "draw_textured_quad_immediate",
+      "android_symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
+      "source_object": null,
+      "confidence": "high",
+      "notes": "Both build and submit one immediate textured UI quad from explicit corners, axis-aligned dimensions, or a rotation angle. All three Windows callsites discard EAX, and the 98.34% Windows reconstruction already has a void body."
+    },
+    {
       "address": "0x449ca0",
       "windows_name": "update_font_wave_state",
       "android_symbol": "FontAI()",

@@ -47,10 +47,7 @@ counter shape, so the original tail spelling remains.
 2026-06-20 tail improvement: treating this implementation as `void` and letting
 the D3D/report call result remain incidental in `eax` improves the tail to the
 native `inc dword [data_4f7454]` shape and raises the focused result from
-97.60% to 98.34%. Keep `font_system.h`'s external prototype as `int` for now:
-the exact `draw_queued_font_quad_instance` forwarder still returns the
-incidental result of this helper, so the ABI should not be promoted globally
-until more callsites agree.
+97.60% to 98.34%.
 
 Rejected 2026-06-20 body probes: a separate `half_height_for_radius` local and
 re-spelling the radius as repeated `height * 0.5f` were codegen-neutral and did
@@ -79,3 +76,10 @@ operands clean and the same x87/scheduling residual.
 lookalike in favor of the size-asserted `ObjectRenderVertex` used by every FVF
 `0x142` path. This is a type-only consolidation; the focused result and honest
 one-instruction scheduling residual are unchanged.
+
+2026-07-14 cross-port contract closure: Android exports the same helper as
+`G0RenderFont(cRTexture*, ..., tColour&, int, float)`. Both font-text callsites
+and the explicit-quad forwarder discard EAX; after recovering that forwarder as
+void, no consumer remains for the incidental DrawPrimitive/report register.
+The shared declaration is now void as well, matching the existing body and
+preserving the 98.34% focused result with 26 clean operands.
