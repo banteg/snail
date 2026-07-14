@@ -13,7 +13,7 @@ char __cdecl load_archive_index(char* path)
 {
     char header[0x7c];
     int byte_count;
-    ArchiveIndex* index;
+    SerializedArchiveIndex* serialized_index;
     ArchiveIndex* records;
     int i;
     int offset;
@@ -28,16 +28,19 @@ char __cdecl load_archive_index(char* path)
     load_file_bytes_fixed_size_from_archive_or_fs(path, header, sizeof(header));
     xor_archive_bytes_in_place(0, header, sizeof(header));
 
-    byte_count = *(int*)(header + 8);
-    index = (ArchiveIndex*)allocate_tracked_memory(byte_count, "Dat File Header");
+    byte_count =
+        ((SerializedArchiveIndex*)header)->entries[0].data_offset;
+    serialized_index = (SerializedArchiveIndex*)allocate_tracked_memory(
+        byte_count, "Dat File Header");
 
-    load_file_bytes_fixed_size_from_archive_or_fs(path, (char*)index, byte_count);
-    xor_archive_bytes_in_place(0, (char*)index, byte_count);
-    records = index;
+    load_file_bytes_fixed_size_from_archive_or_fs(
+        path, (char*)serialized_index, byte_count);
+    xor_archive_bytes_in_place(0, (char*)serialized_index, byte_count);
+    records = (ArchiveIndex*)serialized_index;
     g_archive_index_records = records;
 
     i = 0;
-    if (index->count > 0) {
+    if (serialized_index->count > 0) {
         offset = 0;
         do {
             rebased_path = *(char**)((char*)records + offset + 4);

@@ -47,3 +47,17 @@ changing code generation.
 header, allocates and decodes the full index, rebases each 12-byte entry path,
 installs `gDat`, and opens `gDatFP`, matching the Windows `ArchiveIndex` and
 `g_archive_file` ownership.
+
+## 2026-07-14 serialized-to-live index lifecycle
+
+The decoded bytes now use `SerializedArchiveIndex` until the path-offset rebase
+begins. Its first entry's `data_offset` owns the complete header/index byte
+count read from the 0x7c-byte prefix, and each serialized record begins with a
+file-relative `path_offset`. Only after decryption does the helper expose the
+same allocation as `ArchiveIndex` and replace those offsets in place with live
+`char* path` values before publishing `g_archive_index_records`.
+
+This separates the on-disk and relocated record owners without changing the
+native transition: the focused result remains 92.54%, 67/67 instructions, a
+40-instruction prefix, and 13 clean masked references, with a byte-identical
+normalized candidate listing.

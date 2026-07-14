@@ -13,6 +13,20 @@ typedef struct ArchiveIndex {
     ArchiveEntry entries[1]; // +0x04
 } ArchiveIndex;
 
+// Serialized DAT/DAM records carry a file-relative path offset in the first
+// word. load_archive_index rebases that word in place before exposing the
+// allocation as ArchiveIndex; archive rebuilds retain this serialized view.
+typedef struct SerializedArchiveEntry {
+    int path_offset; // +0x00
+    int data_offset; // +0x04
+    int byte_count;  // +0x08
+} SerializedArchiveEntry;
+
+typedef struct SerializedArchiveIndex {
+    int count;                         // +0x00
+    SerializedArchiveEntry entries[1]; // +0x04
+} SerializedArchiveIndex;
+
 // Windows RShell owns one 4 MiB transient workspace exposed as two 2 MiB
 // regions, plus a separate shared buffer for archived music and samples.
 enum {
@@ -34,6 +48,8 @@ typedef enum ArchiveEntryExtensionClass {
 } ArchiveEntryExtensionClass;
 
 typedef char ArchiveEntry_must_be_0x0c[(sizeof(ArchiveEntry) == 0x0c) ? 1 : -1];
+typedef char SerializedArchiveEntry_must_be_0x0c[
+    (sizeof(SerializedArchiveEntry) == 0x0c) ? 1 : -1];
 typedef char DirectoryEntryName_must_be_0x80[
     (sizeof(DirectoryEntryName) == 0x80) ? 1 : -1];
 

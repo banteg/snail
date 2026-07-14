@@ -31,8 +31,10 @@ native keeps and advances that output cursor as an independent local at
 
 - Recovered the `.dat`/`.dam` existence gates and the 40,000,000-byte rebuild
   allocation.
-- Recovered the decoded blob's `ArchiveIndex` owner and `ArchiveEntry` array,
-  while preserving the native hot-loop cursor at each entry's byte-count field.
+- Recovered the decoded blob's `SerializedArchiveIndex` owner and
+  `SerializedArchiveEntry` array, distinguishing its file-relative path offsets
+  from the rebased pointers in the live `ArchiveIndex`, while preserving the
+  native hot-loop cursor at each entry's byte-count field.
 - Recovered the distinct serialized output-record cursor and the base delta that
   maps source byte-count fields to their rebuilt counterparts.
 - Preserved the native signed `(cursor & 0x80000003)` remainder expression for

@@ -34,8 +34,8 @@ void __cdecl rebuild_game_archive_if_needed(void)
     char* rebuilt;
     int png_height;
     unsigned int* dam_words;
-    ArchiveIndex* source_index;
-    ArchiveEntry* source_entries;
+    SerializedArchiveIndex* source_index;
+    SerializedArchiveEntry* source_entries;
     int png_width;
     int x;
     int source_to_output_delta;
@@ -61,7 +61,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
     dam_words = (unsigned int*)load_file_bytes_allocating("SnailMail.dam", &dam_size);
     toggle_archive_high_bit_in_place(dam_words, dam_size);
 
-    source_index = (ArchiveIndex*)dam_words;
+    source_index = (SerializedArchiveIndex*)dam_words;
     source_entries = source_index->entries;
     memcpy(rebuilt_words, dam_words, source_entries[0].data_offset);
 
