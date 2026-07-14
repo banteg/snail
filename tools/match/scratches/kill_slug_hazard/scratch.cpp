@@ -2,6 +2,7 @@
 
 #include "slug_hazard_types.h"
 #include "player.h"
+#include "subgame_runtime.h"
 
 int next_math_random_value();
 
@@ -16,7 +17,7 @@ void Slug::kill_slug_hazard()
             death_toss_direction = 1;
         else
             death_toss_direction = 2;
-        ((Player*)((char*)owner_game + 0x3bb764))->add_subgoldy_score(SUBGOLDY_SCORE_SLUG, 0);
+        owner_game->player.add_subgoldy_score(SUBGOLDY_SCORE_SLUG, 0);
         explode_slug_hazard();
     }
 }

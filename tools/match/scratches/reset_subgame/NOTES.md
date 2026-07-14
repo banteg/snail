@@ -13,10 +13,9 @@ Recovered behavior:
 - re-arms the two live subgame bytes, clears the replay/restore byte, and
   resets the active garbage chain head.
 
-The scratch still uses raw dword lanes for the unresolved score/timer snapshot
-band. Its owner is now `SubgameRuntime`, because all touched pool and snapshot
-offsets are relative to the embedded subgame controller rather than the root
-game allocation.
+The exact scratch now consumes the canonical `SubgameRuntime` owners for every
+touched pool and for the replay snapshot handoff into the embedded `Player`.
+No fixed dword indices remain.
 
 Current focused result:
 
@@ -96,3 +95,22 @@ the enclosing `SubgameRuntime` at `+0x1d0`. `cRSubRing::Init` and `AI` consume
 that same owner for `subgame_rate` and the pause gate; there is no separately
 allocated rate-source object. The historical generic ring names remain aliases
 only, and the exact reset body remains 75/75.
+
+## 2026-07-13 canonical reset ownership
+
+The full exact body now expresses its allocation and lifetime boundaries
+directly:
+
+- `speedup_pickup`, `jetpack_pickup`, `health_pickups`, `slug_hazards`,
+  `garbage_hazards`, and `ring_effects` receive their state clears and borrowed
+  `SubgameRuntime*` backlinks through their primary types;
+- the replay restore condition reads `replay_launch_active`, `level_mode`, and
+  `current_high_score_record.replay_mode_id`;
+- score, `Time`, score-tail, and replay-source values copy from the owned
+  `SubSolution` snapshot into the embedded `Player`;
+- the non-restore path clears that same Player state, and the final stores name
+  the scan/camera latches, ring-spawn position, and garbage active-chain head.
+
+The intrinsic `memcpy` is retained because it is the source-plausible form that
+produces the native six-dword `Time` copy. All ownership substitutions remain
+byte-exact at 75/75 instructions with both masked operands clean.
