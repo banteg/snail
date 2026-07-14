@@ -1,9 +1,10 @@
 // add_subgoldy_score @ 0x4402c0 (thiscall, ret 8)
 
+#include "game_root.h"
 #include "player.h"
 #include "sound_effect_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void report_errorf(const char* message, ...);
 
@@ -42,9 +43,8 @@ void Player::add_subgoldy_score(int score_kind, int bonus_score)
         int lives = visible_life_stock;
         if (lives < 9) {
             visible_life_stock = lives + 1;
-            char* game = g_game_base;
-            if (*(int*)(game + 0x74658) == 0) {
-                if (*(int*)(game + 0x24) == 0) {
+            if (g_game->subgame.level_mode == 0) {
+                if (g_game->fade.state == 0) {
                     g_sound_effect_manager.play_sound_effect(0x2c);
                 }
             }

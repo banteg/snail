@@ -15,7 +15,8 @@ operands.
 - Crossing a 50,000-point boundary increments `Player+0x4340` up to a visible
   life stock cap of `9`.
 - The score sound `0x2c` only plays after the 50,000-point threshold awards a
-  life, and is gated off while `game+0x74658` or `game+0x24` is nonzero.
+  life, and is gated off while `SubgameRuntime::level_mode` or the root-owned
+  `FrontendFade::state` is nonzero.
 - The function is a `void` mutator in source terms.
 - `END=0x44037e` excludes the native switch jump-table data that follows the
   final `ret`.
@@ -40,3 +41,6 @@ operands.
 - 2026-06-20 life-award sound nesting: moved the game-state sound gate inside
   the visible-life increment block. Focused Wibo now matches at `100.00%`,
   `58/58` instructions, `58/58` prefix, with `6 ok / 0` masks.
+- 2026-07-14 root gate ownership: the two remaining raw game offsets now use
+  `GameRoot::subgame.level_mode` and `GameRoot::fade.state`. Focused Wibo stays
+  exact at `58/58` instructions with all six operands clean.

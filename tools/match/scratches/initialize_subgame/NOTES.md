@@ -50,6 +50,12 @@ Ownership recovered:
   subgame, while `cached_camera_target_world` is player-owned state initialized
   from the player's live position.
 
+2026-07-14 final initializer ownership cleanup: the remaining raw receiver
+offsets now use `SubgameRuntime::pause_fade_step`, embedded `TimesUp::state`,
+and `FrontendWidget::texture_layer` for the two retained HUD handles. This
+removes the scratch-local byte view entirely while preserving exact 396/396
+output and all 85 clean operands.
+
 2026-06-20 switch-table audit: `initialize_subgame_level_mode_bottom_hud_jump_table`
 (`0x437adc`) and `initialize_subgame_level_mode_startup_jump_table`
 (`0x437af0`) are now content-audited. Focused matcher remains `63.25%`; masked

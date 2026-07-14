@@ -34,7 +34,6 @@ int report_errorf(char* format, ...); // @ 0x431cc0
 
 void SubgameRuntime::initialize_subgame()
 {
-    char* game = (char*)this;
     int scratch[6];
 
     TrackRowCellFringeLinkView* cell = runtime_cell_fringe_links();
@@ -90,10 +89,10 @@ void SubgameRuntime::initialize_subgame()
     subgame_pause_gate = 0;
     resume_requested = 0;
     pause_fade = 0.0f;
-    *(int*)(game + 0x10) = 0x3d088889;
+    pause_fade_step = 0.0333333351f;
     sub_high_score.noop_runtime_ai();
     subgame_state = 0;
-    *(int*)(game + 0x1272828) = 0;
+    times_up.state = 0;
 
     top_score_widget = g_game->border_manager.allocate_border();
     top_score_widget->initialize_frontend_widget(
@@ -106,7 +105,7 @@ void SubgameRuntime::initialize_subgame()
         3,
         300.0f);
     top_score_widget->font_scale = 1.5f;
-    *(int*)((char*)top_score_widget + 0x274) = 7;
+    top_score_widget->texture_layer = 7;
     top_score_widget->text_buffer[0] = 0;
 
     if (this->level_mode == 0) {
@@ -189,7 +188,7 @@ void SubgameRuntime::initialize_subgame()
         3,
         -71.0f);
     bottom_score_widget->font_scale = 1.5f;
-    *(int*)((char*)bottom_score_widget + 0x274) = 7;
+    bottom_score_widget->texture_layer = 7;
     bottom_score_widget->text_buffer[0] = 0;
 
     switch (this->level_mode) {

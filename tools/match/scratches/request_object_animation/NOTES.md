@@ -138,3 +138,10 @@ are not retained.
 pointer bank, each `ObjectAnimationFrame`, its `Vector3` vertex bank, and its
 two-normal-per-face bank now derive allocation extents from their shared types.
 Matching remains exact at 231/231 instructions with all 17 operands clean.
+
+2026-07-14 keyframe-container ownership: rebasing the native `Object**` cursor
+to its containing keyframe now subtracts
+`offsetof(XAnimationKeyframe, object)` instead of a literal `0x24`. Advancing to
+the next record already uses `sizeof(XAnimationKeyframe)`, so the full cursor
+relationship is now derived from the owned type. Focused Wibo remains exact at
+231/231 instructions with all 17 operands clean.

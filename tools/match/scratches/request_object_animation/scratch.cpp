@@ -1,5 +1,7 @@
 // request_object_animation @ 0x430a70 (thiscall, ret 0x10)
 
+#include <stddef.h>
+
 #include "object_animation_types.h"
 #include "object_render_types.h"
 
@@ -82,10 +84,11 @@ void Object::request_object_animation(
                 ++current_keyframe;
                 keyframe_object_cursor =
                     (Object**)((char*)keyframe_object_cursor + sizeof(XAnimationKeyframe));
-                current_time =
-                    ((XAnimationKeyframe*)((char*)keyframe_object_cursor - 0x24))->frame_number;
-                next_time = ((XAnimationKeyframe*)((char*)keyframe_object_cursor - 0x24))[1]
-                                .frame_number;
+                XAnimationKeyframe* current_keyframe_record =
+                    (XAnimationKeyframe*)((char*)keyframe_object_cursor
+                        - offsetof(XAnimationKeyframe, object));
+                current_time = current_keyframe_record->frame_number;
+                next_time = current_keyframe_record[1].frame_number;
             }
 
             float keyframe_span = (float)(next_time - current_time);
