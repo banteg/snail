@@ -138,7 +138,8 @@
     },
     {
       "address": "0x404080",
-      "name": "update_twinkle"
+      "name": "update_twinkle",
+      "description": "Exact Windows `cRTwinkle::AI()`: advances one FrontendWidget-owned twinkle and borrows its containing authored `cRBorder` for widget flags and the current layout rectangle. Android `cRTwinkleManager::Init(cRBorder*)` independently proves that owner link."
     },
     {
       "address": "0x404350",

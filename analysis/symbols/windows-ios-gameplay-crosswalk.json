@@ -10,6 +10,15 @@
   ],
   "entries": [
     {
+      "address": "0x404080",
+      "windows_name": "update_twinkle",
+      "ios_symbol": "cRTwinkle::AI()",
+      "android_symbol": "cRTwinkle::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact Windows record and Android member share the 0x30-byte twinkle layout. Android cRTwinkleManager::Init(cRBorder*) stores the borrowed border pointer at +0x2c; Windows consumes the corresponding FrontendWidget flags and layout rectangle through that link."
+    },
+    {
       "address": "0x404580",
       "windows_name": "border_mouse_test",
       "ios_symbol": "cRBorder::MouseTest()",

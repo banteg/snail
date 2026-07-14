@@ -1,20 +1,8 @@
 // update_twinkle @ 0x404080 (thiscall, void)
 
-#include "twinkle.h"
+#include "frontend_widget.h"
 
 int next_math_random_value();
-
-class TwinkleOwner {
-public:
-    char pad_000[0x1a0];
-    int input_flags; // +0x1a0
-    char pad_1a4[0x238 - 0x1a4];
-    float x; // +0x238
-    float y; // +0x23c
-    char pad_240[0x248 - 0x240];
-    float width; // +0x248
-    float height; // +0x24c
-};
 
 void Twinkle::update_twinkle()
 {
@@ -28,7 +16,7 @@ void Twinkle::update_twinkle()
 
     switch (state) {
     case 1: {
-        int flags = owner->input_flags;
+        int flags = owner_widget->widget_flags;
         if ((flags & 2) != 0 && (flags & 0x8000) == 0) {
             float next_delay = delay_progress;
             next_delay += delay_step;
@@ -57,7 +45,7 @@ void Twinkle::update_twinkle()
 
                 int step_random = next_math_random_value();
                 delay_progress = 0.0f;
-                TwinkleOwner* active_owner = owner;
+                FrontendWidget* active_owner = owner_widget;
                 delay_step = 1.0f;
                 angle_step =
                     1.0f /
@@ -67,17 +55,17 @@ void Twinkle::update_twinkle()
                     spin_direction * 6.2831855f;
 
                 x = ((float)next_math_random_value() *
-                         (active_owner->width * 0.80000001f) *
+                         (active_owner->layout_width * 0.80000001f) *
                          0.000030517578f +
-                     active_owner->x) +
-                    active_owner->width * 0.100000001f;
+                     active_owner->layout_x) +
+                    active_owner->layout_width * 0.100000001f;
 
-                active_owner = owner;
+                active_owner = owner_widget;
                 y = ((float)next_math_random_value() *
-                         (active_owner->height * 0.80000001f) *
+                         (active_owner->layout_height * 0.80000001f) *
                          0.000030517578f +
-                     active_owner->height * 0.100000001f) +
-                    active_owner->y;
+                     active_owner->layout_height * 0.100000001f) +
+                    active_owner->layout_y;
 
                 size =
                     ((float)next_math_random_value() - 16384.0f) *

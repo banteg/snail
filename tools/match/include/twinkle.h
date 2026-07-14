@@ -1,7 +1,7 @@
 #ifndef TWINKLE_H
 #define TWINKLE_H
 
-class TwinkleOwner;
+class FrontendWidget;
 
 class Twinkle {
 public:
@@ -16,7 +16,7 @@ public:
     float x; // +0x20
     float y; // +0x24
     float size; // +0x28
-    TwinkleOwner* owner; // +0x2c
+    FrontendWidget* owner_widget; // +0x2c, borrowed authored cRBorder
 
     void draw_twinkle();
     void update_twinkle(); // @ 0x404080
