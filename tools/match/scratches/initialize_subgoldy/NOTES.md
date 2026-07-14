@@ -37,6 +37,11 @@ Latest focused result:
 - prefix: 279 / 279
 - masked operands: 27 clean, 0 unresolved, 0 mismatched
 
+2026-07-14 Snail animation-owner cleanup: the borrowed
+`AnimManager::target_model` now receives `&presentation` through Snail's proven
+public `RenderableBod` inheritance. This removes the last cast-only prefix view
+from the exact initializer without changing its ownership or ABI.
+
 2026-07-11 Squidge ownership closure:
 
 - The call on `Player +0x4344` is the authored `cRSquidge::Init`, not

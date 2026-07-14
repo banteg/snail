@@ -141,3 +141,9 @@ remaining equivalent SIB base/index encoding is intentionally left visible.
 reach inherited `SubLoc::position` through the actual `BodBase` owner. The
 exact cell constructor and full dependency sweep preserve this near-match at
 99.79%, 475/475 instructions, with all 20 operands clean.
+
+2026-07-14 cache-object handle closure: destination cache slots and borrowed
+`Fringe` sources now use their inherited `BodBase::object` handles directly.
+This removes stale per-use `Object*` casts without changing the ownership
+boundary: `ObjectList` owns the objects, while `SegmentCache` and `Fringe`
+retain typed handles and borrow texture references from their facequads.

@@ -153,3 +153,7 @@ all border-manager pointers use the recovered concrete record view.
 vtable, and `allocate_border` returns the same record storage through the
 widget view. The interaction scratch remains the honest 68.32%, 644/647
 partial with a one-instruction prefix and all 93 masked operands clean.
+
+The three active-list removals now rely on that proven public inheritance
+directly. No `BodNode*` prefix cast remains to obscure that the list borrows
+the widget's inherited node rather than a separate overlay object.

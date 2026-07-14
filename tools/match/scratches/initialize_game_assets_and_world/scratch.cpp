@@ -429,10 +429,10 @@ char GameRoot::initialize_game_assets_and_world()
     int salt_count = 40;
     do {
         Salt* salt = (Salt*)((char*)salt_owner - 0x88);
-        ((BodBase*)salt)->set_bod_object(salt_model->object);
+        salt->set_bod_object(salt_model->object);
         *salt_owner = &subgame;
         salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
-        ((Object*)salt->object)->blend_mode = 12;
+        salt->object->blend_mode = 12;
         set_matrix_identity(&salt->transform);
         salt_owner = (SubgameRuntime**)((char*)salt_owner + sizeof(Salt));
         --salt_count;
@@ -2545,8 +2545,7 @@ char GameRoot::initialize_game_assets_and_world()
     loader->load_x_animation_clip(
         base_animation_name,
         subgame.player.presentation.cutscene_animation_slots[0].body.object);
-    ((BodBase*)&subgame.player.presentation)
-        ->set_bod_object(g_object_list.add_object_to_list());
+    subgame.player.presentation.set_bod_object(g_object_list.add_object_to_list());
     loader->load_x_animation_clip(
         base_animation_name, subgame.player.presentation.object);
 

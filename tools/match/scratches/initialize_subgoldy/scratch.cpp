@@ -62,8 +62,7 @@ void Player::initialize_subgoldy(int player_slot)
             &this->presentation.anim_manager;
         this->presentation.anim_manager.initialize_anim_manager();
         this->presentation.anim_manager.state = 1;
-        this->presentation.anim_manager.target_model =
-            (BodBase*)&this->presentation;
+        this->presentation.anim_manager.target_model = &this->presentation;
         this->presentation.anim_manager.animation_slots =
             this->presentation.cutscene_animation_slots;
         this->presentation.anim_manager.queue_count = zero;

@@ -625,3 +625,9 @@ through inherited `BodBase::set_bod_object`, without cast-only prefix views.
 Their slot banks remain separately owned by each channel. The broad initializer
 is byte-identical at 80.49%, 5,391/5,411 instructions, with 1,542 clean
 operands.
+
+The same inherited-owner rule now covers the root `Snail` presentation and
+each manager-owned `Salt` slot. Both call `set_bod_object` through their
+recovered `RenderableBod` base directly; the field-first SubLazer induction
+remains intentionally explicit because that loop's native source shape walks
+the embedded `object` lane rather than whole records.

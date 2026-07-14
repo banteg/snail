@@ -29,7 +29,7 @@ void* SegmentCache::initialize_track_render_cache_manager()
     owner_subgame = &g_game->subgame;
 
     int slot_base = 0;
-    Object** skirt_object_ref = (Object**)&slots[0][4].bod.object;
+    Object** skirt_object_ref = &slots[0][4].bod.object;
     int i;
     do {
         for (i = 0;
@@ -40,22 +40,22 @@ void* SegmentCache::initialize_track_render_cache_manager()
                     + (slot_base + i) * sizeof(TrackRenderCacheSlot));
             slot->bod.set_bod_object(g_object_list.add_object_to_list());
 
-            ((Object*)slot->bod.object)->flags = 0x80000;
-            ((Object*)slot->bod.object)->vertex_count = 0;
-            ((Object*)slot->bod.object)->vertices = 0;
-            ((Object*)slot->bod.object)->facequad_count = 0;
-            ((Object*)slot->bod.object)->facequads = 0;
-            ((Object*)slot->bod.object)->texture_group_count = 1;
-            ((Object*)slot->bod.object)->render_buffers =
+            slot->bod.object->flags = 0x80000;
+            slot->bod.object->vertex_count = 0;
+            slot->bod.object->vertices = 0;
+            slot->bod.object->facequad_count = 0;
+            slot->bod.object->facequads = 0;
+            slot->bod.object->texture_group_count = 1;
+            slot->bod.object->render_buffers =
                 g_direct3d_renderer.create_vertex_buffer(max_vertex_counts[i], 0x142);
-            ((Object*)slot->bod.object)->index_buffer = g_direct3d_renderer
+            slot->bod.object->index_buffer = g_direct3d_renderer
                 .index_buffer_factory.create_index_buffer(max_index_counts[i]);
-            ((Object*)slot->bod.object)->group_index_starts =
+            slot->bod.object->group_index_starts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroups");
-            ((Object*)slot->bod.object)->group_index_starts[0] = 0;
-            ((Object*)slot->bod.object)->group_texture_refs =
+            slot->bod.object->group_index_starts[0] = 0;
+            slot->bod.object->group_texture_refs =
                 (TextureRef**)allocate_tracked_memory(4, "DX TextureGroupsTexture Ref");
-            ((Object*)slot->bod.object)->group_primitive_counts =
+            slot->bod.object->group_primitive_counts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroupsTexture Primcount");
 
             if (i == 4)

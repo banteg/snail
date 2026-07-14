@@ -50,13 +50,13 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     unsigned int flags = widget_flags;
     if (flags == 0) {
-        ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
+        ((GameRoot*)g_game_base)->active_bod_list.remove_bod(this);
         tooltip.reset_tooltip();
         return;
     }
     if ((flags & 0x200) != 0) {
         widget_flags = flags & ~0x200u;
-        ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
+        ((GameRoot*)g_game_base)->active_bod_list.remove_bod(this);
         tooltip.reset_tooltip();
         widget_flags = 0;
         return;
@@ -65,7 +65,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     if ((flags & 0x400) != 0) {
         teardown_progress = teardown_progress_step + teardown_progress;
         if (teardown_progress > 1.0f) {
-            ((GameRoot*)g_game_base)->active_bod_list.remove_bod((BodNode*)this);
+            ((GameRoot*)g_game_base)->active_bod_list.remove_bod(this);
             tooltip.reset_tooltip();
             widget_flags = 0;
             return;

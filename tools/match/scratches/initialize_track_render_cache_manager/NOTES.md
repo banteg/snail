@@ -116,3 +116,8 @@ direct pointer to `slots[0][0]` regressed focused matching from 99.18% to
 base plus `slot_index * sizeof(TrackRenderCacheSlot)` and applies the field
 offsets at each access. The accepted ownership cleanup is byte-identical at
 99.18%, 122/122 instructions, prefix 29/122, with all 18 operands clean.
+
+The cursor's inherited `BodBase::object` is now consumed as the canonical
+`Object*` handle throughout allocation. The old per-access casts predated that
+shared field type and falsely suggested a generic or overlaid payload; each
+cache slot retains one ObjectList-owned render object for the manager lifetime.

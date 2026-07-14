@@ -67,7 +67,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                     if (fringe_object != 0) {
                         append_track_cache_object(
                             row_index,
-                            (Object*)fringe_object->object,
+                            fringe_object->object,
                             (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[4],
@@ -79,9 +79,9 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             skirt_color_bgra,
                             0);
 
-                        ((Object*)slots[cache_row][4].bod.object)->group_texture_refs[0] =
-                            ((Object*)(*(Fringe**)((char*)owner_subgame +
-                                fringe_offset))->object)->facequads[0].texture_ref;
+                        slots[cache_row][4].bod.object->group_texture_refs[0] =
+                            (*(Fringe**)((char*)owner_subgame + fringe_offset))
+                                ->object->facequads[0].texture_ref;
                         *(Fringe**)((char*)owner_subgame + fringe_offset) = 0;
                     }
                     fringe_offset += 4;
@@ -104,7 +104,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         *(unsigned int*)&white_color,
                         1);
 
-                    ((Object*)slots[cache_row][2].bod.object)->group_texture_refs[0] =
+                    slots[cache_row][2].bod.object->group_texture_refs[0] =
                         (*(Object**)((char*)owner_subgame + cell_offset +
                             0x3bfaec))->facequads[0].texture_ref;
                     *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08) &= ~0x4000;
@@ -128,7 +128,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             *(unsigned int*)&white_color,
                             1);
 
-                        ((Object*)slots[cache_row][1].bod.object)->group_texture_refs[0] =
+                        slots[cache_row][1].bod.object->group_texture_refs[0] =
                             (*(Object**)((char*)owner_subgame + cell_offset +
                                 0x3bfaec))->facequads[0].texture_ref;
                     } else {
@@ -146,7 +146,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             *(unsigned int*)&white_color,
                             1);
 
-                        ((Object*)slots[cache_row][0].bod.object)->group_texture_refs[0] =
+                        slots[cache_row][0].bod.object->group_texture_refs[0] =
                             (*(Object**)((char*)owner_subgame + cell_offset +
                                 0x3bfaec))->facequads[0].texture_ref;
                     }
@@ -171,7 +171,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             *(unsigned int*)&white_color,
                             1);
 
-                        ((Object*)slots[cache_row][0].bod.object)->group_texture_refs[0] =
+                        slots[cache_row][0].bod.object->group_texture_refs[0] =
                             (*(Object**)((char*)owner_subgame + cell_offset +
                                 0x3bfaec))->facequads[0].texture_ref;
                     } else {
@@ -189,7 +189,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                             *(unsigned int*)&white_color,
                             1);
 
-                        ((Object*)slots[cache_row][1].bod.object)->group_texture_refs[0] =
+                        slots[cache_row][1].bod.object->group_texture_refs[0] =
                             (*(Object**)((char*)owner_subgame + cell_offset +
                                 0x3bfaec))->facequads[0].texture_ref;
                     }
@@ -212,7 +212,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         *(unsigned int*)&white_color,
                         0);
 
-                    ((Object*)slots[cache_row][3].bod.object)->group_texture_refs[0] =
+                    slots[cache_row][3].bod.object->group_texture_refs[0] =
                         (*(Object**)((char*)owner_subgame + cell_offset +
                             0x3bfaec))->facequads[0].texture_ref;
                     *(int*)((char*)owner_subgame + cell_offset + 0x3bfb08) &= ~0x4000;
@@ -225,7 +225,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
             saved_cell_offset = cell_offset;
             if (row_mod == 23 || row_index == owner_subgame->runtime_row_count - 1) {
                 int* max_vertices = max_vertex_counts;
-                Object** object_ref = (Object**)&slots[cache_row][0].bod.object;
+                Object** object_ref = &slots[cache_row][0].bod.object;
                 int family_index = 0;
 
                 do {
@@ -277,7 +277,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
         int cache_rows = owner_subgame->runtime_row_count / 24;
 
         if (cache_rows > 0) {
-            Object** object_ref = (Object**)&slots[0][family_index].bod.object;
+            Object** object_ref = &slots[0][family_index].bod.object;
             do {
                 Object* object = *object_ref;
                 if (object->vertex_count > max_vertices_seen)
