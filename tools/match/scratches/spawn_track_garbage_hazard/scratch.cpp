@@ -19,13 +19,6 @@ enum {
     GARBAGE_POOL_ACTIVE_HEAD_WORD = 877648,
     GARBAGE_SLOT_BASE_WORD = 877649,
     GARBAGE_SLOT_NEXT_ACTIVE_WORD = 877681,
-    GARBAGE_SLOT_STATE_WORD = 877682,
-    GARBAGE_SLOT_MATRIX_WORD = 877663,
-    GARBAGE_SLOT_WORLD_POSITION_FLOAT = 877675,
-    GARBAGE_SLOT_RADIUS_WORD = 877688,
-    GARBAGE_SLOT_ATTACHMENT_FACING_ANGLE_WORD = 877689,
-    GARBAGE_SLOT_SPRITE_WORD = 877694,
-    GARBAGE_SLOT_PLAYER_WORD = 877697,
 };
 
 extern char* g_game_base; // data_4df904
@@ -39,29 +32,28 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;
-    DWORD* scan;
-    scan = self_words + GARBAGE_SLOT_STATE_WORD;
+    SubGarbage* scan = garbage_hazards.slots;
     while (1) {
-        if (*scan == 0)
+        if (scan->state == 0)
             break;
         ++slot_index;
-        scan += GARBAGE_SLOT_WORD_STRIDE;
+        ++scan;
         if (slot_index < GARBAGE_SLOT_COUNT)
             continue;
         return (DWORD*)report_warningf("Run Out of Garbage Slots");
     }
 
-    float* slot_base_words = (float*)(self_words + GARBAGE_SLOT_WORD_STRIDE * slot_index);
+    float* slot_base_words =
+        (float*)(self_words + GARBAGE_SLOT_WORD_STRIDE * slot_index);
     ((DWORD*)slot_base_words)[GARBAGE_SLOT_NEXT_ACTIVE_WORD] = self_words[GARBAGE_POOL_ACTIVE_HEAD_WORD];
     DWORD* slot = (DWORD*)(slot_base_words + GARBAGE_SLOT_BASE_WORD);
     self_words[GARBAGE_POOL_ACTIVE_HEAD_WORD] = (DWORD)slot;
 
-    ((DWORD*)slot_base_words)[GARBAGE_SLOT_PLAYER_WORD] = (DWORD)player;
-    float* radius = (float*)(self_words + GARBAGE_SLOT_WORD_STRIDE * slot_index + GARBAGE_SLOT_RADIUS_WORD);
+    garbage_hazards.slots[slot_index].player = player;
+    float* radius = &garbage_hazards.slots[slot_index].radius;
     *radius = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
-    ((DWORD*)slot_base_words)[GARBAGE_SLOT_STATE_WORD] = 1;
-    ((TransformMatrix*)((DWORD*)slot_base_words + GARBAGE_SLOT_MATRIX_WORD))
-        ->set_matrix_identity();
+    garbage_hazards.slots[slot_index].state = 1;
+    garbage_hazards.slots[slot_index].transform.set_matrix_identity();
 
     Vector3 staged_position;
     float& staged_y = staged_position.y;
@@ -69,14 +61,15 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     staged_y += cell->position.y;
     staged_position.x = cell->position.x;
     staged_position.z = cell->position.z;
-    Vector3* live_position = (Vector3*)(slot_base_words + GARBAGE_SLOT_WORLD_POSITION_FLOAT);
+    Vector3* live_position =
+        &garbage_hazards.slots[slot_index].transform.position;
     *live_position = staged_position;
     project_position_onto_track_attachment(
         live_position,
-        slot_base_words + GARBAGE_SLOT_ATTACHMENT_FACING_ANGLE_WORD);
+        &garbage_hazards.slots[slot_index].attachment_facing_angle);
 
     BodNode* node = (BodNode*)slot;
-    BodNode* tail = (BodNode*)&this->player;
+    BodNode* tail = &this->player;
     BodList* active_list = &((GameRoot*)g_game_base)->active_bod_list;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDbefore");
@@ -95,19 +88,20 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     }
 
     Sprite* sprite = g_sprite_manager.allocate_sprite(
-        ((Player*)((DWORD*)slot_base_words)[GARBAGE_SLOT_PLAYER_WORD])->player_slot,
+        garbage_hazards.slots[slot_index].player->player_slot,
         114 - (int)((float)next_math_random_value() * -0.00012207031f),
         -1,
         -1);
-    ((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD] = (DWORD)sprite;
-    ((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->flags |= 0x800u;
-    ((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->gravity_step = 0.0f;
-    ((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->progress = 0.0f;
-    ((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->progress_step = 0.0f;
-    ((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->size_start = *radius;
-    ((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->size_end = *radius;
+    garbage_hazards.slots[slot_index].sprite = sprite;
+    garbage_hazards.slots[slot_index].sprite->flags |= 0x800u;
+    garbage_hazards.slots[slot_index].sprite->gravity_step = 0.0f;
+    garbage_hazards.slots[slot_index].sprite->progress = 0.0f;
+    garbage_hazards.slots[slot_index].sprite->progress_step = 0.0f;
+    garbage_hazards.slots[slot_index].sprite->size_start = *radius;
+    garbage_hazards.slots[slot_index].sprite->size_end = *radius;
 
-    DWORD* result = (DWORD*)&((Sprite*)((DWORD*)slot_base_words)[GARBAGE_SLOT_SPRITE_WORD])->position;
+    DWORD* result =
+        (DWORD*)&garbage_hazards.slots[slot_index].sprite->position;
     result[0] = *(DWORD*)&live_position->x;
     result[1] = *(DWORD*)&live_position->y;
     result[2] = *(DWORD*)&live_position->z;

@@ -194,18 +194,18 @@ Residuals:
 ## 2026-07-14 renderable inheritance closure
 
 The shared `SubGarbage` slot now inherits `RenderableBod` instead of duplicating
-its 0x78-byte prefix. This exact spawner intentionally retains its proven raw
-cursor/source shape, but its 0xc4 slot stride and all 16 masked operands remain
+its 0x78-byte prefix. Its 0xc4 slot stride and all 16 masked operands remain
 exact while the constructor and typed AI consumers independently prove
-`transform.position +0x68`.
+`transform.position +0x68`; the later direct-member pass below retires every
+raw field cursor except the active-chain splice.
 
 ## 2026-07-13 projection-output naming
 
 The exact projection call writes garbage `+0xa0`, and the updater consumes that
 same scalar only as the attachment-facing angle added to the player's heading.
-The field and raw word constant are now named `attachment_facing_angle`; the
-former `sprite_y_offset` label is rejected. This naming-only recovery leaves
-the spawner exact at 143/143 instructions with all 16 operands clean.
+The shared field is named `attachment_facing_angle`; the former
+`sprite_y_offset` label is rejected. The spawner now passes that member
+directly and remains exact at 143/143 instructions with all 16 operands clean.
 
 ## 2026-07-13 canonical allocator boundaries
 
@@ -221,3 +221,19 @@ This retires the raw root-list address, the player word offset, and the
 one-record `GarbageHazardPoolSlotView` overlay. The canonical spelling remains
 exact at 143/143 instructions with all 16 masked operands clean, so these are
 ownership recoveries rather than source-shape guesses.
+
+## 2026-07-14 direct cRSubGarbage member access
+
+The free-slot scan now walks `garbage_hazards.slots` as `SubGarbage*` records.
+After selection, direct indexed members own the player backlink, radius, state,
+inherited transform position, attachment-facing projection output, sprite
+handle and presentation fields, plus the embedded Player tail conversion.
+Literal constants for those fields and the 49-word scan stride are gone.
+
+Only the active-garbage-chain splice keeps its short biased cursor. Typing its
+`next_active` store changes saved-register ownership and drops focused matching
+to 73.43%; deriving the BOD node again from a second typed slot expression
+similarly produces 144 instructions and 76.66%. Both probes were reverted.
+The retained mixed form is still byte-identical at 143/143 instructions with
+all 16 operands clean, while every field outside that optimizer-sensitive
+three-word splice now belongs to `SubGarbage` directly.
