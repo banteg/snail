@@ -1,7 +1,6 @@
 // find_registered_sound_sample_id_by_name @ 0x432fc0 (cdecl)
 
-extern int g_registered_sound_sample_count; // data_5108b0
-extern char g_registered_sound_sample_names[256][0x80]; // data_5088b0
+#include "audio_system.h"
 
 char* find_case_insensitive_substring(char* needle, char* haystack);
 int report_errorf(char* format, ...);

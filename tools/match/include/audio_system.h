@@ -4,6 +4,11 @@
 
 #include "sound_effect_manager.h"
 
+// The native exhaustion diagnostic names this original RShell.h capacity.
+enum {
+    RSHELL_SOUND_MAX = 256,
+};
+
 class AudioBackend {
 public:
     char initialize_bass_audio_backend(void* hwnd); // @ 0x449460
@@ -48,5 +53,7 @@ public:
 };
 
 extern AudioBackend g_audio_backend; // 0x753c58
+extern char g_registered_sound_sample_names[RSHELL_SOUND_MAX][0x80]; // data_5088b0
+extern int g_registered_sound_sample_count; // data_5108b0
 
 #endif

@@ -4,8 +4,6 @@
 #include "archive_index.h"
 
 extern char* g_music_memory_buffer; // data_53c7e8
-extern char g_registered_sound_sample_names[256][0x80]; // data_5088b0
-extern int g_registered_sound_sample_count; // data_5108b0
 
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 void rstrcpy_checked_ascii(char* destination, char* source);
@@ -36,8 +34,8 @@ int register_sound_sample(char* path, int normalization_class)
 
     int next_count = g_registered_sound_sample_count + 1;
     g_registered_sound_sample_count = next_count;
-    if (next_count == 256) {
-        g_registered_sound_sample_count = 255;
+    if (next_count == RSHELL_SOUND_MAX) {
+        g_registered_sound_sample_count = RSHELL_SOUND_MAX - 1;
         report_errorf("Run out of Sound slots increase RSHELL_SOUND_MAX in RShell.h");
         next_count = g_registered_sound_sample_count;
     }

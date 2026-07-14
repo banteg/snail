@@ -52,3 +52,18 @@ Resolved:
   `int sample_size` matches 100.00%; the previous scratch had misidentified the
   native `lea [esp+0x8]` as `&path` when it is the local byte-count slot after
   saving `esi`.
+
+## 2026-07-14 registered-sample owner closure
+
+The native exhaustion diagnostic explicitly names `RSHELL_SOUND_MAX` and
+`RShell.h`. That evidence now backs a shared 256-slot capacity in
+`audio_system.h`, alongside the registered-name table and live count. Reset,
+registration, and lookup therefore borrow one owner instead of repeating local
+extern declarations, while the overflow clamp derives from the recovered
+capacity.
+
+All three normalized listings remain byte-identical and proof-grade:
+
+- reset: `10cc8c23057039806e8185c1f8ac869d1ad353ce65a0c6701136ad931605ae75`
+- register: `4c26a7c9c45bbaa1fc167475662dda1dba4e7ff8527e74f64df1dc1a5adcd335`
+- lookup: `a5e0964564e48d057ecf9330e790301c5e03bfbb75aae62678151b8bf5cedc7b`
