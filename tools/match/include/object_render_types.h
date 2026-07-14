@@ -33,6 +33,9 @@ struct ObjectRenderVertex {
     float v;
 };
 
+typedef char ObjectRenderVertex_must_be_0x18[
+    (sizeof(ObjectRenderVertex) == 0x18) ? 1 : -1];
+
 struct ObjectGroupedVertex {
     float x;              // +0x00
     float y;              // +0x04

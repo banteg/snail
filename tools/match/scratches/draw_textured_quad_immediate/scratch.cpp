@@ -2,17 +2,9 @@
 
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
+#include "object_render_types.h"
 #include "sprite.h"
 #include "vertex_buffer_view.h"
-
-struct ImmediateVertex {
-    float x;
-    float y;
-    float z;
-    unsigned int color;
-    float u;
-    float v;
-};
 
 extern Direct3DDevice8* g_d3d_device;      // data_502fec
 extern int g_render_triangle_count;        // data_4f7450
@@ -54,10 +46,10 @@ void draw_textured_quad_immediate(
     packed.noop_this_constructor();
     packed.pack_color_rgba_u8(color);
 
-    ImmediateVertex* vertices;
+    ObjectRenderVertex* vertices;
     g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Lock(
         g_direct3d_renderer.renderer_state->sprite_vertex_buffer, 0,
-        sizeof(ImmediateVertex) * 4,
+        sizeof(ObjectRenderVertex) * 4,
         (void**)&vertices, 0);
 
     if (rotation == 0.0f) {
@@ -67,35 +59,35 @@ void draw_textured_quad_immediate(
             vertices[0].z = 0.0f;
             vertices[0].u = u0;
             vertices[0].v = v0;
-            vertices[0].color = *(unsigned int*)&packed;
+            vertices[0].diffuse = *(unsigned int*)&packed;
 
             vertices[1].x = x1;
             vertices[1].y = y1;
             vertices[1].z = 0.0f;
             vertices[1].u = u1;
             vertices[1].v = v0;
-            vertices[1].color = *(unsigned int*)&packed;
+            vertices[1].diffuse = *(unsigned int*)&packed;
 
             vertices[2].x = x2;
             vertices[2].y = y2;
             vertices[2].z = 0.0f;
             vertices[2].u = u1;
             vertices[2].v = v1;
-            vertices[2].color = *(unsigned int*)&packed;
+            vertices[2].diffuse = *(unsigned int*)&packed;
 
             vertices[3].x = x3;
             vertices[3].y = y3;
             vertices[3].z = 0.0f;
             vertices[3].u = u0;
             vertices[3].v = v1;
-            vertices[3].color = *(unsigned int*)&packed;
+            vertices[3].diffuse = *(unsigned int*)&packed;
         } else {
             vertices[0].x = x0;
             vertices[0].y = y0;
             vertices[0].z = 0.0f;
             vertices[0].u = u0;
             vertices[0].v = v0;
-            vertices[0].color = *(unsigned int*)&packed;
+            vertices[0].diffuse = *(unsigned int*)&packed;
 
             float right = x0 + width;
             vertices[1].x = right;
@@ -103,7 +95,7 @@ void draw_textured_quad_immediate(
             vertices[1].z = 0.0f;
             vertices[1].u = u1;
             vertices[1].v = v0;
-            vertices[1].color = *(unsigned int*)&packed;
+            vertices[1].diffuse = *(unsigned int*)&packed;
 
             vertices[2].x = right;
             float bottom = y0 + height;
@@ -111,14 +103,14 @@ void draw_textured_quad_immediate(
             vertices[2].z = 0.0f;
             vertices[2].u = u1;
             vertices[2].v = v1;
-            vertices[2].color = *(unsigned int*)&packed;
+            vertices[2].diffuse = *(unsigned int*)&packed;
 
             vertices[3].x = x0;
             vertices[3].y = bottom;
             vertices[3].z = 0.0f;
             vertices[3].u = u0;
             vertices[3].v = v1;
-            vertices[3].color = *(unsigned int*)&packed;
+            vertices[3].diffuse = *(unsigned int*)&packed;
         }
     } else {
         float half_width = width * 0.5f;
@@ -135,35 +127,35 @@ void draw_textured_quad_immediate(
         vertices[0].z = 0.0f;
         vertices[0].u = u0;
         vertices[0].v = v0;
-        vertices[0].color = *(unsigned int*)&packed;
+        vertices[0].diffuse = *(unsigned int*)&packed;
 
         vertices[1].x = center_x - cos_radius;
         vertices[1].y = center_y + sin_radius;
         vertices[1].z = 0.0f;
         vertices[1].u = u1;
         vertices[1].v = v0;
-        vertices[1].color = *(unsigned int*)&packed;
+        vertices[1].diffuse = *(unsigned int*)&packed;
 
         vertices[2].x = center_x - sin_radius;
         vertices[2].y = center_y - cos_radius;
         vertices[2].z = 0.0f;
         vertices[2].u = u1;
         vertices[2].v = v1;
-        vertices[2].color = *(unsigned int*)&packed;
+        vertices[2].diffuse = *(unsigned int*)&packed;
 
         vertices[3].x = center_x + cos_radius;
         vertices[3].y = center_y - sin_radius;
         vertices[3].z = 0.0f;
         vertices[3].u = u0;
         vertices[3].v = v1;
-        vertices[3].color = *(unsigned int*)&packed;
+        vertices[3].diffuse = *(unsigned int*)&packed;
     }
 
     g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Unlock(
         g_direct3d_renderer.renderer_state->sprite_vertex_buffer);
     g_d3d_device->vtbl->SetStreamSource(
         g_d3d_device, 0, g_direct3d_renderer.renderer_state->sprite_vertex_buffer,
-        sizeof(ImmediateVertex));
+        sizeof(ObjectRenderVertex));
     g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
     int result = g_d3d_device->vtbl->DrawPrimitive(g_d3d_device, 6, 0, 2);
     g_render_triangle_count += 2;

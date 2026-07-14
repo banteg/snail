@@ -12,6 +12,10 @@ Important type notes:
   corner coordinates (`width == 0.0f`) or axis-aligned `width`/`height`; a
   nonzero angle computes a rotated quad around the rectangle center.
 - The transient vertex is 24 bytes: `x`, `y`, `z`, packed BGRA color, `u`, `v`.
+- The transient quad is not an immediate-only record. It uses the shared
+  `ObjectRenderVertex` FVF `0x142` payload also locked by object, track-cache,
+  and sprite rendering: `xyz`, packed diffuse BGRA, then `uv`. The renderer's
+  `sprite_vertex_buffer` owns the four-record staging region.
 - Native increments both the submitted triangle counter and the draw-call counter
   before checking `DrawPrimitive`, then increments `data_4f7454` only on
   success.
@@ -69,3 +73,8 @@ now reached through the renderer's `+0xbb88` state pointer rather than a false
 standalone global owner. The proven `Direct3DRenderer` extent resolves all
 three interior relocations. Focused output remains 98.34%, 331/332, with all 26
 operands clean and the same x87/scheduling residual.
+
+2026-07-14 shared vertex ownership: removed the private `ImmediateVertex`
+lookalike in favor of the size-asserted `ObjectRenderVertex` used by every FVF
+`0x142` path. This is a type-only consolidation; the focused result and honest
+one-instruction scheduling residual are unchanged.

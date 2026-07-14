@@ -14,6 +14,9 @@ Current recovered relationships:
   `+0x88` is the rotated-corner scale/stretch lane.
 - The 0x60-byte locked buffer is four 0x18-byte vertices:
   `float x, y, z; uint32 color; float u, v`.
+- Those records are the shared, size-asserted `ObjectRenderVertex` FVF `0x142`
+  payload rather than a sprite-private type. The same renderer-owned staging
+  buffer and record are used by the immediate textured-quad path.
 - The transform callsite targets `j_sub_44fd5c` @ `0x44fd8a`, a `jmp
   dword [0x4acea0]` thunk used by both `draw_sprite_quad` and `sub_411e10`.
   That is semantically `D3DXMatrixTranslation`, not a direct call to the curated
@@ -40,3 +43,7 @@ now reached as `g_direct3d_renderer.renderer_state->sprite_vertex_buffer`.
 Manifesting the renderer's proven `0xbcc0` extent maps the emitted
 `g_direct3d_renderer+0xbb88` relocation back to the interior renderer-state
 reference. The full 259/259 stream and all 29 operands remain exact.
+
+2026-07-14 shared vertex ownership: removed the private `SpriteVertex`
+lookalike and used the common `ObjectRenderVertex` payload directly. The exact
+259/259 sprite renderer is retained as the consolidation's regression oracle.
