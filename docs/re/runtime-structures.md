@@ -17,8 +17,11 @@ The current high-confidence `Player` fields are:
 - `+0x98`: `ghost_sprite_a`
 - `+0x9c`: `ghost_sprite_b`
 - `+0xa0`: exact 0xac-byte `click_start` child (`cRClickStart`)
-  - child `+0x80` / Player `+0x120`: `state`
-  - state `2` is the suspended-drive/start-gate state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
+  - child `+0x80` / Player `+0x120`: `state`, the complete observed
+    `ClickStartState` graph: `INACTIVE (0)`, deliberately unresolved
+    `UNKNOWN_1 (1)`, `WAITING_FOR_START (2)`, `START_PENDING (3)`, and
+    `TEARDOWN (4)`
+  - `WAITING_FOR_START` is the suspended-drive/start-gate state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
   - the current Zig port maps this shape to the post-attachment launch envelope (`LaunchState.active`) rather than treating it as a standalone hazard flag
   - child `+0x84`: prompt widget
   - child `+0x88/+0x8c`: teardown progress and step

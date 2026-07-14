@@ -1348,10 +1348,18 @@ typedef struct FireWork {
     uint8_t _empty;
 } FireWork;
 
+typedef enum ClickStartState {
+    CLICK_START_STATE_INACTIVE = 0,
+    CLICK_START_STATE_UNKNOWN_1 = 1,
+    CLICK_START_STATE_WAITING_FOR_START = 2,
+    CLICK_START_STATE_START_PENDING = 3,
+    CLICK_START_STATE_TEARDOWN = 4,
+} ClickStartState;
+
 /* Authored cRClickStart, exact 0xac-byte RenderableBod child. */
 typedef struct ClickStart {
     RenderableBod bod;
-    int32_t state;
+    ClickStartState state;
     FrontendWidget* prompt;
     float teardown_progress;
     float teardown_progress_step;

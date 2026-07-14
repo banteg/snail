@@ -242,6 +242,7 @@ REQUIRED_HEADER_STRUCTS = (
     "NukeState",
     "Nuke",
     "FireWork",
+    "ClickStartState",
     "ClickStart",
     "Cameraman",
     "Squidge",
@@ -463,6 +464,16 @@ DAMAGE_GUAGE_FIELD_UPDATES = (
 
 NUKE_FIELD_UPDATES = (
     ("0x00", "state", "NukeState"),
+)
+
+CLICK_START_FIELD_UPDATES = (
+    ("0x00", "bod", "RenderableBod"),
+    ("0x80", "state", "ClickStartState"),
+    ("0x84", "prompt", "FrontendWidget*"),
+    ("0x88", "teardown_progress", "float"),
+    ("0x8c", "teardown_progress_step", "float"),
+    ("0x98", "owner_player", "Player*"),
+    ("0xa8", "hide_prompt", "uint8_t"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (
@@ -1236,6 +1247,7 @@ def main() -> int:
                 ("Warning", WARNING_FIELD_UPDATES),
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("Nuke", NUKE_FIELD_UPDATES),
+                ("ClickStart", CLICK_START_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),

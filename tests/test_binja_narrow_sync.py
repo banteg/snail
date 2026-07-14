@@ -849,6 +849,43 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_click_start_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/click_start.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"ClickStartState",' in path_sync
+    assert '("0x80", "state", "ClickStartState")' in path_sync
+    assert '("0x98", "owner_player", "Player*")' in path_sync
+    assert '("ClickStart", CLICK_START_FIELD_UPDATES)' in path_sync
+    for header in (analysis_header, matcher_header):
+        assert "CLICK_START_STATE_INACTIVE = 0" in header
+        assert "CLICK_START_STATE_UNKNOWN_1 = 1" in header
+        assert "CLICK_START_STATE_WAITING_FOR_START = 2" in header
+        assert "CLICK_START_STATE_START_PENDING = 3" in header
+        assert "CLICK_START_STATE_TEARDOWN = 4" in header
+
+    consumers = {
+        "initialize_click_start": "CLICK_START_STATE_WAITING_FOR_START",
+        "update_click_start": "CLICK_START_STATE_UNKNOWN_1",
+        "update_subgame": "CLICK_START_STATE_WAITING_FOR_START",
+        "update_subgoldy": "CLICK_START_STATE_TEARDOWN",
+        "remove_subgame_bods": "CLICK_START_STATE_INACTIVE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_nuke_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

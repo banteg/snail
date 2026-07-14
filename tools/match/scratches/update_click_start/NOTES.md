@@ -82,3 +82,14 @@ masked-reference mismatch.
 `CLICK_START_STATE_WAITING_FOR_START` rather than a bare `2`. Exact
 `initialize_click_start` remains 79/79. No volatile qualifier, synthetic
 branch, register-shaped helper, or other fakematch was retained.
+
+## 2026-07-14 analysis ownership synchronization
+
+The proven five-value `ClickStartState` now propagates through the shared
+analysis header and the narrow Binary Ninja field replay at owner `+0x80`.
+The same replay now preserves the complete high-confidence tail, including the
+borrowed `owner_player` backlink at `+0x98`, instead of its stale generic
+`player` alias.
+State one remains explicitly `UNKNOWN_1`: neither Windows nor the available
+mobile writers justify a stronger name. Matcher source and the honest 84.06%,
+138/138-instruction partial are unchanged.
