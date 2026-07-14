@@ -26,9 +26,9 @@ void SubHover::update_jet_particles()
         (float)next_math_random_value() * 0.00000152587893f + 0.119999997f;
     int row = 0;
 
-    for (; row < 15; ++row) {
+    for (; row < JET_PARTICLE_ROW_COUNT; ++row) {
         int column = 0;
-        float row_fraction = (float)row / 14.0f;
+        float row_fraction = (float)row / (float)JET_PARTICLE_LAST_ROW_INDEX;
         float sprite_size =
             (1.0f - row_fraction) * size_scale * warning_intensity;
 
@@ -61,7 +61,7 @@ void SubHover::update_jet_particles()
             slot->sprite->position.y = base_position.y;
             slot->sprite->position.z = base_position.z;
 
-            if (row == 14
+            if (row == JET_PARTICLE_LAST_ROW_INDEX
                 && (float)next_math_random_value() * 0.0000305175781f
                        > 0.899999976f) {
                 Sprite* sprite =
@@ -93,6 +93,6 @@ void SubHover::update_jet_particles()
                 out_position->z = base_position.z;
             }
             ++column;
-        } while (column < 2);
+        } while (column < JET_PARTICLE_COLUMN_COUNT);
     }
 }

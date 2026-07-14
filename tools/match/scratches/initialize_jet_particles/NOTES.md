@@ -42,3 +42,13 @@ Rejected/source-shaped probes:
 
 Android independently exports `cRSubHover::JetInit()` and initializes the same
 30 inline sprite records. Focused Windows remains exact at 73/73 instructions.
+
+## Derived particle-grid axes (2026-07-14)
+
+`JET_PARTICLE_ROW_COUNT` and `JET_PARTICLE_COLUMN_COUNT` now own the 15-by-2
+extent shared by the embedded array, exact initializer, updater, and exact
+teardown. `JET_PARTICLE_LAST_ROW_INDEX` also ties the updater's terminal-row
+puff gate and normalized row fraction to that owner instead of repeating the
+literal `14`. The paired Windows loops and Android traversal independently pin
+both axes; these are derived capacity names, not claims about original symbol
+spelling.

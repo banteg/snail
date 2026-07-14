@@ -5,8 +5,8 @@
 
 void SubHover::uninit_jet_particles()
 {
-    for (int row = 0; row < 15; row++) {
-        for (int column = 0; column < 2; column++) {
+    for (int row = 0; row < JET_PARTICLE_ROW_COUNT; row++) {
+        for (int column = 0; column < JET_PARTICLE_COLUMN_COUNT; column++) {
             particle_slots[row][column].sprite->kill_sprite();
         }
     }

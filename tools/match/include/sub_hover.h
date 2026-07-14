@@ -17,6 +17,12 @@ struct JetParticleSlot {
 typedef char JetParticleSlot_must_be_0x10[
     (sizeof(JetParticleSlot) == 0x10) ? 1 : -1];
 
+enum {
+    JET_PARTICLE_ROW_COUNT = 15,
+    JET_PARTICLE_COLUMN_COUNT = 2,
+    JET_PARTICLE_LAST_ROW_INDEX = JET_PARTICLE_ROW_COUNT - 1,
+};
+
 class SubHover {
 public:
     void initialize_jetpack_gauge(int player_slot); // @ 0x43a930, cRSubHover::Init
@@ -38,7 +44,8 @@ public:
     float wobble_x; // +0x14
     float wobble_y; // +0x18
     float wobble_alpha; // +0x1c
-    JetParticleSlot particle_slots[15][2]; // +0x20
+    JetParticleSlot
+        particle_slots[JET_PARTICLE_ROW_COUNT][JET_PARTICLE_COLUMN_COUNT]; // +0x20
     SubgameRuntime* game; // +0x200, borrowed owning subgame
     char unknown_204[0x20c - 0x204];
     float warning_intensity_latch; // +0x20c

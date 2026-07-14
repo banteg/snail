@@ -6,9 +6,9 @@
 void SubHover::initialize_jet_particles()
 {
     JetParticleSlot* slot = &particle_slots[0][0];
-    int rows = 15;
+    int rows = JET_PARTICLE_ROW_COUNT;
     do {
-        int columns = 2;
+        int columns = JET_PARTICLE_COLUMN_COUNT;
         do {
             slot->sprite = g_sprite_manager.allocate_sprite(1, 0x9e, -1, -1);
             unsigned int flags = slot->sprite->flags;
