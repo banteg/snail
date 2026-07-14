@@ -18,6 +18,19 @@ struct D3DViewport8 {
 
 typedef Direct3DVertexBuffer8 VertexBuffer;
 
+struct Direct3DTexture8Vtbl {
+    char unknown_000[0x08];
+    int (__stdcall* Release)(Direct3DTexture8* self);
+};
+
+class Direct3DTexture8 {
+public:
+    Direct3DTexture8Vtbl* vtbl;
+};
+
+typedef char Direct3DTexture8_must_be_0x04[
+    (sizeof(Direct3DTexture8) == 0x04) ? 1 : -1];
+
 struct Direct3DDevice8Vtbl {
     char unknown_000[0x08];
     int (__stdcall* Release)(Direct3DDevice8* self);

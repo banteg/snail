@@ -4,8 +4,9 @@ Tears down the loading-screen textures and preserves the measured loading
 budget at `+0x08` in `data_4df9c4`.
 
 The texture releases are COM-style calls: the texture pointer is pushed before
-calling vtable slot `+0x08`, so the scratch keeps a narrow stdcall vtable view
-instead of treating the release as a C++ thiscall.
+calling vtable slot `+0x08`. The shared `Direct3DTexture8` view now exposes that
+stdcall COM `Release` slot directly instead of duplicating a scratch-local
+interface and vtable.
 
 Focused Wibo matches 100.00%, 15/15 instructions. The masked audit is clean
 after curating `RuntimeConfig::last_loading_budget`, `g_loading_background_texture`, and
@@ -16,3 +17,8 @@ is the `LoadingBarOn` progress-fill texture.
 2026-07-11 cRLoadingBar ownership: Android preserves the resource teardown as
 `cRLoadingBar::UnInit()`. The exact 15/15 Windows member now lives on the
 shared `LoadingBar g_loading_bar` owner.
+
+2026-07-14 resource ownership: the two texture globals and two render-buffer
+globals created and consumed by the loading lifecycle are declared alongside
+`LoadingBar`. Initializer, updater, and teardown retain their existing focused
+instruction streams and operand audits.

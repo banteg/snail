@@ -7,12 +7,6 @@
 #include "loading_vertex.h"
 #include "object_render_types.h"
 
-extern Direct3DDevice8* g_d3d_device; // data_502fec
-extern Direct3DTexture8* g_loading_background_texture; // data_503288
-extern ObjectRenderBuffers* g_loading_background_vertex_buffer; // data_503284
-extern Direct3DTexture8* g_loading_bar_on_texture; // data_503280
-extern ObjectRenderBuffers* g_loading_bar_vertex_buffer; // data_5032a4
-
 extern "C" int __stdcall D3DXCreateTextureFromFileInMemoryEx(Direct3DDevice8* device,
     void* src_data, unsigned int src_data_size, unsigned int width, unsigned int height,
     unsigned int mip_levels, unsigned int usage, unsigned int format, unsigned int pool,
