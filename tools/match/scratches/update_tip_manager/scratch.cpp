@@ -5,7 +5,7 @@
 void TipManager::update_tip_manager()
 {
     Tip* tip = tips;
-    int count = 3;
+    int count = TIP_SLOT_COUNT;
     do {
         if (tip->active == 1) {
             tip->update_tip();

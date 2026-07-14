@@ -5,7 +5,7 @@
 void TipManager::uninit_tips()
 {
     Tip* tip = tips;
-    int count = 3;
+    int count = TIP_SLOT_COUNT;
     do {
         if (tip->active == 1) {
             tip->kill_tip_widgets();

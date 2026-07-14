@@ -19,7 +19,7 @@ Tip* TipManager::enqueue_tip_message(
 
         ++index;
         ++tip;
-        if (index >= 3) {
+        if (index >= TIP_SLOT_COUNT) {
             report_errorf("Run out of Tips");
             return 0;
         }

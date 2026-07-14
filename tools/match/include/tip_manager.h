@@ -15,6 +15,10 @@ struct TipData {
 };
 typedef TipData TipMessageDefinition;
 
+enum {
+    TIP_SLOT_COUNT = 3,
+};
+
 class Tip {
 public:
     void initialize_tip(TipData* definition, int hide_disable_button); // @ 0x448a40, cRTip::Init
@@ -39,7 +43,7 @@ public:
     Tip* enqueue_tip_message(TipData* definition, int hide_disable_button); // @ 0x448d30, cRTipManager::TipNew
     void update_tip_manager(); // @ 0x448d80, cRTipManager::AI
 
-    Tip tips[3]; // +0x38
+    Tip tips[TIP_SLOT_COUNT]; // +0x38
 };
 
 typedef char TipData_must_be_0x14[(sizeof(TipData) == 0x14) ? 1 : -1];

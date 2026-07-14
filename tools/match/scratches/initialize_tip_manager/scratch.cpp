@@ -5,7 +5,7 @@
 void TipManager::initialize_tip_manager()
 {
     Tip* tip = tips;
-    int count = 3;
+    int count = TIP_SLOT_COUNT;
     do {
         tip->active = 0;
         ++tip;
