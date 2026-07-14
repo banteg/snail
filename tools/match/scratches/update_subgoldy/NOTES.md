@@ -528,3 +528,11 @@ direct non-member state consumers recovered by Binary Ninja field xrefs; the
 other is `calc_subgame_rate`. Focused output remains byte-identical at 74.20%,
 2,075/2,087 instructions, prefix 12/2,087, 290 clean operands, and the same
 bounded jump-table mismatch.
+
+## 2026-07-14 hover lifecycle ownership
+
+All player-side hover gates now consume `SubHoverState`: the active lane adds
+forward acceleration, suppresses attachment lateral handling, shapes the
+vertical hover response, and owns the late attachment-exit retirement branch.
+Focused output remains byte-identical at 74.20%, 2,075/2,087 instructions,
+prefix 12/2,087, 290 clean operands, and the same bounded jump-table mismatch.

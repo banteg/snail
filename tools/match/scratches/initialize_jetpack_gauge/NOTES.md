@@ -11,3 +11,10 @@ Cross-port Android identifies the exact field/store body as
 The normalized exact 0x214-byte owner is `SubHover`, with borrowed Player and
 SubgameRuntime backlinks at `+0x10/+0x200`. Its authored return is void; the
 honest void definition remains exact at 15/15 instructions.
+
+## 2026-07-14 hover lifecycle ownership
+
+Initialization now seeds `SUB_HOVER_STATE_INACTIVE`. Live Windows field xrefs
+and Android `cRSubHover::{Init,On,AI,End}` agree that `+0x0c` is the exact
+two-state lifecycle owner. Focused output remains exact at 15/15 instructions
+with all three operands clean.

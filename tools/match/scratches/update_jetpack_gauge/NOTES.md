@@ -84,3 +84,11 @@ authored `JetPack=Off` metadata lane. It belongs to `SubRow::flags`; the same
 numeric `0x8000` in the separate `SubLoc::lane_and_flags` owner is unrelated.
 Focused output remains 85.93%, 132/131 instructions, prefix 6/131, with all 34
 operands clean.
+
+## 2026-07-14 hover lifecycle ownership
+
+The native early ladder and teardown store now name
+`SUB_HOVER_STATE_INACTIVE`; the only armed value is
+`SUB_HOVER_STATE_ACTIVE`. This preserves the deliberate VC6 ladder shape and
+the honest 85.93%, 132/131-instruction partial, prefix 6/131, with all 34
+operands clean.

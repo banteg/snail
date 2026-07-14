@@ -436,7 +436,7 @@ steering_stored:
                 }
             }
         }
-        if (sub_hover.state == 1) {
+        if (sub_hover.state == SUB_HOVER_STATE_ACTIVE) {
             float rate = game->subgame_rate;
             float quantum = rate * rate * 0.0040000002f;
             velocity.z = quantum + quantum + velocity.z;
@@ -458,7 +458,8 @@ steering_stored:
                          .flags
                       & SUBROW_FLAG_NO_FALL)
                     == 0
-                    && !sub_hover.state && !control_override_active) {
+                    && sub_hover.state == SUB_HOVER_STATE_INACTIVE
+                    && !control_override_active) {
                     velocity.z = (1.0f - drag_game->subgame_rate * 0.2f) * velocity.z;
                 }
                 if (game
@@ -912,9 +913,9 @@ steering_stored:
     float interaction_near = transform.position.z - 8.0f;
     if (interaction_limit >= interaction_near)
         interaction_limit = interaction_near;
-    int hover_state = sub_hover.state;
+    SubHoverState hover_state = sub_hover.state;
     interaction_max_z = interaction_limit;
-    if (hover_state == 1) {
+    if (hover_state == SUB_HOVER_STATE_ACTIVE) {
         if (transform.position.y < 1.0f) {
             velocity.y = velocity.y * 0.89999998f;
             velocity.y = velocity.y - game->subgame_rate * game->subgame_rate * -0.0099999998f;

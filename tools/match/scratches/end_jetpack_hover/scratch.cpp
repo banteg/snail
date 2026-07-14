@@ -4,7 +4,7 @@
 
 void SubHover::end_jetpack_hover()
 {
-    if (state == 1 && progress < 0.94f) {
+    if (state == SUB_HOVER_STATE_ACTIVE && progress < 0.94f) {
         progress = 0.94f;
     }
 }

@@ -2,7 +2,8 @@
 
 Exact `cRSubHover::End()` hover clamp helper.
 
-- It is a `SubHover` member that only acts while `state == 1`.
+- It is a `SubHover` member that only acts while
+  `state == SUB_HOVER_STATE_ACTIVE`.
 - If active and `progress < 0.94f`, it clamps `progress` to `0.94f`; otherwise
   it returns without side effects.
 - 2026-06-18 BN/IDA sync: BN's raw prototype was `void __fastcall(int32_t*)`.
@@ -11,3 +12,8 @@ Exact `cRSubHover::End()` hover clamp helper.
 - Android independently exports `cRSubHover::End()` and performs the same
   state test and 0.94 clamp at identical owner offsets. Focused Windows remains
   exact at 9/9 instructions.
+
+## 2026-07-14 hover lifecycle ownership
+
+The clamp gate now consumes the typed active state rather than raw value one.
+Focused output remains exact at 9/9 instructions with its operand clean.

@@ -248,7 +248,7 @@ int FollowState::update_track_attachment_follow_state(
             * orient_template->installed_heading_delta
             / (float)(int)orient_template->segment_count;
 
-        if (player->sub_hover.state != 1) {
+        if (player->sub_hover.state != SUB_HOVER_STATE_ACTIVE) {
             float abs_lateral = out_position->x - v85;
             if (abs_lateral < 0.0f)
                 abs_lateral = -abs_lateral;

@@ -10,3 +10,9 @@ Android identifies this exact transition as `cRSubHover::On()`: it writes the
 same state/progress/wobble lanes, calls `cRSnail::SetJetPack(1)`, and tail-calls
 `cRSubHover::JetInit()`. The Windows `SubHover` member and both callees now use
 their authored void contracts while preserving the exact 18/18 instructions.
+
+## 2026-07-14 hover lifecycle ownership
+
+The authored `On` edge now explicitly transitions the child from
+`SUB_HOVER_STATE_INACTIVE` to `SUB_HOVER_STATE_ACTIVE`. Focused output remains
+exact at 18/18 instructions with all four operands clean.

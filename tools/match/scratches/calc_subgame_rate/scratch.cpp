@@ -46,7 +46,7 @@ void SubgameRuntime::calc_subgame_rate()
             }
         }
 
-        if (player.sub_hover.state == 1)
+        if (player.sub_hover.state == SUB_HOVER_STATE_ACTIVE)
             subgame_rate += player.sub_hover.warning_intensity_latch * 0.5f;
     } else {
         subgame_rate = base_rate;

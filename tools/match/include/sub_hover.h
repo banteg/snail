@@ -23,6 +23,11 @@ enum {
     JET_PARTICLE_LAST_ROW_INDEX = JET_PARTICLE_ROW_COUNT - 1,
 };
 
+enum SubHoverState {
+    SUB_HOVER_STATE_INACTIVE = 0,
+    SUB_HOVER_STATE_ACTIVE = 1,
+};
+
 class SubHover {
 public:
     void initialize_jetpack_gauge(int player_slot); // @ 0x43a930, cRSubHover::Init
@@ -39,7 +44,7 @@ public:
     float progress; // +0x00
     float progress_step; // +0x04
     int unknown_08; // +0x08
-    int state; // +0x0c
+    SubHoverState state; // +0x0c
     Player* player; // +0x10, borrowed containing player
     float wobble_x; // +0x14
     float wobble_y; // +0x18

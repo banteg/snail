@@ -10,7 +10,7 @@ int next_math_random_value();
 
 void SubHover::update_jet_particles()
 {
-    if (state != 1) {
+    if (state != SUB_HOVER_STATE_ACTIVE) {
         return;
     }
 

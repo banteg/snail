@@ -406,7 +406,8 @@ High-confidence current fields:
 - `+0x00`: `progress`
 - `+0x04`: `progress_step`
 - `+0x08`: unresolved padding
-- `+0x0c`: `state`
+- `+0x0c`: `state`, the complete `SubHoverState` graph:
+  `INACTIVE (0) -> ACTIVE (1) -> INACTIVE`
 - `+0x10`: `player`
 - `+0x14`: `wobble_x`
 - `+0x18`: `wobble_y`
@@ -419,7 +420,7 @@ High-confidence current fields:
 Current practical read:
 
 - `initialize_jetpack_gauge` zeros the controller, sets the progress step to `1/600`, and seeds the runtime and owning-player pointers
-- `arm_jetpack_gauge` transitions `state` from idle to active and clears the wobble outputs
+- `arm_jetpack_gauge` transitions `state` from `INACTIVE` to `ACTIVE` and clears the wobble outputs
 - `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, shuts off the `JETPACKTHRUST` visual lane once the warning band begins, and forces shutoff when the current runtime cell carries flag `0x80`
 - `initialize_jet_particles`, `update_jet_particles`, and `uninit_jet_particles` operate on the same controller; the `+0x20` block is a fixed `30`-entry sprite-slot bank used by the hover thrust particles
   - cross-port authored names are `cRSubHover::JetInit`, `Jets`, and `JetUnInit`

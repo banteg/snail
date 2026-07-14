@@ -849,6 +849,41 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_sub_hover_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/sub_hover.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"SubHoverState",' in path_sync
+    assert '("0x0c", "state", "SubHoverState")' in path_sync
+    for header in (analysis_header, matcher_header):
+        assert "SUB_HOVER_STATE_INACTIVE = 0" in header
+        assert "SUB_HOVER_STATE_ACTIVE = 1" in header
+
+    consumers = {
+        "initialize_jetpack_gauge": "SUB_HOVER_STATE_INACTIVE",
+        "arm_jetpack_gauge": "SUB_HOVER_STATE_ACTIVE",
+        "end_jetpack_hover": "SUB_HOVER_STATE_ACTIVE",
+        "update_jetpack_gauge": "SUB_HOVER_STATE_INACTIVE",
+        "update_jet_particles": "SUB_HOVER_STATE_ACTIVE",
+        "update_track_attachment_follow_state": "SUB_HOVER_STATE_ACTIVE",
+        "calc_subgame_rate": "SUB_HOVER_STATE_ACTIVE",
+        "update_subgoldy": "SUB_HOVER_STATE_ACTIVE",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_invincible_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

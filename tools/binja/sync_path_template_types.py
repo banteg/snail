@@ -256,6 +256,7 @@ REQUIRED_HEADER_STRUCTS = (
     "GolbShot",
     "Player",
     "JetParticleSlot",
+    "SubHoverState",
     "SubHover",
     "TipData",
     "Tip",
@@ -532,7 +533,7 @@ JET_PARTICLE_SLOT_FIELD_UPDATES = (
 SUB_HOVER_FIELD_UPDATES = (
     ("0x00", "progress", "float"),
     ("0x04", "progress_step", "float"),
-    ("0x0c", "state", "int32_t"),
+    ("0x0c", "state", "SubHoverState"),
     ("0x10", "player", "Player*"),
     ("0x14", "wobble_x", "float"),
     ("0x18", "wobble_y", "float"),

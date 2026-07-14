@@ -37,3 +37,10 @@ The rate envelope now consumes the typed `DamageGuageState` and adds its
 mode-dependent bonus only while the controller is
 `DAMAGE_GUAGE_STATE_DRAINING`. Matching remains exact at 84/84 instructions
 with all 16 operands clean.
+
+## 2026-07-14 hover lifecycle ownership
+
+The final rate lane now explicitly belongs to `SUB_HOVER_STATE_ACTIVE`; its
+warning-intensity latch is therefore part of the same exact hover owner rather
+than a generic player rate field. Matching remains exact at 84/84 instructions
+with all 16 operands clean.

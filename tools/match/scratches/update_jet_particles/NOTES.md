@@ -130,3 +130,10 @@ free-function scaled-vector expressions reached 51.83%. A real detached-puff
 reverted. Native's stack-spilled column and saved-register x/y ownership remain
 honest compiler-allocation debt, not a reason to add padding, volatile locals,
 or address-taking without a semantic owner.
+
+## 2026-07-14 hover lifecycle ownership
+
+Jet emission now explicitly belongs to `SUB_HOVER_STATE_ACTIVE`. This is one
+of the eight direct Windows consumers of the exact state field at owner
+`+0x0c`. Focused output remains byte-identical at 52.96%, 174/181
+instructions, prefix 0, with all 16 operands clean.

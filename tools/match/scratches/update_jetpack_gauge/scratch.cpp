@@ -20,10 +20,10 @@ void SubHover::update_jetpack_gauge()
 
     int live_state = state;
     live_state -= zero;
-    if (live_state == 0)
+    if (live_state == SUB_HOVER_STATE_INACTIVE)
         return;
     --live_state;
-    if (live_state != 0)
+    if (live_state != SUB_HOVER_STATE_INACTIVE)
         return;
 
     {
@@ -72,7 +72,7 @@ finish_hover:
     end_jetpack_hover();
     if (progress <= 0.94f)
         g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
-    state = zero;
+    state = SUB_HOVER_STATE_INACTIVE;
     wobble_alpha = (float)zero;
     wobble_y = (float)zero;
     wobble_x = (float)zero;

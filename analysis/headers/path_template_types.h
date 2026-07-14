@@ -1144,12 +1144,17 @@ typedef struct JetParticleSlot {
     float wobble_alpha;
 } JetParticleSlot;
 
+typedef enum SubHoverState {
+    SUB_HOVER_STATE_INACTIVE = 0,
+    SUB_HOVER_STATE_ACTIVE = 1,
+} SubHoverState;
+
 /* Authored cRSubHover, exact 0x214-byte hover and jet-VFX owner. */
 typedef struct SubHover {
     float progress;
     float progress_step;
     uint8_t _pad_08[0x4];
-    int32_t state;
+    SubHoverState state;
     struct Player* player;
     float wobble_x;
     float wobble_y;

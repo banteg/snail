@@ -313,3 +313,10 @@ byte pointer repeatedly cast at each use. This closes the shared process-root
 edge without changing code generation: focused matching remains 72.89%,
 698/726 instructions, with the 122-instruction prefix and all 63 operands
 clean.
+
+## 2026-07-14 hover lifecycle ownership
+
+Attachment-side lateral handling now tests the typed active hover state. Live
+field xrefs prove this is a direct consumer of `SubHover +0x0c`, not an
+attachment-owned flag. Focused output remains byte-identical at 72.89%,
+698/726 instructions, prefix 122/726, with all 63 operands clean.
