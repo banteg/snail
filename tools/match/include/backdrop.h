@@ -66,12 +66,12 @@ public:
     float unknown_670; // +0x670
     float unknown_674; // +0x674
     float unknown_678; // +0x678
-    char unknown_67c[0x68c - 0x67c];
+    Color4f unknown_color_67c; // +0x67c, constructed as a Color4f at startup
     float primary_blend; // +0x68c
     float primary_blend_step; // +0x690
     int previous_primary_texture; // +0x694
     int current_primary_texture; // +0x698
-    char unknown_69c[0x6ac - 0x69c];
+    Color4f unknown_color_69c; // +0x69c, constructed as a Color4f at startup
     float secondary_blend; // +0x6ac
     float secondary_blend_step; // +0x6b0
     int previous_secondary_texture; // +0x6b4
