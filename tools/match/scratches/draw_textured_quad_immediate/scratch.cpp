@@ -47,8 +47,8 @@ void draw_textured_quad_immediate(
     packed.pack_color_rgba_u8(color);
 
     ObjectRenderVertex* vertices;
-    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Lock(
-        g_direct3d_renderer.renderer_state->sprite_vertex_buffer, 0,
+    g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Lock(
+        g_direct3d_renderer.renderer_state->vertex_buffer, 0,
         sizeof(ObjectRenderVertex) * 4,
         (void**)&vertices, 0);
 
@@ -151,10 +151,10 @@ void draw_textured_quad_immediate(
         vertices[3].diffuse = *(unsigned int*)&packed;
     }
 
-    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Unlock(
-        g_direct3d_renderer.renderer_state->sprite_vertex_buffer);
+    g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Unlock(
+        g_direct3d_renderer.renderer_state->vertex_buffer);
     g_d3d_device->vtbl->SetStreamSource(
-        g_d3d_device, 0, g_direct3d_renderer.renderer_state->sprite_vertex_buffer,
+        g_d3d_device, 0, g_direct3d_renderer.renderer_state->vertex_buffer,
         sizeof(ObjectRenderVertex));
     g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
     int result = g_d3d_device->vtbl->DrawPrimitive(g_d3d_device, 6, 0, 2);

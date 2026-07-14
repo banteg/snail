@@ -15,7 +15,8 @@ Important type notes:
 - The transient quad is not an immediate-only record. It uses the shared
   `ObjectRenderVertex` FVF `0x142` payload also locked by object, track-cache,
   and sprite rendering: `xyz`, packed diffuse BGRA, then `uv`. The renderer's
-  `sprite_vertex_buffer` owns the four-record staging region.
+  borrowed `ObjectRenderBuffers` slot owns the four-record staging region
+  through its canonical `vertex_buffer` field.
 - Native increments both the submitted triangle counter and the draw-call counter
   before checking `DrawPrimitive`, then increments `data_4f7454` only on
   success.

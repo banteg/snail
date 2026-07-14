@@ -63,8 +63,8 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
     packed.a = (unsigned char)(int)(alpha * 255.0f);
 
     ObjectRenderVertex* vertices;
-    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Lock(
-        g_direct3d_renderer.renderer_state->sprite_vertex_buffer, 0,
+    g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Lock(
+        g_direct3d_renderer.renderer_state->vertex_buffer, 0,
         sizeof(ObjectRenderVertex) * 4,
         (void**)&vertices, 0);
 
@@ -129,10 +129,10 @@ int draw_sprite_quad(Vec3* position, Sprite* sprite)
     vertices[3].v = 1.0f;
     vertices[3].diffuse = *(unsigned int*)&packed;
 
-    g_direct3d_renderer.renderer_state->sprite_vertex_buffer->vtbl->Unlock(
-        g_direct3d_renderer.renderer_state->sprite_vertex_buffer);
+    g_direct3d_renderer.renderer_state->vertex_buffer->vtbl->Unlock(
+        g_direct3d_renderer.renderer_state->vertex_buffer);
     g_d3d_device->vtbl->SetStreamSource(
-        g_d3d_device, 0, g_direct3d_renderer.renderer_state->sprite_vertex_buffer,
+        g_d3d_device, 0, g_direct3d_renderer.renderer_state->vertex_buffer,
         sizeof(ObjectRenderVertex));
     g_d3d_device->vtbl->SetVertexShader(g_d3d_device, 0x142);
     int result = g_d3d_device->vtbl->DrawPrimitive(g_d3d_device, 6, 0, 2);

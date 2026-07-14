@@ -38,11 +38,11 @@ Open matching issues:
 shared `Vector3` type. Focused Wibo stays exact at `100.00%`, `259/259`, with
 `29 ok` masked operands.
 
-2026-07-11 renderer-state owner closure: the transient sprite vertex buffer is
-now reached as `g_direct3d_renderer.renderer_state->sprite_vertex_buffer`.
-Manifesting the renderer's proven `0xbcc0` extent maps the emitted
-`g_direct3d_renderer+0xbb88` relocation back to the interior renderer-state
-reference. The full 259/259 stream and all 29 operands remain exact.
+2026-07-14 factory-slot owner closure: `renderer_state` is the borrowed
+`ObjectRenderBuffers*` returned by the embedded vertex-buffer factory, not a
+distinct renderer-state layout. The transient buffer is therefore reached
+through its canonical `vertex_buffer` field. The full 259/259 stream and all
+29 operands remain exact.
 
 2026-07-14 shared vertex ownership: removed the private `SpriteVertex`
 lookalike and used the common `ObjectRenderVertex` payload directly. The exact

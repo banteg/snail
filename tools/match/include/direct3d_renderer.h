@@ -70,7 +70,7 @@ public:
 
     VertexBufferFactory vertex_buffer_factory; // +0x0000, 3000 entries
     IndexBufferFactory index_buffer_factory; // +0x8ca4, 3000 entries
-    RendererState* renderer_state; // +0xbb88
+    ObjectRenderBuffers* renderer_state; // +0xbb88, borrowed factory slot
     unsigned char device_initialized; // +0xbb8c
     char unknown_bb8d[0xbb90 - 0xbb8d];
     Direct3D8* d3d;                  // +0xbb90
