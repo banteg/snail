@@ -3496,7 +3496,7 @@
     {
       "address": "0x44cb50",
       "name": "dot_vectors",
-      "description": "Computes the 3D dot product of two vectors. Android symbols match this helper to the static overload `tVector::Dot(const tVector&, const tVector&)`."
+      "description": "Exact static `Vector3::dot_vectors` overload: computes the 3D dot product of two vectors, matching Android `tVector::Dot(const tVector&, const tVector&)`."
     },
     {
       "address": "0x44cb70",
