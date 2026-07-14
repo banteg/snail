@@ -1254,8 +1254,8 @@
     },
     {
       "address": "0x41aa30",
-      "name": "reset_spring_float",
-      "description": "Clears the five-float spring state used by the player's visual root before initializing SubGoldy."
+      "name": "initialize_object_distort",
+      "description": "Initializes the five-float cRDistort subobject embedded at Object +0x80. Android independently exports cRDistort::Init and calls it from cRSubGoldy::Init on the same presentation object."
     },
     {
       "address": "0x41aa50",

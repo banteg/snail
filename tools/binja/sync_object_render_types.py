@@ -72,6 +72,7 @@ SYMBOL_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x41aa30", "initialize_object_distort"),
     ("0x4114b0", "create_object_vertex_buffer_resource"),
     ("0x4115d0", "create_object_index_buffer_resource"),
     ("0x411630", "initialize_direct3d_renderer_defaults"),
@@ -95,6 +96,10 @@ DATA_VAR_UPDATES = (
 # direct Function.set_user_type updates. Keep it out of the repeatable sync
 # until that Binary Ninja function-type defect is cleared.
 PROTO_UPDATES = (
+    (
+        "initialize_object_distort",
+        "void __thiscall initialize_object_distort(ObjectDistort* distort)",
+    ),
     (
         "initialize_object",
         "void __thiscall initialize_object(Object* object)",

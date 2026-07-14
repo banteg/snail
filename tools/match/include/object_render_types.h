@@ -104,15 +104,18 @@ struct Object;
 void disable_object_rendering(Object* object); // @ 0x41a0a0
 
 struct ObjectDistort {
+    void initialize_object_distort(); // @ 0x41aa30, cRDistort::Init
     float z_wave; // +0x00, y offset envelope from vertex z
     float y_squash; // +0x04, x stretch plus y squash around bounds_min.y
     float xyz_scale; // +0x08, x/y grow and z squash
+    float unknown_0c;
+    float unknown_10;
 
     void apply_distort_to_object(Object* object); // @ 0x41aa50
 };
 
-typedef char ObjectDistort_must_be_0x0c[
-    (sizeof(ObjectDistort) == 0x0c) ? 1 : -1];
+typedef char ObjectDistort_must_be_0x14[
+    (sizeof(ObjectDistort) == 0x14) ? 1 : -1];
 
 struct ObjectIndexBufferResourceVtbl {
     char unknown_00[0x2c];
@@ -179,7 +182,6 @@ struct Object {
     ObjectToonEdge* edges; // +0x74
     char unknown_78[0x80 - 0x78];
     ObjectDistort distort; // +0x80
-    char unknown_8c[0x94 - 0x8c];
     float bounding_radius; // +0x94
     char unknown_98[0xa4 - 0x98];
     Vector3 bounds_min; // +0xa4

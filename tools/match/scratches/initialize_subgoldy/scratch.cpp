@@ -10,7 +10,6 @@
 #include "sub_hover.h"
 #include "player.h"
 #include "snail_skin.h"
-#include "spring_float.h"
 #include "transform_matrix.h"
 
 extern GameRoot* g_game; // data_4df904
@@ -42,7 +41,7 @@ void Player::initialize_subgoldy(int player_slot)
     *(int*)(self + 0x2dc) = zero;
     *(int*)(self + 0x2e0) = zero;
 
-    ((SpringFloat*)(*(char**)(self + 0x29a8) + 0x80))->reset_spring_float();
+    this->presentation.object->distort.initialize_object_distort();
     *(int*)(self + 0x2980) = 0xc1980000;
     *(int*)(self + 0x1cc) = zero;
     *(int*)(self + 0x42b0) = zero;

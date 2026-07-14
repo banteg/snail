@@ -221,7 +221,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_backdrop_slice_quad | 0x41a1c0 | 196 | 61/61 | 100.00% | 61/61 | 7 ok |  |
 | ✅ | initialize_backdrop_corner_quad | 0x41a290 | 207 | 55/55 | 100.00% | 55/55 | 10 ok |  |
 | ✅ | initialize_backdrop_tile_quad | 0x41a4d0 | 1368 | 367/367 | 100.00% | 367/367 | 63 ok |  |
-| ✅ | reset_spring_float | 0x41aa30 | 17 | 7/7 | 100.00% | 7/7 | - |  |
+| ✅ | initialize_object_distort | 0x41aa30 | 17 | 7/7 | 100.00% | 7/7 | - |  |
 | ✅ | initialize_options_menu | 0x41ace0 | 506 | 127/127 | 100.00% | 127/127 | 32 ok |  |
 | ✅ | destroy_options_menu | 0x41aee0 | 127 | 32/32 | 100.00% | 32/32 | 13 ok |  |
 | ✅ | update_options_menu | 0x41af60 | 267 | 73/73 | 100.00% | 73/73 | 19 ok |  |

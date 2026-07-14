@@ -17,8 +17,9 @@ and final lane/attachment/nuke state clears.
 
 Evidence-backed changes in this pass:
 
-- `reset_spring_float @ 0x41aa30` is now a proof-grade scratch, resolving the
-  only masked unresolved operand in this caller.
+- `initialize_object_distort @ 0x41aa30` is now a proof-grade authored
+  `cRDistort::Init` scratch, resolving the call target through the embedded
+  presentation Object owner.
 - Recasting the cached camera target as an `int*` and assigning the live Z seed
   as `4.0f` moved the tail from 92.25% to 94.77%.
 - Keeping the `g_game_base` load inside the active-slot branches moved the tail

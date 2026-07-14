@@ -23,9 +23,9 @@ Source-shape notes:
 
 - The receiver is the complete shared `Player`; several old initialization
   runs remain raw-offset shaped where that is the proven VC6 source form.
-- The tiny `0x41aa30` spring reset is now split out as a proof-grade
-  `reset_spring_float` scratch; the empty runtime callback is still represented
-  as a local method view only to preserve its call shape.
+- The tiny `0x41aa30` helper is the proof-grade authored
+  `initialize_object_distort` / `cRDistort::Init`; the empty runtime callback
+  is still represented as a local method view only to preserve its call shape.
 - The camera-target/control-source tail is now exact. The retained aggregate
   assignment is supported independently by the named Android
   `cRSubGoldy::Init` implementation, not by register forcing.
@@ -216,3 +216,10 @@ stores a direct `BodBase*` backlink to its containing
 `PresentationAnimationChannel`, whose inherited render prefix owns the object,
 flags, color, and transform. The four explicit base casts are gone; focused
 Wibo remains exact at 279/279 instructions and 27 clean operands.
+
+2026-07-14 cRDistort owner correction: Android's named `cRDistort::Init` clears
+the same five-word owner and is called from `cRSubGoldy::Init` on the
+presentation object, while iOS retains the same authored class. Windows now
+calls `presentation.object->distort.initialize_object_distort()` directly;
+the stale standalone `SpringFloat` view is gone. Focused Wibo remains exact at
+279/279 instructions with all 27 operands clean.

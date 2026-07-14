@@ -123,6 +123,8 @@ typedef struct ObjectDistort {
     float z_wave;
     float y_squash;
     float xyz_scale;
+    float unknown_0c;
+    float unknown_10;
 } ObjectDistort;
 
 typedef struct ObjectIndexBufferResource ObjectIndexBufferResource;
@@ -179,7 +181,6 @@ typedef struct Object {
     ObjectToonEdge* edges;
     uint8_t _pad_78[0x80 - 0x78];
     ObjectDistort distort;
-    uint8_t _pad_8c[0x94 - 0x8c];
     float bounding_radius;
     uint8_t _pad_98[0xa4 - 0x98];
     Vec3 bounds_min;
