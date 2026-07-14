@@ -17,6 +17,8 @@ struct TransformMatrix {
         float m30, float m31, float m32, float m33); // @ 0x44cfe0
     TransformMatrix* multiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1a0
     TransformMatrix* multiply_matrix_in_place(const TransformMatrix* rhs); // const-callsite view
+    TransformMatrix* multiply_matrix_in_place_forward_thunk(
+        TransformMatrix* rhs); // @ 0x44d1d0
     TransformMatrix* premultiply_matrix_in_place(TransformMatrix* rhs); // @ 0x44d1e0
     TransformMatrix* premultiply_matrix_in_place(const TransformMatrix* rhs); // const-callsite view
     TransformMatrix* multiply_matrices(const TransformMatrix* lhs, const TransformMatrix* rhs);
