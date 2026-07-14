@@ -230,3 +230,19 @@ base now derives from `offsetof(SubgameRuntime, ring_effects)` and its step from
 and `0x1f8` parent stride without changing the emitted code. Focused output
 remains honestly at 64.09%, 327/347 instructions, with 48 clean operands and
 the same ten explicit kind-switch mismatches.
+
+## 2026-07-14 fixed parent and child extents
+
+The runtime constructor and size ledger prove two embedded `0x1f8` `SubRing`
+parents, while the exact particle initializer and parent updater prove ten
+embedded `0x20` `SubRingStar` children per parent. The shared owner now carries
+`SUB_RING_POOL_CAPACITY` and `SUB_RING_PARTICLE_COUNT`; the free-parent scan no
+longer repeats raw `2`, and every child loop borrows the same bound.
+
+All five dependent normalized listings remain byte-identical:
+
+- spawner: `cff66af6bf1bdff20727ebc2c6018b82b6cb9173a2273a3c02e65af56973cc9c`
+- particle initializer: `a8c10dd83dfdc6db3bc0dd25b8b9709dd1e0c0b973e1f28ebabb14d9482adcc4`
+- parent updater: `0940726eee8e7a0a108d1a2d58301241c610d08414c729dc7685b0f5f9950488`
+- parent constructor: `a02f4e5d58e4322ce0393c0db796f2d37ae5cc9bb63372a84ae6c8c25f7c3bf1`
+- runtime constructor: `755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`

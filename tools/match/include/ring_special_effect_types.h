@@ -10,6 +10,11 @@ class SubgameRuntime;
 class SubRing;
 typedef SubRing RingOrSpecialEffectParent;
 
+enum {
+    SUB_RING_PARTICLE_COUNT = 10,
+    SUB_RING_POOL_CAPACITY = 2,
+};
+
 class SubRingStar {
 public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
@@ -41,7 +46,7 @@ public:
     int owner_lives_snapshot; // +0x8c
     // Fixed child storage owned by this parent. Each child's sprite is a
     // separate SpriteManager allocation released on every parent-removal path.
-    SubRingStar particles[10]; // +0x90, embedded child records
+    SubRingStar particles[SUB_RING_PARTICLE_COUNT]; // +0x90
     SubgameRuntime* rate_source; // +0x1d0, borrowed enclosing cRSubGame
     float transition_progress; // +0x1d4
     float transition_step; // +0x1d8
@@ -62,7 +67,7 @@ typedef SubRingListAnchor RingOrSpecialEffectListAnchor;
 class SubRingPool {
 public:
     // Fixed storage owned by SubgameRuntime; active-list linkage never owns it.
-    SubRing slots[2]; // game +0x35b78c, stride 0x1f8
+    SubRing slots[SUB_RING_POOL_CAPACITY]; // game +0x35b78c
 };
 
 typedef SubRingPool RingOrSpecialEffectPool;

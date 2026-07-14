@@ -28,7 +28,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
             break;
         slot_index++;
         scan = (SubRing*)((char*)scan + sizeof(SubRing));
-        if (slot_index < 2)
+        if (slot_index < SUB_RING_POOL_CAPACITY)
             continue;
         return;
     }

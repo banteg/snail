@@ -7,10 +7,6 @@
 
 int SubRing::initialize_ring_or_special_effect_particles(int)
 {
-    enum {
-        PARTICLE_COUNT = sizeof(particles) / sizeof(particles[0]),
-    };
-
     int i = 0;
     state = 1;
     star_shower_counter = 0;
@@ -75,7 +71,7 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
 
         particle->update_ring_or_special_effect_particle();
         i++;
-    } while (i < PARTICLE_COUNT);
+    } while (i < SUB_RING_PARTICLE_COUNT);
 
     return i;
 }

@@ -179,7 +179,8 @@ depending on `game_root.h` to expose the complete owner transitively.
 
 ## 2026-07-14 particle extent derivation
 
-All six update/kill loops and both indexed radius loops now derive their bound
-from `SubRing::particles`. The normalized listing remains byte-identical
+All six update/kill loops and both indexed radius loops now share the
+`SUB_RING_PARTICLE_COUNT` bound owned by `SubRing::particles`. The normalized
+listing remains byte-identical
 (`0940726eee8e7a0a108d1a2d58301241c610d08414c729dc7685b0f5f9950488`)
 at the honest 98.21% result (`336/336`, prefix `193/336`, 37 clean operands).
