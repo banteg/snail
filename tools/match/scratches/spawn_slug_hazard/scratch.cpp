@@ -11,8 +11,6 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-typedef unsigned int DWORD;
-
 extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value();
@@ -21,40 +19,39 @@ int report_errorf(char* format, ...);
 int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
 {
     int slot_index = 0;
-    DWORD* game_words = (DWORD*)this;
-    DWORD* scan = game_words + 874760;
+    Slug* scan = slug_hazards.slots;
     while (1) {
-        if (*scan == 0)
+        if (scan->state == 0)
             break;
         ++slot_index;
-        scan += 59;
+        ++scan;
         if (slot_index < 8)
             continue;
         return slot_index;
     }
 
-    char* slot_base = (char*)(game_words + 59 * slot_index);
-    DWORD* state_ref = (DWORD*)(slot_base + 0x356420);
-    DWORD* player_ref = (DWORD*)(slot_base + 0x356460);
+    int* state_ref = &slug_hazards.slots[slot_index].state;
+    Player** player_ref = &slug_hazards.slots[slot_index].player;
     *state_ref = 1;
-    *player_ref = (DWORD)player;
-    ((TransformMatrix*)(slot_base + 0x3563d8))->set_matrix_identity();
+    *player_ref = player;
+    slug_hazards.slots[slot_index].transform.set_matrix_identity();
 
     Vector3 staged_position;
     staged_position.y = cell->position.y + 1.7f;
     staged_position.x = cell->position.x;
     staged_position.z = cell->position.z;
-    Vector3* live_position = (Vector3*)(slot_base + 0x356408);
+    Vector3* live_position =
+        &slug_hazards.slots[slot_index].transform.position;
     *live_position = staged_position;
     project_position_onto_track_attachment(
         live_position,
-        (float*)(slot_base + 0x356438));
+        &slug_hazards.slots[slot_index].attachment_facing_angle);
 
-    Vector3 velocity = Vector3(0.0f, 0.0f, -0.2f) * *((float*)this + 14);
-    *(Vector3*)(slot_base + 0x35642c) = velocity;
+    Vector3 velocity = Vector3(0.0f, 0.0f, -0.2f) * subgame_rate;
+    slug_hazards.slots[slot_index].velocity = velocity;
 
-    BodNode* node = (BodNode*)(slot_base + 0x3563a0);
-    BodNode* tail = (BodNode*)&this->player;
+    BodNode* node = &slug_hazards.slots[slot_index];
+    BodNode* tail = &this->player;
     BodList* anchor = &g_game->active_bod_list;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDbefore");
@@ -74,50 +71,47 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
 
     Sprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 118, -1, -1);
-    *(DWORD*)(slot_base + 0x35644c) = (DWORD)sprite;
-    DWORD flags = sprite->flags;
+    slug_hazards.slots[slot_index].sprite = sprite;
+    unsigned int flags = sprite->flags;
     flags |= 0x800;
     sprite->flags = flags;
-    ((Sprite*)*(DWORD*)(slot_base + 0x35644c))->color.set_color_white();
-    ((Sprite*)*(DWORD*)(slot_base + 0x35644c))->gravity_step = 0.0f;
-    ((Sprite*)*(DWORD*)(slot_base + 0x35644c))->progress = 0.0f;
-    ((Sprite*)*(DWORD*)(slot_base + 0x35644c))->progress_step = 0.0f;
-    ((Sprite*)*(DWORD*)(slot_base + 0x35644c))->size_start = 2.0f;
-    ((Sprite*)*(DWORD*)(slot_base + 0x35644c))->size_end = 2.0f;
+    slug_hazards.slots[slot_index].sprite->color.set_color_white();
+    slug_hazards.slots[slot_index].sprite->gravity_step = 0.0f;
+    slug_hazards.slots[slot_index].sprite->progress = 0.0f;
+    slug_hazards.slots[slot_index].sprite->progress_step = 0.0f;
+    slug_hazards.slots[slot_index].sprite->size_start = 2.0f;
+    slug_hazards.slots[slot_index].sprite->size_end = 2.0f;
 
-    DWORD* sprite_position =
-        (DWORD*)&((Sprite*)*(DWORD*)(slot_base + 0x35644c))->position;
-    sprite_position[0] = *(DWORD*)&live_position->x;
-    sprite_position[1] = *(DWORD*)&live_position->y;
-    sprite_position[2] = *(DWORD*)&live_position->z;
-    *(DWORD*)(slot_base + 0x356450) = (DWORD)cell;
-    *(unsigned char*)(slot_base + 0x356454) = 0;
-    *(unsigned char*)(slot_base + 0x35646c) = 0;
-    *(DWORD*)(slot_base + 0x356470) = 0;
-    float* hit_flash_step_ref = (float*)(slot_base + 0x356474);
+    slug_hazards.slots[slot_index].sprite->position = *live_position;
+    slug_hazards.slots[slot_index].source_cell = cell;
+    slug_hazards.slots[slot_index].passed_player = 0;
+    slug_hazards.slots[slot_index].hit_flash_pending = 0;
+    slug_hazards.slots[slot_index].hit_flash_progress = 0.0f;
+    float* hit_flash_step_ref =
+        &slug_hazards.slots[slot_index].hit_flash_progress_step;
     *hit_flash_step_ref =
         g_game->subgame.subgame_rate * 0.16666667f;
-    DWORD* hit_points_ref = (DWORD*)(slot_base + 0x356468);
+    int* hit_points_ref = &slug_hazards.slots[slot_index].hit_points;
     *hit_points_ref = 7;
 
-    DWORD* node_flags_ref = (DWORD*)(slot_base + 0x3563a4);
-    DWORD node_flags = *node_flags_ref;
+    int* node_flags_ref = &slug_hazards.slots[slot_index].list_flags;
+    unsigned int node_flags = (unsigned int)*node_flags_ref;
     node_flags &= ~0x1000u;
     *node_flags_ref = node_flags;
-    *(unsigned char*)(slot_base + 0x356478) = 0;
-    *(unsigned char*)(slot_base + 0x356479) = 0;
-    *(DWORD*)(slot_base + 0x35647c) = 0;
-    *(DWORD*)(slot_base + 0x356480) = 0x3d088889;
+    slug_hazards.slots[slot_index].voice_active = 0;
+    slug_hazards.slots[slot_index].player_encounter_latched = 0;
+    slug_hazards.slots[slot_index].voice_progress = 0.0f;
+    slug_hazards.slots[slot_index].voice_progress_step = 0.0333333351f;
 
     if (cell->position.z > next_slug_voice_trigger_z) {
-        ((Slug*)(slot_base + 0x3563a0))->engagement_voice_gate = 1;
+        slug_hazards.slots[slot_index].engagement_voice_gate = 1;
         next_slug_voice_trigger_z =
             slug_voice_trigger_spacing_z + next_slug_voice_trigger_z;
     }
 
-    *(DWORD*)(slot_base + 0x356484) = 0;
+    slug_hazards.slots[slot_index].blink_progress = 0.0f;
     int result = next_math_random_value();
-    *(float*)(slot_base + 0x356488) =
+    slug_hazards.slots[slot_index].blink_step =
         1.0f / (((float)result * 0.000030517578f + 1.0f) * 60.0f);
     return result;
 }

@@ -108,10 +108,11 @@ The same pass records the surrounding owners without changing codegen:
 
 The eight inline records are now primarily named `Slug`, matching the retained
 Android/iOS `cRSlug` owner; `SlugHazardRuntime` is a compatibility alias only.
-The exact 160-instruction allocator still keeps its narrow raw slot-base
-spelling because a broad typed receiver changes saved-register ownership. Its
-scan nevertheless starts at `SlugPool::slots`, uses `sizeof(Slug) == 0xec`, and
-closes the complete 0x760 native allocation.
+The exact allocator uses direct `SlugPool::slots` expressions rather than a
+broad cached receiver: caching one `Slug*` across the body changes
+saved-register ownership, while direct array indexing preserves VC6's native
+biased-index addressing. `sizeof(Slug) == 0xec` closes the complete 0x760
+native allocation.
 
 ## 2026-07-13 projection-output ownership
 
@@ -121,3 +122,18 @@ same scalar to the player's heading before assigning the sprite facing angle.
 The exact garbage spawn/update pair independently proves the same field
 contract at garbage `+0xa0`, and Android retains both authored consumers. The
 slug spawner remains exact at 160/160 instructions with all 18 operands clean.
+
+## 2026-07-14 complete typed pool access
+
+The exact allocator now scans `SlugPool::slots` with a typed `Slug*` and
+advances it normally, retiring the unexplained dword constants `874760` and
+`59`. Once the free index is known, direct array expressions own every slug
+write: state, player backlink, inherited transform/list node, attachment
+projection, velocity, sprite handle, source cell, hit/voice/blink state, and
+their progress rates. The sprite position copy is also the ordinary `Vector3`
+assignment, and the velocity scale names `SubgameRuntime::subgame_rate` rather
+than float lane 14.
+
+This is the source shape VC6's native biased-index addressing was hiding; it
+does not introduce a long-lived slot pointer. The complete rewrite remains
+byte-identical at 160/160 instructions, full prefix, and all 18 operands clean.
