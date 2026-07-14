@@ -256,3 +256,19 @@ borrowed `Object*`, color, and transform through `+0x77`; Player's first
 derived storage remains at `+0x78`, and its complete size remains `0x4364`.
 The exact constructor is byte-identical at 227/227 instructions with all 72
 operands clean.
+
+## 2026-07-14 cRBanner constructor ownership
+
+The two 0x60-byte constructor records now walk `BannerPool::slots` directly
+instead of reconstructing `SubgameRuntime +0x359080` through a generic
+`RuntimeSlot` and a literal stride. Startup, level construction, and teardown
+agree that these are the embedded start/completion `Banner` actors; advancing a
+typed `Banner*` preserves the exact 227/227 instructions and all 72 operands.
+
+The two folded no-op constructors at Player `+0x200` and `+0x384` now take
+their receivers from the exact `cameraman` and `follow_state` members. A
+neutral `RuntimeSlot` cast remains only at the shared folded call boundary; the
+addresses no longer recreate either Player subobject with literal offsets.
+This is also byte-identical. Directly typing the later barrier cursor or script
+array cursor perturbed VC6 scheduling after instruction 173, so those neutral
+constructor cursors remain unchanged rather than trading away the exact match.

@@ -97,12 +97,12 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
         40,
         &RuntimeSlot::initialize_salt_hazard_runtime);
 
-    RuntimeSlot* banner = SLOT(0x359080);
+    Banner* banner = banners.slots;
     int banner_count = 2;
     do {
         banner->initialize_bod_base();
         banner->vtable = &g_banner_callback_table;
-        banner = (RuntimeSlot*)((char*)banner + 0x60);
+        ++banner;
         --banner_count;
     } while (banner_count);
 
@@ -131,8 +131,8 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     Player* subgoldy = &player;
     subgoldy->initialize_renderable_bod();
     subgoldy->click_start.initialize_click_start_controller_runtime();
-    ((RuntimeSlot*)((char*)subgoldy + 0x200))->noop_runtime_slot_constructor();
-    ((RuntimeSlot*)((char*)subgoldy + 0x384))->noop_runtime_slot_constructor();
+    ((RuntimeSlot*)&subgoldy->cameraman)->noop_runtime_slot_constructor();
+    ((RuntimeSlot*)&subgoldy->follow_state)->noop_runtime_slot_constructor();
     initialize_array_with_constructor(
         (RuntimeSlot*)subgoldy->golb_shots,
         sizeof(GolbShot),
