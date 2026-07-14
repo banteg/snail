@@ -41,9 +41,9 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     set_matrix_identity((TransformMatrix*)(slot_base + 0x3563d8));
 
     Vector3 staged_position;
-    staged_position.y = cell->anchor_position.y + 1.7f;
-    staged_position.x = cell->anchor_position.x;
-    staged_position.z = cell->anchor_position.z;
+    staged_position.y = cell->position.y + 1.7f;
+    staged_position.x = cell->position.x;
+    staged_position.z = cell->position.z;
     Vector3* live_position = (Vector3*)(slot_base + 0x356408);
     *live_position = staged_position;
     project_position_onto_track_attachment(
@@ -109,7 +109,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* player)
     *(DWORD*)(slot_base + 0x35647c) = 0;
     *(DWORD*)(slot_base + 0x356480) = 0x3d088889;
 
-    if (cell->anchor_position.z > next_slug_voice_trigger_z) {
+    if (cell->position.z > next_slug_voice_trigger_z) {
         ((Slug*)(slot_base + 0x3563a0))->engagement_voice_gate = 1;
         next_slug_voice_trigger_z =
             slug_voice_trigger_spacing_z + next_slug_voice_trigger_z;

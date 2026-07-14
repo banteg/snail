@@ -7,7 +7,7 @@ Recovered relationships:
 
 - scans the eight-slot slug pool at `game+0x3563a0`, stride `0xec`, using
   `state +0x80`;
-- seeds the renderable transform position from `TrackRowCell::anchor_position`
+- seeds the renderable transform position from `TrackRowCell::position`
   with a fixed `+1.7f` Y lift, then projects through
   `project_position_onto_track_attachment`;
 - inserts the slot's zero-offset `BodNode` before the shared BOD-list tail;

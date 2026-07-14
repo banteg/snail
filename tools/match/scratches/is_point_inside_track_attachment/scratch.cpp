@@ -12,7 +12,7 @@ bool Path::is_point_inside_track_attachment(
 {
     Vector3 local;
     Vector3 sample_origin;
-    Vector3 anchor = cell->anchor_position;
+    Vector3 anchor = cell->position;
     float anchor_x = anchor.x;
     float anchor_y = anchor.y;
     float anchor_z = anchor.z;

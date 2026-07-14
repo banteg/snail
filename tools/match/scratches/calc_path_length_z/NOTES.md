@@ -218,4 +218,4 @@ used by the player attachment lane. The private `GolbPathTemplate` and
 cast. Focused matching stays honestly unchanged at 55.52%, `400/425`, with all
 seven masked operands clean. The exact 16-instruction initializer also remains
 proof-grade after loading `SubLoc::attachment_template_record` and
-`SubLoc::anchor_position` directly.
+`SubLoc::position` directly.

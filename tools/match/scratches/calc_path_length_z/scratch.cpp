@@ -39,7 +39,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                 float carry = delta + terminal_template->width_or_scale;
                 AttachmentSample* terminal =
                     &terminal_template->secondary_samples[count];
-                Vec3* anchor = &source_cell->anchor_position;
+                Vec3* anchor = &source_cell->position;
 
                 float forward_x = carry * terminal[-1].transform.basis_forward.x;
                 float forward_y = carry * terminal[-1].transform.basis_forward.y;
@@ -59,7 +59,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
                     delta
                     + terminal_template->secondary_samples[terminal_template->segment_count - 1]
                           .transform.position.z
-                    + source_cell->anchor_position.z
+                    + source_cell->position.z
                     + terminal_template->width_or_scale;
                 position->z = z;
                 shot->flight_transform.position.z = z;
@@ -129,7 +129,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
             &template_record->secondary_samples[sample_index];
         float z =
             active_sample->delta_dir_to_next.z * progress
-            + source_cell->anchor_position.z
+            + source_cell->position.z
             + active_sample->transform.position.z;
         transform.basis_right.x *= lateral_scale;
         transform.basis_right.y *= lateral_scale;
@@ -141,7 +141,7 @@ int GolbPathFollowState::calc_path_length_z(float path_factor, Vec3* position, V
     } else {
         AttachmentSample* secondary = current_template->secondary_samples;
         AttachmentSample* sample = &secondary[sample_index];
-        Vec3* anchor = &source_cell->anchor_position;
+        Vec3* anchor = &source_cell->position;
         float base_x =
             advanced * sample->delta_dir_to_next.x * lateral_scale
             + sample->transform.position.x

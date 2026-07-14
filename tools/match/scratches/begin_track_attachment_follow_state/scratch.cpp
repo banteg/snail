@@ -11,7 +11,7 @@ void FollowState::begin_track_attachment_follow_state(
     template_record = cell->attachment_template_record;
     source_cell = cell;
     sample_index = 0;
-    progress = world_position->z - cell->anchor_position.z;
+    progress = world_position->z - cell->position.z;
     float height = world_position->y - 0.49f;
     player = owning_player;
     vertical_offset = height;

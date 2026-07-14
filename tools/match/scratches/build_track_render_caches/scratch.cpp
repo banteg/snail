@@ -68,7 +68,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             (Object*)fringe_object->object,
-                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[4],
                             &vertex_counts[4],
@@ -93,7 +93,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                     append_track_cache_object(
                         row_index,
                         *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
-                        (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                        (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                             + cell_offset),
                         (ObjectRenderVertex*)shared_vertex_buffers[2],
                         &vertex_counts[2],
@@ -117,7 +117,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[1],
                             &vertex_counts[1],
@@ -135,7 +135,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[0],
                             &vertex_counts[0],
@@ -160,7 +160,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[0],
                             &vertex_counts[0],
@@ -178,7 +178,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                         append_track_cache_object(
                             row_index,
                             *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
-                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                                 + cell_offset),
                             (ObjectRenderVertex*)shared_vertex_buffers[1],
                             &vertex_counts[1],
@@ -201,7 +201,7 @@ int SegmentCache::build_track_render_caches(Color4f skirt_color)
                     append_track_cache_object(
                         row_index,
                         *(Object**)((char*)owner_subgame + cell_offset + 0x3bfaec),
-                        (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].anchor_position
+                        (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position
                             + cell_offset),
                         (ObjectRenderVertex*)shared_vertex_buffers[3],
                         &vertex_counts[3],

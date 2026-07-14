@@ -56,7 +56,7 @@ void Cameraman::update_cameraman()
             || kind == 0x2d
             || kind == 0x24
             || kind == 0xe)) {
-        float phase = (lift_player->live_matrix.position.z - lift_player->follow_state.source_cell->anchor_position.z)
+        float phase = (lift_player->live_matrix.position.z - lift_player->follow_state.source_cell->position.z)
             / template_record->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;
@@ -117,7 +117,7 @@ void Cameraman::update_cameraman()
     Path* worm_template;
     float desired_fov;
     if (worm_player->follow_state.active == 1 && (worm_template = worm_player->follow_state.template_record, worm_template->kind == 0x18)) {
-        float phase = (worm_player->live_matrix.position.z - worm_player->follow_state.source_cell->anchor_position.z)
+        float phase = (worm_player->live_matrix.position.z - worm_player->follow_state.source_cell->position.z)
             / worm_template->segment_count_f;
         if (phase < 0.0f)
             phase = 0.0f;

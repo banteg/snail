@@ -595,11 +595,11 @@ steering_stored:
             SubLoc* trampoline_cell =
                 game->get_track_grid_cell_at_world_position(p_position);
             if (trampoline_cell->tile_id == 22
-                && trampoline_cell->anchor_position.y + 0.49000001f > live_matrix.position.y
-                && trampoline_cell->anchor_position.y - 0.49000001f < live_matrix.position.y) {
+                && trampoline_cell->position.y + 0.49000001f > live_matrix.position.y
+                && trampoline_cell->position.y - 0.49000001f < live_matrix.position.y) {
                 squidge.start_squidge_y(velocity.y);
                 velocity.y = game->subgame_rate * 0.30000001f;
-                live_matrix.position.y = trampoline_cell->anchor_position.y + 0.49000001f;
+                live_matrix.position.y = trampoline_cell->position.y + 0.49000001f;
                 attachment_exit_pending = 0;
                 trampoline_bounce_active = 1;
                 g_sound_effect_manager.play_sound_effect(41);

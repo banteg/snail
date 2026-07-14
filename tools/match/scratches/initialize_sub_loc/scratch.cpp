@@ -7,8 +7,8 @@ extern int g_sub_loc_count;    // unk_4dfadc / data_4dfadc
 
 SubLoc* SubLoc::initialize_sub_loc()
 {
-    ((BodBase*)this)->initialize_bod_base();
-    bod.vtable = &g_sub_loc_vtable;
+    initialize_bod_base();
+    vtable = &g_sub_loc_vtable;
     ++g_sub_loc_count;
     return this;
 }

@@ -7,7 +7,7 @@ Recovered `cRPathFollowGoldy::Init` ownership and behavior:
   and runtime row index; the borrowed world position and owning Player are
   retained only through copied values/backlinks.
 - Initialization sets `active`, stores the Path and source cell, resets the
-  sample index, seeds `progress = world_position.z - cell.anchor_position.z`,
+  sample index, seeds `progress = world_position.z - cell.position.z`,
   and seeds `vertical_offset = world_position.y - 0.49f` without clamping.
 - Root-relative `0x64118c` is
   `GameRoot::subgame.runtime_rows[0].installed_heading_delta`, not a standalone

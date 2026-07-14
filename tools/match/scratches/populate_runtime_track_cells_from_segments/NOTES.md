@@ -79,7 +79,7 @@ anchor/color/UV/sub-object block are now in source. Focused score moved from
 18.90% to 27.24%, with masked operands 57 ok / 1 unresolved / 0 mismatch. The
 lane correction matters: anchor/UV math uses the runtime lane loop counter,
 while glyph lookup uses the mirrored authored lane. The native entry-tile
-anchor also puts `cell->anchor_position.z` at the row boundary (`row + 0.0`),
+anchor also puts `cell->position.z` at the row boundary (`row + 0.0`),
 not the non-entry `row + 0.5` center. Remaining residuals are source-shape
 issues: candidate frame is still `0x40` vs native `0x44`, and the jump-table
 displacement remains unresolved. Do not pad the frame or force switch layout
@@ -367,9 +367,9 @@ glyph jump-table layout difference.
 
 The scratch-local `TrackRowBodSlot` did not own any storage. The exact
 `initialize_sub_loc` constructor runs the shared `cRBod` initializer over each
-0x54-byte `SubLoc`, so glyph-selected object writes now call
-`BodBase::set_bod_object` through that proven base prefix while retaining the
-raw cell cursor needed by the large VC6 switch.
+0x54-byte `SubLoc`; that owner now directly inherits `BodBase`, so glyph-selected
+object writes call `BodBase::set_bod_object` through the real base while
+retaining the raw cell cursor needed by the large VC6 switch.
 
 The other two receivers are complete embedded owners, not prefix views:
 
@@ -392,3 +392,7 @@ The remaining root services in the builder now name their complete owners:
 row object ids index `GameRoot::directx_loader.cached_x_mesh_slots[].object`.
 The root byte pointer remains only as the established source-shape carrier for
 the large switch; no absolute root-plus-offset expression remains here.
+
+The inherited-base promotion is byte-stable at the same 29.27%, 1,208/1,245
+instructions, with 60 clean operands and the one known glyph jump-table
+layout mismatch.

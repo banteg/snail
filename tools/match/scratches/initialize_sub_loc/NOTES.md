@@ -20,3 +20,11 @@ Ownership is fixed by three independent Windows facts:
 The scratch defines `initialize_sub_loc` directly on `SubLoc`; the old generic
 `initialize_bod` label is retired. It remains exact at 10/10 instructions with
 four clean masked operands.
+
+## 2026-07-14 BodBase inheritance closure
+
+`SubLoc` now derives directly from the `BodBase` initialized here. The vtable
+write uses the inherited zero-offset object, `BodBase::position +0x10` owns the
+cell anchor used across the runtime grid, and the first cell-specific field
+remains `attachment_template_record +0x38`. The constructor remains exact at
+10/10 instructions with all four operands clean.

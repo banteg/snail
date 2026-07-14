@@ -65,7 +65,7 @@ int FollowState::update_track_attachment_follow_state(
                 ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_base_strip_mesh;
                 ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->color.a = 1.0f;
             } else if (current_index == (3 * count) / 7) {
-                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->bod.list_flags |= 0x80;
+                ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->list_flags |= 0x80;
                 Path* attached =
                     ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->attachment_template_record;
                 ((GameRoot*)g_game_base)->subgame.runtime_rows[source_cell->get_track_cell_row_index()].primary_attachment_cell->object = attached->entry_transition_strip_mesh;
@@ -135,7 +135,7 @@ int FollowState::update_track_attachment_follow_state(
             float y = transform.position.y;
             float z =
                 this->template_record->secondary_samples[sample_index].delta_dir_to_next.z * progress
-                + source_cell->anchor_position.z
+                + source_cell->position.z
                 + this->template_record->secondary_samples[sample_index].transform.position.z;
             transform.basis_right.x *= v79;
             transform.basis_right.y *= v79;
@@ -151,7 +151,7 @@ int FollowState::update_track_attachment_follow_state(
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
-            Vec3* anchor = &source_cell->anchor_position;
+            Vec3* anchor = &source_cell->position;
             float path_x = out_angle * sample->delta_dir_to_next.x;
             float path_y = out_angle * sample->delta_dir_to_next.y;
             float path_z = out_angle * sample->delta_dir_to_next.z;
@@ -298,7 +298,7 @@ terminal_path:
             float carry = delta + supertramp_template->width_or_scale;
             AttachmentSample* samples = supertramp_template->secondary_samples;
             AttachmentSample* terminal = &samples[count];
-            Vec3* anchor = &source_cell->anchor_position;
+            Vec3* anchor = &source_cell->position;
             Vec3 forward_offset;
             forward_offset.x = carry * terminal[-1].transform.basis_forward.x;
             forward_offset.y = carry * terminal[-1].transform.basis_forward.y;
@@ -320,7 +320,7 @@ terminal_path:
         } else {
             out_position->z =
                 final_template->secondary_samples[final_template->segment_count - 1].transform.position.z
-                + source_cell->anchor_position.z
+                + source_cell->position.z
                 + final_template->width_or_scale
                 + delta;
         }

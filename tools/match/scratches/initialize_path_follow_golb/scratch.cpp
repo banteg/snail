@@ -9,7 +9,7 @@ int GolbPathFollowState::initialize_path_follow_golb(
     template_record = cell->attachment_template_record;
     source_cell = cell;
     sample_index = 0;
-    progress = position->z - cell->anchor_position.z;
+    progress = position->z - cell->position.z;
     shot = shot_;
     vertical_offset = position->y - 0.49f;
     return (int)shot_;

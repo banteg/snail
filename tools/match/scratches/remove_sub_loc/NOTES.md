@@ -15,7 +15,8 @@ exact prefix, and all `17` masked operands clean.
 Recovered behavior:
 
 - the receiver is the full `SubLoc` runtime-grid object, not a
-  `SubLazerSlot`; the first `0x10` bytes are the shared `BodNode` prefix;
+  `SubLazerSlot`; its first `0x38` bytes are inherited `BodBase`, including
+  zero-offset `BodNode` membership and `position +0x10`;
 - tile ids `0x1d` and `0x1e` may unlink
   `SubRow::attachment_body +0xb0` at `game+0x6410e0 + row*0xf4`, gated by the
   row record's dirty bit `0x08`; this is distinct from the moving
@@ -37,10 +38,11 @@ fringe-array spelling.
 
 ## 2026-06-18 BN/IDA name sync
 
-Promoted the analysis-side `TrackRowCell` prefix to `BodNode`, renamed
-`+0x40` to `lane_and_flags`, and synced the four directional fringe pointers as
-`fringe_front/right/left/back`. BN now resolves the cell unlink block through
-`cell->bod.*` and starts the final four-pointer scan at `cell->fringe_front`.
+At that stage, the analysis-side `TrackRowCell` prefix was promoted to
+`BodNode`, `+0x40` was renamed to `lane_and_flags`, and the four directional
+fringe pointers were synced as `fringe_front/right/left/back`. BN then resolved
+the cell unlink block through its zero-offset list prefix and started the final
+four-pointer scan at `cell->fringe_front`.
 The IDA snapshot was corrected away from the stale `SubLazerSlot` wording.
 
 The same BN type sync does help `update_sub_loc`, but that
@@ -132,3 +134,12 @@ Both unlink spellings now borrow `GameRoot::active_bod_list` directly rather
 than reconstructing a `BodList*` from `g_game_base + 0x5a8`. Focused output is
 unchanged at 91.19%, 130/131 instructions, with the 87-instruction prefix and
 all 17 operands clean. The final fringe reload remains an honest CSE residual.
+
+## 2026-07-14 cell-base ownership
+
+The receiver's own active-node precheck/removal now uses inherited
+`SubLoc::list_flags` and passes `this` through the real
+`BodBase -> BodNode` chain. Exact constructor evidence and the complete 0x54
+slab stride fix that base independently of this near-match. Focused teardown is
+byte-stable at 91.19%, 130/131 instructions, with its 87-instruction prefix and
+all 17 operands clean.

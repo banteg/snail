@@ -30,7 +30,7 @@ unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
             do {                                                               \
                 TrackRowCell* clear_cell =                                     \
                     CELL_FROM_LANE_FLAGS(clear_lane_flags);                     \
-                clear_cell->bod.list_flags &= ~0x20;                           \
+                clear_cell->list_flags &= ~0x20;                               \
                 *clear_lane_flags &= ~0x6000u;                                 \
                 clear_lane_flags -=                                           \
                     sizeof(TrackRowCell) / sizeof(unsigned int);               \
@@ -164,7 +164,7 @@ void SubgameRuntime::merge_track_tile_runs()
                 }
 
                 if ((((unsigned char*)row_attachment_flags)[-0xb4] & 4) != 0) {
-                    CELL_FROM_LANE_FLAGS(cell_lane_flags)->bod.list_flags &= ~0x222;
+                    CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &= ~0x222;
                     *cell_lane_flags &= ~0x4000u;
                     *row_attachment_flags &= ~0x20;
                 }

@@ -33,9 +33,9 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     slot->jetpack_pickup.owner = player;
 
     Vector3 staged_position;
-    staged_position.x = cell->anchor_position.x;
-    staged_position.z = cell->anchor_position.z;
-    staged_position.y = cell->anchor_position.y + 1.5f;
+    staged_position.x = cell->position.x;
+    staged_position.z = cell->position.z;
+    staged_position.y = cell->position.y + 1.5f;
     Vector3* live_position = &slot->jetpack_pickup.position;
     *live_position = staged_position;
 

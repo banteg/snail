@@ -32,7 +32,7 @@ void SubLoc::update_sub_loc()
             >= g_game->subgame.embedded_player()->live_matrix.position.z)
             goto cull_check;
         if (random_float_below(100.0f, "W") < 4.0f) {
-            Vector3 spawn = anchor_position;
+            Vector3 spawn = position;
             spawn.y += 8.0f;
             unsigned int lane = (lane_and_flags >> 8) & 0xF;
             spawn.x = (float)lane * 0.5f + spawn.x;
@@ -50,13 +50,13 @@ void SubLoc::update_sub_loc()
             g_game->subgame.sub_lazers.shoot_subgoldy(&spawn, &direction);
         }
 cull_check:
-        if (anchor_position.z < g_game->subgame.embedded_player()->interaction_max_z)
+        if (position.z < g_game->subgame.embedded_player()->interaction_max_z)
             remove_sub_loc();
         return;
     }
 
     if (tile_id == 22) {
-        if (anchor_position.z >= g_game->subgame.embedded_player()->interaction_max_z)
+        if (position.z >= g_game->subgame.embedded_player()->interaction_max_z)
             return;
         goto destroy;
     }
@@ -73,13 +73,13 @@ cull_check:
             .attachment_body.color = *skirt;
         if (g_game->subgame.embedded_player()->interaction_max_z
                 - ((float)attachment_template_record->row_span_count + 5.0f)
-            > anchor_position.z)
+            > position.z)
             remove_sub_loc();
         return;
     }
 
-    if (anchor_position.z < g_game->subgame.embedded_player()->interaction_max_z
-        && (float)(g_game->subgame.completion_row_start - 5) > anchor_position.z) {
+    if (position.z < g_game->subgame.embedded_player()->interaction_max_z
+        && (float)(g_game->subgame.completion_row_start - 5) > position.z) {
 destroy:
         remove_sub_loc();
     }

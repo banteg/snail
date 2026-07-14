@@ -280,12 +280,12 @@ void SubgameRuntime::update_subgame()
                     RuntimeCellSlotBase* cell_slot =
                         (RuntimeCellSlotBase*)(game
                             + sizeof(TrackRowCell) * (attachment_count + 8 * cell_index));
-                    if ((cell_slot->cell.bod.list_flags & 0x200) == zero) {
+                    if ((cell_slot->cell.list_flags & 0x200) == zero) {
                         if ((cell_slot->cell.lane_and_flags & 0x4000) != zero) {
                             unsigned char tile = cell_slot->cell.tile_id;
                             if (tile == 29 || tile == 30) {
                                 if (cell_slot->cell.object != 0) {
-                                BodNode* node = &cell_slot->cell.bod;
+                                BodNode* node = &cell_slot->cell;
                                 BodNode* active_list = &special_track_cell_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
                                     report_errorf("List ADDafter");
@@ -312,10 +312,10 @@ void SubgameRuntime::update_subgame()
                                         node->list_next->list_prev = node;
                                     node->list_flags |= 0x200;
                                 }
-                                runtime_rows[cell_index].attachment_body.position = cell_slot->cell.anchor_position;
+                                runtime_rows[cell_index].attachment_body.position = cell_slot->cell.position;
                                 }
                             } else {
-                                BodNode* node = &cell_slot->cell.bod;
+                                BodNode* node = &cell_slot->cell;
                                 BodNode* active_list = &track_body_list_head;
                                 if ((node->list_flags & 0x200) != zero) {
                                     report_errorf("List ADDafter");
@@ -410,7 +410,7 @@ void SubgameRuntime::update_subgame()
                             if (cell_index >= first_block_row_count
                                 && cell_index < completion_row_start) {
                                 salt_hazards.spawn_salt_hazard(
-                                    &cell_slot->cell.anchor_position);
+                                    &cell_slot->cell.position);
                             }
                         } else if ((cell_slot->cell.lane_and_flags & 8) == 0
                             && (hazard_tile == 1 || hazard_tile == 15)
@@ -422,7 +422,7 @@ void SubgameRuntime::update_subgame()
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
                             salt_hazards.spawn_salt_hazard(
-                                &cell_slot->cell.anchor_position);
+                                &cell_slot->cell.position);
                         }
 
                         if ((runtime_flags & 0x80) != 0
@@ -455,14 +455,14 @@ void SubgameRuntime::update_subgame()
                                     goto after_authored_ring;
                                 }
                                 player.last_ring_spawn_z =
-                                    cell_slot->cell.anchor_position.z;
+                                    cell_slot->cell.position.z;
 after_authored_ring:
                                 ;
                             } else if ((cell_slot->cell.tile_id == 2 || cell_slot->cell.tile_id == 3
                                     || cell_slot->cell.tile_id == 4 || cell_slot->cell.tile_id == 5
                                     || cell_slot->cell.tile_id == 6 || cell_slot->cell.tile_id == 7)
                                 && player.last_ring_spawn_z + 10.0f
-                                    < cell_slot->cell.anchor_position.z
+                                    < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & 0x2000) != 0) {
                                     spawn_track_ring_or_special_effect(
@@ -470,21 +470,21 @@ after_authored_ring:
                                         8, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[6 * 8].anchor_position.z;
+                                        (&cell_slot->cell)[6 * 8].position.z;
                                 } else if ((ring_flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[6 * 8],
                                         6, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[6 * 8].anchor_position.z;
+                                        (&cell_slot->cell)[6 * 8].position.z;
                                 } else if ((ring_flags & 0x1000) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &(&cell_slot->cell)[6 * 8],
                                         7, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[6 * 8].anchor_position.z;
+                                        (&cell_slot->cell)[6 * 8].position.z;
                                 } else if ((runtime_flags & 8) != 0
                                     && (random_float_below(1.0f, "R") > 0.7f
                                         || level_mode == 7)
@@ -494,27 +494,27 @@ after_authored_ring:
                                         &cell_slot->cell, 4, &player, 0.0f);
                                     if (player.lives < 10)
                                         player.last_ring_spawn_z =
-                                            cell_slot->cell.anchor_position.z;
+                                            cell_slot->cell.position.z;
                                     else
                                         player.last_ring_spawn_z =
-                                            cell_slot->cell.anchor_position.z + 35.0f;
+                                            cell_slot->cell.position.z + 35.0f;
                                 }
                             } else if ((cell_slot->cell.tile_id == 8 || cell_slot->cell.tile_id == 9
                                     || cell_slot->cell.tile_id == 10)
                                 && player.last_ring_spawn_z + 10.0f
-                                    < cell_slot->cell.anchor_position.z
+                                    < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & 0x800) != 0) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 2, &player,
                                         runtime_rows[cell_index].ring_speed);
-                                    player.last_ring_spawn_z = cell_slot->cell.anchor_position.z;
+                                    player.last_ring_spawn_z = cell_slot->cell.position.z;
                                 } else if (random_float_below(1.0f, "R2") > 0.7f
                                     || level_mode == 7
                                     || ((runtime_rows[cell_index].flags & 0x800) != 0)) {
                                     spawn_track_ring_or_special_effect(
                                         &cell_slot->cell, 2, &player, 0.0f);
-                                    player.last_ring_spawn_z = cell_slot->cell.anchor_position.z;
+                                    player.last_ring_spawn_z = cell_slot->cell.position.z;
                                 }
                             }
                         }

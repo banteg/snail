@@ -295,3 +295,11 @@ Focused Wibo improves from 78.22% to 79.75%. The candidate is 1036/1033
 instructions with 117 clean masked operands, no unresolved operands, and only
 the same two honest state-table identity mismatches. No score-only alias or
 masked-operand waiver is introduced.
+
+## 2026-07-14 runtime-cell base closure
+
+Runtime cells now expose their real inherited `BodBase`: active checks and
+list insertion use inherited `BodNode`, object/render fields stay on the same
+base, and all anchor reads use `SubLoc::position`. The exact constructor and
+0x54 stride preserve the main-loop scratch byte-for-byte at 79.75%, 1036/1033
+instructions, with 117 clean operands and the same two honest table mismatches.

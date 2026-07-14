@@ -280,3 +280,11 @@ The direct owner spelling improves the focused candidate from `70.28%`,
 `694/726`, `51/0/0` masks to `72.89%`, `698/726`, with the exact `122/726`
 prefix retained and `63/0/0` masked operands. No volatile or scheduling-only
 source was introduced.
+
+## 2026-07-14 source-cell base closure
+
+The borrowed `SubLoc*` now exposes inherited `BodBase::position` and list flags
+directly. Entry-mesh milestone writes therefore reach the primary attachment
+cell's inherited `BodNode` without a synthetic embedded `bod` owner. Focused
+output is byte-stable at 72.89%, 698/726 instructions, with the 122-instruction
+prefix and all 63 operands clean.

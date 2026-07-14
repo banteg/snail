@@ -4,7 +4,7 @@ Exact VC6 match: 100.00% (111/111 instructions, full prefix, six clean
 masked operands).
 
 The function scans `secondary_samples` backward, adds the borrowed
-`TrackRowCell::anchor_position` to each sample origin, subtracts that world
+`TrackRowCell::position` to each sample origin, subtracts that world
 origin from the by-value probe, and rotates the resulting local vector through
 the sample's `inverse_matrix`. It accepts points inside the widened lane
 bounds: X within the integer half-width plus `0.3`, Y in `[-0.3, 0.3)`, and

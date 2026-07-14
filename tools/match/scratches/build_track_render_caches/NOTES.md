@@ -111,7 +111,7 @@ headers and Binary Ninja sync now agree on that layout and on the owned
 
 2026-07-11 runtime-cell anchor cleanup: all seven mesh-builder position
 arguments now name
-`owner_subgame->runtime_cells[0][0].anchor_position + cell_offset` directly,
+`owner_subgame->runtime_cells[0][0].position + cell_offset` directly,
 and the unused scratch-local cell layout duplicate has been removed. This
 keeps the real owner and inherited `TrackRowCell +0x10` anchor visible while
 preserving 99.79%, 475/475 instructions, and 20 clean operands. The lone
@@ -136,3 +136,8 @@ and `runtime_cells`. Removing that synthetic type from the scratch, shared
 analysis header, narrow Binary Ninja header, and sync script preserves the
 honest 99.79%, 475/475 instruction result with 20 clean operands. The sole
 remaining equivalent SIB base/index encoding is intentionally left visible.
+
+2026-07-14 runtime-cell base closure: the seven cache position arguments now
+reach inherited `SubLoc::position` through the actual `BodBase` owner. The
+exact cell constructor and full dependency sweep preserve this near-match at
+99.79%, 475/475 instructions, with all 20 operands clean.

@@ -80,7 +80,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
                         cell->fringe_front->list_flags |= 0x20;
-                        cell->fringe_front->position = cell->anchor_position;
+                        cell->fringe_front->position = cell->position;
                         Color4f color0;
                         Color4f* skirt_color = get_track_skirt_color(&color0);
                         edge_a = 0;
@@ -104,7 +104,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
                         cell->fringe_right->list_flags |= 0x20;
-                        cell->fringe_right->position = cell->anchor_position;
+                        cell->fringe_right->position = cell->position;
                         Color4f color1;
                         Color4f* skirt_color = get_track_skirt_color(&color1);
                         edge_a = 0;
@@ -128,7 +128,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
                         cell->fringe_left->list_flags |= 0x20;
-                        cell->fringe_left->position = cell->anchor_position;
+                        cell->fringe_left->position = cell->position;
                         Color4f color2;
                         Color4f* skirt_color = get_track_skirt_color(&color2);
                         edge_a = 0;
@@ -152,7 +152,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
                         cell->fringe_back->list_flags |= 0x20;
-                        cell->fringe_back->position = cell->anchor_position;
+                        cell->fringe_back->position = cell->position;
                         Color4f color3;
                         Color4f* skirt_color = get_track_skirt_color(&color3);
                         edge_a = 0;

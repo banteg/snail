@@ -2,9 +2,10 @@
 
 This is the per-cell `SubLoc` update, matching the iOS
 `cRSubLoc::AI()` owner, not a pooled `FringeObject` method. The receiver's
-`BodNode`, position/render/color lanes, attachment-template backlink, tile id,
-and lane flags are the same fields used by the exact runtime-grid builders and
-the near-matched cell teardown. Semantics complete:
+inherited `BodBase` owns its list node, position, render arguments, object, and
+color; the attachment-template backlink, tile id, and lane flags are the same
+fields used by the exact runtime-grid builders and near-matched cell teardown.
+Semantics complete:
 
 The Windows `SubLoc` constructor installs the table at `0x497368`, whose entry
 is this exact address. That direct callback edge closes the owner independently
@@ -78,7 +79,7 @@ a target, and assign `direction = target - spawn` before normalization. Direct
 component arrays, constructor initialization, and initializer-form subtraction
 all compiled worse; the retained copy/assignment form is semantic source, not a
 coercion-only temporary. Spelling the tile-22 comparison as
-`anchor_position.z >= interaction_max_z` becomes the native comparison order
+`position.z >= interaction_max_z` becomes the native comparison order
 after the owner rewrite. Focused Wibo improves from 46.77% to 82.67%, 188/187
 candidate/target instructions, prefix 26/187, with 34 clean masked operands.
 
@@ -109,3 +110,11 @@ count rises from 34 to 35. The remaining mismatch is confined to temporary
 allocation and scheduling inside the Wall2 spawn/direction block; constructor,
 component-assignment, in-place-target, and declaration-order variants were
 neutral or regressive and are not retained.
+
+## 2026-07-14 BodBase ownership
+
+All cell-anchor reads now name inherited `SubLoc::position`, while render
+arguments, object, color, and active-list links resolve through the same
+`BodBase` receiver. The exact constructor and 25,600-cell initialization loop
+prove the base and 0x54 stride. Focused output remains byte-stable at 83.20%,
+188/187 instructions, prefix 26/187, with all 35 operands clean.

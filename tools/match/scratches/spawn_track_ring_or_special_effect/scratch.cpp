@@ -56,9 +56,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     case 0:
     case 4: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z + 6.0f;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z + 6.0f;
         *slot_position = staged_position;
         double random_x = random_float_below(1.0f, "RR") - 0.5f;
         slot_position->x = (float)((random_x + random_x) * 3.0);
@@ -68,9 +68,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 1: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z + 6.0f;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z + 6.0f;
         *slot_position = staged_position;
         double random_x = random_float_below(1.0f, "RR2") - 0.5f;
         slot_position->x = (float)((random_x + random_x) * 3.0);
@@ -79,9 +79,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 2: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 3.5f;
-        staged_position.z = cell->anchor_position.z + 17.0f;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 3.5f;
+        staged_position.z = cell->position.z + 17.0f;
         *slot_position = staged_position;
         double random_x = random_float_below(1.0f, "RR4") - 0.5f;
         slot_position->x = (float)((random_x + random_x) * 3.0);
@@ -91,9 +91,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 3: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z + 6.0f;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z + 6.0f;
         *slot_position = staged_position;
         double random_x = random_float_below(1.0f, "RR6") - 0.5f;
         slot_position->x = (float)((random_x + random_x) * 3.0);
@@ -103,9 +103,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 5: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z;
         *slot_position = staged_position;
         slot->active_phase = random_float_below(1.0f, "RR10") * 6.28318548f;
         slot->active_phase_step =
@@ -114,9 +114,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 6: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z;
         *slot_position = staged_position;
         slot->active_phase = random_float_below(1.0f, "RR12") * 6.28318548f;
         slot->active_phase_step =
@@ -125,9 +125,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 7: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z;
         *slot_position = staged_position;
         slot->active_phase = random_float_below(1.0f, "RR13") * 6.28318548f;
         slot->active_phase_step =
@@ -136,9 +136,9 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     }
     case 8: {
         Vector3 staged_position;
-        staged_position.x = cell->anchor_position.x;
-        staged_position.y = cell->anchor_position.y + 2.5f;
-        staged_position.z = cell->anchor_position.z;
+        staged_position.x = cell->position.x;
+        staged_position.y = cell->position.y + 2.5f;
+        staged_position.z = cell->position.z;
         *slot_position = staged_position;
         slot->active_phase = random_float_below(1.0f, "RR11") * 6.28318548f;
         slot->active_phase_step =

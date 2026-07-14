@@ -25,7 +25,7 @@ double SubgameRuntime::sample_track_floor_height_at_position(Vector3* position)
     }
 
     if (tile_id == 0x16) {
-        return cell->anchor_position.y;
+        return cell->position.y;
     }
 
     return kInvalidFloorHeight;

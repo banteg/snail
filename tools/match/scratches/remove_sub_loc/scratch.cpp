@@ -72,8 +72,8 @@ void SubLoc::remove_sub_loc()
         }
     }
 
-    if ((bod.list_flags & 0x200) != 0)
-        REMOVE_PRECHECKED_BOD_NODE(&bod, unlink_mask);
+    if ((list_flags & 0x200) != 0)
+        REMOVE_PRECHECKED_BOD_NODE(this, unlink_mask);
 
     Fringe** fringe = &fringe_front;
     for (int i = 0; i < 4; ++i) {

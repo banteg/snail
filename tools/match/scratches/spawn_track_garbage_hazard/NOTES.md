@@ -91,7 +91,7 @@ Residuals:
   regressed to 60.56%.
 - 2026-06-16 cell typing pass: the incoming `cRSubLoc*` argument is now typed
   as `TrackRowCell*`, and the projection staging reads
-  `cell->anchor_position.{x,y,z}`. BN decompile resolves the same anchor fields,
+  `cell->position.{x,y,z}`. BN decompile resolves the same anchor fields,
   and focused Wibo is codegen-neutral at 92.58%, 140/143 instructions, with the
   same x87/local staging residual.
 - 2026-06-16 Vector3 staging correction: after the pickup spawner correction,
@@ -114,12 +114,12 @@ Residuals:
   99.30%, 143/143, with the same projection-staging scheduling residual. The
   earlier full `GarbageHazardSlot*` rewrite is still rejected because it
   changed saved-register ownership and regressed badly. Collapsing the y
-  staging into `*radius + cell->anchor_position.y` is also rejected: it
+  staging into `*radius + cell->position.y` is also rejected: it
   regresses to 98.60% by reversing the native x87 operand load order.
 - 2026-06-19 projection-staging audit: focused Wibo still reproduces 99.30%,
   143/143 instructions, and the single residual where native performs
-  `fadd [cell->anchor_position.y]` before loading x/z. The remaining
-  source-plausible probes did not improve it: an `anchor_position` pointer and
+  `fadd [cell->position.y]` before loading x/z. The remaining
+  source-plausible probes did not improve it: an `position` pointer and
   moving the `Vector3` declaration before `staged_y` were codegen-neutral;
   the `Vector3(x, y, z)` constructor regressed to 92.68% by adding extra x87
   stores; named `staged_x`/`staged_z` locals regressed to 93.38%; and copying
@@ -135,7 +135,7 @@ Residuals:
   same lone `fadd` scheduling residual, so the scratch keeps the clearer
   two-step `staged_y` temporary.
 - 2026-06-19 z-lane staging audit: an explicit `DWORD staged_z_bits` local
-  recovers the native early `fadd [cell->anchor_position.y]`, but regresses to
+  recovers the native early `fadd [cell->position.y]`, but regresses to
   90.14% by removing the native staged-vector stack copy and changing the
   body-list label layout. Copying through a pointer to the local staged vector
   is codegen-neutral at 99.30%. Keep the direct `*live_position =
@@ -143,16 +143,16 @@ Residuals:
   scheduling debt.
 - 2026-06-19 additive-y retry: the focused matcher still reports 99.30%,
   143/143 instructions, 48/143 prefix, and 16 clean masked operands. Replacing
-  `staged_y += cell->anchor_position.y` with an explicit
-  `staged_y = staged_y + cell->anchor_position.y`, or with a temporary pointer
-  to `cell->anchor_position.y`, is codegen-neutral and leaves the same first
+  `staged_y += cell->position.y` with an explicit
+  `staged_y = staged_y + cell->position.y`, or with a temporary pointer
+  to `cell->position.y`, is codegen-neutral and leaves the same first
   mismatch. Keep the current two-step additive spelling.
 - 2026-06-20 projection residual audit: focused Wibo still reports 99.30%,
   143/143 instructions, 48/143 prefix, and 16 clean masked operands. A
-  `Vector3& anchor_position` alias and a `float* anchor_components` view both
+  `Vector3& position` alias and a `float* anchor_components` view both
   compile to the same residual (`mov x`, `mov z`, then `fadd y`). Assigning the
   y sum directly into `staged_position.y` is also codegen-neutral. Copying the
-  full `cell->anchor_position` vector after computing the y sum regresses to
+  full `cell->position` vector after computing the y sum regresses to
   82.64%, grows the candidate to 145 instructions, and drops the masked audit
   to 15 clean operands. Keep the existing field-by-field staged `Vector3`; the
   remaining mismatch is still a local x87/integer-load scheduling residual, not
@@ -160,8 +160,8 @@ Residuals:
 - 2026-06-20 larger garbage-family retry: focused Wibo still reports 99.30%,
   143/143 instructions, 48/143 prefix, and 16 clean masked operands. Reordering
   the staged-vector field writes from x/z/y to x/y/z is codegen-neutral and
-  leaves the same `fadd [cell->anchor_position.y]` scheduling residual.
-  Starting `staged_y` from `cell->anchor_position.y` and then adding `*radius`
+  leaves the same `fadd [cell->position.y]` scheduling residual.
+  Starting `staged_y` from `cell->position.y` and then adding `*radius`
   regresses to 98.60% by inverting the native x87 load order (`fld cell_y`,
   then `fadd radius`). Keep the radius-first `staged_y` and x/z/y field-copy
   spelling.
@@ -170,7 +170,7 @@ Residuals:
   y accumulation write through the real vector lane before the x/z field loads.
   Focused Wibo is now exact: 100.00%, 143/143 instructions, 143/143 prefix,
   and 16 clean masked operands. The target/candidate dump confirms the native
-  projection schedule (`fld [radius]`, `fadd [cell->anchor_position.y]`, x/z
+  projection schedule (`fld [radius]`, `fadd [cell->position.y]`, x/z
   dword loads, staged vector copy, then projection call). A pointer alias to
   `staged_position.y` also matched, but the reference spelling is retained as
   the narrower original-looking C++ source shape. No residual remains.

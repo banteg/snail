@@ -28,7 +28,7 @@ void Path::try_enter_track_attachment_from_swept_motion(
     Vector3 sample_origin;
     Vector3 hit_origin;
     Vector3 swept_position;
-    Vector3 anchor = cell->anchor_position;
+    Vector3 anchor = cell->position;
     float v19 = anchor.x;
     float v20 = anchor.y;
     float v21 = anchor.z;

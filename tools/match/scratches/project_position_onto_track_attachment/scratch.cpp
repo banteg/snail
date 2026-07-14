@@ -36,9 +36,9 @@ void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, f
                 sample->transform.basis_right
                 * (position->x - sample->center_x);
             Vector3 anchored_base(
-                sample->transform.position.x + cell->anchor_position.x,
-                sample->transform.position.y + cell->anchor_position.y,
-                sample->transform.position.z + cell->anchor_position.z);
+                sample->transform.position.x + cell->position.x,
+                sample->transform.position.y + cell->position.y,
+                sample->transform.position.z + cell->position.z);
             Vector3 projected = anchored_base + lateral_contribution;
             *position = projected + vertical_contribution;
             return;

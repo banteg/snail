@@ -65,9 +65,9 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     Vector3 staged_position;
     float& staged_y = staged_position.y;
     staged_y = *radius;
-    staged_y += cell->anchor_position.y;
-    staged_position.x = cell->anchor_position.x;
-    staged_position.z = cell->anchor_position.z;
+    staged_y += cell->position.y;
+    staged_position.x = cell->position.x;
+    staged_position.z = cell->position.z;
     Vector3* live_position = (Vector3*)(slot_base_words + GARBAGE_SLOT_WORLD_POSITION_FLOAT);
     *live_position = staged_position;
     project_position_onto_track_attachment(

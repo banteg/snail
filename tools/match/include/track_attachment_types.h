@@ -275,11 +275,11 @@ enum {
 
 // Authored runtime-grid cell owner. iOS preserves this class as cRSubLoc;
 // its cRSubLoc::Yi() accessor performs the same lane/slab row-index recovery
-// as the exact Windows helper below. The Windows layout is 0x54 bytes.
-struct SubLoc {
+// as the exact Windows helper below. Its exact constructor proves the inherited
+// BodBase at +0x00 and its world/track anchor is BodBase::position at +0x10.
+// The complete Windows layout is 0x54 bytes.
+struct SubLoc : public BodBase {
     SubLoc* initialize_sub_loc(); // @ 0x4088c0, cRSubLoc constructor wrapper
-
-    BodNode bod;                       // +0x00, active/free BOD prefix
 
     void remove_sub_loc(); // @ 0x439bc0, cRSubLoc::Remove
     void update_sub_loc(); // @ 0x439d50, cRSubLoc::AI
@@ -288,11 +288,6 @@ struct SubLoc {
     unsigned char is_sub_loc_empty(); // @ 0x439ab0, cRSubLoc::IsEmpty
     unsigned char is_sub_loc_slide(); // @ 0x439ad0, cRSubLoc::IsSlide
 
-    Vector3 anchor_position;            // +0x10 (z at +0x18)
-    float render_arg_1c;                // +0x1c, inline BodBase texture-u argument
-    float render_arg_20;                // +0x20
-    Object* object;                     // +0x24, swapped by entry-mesh transitions
-    Color4f color;                      // +0x28, alpha at +0x34
     Path* attachment_template_record; // +0x38, installed by P/p entry tiles
     unsigned char tile_id;              // +0x3c
     unsigned char tile_flags_3d;        // +0x3d

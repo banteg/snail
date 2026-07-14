@@ -3,7 +3,7 @@
 The candidate uses the project-standard `msvc6.5 /O2 /G5 /W3`. Current
 source-shape recoveries:
 
-- `cell->anchor_position` is copied as a `Vector3`, reproducing the native
+- `cell->position` is copied as a `Vector3`, reproducing the native
   anchor-load prologue and three persistent stack lanes.
 - Both local probes are real vector subtractions. The swept endpoint is a
   vector addition before the second subtraction; the obsolete scalar-copy
