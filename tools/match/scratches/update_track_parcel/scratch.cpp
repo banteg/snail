@@ -121,7 +121,10 @@ void Parcel::update_track_parcel()
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
         delta = current_subgame->completion.widget_world - *home_anchor;
 
-        sprite->size_end = progress * 0.60000002f + 0.40000001f;
+        float delivery_scale = progress;
+        delivery_scale *= 0.60000002f;
+        delivery_scale += 0.40000001f;
+        sprite->size_end = delivery_scale;
         sprite->size_start = sprite->size_end;
 
         sprite->position =

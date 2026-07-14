@@ -74,3 +74,18 @@ barrier or dummy data flow is retained to force it.
 The borrowed player now exposes the authored embedded `FollowState` owner at
 +0x384. The active/orientation reads remain codegen-neutral at 99.68%,
 312/312 instructions, prefix 237, and 34 clean operands.
+
+## 2026-07-14 exact delivery-scale closure
+
+The state-7 sprite size is one real `delivery_scale` value. It begins at the
+parcel progress, then applies the `* 0.60000002f` span and `+ 0.40000001f`
+minimum before feeding both sprite size lanes. Android's symbol-preserving
+`cRParcel::AI()` independently retains the corresponding float value across
+the two stores.
+
+Keeping those affine steps explicit lets VC6 finish the reusable `delta`
+vector's z-lane copy between loading progress and applying the multiply, which
+is the native Windows schedule. Focused matching is now exact: **100.00%,
+312/312 instructions, full 312/312 prefix, and 35 clean masked operands**.
+No volatile barrier, dummy dependency, precision cast, or unrelated work is
+used to force the ordering.
