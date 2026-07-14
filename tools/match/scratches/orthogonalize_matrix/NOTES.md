@@ -26,6 +26,7 @@ call` for the first cross call and `push; push; mov ecx; call` for the second,
 matching native byte-for-byte; the free `__fastcall` spelling emits
 `mov ecx` first in both cases.
 
-The child layout and `cross_vectors`/`normalize_vector` ABIs are unchanged:
-`this` = output for `cross_vectors`, and `normalize_vector` is the shared
-`__fastcall` callsite view returning `float` (discarded with `fstp st(0)`).
+2026-07-14 vector-owner promotion: the three basis normalizations now call the
+recovered `Vector3::normalize_vector()` method directly. The ABI remains
+`ECX = vector`, each returned length is discarded with `fstp st(0)`, and the
+complete helper stays exact.

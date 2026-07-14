@@ -3514,7 +3514,8 @@
     },
     {
       "address": "0x44cca0",
-      "name": "normalize_vector"
+      "name": "normalize_vector",
+      "description": "Exact `Vector3::normalize_vector` method: normalizes the vector in place and returns its prior magnitude, matching Android `tVector::Normalize()`."
     },
     {
       "address": "0x44ccf0",
@@ -3582,7 +3583,7 @@
     {
       "address": "0x44d250",
       "name": "set_matrix_rotation_identity",
-      "description": "Resets the rotational basis and homogeneous row to identity while preserving the translation slots. Android symbols match this helper to `tMatrix::RotIdentity()`."
+      "description": "Exact `TransformMatrix::set_matrix_rotation_identity` method: resets the rotational basis and homogeneous row while preserving translation, matching Android `tMatrix::RotIdentity()`."
     },
     {
       "address": "0x44d280",

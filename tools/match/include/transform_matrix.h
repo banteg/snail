@@ -32,7 +32,7 @@ struct TransformMatrix {
         float alpha); // @ 0x44da90
     void interpolate_matrix_rotation(float alpha);     // @ 0x44d920
     void orthogonalize_matrix();                       // @ 0x44d3d0
-    void set_matrix_rotation_identity();              // @ 0x44d250
+    void set_matrix_rotation_identity();              // @ 0x44d250, tMatrix::RotIdentity()
     void rotate_matrix_world_x(float angle);          // @ 0x44ce30
     void rotate_matrix_world_y(float angle);          // @ 0x44cec0
     void rotate_matrix_world_z(float angle);          // @ 0x44cf50
