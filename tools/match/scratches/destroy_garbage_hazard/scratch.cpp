@@ -1,7 +1,7 @@
 // destroy_garbage_hazard @ 0x43f130 (thiscall, ret)
 // cRSubGarbage::Kill(): remove the live bod from the shared active list,
-// kill its sprite, then unlink the slot from the active garbage chain at
-// game+0x359140.
+// kill its sprite, then unlink the slot from the runtime-owned active garbage
+// chain.
 
 #include "garbage_hazard_slot.h"
 #include "game_root.h"
@@ -43,10 +43,10 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
 
     sprite->kill_sprite();
 
-    SubGarbage* result = *(SubGarbage**)((char*)game + 0x359140);
+    SubGarbage* result = game->garbage_hazards.active_head;
     if (result == this) {
         result = next_active;
-        *(SubGarbage**)((char*)game + 0x359140) = result;
+        game->garbage_hazards.active_head = result;
         return result;
     } else if (result) {
         while (1) {

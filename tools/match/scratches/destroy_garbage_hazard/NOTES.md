@@ -25,8 +25,8 @@ Residuals:
   This records the cross-function evidence from destroy, collision, and spawn:
   active garbage head at `+0x359140`, 50 slots at `+0x359144`, total pool view
   size `0x264c`. Focused Wibo remains exact.
-- 2026-06-21 owner cleanup: the final active-chain unlink now casts the opaque
-  slot owner through raw `game+0x359140` loads/stores instead of carrying a
+- 2026-06-21 owner cleanup: the final active-chain unlink cast the opaque slot
+  owner through raw `game+0x359140` loads/stores instead of carrying a
   scratch-local `Game` view. A typed `GarbageHazardPool*` temporary regressed
   to `89.60%` by compiling to `add ecx, 0x359140; mov eax, [ecx]`; the raw
   offset spelling preserves the native `[ecx+0x359140]` address generation and
@@ -47,3 +47,13 @@ remains 62/62 with all six operands clean, proving the removed
 `GarbageHazardListAnchor` typedef was not a garbage-pool owner. The pool owns
 its 50 `SubGarbage` records and active chain; their inherited BOD nodes merely
 borrow membership in the one root active/free list.
+
+## 2026-07-13 active-chain owner
+
+The final unlink now reads and writes
+`game->garbage_hazards.active_head` directly. Unlike the previously rejected
+pool-pointer temporary, this canonical field expression preserves the native
+base-plus-displacement loads and remains exact at 62/62 instructions with all
+six masked operands clean. Together with the root-list cleanup, the destroyer
+now distinguishes both owners explicitly: `GameRoot` owns BOD membership and
+`SubgameRuntime::SubGarbagePool` owns garbage-chain membership.

@@ -106,11 +106,11 @@ Residuals:
   `Vector3*`, matching the live slot position. Removing the `(float*)` cast is
   codegen-neutral: focused Wibo remains 99.30%, 143/143, with the same single
   projection-staging scheduling residual and 16 clean masked operands.
-- 2026-06-18 naming cleanup: the scratch now uses named garbage slot/pool
+- 2026-06-18 naming cleanup: the scratch began using named garbage slot/pool
   constants, renames the local presentation/radius pointer to `radius`, and
-  spells the intrusive BOD-list insertion through `BodNode`/`BodList`. It also
-  uses a narrow `GarbageHazardPoolSlotView` only for the confirmed tail fields
-  `source_cell` and `hidden`. This is codegen-neutral: focused Wibo remains
+  spells the intrusive BOD-list insertion through `BodNode`/`BodList`. At that
+  point it used a narrow `GarbageHazardPoolSlotView` only for the confirmed tail
+  fields `source_cell` and `hidden`. This was codegen-neutral: focused Wibo remained
   99.30%, 143/143, with the same projection-staging scheduling residual. The
   earlier full `GarbageHazardSlot*` rewrite is still rejected because it
   changed saved-register ownership and regressed badly. Collapsing the y
@@ -198,3 +198,18 @@ same scalar only as the attachment-facing angle added to the player's heading.
 The field and raw word constant are now named `attachment_facing_angle`; the
 former `sprite_y_offset` label is rejected. This naming-only recovery leaves
 the spawner exact at 143/143 instructions with all 16 operands clean.
+
+## 2026-07-13 canonical allocator boundaries
+
+The exact spawner now reaches each shared owner directly:
+
+- `GameRoot::active_bod_list` owns the root intrusive-list anchor;
+- `SubgameRuntime::player` supplies the embedded tail sentinel used by the
+  active BOD list during gameplay;
+- `SubgameRuntime::garbage_hazards.slots[slot_index]` owns the final
+  `source_cell` and `hidden` writes.
+
+This retires the raw root-list address, the player word offset, and the
+one-record `GarbageHazardPoolSlotView` overlay. The canonical spelling remains
+exact at 143/143 instructions with all 16 masked operands clean, so these are
+ownership recoveries rather than source-shape guesses.

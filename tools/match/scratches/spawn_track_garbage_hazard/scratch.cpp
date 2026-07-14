@@ -4,6 +4,7 @@
 // link it into both active lists, and allocate the sprite presentation.
 
 #include "sprite.h"
+#include "game_root.h"
 #include "player.h"
 #include "garbage_hazard_slot.h"
 #include "subgame_runtime.h"
@@ -25,12 +26,6 @@ enum {
     GARBAGE_SLOT_ATTACHMENT_FACING_ANGLE_WORD = 877689,
     GARBAGE_SLOT_SPRITE_WORD = 877694,
     GARBAGE_SLOT_PLAYER_WORD = 877697,
-    GAME_ACTIVE_BOD_TAIL_WORD = 978393,
-};
-
-struct GarbageHazardPoolSlotView {
-    char pool_offset[0x359144];
-    SubGarbage slot;
 };
 
 extern char* g_game_base; // data_4df904
@@ -80,8 +75,8 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
         slot_base_words + GARBAGE_SLOT_ATTACHMENT_FACING_ANGLE_WORD);
 
     BodNode* node = (BodNode*)slot;
-    BodNode* tail = (BodNode*)(self_words + GAME_ACTIVE_BOD_TAIL_WORD);
-    BodList* active_list = (BodList*)(g_game_base + 1448);
+    BodNode* tail = (BodNode*)&this->player;
+    BodList* active_list = &((GameRoot*)g_game_base)->active_bod_list;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDbefore");
     } else {
@@ -115,8 +110,8 @@ DWORD* SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* pl
     result[0] = *(DWORD*)&live_position->x;
     result[1] = *(DWORD*)&live_position->y;
     result[2] = *(DWORD*)&live_position->z;
-    GarbageHazardPoolSlotView* slot_view = (GarbageHazardPoolSlotView*)slot_base_words;
-    slot_view->slot.source_cell = cell;
-    slot_view->slot.hidden = 0;
+    SubGarbage* slot_view = &garbage_hazards.slots[slot_index];
+    slot_view->source_cell = cell;
+    slot_view->hidden = 0;
     return result;
 }
