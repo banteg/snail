@@ -67,3 +67,10 @@ does not consume EAX, but it changed the final assign-then-test loop to 61
 instructions. Unlike the slot-zero AI callback, no independent ABI evidence
 proves `Kill()` void, so the exact pointer-returning contract is retained
 rather than forcing an ownership claim from an unused register.
+
+## 2026-07-14 canonical process-root declaration
+
+The destroyer now carries the process root as `GameRoot*`, matching the
+already-proven `active_bod_list` owner instead of casting a byte pointer at the
+unlink site. It remains exact at 62/62 instructions with all six operands
+clean.

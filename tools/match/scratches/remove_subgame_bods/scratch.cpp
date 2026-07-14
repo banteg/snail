@@ -13,7 +13,7 @@
 
 typedef unsigned int DWORD;
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 
@@ -26,13 +26,13 @@ int report_errorf(char* format, ...);
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr)            \
     do {                                                         \
         BodNode** next_link = (next_link_expr);                  \
-        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
+        BodList* list = &g_game->active_bod_list;                 \
         list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_link));    \
     } while (0)
 
 #define REMOVE_INLINE_BOD_NODE(node_expr)                        \
     do {                                                         \
-        BodList* list = &((GameRoot*)g_game_base)->active_bod_list; \
+        BodList* list = &g_game->active_bod_list;                 \
         list->remove_bod((node_expr));                           \
     } while (0)
 
@@ -129,12 +129,12 @@ void SubgameRuntime::remove_subgame_bods()
     REMOVE_INLINE_BOD_NODE(
         &embedded_player()->presentation.weapon_channels[0]);
 
-    BodList* list = &((GameRoot*)g_game_base)->active_bod_list;
+    BodList* list = &g_game->active_bod_list;
     list->recycle_bod_to_free_list(
         &embedded_player()->presentation.weapon_channels[1]);
-    ((GameRoot*)g_game_base)->active_bod_list.recycle_bod_to_free_list(
+    g_game->active_bod_list.recycle_bod_to_free_list(
         &embedded_player()->presentation.weapon_channels[2]);
-    ((GameRoot*)g_game_base)->active_bod_list.recycle_bod_to_free_list(
+    g_game->active_bod_list.recycle_bod_to_free_list(
         (BodNode*)&embedded_player()->presentation.invincible_shell);
 
     player.movement_mode_selector = 0;
@@ -151,7 +151,7 @@ void SubgameRuntime::remove_subgame_bods()
     }
 
     if ((player.click_start.list_flags & 0x200) != 0)
-        ((GameRoot*)g_game_base)->active_bod_list.recycle_bod_to_free_list(
+        g_game->active_bod_list.recycle_bod_to_free_list(
             (BodNode*)&player.click_start);
 
     player.click_start.state = CLICK_START_STATE_INACTIVE;

@@ -5,12 +5,12 @@
 #include "sub_lazer_types.h"
 #include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void SubLazer::deactivate_sub_lazer_projectile()
 {
-    BodList* anchor = &((GameRoot*)g_game_base)->active_bod_list;
+    BodList* anchor = &g_game->active_bod_list;
     int flags = list_flags;
     BodNode* next;
     BodNode* prev;

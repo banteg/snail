@@ -184,3 +184,12 @@ unused raw `char*` alias of the `SubgameRuntime` receiver is also gone; every
 remaining access follows a typed embedded owner. Focused output is unchanged
 at 67.67%, 495/501 instructions, with 63 clean operands and the same two honest
 string-order mismatches.
+
+## 2026-07-14 canonical process-root declaration
+
+All inline removals and the three out-of-line recycler calls now borrow the
+shared intrusive list from a canonical `GameRoot*`. Pool, singleton, Player,
+and presentation storage stays embedded in `SubgameRuntime`; only each
+`BodNode` membership crosses into the root list. Focused output remains 67.67%,
+495/501 instructions, prefix 6/501, with 63 clean operands and the same two
+documented string-order mismatches.

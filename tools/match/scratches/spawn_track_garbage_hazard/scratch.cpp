@@ -20,7 +20,7 @@ enum {
     GARBAGE_SLOT_NEXT_ACTIVE_WORD = 877681,
 };
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 float random_float_below(float upper_bound, const char* tag);
 int next_math_random_value();
@@ -70,7 +70,7 @@ void SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* play
 
     BodNode* node = (BodNode*)slot;
     BodNode* tail = &this->player;
-    BodList* active_list = &((GameRoot*)g_game_base)->active_bod_list;
+    BodList* active_list = &g_game->active_bod_list;
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDbefore");
     } else {

@@ -247,3 +247,10 @@ stable return value. Modeling `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`
 as `void` keeps the Windows body byte-identical at 143/143 instructions with
 all 16 operands clean. The owned 50-slot capacity and active/inactive state
 roles now come from the shared `SubGarbagePool` contract.
+
+## 2026-07-14 canonical process-root declaration
+
+The allocator's borrowed BOD membership now begins from a canonical
+`GameRoot*` declaration, while slot storage and active-chain ownership remain
+with `SubgameRuntime::garbage_hazards`. Focused output stays exact at 143/143
+instructions with all 16 operands clean.

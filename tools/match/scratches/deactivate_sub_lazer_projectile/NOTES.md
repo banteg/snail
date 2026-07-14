@@ -65,3 +65,10 @@ not an integer query. Its only Windows caller discards EAX, while Android's
 apparent result is the value left by the list-removal call before the state
 store. Removing the synthetic result variable and return keeps the Windows
 body exact at 43/43 instructions with all five references clean.
+
+## 2026-07-14 canonical process-root declaration
+
+Keeping the proven anchor-before-flags expression order is sufficient for the
+native lifetime; the global itself can now be declared as `GameRoot*` and reach
+`active_bod_list` directly. The lifecycle method remains exact at 43/43
+instructions with all five operands clean.
