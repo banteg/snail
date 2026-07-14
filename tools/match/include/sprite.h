@@ -8,6 +8,8 @@
 
 #include "vector3.h"
 
+struct TgaImageView;
+
 enum {
     SPRITE_POOL_CAPACITY = 3000,
     SPRITE_DEPTH_BUCKET_COUNT = 256,
@@ -147,7 +149,7 @@ public:
     void kill_game_sprites(); // @ 0x44e3d0
     char set_sprite_manager_paused(char paused_); // @ 0x44e540
     TextureRef* get_sprite_texture(int texture_id); // @ 0x44e570
-    void* get_sprite_texture_ref(int texture_id); // @ 0x44e580, callsite-view
+    TgaImageView* get_sprite_tga(int texture_id); // @ 0x44e580, iOS/Android GetTga
 
     unsigned char paused; // +0x00000
     char unknown_00001[0x04 - 0x01];

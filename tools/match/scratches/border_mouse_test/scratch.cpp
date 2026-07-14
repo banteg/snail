@@ -2,14 +2,7 @@
 
 #include "frontend_widget.h"
 #include "game_root.h"
-
-struct TextureHitMask {
-    char unknown_00[0x0c];
-    unsigned short width;
-    unsigned short height;
-    char unknown_10[0x12 - 0x10];
-    unsigned char pixels[1];
-};
+#include "tga_image_view.h"
 
 extern GameRoot* g_game; // data_4df904
 extern SpriteManager g_sprite_manager; // data_790f30
@@ -31,9 +24,8 @@ unsigned char FrontendWidget::border_mouse_test()
             u = (mouse->saved_x - u) / texture_hit_width;
             float v = texture_hit_y;
             v = (mouse->saved_y - v) / texture_hit_height;
-            TextureHitMask* mask =
-                (TextureHitMask*)g_sprite_manager.get_sprite_texture_ref(
-                    texture_hit_test_sprite);
+            TgaImageView* mask =
+                g_sprite_manager.get_sprite_tga(texture_hit_test_sprite);
 
             int width = mask->width;
             int x = (int)((float)width * u);

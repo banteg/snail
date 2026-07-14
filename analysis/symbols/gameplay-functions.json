@@ -3794,7 +3794,10 @@
     {
       "address": "0x44e580",
       "name": "get_sprite_texture_ref",
-      "description": "Returns the texture-ref record for a manager texture id; iOS RSprite.o names this `cRSpriteManager::GetTextureRef(int)`."
+      "aliases": [
+        "get_sprite_tga"
+      ],
+      "description": "Returns the borrowed TGA header and inline pixel payload at `TextureRef::texture_ref +0x98` for one manager texture id. iOS and Android distinguish this as `cRSpriteManager::GetTga(int)`; their separate `GetTextureRef(int)` accessor instead returns record `+0x8c`."
     },
     {
       "address": "0x44e5a0",

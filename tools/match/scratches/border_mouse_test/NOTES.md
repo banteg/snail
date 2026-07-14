@@ -8,7 +8,8 @@ Recovered behavior:
   `g_game_base + 0x290`;
 - plain widgets use the laid-out rectangle expanded by `target_padding`;
 - texture-backed widgets first test a separate texture-hit rectangle, then map
-  the mouse position to a raw RGB mask returned by `get_sprite_texture_ref`;
+  the mouse position to the borrowed TGA bytes returned by
+  `SpriteManager::get_sprite_tga`;
 - the hit mask clamps sampled x/y to the texture dimensions and treats a zero
   mask byte as hittable.
 
@@ -65,3 +66,13 @@ local with `y *= width` before indexing, and initializing `pixel_index` from
 `imul eax, esi` / `lea eax, [eax+edi+6]` pair. Keep the explicit
 `row = width; row *= y` source; native's `imul esi, eax` remains an isolated
 multiply-destination residual.
+
+## 2026-07-14 TGA view recovery
+
+The scratch-local `TextureHitMask` duplicated the already-proven
+`TgaImageView`: width and height are the TGA `+0x0c/+0x0e` fields and pixels
+begin at `+0x12`. Android calls this exact border path through
+`cRSpriteManager::GetTga(int)`, which returns the texture record's `+0x98`
+payload just like Windows `0x44e580`. The shared typed view and corrected
+manager method preserve the honest 98.29%, 117/117 result; the only residual
+is still the documented multiply destination.

@@ -2271,9 +2271,11 @@
     {
       "address": "0x44e580",
       "windows_name": "get_sprite_texture_ref",
-      "ios_symbol": "cRSpriteManager::GetTextureRef(int)",
+      "ios_symbol": "cRSpriteManager::GetTga(int)",
+      "android_symbol": "cRSpriteManager::GetTga(int)",
       "source_object": "RSprite.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All three implementations return the sprite texture record's +0x98 payload. The mobile GetTextureRef accessor is a distinct function returning record +0x8c; the Windows stable harness name is therefore historically misleading."
     },
     {
       "address": "0x44e5a0",
