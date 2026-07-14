@@ -2464,7 +2464,7 @@
         "off_4A2140",
         "data_4a2140"
       ],
-      "description": "Startup sound-bank entry table passed to initialize_sound_bank before voice and volume setup."
+      "description": "52-record startup `cRSoundBank` table: 51 shipped SFX path/sample-id/normalization records followed by an empty-string sentinel. Android names the corresponding owner `gSFXBank`."
     },
     {
       "address": "0x4a347c",

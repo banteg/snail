@@ -2151,6 +2151,14 @@
       "notes": "Both populate the borrowed Object/cRObject slot. The iOS epilogue establishes no return value and every Windows caller discards EAX, proving the Windows cdecl helper is a staticized void load rather than a cursor-returning API."
     },
     {
+      "address": "0x44dcb0",
+      "windows_name": "initialize_sound_bank",
+      "ios_symbol": "cRSound::Init(cRSoundBank*)",
+      "source_object": "RSound.o",
+      "confidence": "high",
+      "notes": "Windows and Android both walk 12-byte path/sample-id/normalization records until an empty path. Android additionally names the corresponding global gSFXBank and stores its address in gRSound."
+    },
+    {
       "address": "0x44dce0",
       "windows_name": "play_sound_effect_at_position",
       "ios_symbol": "cRSound::Play(int, tVector&)",

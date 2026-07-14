@@ -125,6 +125,12 @@ scratch buffer (`0x74eb18`), and the startup sound-bank table
 referenced as `g_builtin_segment_definitions`. Focused Wibo is still `4.73%`,
 but masked audit now has no unresolved operands.
 
+2026-07-14 sound-bank ownership: the startup call now passes the typed
+52-record `SoundBankEntry` array directly instead of taking the address of a
+single `void*`. iOS names the authored record `cRSoundBank`, while Android
+names the corresponding global `gSFXBank`; both preserve Windows' 12-byte
+path/sample-id/normalization layout. The caller remains byte-identical.
+
 ## 2026-07-10 path-constructor ownership
 
 The constructor island spans the same embedded bank initialized through the

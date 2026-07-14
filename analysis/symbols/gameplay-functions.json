@@ -3688,7 +3688,7 @@
     {
       "address": "0x44dcb0",
       "name": "initialize_sound_bank",
-      "description": "Registers one null-terminated table of shipped SFX paths into the shared runtime sound table by repeatedly calling `register_sound_sample` with each path and its normalization class."
+      "description": "Windows counterpart of `cRSound::Init(cRSoundBank*)`: registers the 51 shipped `g_sound_bank_entries` records, stores each returned sample id at record `+0x04`, and stops at the 52nd record whose path points at an empty string. Android names the corresponding global `gSFXBank` and preserves the same 12-byte record layout."
     },
     {
       "address": "0x44dce0",

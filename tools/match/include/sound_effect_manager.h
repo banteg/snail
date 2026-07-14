@@ -5,6 +5,14 @@
 
 struct Vector3;
 
+// Windows layout of one authored cRSoundBank entry. The shipped global holds
+// 51 samples followed by one entry whose path points at an empty string.
+struct SoundBankEntry {
+    char* path;               // +0x00
+    int sample_id;            // +0x04, populated by initialize_sound_bank
+    int normalization_class;  // +0x08
+};
+
 class SoundEffectManager {
 public:
     void play_sound_effect(int sound_id); // @ 0x44dde0
@@ -16,5 +24,11 @@ public:
 };
 
 extern SoundEffectManager g_sound_effect_manager;
+extern SoundBankEntry g_sound_bank_entries[52]; // 0x4a2140, Android gSFXBank
+
+char* __stdcall initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
+
+typedef char SoundBankEntry_must_be_0x0c[
+    (sizeof(SoundBankEntry) == 0x0c) ? 1 : -1];
 
 #endif

@@ -14,6 +14,7 @@
 #include "object_render_types.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
+#include "sound_effect_manager.h"
 #include "sprite.h"
 #include "thanks_screen.h"
 #include "transform_matrix.h"
@@ -23,7 +24,6 @@ extern char* g_game_base; // data_4df904
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern char g_help_script_path[]; // 0x4a3488
 extern char g_menu_background_script_path[]; // 0x4a347c
-extern void* g_sound_bank_entries; // 0x4a2140, sound bank table
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 int report_errorf(char* format, ...); // @ 0x431cc0
@@ -48,8 +48,6 @@ void set_input_controller_pointer_authored_xy(
     int controller,
     float authored_x,
     float authored_y); // @ 0x4323a0
-char* __stdcall initialize_sound_bank(void* entries); // @ 0x44dcb0
-
 static __forceinline void link_root_bod(BodBase* bod)
 {
     char* node = (char*)bod;
@@ -142,7 +140,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.galaxy.load_galaxy_layout();
     subgame.player.cameraman.initialize_cameraman();
     logo.open_logo();
-    initialize_sound_bank(&g_sound_bank_entries);
+    initialize_sound_bank(g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     options.apply_audio_config_volumes();
     sm_tracks->load_level_definitions();
