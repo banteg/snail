@@ -6,6 +6,10 @@
 
 class Player;
 
+enum {
+    NUKE_SPRITE_SLOT_COUNT = 25,
+};
+
 class Nuke {
 public:
     void initialize_nuke(); // @ 0x447110, cRNuke::Init
@@ -18,7 +22,7 @@ public:
     float orbit_center_z; // +0x0c
     float orbit_phase; // +0x10
     float orbit_phase_step; // +0x14
-    Sprite* sprite_slots[25]; // +0x18
+    Sprite* sprite_slots[NUKE_SPRITE_SLOT_COUNT]; // +0x18
 };
 
 typedef char Nuke_must_be_0x7c[(sizeof(Nuke) == 0x7c) ? 1 : -1];

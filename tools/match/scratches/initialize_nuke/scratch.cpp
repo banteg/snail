@@ -12,7 +12,7 @@ void Nuke::initialize_nuke()
     int zero = 0;
     if (state == zero) {
         Sprite** slots = sprite_slots;
-        int count = 25;
+        int count = NUKE_SPRITE_SLOT_COUNT;
 
         orbit_center_z = owner_player->transform.position.z - 5.0f;
         float rate = g_game->subgame.subgame_rate;

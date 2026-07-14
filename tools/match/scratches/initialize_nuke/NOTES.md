@@ -68,3 +68,12 @@ phase/step +0x10/+0x14, and 25 sprite pointers from +0x18 through +0x78.
 shared type is now `Nuke`, and the analysis prototypes correctly preserve the
 side-effect-only `void` contract. Focused Wibo remains an honest 93.75%, 64/64
 instructions, prefix 30/64, with five clean masked operands.
+
+## Derived sprite-bank extent (2026-07-14)
+
+`NUKE_SPRITE_SLOT_COUNT` now owns the 25-entry extent used by the inline array,
+initializer, exact updater, and exact teardown. Binary Ninja field xrefs show
+those are the complete Windows consumers of `Nuke::sprite_slots`; Android
+independently preserves the same 0x7c-byte class layout and 25-slot walks. This
+is a derived capacity name, not a claim that the original source exposed an
+identically named constant.

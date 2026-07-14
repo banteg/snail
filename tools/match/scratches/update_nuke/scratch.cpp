@@ -41,5 +41,5 @@ active:
         i++;
         slots++;
         ((Sprite*)result)->position.y = y;
-    } while (i < 25);
+    } while (i < NUKE_SPRITE_SLOT_COUNT);
 }
