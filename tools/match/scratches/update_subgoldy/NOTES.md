@@ -479,3 +479,17 @@ best 73.54%; explicit component constructors reached 73.32% or 72.87% with the
 same oversized frame; and a purely sequential `operator+=` chain shrank the
 frame to 0x34 and fell to 72.37%. No padding, volatile storage, fake fields, or
 register-shaped adapters were introduced.
+
+## 2026-07-14 ghost record-bank owner derivation
+
+The offset-preserving ghost cursor remains intact, but its former `0x944150`
+bank base now derives from `offsetof(SubgameRuntime, sub_high_score) +
+offsetof(SubHighScore, time_trial_route_records)`. This identifies the exact
+owned time-trial bank while retaining the native `sizeof(SubSolution) *
+level_mode_arg` evaluation order that the direct indexed-member spelling had
+regressed.
+The macro-expanded cursor preserves the normalized candidate listing
+byte-for-byte
+(`56d9084051f977d866ddf7443f41deab0d9a04521c830d3e2d4f3d96da2003cb`)
+and the honest 74.20% focused result (`2075/2087`, prefix `12/2087`, 290 clean
+operands, one bounded jump-table mismatch).

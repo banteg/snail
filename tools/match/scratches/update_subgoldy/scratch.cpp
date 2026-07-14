@@ -8,6 +8,8 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include <stddef.h>
+
 #include "attachment_sample.h"
 #include "app_shell.h"
 #include "audio_system.h"
@@ -44,6 +46,15 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
+
+enum {
+    TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
+        offsetof(SubgameRuntime, sub_high_score)
+        + offsetof(SubHighScore, time_trial_route_records),
+};
+
+#define TIME_TRIAL_RECORD_AT(block_expr) \
+    ((SubSolution*)((block_expr) + TIME_TRIAL_RECORD_BANK_FROM_SUBGAME))
 
 // Caller-local cRPath prefix. This aggregate-argument declaration preserves
 // the native VC6 push sequence in this large caller; the shared Path owner has
@@ -847,28 +858,28 @@ steering_stored:
     if (ghost_game->level_mode == 4) {
         char* record_block =
             (char*)ghost_game + sizeof(SubSolution) * ghost_game->level_mode_arg;
-        if (((SubSolution*)(record_block + 0x944150))->active == 1
+        if (TIME_TRIAL_RECORD_AT(record_block)->active == 1
             && !ghost_game->selected_level_record_active) {
             int cursor = ghost_game->replay_update_cursor;
             if (cursor
-                >= ((SubSolution*)(record_block + 0x944150))->replay_sample_count)
+                >= TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count)
                 cursor =
-                    ((SubSolution*)(record_block + 0x944150))->replay_sample_count;
+                    TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
             int anchor = startup_track_index;
             int offset_cursor;
             float ghost_z;
             if (!anchor
                 || (offset_cursor =
-                        ((SubSolution*)(record_block + 0x944150))->source_tail
+                        TIME_TRIAL_RECORD_AT(record_block)->source_tail
                             - anchor + cursor)
                     == 0)
                 ghost_z = convert_math_type16_to_32(
-                    (unsigned short)((SubSolution*)(record_block + 0x944150))
+                    (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
                         ->run_records[0].delta_z,
                     32.0f);
             else
                 ghost_z = convert_math_type16_to_32(
-                              (unsigned short)((SubSolution*)(record_block + 0x944150))
+                              (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
                                   ->run_records[offset_cursor].delta_z,
                               32.0f)
                         + g_subgoldy_ghost_z;
@@ -1007,3 +1018,5 @@ steering_stored:
         times_game->times_up.show_times_up_message();
     game->times_up.update_times_up();
 }
+
+#undef TIME_TRIAL_RECORD_AT
