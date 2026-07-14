@@ -27,10 +27,9 @@ Recovered relationships:
 
 Corrected assumptions:
 
-- `Object +0x80` is a real three-float `ObjectDistort` subobject, but this
-  narrow renderer-local view should keep the explicit cast-call shape. Modeling
-  it as a local member perturbs unrelated vertex-copy loop codegen without
-  improving this scratch.
+- `Object +0x80` is a real three-float `ObjectDistort` subobject. The shared
+  complete `Object` layout now owns that member directly; the older explicit
+  cast was a temporary renderer-local view.
 - `ObjectAnimation +0x04/+0x0c` are not a raw frame-index/scale pair. The
   animation builder proves they are generated frame count and playback
   progress; their product selects the generated frame.
@@ -71,3 +70,12 @@ from 60.81% (`134/139`, prefix 41) to 90.58% (`137/139`, prefix 7), with all
 four references still clean. The two residual instructions are scheduling
 differences in source/destination address formation; no compiler-control
 scaffolding was added.
+
+## 2026-07-14 distort and render-stream ownership
+
+The dynamic path now calls the embedded `object->distort` owner directly, and
+both lock sizes derive from the shared 24-byte `ObjectRenderVertex` type.
+These replace the last `Object +0x80` cast and duplicated `0x18` stream stride
+without changing code generation: focused output remains 90.58%, 137/139
+instructions, prefix 7, with all four operands clean. The two missing
+instructions remain the documented address-formation scheduling differences.

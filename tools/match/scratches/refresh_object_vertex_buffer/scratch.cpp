@@ -15,12 +15,13 @@ void refresh_object_vertex_buffer(Object* object)
         object->facequad_normals = animation->frames[frame_index]->facequad_normals;
 
         if ((flags & 0x800000) != 0) {
-            ((ObjectDistort*)((char*)object + 0x80))->apply_distort_to_object((Object*)object);
+            object->distort.apply_distort_to_object(object);
         }
 
         ObjectRenderVertex* vertices;
         object->render_buffers->vertex_buffer->vtbl->Lock(
-            object->render_buffers->vertex_buffer, 0, object->grouped_vertex_count * 0x18,
+            object->render_buffers->vertex_buffer, 0,
+            object->grouped_vertex_count * sizeof(ObjectRenderVertex),
             (void**)&vertices, 0);
 
         for (int i = 0; i < object->grouped_vertex_count; ++i) {
@@ -31,7 +32,8 @@ void refresh_object_vertex_buffer(Object* object)
     } else if ((flags & 4) != 0) {
         ObjectRenderVertex* vertices;
         object->render_buffers->vertex_buffer->vtbl->Lock(
-            object->render_buffers->vertex_buffer, 0, object->grouped_vertex_count * 0x18,
+            object->render_buffers->vertex_buffer, 0,
+            object->grouped_vertex_count * sizeof(ObjectRenderVertex),
             (void**)&vertices, 0);
 
         for (int i = 0; i < object->grouped_vertex_count; ++i) {
