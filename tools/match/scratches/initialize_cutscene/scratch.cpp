@@ -3,13 +3,13 @@
 #include "game_root.h"
 #include "player.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 float sine(float angle);
 
 void Snail::initialize_cutscene()
 {
-    if (((GameRoot*)g_game_base)->subgame.subgame_pause_gate != 0)
+    if (g_game->subgame.subgame_pause_gate != 0)
         return;
 
     snail_skin.update_snail_skin_transition();

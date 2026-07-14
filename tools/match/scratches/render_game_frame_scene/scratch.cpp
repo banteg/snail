@@ -7,7 +7,7 @@
 extern Direct3DDevice8* g_d3d_device; // data_502fec
 extern DisplayModeState g_display_mode_state; // data_4df9e0
 extern int g_render_successful_primitive_count; // data_4f7454
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void render_game_frame_scene()
 {
@@ -19,7 +19,7 @@ void render_game_frame_scene()
 
     g_render_successful_primitive_count = 0;
     g_display_mode_state.update_display_mode_view_state();
-    ((GameRoot*)g_game_base)->render_game_frame();
+    g_game->render_game_frame();
 
     device = g_d3d_device;
     device->vtbl->EndScene(device);

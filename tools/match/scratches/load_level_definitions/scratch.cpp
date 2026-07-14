@@ -4,7 +4,7 @@
 #include "segment_catalog_types.h"
 #include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 void enumerate_matching_archive_or_fs_entries(
     char* directory,
@@ -23,8 +23,7 @@ void SMTracks::load_level_definitions()
     if (count > 0) {
         char* name = names;
         do {
-            ((GameRoot*)g_game_base)
-                ->subgame.level_definition_scratch.load_level_definition_file(name);
+            g_game->subgame.level_definition_scratch.load_level_definition_file(name);
             ++index;
             name += 0x80;
         } while (index < count);

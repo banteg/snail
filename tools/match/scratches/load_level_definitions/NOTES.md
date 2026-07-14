@@ -29,3 +29,8 @@ the active gameplay definition. Typing the nested receiver preserves the exact
 void member `cRSMTracks::OpenLevels()`. Renaming the exact 0x25cfb4-byte owner
 to `SMTracks` and removing the synthetic count result preserves proof grade at
 100.00%, 30/30 instructions, with all six operands clean.
+
+2026-07-14 canonical level-store root: the enumerator now reaches the second
+owned `SubTracks` through `g_game->subgame.level_definition_scratch`, without
+discarding the root type at the singleton reload. It remains exact at 30/30
+instructions with all six operands clean.

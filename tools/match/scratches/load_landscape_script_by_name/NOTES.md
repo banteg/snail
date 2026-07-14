@@ -19,3 +19,7 @@ precheck, then uses a `while (index < script_count)` loop. That preserves the
 native `edi` index / `ebp` name-cursor ownership and avoids VC6's earlier
 duplicated compare-call layout. Focused Wibo now reports 100.00%, 386/386
 instructions, full prefix, and 63 clean masked operands.
+
+2026-07-14 canonical DirectX owner: the landscape mesh import now reloads the
+live `GameRoot* g_game` and calls its embedded `directx_loader` directly. The
+loader remains exact at 386/386 instructions with all 63 operands clean.

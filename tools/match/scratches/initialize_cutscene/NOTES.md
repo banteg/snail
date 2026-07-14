@@ -100,3 +100,7 @@ with all 44 operands clean.
 void const-reference `TransformMatrix::multiply_matrix` member retained by the
 mobile builds as `tMatrix::Multiply(const tMatrix&)`. The complete cutscene
 initializer remains 339/339 exact with all 44 operands clean.
+
+2026-07-14 canonical process-root gate: the pause early-out now reads
+`g_game->subgame.subgame_pause_gate` directly. The complete initializer remains
+exact at 339/339 instructions with all 44 operands clean.

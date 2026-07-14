@@ -18,3 +18,10 @@ The lane rewind and runtime-slab index now derive their `0x54` stride from
 `sizeof(SubLoc)`. The explicit `int` cast preserves the signed division implied
 by the pointer-difference carrier. The function remains exact at 22/22
 instructions with two clean masked operands.
+
+## 2026-07-14 canonical process-root address
+
+The slab-offset subtraction now borrows the canonical `GameRoot* g_game` and
+casts only for byte-address arithmetic. It does not claim that the `SubLoc`
+owns the process root. The helper remains exact at 22/22 instructions with two
+clean operands.

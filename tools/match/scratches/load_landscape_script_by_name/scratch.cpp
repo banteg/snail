@@ -3,7 +3,7 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int sprintf(char* buffer, char* format, ...);
 char* load_file_bytes(char* path, char* out_buffer);
@@ -167,8 +167,8 @@ load_script:
             out[1] = 0;
 
             scripts[script_count].object_index =
-                ((GameRoot*)g_game_base)->directx_loader
-                    .load_or_reuse_cached_x_mesh(object_mesh_name);
+                g_game->directx_loader.load_or_reuse_cached_x_mesh(
+                    object_mesh_name);
         }
     }
 
