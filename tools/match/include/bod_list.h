@@ -30,6 +30,8 @@ typedef char BodNode_must_be_0x10[(sizeof(BodNode) == 0x10) ? 1 : -1];
 
 class BodList {
 public:
+    void add_bod_to_front(BodNode* node); // @ 0x4113b0
+    void append_bod_to_end(BodNode* node); // @ 0x411420
     int recycle_bod_to_free_list(BodNode* node); // @ 0x447290
 
     // Inlined cLinkedList<cRBod>::Add used by pickup allocators.

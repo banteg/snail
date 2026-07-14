@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "backdrop.h"
-#include "bod_list_endpoints_view.h"
 #include "bod_types.h"
 #include "cameraman.h"
 #include "cheat_state.h"
@@ -2990,8 +2989,7 @@ char GameRoot::initialize_game_assets_and_world()
     g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/Universe/Fringe.tga", 0, 0)->flags |= 0x400;
 
-    BodListEndpointsView* active_bods =
-        (BodListEndpointsView*)&active_bod_list;
+    BodList* active_bods = &active_bod_list;
     GameInput* game_input = &game_inputs[0];
     int input_index = 0;
     do {
@@ -3039,8 +3037,8 @@ char GameRoot::initialize_game_assets_and_world()
 
     tip_manager.initialize_tip_manager();
     active_bods->add_bod_to_front(&tip_manager);
-    ((BodListEndpointsView*)&((GameRoot*)g_game_base)->active_bod_list)
-        ->add_bod_to_front((BodNode*)&star_manager);
+    ((GameRoot*)g_game_base)->active_bod_list.add_bod_to_front(
+        (BodNode*)&star_manager);
     star_manager.open_star_field(36);
     subgame.bottom_score_widget = 0;
     subgame.top_score_widget = 0;

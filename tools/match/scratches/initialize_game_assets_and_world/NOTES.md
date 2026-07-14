@@ -637,3 +637,12 @@ each manager-owned `Salt` slot. Both call `set_bod_object` through their
 recovered `RenderableBod` base directly; the field-first SubLazer induction
 remains intentionally explicit because that loop's native source shape walks
 the embedded `object` lane rather than whole records.
+
+## 2026-07-14 active-list method ownership
+
+The final startup insertions now invoke `add_bod_to_front` and
+`append_bod_to_end` on `GameRoot::active_bod_list` itself. Their exact bodies,
+the root constructor, and all inline list users agree on the same 0x0c-byte
+`BodList`; the former `BodListEndpointsView` had no separate storage or ABI
+role and is retired. This is an ownership clarification, not a derived-list
+relationship.

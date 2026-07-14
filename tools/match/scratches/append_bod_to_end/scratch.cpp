@@ -1,8 +1,8 @@
 // BodList::append_bod_to_end @ 0x411420
 
-#include "bod_list_endpoints_view.h"
+#include "bod_list.h"
 
-void BodListEndpointsView::append_bod_to_end(BodNode* node)
+void BodList::append_bod_to_end(BodNode* node)
 {
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADDend");

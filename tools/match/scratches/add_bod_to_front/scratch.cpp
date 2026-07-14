@@ -1,8 +1,8 @@
 // BodList::add_bod_to_front @ 0x4113b0
 
-#include "bod_list_endpoints_view.h"
+#include "bod_list.h"
 
-void BodListEndpointsView::add_bod_to_front(BodNode* node)
+void BodList::add_bod_to_front(BodNode* node)
 {
     if ((node->list_flags & 0x200) != 0) {
         report_errorf("List ADD");
