@@ -99,3 +99,13 @@ The borrowed unlink target now names `GameRoot::active_bod_list` directly.
 The cache remains the owner of its 715 embedded BOD records; the root list owns
 only their live/free linkage. Focused matching remains honestly partial at
 70.59%, 61/58 instructions, with all five operands clean.
+
+## 2026-07-14 embedded-grid bounds
+
+The compiler-sensitive cursor still walks the `BodNode::list_next` lane, but
+its two bounds and byte stride now derive from the recovered owner:
+`SegmentCache::slots` is a 143 by 5 grid of `TrackRenderCacheSlot` records.
+The borrowed unlink target also uses the canonical `GameRoot* g_game` global
+instead of reconstructing the same root through a `char*` alias. These are
+ownership-only source improvements; focused output remains byte-identical at
+70.59%, 61/58 instructions, prefix 5/58, with all five operands clean.
