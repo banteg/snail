@@ -12,10 +12,10 @@
 
 class HighScore {
 public:
-    int destroy_high_score_screen(); // @ 0x417220, cRHighScore::UnInit
-    int update_high_score_screen(); // @ 0x417260, cRHighScore::AI
-    int initialize_high_score_screen(int mode, int rank); // @ 0x416910, cRHighScore::Init
-    int exit_high_score_screen(); // @ 0x417b50, cRHighScore::Exit
+    void destroy_high_score_screen(); // @ 0x417220, cRHighScore::UnInit
+    void update_high_score_screen(); // @ 0x417260, cRHighScore::AI
+    void initialize_high_score_screen(int mode, int rank); // @ 0x416910, cRHighScore::Init
+    void exit_high_score_screen(); // @ 0x417b50, cRHighScore::Exit
 
     int field_00;
     int mode; // +0x04, front-end return mode

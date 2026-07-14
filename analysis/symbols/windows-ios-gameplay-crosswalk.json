@@ -26,6 +26,38 @@
       "notes": "Android preserves the same hide-blend restore and 0x1000 flag clear. Every Windows caller discards EAX, and the void member remains exact at 5/5 instructions."
     },
     {
+      "address": "0x401d30",
+      "windows_name": "initialize_frontend_widget",
+      "android_symbol": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same shell-font widget construction and ends through the void RePosition member. All 83 Windows callers discard EAX; the void transcription remains 429/429 instructions at an honest 99.30%."
+    },
+    {
+      "address": "0x4024a0",
+      "windows_name": "layout_frontend_widget",
+      "android_symbol": "cRBorder::RePosition()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored layout member and exits without a stable result. All 24 Windows callers discard EAX; removing the synthetic result leaves 177/177 instructions at an honest 84.18%."
+    },
+    {
+      "address": "0x402790",
+      "windows_name": "set_frontend_widget_shortcut_key",
+      "android_symbol": "cRBorder::SetKeyLeft(int)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same shortcut store and flag set as a void member. All five Windows callers discard EAX, and the corrected member remains exact at 6/6 instructions."
+    },
+    {
+      "address": "0x4027b0",
+      "windows_name": "stack_widget_below",
+      "android_symbol": "cRBorder::SetBelow(cRBorder*)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same anchor stores and tail-calls void RePosition. All 36 Windows callers discard EAX, and the corrected member remains exact at 9/9 instructions."
+    },
+    {
       "address": "0x4027e0",
       "windows_name": "unhighlight_border",
       "android_symbol": "cRBorder::UnHighlight()",
@@ -158,7 +190,7 @@
       "android_symbol": "cRExit::Init()",
       "source_object": "Exit.o",
       "confidence": "high",
-      "notes": "The exact Windows member initializes the same state-driven Yes/No prompt layouts on the root-owned 0x1c-byte Exit."
+      "notes": "The exact void Windows member initializes the same state-driven Yes/No prompt layouts on the root-owned 0x1c-byte Exit. Android reaches a side-effect-only epilogue, and the sole Windows caller discards EAX."
     },
     {
       "address": "0x4067e0",
@@ -2616,7 +2648,7 @@
       "android_symbol": "cRHighScore::Init(int, int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "All ports build the high-score UI through the cRHighScore owner. Windows embeds it at GameRoot +0x12e6e50; five ten-handle row banks prove storage through +0xf4, while the following 0x14 root bytes remain unassigned before TipManager. The controller is separate from the persistent cRSubHighScore bank."
+      "notes": "All ports build the high-score UI through the void cRHighScore lifecycle. Windows embeds it at GameRoot +0x12e6e50; five ten-handle row banks prove storage through +0xf4, while the following 0x14 root bytes remain unassigned before TipManager. All three Windows callers discard EAX."
     },
     {
       "address": "0x417220",
@@ -2624,7 +2656,7 @@
       "android_symbol": "cRHighScore::UnInit()",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The exact Windows teardown stores cRHighScore +0x08, kills the active border set, and clears the owning root player's pending-entry state."
+      "notes": "The exact void Windows teardown stores cRHighScore +0x08, kills the active border set, and clears the owning root player's pending-entry state. Android AI tail-branches here, and all six Windows callers discard EAX."
     },
     {
       "address": "0x417260",
@@ -2633,7 +2665,7 @@
       "android_symbol": "cRHighScore::AI()",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The ports share the cRHighScore name-entry, bank-toggle, replay-launch, and exit state machine. The Windows body is proof-grade at 205/205 instructions and exposes the same borrowed widget and persistent-record boundaries."
+      "notes": "The ports share the void cRHighScore name-entry, bank-toggle, replay-launch, and exit state machine. Android directly tail-branches among Init, UnInit, and Exit; the honest Windows void transcription is 205/205 instructions at 98.05%."
     },
     {
       "address": "0x417b50",
@@ -2641,7 +2673,7 @@
       "android_symbol": "cRHighScore::Exit()",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The exact Windows member restores the postal or challenge front-end state and requests the corresponding rebuild through the root-owned cRHighScore controller."
+      "notes": "The exact void Windows member restores the postal or challenge front-end state and requests the corresponding rebuild through the root-owned cRHighScore controller. Both Windows callers discard EAX."
     },
     {
       "address": "0x4176a0",
@@ -2719,7 +2751,7 @@
       "android_symbol": "cRGUI::Init()",
       "source_object": "GUI.o",
       "confidence": "high",
-      "notes": "The exact Windows member initializes the same 0x28-byte GUI owner and mode-dependent widget slots. Android independently preserves the identical borrowed game pointer and +0x04 through +0x24 widget layout."
+      "notes": "The void Windows member initializes the same 0x28-byte GUI owner and mode-dependent widget slots. Android independently preserves the identical borrowed game pointer and +0x04 through +0x24 widget layout; the sole Windows caller discards EAX. Removing the synthetic result leaves 167/167 instructions at 96.41%."
     },
     {
       "address": "0x4161f0",

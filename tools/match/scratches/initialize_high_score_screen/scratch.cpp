@@ -17,7 +17,7 @@ extern char g_back_text[]; // 0x4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-int HighScore::initialize_high_score_screen(int mode_, int rank)
+void HighScore::initialize_high_score_screen(int mode_, int rank)
 {
     // VC6 gives the short-lived color values distinct stack objects. Several
     // slots are reused after their title or row branch has ended.
@@ -237,7 +237,8 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
         submit_name_button->initialize_frontend_widget(
             0x20000014, (char*)"Submit", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
-        return submit_name_button->set_frontend_widget_shortcut_key(5);
+        submit_name_button->set_frontend_widget_shortcut_key(5);
+        return;
     }
 
     back_button = g_game->border_manager.allocate_border();
@@ -248,13 +249,15 @@ int HighScore::initialize_high_score_screen(int mode_, int rank)
     bank_toggle_button = g_game->border_manager.allocate_border();
     switch (selected_bank) {
     case 0:
-        return bank_toggle_button->initialize_frontend_widget(
+        bank_toggle_button->initialize_frontend_widget(
             0x20000014, (char*)"Challenge Scores", 23, 0.0f, y,
             color_46.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
+        return;
     case 1:
-        return bank_toggle_button->initialize_frontend_widget(
+        bank_toggle_button->initialize_frontend_widget(
             0x20000014, (char*)"Postal Scores", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
+        return;
     }
 
 }

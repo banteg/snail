@@ -2,9 +2,14 @@
 
 Small front-end widget mutator at 0x402790. Both BN and IDA decompiles show it
 storing the shortcut key at +0x194, setting widget flag 0x80000 at +0x1a0, and
-returning the updated flags word.
+leaving the updated flags word in EAX incidentally.
 
 Exact match: 100.00%, 6/6 instructions, no masked operands.
+
+Android preserves the authored member as `cRBorder::SetKeyLeft(int)`. Its body
+has the same stores and no semantic return, while all five Windows callers
+discard EAX. The shared member is therefore `void`; the exact 6/6 body is
+unchanged.
 
 2026-06-16 type consolidation: `FrontendWidget` now lives in
 `frontend_widget.h` with the shortcut field, shared flags word, hide/unhide,

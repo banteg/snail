@@ -891,6 +891,47 @@ therefore uses the authored `void` contract and names the final `+0x714` lane
 as input capacity. Its Binary Ninja prototype is reported as deferred for the
 same live-session reason as the five adjacent methods.
 
+The broader cRBorder construction/layout surface is also authored `void`:
+
+- `initialize_frontend_widget` is Android
+  `cRBorder::Init(int, char*, int, float, float, tColour, int, float)`; all 83
+  Windows callers discard EAX
+- `layout_frontend_widget` is `cRBorder::RePosition()`; all 24 callers discard
+  EAX, and Android exits without establishing a result
+- `set_frontend_widget_shortcut_key` is `cRBorder::SetKeyLeft(int)`; all five
+  callers discard the flags word left incidentally in EAX
+- `stack_widget_below` is `cRBorder::SetBelow(cRBorder*)`; Android tail-calls
+  void `RePosition()`, and all 36 Windows callers discard EAX
+
+The exact small setters remain 6/6 and 9/9 instructions, and the constructor
+remains 429/429 at 99.30%. `RePosition()` falls honestly to 84.18% at 177/177
+because removing the synthetic result changes register allocation. Binary
+Ninja accepts all four void previews but restores stale scalar inference in
+the live session, so the sync records the desired contracts as deferred.
+
+### Frontend lifecycle return contracts
+
+The same audit closes three controller families without widening every `AI()`
+member indiscriminately:
+
+- root-owned 0x1c-byte `Exit::initialize_exit_prompt` is the exact void
+  `cRExit::Init()`; Android reaches a common side-effect-only epilogue and the
+  sole Windows caller discards EAX
+- embedded 0x28-byte `GUI::initialize_challenge_setup_screen` is void
+  `cRGUI::Init()`; Binary Ninja applied and read back this prototype, while
+  `GUI::update_challenge_setup_screen` remains result-bearing `cRGUI::AI()`
+  because `update_subgame` consumes its semantic 0/1/3 result
+- the four `HighScore` methods are the void `cRHighScore::Init(int, int)`,
+  `AI()`, `UnInit()`, and `Exit()` lifecycle; Android AI directly tail-branches
+  to the other three, and every external Windows caller discards EAX
+
+Exit Init and HighScore UnInit/Exit remain exact. GUI Init is honestly 96.41%
+at 167/167 instructions, and HighScore AI is honestly 98.05% at 205/205; both
+lost only register allocation formerly constrained by synthetic return values.
+The cRBorder, Exit, and HighScore void prototypes remain explicitly deferred
+in Binary Ninja after live verification restored scalar inference, rather than
+being forced or reported as applied.
+
 ### Frontend Widget Tooltip
 
 The iOS `Border.o` symbol set identifies this embedded owner as authored

@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int HighScore::exit_high_score_screen()
+void HighScore::exit_high_score_screen()
 {
     GameRoot* game = g_game;
     if (game->subgame.level_mode == 0) {
@@ -22,5 +22,4 @@ int HighScore::exit_high_score_screen()
         g_game->players[0].redispatch_requested = 1;
     }
 
-    return (int)game;
 }

@@ -6,7 +6,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int Exit::initialize_exit_prompt()
+void Exit::initialize_exit_prompt()
 {
     Color4f color_2;
     Color4f color_3;
@@ -44,7 +44,7 @@ int Exit::initialize_exit_prompt()
             140.0f);
 
         no_button = g_game->border_manager.allocate_border();
-        return (int)no_button->initialize_frontend_widget(
+        no_button->initialize_frontend_widget(
             0x14,
             "No",
             0x14,
@@ -53,6 +53,7 @@ int Exit::initialize_exit_prompt()
             color_19.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             268.0f);
+        return;
 
     case 8:
         prompt_title = g_game->border_manager.allocate_border();
@@ -88,7 +89,8 @@ int Exit::initialize_exit_prompt()
             color_7.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        return (int)no_button->stack_widget_below(prompt_title);
+        no_button->stack_widget_below(prompt_title);
+        return;
 
     case 9:
         prompt_title = g_game->border_manager.allocate_border();
@@ -124,7 +126,8 @@ int Exit::initialize_exit_prompt()
             color_15.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        return (int)no_button->stack_widget_below(prompt_title);
+        no_button->stack_widget_below(prompt_title);
+        return;
 
     case 0:
     case 5:
@@ -161,7 +164,8 @@ int Exit::initialize_exit_prompt()
             color_4.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        return (int)no_button->stack_widget_below(prompt_title);
+        no_button->stack_widget_below(prompt_title);
+        return;
 
     case 1:
         prompt_title = g_game->border_manager.allocate_border();
@@ -197,7 +201,8 @@ int Exit::initialize_exit_prompt()
             color_10.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        return (int)no_button->stack_widget_below(prompt_title);
+        no_button->stack_widget_below(prompt_title);
+        return;
 
     case 2:
         prompt_title = g_game->border_manager.allocate_border();
@@ -233,7 +238,8 @@ int Exit::initialize_exit_prompt()
             color_16.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        return (int)no_button->stack_widget_below(prompt_title);
+        no_button->stack_widget_below(prompt_title);
+        return;
 
     case 3:
         yes_button = g_game->border_manager.allocate_border();
@@ -248,7 +254,7 @@ int Exit::initialize_exit_prompt()
             0.0f);
 
         no_button = g_game->border_manager.allocate_border();
-        return (int)no_button->initialize_frontend_widget(
+        no_button->initialize_frontend_widget(
             0x14,
             "No",
             0x14,
@@ -257,7 +263,8 @@ int Exit::initialize_exit_prompt()
             color_20.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
+        return;
     }
 
-    return state - 2;
+    return;
 }

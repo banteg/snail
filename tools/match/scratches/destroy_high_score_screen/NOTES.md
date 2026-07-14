@@ -19,3 +19,9 @@ high-score owner type-consolidation candidate.
 2026-07-11 cRHighScore ownership: Android preserves this exact lifecycle role
 as `cRHighScore::UnInit()`. The 0xd0-byte root-owned controller is now named
 `HighScore`; this exact 11/11 teardown remains distinct from `SubHighScore`.
+
+2026-07-14 return-contract audit: Android's direct AI tail branch and all six
+Windows callers establish a side-effect-only `void` member. Removing the
+synthetic `return 0` preserves the exact 11/11 body and five clean operands;
+Binary Ninja records the authored prototype as explicitly deferred because
+live analysis restores its stale scalar inference.

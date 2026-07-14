@@ -165,7 +165,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_challenge_setup_screen",
-        "int32_t __thiscall initialize_challenge_setup_screen(GUI* gui)",
+        "void __thiscall initialize_challenge_setup_screen(GUI* gui)",
     ),
     (
         "destroy_challenge_setup_screen",

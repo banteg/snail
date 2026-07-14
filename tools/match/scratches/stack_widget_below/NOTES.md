@@ -7,3 +7,8 @@ and then relayouting this widget.
 
 Exact match: 100.00%, 9/9 instructions, with the layout_frontend_widget call
 operand resolved.
+
+2026-07-14 return-contract audit: Android `cRBorder::SetBelow(cRBorder*)`
+performs the same anchor stores and tail-calls the void `RePosition()` member.
+All 36 Windows callers discard EAX. Modeling both members as `void` preserves
+the exact 9/9 result and removes the false pointer/scalar return ownership.

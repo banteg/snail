@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int HighScore::update_high_score_screen()
+void HighScore::update_high_score_screen()
 {
     int result;
 
@@ -30,7 +30,8 @@ int HighScore::update_high_score_screen()
             rstrcpy_checked_ascii(
                 g_runtime_config.last_entered_player_name,
                 name_row_widgets[selected_rank]->text_buffer);
-            return exit_high_score_screen();
+            exit_high_score_screen();
+            return;
         }
 
         FrontendWidget* submit = submit_name_button;
@@ -51,7 +52,8 @@ int HighScore::update_high_score_screen()
             g_sprite_manager.kill_game_sprites();
             g_game->subgame.sub_high_score.mini_delete_high_score_entry(
                 selected_rank);
-            return exit_high_score_screen();
+            exit_high_score_screen();
+            return;
         }
     } else {
         FrontendWidget* toggle = bank_toggle_button;
@@ -72,7 +74,8 @@ int HighScore::update_high_score_screen()
             }
 
             g_runtime_config.high_score_selected_bank = selected_bank;
-            return initialize_high_score_screen(selected_bank, -1);
+            initialize_high_score_screen(selected_bank, -1);
+            return;
         }
 
         FrontendWidget* back = back_button;
@@ -85,13 +88,15 @@ int HighScore::update_high_score_screen()
             if (current_mode == 1) {
                 g_game->players[0].frontend_state = 10;
                 g_game->players[0].redispatch_requested = 1;
-                return destroy_high_score_screen();
+                destroy_high_score_screen();
+                return;
             }
 
             if (current_mode == 0)
                 g_game->players[0].frontend_state = 4;
 
-            return destroy_high_score_screen();
+            destroy_high_score_screen();
+            return;
         }
 
         int i = 0;
@@ -139,5 +144,4 @@ int HighScore::update_high_score_screen()
         }
     }
 
-    return result;
 }

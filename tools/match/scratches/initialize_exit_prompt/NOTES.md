@@ -19,15 +19,10 @@
 - `initialize_exit_prompt_jump_table` is curated at `0x4067b4` with ten entries
   (`0x28` bytes) between the function `ret` at `0x4067b0` and the `0x90`
   padding before `update_completion_screen`. The table now resolves cleanly.
-- Shared headers now model `FrontendWidget::initialize_frontend_widget` as
-  returning the same word result as `layout_frontend_widget`; this matches the
-  two no-title branches that return the call result in `eax` and remains
-  codegen-neutral for this scratch.
-- 2026-06-20 proof: the two no-title branches must return the final
-  `no_button->initialize_frontend_widget(...)` result instead of discarding it
-  with `return 0`. BN and IDA both show native leaving that call result in
-  `eax`; matching the real result flow removes the extra `xor eax,eax`, fixes
-  the jump-table target offset, and proves the scratch.
+- The two no-title branches end immediately after the final No-button
+  initializer. Earlier analysis treated the call's incidental EAX as a scalar
+  result; cross-port prototypes and caller evidence now identify both this
+  owner and the cRBorder initializer as `void`.
 - A shared `result` local still remains rejected: it introduces an `edi` result
   register, shifts the stack color locals, and drops to `92.20%`.
 - 2026-07-11 local-label collision audit: the current compiler generation calls
@@ -43,3 +38,9 @@
   reload the canonical `GameRoot::border_manager` member. The native duplicated
   switch bodies and their short borrow lifetimes remain untouched; output is
   still exact at 441/441 instructions with all 109 operands clean.
+- 2026-07-14 return-contract audit: Android/iOS `cRExit::Init()` has a common
+  side-effect-only epilogue, and the sole Windows caller discards EAX. Rewriting
+  the tail branches as calls followed by `return;` preserves the exact 441/441
+  body and all 109 clean operands. Binary Ninja now has the exact 0x1c-byte
+  `Exit` owner; its void prototype preview verifies but live analysis restores
+  the stale scalar form, so the sync script reports it as deferred.

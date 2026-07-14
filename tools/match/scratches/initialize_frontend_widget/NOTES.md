@@ -11,13 +11,10 @@ constructor's local scheduling is not yet source-shaped.
 Expected residuals:
 - stack-local color ordering is still decompiler-shaped.
 
-2026-06-20 frontend type pass: `initialize_frontend_widget` and
-`layout_frontend_widget` are modeled as returning the same word result, not a
-widget pointer. This matches the exact `layout_frontend_widget` helper and the
-exact `initialize_exit_prompt` branches that return the initializer result in
-`eax`. Focused matcher evidence for this scratch stayed unchanged at `45.21%`,
-`270/429` candidate/target instructions, with the same `38 ok / 1 unresolved /
-1 mismatch` masked audit.
+2026-06-20 frontend type pass initially modeled the constructor and layout
+helper as sharing one scalar result. The 2026-07-14 cross-port/callsite audit
+supersedes that interpretation: the apparent result is incidental register
+state from the final layout call, not an authored return value.
 
 2026-06-20 shared frontend header pass: the local `FrontendWidget` list-prefix
 view was removed in favor of `include/frontend_widget.h`. Focused matcher
@@ -116,3 +113,12 @@ through the widget view. The shared type therefore inherits the actual
 duplicating only its intrusive-list lanes. This ownership-only change preserves
 the honest 99.30%, 429/429 result, 55-instruction prefix, 49 clean operands,
 and one bounded jump-table mismatch.
+
+## 2026-07-14 authored void contract
+
+Android preserves this text constructor as
+`cRBorder::Init(int, char*, int, float, float, tColour, int, float)` and ends
+through the void `RePosition()` member. All 83 Windows callsites discard EAX;
+the former Exit/HighScore tail returns only propagated incidental call state.
+The shared method is now `void`. Focused matching remains 99.30%, 429/429,
+prefix 55, with 49 clean operands and the same bounded jump-table mismatch.

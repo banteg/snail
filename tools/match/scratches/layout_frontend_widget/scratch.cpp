@@ -23,7 +23,7 @@ float* layout_and_queue_wrapped_font_text(
     char measure_only,
     char pulse_alpha);
 
-int FrontendWidget::layout_frontend_widget()
+void FrontendWidget::layout_frontend_widget()
 {
     FrontendWidget* widget = this;
     int result;
@@ -142,5 +142,4 @@ int FrontendWidget::layout_frontend_widget()
         }
     }
 
-    return result;
 }

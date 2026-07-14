@@ -100,3 +100,13 @@ byte-identical. Their normalized hashes are:
 - entry initializer: `a75572ab1c999e728b3bf9356515c35b99667c5991e253bcb5826e50e91b3b5d`
 - compact serializer: `42e7a54dd829b5591e8c6fbad3179da8ad3ec37584c975207a0fdb73cd1d8445`
 - compact deserializer: `61da5c69624b6c1ceacbaf10df68a57e4605bed0c22aa580090a32b06fe52f93`
+
+## 2026-07-14 lifecycle return contract
+
+Android `cRHighScore::Init(int, int)` shares a void lifecycle with `AI()`,
+`UnInit()`, and `Exit()`; the Android AI body directly tail-branches among all
+three peers. All three external Windows initializer callers discard EAX.
+Removing the synthetic return preserves this initializer at 98.00%, 600/600,
+prefix 80, with all 137 operands clean. Binary Ninja accepts the void preview
+but restores the stale scalar form during live verification, so the narrow
+sync reports it as deferred.

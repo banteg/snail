@@ -111,6 +111,26 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
 )
 
 DEFERRED_PROTO_UPDATES = (
+    (
+        "initialize_frontend_widget",
+        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x)",
+    ),
+    (
+        "layout_frontend_widget",
+        "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
+    ),
+    (
+        "0x402790",
+        "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)",
+    ),
+    (
+        "stack_widget_below",
+        "void __thiscall stack_widget_below(FrontendWidget* widget, FrontendWidget* previous_widget)",
+    ),
+    (
+        "initialize_exit_prompt",
+        "void __thiscall initialize_exit_prompt(Exit* exit_prompt)",
+    ),
     ("hide_border_init", "void __thiscall hide_border_init(FrontendWidget* widget)"),
     ("unhide_border_init", "void __thiscall unhide_border_init(FrontendWidget* widget)"),
     ("unhighlight_border", "void __thiscall unhighlight_border(FrontendWidget* widget)"),
@@ -130,9 +150,6 @@ PROTO_UPDATES = (
         "border_mouse_test",
         "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
     ),
-    ("initialize_frontend_widget", "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x)"),
-    ("layout_frontend_widget", "int32_t __thiscall layout_frontend_widget(FrontendWidget* widget)"),
-    ("0x402790", "int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)"),
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),

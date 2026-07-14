@@ -14,3 +14,9 @@ root-owned `HighScore` controller.
 `GameRoot*` global while preserving native's deliberate reloads between player
 state, rebuild-selector, and redispatch writes. The helper remains exact at
 23/23 with all six operands clean.
+
+2026-07-14 return-contract audit: Android's AI tail branches and both Windows
+callers establish `cRHighScore::Exit()` as side-effect-only. Removing the
+incidental root-pointer return preserves the exact 23/23 body and six clean
+operands. The Binary Ninja void prototype remains explicitly deferred after
+live analysis restores its stale scalar form.

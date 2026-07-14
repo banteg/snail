@@ -10,7 +10,7 @@ extern char g_blank_text[]; // data_4dfb08
 int report_errorf(char* format, ...);
 void __cdecl rstrcpy_checked_ascii(char* destination, char* source);
 
-int FrontendWidget::initialize_frontend_widget(
+void FrontendWidget::initialize_frontend_widget(
     int flags,
     char* text,
     int widget_type,
@@ -180,5 +180,5 @@ int FrontendWidget::initialize_frontend_widget(
             0.0f);
     }
 
-    return layout_frontend_widget();
+    layout_frontend_widget();
 }

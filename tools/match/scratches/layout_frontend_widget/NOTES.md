@@ -64,3 +64,12 @@ The four slider hit bounds now use the shared `FrontendWidget` fields at
 at `+0x71c/+0x718/+0x720`. This removes the last raw-offset writes and generic
 child aliases from the layout pass while preserving the honest 87.57%,
 177/177 instruction result, 23-instruction prefix, and all 20 clean operands.
+
+## 2026-07-14 authored void contract
+
+Android preserves this member as `cRBorder::RePosition()` and exits without a
+stable result; all 24 Windows callsites discard EAX. Removing the synthetic
+scalar return changes only register allocation: the honest focused result is
+84.18%, 177/177 instructions, prefix 21, with all 20 operands clean. The lower
+sequence score is retained because the shared API now models real ownership
+instead of constraining EAX for the matcher.

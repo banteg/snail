@@ -21,9 +21,12 @@ public:
     void unhide_border_init(); // @ 0x401110, Android cRBorder::UnHideInit()
     void highlight_border(); // @ 0x402800, Android cRBorder::Highlight()
     void unhighlight_border(); // @ 0x4027e0, Android cRBorder::UnHighlight()
-    FrontendWidget* stack_widget_below(FrontendWidget* previous_widget); // @ 0x4027b0
-    int layout_frontend_widget(); // @ 0x4024a0
-    int set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790
+    void stack_widget_below(FrontendWidget* previous_widget); // @ 0x4027b0,
+        // Android cRBorder::SetBelow(cRBorder*)
+    void layout_frontend_widget(); // @ 0x4024a0,
+        // Android cRBorder::RePosition()
+    void set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790,
+        // Android cRBorder::SetKeyLeft(int)
     void border_input_text_init(int capacity, char* text, int flags); // @ 0x403410,
         // Android cRBorder::InputTextInit(int, char*, int)
     void border_input_text(); // @ 0x4035b0
@@ -32,7 +35,7 @@ public:
         char flag); // @ 0x404540, Android cRBorder::SpriteExtend(int, int, int, bool)
     unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
     void update_frontend_widget_interaction(); // @ 0x402820
-    int initialize_frontend_widget(int flags, char* text, int widget_type,
+    void initialize_frontend_widget(int flags, char* text, int widget_type,
         float x, float y, Color4f* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
         Color4f* color, float z, int layer);

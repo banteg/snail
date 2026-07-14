@@ -37,22 +37,22 @@
     {
       "address": "0x401d30",
       "name": "initialize_frontend_widget",
-      "description": "Constructs one shell-font cRBorder widget, seeds its border style, text scale, alignment, six color blocks, and optional slider-child controls, then links it into the active widget list."
+      "description": "Authored void `cRBorder::Init(int, char*, int, float, float, tColour, int, float)`: constructs one shell-font widget, seeds its border style, text scale, alignment, six color blocks, and optional slider children, then links it into the active list. All 83 Windows callers discard the incidental EAX state."
     },
     {
       "address": "0x4024a0",
       "name": "layout_frontend_widget",
-      "description": "Recomputes one front-end widget's authored-space position, measured text bounds, and any attached slider-child offsets before the current frame draw."
+      "description": "Authored void `cRBorder::RePosition()`: recomputes one widget's authored-space position, measured text bounds, and attached slider-child offsets before draw. All 24 Windows callers discard EAX; the honest void transcription is 177/177 instructions at 84.18%."
     },
     {
       "address": "0x402790",
       "name": "set_frontend_widget_shortcut_key",
-      "description": "Stores one keyboard shortcut code on a front-end widget and enables the matching flag so `update_frontend_widget_interaction` dispatches the widget when `read_pressed_text_input_key_code()` returns that code."
+      "description": "Exact void `cRBorder::SetKeyLeft(int)`: stores one keyboard shortcut code and enables the matching dispatch flag. All five Windows callers discard the updated flags left incidentally in EAX."
     },
     {
       "address": "0x4027b0",
       "name": "stack_widget_below",
-      "description": "Chains one shell-font front-end widget below another by copying the previous widget x anchor and adding the current gap plus the previous measured height."
+      "description": "Exact void `cRBorder::SetBelow(cRBorder*)`: chains one shell-font widget below another, then tail-calls `RePosition()`. All 36 Windows callers discard EAX."
     },
     {
       "address": "0x4027e0",
@@ -281,7 +281,7 @@
     {
       "address": "0x4060d0",
       "name": "initialize_exit_prompt",
-      "description": "Exact Windows `Exit::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain `cRExit::Init()`."
+      "description": "Exact void Windows `Exit::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain the side-effect-only `cRExit::Init()`, and the sole Windows caller discards EAX."
     },
     {
       "address": "0x4067e0",
@@ -1024,7 +1024,7 @@
     {
       "address": "0x415f50",
       "name": "initialize_challenge_setup_screen",
-      "description": "Implements `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets."
+      "description": "Void `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets. The sole Windows caller discards EAX; the honest void transcription is 167/167 instructions at 96.41%."
     },
     {
       "address": "0x4161f0",
@@ -1034,7 +1034,7 @@
     {
       "address": "0x416370",
       "name": "update_challenge_setup_screen",
-      "description": "Implements `cRGUI::AI()`: runs postal, challenge, and time-trial level selection, including navigation, difficulty/speed changes, replay launch, Play, and Back handoffs."
+      "description": "Implements result-bearing `cRGUI::AI()`: runs postal, challenge, and time-trial level selection, including navigation, difficulty/speed changes, replay launch, Play, and Back handoffs. `update_subgame` consumes its semantic 0/1/3 result, so this member remains `int`."
     },
     {
       "address": "0x416800",
@@ -1054,17 +1054,17 @@
     {
       "address": "0x416910",
       "name": "initialize_high_score_screen",
-      "description": "Builds the postal or challenge high-score screen, optionally enables inline name entry for a pending rank, and lays out five owned ten-handle row banks for backgrounds, ranks, names, scores, and replay actions. Cross-port Android and iOS symbols match this helper to `cRHighScore::Init(int, int)`."
+      "description": "Void `cRHighScore::Init(int, int)`: builds the postal or challenge high-score screen, optionally enables inline name entry, and lays out five owned ten-handle row banks. Android AI tail-branches among the void lifecycle peers; all three Windows callers discard EAX."
     },
     {
       "address": "0x417220",
       "name": "destroy_high_score_screen",
-      "description": "Tears down the active high-score table widgets, preserves the selected bank index, and resets the shell-font scene before control returns to the owning front-end state. Cross-port Android symbols match this helper to `cRHighScore::UnInit()`."
+      "description": "Exact void `cRHighScore::UnInit()`: tears down the active high-score widgets, preserves the selected bank index, and resets the shell-font scene. Android lifecycle branches and six Windows callers establish that the former zero result was incidental."
     },
     {
       "address": "0x417260",
       "name": "update_high_score_screen",
-      "description": "Proof-grade Windows `cRHighScore::AI()` at 205/205 instructions. Runs replay launch, bank toggling, inline name submission, and back or exit actions while borrowing row-widget handles and records from the separate persistent cRSubHighScore bank. Cross-port Android and iOS preserve the same authored owner."
+      "description": "Void Windows `cRHighScore::AI()`: runs replay launch, bank toggling, inline name submission, and exit actions while borrowing row widgets and the separate persistent cRSubHighScore bank. Android directly tail-branches to Init, UnInit, and Exit; the honest void transcription is 205/205 instructions at 98.05%."
     },
     {
       "address": "0x417540",
@@ -1109,7 +1109,7 @@
     {
       "address": "0x417b50",
       "name": "exit_high_score_screen",
-      "description": "Leaves the high-score screen, restores front-end state `2` for postal or `10` for challenge, and seeds rebuild selector `2` on both paths. Cross-port Android symbols match this helper to `cRHighScore::Exit()`."
+      "description": "Exact void `cRHighScore::Exit()`: leaves the high-score screen, restores front-end state `2` for postal or `10` for challenge, and seeds rebuild selector `2` on both paths. Both Windows callers discard the incidental root pointer left in EAX."
     },
     {
       "address": "0x417bc0",

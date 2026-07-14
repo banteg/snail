@@ -10,7 +10,7 @@ class SubgameRuntime;
 
 class GUI {
 public:
-    int initialize_challenge_setup_screen(); // @ 0x415f50, cRGUI::Init
+    void initialize_challenge_setup_screen(); // @ 0x415f50, cRGUI::Init
     void destroy_challenge_setup_screen(); // @ 0x4161f0, cRGUI::UnInit
     int update_challenge_setup_screen(); // @ 0x416370, cRGUI::AI
 

@@ -128,4 +128,15 @@ typedef struct FrontendWidget {
     FrontendWidget* slider_value_widget;
 } FrontendWidget;
 
+/* Authored cRExit, exact 0x1c-byte root owner. */
+typedef struct Exit {
+    int32_t state;
+    uint8_t _pad_04[0x08 - 0x04];
+    int32_t previous_frontend_state;
+    float prompt_y;
+    FrontendWidget* prompt_title;
+    FrontendWidget* yes_button;
+    FrontendWidget* no_button;
+} Exit;
+
 #endif

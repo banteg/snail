@@ -58,3 +58,13 @@ screen shell without changing the honest 67.65% baseline.
 - The replay-launch branch still reloads the root around teardown rather than
   retaining a callback-spanning borrow. Output remains exact at 205/205 with
   all 40 operands clean.
+
+## 2026-07-14 lifecycle return contract
+
+Android `cRHighScore::AI()` directly tail-branches to `UnInit()`, `Exit()`, and
+`Init(int, int)`, proving one void lifecycle; both external Windows callers
+discard EAX. Removing the synthetic result leaves an honest 98.05%, 205/205
+instructions, prefix 191, with 39 clean operands. The only drift is final-loop
+register allocation formerly constrained by the fake scalar return. Binary
+Ninja accepts the void preview but restores the stale scalar form during live
+verification, so the sync reports it as deferred.

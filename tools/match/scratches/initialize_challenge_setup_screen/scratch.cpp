@@ -12,7 +12,7 @@
 extern GameRoot* g_game; // data_4df904
 extern char g_back_text[]; // 0x4a20ec
 
-int GUI::initialize_challenge_setup_screen()
+void GUI::initialize_challenge_setup_screen()
 {
     g_game->players[0].mouse_cursor.capture_mouse_cursor();
     game->level_definition.load_frontend_level_by_mode_and_index(
@@ -22,7 +22,7 @@ int GUI::initialize_challenge_setup_screen()
     int mode = game->level_mode;
     --mode;
     if (mode != 0)
-        return mode;
+        return;
 
     Color4f difficulty_color;
     Color4f speed_color;
@@ -101,5 +101,5 @@ int GUI::initialize_challenge_setup_screen()
         back_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    return (int)back_button->stack_widget_below(replay_button);
+    back_button->stack_widget_below(replay_button);
 }
