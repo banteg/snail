@@ -1,6 +1,8 @@
-// calc_slider_to_rate @ 0x437e80 (stdcall, ret 0x4)
+// SubgameRuntime::calc_slider_to_rate @ 0x437e80
 
-float __stdcall calc_slider_to_rate(float slider)
+#include "subgame_runtime.h"
+
+float SubgameRuntime::calc_slider_to_rate(float slider)
 {
     if (slider == 1.0f) {
         return 1.1f;

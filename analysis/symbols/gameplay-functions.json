@@ -2209,7 +2209,8 @@
     },
     {
       "address": "0x437e80",
-      "name": "calc_slider_to_rate"
+      "name": "calc_slider_to_rate",
+      "description": "SubgameRuntime method that maps a normalized challenge-speed slider to its gameplay rate, with the authored maximum slider receiving the special 1.1 rate."
     },
     {
       "address": "0x437eb0",
