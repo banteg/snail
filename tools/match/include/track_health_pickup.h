@@ -9,6 +9,7 @@
 
 #include "bod_types.h"
 #include "sub_loc_fwd.h"
+#include "track_pickup_state.h"
 
 class Player;
 class Sprite;
@@ -19,7 +20,7 @@ public:
     SubHealth* initialize_track_health_pickup_runtime(); // @ 0x408510
     void update_track_health_pickup(); // @ 0x43ecc0
 
-    int state; // +0x38
+    TrackPickupState state; // +0x38
     Player* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
     // Pause gate view initialized from SubgameRuntime during reset_subgame. This is

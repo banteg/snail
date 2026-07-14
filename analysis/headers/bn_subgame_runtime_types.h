@@ -177,6 +177,12 @@ typedef struct Vapour {
     TransformMatrix* points;
 } Vapour;
 
+typedef enum TrackPickupState {
+    TRACK_PICKUP_STATE_INACTIVE = 0,
+    TRACK_PICKUP_STATE_ACTIVE = 1,
+    TRACK_PICKUP_STATE_TEARDOWN_PENDING = 2,
+} TrackPickupState;
+
 /* Exact 0x19c-byte Windows cRJetPack singleton. */
 typedef struct JetPack {
     void* vtable;
@@ -187,7 +193,7 @@ typedef struct JetPack {
     float world_position_y;
     float world_position_z;
     uint8_t unknown_1c[0x38 - 0x1c];
-    int32_t state;
+    TrackPickupState state;
     Player* owner;
     uint8_t unknown_40[0x44 - 0x40];
     SubgameRuntime* owner_game;

@@ -213,6 +213,7 @@ REQUIRED_HEADER_STRUCTS = (
     "BodBase",
     "Banner",
     "Vapour",
+    "TrackPickupState",
     "JetPack",
     "ParcelState",
     "CompletionState",

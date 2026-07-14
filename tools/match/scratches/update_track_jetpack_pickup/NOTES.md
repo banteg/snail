@@ -77,3 +77,11 @@ all 20 operands clean.
 the kill plane and bob base read `position.z/y`, while list removal continues
 through inherited `BodNode`. Matching remains exact at 127/127 with all 20
 operands clean.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+The authored `cRJetPack` parent now shares `TrackPickupState` with
+`cRSubSpeedUp` and `cRSubHealth`. Its live state bobs and culls the pickup;
+collision requests teardown, and the exact next AI tick removes the inherited
+BOD and sprite before returning to inactive. Matching remains exact at 127/127
+instructions with all 20 operands clean.

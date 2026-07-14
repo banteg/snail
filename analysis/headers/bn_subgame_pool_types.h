@@ -55,11 +55,17 @@ typedef struct Vapour {
     TransformMatrix* points;
 } Vapour;
 
-typedef struct TrackSpeedupRuntime {
+typedef enum TrackPickupState {
+    TRACK_PICKUP_STATE_INACTIVE = 0,
+    TRACK_PICKUP_STATE_ACTIVE = 1,
+    TRACK_PICKUP_STATE_TEARDOWN_PENDING = 2,
+} TrackPickupState;
+
+typedef struct SubSpeedUp {
     void* vtable;
     uint32_t list_flags;
-    struct TrackSpeedupRuntime* list_prev;
-    struct TrackSpeedupRuntime* list_next;
+    struct SubSpeedUp* list_prev;
+    struct SubSpeedUp* list_next;
     Vec3 bod_position;
     float render_arg_1c;
     float render_arg_20;
@@ -75,14 +81,16 @@ typedef struct TrackSpeedupRuntime {
     float world_position_w;
     void* render_animation_manager;
     uint8_t unknown_7c[0x04];
-    int32_t state;
+    TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_88[0x04];
     SubgameRuntime* owner_game;
     uint8_t unknown_90[0x1c];
     struct Sprite* sprite;
     uint8_t unknown_b0[0x04];
-} TrackSpeedupRuntime;
+} SubSpeedUp;
+
+typedef SubSpeedUp TrackSpeedupRuntime;
 
 typedef struct JetPack {
     void* vtable;
@@ -91,7 +99,7 @@ typedef struct JetPack {
     struct JetPack* list_next;
     Vec3 world_position;
     uint8_t unknown_1c[0x1c];
-    int32_t state;
+    TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
     SubgameRuntime* owner_game;
@@ -104,14 +112,14 @@ typedef struct JetPack {
     Vapour vapour_b;
 } JetPack;
 
-typedef struct TrackHealthPickup {
+typedef struct SubHealth {
     void* vtable;
     uint32_t list_flags;
-    struct TrackHealthPickup* list_prev;
-    struct TrackHealthPickup* list_next;
+    struct SubHealth* list_prev;
+    struct SubHealth* list_next;
     Vec3 world_position;
     uint8_t unknown_1c[0x1c];
-    int32_t state;
+    TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
     SubgameRuntime* owner_game;
@@ -120,7 +128,9 @@ typedef struct TrackHealthPickup {
     struct TrackRowCell* source_cell;
     float bob_phase;
     float bob_phase_step;
-} TrackHealthPickup;
+} SubHealth;
+
+typedef SubHealth TrackHealthPickup;
 
 enum SubSlugState {
     SUB_SLUG_STATE_INACTIVE = 0,
@@ -269,7 +279,11 @@ void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_wid
 void __thiscall reset_vapour(Vapour* vapour, float* z_floor);
 void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);
 void __thiscall update_vapour(Vapour* vapour);
+SubSpeedUp* __thiscall initialize_track_speedup_runtime(SubSpeedUp* speedup);
+void __thiscall update_track_speedup(SubSpeedUp* speedup);
 JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);
 void __thiscall update_track_jetpack_pickup(JetPack* jetpack);
+SubHealth* __thiscall initialize_track_health_pickup_runtime(SubHealth* pickup);
+void __thiscall update_track_health_pickup(SubHealth* pickup);
 
 #endif

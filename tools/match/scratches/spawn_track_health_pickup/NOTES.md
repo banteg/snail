@@ -197,3 +197,11 @@ optimizer-sensitive shifted receiver still derives its displacement from
 `sizeof(SubHealth)` rather than the unexplained 29-word stride, and the
 inherited BOD conversion no longer needs a cast. Focused output is unchanged at
 90.08%, 120/122 instructions, prefix 6, with all seven operands clean.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+The free-slot scan now explicitly accepts only
+`TRACK_PICKUP_STATE_INACTIVE`, then activates the selected authored
+`cRSubHealth` slot with `TRACK_PICKUP_STATE_ACTIVE`. Focused output is
+byte-stable at 90.08%, 120/122 instructions, prefix 6, with all seven operands
+clean.

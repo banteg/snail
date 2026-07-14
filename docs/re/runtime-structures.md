@@ -488,12 +488,20 @@ The current high-confidence `Game` fields are:
   - `+0x355c0c`: live salt hazards
   - `+0x355cb4`: tile 29/30 special track bodies
   - the other five constructed group roles remain unknown on Windows
+- `+0x355db0`: `speedup_pickup`
+  - exact `0xb4`-byte authored `cRSubSpeedUp` singleton
 - `+0x355e64`: `jetpack_pickup`
   - exact `0x19c`-byte `cRJetPack` singleton
   - two complete embedded `0x94`-byte `cRVapour` children at `+0x74` and
     `+0x108`; each retains the real output `cRObject*` at child `+0x24`
 - `+0x356000`: `health_pickups`
-  - `8`-slot `TrackPickupRuntime` array
+  - eight inline exact `0x74`-byte authored `cRSubHealth` slots
+  - `cRSubSpeedUp`, `cRJetPack`, and `cRSubHealth` share the recovered
+    `TrackPickupState` protocol: `INACTIVE (0)`, `ACTIVE (1)`, and
+    `TEARDOWN_PENDING (2)`
+  - the live spawners claim only `INACTIVE` slots, collision moves a collected
+    `ACTIVE` pickup to `TEARDOWN_PENDING`, and the exact class AI removes its
+    inherited BOD and sprite before returning the owner to `INACTIVE`
 - `+0x3563a0`: `slug_hazards`
   - `8`-slot `SlugHazardRuntime` array in Windows
 - `+0x356b00`: `sub_lazers`

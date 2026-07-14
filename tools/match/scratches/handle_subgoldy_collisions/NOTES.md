@@ -527,3 +527,11 @@ The parcel sweep now names its only accepted source state as
 that transition and completes the flight into the player-owned home anchor.
 Focused output remains byte-stable at 53.93%, 651/673 instructions, prefix
 8/673, with all 86 operands clean.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+The health, speedup, and jetpack collision branches now consume only
+`TRACK_PICKUP_STATE_ACTIVE` owners and hand successful collections to the
+respective exact AI through `TRACK_PICKUP_STATE_TEARDOWN_PENDING`. Focused
+output remains byte-stable at 53.93%, 651/673 instructions, prefix 8/673, with
+all 86 operands clean.

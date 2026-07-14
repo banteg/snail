@@ -22,11 +22,11 @@ void JetPack::update_track_jetpack_pickup()
 
     int current_state = state - zero;
     switch (current_state) {
-    case 0:
+    case TRACK_PICKUP_STATE_INACTIVE:
         break;
-    case 1:
+    case TRACK_PICKUP_STATE_ACTIVE:
         goto state_one;
-    case 2:
+    case TRACK_PICKUP_STATE_TEARDOWN_PENDING:
         goto state_two;
     default:
         goto update_bob;
@@ -34,14 +34,14 @@ void JetPack::update_track_jetpack_pickup()
     return;
 
 state_two:
-    state = zero;
+    state = TRACK_PICKUP_STATE_INACTIVE;
     g_game->active_bod_list.remove_bod(this);
     sprite->kill_sprite();
     return;
 
 state_one:
     if (position.z < owner->interaction_max_z) {
-        state = zero;
+        state = TRACK_PICKUP_STATE_INACTIVE;
         g_game->active_bod_list.remove_bod(this);
         sprite->kill_sprite();
         return;

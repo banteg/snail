@@ -62,6 +62,10 @@ PARCEL_FIELD_UPDATES = (
     ("0x38", "state", "ParcelState"),
 )
 
+JETPACK_FIELD_UPDATES = (
+    ("0x38", "state", "TrackPickupState"),
+)
+
 TIMES_UP_FIELD_UPDATES = (
     ("0x00", "state", "TimesUpState"),
 )
@@ -250,6 +254,7 @@ def main() -> int:
                 "GalaxyRouteNameRecord",
                 "Galaxy",
                 "Vapour",
+                "TrackPickupState",
                 "JetPack",
                 "Banner",
                 "BannerPool",
@@ -287,6 +292,14 @@ def main() -> int:
                 updates=SUBGAME_PLAYER_FIELD_UPDATES,
             )
         )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="JetPack",
+            updates=JETPACK_FIELD_UPDATES,
+        )
+    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,

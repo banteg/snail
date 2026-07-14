@@ -8,6 +8,7 @@
 
 #include "bod_types.h"
 #include "sub_loc_fwd.h"
+#include "track_pickup_state.h"
 #include "vapour.h"
 
 class Player;
@@ -19,7 +20,7 @@ public:
     JetPack* initialize_track_jetpack_pickup_runtime(); // @ 0x4084d0
     void update_track_jetpack_pickup(); // @ 0x43efb0
 
-    int state; // +0x38
+    TrackPickupState state; // +0x38
     Player* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
     SubgameRuntime* owner_game; // +0x44, borrowed containing subgame

@@ -194,10 +194,16 @@ typedef struct SubTracks {
     int32_t parcel_quota;
 } SubTracks;
 
+typedef enum TrackPickupState {
+    TRACK_PICKUP_STATE_INACTIVE = 0,
+    TRACK_PICKUP_STATE_ACTIVE = 1,
+    TRACK_PICKUP_STATE_TEARDOWN_PENDING = 2,
+} TrackPickupState;
+
 /* Exact 0xb4-byte authored cRSubSpeedUp singleton. */
 typedef struct SubSpeedUp {
     RenderableBod body;
-    int32_t state;
+    TrackPickupState state;
     Player* owner;
     uint8_t unknown_88[0x8c - 0x88];
     SubgameRuntime* owner_game;
@@ -242,7 +248,7 @@ typedef struct JetPack {
     BodNode bod;
     Vec3 world_position;
     uint8_t _pad_1c[0x38 - 0x1c];
-    int32_t state;
+    TrackPickupState state;
     Player* owner;
     uint8_t _pad_40[0x44 - 0x40];
     SubgameRuntime* owner_game;
@@ -635,11 +641,11 @@ typedef struct SubLazerSlot {
 } SubLazerSlot;
 
 /* Exact 0x74-byte authored cRSubHealth pickup slot. */
-typedef struct TrackHealthPickup {
+typedef struct SubHealth {
     BodNode bod;
     Vec3 world_position;
     uint8_t _pad_1c[0x38 - 0x1c];
-    int32_t state;
+    TrackPickupState state;
     Player* owner;
     uint8_t _pad_40[0x44 - 0x40];
     SubgameRuntime* owner_game;
@@ -648,7 +654,9 @@ typedef struct TrackHealthPickup {
     TrackRowCell* source_cell;
     float bob_phase;
     float bob_phase_step;
-} TrackHealthPickup;
+} SubHealth;
+
+typedef SubHealth TrackHealthPickup;
 
 /* Exact 0xec-byte authored cRSlug hazard slot. */
 enum SubSlugState {
@@ -1719,7 +1727,7 @@ typedef struct SubgameRuntime {
     Time active_level_timer;
     SubSpeedUp speedup_pickup;
     JetPack jetpack_pickup;
-    TrackHealthPickup health_pickups[8];
+    SubHealth health_pickups[8];
     SlugPool slug_hazards;
     SubLazerManager sub_lazers;
     SaltManager salt_hazards;
@@ -1893,8 +1901,12 @@ void __thiscall start_squidge_z(Squidge* squidge, float value);
 void __thiscall update_squidge(Squidge* squidge);
 void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count);
 void __thiscall update_banner(Banner* banner);
+SubSpeedUp* __thiscall initialize_track_speedup_runtime(SubSpeedUp* speedup);
+void __thiscall update_track_speedup(SubSpeedUp* speedup);
 JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);
 void __thiscall update_track_jetpack_pickup(JetPack* jetpack);
+SubHealth* __thiscall initialize_track_health_pickup_runtime(SubHealth* pickup);
+void __thiscall update_track_health_pickup(SubHealth* pickup);
 void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_width);
 void __thiscall reset_vapour(Vapour* vapour, float* z_floor);
 void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);

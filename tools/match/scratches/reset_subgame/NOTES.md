@@ -128,3 +128,9 @@ and remains exact at 75/75 instructions with two clean operands.
 Reset now clears each owned `SubRing` with `SUB_RING_STATE_INACTIVE` rather
 than raw zero. The scratch remains exact at 75/75 instructions with two clean
 operands.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+Reset now clears the owned `cRSubSpeedUp` and `cRJetPack` singletons plus all
+eight inline `cRSubHealth` slots through `TRACK_PICKUP_STATE_INACTIVE`. The
+scratch remains exact at 75/75 instructions with two clean operands.

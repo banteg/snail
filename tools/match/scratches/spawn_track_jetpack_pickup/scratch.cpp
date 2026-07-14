@@ -19,7 +19,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     DWORD* game_words = (DWORD*)this;
     JetPack* scan = &jetpack_pickup;
     while (1) {
-        if (scan->state == 0)
+        if (scan->state == TRACK_PICKUP_STATE_INACTIVE)
             break;
         ++slot_index;
         ++scan;
@@ -30,7 +30,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
     DWORD* slot_base =
         game_words + sizeof(JetPack) / sizeof(DWORD) * slot_index;
     SubgameRuntime* slot = (SubgameRuntime*)slot_base;
-    slot->jetpack_pickup.state = 1;
+    slot->jetpack_pickup.state = TRACK_PICKUP_STATE_ACTIVE;
     slot->jetpack_pickup.owner = player;
 
     Vector3 staged_position;

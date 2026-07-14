@@ -145,3 +145,11 @@ shifted receiver used by the remaining source shape derives its displacement
 from `sizeof(JetPack)` rather than the unexplained 103-word stride, and the
 inherited BOD conversion no longer needs a cast. Focused output remains the
 honest 84.72%, 144/144 baseline, prefix 7, with all nine operands clean.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+The singleton availability test now names
+`TRACK_PICKUP_STATE_INACTIVE`, and a successful spawn moves the authored
+`cRJetPack` owner to `TRACK_PICKUP_STATE_ACTIVE`. Focused output remains
+byte-stable at 84.72%, 144/144 instructions, prefix 7, with all nine operands
+clean.

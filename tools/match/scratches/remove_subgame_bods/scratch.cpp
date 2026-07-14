@@ -70,7 +70,8 @@ void SubgameRuntime::remove_subgame_bods()
     do {
         if ((BOD_NEXT_LINK_FLAGS(health_next) & 0x200) != 0)
             REMOVE_BOD_NODE_FROM_NEXT_LINK(health_next);
-        ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state = 0;
+        ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state =
+            TRACK_PICKUP_STATE_INACTIVE;
         health_next = (BodNode**)((char*)health_next + sizeof(SubHealth));
         --health_count;
     } while (health_count != 0);
@@ -78,12 +79,12 @@ void SubgameRuntime::remove_subgame_bods()
     BodNode* speedup = &speedup_pickup;
     if ((speedup->list_flags & 0x200) != 0)
         REMOVE_INLINE_BOD_NODE(speedup);
-    speedup_pickup.state = 0;
+    speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
 
     BodNode* jetpack = &jetpack_pickup;
     if ((jetpack->list_flags & 0x200) != 0)
         REMOVE_INLINE_BOD_NODE(jetpack);
-    jetpack_pickup.state = 0;
+    jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
 
     BodNode** garbage_next = &garbage_hazards.slots[0].list_next;
     int garbage_count =

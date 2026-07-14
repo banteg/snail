@@ -200,3 +200,11 @@ The remover now tests and clears the embedded ring slots through
 `SUB_RING_STATE_INACTIVE`. Focused output remains 67.67%, 495/501 instructions,
 prefix 6/501, with 63 clean operands and the same two documented string-order
 mismatches.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+Bulk teardown now returns the real `cRSubSpeedUp`, `cRJetPack`, and eight
+`cRSubHealth` owners to `TRACK_PICKUP_STATE_INACTIVE` after unlinking their
+inherited BOD nodes. Focused output remains byte-stable at 67.67%, 495/501
+instructions, prefix 6/501, with 63 clean operands and the same two documented
+string-order mismatches.

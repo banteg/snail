@@ -541,12 +541,28 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_banner(Banner* banner);",
     ),
     (
+        "initialize_track_speedup_runtime",
+        "SubSpeedUp* __thiscall initialize_track_speedup_runtime(SubSpeedUp* speedup);",
+    ),
+    (
+        "update_track_speedup",
+        "void __thiscall update_track_speedup(SubSpeedUp* speedup);",
+    ),
+    (
         "initialize_track_jetpack_pickup_runtime",
         "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);",
     ),
     (
         "update_track_jetpack_pickup",
         "void __thiscall update_track_jetpack_pickup(JetPack* jetpack);",
+    ),
+    (
+        "initialize_track_health_pickup_runtime",
+        "SubHealth* __thiscall initialize_track_health_pickup_runtime(SubHealth* pickup);",
+    ),
+    (
+        "update_track_health_pickup",
+        "void __thiscall update_track_health_pickup(SubHealth* pickup);",
     ),
     (
         "initialize_vapour",

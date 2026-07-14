@@ -227,7 +227,7 @@ void Player::handle_subgoldy_collisions()
          ii < (int)sizeof(game->health_pickups);
          ii += (int)sizeof(SubHealth)) {
         SubHealth* pickup = (SubHealth*)((char*)game->health_pickups + ii);
-        if (pickup->state == 1) {
+        if (pickup->state == TRACK_PICKUP_STATE_ACTIVE) {
             probe_b.x = pickup->position.x - cached_camera_target_world.x;
             probe_b.y = pickup->position.y - cached_camera_target_world.y;
             probe_c.x = probe_b.x;
@@ -243,7 +243,7 @@ void Player::handle_subgoldy_collisions()
                 if (pickup_y < 0.40000001f
                     && normalize_vector(&probe_c) < 0.98000002f) {
                     g_sound_effect_manager.play_sound_effect(14);
-                    pickup->state = 2;
+                    pickup->state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                     health_collect_particles(pickup);
                     damage_gauge.apply_damage_gauge_delta(-0.5f, 0);
                 }
@@ -251,7 +251,7 @@ void Player::handle_subgoldy_collisions()
         }
     }
     SubSpeedUp* speedup = &game->speedup_pickup;
-    if (speedup->state == 1) {
+    if (speedup->state == TRACK_PICKUP_STATE_ACTIVE) {
         probe_b.x = speedup->transform.position.x - cached_camera_target_world.x;
         probe_b.y = speedup->transform.position.y - cached_camera_target_world.y;
         probe_c.x = probe_b.x;
@@ -266,14 +266,14 @@ void Player::handle_subgoldy_collisions()
                 pickup_y = probe_b.y;
             if (pickup_y < 0.40000001f
                 && normalize_vector(&probe_c) < 0.98000002f) {
-                speedup->state = 2;
+                speedup->state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                 noop_runtime_ai();
                 velocity.z = game->subgame_rate * 0.5f;
             }
         }
     }
     JetPack* jetpack = &game->jetpack_pickup;
-    if (jetpack->state == 1) {
+    if (jetpack->state == TRACK_PICKUP_STATE_ACTIVE) {
         probe_b.x = jetpack->position.x - cached_camera_target_world.x;
         probe_b.y = jetpack->position.y - cached_camera_target_world.y;
         probe_c.x = probe_b.x;
@@ -281,7 +281,7 @@ void Player::handle_subgoldy_collisions()
         probe_b.z = jetpack->position.z - cached_camera_target_world.z;
         probe_c.z = probe_b.z;
         if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
-            jetpack->state = 2;
+            jetpack->state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
             sub_hover.arm_jetpack_gauge();
         }
     }

@@ -711,6 +711,79 @@ def test_times_up_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_pool_types.h",
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/track_pickup_state.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"TrackPickupState"' in pool_sync
+    assert '("0x80", "state", "TrackPickupState")' in pool_sync
+    assert pool_sync.count('("0x38", "state", "TrackPickupState")') == 2
+    assert '("0x1c", "render_arg_1c", "float")' in pool_sync
+    assert '("0x355db0", "speedup_pickup", "SubSpeedUp")' in pool_sync
+    assert '("0x356000", "health_pickups", "SubHealth[0x8]")' in pool_sync
+    assert 'struct_name="JetPack"' in runtime_sync
+    assert '("0x38", "state", "TrackPickupState")' in runtime_sync
+    assert '"TrackPickupState",' in path_sync
+    for function_name in (
+        "initialize_track_speedup_runtime",
+        "update_track_speedup",
+        "initialize_track_health_pickup_runtime",
+        "update_track_health_pickup",
+    ):
+        assert function_name in pool_sync
+        assert function_name in ida_sync
+
+    for header in (*analysis_headers, matcher_header):
+        assert "TRACK_PICKUP_STATE_INACTIVE = 0" in header
+        assert "TRACK_PICKUP_STATE_ACTIVE = 1" in header
+        assert "TRACK_PICKUP_STATE_TEARDOWN_PENDING = 2" in header
+
+    pool_header, path_header, *_ = analysis_headers
+    for header in (pool_header, path_header):
+        assert "typedef struct SubSpeedUp" in header
+        assert "typedef struct SubHealth" in header
+        assert "typedef SubHealth TrackHealthPickup" in header
+
+    consumers = {
+        "reset_subgame": "TRACK_PICKUP_STATE_INACTIVE",
+        "remove_subgame_bods": "TRACK_PICKUP_STATE_INACTIVE",
+        "spawn_track_health_pickup": "TRACK_PICKUP_STATE_ACTIVE",
+        "spawn_track_jetpack_pickup": "TRACK_PICKUP_STATE_ACTIVE",
+        "update_track_speedup": "TRACK_PICKUP_STATE_TEARDOWN_PENDING",
+        "update_track_health_pickup": "TRACK_PICKUP_STATE_TEARDOWN_PENDING",
+        "update_track_jetpack_pickup": "TRACK_PICKUP_STATE_TEARDOWN_PENDING",
+        "handle_subgoldy_collisions": "TRACK_PICKUP_STATE_TEARDOWN_PENDING",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

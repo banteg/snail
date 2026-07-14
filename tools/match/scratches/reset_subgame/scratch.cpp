@@ -13,15 +13,15 @@ void SubgameRuntime::reset_subgame()
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     SubHealth* health = health_pickups;
     do {
-        health->state = 0;
+        health->state = TRACK_PICKUP_STATE_INACTIVE;
         health->owner_game = this;
         ++health;
         --health_count;
     } while (health_count);
 
-    speedup_pickup.state = 0;
+    speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     speedup_pickup.owner_game = this;
-    jetpack_pickup.state = 0;
+    jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     jetpack_pickup.owner_game = this;
 
     SubGarbage* garbage = garbage_hazards.slots;

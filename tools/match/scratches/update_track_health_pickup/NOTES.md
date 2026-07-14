@@ -138,3 +138,11 @@ with all 21 operands clean.
 the kill plane and bob base read `position.z/y`, while list removal continues
 through inherited `BodNode`. Matching remains exact at 128/128 with all 21
 operands clean.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+The authored `cRSubHealth` state now uses `TrackPickupState`. The exact AI
+distinguishes inactive, live, and teardown-pending records; collision is the
+only recovered producer of the teardown state, while culling and teardown both
+return the slot to inactive. Matching remains exact at 128/128 instructions
+with all 21 operands clean.

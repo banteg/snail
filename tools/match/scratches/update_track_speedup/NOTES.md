@@ -56,9 +56,21 @@ bodies with the owned inline `BodList::remove_bod` keeps the function exact at
 `GameRoot::active_bod_list` directly. Matching remains exact at 103/103 with
 all 15 operands clean.
 
+The Binary Ninja pool replay now also preserves inherited
+`RenderableBod::render_arg_1c` as the authoritative `float`; the former
+`int32_t` override contradicted both matcher and path-template headers.
+
 2026-07-14 renderable-owner closure: the state-1 kill-plane read now names
 `SubSpeedUp::transform.position.z`. Together with the exact constructor and
 the full-vector collision consumer, this promotes the real inherited
 `RenderableBod` rather than a duplicated prefix. The inherited `BodNode` still
 owns both teardown links, and matching remains exact at 103/103 with all 15
 operands clean.
+
+## 2026-07-14 shared pickup lifecycle ownership
+
+The receiver state now uses `TrackPickupState`, shared with the authored
+`cRSubHealth` and `cRJetPack` owners. State 1 is the live collision/cull state;
+state 2 is a one-tick teardown request; both removal paths return the singleton
+to state 0. The semantic constants remain exact at 103/103 instructions with
+all 15 operands clean.

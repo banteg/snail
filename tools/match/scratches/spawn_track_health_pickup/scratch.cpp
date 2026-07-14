@@ -19,7 +19,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     DWORD* game_words = (DWORD*)this;
     SubHealth* scan = health_pickups;
     while (1) {
-        if (scan->state == 0)
+        if (scan->state == TRACK_PICKUP_STATE_INACTIVE)
             break;
         ++slot_index;
         ++scan;
@@ -31,7 +31,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
     DWORD* slot_base =
         game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;
     SubgameRuntime* slot = (SubgameRuntime*)slot_base;
-    slot->health_pickups[0].state = 1;
+    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;
     slot->health_pickups[0].owner = player;
 
     Vector3 staged_position;
