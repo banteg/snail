@@ -648,7 +648,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_track_cache_vertex | 0x433830 | 299 | 103/103 | 99.03% | 76/103 | 7 ok |  |
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 95.81% | 16/167 | 6 ok |  |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 98.38% | 29/247 | 25 ok |  |
-| 🚧 | update_star_positions | 0x434800 | 378 | 106/106 | 98.11% | 44/106 | 11 ok |  |
+| 🚧 | update_star_positions | 0x434800 | 378 | 106/106 | 99.06% | 44/106 | 11 ok |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  |

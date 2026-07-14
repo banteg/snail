@@ -2,7 +2,7 @@
 
 #include "game_root.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value(); // @ 0x44c900
 
@@ -45,7 +45,7 @@ int StarManager::initialize_star_field()
                     0.400000006f;
             }
 
-            GameRoot* root = (GameRoot*)g_game_base;
+            GameRoot* root = g_game;
             entries[index].position =
                 root->overlay_0.transform.basis_forward * 50.0f +
                 root->overlay_0.transform.position;

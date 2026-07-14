@@ -3,7 +3,7 @@
 #include "game_root.h"
 #include "star_manager.h"
 
-extern char* g_game_base; // data_4df904
+extern GameRoot* g_game; // data_4df904
 
 inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 {
@@ -21,7 +21,7 @@ void StarManager::update_star_positions(float fade_alpha)
                 *travel_distance = 0.0f;
                 entries[i].sprite->facing_refresh_progress = 0.0f;
 
-                GameRoot* game = (GameRoot*)g_game_base;
+                GameRoot* game = g_game;
                 entries[i].sprite->position =
                     game->overlay_0.transform.basis_forward * 50.0f +
                     game->overlay_0.transform.position;
@@ -31,9 +31,10 @@ void StarManager::update_star_positions(float fade_alpha)
                     entries[i].speed * 10.0f + entries[i].travel_distance;
             }
 
-            entries[i].sprite->color.a =
+            float alpha =
                 (entries[i].travel_distance - 2.0f) * entries[i].alpha_scale *
-                0.0114285713f * fade_alpha;
+                0.0114285713f;
+            entries[i].sprite->color.a = alpha * fade_alpha;
             ++i;
         } while (i < count);
     }

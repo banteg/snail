@@ -42,3 +42,11 @@ Android and iOS preserve the complete `cRStarManager` lifecycle and the
 already-proven `StarManagerEntry` vocabulary consistently with the BN/IDA
 header. Its exact 0x4c extent closes between `MainMenu` and `Options` in
 `GameRoot`; the rename is codegen-neutral at the same 98.38% near match.
+
+## 2026-07-14 root ownership cleanup
+
+The camera transform now comes through the canonical `GameRoot* g_game`
+owner instead of a raw `char*` base followed by a local cast. This is
+byte-identical at 98.38%, 247/247 instructions, with all 25 operands clean;
+the remaining differences are still only the documented random/color and
+corner-scale scheduling windows.

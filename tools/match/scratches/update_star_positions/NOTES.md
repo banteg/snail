@@ -56,3 +56,15 @@ Earlier rejected/source-shape probes:
 - Returning the incidental final sprite pointer reached 94.88% but emitted
   three extra result-reload instructions, contradicting the cross-port void
   method and the native tail.
+
+## 2026-07-14 root owner and alpha lifetime
+
+The camera transform now comes through the canonical `GameRoot* g_game`
+owner rather than a raw base plus local cast. Naming the alpha before applying
+the borrowed `fade_alpha` argument also recovers native's left-associated
+constant-then-fade multiply order. Focused matching rises from 98.11% to
+99.06%, remains 106/106 instructions with all 11 operands clean, and removes
+the alpha-tail mismatch entirely. The sole residual is the independent
+sprite-position pointer advance moving across the final temporary Z store;
+named position and sprite locals compile identically, so no ordering barrier
+is retained.
