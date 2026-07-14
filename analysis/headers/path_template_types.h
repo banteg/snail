@@ -1358,13 +1358,23 @@ typedef struct Tutorial {
     uint8_t _pad_10[0xc];
 } Tutorial;
 
+typedef enum CompletionState {
+    COMPLETION_STATE_INACTIVE = 0,
+    COMPLETION_STATE_STAGING_PARCELS = 1,
+    COMPLETION_STATE_WAITING_FOR_DELIVERIES = 2,
+    COMPLETION_STATE_SUMMARY_PENDING = 3,
+    COMPLETION_STATE_SUMMARY_ACTIVE = 4,
+    COMPLETION_STATE_CONTINUE_ACCEPTED = 5,
+    COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
+} CompletionState;
+
 typedef struct Completion {
     void* widget_a;
     void* delivered_count_widget;
     void* bonus_widget;
     void* widget_d;
     void* continue_widget;
-    int32_t state;
+    CompletionState state;
     uint8_t gate_18;
     uint8_t _pad_19[0x3];
     int32_t parcel_target_count;

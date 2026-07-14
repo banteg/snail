@@ -5,6 +5,7 @@
 #include "anim_manager.h"
 #include "cameraman.h"
 #include "click_start.h"
+#include "completion.h"
 #include "damage_guage.h"
 #include "game_root.h"
 #include "invincible.h"
@@ -35,7 +36,7 @@ void Player::initialize_subgoldy(int player_slot)
     this->trampoline_bounce_active = (unsigned char)zero;
     this->presentation.invincible_shell.channel_release_steps_active =
         (unsigned char)zero;
-    this->game->completion.state = zero;
+    this->game->completion.state = COMPLETION_STATE_INACTIVE;
     this->presentation.jetpack_channel.selected_state = zero;
     this->presentation.weapon_channels[0].selected_state = zero;
     this->presentation.weapon_channels[1].selected_state = zero;

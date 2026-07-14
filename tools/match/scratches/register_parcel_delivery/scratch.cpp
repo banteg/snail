@@ -18,7 +18,7 @@ void Completion::register_parcel_delivery()
                 g_game->subgame.player.add_subgoldy_score(SUBGOLDY_SCORE_BONUS, bonus_score);
                 g_sound_effect_manager.play_sound_effect(0x31);
             }
-            state = 3;
+            state = COMPLETION_STATE_SUMMARY_PENDING;
         }
     }
 }

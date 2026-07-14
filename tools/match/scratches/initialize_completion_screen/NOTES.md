@@ -98,3 +98,11 @@ Construction fixes every pointer in the shared `Completion` owner:
 `bonus_icon_widget`, and `continue_widget`. The former generic aliases are no
 longer needed by AI or teardown. Removing them preserves the initializer at
 89.89%, 276/278 instructions, prefix 23/278, with all 44 operands clean.
+
+## 2026-07-14 completion lifecycle ownership
+
+Init now enters `COMPLETION_STATE_STAGING_PARCELS`, the producer for AI's
+one-at-a-time delivery-sprite setup. The state name also closes the shared
+0x50-byte owner's transition into its exact AI and teardown members. Focused
+output remains byte-stable at 89.89%, 276/278 instructions, prefix 23/278,
+with all 44 operands clean.

@@ -621,6 +621,54 @@ def test_parcel_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_completion_state_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "completion_screen_types.h",
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (repo_root / "tools/match/include/completion.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"CompletionState",' in runtime_sync
+    assert '("0x14", "state", "CompletionState")' in runtime_sync
+    assert '"CompletionState",' in path_sync
+    for header in (*analysis_headers, matcher_header):
+        assert "COMPLETION_STATE_INACTIVE = 0" in header
+        assert "COMPLETION_STATE_STAGING_PARCELS = 1" in header
+        assert "COMPLETION_STATE_WAITING_FOR_DELIVERIES = 2" in header
+        assert "COMPLETION_STATE_SUMMARY_PENDING = 3" in header
+        assert "COMPLETION_STATE_SUMMARY_ACTIVE = 4" in header
+        assert "COMPLETION_STATE_CONTINUE_ACCEPTED = 5" in header
+        assert "COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6" in header
+
+    consumers = {
+        "initialize_completion_screen": "COMPLETION_STATE_STAGING_PARCELS",
+        "flush_row_event_display": "COMPLETION_STATE_INACTIVE",
+        "update_row_event_display": "COMPLETION_STATE_EMPTY_DELIVERY_DELAY",
+        "register_parcel_delivery": "COMPLETION_STATE_SUMMARY_PENDING",
+        "initialize_subgoldy": "COMPLETION_STATE_INACTIVE",
+        "update_subgoldy": "COMPLETION_STATE_CONTINUE_ACCEPTED",
+    }
+    for function_name, constant in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
+
 def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch) -> None:
     calls = []
 

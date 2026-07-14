@@ -510,3 +510,12 @@ falling gate and `runtime_flags & 0x400000` as the movement-fire emitter gate.
 The former remains separate from per-row `SUBROW_FLAG_NO_FALL`. Focused output
 is byte-identical at 74.20%, 2,075/2,087 instructions, prefix 12/2,087, 290
 clean operands, and the same bounded jump-table mismatch.
+
+## 2026-07-14 completion lifecycle ownership
+
+The player-side handoff now waits explicitly for
+`COMPLETION_STATE_CONTINUE_ACCEPTED`, holds the timer while any earlier state is
+active, and only flushes a non-`INACTIVE` controller after the fade completes.
+This closes the consumer side of the exact `cRCompletion` state graph. Focused
+output remains byte-identical at 74.20%, 2,075/2,087 instructions, prefix
+12/2,087, 290 clean operands, and the same bounded jump-table mismatch.

@@ -741,9 +741,10 @@ Current practical read:
     - current best read is the same rebuild selector seen at `game + 0x1270fc8`, with selector `1` owning the postal post-completion reopen and selector `2` owning the ordinary rebuild/start lane
     - state `0x1c` only clears that selector during the rebuild-clear-replay bridge
 - `game + 0x12727d8` is the authored `Completion` controller, not a loose flag cluster:
-  - `initialize_subgoldy` clears `completion.state`
+  - `initialize_subgoldy` clears `completion.state` to `COMPLETION_STATE_INACTIVE`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
+  - `update_subgoldy` waits for `COMPLETION_STATE_CONTINUE_ACCEPTED` before allowing the completion handoff timer to finish
   - the old `game + 0x12727f0` byte is `Completion +0x18` and remains a conservative controller gate: when it is `1` and the control source carries the `0x4000` accept/fire flag, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and `ParcelManager::slots`
@@ -969,7 +970,7 @@ High-confidence current fields:
 - `+0x08`: `widget_c`
 - `+0x0c`: `widget_d`
 - `+0x10`: `widget_e`
-- `+0x14`: `state`
+- `+0x14`: `state` (`CompletionState`)
 - `+0x18`: `completion_fast_forward_gate`
 - `+0x1c`: `parcel_target_count`
 - `+0x20`: `bonus_enabled`
@@ -985,9 +986,14 @@ High-confidence current fields:
 
 Current practical read:
 
-- `update_row_event_display` drives the controller state machine and the staged parcel-widget reveal path; its accept branch sets `state = 5` directly
-- `register_parcel_delivery` increments `delivered_parcel_count`, awards the parcel score tier, applies the optional final bonus, and sets `state = 3`
-- `flush_row_event_display` fast-forwards the remaining parcel payout, destroys the owned widgets, copies `display_token` into the global presentation slot, and clears `state`
+- `initialize_completion_screen` enters `STAGING_PARCELS`
+- `update_row_event_display` owns the complete display lifecycle:
+  - `STAGING_PARCELS` creates one HUD-bound delivery parcel at a time
+  - after the last staged parcel, nonempty runs enter `WAITING_FOR_DELIVERIES`; the zero-parcel path uses `EMPTY_DELIVERY_DELAY` before joining the summary lane
+  - the final registered delivery or empty-delay expiry enters `SUMMARY_PENDING`, which reveals the summary and advances immediately to `SUMMARY_ACTIVE`
+  - the accept input moves `SUMMARY_ACTIVE` to `CONTINUE_ACCEPTED`
+- `register_parcel_delivery` increments `delivered_parcel_count`, awards the parcel score tier, applies the optional final bonus, and moves the final parcel to `SUMMARY_PENDING`
+- `flush_row_event_display` fast-forwards the remaining parcel payout, destroys the owned widgets, copies `display_token` into the global presentation slot, and returns the controller to `INACTIVE`
 - the byte at `+0x18` still contains the old `game + 0x12727f0` gate; it is now tracked as `completion_fast_forward_gate` because one recovered completion-handoff read uses it, but the nonzero writer is still unresolved
 
 ## Track Parcel Runtime

@@ -38,3 +38,9 @@ Teardown now releases the same five semantic fields proven by Init: the title,
 delivered count, bonus icon, bonus summary, and continue prompt. This removes
 the last generic widget aliases from the lifecycle while remaining exact at
 67/67 instructions with all 19 operands clean.
+
+## 2026-07-14 completion lifecycle ownership
+
+Teardown now tests and restores `COMPLETION_STATE_INACTIVE` explicitly. This
+closes the lifecycle against Init and every AI terminal path while preserving
+the exact 67/67 instruction body and all 19 clean operands.

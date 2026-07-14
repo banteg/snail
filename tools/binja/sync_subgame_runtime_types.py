@@ -54,6 +54,7 @@ SUBGAME_PLAYER_FIELD_UPDATES = (
 )
 
 COMPLETION_FIELD_UPDATES = (
+    ("0x14", "state", "CompletionState"),
     ("0x34", "widget_world", "Vec3"),
 )
 
@@ -251,6 +252,7 @@ def main() -> int:
                 "ParcelState",
                 "Parcel",
                 "ParcelManager",
+                "CompletionState",
                 "Completion",
                 "TimesUp",
             ),

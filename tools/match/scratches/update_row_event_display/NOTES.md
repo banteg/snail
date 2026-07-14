@@ -173,3 +173,13 @@ The completion controller's staged parcel producer now writes
 fresh slot from the normal track-active spawn and closes the producer edge into
 the exact parcel updater's delivery transition. Focused matching remains exact
 at 213/213 instructions with all 38 operands clean.
+
+## 2026-07-14 completion lifecycle ownership
+
+The exact switch now exposes all seven `CompletionState` values. Init enters
+`STAGING_PARCELS`; AI advances nonempty runs to
+`WAITING_FOR_DELIVERIES`, routes the zero-parcel case through
+`EMPTY_DELIVERY_DELAY`, reveals `SUMMARY_PENDING` as `SUMMARY_ACTIVE`, and
+records accept input as `CONTINUE_ACCEPTED`. Final parcel registration supplies
+the other `SUMMARY_PENDING` producer. Focused matching remains exact at
+213/213 instructions with all 38 operands clean.

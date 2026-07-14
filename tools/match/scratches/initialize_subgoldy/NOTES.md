@@ -272,3 +272,10 @@ set `BOD_FLAG_SYNC_ANIMATION`, while the four detachable presentation channels
 also clear `BOD_FLAG_RENDER_ENABLED`. This names the producer side consumed by
 `cRGame::Render()` without changing the exact 279/279 instruction stream or
 its 27 clean operands.
+
+## 2026-07-14 completion lifecycle ownership
+
+Player initialization now resets the borrowed subgame controller to
+`COMPLETION_STATE_INACTIVE`. The named enum constant remains codegen-identical
+to the shared zero seed: focused matching is still exact at 279/279
+instructions with all 27 operands clean.

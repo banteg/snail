@@ -106,7 +106,7 @@ void Completion::initialize_completion_screen(
 
     delivered_count_progress = 0;
     delivered_count_display = 0;
-    continue_state = 1;
+    continue_state = COMPLETION_STATE_STAGING_PARCELS;
     delivered_count_progress_limit = 0.833333313f;
     continue_visible = 1;
     delivered_count_progress_step =

@@ -7,7 +7,7 @@ extern GameRoot* g_game; // data_4df904
 
 void Completion::flush_row_event_display()
 {
-    if (state != 0) {
+    if (state != COMPLETION_STATE_INACTIVE) {
         if (delivered_parcel_count != parcel_target_count) {
             while (delivered_parcel_count < parcel_target_count) {
                 g_game->subgame.player.add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
@@ -31,5 +31,5 @@ void Completion::flush_row_event_display()
             g_game->subgame.player.total_score = display_token;
 
     }
-    state = 0;
+    state = COMPLETION_STATE_INACTIVE;
 }

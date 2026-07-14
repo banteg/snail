@@ -22,3 +22,9 @@ with all 10 operands clean.
 Both score awards now name the embedded `GameRoot::subgame.player` producer
 instead of reconstructing `Player*` from `root + 0x42fd7c`. The direct global
 reloads and exact 36/36 code shape are unchanged.
+
+## 2026-07-14 completion lifecycle ownership
+
+The final delivery now enters `COMPLETION_STATE_SUMMARY_PENDING`, which the
+exact AI member consumes to reveal the summary and continue prompt. Focused
+matching remains exact at 36/36 instructions with all 10 operands clean.

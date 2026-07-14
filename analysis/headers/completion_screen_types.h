@@ -137,13 +137,23 @@ typedef struct Exit {
     FrontendWidget* no_button;
 } Exit;
 
+typedef enum CompletionState {
+    COMPLETION_STATE_INACTIVE = 0,
+    COMPLETION_STATE_STAGING_PARCELS = 1,
+    COMPLETION_STATE_WAITING_FOR_DELIVERIES = 2,
+    COMPLETION_STATE_SUMMARY_PENDING = 3,
+    COMPLETION_STATE_SUMMARY_ACTIVE = 4,
+    COMPLETION_STATE_CONTINUE_ACCEPTED = 5,
+    COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
+} CompletionState;
+
 typedef struct Completion {
     FrontendWidget* title_widget;
     FrontendWidget* delivered_count_widget;
     FrontendWidget* bonus_summary_widget;
     FrontendWidget* bonus_icon_widget;
     FrontendWidget* continue_widget;
-    int32_t continue_state;
+    CompletionState continue_state;
     uint8_t continue_visible;
     uint8_t _pad_19[0x1c - 0x19];
     int32_t delivered_count;

@@ -113,6 +113,16 @@ typedef struct ParcelManager {
     Parcel slots[50];
 } ParcelManager;
 
+typedef enum CompletionState {
+    COMPLETION_STATE_INACTIVE = 0,
+    COMPLETION_STATE_STAGING_PARCELS = 1,
+    COMPLETION_STATE_WAITING_FOR_DELIVERIES = 2,
+    COMPLETION_STATE_SUMMARY_PENDING = 3,
+    COMPLETION_STATE_SUMMARY_ACTIVE = 4,
+    COMPLETION_STATE_CONTINUE_ACCEPTED = 5,
+    COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
+} CompletionState;
+
 /* Exact 0x50-byte Windows cRCompletion embedded in SubgameRuntime. */
 typedef struct Completion {
     FrontendWidget* widget_a;
@@ -120,7 +130,7 @@ typedef struct Completion {
     FrontendWidget* bonus_widget;
     FrontendWidget* widget_d;
     FrontendWidget* continue_widget;
-    int32_t state;
+    CompletionState state;
     uint8_t gate_18;
     uint8_t unknown_19[0x1c - 0x19];
     int32_t parcel_target_count;

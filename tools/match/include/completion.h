@@ -6,6 +6,16 @@
 #include "frontend_widget.h"
 #include "vector3.h"
 
+enum CompletionState {
+    COMPLETION_STATE_INACTIVE = 0,
+    COMPLETION_STATE_STAGING_PARCELS = 1,
+    COMPLETION_STATE_WAITING_FOR_DELIVERIES = 2,
+    COMPLETION_STATE_SUMMARY_PENDING = 3,
+    COMPLETION_STATE_SUMMARY_ACTIVE = 4,
+    COMPLETION_STATE_CONTINUE_ACCEPTED = 5,
+    COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
+};
+
 class Completion {
 public:
     void flush_row_event_display(); // @ 0x404830, cRCompletion::UnInit
@@ -21,8 +31,8 @@ public:
     FrontendWidget* bonus_icon_widget; // +0x0c, sprite id 122
     FrontendWidget* continue_widget; // +0x10
     union {
-        int state;
-        int continue_state;
+        CompletionState state;
+        CompletionState continue_state;
     }; // +0x14
     union {
         unsigned char gate_18;

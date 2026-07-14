@@ -16,7 +16,7 @@ typedef Vector3 Vec3;
 void Completion::update_row_event_display()
 {
     Completion* controller = this;
-    if (controller->state == 0)
+    if (controller->state == COMPLETION_STATE_INACTIVE)
         return;
 
     char pause_gate = g_game->subgame.subgame_pause_gate;
@@ -37,9 +37,9 @@ void Completion::update_row_event_display()
     controller->continue_widget->unhide_border_init();
 
     switch (controller->state) {
-    case 0:
+    case COMPLETION_STATE_INACTIVE:
         return;
-    case 1: {
+    case COMPLETION_STATE_STAGING_PARCELS: {
         float progress = controller->progress_step;
         progress += controller->progress;
         controller->progress = progress;
@@ -64,29 +64,29 @@ void Completion::update_row_event_display()
             controller->progress = 0.0f;
             if (controller->staged_parcel_count == parcel_target_count) {
                 if (parcel_target_count == 0) {
-                    controller->state = 6;
+                    controller->state = COMPLETION_STATE_EMPTY_DELIVERY_DELAY;
                     controller->progress = 0.0f;
                     controller->progress_step = 0.00833333377f;
                 } else {
-                    controller->state = 2;
+                    controller->state = COMPLETION_STATE_WAITING_FOR_DELIVERIES;
                 }
             }
         }
         break;
     }
-    case 6: {
+    case COMPLETION_STATE_EMPTY_DELIVERY_DELAY: {
         float progress = controller->progress_step;
         progress += controller->progress;
         controller->progress = progress;
         if (progress > 1.0f)
-            controller->state = 3;
+            controller->state = COMPLETION_STATE_SUMMARY_PENDING;
         break;
     }
-    case 3: {
+    case COMPLETION_STATE_SUMMARY_PENDING: {
         controller->continue_widget->unhide_border_init();
         int bonus_enabled = controller->bonus_enabled;
         controller->gate_18 = 0;
-        controller->state = 4;
+        controller->state = COMPLETION_STATE_SUMMARY_ACTIVE;
         if (bonus_enabled != 0) {
             controller->bonus_summary_widget->unhide_border_init();
             if (controller->parcel_target_count == 0) {
@@ -100,7 +100,7 @@ void Completion::update_row_event_display()
         }
         /* fall through */
     }
-    case 4: {
+    case COMPLETION_STATE_SUMMARY_ACTIVE: {
         GameRoot* game = g_game;
         if (controller->bonus_enabled != 0) {
             float blink_progress = controller->bonus_blink_step + controller->bonus_blink_progress;
@@ -119,7 +119,7 @@ void Completion::update_row_event_display()
         }
 
         if ((game->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
-            controller->state = 5;
+            controller->state = COMPLETION_STATE_CONTINUE_ACCEPTED;
             g_sound_effect_manager.play_sound_effect(8);
         }
         break;

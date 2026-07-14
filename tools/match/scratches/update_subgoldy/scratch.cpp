@@ -754,14 +754,14 @@ steering_stored:
                 if (skip_game->completion.gate_18 == 1
                     && (control_source->control_flags_a & 0x4000) != 0)
                     completion_handoff_timer = 5.0999999f;
-                if (skip_game->completion.state == 5)
+                if (skip_game->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED)
                     completion_handoff_timer = 5.0999999f;
             }
         }
         if (completion_handoff_timer > 5.0f) {
             SubgameRuntime* hold_game = game;
             if ((hold_game->level_mode == 0 || hold_game->level_mode == 1)
-                && hold_game->completion.state != 5)
+                && hold_game->completion.state != COMPLETION_STATE_CONTINUE_ACCEPTED)
                 completion_handoff_timer =
                     completion_handoff_timer - completion_handoff_timer_step;
         }
@@ -771,7 +771,7 @@ steering_stored:
                 g_app->fade.begin_frontend_fade_out(0);
             } else if (fade_state == 4) {
                 SubgameRuntime* finish_game = game;
-                if (finish_game->completion.state)
+                if (finish_game->completion.state != COMPLETION_STATE_INACTIVE)
                     finish_game->completion.flush_row_event_display();
                 SubgameRuntime* dispatch_game = game;
                 if (!dispatch_game->level_mode) {

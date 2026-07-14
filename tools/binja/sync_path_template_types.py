@@ -215,6 +215,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Vapour",
     "JetPack",
     "ParcelState",
+    "CompletionState",
     "AxisAngle",
     "Quaternion",
     "RenderableBod",
