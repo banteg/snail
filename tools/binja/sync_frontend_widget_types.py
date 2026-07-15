@@ -165,6 +165,7 @@ PROTO_UPDATES = (
         "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
     ),
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
+    ("border_input_text", "void __thiscall border_input_text(FrontendWidget* widget)"),
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("0x433050", "int32_t __cdecl launch_alpha72_url(char* url)"),
@@ -173,6 +174,14 @@ PROTO_UPDATES = (
 USER_VAR_UPDATES = (
     (
         "draw_frontend_widget",
+        "RegisterVariableSourceType",
+        0,
+        67,
+        "widget",
+        "FrontendWidget*",
+    ),
+    (
+        "border_input_text",
         "RegisterVariableSourceType",
         0,
         67,

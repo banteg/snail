@@ -68,3 +68,21 @@ The editor's final OK-button teardown now uses the canonical `GameRoot*`
 global and its embedded `BorderManager` directly. This retires the last
 `char*` process-root declaration in the authored text-input path while
 preserving the 64.64%, 442/446-instruction result and all eight clean operands.
+
+## 2026-07-15 authored cRBorder InputText ownership
+
+The iOS binary exports `cRBorder::InputText()` at `0x3b97c` from `Border.o`,
+and the unstripped Android library exports the same member at `0x52a7c`.
+Their complete bodies preserve the Windows autorepeat key dispatch, cursor
+marker shifts, insertion/deletion, separator-aware movement, filters, blink
+and `RePosition()` tail, plus the optional `cRInputOK`/`cRBorderManager`
+teardown. Mobile stores the editor lanes eight bytes earlier because its
+`cRBorder` prefix is shorter, but the field order matches Windows
+`+0x6fc..+0x714` exactly.
+
+Windows has one callsite at `0x402e48`; the next instruction tests
+`widget_flags` directly and never consumes EAX. Android's decompiler-inferred
+`float` return is the incidental result of `RePosition()` or `Kill()`, not an
+authored ABI. The shared member and replay manifests therefore use `void`.
+The clear scratch remains 64.64% with 442/446 instructions and eight clean
+operands; no register forcing or other fakematching was introduced.

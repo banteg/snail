@@ -15,11 +15,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_frontend_widget_interaction",
-      "address": "0x402820"
+      "name": "border_input_text",
+      "address": "0x4035b0"
     }
   ],
-  "health_check_count": 220,
+  "health_check_count": 222,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

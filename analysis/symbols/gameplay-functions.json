@@ -110,7 +110,8 @@
     },
     {
       "address": "0x4035b0",
-      "name": "border_input_text"
+      "name": "border_input_text",
+      "description": "Stable Windows harness identity for the authored void cRBorder::InputText() member. The iOS and Android bodies preserve the same autorepeat key dispatch, inline cursor marker, insertion/deletion and separator-aware movement, blink/layout refresh, and optional cRInputOK teardown over the complete editor tail. The sole Windows caller ignores EAX; mobile return values are incidental RePosition/Kill results, not an authored result."
     },
     {
       "address": "0x403be0",

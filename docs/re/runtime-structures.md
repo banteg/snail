@@ -980,6 +980,19 @@ therefore uses the authored `void` contract and names the final `+0x714` lane
 as input capacity. Its Binary Ninja prototype is reported as deferred for the
 same live-session reason as the five adjacent methods.
 
+The adjacent Windows `border_input_text` body is authored
+`cRBorder::InputText()` in both mobile symbol sets (`0x3b97c` on iOS and
+`0x52a7c` on Android). Both ports preserve the complete editor state machine:
+autorepeat key dispatch, the inline cursor marker, insertion/deletion,
+separator-aware vertical movement, numeric/space filtering, blink and
+`RePosition()`, and optional `cRInputOK`/`cRBorderManager` teardown. Mobile's
+editor lanes are eight bytes earlier because its `cRBorder` prefix is shorter,
+but their order matches Windows `+0x6fc..+0x714`. The sole Windows caller at
+`0x402e48` immediately tests `widget_flags`, so EAX is not consumed; the float
+shown by the Android decompiler is only the incidental result of the final
+callee. The replayed Windows member therefore has the authored `void`
+contract while the 64.64% scratch remains an honest partial match.
+
 The broader cRBorder construction/layout surface is also authored `void`:
 
 - `initialize_frontend_widget` is Android

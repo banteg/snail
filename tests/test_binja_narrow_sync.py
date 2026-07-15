@@ -1625,6 +1625,34 @@ def test_frontend_widget_draw_owner_replay_stays_aligned() -> None:
     assert '(0x401130, "draw_frontend_widget")' in ida_frontend_sync
 
 
+def test_frontend_widget_input_text_owner_replay_stays_aligned() -> None:
+    frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    expected = "void __thiscall border_input_text(FrontendWidget* widget)"
+    assert expected in frontend_sync
+    assert f'"{expected};"' in ida_path_sync
+    assert '"border_input_text",\n        "RegisterVariableSourceType"' in frontend_sync
+    for field in (
+        "input_cursor",
+        "input_cursor_visible",
+        "input_cursor_blink_progress",
+        "input_cursor_blink_step",
+        "input_flags",
+        "input_length",
+        "input_capacity",
+    ):
+        assert field in ida_path_header
+    assert "_pad_6fc" not in ida_path_header
+
+
 def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     sync_sources = {

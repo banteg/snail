@@ -477,6 +477,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget);",
     ),
     (
+        "border_input_text",
+        "void __thiscall border_input_text(FrontendWidget* widget);",
+    ),
+    (
         "reset_tooltip",
         "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip);",
     ),

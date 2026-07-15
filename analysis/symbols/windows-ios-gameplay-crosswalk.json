@@ -100,6 +100,15 @@
       "notes": "Android preserves the same text copy, cursor/length scan, marker append, blink/filter/capacity stores, RePosition call, and conditional cRInputOK initialization. Both Windows callers discard EAX, and the corrected void member remains exact at 46/46 instructions."
     },
     {
+      "address": "0x4035b0",
+      "windows_name": "border_input_text",
+      "ios_symbol": "cRBorder::InputText()",
+      "android_symbol": "cRBorder::InputText()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both mobile bodies preserve the Windows autorepeat key dispatch, inline cursor marker, insertion/deletion and separator-aware movement, blink and RePosition tail, and optional cRInputOK/BorderManager teardown. Their cRBorder editor state is eight bytes earlier than Windows but keeps the same field order. The sole Windows caller immediately tests widget flags without consuming EAX, proving the authored member is void."
+    },
+    {
       "address": "0x404080",
       "windows_name": "update_twinkle",
       "ios_symbol": "cRTwinkle::AI()",

@@ -388,6 +388,52 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_input_text_owner",
+      "artifact": "analysis/decompile/binja/functions/004035b0-border_input_text.c",
+      "required_substrings": [
+        "widget->input_flags",
+        "widget->input_cursor",
+        "widget->input_cursor_visible",
+        "widget->input_cursor_blink_progress",
+        "widget->input_cursor_blink_step",
+        "widget->input_length",
+        "widget->input_capacity",
+        "widget->text_buffer.raw",
+        "layout_frontend_widget(widget)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "_pad_6fc",
+        "data_4df904",
+        "__offset(",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_input_text_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004035b0-border_input_text.c",
+      "required_substrings": [
+        "void __thiscall border_input_text(FrontendWidget *widget)",
+        "widget->input_flags",
+        "widget->input_cursor",
+        "widget->input_cursor_visible",
+        "widget->input_cursor_blink_progress",
+        "widget->input_cursor_blink_step",
+        "widget->input_length",
+        "widget->input_capacity",
+        "widget->text_buffer.raw",
+        "layout_frontend_widget(widget)"
+      ],
+      "forbidden_substrings": [
+        "sub_4035B0",
+        "int this",
+        "_pad_6fc",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_high_score_subgame_record_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00416910-initialize_high_score_screen.c",
       "required_substrings": [

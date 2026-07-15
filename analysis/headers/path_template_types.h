@@ -524,7 +524,13 @@ typedef struct FrontendWidget {
     float font_scale;
     float layout_anchor_x;
     float layout_anchor_y;
-    uint8_t _pad_6fc[0x1c];
+    int32_t input_cursor;
+    int32_t input_cursor_visible;
+    float input_cursor_blink_progress;
+    float input_cursor_blink_step;
+    uint32_t input_flags;
+    int32_t input_length;
+    int32_t input_capacity;
     FrontendWidget* slider_less_widget;
     FrontendWidget* slider_more_widget;
     FrontendWidget* slider_value_widget;
