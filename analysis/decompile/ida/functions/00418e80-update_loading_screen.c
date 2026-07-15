@@ -2,112 +2,113 @@
 /* function: update_loading_screen @ 0x418e80 */
 /* selector: update_loading_screen */
 
-// Advances the normalized loader percentage, draws the loading background, and clips the LoadingBarOn fill quad into the recovered 192x289 to 448x321 window.
-int __thiscall sub_418E80(int *this)
+// Exact void cRLoadingBar::AI(): advances the normalized percentage, draws the loading background, and clips the fill quad into the recovered 192x289 to 448x321 window. All three Windows callers discard EAX.
+void __thiscall update_loading_screen(LoadingBar *loading_bar)
 {
-  int result; // eax
-  int v3; // ecx
-  int v4; // edi
+  int32_t last_loading_budget; // ecx
+  int32_t v3; // edi
+  double v4; // st7
   double v5; // st7
-  double v6; // st7
-  double v7; // st6
-  double v8; // st7
-  int v9; // [esp+88h] [ebp-8h] BYREF
-  float v10; // [esp+8Ch] [ebp-4h]
+  double v6; // st6
+  double v7; // st7
+  int v8; // [esp+88h] [ebp-8h] BYREF
+  float v9; // [esp+8Ch] [ebp-4h]
 
-  result = *this;
-  if ( !*this )
-    return result;
-  ++*(this + 2);
-  v3 = unk_4DF9C4;
-  if ( !unk_4DF9C4 )
+  if ( !loading_bar->active )
+    return;
+  ++loading_bar->last_loading_budget;
+  last_loading_budget = g_runtime_config.last_loading_budget;
+  if ( !g_runtime_config.last_loading_budget )
   {
-    v3 = 1;
-    unk_4DF9C4 = 1;
+    last_loading_budget = 1;
+    g_runtime_config.last_loading_budget = 1;
   }
-  v9 = 100 * *(this + 2) / v3;
-  v4 = v9;
-  if ( v9 >= 0 )
+  v8 = 100 * loading_bar->last_loading_budget / last_loading_budget;
+  v3 = v8;
+  if ( v8 >= 0 )
   {
-    if ( v9 <= 100 )
+    if ( v8 <= 100 )
       goto LABEL_9;
-    v4 = 100;
+    v3 = 100;
   }
   else
   {
-    v4 = 0;
+    v3 = 0;
   }
-  v9 = v4;
+  v8 = v3;
 LABEL_9:
-  result = v4 - *(this + 1);
-  if ( result >= 1 )
+  if ( v3 - loading_bar->previous_percent >= 1 )
   {
-    v10 = (double)v9 * 0.92000002;
-    if ( v4 > 98 )
-      v10 = 100.0;
-    (*(void (__stdcall **)(int, _DWORD, _DWORD, int, int, int, _DWORD))(*(_DWORD *)MEMORY[0x502FEC] + 144))(
-      MEMORY[0x502FEC],
+    v9 = (double)v8 * 0.92000002;
+    if ( v3 > 98 )
+      v9 = 100.0;
+    ((void (__stdcall *)(Direct3DDevice8 *, _DWORD, _DWORD, int, int, int, _DWORD))g_direct3d_renderer.device->vtbl->Clear)(
+      g_direct3d_renderer.device,
       0,
       0,
       2,
       -16777216,
       1065353216,
       0);
-    (*(void (__stdcall **)(int))(*(_DWORD *)MEMORY[0x502FEC] + 136))(MEMORY[0x502FEC]);
-    (*(void (__stdcall **)(int, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 244))(MEMORY[0x502FEC], 0, MEMORY[0x503288]);
-    (*(void (__stdcall **)(int, _DWORD, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 252))(MEMORY[0x502FEC], 0, 13, 3);
-    (*(void (__stdcall **)(int, _DWORD, int, int))(*(_DWORD *)MEMORY[0x502FEC] + 252))(MEMORY[0x502FEC], 0, 14, 3);
-    (*(void (__stdcall **)(int, _DWORD, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 332))(
-      MEMORY[0x502FEC],
+    g_direct3d_renderer.device->vtbl->BeginScene(g_direct3d_renderer.device);
+    g_direct3d_renderer.device->vtbl->SetTexture(
+      g_direct3d_renderer.device,
       0,
-      *(_DWORD *)(MEMORY[0x503284] + 8),
+      (Direct3DTexture8 *)g_loading_background_texture);
+    g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 13, 3);
+    g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 14, 3);
+    g_direct3d_renderer.device->vtbl->SetStreamSource(
+      g_direct3d_renderer.device,
+      0,
+      *(ObjectVertexBuffer **)(g_loading_background_vertex_buffer + 8),
       20);
-    (*(void (__stdcall **)(int, int))(*(_DWORD *)MEMORY[0x502FEC] + 304))(MEMORY[0x502FEC], 258);
-    (*(void (__stdcall **)(int, int, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 280))(MEMORY[0x502FEC], 6, 0, 2);
-    (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD))(**(_DWORD **)(MEMORY[0x5032A4] + 8) + 44))(
-      *(_DWORD *)(MEMORY[0x5032A4] + 8),
+    g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 258);
+    g_direct3d_renderer.device->vtbl->DrawPrimitive(g_direct3d_renderer.device, 6, 0, 2);
+    (*(void (__stdcall **)(_DWORD, _DWORD, int, int *, _DWORD))(**(_DWORD **)(g_loading_bar_vertex_buffer + 8) + 44))(
+      *(_DWORD *)(g_loading_bar_vertex_buffer + 8),
       0,
       80,
-      &v9,
+      &v8,
       0);
-    v5 = v10;
-    *(_DWORD *)v9 = 1128267776;
-    *(_DWORD *)(v9 + 4) = 1133543424;
-    v6 = v5 * 2.5599999 + 192.0;
-    *(_DWORD *)(v9 + 8) = 0;
-    *(_DWORD *)(v9 + 12) = 0;
-    *(_DWORD *)(v9 + 16) = 0;
-    *(float *)(v9 + 20) = v6;
-    v7 = v10 * 0.0099999998;
-    *(_DWORD *)(v9 + 24) = 1133543424;
-    *(_DWORD *)(v9 + 28) = 0;
-    v10 = v7;
-    *(float *)(v9 + 32) = v7;
-    *(_DWORD *)(v9 + 36) = 0;
-    *(float *)(v9 + 40) = v6;
-    v8 = v10;
-    *(_DWORD *)(v9 + 44) = 1134592000;
-    *(_DWORD *)(v9 + 48) = 0;
-    *(float *)(v9 + 52) = v8;
-    *(_DWORD *)(v9 + 56) = 1065353216;
-    *(_DWORD *)(v9 + 60) = 1128267776;
-    *(_DWORD *)(v9 + 64) = 1134592000;
-    *(_DWORD *)(v9 + 68) = 0;
-    *(_DWORD *)(v9 + 72) = 0;
-    *(_DWORD *)(v9 + 76) = 1065353216;
-    (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(MEMORY[0x5032A4] + 8) + 48))(*(_DWORD *)(MEMORY[0x5032A4] + 8));
-    (*(void (__stdcall **)(int, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 244))(MEMORY[0x502FEC], 0, MEMORY[0x503280]);
-    (*(void (__stdcall **)(int, _DWORD, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 332))(
-      MEMORY[0x502FEC],
+    v4 = v9;
+    *(_DWORD *)v8 = 1128267776;
+    *(_DWORD *)(v8 + 4) = 1133543424;
+    v5 = v4 * 2.5599999 + 192.0;
+    *(_DWORD *)(v8 + 8) = 0;
+    *(_DWORD *)(v8 + 12) = 0;
+    *(_DWORD *)(v8 + 16) = 0;
+    *(float *)(v8 + 20) = v5;
+    v6 = v9 * 0.0099999998;
+    *(_DWORD *)(v8 + 24) = 1133543424;
+    *(_DWORD *)(v8 + 28) = 0;
+    v9 = v6;
+    *(float *)(v8 + 32) = v6;
+    *(_DWORD *)(v8 + 36) = 0;
+    *(float *)(v8 + 40) = v5;
+    v7 = v9;
+    *(_DWORD *)(v8 + 44) = 1134592000;
+    *(_DWORD *)(v8 + 48) = 0;
+    *(float *)(v8 + 52) = v7;
+    *(_DWORD *)(v8 + 56) = 1065353216;
+    *(_DWORD *)(v8 + 60) = 1128267776;
+    *(_DWORD *)(v8 + 64) = 1134592000;
+    *(_DWORD *)(v8 + 68) = 0;
+    *(_DWORD *)(v8 + 72) = 0;
+    *(_DWORD *)(v8 + 76) = 1065353216;
+    (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(g_loading_bar_vertex_buffer + 8) + 48))(*(_DWORD *)(g_loading_bar_vertex_buffer + 8));
+    g_direct3d_renderer.device->vtbl->SetTexture(
+      g_direct3d_renderer.device,
       0,
-      *(_DWORD *)(MEMORY[0x5032A4] + 8),
+      (Direct3DTexture8 *)g_loading_bar_on_texture);
+    g_direct3d_renderer.device->vtbl->SetStreamSource(
+      g_direct3d_renderer.device,
+      0,
+      *(ObjectVertexBuffer **)(g_loading_bar_vertex_buffer + 8),
       20);
-    (*(void (__stdcall **)(int, int))(*(_DWORD *)MEMORY[0x502FEC] + 304))(MEMORY[0x502FEC], 258);
-    (*(void (__stdcall **)(int, int, _DWORD, int))(*(_DWORD *)MEMORY[0x502FEC] + 280))(MEMORY[0x502FEC], 6, 0, 2);
-    (*(void (__stdcall **)(int))(*(_DWORD *)MEMORY[0x502FEC] + 140))(MEMORY[0x502FEC]);
-    result = sub_413520();
-    *(this + 1) = v4;
+    g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 258);
+    g_direct3d_renderer.device->vtbl->DrawPrimitive(g_direct3d_renderer.device, 6, 0, 2);
+    g_direct3d_renderer.device->vtbl->EndScene(g_direct3d_renderer.device);
+    present_backbuffer();
+    loading_bar->previous_percent = v3;
   }
-  return result;
 }
-

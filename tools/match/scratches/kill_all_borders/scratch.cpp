@@ -1,8 +1,8 @@
-// kill_all_borders @ 0x4033c0 (thiscall, ret)
+// kill_all_borders @ 0x4033c0 (thiscall)
 
 #include "border_manager.h"
 
-int BorderManager::kill_all_borders()
+void BorderManager::kill_all_borders()
 {
     int result = 0;
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
@@ -12,5 +12,4 @@ int BorderManager::kill_all_borders()
             borders[i].flags = result;
         }
     }
-    return result;
 }

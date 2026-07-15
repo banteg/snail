@@ -78,7 +78,7 @@ typedef Logo IntroScreenRuntime;
 LogoLetter* __thiscall initialize_intro_logo_renderable(LogoLetter* letter);
 int32_t __thiscall open_logo(Logo* logo);
 void __thiscall initialize_intro_screen(Logo* logo, char* file_name);
-int32_t __thiscall destroy_intro_screen(Logo* logo);
+void __thiscall destroy_intro_screen(Logo* logo);
 void __thiscall update_intro_screen(Logo* logo);
 void __thiscall update_intro_logo_renderable(LogoLetter* letter);
 

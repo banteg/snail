@@ -14,3 +14,8 @@ the raw root-offset reconstruction without changing codegen.
 2026-07-11 cRHelp ownership: Android names this lifecycle edge
 `cRHelp::UnInit()`. The exact 3/3 Windows body now lives on the shared
 four-byte `Help` owner.
+
+2026-07-15 return-ownership closure: the sole call at `0x4168e4` immediately
+reloads the game root instead of consuming EAX. Together with the authored
+`UnInit` role and the void `KillBorders` tail target, this proves a void member
+contract. The corrected declaration remains exact at 3/3 instructions.

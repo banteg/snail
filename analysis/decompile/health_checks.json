@@ -4342,6 +4342,203 @@
         "data_5031c0",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_border_manager_kill_all_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004033c0-kill_all_borders.c",
+      "required_substrings": [
+        "&manager->borders[0].flags",
+        "do while (i != 1)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_border_manager_kill_all_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004033c0-kill_all_borders.c",
+      "required_substrings": [
+        "void __thiscall kill_all_borders(FrameBorderManager *manager)",
+        "manager->unknown_000010[2068]"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall kill_all_borders",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_help_uninit_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004168c0-destroy_help_screen.c",
+      "required_substrings": [
+        "kill_all_borders(&g_game_base->border_manager)",
+        "__tailcall"
+      ],
+      "forbidden_substrings": [
+        "data_4df904",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_help_uninit_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004168c0-destroy_help_screen.c",
+      "required_substrings": [
+        "void __thiscall destroy_help_screen(Help *help)",
+        "kill_all_borders(&g_game_base->border_manager);"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall destroy_help_screen",
+        "return kill_all_borders",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_loading_bar_init_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00418b50-initialize_loading_screen.c",
+      "required_substrings": [
+        "begin_overlay_render_state()",
+        "loading_bar->last_loading_budget = 0",
+        "loading_bar->previous_percent = 0",
+        "loading_bar->active = 1"
+      ],
+      "forbidden_substrings": [
+        "int32_t result = begin_overlay_render_state()",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_loading_bar_init_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00418b50-initialize_loading_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_loading_screen(LoadingBar *loading_bar)",
+        "d3dx_create_texture_from_file_in_memory_ex",
+        "d3dx_create_texture_from_file_ex",
+        "d3dx_create_texture_from_file(",
+        "loading_bar->last_loading_budget = 0;",
+        "loading_bar->active = 1;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_loading_screen",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_loading_bar_uninit_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00418e50-destroy_loading_screen.c",
+      "required_substrings": [
+        "g_runtime_config.last_loading_budget = loading_bar->last_loading_budget",
+        "loading_bar->active = 0",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_loading_bar_uninit_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00418e50-destroy_loading_screen.c",
+      "required_substrings": [
+        "void __thiscall destroy_loading_screen(LoadingBar *loading_bar)",
+        "g_runtime_config.last_loading_budget = loading_bar->last_loading_budget;",
+        "loading_bar->active = 0;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall destroy_loading_screen",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_loading_bar_ai_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00418e80-update_loading_screen.c",
+      "required_substrings": [
+        "if (loading_bar->active == 0)",
+        "loading_bar->last_loading_budget += 1",
+        "loading_bar->previous_percent = edi_1"
+      ],
+      "forbidden_substrings": [
+        "int32_t result = *arg1",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_loading_bar_ai_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00418e80-update_loading_screen.c",
+      "required_substrings": [
+        "void __thiscall update_loading_screen(LoadingBar *loading_bar)",
+        "if ( !loading_bar->active )",
+        "++loading_bar->last_loading_budget;",
+        "loading_bar->previous_percent = v3;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall update_loading_screen",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_logo_uninit_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00419920-destroy_intro_screen.c",
+      "required_substrings": [
+        "logo->saved_render_flags",
+        "logo->renderable_count",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_logo_uninit_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00419920-destroy_intro_screen.c",
+      "required_substrings": [
+        "void __thiscall destroy_intro_screen(Logo *logo)",
+        "logo->renderable_count"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall destroy_intro_screen",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_options_uninit_void_owner",
+      "artifact": "analysis/decompile/binja/functions/0041aee0-destroy_options_menu.c",
+      "required_substrings": [
+        "kill_border(options->back_widget)",
+        "save_config_file(\"SnailMail.cfg\", &g_runtime_config, 0xc4)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return save_config_file",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_options_uninit_void_owner",
+      "artifact": "analysis/decompile/ida/functions/0041aee0-destroy_options_menu.c",
+      "required_substrings": [
+        "void __thiscall destroy_options_menu(Options *options)",
+        "options->back_widget",
+        "save_config_file("
+      ],
+      "forbidden_substrings": [
+        "char *__thiscall destroy_options_menu",
+        "return (char *)save_config_file",
+        "unimplemented"
+      ]
     }
   ]
 }

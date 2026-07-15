@@ -22,3 +22,8 @@ shared `LoadingBar g_loading_bar` owner.
 globals created and consumed by the loading lifecycle are declared alongside
 `LoadingBar`. Initializer, updater, and teardown retain their existing focused
 instruction streams and operand audits.
+
+2026-07-15 return-ownership closure: startup invokes teardown at `0x406f8a`
+and immediately reloads the root; it never consumes the final COM `Release`
+value. The authored `cRLoadingBar::UnInit()` member is void, and dropping the
+synthetic return preserves the exact 15/15 instructions and three operands.

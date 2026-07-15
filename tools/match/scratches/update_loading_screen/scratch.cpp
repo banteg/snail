@@ -1,4 +1,4 @@
-// update_loading_screen @ 0x418e80 (thiscall, ret)
+// update_loading_screen @ 0x418e80 (thiscall)
 
 #include "direct3d_device8_view.h"
 #include "loading_bar.h"
@@ -8,7 +8,7 @@
 
 int present_backbuffer(); // @ 0x413520
 
-int LoadingBar::update_loading_screen()
+void LoadingBar::update_loading_screen()
 {
     int result = active;
     if (active != 0) {
@@ -90,5 +90,4 @@ int LoadingBar::update_loading_screen()
             previous_percent = clamped_percent;
         }
     }
-    return result;
 }

@@ -7,7 +7,7 @@
 class Options {
 public:
     void initialize_options_menu(); // @ 0x41ace0, cROptions::Init
-    char* destroy_options_menu(); // @ 0x41aee0, cROptions::UnInit
+    void destroy_options_menu(); // @ 0x41aee0, cROptions::UnInit
     void update_options_menu(); // @ 0x41af60, cROptions::AI
     void apply_audio_config_volumes(); // @ 0x41b070, cROptions::Apply-compatible
 

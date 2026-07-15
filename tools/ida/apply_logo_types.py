@@ -26,7 +26,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "destroy_intro_screen",
-        "int32_t __thiscall destroy_intro_screen(Logo* logo);",
+        "void __thiscall destroy_intro_screen(Logo* logo);",
     ),
     ("update_intro_screen", "void __thiscall update_intro_screen(Logo* logo);"),
     (

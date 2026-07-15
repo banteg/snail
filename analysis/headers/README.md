@@ -57,6 +57,8 @@ Current checked-in example:
 
 - `frame_renderer_types.h`
 - `uv run python tools/ida/sync_frame_renderer_types.py`
+- `logo_types.h`
+- `uv run python tools/ida/sync_logo_types.py`
 - `path_template_types.h`
 - `uv run python tools/ida/sync_path_template_types.py`
 - `click_start_types.h`
@@ -93,6 +95,11 @@ intentional.
 - `uv run python tools/binja/sync_frontend_menu_types.py`
   - Replays the exact MainMenu, Options, and Exit owners plus the adjacent
     standalone 0x38-byte root BodBase without redefining FrontendWidget.
+- `bn_loading_bar_types.h`
+- `uv run python tools/binja/sync_loading_bar_types.py`
+  - Width-gates the exact 0x0c-byte global cRLoadingBar owner, names its
+    `g_loading_bar` instance, and replays the caller-proven void Init, UnInit,
+    and AI contracts without importing unrelated renderer state.
 - `bn_backdrop_types.h`
 - `uv run python tools/binja/sync_backdrop_types.py`
 - `bn_frame_renderer_types.h`
@@ -223,6 +230,14 @@ the count values left in EAX are loop-control residue rather than results. Its
 IDA import refuses forward-only shared declarations and verifies the exact
 `Sprite`, `StarManagerEntry`, and `StarManager` sizes before changing any
 prototype.
+
+The canonical IDA `path_template_types.h` lane remains useful beyond path
+templates because it is the single accumulated `SubgameRuntime` and gameplay
+owner graph. The front-end lifecycle slice reuses it for exact `Help`,
+`Options`, and `LoadingBar` records instead of creating another broad GameRoot
+header. Its narrow trusted declarations now preserve void Help/Options teardown
+and the complete void LoadingBar lifecycle, while the frame-root lane owns the
+separate exact-sized BorderManager projection and `KillBorders` contract.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

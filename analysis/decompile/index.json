@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,27 +15,35 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "destroy_star_field",
-      "address": "0x434270"
+      "name": "kill_all_borders",
+      "address": "0x4033c0"
     },
     {
-      "name": "initialize_star_field",
-      "address": "0x434310"
+      "name": "destroy_help_screen",
+      "address": "0x4168c0"
     },
     {
-      "name": "hide_star_field",
-      "address": "0x434670"
+      "name": "initialize_loading_screen",
+      "address": "0x418b50"
     },
     {
-      "name": "unhide_star_field",
-      "address": "0x4346b0"
+      "name": "destroy_loading_screen",
+      "address": "0x418e50"
     },
     {
-      "name": "update_star_field",
-      "address": "0x4346f0"
+      "name": "update_loading_screen",
+      "address": "0x418e80"
+    },
+    {
+      "name": "destroy_intro_screen",
+      "address": "0x419920"
+    },
+    {
+      "name": "destroy_options_menu",
+      "address": "0x41aee0"
     }
   ],
-  "health_check_count": 249,
+  "health_check_count": 263,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

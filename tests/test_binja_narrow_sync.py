@@ -2748,3 +2748,94 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
         assert stale not in runtime_sync
         assert stale not in ida_path_sync
         assert stale not in header
+
+
+def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
+    repo_root = Path(__file__).parents[1]
+    frame_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    menu_sync = (BINJA_DIR / "sync_frontend_menu_types.py").read_text(
+        encoding="utf-8"
+    )
+    logo_sync = (BINJA_DIR / "sync_logo_types.py").read_text(encoding="utf-8")
+    loading_sync = (BINJA_DIR / "sync_loading_bar_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_frame_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_logo_sync = (IDA_DIR / "apply_logo_types.py").read_text(encoding="utf-8")
+    ida_logo_runner = (IDA_DIR / "sync_logo_types.py").read_text(encoding="utf-8")
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    loading_header = (HEADER_DIR / "bn_loading_bar_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_border_header = (
+        repo_root / "tools/match/include/border_manager.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"kill_all_borders"' in frame_sync
+    assert "void __thiscall kill_all_borders" in frame_sync
+    assert "void __thiscall kill_all_borders" in ida_frame_sync
+    assert "void __thiscall destroy_help_screen(Help* help)" in runtime_sync
+    assert "void __thiscall destroy_options_menu(Options* options)" in menu_sync
+    assert "void __thiscall destroy_intro_screen(Logo* logo)" in logo_sync
+    assert "void __thiscall destroy_intro_screen(Logo* logo);" in ida_logo_sync
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/logo_types.h"' in ida_logo_runner
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_logo_types.py"' in ida_logo_runner
+
+    for prototype in (
+        "void __thiscall initialize_loading_screen(LoadingBar* loading_bar)",
+        "void __thiscall destroy_loading_screen(LoadingBar* loading_bar)",
+        "void __thiscall update_loading_screen(LoadingBar* loading_bar)",
+    ):
+        assert prototype in loading_sync
+        assert prototype + ";" in ida_path_sync
+
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_loading_bar_types.h"' in loading_sync
+    assert 'struct_name="LoadingBar"' in loading_sync
+    assert 'replace_types=("LoadingBar",)' in loading_sync
+    assert '("0x503290", "g_loading_bar")' in loading_sync
+    assert '("0x503290", "LoadingBar")' in loading_sync
+    assert "typedef struct LoadingBar" in loading_header
+    assert "typedef struct LoadingBar" in path_header
+    assert "typedef struct Options" in path_header
+    assert "LoadingBar g_loading_bar;" in ida_path_sync
+    loading_notes = (
+        repo_root / "tools/match/scratches/initialize_loading_screen/NOTES.md"
+    ).read_text(encoding="utf-8")
+    for address, wrapper, cleanup in (
+        ("0x4533C4", "d3dx_create_texture_from_file_in_memory_ex", "0x3c"),
+        ("0x453404", "d3dx_create_texture_from_file_ex", "0x38"),
+        ("0x453467", "d3dx_create_texture_from_file", "0x0c"),
+    ):
+        assert f'"{wrapper}"' in ida_path_sync
+        assert f'({address}, "{wrapper}")' in ida_path_sync
+        assert f"int32_t __stdcall {wrapper}" in ida_path_sync
+        assert f"int32_t __stdcall {wrapper}" in path_header
+        assert cleanup in loading_notes
+
+    for stale in (
+        "char* __thiscall destroy_options_menu",
+        "int32_t __thiscall destroy_intro_screen",
+        "int32_t __thiscall initialize_loading_screen",
+        "int32_t __thiscall destroy_loading_screen",
+        "int32_t __thiscall update_loading_screen",
+    ):
+        assert stale not in menu_sync
+        assert stale not in logo_sync
+        assert stale not in loading_sync
+        assert stale not in ida_path_sync
+        assert stale not in ida_logo_sync
+
+    # kill_border has a separate VC6 recursion-shape constraint and is not
+    # widened into this lifecycle proof.
+    assert "int kill_border(FrontendWidget* border);" in matcher_border_header
+    assert '"kill_border",' not in frame_sync

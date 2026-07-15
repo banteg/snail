@@ -28,7 +28,7 @@ public:
     int open_logo(); // @ 0x419110, cRLogo::Open
     void initialize_intro_screen(char* file_name); // @ 0x4191e0, cRLogo::Init
     void update_intro_screen(); // @ 0x4199e0, cRLogo::AI
-    int destroy_intro_screen(); // @ 0x419920, cRLogo::UnInit
+    void destroy_intro_screen(); // @ 0x419920, cRLogo::UnInit
 
     float progress;                 // +0x00
     float progress_step;            // +0x04

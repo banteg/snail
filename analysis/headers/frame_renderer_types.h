@@ -204,6 +204,8 @@ typedef struct FrameBorderManager {
     float justify_centre;
 } FrameBorderManager;
 
+void __thiscall kill_all_borders(FrameBorderManager* manager);
+
 typedef struct FrameSubgameRuntime {
     uint8_t scan_reset;
     uint8_t camera_snap_requested;

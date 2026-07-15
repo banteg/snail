@@ -102,6 +102,14 @@
       "notes": "The exact Windows allocator scans the manager-owned 150-record cRBorder pool, stamps the chosen slot from GameRoot::frame_counter, and returns that record through the FrontendWidget/cRBorder view."
     },
     {
+      "address": "0x4033c0",
+      "windows_name": "kill_all_borders",
+      "ios_symbol": "cRBorderManager::KillBorders()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact Windows pool walk shares the authored BorderManager lifecycle role. All three Windows callers discard EAX, proving the final flags value is loop residue and the member contract is void."
+    },
+    {
       "address": "0x403410",
       "windows_name": "border_input_text_init",
       "android_symbol": "cRBorder::InputTextInit(int, char*, int)",
@@ -2995,7 +3003,7 @@
       "android_symbol": "cRLoadingBar::Init()",
       "source_object": "LoadingBar.o",
       "confidence": "high",
-      "notes": "All ports initialize the global cRLoadingBar lifecycle owner. Windows preserves an exact 0x0c-byte state object at data_503290 and the broader renderer setup remains honestly partial."
+      "notes": "All ports initialize the global cRLoadingBar lifecycle owner. Windows preserves an exact 0x0c-byte state object at data_503290; startup discards EAX, proving void ownership, while the broader renderer setup remains honestly partial."
     },
     {
       "address": "0x418e50",
@@ -3003,7 +3011,7 @@
       "android_symbol": "cRLoadingBar::UnInit()",
       "source_object": "LoadingBar.o",
       "confidence": "high",
-      "notes": "The exact Windows member releases both loading textures and preserves the measured budget through the cRLoadingBar owner."
+      "notes": "The exact Windows member releases both loading textures and preserves the measured budget through the cRLoadingBar owner. Startup discards the final COM Release value, proving the UnInit contract is void."
     },
     {
       "address": "0x418e80",
@@ -3012,7 +3020,7 @@
       "android_symbol": "cRLoadingBar::AI()",
       "source_object": "LoadingBar.o",
       "confidence": "high",
-      "notes": "The exact Windows AI member advances and renders the global loading bar through the same owner exported as gLoadingBar on mobile."
+      "notes": "The exact Windows AI member advances and renders the global loading bar through the same owner exported as gLoadingBar on mobile. All three Windows callers discard EAX, proving the AI contract is void."
     },
     {
       "address": "0x419110",
@@ -3036,7 +3044,7 @@
       "ios_symbol": "cRLogo::UnInit()",
       "source_object": null,
       "confidence": "high",
-      "notes": "iOS v1.9 preserves the authored UnInit symbol; the v1.5 cRLogo::AI body inlines the same active-letter list teardown visible in the exact Windows helper."
+      "notes": "iOS v1.9 preserves the authored UnInit symbol; the v1.5 cRLogo::AI body inlines the same active-letter list teardown visible in the exact Windows helper. The sole Windows caller discards the final count, proving the UnInit contract is void."
     },
     {
       "address": "0x4199e0",
@@ -3078,7 +3086,7 @@
       "android_symbol": "cROptions::UnInit()",
       "source_object": "Options.o",
       "confidence": "high",
-      "notes": "All ports tear down the cROptions widget set and persist the active configuration through the same lifecycle edge."
+      "notes": "All ports tear down the cROptions widget set and persist the active configuration through the same lifecycle edge. The sole Windows caller discards the save pointer, proving the UnInit contract is void."
     },
     {
       "address": "0x41af60",
@@ -3175,7 +3183,7 @@
       "android_symbol": "cRHelp::UnInit()",
       "source_object": "Help.o",
       "confidence": "high",
-      "notes": "The exact Windows lifecycle edge tears down the shared border set through the four-byte cRHelp owner."
+      "notes": "The exact Windows lifecycle edge tears down the shared border set through the four-byte cRHelp owner. Its sole caller discards EAX and the body tail-calls void KillBorders, proving the UnInit contract is void."
     },
     {
       "address": "0x4168d0",

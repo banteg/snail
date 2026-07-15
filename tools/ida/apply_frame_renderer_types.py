@@ -24,6 +24,10 @@ TRUSTED_NAMES = [
 
 TRUSTED_FUNCTION_DECLARATIONS = [
     (
+        "kill_all_borders",
+        "void __thiscall kill_all_borders(FrameBorderManager *manager);",
+    ),
+    (
         "allocate_border",
         "FrontendWidget *__thiscall allocate_border(FrameBorderManager *manager);",
     ),

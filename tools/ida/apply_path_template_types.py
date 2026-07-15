@@ -40,18 +40,55 @@ TRUSTED_NAMES = [
     (0x44D5D0, "initialize_quaternion_from_matrix"),
     (0x44D820, "initialize_matrix_from_quaternion"),
     (0x44D920, "interpolate_matrix_rotation"),
+    (0x4533C4, "d3dx_create_texture_from_file_in_memory_ex"),
+    (0x453404, "d3dx_create_texture_from_file_ex"),
+    (0x453467, "d3dx_create_texture_from_file"),
     (0x4AC5C8, "g_default_tip_message"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
     (0x49735C, "g_presentation_animation_channel_noop_vtable"),
+    (0x503290, "g_loading_bar"),
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
     (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
+    (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
 ]
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "d3dx_create_texture_from_file_in_memory_ex",
+        "int32_t __stdcall d3dx_create_texture_from_file_in_memory_ex(void* device, void* source_data, uint32_t source_size, uint32_t width, uint32_t height, uint32_t mip_levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t filter, uint32_t mip_filter, uint32_t color_key, void* source_info, void* palette, void** texture);",
+    ),
+    (
+        "d3dx_create_texture_from_file_ex",
+        "int32_t __stdcall d3dx_create_texture_from_file_ex(void* device, char* path, uint32_t width, uint32_t height, uint32_t mip_levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t filter, uint32_t mip_filter, uint32_t color_key, void* source_info, void* palette, void** texture);",
+    ),
+    (
+        "d3dx_create_texture_from_file",
+        "int32_t __stdcall d3dx_create_texture_from_file(void* device, char* path, void** texture);",
+    ),
+    (
+        "destroy_help_screen",
+        "void __thiscall destroy_help_screen(Help* help);",
+    ),
+    (
+        "initialize_loading_screen",
+        "void __thiscall initialize_loading_screen(LoadingBar* loading_bar);",
+    ),
+    (
+        "destroy_loading_screen",
+        "void __thiscall destroy_loading_screen(LoadingBar* loading_bar);",
+    ),
+    (
+        "update_loading_screen",
+        "void __thiscall update_loading_screen(LoadingBar* loading_bar);",
+    ),
+    (
+        "destroy_options_menu",
+        "void __thiscall destroy_options_menu(Options* options);",
+    ),
     (
         "uninit_pause_menu",
         "void __thiscall uninit_pause_menu(SubPause* pause);",

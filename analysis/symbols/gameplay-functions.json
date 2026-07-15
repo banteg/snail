@@ -84,7 +84,8 @@
     },
     {
       "address": "0x4033c0",
-      "name": "kill_all_borders"
+      "name": "kill_all_borders",
+      "description": "Exact void cRBorderManager::KillBorders() pool teardown. All three Windows callers discard EAX, proving the final per-record flags value is loop residue rather than an API result."
     },
     {
       "address": "0x4033f0",
@@ -1046,7 +1047,7 @@
     {
       "address": "0x4168c0",
       "name": "destroy_help_screen",
-      "description": "Clears the Help-screen shell-font scene before control returns to the owning front-end state. Cross-port Android symbols match this helper to `cRHelp::UnInit()`."
+      "description": "Void cRHelp::UnInit(): clears the Help-screen shell-font scene before control returns to the owning front-end state. Its sole Windows caller discards EAX, and the exact body tail-calls void KillBorders."
     },
     {
       "address": "0x4168d0",
@@ -1150,17 +1151,17 @@
     {
       "address": "0x418b50",
       "name": "initialize_loading_screen",
-      "description": "Loads the loading-screen textures, seeds the full-screen quad and progress-bar quad, and resets the loader progress counters. Cross-port Android and iOS symbols match the global owner lifecycle to `cRLoadingBar::Init()`."
+      "description": "Void cRLoadingBar::Init(): loads the loading-screen textures, seeds the full-screen and progress quads, and resets the loader counters. Startup discards EAX; the remaining 83.00% source shape is honest register scheduling, not return uncertainty."
     },
     {
       "address": "0x418e50",
       "name": "destroy_loading_screen",
-      "description": "Tears down the loading-screen textures and preserves the last measured loading budget for the next loader pass. Cross-port Android symbols match this exact member to `cRLoadingBar::UnInit()`."
+      "description": "Exact void cRLoadingBar::UnInit(): tears down the loading-screen textures and preserves the last measured loading budget. Startup discards the final COM Release value left in EAX."
     },
     {
       "address": "0x418e80",
       "name": "update_loading_screen",
-      "description": "Advances the normalized loader percentage, draws the loading background, and clips the LoadingBarOn fill quad into the recovered 192x289 to 448x321 window. Cross-port Android and iOS symbols match this exact member to `cRLoadingBar::AI()`."
+      "description": "Exact void cRLoadingBar::AI(): advances the normalized percentage, draws the loading background, and clips the fill quad into the recovered 192x289 to 448x321 window. All three Windows callers discard EAX."
     },
     {
       "address": "0x419110",
@@ -1175,7 +1176,7 @@
     {
       "address": "0x419920",
       "name": "destroy_intro_screen",
-      "description": "Windows `cRLogo::UnInit()`: unlinks each active LogoLetter from the BOD lists and returns it to the shared free list before the crawl exits. Windows retains an incidental count result while all callers discard it."
+      "description": "Exact void Windows cRLogo::UnInit(): unlinks each active LogoLetter from the BOD lists and returns it to the shared free list. Its sole caller discards the loop count left in EAX."
     },
     {
       "address": "0x4199e0",
@@ -1276,7 +1277,7 @@
     {
       "address": "0x41aee0",
       "name": "destroy_options_menu",
-      "description": "Tears down the Options-screen widgets and writes the current SnailMail.cfg blob back to disk. Cross-port Android and iOS symbols match this helper to `cROptions::UnInit()`."
+      "description": "Exact void cROptions::UnInit(): tears down the Options widgets and writes SnailMail.cfg. Its sole Windows caller discards the save_config_file pointer left in EAX."
     },
     {
       "address": "0x41af60",

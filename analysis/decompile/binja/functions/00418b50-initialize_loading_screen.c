@@ -66,8 +66,8 @@
 00418e1c        var_8[0x13] = 0x3f800000
 00418e25        int32_t* eax_15 = *(data_5032a4 + 8)
 00418e2b        (*(*eax_15 + 0x30))(eax_15)
-00418e2e        int32_t result = begin_overlay_render_state()
-00418e33        arg1[2] = 0
-00418e36        arg1[1] = 0
-00418e3a        *arg1 = 1
-00418e45        return result
+00418e2e        begin_overlay_render_state()
+00418e33        loading_bar->last_loading_budget = 0
+00418e36        loading_bar->previous_percent = 0
+00418e3a        loading_bar->active = 1
+00418e45        return

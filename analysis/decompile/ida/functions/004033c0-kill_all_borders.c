@@ -2,30 +2,29 @@
 /* function: kill_all_borders @ 0x4033c0 */
 /* selector: kill_all_borders */
 
-int __thiscall sub_4033C0(int *this)
+// Exact void cRBorderManager::KillBorders() pool teardown. All three Windows callers discard EAX, proving the final per-record flags value is loop residue rather than an API result.
+void __thiscall kill_all_borders(FrameBorderManager *manager)
 {
-  int *v1; // ecx
+  uint8_t *v1; // ecx
   int v2; // edx
-  int result; // eax
+  int v3; // eax
 
-  v1 = this + 521;
+  v1 = &manager->unknown_000010[2068];
   v2 = 150;
   do
   {
-    result = *v1;
-    if ( *v1 )
+    v3 = *(_DWORD *)v1;
+    if ( *(_DWORD *)v1 )
     {
-      if ( (result & 0x10000400) == 0 )
+      if ( (v3 & 0x10000400) == 0 )
       {
-        LOBYTE(result) = result & 1;
-        BYTE1(result) |= 2u;
-        *v1 = result;
+        LOBYTE(v3) = v3 & 1;
+        BYTE1(v3) |= 2u;
+        *(_DWORD *)v1 = v3;
       }
     }
-    v1 += 457;
+    v1 += 1828;
     --v2;
   }
   while ( v2 );
-  return result;
 }
-

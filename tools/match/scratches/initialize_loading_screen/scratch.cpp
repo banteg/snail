@@ -1,4 +1,4 @@
-// initialize_loading_screen @ 0x418b50 (thiscall, ret)
+// initialize_loading_screen @ 0x418b50 (thiscall)
 
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
@@ -25,7 +25,7 @@ char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out
 int report_errorf(char* format, ...);
 int begin_overlay_render_state();
 
-int LoadingBar::initialize_loading_screen()
+void LoadingBar::initialize_loading_screen()
 {
     g_runtime_config.last_loading_budget = 1276;
 
@@ -113,9 +113,8 @@ int LoadingBar::initialize_loading_screen()
 
     g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Unlock(
         g_loading_bar_vertex_buffer->vertex_buffer);
-    int result = begin_overlay_render_state();
+    begin_overlay_render_state();
     last_loading_budget = 0;
     previous_percent = 0;
     active = 1;
-    return result;
 }

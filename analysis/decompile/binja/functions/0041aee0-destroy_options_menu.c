@@ -12,4 +12,5 @@
 0041af2c        kill_border(options->sound_volume_widget)
 0041af34        g_game_base
 0041af41        kill_border(options->fullscreen_widget)
-0041af5e        return save_config_file("SnailMail.cfg", &g_runtime_config, 0xc4)
+0041af55        save_config_file("SnailMail.cfg", &g_runtime_config, 0xc4)
+0041af5e        return

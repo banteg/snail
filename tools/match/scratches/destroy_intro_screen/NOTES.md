@@ -31,9 +31,6 @@ Rejected same-family probes:
 2026-07-12 authored-owner correction: iOS v1.9 preserves this lifecycle edge
 as `cRLogo::UnInit()`, and the v1.5 `cRLogo::AI()` body inlines the same
 active-letter list teardown. Windows factors it into this exact 61/61 helper.
-Its count-shaped EAX value is retained in the Windows declaration because the
-mobile symbol does not encode return type; every known Windows caller discards
-it.
 
 2026-07-14 root-owner closure: root `+0x30d` is player 0's
 `high_score_entry_pending` latch and root `+0x1b8` is the same player's
@@ -45,3 +42,9 @@ all seven operands.
 cursor at `BodNode::list_next`, but all backward reaches to `list_flags`,
 `list_prev`, and the containing node now derive from the shared member offsets.
 The ownership cleanup remains exact at 61/61 with all seven operands clean.
+
+2026-07-15 return-ownership closure: the only Windows call at `0x419a24`
+immediately reloads the logo state instead of reading EAX. The count left by
+the native teardown loop is incidental, so the authored `cRLogo::UnInit()`
+contract is void. Removing the synthetic return preserves the exact 61/61
+instructions and all seven operands.

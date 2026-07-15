@@ -7,12 +7,12 @@
 extern GameRoot* g_game; // data_4df904
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
-char* Options::destroy_options_menu()
+void Options::destroy_options_menu()
 {
     g_game->border_manager.unhide_all_borders();
     g_game->border_manager.kill_border(back_widget);
     g_game->border_manager.kill_border(music_volume_widget);
     g_game->border_manager.kill_border(sound_volume_widget);
     g_game->border_manager.kill_border(fullscreen_widget);
-    return save_config_file("SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
+    save_config_file("SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
 }

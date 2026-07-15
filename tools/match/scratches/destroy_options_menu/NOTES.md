@@ -11,3 +11,9 @@ First scratch for options teardown.
 2026-07-11 cROptions ownership: Android and iOS name this lifecycle edge
 `cROptions::UnInit()`. The exact Windows body now lives on the shared
 0x24-byte `Options` owner.
+
+2026-07-15 return-ownership closure: the sole call at `0x41b01f` immediately
+reloads the game root. The `save_config_file` pointer previously forwarded in
+EAX is therefore incidental, while the cross-port `cROptions::UnInit()` role
+supplies the authored void contract. The corrected member remains exact at
+32/32 instructions with all 13 operands clean.

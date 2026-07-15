@@ -316,6 +316,10 @@ PROTO_UPDATES = (
         "update_subgame_camera",
         "void __thiscall update_subgame_camera(SubgameRuntime* runtime)",
     ),
+    (
+        "destroy_help_screen",
+        "void __thiscall destroy_help_screen(Help* help)",
+    ),
 )
 
 

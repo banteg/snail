@@ -43,3 +43,15 @@ and device fields remain at `+0xbb88/+0xbb94`. Focused output remains 83.00%,
 `cRLoadingBar::Init()` and preserve the `gLoadingBar` global. Promoting the
 Windows 0x0c owner to `LoadingBar g_loading_bar` is codegen-neutral at the same
 83.00% near-complete source shape.
+
+2026-07-15 return-ownership closure: startup calls this member at `0x406f19`
+and immediately continues through the next initialization call without reading
+EAX. `cRLoadingBar::Init()` is therefore void; the old return was only the
+residue of `begin_overlay_render_state`. Removing it preserves the honest
+83.00%, 253/253 instruction result and all 47 clean operands.
+
+Fresh IDA decompilation also proves the three linked D3DX 8 texture wrappers
+use `__stdcall` cleanup: `sub_4533C4` returns with `0x3c`, `sub_453404` with
+`0x38`, and `sub_453467` with `0x0c`. Persisting that exact arity prevents a
+stale inferred callee type from breaking Hex-Rays call analysis when the caller
+prototype is refreshed.

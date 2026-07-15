@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int Help::destroy_help_screen()
+void Help::destroy_help_screen()
 {
-    return g_game->border_manager.kill_all_borders();
+    g_game->border_manager.kill_all_borders();
 }

@@ -4,11 +4,10 @@
 #include "loading_bar.h"
 #include "runtime_config.h"
 
-int LoadingBar::destroy_loading_screen()
+void LoadingBar::destroy_loading_screen()
 {
     g_runtime_config.last_loading_budget = last_loading_budget;
     g_loading_background_texture->vtbl->Release(g_loading_background_texture);
-    int result = g_loading_bar_on_texture->vtbl->Release(g_loading_bar_on_texture);
+    g_loading_bar_on_texture->vtbl->Release(g_loading_bar_on_texture);
     active = 0;
-    return result;
 }

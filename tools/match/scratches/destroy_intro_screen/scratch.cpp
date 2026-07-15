@@ -1,4 +1,4 @@
-// destroy_intro_screen @ 0x419920 (thiscall, ret)
+// destroy_intro_screen @ 0x419920 (thiscall)
 
 #include <stddef.h>
 
@@ -10,7 +10,7 @@ extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 
-int Logo::destroy_intro_screen()
+void Logo::destroy_intro_screen()
 {
     g_runtime_config.render_flags = saved_render_flags;
 
@@ -70,5 +70,4 @@ next_renderable:
             next_ref = (BodNode**)((char*)next_ref + sizeof(LogoLetter));
         } while (index < result);
     }
-    return result;
 }

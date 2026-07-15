@@ -64,3 +64,9 @@ separate loading-only wrapper or device types.
 lifecycle role as `cRLoadingBar::AI()` and export the global as `gLoadingBar`.
 The Windows owner is now `LoadingBar g_loading_bar`; the 0x0c layout and exact
 204/204 updater remain unchanged.
+
+2026-07-15 return-ownership closure: the calls at `0x42fa07`, `0x43103f`, and
+`0x4312df` all continue with unrelated loads and never consume EAX. The active,
+delta, and `Present` values previously returned are branch residue, not an API
+result. The void `cRLoadingBar::AI()` transcription remains exact at 204/204
+instructions with all 26 operands clean.

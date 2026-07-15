@@ -2,15 +2,11 @@
 /* function: destroy_loading_screen @ 0x418e50 */
 /* selector: destroy_loading_screen */
 
-// Tears down the loading-screen textures and preserves the last measured loading budget for the next loader pass.
-int __thiscall sub_418E50(_DWORD *this)
+// Exact void cRLoadingBar::UnInit(): tears down the loading-screen textures and preserves the last measured loading budget. Startup discards the final COM Release value left in EAX.
+void __thiscall destroy_loading_screen(LoadingBar *loading_bar)
 {
-  int result; // eax
-
-  unk_4DF9C4 = *(this + 2);
-  (*(void (__stdcall **)(int))(*(_DWORD *)MEMORY[0x503288] + 8))(MEMORY[0x503288]);
-  result = (*(int (__stdcall **)(int))(*(_DWORD *)MEMORY[0x503280] + 8))(MEMORY[0x503280]);
-  *this = 0;
-  return result;
+  g_runtime_config.last_loading_budget = loading_bar->last_loading_budget;
+  (*(void (__stdcall **)(int))(*(_DWORD *)g_loading_background_texture + 8))(g_loading_background_texture);
+  (*(void (__stdcall **)(int))(*(_DWORD *)g_loading_bar_on_texture + 8))(g_loading_bar_on_texture);
+  loading_bar->active = 0;
 }
-

@@ -70,7 +70,7 @@ PROTO_UPDATES = (
     ),
     (
         "destroy_options_menu",
-        "char* __thiscall destroy_options_menu(Options* options)",
+        "void __thiscall destroy_options_menu(Options* options)",
     ),
     ("update_options_menu", "void __thiscall update_options_menu(Options* options)"),
     (

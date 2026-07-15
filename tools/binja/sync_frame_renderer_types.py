@@ -203,6 +203,18 @@ def resolved_border_manager_struct_name(*, target: str) -> str:
     )
 
 
+def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
+    """Keep the border lifecycle receiver on the best available exact owner."""
+    border_manager_type = resolved_border_manager_struct_name(target=target)
+    return (
+        *PROTO_UPDATES,
+        (
+            "kill_all_borders",
+            f"void __thiscall kill_all_borders({border_manager_type}* manager)",
+        ),
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the root frame-renderer ownership slice to Binary Ninja."
@@ -247,7 +259,7 @@ def main() -> int:
                 ),
                 ("GameRoot", resolved_game_root_field_updates(target=args.target)),
             ),
-            proto_updates=PROTO_UPDATES,
+            proto_updates=resolved_proto_updates(target=args.target),
         )
     )
     operations.extend(

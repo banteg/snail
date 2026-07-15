@@ -343,6 +343,25 @@ typedef struct Help {
     FrontendWidget* back_button;
 } Help;
 
+/* Exact 0x24-byte authored cROptions front-end controller. */
+typedef struct Options {
+    int32_t previous_frontend_state;
+    uint8_t active;
+    uint8_t _pad_05[0x0b];
+    FrontendWidget* back_widget;
+    FrontendWidget* fullscreen_widget;
+    FrontendWidget* sound_volume_widget;
+    FrontendWidget* music_volume_widget;
+    float previous_sample_volume;
+} Options;
+
+/* Exact 0x0c-byte global cRLoadingBar lifecycle owner. */
+typedef struct LoadingBar {
+    int32_t active;
+    int32_t previous_percent;
+    int32_t last_loading_budget;
+} LoadingBar;
+
 /* Exact 0x14-byte thanks-for-playing controller. */
 typedef struct ThanksScreen {
     SubgameRuntime* game;
@@ -2322,6 +2341,58 @@ char __cdecl cache_music_file(
 );
 
 void* __thiscall noop_this_constructor(void* self);
+
+/* D3DX 8 texture helpers use callee cleanup; exact arity is required for IDA. */
+int32_t __stdcall d3dx_create_texture_from_file_in_memory_ex(
+    void* device,
+    void* source_data,
+    uint32_t source_size,
+    uint32_t width,
+    uint32_t height,
+    uint32_t mip_levels,
+    uint32_t usage,
+    uint32_t format,
+    uint32_t pool,
+    uint32_t filter,
+    uint32_t mip_filter,
+    uint32_t color_key,
+    void* source_info,
+    void* palette,
+    void** texture
+);
+
+int32_t __stdcall d3dx_create_texture_from_file_ex(
+    void* device,
+    char* path,
+    uint32_t width,
+    uint32_t height,
+    uint32_t mip_levels,
+    uint32_t usage,
+    uint32_t format,
+    uint32_t pool,
+    uint32_t filter,
+    uint32_t mip_filter,
+    uint32_t color_key,
+    void* source_info,
+    void* palette,
+    void** texture
+);
+
+int32_t __stdcall d3dx_create_texture_from_file(
+    void* device,
+    char* path,
+    void** texture
+);
+
+void __thiscall destroy_help_screen(Help* help);
+
+void __thiscall initialize_loading_screen(LoadingBar* loading_bar);
+
+void __thiscall destroy_loading_screen(LoadingBar* loading_bar);
+
+void __thiscall update_loading_screen(LoadingBar* loading_bar);
+
+void __thiscall destroy_options_menu(Options* options);
 
 void __thiscall initialize_subgame(SubgameRuntime* game);
 

@@ -2,62 +2,58 @@
 /* function: destroy_intro_screen @ 0x419920 */
 /* selector: destroy_intro_screen */
 
-// Windows cRLogo::UnInit(): unlinks each active LogoLetter from the BOD lists and returns it to the shared free list before the crawl exits.
-int __thiscall sub_419920(int *this)
+// Exact void Windows cRLogo::UnInit(): unlinks each active LogoLetter from the BOD lists and returns it to the shared free list. Its sole caller discards the loop count left in EAX.
+void __thiscall destroy_intro_screen(Logo *logo)
 {
-  int result; // eax
-  int v3; // edi
-  _DWORD *v4; // esi
-  int v5; // eax
-  char *v6; // ecx
-  int v7; // eax
-  int v8; // eax
+  int32_t v2; // edi
+  struct BodNode **p_list_next; // esi
+  int v4; // eax
+  FrameBodList *p_active_bod_list; // ecx
+  int v6; // eax
+  struct BodNode *v7; // eax
 
-  byte_4DF934 = *(this + 3);
-  if ( *((_BYTE *)MEMORY[0x4DF904] + 781) == 1 )
-    *((_DWORD *)MEMORY[0x4DF904] + 110) = 20;
+  g_runtime_config.render_flags = logo->saved_render_flags;
+  if ( g_game_base->players[0].high_score_entry_pending == 1 )
+    g_game_base->players[0].frontend_state = 20;
   else
-    *((_DWORD *)MEMORY[0x4DF904] + 110) = 3;
-  result = *(this + 5);
-  v3 = 0;
-  if ( result > 0 )
+    g_game_base->players[0].frontend_state = 3;
+  v2 = 0;
+  if ( logo->renderable_count > 0 )
   {
-    v4 = this + 9;
+    p_list_next = &logo->letters[0].renderable.bod.bod.list_next;
     do
     {
-      v5 = *(v4 - 2);
-      v6 = (char *)MEMORY[0x4DF904] + 1448;
-      if ( (v5 & 0x200) != 0 )
+      v4 = (int)*(p_list_next - 2);
+      p_active_bod_list = &g_game_base->active_bod_list;
+      if ( (v4 & 0x200) != 0 )
       {
-        if ( (v5 & 0x40) != 0 )
+        if ( (v4 & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
         }
         else
         {
-          if ( *v4 )
-            *(_DWORD *)(*v4 + 8) = *(v4 - 1);
-          v7 = *(v4 - 1);
-          if ( v7 )
-            *(_DWORD *)(v7 + 12) = *v4;
+          if ( *p_list_next )
+            (*p_list_next)->list_prev = *(p_list_next - 1);
+          v6 = (int)*(p_list_next - 1);
+          if ( v6 )
+            *(_DWORD *)(v6 + 12) = *p_list_next;
           else
-            *((_DWORD *)v6 + 1) = *v4;
-          *v4 = *((_DWORD *)v6 + 2);
-          *((_DWORD *)v6 + 2) = v4 - 3;
-          v8 = *(v4 - 2);
-          BYTE1(v8) &= ~2u;
-          *(v4 - 2) = v8;
+            p_active_bod_list->first = (FrameBodBase *)*p_list_next;
+          *p_list_next = (struct BodNode *)p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (FrameBodBase *)(p_list_next - 3);
+          v7 = *(p_list_next - 2);
+          BYTE1(v7) &= ~2u;
+          *(p_list_next - 2) = v7;
         }
       }
       else
       {
         report_errorf(aListRemove);
       }
-      result = *(this + 5);
-      ++v3;
-      v4 += 36;
+      ++v2;
+      p_list_next += 36;
     }
-    while ( v3 < result );
+    while ( v2 < logo->renderable_count );
   }
-  return result;
 }
