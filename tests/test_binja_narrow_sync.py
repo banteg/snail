@@ -1701,6 +1701,8 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
         "void __thiscall unhide_border_init(FrontendWidget* widget)",
         "void __thiscall unhighlight_border(FrontendWidget* widget)",
         "void __thiscall highlight_border(FrontendWidget* widget)",
+        "void __thiscall border_sprite_extend(FrontendWidget* widget, int32_t sprite_a, int32_t sprite_c, int32_t sprite_b, uint8_t wobble_positive)",
+        "void __thiscall border_input_text_init(FrontendWidget* widget, int32_t capacity, char* text, int32_t flags)",
     )
     for prototype in expected:
         assert prototype not in deferred

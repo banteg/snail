@@ -29,3 +29,11 @@ The exact body also closes the formerly padded tail as cursor index,
 visibility, blink progress/step, input flags, current length, and capacity at
 `+0x6fc..+0x714`. `border_input_text` independently consumes the same seven
 fields.
+
+## 2026-07-15 persisted member ABI
+
+The rollback-safe Binary Ninja replay now applies and independently verifies
+the authored `void cRBorder::InputTextInit(int, char*, int)` contract. IDA
+carries the same typed receiver and three arguments. The exact 46/46 scratch
+and all three clean operands are unchanged, while both analyzers now expose
+the seven-field editor tail instead of a padded byte array.

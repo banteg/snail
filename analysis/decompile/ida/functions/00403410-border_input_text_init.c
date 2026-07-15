@@ -2,29 +2,33 @@
 /* function: border_input_text_init @ 0x403410 */
 /* selector: border_input_text_init */
 
-float *__thiscall border_input_text_init(int this, int a2, char *ArgList, int a4)
+// Stable Windows harness identity for the authored void cRBorder::InputTextInit(int, char*, int) member. It initializes the complete inline editor tail through input_capacity at +0x714, relayouts the border, and optionally initializes its embedded cRInputOK overlay.
+void __thiscall border_input_text_init(FrontendWidget *widget, int32_t capacity, char *text, int32_t flags)
 {
-  _BYTE *v5; // eax
-  float *result; // eax
+  FrontendWidgetTextBuffer *p_text_buffer; // eax
 
-  *(_DWORD *)(this + 1804) = a4;
-  rstrcpy_checked_ascii((char *)(this + 1740), ArgList);
-  v5 = (_BYTE *)(this + 716);
-  *(_DWORD *)(this + 1788) = 0;
-  for ( *(_DWORD *)(this + 1808) = 0; *v5; ++*(_DWORD *)(this + 1788) )
+  widget->input_flags = flags;
+  rstrcpy_checked_ascii((char *)&widget->text_buffer.raw[1024], text);
+  p_text_buffer = &widget->text_buffer;
+  widget->input_cursor = 0;
+  widget->input_length = 0;
+  if ( widget->text_buffer.raw[0] )
   {
-    ++v5;
-    ++*(_DWORD *)(this + 1808);
+    do
+    {
+      p_text_buffer = (FrontendWidgetTextBuffer *)((char *)p_text_buffer + 1);
+      ++widget->input_length;
+      ++widget->input_cursor;
+    }
+    while ( p_text_buffer->raw[0] );
   }
-  *(_BYTE *)(*(_DWORD *)(this + 1788) + this + 716) = 124;
-  *(_BYTE *)(*(_DWORD *)(this + 1788) + this + 717) = 0;
-  *(_DWORD *)(this + 1796) = 0;
-  *(_DWORD *)(this + 1792) = 1;
-  *(_DWORD *)(this + 1812) = a2;
-  *(_DWORD *)(this + 1800) = 1034594987;
-  result = (float *)layout_frontend_widget((FrontendWidget *)this);
-  if ( (a4 & 0xC) != 0 )
-    return (float *)initialize_input_ok(this + 680);
-  return result;
+  widget->text_buffer.raw[widget->input_cursor] = 124;
+  widget->text_buffer.raw[widget->input_cursor + 1] = 0;
+  widget->input_cursor_blink_progress = 0.0;
+  widget->input_cursor_visible = 1;
+  widget->input_capacity = capacity;
+  widget->input_cursor_blink_step = 0.083333336;
+  layout_frontend_widget(widget);
+  if ( (flags & 0xC) != 0 )
+    initialize_input_ok((int)widget->tooltip._pad_1c);
 }
-

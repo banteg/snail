@@ -690,6 +690,107 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_sprite_extend_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00404540-border_sprite_extend.c",
+      "required_substrings": [
+        "widget->background_texture_id = sprite_a",
+        "widget->texture_hit_test_sprite = sprite_b",
+        "widget->sprite_extend_texture_c = sprite_c",
+        "widget->texture_hit_test_enabled = 1",
+        "widget->sprite_wobble_positive = wobble_positive",
+        "widget->target_padding = 0f",
+        "widget->idle_padding = 0f",
+        "widget->hot_padding = 0f",
+        "00404574        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return 0",
+        "*(widget +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_sprite_extend_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00404540-border_sprite_extend.c",
+      "required_substrings": [
+        "void __thiscall border_sprite_extend(",
+        "FrontendWidget *widget",
+        "int32_t sprite_a",
+        "int32_t sprite_c",
+        "int32_t sprite_b",
+        "uint8_t wobble_positive",
+        "widget->sprite_extend_texture_c = sprite_c;",
+        "widget->sprite_wobble_positive = wobble_positive;",
+        "widget->target_padding = 0.0;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall sub_404540",
+        "int this",
+        "widget->_pad_5d",
+        "widget->_pad_68",
+        "return 0",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_input_init_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00403410-border_input_text_init.c",
+      "required_substrings": [
+        "widget->input_flags = flags",
+        "&widget->text_buffer.raw[0x400]",
+        "widget->input_cursor = 0",
+        "widget->input_length = 0",
+        "widget->input_cursor_blink_progress = 0f",
+        "widget->input_cursor_visible = 1",
+        "widget->input_capacity = capacity",
+        "widget->input_cursor_blink_step = 0.0833333358f",
+        "layout_frontend_widget(widget)",
+        "initialize_input_ok(&widget->tooltip._pad_1c)",
+        "004034c5        return"
+      ],
+      "forbidden_substrings": [
+        "_pad_6fc",
+        "arg1",
+        "int32_t result",
+        "return result",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_input_init_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00403410-border_input_text_init.c",
+      "required_substrings": [
+        "void __thiscall border_input_text_init(FrontendWidget *widget, int32_t capacity, char *text, int32_t flags)",
+        "widget->input_flags = flags;",
+        "widget->input_cursor = 0;",
+        "widget->input_length = 0;",
+        "widget->input_cursor_blink_progress = 0.0;",
+        "widget->input_cursor_visible = 1;",
+        "widget->input_capacity = capacity;",
+        "widget->input_cursor_blink_step = 0.083333336;",
+        "layout_frontend_widget(widget);",
+        "initialize_input_ok((int)widget->tooltip._pad_1c);"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall border_input_text_init",
+        "int this",
+        "this +",
+        "return result",
+        "_pad_6fc",
+        "sub_403410",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frontend_widget_input_text_owner",
       "artifact": "analysis/decompile/binja/functions/004035b0-border_input_text.c",
       "required_substrings": [

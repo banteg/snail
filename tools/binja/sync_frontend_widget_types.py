@@ -126,14 +126,6 @@ DEFERRED_PROTO_UPDATES = (
         "void __thiscall initialize_exit_prompt(Exit* exit_prompt)",
     ),
     (
-        "border_sprite_extend",
-        "void __thiscall border_sprite_extend(FrontendWidget* widget, int32_t sprite_a, int32_t sprite_c, int32_t sprite_b, uint8_t wobble_positive)",
-    ),
-    (
-        "border_input_text_init",
-        "void __thiscall border_input_text_init(FrontendWidget* widget, int32_t capacity, char* text, int32_t flags)",
-    ),
-    (
         "draw_frontend_widget",
         "void __thiscall draw_frontend_widget(FrontendWidget* widget)",
     ),
@@ -161,6 +153,14 @@ PROTO_UPDATES = (
     ("unhide_border_init", "void __thiscall unhide_border_init(FrontendWidget* widget)"),
     ("unhighlight_border", "void __thiscall unhighlight_border(FrontendWidget* widget)"),
     ("highlight_border", "void __thiscall highlight_border(FrontendWidget* widget)"),
+    (
+        "border_sprite_extend",
+        "void __thiscall border_sprite_extend(FrontendWidget* widget, int32_t sprite_a, int32_t sprite_c, int32_t sprite_b, uint8_t wobble_positive)",
+    ),
+    (
+        "border_input_text_init",
+        "void __thiscall border_input_text_init(FrontendWidget* widget, int32_t capacity, char* text, int32_t flags)",
+    ),
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
     ("border_input_text", "void __thiscall border_input_text(FrontendWidget* widget)"),
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),

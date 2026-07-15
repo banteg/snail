@@ -21,3 +21,10 @@ sprite lane.
   Windows callers discard EAX; the zero retained there is the source for the
   three stores, not a result contract. The corrected `void` member remains
   exact at 14/14 instructions.
+
+## 2026-07-15 persisted member ABI
+
+The rollback-safe Binary Ninja replay now applies and independently verifies
+the authored `void cRBorder::SpriteExtend(int, int, int, bool)` contract on a
+typed `FrontendWidget*` receiver. IDA carries the same argument ownership. The
+exact 14/14 scratch remains unchanged with no masked operands.

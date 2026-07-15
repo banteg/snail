@@ -969,17 +969,17 @@ Android preserves the adjacent authored API as `cRBorder::HideInit()`,
 Windows state transitions, and every Windows callsite discards EAX. The shared
 members therefore use the real `void` contracts; values left in EAX by the
 Windows store schedules are incidental, not ownership-bearing returns.
-The transactional Binary Ninja replay now persists and verifies the four
-visibility/highlight transitions directly. `SpriteExtend(...)` remains
-deferred because the live session still restores its stale scalar form during
-verification, so the script does not force or misreport it.
+The transactional Binary Ninja replay now persists and verifies all five
+visibility/highlight/sprite-extension members directly, including the three
+texture IDs and wobble byte owned by `SpriteExtend(...)`.
 
 Android also preserves the exact `cRBorder::InputTextInit(int, char*, int)`
 body. Both Windows callers discard EAX, while each platform exits with the
 incidental result of `RePosition()` or `cRInputOK::Init()`. The shared member
 therefore uses the authored `void` contract and names the final `+0x714` lane
-as input capacity. Its Binary Ninja prototype is reported as deferred for the
-same live-session reason as the five adjacent methods.
+as input capacity. The transactional Binary Ninja replay now persists and
+verifies that typed receiver, its three arguments, and the void result
+directly.
 
 The adjacent Windows `border_input_text` body is authored
 `cRBorder::InputText()` in both mobile symbol sets (`0x3b97c` on iOS and
