@@ -35,7 +35,9 @@ static __forceinline void initialize_pair_sample(
 }
 
 static __forceinline void orient_previous_with_up(
-    PathTemplateSample* samples, int current_index, float roll_angle)
+    PathTemplateSample* samples,
+    int current_index,
+    PathTemplateSample* roll_source)
 {
     PathTemplateSample* previous = &samples[current_index - 1];
     PathTemplateSample* current = &samples[current_index];
@@ -54,6 +56,7 @@ static __forceinline void orient_previous_with_up(
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
+    float roll_angle = roll_source->center_x * 0.2617994f;
     previous->transform.rotate_matrix_local_z(roll_angle);
 }
 
@@ -93,8 +96,8 @@ static __forceinline void build_extrapolated_strip_mesh(
     path->strip_mesh->request_object_facequads(
         2 * path->width_cells * path->segment_count);
 
-    Vector3* vertices = path->strip_mesh->vertices;
     ObjectFaceQuad* facequads = path->strip_mesh->facequads;
+    Vector3* vertices = path->strip_mesh->vertices;
 
     int row;
     int column;
@@ -102,18 +105,26 @@ static __forceinline void build_extrapolated_strip_mesh(
     for (row = 0; row <= path->segment_count; ++row) {
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
-            PathTemplateSample* sample = &path->primary_samples[row];
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row == path->segment_count)
-                sample = &path->primary_samples[row - 1];
-
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z
-                + (row == path->segment_count ? 1.0f : 0.0f);
+            if (row == path->segment_count) {
+                PathTemplateSample* previous = &path->primary_samples[row - 1];
+                vertex->x = previous->transform.position.x
+                    + lateral * previous->transform.basis_right.x;
+                vertex->y = previous->transform.position.y
+                    + lateral * previous->transform.basis_right.y;
+                vertex->z = previous->transform.position.z + 1.0f
+                    + lateral * previous->transform.basis_right.z;
+            } else {
+                PathTemplateSample* sample = &path->primary_samples[row];
+                Vector3 generated_position(
+                    sample->transform.position.x
+                        + lateral * sample->transform.basis_right.x,
+                    sample->transform.position.y
+                        + lateral * sample->transform.basis_right.y,
+                    sample->transform.position.z
+                        + lateral * sample->transform.basis_right.z);
+                *vertex = generated_position;
+            }
         }
     }
 
@@ -193,9 +204,9 @@ void Path::initialize_slalombig_path_template_pair(
         primary->special_scalar = 0.0f;
         primary->lateral_scale = 1.0f;
         set_matrix_identity(&primary->transform);
+        float z = (float)i;
         primary->transform.position.x = primary->center_x;
         primary->transform.position.y = 0.0f;
-        float z = (float)i;
         primary->transform.position.z = z;
 
         set_matrix_identity(&secondary->transform);
@@ -204,8 +215,26 @@ void Path::initialize_slalombig_path_template_pair(
         secondary->transform.position.z = z;
     }
 
-    for (i = lead_out_start; i < total_segments; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, (float)i);
+    int departure_index = lead_out_start;
+    do {
+        PathTemplateSample* primary = &primary_samples[departure_index];
+        PathTemplateSample* secondary = &secondary_samples[departure_index];
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        float z = (float)departure_index;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
+        ++departure_index;
+    } while (departure_index - 4 - curve_segments < 4);
 
     for (i = 0; i < curve_segments; ++i) {
         float t = (float)i / (float)curve_segments;
@@ -222,8 +251,9 @@ void Path::initialize_slalombig_path_template_pair(
         float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         int sample_index = i + 4;
         initialize_pair_sample(this, sample_index, center, 0.0f, (float)sample_index);
-        orient_previous_with_up(primary_samples, sample_index, primary_samples[sample_index - 1].center_x * 0.2617994f);
-        orient_previous_with_up(secondary_samples, sample_index, primary_samples[sample_index - 1].center_x * 0.2617994f);
+        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];
+        orient_previous_with_up(primary_samples, sample_index, roll_source);
+        orient_previous_with_up(secondary_samples, sample_index, roll_source);
     }
 
     compute_terminal_deltas(this);

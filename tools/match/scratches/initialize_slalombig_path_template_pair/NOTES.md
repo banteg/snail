@@ -65,3 +65,26 @@ Changing only the terminal stores to address the two `Path` sample arrays
 directly moves focused Wibo from 21.76% (600/696) to 24.69% (608/696), with
 the masked audit unchanged at 25 ok, 0 unresolved, 1 mismatch. This confirms
 terminal-array ownership independently of the constructor-specific loop shape.
+
+2026-07-15 mesh ownership recovery: the native acquires `facequads` before
+`vertices` and emits the extrapolated terminal row separately from ordinary
+rows. Preserving acquisition order is codegen-neutral; separating the row
+branches and materializing the ordinary position as a `Vector3` raises focused
+Wibo from 24.69% (608/696) to 25.82% (621/696), without changing the one
+orientation mismatch.
+
+2026-07-15 departure and roll-source ownership: the four trailing samples now
+advance a mutating departure index, reaching 25.84% (620/696). More
+importantly, `orient_previous_with_up` now owns a pointer to the primary
+previous sample and computes its roll only after completing each lane's frame.
+That keeps the compact helper favored by this target while reproducing the
+native primary-frame/primary-roll then secondary-frame/secondary-roll order.
+Focused Wibo reaches 28.64% (617/696), with 27 clean masked operands and no
+unresolved or mismatched operands.
+
+2026-07-15 rejected follow-ups: moving the width guard and face-column
+`do/while` into explicit source regressed the post-mesh result from 25.82% to
+25.36% without improving the audit. Expanding the curved pair initializer after
+the roll-source recovery regressed the clean result from 28.64% to 27.46%
+(615/696). Both compact forms remain until their surrounding lifetimes provide
+stronger evidence.

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**622/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **98410/317040** bytes (**31.04%**) are proof-grade, and overall fuzzy is **74.24%**.
+**622/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **98410/317040** bytes (**31.04%**) are proof-grade, and overall fuzzy is **74.27%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -791,7 +791,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 600/655 | 34.74% | 0/655 | 1 mismatch, 25 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 619/685 | 39.88% | 0/685 | 32 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 627/696 | 28.42% | 0/696 | 27 ok |  |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 608/696 | 24.69% | 0/696 | 1 mismatch, 25 ok |  |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 617/696 | 28.64% | 0/696 | 27 ok |  |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 559/652 | 32.70% | 0/652 | 34 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 562/652 | 30.15% | 0/652 | 37 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 538/552 | 43.49% | 15/552 | 1 mismatch, 22 ok |  |
