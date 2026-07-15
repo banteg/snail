@@ -10,16 +10,16 @@
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "draw_frontend_widget",
-      "address": "0x401130"
+      "name": "update_frontend_widget_interaction",
+      "address": "0x402820"
     }
   ],
-  "health_check_count": 218,
+  "health_check_count": 220,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

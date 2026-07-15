@@ -2,17 +2,17 @@
 /* function: update_frontend_widget_interaction @ 0x402820 */
 /* selector: update_frontend_widget_interaction */
 
-// Runs one front-end widget's per-frame interaction state, including hover easing, delayed click-bit dispatch, slider-arrow adjustments, bounds refresh, and draw.
+// Authored void `cRBorder::AI()`: slot-zero per-frame callback for one complete front-end border/widget owner. The Android and iOS bodies preserve the Windows flag snapshot, active-list removal, mouse/shortcut dispatch, tooltip and twinkle updates, RePosition/Draw calls, sound IDs 8/9, text input, and slider-child propagation. The Windows active-BOD dispatcher ignores callback results; the honest scratch remains 68.32% with all 93 audited operands clean.
 void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
 {
-  uint32_t v2; // edx
-  uint32_t widget_flags; // eax
+  FrontendWidgetFlag v2; // edx
+  FrontendWidgetFlag widget_flags; // eax
   uint32_t list_flags; // eax
-  char *v5; // ecx
+  FrameBodList *p_active_bod_list; // ecx
   FrontendWidget *list_next; // eax
   FrontendWidget *list_prev; // eax
   uint32_t v8; // eax
-  char *v9; // ecx
+  FrameBodList *v9; // ecx
   uint32_t v10; // eax
   FrontendWidget *v11; // eax
   FrontendWidget *v12; // eax
@@ -21,38 +21,38 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   FrontendWidget *v15; // eax
   FrontendWidget *v16; // eax
   uint32_t v17; // eax
-  uint32_t v18; // eax
-  uint32_t v19; // ecx
-  uint32_t v20; // eax
-  uint32_t v21; // eax
-  uint32_t v22; // eax
-  uint32_t v23; // eax
-  uint32_t v24; // eax
-  _DWORD *v25; // ecx
-  uint32_t v26; // eax
-  uint32_t v27; // edx
-  uint32_t v28; // eax
-  uint32_t v29; // eax
+  FrontendWidgetFlag v18; // eax
+  FrontendWidgetFlag v19; // ecx
+  FrontendWidgetFlag v20; // eax
+  FrontendWidgetFlag v21; // eax
+  FrontendWidgetFlag v22; // eax
+  FrontendWidgetFlag v23; // eax
+  FrontendWidgetFlag v24; // eax
+  GameRoot *v25; // ecx
+  FrontendWidgetFlag v26; // eax
+  FrontendWidgetFlag v27; // edx
+  FrontendWidgetFlag v28; // eax
+  FrontendWidgetFlag v29; // eax
   double v30; // st7
   double v31; // st7
   double v32; // st7
-  double v33; // st6
-  uint32_t v34; // eax
+  double v33; // st7
+  FrontendWidgetFlag v34; // eax
   float authored_top; // eax
   float authored_width; // ecx
   float authored_height; // edx
-  int32_t mouse_settle_frames; // eax
+  int32_t mouse_history_warmup_frames; // eax
   FrontendWidget *slider_more_widget; // ecx
-  uint32_t v40; // eax
+  FrontendWidgetFlag v40; // eax
   double v41; // st7
   FrontendWidget *slider_less_widget; // ecx
-  uint32_t v43; // eax
+  FrontendWidgetFlag v43; // eax
   double v44; // st7
   FrontendWidget *v45; // eax
-  uint32_t v46; // edx
+  FrontendWidgetFlag v46; // edx
   FrontendWidget *v47; // eax
-  uint32_t v48; // ecx
-  Color4f *p_current_text_color; // ecx
+  FrontendWidgetFlag v48; // ecx
+  tColour *p_current_text_color; // ecx
   float r; // [esp+0h] [ebp-24h]
   float ra; // [esp+0h] [ebp-24h]
   float g; // [esp+4h] [ebp-20h]
@@ -61,7 +61,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   float ba; // [esp+8h] [ebp-1Ch]
   float a; // [esp+Ch] [ebp-18h]
   float aa; // [esp+Ch] [ebp-18h]
-  char v58; // [esp+1Ch] [ebp-8h]
+  uint8_t v58; // [esp+1Ch] [ebp-8h]
 
   widget->previous_widget_flags = widget->widget_flags;
   v2 = widget->widget_flags & 0xFFFDFFFF;
@@ -79,7 +79,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   if ( !widget_flags )
   {
     list_flags = widget->list_flags;
-    v5 = (char *)MEMORY[0x4DF904] + 1448;
+    p_active_bod_list = &g_game_base->active_bod_list;
     if ( (list_flags & 0x200) != 0 )
     {
       if ( (list_flags & 0x40) != 0 )
@@ -96,9 +96,9 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
         if ( list_prev )
           list_prev->list_next = widget->list_next;
         else
-          *((_DWORD *)v5 + 1) = widget->list_next;
-        widget->list_next = *((FrontendWidget **)v5 + 2);
-        *((_DWORD *)v5 + 2) = widget;
+          p_active_bod_list->first = (FrameBodBase *)widget->list_next;
+        widget->list_next = (FrontendWidget *)p_active_bod_list->free_top;
+        p_active_bod_list->free_top = (FrameBodBase *)widget;
         v8 = widget->list_flags;
         BYTE1(v8) &= ~2u;
         widget->list_flags = v8;
@@ -112,11 +112,11 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
     }
     return;
   }
-  if ( (widget_flags & 0x200) != 0 )
+  if ( (BYTE1(widget_flags) & 2) != 0 )
   {
     BYTE1(widget_flags) &= ~2u;
     widget->widget_flags = widget_flags;
-    v9 = (char *)MEMORY[0x4DF904] + 1448;
+    v9 = &g_game_base->active_bod_list;
     v10 = widget->list_flags;
     if ( (v10 & 0x200) == 0 )
     {
@@ -141,8 +141,8 @@ LABEL_18:
     {
       v12->list_next = widget->list_next;
 LABEL_32:
-      widget->list_next = *((FrontendWidget **)v9 + 2);
-      *((_DWORD *)v9 + 2) = widget;
+      widget->list_next = (FrontendWidget *)v9->free_top;
+      v9->free_top = (FrameBodBase *)widget;
       v17 = widget->list_flags;
       BYTE1(v17) &= ~2u;
       widget->list_flags = v17;
@@ -150,11 +150,11 @@ LABEL_32:
     }
     goto LABEL_31;
   }
-  if ( (widget_flags & 0x400) == 0 )
+  if ( (BYTE1(widget_flags) & 4) == 0 )
   {
-    if ( (widget_flags & 0x1000) != 0 )
+    if ( (BYTE1(widget_flags) & 0x10) != 0 )
       return;
-    if ( (widget_flags & 0x8000) != 0 )
+    if ( SBYTE1(widget_flags) < 0 )
     {
       widget->text_effect_target = 0.0;
       v18 = widget->widget_flags;
@@ -167,14 +167,14 @@ LABEL_82:
       widget->hover_blend_target = 1.0;
     v19 = widget->widget_flags;
     if ( (v19 & 0x2000000) != 0
-      && !widget->mouse_settle_frames
-      && (*((float *)MEMORY[0x4DF904] + 167) != widget->previous_mouse_x
-       || *((float *)MEMORY[0x4DF904] + 168) != widget->previous_mouse_y) )
+      && !widget->mouse_history_warmup_frames
+      && (g_game_base->players[0].mouse_cursor.saved_x != widget->previous_mouse_x
+       || g_game_base->players[0].mouse_cursor.saved_y != widget->previous_mouse_y) )
     {
       widget->widget_flags = v19 | 0x4000000;
     }
     if ( (widget->widget_flags & 0x80000) != 0
-      && is_mouse_captured((char *)MEMORY[0x4DF904] + 656)
+      && is_mouse_captured(&g_game_base->players[0].mouse_cursor)
       && read_pressed_text_input_key_code() == widget->shortcut_key_code )
     {
       reset_tooltip(&widget->tooltip);
@@ -186,10 +186,10 @@ LABEL_82:
       }
       else
       {
-        queue_frontend_widget_flag_after_delay((int)MEMORY[0x4DF904] + 2892, (int)widget, 32);
+        queue_frontend_widget_flag_after_delay((int)&g_game_base->unknown_000b48[4], (int)widget, 32);
       }
     }
-    if ( !is_mouse_captured((char *)MEMORY[0x4DF904] + 656) || !border_mouse_test((int)widget) )
+    if ( !is_mouse_captured(&g_game_base->players[0].mouse_cursor) || !border_mouse_test(widget) )
     {
       v27 = widget->widget_flags & 0xFFDFFFFF;
       widget->widget_flags = v27;
@@ -222,12 +222,13 @@ LABEL_82:
     v24 = widget->widget_flags;
     if ( (v24 & 0x10) != 0 )
     {
-      v25 = MEMORY[0x4DF904];
-      if ( *((_BYTE *)MEMORY[0x4DF904] + 278764) || (*(_BYTE *)(*((_DWORD *)MEMORY[0x4DF904] + 163) + 61) & 0x40) == 0 )
+      v25 = g_game_base;
+      if ( g_game_base->unknown_000b48[275876]
+        || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) == 0 )
       {
 LABEL_72:
         v26 = widget->widget_flags;
-        if ( (v26 & 0x40) != 0 && *(char *)(v25[163] + 61) < 0 )
+        if ( (v26 & 0x40) != 0 && (v25->players[0].game_input->input.pressed_buttons & 0x8000) != 0 )
         {
           if ( (v26 & 0x1000000) != 0 )
           {
@@ -236,7 +237,7 @@ LABEL_72:
           }
           else
           {
-            queue_frontend_widget_flag_after_delay((int)(v25 + 723), (int)widget, 128);
+            queue_frontend_widget_flag_after_delay((int)&v25->unknown_000b48[4], (int)widget, 128);
           }
           play_sound_effect(8);
           reset_tooltip(&widget->tooltip);
@@ -250,21 +251,21 @@ LABEL_72:
       }
       else
       {
-        queue_frontend_widget_flag_after_delay((int)MEMORY[0x4DF904] + 2892, (int)widget, 32);
+        queue_frontend_widget_flag_after_delay((int)&g_game_base->unknown_000b48[4], (int)widget, 32);
       }
       if ( ((unsigned int)&unk_800000 & widget->widget_flags) == 0 )
         play_sound_effect(8);
       if ( (widget->tooltip.mode_flags & 0x20) == 0 )
         reset_tooltip(&widget->tooltip);
     }
-    v25 = MEMORY[0x4DF904];
+    v25 = g_game_base;
     goto LABEL_72;
   }
-  v13 = widget->aux_step + widget->aux_progress;
-  widget->aux_progress = v13;
+  v13 = widget->teardown_progress_step + widget->teardown_progress;
+  widget->teardown_progress = v13;
   if ( v13 > 1.0 )
   {
-    v9 = (char *)MEMORY[0x4DF904] + 1448;
+    v9 = &g_game_base->active_bod_list;
     v14 = widget->list_flags;
     if ( (v14 & 0x200) == 0 )
       goto LABEL_16;
@@ -280,12 +281,12 @@ LABEL_72:
       goto LABEL_32;
     }
 LABEL_31:
-    *((_DWORD *)v9 + 1) = widget->list_next;
+    v9->first = (FrameBodBase *)widget->list_next;
     goto LABEL_32;
   }
 LABEL_83:
   v28 = widget->widget_flags;
-  if ( (v28 & 0x8000) != 0 )
+  if ( SBYTE1(v28) < 0 )
   {
     widget->widget_flags = v28 & 0xFFDFFFFF;
     unhighlight_border(widget);
@@ -313,16 +314,16 @@ LABEL_83:
   }
   if ( (widget->widget_flags & 0x2000) != 0 )
   {
-    if ( is_mouse_captured((char *)MEMORY[0x4DF904] + 656) )
+    if ( is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
     {
       border_input_text((int)widget);
       if ( (widget->widget_flags & 0x2000) == 0 )
-        activate_all_borders((int *)MEMORY[0x4DF904] + 723);
+        activate_all_borders((int *)&g_game_base->unknown_000b48[4]);
     }
   }
-  update_twinkle_manager(widget->_pad_80);
+  update_twinkle_manager((float *)widget->twinkle_manager.twinkles);
   update_tooltip(&widget->tooltip);
-  v58 = BYTE1(widget->widget_flags) & 1;
+  v58 = ((unsigned __int16)widget->widget_flags >> 8) & 1;
   layout_frontend_widget(widget);
   if ( (widget->widget_flags & 0x1000) == 0 )
   {
@@ -339,7 +340,7 @@ LABEL_83:
     ra = widget->hover_blend_current * widget->hot_text_color.r + v33 * widget->idle_text_color.r;
     store_color4f(&widget->current_text_color, ra, ga, ba, aa);
     v34 = widget->widget_flags;
-    if ( (v34 & 0x8000) != 0 )
+    if ( SBYTE1(v34) < 0 )
     {
       widget->current_text_color.r = widget->current_text_color.r * 0.5;
       widget->current_text_color.g = widget->current_text_color.g * 0.5;
@@ -350,7 +351,7 @@ LABEL_83:
       widget->current_fill_color.b = widget->current_fill_color.b * 0.5;
       widget->current_fill_color.a = widget->current_fill_color.a * 0.5;
     }
-    if ( (v34 & 0x800) == 0 )
+    if ( (BYTE1(v34) & 8) == 0 )
     {
       if ( (v34 & 0x10000) != 0 )
       {
@@ -367,30 +368,30 @@ LABEL_83:
         layout_and_queue_wrapped_font_text(
           (char *)&widget->text_buffer,
           widget->font_id,
-          LODWORD(widget->font_scale),
+          widget->font_scale,
           widget->layout_anchor_x,
           widget->layout_anchor_y,
           &widget->layout_left,
           &widget->layout_top,
           &widget->layout_width,
           &widget->layout_height,
-          LODWORD(widget->text_effect_current),
-          unk_4DF935 & 1,
+          widget->text_effect_current,
+          BYTE1(g_runtime_config.render_flags) & 1,
           widget->text_alignment,
-          LODWORD(widget->anchor_x),
-          0x1000000,
-          (int)&widget->current_text_color,
+          widget->anchor_x,
+          0x1000000u,
+          &widget->current_text_color,
           0,
           v58);
       }
     }
-    draw_frontend_widget((int)widget);
+    draw_frontend_widget(widget);
   }
-  mouse_settle_frames = widget->mouse_settle_frames;
-  if ( mouse_settle_frames )
-    widget->mouse_settle_frames = mouse_settle_frames - 1;
-  widget->previous_mouse_x = *((float *)MEMORY[0x4DF904] + 167);
-  widget->previous_mouse_y = *((float *)MEMORY[0x4DF904] + 168);
+  mouse_history_warmup_frames = widget->mouse_history_warmup_frames;
+  if ( mouse_history_warmup_frames )
+    widget->mouse_history_warmup_frames = mouse_history_warmup_frames - 1;
+  widget->previous_mouse_x = g_game_base->players[0].mouse_cursor.saved_x;
+  widget->previous_mouse_y = g_game_base->players[0].mouse_cursor.saved_y;
   if ( (widget->widget_flags & 0x100000) != 0 )
   {
     slider_more_widget = widget->slider_more_widget;
@@ -446,4 +447,3 @@ LABEL_83:
       (unsigned int)(__int64)(widget->slider_position_target * 100.0 + 0.1));
   }
 }
-

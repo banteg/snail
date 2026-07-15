@@ -346,6 +346,48 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_ai_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00402820-update_frontend_widget_interaction.c",
+      "required_substrings": [
+        "widget->previous_widget_flags",
+        "&g_game_base->active_bod_list",
+        "queue_frontend_widget_flag_after_delay(&g_game_base->border_manager, widget",
+        "border_input_text(widget)",
+        "update_twinkle_manager(&widget->twinkle_manager)",
+        "draw_frontend_widget(widget)",
+        "widget->slider_value_widget->current_text_color"
+      ],
+      "forbidden_substrings": [
+        "*(widget +",
+        "arg1",
+        "data_4df904",
+        "__offset(",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_ai_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00402820-update_frontend_widget_interaction.c",
+      "required_substrings": [
+        "void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)",
+        "widget->previous_widget_flags",
+        "widget->slider_position_target",
+        "widget->tooltip.mode_flags",
+        "widget->current_fill_color",
+        "widget->current_text_color",
+        "widget->slider_less_widget",
+        "widget->slider_more_widget",
+        "widget->slider_value_widget"
+      ],
+      "forbidden_substrings": [
+        "sub_402820",
+        "int this",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_high_score_subgame_record_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00416910-initialize_high_score_screen.c",
       "required_substrings": [

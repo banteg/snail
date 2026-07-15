@@ -2096,7 +2096,7 @@
         "off_497308",
         "data_497308"
       ],
-      "description": "Front-end widget/border callback table installed by initialize_border_record; first entry is `update_frontend_widget_interaction`."
+      "description": "Authored cRBorder callback table installed by initialize_border_record; its slot-zero `cRBorder::AI()` entry is retained as `update_frontend_widget_interaction`."
     },
     {
       "address": "0x49730c",

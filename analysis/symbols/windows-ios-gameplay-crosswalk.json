@@ -83,6 +83,15 @@
       "notes": "Android preserves the same hover-target raise and hot-padding selection. Windows callsites discard EAX, proving the copied padding bits are incidental; the void member remains exact at 4/4 instructions."
     },
     {
+      "address": "0x402820",
+      "windows_name": "update_frontend_widget_interaction",
+      "ios_symbol": "cRBorder::AI()",
+      "android_symbol": "cRBorder::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android and iOS preserve the same cRBorder flag snapshot, active-list removal, mouse and shortcut dispatch, tooltip/twinkle/RePosition/Draw sequence, sound IDs 8/9, text-input branch, and slider-child propagation. Windows exposes this body only through the cRBorder slot-zero callback table, and run_frame_update invokes that slot through the shared void AI contract."
+    },
+    {
       "address": "0x403410",
       "windows_name": "border_input_text_init",
       "android_symbol": "cRBorder::InputTextInit(int, char*, int)",

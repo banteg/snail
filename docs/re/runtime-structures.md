@@ -948,10 +948,20 @@ inferred from nearby behavior.
 Conservative current read:
 
 - `layout_frontend_widget` owns the authored/live/clamped rect lane plus slider hit bounds
-- `update_frontend_widget_interaction` owns the hover blend, padding interpolation, shortcut dispatch, tooltip updates, and slider child propagation
+- `update_frontend_widget_interaction` is the authored `cRBorder::AI()` slot-zero
+  callback and owns the hover blend, padding interpolation, shortcut dispatch,
+  tooltip updates, and slider child propagation
 - `initialize_frontend_widget` seeds the shared color/style banks, render inset controls, font/layout anchors, and slider child widgets
 - exact `border_input_text_init` initializes the seven-field editor tail at `+0x6fc..+0x714`; `border_input_text` consumes the same cursor, blink, filter, length, and capacity state
 - `text_buffer` should stay opaque for now; the full `0x420` block is consumed by widget text/layout helpers and text-input init, not just by plain C-string calls
+
+The unstripped Android `cRBorder::AI()` body and the iOS `Border.o` function at
+`0x3c410` independently preserve the same field offsets and call sequence as
+Windows: active-list removal, `MouseTest`, delayed clicks, sound IDs 8/9,
+tooltip and twinkle updates, `RePosition`, `Draw`, `InputText`, and slider-child
+propagation. Windows installs `0x402820` in the border callback table and the
+active-BOD loop invokes slot zero through its shared void AI contract. This is
+class and ABI provenance; it does not inflate the still-partial byte match.
 
 Android preserves the adjacent authored API as `cRBorder::HideInit()`,
 `UnHideInit()`, `Highlight()`, `UnHighlight()`, and

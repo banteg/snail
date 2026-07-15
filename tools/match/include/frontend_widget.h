@@ -30,7 +30,7 @@ enum FrontendWidgetFlag {
 // begin at +0x38.
 class FrontendWidget : public BodBase {
 public:
-    void draw_frontend_widget(); // @ 0x401130
+    void draw_frontend_widget(); // @ 0x401130, iOS/Android cRBorder::Draw()
     void hide_border_init(); // @ 0x4010e0, Android cRBorder::HideInit()
     void unhide_border_init(); // @ 0x401110, Android cRBorder::UnHideInit()
     void highlight_border(); // @ 0x402800, Android cRBorder::Highlight()
@@ -48,7 +48,8 @@ public:
     void border_sprite_extend(int sprite_a, int sprite_c, int sprite_b,
         char flag); // @ 0x404540, Android cRBorder::SpriteExtend(int, int, int, bool)
     unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
-    void update_frontend_widget_interaction(); // @ 0x402820
+    void update_frontend_widget_interaction(); // @ 0x402820,
+        // iOS/Android cRBorder::AI()
     void initialize_frontend_widget(int flags, char* text, int widget_type,
         float x, float y, tColour* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,

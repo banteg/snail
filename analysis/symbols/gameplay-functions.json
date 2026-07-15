@@ -67,7 +67,7 @@
     {
       "address": "0x402820",
       "name": "update_frontend_widget_interaction",
-      "description": "Runs one front-end widget's per-frame interaction state, including hover easing, delayed click-bit dispatch, slider-arrow adjustments, bounds refresh, and draw."
+      "description": "Authored void `cRBorder::AI()`: slot-zero per-frame callback for one complete front-end border/widget owner. The Android and iOS bodies preserve the Windows flag snapshot, active-list removal, mouse/shortcut dispatch, tooltip and twinkle updates, RePosition/Draw calls, sound IDs 8/9, text input, and slider-child propagation. The Windows active-BOD dispatcher ignores callback results; the honest scratch remains 68.32% with all 93 audited operands clean."
     },
     {
       "address": "0x4032a0",

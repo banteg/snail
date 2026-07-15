@@ -184,3 +184,40 @@ checked-in `FrontendWidget` analysis header and the narrow Binary Ninja replay.
 Both `widget_flags +0x1a0` and `previous_widget_flags +0x1a4` carry the shared
 enum on the exact 0x724-byte live owner. The matcher remains byte-identical;
 unproven interaction/style bits deliberately stay numeric.
+
+## 2026-07-15 authored cRBorder AI ownership
+
+The mobile binaries close the original class identity without relying on a
+name-only match:
+
+- the iOS `Border.o` function `cRBorder::AI()` spans `0x3c410..0x3d14f` and
+  calls `cRBorder::MouseTest`, `cRToolTip::AI`, `cRTwinkle::AI`,
+  `cRBorder::RePosition`, `cRBorder::Draw`, `cRBorder::InputText`, and
+  `cRSound::Play`; its sound immediates and branches retain the Windows 8/9
+  activation/hover roles;
+- the unstripped Android `cRBorder::AI()` at `0x55948` preserves the Windows
+  `+0x194/+0x198` flag snapshot, `+0x170/+0x174` slider easing, three
+  active-list removals, delayed-click manager calls, text/color interpolation,
+  input editor, and `+0x710..+0x720` slider-child tail;
+- Windows has no direct call xrefs to `0x402820`: its only reference is the
+  slot at `g_frontend_widget_vtable +0`, installed by
+  `initialize_border_record`. Exact `run_frame_update` invokes every active
+  BOD's slot zero as `void (__thiscall *)(FrameBodBase*)`, then advances to the
+  saved successor without consuming EAX.
+
+The Android decompiler's guessed `float` prototype merely propagates whatever
+callee result happens to survive each exit; it is not source ABI evidence. The
+shared slot-zero dispatch and cross-port class identity support the authored
+void `cRBorder::AI()` contract already present in both analysis databases.
+This pass changes ownership metadata and guards only: the scratch remains the
+honest 68.32%, 644/647-instruction partial with a one-instruction prefix and all
+93 masked operands clean. No register coercion or result-producing return was
+introduced.
+
+The focused tracked export also reanalyzed Binary Ninja's prior
+`ExceedFunctionAnalysisTime` skip and recovered the complete high-level body
+instead of the former prototype-only stub. That artifact now independently
+shows the same `FrontendWidget`, `GameRoot::active_bod_list`, player cursor,
+`BorderManager`, twinkle, tooltip, and slider-child owner graph as IDA; focused
+health checks guard both lanes against falling back to raw offsets or an
+anonymous receiver.
