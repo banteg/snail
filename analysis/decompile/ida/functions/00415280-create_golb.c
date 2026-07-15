@@ -2,464 +2,464 @@
 /* function: create_golb @ 0x415280 */
 /* selector: create_golb */
 
-// Initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before the actor enters `update_golb_ai`.
-int __thiscall create_golb(char *this, int a2, int32_t a3, int a4)
+// Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and the independent iOS body establish no result contract.
+void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_selector, int32_t emitter_index)
 {
-  char *v5; // eax
-  int v6; // ecx
-  int v7; // ecx
-  int v8; // eax
-  int v9; // eax
-  float *v10; // edi
+  FrameBodBase **p_first; // eax
+  FrameBodBase *first; // ecx
+  FrameBodBase *list_prev; // ecx
+  uint32_t movement_flags; // eax
+  Player *owner_player; // eax
+  Vec4 *p_position; // edi
   double v11; // st7
-  double v12; // st7
-  int v13; // ecx
-  int v14; // eax
+  Player *v12; // ecx
+  uint32_t v13; // eax
+  double v14; // st7
   double v15; // st7
   float v16; // eax
   double v17; // st7
   float v18; // edx
-  double v19; // st7
+  double x; // st7
+  double v20; // st7
   float g; // eax
-  float v21; // edx
-  float v22; // ecx
-  float *v23; // edx
-  double v24; // st7
-  float b; // ecx
+  float v22; // edx
+  double v23; // st7
+  float v24; // ecx
+  Vec3 *snail_hotspots_world; // edx
   double v26; // st7
-  float v27; // eax
-  float v28; // edx
-  float v29; // ecx
-  int v30; // eax
-  int v31; // eax
-  int v32; // ecx
-  char *v33; // ecx
-  char *v34; // eax
-  int v35; // edx
-  int v36; // edx
-  int v37; // eax
-  ContactTargetRegistry *v38; // ecx
-  ContactTargetEntry *v39; // eax
+  double v27; // st7
+  float b; // ecx
+  double v29; // st7
+  float v30; // eax
+  double v31; // st7
+  float v32; // edx
+  double v33; // st7
+  float v34; // ecx
+  int32_t kind; // eax
+  int v36; // eax
+  SubgameRuntime *game; // ecx
+  double v38; // st7
+  RenderableBod *p_tertiary_body; // ecx
+  FrameBodBase **v40; // eax
+  FrameBodBase *v41; // edx
+  FrameBodBase *v42; // edx
+  uint32_t list_flags; // eax
+  EnemyManager *p_enemy_manager; // ecx
+  ContactTargetEntry *v45; // eax
   ContactTargetObject *object; // ecx
-  int32_t list_flags; // edx
-  Vec3 *p_position; // eax
+  int32_t v47; // edx
+  Vec3 *v48; // eax
   float z; // eax
-  int v44; // ecx
-  char *v45; // ebp
-  double v46; // st7
-  char *v47; // eax
-  int v48; // eax
-  int v49; // ecx
-  int v50; // edx
+  SubgameRuntime *v50; // ecx
+  RenderableBod *p_secondary_body; // ebp
+  double v52; // st7
+  BodBase *p_golb_vapour_list_head; // eax
+  struct BodNode *list_next; // eax
+  SubgameRuntime *v55; // ecx
+  Player *v56; // edx
   _DWORD *sprite; // eax
-  _DWORD *v52; // eax
-  int v53; // ecx
-  int v54; // eax
-  float v55; // eax
-  int v56; // ecx
-  int v57; // eax
+  char *v58; // eax
+  Player *v59; // ecx
+  float v60; // eax
+  double v61; // st7
+  float v62; // eax
+  float y; // ecx
+  float v64; // eax
   Color4f color; // [esp+Ch] [ebp-10h] BYREF
 
-  *(this + 444) = 0;
-  *(this + 445) = 0;
-  if ( (*((_DWORD *)this + 1) & 0x200) != 0 )
+  shot->skip_one_tick = 0;
+  shot->slug_bounce_armed = 0;
+  if ( (shot->primary_body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
   else
   {
-    v5 = (char *)g_game_base + 1452;
-    v6 = *((_DWORD *)g_game_base + 363);
-    if ( v6 )
+    p_first = &g_game_base->active_bod_list.first;
+    first = g_game_base->active_bod_list.first;
+    if ( first )
     {
-      *(_DWORD *)(v6 + 8) = this;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v5 + 8) + 12) = *(_DWORD *)v5;
-      v7 = *(_DWORD *)(*(_DWORD *)v5 + 8);
-      *(_DWORD *)v5 = v7;
-      *(_DWORD *)(v7 + 8) = 0;
+      first->bod.list_prev = (FrameBodBase *)shot;
+      (*p_first)->bod.list_prev->bod.list_next = *p_first;
+      list_prev = (*p_first)->bod.list_prev;
+      *p_first = list_prev;
+      list_prev->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v5 = this;
-      *((_DWORD *)this + 2) = 0;
-      *(_DWORD *)(*(_DWORD *)v5 + 12) = 0;
+      *p_first = (FrameBodBase *)shot;
+      shot->primary_body.bod.bod.list_prev = nullptr;
+      (*p_first)->bod.list_next = nullptr;
     }
-    *((_DWORD *)this + 1) |= 0x200u;
+    shot->primary_body.bod.bod.list_flags |= 0x200u;
   }
-  *((_DWORD *)this + 158) = a2;
-  v8 = *(_DWORD *)(a2 + 824);
-  if ( (v8 & 7) != 0 )
+  shot->owner_player = player;
+  movement_flags = player->movement_flags;
+  if ( (movement_flags & 7) != 0 )
   {
-    *((_DWORD *)this + 112) = 0;
+    shot->kind = 0;
   }
-  else if ( (v8 & 0x18) != 0 )
+  else if ( (movement_flags & 0x18) != 0 )
   {
-    *((_DWORD *)this + 112) = 1;
+    shot->kind = 1;
   }
-  else if ( (v8 & 0x60) != 0 )
+  else if ( (movement_flags & 0x60) != 0 )
   {
-    *((_DWORD *)this + 112) = 2;
+    shot->kind = 2;
   }
-  set_matrix_identity((TransformMatrix *)(this + 636));
-  v9 = *((_DWORD *)this + 158);
-  v10 = (float *)(this + 500);
-  *((_DWORD *)this + 145) = 1;
-  *((_DWORD *)this + 125) = *(_DWORD *)(v9 + 104);
-  *((_DWORD *)this + 126) = *(_DWORD *)(v9 + 108);
-  *((_DWORD *)this + 127) = *(_DWORD *)(v9 + 112);
-  v11 = *(float *)(v9 + 88) * 0.5;
-  color.g = *(float *)(v9 + 92) * 0.5;
-  color.b = *(float *)(v9 + 96) * 0.5;
-  *((float *)this + 125) = v11 + *((float *)this + 125);
-  *((float *)this + 126) = color.g + *((float *)this + 126);
-  v12 = color.b + *((float *)this + 127);
-  *((float *)this + 127) = v12;
-  v13 = *((_DWORD *)this + 158);
-  v14 = *(_DWORD *)(v13 + 824);
-  if ( (v14 & 5) != 0 )
+  set_matrix_identity(&shot->source_matrix);
+  owner_player = shot->owner_player;
+  p_position = &shot->flight_transform.position;
+  shot->state = 1;
+  shot->flight_transform.position.x = owner_player->body.transform.position.x;
+  shot->flight_transform.position.y = owner_player->body.transform.position.y;
+  shot->flight_transform.position.z = owner_player->body.transform.position.z;
+  v11 = owner_player->body.transform.basis_forward.x * 0.5;
+  color.g = owner_player->body.transform.basis_forward.y * 0.5;
+  color.b = owner_player->body.transform.basis_forward.z * 0.5;
+  shot->flight_transform.position.x = v11 + shot->flight_transform.position.x;
+  shot->flight_transform.position.y = color.g + shot->flight_transform.position.y;
+  shot->flight_transform.position.z = color.b + shot->flight_transform.position.z;
+  v12 = shot->owner_player;
+  v13 = v12->movement_flags;
+  if ( (v13 & 5) != 0 )
   {
-    switch ( a3 )
+    switch ( spawn_selector )
     {
       case 3:
-        v23 = (float *)(v13 + 16692);
+        snail_hotspots_world = v12->presentation.snail_hotspots_world;
         break;
       case 2:
-        v23 = (float *)(v13 + 16716);
+        snail_hotspots_world = &v12->presentation.snail_hotspots_world[2];
         break;
       case 1:
-        v23 = (float *)(v13 + 16740);
+        snail_hotspots_world = &v12->presentation.snail_hotspots_world[4];
         break;
       default:
 LABEL_43:
-        if ( (*(_BYTE *)(v13 + 824) & 4) == 0 )
+        if ( (v12->movement_flags & 4) == 0 )
           goto LABEL_50;
-        if ( a3 == 3 )
+        if ( spawn_selector == 3 )
         {
-          v24 = *(float *)(v13 + 1048) + 1.0;
+          v26 = v12->velocity.z + 1.0;
           color.r = 0.1;
           color.g = 0.0;
-          color.b = v24;
-          v12 = *v10 + 0.5;
-          *((_DWORD *)this + 147) = 1036831949;
+          color.b = v26;
+          v27 = p_position->x + 0.5;
+          shot->velocity.x = 0.1;
           b = color.b;
-          *((_DWORD *)this + 148) = 0;
-          *v10 = v12;
-          *((float *)this + 149) = b;
+          shot->velocity.y = 0.0;
+          p_position->x = v27;
+          shot->velocity.z = b;
           goto LABEL_51;
         }
-        if ( a3 != 2 )
+        if ( spawn_selector != 2 )
         {
-          v12 = *(float *)(v13 + 1048) + 1.0;
+          v31 = v12->velocity.z + 1.0;
           color.r = 0.0;
           color.g = 0.0;
-          *((_DWORD *)this + 147) = 0;
-          color.b = v12;
-          v28 = color.b;
-          *((_DWORD *)this + 148) = 0;
-          *((float *)this + 149) = v28;
+          shot->velocity.x = 0.0;
+          color.b = v31;
+          v32 = color.b;
+          shot->velocity.y = 0.0;
+          shot->velocity.z = v32;
           goto LABEL_51;
         }
-        v26 = *(float *)(v13 + 1048) + 1.0;
+        v29 = v12->velocity.z + 1.0;
         color.r = -0.1;
         color.g = 0.0;
-        *((_DWORD *)this + 147) = -1110651699;
-        color.b = v26;
-        v27 = color.b;
-        *((_DWORD *)this + 148) = 0;
-        v19 = *v10;
-        *((float *)this + 149) = v27;
+        shot->velocity.x = -0.1;
+        color.b = v29;
+        v30 = color.b;
+        shot->velocity.y = 0.0;
+        x = p_position->x;
+        shot->velocity.z = v30;
 LABEL_48:
-        v12 = v19 - 0.5;
-        *v10 = v12;
+        p_position->x = x - 0.5;
         goto LABEL_51;
     }
-    *v10 = *v23;
-    *((float *)this + 126) = v23[1];
-    *((float *)this + 127) = v23[2];
+    p_position->x = snail_hotspots_world->x;
+    shot->flight_transform.position.y = snail_hotspots_world->y;
+    shot->flight_transform.position.z = snail_hotspots_world->z;
     goto LABEL_43;
   }
-  if ( (v14 & 2) != 0 )
+  if ( (v13 & 2) != 0 )
   {
-    if ( a3 == 2 )
+    if ( spawn_selector == 2 )
     {
-      *v10 = *(float *)(v13 + 16692);
-      *((_DWORD *)this + 126) = *(_DWORD *)(v13 + 16696);
-      *((_DWORD *)this + 127) = *(_DWORD *)(v13 + 16700);
-      v15 = *v10 + 0.5;
+      p_position->x = v12->presentation.snail_hotspots_world[0].x;
+      shot->flight_transform.position.y = v12->presentation.snail_hotspots_world[0].y;
+      shot->flight_transform.position.z = v12->presentation.snail_hotspots_world[0].z;
+      v14 = p_position->x + 0.5;
 LABEL_19:
-      *v10 = v15;
+      p_position->x = v14;
       goto LABEL_50;
     }
-    if ( a3 == 1 )
+    if ( spawn_selector == 1 )
     {
-      *v10 = *(float *)(v13 + 16716);
-      *((_DWORD *)this + 126) = *(_DWORD *)(v13 + 16720);
-      *((_DWORD *)this + 127) = *(_DWORD *)(v13 + 16724);
-      v15 = *v10 - 0.5;
+      p_position->x = v12->presentation.snail_hotspots_world[2].x;
+      shot->flight_transform.position.y = v12->presentation.snail_hotspots_world[2].y;
+      shot->flight_transform.position.z = v12->presentation.snail_hotspots_world[2].z;
+      v14 = p_position->x - 0.5;
       goto LABEL_19;
     }
 LABEL_50:
-    v12 = *(float *)(v13 + 1048) + 1.0;
+    v33 = v12->velocity.z + 1.0;
     color.r = 0.0;
     color.g = 0.0;
-    *((_DWORD *)this + 147) = 0;
-    color.b = v12;
-    v29 = color.b;
-    *((_DWORD *)this + 148) = 0;
-    *((float *)this + 149) = v29;
+    shot->velocity.x = 0.0;
+    color.b = v33;
+    v34 = color.b;
+    shot->velocity.y = 0.0;
+    shot->velocity.z = v34;
     goto LABEL_51;
   }
-  if ( (v14 & 0x18) != 0 )
+  if ( (v13 & 0x18) != 0 )
   {
-    if ( a3 == 2 )
+    if ( spawn_selector == 2 )
     {
-      *v10 = *(float *)(v13 + 16764);
-      *((_DWORD *)this + 126) = *(_DWORD *)(v13 + 16768);
-      *((_DWORD *)this + 127) = *(_DWORD *)(v13 + 16772);
-      if ( *(float *)(v13 + 96) > 0.0 )
+      p_position->x = v12->presentation.snail_hotspots_world[6].x;
+      shot->flight_transform.position.y = v12->presentation.snail_hotspots_world[6].y;
+      shot->flight_transform.position.z = v12->presentation.snail_hotspots_world[6].z;
+      if ( v12->body.transform.basis_forward.z > 0.0 )
       {
-        a3 = v13 + 16772;
+        spawn_selector = (int32_t)&v12->presentation.snail_hotspots_world[6].z;
 LABEL_35:
-        v12 = *(float *)(v13 + 1048) + 1.0;
+        v23 = v12->velocity.z + 1.0;
         color.r = 0.0;
         color.g = 0.0;
-        *(this + 444) = 1;
-        *((_DWORD *)this + 147) = 0;
-        color.b = v12;
-        v22 = color.b;
-        *((_DWORD *)this + 148) = 0;
-        *((float *)this + 149) = v22;
+        shot->skip_one_tick = 1;
+        shot->velocity.x = 0.0;
+        color.b = v23;
+        v24 = color.b;
+        shot->velocity.y = 0.0;
+        shot->velocity.z = v24;
         goto LABEL_51;
       }
     }
     else
     {
-      *v10 = *(float *)(v13 + 16776);
-      *((_DWORD *)this + 126) = *(_DWORD *)(v13 + 16780);
-      *((_DWORD *)this + 127) = *(_DWORD *)(v13 + 16784);
-      if ( *(float *)(v13 + 96) > 0.0 )
+      p_position->x = v12->presentation.snail_hotspots_world[7].x;
+      shot->flight_transform.position.y = v12->presentation.snail_hotspots_world[7].y;
+      shot->flight_transform.position.z = v12->presentation.snail_hotspots_world[7].z;
+      if ( v12->body.transform.basis_forward.z > 0.0 )
       {
-        a3 = v13 + 16772;
+        spawn_selector = (int32_t)&v12->presentation.snail_hotspots_world[6].z;
         goto LABEL_35;
       }
     }
-    a3 = 0;
+    spawn_selector = 0;
     goto LABEL_35;
   }
-  if ( (v14 & 0x60) != 0 )
+  if ( (v13 & 0x60) != 0 )
   {
     color.r = 0.0;
     color.g = 0.0;
-    *v10 = *(float *)(v13 + 16812);
-    *((_DWORD *)this + 126) = *(_DWORD *)(v13 + 16816);
-    *((_DWORD *)this + 127) = *(_DWORD *)(v13 + 16820);
-    v12 = *(float *)(v13 + 1048) + 0.60000002;
+    p_position->x = v12->presentation.snail_hotspots_world[10].x;
+    shot->flight_transform.position.y = v12->presentation.snail_hotspots_world[10].y;
+    shot->flight_transform.position.z = v12->presentation.snail_hotspots_world[10].z;
+    v20 = v12->velocity.z + 0.60000002;
     g = color.g;
-    *((_DWORD *)this + 147) = LODWORD(color.r);
-    color.b = v12;
-    v21 = color.b;
-    *((float *)this + 148) = g;
-    *((float *)this + 149) = v21;
+    shot->velocity.x = color.r;
+    color.b = v20;
+    v22 = color.b;
+    shot->velocity.y = g;
+    shot->velocity.z = v22;
     goto LABEL_51;
   }
-  if ( (v14 & 0x29) != 0 )
+  if ( (v13 & 0x29) != 0 )
   {
-    v12 = *(float *)(v13 + 1048) + 1.0;
+    v15 = v12->velocity.z + 1.0;
     color.r = 0.0;
     color.g = 0.0;
-    *((_DWORD *)this + 147) = 0;
-    color.b = v12;
+    shot->velocity.x = 0.0;
+    color.b = v15;
     v16 = color.b;
-    *((_DWORD *)this + 148) = 0;
-    *((float *)this + 149) = v16;
+    shot->velocity.y = 0.0;
+    shot->velocity.z = v16;
     goto LABEL_51;
   }
-  if ( (v14 & 0x52) != 0 )
+  if ( (v13 & 0x52) != 0 )
   {
-    v17 = *(float *)(v13 + 1048) + 1.0;
+    v17 = v12->velocity.z + 1.0;
     color.r = 0.0;
     color.g = 0.0;
-    *((_DWORD *)this + 147) = 0;
+    shot->velocity.x = 0.0;
     color.b = v17;
     v18 = color.b;
-    *((_DWORD *)this + 148) = 0;
-    v19 = *v10;
-    *((float *)this + 149) = v18;
-    if ( a3 == 2 )
+    shot->velocity.y = 0.0;
+    x = p_position->x;
+    shot->velocity.z = v18;
+    if ( spawn_selector == 2 )
     {
-      v12 = v19 + 0.5;
-      *v10 = v12;
+      p_position->x = x + 0.5;
       goto LABEL_51;
     }
     goto LABEL_48;
   }
 LABEL_51:
-  if ( *((_DWORD *)this + 112) == 1 )
+  if ( shot->kind == 1 )
   {
-    *((float *)this + 147) = *((float *)this + 147) + *((float *)this + 147);
-    *((float *)this + 148) = *((float *)this + 148) + *((float *)this + 148);
-    v12 = *((float *)this + 149) + *((float *)this + 149);
-    *((float *)this + 149) = v12;
+    shot->velocity.x = shot->velocity.x + shot->velocity.x;
+    shot->velocity.y = shot->velocity.y + shot->velocity.y;
+    shot->velocity.z = shot->velocity.z + shot->velocity.z;
   }
-  if ( *((_DWORD *)this + 112) == 2 )
+  if ( shot->kind == 2 )
   {
-    *((float *)this + 147) = *((float *)this + 147) * 0.80000001;
-    *((float *)this + 148) = *((float *)this + 148) * 0.80000001;
-    v12 = *((float *)this + 149) * 0.80000001;
-    *((float *)this + 149) = v12;
+    shot->velocity.x = shot->velocity.x * 0.80000001;
+    shot->velocity.y = shot->velocity.y * 0.80000001;
+    shot->velocity.z = shot->velocity.z * 0.80000001;
   }
-  *((_DWORD *)this + 150) = *((_DWORD *)this + 147);
-  *((_DWORD *)this + 151) = *((_DWORD *)this + 148);
-  *((_DWORD *)this + 152) = *((_DWORD *)this + 149);
-  v30 = *((_DWORD *)this + 112);
-  if ( v30 )
+  shot->direction.x = shot->velocity.x;
+  shot->direction.y = shot->velocity.y;
+  shot->direction.z = shot->velocity.z;
+  kind = shot->kind;
+  if ( kind )
   {
-    v31 = v30 - 1;
-    if ( v31 )
+    v36 = kind - 1;
+    if ( v36 )
     {
-      if ( v31 == 1 )
+      if ( v36 == 1 )
       {
-        v32 = *((_DWORD *)this + 156);
-        *((_DWORD *)this + 154) = 0;
-        v12 = *(float *)(v32 + 56) * 0.027777776;
-        v33 = this + 280;
-        *((_DWORD *)this + 106) = this;
-        *((_DWORD *)this + 109) = 0;
-        *((_DWORD *)this + 110) = 1045854032;
-        *((_DWORD *)this + 102) = 0;
-        *((float *)this + 155) = v12;
-        if ( (*((_DWORD *)this + 71) & 0x200) != 0 )
+        game = shot->game;
+        shot->lifetime = 0.0;
+        v38 = game->subgame_rate * 0.027777776;
+        p_tertiary_body = &shot->tertiary_body;
+        shot->rocket_owner_shot = shot;
+        shot->spin = 0.0;
+        shot->spin_step = 0.20943952;
+        shot->homing_target_object = nullptr;
+        shot->lifetime_step = v38;
+        if ( (shot->tertiary_body.bod.bod.list_flags & 0x200) != 0 )
         {
           report_errorf(aListAdd);
         }
         else
         {
-          v34 = (char *)g_game_base + 1452;
-          v35 = *((_DWORD *)g_game_base + 363);
-          if ( v35 )
+          v40 = &g_game_base->active_bod_list.first;
+          v41 = g_game_base->active_bod_list.first;
+          if ( v41 )
           {
-            *(_DWORD *)(v35 + 8) = v33;
-            *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v34 + 8) + 12) = *(_DWORD *)v34;
-            v36 = *(_DWORD *)(*(_DWORD *)v34 + 8);
-            *(_DWORD *)v34 = v36;
-            *(_DWORD *)(v36 + 8) = 0;
+            v41->bod.list_prev = (FrameBodBase *)p_tertiary_body;
+            (*v40)->bod.list_prev->bod.list_next = *v40;
+            v42 = (*v40)->bod.list_prev;
+            *v40 = v42;
+            v42->bod.list_prev = nullptr;
           }
           else
           {
-            *(_DWORD *)v34 = v33;
-            *((_DWORD *)this + 72) = 0;
-            *(_DWORD *)(*(_DWORD *)v34 + 12) = 0;
+            *v40 = (FrameBodBase *)p_tertiary_body;
+            shot->tertiary_body.bod.bod.list_prev = nullptr;
+            (*v40)->bod.list_next = nullptr;
           }
-          v37 = *((_DWORD *)this + 71);
-          BYTE1(v37) |= 2u;
-          *((_DWORD *)this + 71) = v37;
+          list_flags = shot->tertiary_body.bod.bod.list_flags;
+          BYTE1(list_flags) |= 2u;
+          shot->tertiary_body.bod.bod.list_flags = list_flags;
         }
-        v38 = (ContactTargetRegistry *)(*((_DWORD *)this + 156) + 19337172);
-        *((_DWORD *)this + 157) = a4;
-        v39 = search_path_for_golb(v38, (const Vec3 *)(this + 500));
-        if ( v39 )
+        p_enemy_manager = &shot->game->enemy_manager;
+        shot->object_ref = (void *)emitter_index;
+        v45 = search_path_for_golb(p_enemy_manager, (const Vec3 *)&shot->flight_transform.position);
+        if ( v45 )
         {
-          object = v39->object;
-          *((_DWORD *)this + 102) = object;
-          if ( !v39->kind )
+          object = v45->object;
+          shot->homing_target_object = object;
+          if ( !v45->kind )
           {
-            list_flags = object->list_flags;
-            BYTE1(list_flags) |= 0x10u;
-            object->list_flags = list_flags;
+            v47 = object->list_flags;
+            BYTE1(v47) |= 0x10u;
+            object->list_flags = v47;
           }
-          p_position = &v39->position;
-          *((_DWORD *)this + 103) = LODWORD(p_position->x);
-          *((_DWORD *)this + 104) = LODWORD(p_position->y);
-          z = p_position->z;
-          *((_DWORD *)this + 107) = 0;
-          *((float *)this + 105) = z;
-          *((_DWORD *)this + 108) = 1023969417;
+          v48 = &v45->position;
+          shot->homing_target.x = v48->x;
+          shot->homing_target.y = v48->y;
+          z = v48->z;
+          shot->homing_blend = 0.0;
+          shot->homing_target.z = z;
+          shot->homing_blend_step = 0.033333335;
         }
       }
     }
     else
     {
-      v44 = *((_DWORD *)this + 156);
-      *((_DWORD *)this + 154) = 0;
-      v45 = this + 128;
-      v46 = *(float *)(v44 + 56) * 0.041666668;
-      *((_DWORD *)this + 69) = this;
-      *((float *)this + 155) = v46;
-      v47 = (char *)g_game_base + 3973948;
-      if ( (*((_DWORD *)this + 33) & 0x200) != 0 )
+      v50 = shot->game;
+      shot->lifetime = 0.0;
+      p_secondary_body = &shot->secondary_body;
+      v52 = v50->subgame_rate * 0.041666668;
+      shot->vapour_owner_shot = shot;
+      shot->lifetime_step = v52;
+      p_golb_vapour_list_head = &g_game_base->subgame.golb_vapour_list_head;
+      if ( (shot->secondary_body.bod.bod.list_flags & 0x200) != 0 )
       {
         report_errorf(aListAddafter);
       }
       else
       {
-        *((_DWORD *)this + 34) = v47;
-        *((_DWORD *)this + 35) = *((_DWORD *)v47 + 3);
-        *((_DWORD *)v47 + 3) = v45;
-        v48 = *((_DWORD *)this + 35);
-        if ( v48 )
-          *(_DWORD *)(v48 + 8) = v45;
-        *((_DWORD *)this + 33) |= 0x200u;
+        shot->secondary_body.bod.bod.list_prev = &p_golb_vapour_list_head->bod;
+        shot->secondary_body.bod.bod.list_next = p_golb_vapour_list_head->bod.list_next;
+        p_golb_vapour_list_head->bod.list_next = &p_secondary_body->bod.bod;
+        list_next = shot->secondary_body.bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = &p_secondary_body->bod.bod;
+        shot->secondary_body.bod.bod.list_flags |= 0x200u;
       }
-      reset_vapour((VapourTrail *)(this + 128), a3);
-      v12 = store_color4f((Color4f *)(this + 168), 1.0, 1.0, 1.0, 0.99000001);
-      *((_DWORD *)this + 157) = a4;
-      add_vapour_point((VapourTrail *)(this + 128), (const TransformMatrix *)(this + 452));
-      (**(void (__usercall ***)(char *@<ecx>, double@<st0>))v45)(this + 128, v12);
+      reset_vapour(&shot->vapour, (float *)spawn_selector);
+      store_color4f(&shot->secondary_body.bod.color, 1.0, 1.0, 1.0, 0.99000001);
+      shot->object_ref = (void *)emitter_index;
+      add_vapour_point(&shot->vapour, &shot->flight_transform);
+      (*(void (__thiscall **)(Vapour *))p_secondary_body->bod.bod.vtable)(&shot->vapour);
     }
   }
   else
   {
-    v49 = *((_DWORD *)this + 156);
-    v50 = *((_DWORD *)this + 158);
-    *((_DWORD *)this + 154) = 0;
-    *((float *)this + 155) = *(float *)(v49 + 56) * 0.041666668;
-    sprite = allocate_sprite(g_sprite_manager, *(_DWORD *)(v50 + 896), 130, -1, -1);
-    *((_DWORD *)this + 146) = sprite;
+    v55 = shot->game;
+    v56 = shot->owner_player;
+    shot->lifetime = 0.0;
+    shot->lifetime_step = v55->subgame_rate * 0.041666668;
+    sprite = allocate_sprite(g_sprite_manager, v56->player_slot, 130, -1, -1);
+    shot->render_body_owner = sprite;
     sprite[1] |= 0x800u;
-    *(_DWORD *)(*((_DWORD *)this + 146) + 104) = 0;
-    *(_DWORD *)(*((_DWORD *)this + 146) + 108) = 0;
-    *(_DWORD *)(*((_DWORD *)this + 146) + 120) = 0;
-    *(Color4f *)(*((_DWORD *)this + 146) + 44) = *set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-    *(_DWORD *)(*((_DWORD *)this + 146) + 96) = 1056629064;
-    *(_DWORD *)(*((_DWORD *)this + 146) + 100) = 1056629064;
-    v52 = (_DWORD *)(*((_DWORD *)this + 146) + 72);
-    *v52 = *(_DWORD *)v10;
-    v52[1] = *((_DWORD *)this + 126);
-    v52[2] = *((_DWORD *)this + 127);
-    *(float *)(*((_DWORD *)this + 146) + 124) = ((double)next_math_random_value() - 16384.0) * 0.0001917476;
-    v12 = *(float *)(*((_DWORD *)this + 156) + 56) * 0.58177644;
-    *(float *)(*((_DWORD *)this + 146) + 128) = v12;
-    *((_DWORD *)this + 157) = a4;
+    *((_DWORD *)shot->render_body_owner + 26) = 0;
+    *((_DWORD *)shot->render_body_owner + 27) = 0;
+    *((_DWORD *)shot->render_body_owner + 30) = 0;
+    *(tColour *)((char *)shot->render_body_owner + 44) = *set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+    *((_DWORD *)shot->render_body_owner + 24) = 1056629064;
+    *((_DWORD *)shot->render_body_owner + 25) = 1056629064;
+    v58 = (char *)shot->render_body_owner + 72;
+    *(float *)v58 = p_position->x;
+    *((_DWORD *)v58 + 1) = LODWORD(shot->flight_transform.position.y);
+    *((_DWORD *)v58 + 2) = LODWORD(shot->flight_transform.position.z);
+    *((float *)shot->render_body_owner + 31) = ((double)next_math_random_value() - 16384.0) * 0.0001917476;
+    *((float *)shot->render_body_owner + 32) = shot->game->subgame_rate * 0.58177644;
+    shot->object_ref = (void *)emitter_index;
   }
-  v53 = *((_DWORD *)this + 158);
-  if ( *(_BYTE *)(v53 + 900) == 1 && (v12 = *(float *)(v53 + 920), v12 < 0.5) )
+  v59 = shot->owner_player;
+  if ( v59->follow_state.active == 1 && v59->follow_state.vertical_offset < 0.5 )
   {
-    *(this + 700) = 1;
-    *((_DWORD *)this + 176) = *(_DWORD *)(v53 + 904);
-    *((_DWORD *)this + 177) = *(_DWORD *)(v53 + 908);
-    *((_DWORD *)this + 178) = *(_DWORD *)(v53 + 912);
-    *((_DWORD *)this + 179) = *(_DWORD *)(v53 + 916);
-    *((_DWORD *)this + 180) = 0;
-    *((_DWORD *)this + 181) = *(_DWORD *)(v53 + 944);
-    *((_DWORD *)this + 182) = *(_DWORD *)(v53 + 948);
-    v54 = *(_DWORD *)(v53 + 952);
-    *((_DWORD *)this + 184) = this;
-    *((_DWORD *)this + 183) = v54;
-    *((_DWORD *)this + 185) = *(_DWORD *)(v53 + 952);
+    shot->path_follow.active = 1;
+    shot->path_follow.template_record = v59->follow_state.template_record;
+    shot->path_follow.source_cell = v59->follow_state.source_cell;
+    shot->path_follow.sample_index = v59->follow_state.sample_index;
+    shot->path_follow.progress = v59->follow_state.progress;
+    shot->path_follow.vertical_offset = 0.0;
+    shot->path_follow.output_position.x = v59->follow_state.output_position.x;
+    shot->path_follow.output_position.y = v59->follow_state.output_position.y;
+    v60 = v59->follow_state.output_position.z;
+    shot->path_follow.shot = shot;
+    shot->path_follow.output_position.z = v60;
+    shot->path_entry_z_latch = v59->follow_state.output_position.z;
   }
   else
   {
-    *(this + 700) = 0;
-    *((_DWORD *)this + 185) = -1082130432;
+    shot->path_follow.active = 0;
+    shot->path_entry_z_latch = -1.0;
   }
-  vector_magnitude((float *)this + 147);
-  v55 = *v10;
-  v56 = *((_DWORD *)this + 126);
-  *((float *)this + 153) = v12;
-  *((float *)this + 141) = v55;
-  v57 = *((_DWORD *)this + 127);
-  *((_DWORD *)this + 142) = v56;
-  *((_DWORD *)this + 143) = v57;
-  return (**(int (__thiscall ***)(char *))this)(this);
+  v61 = vector_magnitude(&shot->velocity);
+  v62 = p_position->x;
+  y = shot->flight_transform.position.y;
+  shot->path_factor = v61;
+  shot->previous_flight_transform.position.x = v62;
+  v64 = shot->flight_transform.position.z;
+  shot->previous_flight_transform.position.y = y;
+  shot->previous_flight_transform.position.z = v64;
+  (*(void (__thiscall **)(GolbShot *))shot->primary_body.bod.bod.vtable)(shot);
 }
-

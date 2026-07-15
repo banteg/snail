@@ -249,3 +249,13 @@ This promotion is byte-stable at the honest 36.08%, 460/582 instruction
 frontier, prefix 1/582, with all 35 masked operands clean. The deliberately
 raw kind-2 list splice remains unchanged because its word-slice schedule is a
 measured source-shape improvement, not missing projectile ownership.
+
+## 2026-07-16 analysis replay closure
+
+The proven `void __thiscall create_golb(GolbShot*, Player*, int32_t, int32_t)`
+contract is now durable in both analysis replay catalogs and the tracked
+Binary Ninja/IDA artifacts. This replaces IDA's stale
+`int __thiscall(char*, int, int32_t, int)` shell and lets both decompilers
+propagate the complete `GolbShot` and `Player` owners through the movement,
+presentation, and path-follow branches. The matcher source is unchanged at
+the honest 36.08% frontier.

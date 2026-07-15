@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,16 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_golb_shot",
-      "address": "0x408690"
-    },
-    {
-      "name": "kill_golb",
-      "address": "0x414670"
-    },
-    {
-      "name": "update_golb_ai",
-      "address": "0x414820"
+      "name": "create_golb",
+      "address": "0x415280"
     }
   ],
   "health_check_count": 324,
