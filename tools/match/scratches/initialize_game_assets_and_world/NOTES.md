@@ -750,3 +750,18 @@ body. The tracked export now spells every camera loan and constructor call
 through the corresponding overlay owner, while a focused health check rejects
 regression to raw `+0x67c/+0x7c8/+0x914` root offsets or an unavailable body.
 No matcher source changed, so the existing 80.50% frontier is preserved.
+
+## 2026-07-15 root DirectX-loader replay
+
+The exact `DirectXLoader` extent at root `+0x48e00` is now part of the durable
+object-render sync. Its 0x5e10 bytes end exactly where the independently proven
+`Backdrop` begins at `+0x4ec10`; the initializer and the loader's four exact
+methods supply 48 mesh/animation callsites plus the direct `animation_bytes`
+consumer.
+
+The refreshed HLIL replaces every raw `game +0x48e00` receiver with
+`game->directx_loader`, including the cutscene, equipment, and projectile
+animation banks. The object-render sync now batches its struct fields and
+prototypes in one previewed transaction, and the initializer health check
+rejects loss of the root loader owner. Matcher output remains byte-stable at
+80.50% because this closes analysis replay rather than changing source shape.

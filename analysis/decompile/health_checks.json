@@ -593,7 +593,7 @@
       ]
     },
     {
-      "name": "bn_game_initializer_overlay_ownership",
+      "name": "bn_game_initializer_root_ownership",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
         "game->render_camera_slots[0].source = &game->overlay_0.camera",
@@ -601,12 +601,16 @@
         "game->render_camera_slots[3].source = &game->overlay_2.camera",
         "initialize_overlay(&game->overlay_2)",
         "game->render_camera_slots[2].source = &game->overlay_1.camera",
-        "initialize_overlay(&game->overlay_1)"
+        "initialize_overlay(&game->overlay_1)",
+        "initialize_directx_loader(&game->directx_loader)",
+        "game->directx_loader.animation_bytes",
+        "load_x_animation_clip(&game->directx_loader"
       ],
       "forbidden_substrings": [
         "game->__offset(0x67c)",
         "game->__offset(0x7c8)",
         "game->__offset(0x914)",
+        "game->__offset(0x48e00)",
         "analysis skipped",
         "unimplemented"
       ]

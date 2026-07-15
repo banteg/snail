@@ -1419,6 +1419,9 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     overlay_sync = (BINJA_DIR / "sync_overlay_types.py").read_text(
         encoding="utf-8"
     )
+    object_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
         encoding="utf-8"
     )
@@ -1445,6 +1448,9 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     ):
         assert field_update in overlay_sync
     assert "apply_struct_and_proto_updates" in overlay_sync
+    assert 'DirectXLoader directx_loader; // +0x48e00' in matcher_header
+    assert '("0x48e00", "directx_loader", "DirectXLoader")' in object_sync
+    assert "apply_struct_and_proto_updates" in object_sync
     assert not (repo_root / "tools/match/include/app_shell.h").exists()
     assert "TransformMatrix transform;" in path_header
     assert "uint8_t transform[0x40];" not in path_header

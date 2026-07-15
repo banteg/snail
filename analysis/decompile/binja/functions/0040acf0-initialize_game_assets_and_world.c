@@ -100,7 +100,7 @@
 0040ae2d        report_errorf("List ADD")
 0040ae73        initialize_overlay(&game->overlay_0)
 0040ae8a        __builtin_memset(0x74eb18, 0, 0x15c)
-0040ae8e        initialize_directx_loader(&game->__offset(0x48e00).d)
+0040ae8e        initialize_directx_loader(&game->directx_loader)
 0040ae9b        reset_landscape_manager(&game->subgame.landscape_manager)
 0040aea6        load_segment_definitions(&game->subgame.sm_tracks)
 0040aeb2        load_landscape_script_by_name("Starmap.txt")
@@ -312,35 +312,35 @@
 0040b818        struct TransformMatrix transform_1
 0040b818        set_matrix_identity(&transform_1)
 0040b830        set_bod_object(&game->__offset(0x445d0).d, add_object_to_list(&g_object_list))
-0040b845        load_x_mesh(&game->__offset(0x48e00).d, "pillar1.x", game->__offset(0x445f4).d, 1)
+0040b845        load_x_mesh(&game->directx_loader, "pillar1.x", game->__offset(0x445f4).d, 1)
 0040b84e        transform_1.position.x = 0
 0040b859        apply_bod_position(&game->__offset(0x445d0).d, &transform_1)
 0040b871        set_bod_object(&game->__offset(0x44608).d, add_object_to_list(&g_object_list))
-0040b886        load_x_mesh(&game->__offset(0x48e00).d, "pillar2.x", game->__offset(0x4462c).d, 1)
+0040b886        load_x_mesh(&game->directx_loader, "pillar2.x", game->__offset(0x4462c).d, 1)
 0040b892        transform_1.position.x = 0x3f000000
 0040b89a        apply_bod_position(&game->__offset(0x44608).d, &transform_1)
 0040b8b2        set_bod_object(&game->__offset(0x44640).d, add_object_to_list(&g_object_list))
-0040b8c7        load_x_mesh(&game->__offset(0x48e00).d, "pillar3.x", game->__offset(0x44664).d, 1)
+0040b8c7        load_x_mesh(&game->directx_loader, "pillar3.x", game->__offset(0x44664).d, 1)
 0040b8d3        transform_1.position.x = 0x3f800000
 0040b8db        apply_bod_position(&game->__offset(0x44640).d, &transform_1)
 0040b8f3        set_bod_object(&game->__offset(0x44678).d, add_object_to_list(&g_object_list))
-0040b908        load_x_mesh(&game->__offset(0x48e00).d, "pillar4.x", game->__offset(0x4469c).d, 1)
+0040b908        load_x_mesh(&game->directx_loader, "pillar4.x", game->__offset(0x4469c).d, 1)
 0040b911        transform_1.position.x = 0x3fc00000
 0040b91c        apply_bod_position(&game->__offset(0x44678).d, &transform_1)
 0040b934        set_bod_object(&game->__offset(0x446b0).d, add_object_to_list(&g_object_list))
-0040b949        load_x_mesh(&game->__offset(0x48e00).d, "pillar5.x", game->__offset(0x446d4).d, 1)
+0040b949        load_x_mesh(&game->directx_loader, "pillar5.x", game->__offset(0x446d4).d, 1)
 0040b955        transform_1.position.x = 0x40000000
 0040b95d        apply_bod_position(&game->__offset(0x446b0).d, &transform_1)
 0040b975        set_bod_object(&game->__offset(0x446e8).d, add_object_to_list(&g_object_list))
-0040b98a        load_x_mesh(&game->__offset(0x48e00).d, "pillar6.x", game->__offset(0x4470c).d, 1)
+0040b98a        load_x_mesh(&game->directx_loader, "pillar6.x", game->__offset(0x4470c).d, 1)
 0040b996        transform_1.position.x = 0x40200000
 0040b99e        apply_bod_position(&game->__offset(0x446e8).d, &transform_1)
 0040b9b6        set_bod_object(&game->__offset(0x44720).d, add_object_to_list(&g_object_list))
-0040b9cb        load_x_mesh(&game->__offset(0x48e00).d, "pillar7.x", game->__offset(0x44744).d, 1)
+0040b9cb        load_x_mesh(&game->directx_loader, "pillar7.x", game->__offset(0x44744).d, 1)
 0040b9d4        transform_1.position.x = 0x40400000
 0040b9df        apply_bod_position(&game->__offset(0x44720).d, &transform_1)
 0040b9f7        set_bod_object(&game->__offset(0x44758).d, add_object_to_list(&g_object_list))
-0040ba0c        load_x_mesh(&game->__offset(0x48e00).d, "pillar8.x", game->__offset(0x4477c).d, 1)
+0040ba0c        load_x_mesh(&game->directx_loader, "pillar8.x", game->__offset(0x4477c).d, 1)
 0040ba18        transform_1.position.x = 0x40600000
 0040ba20        apply_bod_position(&game->__offset(0x44758).d, &transform_1)
 0040ba36        set_bod_object(&game->__offset(0x44cd0).d, add_object_to_list(&g_object_list))
@@ -377,7 +377,7 @@
 0040bcc1        set_bod_object(&game->__offset(0x44448).d, add_object_to_list(&g_object_list))
 0040bcd4        initialize_backdrop_corner_quad(3, game->__offset(0x4446c).d, "Objects/World00/Slide0.tga")
 0040bced        set_bod_object(&game->__offset(0x444b8).d, add_object_to_list(&g_object_list))
-0040bd02        load_x_mesh(&game->__offset(0x48e00).d, "Tramp.x", game->__offset(0x444dc).d, 1)
+0040bd02        load_x_mesh(&game->directx_loader, "Tramp.x", game->__offset(0x444dc).d, 1)
 0040bd0d        *(game->__offset(0x444dc).d + 0x14) = 6
 0040bd1a        void* ecx_159 = *(game->__offset(0x444dc).d + 0x5c)
 0040bd1d        int32_t* eax_59
@@ -421,7 +421,7 @@
 0040be00        var_128_2 -= 1
 0040be04        do while (cond:1_1)
 0040be17        set_bod_object(&game->__offset(0x48dc8).d, add_object_to_list(&g_object_list))
-0040be2c        load_x_mesh(&game->__offset(0x48e00).d, "salt.x", game->__offset(0x48dec).d, 1)
+0040be2c        load_x_mesh(&game->directx_loader, "salt.x", game->__offset(0x48dec).d, 1)
 0040be31        struct SubgameRuntime** edi_18 = &game->subgame.salt_hazards.slots[0].owner_game
 0040be37        int32_t var_128_3 = 0x28
 0040be96        bool cond:2_1
@@ -445,9 +445,9 @@
 0040bea5        void* edx_28 = &game->unknown_000000[options_flags * 0x60]
 0040bebb        set_bod_object(edx_28 + 0x3cd698, add_object_to_list(&g_object_list))
 0040bec2        if (options_flags == 0)
-0040bee3        load_x_mesh(&game->__offset(0x48e00).d, "postofficestop.x", game->subgame.banners.slots[0].bod.object, 1)
+0040bee3        load_x_mesh(&game->directx_loader, "postofficestop.x", game->subgame.banners.slots[0].bod.object, 1)
 0040bed2        if (options_flags == 1)
-0040bee3        load_x_mesh(&game->__offset(0x48e00).d, "postofficestop.x", game->subgame.banners.slots[1].bod.object, options_flags)
+0040bee3        load_x_mesh(&game->directx_loader, "postofficestop.x", game->subgame.banners.slots[1].bod.object, options_flags)
 0040befc        *(edx_28 + 0x3cd6b0) = 0
 0040bf02        *(edx_28 + 0x3cd6ac) = 0
 0040bf08        *(edx_28 + 0x3cd6a8) = 0
@@ -1936,7 +1936,7 @@
 0040f26a        game->subgame.path_pairs[0x1a].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[0x3c].secondary.bod.object
 0040f276        game->subgame.path_pairs[0x1a].secondary.entry_base_strip_mesh = game->subgame.path_pairs[0x1a].secondary.bod.object
 0040f295        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots, add_object_to_list(&g_object_list))
-0040f2a2        char* eax_235 = find_case_insensitive_substring("Test:", game->__offset(0x48e00).d)
+0040f2a2        char* eax_235 = find_case_insensitive_substring("Test:", game->directx_loader.animation_bytes)
 0040f2ac        if (eax_235 == 0)
 0040f2f3        rstrcpy_checked_ascii(&var_29c, "turbo-base-000.x")
 0040f2b4        char* eax_236 = find_case_insensitive_substring(":", eax_235)
@@ -1949,29 +1949,29 @@
 0040f2dd        *eax_237 = 0x2e
 0040f2e1        *(eax_237 + 1) = 0x78
 0040f2e4        *(eax_237 + 2) = 0
-0040f309        load_x_animation_clip(&game->__offset(0x48e00).d, &var_29c, game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object)
+0040f309        load_x_animation_clip(&game->directx_loader, &var_29c, game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object)
 0040f321        set_bod_object(&game->subgame.player.presentation, add_object_to_list(&g_object_list))
-0040f334        load_x_animation_clip(&game->__offset(0x48e00).d, &var_29c, game->subgame.player.presentation.body.bod.object)
+0040f334        load_x_animation_clip(&game->directx_loader, &var_29c, game->subgame.player.presentation.body.bod.object)
 0040f34a        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[1], add_object_to_list(&g_object_list))
-0040f35d        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-move-000.x", game->subgame.player.presentation.cutscene_animation_slots[1].body.bod.object)
+0040f35d        load_x_animation_clip(&game->directx_loader, "turbo-move-000.x", game->subgame.player.presentation.cutscene_animation_slots[1].body.bod.object)
 0040f373        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[2], add_object_to_list(&g_object_list))
-0040f386        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-bobalong-000.x", game->subgame.player.presentation.cutscene_animation_slots[2].body.bod.object)
+0040f386        load_x_animation_clip(&game->directx_loader, "turbo-bobalong-000.x", game->subgame.player.presentation.cutscene_animation_slots[2].body.bod.object)
 0040f39c        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[3], add_object_to_list(&g_object_list))
-0040f3af        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-lookbackleft-000.x", game->subgame.player.presentation.cutscene_animation_slots[3].body.bod.object)
+0040f3af        load_x_animation_clip(&game->directx_loader, "turbo-lookbackleft-000.x", game->subgame.player.presentation.cutscene_animation_slots[3].body.bod.object)
 0040f3c5        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[4], add_object_to_list(&g_object_list))
-0040f3d8        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-lookbackright-000.x", game->subgame.player.presentation.cutscene_animation_slots[4].body.bod.object)
+0040f3d8        load_x_animation_clip(&game->directx_loader, "turbo-lookbackright-000.x", game->subgame.player.presentation.cutscene_animation_slots[4].body.bod.object)
 0040f3ee        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[5], add_object_to_list(&g_object_list))
-0040f401        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-fall-000.x", game->subgame.player.presentation.cutscene_animation_slots[5].body.bod.object)
+0040f401        load_x_animation_clip(&game->directx_loader, "turbo-fall-000.x", game->subgame.player.presentation.cutscene_animation_slots[5].body.bod.object)
 0040f417        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[6], add_object_to_list(&g_object_list))
-0040f42a        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-damaged-000.x", game->subgame.player.presentation.cutscene_animation_slots[6].body.bod.object)
+0040f42a        load_x_animation_clip(&game->directx_loader, "turbo-damaged-000.x", game->subgame.player.presentation.cutscene_animation_slots[6].body.bod.object)
 0040f440        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[7].body.bod.bod.vtable, add_object_to_list(&g_object_list))
-0040f453        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-intoshell-000.x", game->subgame.player.presentation.cutscene_animation_slots[7].body.bod.object)
+0040f453        load_x_animation_clip(&game->directx_loader, "turbo-intoshell-000.x", game->subgame.player.presentation.cutscene_animation_slots[7].body.bod.object)
 0040f469        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[8].body.bod.bod.vtable, add_object_to_list(&g_object_list))
-0040f47c        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-skidstop-000.x", game->subgame.player.presentation.cutscene_animation_slots[8].body.bod.object)
+0040f47c        load_x_animation_clip(&game->directx_loader, "turbo-skidstop-000.x", game->subgame.player.presentation.cutscene_animation_slots[8].body.bod.object)
 0040f492        set_bod_object(&game->subgame.player.presentation.cutscene_animation_slots[9], add_object_to_list(&g_object_list))
-0040f4a5        load_x_animation_clip(&game->__offset(0x48e00).d, "turbo-talk-000.x", game->subgame.player.presentation.cutscene_animation_slots[9].body.bod.object)
+0040f4a5        load_x_animation_clip(&game->directx_loader, "turbo-talk-000.x", game->subgame.player.presentation.cutscene_animation_slots[9].body.bod.object)
 0040f4bb        set_bod_object(&game->subgame.player.presentation.snail_hotspot_body, add_object_to_list(&g_object_list))
-0040f4d4        load_x_mesh(&game->__offset(0x48e00).d, "TurboHotSpots.x", game->subgame.player.presentation.snail_hotspot_body.bod.object, 2)
+0040f4d4        load_x_mesh(&game->directx_loader, "TurboHotSpots.x", game->subgame.player.presentation.snail_hotspot_body.bod.object, 2)
 0040f4df        build_snail_hotspots(&game->subgame.player.presentation)
 0040f4ea        int32_t var_304_3 = 0xa
 0040f4f2        void** var_308 = &game->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
@@ -2004,11 +2004,11 @@
 0040f56c        *(game->subgame.player.presentation.body.bod.object + 0x84) = 0
 0040f578        *(game->subgame.player.presentation.body.bod.object + 0x88) = 0
 0040f58f        set_bod_object(&game->subgame.player.presentation.jetpack_channel, add_object_to_list(&g_object_list))
-0040f5a2        load_x_animation_clip(&game->__offset(0x48e00).d, "jetpack-base-000.x", game->subgame.player.presentation.jetpack_channel.body.bod.object)
+0040f5a2        load_x_animation_clip(&game->directx_loader, "jetpack-base-000.x", game->subgame.player.presentation.jetpack_channel.body.bod.object)
 0040f5b8        set_bod_object(&game->subgame.player.presentation.jetpack_channel.animation_slots, add_object_to_list(&g_object_list))
-0040f5cb        load_x_animation_clip(&game->__offset(0x48e00).d, "jetpack-base-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object)
+0040f5cb        load_x_animation_clip(&game->directx_loader, "jetpack-base-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object)
 0040f5e1        set_bod_object(&game->subgame.player.presentation.jetpack_channel.animation_slots[1], add_object_to_list(&g_object_list))
-0040f5f4        load_x_animation_clip(&game->__offset(0x48e00).d, "jetpack-draw-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod.object)
+0040f5f4        load_x_animation_clip(&game->directx_loader, "jetpack-draw-000.x", game->subgame.player.presentation.jetpack_channel.animation_slots[1].body.bod.object)
 0040f5ff        int32_t var_304_4 = 2
 0040f603        void** var_308_1 = &game->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
 0040f64e        bool cond:6_1
@@ -2040,17 +2040,17 @@
 0040f67d        *(game->subgame.player.presentation.jetpack_channel.body.bod.object + 0x84) = 0
 0040f68e        *(game->subgame.player.presentation.jetpack_channel.body.bod.object + 0x88) = 0
 0040f6a0        set_bod_object(&game->subgame.player.presentation.weapon_channels, add_object_to_list(&g_object_list))
-0040f6b3        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].body.bod.object)
+0040f6b3        load_x_animation_clip(&game->directx_loader, "blasterleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].body.bod.object)
 0040f6c9        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots, add_object_to_list(&g_object_list))
-0040f6dc        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object)
+0040f6dc        load_x_animation_clip(&game->directx_loader, "blasterleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object)
 0040f6f2        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[1], add_object_to_list(&g_object_list))
-0040f705        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterleft-draw-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[1].body.bod.object)
+0040f705        load_x_animation_clip(&game->directx_loader, "blasterleft-draw-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[1].body.bod.object)
 0040f71b        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[2], add_object_to_list(&g_object_list))
-0040f72e        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterleft-fire-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[2].body.bod.object)
+0040f72e        load_x_animation_clip(&game->directx_loader, "blasterleft-fire-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[2].body.bod.object)
 0040f744        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[3], add_object_to_list(&g_object_list))
-0040f757        load_x_animation_clip(&game->__offset(0x48e00).d, "Laserleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod.object)
+0040f757        load_x_animation_clip(&game->directx_loader, "Laserleft-base-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[3].body.bod.object)
 0040f76d        set_bod_object(&game->subgame.player.presentation.weapon_channels[0].animation_slots[4], add_object_to_list(&g_object_list))
-0040f780        load_x_animation_clip(&game->__offset(0x48e00).d, "Laserleft-draw-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod.object)
+0040f780        load_x_animation_clip(&game->directx_loader, "Laserleft-draw-000.x", game->subgame.player.presentation.weapon_channels[0].animation_slots[4].body.bod.object)
 0040f78b        int32_t var_304_5 = 5
 0040f793        void** var_308_2 = &game->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
 0040f7de        bool cond:7_1
@@ -2082,17 +2082,17 @@
 0040f80d        *(game->subgame.player.presentation.weapon_channels[0].body.bod.object + 0x84) = 0
 0040f819        *(game->subgame.player.presentation.weapon_channels[0].body.bod.object + 0x88) = 0
 0040f830        set_bod_object(&game->subgame.player.presentation.weapon_channels[1], add_object_to_list(&g_object_list))
-0040f843        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterRight-base-000.x", game->subgame.player.presentation.weapon_channels[1].body.bod.object)
+0040f843        load_x_animation_clip(&game->directx_loader, "blasterRight-base-000.x", game->subgame.player.presentation.weapon_channels[1].body.bod.object)
 0040f859        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots, add_object_to_list(&g_object_list))
-0040f86c        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterRight-base-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object)
+0040f86c        load_x_animation_clip(&game->directx_loader, "blasterRight-base-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object)
 0040f882        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[1].body.bod.bod.vtable, add_object_to_list(&g_object_list))
-0040f895        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterRight-draw-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[1].body.bod.object)
+0040f895        load_x_animation_clip(&game->directx_loader, "blasterRight-draw-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[1].body.bod.object)
 0040f8ab        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[2], add_object_to_list(&g_object_list))
-0040f8be        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterRight-fire-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[2].body.bod.object)
+0040f8be        load_x_animation_clip(&game->directx_loader, "blasterRight-fire-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[2].body.bod.object)
 0040f8d4        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[3], add_object_to_list(&g_object_list))
-0040f8e7        load_x_animation_clip(&game->__offset(0x48e00).d, "Laserright-base-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[3].body.bod.object)
+0040f8e7        load_x_animation_clip(&game->directx_loader, "Laserright-base-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[3].body.bod.object)
 0040f8fd        set_bod_object(&game->subgame.player.presentation.weapon_channels[1].animation_slots[4], add_object_to_list(&g_object_list))
-0040f910        load_x_animation_clip(&game->__offset(0x48e00).d, "Laserright-draw-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod.object)
+0040f910        load_x_animation_clip(&game->directx_loader, "Laserright-draw-000.x", game->subgame.player.presentation.weapon_channels[1].animation_slots[4].body.bod.object)
 0040f91b        int32_t var_304_6 = 5
 0040f923        void** var_308_3 = &game->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
 0040f96e        bool cond:8_1
@@ -2124,17 +2124,17 @@
 0040f99d        *(game->subgame.player.presentation.weapon_channels[1].body.bod.object + 0x84) = 0
 0040f9ae        *(game->subgame.player.presentation.weapon_channels[1].body.bod.object + 0x88) = 0
 0040f9c0        set_bod_object(&game->subgame.player.presentation.weapon_channels[2], add_object_to_list(&g_object_list))
-0040f9d3        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterTop-base-000.x", game->subgame.player.presentation.weapon_channels[2].body.bod.object)
+0040f9d3        load_x_animation_clip(&game->directx_loader, "blasterTop-base-000.x", game->subgame.player.presentation.weapon_channels[2].body.bod.object)
 0040f9e9        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots, add_object_to_list(&g_object_list))
-0040f9fc        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterTop-base-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object)
+0040f9fc        load_x_animation_clip(&game->directx_loader, "blasterTop-base-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object)
 0040fa12        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[1], add_object_to_list(&g_object_list))
-0040fa25        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterTop-draw-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[1].body.bod.object)
+0040fa25        load_x_animation_clip(&game->directx_loader, "blasterTop-draw-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[1].body.bod.object)
 0040fa3b        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[2], add_object_to_list(&g_object_list))
-0040fa4e        load_x_animation_clip(&game->__offset(0x48e00).d, "blasterTop-fire-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[2].body.bod.object)
+0040fa4e        load_x_animation_clip(&game->directx_loader, "blasterTop-fire-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[2].body.bod.object)
 0040fa64        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[3], add_object_to_list(&g_object_list))
-0040fa77        load_x_animation_clip(&game->__offset(0x48e00).d, "rocketlauncher-base-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[3].body.bod.object)
+0040fa77        load_x_animation_clip(&game->directx_loader, "rocketlauncher-base-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[3].body.bod.object)
 0040fa8d        set_bod_object(&game->subgame.player.presentation.weapon_channels[2].animation_slots[4], add_object_to_list(&g_object_list))
-0040faa0        load_x_animation_clip(&game->__offset(0x48e00).d, "rocketlauncher-draw-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod.object)
+0040faa0        load_x_animation_clip(&game->directx_loader, "rocketlauncher-draw-000.x", game->subgame.player.presentation.weapon_channels[2].animation_slots[4].body.bod.object)
 0040faab        int32_t var_304_7 = 5
 0040fab3        void** var_308_4 = &game->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
 0040fafe        bool cond:9_1
@@ -2169,11 +2169,11 @@
 0040fb73        game->subgame.player.presentation.snail_skin.material_overrides[1] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo-damage.tga", 0, 0)
 0040fb83        game->subgame.player.presentation.snail_skin.material_overrides[2] = get_or_create_texture_ref(&g_texture_refs, "x/snail-turbo-invincible.tga", 0, 0)
 0040fb95        set_bod_object(&game->subgame.player.presentation.invincible_shell, add_object_to_list(&g_object_list))
-0040fbaa        load_x_mesh(&game->__offset(0x48e00).d, "invincible-base-000.x", game->subgame.player.presentation.invincible_shell.body.bod.object, 1)
+0040fbaa        load_x_mesh(&game->directx_loader, "invincible-base-000.x", game->subgame.player.presentation.invincible_shell.body.bod.object, 1)
 0040fbaf        void* object_5 = game->subgame.player.presentation.invincible_shell.body.bod.object
 0040fbba        *(object_5 + 0x10) &= 0xffefffff
 0040fbcd        set_bod_object(&game->subgame.player.golb_shots[0]...tertiary_body.bod.bod.vtable, add_object_to_list(&g_object_list))
-0040fbe2        load_x_mesh(&game->__offset(0x48e00).d, "rocket-base-000.x", game->subgame.player.golb_shots[0]...__offset(0x13c).d, 1)
+0040fbe2        load_x_mesh(&game->directx_loader, "rocket-base-000.x", game->subgame.player.golb_shots[0]...__offset(0x13c).d, 1)
 0040fbe7        void* __offset(GameRoot, 0x430270) esi_3 = &game->subgame.player.golb_shots[0]...secondary_body.bod.object
 0040fbed        int32_t var_304_8 = 0xc
 0040fc5d        bool cond:10_1
