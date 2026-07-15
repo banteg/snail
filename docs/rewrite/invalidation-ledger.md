@@ -226,11 +226,11 @@ Template:
 - replacement evidence: `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on the inline root at `player + 0x2984`; `initialize_subgoldy` and `update_subgoldy` both reach the live visual object through that root as `presentation.visual_root`, and the embedded cutscene AI sits at `player + 0x42dc`
 - port consequence: keep the recovered type lane and docs centered on one inline authored `Snail`; future Zig or RE naming should stop treating `+0x29a8` as a standalone sibling object
 
-## 2026-03-26 - Player presentation animation lanes
+## 2026-03-26 - Player weapon animation lanes
 
-- invalidated claim: the presentation root stores a flat `active_keyframe` at `+0x110`, a flat `queued_animation_count` at `+0x140`, and each weapon lane stores an anim-manager root at `+0x104`
-- replacement evidence: `dispatch_cutscene_animation`, `set_weapon_animation`, `initialize_subgoldy`, `initialize_cutscene`, and `set_snail_jetpack` all agree on the same nested model: the root has an inline animation-dispatch block at `player + 0x2a88`, each repeated weapon/jetpack lane has `selected_state` at `+0x104` and an inline animation-dispatch block at `+0x108`, and the shared visual flags live at channel/root offset `+0x04`
-- port consequence: keep the checked-in BN/IDA type lane centered on nested `AnimationDispatchState` and repeated `PresentationAnimationChannel` blocks; future Zig or RE naming should stop flattening those lanes into standalone root fields or treating `+0x104` as the anim-manager root inside the weapon channels
+- invalidated claim: the presentation root stores a flat `active_keyframe` at `+0x110`, a flat `queued_animation_count` at `+0x140`, and each repeated lane stores an anim-manager root at `+0x104`
+- replacement evidence: `dispatch_cutscene_animation`, `set_weapon_animation`, `initialize_subgoldy`, `initialize_cutscene`, and `set_snail_jetpack` first established the nested layout; Android then retained `cRWeapon::SetAnimation(int, bool, int)` and `cRWeapon::AI()`, iOS retained the cRWeapon RTTI/vtable, and the Windows constructor built four identical `0x3dc`-byte children. The Snail therefore owns `Weapon weapon_channels[3]` plus `Weapon jetpack_channel`; every Weapon has `selected_state` at `+0x104`, an inline `AnimManager` at `+0x108`, and five owned renderable slots at `+0x150`.
+- port consequence: keep the checked-in BN/IDA type lane centered on the authored `Weapon` owner and nested `AnimManager`; future Zig or RE naming should stop flattening those lanes into standalone root fields, treating `+0x104` as the manager root, or modeling the embedded Snail as a separate global jetpack controller
 
 ## 2026-03-26 - Camera matrix helper prototypes
 

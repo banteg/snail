@@ -149,7 +149,8 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x40`: borrowed `RenderableBod* target_model` backlink
     - `+0x44`: borrowed `PresentationAnimationSlot* animation_slots`
   - `+0x14c`: ten owned 0x80-byte cutscene animation donor slots
-  - `+0x64c/+0xa28/+0xe04`: repeated `PresentationAnimationChannel` weapon lanes
+  - `+0x64c`: `weapon_channels[3]`, three consecutive exact `0x3dc`-byte
+    authored `cRWeapon` owners at `+0x64c/+0xa28/+0xe04`
     - `+0x04`: inherited BOD `list_flags`
     - `+0x24`: borrowed animated `Object* object`
     - `+0x38`: `live_matrix`
@@ -159,7 +160,8 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x108`: inline `anim_manager`
     - `+0x150`: five owned 0x80-byte animation donor slots
     - `+0x3d0`: `release_step`
-  - `+0x11e0`: repeated `PresentationAnimationChannel` jetpack lane
+  - `+0x11e0`: `jetpack_channel`, a fourth exact `cRWeapon` owner used for
+    the jetpack base/draw animation slots
   - `+0x15bc`: `wobble`
     - `+0x00`: `roll_phase`
     - `+0x04`: `roll_phase_step`
@@ -225,9 +227,12 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `slow_commentary_step`
   - `initialize_subgoldy` seeds the step to `1/60`
   - `update_subgoldy` resets the timer outside the narrow slow-movement band and triggers the native slow commentary once the timer exceeds `1.0`
-- the global jetpack presentation controller at `data_4df904 + 0x432700` reuses the same `PresentationAnimationChannel` shape
-  - `+0x11e0`: `jetpack_channel`
-  - `set_snail_jetpack` only mutates `jetpack_channel.selected_state` and routes the visible thrust lane through `set_weapon_animation(&controller->jetpack_channel, ...)`
+- `data_4df904 + 0x432700` is the embedded `Snail` itself, not a separate
+  global jetpack controller
+  - that Snail owns `Weapon jetpack_channel` at `+0x11e0`
+  - `set_snail_jetpack` mutates `jetpack_channel.selected_state` and routes
+    the visible thrust lane through the authored
+    `cRWeapon::SetAnimation(int, bool, int)` member
 - `player + 0x29a8` is `player->presentation.visual_root`, not a standalone sibling field
   - the currently safe `SnailVisual` sub-slice is:
     - `+0x10`: `flags`
@@ -327,7 +332,7 @@ Important caveat:
 
 ## Cameraman State
 
-The current high-confidence `CameramanState` prefix is:
+The current high-confidence `Cameraman` owner is:
 
 - `+0x00`: `live_matrix`
 - `+0x40`: `desired_matrix`
@@ -335,7 +340,7 @@ The current high-confidence `CameramanState` prefix is:
 - `+0xc0`: `player`
 - `+0xc4`: `game`
 - `+0xc8`: `fov_degrees`
-- `+0xcc`: unresolved byte flag
+- `+0xcc`: `force_camera_update`
 - `+0xd0`: `attachment_lift_envelope`
 - `+0xd4`: `smoothed_attachment_lift_envelope`
 
@@ -345,10 +350,11 @@ Current practical read:
 - `update_cameraman` builds `desired_matrix` from `player->cached_camera_target_world`, attachment and movement-side lift inputs, then interpolates `live_matrix` between `previous_desired_matrix` and `desired_matrix`
 - the current tracked IDA camera slice is now typed from the checked-in header, so the decompile uses `live_matrix`, `desired_matrix`, and `cached_camera_target_world` directly instead of raw matrix blocks and `player + 0x2964` float indexing
 
-Important caveat:
-
-- the byte at `+0xcc` is still unresolved and intentionally unnamed beyond “unresolved byte flag”
-- several player-side attachment and presentation inputs consumed by `update_cameraman` are still only partially typed
+The outer `cRSubGame::CameraAI()` path copies `force_camera_update` into
+`SubgameRuntime::camera_snap_requested`, matching the parallel
+`CutScene::force_camera_update` handoff. Several player-side attachment and
+presentation inputs consumed by `update_cameraman` are still only partially
+typed.
 
 ## Damage Gauge Controller
 
@@ -444,35 +450,48 @@ Current practical read:
   `SubHover*`, `Vector3*`, and `float`; Android's separate literal no-op
   `cRSubHover::Hover(tVector&, float)` proves the folded authored alias
 
-## Movement Visual State Controller
+## Weapon Presentation Owners
 
-The block rooted at `player + 0x2984` now has a stable enough behavioral shape to document, even though the full struct layout is still incomplete.
+The block rooted at `player + 0x2984` is the exact authored `cRSnail` owner.
+Its weapon presentation is not a flat state controller: the Snail owns three
+consecutive `cRWeapon` instances plus a fourth jetpack instance.
 
 High-confidence current read:
 
-- `update_player_movement_flags` feeds this block through `update_movement_visual_state_controller` at `0x445920`
-- the controller resolves one `movement_flags` mask into three channel states
-- those three channels live at offsets:
+- `update_player_movement_flags` feeds the authored
+  `cRSnail::SetWeapon(int)` member (`set_snail_weapon` at `0x445920`)
+- `SetWeapon` resolves one `movement_flags` mask into three Weapon states
+- the three `Weapon` owners live at Snail offsets:
   - `+0x64c`
   - `+0xa28`
   - `+0xe04`
-- each channel keeps its current selected state at:
+- each Weapon keeps its current selected state at:
   - `+0x750`
   - `+0xb2c`
   - `+0xf08`
 
-The transition helpers at `dispatch_cutscene_animation` (`0x444600`) and `0x4446e0` appear to be near-identical queue or start routines over adjacent channel structs:
+The paired queue/start helpers operate at two different ownership levels:
+
+- `dispatch_cutscene_animation` (`0x444600`) is
+  `cRSnail::SetAnimation(int, bool, int)` over the Snail root, its root
+  `AnimManager`, and ten owned animation slots
+- `set_weapon_animation` (`0x4446e0`) is
+  `cRWeapon::SetAnimation(int, bool, int)` over one Weapon, its inline
+  `AnimManager`, and five owned animation slots
 
 - when their third argument is non-zero, they immediately begin a selected state
 - when their third argument is zero, they append the requested state id to a small queued-transition list
-- both helpers read per-state records from pointer tables whose entries are selected by `state_id << 7`
+- both helpers select `0x80`-byte owned renderable slots with
+  `state_id << 7`, then borrow each slot's linked `Object::animation`
 
 Practical interpretation:
 
 - this is not the same system as the 12 movement-flag emitter slots updated at `player + 0x450`
-- the `+0x2984` block is a second layer that looks more like a queued visual-state or presentation controller
-- the same queue or start pattern also appears in the global jetpack-related controller rooted at `data_4df904 + 0x432700`, via helper `0x445860`
-- that separate jetpack-side controller keeps its selected state at `player + 0x12e4`
+- the `+0x2984` block is one embedded Snail, not a second anonymous visual
+  controller
+- the jetpack lane is `Snail::jetpack_channel` at `+0x11e0`; it is not a
+  separate global controller
+- that Weapon keeps its selected state at Snail `+0x12e4`
   - `0` = no thrust presentation
   - `4` = active thrust presentation
   - activation uses `set_weapon_animation(..., 1, ..., 4)` followed by a queued `0`
@@ -813,7 +832,10 @@ Current practical read:
   - the persistent replay scratch, bank rotation, saved replay return-owner writes, startup clear, and click-start suppressor are confirmed statically
   - BN static inspection now shows `data_4df904 + 0x4f2dc + 0x14` starts as zero and has no direct absolute xrefs outside the `update_new_game_menu` read, so the port keeps the replay-attract branch modeled but dormant instead of inventing a timer
   - the hide-release lane is now modeled as the recovered `+0x8` accumulator and `+0xc = 1/3600` step reset after each probe pass; the remaining static gap is the dormant launch-step producer at `+0x14`
-- one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
+- the former single-slot pickup-like window around `game + 0x355e08` lies
+  inside the exact `0xb4`-byte `SubSpeedUp` owner at `+0x355db0`; it is not a
+  second pickup and must not be merged with the adjacent `JetPack` at
+  `+0x355e64`
 
 ## Runtime Configuration
 
