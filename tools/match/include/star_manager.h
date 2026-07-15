@@ -21,12 +21,12 @@ typedef char StarManagerEntry_must_be_0x2c[
 
 class StarManager {
 public:
-    virtual int update_star_field_callback(); // vtable slot 0, points to update_star_field
-    int destroy_star_field(); // @ 0x434270, cRStarManager::UnInit
+    virtual void update_star_field_callback(); // vtable slot 0, points to update_star_field
+    void destroy_star_field(); // @ 0x434270, cRStarManager::UnInit
     void open_star_field(int star_count); // @ 0x4342c0, cRStarManager::Open
-    int initialize_star_field(); // @ 0x434310, cRStarManager::Init
-    int hide_star_field(); // @ 0x434670, cRStarManager::Hide
-    int unhide_star_field(); // @ 0x4346b0, cRStarManager::UnHide
+    void initialize_star_field(); // @ 0x434310, cRStarManager::Init
+    void hide_star_field(); // @ 0x434670, cRStarManager::Hide
+    void unhide_star_field(); // @ 0x4346b0, cRStarManager::UnHide
     void update_star_field(); // @ 0x4346f0, cRStarManager::AI
     void update_star_positions(float fade); // @ 0x434800, cRStarManager::UpdateStars
 

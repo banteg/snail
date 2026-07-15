@@ -2,7 +2,7 @@
 
 #include "star_manager.h"
 
-int StarManager::destroy_star_field()
+void StarManager::destroy_star_field()
 {
     int i = 0;
     int result = count;
@@ -13,5 +13,4 @@ int StarManager::destroy_star_field()
     }
 
     state = 0;
-    return result;
 }

@@ -2,8 +2,8 @@
 /* function: initialize_star_field @ 0x434310 */
 /* selector: initialize_star_field */
 
-// Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`.
-int32_t __thiscall initialize_star_field(StarManager *manager)
+// Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Both direct Windows callers ignore a result and its inherited callback target is the void `cRStarManager::AI()`, proving this lifecycle member is void. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`.
+void __thiscall initialize_star_field(StarManager *manager)
 {
   int32_t v2; // edi
   int v3; // ebx
@@ -30,20 +30,20 @@ int32_t __thiscall initialize_star_field(StarManager *manager)
   StarManagerEntry *v24; // eax
   Vec3 *v25; // edx
   int math_random_value; // [esp+10h] [ebp-60h]
-  float v28; // [esp+14h] [ebp-5Ch]
-  float v29; // [esp+18h] [ebp-58h]
-  float v30; // [esp+1Ch] [ebp-54h]
-  float v31; // [esp+20h] [ebp-50h]
-  float v32; // [esp+24h] [ebp-4Ch]
-  float v33; // [esp+30h] [ebp-40h]
-  float v34; // [esp+34h] [ebp-3Ch]
-  float v35; // [esp+38h] [ebp-38h]
-  float v36; // [esp+40h] [ebp-30h]
-  float v37; // [esp+44h] [ebp-2Ch]
-  float v38; // [esp+48h] [ebp-28h]
-  float v39; // [esp+4Ch] [ebp-24h]
-  float v40; // [esp+54h] [ebp-1Ch]
-  float v41; // [esp+58h] [ebp-18h]
+  float v27; // [esp+14h] [ebp-5Ch]
+  float v28; // [esp+18h] [ebp-58h]
+  float v29; // [esp+1Ch] [ebp-54h]
+  float v30; // [esp+20h] [ebp-50h]
+  float v31; // [esp+24h] [ebp-4Ch]
+  float v32; // [esp+30h] [ebp-40h]
+  float v33; // [esp+34h] [ebp-3Ch]
+  float v34; // [esp+38h] [ebp-38h]
+  float v35; // [esp+40h] [ebp-30h]
+  float v36; // [esp+44h] [ebp-2Ch]
+  float v37; // [esp+48h] [ebp-28h]
+  float v38; // [esp+4Ch] [ebp-24h]
+  float v39; // [esp+54h] [ebp-1Ch]
+  float v40; // [esp+58h] [ebp-18h]
   struct tColour color; // [esp+60h] [ebp-10h] BYREF
 
   v2 = 0;
@@ -70,21 +70,22 @@ int32_t __thiscall initialize_star_field(StarManager *manager)
         manager->entries[v6].alpha_scale = ((double)next_math_random_value() - 16384.0) * 0.0000061035157 + 0.40000001;
       else
         manager->entries->alpha_scale = 0.40000001;
-      v36 = *((float *)g_game_base + 438) * 50.0;
-      v37 = *((float *)g_game_base + 439) * 50.0;
-      v29 = *((float *)g_game_base + 437) * 50.0 + *((float *)g_game_base + 441);
-      v30 = v36 + *((float *)g_game_base + 442);
+      v35 = g_game_base->overlay_0.bod.transform.basis_forward.y * 50.0;
+      v36 = g_game_base->overlay_0.bod.transform.basis_forward.z * 50.0;
+      v28 = g_game_base->overlay_0.bod.transform.basis_forward.x * 50.0
+          + g_game_base->overlay_0.bod.transform.position.x;
+      v29 = v35 + g_game_base->overlay_0.bod.transform.position.y;
       p_position = &manager->entries[v6].position;
-      v31 = v37 + *((float *)g_game_base + 443);
-      p_position->x = v29;
-      p_position->y = v30;
-      p_position->z = v31;
-      v28 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
+      v30 = v36 + g_game_base->overlay_0.bod.transform.position.z;
+      p_position->x = v28;
+      p_position->y = v29;
+      p_position->z = v30;
+      v27 = ((double)next_math_random_value() - 16384.0) * 0.000061035156;
       math_random_value = next_math_random_value();
       p_velocity = &manager->entries[v6].velocity;
-      v32 = ((double)math_random_value - 16384.0) * 0.000061035156;
-      p_velocity->x = v32;
-      p_velocity->y = v28;
+      v31 = ((double)math_random_value - 16384.0) * 0.000061035156;
+      p_velocity->x = v31;
+      p_velocity->y = v27;
       p_velocity->z = 0.0;
       normalize_vector(&manager->entries[v6].velocity);
       v9 = next_math_random_value();
@@ -101,18 +102,18 @@ int32_t __thiscall initialize_star_field(StarManager *manager)
       v14 = manager->entries;
       travel_distance = v14[v6].travel_distance;
       v16 = &v14[v6].position.x;
-      v38 = travel_distance * v14[v6].velocity.x;
-      v39 = travel_distance * v14[v6].velocity.y;
+      v37 = travel_distance * v14[v6].velocity.x;
+      v38 = travel_distance * v14[v6].velocity.y;
       speed = v14[v6].speed;
+      v39 = v37 / speed;
       v40 = v38 / speed;
-      v41 = v39 / speed;
-      v33 = v40 + *v16;
-      v34 = v41 + v14[v6].position.y;
+      v32 = v39 + *v16;
+      v33 = v40 + v14[v6].position.y;
       v18 = travel_distance * v14[v6].velocity.z / speed + v14[v6].position.z;
-      *v16 = v33;
-      v16[1] = v34;
-      v35 = v18;
-      v16[2] = v35;
+      *v16 = v32;
+      v16[1] = v33;
+      v34 = v18;
+      v16[2] = v34;
       sprite = manager->entries[v6].sprite;
       sprite->flags |= 0x402u;
       manager->entries[v6].sprite->progress = 0.0;
@@ -139,6 +140,5 @@ int32_t __thiscall initialize_star_field(StarManager *manager)
     }
     while ( v5 < manager->count );
   }
-  return (*(int32_t (__thiscall **)(StarManager *))manager->bod.bod.vtable)(manager);
+  (*(void (__thiscall **)(StarManager *))manager->bod.bod.vtable)(manager);
 }
-

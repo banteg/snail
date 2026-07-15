@@ -13,8 +13,6 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
-typedef struct TransformMatrix TransformMatrix;
-
 typedef struct Vec3 {
     float x;
     float y;

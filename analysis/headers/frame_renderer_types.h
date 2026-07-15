@@ -117,6 +117,13 @@ struct FrameBodBase {
     FrameColor4f color;
 };
 
+typedef struct FrameRenderableBod {
+    FrameBodBase bod;
+    FrameTransformMatrix transform;
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x04];
+} FrameRenderableBod;
+
 typedef struct FrameRenderCamera {
     uint8_t unknown_00[0x38];
     FrameTransformMatrix transform;
@@ -126,6 +133,12 @@ typedef struct FrameRenderCamera {
     float fov_degrees;
     uint32_t render_mask;
 } FrameRenderCamera;
+
+typedef struct FrameOverlay {
+    FrameRenderableBod bod;
+    FrameRenderCamera camera;
+    float rotation_step;
+} FrameOverlay;
 
 typedef struct GamePlayer {
     void* vtable;
@@ -226,7 +239,10 @@ typedef struct GameRoot {
     FrameBodBase inactive_bod_sentinel;
     FrameBodList active_bod_list;
     FrameRenderCameraSlot render_camera_slots[5];
-    uint8_t unknown_00067c[0xb24 - 0x67c];
+    FrameOverlay overlay_0;
+    FrameOverlay overlay_1;
+    FrameOverlay overlay_2;
+    uint8_t unknown_000a60[0xb24 - 0xa60];
     TextureSetSelector texture_set_selector;
     int32_t unknown_000b48;
     FrameBorderManager border_manager;

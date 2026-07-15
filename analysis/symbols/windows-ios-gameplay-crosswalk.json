@@ -3104,7 +3104,7 @@
       "android_symbol": "cRStarManager::UnInit()",
       "source_object": "Star.o",
       "confidence": "high",
-      "notes": "The exact Windows lifecycle edge kills every owned sprite, clears the fixed 0x2c-byte entry records, and resets the root-owned cRStarManager state."
+      "notes": "The exact void Windows lifecycle edge kills every owned sprite, clears the fixed 0x2c-byte entry records, and resets the root-owned cRStarManager state. Its sole caller discards the incidental count left in EAX."
     },
     {
       "address": "0x4342c0",
@@ -3122,7 +3122,7 @@
       "android_symbol": "cRStarManager::Init()",
       "source_object": "Star.o",
       "confidence": "high",
-      "notes": "All ports initialize the same root-owned cRStarManager and its 0x2c-byte streak entries. The near-exact Windows source retains four honest scheduling residuals."
+      "notes": "All ports initialize the same root-owned cRStarManager and its 0x2c-byte streak entries. Both direct Windows callers ignore a result and its callback target is the void AI member, proving a void ABI. The near-exact Windows source retains four honest scheduling residuals."
     },
     {
       "address": "0x434670",
@@ -3130,7 +3130,8 @@
       "ios_symbol": "cRStarManager::Hide()",
       "android_symbol": "cRStarManager::Hide()",
       "source_object": "Star.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All six Windows callers discard EAX, proving the exact member is void; the observed count is loop-control residue."
     },
     {
       "address": "0x4346b0",
@@ -3138,7 +3139,8 @@
       "ios_symbol": "cRStarManager::UnHide()",
       "android_symbol": "cRStarManager::UnHide()",
       "source_object": "Star.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Both Windows callers discard EAX, proving the exact member is void; the observed count is loop-control residue."
     },
     {
       "address": "0x4346f0",

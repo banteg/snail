@@ -16,7 +16,7 @@ inline Vector3 operator/(const Vector3& vector, float scale)
     return Vector3(vector.x / scale, vector.y / scale, vector.z / scale);
 }
 
-int StarManager::initialize_star_field()
+void StarManager::initialize_star_field()
 {
     int i = 0;
     if (count > 0) {
@@ -92,5 +92,5 @@ int StarManager::initialize_star_field()
         } while (index < count);
     }
 
-    return update_star_field_callback();
+    update_star_field_callback();
 }

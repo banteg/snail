@@ -2008,7 +2008,7 @@
     {
       "address": "0x434270",
       "name": "destroy_star_field",
-      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0. Cross-port Android symbols match this exact member to `cRStarManager::UnInit()`."
+      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0. This is a void lifecycle edge; its sole Windows caller discards the incidental count left in EAX. Cross-port Android symbols match this exact member to `cRStarManager::UnInit()`."
     },
     {
       "address": "0x4342c0",
@@ -2018,17 +2018,17 @@
     {
       "address": "0x434310",
       "name": "initialize_star_field",
-      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`."
+      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Both direct Windows callers ignore a result and its inherited callback target is the void `cRStarManager::AI()`, proving this lifecycle member is void. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`."
     },
     {
       "address": "0x434670",
       "name": "hide_star_field",
-      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state. Cross-port Android and iOS symbols match this exact member to `cRStarManager::Hide()`."
+      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state. All six Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::Hide()`."
     },
     {
       "address": "0x4346b0",
       "name": "unhide_star_field",
-      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller. Cross-port Android and iOS symbols match this exact member to `cRStarManager::UnHide()`."
+      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller. Both Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::UnHide()`."
     },
     {
       "address": "0x4346f0",

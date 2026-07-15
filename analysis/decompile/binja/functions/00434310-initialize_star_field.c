@@ -19,11 +19,11 @@
 00434377        if (i_1 != 0)
 004343a7        *(&manager->entries->alpha_scale + edi_1) = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351572e-06f) + fconvert.t(0.400000006f))
 0043437c        manager->entries->alpha_scale = 0.400000006f
-004343ab        char* game_base_1 = g_game_base
-004343f4        float var_54_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(game_base_1 + 0x6d8)) * fconvert.t(50f))) + fconvert.t(*(game_base_1 + 0x6e8)))
+004343ab        struct GameRoot* game_base_1 = g_game_base
+004343f4        float var_54_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.y) * fconvert.t(50f))) + fconvert.t(game_base_1->overlay_0.bod.transform.position.y))
 00434405        float* ecx_2 = &manager->entries->position + edi_1
-0043440d        float var_50_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(game_base_1 + 0x6dc)) * fconvert.t(50f))) + fconvert.t(*(game_base_1 + 0x6ec)))
-00434411        *ecx_2 = fconvert.s(fconvert.t(*(game_base_1 + 0x6d4)) * fconvert.t(50f) + fconvert.t(*(game_base_1 + 0x6e4)))
+0043440d        float var_50_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.z) * fconvert.t(50f))) + fconvert.t(game_base_1->overlay_0.bod.transform.position.z))
+00434411        *ecx_2 = fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.x) * fconvert.t(50f) + fconvert.t(game_base_1->overlay_0.bod.transform.position.x))
 00434417        ecx_2[1] = var_54_1
 0043441a        ecx_2[2] = var_50_1
 00434436        float var_5c_1 = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351562e-05f))
@@ -81,4 +81,5 @@
 00434644        edx_18[2] = *(eax_33 + 0xc)
 0043464e        *(*(&manager->entries->sprite + edi_1) + 0x8c) = 0
 00434659        do while (i_1 s< manager->count)
-0043466c        return (*manager->bod.bod.vtable)()
+00434663        (*manager->bod.bod.vtable)()
+0043466c        return

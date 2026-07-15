@@ -5,7 +5,7 @@
 
 004346ff        switch (manager->state)
 0043470d        case 0
-0043470d        if ((data_4df934 & 4) != 0)
+0043470d        if ((g_runtime_config.render_flags.b & 4) != 0)
 00434715        manager->state = 2
 0043471c        initialize_star_field(manager)
 00434725        manager->state = 2
@@ -14,13 +14,13 @@
 0043473a        update_star_positions(manager, 0f)
 004347c2        case 1
 004347c2        update_star_positions(manager, 1f)
-004347ce        if ((data_4df934 & 4) == 0)
+004347ce        if ((g_runtime_config.render_flags.b & 4) == 0)
 004347d0        manager->fade = 1f
 004347d7        manager->fade_step = 0.020833334f
 004347de        manager->state = 3
 00434747        case 2
 00434747        update_star_positions(manager, manager->fade)
-00434753        if ((data_4df934 & 4) == 0)
+00434753        if ((g_runtime_config.render_flags.b & 4) == 0)
 004347de        manager->state = 3
 0043475c        long double x87_r7_2 = fconvert.t(manager->fade_step) + fconvert.t(manager->fade)
 0043475f        manager->fade = fconvert.s(x87_r7_2)
@@ -30,7 +30,7 @@
 0043476f        manager->state = 1
 0043477e        case 3
 0043477e        update_star_positions(manager, manager->fade)
-0043478a        if ((data_4df934 & 4) != 0)
+0043478a        if ((g_runtime_config.render_flags.b & 4) != 0)
 0043478c        manager->state = 2
 00434794        return
 00434798        long double x87_r7_4 = fconvert.t(manager->fade) - fconvert.t(manager->fade_step)

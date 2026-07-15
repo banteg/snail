@@ -1,8 +1,8 @@
-// unhide_star_field @ 0x4346b0 (thiscall, ret int)
+// unhide_star_field @ 0x4346b0 (thiscall)
 
 #include "star_manager.h"
 
-int StarManager::unhide_star_field()
+void StarManager::unhide_star_field()
 {
     int result = state;
     if (result != 0) {
@@ -12,5 +12,4 @@ int StarManager::unhide_star_field()
             result = count;
         }
     }
-    return result;
 }

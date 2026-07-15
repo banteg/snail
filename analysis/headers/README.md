@@ -205,7 +205,9 @@ The overlay lane depends on the presentation types and adds the complete
 catalog lane now carries the complete constructor-proven `0x25cfb4` owner and
 uses it for both startup enumeration methods. The tiny `SubgameOwnerLink`
 view keeps the folded challenge/thanks startup binding typed without asserting
-a shared concrete screen base class.
+a shared concrete screen base class. The IDA frame-root replay mirrors the
+same three overlays at `GameRoot +0x67c`, `+0x7c8`, and `+0x914`, replacing the
+older opaque `0x4a8`-byte block without inventing fields past their exact end.
 
 The star-manager lane records the cross-port `cRStarManager` owner, its
 constructed `BodBase` prefix, the `0x2c` entry stride, and the lifecycle fields
@@ -215,7 +217,12 @@ and `TextureRef` prerequisites too. Its replay compares their exact expected
 sizes, selectively repairs only missing or incomplete definitions, and batches
 field/prototype verification. BN treats forward-only redeclarations as
 destructive, so this lane remains monotonic instead of erasing complete shared
-layouts while adding the star-manager types.
+layouts while adding the star-manager types. The replay also records the void
+`Init`, `UnInit`, `Hide`, and `UnHide` lifecycle ABI proven by their callers;
+the count values left in EAX are loop-control residue rather than results. Its
+IDA import refuses forward-only shared declarations and verifies the exact
+`Sprite`, `StarManagerEntry`, and `StarManager` sizes before changing any
+prototype.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

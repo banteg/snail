@@ -523,11 +523,35 @@ def test_struct_exists_accepts_complete_layout(monkeypatch) -> None:
 
 def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     source = (BINJA_DIR / "sync_star_manager_types.py").read_text(encoding="utf-8")
+    ida_source = (IDA_DIR / "apply_star_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        Path(__file__).parents[1] / "tools/match/include/star_manager.h"
+    ).read_text(encoding="utf-8")
 
     assert "types_declare_missing_only" in source
     assert "current_struct_size" in source
     assert '"Sprite": 0xB4' in source
     assert "types_declare(" not in source
+    for function_name in (
+        "destroy_star_field",
+        "initialize_star_field",
+        "hide_star_field",
+        "unhide_star_field",
+    ):
+        assert f"void __thiscall {function_name}(StarManager* manager)" in source
+        assert f"void __thiscall {function_name}(StarManager *manager);" in ida_source
+        assert f"void {function_name}();" in matcher_header
+        assert f"int {function_name}();" not in matcher_header
+    assert "virtual void update_star_field_callback();" in matcher_header
+    assert "noncanonical_star_manager_header" in ida_source
+    assert "EXPECTED_OWNER_SIZES" in ida_source
+    assert "owner_size_mismatch" in ida_source
+    star_analysis_header = (HEADER_DIR / "star_manager_types.h").read_text(
+        encoding="utf-8"
+    )
+    assert "typedef struct TransformMatrix TransformMatrix;" not in star_analysis_header
 
 
 def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
@@ -2015,6 +2039,13 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
         assert "FrameBorderManager border_manager;" in header
         assert "uint8_t unknown_044100[0x74618 - 0x44100];" in header
         assert "unknown_000b48[0x74618 - 0xb48]" not in header
+
+    assert "typedef struct FrameRenderableBod" in ida_header
+    assert "typedef struct FrameOverlay" in ida_header
+    assert "FrameOverlay overlay_0;" in ida_header
+    assert "FrameOverlay overlay_1;" in ida_header
+    assert "FrameOverlay overlay_2;" in ida_header
+    assert "uint8_t unknown_00067c[0xb24 - 0x67c];" not in ida_header
 
     assert '("0x4df904", "GameRoot*")' in binja_sync
     assert (

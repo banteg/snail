@@ -2,32 +2,26 @@
 /* function: unhide_star_field @ 0x4346b0 */
 /* selector: unhide_star_field */
 
-// Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller.
-int32_t __thiscall unhide_star_field(StarManager *manager)
+// Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller. Both Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::UnHide()`.
+void __thiscall unhide_star_field(StarManager *manager)
 {
-  int32_t result; // eax
-  int32_t v2; // edx
-  int v3; // esi
+  int32_t v1; // edx
+  int v2; // esi
   Sprite *sprite; // eax
 
-  result = manager->state;
-  if ( result )
+  if ( manager->state )
   {
-    result = manager->count;
-    v2 = 0;
-    if ( result > 0 )
+    v1 = 0;
+    if ( manager->count > 0 )
     {
-      v3 = 0;
+      v2 = 0;
       do
       {
-        sprite = manager->entries[v3++].sprite;
-        ++v2;
+        sprite = manager->entries[v2++].sprite;
+        ++v1;
         sprite->flags |= 0x40u;
-        result = manager->count;
       }
-      while ( v2 < result );
+      while ( v1 < manager->count );
     }
   }
-  return result;
 }
-

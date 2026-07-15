@@ -1120,7 +1120,9 @@
       "name": "ida_star_manager_sprite_fields_intact",
       "artifact": "analysis/decompile/ida/functions/00434310-initialize_star_field.c",
       "required_substrings": [
+        "void __thiscall initialize_star_field",
         "manager->entries",
+        "g_game_base->overlay_0.bod.transform",
         "travel_distance",
         "alpha_scale",
         "tColour color",
@@ -1130,8 +1132,58 @@
       ],
       "forbidden_substrings": [
         "Color4f",
+        "unknown_00067c",
+        "*((float *)g_game_base",
+        "return (*(int32_t",
         "_pad_",
         "__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_destroy_star_field_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00434270-destroy_star_field.c",
+      "required_substrings": [
+        "void __thiscall destroy_star_field(StarManager *manager)",
+        "manager->entries",
+        "manager->state = 0"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall destroy_star_field",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_hide_star_field_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00434670-hide_star_field.c",
+      "required_substrings": [
+        "void __thiscall hide_star_field(StarManager *manager)",
+        "manager->state",
+        "manager->count",
+        "sprite->flags &= ~0x40u"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall hide_star_field",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_unhide_star_field_void_abi",
+      "artifact": "analysis/decompile/ida/functions/004346b0-unhide_star_field.c",
+      "required_substrings": [
+        "void __thiscall unhide_star_field(StarManager *manager)",
+        "manager->state",
+        "manager->count",
+        "sprite->flags |= 0x40u"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall unhide_star_field",
+        "return result",
         "__asm",
         "_ET1"
       ]

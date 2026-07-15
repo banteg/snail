@@ -154,17 +154,17 @@ PROTO_UPDATES = (
         "get_sprite_texture_ref",
         "void* __stdcall get_sprite_texture_ref(int32_t texture_id)",
     ),
-    ("destroy_star_field", "int32_t __thiscall destroy_star_field(StarManager* manager)"),
+    ("destroy_star_field", "void __thiscall destroy_star_field(StarManager* manager)"),
     (
         "open_star_field",
         "void __thiscall open_star_field(StarManager* manager, int32_t star_count)",
     ),
     (
         "initialize_star_field",
-        "int32_t __thiscall initialize_star_field(StarManager* manager)",
+        "void __thiscall initialize_star_field(StarManager* manager)",
     ),
-    ("hide_star_field", "int32_t __thiscall hide_star_field(StarManager* manager)"),
-    ("unhide_star_field", "int32_t __thiscall unhide_star_field(StarManager* manager)"),
+    ("hide_star_field", "void __thiscall hide_star_field(StarManager* manager)"),
+    ("unhide_star_field", "void __thiscall unhide_star_field(StarManager* manager)"),
     ("update_star_field", "void __thiscall update_star_field(StarManager* manager)"),
     (
         "update_star_positions",

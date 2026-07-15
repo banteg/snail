@@ -16,7 +16,7 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "destroy_star_field",
-        "int32_t __thiscall destroy_star_field(StarManager *manager);",
+        "void __thiscall destroy_star_field(StarManager *manager);",
     ),
     (
         "open_star_field",
@@ -24,15 +24,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_star_field",
-        "int32_t __thiscall initialize_star_field(StarManager *manager);",
+        "void __thiscall initialize_star_field(StarManager *manager);",
     ),
     (
         "hide_star_field",
-        "int32_t __thiscall hide_star_field(StarManager *manager);",
+        "void __thiscall hide_star_field(StarManager *manager);",
     ),
     (
         "unhide_star_field",
-        "int32_t __thiscall unhide_star_field(StarManager *manager);",
+        "void __thiscall unhide_star_field(StarManager *manager);",
     ),
     (
         "update_star_field",
@@ -43,6 +43,23 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_star_positions(StarManager *manager, float fade_alpha);",
     ),
 ]
+
+REQUIRED_OWNER_MARKERS = (
+    "struct Sprite {",
+    "float facing_refresh_progress;",
+    "typedef struct StarManagerEntry {",
+    "typedef struct StarManager {",
+)
+
+FORBIDDEN_DESTRUCTIVE_DECLARATIONS = (
+    "typedef struct TransformMatrix TransformMatrix;",
+)
+
+EXPECTED_OWNER_SIZES = {
+    "Sprite": 0xB4,
+    "StarManagerEntry": 0x2C,
+    "StarManager": 0x4C,
+}
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -62,6 +79,13 @@ def _normalize_type_text(value: str | None) -> str | None:
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
 
 
 def _sync_initialize_color_lvar() -> dict[str, object]:
@@ -111,9 +135,71 @@ def _sync_initialize_color_lvar() -> dict[str, object]:
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
+    header_text = header_path.read_text(encoding="utf-8")
+    missing_owner_markers = [
+        marker for marker in REQUIRED_OWNER_MARKERS if marker not in header_text
+    ]
+    destructive_declarations = [
+        declaration
+        for declaration in FORBIDDEN_DESTRUCTIVE_DECLARATIONS
+        if declaration in header_text
+    ]
+    if missing_owner_markers or destructive_declarations:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "applied": 0,
+                    "missing_owner_markers": missing_owner_markers,
+                    "destructive_declarations": destructive_declarations,
+                    "failed": [
+                        {
+                            "reason": "noncanonical_star_manager_header",
+                            "detail": (
+                                "refusing to replace shared IDA types with a sparse "
+                                "or forward-only StarManager compatibility header"
+                            ),
+                        }
+                    ],
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     # Sprite is shared by several narrow ownership lanes. Replace any earlier
     # partial declaration so this full 0xb4-byte owner remains authoritative.
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE | idc.PT_REPLACE)
+    owner_sizes = {
+        name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES
+    }
+    size_failures = [
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": owner_sizes[name],
+        }
+        for name, expected_size in EXPECTED_OWNER_SIZES.items()
+        if owner_sizes[name] != expected_size
+    ]
+    if parse_errors or size_failures:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "applied": 0,
+                    "owner_sizes": owner_sizes,
+                    "failed": size_failures,
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     applied = 0
     unchanged = 0
     missing = []
@@ -158,6 +244,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "owner_sizes": owner_sizes,
                 "color_lvar": color_lvar,
                 "missing": missing,
                 "failed": failed,

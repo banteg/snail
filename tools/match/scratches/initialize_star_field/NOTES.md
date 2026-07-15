@@ -7,6 +7,9 @@
 - The final call is the first vtable slot on the star-field object; the scratch
   models that slot as `update_star_field_callback()` while the named
   `update_star_field()` body remains the concrete callback at `0x4346f0`.
+  Because that installed callback and both direct initializer callsites are
+  void-valued, `cRStarManager::Init()` and its inherited callback slot are now
+  modeled as `void`; the tail call remains byte-identical.
 
 ## Recovered source shape
 
