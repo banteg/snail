@@ -36,8 +36,8 @@ prefix, and three clean masked operands. The immediate path is exact; remaining
 shape debt is the equivalent `eax`/`edx` ownership swap in the queued-animation
 tail.
 
-2026-06-17 consolidation: `PresentationAnimationChannel` is now shared in
-`tools/match/include/presentation_animation_channel.h`. The repeated
+2026-06-17 consolidation: the animation channel is now shared in
+`tools/match/include/weapon.h`. The repeated
 presentation blocks start at the full channel bases (`+0x64c`, `+0xa28`,
 `+0xe04`, and jetpack `+0x11e0`), with `selected_state` at channel `+0x104`
 and the `AnimManager` at channel `+0x108`. Earlier local views that started at
@@ -52,7 +52,7 @@ codegen-neutral; the queued branch still keeps `queue_count` in `eax` and
 `animation_id` in `edx`, opposite native.
 
 2026-07-12 object/slot ownership: the synthetic field-first slot view is
-retired. `PresentationAnimationChannel` owns five complete renderable slots at
+retired. `Weapon` owns five complete renderable slots at
 `+0x150`, while the source retains an `Object**` to each inherited `+0x24`
 link so VC6 preserves the exact immediate-path address shape. Focused matching
 remains 94.55%, 55/55, prefix 48, with three clean operands.
@@ -79,7 +79,7 @@ prefix. The plain queue append remains an honest register-owner residual at
 94.55%; no dummy alias or compiler barrier is retained to recover the old
 98.18% score.
 
-2026-07-14 renderable-owner closure: `PresentationAnimationChannel` now
+2026-07-14 renderable-owner closure: `Weapon` now
 inherits the complete `RenderableBod` prefix. Its five slot bodies remain
 owned children and its first derived field remains the render-manager backlink
 at `+0x78`. Focused output is byte-identical at the honest 94.55%, 55/55
@@ -91,3 +91,10 @@ loop, ping-pong, once, and reverse-once modes. The third parameter is therefore
 named `mode_flags`, while `-1` is retained as the caller-side preserve-current
 sentinel and is never stored. This is distinct from queued animation id `-1`,
 which hides the target model when consumed.
+
+2026-07-15 authored-owner closure: Android retains
+`cRWeapon::SetAnimation(int, bool, int)` and `cRWeapon::AI()`, while iOS retains
+the cRWeapon RTTI and vtable. The Windows constructor creates four identical
+0x3dc-byte instances and installs the same callback slot on each. The former
+synthetic presentation-channel type is therefore retired in favor of the exact
+`Weapon` owner. The field layout and focused code remain unchanged.

@@ -2646,9 +2646,10 @@
       "artifact": "analysis/decompile/binja/functions/004086d0-initialize_player_presentation_controller.c",
       "required_substrings": [
         "initialize_player_presentation_controller",
-        "presentation->weapon_channels[0].vtable",
-        "presentation->jetpack_channel.vtable",
-        "presentation->invincible_shell.vtable",
+        "snail->weapon_channels[0].body.bod.bod.vtable",
+        "snail->jetpack_channel.body.bod.bod.vtable",
+        "snail->invincible_shell.body.bod.bod.vtable",
+        "g_weapon_noop_vtable",
         "g_player_presentation_noop_vtable"
       ],
       "forbidden_substrings": [
@@ -2663,9 +2664,10 @@
       "artifact": "analysis/decompile/ida/functions/004086d0-initialize_player_presentation_controller.c",
       "required_substrings": [
         "initialize_player_presentation_controller",
-        "presentation->weapon_channels[0].vtable",
-        "presentation->jetpack_channel.vtable",
-        "presentation->invincible_shell.vtable",
+        "snail->weapon_channels[0].body.bod.bod.vtable",
+        "snail->jetpack_channel.body.bod.bod.vtable",
+        "snail->invincible_shell.body.bod.bod.vtable",
+        "g_weapon_noop_vtable",
         "g_player_presentation_noop_vtable"
       ],
       "forbidden_substrings": [

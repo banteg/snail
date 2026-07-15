@@ -1298,14 +1298,15 @@ struct AnimManager {
     PresentationAnimationSlot* animation_slots;
 };
 
-typedef struct PresentationAnimationChannel {
+/* Authored cRWeapon, exact 0x3dc-byte animation-channel owner. */
+typedef struct Weapon {
     RenderableBod body;
     uint8_t _pad_80[0x104 - 0x80];
     int32_t selected_state;
     AnimManager anim_manager;
     PresentationAnimationSlot animation_slots[5];
     Vec3 release_step;
-} PresentationAnimationChannel;
+} Weapon;
 
 /* Authored cRSnailSkin, exact 0x20-byte material-selection owner. */
 typedef struct SnailSkin {
@@ -1354,8 +1355,8 @@ typedef struct Snail {
     Player* owner_player;
     AnimManager anim_manager;
     PresentationAnimationSlot cutscene_animation_slots[10];
-    PresentationAnimationChannel weapon_channels[3];
-    PresentationAnimationChannel jetpack_channel;
+    Weapon weapon_channels[3];
+    Weapon jetpack_channel;
     PresentationWobbleController wobble;
     RenderableBod snail_hotspot_source_body;
     RenderableBod snail_hotspot_body;
@@ -2074,7 +2075,7 @@ void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
 void __thiscall update_snail_skin(Snail* snail);
 void __thiscall initialize_anim_manager(AnimManager* manager);
 void __thiscall update_anim_manager(AnimManager* manager);
-void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
+void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 void __thiscall store_color4f(tColour* color, float r, float g, float b, float a);

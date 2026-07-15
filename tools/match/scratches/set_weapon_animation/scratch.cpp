@@ -2,9 +2,9 @@
 
 #include "object_animation_types.h"
 #include "object_render_types.h"
-#include "presentation_animation_channel.h"
+#include "weapon.h"
 
-void PresentationAnimationChannel::set_weapon_animation(
+void Weapon::set_weapon_animation(
     int animation_id,
     bool immediate,
     int mode_flags)

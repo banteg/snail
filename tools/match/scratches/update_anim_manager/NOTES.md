@@ -36,7 +36,7 @@ until a source shape recovers native's `edx` zero lane without extra saves.
   the same manager fields through `+0x44`, independently confirming the exact
   0x48-byte Windows owner and the queue/backlink/pointer roles.
 - The manager is embedded at `Snail +0x104` and at
-  `PresentationAnimationChannel +0x108`. In both owners, its `+0x44` pointer is
+  `Weapon +0x108`. In both owners, its `+0x44` pointer is
   the byte immediately following the manager and the actual base of the first
   inline `RenderableBod` slot. Its animated-object link is the inherited
   `BodBase::object` at slot `+0x24`; the old biased-base name obscured that

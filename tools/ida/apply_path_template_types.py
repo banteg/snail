@@ -52,7 +52,7 @@ TRUSTED_NAMES = [
     (0x4AC5C8, "g_default_tip_message"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
-    (0x49735C, "g_presentation_animation_channel_noop_vtable"),
+    (0x49735C, "g_weapon_noop_vtable"),
     (0x503290, "g_loading_bar"),
 ]
 
@@ -437,7 +437,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_weapon_animation",
-        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
+        "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
     ),
     (
         "update_snail_skin_transition",

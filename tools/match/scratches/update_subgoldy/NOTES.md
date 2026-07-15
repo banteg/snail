@@ -217,7 +217,7 @@ source-shape issue is solved.
   290 ok / 1 jump-table masked-audit regression. Keep the compact local sound
   view until the follow-switch layout issue is fixed.
 - 2026-06-17 animation-channel correction: the repeated weapon/jetpack
-  presentation blocks are full `PresentationAnimationChannel` objects, not
+  presentation blocks are full authored `Weapon` objects, not
   manager-starting lanes. `selected_state` lives at channel `+0x104`, the
   `AnimManager` at channel `+0x108`, and the channel stride is `0x3dc`.
   `update_subgoldy` can use the shared channel header without changing its

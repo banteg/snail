@@ -56,7 +56,7 @@ SYMBOL_UPDATES = (
     ("0x4ac5c8", "g_default_tip_message"),
     ("0x497354", "g_player_presentation_noop_vtable"),
     ("0x497358", "g_invincible_shell_update_vtable"),
-    ("0x49735c", "g_presentation_animation_channel_noop_vtable"),
+    ("0x49735c", "g_weapon_noop_vtable"),
 )
 
 SNAIL_FIELD_UPDATES = (
@@ -66,8 +66,8 @@ SNAIL_FIELD_UPDATES = (
     ("0x100", "owner_player", "Player*"),
     ("0x104", "anim_manager", "AnimManager"),
     ("0x14c", "cutscene_animation_slots", "PresentationAnimationSlot[0xa]"),
-    ("0x64c", "weapon_channels", "PresentationAnimationChannel[0x3]"),
-    ("0x11e0", "jetpack_channel", "PresentationAnimationChannel"),
+    ("0x64c", "weapon_channels", "Weapon[0x3]"),
+    ("0x11e0", "jetpack_channel", "Weapon"),
     ("0x15cc", "snail_hotspot_source_body", "RenderableBod"),
     ("0x164c", "snail_hotspot_body", "RenderableBod"),
     ("0x1894", "invincible_shell", "Invincible"),
@@ -75,7 +75,7 @@ SNAIL_FIELD_UPDATES = (
     ("0x1958", "cutscene", "CutScene"),
 )
 
-PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES = (
+WEAPON_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x104", "selected_state", "int32_t"),
     ("0x108", "anim_manager", "AnimManager"),
@@ -259,7 +259,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ObjectAnimation",
     "PresentationAnimationSlot",
     "AnimManager",
-    "PresentationAnimationChannel",
+    "Weapon",
     "GolbShot",
     "Player",
     "JetParticleSlot",
@@ -934,7 +934,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "set_weapon_animation",
-        "void __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
+        "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags)",
     ),
     (
         "initialize_anim_manager",
@@ -1439,10 +1439,7 @@ def main() -> int:
                 ("Tutorial", TUTORIAL_FIELD_UPDATES),
                 ("Player", PLAYER_FIELD_UPDATES),
                 ("Snail", SNAIL_FIELD_UPDATES),
-                (
-                    "PresentationAnimationChannel",
-                    PRESENTATION_ANIMATION_CHANNEL_FIELD_UPDATES,
-                ),
+                ("Weapon", WEAPON_FIELD_UPDATES),
                 ("AnimManager", ANIM_MANAGER_FIELD_UPDATES),
                 ("Invincible", INVINCIBLE_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),

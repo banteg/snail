@@ -19,19 +19,19 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   uint32_t v14; // eax
   double completion_row_start; // st7
   Player *p_player; // edi
-  PresentationAnimationChannel *p_jetpack_channel; // eax
+  Weapon *p_jetpack_channel; // eax
   FrameBodBase **p_first; // ecx
   FrameBodBase *first; // edx
   FrameBodBase *list_prev; // edx
-  PresentationAnimationChannel *weapon_channels; // ecx
+  Weapon *weapon_channels; // ecx
   FrameBodBase **v22; // eax
   FrameBodBase *v23; // edx
   FrameBodBase *v24; // edx
-  PresentationAnimationChannel *v25; // ecx
+  Weapon *v25; // ecx
   FrameBodBase **v26; // eax
   FrameBodBase *v27; // edx
   FrameBodBase *v28; // edx
-  PresentationAnimationChannel *v29; // ecx
+  Weapon *v29; // ecx
   FrameBodBase **v30; // eax
   FrameBodBase *v31; // edx
   FrameBodBase *v32; // edx
@@ -52,7 +52,7 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   int32_t v47; // eax
   float v48; // [esp+0h] [ebp-14h]
 
-  unhide_star_field((StarManager *)&g_game_base->unknown_00067c[322752]);
+  unhide_star_field(&g_game_base->star_manager);
   if ( game->level_mode == 7 )
     hide_gameplay_scores(game);
   else
@@ -138,10 +138,10 @@ LABEL_24:
     }
   }
   initialize_track_parcel_slots(&game->parcel_manager);
-  if ( g_game_base->unknown_00067c[322660] == 1 )
+  if ( g_game_base->intro.hide_for_replay_latch == 1 )
   {
-    hide_border_init(&game->top_score_widget->list_kind);
-    hide_border_init(&game->bottom_score_widget->list_kind);
+    hide_border_init(game->top_score_widget);
+    hide_border_init(game->bottom_score_widget);
   }
   rebuild_track_runtime_from_segments(game, level_index);
   if ( game->level_definition.track_texture_set == 5 )
@@ -150,22 +150,22 @@ LABEL_24:
     {
       case 0u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     (char *)&g_game_base->subgame.landscape_manager,
                                      aSpaceblueswhor);
         break;
       case 1u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     (char *)&g_game_base->subgame.landscape_manager,
                                      aSpacegreenwarp);
         break;
       case 2u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     (char *)&g_game_base->subgame.landscape_manager,
                                      aSpacepurpleTxt);
         break;
       case 3u:
         landscape_script_by_name = load_landscape_script_by_name(
-                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     (char *)&g_game_base->subgame.landscape_manager,
                                      aSpaceredTxt);
         break;
       default:
@@ -173,7 +173,7 @@ LABEL_24:
         break;
     }
     activate_landscape_entry((char *)&game->landscape_manager, landscape_script_by_name);
-    g_game_base->unknown_00067c[321000] = random_float_below(1.0) > 0.5;
+    g_game_base->backdrop.pending_flip = random_float_below(1.0) > 0.5;
   }
   else
   {
@@ -437,13 +437,13 @@ LABEL_24:
   if ( !v47 )
   {
     sprintf((char *const)&game->lives_text_widget->text_buffer, "0/%i", game->level_definition.parcel_count);
-    unhide_border_init(&game->lives_icon_widget->list_kind);
-    unhide_border_init(&game->lives_text_widget->list_kind);
+    unhide_border_init(game->lives_icon_widget);
+    unhide_border_init(game->lives_text_widget);
   }
   set_input_controller_pointer_authored_xy(0, 320.0, 240.0);
   set_input_controller_pointer_authored_xy(1, 320.0, 240.0);
   game->player.track_z_offset = 320.0;
   game->player.track_z_anchor = 320.0;
-  game->_pad_00[0] = 1;
+  game->scan_reset = 1;
   calc_subgame_rate(game);
 }

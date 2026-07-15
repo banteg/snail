@@ -2313,14 +2313,14 @@
     },
     {
       "address": "0x49735c",
-      "name": "g_presentation_animation_channel_noop_vtable",
+      "name": "g_weapon_noop_vtable",
       "kind": "vtable",
       "aliases": [
         "g_enemy_group_vtable",
         "off_49735c",
         "data_49735c"
       ],
-      "description": "No-op callback slot installed on the three weapon animation channels and the jetpack animation channel embedded in authored cRSnail."
+      "description": "Authored cRWeapon callback slot installed on the three weapon owners and the jetpack Weapon embedded in cRSnail; its first and only callback is noop_runtime_ai."
     },
     {
       "address": "0x497360",

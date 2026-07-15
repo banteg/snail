@@ -51,3 +51,10 @@ and byte-flag contract from this caller.
 parser/updater-owned mode bits. State `4` selects the once mode, leaving it uses
 reverse-once, and queued followups preserve the clip's existing flags. The
 equal-valued animation-id `-1` remains a separate hide-channel sentinel.
+
+2026-07-15 cRWeapon owner closure: the embedded `+0x11e0` jetpack channel is
+now the exact `Weapon` (`cRWeapon`) owner shared with the three weapon channels.
+Android preserves `cRWeapon::SetAnimation`, `cRWeapon::AI`, RTTI, and the same
+Snail-to-Weapon call relationship; Windows independently constructs four
+0x3dc-byte children and installs one callback slot on all four. This retires the
+synthetic presentation-channel type without changing focused codegen.

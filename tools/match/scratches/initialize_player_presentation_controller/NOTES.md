@@ -7,7 +7,7 @@ Recovered ownership:
 
 - `Snail` inherits the complete `RenderableBod` through `+0x7f` and owns ten
   `0x80`-byte cutscene visual slots beginning at `+0x14c`;
-- the three `PresentationAnimationChannel` weapon owners begin at `+0x64c`
+- the three authored `Weapon` owners begin at `+0x64c`
   and the jetpack channel begins at `+0x11e0`, all at the proven `0x3dc`
   stride;
 - two complete renderable hotspot sources begin at `+0x15cc/+0x164c`, with
@@ -50,7 +50,7 @@ full prefix, and 27 clean masked operands.
 
 ## 2026-07-14 animation-channel inheritance closure
 
-All four `PresentationAnimationChannel` owners now inherit the same complete
+All four `Weapon` owners now inherit the same complete
 `RenderableBod` initialized here, including its conditional borrowed manager
 lane at `+0x78`; selected state remains
 `+0x104`, the owned manager `+0x108`, five owned slots `+0x150`, and release
@@ -90,3 +90,12 @@ constructor loops now derive their bounds from the owned
 byte-identical
 (`778a1842100ba2dd19cc4f47d86ee7b31199cb7ae1ac3d0bbd068e0ca088f808`)
 and exact at 79/79 instructions with 27 clean operands.
+
+## 2026-07-15 cRWeapon owner closure
+
+Android retains both `cRWeapon::SetAnimation(int, bool, int)` and
+`cRWeapon::AI()`, and iOS independently retains cRWeapon RTTI and its vtable.
+Those symbols close the four 0x3dc-byte Windows children as authored `Weapon`
+objects rather than generic presentation channels. The callback at `0x49735c`
+is consequently named `g_weapon_noop_vtable`; exact construction remains
+byte-identical.

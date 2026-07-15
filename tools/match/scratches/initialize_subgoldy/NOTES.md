@@ -192,7 +192,7 @@ with all 27 operands clean.
   five-entry `PresentationAnimationSlot` bank. Those are ownership links, not
   a biased byte pointer or a texture controller.
 - The five formerly raw-offset blocks now use the exact `Snail`,
-  `PresentationAnimationChannel`, `AnimManager`, `Object`, and animation-slot
+  `Weapon`, `AnimManager`, `Object`, and animation-slot
   fields. Focused Windows remains exact at 279/279 with all 27 operands clean.
 - Android `cRSubGoldy::Init(int)` independently stores the same self-owned
   manager pointers on the matching `cRSnail` and `cRWeapon` BODs before
@@ -216,7 +216,7 @@ camera target remains Player-owned at `+0x2964`. Focused Wibo remains exact at
 
 2026-07-14 animation-channel inheritance: each weapon/jetpack manager now
 stores a direct `BodBase*` backlink to its containing
-`PresentationAnimationChannel`, whose inherited render prefix owns the object,
+`Weapon`, whose inherited render prefix owns the object,
 flags, color, and transform. The four explicit base casts are gone; focused
 Wibo remains exact at 279/279 instructions and 27 clean operands.
 

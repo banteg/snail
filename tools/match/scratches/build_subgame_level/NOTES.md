@@ -370,7 +370,7 @@ clean operands and the existing state-table mismatch.
 ## 2026-07-14 animation-channel active-list inheritance
 
 The jetpack and three weapon nodes now enter the active list through their real
-`PresentationAnimationChannel -> RenderableBod -> BodNode` inheritance. Snail
+`Weapon -> RenderableBod -> BodNode` inheritance. Snail
 retains storage ownership and the root list only borrows those four embedded
 subobjects. Focused output is byte-identical at 77.67%, 560/555 instructions,
 prefix 177, with 101 clean operands and the existing state-table mismatch.

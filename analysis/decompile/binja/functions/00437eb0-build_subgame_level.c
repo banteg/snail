@@ -4,7 +4,7 @@
 /* function: build_subgame_level @ 0x437eb0 */
 
 00437eb0        struct SubgameRuntime* game_1 = game
-00437ec1        unhide_star_field(&g_game_base[0x4f33c])
+00437ec1        unhide_star_field(&g_game_base->star_manager)
 00437ece        if (game->level_mode != 7)
 00437ed7        unhide_gameplay_scores(game)
 00437ed0        hide_gameplay_scores(game)
@@ -76,7 +76,7 @@
 004380e4        game->garbage_frequency = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
 004380fc        game->salt_frequency = fconvert.s(float.t(g_runtime_config.completion_bonus_y_source) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
 00438154        initialize_track_parcel_slots(&game->parcel_manager)
-00438166        if (g_game_base[0x4f2e0] == 1)
+00438166        if (g_game_base->intro.hide_for_replay_latch == 1)
 0043816e        hide_border_init(game->top_score_widget)
 00438179        hide_border_init(game->bottom_score_widget)
 00438181        int16_t x87control_1 = rebuild_track_runtime_from_segments(game, level_index)
@@ -89,25 +89,21 @@
 00438200        level_index_1 = level_index
 004381ab        switch (eax_9)
 004381b2        case 0
-004381ee        g_game_base
-004381f9        level_index_1 = load_landscape_script_by_name("SpaceBluesWhorl.txt")
-004381b9        case 1
-004381b9        g_game_base
-004381ca        level_index_1 = load_landscape_script_by_name("SpaceGreenWarp.txt")
-004381d1        case 2
-004381d1        g_game_base
-004381e2        level_index_1 = load_landscape_script_by_name("SpacePurple.txt")
+004381f9        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceBluesWhorl.txt")
+004381ca        case 1
+004381ca        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceGreenWarp.txt")
+004381e2        case 2
+004381e2        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpacePurple.txt")
 004381e9        case 3
-004381ee        g_game_base
-004381f9        level_index_1 = load_landscape_script_by_name("SpaceRed.txt")
+004381f9        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceRed.txt")
 0043820b        activate_landscape_entry(&game->landscape_manager, level_index_1)
 00438210        int32_t __saved_ebp_13 = 0
 00438216        long double st0_5 = random_float_below(1f)
 0043821b        long double temp1_1 = fconvert.t(0.5f)
 0043821b        st0_5 - temp1_1
 00438229        if ((((st0_5 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(st0_5, temp1_1) ? 1 : 0) << 0xa | (st0_5 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
-00438240        g_game_base[0x4ec64] = 0
-00438231        g_game_base[0x4ec64] = 1
+00438240        g_game_base->backdrop.pending_flip = 0
+00438231        g_game_base->backdrop.pending_flip = 1
 00438273        if ((0x200 & game->banners.slots[0].bod.bod.list_flags) == 0)
 00438284        game->banners.slots[0].bod.bod.list_prev = &game->track_body_list_head
 0043828a        game->banners.slots[0].bod.bod.list_next = game->track_body_list_head.bod.list_next
@@ -148,54 +144,54 @@
 0043835a        game->replay_update_cursor = 0
 00438360        game->times_up.state = 0
 00438366        game->subgame_state = 2
-00438378        *(g_game_base + 0x56c) = 1
-00438389        release_mouse_cursor(&g_game_base[0x290])
+00438378        g_game_base->render_skip_count = 1
+00438389        release_mouse_cursor(&g_game_base->players[0].mouse_cursor)
 00438391        game->player.movement_mode_selector = 1
 00438397        game->player.steering_mode_selector = 0
 0043839d        struct SubgameRuntime* runtime
 0043839d        struct Player* edi_3
 0043839d        runtime, edi_3 = initialize_subgoldy(&game->player, 1)
 004383b5        if ((0x200 & runtime->player.presentation.jetpack_channel.body.bod.bod.list_flags) == 0)
-004383cc        char* ecx_35 = &g_game_base[0x5ac]
+004383cc        struct FrameBodBase** ecx_35 = &g_game_base->active_bod_list.first
 004383d2        void* edx_12
-004383d2        edx_12.b = *ecx_35
-004383d2        edx_12:1.b = ecx_35[1]
-004383d2        edx_12:2.b = ecx_35[2]
-004383d2        edx_12:3.b = ecx_35[3]
+004383d2        edx_12.b = (ecx_35 - 0x5ac)->:0x5ac.b
+004383d2        edx_12:1.b = (ecx_35 - 0x5ac)->:0x5ad.b
+004383d2        edx_12:2.b = (ecx_35 - 0x5ac)->:0x5ae.b
+004383d2        edx_12:3.b = (ecx_35 - 0x5ac)->:0x5af.b
 004383d6        if (edx_12 != 0)
 004383e4        *(edx_12 + 8) = &runtime->player.presentation.jetpack_channel
 004383e7        void* edx_14
-004383e7        edx_14.b = *ecx_35
-004383e7        edx_14:1.b = ecx_35[1]
-004383e7        edx_14:2.b = ecx_35[2]
-004383e7        edx_14:3.b = ecx_35[3]
+004383e7        edx_14.b = (ecx_35 - 0x5ac)->:0x5ac.b
+004383e7        edx_14:1.b = (ecx_35 - 0x5ac)->:0x5ad.b
+004383e7        edx_14:2.b = (ecx_35 - 0x5ac)->:0x5ae.b
+004383e7        edx_14:3.b = (ecx_35 - 0x5ac)->:0x5af.b
 004383ec        *(*(edx_14 + 8) + 0xc) = edx_14
 004383ef        void* edx_15
-004383ef        edx_15.b = *ecx_35
-004383ef        edx_15:1.b = ecx_35[1]
-004383ef        edx_15:2.b = ecx_35[2]
-004383ef        edx_15:3.b = ecx_35[3]
+004383ef        edx_15.b = (ecx_35 - 0x5ac)->:0x5ac.b
+004383ef        edx_15:1.b = (ecx_35 - 0x5ac)->:0x5ad.b
+004383ef        edx_15:2.b = (ecx_35 - 0x5ac)->:0x5ae.b
+004383ef        edx_15:3.b = (ecx_35 - 0x5ac)->:0x5af.b
 004383f6        void* edx_16 = *(edx_15 + 8)
-004383f9        *ecx_35 = edx_16.b
-004383f9        ecx_35[1] = edx_16:1.b
-004383f9        ecx_35[2] = edx_16:2.b
-004383f9        ecx_35[3] = edx_16:3.b
+004383f9        (ecx_35 - 0x5ac)->:0x5ac.b = edx_16.b
+004383f9        (ecx_35 - 0x5ac)->:0x5ad.b = edx_16:1.b
+004383f9        (ecx_35 - 0x5ac)->:0x5ae.b = edx_16:2.b
+004383f9        (ecx_35 - 0x5ac)->:0x5af.b = edx_16:3.b
 004383fb        *(edx_16 + 8) = 0
-004383d8        *ecx_35 = (&runtime->player.presentation.jetpack_channel).b
-004383d8        ecx_35[1] = (&runtime->player.presentation.jetpack_channel):1.b
-004383d8        ecx_35[2] = (&runtime->player.presentation.jetpack_channel):2.b
-004383d8        ecx_35[3] = (&runtime->player.presentation.jetpack_channel):3.b
+004383d8        (ecx_35 - 0x5ac)->:0x5ac.b = (&runtime->player.presentation.jetpack_channel).b
+004383d8        (ecx_35 - 0x5ac)->:0x5ad.b = (&runtime->player.presentation.jetpack_channel):1.b
+004383d8        (ecx_35 - 0x5ac)->:0x5ae.b = (&runtime->player.presentation.jetpack_channel):2.b
+004383d8        (ecx_35 - 0x5ac)->:0x5af.b = (&runtime->player.presentation.jetpack_channel):3.b
 004383da        runtime->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr
 004383dd        void* edx_13
-004383dd        edx_13.b = *ecx_35
-004383dd        edx_13:1.b = ecx_35[1]
-004383dd        edx_13:2.b = ecx_35[2]
-004383dd        edx_13:3.b = ecx_35[3]
+004383dd        edx_13.b = (ecx_35 - 0x5ac)->:0x5ac.b
+004383dd        edx_13:1.b = (ecx_35 - 0x5ac)->:0x5ad.b
+004383dd        edx_13:2.b = (ecx_35 - 0x5ac)->:0x5ae.b
+004383dd        edx_13:3.b = (ecx_35 - 0x5ac)->:0x5af.b
 004383df        *(edx_13 + 0xc) = 0
 004383fe        runtime->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200
 004383bc        report_errorf("List ADD")
 0043840f        if ((0x200 & runtime->player.presentation.weapon_channels[0].body.bod.bod.list_flags) == 0)
-00438425        void** eax_21 = &g_game_base[0x5ac]
+00438425        void** eax_21 = &g_game_base->active_bod_list.first
 0043842a        void* edx_17 = *eax_21
 0043842e        if (edx_17 != 0)
 0043843c        *(edx_17 + 8) = &runtime->player.presentation.weapon_channels
@@ -211,7 +207,7 @@
 00438456        runtime->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200
 00438416        report_errorf("List ADD")
 00438467        if ((0x200 & runtime->player.presentation.weapon_channels[1].body.bod.bod.list_flags) == 0)
-0043847d        void** eax_24 = &g_game_base[0x5ac]
+0043847d        void** eax_24 = &g_game_base->active_bod_list.first
 00438482        void* edx_22 = *eax_24
 00438486        if (edx_22 != 0)
 00438494        *(edx_22 + 8) = &runtime->player.presentation.weapon_channels[1]
@@ -227,7 +223,7 @@
 004384ae        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200
 0043846e        report_errorf("List ADD")
 004384bf        if ((0x200 & runtime->player.presentation.weapon_channels[2].body.bod.bod.list_flags) == 0)
-004384d5        void** eax_27 = &g_game_base[0x5ac]
+004384d5        void** eax_27 = &g_game_base->active_bod_list.first
 004384da        void* edx_27 = *eax_27
 004384de        if (edx_27 != 0)
 004384ec        *(edx_27 + 8) = &runtime->player.presentation.weapon_channels[2]
@@ -243,7 +239,7 @@
 00438506        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200
 004384c6        report_errorf("List ADD")
 00438517        if ((0x200 & runtime->player.presentation.invincible_shell.body.bod.bod.list_flags) == 0)
-0043852d        void** eax_30 = &g_game_base[0x5ac]
+0043852d        void** eax_30 = &g_game_base->active_bod_list.first
 00438532        void* edx_32 = *eax_30
 00438536        if (edx_32 != 0)
 00438544        *(edx_32 + 8) = &runtime->player.presentation.invincible_shell
@@ -262,7 +258,7 @@
 00438567        list_flags_1.b |= 0x80
 0043856a        runtime->player.presentation.invincible_shell.body.bod.bod.list_flags = list_flags_1
 0043857e        if ((0x200 & runtime->player.presentation.body.bod.bod.list_flags) == 0)
-00438594        void** eax_33 = &g_game_base[0x5ac]
+00438594        void** eax_33 = &g_game_base->active_bod_list.first
 00438599        void* edx_38 = *eax_33
 0043859d        if (edx_38 != 0)
 004385ab        *(edx_38 + 8) = &runtime->player.presentation
@@ -278,7 +274,7 @@
 004385c5        runtime->player.presentation.body.bod.bod.list_flags |= 0x200
 00438585        report_errorf("List ADD")
 004385cb        if ((edi_3->body.bod.bod.list_flags & 0x200) == 0)
-004385e1        void** eax_35 = &g_game_base[0x5ac]
+004385e1        void** eax_35 = &g_game_base->active_bod_list.first
 004385e6        void* ecx_41 = *eax_35
 004385ea        if (ecx_41 != 0)
 004385f8        *(ecx_41 + 8) = edi_3.b
@@ -321,6 +317,6 @@
 004386b7        set_input_controller_pointer_authored_xy(1, 320f, 240f)
 004386c1        runtime->player.track_z_offset = 320f
 004386c7        runtime->player.track_z_anchor = 320f
-004386cd        runtime->unknown_000000[0] = 1
+004386cd        runtime->scan_reset = 1
 004386d0        calc_subgame_rate(runtime)
 004386d9        return

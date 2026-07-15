@@ -2,7 +2,7 @@
 
 First source-shaped scratch for authored `cRSnail::SetWeapon(int)`.
 This sits between `update_player_movement_flags` and
-`PresentationAnimationChannel::set_weapon_animation`.
+`Weapon::set_weapon_animation`.
 
 Recovered mapping:
 

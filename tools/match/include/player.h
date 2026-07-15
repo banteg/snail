@@ -18,7 +18,7 @@
 #include "invincible.h"
 #include "sub_hover.h"
 #include "nuke.h"
-#include "presentation_animation_channel.h"
+#include "weapon.h"
 #include "progress_bar.h"
 #include "score_buckets.h"
 #include "snail_skin.h"
@@ -100,9 +100,9 @@ public:
     PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
     // Authored order: left blaster/laser, right blaster/laser, top
     // blaster/rocket launcher. Each channel owns its five animation slots.
-    PresentationAnimationChannel weapon_channels[3]; // +0x64c
+    Weapon weapon_channels[3]; // +0x64c, authored cRWeapon owners
     // Owns the jetpack base/draw slots in animation_slots[0..1].
-    PresentationAnimationChannel jetpack_channel;     // +0x11e0
+    Weapon jetpack_channel;     // +0x11e0, authored cRWeapon owner
     float wobble_roll_phase;            // +0x15bc
     float wobble_roll_phase_step;       // +0x15c0
     float wobble_lift_phase;            // +0x15c4

@@ -4,7 +4,7 @@
 #include "object_render_types.h"
 #include "anim_manager.h"
 #include "game_root.h"
-#include "presentation_animation_channel.h"
+#include "weapon.h"
 
 extern GameRoot* g_game; // data_4df904
 

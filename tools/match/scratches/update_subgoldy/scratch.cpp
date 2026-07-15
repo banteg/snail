@@ -23,7 +23,7 @@
 #include "player.h"
 #include "sub_solution.h"
 #include "progress_bar.h"
-#include "presentation_animation_channel.h"
+#include "weapon.h"
 #include "runtime_config.h"
 #include "sub_hover.h"
 #include "tip_manager.h"
