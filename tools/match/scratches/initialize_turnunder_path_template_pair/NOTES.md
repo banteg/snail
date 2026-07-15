@@ -1,15 +1,13 @@
 # initialize_turnunder_path_template_pair
 
-Starter reconstruction for `initialize_turnunder_path_template_pair @ 0x427fe0`.
+Ownership recovery for `initialize_turnunder_path_template_pair @ 0x427fe0`.
 
-This scratch follows the recovered path-template family shape: local
-`Path` overlay, `0x27` kind, computed `radius * 2pi + 8`
-sample count, six straight lead-in samples, two straight exit samples, nonlinear
-interior samples, recomputed deltas, generated strip mesh, and
-`finalize_path_template`.
-
-Residuals are expected in the induction variables, x87 temporary scheduling, and
-mesh/face loop register allocation. No flags or fakematching tricks were used.
+The retained scratch scores 48.06% (628/687 candidate/target instructions),
+with 41 masked operands clean, 0 unresolved, and 0 mismatch. It owns the
+opposite-signed straight sample seeds, nonlinear under-roll construction,
+transform-only secondary propagation, and 16-bit face header. The main
+remaining structural debt is the target's 0x54 stack frame and native
+mesh/delta loop layout; the retained candidate uses a 0x2c frame.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 8.37% (197/687
@@ -66,3 +64,25 @@ copies. Removing that scratch-only scalar traffic changes focused Wibo from
 0 unresolved, 1 mismatch. The small fuzzy-score regression is retained as a
 proved ownership correction rather than preserving non-native work for metric
 alignment.
+
+2026-07-15 coordinated sample ownership: replacing both helper-shaped straight
+loops with direct primary/secondary arrays, separate logical Z counters, and
+the target's do-loop bounds recovers the actual lateral endpoints. The lead-in
+owns `-(width * 0.5 - 4.0)` while the exit owns
+`-(4.0 - width * 0.5)`; the earlier isolated endpoint swap probe lacked the
+native loop and lifetime context and therefore was not sufficient evidence.
+
+The floating interior count now survives across allocation and the incoming
+`turns` slot owns the derived radius. The curved body uses separate curve and
+sample indices, reloads interpolation endpoints from the seeded sample fields,
+preserves the repeated under-roll sine calls, constructs the forward/right
+bases directly, and copies only the 0x40-byte transform into the secondary
+lane. Together these changes move focused Wibo from 27.77% (624/687) to 48.06%
+(628/687) and clear the last constant-alignment mismatch: all 41 masked
+operands resolve cleanly. The face loop now clears `header_word`, matching the
+target's 16-bit store.
+
+Rejected: retaining an explicit `tail_start_index` across the tail and curved
+loops reduced focused Wibo to 46.11% (623/687), with the operand audit still
+clean. Although the target preserves a related byte offset, that source-level
+lifetime does not reproduce it; keep the direct count-relative spelling.

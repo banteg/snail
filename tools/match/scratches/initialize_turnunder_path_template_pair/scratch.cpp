@@ -138,7 +138,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             for (face_index = 0; face_index < 2; ++face_index) {
                 ObjectFaceQuad* face =
                     &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                face->flags = 0;
+                face->header_word = 0;
                 if (face_index == 0) {
                     face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
                     face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
@@ -176,65 +176,130 @@ void Path::initialize_turnunder_path_template_pair(
     float turns, int width_cells_, int side_exit,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
-    float scaled_turns = turns * 6.2831855f;
-
     kind = 0x27;
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
-    int interior_count = (int)scaled_turns;
+
+    int interior_count = (int)(turns * 6.2831855f);
     width_or_scale = 1.0f;
     segment_count = interior_count + 8;
     segment_count_f = (float)segment_count;
-    allocate_path_template_samples();
-
-    has_entry_mesh_transition = 0;
-    for (int i = 0; i < 6; ++i) {
-        float center = (float)width_cells * 0.5f - 4.0f;
-        initialize_pair_sample(this, i, center, center, 0.0f, (float)i);
-    }
-
-    for (int j = 0; j < 2; ++j) {
-        int index = interior_count + 6 + j;
-        float center = 4.0f - (float)width_cells * 0.5f;
-        initialize_pair_sample(this, index, center, center, 0.0f, (float)index);
-    }
-
-    float start_center = primary_samples[0].center_x;
-    float end_center = primary_samples[interior_count + 6].center_x;
     float interior_count_f = (float)interior_count;
-    float radius = interior_count_f * 0.15915494f;
+    turns = interior_count_f * 0.15915494f;
+    allocate_path_template_samples();
+    has_entry_mesh_transition = 0;
 
-    for (int k = 0; k < interior_count; ++k) {
-        int index = k + 6;
-        float phase = (float)k / interior_count_f;
-        float angle = phase * -6.2831855f;
-        float center = start_center + (end_center - start_center) * phase;
-        float half_angle = angle * 0.5f;
-        float half_side = sine(half_angle);
-        float side = sine(angle);
-        float offset = side * half_side + side * half_side;
-        float y = (radius - cosine(angle) * radius) * -0.2f;
-        float roll_cos = cosine(sine(angle) * 1.0471976f);
-        float roll_sin = sine(sine(angle) * 1.0471976f);
+    int lead_z_index = 0;
+    int i = 0;
+    do {
+        primary_samples[i].center_x =
+            -((float)width_cells * 0.5f - 4.0f);
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        float z = (float)lead_z_index;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
+        primary_samples[i].delta_length = 1.0f;
 
-        initialize_sample(&primary_samples[index], center, center - offset, y, (float)index);
-        primary_samples[index].transform.basis_up.x = -roll_sin;
-        primary_samples[index].transform.basis_up.y = roll_cos;
-        primary_samples[index].transform.basis_up.z = 0.0f;
-        PathTemplateSample* previous = &primary_samples[index - 1];
-        primary_samples[index].transform.basis_forward = Vector3(
-            primary_samples[index].transform.position.x - previous->transform.position.x,
-            primary_samples[index].transform.position.y - previous->transform.position.y,
-            primary_samples[index].transform.position.z - previous->transform.position.z);
-        primary_samples[index].transform.basis_forward.normalize_vector();
-        primary_samples[index].transform.basis_right.cross_vectors(
-            &primary_samples[index].transform.basis_up,
-            &primary_samples[index].transform.basis_forward);
-        copy_secondary_from_primary(this, index);
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
+        ++i;
+        secondary_samples[i - 1].delta_length = 1.0f;
+        ++lead_z_index;
+    } while (i < 6);
+
+    int tail_z_index = interior_count + 6;
+    i = interior_count + 6;
+    do {
+        primary_samples[i].center_x =
+            -(4.0f - (float)width_cells * 0.5f);
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        float z = (float)tail_z_index;
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
+        primary_samples[i].delta_length = 1.0f;
+
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
+        secondary_samples[i].delta_length = 1.0f;
+        ++i;
+        ++tail_z_index;
+    } while (tail_z_index - 6 - interior_count < 2);
+
+    int curve_index = 0;
+    if (interior_count > 0) {
+        i = 6;
+        do {
+            float t = (float)curve_index;
+            float angle = t * -6.2831855f / interior_count_f;
+
+            primary_samples[i].center_x =
+                (primary_samples[interior_count + 6].center_x -
+                    primary_samples[0].center_x) *
+                    t / interior_count_f +
+                primary_samples[0].center_x;
+            primary_samples[i].rotation_scalar_98 = 0.0f;
+            primary_samples[i].rotation_scalar_94 = 0.0f;
+            primary_samples[i].special_scalar = 0.0f;
+            primary_samples[i].lateral_scale = 1.0f;
+            set_matrix_identity(&primary_samples[i].transform);
+
+            float half_angle = angle * 0.5f;
+            float half_sine = sine(half_angle);
+            float angle_sine = sine(angle);
+            primary_samples[i].transform.position.x =
+                primary_samples[i].center_x -
+                (angle_sine * half_sine + angle_sine * half_sine);
+            primary_samples[i].transform.position.z = (float)(curve_index + 6);
+            primary_samples[i].transform.position.y =
+                (turns - cosine(angle) * turns) * -0.2f;
+
+            float roll_cosine = cosine(sine(angle) * 1.0471976f);
+            float roll_sine = sine(sine(angle) * 1.0471976f);
+            primary_samples[i].transform.basis_up =
+                Vector3(-roll_sine, roll_cosine, 0.0f);
+            primary_samples[i].transform.basis_forward = Vector3(
+                primary_samples[i].transform.position.x -
+                    primary_samples[i - 1].transform.position.x,
+                primary_samples[i].transform.position.y -
+                    primary_samples[i - 1].transform.position.y,
+                primary_samples[i].transform.position.z -
+                    primary_samples[i - 1].transform.position.z);
+            primary_samples[i].transform.basis_forward.normalize_vector();
+            primary_samples[i].transform.basis_right.cross_vectors(
+                &primary_samples[i].transform.basis_up,
+                &primary_samples[i].transform.basis_forward);
+
+            secondary_samples[i].transform = primary_samples[i].transform;
+            secondary_samples[i].transform.position.x +=
+                primary_samples[i].transform.basis_up.x * 0.49000001f;
+            secondary_samples[i].transform.position.y +=
+                primary_samples[i].transform.basis_up.y * 0.49000001f;
+            secondary_samples[i].transform.position.z +=
+                primary_samples[i].transform.basis_up.z * 0.49000001f;
+
+            ++i;
+            ++curve_index;
+        } while (curve_index < interior_count);
     }
 
     compute_path_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
     finalize_path_template();
+    (void)side_exit;
+    (void)vertical_texture;
 }
