@@ -15,16 +15,16 @@
 00435640        int32_t k = 0
 0043567e        while (k s< 0x1c0)
 00435642        void* object = (esi_1 - 0x3bfaec)->runtime_cells[0][0].object
-00435656        if (object == *(k + game_base_1 + 0x447b4) || object == *(k + game_base_1 + 0x44b34))
-00435663        set_bod_object(&esi_1[-9], *(k + game_base_1 + 0x44974))
+00435656        if (object == *(&game_base_1->root_bod_catalog.floor_slices.storage[0].object + k) || object == *(&game_base_1->root_bod_catalog.slide_slices.storage[0].object + k))
+00435663        set_bod_object(&esi_1[-9], *(&game_base_1->root_bod_catalog.warning_slices.storage[0].object + k))
 0043566d        (esi_1 - 0x3bfaec)->runtime_cells[0][0].lane_and_flags |= 0x20
 00435670        game_base_1 = g_game_base
 00435675        k += 0x38
 00435680        int32_t k_1 = 0
 004356be        while (k_1 s< 0xe0)
 00435682        void* object_1 = (esi_1 - 0x3bfaec)->runtime_cells[0][0].object
-00435696        if (object_1 == *(k_1 + game_base_1 + 0x4423c) || object_1 == *(k_1 + game_base_1 + 0x443fc))
-004356a3        set_bod_object(&esi_1[-9], *(k_1 + game_base_1 + 0x4431c))
+00435696        if (object_1 == *(&game_base_1->root_bod_catalog.floor_corners.storage[0].object + k_1) || object_1 == *(&game_base_1->root_bod_catalog.slide_corners.storage[0].object + k_1))
+004356a3        set_bod_object(&esi_1[-9], *(&game_base_1->root_bod_catalog.warning_corners.storage[0].object + k_1))
 004356ad        (esi_1 - 0x3bfaec)->runtime_cells[0][0].lane_and_flags |= 0x20
 004356b0        game_base_1 = g_game_base
 004356b5        k_1 += 0x38

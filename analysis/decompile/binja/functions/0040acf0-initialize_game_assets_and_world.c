@@ -311,130 +311,130 @@
 0040b80e        do while ((((x87_r7_3 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp0_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0040b818        struct TransformMatrix transform_1
 0040b818        set_matrix_identity(&transform_1)
-0040b830        set_bod_object(&game->__offset(0x445d0).d, add_object_to_list(&g_object_list))
-0040b845        load_x_mesh(&game->directx_loader, "pillar1.x", game->__offset(0x445f4).d, 1)
+0040b830        set_bod_object(&game->root_bod_catalog.pillars, add_object_to_list(&g_object_list))
+0040b845        load_x_mesh(&game->directx_loader, "pillar1.x", game->root_bod_catalog.pillars[0].object, 1)
 0040b84e        transform_1.position.x = 0
-0040b859        apply_bod_position(&game->__offset(0x445d0).d, &transform_1)
-0040b871        set_bod_object(&game->__offset(0x44608).d, add_object_to_list(&g_object_list))
-0040b886        load_x_mesh(&game->directx_loader, "pillar2.x", game->__offset(0x4462c).d, 1)
+0040b859        apply_bod_position(&game->root_bod_catalog.pillars, &transform_1)
+0040b871        set_bod_object(&game->root_bod_catalog.pillars[1], add_object_to_list(&g_object_list))
+0040b886        load_x_mesh(&game->directx_loader, "pillar2.x", game->root_bod_catalog.pillars[1].object, 1)
 0040b892        transform_1.position.x = 0x3f000000
-0040b89a        apply_bod_position(&game->__offset(0x44608).d, &transform_1)
-0040b8b2        set_bod_object(&game->__offset(0x44640).d, add_object_to_list(&g_object_list))
-0040b8c7        load_x_mesh(&game->directx_loader, "pillar3.x", game->__offset(0x44664).d, 1)
+0040b89a        apply_bod_position(&game->root_bod_catalog.pillars[1], &transform_1)
+0040b8b2        set_bod_object(&game->root_bod_catalog.pillars[2], add_object_to_list(&g_object_list))
+0040b8c7        load_x_mesh(&game->directx_loader, "pillar3.x", game->root_bod_catalog.pillars[2].object, 1)
 0040b8d3        transform_1.position.x = 0x3f800000
-0040b8db        apply_bod_position(&game->__offset(0x44640).d, &transform_1)
-0040b8f3        set_bod_object(&game->__offset(0x44678).d, add_object_to_list(&g_object_list))
-0040b908        load_x_mesh(&game->directx_loader, "pillar4.x", game->__offset(0x4469c).d, 1)
+0040b8db        apply_bod_position(&game->root_bod_catalog.pillars[2], &transform_1)
+0040b8f3        set_bod_object(&game->root_bod_catalog.pillars[3], add_object_to_list(&g_object_list))
+0040b908        load_x_mesh(&game->directx_loader, "pillar4.x", game->root_bod_catalog.pillars[3].object, 1)
 0040b911        transform_1.position.x = 0x3fc00000
-0040b91c        apply_bod_position(&game->__offset(0x44678).d, &transform_1)
-0040b934        set_bod_object(&game->__offset(0x446b0).d, add_object_to_list(&g_object_list))
-0040b949        load_x_mesh(&game->directx_loader, "pillar5.x", game->__offset(0x446d4).d, 1)
+0040b91c        apply_bod_position(&game->root_bod_catalog.pillars[3], &transform_1)
+0040b934        set_bod_object(&game->root_bod_catalog.pillars[4], add_object_to_list(&g_object_list))
+0040b949        load_x_mesh(&game->directx_loader, "pillar5.x", game->root_bod_catalog.pillars[4].object, 1)
 0040b955        transform_1.position.x = 0x40000000
-0040b95d        apply_bod_position(&game->__offset(0x446b0).d, &transform_1)
-0040b975        set_bod_object(&game->__offset(0x446e8).d, add_object_to_list(&g_object_list))
-0040b98a        load_x_mesh(&game->directx_loader, "pillar6.x", game->__offset(0x4470c).d, 1)
+0040b95d        apply_bod_position(&game->root_bod_catalog.pillars[4], &transform_1)
+0040b975        set_bod_object(&game->root_bod_catalog.pillars[5], add_object_to_list(&g_object_list))
+0040b98a        load_x_mesh(&game->directx_loader, "pillar6.x", game->root_bod_catalog.pillars[5].object, 1)
 0040b996        transform_1.position.x = 0x40200000
-0040b99e        apply_bod_position(&game->__offset(0x446e8).d, &transform_1)
-0040b9b6        set_bod_object(&game->__offset(0x44720).d, add_object_to_list(&g_object_list))
-0040b9cb        load_x_mesh(&game->directx_loader, "pillar7.x", game->__offset(0x44744).d, 1)
+0040b99e        apply_bod_position(&game->root_bod_catalog.pillars[5], &transform_1)
+0040b9b6        set_bod_object(&game->root_bod_catalog.pillars[6], add_object_to_list(&g_object_list))
+0040b9cb        load_x_mesh(&game->directx_loader, "pillar7.x", game->root_bod_catalog.pillars[6].object, 1)
 0040b9d4        transform_1.position.x = 0x40400000
-0040b9df        apply_bod_position(&game->__offset(0x44720).d, &transform_1)
-0040b9f7        set_bod_object(&game->__offset(0x44758).d, add_object_to_list(&g_object_list))
-0040ba0c        load_x_mesh(&game->directx_loader, "pillar8.x", game->__offset(0x4477c).d, 1)
+0040b9df        apply_bod_position(&game->root_bod_catalog.pillars[6], &transform_1)
+0040b9f7        set_bod_object(&game->root_bod_catalog.pillars[7], add_object_to_list(&g_object_list))
+0040ba0c        load_x_mesh(&game->directx_loader, "pillar8.x", game->root_bod_catalog.pillars[7].object, 1)
 0040ba18        transform_1.position.x = 0x40600000
-0040ba20        apply_bod_position(&game->__offset(0x44758).d, &transform_1)
-0040ba36        set_bod_object(&game->__offset(0x44cd0).d, add_object_to_list(&g_object_list))
-0040ba48        initialize_textured_backdrop_quad(game->__offset(0x44cf4).d, "Objects/Universe/Ramp.tga", 0f)
-0040ba56        raise_backdrop_quad_edge_pair(0xffffffff, game->__offset(0x44cf4).d)
-0040ba6f        set_bod_object(&game->__offset(0x44d08).d, add_object_to_list(&g_object_list))
-0040ba81        initialize_textured_backdrop_quad(game->__offset(0x44d2c).d, "Objects/Universe/Ramp.tga", 0f)
-0040ba8e        raise_backdrop_quad_edge_pair(0, game->__offset(0x44d2c).d)
-0040baa7        set_bod_object(&game->__offset(0x44d40).d, add_object_to_list(&g_object_list))
-0040bab9        initialize_textured_backdrop_quad(game->__offset(0x44d64).d, "Objects/Universe/Ramp.tga", 0f)
-0040bac7        raise_backdrop_quad_edge_pair(1, game->__offset(0x44d64).d)
-0040bae0        set_bod_object(&game->__offset(0x44218).d, add_object_to_list(&g_object_list))
-0040baf2        initialize_backdrop_corner_quad(0, game->__offset(0x4423c).d, "Objects/World00/Track0.tga")
-0040bb0b        set_bod_object(&game->__offset(0x44250).d, add_object_to_list(&g_object_list))
-0040bb1e        initialize_backdrop_corner_quad(1, game->__offset(0x44274).d, "Objects/World00/Track0.tga")
-0040bb37        set_bod_object(&game->__offset(0x442c0).d, add_object_to_list(&g_object_list))
-0040bb4a        initialize_backdrop_corner_quad(2, game->__offset(0x442e4).d, "Objects/World00/Track0.tga")
-0040bb63        set_bod_object(&game->__offset(0x44288).d, add_object_to_list(&g_object_list))
-0040bb76        initialize_backdrop_corner_quad(3, game->__offset(0x442ac).d, "Objects/World00/Track0.tga")
-0040bb8f        set_bod_object(&game->__offset(0x442f8).d, add_object_to_list(&g_object_list))
-0040bba1        initialize_backdrop_corner_quad(0, game->__offset(0x4431c).d, "Objects/World00/TrackWarn.tga")
-0040bbba        set_bod_object(&game->__offset(0x44330).d, add_object_to_list(&g_object_list))
-0040bbcd        initialize_backdrop_corner_quad(1, game->__offset(0x44354).d, "Objects/World00/TrackWarn.tga")
-0040bbe6        set_bod_object(&game->__offset(0x443a0).d, add_object_to_list(&g_object_list))
-0040bbf9        initialize_backdrop_corner_quad(2, game->__offset(0x443c4).d, "Objects/World00/TrackWarn.tga")
-0040bc12        set_bod_object(&game->__offset(0x44368).d, add_object_to_list(&g_object_list))
-0040bc25        initialize_backdrop_corner_quad(3, game->__offset(0x4438c).d, "Objects/World00/TrackWarn.tga")
-0040bc3e        set_bod_object(&game->__offset(0x443d8).d, add_object_to_list(&g_object_list))
-0040bc50        initialize_backdrop_corner_quad(0, game->__offset(0x443fc).d, "Objects/World00/Slide0.tga")
-0040bc69        set_bod_object(&game->__offset(0x44410).d, add_object_to_list(&g_object_list))
-0040bc7c        initialize_backdrop_corner_quad(1, game->__offset(0x44434).d, "Objects/World00/Slide0.tga")
-0040bc95        set_bod_object(&game->__offset(0x44480).d, add_object_to_list(&g_object_list))
-0040bca8        initialize_backdrop_corner_quad(2, game->__offset(0x444a4).d, "Objects/World00/Slide0.tga")
-0040bcc1        set_bod_object(&game->__offset(0x44448).d, add_object_to_list(&g_object_list))
-0040bcd4        initialize_backdrop_corner_quad(3, game->__offset(0x4446c).d, "Objects/World00/Slide0.tga")
-0040bced        set_bod_object(&game->__offset(0x444b8).d, add_object_to_list(&g_object_list))
-0040bd02        load_x_mesh(&game->directx_loader, "Tramp.x", game->__offset(0x444dc).d, 1)
-0040bd0d        *(game->__offset(0x444dc).d + 0x14) = 6
-0040bd1a        void* ecx_159 = *(game->__offset(0x444dc).d + 0x5c)
+0040ba20        apply_bod_position(&game->root_bod_catalog.pillars[7], &transform_1)
+0040ba36        set_bod_object(&game->root_bod_catalog.ramp_edges, add_object_to_list(&g_object_list))
+0040ba48        initialize_textured_backdrop_quad(game->root_bod_catalog.ramp_edges[0].object, "Objects/Universe/Ramp.tga", 0f)
+0040ba56        raise_backdrop_quad_edge_pair(0xffffffff, game->root_bod_catalog.ramp_edges[0].object)
+0040ba6f        set_bod_object(&game->root_bod_catalog.ramp_edges[1], add_object_to_list(&g_object_list))
+0040ba81        initialize_textured_backdrop_quad(game->root_bod_catalog.ramp_edges[1].object, "Objects/Universe/Ramp.tga", 0f)
+0040ba8e        raise_backdrop_quad_edge_pair(0, game->root_bod_catalog.ramp_edges[1].object)
+0040baa7        set_bod_object(&game->root_bod_catalog.ramp_edges[2], add_object_to_list(&g_object_list))
+0040bab9        initialize_textured_backdrop_quad(game->root_bod_catalog.ramp_edges[2].object, "Objects/Universe/Ramp.tga", 0f)
+0040bac7        raise_backdrop_quad_edge_pair(1, game->root_bod_catalog.ramp_edges[2].object)
+0040bae0        set_bod_object(&game->root_bod_catalog.floor_corners, add_object_to_list(&g_object_list))
+0040baf2        initialize_backdrop_corner_quad(0, game->root_bod_catalog.floor_corners.storage[0].object, "Objects/World00/Track0.tga")
+0040bb0b        set_bod_object(&game->root_bod_catalog.floor_corners.storage[1], add_object_to_list(&g_object_list))
+0040bb1e        initialize_backdrop_corner_quad(1, game->root_bod_catalog.floor_corners.storage[1].object, "Objects/World00/Track0.tga")
+0040bb37        set_bod_object(&game->root_bod_catalog.floor_corners.storage[3], add_object_to_list(&g_object_list))
+0040bb4a        initialize_backdrop_corner_quad(2, game->root_bod_catalog.floor_corners.storage[3].object, "Objects/World00/Track0.tga")
+0040bb63        set_bod_object(&game->root_bod_catalog.floor_corners.storage[2], add_object_to_list(&g_object_list))
+0040bb76        initialize_backdrop_corner_quad(3, game->root_bod_catalog.floor_corners.storage[2].object, "Objects/World00/Track0.tga")
+0040bb8f        set_bod_object(&game->root_bod_catalog.warning_corners, add_object_to_list(&g_object_list))
+0040bba1        initialize_backdrop_corner_quad(0, game->root_bod_catalog.warning_corners.storage[0].object, "Objects/World00/TrackWarn.tga")
+0040bbba        set_bod_object(&game->root_bod_catalog.warning_corners.storage[1], add_object_to_list(&g_object_list))
+0040bbcd        initialize_backdrop_corner_quad(1, game->root_bod_catalog.warning_corners.storage[1].object, "Objects/World00/TrackWarn.tga")
+0040bbe6        set_bod_object(&game->root_bod_catalog.warning_corners.storage[3], add_object_to_list(&g_object_list))
+0040bbf9        initialize_backdrop_corner_quad(2, game->root_bod_catalog.warning_corners.storage[3].object, "Objects/World00/TrackWarn.tga")
+0040bc12        set_bod_object(&game->root_bod_catalog.warning_corners.storage[2], add_object_to_list(&g_object_list))
+0040bc25        initialize_backdrop_corner_quad(3, game->root_bod_catalog.warning_corners.storage[2].object, "Objects/World00/TrackWarn.tga")
+0040bc3e        set_bod_object(&game->root_bod_catalog.slide_corners, add_object_to_list(&g_object_list))
+0040bc50        initialize_backdrop_corner_quad(0, game->root_bod_catalog.slide_corners.storage[0].object, "Objects/World00/Slide0.tga")
+0040bc69        set_bod_object(&game->root_bod_catalog.slide_corners.storage[1], add_object_to_list(&g_object_list))
+0040bc7c        initialize_backdrop_corner_quad(1, game->root_bod_catalog.slide_corners.storage[1].object, "Objects/World00/Slide0.tga")
+0040bc95        set_bod_object(&game->root_bod_catalog.slide_corners.storage[3], add_object_to_list(&g_object_list))
+0040bca8        initialize_backdrop_corner_quad(2, game->root_bod_catalog.slide_corners.storage[3].object, "Objects/World00/Slide0.tga")
+0040bcc1        set_bod_object(&game->root_bod_catalog.slide_corners.storage[2], add_object_to_list(&g_object_list))
+0040bcd4        initialize_backdrop_corner_quad(3, game->root_bod_catalog.slide_corners.storage[2].object, "Objects/World00/Slide0.tga")
+0040bced        set_bod_object(&game->root_bod_catalog.trampoline, add_object_to_list(&g_object_list))
+0040bd02        load_x_mesh(&game->directx_loader, "Tramp.x", game->root_bod_catalog.trampoline.object, 1)
+0040bd0d        *(game->root_bod_catalog.trampoline.object + 0x14) = 6
+0040bd1a        void* ecx_159 = *(game->root_bod_catalog.trampoline.object + 0x5c)
 0040bd1d        int32_t* eax_59
 0040bd1d        eax_59.b = *(ecx_159 + 0xc)
 0040bd1d        eax_59:1.b = *(ecx_159 + 0xd)
 0040bd1d        eax_59:2.b = *(ecx_159 + 0xe)
 0040bd1d        eax_59:3.b = *(ecx_159 + 0xf)
 0040bd25        *eax_59 |= 0x400
-0040bd37        set_bod_object(&game->__offset(0x44100).d, add_object_to_list(&g_object_list))
-0040bd49        initialize_textured_backdrop_quad(game->__offset(0x44124).d, "Objects/Universe/Hole.tga", 0f)
-0040bd57        *(game->__offset(0x44124).d + 0x14) = 5
-0040bd67        int32_t* eax_62 = *(*(game->__offset(0x44124).d + 0x5c) + 0xc)
+0040bd37        set_bod_object(&game->root_bod_catalog, add_object_to_list(&g_object_list))
+0040bd49        initialize_textured_backdrop_quad(game->root_bod_catalog.universe_hole.object, "Objects/Universe/Hole.tga", 0f)
+0040bd57        *(game->root_bod_catalog.universe_hole.object + 0x14) = 5
+0040bd67        int32_t* eax_62 = *(*(game->root_bod_catalog.universe_hole.object + 0x5c) + 0xc)
 0040bd6a        int32_t ecx_162 = *eax_62
 0040bd6c        ecx_162:1.b |= 4
 0040bd6f        *eax_62 = ecx_162
-0040bd82        set_bod_object(&game->__offset(0x44d78).d, add_object_to_list(&g_object_list))
-0040bd93        load_object_definition("Objects/Lazer", game->__offset(0x44d9c).d)
+0040bd82        set_bod_object(&game->root_bod_catalog.lazer_model, add_object_to_list(&g_object_list))
+0040bd93        load_object_definition("Objects/Lazer", game->root_bod_catalog.lazer_model.object)
 0040bd9b        void** edi_17 = &game->subgame.sub_lazers.slots[0].object
 0040bda1        int32_t var_128_2 = 0x14
 0040be04        bool cond:1_1
-0040bdb3        set_bod_object(&edi_17[-9], game->__offset(0x44d9c).d)
-0040bdb8        void* object_12 = (edi_17 - 0x3cb13c)->subgame.sub_lazers.slots[0].object
+0040bdb3        set_bod_object(&edi_17[-9], game->root_bod_catalog.lazer_model.object)
+0040bdb8        void* object_13 = (edi_17 - 0x3cb13c)->subgame.sub_lazers.slots[0].object
 0040bdba        float a
 0040bdba        __builtin_strncpy(&a, "333?", 4)
 0040bdbf        float b = 1f
 0040bdc4        float g = 1f
 0040bdcc        float r = 1f
-0040bdd1        int32_t* eax_66 = *(*(object_12 + 0x5c) + 0xc)
+0040bdd1        int32_t* eax_66 = *(*(object_13 + 0x5c) + 0xc)
 0040bdd4        int32_t ecx_166 = *eax_66
 0040bdd6        ecx_166:1.b |= 4
 0040bdd9        *eax_66 = ecx_166
 0040bde4        (edi_17 - 0x3cb13c)->subgame.sub_lazers.slots[0].owner_game = &game->subgame
 0040bde7        store_color4f(&edi_17[1], r, g, b, a)
-0040bdec        void* object_6 = (edi_17 - 0x3cb13c)->subgame.sub_lazers.slots[0].object
+0040bdec        void* object_7 = (edi_17 - 0x3cb13c)->subgame.sub_lazers.slots[0].object
 0040bdf2        edi_17 = &edi_17[0x2c]
 0040bdf8        cond:1_1 = var_128_2 != 1
-0040bdf9        *(object_6 + 0x14) = 9
-0040bdf9        *(object_6 + 0x15) = 0
-0040bdf9        *(object_6 + 0x16) = 0
-0040bdf9        *(object_6 + 0x17) = 0
+0040bdf9        *(object_7 + 0x14) = 9
+0040bdf9        *(object_7 + 0x15) = 0
+0040bdf9        *(object_7 + 0x16) = 0
+0040bdf9        *(object_7 + 0x17) = 0
 0040be00        var_128_2 -= 1
 0040be04        do while (cond:1_1)
-0040be17        set_bod_object(&game->__offset(0x48dc8).d, add_object_to_list(&g_object_list))
-0040be2c        load_x_mesh(&game->directx_loader, "salt.x", game->__offset(0x48dec).d, 1)
+0040be17        set_bod_object(&game->root_bod_catalog.salt_model, add_object_to_list(&g_object_list))
+0040be2c        load_x_mesh(&game->directx_loader, "salt.x", game->root_bod_catalog.salt_model.object, 1)
 0040be31        struct SubgameRuntime** edi_18 = &game->subgame.salt_hazards.slots[0].owner_game
 0040be37        int32_t var_128_3 = 0x28
 0040be96        bool cond:2_1
-0040be4c        set_bod_object(&edi_18[-0x22], game->__offset(0x48dec).d)
+0040be4c        set_bod_object(&edi_18[-0x22], game->root_bod_catalog.salt_model.object)
 0040be51        float a_1
 0040be51        __builtin_strncpy(&a_1, "fff?", 4)
 0040be6e        (edi_18 - 0x3cbf60)->subgame.salt_hazards.slots[0].owner_game = &game->subgame
 0040be70        store_color4f(&edi_18[-0x18], 1f, 1f, 1f, a_1)
-0040be75        void* object_7 = (edi_18 - 0x3cbf60)->subgame.salt_hazards.slots[0].object
-0040be78        *(object_7 + 0x14) = 0xc
-0040be78        *(object_7 + 0x15) = 0
-0040be78        *(object_7 + 0x16) = 0
-0040be78        *(object_7 + 0x17) = 0
+0040be75        void* object_8 = (edi_18 - 0x3cbf60)->subgame.salt_hazards.slots[0].object
+0040be78        *(object_8 + 0x14) = 0xc
+0040be78        *(object_8 + 0x15) = 0
+0040be78        *(object_8 + 0x16) = 0
+0040be78        *(object_8 + 0x17) = 0
 0040be82        set_matrix_identity(&edi_18[-0x14])
 0040be8b        edi_18 = &edi_18[0x26]
 0040be91        cond:2_1 = var_128_3 != 1
@@ -1465,11 +1465,11 @@
 0040df71        disable_object_rendering(game->subgame.path_pairs[0x18].primary.fringe_mesh_bod.object)
 0040df8a        set_bod_object(&game->subgame.path_pairs[0x18].secondary.fringe_mesh_bod, add_object_to_list(&g_object_list))
 0040df96        disable_object_rendering(game->subgame.path_pairs[0x18].secondary.fringe_mesh_bod.object)
-0040df9b        void* object_8 = game->subgame.path_pairs[0x18].primary.bod.object
-0040dfaf        *(object_8 + 0x14) = 8
-0040dfaf        *(object_8 + 0x15) = 0
-0040dfaf        *(object_8 + 0x16) = 0
-0040dfaf        *(object_8 + 0x17) = 0
+0040df9b        void* object_9 = game->subgame.path_pairs[0x18].primary.bod.object
+0040dfaf        *(object_9 + 0x14) = 8
+0040dfaf        *(object_9 + 0x15) = 0
+0040dfaf        *(object_9 + 0x16) = 0
+0040dfaf        *(object_9 + 0x17) = 0
 0040dfbd        *(game->subgame.path_pairs[0x18].secondary.bod.object + 0x14) = 8
 0040dfc8        set_bod_object(&game->subgame.path_pairs[0x1c], add_object_to_list(&g_object_list))
 0040dfcd        char* var_274_15 = "Objects/Path/VeryDark.tga"
@@ -1982,16 +1982,16 @@
 0040f4fb        eax_255:2.b = (var_308 - 0x432870)->:0x432872.b
 0040f4fb        eax_255:3.b = (var_308 - 0x432870)->:0x432873.b
 0040f503        *(eax_255 + 0x10) |= 4
-0040f506        struct Object* object_15
-0040f506        object_15.b = (var_308 - 0x432870)->:0x432870.b
-0040f506        object_15:1.b = (var_308 - 0x432870)->:0x432871.b
-0040f506        object_15:2.b = (var_308 - 0x432870)->:0x432872.b
-0040f506        object_15:3.b = (var_308 - 0x432870)->:0x432873.b
-0040f508        apply_object_toon(object_15, 0)
-0040f511        void* object_9 = (var_308 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
+0040f506        struct Object* object_16
+0040f506        object_16.b = (var_308 - 0x432870)->:0x432870.b
+0040f506        object_16:1.b = (var_308 - 0x432870)->:0x432871.b
+0040f506        object_16:2.b = (var_308 - 0x432870)->:0x432872.b
+0040f506        object_16:3.b = (var_308 - 0x432870)->:0x432873.b
+0040f508        apply_object_toon(object_16, 0)
+0040f511        void* object_10 = (var_308 - 0x432870)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object
 0040f513        void** eax_257 = &var_308[0x20]
 0040f518        var_308 = eax_257
-0040f51c        *(object_9 + 0x80) = 0
+0040f51c        *(object_10 + 0x80) = 0
 0040f525        *((eax_257 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object + 0x84) = 0
 0040f532        cond:5_1 = var_304_3 != 1
 0040f533        *((eax_257 - 0x4328f0)->subgame.player.presentation.cutscene_animation_slots[0].body.bod.object + 0x88) = 0
@@ -2018,16 +2018,16 @@
 0040f60c        eax_266:2.b = (var_308_1 - 0x433a54)->:0x433a56.b
 0040f60c        eax_266:3.b = (var_308_1 - 0x433a54)->:0x433a57.b
 0040f614        *(eax_266 + 0x10) |= 4
-0040f617        struct Object* object_16
-0040f617        object_16.b = (var_308_1 - 0x433a54)->:0x433a54.b
-0040f617        object_16:1.b = (var_308_1 - 0x433a54)->:0x433a55.b
-0040f617        object_16:2.b = (var_308_1 - 0x433a54)->:0x433a56.b
-0040f617        object_16:3.b = (var_308_1 - 0x433a54)->:0x433a57.b
-0040f619        apply_object_toon(object_16, 0)
-0040f622        void* object_13 = (var_308_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
+0040f617        struct Object* object_17
+0040f617        object_17.b = (var_308_1 - 0x433a54)->:0x433a54.b
+0040f617        object_17:1.b = (var_308_1 - 0x433a54)->:0x433a55.b
+0040f617        object_17:2.b = (var_308_1 - 0x433a54)->:0x433a56.b
+0040f617        object_17:3.b = (var_308_1 - 0x433a54)->:0x433a57.b
+0040f619        apply_object_toon(object_17, 0)
+0040f622        void* object_14 = (var_308_1 - 0x433a54)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object
 0040f624        void** eax_268 = &var_308_1[0x20]
 0040f629        var_308_1 = eax_268
-0040f62d        *(object_13 + 0x80) = 0
+0040f62d        *(object_14 + 0x80) = 0
 0040f636        *((eax_268 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object + 0x84) = 0
 0040f643        cond:6_1 = var_304_4 != 1
 0040f644        *((eax_268 - 0x433ad4)->subgame.player.presentation.jetpack_channel.animation_slots[0].body.bod.object + 0x88) = 0
@@ -2060,16 +2060,16 @@
 0040f79c        eax_281:2.b = (var_308_2 - 0x432ec0)->:0x432ec2.b
 0040f79c        eax_281:3.b = (var_308_2 - 0x432ec0)->:0x432ec3.b
 0040f7a4        *(eax_281 + 0x10) |= 4
-0040f7a7        struct Object* object_17
-0040f7a7        object_17.b = (var_308_2 - 0x432ec0)->:0x432ec0.b
-0040f7a7        object_17:1.b = (var_308_2 - 0x432ec0)->:0x432ec1.b
-0040f7a7        object_17:2.b = (var_308_2 - 0x432ec0)->:0x432ec2.b
-0040f7a7        object_17:3.b = (var_308_2 - 0x432ec0)->:0x432ec3.b
-0040f7a9        apply_object_toon(object_17, 0)
-0040f7b2        void* object_10 = (var_308_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
+0040f7a7        struct Object* object_18
+0040f7a7        object_18.b = (var_308_2 - 0x432ec0)->:0x432ec0.b
+0040f7a7        object_18:1.b = (var_308_2 - 0x432ec0)->:0x432ec1.b
+0040f7a7        object_18:2.b = (var_308_2 - 0x432ec0)->:0x432ec2.b
+0040f7a7        object_18:3.b = (var_308_2 - 0x432ec0)->:0x432ec3.b
+0040f7a9        apply_object_toon(object_18, 0)
+0040f7b2        void* object_11 = (var_308_2 - 0x432ec0)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object
 0040f7b4        void** eax_283 = &var_308_2[0x20]
 0040f7b9        var_308_2 = eax_283
-0040f7bd        *(object_10 + 0x80) = 0
+0040f7bd        *(object_11 + 0x80) = 0
 0040f7c6        *((eax_283 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object + 0x84) = 0
 0040f7d3        cond:7_1 = var_304_5 != 1
 0040f7d4        *((eax_283 - 0x432f40)->subgame.player.presentation.weapon_channels[0].animation_slots[0].body.bod.object + 0x88) = 0
@@ -2102,16 +2102,16 @@
 0040f92c        eax_296:2.b = (var_308_3 - 0x43329c)->:0x43329e.b
 0040f92c        eax_296:3.b = (var_308_3 - 0x43329c)->:0x43329f.b
 0040f934        *(eax_296 + 0x10) |= 4
-0040f937        struct Object* object_18
-0040f937        object_18.b = (var_308_3 - 0x43329c)->:0x43329c.b
-0040f937        object_18:1.b = (var_308_3 - 0x43329c)->:0x43329d.b
-0040f937        object_18:2.b = (var_308_3 - 0x43329c)->:0x43329e.b
-0040f937        object_18:3.b = (var_308_3 - 0x43329c)->:0x43329f.b
-0040f939        apply_object_toon(object_18, 0)
-0040f942        void* object_14 = (var_308_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
+0040f937        struct Object* object_19
+0040f937        object_19.b = (var_308_3 - 0x43329c)->:0x43329c.b
+0040f937        object_19:1.b = (var_308_3 - 0x43329c)->:0x43329d.b
+0040f937        object_19:2.b = (var_308_3 - 0x43329c)->:0x43329e.b
+0040f937        object_19:3.b = (var_308_3 - 0x43329c)->:0x43329f.b
+0040f939        apply_object_toon(object_19, 0)
+0040f942        void* object_15 = (var_308_3 - 0x43329c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object
 0040f944        void** eax_298 = &var_308_3[0x20]
 0040f949        var_308_3 = eax_298
-0040f94d        *(object_14 + 0x80) = 0
+0040f94d        *(object_15 + 0x80) = 0
 0040f956        *((eax_298 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object + 0x84) = 0
 0040f963        cond:8_1 = var_304_6 != 1
 0040f964        *((eax_298 - 0x43331c)->subgame.player.presentation.weapon_channels[1].animation_slots[0].body.bod.object + 0x88) = 0
@@ -2144,16 +2144,16 @@
 0040fabc        eax_311:2.b = (var_308_4 - 0x433678)->:0x43367a.b
 0040fabc        eax_311:3.b = (var_308_4 - 0x433678)->:0x43367b.b
 0040fac4        *(eax_311 + 0x10) |= 4
-0040fac7        struct Object* object_19
-0040fac7        object_19.b = (var_308_4 - 0x433678)->:0x433678.b
-0040fac7        object_19:1.b = (var_308_4 - 0x433678)->:0x433679.b
-0040fac7        object_19:2.b = (var_308_4 - 0x433678)->:0x43367a.b
-0040fac7        object_19:3.b = (var_308_4 - 0x433678)->:0x43367b.b
-0040fac9        apply_object_toon(object_19, 0)
-0040fad2        void* object_11 = (var_308_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
+0040fac7        struct Object* object_20
+0040fac7        object_20.b = (var_308_4 - 0x433678)->:0x433678.b
+0040fac7        object_20:1.b = (var_308_4 - 0x433678)->:0x433679.b
+0040fac7        object_20:2.b = (var_308_4 - 0x433678)->:0x43367a.b
+0040fac7        object_20:3.b = (var_308_4 - 0x433678)->:0x43367b.b
+0040fac9        apply_object_toon(object_20, 0)
+0040fad2        void* object_12 = (var_308_4 - 0x433678)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object
 0040fad4        void** eax_313 = &var_308_4[0x20]
 0040fad9        var_308_4 = eax_313
-0040fadd        *(object_11 + 0x80) = 0
+0040fadd        *(object_12 + 0x80) = 0
 0040fae6        *((eax_313 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object + 0x84) = 0
 0040faf3        cond:9_1 = var_304_7 != 1
 0040faf4        *((eax_313 - 0x4336f8)->subgame.player.presentation.weapon_channels[2].animation_slots[0].body.bod.object + 0x88) = 0
@@ -2248,21 +2248,21 @@
 0040ffcf        *(game->subgame.barrier.bod.object + 0x14) = 7
 0040ffd6        initialize_track_render_cache_manager(&game->subgame.segment_cache)
 0040ffdb        int32_t var_304_9 = 0
-0040ffdf        void* __offset(GameRoot, 0x44dd4) eax_362 = &game->__offset(0x44dd4).d
+0040ffdf        void** eax_362 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 00410066        bool cond:14_1
 0040ffe5        float var_2f0_3 = 0f
 00410058        bool cond:13_1
 0040ffe9        int32_t var_308_5 = 0
-0040ffed        void* __offset(GameRoot, 0x44dd4) esi_4 = eax_362
+0040ffed        void** esi_4 = eax_362
 00410048        bool cond:12_1
 0040ffef        int32_t i_1 = 0
 0041003a        while (i_1 s< 3)
-0040ffff        set_bod_object(esi_4 - 0x24, add_object_to_list(&g_object_list))
-00410022        initialize_backdrop_tile_quad((esi_4 - 0x44dd4)->__offset(0x44dd4).d, var_304_9, var_2f0_3, var_308_5 - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
-00410027        void* eax_366 = (esi_4 - 0x44dd4)->__offset(0x44dd4).d
+0040ffff        set_bod_object(&esi_4[-9], add_object_to_list(&g_object_list))
+00410022        initialize_backdrop_tile_quad((esi_4 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object, var_304_9, var_2f0_3, var_308_5 - 1, i_1 - 1, "Objects/Universe/Fringe.tga")
+00410027        void* object_6 = (esi_4 - 0x44dd4)->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object
 0041002c        i_1 += 1
-0041002d        esi_4 += 0x38
-00410033        *(eax_366 + 0x14) = 5
+0041002d        esi_4 = &esi_4[0xe]
+00410033        *(object_6 + 0x14) = 5
 00410041        cond:12_1 = var_308_5 + 1 s< 3
 00410044        var_308_5 += 1
 00410048        do while (cond:12_1)
@@ -2273,12 +2273,12 @@
 0041005f        cond:14_1 = var_304_9 + 1 s< 8
 00410062        var_304_9 += 1
 00410066        do while (cond:14_1)
-00410078        struct TextureRef* eax_369 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", 0, 0)
-0041007d        enum TextureRefFlags flags_2 = eax_369->flags
+00410078        struct TextureRef* eax_368 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", 0, 0)
+0041007d        enum TextureRefFlags flags_2 = eax_368->flags
 0041007f        struct InputState* state = &game->game_inputs[0].input
 00410082        flags_2:1.b |= 4
 00410085        int32_t i_2 = 0
-00410087        eax_369->flags = flags_2
+00410087        eax_368->flags = flags_2
 00410093        sub_4113b0(&game->active_bod_list, state - 0x38)
 0041009a        state->controller_slot = i_2
 0041009c        initialize_input(state)
@@ -2324,11 +2324,11 @@
 0041027c        game->border_manager.border_stack.owner = &game->border_manager
 00410289        game->border_manager.delayed_widget_active = 0
 0041028f        set_border_justify_centre(&game->border_manager, 0x41c80000)
-00410294        int32_t* eax_380 = &game->border_manager.borders[0].flags
+00410294        int32_t* eax_379 = &game->border_manager.borders[0].flags
 0041029a        int32_t i_4 = 0x96
 004102a7        int32_t i_3
-0041029f        (eax_380 - 0x1370)->border_manager.borders[0].flags = 0
-004102a1        eax_380 = &eax_380[0x1c9]
+0041029f        (eax_379 - 0x1370)->border_manager.borders[0].flags = 0
+004102a1        eax_379 = &eax_379[0x1c9]
 004102a6        i_3 = i_4
 004102a6        i_4 -= 1
 004102a7        do while (i_3 != 1)
@@ -2432,6 +2432,6 @@
 004106de        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004106ef        set_input_controller_pointer_authored_xy(1, 320f, 240f)
 004106f7        game->subgame.subgame_rebuild_selector = 2
-00410704        void* eax_390
-00410704        eax_390.b = 1
+00410704        void* eax_389
+00410704        eax_389.b = 1
 0041070d        return 1

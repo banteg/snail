@@ -1422,6 +1422,9 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     object_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
+    root_catalog_sync = (
+        BINJA_DIR / "sync_root_bod_catalog_types.py"
+    ).read_text(encoding="utf-8")
     ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
         encoding="utf-8"
     )
@@ -1451,6 +1454,12 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert 'DirectXLoader directx_loader; // +0x48e00' in matcher_header
     assert '("0x48e00", "directx_loader", "DirectXLoader")' in object_sync
     assert "apply_struct_and_proto_updates" in object_sync
+    assert 'RootBodCatalog root_bod_catalog; // +0x44100' in matcher_header
+    assert (
+        '("0x44100", "root_bod_catalog", "RootBodCatalog")'
+        in root_catalog_sync
+    )
+    assert "apply_struct_and_proto_updates" in root_catalog_sync
     assert not (repo_root / "tools/match/include/app_shell.h").exists()
     assert "TransformMatrix transform;" in path_header
     assert "uint8_t transform[0x40];" not in path_header

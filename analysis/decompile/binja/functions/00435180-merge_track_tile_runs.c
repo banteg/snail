@@ -56,7 +56,7 @@
 00435428        if (i_7 s>= 8)
 00435428        break
 0043542d        if (esi_4 s> 1)
-0043544d        set_bod_object(&ebx_1[-0x10], *(g_game_base + esi_4 * 0x38 + 0x445bc))
+0043544d        set_bod_object(&ebx_1[-0x10], g_game_base->root_bod_catalog.unknown_18_21[3 + esi_4].object)
 00435452        uint32_t lane_and_flags_6 = (ebx_1 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags
 00435459        lane_and_flags_6:1.b &= 0xf0
 00435461        int32_t i_10 = esi_4 - 1
@@ -78,7 +78,7 @@
 004354c5        if (game_1->level_mode != 2)
 004354df        lane_and_flags_4:1.b &= 0xbf
 004354e2        (ebx_1 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags = lane_and_flags_4
-004354d5        set_bod_object(&ebx_1[-0x10], *(g_game_base + 0x44124))
+004354d5        set_bod_object(&ebx_1[-0x10], g_game_base->root_bod_catalog.universe_hole.object)
 004352cf        uint16_t lane_and_flags_1 = ((ebx_1 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags).w
 004352dc        if ((lane_and_flags_1:1.b & 0x80) != 0 || (lane_and_flags_1.b & 0x40) != 0)
 004352d4        goto label_4353e2
@@ -99,7 +99,7 @@
 0043530f        i_2 += 1
 00435313        do while (i_2 s< 8)
 00435318        if (esi_1 s> 1)
-00435334        set_bod_object(&ebx_1[-0x10], *(g_game_base + esi_1 * 0x38 + 0x44afc))
+00435334        set_bod_object(&ebx_1[-0x10], g_game_base->root_bod_catalog.warning_slices.storage[7 + esi_1].object)
 00435339        int32_t i_9 = esi_1 - 1
 0043533c        if (i_9 s> 0)
 0043535b        void* eax_15 = &(&game_2->runtime_cells[0][0].lane_and_flags)[(i_9 + (var_10 << 3) + i_6) * 0x15]
@@ -131,7 +131,7 @@
 00435249        i_4 += 1
 0043524d        do while (i_4 s< 8)
 00435252        if (esi s> 1)
-00435272        set_bod_object(&ebx_1[-0x10], *(g_game_base + esi * 0x38 + 0x4477c))
+00435272        set_bod_object(&ebx_1[-0x10], g_game_base->root_bod_catalog.pillars[7 + esi].object)
 00435277        int32_t i_8 = esi - 1
 0043527a        if (i_8 s> 0)
 00435299        void* eax_9 = &(&game_2->runtime_cells[0][0].lane_and_flags)[(i_8 + (var_10 << 3) + i_2) * 0x15]

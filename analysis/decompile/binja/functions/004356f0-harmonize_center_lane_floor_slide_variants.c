@@ -19,27 +19,27 @@
 00435755        if (((&game_1->runtime_cells[0][0].lane_and_flags)[edx_3].b & 0x20) == 0)
 00435762        if ((*(esi + 0x3bfda8) & 0x20) == 0 && is_sub_loc_floor(esi + 0x3bfac8) == 1 && (is_sub_loc_slide(esi + 0x3bfd68) == 1 || *(esi + 0x3bfda4) == 0x1e))
 00435795        struct GameRoot* game_base_1 = g_game_base
-004357a6        if (*(esi + 0x3bfaec) == game_base_1->__offset(0x447b4).d)
-004357b1        set_bod_object(esi + 0x3bfac8, game_base_1->__offset(0x44b34).d)
+004357a6        if (*(esi + 0x3bfaec) == game_base_1->root_bod_catalog.floor_slices.storage[0].object)
+004357b1        set_bod_object(esi + 0x3bfac8, game_base_1->root_bod_catalog.slide_slices.storage[0].object)
 004357be        *(esi + 0x3bfb08) |= 0x40
 004357c4        game_base_1 = g_game_base
 004357c9        int32_t j = 0
 00435807        while (j s< 0xe0)
-004357da        if (*(esi + 0x3bfaec) == *(j + game_base_1 + 0x4423c))
-004357e6        set_bod_object(esi + 0x3bfac8, *(j + game_base_1 + 0x443fc))
+004357da        if (*(esi + 0x3bfaec) == *(&game_base_1->root_bod_catalog.floor_corners.storage[0].object + j))
+004357e6        set_bod_object(esi + 0x3bfac8, *(&game_base_1->root_bod_catalog.slide_corners.storage[0].object + j))
 004357f3        *(esi + 0x3bfb08) |= 0x40
 004357f9        game_base_1 = g_game_base
 004357fe        j += 0x38
 0043581d        if ((*(esi + 0x3bfb08) & 0x20) == 0 && (*(esi + 0x3bfda8) & 0x20) == 0 && is_sub_loc_slide(esi + 0x3bfac8) == 1 && is_sub_loc_floor(esi + 0x3bfd68) == 1)
 0043584b        struct GameRoot* game_base_2 = g_game_base
-0043585c        if (*(esi + 0x3bfaec) == game_base_2->__offset(0x44b34).d)
-00435867        set_bod_object(esi + 0x3bfac8, game_base_2->__offset(0x447b4).d)
+0043585c        if (*(esi + 0x3bfaec) == game_base_2->root_bod_catalog.slide_slices.storage[0].object)
+00435867        set_bod_object(esi + 0x3bfac8, game_base_2->root_bod_catalog.floor_slices.storage[0].object)
 00435874        *(esi + 0x3bfb08) |= 0x40
 0043587a        game_base_2 = g_game_base
 0043587f        int32_t j_1 = 0
 004358bd        while (j_1 s< 0xe0)
-00435890        if (*(esi + 0x3bfaec) == *(j_1 + game_base_2 + 0x443fc))
-0043589c        set_bod_object(esi + 0x3bfac8, *(j_1 + game_base_2 + 0x4423c))
+00435890        if (*(esi + 0x3bfaec) == *(&game_base_2->root_bod_catalog.slide_corners.storage[0].object + j_1))
+0043589c        set_bod_object(esi + 0x3bfac8, *(&game_base_2->root_bod_catalog.floor_corners.storage[0].object + j_1))
 004358a9        *(esi + 0x3bfb08) |= 0x40
 004358af        game_base_2 = g_game_base
 004358b4        j_1 += 0x38
@@ -48,27 +48,27 @@
 004358e6        if ((*(esi_1 + 0x3bfb08) & 0x20) == 0)
 004358f3        if ((*(esi_1 + 0x3bf868) & 0x20) == 0 && is_sub_loc_floor(esi_1 + 0x3bfac8) == 1 && (is_sub_loc_slide(esi_1 + 0x3bf828) == 1 || *(esi_1 + 0x3bf864) == 0x20))
 00435926        struct GameRoot* game_base_3 = g_game_base
-00435937        if (*(esi_1 + 0x3bfaec) == game_base_3->__offset(0x447b4).d)
-00435942        set_bod_object(esi_1 + 0x3bfac8, game_base_3->__offset(0x44b34).d)
+00435937        if (*(esi_1 + 0x3bfaec) == game_base_3->root_bod_catalog.floor_slices.storage[0].object)
+00435942        set_bod_object(esi_1 + 0x3bfac8, game_base_3->root_bod_catalog.slide_slices.storage[0].object)
 0043594f        *(esi_1 + 0x3bfb08) |= 0x40
 00435955        game_base_3 = g_game_base
 0043595a        int32_t j_2 = 0
 00435998        while (j_2 s< 0xe0)
-0043596b        if (*(esi_1 + 0x3bfaec) == *(j_2 + game_base_3 + 0x4423c))
-00435977        set_bod_object(esi_1 + 0x3bfac8, *(j_2 + game_base_3 + 0x443fc))
+0043596b        if (*(esi_1 + 0x3bfaec) == *(&game_base_3->root_bod_catalog.floor_corners.storage[0].object + j_2))
+00435977        set_bod_object(esi_1 + 0x3bfac8, *(&game_base_3->root_bod_catalog.slide_corners.storage[0].object + j_2))
 00435984        *(esi_1 + 0x3bfb08) |= 0x40
 0043598a        game_base_3 = g_game_base
 0043598f        j_2 += 0x38
 004359ae        if ((*(esi_1 + 0x3bfb08) & 0x20) == 0 && (*(esi_1 + 0x3bf868) & 0x20) == 0 && is_sub_loc_slide(esi_1 + 0x3bfac8) == 1 && is_sub_loc_floor(esi_1 + 0x3bf828) == 1)
 004359d8        struct GameRoot* game_base_4 = g_game_base
-004359e9        if (*(esi_1 + 0x3bfaec) == game_base_4->__offset(0x44b34).d)
-004359f4        set_bod_object(esi_1 + 0x3bfac8, game_base_4->__offset(0x447b4).d)
+004359e9        if (*(esi_1 + 0x3bfaec) == game_base_4->root_bod_catalog.slide_slices.storage[0].object)
+004359f4        set_bod_object(esi_1 + 0x3bfac8, game_base_4->root_bod_catalog.floor_slices.storage[0].object)
 00435a01        *(esi_1 + 0x3bfb08) |= 0x40
 00435a07        game_base_4 = g_game_base
 00435a0c        int32_t j_3 = 0
 00435a4a        while (j_3 s< 0xe0)
-00435a1d        if (*(esi_1 + 0x3bfaec) == *(j_3 + game_base_4 + 0x443fc))
-00435a29        set_bod_object(esi_1 + 0x3bfac8, *(j_3 + game_base_4 + 0x4423c))
+00435a1d        if (*(esi_1 + 0x3bfaec) == *(&game_base_4->root_bod_catalog.slide_corners.storage[0].object + j_3))
+00435a29        set_bod_object(esi_1 + 0x3bfac8, *(&game_base_4->root_bod_catalog.floor_corners.storage[0].object + j_3))
 00435a36        *(esi_1 + 0x3bfb08) |= 0x40
 00435a3c        game_base_4 = g_game_base
 00435a41        j_3 += 0x38

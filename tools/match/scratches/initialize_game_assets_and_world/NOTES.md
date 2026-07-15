@@ -765,3 +765,19 @@ animation banks. The object-render sync now batches its struct fields and
 prototypes in one previewed transaction, and the initializer health check
 rejects loss of the root loader owner. Matcher output remains byte-stable at
 80.50% because this closes analysis replay rather than changing source shape.
+
+## 2026-07-15 root BOD-catalog replay
+
+The constructor-proven `RootBodCatalog` is now installed at `GameRoot
++0x44100` by the repeatable Binary Ninja sync. Its exact 0x4d00-byte extent
+ends at `directx_loader +0x48e00`, so this names the complete 352-record owner
+without consuming any unknown neighboring storage. The sync now batches its
+root field and initializer prototype in one previewed transaction.
+
+Refreshing the seven real consumers propagates the same owner graph through
+the initializer, runtime track-cell population, run condensing, warning
+promotion, floor/slide harmonization, edge selection, and fringe construction.
+Health checks pin representative pillar, corner, slice, ramp, universe-hole,
+and fringe accesses; `construct_game_runtime` was inspected but deliberately
+left unexported because its HLIL did not improve. Matcher output remains at the
+byte-stable 80.50% initializer frontier.

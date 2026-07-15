@@ -412,6 +412,8 @@
         "is_sub_loc_floor",
         "is_sub_loc_slide",
         "g_game_base",
+        "g_game_base->root_bod_catalog.pillars",
+        "g_game_base->root_bod_catalog.universe_hole.object",
         "0xffff9fff"
       ],
       "forbidden_substrings": [
@@ -604,12 +606,17 @@
         "initialize_overlay(&game->overlay_1)",
         "initialize_directx_loader(&game->directx_loader)",
         "game->directx_loader.animation_bytes",
-        "load_x_animation_clip(&game->directx_loader"
+        "load_x_animation_clip(&game->directx_loader",
+        "game->root_bod_catalog.pillars[0].object",
+        "game->root_bod_catalog.floor_corners.storage[0].object",
+        "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object"
       ],
       "forbidden_substrings": [
         "game->__offset(0x67c)",
         "game->__offset(0x7c8)",
         "game->__offset(0x914)",
+        "game->__offset(0x44100)",
+        "game->__offset(0x445d0)",
         "game->__offset(0x48e00)",
         "analysis skipped",
         "unimplemented"
@@ -1970,7 +1977,8 @@
         "game_1->runtime_row_count",
         "&game_1->runtime_rows",
         "&game_1->runtime_cells",
-        "runtime_cells[0][0].fringe_front"
+        "runtime_cells[0][0].fringe_front",
+        "g_game_base->root_bod_catalog.fringe_catalog"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -2003,7 +2011,9 @@
       "required_substrings": [
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].object",
-        "runtime_cells[0][0].lane_and_flags"
+        "runtime_cells[0][0].lane_and_flags",
+        "root_bod_catalog.floor_slices.storage[0].object",
+        "root_bod_catalog.warning_slices.storage[0].object"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -2033,7 +2043,9 @@
       "required_substrings": [
         "struct SubgameRuntime* game_1 = game",
         "game_1->runtime_row_count",
-        "game_1->runtime_cells[0][0].lane_and_flags"
+        "game_1->runtime_cells[0][0].lane_and_flags",
+        "root_bod_catalog.floor_corners.storage[0].object",
+        "root_bod_catalog.slide_corners.storage[0].object"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -2063,7 +2075,9 @@
       "required_substrings": [
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].tile_id",
-        "runtime_cells[0][0].lane_and_flags"
+        "runtime_cells[0][0].lane_and_flags",
+        "g_game_base->root_bod_catalog.floor_corners",
+        "g_game_base->root_bod_catalog.slide_corners"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -2260,7 +2274,10 @@
       "required_substrings": [
         "game->runtime_row_count",
         "game->completion_row_start",
-        "switch_track_mirror"
+        "switch_track_mirror",
+        "root_bod_catalog.floor_slices.storage[0].object",
+        "root_bod_catalog.slide_slices.storage[0].object",
+        "root_bod_catalog.ramp_edges[1].object"
       ],
       "forbidden_substrings": [
         "_pad_74622",

@@ -56,7 +56,7 @@
 00434d1c        ebp = 0
 00434d43        struct FringeObject* eax_15 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434d4b        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front = eax_15
-00434d70        set_bod_object(eax_15, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp) * 0x38 + 0x44dd4))
+00434d70        set_bod_object(eax_15, g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][0][(ebx + edi_1 * 0xc) * 3 + ebp].object)
 00434d75        struct FringeObject* fringe_front = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front
 00434d81        fringe_front->bod.list_flags |= 0x20
 00434d89        struct Vec3* eax_17 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front->position
@@ -90,7 +90,7 @@
 00434e20        ebp_3 = 0
 00434e47        struct FringeObject* eax_31 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434e4f        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right = eax_31
-00434e74        set_bod_object(eax_31, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp_3) * 0x38 + 0x44fcc))
+00434e74        set_bod_object(eax_31, g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][0][(ebx + edi_1 * 0xc) * 3 + ebp_3].object)
 00434e79        struct FringeObject* fringe_right = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right
 00434e85        fringe_right->bod.list_flags |= 0x20
 00434e8d        struct Vec3* eax_33 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right->position
@@ -124,7 +124,7 @@
 00434f24        ebp_6 = 0
 00434f4b        struct FringeObject* eax_47 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434f53        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left = eax_47
-00434f78        set_bod_object(eax_47, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp_6) * 0x38 + 0x451c4))
+00434f78        set_bod_object(eax_47, g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][0][(ebx + edi_1 * 0xc) * 3 + ebp_6].object)
 00434f7d        struct FringeObject* fringe_left = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left
 00434f89        fringe_left->bod.list_flags |= 0x20
 00434f91        struct Vec3* eax_49 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left->position
@@ -158,7 +158,7 @@
 00435028        ebp_9 = 0
 0043504f        struct FringeObject* eax_63 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00435057        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back = eax_63
-0043507c        set_bod_object(eax_63, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp_9) * 0x38 + 0x453bc))
+0043507c        set_bod_object(eax_63, g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][0][(ebx + edi_1 * 0xc) * 3 + ebp_9].object)
 00435081        struct FringeObject* fringe_back = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back
 0043508d        fringe_back->bod.list_flags |= 0x20
 00435095        struct Vec3* eax_65 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back->position

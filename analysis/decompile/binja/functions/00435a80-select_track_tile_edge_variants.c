@@ -38,46 +38,46 @@
 00435b46        (esi_1 - 0x3bfb04)->:0x3bfb05.b |= 2
 00435b4a        int32_t eax_6 = 0
 00435b4c        eax_6.b = (esi_1 - 0x3bfb04)->:0x3bfb05.b
-00435b55        int32_t edx_4
+00435b55        void* object
 00435b55        if (eax_6 - 5 u<= 5)
 00435b55        switch (eax_6)
 00435bd0        case 5
 00435bd0        (esi_1 - 0x3bfb04)->runtime_cells[0][0].lane_and_flags |= 0x8000
 00435bd3        uint8_t eax_11 = (esi_1 - 0x3bfb04)->:0x3bfb04.b
 00435beb        if (eax_11 == 1 || eax_11 == 0x14 || eax_11 == 0x15 || eax_11 == 0x1b || eax_11 == 0x21 || eax_11 == 0x22)
-00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->__offset(0x44274).d)
+00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->root_bod_catalog.floor_corners.storage[1].object)
 00435bf7        if (eax_11 != 0x16 && eax_11 != 0xe && is_sub_loc_ramp(&esi_1[0xffffffc4]) == 0)
-00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->__offset(0x44434).d)
+00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->root_bod_catalog.slide_corners.storage[1].object)
 00435c98        case 6
 00435c98        (esi_1 - 0x3bfb04)->runtime_cells[0][0].lane_and_flags |= 0x8000
 00435c9b        uint8_t eax_18 = (esi_1 - 0x3bfb04)->:0x3bfb04.b
 00435cb3        if (eax_18 == 1 || eax_18 == 0x14 || eax_18 == 0x15 || eax_18 == 0x1b || eax_18 == 0x21 || eax_18 == 0x22)
-00435ce2        edx_4 = g_game_base->__offset(0x442e4).d
+00435ce2        object = g_game_base->root_bod_catalog.floor_corners.storage[3].object
 00435ce2        goto label_435ce8
 00435cbb        if (eax_18 != 0x16 && eax_18 != 0xe && is_sub_loc_ramp(&esi_1[0xffffffc4]) == 0)
-00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->__offset(0x444a4).d)
+00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->root_bod_catalog.slide_corners.storage[3].object)
 00435b67        case 9
 00435b67        (esi_1 - 0x3bfb04)->runtime_cells[0][0].lane_and_flags |= 0x8000
 00435b6a        uint8_t eax_8 = (esi_1 - 0x3bfb04)->:0x3bfb04.b
 00435b82        if (eax_8 == 1 || eax_8 == 0x14 || eax_8 == 0x15 || eax_8 == 0x1b || eax_8 == 0x21 || eax_8 == 0x22)
-00435bc0        edx_4 = g_game_base->__offset(0x4423c).d
+00435bc0        object = g_game_base->root_bod_catalog.floor_corners.storage[0].object
 00435ce8        label_435ce8:
-00435cec        set_bod_object(&esi_1[0xffffffc4], edx_4)
+00435cec        set_bod_object(&esi_1[0xffffffc4], object)
 00435b8e        if (eax_8 != 0x16 && eax_8 != 0xe && is_sub_loc_ramp(&esi_1[0xffffffc4]) == 0)
-00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->__offset(0x443fc).d)
+00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->root_bod_catalog.slide_corners.storage[0].object)
 00435c39        case 0xa
 00435c39        (esi_1 - 0x3bfb04)->runtime_cells[0][0].lane_and_flags |= 0x8000
 00435c3c        uint8_t eax_15 = (esi_1 - 0x3bfb04)->:0x3bfb04.b
 00435c54        if (eax_15 == 1 || eax_15 == 0x14 || eax_15 == 0x15 || eax_15 == 0x1b || eax_15 == 0x21 || eax_15 == 0x22)
-00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->__offset(0x442ac).d)
+00435cec        set_bod_object(&esi_1[0xffffffc4], g_game_base->root_bod_catalog.floor_corners.storage[2].object)
 00435c60        if (eax_15 != 0x16 && eax_15 != 0xe && is_sub_loc_ramp(&esi_1[0xffffffc4]) == 0)
 00435c74        struct GameRoot* game_base_1 = g_game_base
-00435c7a        int32_t edx_10
-00435c7a        edx_10.b = game_base_1->__offset(0x4446c).b
-00435c7a        edx_10:1.b = game_base_1->__offset(0x4446d).b
-00435c7a        edx_10:2.b = game_base_1->__offset(0x4446e).b
-00435c7a        edx_10:3.b = game_base_1->__offset(0x4446f).b
-00435cec        set_bod_object(&esi_1[0xffffffc4], edx_10)
+00435c7a        void* edx_9
+00435c7a        edx_9.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object.b
+00435c7a        edx_9:1.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:1.b
+00435c7a        edx_9:2.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:2.b
+00435c7a        edx_9:3.b = game_base_1->root_bod_catalog.slide_corners.storage[2].object:3.b
+00435cec        set_bod_object(&esi_1[0xffffffc4], edx_9)
 00435cf1        i = i_1
 00435cf5        j += 1
 00435cf6        esi_1 = &esi_1[0x54]
