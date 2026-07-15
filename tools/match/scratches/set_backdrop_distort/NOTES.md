@@ -1,6 +1,6 @@
 # set_backdrop_distort @ 0x410c40
 
-Current scratch: 54.93% (73 target insns, 69 candidate insns), clean masks.
+Current scratch: 100.00% (73/73 target insns), 14 clean operands.
 
 Seeds the 8x8 backdrop distortion grid from the parsed landscape `Distort:`
 scalar.
@@ -17,12 +17,13 @@ Recovered layout:
 - border cells (`row == 0`, `row == 7`, `column == 0`, or `column == 7`) are
   hard-zeroed.
 
-Open source-shape issue: the clean float-stride spelling still lets VC6
-strength-reduce the inner loop into a moving pointer cursor. Native keeps the
-row index in `edi`, column in `esi`, zero in `edx`, and recomputes the
-`(row + column) * 0x18` address inside the zero/random branches. Do not close
-this with volatile or dummy helper calls; resume from a loop-shape or idiom
-probe.
+Recovered source shape: the authored loops use row and column indices over the
+owned `Backdrop::distort_grid[8][8]`, and each store names a
+`BackdropDistortCell` field directly. VC6 strength-reduces the row index into
+the native `edi += 8` cell-base index while preserving `esi` as the column and
+recomputing each branch-local cell address. An `interior` predicate leaves the
+randomized path first and the shared border-zero path second, exactly matching
+native control flow.
 
 2026-06-21 direct-index retry: removing the `result`/`cell` pointer locals and
 repeating the full indexed store expression is codegen-neutral at 50.70%. VC6
@@ -43,3 +44,13 @@ derive from `Backdrop::distort_cells/distort_grid`. The normalized listing is
 byte-identical
 (`ace5b77e797fe52f5ec2b0b4fee88aea2dacc52902eb7ce906c2854452f4c31f`)
 at the honest 54.93% result (`69/73`, prefix `3/73`, 14 clean operands).
+
+## 2026-07-15 typed grid recovery
+
+Replacing the flat float-stride approximation with direct
+`distort_grid[row][column].field` accesses recovered the authored 8x8 owner and
+raised the focused result from 54.93% to 76.71% without changing semantics.
+Spelling the four non-border tests as an `interior` predicate then restored the
+native randomized-first block order and reached an exact 100.00% match
+(`73/73`, prefix `73/73`, 14 clean operands). No volatile state, dummy calls,
+or other code-generation-only constructs are present.

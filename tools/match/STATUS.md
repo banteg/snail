@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**620/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96377/317040** bytes (**30.40%**) are proof-grade, and overall fuzzy is **73.05%**.
+**621/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96638/317040** bytes (**30.48%**) are proof-grade, and overall fuzzy is **73.09%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (620)
+## Proof Grade (621)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -138,6 +138,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_global_color4f_bank_32_thunk | 0x410c00 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
 | ✅ | initialize_global_color4f_bank_32 | 0x410c10 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
 | ✅ | set_backdrop_progress_fraction | 0x410c30 | 13 | 3/3 | 100.00% | 3/3 | - |  |
+| ✅ | set_backdrop_distort | 0x410c40 | 261 | 73/73 | 100.00% | 73/73 | 14 ok |  |
 | ✅ | change_backdrop | 0x410d50 | 111 | 34/34 | 100.00% | 34/34 | - |  |
 | ✅ | change_backdrop_real | 0x410dc0 | 87 | 30/30 | 100.00% | 30/30 | 1 ok |  |
 | ✅ | initialize_backdrop | 0x410e20 | 279 | 55/55 | 100.00% | 55/55 | 4 ok |  |
@@ -731,7 +732,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
 
-## Mid Progress (50-79.99%) (41)
+## Mid Progress (50-79.99%) (40)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -744,7 +745,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
-| 🚧 | set_backdrop_distort | 0x410c40 | 261 | 69/73 | 54.93% | 3/73 | 14 ok |  |
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 645/694 | 73.34% | 9/694 | 68 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |

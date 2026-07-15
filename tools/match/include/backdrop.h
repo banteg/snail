@@ -29,7 +29,7 @@ typedef char BackdropWorldBlend_must_be_0x20[
 class Backdrop : public BodBase {
 public:
     void set_backdrop_zoom(float zoom); // @ 0x410c30, iOS cRBackdrop::SetZoom(float)
-    void set_backdrop_distort(float distort); // @ 0x410c40
+    void set_backdrop_distort(float distort); // @ 0x410c40, iOS/Android cRBackdrop::SetDistort(float)
     void change_backdrop(LandscapeScriptRecord* record, char flip); // @ 0x410d50
     void change_backdrop_real(); // @ 0x410dc0
     void initialize_backdrop(int last_mode); // @ 0x410e20
