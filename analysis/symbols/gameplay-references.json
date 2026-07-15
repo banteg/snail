@@ -3732,7 +3732,7 @@
       "aliases": [
         "data_502fe0"
       ],
-      "description": "Direct3DRenderer +0xbb88 renderer-state pointer; pointee offset +0x08 is the transient vertex buffer locked by sprite and immediate textured-quad draw paths."
+      "description": "Matcher/reference alias for the Direct3DRenderer +0xbb88 renderer-state field, not a standalone owner; pointee offset +0x08 is the transient vertex buffer locked by sprite and immediate textured-quad draw paths."
     },
     {
       "address": "0x502fec",
@@ -3741,7 +3741,7 @@
       "aliases": [
         "data_502fec"
       ],
-      "description": "Direct3DRenderer +0xbb94 IDirect3DDevice8 pointer used by render helpers to program render state and submit primitives."
+      "description": "Matcher/reference alias for the Direct3DRenderer +0xbb94 IDirect3DDevice8 field, not a standalone owner; render helpers use it to program render state and submit primitives."
     },
     {
       "address": "0x503170",

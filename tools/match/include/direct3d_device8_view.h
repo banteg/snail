@@ -95,6 +95,7 @@ typedef char D3DViewport8_must_be_0x18[
 typedef char Direct3DDevice8Vtbl_must_cover_0x158[
     (sizeof(Direct3DDevice8Vtbl) == 0x158) ? 1 : -1];
 
-extern Direct3DDevice8* g_d3d_device; // data_502fec
+// Matcher relocation alias for g_direct3d_renderer.device (+0xbb94).
+extern Direct3DDevice8* g_d3d_device;
 
 #endif

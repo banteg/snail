@@ -15,3 +15,10 @@ Initializes the process renderer before Direct3D device creation.
   one anonymous eight-byte padding range.
 
 Focused match is exact: 38/38 instructions with all 15 masked operands clean.
+
+## 2026-07-15 Binary Ninja replay
+
+The live database now types this member as
+`void __thiscall(Direct3DRenderer*)` and renders every `+0xbb90..+0xbcbc`
+write through the canonical receiver. `g_direct3d_renderer` owns one complete
+0xbcc0-byte value; its device pointer is not recreated as a standalone global.

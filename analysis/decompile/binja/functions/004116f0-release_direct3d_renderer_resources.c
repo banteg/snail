@@ -1,7 +1,6 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: set_fullscreen_mode @ 0x414260 */
+/* function: release_direct3d_renderer_resources @ 0x4116f0 */
 
-0041426a        direct3d_renderer_set_fullscreen_mode(&g_direct3d_renderer, enabled)
-0041426f        return
+004116f0        return release_direct3d_device_interfaces(renderer) __tailcall

@@ -20,3 +20,11 @@ real shared device-vtable slot at `+0x38`, immediately before `Present`; the
 former reset-only derived renderer and partial device-vtable shells duplicated
 those owners. The consolidated spelling remains exact at 84/84 instructions
 with all 29 masked operands clean.
+
+## 2026-07-15 Binary Ninja replay
+
+The live replay now exposes `device_initialized`, the nested presentation
+block, cached display format, and typed `IDirect3DDevice8::Reset` from the one
+canonical renderer. Refreshed pseudocode also keeps texture-stage restoration
+and baseline-state restoration on that same receiver; no scratch rewrite was
+needed.

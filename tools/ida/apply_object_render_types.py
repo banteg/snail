@@ -11,6 +11,70 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_direct3d_renderer_defaults",
+        "void __thiscall initialize_direct3d_renderer_defaults(Direct3DRenderer* renderer);",
+    ),
+    (
+        "release_direct3d_renderer_resources",
+        "void __thiscall release_direct3d_renderer_resources(Direct3DRenderer* renderer);",
+    ),
+    (
+        "direct3d_renderer_set_cull_mode",
+        "int32_t __thiscall direct3d_renderer_set_cull_mode(Direct3DRenderer* renderer, uint8_t cull_front);",
+    ),
+    (
+        "initialize_d3d8_device",
+        "void __thiscall initialize_d3d8_device(Direct3DRenderer* renderer, uint8_t use_present_interval_one);",
+    ),
+    (
+        "reset_direct3d_render_state",
+        "void __thiscall reset_direct3d_render_state(Direct3DRenderer* renderer);",
+    ),
+    (
+        "release_direct3d_device_interfaces",
+        "void __thiscall release_direct3d_device_interfaces(Direct3DRenderer* renderer);",
+    ),
+    (
+        "initialize_direct3d_renderer",
+        "uint8_t __cdecl initialize_direct3d_renderer(void);",
+    ),
+    (
+        "set_cull_mode",
+        "int32_t __cdecl set_cull_mode(int32_t cull_front);",
+    ),
+    (
+        "release_global_direct3d_renderer_resources",
+        "void __cdecl release_global_direct3d_renderer_resources(void);",
+    ),
+    (
+        "present_backbuffer",
+        "int32_t __cdecl present_backbuffer(void);",
+    ),
+    (
+        "set_fullscreen_mode",
+        "void __cdecl set_fullscreen_mode(int32_t enabled);",
+    ),
+    (
+        "direct3d_renderer_set_fullscreen_mode",
+        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer* renderer, int32_t enabled);",
+    ),
+    (
+        "restore_texture_ref_stage_states",
+        "void __thiscall restore_texture_ref_stage_states(Direct3DRenderer* renderer);",
+    ),
+    (
+        "bind_texture_ref",
+        "void __cdecl bind_texture_ref(TextureRef* texture);",
+    ),
+    (
+        "query_direct3d_device_caps",
+        "void __thiscall query_direct3d_device_caps(Direct3DRenderer* renderer);",
+    ),
+    (
+        "reset_render_counters",
+        "int32_t __cdecl reset_render_counters(void);",
+    ),
+    (
         "noop_this_constructor",
         "void* __thiscall noop_this_constructor(void* self);",
     ),
@@ -116,12 +180,36 @@ TRUSTED_NAMES = [
     (0x4114B0, "create_object_vertex_buffer_resource"),
     (0x4115D0, "create_object_index_buffer_resource"),
     (0x411630, "initialize_direct3d_renderer_defaults"),
+    (0x4116F0, "release_direct3d_renderer_resources"),
+    (0x411700, "direct3d_renderer_set_cull_mode"),
+    (0x411730, "initialize_d3d8_device"),
     (0x4118B0, "reset_direct3d_render_state"),
+    (0x411960, "release_direct3d_device_interfaces"),
     (0x411D70, "release_global_direct3d_renderer_resources"),
     (0x4129C0, "initialize_direct3d_renderer"),
+    (0x4129F0, "set_cull_mode"),
+    (0x413520, "present_backbuffer"),
+    (0x414260, "set_fullscreen_mode"),
     (0x414270, "direct3d_renderer_set_fullscreen_mode"),
     (0x4143C0, "restore_texture_ref_stage_states"),
+    (0x414500, "bind_texture_ref"),
     (0x414600, "query_direct3d_device_caps"),
+    (0x414650, "reset_render_counters"),
+    (0x4F7450, "g_render_triangle_count"),
+    (0x4F7458, "g_direct3d_renderer"),
+    (0x503170, "g_draw_primitive_call_count"),
+    (0x503174, "g_current_texture_ref"),
+    (0x5031C0, "g_texture_bind_call_count"),
+    (0x5031C8, "g_d3d_texture_slots"),
+]
+
+TRUSTED_DATA_DECLARATIONS = [
+    (0x4F7450, "g_render_triangle_count", "int32_t g_render_triangle_count;"),
+    (0x4F7458, "g_direct3d_renderer", "Direct3DRenderer g_direct3d_renderer;"),
+    (0x503170, "g_draw_primitive_call_count", "int32_t g_draw_primitive_call_count;"),
+    (0x503174, "g_current_texture_ref", "TextureRef* g_current_texture_ref;"),
+    (0x5031C0, "g_texture_bind_call_count", "int32_t g_texture_bind_call_count;"),
+    (0x5031C8, "g_d3d_texture_slots", "Direct3DTexture8** g_d3d_texture_slots;"),
 ]
 
 
@@ -148,6 +236,11 @@ def _normalize_type_text(value: str | None) -> str | None:
 
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
+    return _normalize_type_text(unnamed) or ""
+
+
+def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
+    unnamed = re.sub(rf"\b{re.escape(selector)}\b", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
 
 
@@ -215,6 +308,41 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "declaration": declaration,
                     "observed": observed,
                     "reason": "verification_failed",
+                }
+            )
+            continue
+
+        applied += 1
+
+    for address, selector, declaration in TRUSTED_DATA_DECLARATIONS:
+        expected_observed = _data_declaration_to_observed_type(selector, declaration)
+        normalized_current = _normalize_type_text(idc.get_type(address))
+
+        if normalized_current == expected_observed:
+            unchanged += 1
+            continue
+
+        if not idc.SetType(address, declaration):
+            failed.append(
+                {
+                    "selector": selector,
+                    "address": hex(address),
+                    "declaration": declaration,
+                    "reason": "set_data_type_failed",
+                }
+            )
+            continue
+
+        observed = idc.get_type(address)
+        normalized_observed = _normalize_type_text(observed)
+        if normalized_observed != expected_observed:
+            failed.append(
+                {
+                    "selector": selector,
+                    "address": hex(address),
+                    "declaration": declaration,
+                    "observed": observed,
+                    "reason": "data_verification_failed",
                 }
             )
             continue

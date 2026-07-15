@@ -13,3 +13,11 @@ device pointer but writes stage state through the shared device alias.
 `Direct3DRenderer` owner. The former reset-only derived class added no layout
 or behavior and merely duplicated the real receiver. The consolidated method
 remains exact at 110/110 instructions with all 15 masked operands clean.
+
+## 2026-07-15 Binary Ninja replay
+
+The refreshed artifact resolves the member's first device access through
+`renderer->device`, the texture bank as `Direct3DTexture8**`, and all absolute
+device accesses as `g_direct3d_renderer.device`. Binary Ninja retains some
+indirect-call temporary noise, but the parent ownership is now explicit and
+guarded without inventing an interior global.

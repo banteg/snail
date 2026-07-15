@@ -290,6 +290,164 @@ typedef struct DirectXLoader {
     CachedXMeshSlot cached_x_mesh_slots[0x80];
     DuplicateVertices duplicate_vertices;
 } DirectXLoader;
+typedef struct D3DPresentParameters {
+    uint32_t back_buffer_width;
+    uint32_t back_buffer_height;
+    uint32_t back_buffer_format;
+    uint32_t back_buffer_count;
+    uint32_t multisample_type;
+    uint32_t swap_effect;
+    int32_t device_window;
+    int32_t windowed;
+    int32_t enable_auto_depth_stencil;
+    uint32_t auto_depth_stencil_format;
+    uint32_t flags;
+    uint32_t fullscreen_refresh_rate_hz;
+    uint32_t fullscreen_presentation_interval;
+} D3DPresentParameters;
+
+typedef struct D3DDeviceCaps8 {
+    uint8_t _pad_00[0x58];
+    uint32_t max_texture_width;
+    uint32_t max_texture_height;
+    uint8_t _pad_60[0xd4 - 0x60];
+} D3DDeviceCaps8;
+
+typedef struct D3DDisplayMode {
+    uint32_t width;
+    uint32_t height;
+    uint32_t refresh_rate;
+    uint32_t format;
+} D3DDisplayMode;
+
+typedef struct D3DViewport8 {
+    uint32_t x;
+    uint32_t y;
+    uint32_t width;
+    uint32_t height;
+    float min_z;
+    float max_z;
+} D3DViewport8;
+
+typedef struct Direct3D8 Direct3D8;
+typedef struct Direct3DDevice8 Direct3DDevice8;
+typedef struct Direct3DTexture8 Direct3DTexture8;
+
+typedef struct Direct3D8Vtbl {
+    uint8_t _pad_000[0x08];
+    int32_t (__stdcall* Release)(Direct3D8* self);
+    uint8_t _pad_00c[0x20 - 0x0c];
+    int32_t (__stdcall* GetAdapterDisplayMode)(
+        Direct3D8* self, uint32_t adapter, D3DDisplayMode* mode);
+    uint8_t _pad_024[0x34 - 0x24];
+    int32_t (__stdcall* GetDeviceCaps)(
+        Direct3D8* self, uint32_t adapter, uint32_t device_type,
+        D3DDeviceCaps8* caps);
+    uint8_t _pad_038[0x3c - 0x38];
+    int32_t (__stdcall* CreateDevice)(
+        Direct3D8* self, uint32_t adapter, uint32_t device_type,
+        int32_t focus_window, uint32_t behavior_flags,
+        D3DPresentParameters* parameters, Direct3DDevice8** out_device);
+} Direct3D8Vtbl;
+
+struct Direct3D8 {
+    Direct3D8Vtbl* vtbl;
+};
+
+typedef struct Direct3DTexture8Vtbl {
+    uint8_t _pad_000[0x08];
+    int32_t (__stdcall* Release)(Direct3DTexture8* self);
+} Direct3DTexture8Vtbl;
+
+struct Direct3DTexture8 {
+    Direct3DTexture8Vtbl* vtbl;
+};
+
+typedef struct Direct3DDevice8Vtbl {
+    uint8_t _pad_000[0x08];
+    int32_t (__stdcall* Release)(Direct3DDevice8* self);
+    uint8_t _pad_00c[0x38 - 0x0c];
+    int32_t (__stdcall* Reset)(
+        Direct3DDevice8* self, D3DPresentParameters* parameters);
+    int32_t (__stdcall* Present)(
+        Direct3DDevice8* self, void* source_rect, void* dest_rect,
+        int32_t dest_window_override, void* dirty_region);
+    uint8_t _pad_040[0x5c - 0x40];
+    int32_t (__stdcall* CreateVertexBuffer)(
+        Direct3DDevice8* self, uint32_t length, uint32_t usage, uint32_t fvf,
+        uint32_t pool, ObjectVertexBuffer** out_buffer);
+    int32_t (__stdcall* CreateIndexBuffer)(
+        Direct3DDevice8* self, uint32_t length, uint32_t usage, uint32_t format,
+        uint32_t pool, ObjectIndexBufferResource** out_buffer);
+    uint8_t _pad_064[0x88 - 0x64];
+    int32_t (__stdcall* BeginScene)(Direct3DDevice8* self);
+    int32_t (__stdcall* EndScene)(Direct3DDevice8* self);
+    int32_t (__stdcall* Clear)(
+        Direct3DDevice8* self, uint32_t count, void* rects, uint32_t flags,
+        uint32_t color, float z, uint32_t stencil);
+    int32_t (__stdcall* SetTransform)(
+        Direct3DDevice8* self, int32_t state, TransformMatrix* matrix);
+    int32_t (__stdcall* GetTransform)(
+        Direct3DDevice8* self, int32_t state, TransformMatrix* matrix);
+    int32_t (__stdcall* MultiplyTransform)(
+        Direct3DDevice8* self, int32_t state, TransformMatrix* matrix);
+    int32_t (__stdcall* SetViewport)(
+        Direct3DDevice8* self, D3DViewport8* viewport);
+    int32_t (__stdcall* GetViewport)(
+        Direct3DDevice8* self, D3DViewport8* viewport);
+    uint8_t _pad_0a8[0xc8 - 0xa8];
+    int32_t (__stdcall* SetRenderState)(
+        Direct3DDevice8* self, int32_t state, int32_t value);
+    uint8_t _pad_0cc[0xf4 - 0xcc];
+    int32_t (__stdcall* SetTexture)(
+        Direct3DDevice8* self, uint32_t stage, Direct3DTexture8* texture);
+    uint8_t _pad_0f8[0xfc - 0xf8];
+    int32_t (__stdcall* SetTextureStageState)(
+        Direct3DDevice8* self, uint32_t stage, uint32_t type, uint32_t value);
+    uint8_t _pad_100[0x118 - 0x100];
+    int32_t (__stdcall* DrawPrimitive)(
+        Direct3DDevice8* self, uint32_t primitive_type,
+        uint32_t start_vertex, uint32_t primitive_count);
+    int32_t (__stdcall* DrawIndexedPrimitive)(
+        Direct3DDevice8* self, uint32_t primitive_type,
+        uint32_t min_vertex_index, uint32_t vertex_count,
+        uint32_t start_index, uint32_t primitive_count);
+    uint8_t _pad_120[0x130 - 0x120];
+    int32_t (__stdcall* SetVertexShader)(
+        Direct3DDevice8* self, uint32_t shader);
+    uint8_t _pad_134[0x14c - 0x134];
+    int32_t (__stdcall* SetStreamSource)(
+        Direct3DDevice8* self, uint32_t stream,
+        ObjectVertexBuffer* buffer, uint32_t stride);
+    uint8_t _pad_150[0x154 - 0x150];
+    int32_t (__stdcall* SetIndices)(
+        Direct3DDevice8* self, ObjectIndexBufferResource* index_buffer,
+        uint32_t base_vertex_index);
+} Direct3DDevice8Vtbl;
+
+struct Direct3DDevice8 {
+    Direct3DDevice8Vtbl* vtbl;
+};
+
+typedef struct Direct3DRenderer {
+    VertexBufferFactory vertex_buffer_factory;
+    IndexBufferFactory index_buffer_factory;
+    ObjectRenderBuffers* renderer_state;
+    uint8_t device_initialized;
+    uint8_t _pad_bb8d[0xbb90 - 0xbb8d];
+    Direct3D8* d3d;
+    Direct3DDevice8* device;
+    D3DPresentParameters present;
+    D3DDeviceCaps8 device_caps;
+    uint32_t display_format;
+    uint32_t requested_width;
+    uint32_t requested_height;
+    uint32_t create_device_flags;
+    uint32_t unknown_bcb0;
+    uint32_t unknown_bcb4;
+    uint32_t depth_stencil_format;
+    uint32_t multisample_type;
+} Direct3DRenderer;
 
 void __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
@@ -342,8 +500,33 @@ ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
 ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(
     IndexBufferFactory* factory, int32_t index_count);
+void __thiscall initialize_direct3d_renderer_defaults(Direct3DRenderer* renderer);
+void __thiscall release_direct3d_renderer_resources(Direct3DRenderer* renderer);
+int32_t __thiscall direct3d_renderer_set_cull_mode(
+    Direct3DRenderer* renderer, uint8_t cull_front);
+void __thiscall initialize_d3d8_device(
+    Direct3DRenderer* renderer, uint8_t use_present_interval_one);
+void __thiscall reset_direct3d_render_state(Direct3DRenderer* renderer);
+void __thiscall release_direct3d_device_interfaces(Direct3DRenderer* renderer);
+uint8_t __cdecl initialize_direct3d_renderer(void);
+int32_t __cdecl set_cull_mode(int32_t cull_front);
+void __cdecl release_global_direct3d_renderer_resources(void);
+int32_t __cdecl present_backbuffer(void);
+void __cdecl set_fullscreen_mode(int32_t enabled);
+void __thiscall direct3d_renderer_set_fullscreen_mode(
+    Direct3DRenderer* renderer, int32_t enabled);
+void __thiscall restore_texture_ref_stage_states(Direct3DRenderer* renderer);
+void __cdecl bind_texture_ref(TextureRef* texture);
+void __thiscall query_direct3d_device_caps(Direct3DRenderer* renderer);
+int32_t __cdecl reset_render_counters(void);
 
 extern ObjectToonEdge* g_object_edge_build_edges;
 extern int32_t g_object_edge_build_count;
 extern int32_t g_object_grouped_vertex_cursor;
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;
+extern Direct3DRenderer g_direct3d_renderer;
+extern int32_t g_render_triangle_count;
+extern int32_t g_draw_primitive_call_count;
+extern TextureRef* g_current_texture_ref;
+extern int32_t g_texture_bind_call_count;
+extern Direct3DTexture8** g_d3d_texture_slots;

@@ -12,3 +12,10 @@ slot directly, so teardown no longer recasts either owned interface into a
 scratch-local release-only shell. The exact teardown remains the regression
 oracle for the shared ABI; the repository-wide exact audit covers all other
 consumers of both vtables.
+
+## 2026-07-15 Binary Ninja replay
+
+Live readback now shows a `Direct3DRenderer*` receiver and typed `Release`
+calls for both owned interfaces, followed by clears of `renderer->device` and
+`renderer->d3d`. The device address `0x502fec` resolves as the singleton's
+`+0xbb94` field and has no independent symbol or data variable.

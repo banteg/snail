@@ -3377,6 +3377,162 @@
         "&game->__offset(0x5c)",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_direct3d_renderer_defaults_owner",
+      "artifact": "analysis/decompile/binja/functions/00411630-initialize_direct3d_renderer_defaults.c",
+      "required_substrings": [
+        "renderer->d3d = nullptr",
+        "renderer->device = nullptr",
+        "renderer->requested_width = 0x280",
+        "renderer->requested_height = 0x1e0",
+        "renderer->depth_stencil_format = 0x50",
+        "renderer->device_initialized = 0"
+      ],
+      "forbidden_substrings": [
+        "*(arg1 +",
+        "data_502fec",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_device_initialization_owner",
+      "artifact": "analysis/decompile/binja/functions/00411730-initialize_d3d8_device.c",
+      "required_substrings": [
+        "renderer->d3d = eax",
+        "struct D3DDisplayMode mode",
+        "&renderer->present",
+        "&renderer->device",
+        "renderer->device_initialized = 1"
+      ],
+      "forbidden_substrings": [
+        "*(arg1 +",
+        "arg1 + 0xbb",
+        "data_502fec",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_device_teardown_owner",
+      "artifact": "analysis/decompile/binja/functions/00411960-release_direct3d_device_interfaces.c",
+      "required_substrings": [
+        "struct Direct3DDevice8* device = renderer->device",
+        "device->vtbl->Release(device)",
+        "renderer->device = nullptr",
+        "struct Direct3D8* d3d = renderer->d3d",
+        "d3d->vtbl->Release(d3d)",
+        "renderer->d3d = nullptr"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_502fec",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_renderer_composition_root",
+      "artifact": "analysis/decompile/binja/functions/004129c0-initialize_direct3d_renderer.c",
+      "required_substrings": [
+        "initialize_direct3d_renderer_defaults(&g_direct3d_renderer)",
+        "initialize_d3d8_device(&g_direct3d_renderer, 0)",
+        "g_direct3d_renderer.renderer_state = create_object_vertex_buffer_resource"
+      ],
+      "forbidden_substrings": [
+        "data_4f7458",
+        "data_502fe0",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_present_owner",
+      "artifact": "analysis/decompile/binja/functions/00413520-present_backbuffer.c",
+      "required_substrings": [
+        "struct Direct3DDevice8* device = g_direct3d_renderer.device",
+        "device->vtbl->Present(device, nullptr, nullptr, 0, nullptr)"
+      ],
+      "forbidden_substrings": [
+        "data_502fec",
+        "sub_413520",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_fullscreen_reset_owner",
+      "artifact": "analysis/decompile/binja/functions/00414270-direct3d_renderer_set_fullscreen_mode.c",
+      "required_substrings": [
+        "renderer->device_initialized",
+        "renderer->present.windowed",
+        "renderer->present.back_buffer_format = renderer->display_format",
+        "device->vtbl->Reset(device, &renderer->present)",
+        "restore_texture_ref_stage_states(renderer)",
+        "reset_direct3d_render_state(renderer)"
+      ],
+      "forbidden_substrings": [
+        "*(arg1 +",
+        "data_502fec",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_texture_restore_owner",
+      "artifact": "analysis/decompile/binja/functions/004143c0-restore_texture_ref_stage_states.c",
+      "required_substrings": [
+        "struct Direct3DDevice8* device = renderer->device",
+        "g_d3d_texture_slots",
+        "g_direct3d_renderer.device"
+      ],
+      "forbidden_substrings": [
+        "data_502fec",
+        "data_5031c8",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_texture_bind_owner",
+      "artifact": "analysis/decompile/binja/functions/00414500-bind_texture_ref.c",
+      "required_substrings": [
+        "texture == g_current_texture_ref",
+        "g_direct3d_renderer.device",
+        "g_d3d_texture_slots",
+        "texture->slot_index",
+        "g_texture_bind_call_count += 1",
+        "texture->flags"
+      ],
+      "forbidden_substrings": [
+        "data_502fec",
+        "data_503174",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_caps_owner",
+      "artifact": "analysis/decompile/binja/functions/00414600-query_direct3d_device_caps.c",
+      "required_substrings": [
+        "struct Direct3D8* d3d = renderer->d3d",
+        "d3d->vtbl->GetDeviceCaps(d3d, 0, 1, &renderer->device_caps)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_502fe8",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_render_counter_owners",
+      "artifact": "analysis/decompile/binja/functions/00414650-reset_render_counters.c",
+      "required_substrings": [
+        "g_render_triangle_count = 0",
+        "g_draw_primitive_call_count = 0",
+        "g_texture_bind_call_count = 0"
+      ],
+      "forbidden_substrings": [
+        "data_4f7450",
+        "data_503170",
+        "data_5031c0",
+        "unimplemented"
+      ]
     }
   ]
 }

@@ -762,6 +762,79 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in matcher_header
 
 
+def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+    matcher_header = (
+        repo_root / "tools/match/include/direct3d_renderer.h"
+    ).read_text(encoding="utf-8")
+    matcher_device_header = (
+        repo_root / "tools/match/include/direct3d_device8_view.h"
+    ).read_text(encoding="utf-8")
+
+    for address, name, data_type in (
+        ("0x4f7450", "g_render_triangle_count", "int32_t"),
+        ("0x4f7458", "g_direct3d_renderer", "Direct3DRenderer"),
+        ("0x503170", "g_draw_primitive_call_count", "int32_t"),
+        ("0x503174", "g_current_texture_ref", "TextureRef*"),
+        ("0x5031c0", "g_texture_bind_call_count", "int32_t"),
+        ("0x5031c8", "g_d3d_texture_slots", "Direct3DTexture8**"),
+    ):
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "{data_type}")' in binja_sync
+
+    assert '("0xbb90", "d3d", "Direct3D8*")' in binja_sync
+    assert '("0xbb94", "device", "Direct3DDevice8*")' in binja_sync
+    assert '("0xbb98", "present", "D3DPresentParameters")' in binja_sync
+    assert '("0xbbcc", "device_caps", "D3DDeviceCaps8")' in binja_sync
+    assert '("0x502fec",' not in binja_sync
+
+    for function_name in (
+        "release_direct3d_renderer_resources",
+        "direct3d_renderer_set_cull_mode",
+        "initialize_d3d8_device",
+        "reset_direct3d_render_state",
+        "release_direct3d_device_interfaces",
+        "present_backbuffer",
+        "set_fullscreen_mode",
+        "restore_texture_ref_stage_states",
+        "bind_texture_ref",
+        "query_direct3d_device_caps",
+    ):
+        assert f'"{function_name}"' in binja_sync
+        assert f'"{function_name}"' in ida_sync
+
+    for header in analysis_headers:
+        assert "typedef struct Direct3DRenderer" in header
+        assert "VertexBufferFactory vertex_buffer_factory;" in header
+        assert "IndexBufferFactory index_buffer_factory;" in header
+        assert "Direct3DDevice8* device;" in header
+        assert "D3DPresentParameters present;" in header
+        assert "D3DDeviceCaps8 device_caps;" in header
+        assert "extern Direct3DRenderer g_direct3d_renderer;" in header
+        assert "extern Direct3DDevice8* g_d3d_device;" not in header
+        assert "void __cdecl bind_texture_ref(TextureRef* texture);" in header
+
+    assert "VertexBufferFactory vertex_buffer_factory; // +0x0000" in matcher_header
+    assert "IndexBufferFactory index_buffer_factory; // +0x8ca4" in matcher_header
+    assert "Direct3DDevice8* device;" in matcher_header
+    assert "D3DPresentParameters present;" in matcher_header
+    assert "D3DDeviceCaps8 device_caps;" in matcher_header
+    assert (
+        "Matcher relocation alias for g_direct3d_renderer.device (+0xbb94)."
+        in matcher_device_header
+    )
+
+
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"

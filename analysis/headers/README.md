@@ -123,7 +123,11 @@ The presentation BN sync lane selectively replays the authoritative camera/rende
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
 
 The object-render lane owns the complete shared `Object`, `tColourSmall`, and
-grouped-buffer layouts plus the trusted render contracts. Its retained
+grouped-buffer layouts plus the trusted render contracts. It also replays the
+complete `Direct3DRenderer` singleton, its nested buffer factories,
+presentation/caps blocks, and the recovered Direct3D 8 COM vtable surface.
+The device pointer at `0x502fec` remains the renderer field at `+0xbb94`; the
+lane deliberately does not recreate it as a standalone data variable. Its retained
 `ObjectAnimation` record keeps a two-byte `ObjectAnimationFlags` field, while
 the named stored-bit enum stays separate from the selector-only `-1`
 preserve-current override. Its retained frame bank is consistently typed as

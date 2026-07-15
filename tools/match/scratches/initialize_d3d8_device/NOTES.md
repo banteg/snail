@@ -75,3 +75,12 @@ presentation-parameter store schedule and moves the scratch to `100.00%`,
 
 `0x47bdf4` is now named `Direct3DCreate8`, the Direct3D 8 import thunk used by
 the initializer.
+
+## 2026-07-15 Binary Ninja replay
+
+The repeatable object-render sync now installs the complete renderer receiver,
+`D3DDisplayMode`, `D3DPresentParameters`, and the relevant `IDirect3D8` vtable
+slots before applying this `void __thiscall(Direct3DRenderer*, uint8_t)` ABI.
+The refreshed pseudocode exposes the authored presentation fields and both
+`CreateDevice` attempts through `&renderer->device` without changing the exact
+scratch source.

@@ -69,12 +69,36 @@ OBJECT_LIST_FIELDS = (
     ("0x08", "objects", "Object*"),
 )
 
+DIRECT3D_RENDERER_FIELDS = (
+    ("0x0000", "vertex_buffer_factory", "VertexBufferFactory"),
+    ("0x8ca4", "index_buffer_factory", "IndexBufferFactory"),
+    ("0xbb88", "renderer_state", "ObjectRenderBuffers*"),
+    ("0xbb8c", "device_initialized", "uint8_t"),
+    ("0xbb90", "d3d", "Direct3D8*"),
+    ("0xbb94", "device", "Direct3DDevice8*"),
+    ("0xbb98", "present", "D3DPresentParameters"),
+    ("0xbbcc", "device_caps", "D3DDeviceCaps8"),
+    ("0xbca0", "display_format", "uint32_t"),
+    ("0xbca4", "requested_width", "uint32_t"),
+    ("0xbca8", "requested_height", "uint32_t"),
+    ("0xbcac", "create_device_flags", "uint32_t"),
+    ("0xbcb0", "unknown_bcb0", "uint32_t"),
+    ("0xbcb4", "unknown_bcb4", "uint32_t"),
+    ("0xbcb8", "depth_stencil_format", "uint32_t"),
+    ("0xbcbc", "multisample_type", "uint32_t"),
+)
+
 SYMBOL_UPDATES = (
     ("0x4b7648", "g_object_list"),
+    ("0x4f7450", "g_render_triangle_count"),
     ("0x4f7458", "g_direct3d_renderer"),
     ("0x5000fc", "g_object_index_buffer_factory"),
+    ("0x503170", "g_draw_primitive_call_count"),
+    ("0x503174", "g_current_texture_ref"),
     ("0x5031bc", "g_object_grouped_vertex_cursor"),
+    ("0x5031c0", "g_texture_bind_call_count"),
     ("0x5031c4", "g_object_grouped_vertex_scratch"),
+    ("0x5031c8", "g_d3d_texture_slots"),
     ("0x5031d8", "g_object_texture_transform_matrix"),
     ("0x503300", "g_object_edge_build_edges"),
     ("0x503318", "g_object_edge_build_count"),
@@ -85,18 +109,33 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x4114b0", "create_object_vertex_buffer_resource"),
     ("0x4115d0", "create_object_index_buffer_resource"),
     ("0x411630", "initialize_direct3d_renderer_defaults"),
+    ("0x4116f0", "release_direct3d_renderer_resources"),
+    ("0x411700", "direct3d_renderer_set_cull_mode"),
+    ("0x411730", "initialize_d3d8_device"),
     ("0x4118b0", "reset_direct3d_render_state"),
+    ("0x411960", "release_direct3d_device_interfaces"),
     ("0x411d70", "release_global_direct3d_renderer_resources"),
     ("0x4129c0", "initialize_direct3d_renderer"),
+    ("0x4129f0", "set_cull_mode"),
+    ("0x413520", "present_backbuffer"),
+    ("0x414260", "set_fullscreen_mode"),
     ("0x414270", "direct3d_renderer_set_fullscreen_mode"),
     ("0x4143c0", "restore_texture_ref_stage_states"),
+    ("0x414500", "bind_texture_ref"),
     ("0x414600", "query_direct3d_device_caps"),
+    ("0x414650", "reset_render_counters"),
 )
 
 DATA_VAR_UPDATES = (
     ("0x4b7648", "ObjectList"),
+    ("0x4f7450", "int32_t"),
+    ("0x4f7458", "Direct3DRenderer"),
+    ("0x503170", "int32_t"),
+    ("0x503174", "TextureRef*"),
     ("0x5031bc", "int32_t"),
+    ("0x5031c0", "int32_t"),
     ("0x5031c4", "ObjectGroupedVertex*"),
+    ("0x5031c8", "Direct3DTexture8**"),
     ("0x5031d8", "TransformMatrix"),
     ("0x503300", "ObjectToonEdge*"),
     ("0x503318", "int32_t"),
@@ -107,6 +146,55 @@ DATA_VAR_UPDATES = (
 # direct Function.set_user_type updates. Keep it out of the repeatable sync
 # until that Binary Ninja function-type defect is cleared.
 PROTO_UPDATES = (
+    (
+        "initialize_direct3d_renderer_defaults",
+        "void __thiscall initialize_direct3d_renderer_defaults(Direct3DRenderer* renderer)",
+    ),
+    (
+        "release_direct3d_renderer_resources",
+        "void __thiscall release_direct3d_renderer_resources(Direct3DRenderer* renderer)",
+    ),
+    (
+        "direct3d_renderer_set_cull_mode",
+        "int32_t __thiscall direct3d_renderer_set_cull_mode(Direct3DRenderer* renderer, uint8_t cull_front)",
+    ),
+    (
+        "initialize_d3d8_device",
+        "void __thiscall initialize_d3d8_device(Direct3DRenderer* renderer, uint8_t use_present_interval_one)",
+    ),
+    (
+        "reset_direct3d_render_state",
+        "void __thiscall reset_direct3d_render_state(Direct3DRenderer* renderer)",
+    ),
+    (
+        "release_direct3d_device_interfaces",
+        "void __thiscall release_direct3d_device_interfaces(Direct3DRenderer* renderer)",
+    ),
+    (
+        "initialize_direct3d_renderer",
+        "uint8_t __cdecl initialize_direct3d_renderer()",
+    ),
+    ("set_cull_mode", "int32_t __cdecl set_cull_mode(int32_t cull_front)"),
+    (
+        "release_global_direct3d_renderer_resources",
+        "void __cdecl release_global_direct3d_renderer_resources()",
+    ),
+    ("present_backbuffer", "int32_t __cdecl present_backbuffer()"),
+    ("set_fullscreen_mode", "void __cdecl set_fullscreen_mode(int32_t enabled)"),
+    (
+        "direct3d_renderer_set_fullscreen_mode",
+        "void __thiscall direct3d_renderer_set_fullscreen_mode(Direct3DRenderer* renderer, int32_t enabled)",
+    ),
+    (
+        "restore_texture_ref_stage_states",
+        "void __thiscall restore_texture_ref_stage_states(Direct3DRenderer* renderer)",
+    ),
+    ("bind_texture_ref", "void __cdecl bind_texture_ref(TextureRef* texture)"),
+    (
+        "query_direct3d_device_caps",
+        "void __thiscall query_direct3d_device_caps(Direct3DRenderer* renderer)",
+    ),
+    ("reset_render_counters", "int32_t __cdecl reset_render_counters()"),
     (
         "initialize_object_distort",
         "void __thiscall initialize_object_distort(ObjectDistort* distort)",
@@ -276,10 +364,19 @@ def main() -> int:
         )
     )
     operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        )
+    )
+    operations.extend(
         apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
             struct_updates=(
+                ("Direct3DRenderer", DIRECT3D_RENDERER_FIELDS),
                 ("Object", OBJECT_FIELDS),
                 ("TextureRef", TEXTURE_REF_FIELDS),
                 ("ObjectList", OBJECT_LIST_FIELDS),
@@ -289,7 +386,6 @@ def main() -> int:
         )
     )
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES, kind="data"))
-    operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=FUNCTION_SYMBOL_UPDATES, kind="function"))
     operations.extend(apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
