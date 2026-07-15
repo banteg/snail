@@ -676,7 +676,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 2 mismatch, 37 ok |  |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 39 ok |  |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 101 mismatch, 1550 ok |  |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 36 mismatch, 1639 ok |  |
 | 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 26 ok |  |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 88.24% | 17/67 | 7 ok |  |
 | 🚧 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 1 mismatch, 56 ok |  |
@@ -728,7 +728,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_voice_manager | 0x448ee0 | 960 | 270/269 | 88.68% | 99/269 | 62 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 67/65 | 89.39% | 3/65 | 17 ok |  |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 68/66 | 92.54% | 2/66 | 19 ok |  |
-| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 87.14% | 3/69 | 2 mismatch, 18 ok |  |
+| 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 71/69 | 87.14% | 3/69 | 20 ok |  |
 | 🚧 | layout_and_queue_wrapped_font_text | 0x44abe0 | 548 | 155/155 | 94.19% | 22/155 | 12 ok |  |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  |
 | 🚧 | find_case_insensitive_substring | 0x44e600 | 130 | 59/63 | 85.25% | 8/63 | 4 ok |  |
@@ -742,7 +742,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 442/446 | 64.64% | 2/446 | 8 ok |  |
 | 🚧 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  |
 | 🚧 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC |
-| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 336/325 | 63.84% | 1/325 | 6 mismatch, 126 ok |  |
+| 🚧 | game_startup_and_main_loop | 0x406dc0 | 1316 | 336/325 | 63.84% | 1/325 | 5 mismatch, 127 ok |  |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 52 ok |  |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 6 ok |  |
@@ -771,18 +771,18 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 48 ok |  |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  |
-| 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 4 mismatch, 20 ok |  |
+| 🚧 | harmonize_center_lane_floor_slide_variants | 0x4356f0 | 911 | 225/226 | 58.98% | 9/226 | 12 ok |  |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 101 ok |  |
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.75% | 9/1033 | 2 mismatch, 117 ok |  |
 | 🚧 | update_jet_particles | 0x43a690 | 670 | 174/181 | 52.96% | 0/181 | 16 ok |  |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2072/2087 | 74.30% | 12/2087 | 1 mismatch, 290 ok |  |
-| 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 327/347 | 64.09% | 3/347 | 10 mismatch, 48 ok |  |
-| 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 2 mismatch, 63 ok |  |
+| 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 327/347 | 64.09% | 3/347 | 9 mismatch, 49 ok |  |
+| 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 1 mismatch, 64 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 54.23% | 8/673 | 88 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 68.29% | 1/248 | 1 mismatch, 23 ok |  |
-| 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |
+| 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 1 mismatch, 88 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |
 
 ## Early Progress (>0-49.99%) (23)
@@ -793,7 +793,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 640/685 | 40.91% | 0/685 | 35 ok |  |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 641/690 | 40.57% | 0/690 | 34 ok |  |
-| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 600/655 | 34.74% | 0/655 | 1 mismatch, 25 ok |  |
+| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 600/655 | 34.74% | 0/655 | 26 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 619/685 | 39.88% | 0/685 | 32 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 627/696 | 28.42% | 0/696 | 27 ok |  |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 617/696 | 28.64% | 0/696 | 27 ok |  |
@@ -804,10 +804,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 628/687 | 48.06% | 0/687 | 41 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 564/600 | 49.66% | 0/600 | 30 ok |  |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 659/707 | 37.34% | 0/707 | 46 ok |  |
-| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 577/677 | 24.72% | 0/677 | 3 mismatch, 33 ok |  |
-| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 577/677 | 24.72% | 0/677 | 3 mismatch, 33 ok |  |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 577/677 | 24.72% | 0/677 | 36 ok |  |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 577/677 | 24.72% | 0/677 | 36 ok |  |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 597/663 | 27.94% | 1/663 | 2 mismatch, 22 ok |  |
-| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 577/668 | 21.53% | 0/668 | 4 mismatch, 28 ok |  |
+| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 577/668 | 21.53% | 0/668 | 1 mismatch, 32 ok |  |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 491/579 | 24.67% | 0/579 | 29 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 2 mismatch, 66 ok |  |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 30.93% | 0/639 | 2 mismatch, 40 ok |  |

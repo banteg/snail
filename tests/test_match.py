@@ -7,15 +7,18 @@ import pytest
 
 from snail.match import (
     ClusterTotals,
+    DisassemblyLine,
     IDIOM_CASES_BY_NAME,
     ImageSection,
     LoadedImage,
+    MaskedReference,
     ObjectRelocationReference,
     ObjectFunction,
     ReferenceSymbol,
     ReferenceSymbolManifest,
     ScratchConfig,
     ScratchStatus,
+    audit_masked_operands,
     common_prefix_length,
     diff_regions,
     disassemble_normalized_function,
@@ -495,6 +498,40 @@ def test_masked_operand_audit_flags_wrong_callee_reference() -> None:
     assert entry.status == "mismatch"
     assert entry.target_references[0].text == "fn:right_helper@0x401010"
     assert entry.candidate_references[0].text == "sym:wrong_helper"
+
+
+def test_masked_operand_audit_prefers_matching_repeated_reference() -> None:
+    def line(index: int, key: str, source: str) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=index,
+            address=0x401000 + index,
+            text="call ADDR",
+            masked_references=(
+                MaskedReference(
+                    operand_index=0,
+                    kind="imm",
+                    source=source,
+                    value=None,
+                    text=f"{source}:{key}",
+                    key=f"name:{key}",
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (
+        line(0, "first_helper", "image"),
+        DisassemblyLine(offset=1, address=0x401001, text="mov eax, eax"),
+        line(2, "second_helper", "image"),
+    )
+    candidate = (line(0, "second_helper", "reloc"),)
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 1
+    assert audit.problem_count == 0
+    assert audit.entries[0].target_index == 2
+    assert audit.entries[0].candidate_index == 0
 
 
 def test_masked_operand_audit_flags_unresolved_target_reference() -> None:

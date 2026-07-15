@@ -1540,14 +1540,15 @@ def normalize_function(
     return tuple(line.text for line in lines)
 
 
+def _reference_key_options(reference: MaskedReference) -> frozenset[str]:
+    keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
+    return frozenset(keys)
+
+
 def _reference_status(
     target_references: tuple[MaskedReference, ...],
     candidate_references: tuple[MaskedReference, ...],
 ) -> str:
-    def reference_key_options(reference: MaskedReference) -> frozenset[str]:
-        keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
-        return frozenset(keys)
-
     def is_local_jump_table(
         target: MaskedReference, candidate: MaskedReference
     ) -> bool:
@@ -1628,12 +1629,12 @@ def _reference_status(
             return audited_bytes_match(target, candidate)
         if is_local_function_alias(target, candidate):
             return function_alias_code_matches(target, candidate)
-        target_keys = reference_key_options(target)
-        candidate_keys = reference_key_options(candidate)
+        target_keys = _reference_key_options(target)
+        candidate_keys = _reference_key_options(candidate)
         return bool(target_keys & candidate_keys)
 
-    target_keys = tuple(reference_key_options(reference) for reference in target_references)
-    candidate_keys = tuple(reference_key_options(reference) for reference in candidate_references)
+    target_keys = tuple(_reference_key_options(reference) for reference in target_references)
+    candidate_keys = tuple(_reference_key_options(reference) for reference in candidate_references)
     all_explained = all(
         reference.explained for reference in (*target_references, *candidate_references)
     )
@@ -1688,37 +1689,82 @@ def audit_masked_operands(
     target_disassembly: tuple[DisassemblyLine, ...],
     candidate_disassembly: tuple[DisassemblyLine, ...],
 ) -> MaskedOperandAudit:
-    matcher = difflib.SequenceMatcher(
+    def alignment_token(
+        line: DisassemblyLine,
+    ) -> tuple[str, tuple[tuple[str, ...], ...]]:
+        return (
+            line.text,
+            tuple(
+                tuple(sorted(_reference_key_options(reference)))
+                for reference in line.masked_references
+            ),
+        )
+
+    def equal_pairs(matcher: difflib.SequenceMatcher) -> list[tuple[int, int]]:
+        pairs: list[tuple[int, int]] = []
+        for tag, a0, a1, b0, b1 in matcher.get_opcodes():
+            if tag == "equal":
+                pairs.extend(zip(range(a0, a1), range(b0, b1)))
+        return pairs
+
+    reference_matcher = difflib.SequenceMatcher(
+        a=tuple(alignment_token(line) for line in target_disassembly),
+        b=tuple(alignment_token(line) for line in candidate_disassembly),
+        autojunk=False,
+    )
+    reference_pairs = equal_pairs(reference_matcher)
+    reference_masked_pairs = {
+        (target_index, candidate_index)
+        for target_index, candidate_index in reference_pairs
+        if target_disassembly[target_index].masked_references
+        or candidate_disassembly[candidate_index].masked_references
+    }
+    used_target_indices = {target_index for target_index, _ in reference_masked_pairs}
+    used_candidate_indices = {
+        candidate_index for _, candidate_index in reference_masked_pairs
+    }
+
+    text_matcher = difflib.SequenceMatcher(
         a=tuple(line.text for line in target_disassembly),
         b=tuple(line.text for line in candidate_disassembly),
         autojunk=False,
     )
-    entries: list[MaskedOperandAuditEntry] = []
-    for tag, a0, a1, b0, b1 in matcher.get_opcodes():
-        if tag != "equal":
+    audit_pairs = list(reference_masked_pairs)
+    for target_index, candidate_index in equal_pairs(text_matcher):
+        target_line = target_disassembly[target_index]
+        candidate_line = candidate_disassembly[candidate_index]
+        if not target_line.masked_references and not candidate_line.masked_references:
             continue
-        for target_index, candidate_index in zip(range(a0, a1), range(b0, b1)):
-            target_line = target_disassembly[target_index]
-            candidate_line = candidate_disassembly[candidate_index]
-            if not target_line.masked_references and not candidate_line.masked_references:
-                continue
-            entries.append(
-                MaskedOperandAuditEntry(
-                    target_index=target_index,
-                    candidate_index=candidate_index,
-                    target_offset=target_line.offset,
-                    candidate_offset=candidate_line.offset,
-                    target_address=target_line.address,
-                    candidate_address=candidate_line.address,
-                    instruction=target_line.text,
-                    target_references=target_line.masked_references,
-                    candidate_references=candidate_line.masked_references,
-                    status=_reference_status(
-                        target_line.masked_references,
-                        candidate_line.masked_references,
-                    ),
-                )
+        if (target_index, candidate_index) in reference_masked_pairs:
+            continue
+        if (
+            target_index in used_target_indices
+            or candidate_index in used_candidate_indices
+        ):
+            continue
+        audit_pairs.append((target_index, candidate_index))
+
+    entries: list[MaskedOperandAuditEntry] = []
+    for target_index, candidate_index in sorted(audit_pairs):
+        target_line = target_disassembly[target_index]
+        candidate_line = candidate_disassembly[candidate_index]
+        entries.append(
+            MaskedOperandAuditEntry(
+                target_index=target_index,
+                candidate_index=candidate_index,
+                target_offset=target_line.offset,
+                candidate_offset=candidate_line.offset,
+                target_address=target_line.address,
+                candidate_address=candidate_line.address,
+                instruction=target_line.text,
+                target_references=target_line.masked_references,
+                candidate_references=candidate_line.masked_references,
+                status=_reference_status(
+                    target_line.masked_references,
+                    candidate_line.masked_references,
+                ),
             )
+        )
     return MaskedOperandAudit(tuple(entries))
 
 
