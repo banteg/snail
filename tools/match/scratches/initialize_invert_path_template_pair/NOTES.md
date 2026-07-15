@@ -1,13 +1,15 @@
 # initialize_invert_path_template_pair
 
-Starter reconstruction for `initialize_invert_path_template_pair @ 0x429250`.
+Ownership reconstruction for `initialize_invert_path_template_pair @ 0x429250`.
 
 Models the fixed 34-sample invert template with `0x29` kind, runtime flag `+0x9c`
 set, terminal `pi` rotation scalar, half-angle interior rotation scalar,
 secondary offsets, deltas, strip mesh generation, and finalization.
 
-Residuals should be attacked by reshaping the interior loop and mesh tail; this
-starter deliberately avoids normalizer gaming.
+Current focused result: 49.66% (564/600 candidate/target instructions), with
+30 masked operands ok, 0 unresolved, and 0 mismatched. Residuals are primarily
+the native stack frame, delta/vertex loop source shape, and register allocation;
+this reconstruction deliberately avoids normalizer gaming.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 8.66% (116/600
@@ -59,3 +61,22 @@ then owns `basis_right = basis_up cross basis_forward` before its 0x40-byte
 transform is copied to the secondary lane. Recovering that sequence moves
 focused Wibo from 33.94% (508/600) to 36.59% (537/600), with the masked audit
 still clean at 25 ok, 0 unresolved, 0 mismatch.
+
+2026-07-15 sample ownership cascade: expanding both endpoints and the interior
+initializer into directly owned `PathSample` stores recovers the independent
+primary/secondary endpoint transforms, the primary-only terminal pi rotation,
+and the native split `sample_index`/`local_index` traversal. The interpolated
+center remains primary sample metadata while transform X stays zero; interior
+secondary samples receive only the 0x40-byte transform before their basis-up
+offset. This source shape scored 51.27% (539/600), with 32 ok, 0 unresolved,
+0 mismatch before the mesh argument ownership correction below.
+
+2026-07-15 strip texture ownership: target stack references prove that face 0
+uses `texture_b` and face 1 uses `vertical_texture`; `texture_a` is not consumed
+by this generated strip. The generic row/column parity branch remains in the
+native code even though both arms select the same respective texture pointer.
+Recovering those arguments, the per-branch 16-bit `header_word` clear, and the
+two face-local bodies gives the retained 49.66% (564/600), with 30 ok,
+0 unresolved, 0 mismatch. This is lower than the 51.27% intermediate but fixes
+real behavior, remains well above the 36.59% baseline, and brings the candidate
+instruction count materially closer to the 600-instruction target.
