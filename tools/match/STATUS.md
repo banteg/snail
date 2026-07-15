@@ -772,7 +772,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 327/347 | 64.09% | 3/347 | 10 mismatch, 48 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 2 mismatch, 63 ok |  |
 | 🚧 | apply_damage_gauge_delta | 0x4413f0 | 322 | 91/94 | 78.92% | 0/94 | 20 ok |  |
-| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 53.93% | 8/673 | 86 ok |  |
+| 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 651/673 | 54.23% | 8/673 | 88 ok |  |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 244/248 | 68.29% | 1/248 | 1 mismatch, 23 ok |  |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 573/571 | 62.24% | 5/571 | 5 mismatch, 80 ok |  |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 51 ok |  |

@@ -59,7 +59,6 @@ void Player::handle_subgoldy_collisions()
     Vec3 probe_b;      // v67
     Vec3 probe_c;      // v68
     Vec3 delta;        // v69
-    Vec3 hit_velocity; // v70/v71/v72
     Vec3 probe_salt;   // vector (also rings/effects source)
     Vec3 burst_offset;
     Vec3 burst_position; // v76
@@ -137,7 +136,9 @@ void Player::handle_subgoldy_collisions()
                         garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                     add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
-                    g_sound_effect_manager.play_sound_effect(39 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
+                    g_sound_effect_manager.play_sound_effect(
+                        39 - (int)((float)next_math_random_value()
+                            * -0.000061035156f));
                 }
             }
         }
@@ -161,15 +162,15 @@ void Player::handle_subgoldy_collisions()
                                 control_override_active = 1;
                                 follow_state.active = 0;
                                 float rate = hit_game->subgame_rate;
-                                hit_velocity =
+                                velocity =
                                     Vector3(0.0f, 0.2f, -0.2f) * rate;
-                                velocity = hit_velocity;
                                 begin_post_follow_carryover();
                                 presentation.cutscene.state =
                                     CUT_SCENE_STATE_DEATH_PENDING;
                                 slug->player_encounter_latched = 1;
                                 slug->play_slug_voice(
-                                    34 - (int)(__int64)((double)next_math_random_value() * -0.000061035156));
+                                    34 - (int)((float)next_math_random_value()
+                                        * -0.000061035156f));
                                 float half = distance * 0.5f;
                                 presentation.wobble_lift_phase_step = 0.0f;
                                 burst_offset = probe_b * half;

@@ -1,7 +1,23 @@
-# WIP scratch — 53.93%, 651/673 insns (2026-07-13 collision source-shape pass)
+# WIP scratch — 54.23%, 651/673 insns (2026-07-15 RNG source-type pass)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
+
+2026-07-15 RNG source-type pass: both collision-selected sound variants now
+multiply the integer RNG result as `float`, matching the target's two
+`fmul dword` sites and the independently exact slug AI's RNG conversion idiom.
+The prior explicit `double` cast forced `fmul qword` and was not supported by
+the native code. Focused match improves from `53.93%` to `54.23%`; the
+candidate remains `651/673` instructions and the clean masked audit rises from
+`86` to `88` operands with no unresolved or mismatched values.
+
+The slug knockback now assigns the recovered `Vector3(0, 0.2, -0.2) * rate`
+expression directly to `Player::velocity`. VC6 still emits the same native-size
+aggregate temporary, so this is codegen-neutral, but it removes a scratch-only
+named staging owner that neither the target nor the cross-port expression
+supports. A game-base raw slug cursor was also tested because the native loop
+retains its byte offset; it regressed to `52.57%` and one fewer clean operand,
+so the canonical typed `Slug*` walk remains.
 
 2026-07-13 collision source-shape and ownership pass: retained two independent,
 behavior-preserving compiler-shape recoveries that were measured but deferred
