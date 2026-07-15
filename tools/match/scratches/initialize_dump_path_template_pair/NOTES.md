@@ -83,3 +83,31 @@ primary/secondary pointers and orientation guard through an explicit
 rejected mesh `vertex_index` rewrite. Focused Wibo moves from `19.94%`
 (`614/690`) to `29.78%` (`613/690`), and the masked audit improves from
 `29 ok / 0 mismatch` to `34 ok / 0 mismatch`.
+
+2026-07-15 shared Hump/Dump builder ownership pass: both IDA and Binary Ninja
+show the same authored control structure recovered in the Hump sibling. Dump
+now performs the curve conversion after kind/mirror/exit/width ownership,
+keeps a mutable `curve_count + 7` departure index, writes both seven-sample
+fixed runs directly, advances the explicit curved byte offset in a `do/while`,
+uses owned `TransformMatrix::set_matrix_identity` member calls, constructs the
+ordinary mesh-row position as a real `Vector3`, preserves the nonempty
+face-column `do/while`, and retains both duplicate parity-controlled texture
+paths. Applied as a coherent transfer, that source shape reached `44.48%`
+(`641/690`, `33 ok / 0 mismatch`) from the `29.78%` baseline.
+
+The final accepted source also retains Dump's native grouped unary negatives:
+the approach center is `-(width * 0.5f - 4.0f)` and the departure center is
+`-(4.0f - width * 0.5f)`. The target consequently emits `fsub`/`fchs` and
+`fsubr`/`fchs`, respectively, exactly as both decompilers report. Those real
+expression boundaries reduce the fuzzy alignment from `44.48%` to `40.57%`
+(`641/690`, `34 ok / 0 mismatch`), but replacing them with simplified
+equivalents would be score-driven fakematching. The honest net improvement for
+this pass remains `+10.79` percentage points.
+
+2026-07-15 rejected cursor-lifetime probe: initializing the face-row cursor at
+function entry and reusing it for the zero header fields was directionally
+consistent with the native long-lived `ebx`, but without the still-missing
+shared vertex byte-cursor lifetime it changed the global register plan,
+regressed to `25.34%`, and introduced a masked allocation-call mismatch. The
+native register is therefore documented as residual ownership rather than
+forced with hints or dummy lifetime padding.
