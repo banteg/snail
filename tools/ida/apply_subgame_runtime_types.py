@@ -47,6 +47,30 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_vapour(Vapour* vapour);",
     ),
     (
+        "initialize_track_ring_or_special_effect_runtime",
+        "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, SubRingKind requested_kind, Player* player, float ring_speed);",
+    ),
+    (
+        "initialize_ring_or_special_effect_particles",
+        "int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing* ring, int32_t unused_lives_snapshot);",
+    ),
+    (
+        "emit_ring_star_shower",
+        "void __thiscall emit_ring_star_shower(SubRingStar* particle, Player* owner);",
+    ),
+    (
+        "update_ring_or_special_effect_particle",
+        "void __thiscall update_ring_or_special_effect_particle(SubRingStar* particle);",
+    ),
+    (
+        "update_ring_or_special_effect_parent",
+        "void __thiscall update_ring_or_special_effect_parent(SubRing* ring);",
+    ),
+    (
         "initialize_enemy_manager",
         # Keep this ICF-shared one-store ABI coarse in IDA so the unrelated
         # tracked-allocation callsite is not assigned the registry owner.
@@ -133,6 +157,8 @@ TRUSTED_DECLARATIONS = [
 
 REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SegmentCache segment_cache;",
+    "SubRingStar particles[10];",
+    "SubRingPool ring_effects;",
     "TrackRowCell runtime_cells[3200][8];",
     "SubRow runtime_rows[3200];",
 )
@@ -261,6 +287,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "contact_header": str(contact_header_path),
                 "type_sizes": {
                     "SubgameRuntime": _named_struct_size("SubgameRuntime"),
+                    "SubRingStar": _named_struct_size("SubRingStar"),
+                    "SubRing": _named_struct_size("SubRing"),
+                    "SubRingPool": _named_struct_size("SubRingPool"),
                     "EnemyManager": _named_struct_size("EnemyManager"),
                     "GUI": _named_struct_size("GUI"),
                     "Help": _named_struct_size("Help"),

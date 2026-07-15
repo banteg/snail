@@ -192,3 +192,12 @@ and collecting, then expansion-pending and expanding. Those names follow the
 proved writers and transition behavior rather than guessing an original enum.
 Focused output remains 98.21%, 336/336 instructions, prefix 193/336, with 37
 clean operands.
+
+## 2026-07-15 durable owner replay
+
+Both databases now persist the canonical `SubRing*` receiver, its ten owned
+`SubRingStar` children, borrowed `SubgameRuntime*` rate source, and root-owned
+active-list teardown. Readback confirms the `0x20` child, `0x1f8` parent, and
+`0x3f0` two-slot pool; the synthetic `RingEffectRateSource` owner is gone and
+strict paired export reports no mismatches. Matching remains 98.21%, 336/336
+instructions, prefix 193/336, with 37 clean operands.

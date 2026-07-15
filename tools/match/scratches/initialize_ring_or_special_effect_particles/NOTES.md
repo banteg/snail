@@ -106,3 +106,11 @@ and exact at 153/153 instructions with ten clean operands.
 The initializer now consumes `SubRingKind` for its normal, explode, and slow
 sprite-family dispatch and writes `SUB_RING_STATE_ACTIVE`. This is type-only:
 the scratch remains exact at 153/153 instructions with ten clean operands.
+
+## 2026-07-15 durable owner replay
+
+The paired replay replaces IDA's `_DWORD*` receiver with the canonical
+`SubRing*`, exposes its ten owned `SubRingStar` children, and resolves the
+borrowed `SubgameRuntime*` rate source plus live `Sprite` fields. Strict export
+reports no database/export mismatches. The source and bytes remain exact at
+153/153 instructions with ten clean operands.

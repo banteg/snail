@@ -2,51 +2,50 @@
 /* function: update_ring_or_special_effect_parent @ 0x43e830 */
 /* selector: update_ring_or_special_effect_parent */
 
-// rate_source +0x09 is RingEffectRateSource::subgame_pause_gate; this is the
-// root subgame update gate paired with rate_source +0x38 subgame_rate.
-void __thiscall sub_43E830(int this)
+// Windows `cRSubRing::AI()`: advances a SubgameRuntime-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here.
+void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
 {
-  int v2; // eax
-  int v3; // ecx
+  SubgameRuntime *rate_source; // eax
+  int32_t v3; // ecx
   double v4; // st7
   unsigned __int8 v6; // c0
   unsigned __int8 v7; // c3
   int v8; // ebp
-  int v9; // edi
-  int v10; // ecx
-  int v11; // eax
-  char *v12; // ecx
-  int v13; // eax
-  int v14; // eax
-  int v15; // eax
+  SubRingStar *particles; // edi
+  Player *owner_player; // ecx
+  uint32_t list_flags; // eax
+  FrameBodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v15; // eax
   int *v16; // esi
   int v17; // edi
   int v18; // ebp
-  int v19; // edi
+  SubRingStar *v19; // edi
   double v20; // st7
-  int v21; // eax
-  char *v22; // ecx
-  int v23; // eax
-  int v24; // eax
-  int v25; // eax
+  uint32_t v21; // eax
+  FrameBodList *v22; // ecx
+  struct BodNode *v23; // eax
+  struct BodNode *v24; // eax
+  uint32_t v25; // eax
   int *v26; // esi
   int v27; // edi
   int v28; // edx
-  float *v29; // eax
-  float *v30; // ecx
+  Vec4 *p_position; // eax
+  float *p_radius; // ecx
   double v31; // st7
   float *v32; // esi
   int v33; // ebp
-  int v34; // edi
+  SubRingStar *v34; // edi
   double v35; // st7
-  int v36; // eax
-  char *v37; // ecx
-  int v38; // eax
-  int v39; // eax
-  int v40; // eax
+  uint32_t v36; // eax
+  FrameBodList *v37; // ecx
+  struct BodNode *v38; // eax
+  struct BodNode *v39; // eax
+  uint32_t v40; // eax
   int *v41; // esi
   int v42; // edi
-  float *v43; // edx
+  Vec4 *v43; // edx
   float *v44; // eax
   int v45; // ecx
   double v46; // st7
@@ -57,79 +56,78 @@ void __thiscall sub_43E830(int this)
   float v51; // [esp+20h] [ebp-8h]
   float v52; // [esp+24h] [ebp-4h]
 
-  v2 = *(_DWORD *)(this + 464);
-  if ( !*(_BYTE *)(v2 + 9) )
+  rate_source = ring->rate_source;
+  if ( !rate_source->subgame_pause_gate )
   {
-    v3 = *(_DWORD *)(this + 488) + 1;
-    *(_DWORD *)(this + 488) = v3;
+    v3 = ring->star_shower_counter + 1;
+    ring->star_shower_counter = v3;
     if ( v3 == 3 )
-      *(_DWORD *)(this + 488) = 0;
-    switch ( *(_DWORD *)(this + 128) )
+      ring->star_shower_counter = 0;
+    switch ( ring->state )
     {
-      case 1:
-        if ( *(_BYTE *)(this + 476) )
+      case SUB_RING_STATE_ACTIVE:
+        if ( ring->oscillate_x )
         {
-          v4 = *(float *)(this + 484) + *(float *)(this + 480);
-          *(float *)(this + 480) = v4;
+          v4 = ring->active_phase_step + ring->active_phase;
+          ring->active_phase = v4;
           if ( v6 | v7 )
           {
             if ( v4 < 0.0 )
-              *(float *)(this + 480) = v4 + 6.2831855;
+              ring->active_phase = v4 + 6.2831855;
           }
           else
           {
-            *(float *)(this + 480) = v4 - 6.2831855;
+            ring->active_phase = v4 - 6.2831855;
           }
-          *(float *)(this + 104) = sine(*(float *)(this + 480)) * 3.0;
+          ring->body.transform.position.x = sine(ring->active_phase) * 3.0;
         }
         v8 = 10;
-        v9 = this + 144;
+        particles = ring->particles;
         do
         {
-          update_ring_or_special_effect_particle(v9);
-          v9 += 32;
+          update_ring_or_special_effect_particle(particles++);
           --v8;
         }
         while ( v8 );
-        v10 = *(_DWORD *)(this + 132);
-        if ( *(float *)(this + 112) >= (double)*(float *)(v10 + 10624) )
+        owner_player = ring->owner_player;
+        if ( ring->body.transform.position.z >= (double)owner_player->interaction_max_z )
         {
-          if ( *(_DWORD *)(v10 + 1028) < *(_DWORD *)(this + 140) )
-            *(_DWORD *)(this + 128) = 4;
+          if ( owner_player->lives < ring->owner_lives_snapshot )
+            ring->state = SUB_RING_STATE_EXPAND_PENDING;
         }
         else
         {
-          v11 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 128) = 0;
-          v12 = (char *)MEMORY[0x4DF904] + 1448;
-          if ( (v11 & 0x200) != 0 )
+          list_flags = ring->body.bod.bod.list_flags;
+          ring->state = SUB_RING_STATE_INACTIVE;
+          p_active_bod_list = &g_game_base->active_bod_list;
+          if ( (list_flags & 0x200) != 0 )
           {
-            if ( (v11 & 0x40) != 0 )
+            if ( (list_flags & 0x40) != 0 )
             {
               report_errorf(aListRemoveNext);
             }
             else
             {
-              v13 = *(_DWORD *)(this + 12);
-              if ( v13 )
-                *(_DWORD *)(v13 + 8) = *(_DWORD *)(this + 8);
-              v14 = *(_DWORD *)(this + 8);
-              if ( v14 )
-                *(_DWORD *)(v14 + 12) = *(_DWORD *)(this + 12);
+              list_next = ring->body.bod.bod.list_next;
+              if ( list_next )
+                list_next->list_prev = ring->body.bod.bod.list_prev;
+              list_prev = ring->body.bod.bod.list_prev;
+              if ( list_prev )
+                list_prev->list_next = ring->body.bod.bod.list_next;
               else
-                *((_DWORD *)v12 + 1) = *(_DWORD *)(this + 12);
-              *(_DWORD *)(this + 12) = *((_DWORD *)v12 + 2);
-              *((_DWORD *)v12 + 2) = this;
-              v15 = *(_DWORD *)(this + 4);
+                p_active_bod_list->first = (FrameBodBase *)ring->body.bod.bod.list_next;
+              ring->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
+              p_active_bod_list->free_top = (FrameBodBase *)ring;
+              v15 = ring->body.bod.bod.list_flags;
               BYTE1(v15) &= ~2u;
-              *(_DWORD *)(this + 4) = v15;
+              ring->body.bod.bod.list_flags = v15;
             }
           }
           else
           {
             report_errorf(aListRemove);
           }
-          v16 = (int *)(this + 144);
+          v16 = (int *)ring->particles;
           v17 = 10;
           do
           {
@@ -140,56 +138,57 @@ void __thiscall sub_43E830(int this)
           while ( v17 );
         }
         return;
-      case 2:
-        *(_DWORD *)(this + 128) = 3;
-        *(_DWORD *)(this + 468) = 0;
-        *(float *)(this + 472) = *(float *)(v2 + 56) * 0.069444448;
+      case SUB_RING_STATE_COLLECT_PENDING:
+        ring->state = SUB_RING_STATE_COLLECTING;
+        ring->transition_progress = 0.0;
+        ring->transition_step = rate_source->subgame_rate * 0.069444448;
         goto LABEL_30;
-      case 3:
+      case SUB_RING_STATE_COLLECTING:
 LABEL_30:
         v18 = 10;
-        v19 = this + 144;
+        v19 = ring->particles;
         do
         {
-          update_ring_or_special_effect_particle(v19);
-          v19 += 32;
+          update_ring_or_special_effect_particle(v19++);
           --v18;
         }
         while ( v18 );
-        v20 = *(float *)(this + 472) + *(float *)(this + 468);
-        *(float *)(this + 468) = v20;
+        v20 = ring->transition_step + ring->transition_progress;
+        ring->transition_progress = v20;
         if ( v20 <= 1.0 )
         {
           v28 = 10;
-          v29 = (float *)(this + 104);
-          v30 = (float *)(this + 172);
-          v49 = *(float *)(*(_DWORD *)(this + 132) + 10604) + 0.2;
-          v51 = *(float *)(*(_DWORD *)(this + 132) + 10600) - *(float *)(this + 108);
-          v52 = v49 - *(float *)(this + 112);
+          p_position = &ring->body.transform.position;
+          p_radius = &ring->particles[0].radius;
+          v49 = ring->owner_player->cached_camera_target_world.z + 0.2;
+          v51 = ring->owner_player->cached_camera_target_world.y - ring->body.transform.position.y;
+          v52 = v49 - ring->body.transform.position.z;
           v48 = v51 * 0.94;
           v50 = v52 * 0.94;
-          *(float *)(this + 104) = (*(float *)(*(_DWORD *)(this + 132) + 10596) - *(float *)(this + 104)) * 0.94
-                                 + *(float *)(this + 104);
-          *(float *)(this + 108) = v48 + *(float *)(this + 108);
-          *(float *)(this + 112) = v50 + *(float *)(this + 112);
+          ring->body.transform.position.x = (ring->owner_player->cached_camera_target_world.x
+                                           - ring->body.transform.position.x)
+                                          * 0.94
+                                          + ring->body.transform.position.x;
+          ring->body.transform.position.y = v48 + ring->body.transform.position.y;
+          ring->body.transform.position.z = v50 + ring->body.transform.position.z;
           do
           {
-            v31 = *v30 * 0.94;
-            v32 = v30 - 5;
-            v30 += 8;
+            v31 = *p_radius * 0.94;
+            v32 = p_radius - 5;
+            p_radius += 8;
             --v28;
-            *(v30 - 8) = v31;
-            *v32 = *v29;
-            v32[1] = v29[1];
-            v32[2] = v29[2];
+            *(p_radius - 8) = v31;
+            *v32 = p_position->x;
+            v32[1] = p_position->y;
+            v32[2] = p_position->z;
           }
           while ( v28 );
         }
         else
         {
-          v21 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 128) = 0;
-          v22 = (char *)MEMORY[0x4DF904] + 1448;
+          v21 = ring->body.bod.bod.list_flags;
+          ring->state = SUB_RING_STATE_INACTIVE;
+          v22 = &g_game_base->active_bod_list;
           if ( (v21 & 0x200) != 0 )
           {
             if ( (v21 & 0x40) != 0 )
@@ -198,26 +197,26 @@ LABEL_30:
             }
             else
             {
-              v23 = *(_DWORD *)(this + 12);
+              v23 = ring->body.bod.bod.list_next;
               if ( v23 )
-                *(_DWORD *)(v23 + 8) = *(_DWORD *)(this + 8);
-              v24 = *(_DWORD *)(this + 8);
+                v23->list_prev = ring->body.bod.bod.list_prev;
+              v24 = ring->body.bod.bod.list_prev;
               if ( v24 )
-                *(_DWORD *)(v24 + 12) = *(_DWORD *)(this + 12);
+                v24->list_next = ring->body.bod.bod.list_next;
               else
-                *((_DWORD *)v22 + 1) = *(_DWORD *)(this + 12);
-              *(_DWORD *)(this + 12) = *((_DWORD *)v22 + 2);
-              *((_DWORD *)v22 + 2) = this;
-              v25 = *(_DWORD *)(this + 4);
+                v22->first = (FrameBodBase *)ring->body.bod.bod.list_next;
+              ring->body.bod.bod.list_next = (struct BodNode *)v22->free_top;
+              v22->free_top = (FrameBodBase *)ring;
+              v25 = ring->body.bod.bod.list_flags;
               BYTE1(v25) &= ~2u;
-              *(_DWORD *)(this + 4) = v25;
+              ring->body.bod.bod.list_flags = v25;
             }
           }
           else
           {
             report_errorf(aListRemove);
           }
-          v26 = (int *)(this + 144);
+          v26 = (int *)ring->particles;
           v27 = 10;
           do
           {
@@ -228,28 +227,27 @@ LABEL_30:
           while ( v27 );
         }
         return;
-      case 4:
-        *(_DWORD *)(this + 128) = 5;
-        *(_DWORD *)(this + 468) = 0;
-        *(float *)(this + 472) = *(float *)(v2 + 56) * 0.069444448;
+      case SUB_RING_STATE_EXPAND_PENDING:
+        ring->state = SUB_RING_STATE_EXPANDING;
+        ring->transition_progress = 0.0;
+        ring->transition_step = rate_source->subgame_rate * 0.069444448;
         goto LABEL_50;
-      case 5:
+      case SUB_RING_STATE_EXPANDING:
 LABEL_50:
         v33 = 10;
-        v34 = this + 144;
+        v34 = ring->particles;
         do
         {
-          update_ring_or_special_effect_particle(v34);
-          v34 += 32;
+          update_ring_or_special_effect_particle(v34++);
           --v33;
         }
         while ( v33 );
-        v35 = *(float *)(this + 472) + *(float *)(this + 468);
-        *(float *)(this + 468) = v35;
+        v35 = ring->transition_step + ring->transition_progress;
+        ring->transition_progress = v35;
         if ( v35 <= 1.0 )
         {
-          v43 = (float *)(this + 104);
-          v44 = (float *)(this + 172);
+          v43 = &ring->body.transform.position;
+          v44 = &ring->particles[0].radius;
           v45 = 10;
           do
           {
@@ -258,17 +256,17 @@ LABEL_50:
             v44 += 8;
             --v45;
             *(v44 - 8) = v46;
-            *v47 = *v43;
-            v47[1] = v43[1];
-            v47[2] = v43[2];
+            *v47 = v43->x;
+            v47[1] = v43->y;
+            v47[2] = v43->z;
           }
           while ( v45 );
         }
         else
         {
-          v36 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 128) = 0;
-          v37 = (char *)MEMORY[0x4DF904] + 1448;
+          v36 = ring->body.bod.bod.list_flags;
+          ring->state = SUB_RING_STATE_INACTIVE;
+          v37 = &g_game_base->active_bod_list;
           if ( (v36 & 0x200) != 0 )
           {
             if ( (v36 & 0x40) != 0 )
@@ -277,26 +275,26 @@ LABEL_50:
             }
             else
             {
-              v38 = *(_DWORD *)(this + 12);
+              v38 = ring->body.bod.bod.list_next;
               if ( v38 )
-                *(_DWORD *)(v38 + 8) = *(_DWORD *)(this + 8);
-              v39 = *(_DWORD *)(this + 8);
+                v38->list_prev = ring->body.bod.bod.list_prev;
+              v39 = ring->body.bod.bod.list_prev;
               if ( v39 )
-                *(_DWORD *)(v39 + 12) = *(_DWORD *)(this + 12);
+                v39->list_next = ring->body.bod.bod.list_next;
               else
-                *((_DWORD *)v37 + 1) = *(_DWORD *)(this + 12);
-              *(_DWORD *)(this + 12) = *((_DWORD *)v37 + 2);
-              *((_DWORD *)v37 + 2) = this;
-              v40 = *(_DWORD *)(this + 4);
+                v37->first = (FrameBodBase *)ring->body.bod.bod.list_next;
+              ring->body.bod.bod.list_next = (struct BodNode *)v37->free_top;
+              v37->free_top = (FrameBodBase *)ring;
+              v40 = ring->body.bod.bod.list_flags;
               BYTE1(v40) &= ~2u;
-              *(_DWORD *)(this + 4) = v40;
+              ring->body.bod.bod.list_flags = v40;
             }
           }
           else
           {
             report_errorf(aListRemove);
           }
-          v41 = (int *)(this + 144);
+          v41 = (int *)ring->particles;
           v42 = 10;
           do
           {

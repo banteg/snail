@@ -126,3 +126,11 @@ The scratch now defines the exact method on `SubRingStar`, matching the iOS
 `cRSubRingStar::Shower(cRSubGoldy*)` symbol. Its `parent` pointer is a borrowed
 `SubRing*`, while its sprite remains a SpriteManager allocation. Matching stays
 exact at 65/65 instructions with nine clean operands.
+
+## 2026-07-15 durable owner replay
+
+Binary Ninja and IDA now persist the same `SubRingStar*` receiver, borrowed
+`SubRing*` parent, `Player*` owner, and allocated `Sprite*` consumer fields.
+This retires IDA's stale float-array/raw-owner shell; strict paired export has
+no mismatches. The scratch remains exact at 65/65 instructions with nine clean
+operands.

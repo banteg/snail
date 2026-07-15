@@ -2805,6 +2805,129 @@
       ]
     },
     {
+      "name": "bn_subring_spawn_owner",
+      "artifact": "analysis/decompile/binja/functions/0043df10-spawn_track_ring_or_special_effect.c",
+      "required_substrings": [
+        "enum SubRingState* ecx = &game->ring_effects.slots[0].state",
+        "SUB_RING_STATE_INACTIVE",
+        "enum SubRingKind requested_kind_1 = requested_kind",
+        "struct SubRing* ecx_20",
+        "initialize_ring_or_special_effect_particles"
+      ],
+      "forbidden_substrings": [
+        "unknown_000000",
+        "RingEffectRateSource",
+        "RingOrSpecialEffectParent",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_subring_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/00408570-initialize_track_ring_or_special_effect_runtime.c",
+      "required_substrings": [
+        "SubRing *__thiscall initialize_track_ring_or_special_effect_runtime(SubRing *ring)",
+        "ring->body.bod.bod.vtable",
+        "return ring"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall sub_408570",
+        "RingOrSpecialEffectParent",
+        "int this",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_subring_spawn_owner",
+      "artifact": "analysis/decompile/ida/functions/0043df10-spawn_track_ring_or_special_effect.c",
+      "required_substrings": [
+        "void __thiscall spawn_track_ring_or_special_effect(",
+        "SubgameRuntime *game",
+        "SubRingKind requested_kind",
+        "&game->ring_effects.slots[0].state",
+        "initialize_ring_or_special_effect_particles(v18, player->lives)"
+      ],
+      "forbidden_substrings": [
+        "TrackRowCell *__thiscall spawn_track_ring_or_special_effect",
+        "#26 *this",
+        "RingEffectRateSource",
+        "RingOrSpecialEffectParent",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_subring_particle_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/0043e470-initialize_ring_or_special_effect_particles.c",
+      "required_substrings": [
+        "int32_t __thiscall initialize_ring_or_special_effect_particles(SubRing *ring",
+        "SubRingStar *particles",
+        "ring->state = SUB_RING_STATE_ACTIVE",
+        "ring->rate_source->subgame_rate",
+        "particles->sprite->draw_mode",
+        "update_ring_or_special_effect_particle(particles++)"
+      ],
+      "forbidden_substrings": [
+        "sub_43E470",
+        "_DWORD *this",
+        "RingEffectRateSource",
+        "RingOrSpecialEffectParticle",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_subring_star_shower_owner",
+      "artifact": "analysis/decompile/ida/functions/0043e690-emit_ring_star_shower.c",
+      "required_substrings": [
+        "void __thiscall emit_ring_star_shower(SubRingStar *particle, Player *owner)",
+        "owner->player_slot",
+        "particle->parent->star_sprite_id",
+        "&particle->sprite->position"
+      ],
+      "forbidden_substrings": [
+        "float *particle, int owner",
+        "RingOrSpecialEffectParticle",
+        "sub_43E690",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_subring_particle_update_owner",
+      "artifact": "analysis/decompile/ida/functions/0043e780-update_ring_or_special_effect_particle.c",
+      "required_substrings": [
+        "void __thiscall update_ring_or_special_effect_particle(SubRingStar *particle)",
+        "SubRing *parent",
+        "particle->parent->kind",
+        "&particle->sprite->position",
+        "emit_ring_star_shower(particle"
+      ],
+      "forbidden_substrings": [
+        "RingOrSpecialEffectParent",
+        "RingOrSpecialEffectParticle",
+        "sub_43E780",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_subring_parent_update_owner",
+      "artifact": "analysis/decompile/ida/functions/0043e830-update_ring_or_special_effect_parent.c",
+      "required_substrings": [
+        "void __thiscall update_ring_or_special_effect_parent(SubRing *ring)",
+        "SubgameRuntime *rate_source",
+        "switch ( ring->state )",
+        "ring->particles",
+        "rate_source->subgame_rate",
+        "g_game_base->active_bod_list",
+        "kill_sprite"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_43E830(int this)",
+        "RingEffectRateSource",
+        "RingOrSpecialEffectParent",
+        "RingOrSpecialEffectParticle",
+        "__offset("
+      ]
+    },
+    {
       "name": "bn_challenge_gui_initializer_owner",
       "artifact": "analysis/decompile/binja/functions/00415f50-initialize_challenge_setup_screen.c",
       "required_substrings": [

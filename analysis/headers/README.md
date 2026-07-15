@@ -72,7 +72,10 @@ Current checked-in example:
     subgame-helper prototype set, so it cannot replace the recovered runtime
     children with the older sparse compatibility view. This lane also persists
     the exact cRGUI owner and its void `Init`/`UnInit` versus result-bearing
-    `AI` lifecycle contracts.
+    `AI` lifecycle contracts. The same replay owns the canonical `SubRing` /
+    `SubRingStar` / `SubRingPool` graph and its six constructor, spawn, and
+    update prototypes; the old IDA-only `RingEffectRateSource` shell is retired
+    because the backlink borrows the enclosing `SubgameRuntime` directly.
 - `star_manager_types.h`
 - `uv run python tools/ida/sync_star_manager_types.py`
 - `vapour_trail_types.h`
@@ -200,7 +203,9 @@ The adjacent subgame-pool lane owns the canonical `SubRing` / `SubRingStar` /
 children per parent, and the borrowed backlink from each parent to its enclosing
 `SubgameRuntime`. The replay selectively replaces only the obsolete generic
 ring shells, preserves complete shared owners, and batches the verified root
-field and prototype changes.
+field and prototype changes. The paired IDA subgame-runtime replay consumes the
+same canonical header, so both databases retain identical parent, child, pool,
+and borrowed-runtime ownership after regeneration.
 
 The input-state BN/IDA lane carries the recovered `InputState` button edge
 masks, controller-axis fields, pointer-authored coordinates, and the embedded

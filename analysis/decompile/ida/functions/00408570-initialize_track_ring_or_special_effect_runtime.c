@@ -2,11 +2,10 @@
 /* function: initialize_track_ring_or_special_effect_runtime @ 0x408570 */
 /* selector: initialize_track_ring_or_special_effect_runtime */
 
-// Constructs one authored-ring runtime slot by seeding the shared bod header and installing the ring-or-special-effect vtable. `spawn_track_ring_or_special_effect` allocates from the 2-slot pool at `0x35b78c` before initializing the child particle sprites.
-_DWORD *__thiscall sub_408570(_DWORD *this)
+// Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. SubgameRuntime owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger.
+SubRing *__thiscall initialize_track_ring_or_special_effect_runtime(SubRing *ring)
 {
-  initialize_renderable_bod(this);
-  *this = &off_49732C;
-  return this;
+  initialize_renderable_bod(ring);
+  ring->body.bod.bod.vtable = &g_sub_ring_vtable;
+  return ring;
 }
-

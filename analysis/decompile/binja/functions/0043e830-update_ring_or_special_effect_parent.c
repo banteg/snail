@@ -11,7 +11,7 @@
 0043e85c        if (edi_2 == 3)
 0043e860        ring->star_shower_counter = 0
 0043e879        switch (ring->state)
-0043e880        case 1
+0043e880        case SUB_RING_STATE_ACTIVE
 0043e880        int16_t eax
 0043e880        eax.b = ring->oscillate_x
 0043e888        if (eax.b != 0)
@@ -41,8 +41,8 @@
 0043e90f        x87_r7_8 - temp7_1
 0043e91a        if ((((x87_r7_8 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp7_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043e920        uint16_t list_flags = (ring->bod.list_flags).w
-0043e923        ring->state = 0
-0043e933        void* ecx_5 = &g_game_base[0x5a8]
+0043e923        ring->state = SUB_RING_STATE_INACTIVE
+0043e933        struct FrameBodList* ecx_5 = &g_game_base->active_bod_list
 0043e93c        if ((list_flags:1.b & 2) == 0)
 0043e943        report_errorf("List remove")
 0043e94f        if ((list_flags.b & 0x40) == 0)
@@ -51,10 +51,10 @@
 0043e96a        list_next->list_prev = ring->bod.list_prev
 0043e96d        struct BodNode* list_prev = ring->bod.list_prev
 0043e972        if (list_prev == 0)
-0043e97f        *(ecx_5 + 4) = ring->bod.list_next
+0043e97f        ecx_5->first = ring->bod.list_next
 0043e977        list_prev->list_next = ring->bod.list_next
-0043e985        ring->bod.list_next = *(ecx_5 + 8)
-0043e988        *(ecx_5 + 8) = ring
+0043e985        ring->bod.list_next = ecx_5->free_top
+0043e988        ecx_5->free_top = ring
 0043e98b        uint32_t list_flags_1 = ring->bod.list_flags
 0043e98e        list_flags_1:1.b &= 0xfd
 0043e991        ring->bod.list_flags = list_flags_1
@@ -69,9 +69,9 @@
 0043e9a6        do while (i_1 != 1)
 0043e9af        return
 0043e9be        if (owner_player->lives s< ring->owner_lives_snapshot)
-0043e9c4        ring->state = 4
-0043e9d6        case 2
-0043e9d6        ring->state = 3
+0043e9c4        ring->state = SUB_RING_STATE_EXPAND_PENDING
+0043e9d6        case SUB_RING_STATE_COLLECT_PENDING
+0043e9d6        ring->state = SUB_RING_STATE_COLLECTING
 0043e9e0        ring->transition_progress = 0f
 0043e9ef        ring->transition_step = fconvert.s(fconvert.t(rate_source->subgame_rate) * fconvert.t(0.0694444478f))
 0043e9fb        label_43e9fb:
@@ -107,8 +107,8 @@
 0043eb67        do while (i_3 != 1)
 0043eb70        return
 0043ea32        uint16_t list_flags_2 = (ring->bod.list_flags).w
-0043ea35        ring->state = 0
-0043ea45        void* ecx_10 = &g_game_base[0x5a8]
+0043ea35        ring->state = SUB_RING_STATE_INACTIVE
+0043ea45        struct FrameBodList* ecx_10 = &g_game_base->active_bod_list
 0043ea4e        if ((list_flags_2:1.b & 2) == 0)
 0043ea55        report_errorf("List remove")
 0043ea61        if ((list_flags_2.b & 0x40) == 0)
@@ -117,10 +117,10 @@
 0043ea7c        list_next_1->list_prev = ring->bod.list_prev
 0043ea7f        struct BodNode* list_prev_1 = ring->bod.list_prev
 0043ea84        if (list_prev_1 == 0)
-0043ea91        *(ecx_10 + 4) = ring->bod.list_next
+0043ea91        ecx_10->first = ring->bod.list_next
 0043ea89        list_prev_1->list_next = ring->bod.list_next
-0043ea97        ring->bod.list_next = *(ecx_10 + 8)
-0043ea9a        *(ecx_10 + 8) = ring
+0043ea97        ring->bod.list_next = ecx_10->free_top
+0043ea9a        ecx_10->free_top = ring
 0043ea9d        uint32_t list_flags_3 = ring->bod.list_flags
 0043eaa0        list_flags_3:1.b &= 0xfd
 0043eaa3        ring->bod.list_flags = list_flags_3
@@ -133,10 +133,10 @@
 0043eab7        i_4 = i_14
 0043eab7        i_14 -= 1
 0043eab8        do while (i_4 != 1)
-0043e879        case 3
+0043e879        case SUB_RING_STATE_COLLECTING
 0043e879        goto label_43e9fb
-0043eb71        case 4
-0043eb71        ring->state = 5
+0043eb71        case SUB_RING_STATE_EXPAND_PENDING
+0043eb71        ring->state = SUB_RING_STATE_EXPANDING
 0043eb7b        ring->transition_progress = 0f
 0043eb8a        ring->transition_step = fconvert.s(fconvert.t(rate_source->subgame_rate) * fconvert.t(0.0694444478f))
 0043eb96        label_43eb96:
@@ -154,8 +154,8 @@
 0043ebbc        x87_r7_26 - temp6_1
 0043ebc7        if ((((x87_r7_26 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_26, temp6_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0043ebcd        uint16_t list_flags_4 = (ring->bod.list_flags).w
-0043ebd0        ring->state = 0
-0043ebe3        void* ecx_15 = &g_game_base[0x5a8]
+0043ebd0        ring->state = SUB_RING_STATE_INACTIVE
+0043ebe3        struct FrameBodList* ecx_15 = &g_game_base->active_bod_list
 0043ebe9        if ((list_flags_4:1.b & 2) == 0)
 0043ebf0        report_errorf("List remove")
 0043ebfc        if ((list_flags_4.b & 0x40) == 0)
@@ -164,10 +164,10 @@
 0043ec17        list_next_2->list_prev = ring->bod.list_prev
 0043ec1a        struct BodNode* list_prev_2 = ring->bod.list_prev
 0043ec1f        if (list_prev_2 == 0)
-0043ec2c        *(ecx_15 + 4) = ring->bod.list_next
+0043ec2c        ecx_15->first = ring->bod.list_next
 0043ec24        list_prev_2->list_next = ring->bod.list_next
-0043ec32        ring->bod.list_next = *(ecx_15 + 8)
-0043ec35        *(ecx_15 + 8) = ring
+0043ec32        ring->bod.list_next = ecx_15->free_top
+0043ec35        ecx_15->free_top = ring
 0043ec38        uint32_t list_flags_5 = ring->bod.list_flags
 0043ec3b        list_flags_5:1.b &= 0xfd
 0043ec3e        ring->bod.list_flags = list_flags_5
@@ -194,6 +194,6 @@
 0043ec86        esi_5->y = ring->world_position.y
 0043ec8c        esi_5->z = ring->world_position.z
 0043ec8f        do while (i_7 != 1)
-0043e879        case 5
+0043e879        case SUB_RING_STATE_EXPANDING
 0043e879        goto label_43eb96
 0043ec98        return

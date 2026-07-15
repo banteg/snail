@@ -145,3 +145,11 @@ Rejected source-shape probe:
 The stationary-orbit exception now names `SUB_RING_KIND_SLOW_DEFAULT` instead
 of comparing the parent kind to raw `3`. Focused output remains 96.36%, 55/55
 instructions, prefix 28/55, with all five operands clean.
+
+## 2026-07-15 durable owner replay
+
+The paired replay now fixes this callback on `SubRingStar*` with a borrowed
+`SubRing*` parent and typed sprite position, kind, and shower consumers. Strict
+export reports no database/export mismatches and removes the stale generic ring
+shells from IDA. Matching remains 96.36%, 55/55 instructions, prefix 28/55,
+with all five operands clean; the residual is still instruction scheduling.

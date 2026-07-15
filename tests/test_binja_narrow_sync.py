@@ -1305,6 +1305,12 @@ def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
     analysis_headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in ("bn_subgame_pool_types.h", "path_template_types.h")
@@ -1334,6 +1340,25 @@ def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
         assert "SUB_RING_KIND_EXPLODE_AUTHORED = 6" in header
         assert "SUB_RING_KIND_SLOW_AUTHORED = 7" in header
         assert "SUB_RING_KIND_POWER_UP_AUTHORED = 8" in header
+        assert "SubRing* parent;" in header
+        assert "SubRingStar particles[" in header
+        assert "SubgameRuntime* rate_source;" in header
+        assert "SubRing slots[" in header
+        assert "RingEffectRateSource" not in header
+
+    path_header = analysis_headers[1]
+    assert "SubRingPool ring_effects;" in path_header
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in ida_runner
+    for prototype in (
+        "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime",
+        "void __thiscall spawn_track_ring_or_special_effect",
+        "int32_t __thiscall initialize_ring_or_special_effect_particles",
+        "void __thiscall emit_ring_star_shower",
+        "void __thiscall update_ring_or_special_effect_particle",
+        "void __thiscall update_ring_or_special_effect_parent",
+    ):
+        assert prototype in path_header
+        assert prototype in ida_sync
 
     consumers = {
         "spawn_track_ring_or_special_effect": "SUB_RING_KIND_NORMAL_DEFAULT",

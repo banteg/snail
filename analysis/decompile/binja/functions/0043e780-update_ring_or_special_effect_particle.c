@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_ring_or_special_effect_particle @ 0x43e780 */
 
-0043e790        if (particle->parent->kind != 3)
+0043e790        if (particle->parent->kind != SUB_RING_KIND_SLOW_DEFAULT)
 0043e798        particle->phase = fconvert.s(fconvert.t(particle->phase_step) + fconvert.t(particle->phase))
 0043e79b        long double x87_r7_3 = fconvert.t(particle->phase)
 0043e79e        long double temp0 = fconvert.t(6.28318548f)

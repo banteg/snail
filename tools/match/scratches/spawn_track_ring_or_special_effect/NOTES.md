@@ -255,3 +255,12 @@ randomized slow, explosive-ramp, and the four authored row kinds. Values `0`
 and `1` remain explicit unknown tokens because no live Windows producer is
 recovered. Focused output remains 64.09%, 327/347 instructions, prefix 3/347,
 with 48 clean operands and the same ten documented switch-grouping mismatches.
+
+## 2026-07-15 durable owner replay
+
+Both decompilers now replay the spawner on its real `SubgameRuntime*` receiver,
+typed `SubRingPool` storage, `SubRingKind` input, and `SubRingState` lifecycle.
+The paired exports agree with the databases and retire IDA's stale raw-integer
+receiver and result-bearing prototype. This is ownership-only: focused output
+remains honestly 64.09%, 327/347 instructions, prefix 3/347, with 48 clean
+operands and the same ten explicit switch-family mismatches.

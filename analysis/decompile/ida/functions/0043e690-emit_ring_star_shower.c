@@ -2,42 +2,44 @@
 /* function: emit_ring_star_shower @ 0x43e690 */
 /* selector: emit_ring_star_shower */
 
-void __thiscall emit_ring_star_shower(float *particle, int owner)
+// Exact `cRSubRingStar::Shower(cRSubGoldy*)`: emits a managed star sprite from one inline SubRingStar child when a SubRing collection resolves. Cross-port iOS v1.9 preserves the authored signature.
+void __thiscall emit_ring_star_shower(SubRingStar *particle, Player *owner)
 {
-  float *star; // esi
-  int flags; // eax
-  double star_velocity_y; // st7
-  float *source_position; // eax
-  int source_z; // eax
+  float *sprite; // esi
+  int v4; // eax
+  double v5; // st7
+  Vec3 *p_position; // eax
+  float z; // eax
+  float v8; // [esp+0h] [ebp-24h]
   float v9; // [esp+0h] [ebp-24h]
-  float v10; // [esp+0h] [ebp-24h]
-  float v11; // [esp+Ch] [ebp-18h]
-  float v12; // [esp+10h] [ebp-14h]
-  float v13; // [esp+18h] [ebp-Ch]
+  float v10; // [esp+Ch] [ebp-18h]
+  float v11; // [esp+10h] [ebp-14h]
+  float v12; // [esp+18h] [ebp-Ch]
 
-  if ( (byte_4DF934 & 0x10) == 0 )
-    return;
-  star = (float *)allocate_sprite(g_sprite_manager, *(_DWORD *)(owner + 896), *(_DWORD *)(*((_DWORD *)particle + 1) + 492), -1, -1);
-  flags = *((_DWORD *)star + 1);
-  star[26] = 0.0;
-  BYTE1(flags) |= 8u;
-  star[27] = 0.1111111;
-  *((_DWORD *)star + 1) = flags;
-  star[24] = 0.40000001;
-  star[25] = 0.2;
-  v9 = *(particle + 5) + 1.0471976;
-  v13 = sine(v9) * *(particle + 7);
-  v10 = *(particle + 5) + 1.0471976;
-  v11 = v13 * 0.30000001;
-  star_velocity_y = cosine(v10) * *(particle + 7) * 0.30000001;
-  star[21] = v11;
-  v12 = star_velocity_y;
-  star[22] = v12;
-  star[23] = 0.0;
-  source_position = (float *)(*(_DWORD *)particle + 72);
-  star[18] = *source_position;
-  star[19] = source_position[1];
-  source_z = *((_DWORD *)source_position + 2);
-  star[30] = 0.0;
-  *((_DWORD *)star + 20) = source_z;
+  if ( (g_runtime_config.render_flags & 0x10) != 0 )
+  {
+    sprite = (float *)allocate_sprite(g_sprite_manager, owner->player_slot, particle->parent->star_sprite_id, -1, -1);
+    v4 = *((_DWORD *)sprite + 1);
+    sprite[26] = 0.0;
+    BYTE1(v4) |= 8u;
+    sprite[27] = 0.1111111;
+    *((_DWORD *)sprite + 1) = v4;
+    sprite[24] = 0.40000001;
+    sprite[25] = 0.2;
+    v8 = particle->phase + 1.0471976;
+    v12 = sine(v8) * particle->radius;
+    v9 = particle->phase + 1.0471976;
+    v10 = v12 * 0.30000001;
+    v5 = cosine(v9) * particle->radius * 0.30000001;
+    sprite[21] = v10;
+    v11 = v5;
+    sprite[22] = v11;
+    sprite[23] = 0.0;
+    p_position = &particle->sprite->position;
+    sprite[18] = p_position->x;
+    sprite[19] = p_position->y;
+    z = p_position->z;
+    sprite[30] = 0.0;
+    sprite[20] = z;
+  }
 }

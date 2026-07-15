@@ -829,32 +829,25 @@ typedef enum SubRingKind {
     SUB_RING_KIND_POWER_UP_AUTHORED = 8,
 } SubRingKind;
 
-typedef struct RingOrSpecialEffectParent RingOrSpecialEffectParent;
+typedef struct SubRing SubRing;
 
-typedef struct RingOrSpecialEffectParticle {
+typedef struct SubRingStar {
     Sprite* sprite;
-    RingOrSpecialEffectParent* parent;
+    SubRing* parent;
     Vec3 base_position;
     float phase;
     float phase_step;
     float radius;
-} RingOrSpecialEffectParticle;
+} SubRingStar;
 
-typedef struct RingEffectRateSource {
-    uint8_t _pad_00[0x09];
-    uint8_t subgame_pause_gate;
-    uint8_t _pad_0a[0x38 - 0x0a];
-    float subgame_rate;
-} RingEffectRateSource;
-
-struct RingOrSpecialEffectParent {
+struct SubRing {
     RenderableBod body;
     SubRingState state;
     Player* owner_player;
     SubRingKind kind;
     int32_t owner_lives_snapshot;
-    RingOrSpecialEffectParticle particles[10];
-    RingEffectRateSource* rate_source;
+    SubRingStar particles[10];
+    SubgameRuntime* rate_source;
     float transition_progress;
     float transition_step;
     uint8_t oscillate_x;
@@ -866,9 +859,14 @@ struct RingOrSpecialEffectParent {
     uint8_t _pad_1f0[0x1f8 - 0x1f0];
 };
 
-typedef struct RingOrSpecialEffectPool {
-    RingOrSpecialEffectParent slots[2];
-} RingOrSpecialEffectPool;
+typedef SubRingStar RingOrSpecialEffectParticle;
+typedef SubRing RingOrSpecialEffectParent;
+
+typedef struct SubRingPool {
+    SubRing slots[2];
+} SubRingPool;
+
+typedef SubRingPool RingOrSpecialEffectPool;
 
 typedef struct SlugVoiceManager {
     uint8_t active;
@@ -1841,7 +1839,7 @@ typedef struct SubgameRuntime {
     SaltManager salt_hazards;
     BannerPool banners;
     GarbageHazardPool garbage_hazards;
-    RingOrSpecialEffectPool ring_effects;
+    SubRingPool ring_effects;
     SlugVoiceManager slug_voice_manager;
     FrontendWidget* top_score_widget;
     FrontendWidget* bottom_score_widget;
@@ -2034,6 +2032,19 @@ void __thiscall initialize_vapour(Vapour* vapour, Object* unused, float half_wid
 void __thiscall reset_vapour(Vapour* vapour, float* z_floor);
 void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);
 void __thiscall update_vapour(Vapour* vapour);
+SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);
+void __thiscall spawn_track_ring_or_special_effect(
+    SubgameRuntime* game,
+    TrackRowCell* cell,
+    SubRingKind requested_kind,
+    Player* player,
+    float ring_speed);
+int32_t __thiscall initialize_ring_or_special_effect_particles(
+    SubRing* ring,
+    int32_t unused_lives_snapshot);
+void __thiscall emit_ring_star_shower(SubRingStar* particle, Player* owner);
+void __thiscall update_ring_or_special_effect_particle(SubRingStar* particle);
+void __thiscall update_ring_or_special_effect_parent(SubRing* ring);
 void __thiscall initialize_invincible_shell(Invincible* invincible);
 void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);
