@@ -8,32 +8,11 @@ import ida_name
 import ida_pro
 import idc
 
+SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
+if str(SCRIPT_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_ROOT))
 
-def _parse_address(value):
-    if isinstance(value, int):
-        return value
-    if isinstance(value, str):
-        return int(value, 0)
-    raise TypeError(f"unsupported address value: {value!r}")
-
-
-def _load_manifest(path):
-    raw = json.loads(path.read_text(encoding="utf-8"))
-    symbols = raw.get("symbols")
-    if not isinstance(symbols, list):
-        raise ValueError("reference manifest field 'symbols' must be a list")
-    entries = []
-    for index, symbol in enumerate(symbols):
-        if not isinstance(symbol, dict):
-            raise ValueError(f"symbol entry {index} must be an object")
-        entries.append(
-            (
-                _parse_address(symbol["address"]),
-                symbol["name"],
-                symbol.get("description"),
-            )
-        )
-    return entries
+from reference_manifest import load_address_backed_symbols  # noqa: E402
 
 
 def _sync_manifest(manifest_path):
@@ -41,8 +20,9 @@ def _sync_manifest(manifest_path):
     comments_updated = 0
     unchanged = 0
     skipped = []
+    entries, skipped_non_address = load_address_backed_symbols(manifest_path)
 
-    for address, name, description in _load_manifest(manifest_path):
+    for address, name, description in entries:
         current_name = idc.get_name(address)
         if current_name != name:
             if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
@@ -68,6 +48,13 @@ def _sync_manifest(manifest_path):
                 "renamed": renamed,
                 "comments_updated": comments_updated,
                 "unchanged": unchanged,
+                "skipped_non_address": [
+                    {
+                        **entry,
+                        "address": hex(entry["address"]),
+                    }
+                    for entry in skipped_non_address
+                ],
                 "skipped": [
                     {"address": hex(address), "name": name, "reason": reason}
                     for address, name, reason in skipped
