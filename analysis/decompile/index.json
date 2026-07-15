@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 39,
+  "function_count": 43,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 39,
-  "ida_exported": 39,
+  "bn_exported": 43,
+  "ida_exported": 43,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -16,6 +16,10 @@
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
+    {
+      "name": "update_frontend_widget_interaction",
+      "address": "0x402820"
+    },
     {
       "name": "border_input_text_init",
       "address": "0x403410"
@@ -31,6 +35,18 @@
     {
       "name": "border_input_text",
       "address": "0x4035b0"
+    },
+    {
+      "name": "update_twinkle_manager",
+      "address": "0x404030"
+    },
+    {
+      "name": "draw_twinkle",
+      "address": "0x404070"
+    },
+    {
+      "name": "update_twinkle",
+      "address": "0x404080"
     },
     {
       "name": "flush_row_event_display",
@@ -173,7 +189,7 @@
       "address": "0x448de0"
     }
   ],
-  "health_check_count": 340,
+  "health_check_count": 346,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

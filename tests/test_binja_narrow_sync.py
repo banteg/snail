@@ -3477,3 +3477,62 @@ def test_input_ok_overlay_and_void_abis_are_persisted() -> None:
         assert stale not in binja_path_sync
         assert stale not in ida_frontend_sync
         assert stale not in ida_path_sync
+
+
+def test_twinkle_array_ownership_and_void_abis_are_persisted() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_frontend_sync = (
+        BINJA_DIR / "sync_frontend_widget_types.py"
+    ).read_text(encoding="utf-8")
+    binja_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_frontend_sync = (IDA_DIR / "apply_frontend_replay_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_frontend_widget_types.h",
+            "completion_screen_types.h",
+            "frontend_replay_types.h",
+            "path_template_types.h",
+        )
+    ]
+    matcher_manager_header = (
+        repo_root / "tools/match/include/twinkle_manager.h"
+    ).read_text(encoding="utf-8")
+
+    for header in analysis_headers:
+        assert "typedef struct Twinkle" in header
+        assert "float target_alpha;" in header
+        assert "FrontendWidget* owner_widget;" in header
+        assert "Twinkle twinkles[5];" in header
+        assert "uint8_t twinkles[0xf0];" not in header
+
+    assert '"Twinkle": 0x30' in binja_frontend_sync
+    assert '("0x00", "twinkles", "Twinkle[5]")' in binja_frontend_sync
+    assert '"Twinkle",' in binja_path_sync
+    for prototype in (
+        "void __thiscall update_twinkle_manager(TwinkleManager* manager)",
+        "void __thiscall draw_twinkle(Twinkle* twinkle)",
+        "void __thiscall update_twinkle(Twinkle* twinkle)",
+    ):
+        assert prototype in binja_frontend_sync
+        assert prototype in binja_path_sync
+        assert prototype + ";" in ida_frontend_sync
+        assert prototype + ";" in ida_path_sync
+
+    for address_name in (
+        '(0x404030, "update_twinkle_manager")',
+        '(0x404070, "draw_twinkle")',
+        '(0x404080, "update_twinkle")',
+    ):
+        assert address_name in ida_frontend_sync
+        assert address_name in ida_path_sync
+
+    assert "void update_twinkle_manager();" in matcher_manager_header
+    assert "int update_twinkle_manager();" not in matcher_manager_header

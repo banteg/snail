@@ -139,12 +139,13 @@
     },
     {
       "address": "0x404030",
-      "name": "update_twinkle_manager"
+      "name": "update_twinkle_manager",
+      "description": "Exact void cRTwinkleManager::AI(): walks the five inline 0x30-byte Twinkle records owned by one FrontendWidget while the manager is active. Its sole Windows and Android callers discard the result register; the native exits leave only state/count or nested-AI residue."
     },
     {
       "address": "0x404070",
       "name": "draw_twinkle",
-      "description": "Exact `Twinkle::draw_twinkle` / Android `cRTwinkle::Draw()` method: constructs the temporary draw color while leaving the live Twinkle receiver unused."
+      "description": "Exact void `Twinkle::draw_twinkle` / Android `cRTwinkle::Draw()` method: constructs the temporary draw color while leaving the live typed Twinkle receiver unused."
     },
     {
       "address": "0x404080",

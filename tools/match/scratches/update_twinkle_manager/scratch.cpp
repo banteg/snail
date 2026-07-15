@@ -2,22 +2,19 @@
 
 #include "twinkle_manager.h"
 
-int TwinkleManager::update_twinkle_manager()
+void TwinkleManager::update_twinkle_manager()
 {
     int result = active_state;
     --result;
     if (result == 0) {
-        result = twinkle_count;
         int index = 0;
-        if (result > 0) {
+        if (twinkle_count > 0) {
             Twinkle* twinkle = twinkles;
             do {
                 twinkle->update_twinkle();
-                result = twinkle_count;
                 ++index;
                 ++twinkle;
-            } while (index < result);
+            } while (index < twinkle_count);
         }
     }
-    return result;
 }

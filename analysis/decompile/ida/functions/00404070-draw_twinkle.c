@@ -2,10 +2,10 @@
 /* function: draw_twinkle @ 0x404070 */
 /* selector: draw_twinkle */
 
-#93 *sub_404070()
+// Exact void `Twinkle::draw_twinkle` / Android `cRTwinkle::Draw()` method: constructs the temporary draw color while leaving the live typed Twinkle receiver unused.
+void __thiscall draw_twinkle(Twinkle *twinkle)
 {
-  _BYTE v1[16]; // [esp+0h] [ebp-10h] BYREF
+  _BYTE self[16]; // [esp+0h] [ebp-10h] BYREF
 
-  return Iostream_init::Iostream_init((#93 *)v1);
+  noop_this_constructor(self);
 }
-

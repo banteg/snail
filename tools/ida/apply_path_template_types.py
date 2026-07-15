@@ -21,6 +21,9 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 TRUSTED_NAMES = [
     (0x4034D0, "update_input_ok"),
     (0x403560, "initialize_input_ok"),
+    (0x404030, "update_twinkle_manager"),
+    (0x404070, "draw_twinkle"),
+    (0x404080, "update_twinkle"),
     (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
     (0x440F80, "update_barrier_ai"),
@@ -553,6 +556,18 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_input_ok",
         "void __thiscall initialize_input_ok(InputOkState* input_ok);",
+    ),
+    (
+        "update_twinkle_manager",
+        "void __thiscall update_twinkle_manager(TwinkleManager* manager);",
+    ),
+    (
+        "draw_twinkle",
+        "void __thiscall draw_twinkle(Twinkle* twinkle);",
+    ),
+    (
+        "update_twinkle",
+        "void __thiscall update_twinkle(Twinkle* twinkle);",
     ),
     (
         "update_barrier_ai",

@@ -41,8 +41,27 @@ typedef struct tColour {
     float a;
 } tColour;
 
+typedef struct FrontendWidget FrontendWidget;
+typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
+typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
+
+typedef struct Twinkle {
+    int32_t state;
+    int32_t unused_04;
+    float delay_progress;
+    float delay_step;
+    float alpha;
+    float target_alpha;
+    float angle;
+    float angle_step;
+    float x;
+    float y;
+    float size;
+    FrontendWidget* owner_widget;
+} Twinkle;
+
 typedef struct TwinkleManager {
-    uint8_t twinkles[0xf0];
+    Twinkle twinkles[5];
     int32_t active_state;
     int32_t twinkle_count;
 } TwinkleManager;
@@ -94,9 +113,6 @@ typedef struct Player Player;
 typedef struct SubSegment SubSegment;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct Snail Snail;
-typedef struct FrontendWidget FrontendWidget;
-typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
-typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
 typedef struct Sprite Sprite;
 typedef struct TrackRowCell TrackRowCell;
 typedef struct TrackRowCell SubLoc;

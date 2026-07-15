@@ -193,6 +193,8 @@ REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "FrontendWidgetFlag",
     "TextureRefFlags",
+    "Twinkle",
+    "TwinkleManager",
     "InputOkState",
     "BarrierActor",
     "LandscapeManager",
@@ -1167,6 +1169,12 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_input_ok",
         "void __thiscall initialize_input_ok(InputOkState* input_ok)",
+    ),
+    ("draw_twinkle", "void __thiscall draw_twinkle(Twinkle* twinkle)"),
+    ("update_twinkle", "void __thiscall update_twinkle(Twinkle* twinkle)"),
+    (
+        "update_twinkle_manager",
+        "void __thiscall update_twinkle_manager(TwinkleManager* manager)",
     ),
     (
         "initialize_track_jetpack_pickup_runtime",

@@ -9,7 +9,7 @@ calls `Twinkle::update_twinkle()` on each inline record.
 2026-06-20 type consolidation: `TwinkleManager` now lives in
 `include/twinkle_manager.h` as a 0xf8 shell over the inline twinkle storage.
 `update_frontend_widget_interaction` also uses the shared manager header and
-keeps its existing 46.85% residual profile.
+keeps its existing honest residual profile.
 
 2026-06-20 ABI cleanup: `Twinkle` was promoted to `include/twinkle.h`, and the
 manager now types the inline storage as `Twinkle twinkles[5]`. The local
@@ -21,3 +21,17 @@ masked operand.
 `Twinkle*` with ordinary pointer increment instead of reconstructing the
 proved `0x30` record stride. Focused output remains exact at 23/23 instructions
 with its masked operand clean.
+
+## 2026-07-16 void ABI and analysis ownership
+
+Android preserves the authored `cRTwinkleManager::AI()` name and the same
+state/count-gated walk over five inline 0x30-byte records. Its `cRBorder::AI()`
+caller ignores r0, just as the sole Windows `cRBorder::AI()` callsite ignores
+EAX before updating the tooltip. The native manager exits leave only
+state/count or nested-AI residue. Rewriting the exact Windows source as a
+natural `void` member remains 23/23 instructions with its one masked operand
+clean; the broader caller remains honestly 68.32%.
+
+The replay headers now retain the complete `Twinkle twinkles[5]` array instead
+of a raw 0xf0-byte manager prefix. Each record owns its animation state and
+borrows the containing `FrontendWidget`/authored `cRBorder` at `+0x2c`.

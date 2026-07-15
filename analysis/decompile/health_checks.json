@@ -716,12 +716,136 @@
         "widget->current_text_color",
         "widget->slider_less_widget",
         "widget->slider_more_widget",
-        "widget->slider_value_widget"
+        "widget->slider_value_widget",
+        "update_twinkle_manager(&widget->twinkle_manager);",
+        "update_tooltip(&widget->tooltip);"
       ],
       "forbidden_substrings": [
         "sub_402820",
         "int this",
         "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_twinkle_manager_void_inline_array_owner",
+      "artifact": "analysis/decompile/binja/functions/00404030-update_twinkle_manager.c",
+      "required_substrings": [
+        "manager->active_state",
+        "manager->twinkle_count",
+        "update_twinkle(twinkle)",
+        "twinkle = &twinkle->twinkles[1]",
+        "00404064        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t result",
+        "return result",
+        "manager[0x3c]",
+        "manager[0x3d]",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_twinkle_manager_void_inline_array_owner",
+      "artifact": "analysis/decompile/ida/functions/00404030-update_twinkle_manager.c",
+      "required_substrings": [
+        "void __thiscall update_twinkle_manager(TwinkleManager *manager)",
+        "manager->active_state == 1",
+        "manager->twinkle_count > 0",
+        "update_twinkle(v3->twinkles);",
+        "v2 < manager->twinkle_count"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall update_twinkle_manager",
+        "float __thiscall update_twinkle_manager",
+        "int this",
+        "return result",
+        "sub_404030",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_twinkle_draw_void_typed_receiver",
+      "artifact": "analysis/decompile/binja/functions/00404070-draw_twinkle.c",
+      "required_substrings": [
+        "function: draw_twinkle @ 0x404070",
+        "0040407f        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return noop_this_constructor",
+        "return result",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_twinkle_draw_void_typed_receiver",
+      "artifact": "analysis/decompile/ida/functions/00404070-draw_twinkle.c",
+      "required_substrings": [
+        "void __thiscall draw_twinkle(Twinkle *twinkle)",
+        "noop_this_constructor(self);"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall draw_twinkle",
+        "float *__thiscall draw_twinkle",
+        "int this",
+        "return result",
+        "sub_404070",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_twinkle_ai_void_borrowed_widget_owner",
+      "artifact": "analysis/decompile/binja/functions/00404080-update_twinkle.c",
+      "required_substrings": [
+        "twinkle->angle",
+        "twinkle->state",
+        "twinkle->delay_progress",
+        "twinkle->target_alpha",
+        "twinkle->owner_widget->widget_flags",
+        "owner_widget->layout_width",
+        "owner_widget_1->layout_height",
+        "draw_twinkle(twinkle)",
+        "00404344        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return draw_twinkle",
+        "return result",
+        "*(twinkle +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_twinkle_ai_void_borrowed_widget_owner",
+      "artifact": "analysis/decompile/ida/functions/00404080-update_twinkle.c",
+      "required_substrings": [
+        "void __thiscall update_twinkle(Twinkle *twinkle)",
+        "twinkle->angle",
+        "twinkle->state",
+        "twinkle->delay_progress",
+        "twinkle->target_alpha",
+        "twinkle->owner_widget->widget_flags",
+        "owner_widget->layout_width",
+        "v15->layout_height",
+        "draw_twinkle(twinkle);"
+      ],
+      "forbidden_substrings": [
+        "float __thiscall update_twinkle",
+        "int __thiscall update_twinkle",
+        "int this",
+        "return result",
+        "sub_404080",
         "__asm",
         "_ET1"
       ]

@@ -160,6 +160,14 @@
       "notes": "Both mobile ports preserve the three-state hover-delay, tooltip allocation/layout, and release machine. The sole Windows caller immediately reloads widget flags, and the authored void member remains exact at 218/218 instructions with 23 clean operands."
     },
     {
+      "address": "0x404030",
+      "windows_name": "update_twinkle_manager",
+      "android_symbol": "cRTwinkleManager::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both ports gate five inline 0x30-byte cRTwinkle records behind the manager state/count tail. The sole Windows and Android callers discard the result register, the exits leave incompatible incidental values, and a natural Windows void member remains exact at 23/23 instructions."
+    },
+    {
       "address": "0x404080",
       "windows_name": "update_twinkle",
       "ios_symbol": "cRTwinkle::AI()",

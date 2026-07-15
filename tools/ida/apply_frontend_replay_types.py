@@ -19,6 +19,9 @@ TRUSTED_NAMES = [
     (0x401130, "draw_frontend_widget"),
     (0x4034D0, "update_input_ok"),
     (0x403560, "initialize_input_ok"),
+    (0x404030, "update_twinkle_manager"),
+    (0x404070, "draw_twinkle"),
+    (0x404080, "update_twinkle"),
 ]
 
 TRUSTED_DECLARATIONS = [
@@ -33,6 +36,18 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_input_ok",
         "void __thiscall initialize_input_ok(InputOkState* input_ok);",
+    ),
+    (
+        "update_twinkle_manager",
+        "void __thiscall update_twinkle_manager(TwinkleManager* manager);",
+    ),
+    (
+        "draw_twinkle",
+        "void __thiscall draw_twinkle(Twinkle* twinkle);",
+    ),
+    (
+        "update_twinkle",
+        "void __thiscall update_twinkle(Twinkle* twinkle);",
     ),
     (
         "initialize_high_score_screen",

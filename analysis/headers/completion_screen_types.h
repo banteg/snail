@@ -18,15 +18,30 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
-typedef struct TwinkleManager {
-    uint8_t twinkles[0xf0];
-    int32_t active_state;
-    int32_t twinkle_count;
-} TwinkleManager;
-
 typedef struct FrontendWidget FrontendWidget;
 typedef struct FrontendWidgetTooltip FrontendWidgetTooltip;
 typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
+
+typedef struct Twinkle {
+    int32_t state;
+    int32_t unused_04;
+    float delay_progress;
+    float delay_step;
+    float alpha;
+    float target_alpha;
+    float angle;
+    float angle_step;
+    float x;
+    float y;
+    float size;
+    FrontendWidget* owner_widget;
+} Twinkle;
+
+typedef struct TwinkleManager {
+    Twinkle twinkles[5];
+    int32_t active_state;
+    int32_t twinkle_count;
+} TwinkleManager;
 
 typedef enum FrontendWidgetFlag {
     FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED = 0x00000020,

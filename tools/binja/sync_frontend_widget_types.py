@@ -21,6 +21,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
 
 EXPECTED_STRUCT_SIZES = {
     "tColour": 0x10,
+    "Twinkle": 0x30,
     "TwinkleManager": 0xF8,
     "InputOkState": 0x24,
     "FrontendWidgetTooltip": 0x40,
@@ -121,6 +122,12 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
     ("0x1c", "input_ok_state", "InputOkState"),
 )
 
+TWINKLE_MANAGER_FIELDS = (
+    ("0x00", "twinkles", "Twinkle[5]"),
+    ("0xf0", "active_state", "int32_t"),
+    ("0xf4", "twinkle_count", "int32_t"),
+)
+
 DEFERRED_PROTO_UPDATES = (
     (
         "initialize_exit_prompt",
@@ -171,6 +178,12 @@ PROTO_UPDATES = (
     ),
     ("reset_tooltip", "void __thiscall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "void __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
+    ("draw_twinkle", "void __thiscall draw_twinkle(Twinkle* twinkle)"),
+    ("update_twinkle", "void __thiscall update_twinkle(Twinkle* twinkle)"),
+    (
+        "update_twinkle_manager",
+        "void __thiscall update_twinkle_manager(TwinkleManager* manager)",
+    ),
     ("0x433050", "int32_t __cdecl launch_alpha72_url(char* url)"),
 )
 
@@ -294,6 +307,7 @@ def main() -> int:
             struct_updates=(
                 ("FrontendWidget", FRONTEND_WIDGET_FIELDS),
                 ("FrontendWidgetTooltip", FRONTEND_WIDGET_TOOLTIP_FIELDS),
+                ("TwinkleManager", TWINKLE_MANAGER_FIELDS),
             ),
             proto_updates=PROTO_UPDATES,
         ),
