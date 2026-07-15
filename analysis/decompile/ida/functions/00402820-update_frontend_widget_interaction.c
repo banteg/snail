@@ -186,7 +186,7 @@ LABEL_82:
       }
       else
       {
-        queue_frontend_widget_flag_after_delay((int)&g_game_base->unknown_000b48[4], (int)widget, 32);
+        queue_frontend_widget_flag_after_delay((int)&g_game_base->border_manager, (int)widget, 32);
       }
     }
     if ( !is_mouse_captured(&g_game_base->players[0].mouse_cursor) || !border_mouse_test(widget) )
@@ -223,7 +223,7 @@ LABEL_82:
     if ( (v24 & 0x10) != 0 )
     {
       v25 = g_game_base;
-      if ( g_game_base->unknown_000b48[275876]
+      if ( g_game_base->border_manager.unknown_000010[275856]
         || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) == 0 )
       {
 LABEL_72:
@@ -237,7 +237,7 @@ LABEL_72:
           }
           else
           {
-            queue_frontend_widget_flag_after_delay((int)&v25->unknown_000b48[4], (int)widget, 128);
+            queue_frontend_widget_flag_after_delay((int)&v25->border_manager, (int)widget, 128);
           }
           play_sound_effect(8);
           reset_tooltip(&widget->tooltip);
@@ -251,7 +251,7 @@ LABEL_72:
       }
       else
       {
-        queue_frontend_widget_flag_after_delay((int)&g_game_base->unknown_000b48[4], (int)widget, 32);
+        queue_frontend_widget_flag_after_delay((int)&g_game_base->border_manager, (int)widget, 32);
       }
       if ( ((unsigned int)&unk_800000 & widget->widget_flags) == 0 )
         play_sound_effect(8);
@@ -316,9 +316,9 @@ LABEL_83:
   {
     if ( is_mouse_captured(&g_game_base->players[0].mouse_cursor) )
     {
-      border_input_text((int)widget);
+      border_input_text(widget);
       if ( (widget->widget_flags & 0x2000) == 0 )
-        activate_all_borders((int *)&g_game_base->unknown_000b48[4]);
+        activate_all_borders((int *)&g_game_base->border_manager);
     }
   }
   update_twinkle_manager((float *)widget->twinkle_manager.twinkles);

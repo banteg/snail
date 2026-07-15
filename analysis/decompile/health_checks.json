@@ -791,6 +791,96 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_tooltip_reset_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00403be0-reset_tooltip.c",
+      "required_substrings": [
+        "int32_t state = tooltip->state",
+        "if (state == 2)",
+        "if (state == 3)",
+        "kill_border(tooltip->tooltip_widget)",
+        "tooltip->tooltip_widget = nullptr",
+        "tooltip->state = 1",
+        "00403c12        return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return result",
+        "arg1",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_tooltip_reset_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00403be0-reset_tooltip.c",
+      "required_substrings": [
+        "void __thiscall reset_tooltip(FrontendWidgetTooltip *tooltip)",
+        "if ( tooltip->state != 2 )",
+        "if ( tooltip->state != 3 )",
+        "kill_border(&tooltip->tooltip_widget->list_kind);",
+        "tooltip->tooltip_widget = nullptr;",
+        "tooltip->state = 1;"
+      ],
+      "forbidden_substrings": [
+        "int32_t __fastcall reset_tooltip",
+        "int32_t result",
+        "return result",
+        "sub_403BE0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_tooltip_update_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00403c20-update_tooltip.c",
+      "required_substrings": [
+        "tooltip->owner_widget->widget_flags & FRONTEND_WIDGET_FLAG_POINTER_INSIDE",
+        "tooltip->delay_progress",
+        "tooltip->tooltip_widget = allocate_border(&g_game_base->border_manager)",
+        "struct GameRoot* game_base_1 = g_game_base",
+        "game_base_1->players[0].mouse_cursor.saved_x",
+        "struct tColour",
+        "kill_border(tooltip_widget_1)",
+        "layout_frontend_widget(tooltip->tooltip_widget)",
+        "00403f54        return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return result",
+        "return layout_frontend_widget",
+        "return state -",
+        "return eax_",
+        "data_4df904",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_tooltip_update_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00403c20-update_tooltip.c",
+      "required_substrings": [
+        "void __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)",
+        "tooltip->owner_widget->widget_flags",
+        "tooltip->delay_progress",
+        "allocate_border(&g_game_base->border_manager)",
+        "g_game_base->players[0].mouse_cursor.saved_x",
+        "layout_frontend_widget(tooltip->tooltip_widget);",
+        "kill_border(tooltip_widget);"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall update_tooltip",
+        "int32_t result",
+        "return result",
+        "return layout_frontend_widget",
+        "MEMORY[0x4DF904]",
+        "sub_403C20",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frontend_widget_input_text_owner",
       "artifact": "analysis/decompile/binja/functions/004035b0-border_input_text.c",
       "required_substrings": [

@@ -2,20 +2,15 @@
 /* function: reset_tooltip @ 0x403be0 */
 /* selector: reset_tooltip */
 
-int32_t __fastcall reset_tooltip(FrontendWidgetTooltip *tooltip)
+// Exact authored void cRToolTip::ReSet() member: resets the embedded controller to its idle state and releases any live BorderManager-owned tooltip widget handle.
+void __thiscall reset_tooltip(FrontendWidgetTooltip *tooltip)
 {
-  int32_t result; // eax
-
-  result = tooltip->state - 2;
   if ( tooltip->state != 2 )
   {
-    result = tooltip->state - 3;
     if ( tooltip->state != 3 )
-      return result;
-    kill_border(tooltip->tooltip_widget->_pad_00);
+      return;
+    kill_border(&tooltip->tooltip_widget->list_kind);
     tooltip->tooltip_widget = nullptr;
   }
   tooltip->state = 1;
-  return result;
 }
-

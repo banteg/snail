@@ -1054,7 +1054,10 @@ High-confidence current fields:
 
 Current practical read:
 
-- `reset_tooltip` and `update_tooltip` now decompile directly against `FrontendWidgetTooltip*`
+- exact `reset_tooltip` / authored `cRToolTip::ReSet()` and `update_tooltip` /
+  `cRToolTip::AI()` now replay as void members directly against
+  `FrontendWidgetTooltip*`; their EAX values were incidental nested-call or
+  state-dispatch residue
 - `owner_widget` and `owner_widget_38` are borrowed backlinks; `tooltip_widget` is the live handle to a `BorderManager`-owned widget whose lifetime this controller releases
 - `state == 2` owns the `delay_progress += delay_step` leg before tooltip creation
 - `state == 3` owns the live tooltip widget and kills it when the owner loses the active hover flag

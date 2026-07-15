@@ -6,9 +6,11 @@ interaction update consumes the pending bit and advances `teardown_progress`
 for the transition bit. Widgets with flag `0x100000` own three child widgets at
 `+0x718..+0x720`, which are killed recursively.
 
-The shared `BorderManager` declaration now models the helper as returning
-`int`, matching callers such as `reset_tooltip` that preserve the result. The
-native helper falls through with whatever `eax` contains. The accepted scratch
+The shared `BorderManager` declaration models the helper as returning `int`
+only to accommodate VC6's fatal missing-return diagnostic in this isolated
+harness; recovered callers, including the now-void `reset_tooltip`, do not
+consume that incidental result. The native helper falls through with whatever
+`eax` contains. The accepted scratch
 therefore suppresses VC6's fatal C4716 diagnostic and assigns the third child
 call to an unused local only to prevent VC6 from tail-recursing it into a loop;
 no source return is emitted. Current result: 100.00%, 30/30 instructions, full

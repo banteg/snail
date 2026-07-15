@@ -502,11 +502,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "reset_tooltip",
-        "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip);",
+        "void __thiscall reset_tooltip(FrontendWidgetTooltip* tooltip);",
     ),
     (
         "update_tooltip",
-        "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip);",
+        "void __thiscall update_tooltip(FrontendWidgetTooltip* tooltip);",
     ),
     (
         "initialize_cameraman",

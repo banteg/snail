@@ -70,3 +70,10 @@ surface dispatch syntax.
 `GameRoot::players[0].mouse_cursor.saved_x/saved_y`. This proves root
 +0x29c/+0x2a0 are the saved cursor pair and remains exact at 218/218
 instructions with 23 clean operands.
+
+2026-07-15 persisted member ABI: iOS and Android preserve this exact state
+machine as `cRToolTip::AI()`, while its sole Windows caller immediately reloads
+widget flags. The rollback-safe Binary Ninja replay and IDA now persist the
+authored `void cRToolTip::AI()` contract on the typed
+`FrontendWidgetTooltip*` receiver. Matching remains exact at 218/218 with all
+23 operands clean.

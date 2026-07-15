@@ -4,14 +4,11 @@
 /* function: reset_tooltip @ 0x403be0 */
 
 00403be3        int32_t state = tooltip->state
-00403be6        int32_t result = state - 2
 00403be9        if (state == 2)
 00403c0a        tooltip->state = 1
-00403beb        int32_t result_1 = result
-00403beb        result -= 1
-00403bec        if (result_1 == 1)
-00403bf1        data_4df904
-00403bfe        result = kill_border(tooltip->tooltip_widget)
+00403bec        if (state == 3)
+00403bf1        g_game_base
+00403bfe        kill_border(tooltip->tooltip_widget)
 00403c03        tooltip->tooltip_widget = nullptr
 00403c0a        tooltip->state = 1
-00403c12        return result
+00403c12        return

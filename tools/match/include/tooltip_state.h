@@ -9,7 +9,7 @@ class FrontendWidget;
 
 class FrontendWidgetTooltip {
 public:
-    int reset_tooltip(); // @ 0x403be0
+    void reset_tooltip(); // @ 0x403be0
     void update_tooltip(); // @ 0x403c20
 
     int field_00; // +0x00

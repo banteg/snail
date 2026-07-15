@@ -119,6 +119,23 @@
       "notes": "Both mobile bodies preserve the Windows autorepeat key dispatch, inline cursor marker, insertion/deletion and separator-aware movement, blink and RePosition tail, and optional cRInputOK/BorderManager teardown. Their cRBorder editor state is eight bytes earlier than Windows but keeps the same field order. The sole Windows caller immediately tests widget flags without consuming EAX, proving the authored member is void."
     },
     {
+      "address": "0x403be0",
+      "windows_name": "reset_tooltip",
+      "android_symbol": "cRToolTip::ReSet()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Android preserves the same state-2 idle reset and state-3 BorderManager release. Every Windows continuation discards EAX; a natural void switch remains exact at 16/16 instructions with two clean operands."
+    },
+    {
+      "address": "0x403c20",
+      "windows_name": "update_tooltip",
+      "ios_symbol": "cRToolTip::AI()",
+      "android_symbol": "cRToolTip::AI()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both mobile ports preserve the three-state hover-delay, tooltip allocation/layout, and release machine. The sole Windows caller immediately reloads widget flags, and the authored void member remains exact at 218/218 instructions with 23 clean operands."
+    },
+    {
       "address": "0x404080",
       "windows_name": "update_twinkle",
       "ios_symbol": "cRTwinkle::AI()",

@@ -2,148 +2,126 @@
 /* function: update_tooltip @ 0x403c20 */
 /* selector: update_tooltip */
 
-int32_t __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
+// Exact authored void cRToolTip::AI() state-machine update over the FrontendWidget-owned 0x40-byte controller: arms the hover delay, allocates and lays out the manager-owned tooltip widget, and releases it when hover ends.
+void __thiscall update_tooltip(FrontendWidgetTooltip *tooltip)
 {
-  int32_t result; // eax
   FrontendWidget *tooltip_widget; // ecx
   FrontendWidget *owner_widget; // ecx
-  double v5; // st7
-  __int16 v6; // fps
-  bool v7; // c0
-  char v8; // c2
-  bool v9; // c3
-  FrontendWidget *v10; // eax
+  double v4; // st7
+  FrontendWidget *v5; // eax
   uint32_t mode_flags; // eax
-  Color4f *v12; // eax
+  tColour *v7; // eax
+  FrontendWidget *v8; // edi
+  tColour *v9; // eax
+  FrontendWidget *v10; // edi
+  FrontendWidget *v11; // eax
+  double v12; // st7
   FrontendWidget *v13; // edi
-  Color4f *v14; // eax
-  FrontendWidget *v15; // edi
-  FrontendWidget *v16; // eax
-  double v17; // st7
-  FrontendWidget *v18; // edi
-  FrontendWidget *v19; // ecx
-  FrontendWidget *v20; // ecx
-  double v21; // st7
+  FrontendWidget *v14; // ecx
+  FrontendWidget *v15; // ecx
+  double v16; // st7
   float y; // [esp+0h] [ebp-6Ch]
   float ya; // [esp+0h] [ebp-6Ch]
   float yb; // [esp+0h] [ebp-6Ch]
   float yc; // [esp+0h] [ebp-6Ch]
-  Color4f *v26; // [esp+4h] [ebp-68h]
-  Color4f *v27; // [esp+4h] [ebp-68h]
-  int32_t v28; // [esp+8h] [ebp-64h]
-  float v29; // [esp+Ch] [ebp-60h]
+  tColour *v21; // [esp+4h] [ebp-68h]
+  tColour *v22; // [esp+4h] [ebp-68h]
+  int32_t v23; // [esp+8h] [ebp-64h]
+  float v24; // [esp+Ch] [ebp-60h]
   float anchor_x; // [esp+18h] [ebp-54h]
   Color4f color; // [esp+1Ch] [ebp-50h] BYREF
-  Color4f v32; // [esp+2Ch] [ebp-40h] BYREF
-  Color4f v33; // [esp+3Ch] [ebp-30h] BYREF
-  Color4f v34; // [esp+4Ch] [ebp-20h] BYREF
-  Color4f v35; // [esp+5Ch] [ebp-10h] BYREF
+  tColour v27; // [esp+2Ch] [ebp-40h] BYREF
+  Color4f v28; // [esp+3Ch] [ebp-30h] BYREF
+  Color4f v29; // [esp+4Ch] [ebp-20h] BYREF
+  Color4f v30; // [esp+5Ch] [ebp-10h] BYREF
 
   if ( tooltip->state != 1 )
   {
-    result = tooltip->state - 2;
     if ( tooltip->state != 2 )
     {
-      result = tooltip->state - 3;
-      if ( tooltip->state == 3 )
+      if ( tooltip->state == 3 && (tooltip->owner_widget->widget_flags & 0x20000) == 0 )
       {
-        result = (int32_t)tooltip->owner_widget;
-        if ( (*(_DWORD *)(result + 416) & 0x20000) == 0 )
-        {
-          tooltip_widget = tooltip->tooltip_widget;
-          tooltip->state = 1;
-          kill_border(tooltip_widget);
-          tooltip->tooltip_widget = nullptr;
-        }
+        tooltip_widget = tooltip->tooltip_widget;
+        tooltip->state = 1;
+        kill_border(tooltip_widget);
+        tooltip->tooltip_widget = nullptr;
       }
-      return result;
+      return;
     }
     owner_widget = tooltip->owner_widget;
     if ( (owner_widget->widget_flags & 0x20000) == 0 )
     {
       tooltip->state = 1;
-      return result;
+      return;
     }
-    v5 = tooltip->delay_step + tooltip->delay_progress;
-    tooltip->delay_progress = v5;
-    v7 = v5 < 1.0;
-    v8 = 0;
-    v9 = v5 == 1.0;
-    LOWORD(result) = v6;
-    if ( v5 <= 1.0 )
-      return result;
+    v4 = tooltip->delay_step + tooltip->delay_progress;
+    tooltip->delay_progress = v4;
+    if ( v4 <= 1.0 )
+      return;
     if ( owner_widget->text_alignment )
       anchor_x = owner_widget->anchor_x;
     else
       anchor_x = owner_widget->layout_width * 0.5 + owner_widget->layout_anchor_x - 320.0;
-    v10 = tooltip->tooltip_widget;
+    v5 = tooltip->tooltip_widget;
     tooltip->state = 3;
-    if ( v10 )
+    if ( v5 )
       report_errorf(aToolTipOverloa);
     else
-      tooltip->tooltip_widget = (FrontendWidget *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+      tooltip->tooltip_widget = allocate_border(&g_game_base->border_manager);
     mode_flags = tooltip->mode_flags;
     if ( (mode_flags & 1) != 0 )
     {
-      v12 = set_color_rgba(&color, 1.0, 1.0, 1.0, 1.0);
-      y = *((float *)MEMORY[0x4DF904] + 168) + 64.0;
+      v7 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+      y = g_game_base->players[0].mouse_cursor.saved_y + 64.0;
       initialize_frontend_widget(
         tooltip->tooltip_widget,
         2u,
         (char *)tooltip,
         7,
-        *((float *)MEMORY[0x4DF904] + 167),
+        g_game_base->players[0].mouse_cursor.saved_x,
         y,
-        v12,
+        v7,
         1,
         anchor_x);
 LABEL_27:
-      v19 = tooltip->tooltip_widget;
-      if ( v19->layout_left - v19->hot_padding - v19->stack_gap < 0.0 )
-        v19->layout_anchor_x = v19->stack_gap;
-      v20 = tooltip->tooltip_widget;
-      v21 = v20->stack_gap + v20->layout_width + v20->layout_left + v20->hot_padding;
-      if ( v21 > 640.0 )
-        v20->layout_anchor_x = v20->layout_anchor_x - (v21 - 640.0);
-      return layout_frontend_widget(tooltip->tooltip_widget);
+      v14 = tooltip->tooltip_widget;
+      if ( v14->layout_left - v14->hot_padding - v14->stack_gap < 0.0 )
+        v14->layout_anchor_x = v14->stack_gap;
+      v15 = tooltip->tooltip_widget;
+      v16 = v15->stack_gap + v15->layout_width + v15->layout_left + v15->hot_padding;
+      if ( v16 > 640.0 )
+        v15->layout_anchor_x = v15->layout_anchor_x - (v16 - 640.0);
+      layout_frontend_widget(tooltip->tooltip_widget);
+      return;
     }
     if ( (mode_flags & 4) != 0 )
     {
-      v13 = tooltip->owner_widget;
-      v29 = anchor_x;
-      v28 = 1;
-      v14 = set_color_rgba(&v32, 1.0, 1.0, 1.0, 1.0);
+      v8 = tooltip->owner_widget;
+      v24 = anchor_x;
+      v23 = 1;
+      v9 = set_color_rgba(&v27, 1.0, 1.0, 1.0, 1.0);
 LABEL_22:
-      yb = v13->layout_anchor_y - v13->current_padding;
-      initialize_frontend_widget(
-        tooltip->tooltip_widget,
-        2u,
-        (char *)tooltip,
-        7,
-        v13->layout_anchor_x,
-        yb,
-        v14,
-        v28,
-        v29);
-      v16 = tooltip->tooltip_widget;
-      v17 = v16->layout_anchor_y - (v16->layout_height + v16->current_padding);
+      yb = v8->layout_anchor_y - v8->current_padding;
+      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v8->layout_anchor_x, yb, v9, v23, v24);
+      v11 = tooltip->tooltip_widget;
+      v12 = v11->layout_anchor_y - (v11->layout_height + v11->current_padding);
 LABEL_26:
-      v16->layout_anchor_y = v17;
+      v11->layout_anchor_y = v12;
       goto LABEL_27;
     }
     if ( (mode_flags & 2) != 0 )
     {
-      v15 = tooltip->owner_widget;
-      v26 = set_color_rgba(&v33, 1.0, 1.0, 1.0, 1.0);
-      ya = v15->layout_anchor_y + v15->layout_height + v15->current_padding;
+      v10 = tooltip->owner_widget;
+      v21 = set_color_rgba((tColour *)&v28, 1.0, 1.0, 1.0, 1.0);
+      ya = v10->layout_anchor_y + v10->layout_height + v10->current_padding;
       initialize_frontend_widget(
         tooltip->tooltip_widget,
         2u,
         (char *)tooltip,
         7,
-        v15->layout_anchor_x,
+        v10->layout_anchor_x,
         ya,
-        v26,
+        v21,
         1,
         anchor_x);
     }
@@ -151,29 +129,26 @@ LABEL_26:
     {
       if ( (mode_flags & 0x10) != 0 )
       {
-        v13 = tooltip->owner_widget;
-        v29 = 0.0;
-        v28 = 0;
-        v14 = set_color_rgba(&v34, 1.0, 1.0, 1.0, 1.0);
+        v8 = tooltip->owner_widget;
+        v24 = 0.0;
+        v23 = 0;
+        v9 = set_color_rgba((tColour *)&v29, 1.0, 1.0, 1.0, 1.0);
         goto LABEL_22;
       }
       if ( (mode_flags & 8) == 0 )
         goto LABEL_27;
-      v18 = tooltip->owner_widget;
-      v27 = set_color_rgba(&v35, 1.0, 1.0, 1.0, 1.0);
-      yc = v18->layout_anchor_y + v18->layout_height + v18->current_padding;
-      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v18->layout_anchor_x, yc, v27, 0, 0.0);
+      v13 = tooltip->owner_widget;
+      v22 = set_color_rgba((tColour *)&v30, 1.0, 1.0, 1.0, 1.0);
+      yc = v13->layout_anchor_y + v13->layout_height + v13->current_padding;
+      initialize_frontend_widget(tooltip->tooltip_widget, 2u, (char *)tooltip, 7, v13->layout_anchor_x, yc, v22, 0, 0.0);
     }
-    v16 = tooltip->tooltip_widget;
-    v17 = v16->current_padding + v16->layout_anchor_y;
+    v11 = tooltip->tooltip_widget;
+    v12 = v11->current_padding + v11->layout_anchor_y;
     goto LABEL_26;
   }
-  result = (int32_t)tooltip->owner_widget;
-  if ( (*(_DWORD *)(result + 416) & 0x20000) != 0 )
+  if ( (tooltip->owner_widget->widget_flags & 0x20000) != 0 )
   {
     tooltip->delay_progress = 0.0;
     tooltip->state = 2;
   }
-  return result;
 }
-
