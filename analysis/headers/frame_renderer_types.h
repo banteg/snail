@@ -184,11 +184,11 @@ typedef struct FrameContactTargetRegistry {
 
 typedef struct TextureRef TextureRef;
 
-typedef struct TextureSetSelector {
-    TextureRef* primary_textures[4];
-    TextureRef* secondary_textures[4];
+typedef struct Track {
+    TextureRef* track_textures[4];
+    TextureRef* slide_textures[4];
     int32_t current_texture_set;
-} TextureSetSelector;
+} Track;
 
 typedef struct FrontendWidget FrontendWidget;
 typedef struct BorderManager BorderManager;
@@ -322,7 +322,7 @@ typedef struct GameRoot {
     FrameOverlay overlay_2;
     FrameRenderableBod root_noop_renderable;
     uint8_t unknown_000ae0[0xb24 - 0xae0];
-    TextureSetSelector texture_set_selector;
+    Track track;
     int32_t unknown_000b48;
     BorderManager border_manager;
     uint8_t unknown_044100[0x74618 - 0x44100];

@@ -1,77 +1,33 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 14,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 14,
-  "ida_exported": 14,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
-    {
-      "name": "allocate_border",
-      "address": "0x4032a0"
-    },
-    {
-      "name": "activate_all_borders",
-      "address": "0x403300"
-    },
-    {
-      "name": "kill_all_borders",
-      "address": "0x4033c0"
-    },
-    {
-      "name": "hide_all_borders",
-      "address": "0x4033f0"
-    },
-    {
-      "name": "unhide_all_borders",
-      "address": "0x403400"
-    },
-    {
-      "name": "queue_frontend_widget_flag_after_delay",
-      "address": "0x403f60"
-    },
-    {
-      "name": "update_border_manager",
-      "address": "0x403fc0"
-    },
-    {
-      "name": "set_border_justify_centre",
-      "address": "0x404730"
-    },
-    {
-      "name": "update_completion_screen",
-      "address": "0x4067e0"
-    },
-    {
-      "name": "initialize_border_record",
-      "address": "0x408410"
-    },
     {
       "name": "initialize_game_assets_and_world",
       "address": "0x40acf0"
     },
     {
-      "name": "activate_landscape_entry",
-      "address": "0x418870"
+      "name": "select_level_track_texture_set",
+      "address": "0x410730"
     },
     {
-      "name": "initialize_options_menu",
-      "address": "0x41ace0"
-    },
-    {
-      "name": "update_options_menu",
-      "address": "0x41af60"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     }
   ],
-  "health_check_count": 309,
+  "health_check_count": 311,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -37,7 +37,7 @@ REQUIRED_STRUCTS = (
     "FrameRenderCameraSlot",
     "FrameContactTargetRegistry",
     "FrameSubgameRuntime",
-    "TextureSetSelector",
+    "Track",
     "BorderStackEntry",
     "BorderStack",
     "BorderRecord",
@@ -92,6 +92,10 @@ PROTO_UPDATES = (
     (
         "render_game_frame",
         "void __thiscall render_game_frame(GameRoot* game)",
+    ),
+    (
+        "select_level_track_texture_set",
+        "void __thiscall select_level_track_texture_set(Track* track, int32_t texture_set)",
     ),
 )
 
@@ -230,7 +234,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x7c8", "overlay_1", "FrameOverlay"),
     ("0x914", "overlay_2", "FrameOverlay"),
     ("0xa60", "root_noop_renderable", "FrameRenderableBod"),
-    ("0xb24", "texture_set_selector", "TextureSetSelector"),
+    ("0xb24", "track", "Track"),
     ("0xb48", "unknown_000b48", "int32_t"),
     ("0xb4c", "border_manager", "BorderManager"),
     ("0x74618", "subgame", "FrameSubgameRuntime"),

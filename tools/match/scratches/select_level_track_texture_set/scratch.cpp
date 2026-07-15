@@ -1,10 +1,10 @@
 // select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)
 
-#include "texture_set_selector.h"
+#include "track.h"
 
 double random_float_below(float upper_bound, int zero);
 
-void TextureSetSelector::select_level_track_texture_set(int texture_set)
+void Track::Change(int texture_set)
 {
     int selected;
 
@@ -32,9 +32,9 @@ void TextureSetSelector::select_level_track_texture_set(int texture_set)
     int previous = current_texture_set;
     if (selected != previous) {
         g_object_list.replace_object_list_texture_refs(
-            primary_textures[selected], primary_textures[previous]);
+            track_textures[selected], track_textures[previous]);
         g_object_list.replace_object_list_texture_refs(
-            secondary_textures[selected], secondary_textures[current_texture_set]);
+            slide_textures[selected], slide_textures[current_texture_set]);
         current_texture_set = selected;
     }
 }

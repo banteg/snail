@@ -116,7 +116,8 @@ intentional.
 - `uv run python tools/binja/sync_frame_renderer_types.py`
   - Promotes the complete `BorderManager` owner when available, including its
     final `float justify_centre` field and the exact void
-    `SetJustifyCentre(float)` ABI.
+    `SetJustifyCentre(float)` ABI. It also preserves the cross-port-authored
+    `Track` (`cRTrack`) root subobject and the void `Change(int)` receiver ABI.
 - `bn_object_render_types.h`
 - `uv run python tools/binja/sync_object_render_types.py`
 - `bn_input_state_types.h`
@@ -239,7 +240,8 @@ older opaque `0x4a8`-byte block without inventing fields past their exact end.
 The shared frame-root replay now closes the rest of that exact prefix too: the
 root callback/fog block through `+0x24`, the front-end link latch at `+0x568`,
 and the standalone `RenderableBod +0xa60` between the overlays and texture-set
-selector. Replaying a later owner lane therefore no longer degrades these
+owner. The `+0xb24` object is now the exact `Track` / `cRTrack` owner rather
+than a semantic-only selector shell. Replaying a later owner lane therefore no longer degrades these
 independently bounded fields back into byte arrays.
 The same replay now owns the complete `BorderManager +0xb4c`: its embedded
 `BorderStack`, fixed 150-entry `BorderRecord` pool, and delayed-widget state.

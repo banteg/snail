@@ -2931,31 +2931,31 @@ char GameRoot::initialize_game_assets_and_world()
         (char*)"Objects/World00/Slide3.tga", 0, 0);
     texture_ref->flags |= 0x1002;
 
-    texture_set_selector.primary_textures[0] =
+    track.track_textures[0] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Track0.tga", 0, 0);
-    texture_set_selector.secondary_textures[0] =
+    track.slide_textures[0] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Slide0.tga", 0, 0);
-    texture_set_selector.primary_textures[1] =
+    track.track_textures[1] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Track1.tga", 0, 0);
-    texture_set_selector.secondary_textures[1] =
+    track.slide_textures[1] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Slide1.tga", 0, 0);
-    texture_set_selector.primary_textures[2] =
+    track.track_textures[2] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Track2.tga", 0, 0);
-    texture_set_selector.secondary_textures[2] =
+    track.slide_textures[2] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Slide2.tga", 0, 0);
-    texture_set_selector.primary_textures[3] =
+    track.track_textures[3] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Track3.tga", 0, 0);
-    texture_set_selector.secondary_textures[3] =
+    track.slide_textures[3] =
         g_texture_refs.get_or_create_texture_ref(
             (char*)"Objects/World00/Slide3.tga", 0, 0);
-    texture_set_selector.current_texture_set = 0;
+    track.current_texture_set = 0;
 
     g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/World00/Back.tga", 0, 0)->mip_levels = 2;

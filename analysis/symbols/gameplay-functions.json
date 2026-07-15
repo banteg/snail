@@ -702,7 +702,8 @@
     },
     {
       "address": "0x410730",
-      "name": "select_level_track_texture_set"
+      "name": "select_level_track_texture_set",
+      "description": "Windows cRTrack::Change(int): selects one of four root-owned track/slide texture pairs, with selector 5 choosing a random pair. Symbol-preserving iOS and Android builds independently retain the authored cRTrack owner and Change(int) method."
     },
     {
       "address": "0x4107d0",

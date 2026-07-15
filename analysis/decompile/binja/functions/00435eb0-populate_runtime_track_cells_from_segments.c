@@ -34,7 +34,7 @@
 00435f78        game->player.score_tail = 0
 00435f7e        game->player.movement_flag_selector = 0
 00435f84        set_math_random_seed(runtime_build_seed)
-00435f9f        int16_t x87control_1 = select_level_track_texture_set(&g_game_base->texture_set_selector, game->level_definition.track_texture_set)
+00435f9f        int16_t x87control_1 = select_level_track_texture_set(&g_game_base->track, game->level_definition.track_texture_set)
 00435fa4        int32_t level_mode_2 = game->level_mode
 00435fb8        int32_t var_24
 00435fb8        int32_t random_length_1
@@ -318,18 +318,18 @@
 004366b6        random_length_1.b = 0
 004366bd        if (j_1 s< game->first_block_row_count || j_1 s>= game->completion_row_start)
 004366bf        random_length_1.b = 1
-004366ce        set_bod_object(esi_11 + 0x3bfac8, 0)
+004366ce        set_bod_object(esi_11 + 0x3bfac8, nullptr)
 004366e4        struct SubSegment* edx_32 = var_3c_1
 004366ee        char* ebp_4 = &edx_32->glyph_rows + (ebp_1 << 8) + segment_count_2
 004366f2        edx_32.b = *ebp_4
 004366f6        char eax_74 = normalize_segment_glyph_for_track_flags(game, edx_32.b, j_1, random_length_1.b)
 00436704        if (sx.d(eax_74) - 0x20 u> 0x5d)
 00436eb5        label_436eb5:
-00436eb5        struct SubSegment* edx_58 = var_3c_1
-00436ebd        edx_58->source_name
-00436ec0        edx_58.b = *ebp_4
+00436eb5        struct SubSegment* edx_50 = var_3c_1
+00436ebd        edx_50->source_name
+00436ec0        edx_50.b = *ebp_4
 0043670a        int32_t edx_33 = 0
-0043670c        edx_33.b = *(sx.d(eax_74) + &jump_table_437194[0x14])
+0043670c        edx_33.b = *(sx.d(eax_74) + &populate_runtime_track_cells_glyph_jump_table[0x14])
 00436712        switch (edx_33)
 00436719        case 0
 00436719        *(esi_11 + 0x3bfb04) = 0
@@ -343,24 +343,24 @@
 0043675c        *(esi_11 + 0x3bfacc) = eax_77
 004367e5        case 2
 004367e5        struct GameRoot* game_base_1 = g_game_base
-004367eb        int32_t edx_35
-004367eb        edx_35.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object.b
-004367eb        edx_35:1.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:1.b
-004367eb        edx_35:2.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:2.b
-004367eb        edx_35:3.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:3.b
-004367f4        set_bod_object(esi_11 + 0x3bfac8, edx_35)
+004367eb        struct Object* object
+004367eb        object.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object.b
+004367eb        object:1.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:1.b
+004367eb        object:2.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:2.b
+004367eb        object:3.b = game_base_1->root_bod_catalog.slide_slices.storage[0].object:3.b
+004367f4        set_bod_object(esi_11 + 0x3bfac8, object)
 004367f9        *(esi_11 + 0x3bfb04) = 0x17
 00436800        int32_t eax_83 = *(esi_11 + 0x3bfacc)
 00436806        eax_83.b |= 0x20
 00436808        *(esi_11 + 0x3bfacc) = eax_83
 004368f7        case 3
 004368f7        struct GameRoot* game_base_3 = g_game_base
-004368fd        int32_t edx_39
-004368fd        edx_39.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object.b
-004368fd        edx_39:1.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:1.b
-004368fd        edx_39:2.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:2.b
-004368fd        edx_39:3.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:3.b
-00436906        set_bod_object(esi_11 + 0x3bfac8, edx_39)
+004368fd        struct Object* object_2
+004368fd        object_2.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object.b
+004368fd        object_2:1.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:1.b
+004368fd        object_2:2.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:2.b
+004368fd        object_2:3.b = game_base_3->root_bod_catalog.floor_slices.storage[0].object:3.b
+00436906        set_bod_object(esi_11 + 0x3bfac8, object_2)
 0043690b        *(esi_11 + 0x3bfb04) = 0x22
 00436912        int32_t eax_93 = *(esi_11 + 0x3bfacc)
 00436918        eax_93.b |= 0x20
@@ -379,12 +379,12 @@
 00436aad        *(esi_11 + 0x3bfacc) = eax_103
 00436ab3        *(esi_11 + 0x3bfb04) = 0x16
 00436a41        struct GameRoot* game_base_5 = g_game_base
-00436a47        int32_t edx_43
-00436a47        edx_43.b = game_base_5->root_bod_catalog.trampoline.object.b
-00436a47        edx_43:1.b = game_base_5->root_bod_catalog.trampoline.object:1.b
-00436a47        edx_43:2.b = game_base_5->root_bod_catalog.trampoline.object:2.b
-00436a47        edx_43:3.b = game_base_5->root_bod_catalog.trampoline.object:3.b
-00436a50        set_bod_object(esi_11 + 0x3bfac8, edx_43)
+00436a47        struct Object* object_4
+00436a47        object_4.b = game_base_5->root_bod_catalog.trampoline.object.b
+00436a47        object_4:1.b = game_base_5->root_bod_catalog.trampoline.object:1.b
+00436a47        object_4:2.b = game_base_5->root_bod_catalog.trampoline.object:2.b
+00436a47        object_4:3.b = game_base_5->root_bod_catalog.trampoline.object:3.b
+00436a50        set_bod_object(esi_11 + 0x3bfac8, object_4)
 00436a72        *(esi_11 + 0x3bfacc) |= 0x20
 00436a9a        store_color4f(game + (var_30_1 + (j_1 << 3) + 0xb6cc) * 0x54, 1f, 1f, 1f, 0.999000013f)
 00436a9f        *(esi_11 + 0x3bfb04) = 0x16
@@ -438,12 +438,12 @@
 00436e96        *(esi_11 + 0x3bfacc) = eax_138
 00436c67        case 0xb
 00436c67        struct GameRoot* game_base_8 = g_game_base
-00436c6d        int32_t edx_51
-00436c6d        edx_51.b = game_base_8->root_bod_catalog.ramp_edges[1].object.b
-00436c6d        edx_51:1.b = game_base_8->root_bod_catalog.ramp_edges[1].object:1.b
-00436c6d        edx_51:2.b = game_base_8->root_bod_catalog.ramp_edges[1].object:2.b
-00436c6d        edx_51:3.b = game_base_8->root_bod_catalog.ramp_edges[1].object:3.b
-00436c76        set_bod_object(esi_11 + 0x3bfac8, edx_51)
+00436c6d        struct Object* object_7
+00436c6d        object_7.b = game_base_8->root_bod_catalog.ramp_edges[1].object.b
+00436c6d        object_7:1.b = game_base_8->root_bod_catalog.ramp_edges[1].object:1.b
+00436c6d        object_7:2.b = game_base_8->root_bod_catalog.ramp_edges[1].object:2.b
+00436c6d        object_7:3.b = game_base_8->root_bod_catalog.ramp_edges[1].object:3.b
+00436c76        set_bod_object(esi_11 + 0x3bfac8, object_7)
 00436c7d        *(esi_11 + 0x3bfae4) = 0
 00436c83        *(esi_11 + 0x3bfae8) = 0
 00436c89        *(esi_11 + 0x3bfb04) = 6
@@ -466,12 +466,12 @@
 00436b3f        eax_111.b |= 0x20
 00436b41        *(esi_11 + 0x3bfacc) = eax_111
 00436ad2        struct GameRoot* game_base_6 = g_game_base
-00436ad8        int32_t edx_47
-00436ad8        edx_47.b = game_base_6->root_bod_catalog.ramp_edges[1].object.b
-00436ad8        edx_47:1.b = game_base_6->root_bod_catalog.ramp_edges[1].object:1.b
-00436ad8        edx_47:2.b = game_base_6->root_bod_catalog.ramp_edges[1].object:2.b
-00436ad8        edx_47:3.b = game_base_6->root_bod_catalog.ramp_edges[1].object:3.b
-00436ae1        set_bod_object(esi_11 + 0x3bfac8, edx_47)
+00436ad8        struct Object* object_5
+00436ad8        object_5.b = game_base_6->root_bod_catalog.ramp_edges[1].object.b
+00436ad8        object_5:1.b = game_base_6->root_bod_catalog.ramp_edges[1].object:1.b
+00436ad8        object_5:2.b = game_base_6->root_bod_catalog.ramp_edges[1].object:2.b
+00436ad8        object_5:3.b = game_base_6->root_bod_catalog.ramp_edges[1].object:3.b
+00436ae1        set_bod_object(esi_11 + 0x3bfac8, object_5)
 00436ae6        *(esi_11 + 0x3bfae4) = 0
 00436aec        *(esi_11 + 0x3bfae8) = 0
 00436af2        *(esi_11 + 0x3bfb04) = 9
@@ -487,12 +487,12 @@
 00436780        switch_track_mirror(game)
 0043686e        case 0xf
 0043686e        struct GameRoot* game_base_2 = g_game_base
-00436874        int32_t edx_37
-00436874        edx_37.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object.b
-00436874        edx_37:1.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:1.b
-00436874        edx_37:2.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:2.b
-00436874        edx_37:3.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:3.b
-0043687d        set_bod_object(esi_11 + 0x3bfac8, edx_37)
+00436874        struct Object* object_1
+00436874        object_1.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object.b
+00436874        object_1:1.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:1.b
+00436874        object_1:2.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:2.b
+00436874        object_1:3.b = game_base_2->root_bod_catalog.slide_slices.storage[0].object:3.b
+0043687d        set_bod_object(esi_11 + 0x3bfac8, object_1)
 00436882        *(esi_11 + 0x3bfb04) = 0x13
 00436889        int32_t eax_88 = *(esi_11 + 0x3bfacc)
 0043688f        eax_88.b |= 0x20
@@ -505,12 +505,12 @@
 004367ac        *(esi_11 + 0x3bfacc) = eax_80
 00436980        case 0x11
 00436980        struct GameRoot* game_base_4 = g_game_base
-00436986        int32_t edx_41
-00436986        edx_41.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object.b
-00436986        edx_41:1.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:1.b
-00436986        edx_41:2.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:2.b
-00436986        edx_41:3.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:3.b
-0043698f        set_bod_object(esi_11 + 0x3bfac8, edx_41)
+00436986        struct Object* object_3
+00436986        object_3.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object.b
+00436986        object_3:1.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:1.b
+00436986        object_3:2.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:2.b
+00436986        object_3:3.b = game_base_4->root_bod_catalog.slide_slices.storage[0].object:3.b
+0043698f        set_bod_object(esi_11 + 0x3bfac8, object_3)
 00436994        *(esi_11 + 0x3bfb04) = 0x19
 0043699b        int32_t eax_98 = *(esi_11 + 0x3bfacc)
 004369a1        eax_98.b |= 0x20
@@ -616,12 +616,12 @@
 00436b5d        case 0x1a
 00436b5d        if (j_1 s<= 0 || *(esi_11 + 0x3bf864) != 3)
 00436ba0        struct GameRoot* game_base_7 = g_game_base
-00436ba6        int32_t edx_49
-00436ba6        edx_49.b = game_base_7->root_bod_catalog.ramp_edges[2].object.b
-00436ba6        edx_49:1.b = game_base_7->root_bod_catalog.ramp_edges[2].object:1.b
-00436ba6        edx_49:2.b = game_base_7->root_bod_catalog.ramp_edges[2].object:2.b
-00436ba6        edx_49:3.b = game_base_7->root_bod_catalog.ramp_edges[2].object:3.b
-00436baf        set_bod_object(esi_11 + 0x3bfac8, edx_49)
+00436ba6        struct Object* object_6
+00436ba6        object_6.b = game_base_7->root_bod_catalog.ramp_edges[2].object.b
+00436ba6        object_6:1.b = game_base_7->root_bod_catalog.ramp_edges[2].object:1.b
+00436ba6        object_6:2.b = game_base_7->root_bod_catalog.ramp_edges[2].object:2.b
+00436ba6        object_6:3.b = game_base_7->root_bod_catalog.ramp_edges[2].object:3.b
+00436baf        set_bod_object(esi_11 + 0x3bfac8, object_6)
 00436bb4        *(esi_11 + 0x3bfae4) = 0
 00436bba        *(esi_11 + 0x3bfae8) = 0
 00436bc0        *(esi_11 + 0x3bfb04) = 4

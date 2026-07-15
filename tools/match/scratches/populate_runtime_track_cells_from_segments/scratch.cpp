@@ -10,7 +10,7 @@
 #include "game_time.h"
 #include "root_bod_catalog.h"
 #include "track_attachment_types.h"
-#include "texture_set_selector.h"
+#include "track.h"
 
 extern GameRoot* g_game; // data_4df904
 
@@ -82,8 +82,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
     player.score_tail = 0;
     player.movement_flag_selector = 0;
     set_math_random_seed(runtime_build_seed);
-    g_game->texture_set_selector.select_level_track_texture_set(
-        level_definition.track_texture_set);
+    g_game->track.Change(level_definition.track_texture_set);
 
     int segment_cursor = 0;
     mode = level_mode;

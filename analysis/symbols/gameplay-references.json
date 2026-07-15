@@ -59,6 +59,15 @@
       "description": "Thiscall helper on a 0x2a0-byte GalaxyRouteSlot that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
     },
     {
+      "address": "0x410730",
+      "name": "select_level_track_texture_set",
+      "kind": "function",
+      "aliases": [
+        "Change"
+      ],
+      "description": "Stable Windows harness identity for the authored cRTrack::Change(int) member preserved by iOS and Android."
+    },
+    {
       "address": "0x410c30",
       "name": "set_backdrop_progress_fraction",
       "kind": "function",

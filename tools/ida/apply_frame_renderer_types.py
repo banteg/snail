@@ -30,7 +30,7 @@ EXPECTED_OWNER_SIZES = {
     "FrameRenderCamera": 0xC8,
     "FrameOverlay": 0x14C,
     "FrameRenderCameraSlot": 0x28,
-    "TextureSetSelector": 0x24,
+    "Track": 0x24,
     "BorderStackEntry": 0x8,
     "BorderStack": 0x64C,
     "BorderRecord": 0x724,
@@ -119,6 +119,10 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "render_game_frame",
         "void __thiscall render_game_frame(GameRoot *game);",
+    ),
+    (
+        "select_level_track_texture_set",
+        "void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set);",
     ),
 ]
 

@@ -189,7 +189,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   game->player.score_tail = 0;
   game->player.movement_flag_selector = 0;
   set_math_random_seed(runtime_build_seed);
-  select_level_track_texture_set((int *)&g_game_base->texture_set_selector, game->level_definition.track_texture_set);
+  select_level_track_texture_set(&g_game_base->track, game->level_definition.track_texture_set);
   v7 = game->level_mode;
   if ( !v7 || v7 == 7 || v7 == 4 || v7 == 1 )
   {
@@ -441,8 +441,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             LOBYTE(v42) = v42 | 2;
             *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v42;
             set_bod_object(
-              (char *)&unk_5CCACC + (_DWORD)v41,
-              *(_DWORD *)&g_game_base->unknown_000b48[188 * v36[522] + 295652]);
+              (BodBase *)((char *)&unk_5CCACC + (_DWORD)v41),
+              g_game_base->directx_loader.cached_x_mesh_slots[v36[522]].object);
             set_matrix_identity((TransformMatrix *)((char *)&unk_5CCB04 + (_DWORD)v41));
             v43 = (_DWORD *)((char *)&unk_5CCB34 + (_DWORD)v41);
             *v43 = v36[523];
@@ -519,7 +519,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             if ( v108 < game->first_block_row_count || (v120 = 0, v108 >= game->completion_row_start) )
               v120 = 1;
             v52 = v50 + 3930824;
-            set_bod_object((_DWORD *)v50 + 982706, 0);
+            set_bod_object((BodBase *)(v50 + 3930824), nullptr);
             v53 = &p_first_segment->glyph_rows[v49][v111];
             v54 = normalize_segment_glyph_for_track_flags((int)game, *v53, v108, v120);
             switch ( v54 )
@@ -537,14 +537,18 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 *((_DWORD *)v50 + 982707) = v57;
                 break;
               case '$':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 23;
                 v60 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v60) = v60 | 0x20;
                 *((_DWORD *)v50 + 982707) = v60;
                 break;
               case '&':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 v50[3930884] = 34;
                 v66 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v66) = v66 | 0x20;
@@ -565,7 +569,9 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 {
                   if ( v72 == 8 )
                   {
-                    set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[276884]);
+                    set_bod_object(
+                      (BodBase *)(v50 + 3930824),
+                      (Object *)g_game_base->root_bod_catalog.trampoline.object);
                     *((_DWORD *)v50 + 982707) |= 0x20u;
                     store_color4f(&game->runtime_cells[v108][v113].color, 1.0, 1.0, 1.0, 0.99900001);
                   }
@@ -578,28 +584,34 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 }
                 break;
               case '+':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 24;
                 v68 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v68) = v68 | 0x20;
                 *((_DWORD *)v50 + 982707) = v68;
                 break;
               case ',':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[275932]);
+                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.universe_hole.object);
                 v50[3930884] = 28;
                 v67 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v67) = v67 | 0x20;
                 *((_DWORD *)v50 + 982707) = v67;
                 break;
               case '-':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 v50[3930884] = 21;
                 v70 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v70) = v70 | 0x20;
                 *((_DWORD *)v50 + 982707) = v70;
                 break;
               case '.':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 v50[3930884] = 1;
                 v64 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v64) = v64 | 0x20;
@@ -637,7 +649,7 @@ LABEL_173:
                 v50[3930884] = 0;
                 break;
               case '<':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279012]);
+                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
                 *((_DWORD *)v50 + 982713) = 0;
                 *((_DWORD *)v50 + 982714) = 0;
                 v50[3930884] = 6;
@@ -647,7 +659,7 @@ LABEL_173:
                 break;
               case '=':
               case '|':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277164]);
+                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.pillars[0].object);
                 v50[3930884] = 14;
                 v71 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v71) = v71 | 0x20;
@@ -656,7 +668,9 @@ LABEL_173:
               case '>':
                 if ( v108 > 0 && v50[3930212] == 3 )
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279012]);
+                  set_bod_object(
+                    (BodBase *)(v50 + 3930824),
+                    (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 9;
@@ -667,7 +681,9 @@ LABEL_173:
                 }
                 else
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279012]);
+                  set_bod_object(
+                    (BodBase *)(v50 + 3930824),
+                    (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 3;
@@ -684,28 +700,36 @@ LABEL_173:
                 switch_track_mirror(game);
                 break;
               case 'F':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 19;
                 v63 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v63) = v63 | 0x20;
                 *((_DWORD *)v50 + 982707) = v63;
                 break;
               case 'G':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 17;
                 v59 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v59) = v59 | 0x20;
                 *((_DWORD *)v50 + 982707) = v59;
                 break;
               case 'J':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 25;
                 v69 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v69) = v69 | 0x20;
                 *((_DWORD *)v50 + 982707) = v69;
                 break;
               case 'M':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 18;
                 v62 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v62) = v62 | 0x20;
@@ -731,9 +755,11 @@ LABEL_173:
                 if ( !v107 )
                 {
                   v107 = 1;
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)(*((_DWORD *)v50 + 982720) + 36));
+                  set_bod_object((BodBase *)(v50 + 3930824), *(Object **)(*((_DWORD *)v50 + 982720) + 36));
                   *((_DWORD *)v50 + 982707) |= 0x20u;
-                  set_bod_object((char *)&unk_5CCB78 + (_DWORD)v41, *(_DWORD *)(*((_DWORD *)v50 + 982720) + 132));
+                  set_bod_object(
+                    (BodBase *)((char *)&unk_5CCB78 + (_DWORD)v41),
+                    *(Object **)(*((_DWORD *)v50 + 982720) + 132));
                   *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)v41) |= 0x20u;
                   *(_DWORD *)((char *)&unk_5CCB74 + (_DWORD)v41) = p_first_segment->angle_radians.bits;
                   v86 = 0;
@@ -769,7 +795,7 @@ LABEL_173:
                 *((_DWORD *)v50 + 982707) = v56;
                 break;
               case '[':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278956]);
+                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
                 *((_DWORD *)v50 + 982713) = 0;
                 *((_DWORD *)v50 + 982714) = 0;
                 v50[3930884] = 5;
@@ -779,21 +805,27 @@ LABEL_173:
                 break;
               case '_':
 LABEL_174:
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 15;
                 v90 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v90) = v90 | 0x20;
                 *((_DWORD *)v50 + 982707) = v90;
                 break;
               case 'o':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
                 v50[3930884] = 16;
                 v61 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v61) = v61 | 0x20;
                 *((_DWORD *)v50 + 982707) = v61;
                 break;
               case 's':
-                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
+                set_bod_object(
+                  (BodBase *)(v50 + 3930824),
+                  (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
                 v50[3930884] = 33;
                 v65 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v65) = v65 | 0x20;
@@ -802,7 +834,9 @@ LABEL_174:
               case '{':
                 if ( v108 > 0 && v50[3930212] == 3 )
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278956]);
+                  set_bod_object(
+                    (BodBase *)(v50 + 3930824),
+                    (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 8;
@@ -813,7 +847,9 @@ LABEL_174:
                 }
                 else
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278956]);
+                  set_bod_object(
+                    (BodBase *)(v50 + 3930824),
+                    (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 2;
@@ -825,7 +861,9 @@ LABEL_174:
               case '}':
                 if ( v108 > 0 && v50[3930212] == 3 )
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279068]);
+                  set_bod_object(
+                    (BodBase *)(v50 + 3930824),
+                    (Object *)g_game_base->root_bod_catalog.ramp_edges[2].object);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 10;
@@ -836,7 +874,9 @@ LABEL_174:
                 }
                 else
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279068]);
+                  set_bod_object(
+                    (BodBase *)(v50 + 3930824),
+                    (Object *)g_game_base->root_bod_catalog.ramp_edges[2].object);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 4;
@@ -869,7 +909,7 @@ LABEL_174:
               {
                 *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)v41) = 0;
                 *((float *)v41 + 1520356) = v96;
-                track_skirt_color = get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &out);
+                track_skirt_color = get_track_skirt_color(&g_game_base->subgame, &out);
                 *(tColour *)((char *)&unk_5CCBA0 + (_DWORD)v41) = *track_skirt_color;
                 set_object_color(*(Object **)((char *)&unk_5CCB9C + (_DWORD)v41), *track_skirt_color);
               }

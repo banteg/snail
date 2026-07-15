@@ -88,7 +88,7 @@ barrier, and render-cache handoff at `0x40fb46..0x40ffd6`:
   `OBJECT_FLAG_DYNAMIC_VERTICES`; vapour output combines that bit with
   `OBJECT_FLAG_DISABLE_CULLING`. These are shared render-object policies, not
   startup-local magic masks.
-- `GameRoot +0xb24` is the exact `TextureSetSelector`: four primary track
+- `GameRoot +0xb24` is the exact `Track` (`cRTrack`) owner: four primary track
   textures, four secondary slide textures, and the current set at `+0x20`.
   Startup also applies the recovered texture flags and two-level mip policy.
 - The final island constructs the embedded `SubgameRuntime::barrier`, loads its

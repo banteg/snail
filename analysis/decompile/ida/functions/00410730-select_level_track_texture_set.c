@@ -2,12 +2,13 @@
 /* function: select_level_track_texture_set @ 0x410730 */
 /* selector: select_level_track_texture_set */
 
-int __thiscall sub_410730(int *this, int a2)
+// Windows cRTrack::Change(int): selects one of four root-owned track/slide texture pairs, with selector 5 choosing a random pair. Symbol-preserving iOS and Android builds independently retain the authored cRTrack owner and Change(int) method.
+void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set)
 {
-  int v3; // edi
-  int result; // eax
+  int32_t v3; // edi
+  int32_t current_texture_set; // eax
 
-  switch ( a2 )
+  switch ( texture_set )
   {
     case 0:
       v3 = 0;
@@ -25,16 +26,20 @@ int __thiscall sub_410730(int *this, int a2)
       v3 = (__int64)random_float_below(4.0);
       break;
     default:
-      v3 = a2;
+      v3 = texture_set;
       break;
   }
-  result = *(this + 8);
-  if ( v3 != result )
+  current_texture_set = track->current_texture_set;
+  if ( v3 != current_texture_set )
   {
-    replace_object_list_texture_refs(unk_4B7648, *(this + v3), *(this + result));
-    result = replace_object_list_texture_refs(unk_4B7648, *(this + v3 + 4), *(this + *(this + 8) + 4));
-    *(this + 8) = v3;
+    replace_object_list_texture_refs(
+      &g_object_list,
+      track->track_textures[v3],
+      track->track_textures[current_texture_set]);
+    replace_object_list_texture_refs(
+      &g_object_list,
+      track->slide_textures[v3],
+      track->slide_textures[track->current_texture_set]);
+    track->current_texture_set = v3;
   }
-  return result;
 }
-

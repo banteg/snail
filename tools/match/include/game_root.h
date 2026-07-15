@@ -22,7 +22,7 @@
 #include "sprite.h"
 #include "star_manager.h"
 #include "subgame_runtime.h"
-#include "texture_set_selector.h"
+#include "track.h"
 #include "tip_manager.h"
 #include "vector3.h"
 
@@ -104,7 +104,7 @@ public:
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport slot 3
     RenderableBod root_noop_renderable; // +0xa60, callback has an empty AI slot
     char unknown_000ae0[0xb24 - 0xae0];
-    TextureSetSelector texture_set_selector; // +0xb24, four track/slide pairs
+    Track track; // +0xb24, exact cRTrack owner with four track/slide pairs
     int unknown_000b48; // +0xb48, startup-only dword storage
     // Exact cRBorder manager: the 150-record pool is followed by its delayed
     // transition lane and center-justify scalar, ending at the root BOD bank.
