@@ -85,3 +85,42 @@ primary/secondary pointers and orientation guard through an explicit
 rejected mesh `vertex_index` rewrite. Focused Wibo moves from `20.49%`
 (`613/685`) to `30.38%` (`612/685`), and the masked audit improves from
 `33 ok / 0 mismatch` to `38 ok / 0 mismatch`.
+
+2026-07-15 fixed-seed and face-control ownership pass: independent IDA and
+Binary Ninja output agree that the native initializer converts the curve count
+after writing kind/mirror/exit/width, keeps a mutable `curve_count + 7`
+departure index, writes both seven-sample fixed runs directly, and preserves
+redundant parity branches around each face texture lookup. Recovering those
+shapes raises focused Wibo from `30.38%` (`612/685`, `38 ok / 0 mismatch`) to
+`40.82%` (`633/685`, `35 ok / 0 mismatch`). The main measured steps were:
+
+- duplicate parity-controlled texture calls: `37.40%` (`625/685`);
+- direct approach writes plus the native member/conversion order: `39.70%`
+  (`640/685`);
+- mutating departure-index `do/while`: `40.70%` (`637/685`);
+- explicit-offset curved `do/while`: `40.73%` (`636/685`); and
+- the native nonempty face-column `do/while`: `40.82%` (`633/685`).
+
+The fixed and curved sample identities now use the owned
+`TransformMatrix::set_matrix_identity` member spelling. That cleanup is
+code-generation neutral and leaves the focused result unchanged.
+
+2026-07-15 nonterminal mesh value ownership: constructing the ordinary-row
+mesh position as a real `Vector3` before assigning the destination recovers the
+target's aggregate copy boundary. Focused Wibo moves from `40.82%` (`633/685`)
+to `40.91%` (`640/685`), with the masked audit still clean at
+`35 ok / 0 mismatch`.
+
+2026-07-15 rejected ownership probes: the target clearly has a long-lived
+sample-byte cursor shared with mesh traversal, but transferring the whole Cage2
+cursor/vector shape before the curved loop's register plan is recovered
+regressed to `34.18%` (or `32.58%` with scalar vertex stores). Isolating only
+the cursor still reached just `34.64%`. Direct curved array indexing regressed
+from `40.70%` to `37.96%`, and a target-looking two-counter delta `do/while`
+collapsed global alignment to `28.05%`; the accepted explicit curved byte
+offset and ordinary delta loop therefore remain pinned. A value-owned terminal
+vertex reached `40.60%`, while adding a separate terminal lateral vector
+reached `40.69%`, both below the `40.91%` baseline. The full `Vector3`
+multiply/add mesh expression was rejected much earlier at `18.39%`. These are
+real residual ownership clues, not license to force the native register or
+stack layout.

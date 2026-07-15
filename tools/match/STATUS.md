@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**622/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **98410/317040** bytes (**31.04%**) are proof-grade, and overall fuzzy is **73.95%**.
+**622/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **98410/317040** bytes (**31.04%**) are proof-grade, and overall fuzzy is **74.04%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -786,7 +786,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|
 | 🚧 | render_game_frame | 0x40a490 | 1460 | 415/439 | 45.43% | 3/439 | 26 ok |  |
 | 🚧 | create_golb | 0x415280 | 2349 | 460/582 | 36.08% | 1/582 | 35 ok |  |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 612/685 | 30.38% | 0/685 | 38 ok |  |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 640/685 | 40.91% | 0/685 | 35 ok |  |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 613/690 | 29.78% | 0/690 | 34 ok |  |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 564/655 | 30.19% | 0/655 | 1 mismatch, 30 ok |  |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 601/685 | 30.95% | 0/685 | 33 ok |  |
