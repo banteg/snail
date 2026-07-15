@@ -612,6 +612,14 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);",
     ),
     (
+        "update_subgoldy",
+        "void __thiscall update_subgoldy(Player* player);",
+    ),
+    (
+        "play_movement_state_sound",
+        "void __thiscall play_movement_state_sound(Player* player);",
+    ),
+    (
         "end_jetpack_hover",
         "void __thiscall end_jetpack_hover(SubHover* sub_hover);",
     ),
@@ -638,10 +646,6 @@ TRUSTED_DECLARATIONS = [
     (
         "arm_jetpack_gauge",
         "void __thiscall arm_jetpack_gauge(SubHover* sub_hover);",
-    ),
-    (
-        "update_subgoldy",
-        "int32_t __thiscall update_subgoldy(Player* player);",
     ),
     (
         "set_subgoldy_ghost_z",
@@ -701,7 +705,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "handle_subgoldy_collisions",
-        "int32_t __thiscall handle_subgoldy_collisions(Player* player);",
+        "void __thiscall handle_subgoldy_collisions(Player* player);",
     ),
     (
         "set_snail_weapon",

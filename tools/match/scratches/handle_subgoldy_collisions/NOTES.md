@@ -544,6 +544,15 @@ that transition and completes the flight into the player-owned home anchor.
 Focused output remains byte-stable at 53.93%, 651/673 instructions, prefix
 8/673, with all 86 operands clean.
 
+## 2026-07-16 void collision ABI
+
+The sole `update_subgoldy` caller discards EAX, and the function's only native
+return follows the final ring/effect score path, leaving only the last helper's
+incidental register value. BN and IDA now preserve the authored
+`cRSubGoldy::Collision()` contract as `void __thiscall(Player*)`. The matching
+source already used that ABI; current focused output remains 54.23%, 651/673
+instructions, prefix 8/673, with all 88 masked operands clean.
+
 ## 2026-07-14 shared pickup lifecycle ownership
 
 The health, speedup, and jetpack collision branches now consume only

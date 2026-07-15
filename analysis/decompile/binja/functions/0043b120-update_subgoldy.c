@@ -3,8 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_subgoldy @ 0x43b120 */
 
-0043b129        struct SubgameRuntime* game = player->game
-0043b134        if (game->subgame_pause_gate == 0)
+0043b134        if (player->game->subgame_pause_gate == 0)
 0043b18a        if (player->follow_state.active != 1)
 0043b1e1        struct Object* object = player->presentation.body.bod.object
 0043b1fb        object->distort.z_wave = fconvert.s(fneg(fconvert.t(object->distort.z_wave)) * fconvert.t(0.100000001f) + fconvert.t(object->distort.z_wave))
@@ -26,27 +25,23 @@
 0043b239        if (player->game->level_mode == 0)
 0043b23d        show_subgoldy_lives(player)
 0043b242        int32_t movement_mode_selector = player->movement_mode_selector
-0043b248        game = movement_mode_selector
-0043b24b        if (movement_mode_selector != 0)
-0043b256        struct SubgameRuntime* game_26 = game
-0043b256        game -= 2
-0043b258        if (game_26 != 2)
-0043b25e        struct SubgameRuntime* game_1 = player->game
-0043b275        if (game_1->replay_update_cursor s> 0x14 && game_1->track_state_latch == 0)
-0043b277        game_1->track_state_latch = 1
-0043b27e        struct SubgameRuntime* eax_6 = player->game
+0043b258        if (movement_mode_selector != 0 && movement_mode_selector != 2)
+0043b25e        struct SubgameRuntime* game = player->game
+0043b275        if (game->replay_update_cursor s> 0x14 && game->track_state_latch == 0)
+0043b277        game->track_state_latch = 1
+0043b27e        struct SubgameRuntime* eax_8 = player->game
 0043b291        struct Vec3* ebx_1
 0043b291        long double st0_1
 0043b291        int16_t top_1
-0043b291        struct SubgameRuntime* game_3
-0043b291        if (eax_6->selected_level_record_active == 0)
+0043b291        struct SubgameRuntime* game_2
+0043b291        if (eax_8->selected_level_record_active == 0)
 0043b360        label_43b360:
-0043b360        int16_t eax_8
-0043b360        eax_8.b = player->follow_state._pad_3c[0]
-0043b368        if (eax_8.b == 0)
+0043b360        int16_t eax_11
+0043b360        eax_11.b = player->follow_state._pad_3c[0]
+0043b368        if (eax_11.b == 0)
 0043b38a        label_43b38a:
-0043b38a        eax_8.b = player->control_override_active
-0043b392        if (eax_8.b == 0)
+0043b38a        eax_11.b = player->control_override_active
+0043b392        if (eax_11.b == 0)
 0043b403        resolve_uncaptured_cursor_sensitivity_scale(g_runtime_config.steering_sensitivity[player->steering_mode_selector])
 0043b41c        long double x87_r7_21 = fconvert.t(player->control_source->steering_x) - fconvert.t(player->track_z_anchor) + fconvert.t(player->track_z_offset)
 0043b422        long double temp3_1 = fconvert.t(0f)
@@ -70,25 +65,25 @@
 0043b3ae        long double x87_r7_14 = fconvert.t(player->track_z_offset)
 0043b3b4        long double temp4_1 = fconvert.t(0f)
 0043b3b4        x87_r7_14 - temp4_1
-0043b3ba        eax_8 = (x87_r7_14 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_14, temp4_1) ? 1 : 0) << 0xa | (x87_r7_14 == temp4_1 ? 1 : 0) << 0xe
+0043b3ba        eax_11 = (x87_r7_14 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_14, temp4_1) ? 1 : 0) << 0xa | (x87_r7_14 == temp4_1 ? 1 : 0) << 0xe
 0043b3bf        long double x87_r7_15
-0043b3bf        if ((eax_8:1.b & 1) == 0)
+0043b3bf        if ((eax_11:1.b & 1) == 0)
 0043b3cc        long double x87_r7_16 = fconvert.t(player->track_z_offset)
 0043b3d2        long double temp6_1 = fconvert.t(639f)
 0043b3d2        x87_r7_16 - temp6_1
-0043b3d8        eax_8 = (x87_r7_16 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_16, temp6_1) ? 1 : 0) << 0xa | (x87_r7_16 == temp6_1 ? 1 : 0) << 0xe
-0043b3dd        if ((eax_8:1.b & 0x41) != 0)
+0043b3d8        eax_11 = (x87_r7_16 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_16, temp6_1) ? 1 : 0) << 0xa | (x87_r7_16 == temp6_1 ? 1 : 0) << 0xe
+0043b3dd        if ((eax_11:1.b & 0x41) != 0)
 0043b3ea        x87_r7_15 = fconvert.t(player->track_z_offset)
 0043b3df        x87_r7_15 = fconvert.t(639f)
 0043b3c1        x87_r7_15 = fconvert.t(0f)
 0043b47d        player->track_z_offset = fconvert.s(x87_r7_15)
-0043b36a        eax_8.b = player->completion_handoff_active
-0043b372        if (eax_8.b == 0)
+0043b36a        eax_11.b = player->completion_handoff_active
+0043b372        if (eax_11.b == 0)
 0043b372        goto label_43b38a
 0043b379        player->track_z_offset = 320f
 0043b37f        player->track_z_anchor = 320f
-0043b483        eax_8.b = player->completion_handoff_active
-0043b48b        if (eax_8.b == 0)
+0043b483        eax_11.b = player->completion_handoff_active
+0043b48b        if (eax_11.b == 0)
 0043b499        long double x87_r7_26 = (fconvert.t(320f) - fconvert.t(player->track_z_offset)) * fconvert.t(0.0125000002f)
 0043b49f        long double temp7_1 = fconvert.t(-3.70000005f)
 0043b49f        x87_r7_26 - temp7_1
@@ -101,79 +96,78 @@
 0043b4d1        if (player->click_start.state != CLICK_START_STATE_WAITING_FOR_START)
 0043b4ec        player->body.transform.position.x = fconvert.s(fconvert.t(player->game->subgame_rate) * fconvert.t(0.200000003f) * (x87_r7_26 - fconvert.t(player->body.transform.position.x)) + fconvert.t(player->body.transform.position.x))
 0043b4f6        ebx_1 = &player->body.transform.position
-0043b504        int16_t eax_14
+0043b504        int16_t eax_17
 0043b504        int80_t st0_3
-0043b504        st0_3, eax_14 = convert_math_type32_to_16(player->body.transform.position.x, 16f)
-0043b50d        long double st0_4 = convert_math_type16_to_32(eax_14, 16f)
+0043b504        st0_3, eax_17 = convert_math_type32_to_16(player->body.transform.position.x, 16f)
+0043b50d        long double st0_4 = convert_math_type16_to_32(eax_17, 16f)
 0043b51f        ebx_1->x = fconvert.s(st0_4)
-0043b521        struct SubgameRuntime* game_22 = player->game
-0043b528        int16_t eax_16
+0043b521        struct SubgameRuntime* game_20 = player->game
+0043b528        int16_t eax_19
 0043b528        int80_t st0_5
-0043b528        st0_5, eax_16 = convert_math_type32_to_16(fconvert.s(st0_4), 16f)
-0043b536        int32_t ecx_25 = game_22->replay_update_cursor * 3
-0043b53e        *(&game_22->current_high_score_record.run_records + (ecx_25 << 1)) = eax_16
-0043b546        struct SubgameRuntime* game_20 = player->game
+0043b528        st0_5, eax_19 = convert_math_type32_to_16(fconvert.s(st0_4), 16f)
+0043b536        int32_t ecx_25 = game_20->replay_update_cursor * 3
+0043b53e        *(&game_20->current_high_score_record.run_records + (ecx_25 << 1)) = eax_19
+0043b546        struct SubgameRuntime* game_18 = player->game
 0043b556        long double x87_r4_1
-0043b556        struct SubgameRuntime* game_12
-0043b556        if (game_20->replay_update_cursor != 0)
+0043b556        struct SubgameRuntime* game_10
+0043b556        if (game_18->replay_update_cursor != 0)
 0043b5a5        int32_t var_58_4 = ecx_25
-0043b5a9        int16_t eax_22
+0043b5a9        int16_t eax_25
 0043b5a9        int80_t st0_7
-0043b5a9        st0_7, eax_22 = convert_math_type32_to_16(fconvert.s(fconvert.t(player->body.transform.position.z) - fconvert.t(data_643194)), 32f)
-0043b5c2        *(game_20 + (game_20->replay_update_cursor + 0x2a31eb) * 6) = eax_22
-0043b5c6        game_12 = player->game
-0043b5d2        int32_t eax_24 = game_12->replay_update_cursor + 0x2a31eb
-0043b5da        eax_24.w = *(game_12 + eax_24 * 6)
-0043b5df        st0_1 = convert_math_type16_to_32(eax_24.w, 32f)
+0043b5a9        st0_7, eax_25 = convert_math_type32_to_16(fconvert.s(fconvert.t(player->body.transform.position.z) - fconvert.t(data_643194)), 32f)
+0043b5c2        *(game_18 + (game_18->replay_update_cursor + 0x2a31eb) * 6) = eax_25
+0043b5c6        game_10 = player->game
+0043b5d2        int32_t eax_27 = game_10->replay_update_cursor + 0x2a31eb
+0043b5da        eax_27.w = *(game_10 + eax_27 * 6)
+0043b5df        st0_1 = convert_math_type16_to_32(eax_27.w, 32f)
 0043b5e4        x87_r4_1 = st0_1 + fconvert.t(data_643194)
-0043b55c        int16_t eax_19
+0043b55c        int16_t eax_22
 0043b55c        int80_t st0_6
-0043b55c        st0_6, eax_19 = convert_math_type32_to_16(player->body.transform.position.z, 32f)
-0043b575        *(game_20 + (game_20->replay_update_cursor + 0x2a31eb) * 6) = eax_19
-0043b579        game_12 = player->game
-0043b585        int32_t eax_21 = game_12->replay_update_cursor + 0x2a31eb
-0043b58d        eax_21.w = *(game_12 + eax_21 * 6)
-0043b592        st0_1 = convert_math_type16_to_32(eax_21.w, 32f)
+0043b55c        st0_6, eax_22 = convert_math_type32_to_16(player->body.transform.position.z, 32f)
+0043b575        *(game_18 + (game_18->replay_update_cursor + 0x2a31eb) * 6) = eax_22
+0043b579        game_10 = player->game
+0043b585        int32_t eax_24 = game_10->replay_update_cursor + 0x2a31eb
+0043b58d        eax_24.w = *(game_10 + eax_24 * 6)
+0043b592        st0_1 = convert_math_type16_to_32(eax_24.w, 32f)
 0043b592        x87_r4_1 = st0_1
 0043b5ed        data_643194 = fconvert.s(x87_r4_1)
 0043b5ed        top_1 = 0xfffd
-0043b5f3        struct SubgameRuntime* game_4 = player->game
-0043b601        if (game_4->track_state_latch != 0)
+0043b5f3        struct SubgameRuntime* game_3 = player->game
+0043b601        if (game_3->track_state_latch != 0)
 0043b60c        if ((*(player->control_source + 4) & 0x4000) != 0)
-0043b614        int32_t edx_11 = game_4->replay_update_cursor * 3
-0043b617        (&game_4->current_high_score_record.run_records[0].flags)[edx_11 << 1] |= 1
+0043b614        int32_t edx_11 = game_3->replay_update_cursor * 3
+0043b617        (&game_3->current_high_score_record.run_records[0].flags)[edx_11 << 1] |= 1
 0043b62f        if ((player->control_source->control_flags_b & 0x4000) != 0)
-0043b631        struct SubgameRuntime* game_5 = player->game
-0043b63d        int32_t ecx_35 = game_5->replay_update_cursor * 3
-0043b640        (&game_5->current_high_score_record.run_records[0].flags)[ecx_35 << 1] |= 2
+0043b631        struct SubgameRuntime* game_4 = player->game
+0043b63d        int32_t ecx_35 = game_4->replay_update_cursor * 3
+0043b640        (&game_4->current_high_score_record.run_records[0].flags)[ecx_35 << 1] |= 2
 0043b64f        struct PlayerControlSource* control_source = player->control_source
 0043b65d        if ((control_source->control_flags_b & 0x4000) == 0 && (control_source->control_flags_a & 0x4000) == 0)
 0043b665        player->game->track_state_latch = 1
-0043b66c        game_3 = player->game
-0043b67a        if (game_3->track_state_latch != 0)
-0043b682        int32_t ecx_37 = game_3->replay_update_cursor * 3
-0043b685        (&game_3->current_high_score_record.run_records[0].flags)[ecx_37 << 1] |= 4
-0043b297        struct SubSolution* selected_level_record = eax_6->selected_level_record
-0043b29d        eax_6 = eax_6->replay_update_cursor
-0043b2b2        if (eax_6 s>= selected_level_record->replay_sample_count || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
+0043b66c        game_2 = player->game
+0043b67a        if (game_2->track_state_latch != 0)
+0043b682        int32_t ecx_37 = game_2->replay_update_cursor * 3
+0043b685        (&game_2->current_high_score_record.run_records[0].flags)[ecx_37 << 1] |= 4
+0043b297        struct SubSolution* selected_level_record = eax_8->selected_level_record
+0043b29d        eax_8 = eax_8->replay_update_cursor
+0043b2b2        if (eax_8 s>= selected_level_record->replay_sample_count || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
 0043b2a6        goto label_43b360
 0043b2c0        ebx_1 = &player->body.transform.position
-0043b2c3        eax_6.w = selected_level_record->run_records[eax_6].lateral_x
-0043b2c9        st0_1 = convert_math_type16_to_32(eax_6.w, 16f)
+0043b2c3        eax_8.w = selected_level_record->run_records[eax_8].lateral_x
+0043b2c9        st0_1 = convert_math_type16_to_32(eax_8.w, 16f)
 0043b2ce        ebx_1->x = fconvert.s(st0_1)
 0043b2ce        top_1 = 0
-0043b2d0        struct SubgameRuntime* game_2 = player->game
-0043b2ed        if ((game_2->selected_level_record->run_records[game_2->replay_update_cursor].flags & 4) == 0)
-0043b2f8        game_2->track_state_latch = 0
-0043b2ef        game_2->track_state_latch = 1
-0043b2ff        game_3 = player->game
-0043b319        if ((game_3->selected_level_record->run_records[game_3->replay_update_cursor].flags & 8) != 0)
+0043b2d0        struct SubgameRuntime* game_1 = player->game
+0043b2ed        if ((game_1->selected_level_record->run_records[game_1->replay_update_cursor].flags & 4) == 0)
+0043b2f8        game_1->track_state_latch = 0
+0043b2ef        game_1->track_state_latch = 1
+0043b2ff        game_2 = player->game
+0043b319        if ((game_2->selected_level_record->run_records[game_2->replay_update_cursor].flags & 8) != 0)
 0043b324        g_game_base->players[0].frontend_state = 0x1a
 0043b334        g_game_base->players[0].saved_frontend_state = 0xa
 0043b344        g_game_base->players[0].redispatch_requested = 1
-0043b34b        struct GameRoot* game_base_1 = g_game_base
-0043b353        begin_frontend_fade_in(&game_base_1->fade)
-0043b35f        return game_base_1
+0043b353        begin_frontend_fade_in(&g_game_base->fade)
+0043b35f        return
 0043b694        unimplemented  {fld st0, dword [ebx]}
 0043b696        long double temp9_1 = fconvert.t(-4f)
 0043b696        unimplemented  {fcomp st0, dword [0x497420]} f- temp9_1
@@ -191,28 +185,28 @@
 0043b6b5        bool c2_8 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497210]}, temp10_1)
 0043b6b5        bool c3_8 = unimplemented  {fcomp st0, dword [0x497210]} f== temp10_1
 0043b6b5        unimplemented  {fcomp st0, dword [0x497210]}
-0043b6bb        int16_t eax_28 = (c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top_1 & 7) << 0xb
-0043b6c0        if ((eax_28:1.b & 0x41) == 0)
+0043b6bb        int16_t eax_31 = (c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top_1 & 7) << 0xb
+0043b6c0        if ((eax_31:1.b & 0x41) == 0)
 0043b6c2        ebx_1->x = 0x40800000
 0043b6c8        player->velocity.x = 0
-0043b6d2        eax_28.b = player->resurrect_active.b
-0043b6da        if (eax_28.b != 0)
+0043b6d2        eax_31.b = player->resurrect_active.b
+0043b6da        if (eax_31.b != 0)
 0043b6de        update_subgoldy_resurrect(player)
-0043b6ea        struct TrackRowCell* eax_29 = get_track_grid_cell_at_world_position(player->game, ebx_1)
-0043b6ef        struct SubgameRuntime* game_23 = player->game
-0043b706        int32_t eax_31 = get_track_cell_row_index(eax_29) * 0x3d
-0043b710        int32_t row_event_id = (&game_23->runtime_rows[0].row_event_id)[eax_31]
-0043b734        if (row_event_id s> 0 && row_event_id != player->row_event.id && row_event_id s< game_23->level_definition.segment_count + 1)
+0043b6ea        struct TrackRowCell* eax_32 = get_track_grid_cell_at_world_position(player->game, ebx_1)
+0043b6ef        struct SubgameRuntime* game_21 = player->game
+0043b706        int32_t eax_34 = get_track_cell_row_index(eax_32) * 0x3d
+0043b710        int32_t row_event_id = (&game_21->runtime_rows[0].row_event_id)[eax_34]
+0043b734        if (row_event_id s> 0 && row_event_id != player->row_event.id && row_event_id s< game_21->level_definition.segment_count + 1)
 0043b73a        player->row_event.id = row_event_id
-0043b764        if (*((&game_23->runtime_rows[0].row_event_id)[eax_31] * 0x4220 + player->game + 0xa670) != 0)
+0043b764        if (*((&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220 + player->game + 0xa670) != 0)
 0043b76a        player->row_event.tip_definition.flags = 2
-0043b796        player->row_event.tip_definition.text = &player->game[(&game_23->runtime_rows[0].row_event_id)[eax_31] * 0x4220 + 0xa670]
+0043b796        player->row_event.tip_definition.text = &player->game[(&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220 + 0xa670]
 0043b79c        player->row_event.tip_definition.layout_y = 0f
 0043b7a6        player->row_event.tip_definition.text_scale = 30f
-0043b7d2        player->row_event.tip_definition.dismiss_seconds = *((&game_23->runtime_rows[0].row_event_id)[eax_31] * 0x4220 + player->game + 0xa870)
-0043b7d8        int16_t eax_37
-0043b7d8        eax_37.b = player->row_event_cutscene_started
-0043b7e0        if (eax_37.b == 0)
+0043b7d2        player->row_event.tip_definition.dismiss_seconds = *((&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220 + player->game + 0xa870)
+0043b7d8        int16_t eax_40
+0043b7d8        eax_40.b = player->row_event_cutscene_started
+0043b7e0        if (eax_40.b == 0)
 0043b7e2        player->row_event_cutscene_started = 1
 0043b7eb        unimplemented  {fld st0, dword [ebx]}
 0043b7ed        long double temp15_1 = fconvert.t(0f)
@@ -227,23 +221,23 @@
 0043b802        animation_id = 4
 0043b80a        dispatch_cutscene_animation(&player->presentation, animation_id, 1, 0xffffffff)
 0043b817        dispatch_cutscene_animation(&player->presentation, 1, 0, 0xffffffff)
-0043b837        int32_t sample_override = *(&player->game->level_definition + (&game_23->runtime_rows[0].row_event_id)[eax_31] * 0x4220)
+0043b837        int32_t sample_override = *(&player->game->level_definition + (&game_21->runtime_rows[0].row_event_id)[eax_34] * 0x4220)
 0043b841        if (sample_override != 0xffffffff)
 0043b84d        play_voice_manager(0x751498, 0xd, 2, sample_override)
 0043b866        enqueue_tip_message(&g_game_base->tip_manager, &player->row_event.tip_definition, 1)
-0043b86b        int16_t eax_40
-0043b86b        eax_40.b = player->attachment_exit_pending
-0043b873        if (eax_40.b == 0)
-0043b879        eax_40.b = eax_29->tile_id
-0043b882        if (eax_40.b == 0x1d || eax_40.b == 0x1e)
-0043b884        eax_40.b = player->follow_state.active
-0043b88c        if (eax_40.b == 0)
-0043b89b        begin_track_attachment_follow_state(&player->follow_state, eax_29, ebx_1, player)
+0043b86b        int16_t eax_43
+0043b86b        eax_43.b = player->attachment_exit_pending
+0043b873        if (eax_43.b == 0)
+0043b879        eax_43.b = eax_32->tile_id
+0043b882        if (eax_43.b == 0x1d || eax_43.b == 0x1e)
+0043b884        eax_43.b = player->follow_state.active
+0043b88c        if (eax_43.b == 0)
+0043b89b        begin_track_attachment_follow_state(&player->follow_state, eax_32, ebx_1, player)
 0043b8aa        if (player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM)
 0043b8b7        play_voice_manager(0x751498, 0xc, 0, 0xffffffff)
-0043b8bc        eax_40.b = player->control_override_active
+0043b8bc        eax_43.b = player->control_override_active
 0043b8c4        int16_t top_13
-0043b8c4        if (eax_40.b == 0)
+0043b8c4        if (eax_43.b == 0)
 0043b91b        unimplemented  {fild st0, dword [ecx+0x50]}
 0043b91e        long double temp11_1 = fconvert.t(player->body.transform.position.z)
 0043b91e        unimplemented  {fcomp st0, dword [ebp+0x70]} f- temp11_1
@@ -269,8 +263,8 @@
 0043b949        bool c3_13 = unimplemented  {fcomp st0, dword [0x497220]} f== temp13_1
 0043b949        unimplemented  {fcomp st0, dword [0x497220]}
 0043b949        top_13 = top_1
-0043b94f        eax_40 = (c0_13 ? 1 : 0) << 8 | (c2_13 ? 1 : 0) << 0xa | (c3_13 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
-0043b954        if ((eax_40:1.b & 0x41) == 0)
+0043b94f        eax_43 = (c0_13 ? 1 : 0) << 8 | (c2_13 ? 1 : 0) << 0xa | (c3_13 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
+0043b954        if ((eax_43:1.b & 0x41) == 0)
 0043b956        player->velocity.z = 1f
 0043b967        if (player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
 0043b969        player->velocity.z = 0f
@@ -300,11 +294,11 @@
 0043b906        bool c3_11 = unimplemented  {fcomp st0, dword [0x497234]} f== temp14_1
 0043b906        unimplemented  {fcomp st0, dword [0x497234]}
 0043b906        top_13 = top_1
-0043b90c        eax_40 = (c0_11 ? 1 : 0) << 8 | (c2_11 ? 1 : 0) << 0xa | (c3_11 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
-0043b911        if ((eax_40:1.b & 0x41) == 0)
+0043b90c        eax_43 = (c0_11 ? 1 : 0) << 8 | (c2_11 ? 1 : 0) << 0xa | (c3_11 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
+0043b911        if ((eax_43:1.b & 0x41) == 0)
 0043b969        player->velocity.z = 0f
-0043b973        eax_40.b = player->follow_state.active
-0043b981        if (eax_40.b != 1)
+0043b973        eax_43.b = player->follow_state.active
+0043b981        if (eax_43.b != 1)
 0043bac4        unimplemented  {fld st0, dword [ebp+0x410]}
 0043baca        unimplemented  {fadd dword [ebx]}
 0043bacc        ebx_1->x = fconvert.s(unimplemented  {fstp dword [ebx], st0})
@@ -334,12 +328,12 @@
 0043bb07        bool c2_17 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497210]}, temp17_1)
 0043bb07        bool c3_17 = unimplemented  {fcomp st0, dword [0x497210]} f== temp17_1
 0043bb07        unimplemented  {fcomp st0, dword [0x497210]}
-0043bb0d        eax_40 = (c0_17 ? 1 : 0) << 8 | (c2_17 ? 1 : 0) << 0xa | (c3_17 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
-0043bb12        if ((eax_40:1.b & 0x41) == 0)
+0043bb0d        eax_43 = (c0_17 ? 1 : 0) << 8 | (c2_17 ? 1 : 0) << 0xa | (c3_17 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
+0043bb12        if ((eax_43:1.b & 0x41) == 0)
 0043bb14        ebx_1->x = 0x40800000
 0043bb1a        player->velocity.x = 0
-0043bb24        eax_40.b = player->completion_handoff_active
-0043bb2c        if (eax_40.b == 0)
+0043bb24        eax_43.b = player->completion_handoff_active
+0043bb2c        if (eax_43.b == 0)
 0043bb42        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == 0xf)
 0043bba0        label_43bba0:
 0043bba0        unimplemented  {fld st0, dword [eax+0x38]}
@@ -452,11 +446,11 @@
 0043be55        float sweep_dz_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043be55        unimplemented  {fstp dword [esp+0x1c], st0}
 0043be6d        struct TrackRowCell* source_cell_1 = (&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
-0043bec5        int32_t eax_82
-0043bec5        eax_82, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, ebx_1->x, ebx_1->y, ebx_1->z, sweep_dx_1, sweep_dy_1, sweep_dz_1, source_cell_1)
-0043beca        int16_t eax_83
-0043beca        eax_83.b = player->follow_state.active
-0043bed2        if (eax_83.b == 0)
+0043bec5        int32_t eax_85
+0043bec5        eax_85, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, ebx_1->x, ebx_1->y, ebx_1->z, sweep_dx_1, sweep_dy_1, sweep_dz_1, source_cell_1)
+0043beca        int16_t eax_86
+0043beca        eax_86.b = player->follow_state.active
+0043bed2        if (eax_86.b == 0)
 0043bed8        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043bedb        long double temp30_1 = fconvert.t(0.49000001f)
 0043bedb        unimplemented  {fcomp st0, dword [0x4973e8]} f- temp30_1
@@ -502,9 +496,9 @@
 0043bf62        player->body.transform.position.y = 0.49000001f
 0043bf65        player->velocity.y = 0f
 0043bf6f        player->attachment_exit_pending = 0
-0043bf76        int16_t eax_87
-0043bf76        eax_87.b = cell->tile_id
-0043bf7f        if (eax_87.b == 0 || eax_87.b == 0x23)
+0043bf76        int16_t eax_90
+0043bf76        eax_90.b = cell->tile_id
+0043bf7f        if (eax_90.b == 0 || eax_90.b == 0x23)
 0043bf85        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043bf88        long double temp35_1 = fconvert.t(0.49000001f)
 0043bf88        unimplemented  {fcomp st0, dword [0x4973e8]} f- temp35_1
@@ -523,18 +517,18 @@
 0043bfa6        if ((((c0_25 ? 1 : 0) << 8 | (c2_25 ? 1 : 0) << 0xa | (c3_25 ? 1 : 0) << 0xe | (top_82 & 7) << 0xb):1.b & 0x41) != 0)
 0043bfa8        unimplemented  {fld st0, dword [ebp+0x70]}
 0043bfb0        int32_t var_40_3 = ftol(x87control_1, st0_1)
-0043bfb4        int16_t eax_89
-0043bfb4        eax_89.b = cell->open_edge_mask
+0043bfb4        int16_t eax_92
+0043bfb4        eax_92.b = cell->open_edge_mask
 0043bfb7        unimplemented  {fild st0, dword [esp+0x10]}
 0043bfbd        unimplemented  {fsubr st0, dword [ebp+0x70]}
 0043bfc0        int16_t top_93
-0043bfc0        if ((eax_89.b & 2) != 0)
+0043bfc0        if ((eax_92.b & 2) != 0)
 0043bfca        top_93 = top_82 - 2
 0043bfca        unimplemented  {fld st0, dword [0x497250]}
 0043bfc2        top_93 = top_82 - 2
 0043bfc2        unimplemented  {fld st0, dword [0x497220]}
 0043bfd2        float var_40_4 = 0f
-0043bfda        if ((eax_89.b & 1) != 0)
+0043bfda        if ((eax_92.b & 1) != 0)
 0043bfdc        var_40_4 = 0.200000003f
 0043bfe4        unimplemented  {fld st0, st1}
 0043bfe6        unimplemented  {fcomp st0, st1} f- unimplemented  {fcomp st0, st1}
@@ -555,14 +549,14 @@
 0043bff1        bool c3_27 = unimplemented  {fcomp st0, dword [esp+0x10]} f== temp56_1
 0043bff1        unimplemented  {fcomp st0, dword [esp+0x10]}
 0043bff1        top_82 = top_93 + 2
-0043bff5        eax_89 = (c0_27 ? 1 : 0) << 8 | (c2_27 ? 1 : 0) << 0xa | (c3_27 ? 1 : 0) << 0xe | (top_82 & 7) << 0xb
-0043bffa        if ((eax_89:1.b & 0x41) == 0)
-0043bffc        eax_89.b = player->attachment_exit_pending
-0043c004        if (eax_89.b == 0)
+0043bff5        eax_92 = (c0_27 ? 1 : 0) << 8 | (c2_27 ? 1 : 0) << 0xa | (c3_27 ? 1 : 0) << 0xe | (top_82 & 7) << 0xb
+0043bffa        if ((eax_92:1.b & 0x41) == 0)
+0043bffc        eax_92.b = player->attachment_exit_pending
+0043c004        if (eax_92.b == 0)
 0043c008        begin_post_follow_carryover(player)
-0043c011        struct SubgameRuntime* game_13 = player->game
-0043c01b        if (game_13->level_mode == 3)
-0043c01e        get_track_grid_cell_at_world_position(game_13, ebx_1)
+0043c011        struct SubgameRuntime* game_11 = player->game
+0043c01b        if (game_11->level_mode == 3)
+0043c01e        get_track_grid_cell_at_world_position(game_11, ebx_1)
 0043c038        if (((player->game->runtime_flags).w:1.b & 4) == 0 || (data_4b2f40 & 2) != 0)
 0043c03a        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043c03d        long double temp48_1 = fconvert.t(0.49000001f)
@@ -585,10 +579,10 @@
 0043c07a        bool c3_29 = unimplemented  {fcomp st0, dword [0x4975bc]} f== temp51_1
 0043c07a        unimplemented  {fcomp st0, dword [0x4975bc]}
 0043c07a        top_66 = top_82
-0043c080        int16_t eax_91 = (c0_29 ? 1 : 0) << 8 | (c2_29 ? 1 : 0) << 0xa | (c3_29 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
-0043c085        if ((eax_91:1.b & 1) != 0)
-0043c087        eax_91.b = player->resurrect_active.b
-0043c08f        if (eax_91.b == 0)
+0043c080        int16_t eax_94 = (c0_29 ? 1 : 0) << 8 | (c2_29 ? 1 : 0) << 0xa | (c3_29 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
+0043c085        if ((eax_94:1.b & 1) != 0)
+0043c087        eax_94.b = player->resurrect_active.b
+0043c08f        if (eax_94.b == 0)
 0043c093        initialize_subgoldy_death(player)
 0043bc98        unimplemented  {fld st0, dword [eax+0x38]}
 0043bc9b        unimplemented  {fld st0, st0}
@@ -608,8 +602,8 @@
 0043c09e        bool c2_30 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497234]}, temp29_1)
 0043c09e        bool c3_30 = unimplemented  {fcomp st0, dword [0x497234]} f== temp29_1
 0043c09e        unimplemented  {fcomp st0, dword [0x497234]}
-0043c0a4        int16_t eax_92 = (c0_30 ? 1 : 0) << 8 | (c2_30 ? 1 : 0) << 0xa | (c3_30 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
-0043c0a9        if ((eax_92:1.b & 0x40) == 0)
+0043c0a4        int16_t eax_95 = (c0_30 ? 1 : 0) << 8 | (c2_30 ? 1 : 0) << 0xa | (c3_30 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
+0043c0a9        if ((eax_95:1.b & 0x40) == 0)
 0043c0ab        unimplemented  {fld st0, dword [ebp+0x1e0]}
 0043c0b1        unimplemented  {fadd dword [ebp+0x1dc]}
 0043c0b7        player->surface_reaction_timer = fconvert.s(unimplemented  {fst dword [ebp+0x1dc], st0})
@@ -619,11 +613,11 @@
 0043c0bd        bool c2_31 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497220]}, temp31_1)
 0043c0bd        bool c3_31 = unimplemented  {fcomp st0, dword [0x497220]} f== temp31_1
 0043c0bd        unimplemented  {fcomp st0, dword [0x497220]}
-0043c0c3        eax_92 = (c0_31 ? 1 : 0) << 8 | (c2_31 ? 1 : 0) << 0xa | (c3_31 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
-0043c0c8        if ((eax_92:1.b & 0x41) == 0)
+0043c0c3        eax_95 = (c0_31 ? 1 : 0) << 8 | (c2_31 ? 1 : 0) << 0xa | (c3_31 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
+0043c0c8        if ((eax_95:1.b & 0x41) == 0)
 0043c0ca        player->surface_reaction_timer = 0f
-0043c0d4        eax_92.b = player->attachment_exit_pending
-0043c0dc        if (eax_92.b != 0)
+0043c0d4        eax_95.b = player->attachment_exit_pending
+0043c0dc        if (eax_95.b != 0)
 0043c35c        unimplemented  {fld st0, dword [eax+0x38]}
 0043c35f        unimplemented  {fld st0, st0}
 0043c361        unimplemented  {fmul st0, st1}
@@ -732,9 +726,9 @@
 0043c299        unimplemented  {fmul st0, dword [0x497270]}
 0043c29f        player->velocity.y = fconvert.s(unimplemented  {fstp dword [ebp+0x414], st0})
 0043c29f        unimplemented  {fstp dword [ebp+0x414], st0}
-0043c2a5        int16_t eax_102
-0043c2a5        eax_102.b = player->control_override_active
-0043c2ad        if (eax_102.b == 0)
+0043c2a5        int16_t eax_105
+0043c2a5        eax_105.b = player->control_override_active
+0043c2ad        if (eax_105.b == 0)
 0043c2af        unimplemented  {fld st0, dword [ebx]}
 0043c2b1        long double temp62_1 = fconvert.t(0f)
 0043c2b1        unimplemented  {fcomp st0, dword [0x497234]} f- temp62_1
@@ -874,10 +868,10 @@
 0043c446        position.x = x
 0043c44e        position.z = var_34_1
 0043c459        position.y = y_1
-0043c45d        struct TrackRowCell* eax_109
+0043c45d        struct TrackRowCell* eax_112
 0043c45d        int16_t x87control_2
-0043c45d        eax_109, x87control_2 = get_track_grid_cell_at_world_position(player->game, &position)
-0043c466        if (eax_109->tile_id != 0xe)
+0043c45d        eax_112, x87control_2 = get_track_grid_cell_at_world_position(player->game, &position)
+0043c466        if (eax_112->tile_id != 0xe)
 0043c510        player->barrier_hold_progress = 0f
 0043c46c        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043c46f        long double temp22_1 = fconvert.t(6.5f)
@@ -915,18 +909,18 @@
 0043c4e8        bool c2_42 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497220]}, temp28_1)
 0043c4e8        bool c3_42 = unimplemented  {fcomp st0, dword [0x497220]} f== temp28_1
 0043c4e8        unimplemented  {fcomp st0, dword [0x497220]}
-0043c4ee        int16_t eax_114 = (c0_42 ? 1 : 0) << 8 | (c2_42 ? 1 : 0) << 0xa | (c3_42 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
-0043c4f3        if ((eax_114:1.b & 0x41) == 0)
+0043c4ee        int16_t eax_117 = (c0_42 ? 1 : 0) << 8 | (c2_42 ? 1 : 0) << 0xa | (c3_42 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
+0043c4f3        if ((eax_117:1.b & 0x41) == 0)
 0043c4f5        player->barrier_hold_progress = 0f
-0043c4fb        eax_114.b = player->attachment_exit_pending
-0043c503        if (eax_114.b == 0)
+0043c4fb        eax_117.b = player->attachment_exit_pending
+0043c503        if (eax_117.b == 0)
 0043c507        begin_post_follow_carryover(player)
 0043c51c        if (player->lane_lean_state == 0)
 0043c532        if (get_track_grid_cell_at_world_position(player->game, ebx_1)->tile_id == 2)
 0043c5d0        label_43c5d0:
-0043c5d0        int16_t eax_116
-0043c5d0        eax_116.b = player->attachment_exit_pending
-0043c5d8        if (eax_116.b == 0)
+0043c5d0        int16_t eax_119
+0043c5d0        eax_119.b = player->attachment_exit_pending
+0043c5d8        if (eax_119.b == 0)
 0043c5de        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043c5e1        long double temp27_1 = fconvert.t(0.980000019f)
 0043c5e1        unimplemented  {fcomp st0, dword [0x49756c]} f- temp27_1
@@ -988,7 +982,7 @@
 0043c69e        unimplemented  {fcomp st0, dword [0x497220]}
 0043c6a9        if ((((c0_45 ? 1 : 0) << 8 | (c2_45 ? 1 : 0) << 0xa | (c3_45 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 0x41) == 0)
 0043c6ab        player->damage_retrigger_timer = 0f
-0043c6b1        struct SubgameRuntime* game_14 = player->game
+0043c6b1        struct SubgameRuntime* game_12 = player->game
 0043c6b7        unimplemented  {fild st0, dword [ecx+0x58]}
 0043c6ba        float var_40_6 = fconvert.s(unimplemented  {fstp dword [esp+0x10], st0})
 0043c6ba        unimplemented  {fstp dword [esp+0x10], st0}
@@ -1000,13 +994,13 @@
 0043c6c1        bool c3_46 = unimplemented  {fcomp st0, dword [esp+0x10]} f== temp24_1
 0043c6c1        unimplemented  {fcomp st0, dword [esp+0x10]}
 0043c6c1        int16_t top_142 = top_13
-0043c6c5        int16_t eax_118 = (c0_46 ? 1 : 0) << 8 | (c2_46 ? 1 : 0) << 0xa | (c3_46 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb
-0043c6ca        if ((eax_118:1.b & 1) != 0)
+0043c6c5        int16_t eax_121 = (c0_46 ? 1 : 0) << 8 | (c2_46 ? 1 : 0) << 0xa | (c3_46 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb
+0043c6ca        if ((eax_121:1.b & 1) != 0)
 0043ca46        label_43ca46:
-0043ca46        eax_118.b = player->boost_one_tick
-0043ca4e        if (eax_118.b == 0)
-0043ca50        eax_118.b = player->control_override_active
-0043ca58        if (eax_118.b == 0)
+0043ca46        eax_121.b = player->boost_one_tick
+0043ca4e        if (eax_121.b == 0)
+0043ca50        eax_121.b = player->control_override_active
+0043ca58        if (eax_121.b == 0)
 0043ca5a        unimplemented  {fld st0, dword [ecx+0x38]}
 0043ca5d        unimplemented  {fmul st0, dword [0x4975b0]}
 0043ca63        unimplemented  {fld st0, dword [ebp+0x418]}
@@ -1033,15 +1027,15 @@
 0043ca8e        unimplemented  {fld st0, dword [ebp+0x418]}
 0043ca94        player->velocity.z = fconvert.s(unimplemented  {fstp dword [ebp+0x418], st0})
 0043ca94        unimplemented  {fstp dword [ebp+0x418], st0}
-0043c6d0        eax_118.b = player->attachment_exit_pending
-0043c6d8        if (eax_118.b != 0)
+0043c6d0        eax_121.b = player->attachment_exit_pending
+0043c6d8        if (eax_121.b != 0)
 0043c6d8        goto label_43ca46
-0043c6de        eax_118.b = player->completion_handoff_active
-0043c6e6        if (eax_118.b == 0)
-0043c6f0        if (game_14->level_mode == 4)
+0043c6de        eax_121.b = player->completion_handoff_active
+0043c6e6        if (eax_121.b == 0)
+0043c6f0        if (game_12->level_mode == 4)
 0043c6f2        unimplemented  {fld st0, dword [ebp+0x70]}
 0043c6f5        unimplemented  {fsub st0, dword [esp+0x10]}
-0043c6f9        struct SubgameRuntime* game_24 = game_14
+0043c6f9        struct SubgameRuntime* game_22 = game_12
 0043c700        unimplemented  {fdiv st0, dword [ebp+0x418]}
 0043c706        unimplemented  {fsubr st0, dword [0x497220]}
 0043c70c        unimplemented  {fmul st0, dword [0x4972c8]}
@@ -1122,10 +1116,10 @@
 0043c81d        player->completion_handoff_cycle_progress = 0f
 0043c823        unimplemented  {fld st0, dword [ebp+0x444]}
 0043c829        unimplemented  {fadd dword [ebp+0x448]}
-0043c82f        struct SubgameRuntime* game_15 = player->game
+0043c82f        struct SubgameRuntime* game_13 = player->game
 0043c835        player->completion_handoff_timer = fconvert.s(unimplemented  {fstp dword [ebp+0x444], st0})
 0043c835        unimplemented  {fstp dword [ebp+0x444], st0}
-0043c83b        game_15->subgame_rebuild_selector = 2
+0043c83b        game_13->subgame_rebuild_selector = 2
 0043c845        unimplemented  {fld st0, dword [ebp+0x444]}
 0043c84b        long double temp43_1 = fconvert.t(2f)
 0043c84b        unimplemented  {fcomp st0, dword [0x4974a4]} f- temp43_1
@@ -1133,10 +1127,10 @@
 0043c84b        bool c2_52 = is_unordered.t(unimplemented  {fcomp st0, dword [0x4974a4]}, temp43_1)
 0043c84b        bool c3_52 = unimplemented  {fcomp st0, dword [0x4974a4]} f== temp43_1
 0043c84b        unimplemented  {fcomp st0, dword [0x4974a4]}
-0043c851        eax_118 = (c0_52 ? 1 : 0) << 8 | (c2_52 ? 1 : 0) << 0xa | (c3_52 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb
-0043c856        if ((eax_118:1.b & 0x41) == 0)
-0043c858        eax_118.b = player->completion_handoff_voice_gate
-0043c860        if (eax_118.b == 0)
+0043c851        eax_121 = (c0_52 ? 1 : 0) << 8 | (c2_52 ? 1 : 0) << 0xa | (c3_52 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb
+0043c856        if ((eax_121:1.b & 0x41) == 0)
+0043c858        eax_121.b = player->completion_handoff_voice_gate
+0043c860        if (eax_121.b == 0)
 0043c86d        player->completion_handoff_voice_gate = 1
 0043c874        play_voice_manager(0x751498, 8, 2, 0xffffffff)
 0043c879        unimplemented  {fld st0, dword [ebp+0x444]}
@@ -1147,12 +1141,12 @@
 0043c87f        bool c3_53 = unimplemented  {fcomp st0, dword [0x4974a4]} f== temp47_1
 0043c87f        unimplemented  {fcomp st0, dword [0x4974a4]}
 0043c88a        if ((((c0_53 ? 1 : 0) << 8 | (c2_53 ? 1 : 0) << 0xa | (c3_53 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb):1.b & 0x41) == 0)
-0043c88c        struct SubgameRuntime* game_6 = player->game
-0043c892        int32_t level_mode_1 = game_6->level_mode
+0043c88c        struct SubgameRuntime* game_5 = player->game
+0043c892        int32_t level_mode_1 = game_5->level_mode
 0043c89c        if (level_mode_1 == 0 || level_mode_1 == 1)
-0043c8b8        if (game_6->completion.gate_18 == 1 && (player->control_source->control_flags_a:1.b & 0x40) != 0)
+0043c8b8        if (game_5->completion.gate_18 == 1 && (player->control_source->control_flags_a:1.b & 0x40) != 0)
 0043c8ba        player->completion_handoff_timer = 5.0999999f
-0043c8c6        if (game_6->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED)
+0043c8c6        if (game_5->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED)
 0043c8c8        player->completion_handoff_timer = 5.0999999f
 0043c8ce        unimplemented  {fld st0, dword [ebp+0x444]}
 0043c8d4        long double temp50_1 = fconvert.t(5f)
@@ -1162,9 +1156,9 @@
 0043c8d4        bool c3_54 = unimplemented  {fcomp st0, dword [0x497288]} f== temp50_1
 0043c8d4        unimplemented  {fcomp st0, dword [0x497288]}
 0043c8df        if ((((c0_54 ? 1 : 0) << 8 | (c2_54 ? 1 : 0) << 0xa | (c3_54 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb):1.b & 0x41) == 0)
-0043c8e1        struct SubgameRuntime* game_16 = player->game
-0043c8e7        int32_t level_mode = game_16->level_mode
-0043c8f9        if ((level_mode == 0 || level_mode == 1) && game_16->completion.state != COMPLETION_STATE_CONTINUE_ACCEPTED)
+0043c8e1        struct SubgameRuntime* game_14 = player->game
+0043c8e7        int32_t level_mode = game_14->level_mode
+0043c8f9        if ((level_mode == 0 || level_mode == 1) && game_14->completion.state != COMPLETION_STATE_CONTINUE_ACCEPTED)
 0043c8fb        unimplemented  {fld st0, dword [ebp+0x444]}
 0043c901        unimplemented  {fsub st0, dword [ebp+0x448]}
 0043c907        player->completion_handoff_timer = fconvert.s(unimplemented  {fstp dword [ebp+0x444], st0})
@@ -1177,39 +1171,37 @@
 0043c913        bool c3_55 = unimplemented  {fcomp st0, dword [0x497288]} f== temp54_1
 0043c913        unimplemented  {fcomp st0, dword [0x497288]}
 0043c91e        if ((((c0_55 ? 1 : 0) << 8 | (c2_55 ? 1 : 0) << 0xa | (c3_55 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb):1.b & 0x41) == 0)
-0043c924        struct GameRoot* game_base_2 = g_game_base
-0043c92c        int32_t state = game_base_2->fade.state
+0043c924        struct GameRoot* game_base_1 = g_game_base
+0043c92c        int32_t state = game_base_1->fade.state
 0043c931        if (state == 0)
-0043c934        begin_frontend_fade_out(&game_base_2->fade, 0)
+0043c934        begin_frontend_fade_out(&game_base_1->fade, 0)
 0043c941        if (state == 4)
-0043c947        struct SubgameRuntime* game_7 = player->game
-0043c953        if (game_7->completion.state != COMPLETION_STATE_INACTIVE)
-0043c95b        flush_row_event_display(&game_7->completion)
-0043c960        struct SubgameRuntime* game_17 = player->game
-0043c969        struct SubgameRuntime* game_8
-0043c969        if (game_17->level_mode != 0)
-0043c9c8        game_8 = complete_subgame(game_17, 1)
-0043c97d        if (game_17->level_mode_arg == g_game_base->subgame.galaxy.record_count - 1)
-0043c981        int32_t eax_121 = complete_subgame(game_17, 1)
+0043c947        struct SubgameRuntime* game_6 = player->game
+0043c953        if (game_6->completion.state != COMPLETION_STATE_INACTIVE)
+0043c95b        flush_row_event_display(&game_6->completion)
+0043c960        struct SubgameRuntime* game_15 = player->game
+0043c969        if (game_15->level_mode != 0)
+0043c9c8        complete_subgame(game_15, 1)
+0043c97d        if (game_15->level_mode_arg == g_game_base->subgame.galaxy.record_count - 1)
+0043c981        complete_subgame(game_15, 1)
 0043c98c        g_game_base->players[0].saved_frontend_state = 0x1d
 0043c99c        g_game_base->players[0].frontend_state = 0x1a
-0043c9ad        return eax_121
-0043c9af        complete_subgame(game_17, 0)
-0043c9b4        game_8 = player->game
-0043c9ba        game_8->subgame_rebuild_selector = 1
-0043c9cd        struct SubgameRuntime* game_21 = player->game
-0043c9d7        if (game_21->level_mode == 7)
+0043c9ad        return
+0043c9af        complete_subgame(game_15, 0)
+0043c9ba        player->game->subgame_rebuild_selector = 1
+0043c9cd        struct SubgameRuntime* game_19 = player->game
+0043c9d7        if (game_19->level_mode == 7)
 0043c9df        g_game_base->players[0].frontend_state = 0x1a
 0043c9ef        g_game_base->players[0].saved_frontend_state = 2
-0043ca00        return game_8
-0043ca09        struct GameRoot* game_base_3 = g_game_base
-0043ca14        game_base_3->players[0].saved_frontend_state = game_base_3->players[0].frontend_state
-0043ca1a        struct GameRoot* game_base_5 = g_game_base
-0043ca20        if (game_21->selected_level_record_persistent == 0)
-0043ca34        game_base_5->players[0].frontend_state = 0x1b
-0043ca45        return game_base_3
-0043ca22        game_base_5->players[0].frontend_state = 0x1a
-0043ca33        return game_base_3
+0043ca00        return
+0043ca09        struct GameRoot* game_base_2 = g_game_base
+0043ca14        game_base_2->players[0].saved_frontend_state = game_base_2->players[0].frontend_state
+0043ca1a        struct GameRoot* game_base_4 = g_game_base
+0043ca20        if (game_19->selected_level_record_persistent == 0)
+0043ca34        game_base_4->players[0].frontend_state = 0x1b
+0043ca45        return
+0043ca22        game_base_4->players[0].frontend_state = 0x1a
+0043ca33        return
 0043ca9c        float x_1 = ebx_1->x
 0043caa5        float y = ebx_1->y
 0043caac        float z = ebx_1->z
@@ -1219,8 +1211,8 @@
 0043cacf        ebx_1->z = player->follow_state.output_position.z
 0043cad8        update_jetpack_gauge(&player->sub_hover)
 0043cae5        if (player->completion_handoff_active != 0)
-0043cae7        struct GameRoot* game_base_4 = g_game_base
-0043cafd        __builtin_memcpy(&game_base_4->players[0].completion_handoff_transform, &game_base_4->players[0].transform, 0x40)
+0043cae7        struct GameRoot* game_base_3 = g_game_base
+0043cafd        __builtin_memcpy(&game_base_3->players[0].completion_handoff_transform, &game_base_3->players[0].transform, 0x40)
 0043cb06        unimplemented  {fld st0, dword [eax+0x300]}
 0043cb0c        unimplemented  {fsub st0, dword [0x497220]}
 0043cb12        g_game_base->players[0].completion_handoff_transform.position.y = fconvert.s(unimplemented  {fstp dword [eax+0x300], st0})
@@ -1358,35 +1350,35 @@
 0043ccd8        update_nuke(&player->nuke)
 0043ccc5        player->nuke_effect_progress = 0f
 0043cccb        uninit_nuke(&player->nuke)
-0043cce1        struct SubgameRuntime* game_18 = player->game
-0043cceb        if (game_18->level_mode == 4)
-0043cd07        void* eax_136 = game_18->level_mode_arg * 0x1fac0 + game_18
-0043cd1e        if (*(eax_136 + 0x944150) == 1 && game_18->selected_level_record_active == 0)
-0043cd24        int32_t replay_update_cursor = game_18->replay_update_cursor
-0043cd2a        int32_t replay_update_cursor_1 = *(eax_136 + 0x9441bc)
+0043cce1        struct SubgameRuntime* game_16 = player->game
+0043cceb        if (game_16->level_mode == 4)
+0043cd07        void* eax_139 = game_16->level_mode_arg * 0x1fac0 + game_16
+0043cd1e        if (*(eax_139 + 0x944150) == 1 && game_16->selected_level_record_active == 0)
+0043cd24        int32_t replay_update_cursor = game_16->replay_update_cursor
+0043cd2a        int32_t replay_update_cursor_1 = *(eax_139 + 0x9441bc)
 0043cd32        if (replay_update_cursor s>= replay_update_cursor_1)
 0043cd34        replay_update_cursor = replay_update_cursor_1
 0043cd36        int32_t startup_track_index = player->startup_track_index
 0043cd3e        int32_t edi_8
 0043cd3e        int32_t replay_update_cursor_2
 0043cd3e        if (startup_track_index != 0)
-0043cd46        edi_8 = *(eax_136 + 0x944174) - startup_track_index
+0043cd46        edi_8 = *(eax_139 + 0x944174) - startup_track_index
 0043cd48        replay_update_cursor_2 = replay_update_cursor
 0043cd48        replay_update_cursor += edi_8
 0043cd4a        int16_t top_213
 0043cd4a        if (startup_track_index != 0 && replay_update_cursor_2 != neg.d(edi_8))
-0043cd6b        eax_136.w = *(eax_136 + replay_update_cursor * 6 + 0x9441c2)
+0043cd6b        eax_139.w = *(eax_139 + replay_update_cursor * 6 + 0x9441c2)
 0043cd74        top_213 = top_212 - 1
 0043cd74        unimplemented  {call 0x44c8b0}
 0043cd79        unimplemented  {fadd dword [0x643190]}
-0043cd4c        replay_update_cursor.w = *(eax_136 + 0x9441c2)
+0043cd4c        replay_update_cursor.w = *(eax_139 + 0x9441c2)
 0043cd59        top_213 = top_212 - 1
 0043cd59        unimplemented  {call 0x44c8b0}
 0043cd82        g_subgoldy_ghost_z = fconvert.s(unimplemented  {fstp dword [0x643190], st0})
 0043cd82        unimplemented  {fstp dword [0x643190], st0}
-0043cd8e        int16_t eax_138
-0043cd8e        eax_138.b = player->game->selected_level_record_active
-0043cd96        if (eax_138.b != 0)
+0043cd8e        int16_t eax_141
+0043cd8e        eax_141.b = player->game->selected_level_record_active
+0043cd96        if (eax_141.b != 0)
 0043cd9b        g_subgoldy_ghost_z = player->body.transform.position.z
 0043cda1        unimplemented  {fld st0, dword [ebp+0x70]}
 0043cda4        unimplemented  {fadd dword [0x497448]}
@@ -1405,8 +1397,8 @@
 0043cdbe        unimplemented  {fstp st0, st0}
 0043cdbe        top_212 = top_213 + 1
 0043cdc0        subgoldy_ghost_z_1 = g_subgoldy_ghost_z
-0043cdd1        game_18 = set_subgoldy_ghost_z(player, subgoldy_ghost_z_1)
-0043cde1        struct SubgameRuntime* game_25 = game_18
+0043cdd1        game_16 = set_subgoldy_ghost_z(player, subgoldy_ghost_z_1)
+0043cde1        struct SubgameRuntime* game_23 = game_16
 0043cde2        unimplemented  {fild st0, dword [edx+0x54]}
 0043cdeb        unimplemented  {fdivr st0, dword [ebp+0x70]}
 0043cdee        float var_54_50 = fconvert.s(unimplemented  {fstp dword [esp], st0})
@@ -1456,9 +1448,9 @@
 0043ce73        unimplemented  {fstp st0, st0}
 0043ce73        unimplemented  {fstp st0, st0}
 0043ce75        player->attachment_exit_pending = 0
-0043ce7c        int16_t eax_144
-0043ce7c        eax_144.b = player->attachment_exit_pending
-0043ce84        if (eax_144.b != 0)
+0043ce7c        int16_t eax_147
+0043ce7c        eax_147.b = player->attachment_exit_pending
+0043ce84        if (eax_147.b != 0)
 0043ce8a        unimplemented  {fld st0, dword [ebp+0x438]}
 0043ce90        unimplemented  {fadd dword [ebp+0x434]}
 0043ce96        player->attachment_exit_progress = fconvert.s(unimplemented  {fst dword [ebp+0x434], st0})
@@ -1468,15 +1460,15 @@
 0043ce9c        bool c2_65 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497200]}, temp61_1)
 0043ce9c        bool c3_65 = unimplemented  {fcomp st0, dword [0x497200]} f== temp61_1
 0043ce9c        unimplemented  {fcomp st0, dword [0x497200]}
-0043cea2        eax_144 = (c0_65 ? 1 : 0) << 8 | (c2_65 ? 1 : 0) << 0xa | (c3_65 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
-0043cea7        if ((eax_144:1.b & 0x41) == 0)
-0043cea9        eax_144.b = player->attachment_exit_gate_a
-0043ceb1        if (eax_144.b == 0)
+0043cea2        eax_147 = (c0_65 ? 1 : 0) << 8 | (c2_65 ? 1 : 0) << 0xa | (c3_65 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
+0043cea7        if ((eax_147:1.b & 0x41) == 0)
+0043cea9        eax_147.b = player->attachment_exit_gate_a
+0043ceb1        if (eax_147.b == 0)
 0043cebd        play_voice_manager(0x751498, 3, 0, 0xffffffff)
-0043cec2        int16_t eax_146
-0043cec2        eax_146.b = player->control_override_active
+0043cec2        int16_t eax_149
+0043cec2        eax_149.b = player->control_override_active
 0043cec8        player->attachment_exit_gate_a = 1
-0043ced1        if (eax_146.b == 0)
+0043ced1        if (eax_149.b == 0)
 0043ced3        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043ced6        long double temp68_1 = fconvert.t(-6f)
 0043ced6        unimplemented  {fcomp st0, dword [0x4975a8]} f- temp68_1
@@ -1494,10 +1486,10 @@
 0043cef7        bool c3_67 = unimplemented  {fcomp st0, dword [0x4975bc]} f== temp65_1
 0043cef7        unimplemented  {fcomp st0, dword [0x4975bc]}
 0043cef7        top_224 = top_224
-0043cefd        int16_t eax_147 = (c0_67 ? 1 : 0) << 8 | (c2_67 ? 1 : 0) << 0xa | (c3_67 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
-0043cf02        if ((eax_147:1.b & 1) != 0)
-0043cf04        eax_147.b = player->attachment_exit_gate_b
-0043cf0c        if (eax_147.b == 0)
+0043cefd        int16_t eax_150 = (c0_67 ? 1 : 0) << 8 | (c2_67 ? 1 : 0) << 0xa | (c3_67 ? 1 : 0) << 0xe | (top_224 & 7) << 0xb
+0043cf02        if ((eax_150:1.b & 1) != 0)
+0043cf04        eax_150.b = player->attachment_exit_gate_b
+0043cf0c        if (eax_150.b == 0)
 0043cf19        play_voice_manager(0x751498, 1, 2, 0xffffffff)
 0043cf1e        player->attachment_exit_gate_b = 1
 0043cf25        player->attachment_exit_gate_a = 1
@@ -1547,11 +1539,11 @@
 0043cfa3        bool c3_71 = unimplemented  {fcomp st0, dword [ebp+0x418]} f== temp67_1
 0043cfa3        unimplemented  {fcomp st0, dword [ebp+0x418]}
 0043cfa3        top_241 = top_224
-0043cfa9        int16_t eax_149 = (c0_71 ? 1 : 0) << 8 | (c2_71 ? 1 : 0) << 0xa | (c3_71 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
-0043cfae        if ((eax_149:1.b & 1) == 0)
+0043cfa9        int16_t eax_152 = (c0_71 ? 1 : 0) << 8 | (c2_71 ? 1 : 0) << 0xa | (c3_71 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
+0043cfae        if ((eax_152:1.b & 1) == 0)
 0043cffc        player->slow_commentary_timer = 0f
-0043cfb0        eax_149.b = player->attachment_exit_pending
-0043cfc1        if (eax_149.b != 0 || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
+0043cfb0        eax_152.b = player->attachment_exit_pending
+0043cfc1        if (eax_152.b != 0 || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
 0043cffc        player->slow_commentary_timer = 0f
 0043cfc3        unimplemented  {fld st0, dword [ebp+0x4360]}
 0043cfc9        unimplemented  {fadd dword [ebp+0x435c]}
@@ -1576,8 +1568,8 @@
 0043d05e        update_player_movement_flags(player)
 0043d06f        if (g_game_base->subgame.replay_update_cursor s< 0xa)
 0043d077        player->movement_fire_progress = player->movement_fire_progress_step
-0043d07d        struct SubgameRuntime* game_19 = player->game
-0043d0a6        if ((game_19->runtime_flags & &__dos_header) != 0 && player->completion_handoff_active == 0 && player->control_override_active == 0)
+0043d07d        struct SubgameRuntime* game_17 = player->game
+0043d0a6        if ((game_17->runtime_flags & &__dos_header) != 0 && player->completion_handoff_active == 0 && player->control_override_active == 0)
 0043d0ac        enum ClickStartState state_2 = player->click_start.state
 0043d0b9        if (state_2 == CLICK_START_STATE_INACTIVE || state_2 == CLICK_START_STATE_TEARDOWN)
 0043d0bf        unimplemented  {fld st0, dword [ebp+0x2730]}
@@ -1587,11 +1579,11 @@
 0043d0c5        bool c2_73 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497234]}, temp70_1)
 0043d0c5        bool c3_73 = unimplemented  {fcomp st0, dword [0x497234]} f== temp70_1
 0043d0c5        unimplemented  {fcomp st0, dword [0x497234]}
-0043d0cb        int16_t eax_152 = (c0_73 ? 1 : 0) << 8 | (c2_73 ? 1 : 0) << 0xa | (c3_73 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
-0043d0d0        if ((eax_152:1.b & 0x41) != 0)
-0043d100        eax_152.b = game_19->track_state_latch
-0043d108        if (eax_152.b != 0)
-0043d10e        uint8_t selected_level_record_active = game_19->selected_level_record_active
+0043d0cb        int16_t eax_155 = (c0_73 ? 1 : 0) << 8 | (c2_73 ? 1 : 0) << 0xa | (c3_73 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
+0043d0d0        if ((eax_155:1.b & 0x41) != 0)
+0043d100        eax_155.b = game_17->track_state_latch
+0043d108        if (eax_155.b != 0)
+0043d10e        uint8_t selected_level_record_active = game_17->selected_level_record_active
 0043d116        if (selected_level_record_active == 0)
 0043d138        label_43d138:
 0043d13f        if ((player->control_source->control_flags_a & 0x4000) != 0)
@@ -1601,7 +1593,7 @@
 0043d18b        label_43d18b:
 0043d18e        if (((player->control_source->control_flags_b).w:1.b & 0x40) != 0)
 0043d18e        goto label_43d198
-0043d12c        if ((game_19->selected_level_record->run_records[game_19->replay_update_cursor].flags & 1) != 0)
+0043d12c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags & 1) != 0)
 0043d143        label_43d143:
 0043d143        play_movement_state_sound(player)
 0043d14b        update_movement_flag_emitters(player, player)
@@ -1612,7 +1604,7 @@
 0043d130        if (selected_level_record_active == 0)
 0043d130        goto label_43d138
 0043d168        label_43d168:
-0043d17c        if ((game_19->selected_level_record->run_records[game_19->replay_update_cursor].flags & 2) != 0)
+0043d17c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags & 2) != 0)
 0043d198        label_43d198:
 0043d198        player->movement_fire_progress = player->movement_fire_progress_step
 0043d19e        play_movement_state_sound(player)
@@ -1631,17 +1623,17 @@
 0043d0ef        if ((((c0_74 ? 1 : 0) << 8 | (c2_74 ? 1 : 0) << 0xa | (c3_74 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb):1.b & 0x41) == 0)
 0043d0f5        player->movement_fire_progress = 0f
 0043d1b7        update_row_event_display(&player->game->completion)
-0043d1bc        struct SubgameRuntime* game_9 = player->game
-0043d1c9        game_9->current_high_score_record.replay_sample_count += 1
-0043d1cf        struct SubgameRuntime* game_10 = player->game
-0043d1dc        game_10->replay_update_cursor += 1
-0043d1e2        struct SubgameRuntime* game_11 = player->game
-0043d1f2        if (game_11->replay_update_cursor == 0x5208)
-0043d1fa        show_times_up_message(&game_11->times_up)
-0043d20b        return update_times_up(&player->game->times_up)
+0043d1bc        struct SubgameRuntime* game_7 = player->game
+0043d1c9        game_7->current_high_score_record.replay_sample_count += 1
+0043d1cf        struct SubgameRuntime* game_8 = player->game
+0043d1dc        game_8->replay_update_cursor += 1
+0043d1e2        struct SubgameRuntime* game_9 = player->game
+0043d1f2        if (game_9->replay_update_cursor == 0x5208)
+0043d1fa        show_times_up_message(&game_9->times_up)
+0043d20b        update_times_up(&player->game->times_up)
 0043b143        if (g_game_base->players[0].frontend_state != 9)
 0043b14f        update_damage_gauge(&player->damage_gauge)
 0043b15a        update_progress_bar(&player->progress_bar)
 0043b165        update_warning(&player->warning)
-0043b182        return update_row_event_display(&player->game->completion)
-0043d217        return game
+0043b176        update_row_event_display(&player->game->completion)
+0043d217        return

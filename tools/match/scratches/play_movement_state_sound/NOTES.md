@@ -37,3 +37,13 @@ identified.
 of the front-end `GamePlayer`. The attachment-exit volume therefore measures
 from that camera/player presentation position to the gameplay Goldy position.
 Naming the aggregate owner is codegen-neutral at the retained 89.13% baseline.
+
+## 2026-07-16 void helper ABI
+
+Both direct `update_subgoldy` callsites discard EAX. The two native returns
+either follow `play_sound_effect_scaled` or `play_sound_effect`, so the observed
+register value is merely the callee's incidental residue; the early no-sound
+path likewise promises no result. BN and IDA now preserve the source-authored
+`void __thiscall(Player*)` contract. The matching source already used that ABI
+and remains unchanged at 89.13%, 96/88 instructions, prefix 26/88, with all 19
+masked operands clean.

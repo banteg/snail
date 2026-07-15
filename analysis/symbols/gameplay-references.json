@@ -2084,7 +2084,7 @@
         "data_497300",
         "g_subgoldy_vtable"
       ],
-      "description": "Main SubGoldy/player callback table installed at subgame offset `0x3bb764`; first entry is `update_subgoldy`."
+      "description": "Main SubGoldy/player callback table installed at subgame offset `0x3bb764`; its first entry is the void `update_subgoldy` method invoked through the shared `BodAiDispatch` ABI."
     },
     {
       "address": "0x497304",

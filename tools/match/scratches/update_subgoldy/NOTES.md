@@ -581,3 +581,20 @@ loader directly, but its regenerated IDA listing proves the later gameplay
 lane retains the established player, subgame, and tip-manager owners. The
 matching source remains unchanged at 74.30%, 2,072/2,087 instructions, prefix
 12/2,087, with 290 clean operands and the same bounded jump-table mismatch.
+
+The void prototype also lets BN eliminate one transient `GameRoot*` name in
+the completion-copy block. Its health check now asserts the durable
+`players[0].transform` and `players[0].completion_handoff_transform` ownership
+paths without pinning an analyzer-generated local suffix.
+
+## 2026-07-16 void callback ABI
+
+`update_subgoldy` is slot zero of `g_subgoldy_callback_table`, installed on the
+embedded Player and invoked by `run_frame_update` through the shared void
+`BodAiDispatch` interface. Its seven native return sites leave unrelated call,
+global-load, or branch-register values in EAX; they do not form a result. The
+durable BN and IDA declarations now therefore match the authored
+`cRSubGoldy::AI()` contract as `void __thiscall(Player*)` instead of preserving
+an inferred integer return. This is a decompiler ABI correction only; the
+matching source remains unchanged at 74.30%, 2,072/2,087 instructions, prefix
+12/2,087, with 290 clean operands and the same bounded jump-table mismatch.

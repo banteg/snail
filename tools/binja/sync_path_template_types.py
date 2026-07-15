@@ -1007,6 +1007,14 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
     ),
     (
+        "update_subgoldy",
+        "void __thiscall update_subgoldy(Player* player)",
+    ),
+    (
+        "play_movement_state_sound",
+        "void __thiscall play_movement_state_sound(Player* player)",
+    ),
+    (
         "initialize_score_stats",
         "void __thiscall initialize_score_stats(Squidge* squidge)",
     ),
@@ -1138,7 +1146,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ("update_vapour", "void __thiscall update_vapour(Vapour* vapour)"),
     (
         "handle_subgoldy_collisions",
-        "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
+        "void __thiscall handle_subgoldy_collisions(Player* player)",
     ),
     (
         "initialize_subgoldy_resurrect",

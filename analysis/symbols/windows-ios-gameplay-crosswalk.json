@@ -1270,7 +1270,8 @@
       "windows_name": "update_subgoldy",
       "ios_symbol": "cRSubGoldy::AI()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Windows installs this method in the main SubGoldy callback table and run_frame_update invokes that slot through the shared void BodAiDispatch ABI. Its multiple returns preserve unrelated call or store registers rather than a coherent result, confirming the authored AI contract is void."
     },
     {
       "address": "0x43d230",
@@ -1395,7 +1396,8 @@
       "windows_name": "handle_subgoldy_collisions",
       "ios_symbol": "cRSubGoldy::Collision()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The sole Windows caller ignores EAX and the terminal register value is incidental to the last score-helper call, so the recovered source contract is void."
     },
     {
       "address": "0x446e30",

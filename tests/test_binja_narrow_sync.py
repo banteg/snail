@@ -968,6 +968,34 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
     assert "no-argument auto prototype" not in binja_source
 
 
+def test_subgoldy_replays_preserve_void_update_abis() -> None:
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+
+    declarations = (
+        "void __thiscall update_subgoldy(Player* player)",
+        "void __thiscall play_movement_state_sound(Player* player)",
+        "void __thiscall handle_subgoldy_collisions(Player* player)",
+    )
+    for declaration in declarations:
+        assert declaration in binja_source
+        assert f'"{declaration};"' in ida_source
+        assert f"{declaration};" in header
+
+    for stale_declaration in (
+        "int32_t __thiscall update_subgoldy(Player* player)",
+        "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
+    ):
+        assert stale_declaration not in binja_source
+        assert stale_declaration not in ida_source
+        assert stale_declaration not in header
+
+
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

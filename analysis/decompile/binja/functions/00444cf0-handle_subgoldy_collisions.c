@@ -247,43 +247,38 @@
 004455eb        if ((((st0_8 < temp15_1 ? 1 : 0) << 8 | (is_unordered.t(st0_8, temp15_1) ? 1 : 0) << 0xa | (st0_8 == temp15_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 004455f3        player->game->jetpack_pickup.state = TRACK_PICKUP_STATE_TEARDOWN_PENDING
 00445603        arm_jetpack_gauge(&player->sub_hover)
-00445829        void* x
 00445608        void* i_6 = nullptr
 00445829        while (i_6 s< 0x3f0)
 00445614        struct SubgameRuntime* game_9 = player->game
-00445621        x = i_6 + game_9
+00445621        void* eax_53 = i_6 + game_9
 00445627        if (*(&game_9->ring_effects.slots[0].state + i_6) == 1)
-00445639        vector_2.x = fconvert.s(fconvert.t(*(x + 0x35b7f4)) - fconvert.t(player->cached_camera_target_world.x))
-00445649        vector_2.y = fconvert.s(fconvert.t(*(x + 0x35b7f8)) - fconvert.t(player->cached_camera_target_world.y))
-00445653        long double x87_r7_96 = fconvert.t(*(x + 0x35b7fc)) - fconvert.t(player->cached_camera_target_world.z)
-00445659        x = vector_2.x
+00445639        vector_2.x = fconvert.s(fconvert.t(*(eax_53 + 0x35b7f4)) - fconvert.t(player->cached_camera_target_world.x))
+00445649        vector_2.y = fconvert.s(fconvert.t(*(eax_53 + 0x35b7f8)) - fconvert.t(player->cached_camera_target_world.y))
+00445653        long double x87_r7_96 = fconvert.t(*(eax_53 + 0x35b7fc)) - fconvert.t(player->cached_camera_target_world.z)
 00445661        struct Vec3 vector_4
-00445661        vector_4.x = x
+00445661        vector_4.x = vector_2.x
 00445665        vector_4.y = vector_2.y
 00445669        vector_2.z = fconvert.s(x87_r7_96)
 0044566d        long double temp14_1 = fconvert.t(1f)
 0044566d        x87_r7_96 - temp14_1
 00445677        vector_4.z = vector_2.z
-0044567e        x.w = (x87_r7_96 < temp14_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_96, temp14_1) ? 1 : 0) << 0xa | (x87_r7_96 == temp14_1 ? 1 : 0) << 0xe
-00445683        if ((x:1.b & 1) != 0)
-0044568d        long double st0_9
-0044568d        st0_9, x = normalize_vector(&vector_4)
+00445683        if ((((x87_r7_96 < temp14_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_96, temp14_1) ? 1 : 0) << 0xa | (x87_r7_96 == temp14_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
+0044568d        long double st0_9 = normalize_vector(&vector_4)
 00445692        long double temp18_1 = fconvert.t(0.980000019f)
 00445692        st0_9 - temp18_1
-00445698        x.w = (st0_9 < temp18_1 ? 1 : 0) << 8 | (is_unordered.t(st0_9, temp18_1) ? 1 : 0) << 0xa | (st0_9 == temp18_1 ? 1 : 0) << 0xe
-0044569d        if ((x:1.b & 1) != 0)
+0044569d        if ((((st0_9 < temp18_1 ? 1 : 0) << 8 | (is_unordered.t(st0_9, temp18_1) ? 1 : 0) << 0xa | (st0_9 == temp18_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 004456a9        *(&player->game->ring_effects.slots[0].state + i_6) = 2
 004456bc        if (player->completion_handoff_active == 0)
 004456be        struct SubgameRuntime* game_6 = player->game
-004456c4        int32_t eax_55 = *(&game_6->ring_effects.slots[0].kind + i_6)
-004456d2        if (eax_55 == 3 || eax_55 == 7)
+004456c4        int32_t eax_60 = *(&game_6->ring_effects.slots[0].kind + i_6)
+004456d2        if (eax_60 == 3 || eax_60 == 7)
 004456ec        player->velocity.z = -0.100000001f
 004456f2        play_sound_effect(0x2b)
 004456dd        player->velocity.z = fconvert.s(fconvert.t(game_6->subgame_rate) * fconvert.t(0.5f))
 004456f7        struct SubgameRuntime* game_7 = player->game
-004456fd        x = *(&game_7->ring_effects.slots[0].kind + i_6)
-00445710        int32_t eax_58
-00445710        if (x == 4 || x == 5)
+004456fd        int32_t eax_61 = *(&game_7->ring_effects.slots[0].kind + i_6)
+00445710        int32_t eax_64
+00445710        if (eax_61 == 4 || eax_61 == 5)
 004457ab        int32_t lives = player->lives
 004457b4        if (lives s< 0xa)
 004457c0        if ((game_7->runtime_flags.b & 0x10) != 0 && game_7->level_mode != 3)
@@ -294,31 +289,31 @@
 004457e5        player->movement_flag_selector = movement_flag_selector_1 + 1
 004457ed        if (movement_flag_selector_1 == 8)
 004457ef        player->movement_flag_selector = 7
-004457fb        eax_58 = player->movement_flag_selector - 1
-004457ff        if (eax_58 s> 6)
+004457fb        eax_64 = player->movement_flag_selector - 1
+004457ff        if (eax_64 s> 6)
 004457ff        goto label_445801
-0044580d        play_sound_effect(eax_58 + 1)
-00445818        x = add_subgoldy_score(player, 2, 0)
-00445719        if (x == 8)
+0044580d        play_sound_effect(eax_64 + 1)
+00445818        add_subgoldy_score(player, 2, 0)
+00445719        if (eax_61 == 8)
 0044571b        int32_t movement_flag_selector = player->movement_flag_selector
 00445724        if (movement_flag_selector s< 8)
 00445727        player->movement_flag_selector = movement_flag_selector + 1
 0044572f        if (movement_flag_selector == 8)
 00445731        player->movement_flag_selector = 7
-0044573d        eax_58 = player->movement_flag_selector - 1
-00445741        if (eax_58 s<= 6)
-0044580d        play_sound_effect(eax_58 + 1)
-00445818        x = add_subgoldy_score(player, 2, 0)
+0044573d        eax_64 = player->movement_flag_selector - 1
+00445741        if (eax_64 s<= 6)
+0044580d        play_sound_effect(eax_64 + 1)
+00445818        add_subgoldy_score(player, 2, 0)
 00445801        label_445801:
 0044580d        play_sound_effect(6 + 1)
-00445818        x = add_subgoldy_score(player, 2, 0)
-0044574f        if (x == 1)
+00445818        add_subgoldy_score(player, 2, 0)
+0044574f        if (eax_61 == 1)
 00445757        add_subgoldy_score(player, 2, 0)
-00445763        x = play_sound_effect(1)
-00445775        if (x == 2 || x == 6)
+00445763        play_sound_effect(1)
+00445775        if (eax_61 == 2 || eax_61 == 6)
 00445781        add_subgoldy_score(player, 2, 0)
 0044578d        play_sound_effect(0x2a)
 00445798        player->nuke_effect_progress = player->nuke_effect_progress_step
-004457a4        x = initialize_nuke(&player->nuke)
+004457a4        initialize_nuke(&player->nuke)
 0044581d        i_6 += 0x1f8
-00445836        return x
+00445836        return

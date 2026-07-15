@@ -154,8 +154,8 @@
         "g_game_base->players[0].frontend_state",
         "g_game_base->players[0].saved_frontend_state",
         "g_game_base->players[0].redispatch_requested",
-        "game_base_4->players[0].completion_handoff_transform",
-        "game_base_4->players[0].transform",
+        "players[0].completion_handoff_transform",
+        "players[0].transform",
         "g_game_base->players[0].completion_handoff_transform.position.y"
       ],
       "forbidden_substrings": [

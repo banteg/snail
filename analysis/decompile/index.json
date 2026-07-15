@@ -14,19 +14,19 @@
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
-  "strict": true,
+  "strict": false,
   "selected_functions": [
     {
-      "name": "update_movement_flag_emitters",
-      "address": "0x43a300"
+      "name": "play_movement_state_sound",
+      "address": "0x43afd0"
     },
     {
       "name": "update_subgoldy",
       "address": "0x43b120"
     },
     {
-      "name": "remove_subgame_bods",
-      "address": "0x440910"
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     }
   ],
   "health_check_count": 324,
