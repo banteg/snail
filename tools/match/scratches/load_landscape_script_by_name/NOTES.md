@@ -23,3 +23,12 @@ instructions, full prefix, and 63 clean masked operands.
 2026-07-14 canonical DirectX owner: the landscape mesh import now reloads the
 live `GameRoot* g_game` and calls its embedded `directx_loader` directly. The
 loader remains exact at 386/386 instructions with all 63 operands clean.
+
+## 2026-07-15 durable root-loader replay
+
+The tracked IDA database now derives that same receiver from the shared exact
+root graph: `DirectXLoader +0x48e00` spans `0x5e10` bytes and ends at
+`Backdrop +0x4ec10`. The refreshed listing therefore retains
+`&v23->directx_loader` without a raw `GameRoot +298496` cast. This is
+analysis-only; the matching source remains exact at 386/386 instructions with
+all 63 operands clean.

@@ -55,16 +55,13 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   high_score->selected_bank = selected_bank;
   high_score->selected_rank = selected_rank;
   high_score->entering_name = selected_rank != -1;
-  hide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  hide_star_field(&g_game_base->star_manager);
   hide_gameplay_scores(&g_game_base->subgame.scan_reset);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               (char *)&g_game_base->subgame.landscape_manager,
                                g_menu_background_script_path);
-  change_backdrop(
-    (int)&g_game_base->unknown_044100[43792],
-    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
-    0);
+  change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 25.0);
   capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);
   high_score->title_widget = allocate_border(&g_game_base->border_manager);
@@ -81,7 +78,7 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   {
     v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(high_score->title_widget, 0, aChallengeHighS, 23, 0.0, 64.0, v6, 2, 0.0);
-    *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] = &g_game_base->subgame.unknown_000044[8288972];
+    *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] = g_game_base->subgame.sub_high_score.survival_records;
     *(_DWORD *)((char *)&unk_6FFAE4 + (_DWORD)g_game_base) = 10;
 LABEL_8:
     v37 = 27.0;

@@ -23,15 +23,12 @@ int __thiscall initialize_galaxy(int this)
   tColour *v18; // [esp-Ch] [ebp-28h]
   Color4f color; // [esp+Ch] [ebp-10h] BYREF
 
-  hide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  hide_star_field(&g_game_base->star_manager);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               (char *)&g_game_base->subgame.landscape_manager,
                                aStarmapTxt_0);
-  change_backdrop(
-    (int)&g_game_base->unknown_044100[43792],
-    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
-    0);
+  change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
   capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);
   g_game_base->render_skip_count = 2;

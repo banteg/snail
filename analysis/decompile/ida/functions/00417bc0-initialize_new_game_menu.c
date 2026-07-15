@@ -14,15 +14,12 @@ void __thiscall initialize_new_game_menu(Intro *intro)
   tColour *v8; // eax
   Color4f color; // [esp+4h] [ebp-10h] BYREF
 
-  hide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  hide_star_field(&g_game_base->star_manager);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               (char *)&g_game_base->subgame.landscape_manager,
                                g_menu_background_script_path);
-  change_backdrop(
-    (int)&g_game_base->unknown_044100[43792],
-    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
-    0);
+  change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 25.0);
   g_game_base->render_skip_count = 2;
   intro->tutorial_button = allocate_border(&g_game_base->border_manager);

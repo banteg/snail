@@ -7,6 +7,7 @@ import idc
 
 
 GAME_ROOT_SIZE = 0x12E6FF4
+GAME_ROOT_CATALOG_OFFSET = 0x44100
 GAME_ROOT_FRONTEND_OFFSET = 0x4EC10
 GAME_ROOT_SUBGAME_OFFSET = 0x74618
 GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904
@@ -27,6 +28,16 @@ _FRONTEND_TYPE_SIZES = {
     "BodBase": 0x38,
     "Logo": 0x25218,
 }
+
+_CATALOG_LOADER_TYPE_SIZES = {
+    "RootBodCatalog": 0x4D00,
+    "DirectXLoader": 0x5E10,
+}
+
+_CANONICAL_CATALOG_LOADER = (
+    (0x44100, 0x4D00, "root_bod_catalog", "RootBodCatalog"),
+    (0x48E00, 0x5E10, "directx_loader", "DirectXLoader"),
+)
 
 _CANONICAL_FRONTEND = (
     (0x4EC10, 0x6CC, "backdrop", "Backdrop"),
@@ -238,7 +249,11 @@ def _compose_owner_graph(
 def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
     """Compose recovered root owners without replacing the proved prefix."""
 
-    type_sizes = {**_TAIL_TYPE_SIZES, **_FRONTEND_TYPE_SIZES}
+    type_sizes = {
+        **_TAIL_TYPE_SIZES,
+        **_FRONTEND_TYPE_SIZES,
+        **_CATALOG_LOADER_TYPE_SIZES,
+    }
     types = {name: _named_type(name) for name in ("GameRoot", *type_sizes)}
     missing_tail = [name for name in _TAIL_TYPE_SIZES if types[name] is None]
     if types["GameRoot"] is None or missing_tail:
@@ -286,7 +301,31 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
             }
 
     frontend_ready = not frontend_missing and not frontend_size_mismatches
-    if frontend_ready:
+
+    catalog_loader_missing = [
+        name for name in _CATALOG_LOADER_TYPE_SIZES if types[name] is None
+    ]
+    catalog_loader_size_mismatches = {}
+    for name, expected_size in _CATALOG_LOADER_TYPE_SIZES.items():
+        tif = types[name]
+        if tif is not None and tif.get_size() != expected_size:
+            catalog_loader_size_mismatches[name] = {
+                "observed": tif.get_size(),
+                "expected": expected_size,
+            }
+
+    catalog_loader_ready = (
+        not catalog_loader_missing and not catalog_loader_size_mismatches
+    )
+    if catalog_loader_ready and frontend_ready:
+        start = GAME_ROOT_CATALOG_OFFSET
+        expected = (
+            *_CANONICAL_CATALOG_LOADER,
+            *_CANONICAL_FRONTEND,
+            *_CANONICAL_TAIL,
+        )
+        owner_scope = "catalog_loader_frontend_and_tail"
+    elif frontend_ready:
         start = GAME_ROOT_FRONTEND_OFFSET
         expected = (*_CANONICAL_FRONTEND, *_CANONICAL_TAIL)
         owner_scope = "frontend_and_tail"
@@ -318,6 +357,11 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
             "status": "ready" if frontend_ready else "deferred",
             "missing": frontend_missing,
             "size_mismatches": frontend_size_mismatches,
+        },
+        "catalog_loader_types": {
+            "status": "ready" if catalog_loader_ready else "deferred",
+            "missing": catalog_loader_missing,
+            "size_mismatches": catalog_loader_size_mismatches,
         },
         "root_global": root_global,
     }

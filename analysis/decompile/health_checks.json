@@ -4972,6 +4972,67 @@
       ]
     },
     {
+      "name": "ida_game_initializer_catalog_loader_ownership",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_directx_loader(&game->directx_loader)",
+        "game->root_bod_catalog.pillars[0].object",
+        "game->root_bod_catalog.floor_corners.storage[0].object",
+        "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
+        "game->directx_loader.animation_bytes"
+      ],
+      "forbidden_substrings": [
+        "game->unknown_044100",
+        "(DirectXLoader *)&game->unknown_044100"
+      ]
+    },
+    {
+      "name": "ida_merge_track_tile_runs_root_catalog_owner",
+      "artifact": "analysis/decompile/ida/functions/00435180-merge_track_tile_runs.c",
+      "required_substrings": [
+        "g_game_base->root_bod_catalog.universe_hole.object",
+        "g_game_base->root_bod_catalog.warning_slices.storage",
+        "g_game_base->root_bod_catalog.pillars"
+      ],
+      "forbidden_substrings": [
+        "g_game_base->unknown_044100"
+      ]
+    },
+    {
+      "name": "ida_landscape_loader_directx_owner",
+      "artifact": "analysis/decompile/ida/functions/004182f0-load_landscape_script_by_name.c",
+      "required_substrings": [
+        "load_or_reuse_cached_x_mesh(",
+        "&v23->directx_loader"
+      ],
+      "forbidden_substrings": [
+        "v23 + 298496",
+        "unknown_044100"
+      ]
+    },
+    {
+      "name": "ida_activate_landscape_entry_directx_owner",
+      "artifact": "analysis/decompile/ida/functions/00418870-activate_landscape_entry.c",
+      "required_substrings": [
+        "g_game_base->directx_loader.cached_x_mesh_slots"
+      ],
+      "forbidden_substrings": [
+        "g_game_base->unknown_044100",
+        "g_game_base + 298496"
+      ]
+    },
+    {
+      "name": "ida_load_segment_definitions_directx_owner",
+      "artifact": "analysis/decompile/ida/functions/00448160-load_segment_definitions.c",
+      "required_substrings": [
+        "load_or_reuse_cached_x_mesh(&v36->directx_loader"
+      ],
+      "forbidden_substrings": [
+        "v36 + 298496",
+        "unknown_044100"
+      ]
+    },
+    {
       "name": "ida_render_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/00411040-render_backdrop.c",
       "required_substrings": [

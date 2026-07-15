@@ -79,14 +79,11 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   v2 = 0;
   cache_music_file(aMusicIntrotext, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               (char *)&g_game_base->subgame.landscape_manager,
                                aSpaceredTxt);
-  change_backdrop(
-    (int)&g_game_base->unknown_044100[43792],
-    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
-    0);
+  change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
-  unhide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  unhide_star_field(&g_game_base->star_manager);
   file_bytes = load_file_bytes(file_name, nullptr);
   logo->saved_render_flags = g_runtime_config.render_flags;
   qmemcpy(

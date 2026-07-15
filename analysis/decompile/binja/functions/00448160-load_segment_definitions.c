@@ -136,10 +136,10 @@
 004483f2        *ecx_6 = 0x2e
 004483f6        eax_15.b |= 2
 004483f8        *(esi_4 + 0x88c) = eax_15
-004483fe        char* game_base_1 = g_game_base
+004483fe        struct GameRoot* game_base_1 = g_game_base
 00448404        (*ecx_6)[1] = 0x78
 00448407        (*ecx_6)[2] = 0
-0044841d        *(esi_4 + 0x8a0) = load_or_reuse_cached_x_mesh(&game_base_1[0x48e00], &mesh_name)
+0044841d        *(esi_4 + 0x8a0) = load_or_reuse_cached_x_mesh(&game_base_1->directx_loader, &mesh_name)
 00448436        __return_addr = find_case_insensitive_substring("(", __return_addr)
 00448440        *(esi_4 + 0x8a4) = fconvert.s(parse_next_float32(&__return_addr))
 00448450        *(esi_4 + 0x8a8) = fconvert.s(parse_next_float32(&__return_addr))
@@ -182,7 +182,7 @@
 004485b0        __return_addr = __return_addr_6
 004485b4        i_5 = *__return_addr_6
 004485cc        *edx_16 = 0
-004485ce        int32_t eax_28 = find_segment_path_index_by_name(&g_game_base[0x1066f28], &name)
+004485ce        int32_t eax_28 = find_segment_path_index_by_name(&g_game_base->subgame.path_manager, &name)
 004485d6        *(esi_4 + 0x8bc) = eax_28
 004485dc        if (eax_28 != 0xffffffff)
 004485f7        int32_t eax_29 = *(esi_4 + 0x88c)

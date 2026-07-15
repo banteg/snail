@@ -364,7 +364,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v358; // eax
   TextureRef *v359; // eax
   Object *v360; // eax
-  uint8_t *v361; // eax
+  void **v361; // eax
   PathTemplateStripMesh **v362; // esi
   int j; // edi
   Object *v364; // eax
@@ -452,7 +452,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   }
   initialize_overlay((int)&game->overlay_0);
   memset(&g_directx_loader_scratch, 0, 0x15Cu);
-  initialize_directx_loader((DirectXLoader *)&game->unknown_044100[19712]);
+  initialize_directx_loader(&game->directx_loader);
   reset_landscape_manager(&game->subgame.landscape_manager);
   load_segment_definitions(&game->subgame.sm_tracks);
   load_landscape_script_by_name((char *)&game->subgame.landscape_manager, aStarmapTxt);
@@ -645,115 +645,163 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   while ( v24 < 8.0 );
   set_matrix_identity((TransformMatrix *)&v379[60]);
   v25 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1232], v25);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], mesh_path, *(Object **)&game->unknown_044100[1268], 1);
+  set_bod_object((BodBase *)game->root_bod_catalog.pillars, v25);
+  load_x_mesh(&game->directx_loader, mesh_path, (Object *)game->root_bod_catalog.pillars[0].object, 1);
   transform_48 = 0;
-  apply_bod_position((BodBase *)&game->unknown_044100[1232], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)game->root_bod_catalog.pillars, (TransformMatrix *)&v379[60]);
   v26 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1288], v26);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar2X, *(Object **)&game->unknown_044100[1324], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[1], v26);
+  load_x_mesh(&game->directx_loader, aPillar2X, (Object *)game->root_bod_catalog.pillars[1].object, 1);
   transform_48 = 1056964608;
-  apply_bod_position((BodBase *)&game->unknown_044100[1288], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[1], (TransformMatrix *)&v379[60]);
   v27 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1344], v27);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar3X, *(Object **)&game->unknown_044100[1380], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[2], v27);
+  load_x_mesh(&game->directx_loader, aPillar3X, (Object *)game->root_bod_catalog.pillars[2].object, 1);
   transform_48 = 1065353216;
-  apply_bod_position((BodBase *)&game->unknown_044100[1344], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[2], (TransformMatrix *)&v379[60]);
   v28 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1400], v28);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar4X, *(Object **)&game->unknown_044100[1436], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[3], v28);
+  load_x_mesh(&game->directx_loader, aPillar4X, (Object *)game->root_bod_catalog.pillars[3].object, 1);
   transform_48 = 1069547520;
-  apply_bod_position((BodBase *)&game->unknown_044100[1400], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[3], (TransformMatrix *)&v379[60]);
   v29 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1456], v29);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar5X, *(Object **)&game->unknown_044100[1492], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[4], v29);
+  load_x_mesh(&game->directx_loader, aPillar5X, (Object *)game->root_bod_catalog.pillars[4].object, 1);
   transform_48 = 0x40000000;
-  apply_bod_position((BodBase *)&game->unknown_044100[1456], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[4], (TransformMatrix *)&v379[60]);
   v30 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1512], v30);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar6X, *(Object **)&game->unknown_044100[1548], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[5], v30);
+  load_x_mesh(&game->directx_loader, aPillar6X, (Object *)game->root_bod_catalog.pillars[5].object, 1);
   transform_48 = 1075838976;
-  apply_bod_position((BodBase *)&game->unknown_044100[1512], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[5], (TransformMatrix *)&v379[60]);
   v31 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1568], v31);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar7X, *(Object **)&game->unknown_044100[1604], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[6], v31);
+  load_x_mesh(&game->directx_loader, aPillar7X, (Object *)game->root_bod_catalog.pillars[6].object, 1);
   transform_48 = 1077936128;
-  apply_bod_position((BodBase *)&game->unknown_044100[1568], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[6], (TransformMatrix *)&v379[60]);
   v32 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[1624], v32);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar8X, *(Object **)&game->unknown_044100[1660], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.pillars[7], v32);
+  load_x_mesh(&game->directx_loader, aPillar8X, (Object *)game->root_bod_catalog.pillars[7].object, 1);
   transform_48 = 1080033280;
-  apply_bod_position((BodBase *)&game->unknown_044100[1624], (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[7], (TransformMatrix *)&v379[60]);
   v33 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[3024], v33);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[3060], aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(-1, *(_DWORD *)&game->unknown_044100[3060]);
+  set_bod_object((BodBase *)game->root_bod_catalog.ramp_edges, v33);
+  initialize_textured_backdrop_quad(
+    (PathTemplateStripMesh *)game->root_bod_catalog.ramp_edges[0].object,
+    aObjectsUnivers,
+    0.0);
+  raise_backdrop_quad_edge_pair(-1, (int)game->root_bod_catalog.ramp_edges[0].object);
   v34 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[3080], v34);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[3116], aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(0, *(_DWORD *)&game->unknown_044100[3116]);
+  set_bod_object((BodBase *)&game->root_bod_catalog.ramp_edges[1], v34);
+  initialize_textured_backdrop_quad(
+    (PathTemplateStripMesh *)game->root_bod_catalog.ramp_edges[1].object,
+    aObjectsUnivers,
+    0.0);
+  raise_backdrop_quad_edge_pair(0, (int)game->root_bod_catalog.ramp_edges[1].object);
   v35 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[3136], v35);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[3172], aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(1, *(_DWORD *)&game->unknown_044100[3172]);
+  set_bod_object((BodBase *)&game->root_bod_catalog.ramp_edges[2], v35);
+  initialize_textured_backdrop_quad(
+    (PathTemplateStripMesh *)game->root_bod_catalog.ramp_edges[2].object,
+    aObjectsUnivers,
+    0.0);
+  raise_backdrop_quad_edge_pair(1, (int)game->root_bod_catalog.ramp_edges[2].object);
   v36 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[280], v36);
-  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)&game->unknown_044100[316], aObjectsWorld00);
+  set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners, v36);
+  initialize_backdrop_corner_quad(
+    0,
+    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[0].object,
+    aObjectsWorld00);
   v37 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[336], v37);
-  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)&game->unknown_044100[372], aObjectsWorld00);
+  set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[1], v37);
+  initialize_backdrop_corner_quad(
+    1,
+    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[1].object,
+    aObjectsWorld00);
   v38 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[448], v38);
-  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)&game->unknown_044100[484], aObjectsWorld00);
+  set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[3], v38);
+  initialize_backdrop_corner_quad(
+    2,
+    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[3].object,
+    aObjectsWorld00);
   v39 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[392], v39);
-  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)&game->unknown_044100[428], aObjectsWorld00);
+  set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[2], v39);
+  initialize_backdrop_corner_quad(
+    3,
+    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[2].object,
+    aObjectsWorld00);
   v40 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[504], v40);
-  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)&game->unknown_044100[540], aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners, v40);
+  initialize_backdrop_corner_quad(
+    0,
+    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[0].object,
+    aObjectsWorld00_0);
   v41 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[560], v41);
-  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)&game->unknown_044100[596], aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[1], v41);
+  initialize_backdrop_corner_quad(
+    1,
+    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[1].object,
+    aObjectsWorld00_0);
   v42 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[672], v42);
-  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)&game->unknown_044100[708], aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[3], v42);
+  initialize_backdrop_corner_quad(
+    2,
+    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[3].object,
+    aObjectsWorld00_0);
   v43 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[616], v43);
-  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)&game->unknown_044100[652], aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[2], v43);
+  initialize_backdrop_corner_quad(
+    3,
+    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[2].object,
+    aObjectsWorld00_0);
   v44 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[728], v44);
-  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)&game->unknown_044100[764], texture_a);
+  set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners, v44);
+  initialize_backdrop_corner_quad(
+    0,
+    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[0].object,
+    texture_a);
   v45 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[784], v45);
-  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)&game->unknown_044100[820], texture_a);
+  set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[1], v45);
+  initialize_backdrop_corner_quad(
+    1,
+    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[1].object,
+    texture_a);
   v46 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[896], v46);
-  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)&game->unknown_044100[932], texture_a);
+  set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[3], v46);
+  initialize_backdrop_corner_quad(
+    2,
+    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[3].object,
+    texture_a);
   v47 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[840], v47);
-  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)&game->unknown_044100[876], texture_a);
+  set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[2], v47);
+  initialize_backdrop_corner_quad(
+    3,
+    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[2].object,
+    texture_a);
   v48 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[952], v48);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aTrampX, *(Object **)&game->unknown_044100[988], 1);
-  *(_DWORD *)(*(_DWORD *)&game->unknown_044100[988] + 20) = 6;
-  v49 = *(_DWORD **)(*(_DWORD *)(*(_DWORD *)&game->unknown_044100[988] + 92) + 12);
+  set_bod_object((BodBase *)&game->root_bod_catalog.trampoline, v48);
+  load_x_mesh(&game->directx_loader, aTrampX, (Object *)game->root_bod_catalog.trampoline.object, 1);
+  *((_DWORD *)game->root_bod_catalog.trampoline.object + 5) = 6;
+  v49 = *(_DWORD **)(*((_DWORD *)game->root_bod_catalog.trampoline.object + 23) + 12);
   *v49 |= 0x400u;
   v50 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)game->unknown_044100, v50);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[36], aObjectsUnivers_0, 0.0);
-  *(_DWORD *)(*(_DWORD *)&game->unknown_044100[36] + 20) = 5;
-  v51 = *(int **)(*(_DWORD *)(*(_DWORD *)&game->unknown_044100[36] + 92) + 12);
+  set_bod_object((BodBase *)&game->root_bod_catalog, v50);
+  initialize_textured_backdrop_quad(
+    (PathTemplateStripMesh *)game->root_bod_catalog.universe_hole.object,
+    aObjectsUnivers_0,
+    0.0);
+  *((_DWORD *)game->root_bod_catalog.universe_hole.object + 5) = 5;
+  v51 = *(int **)(*((_DWORD *)game->root_bod_catalog.universe_hole.object + 23) + 12);
   v52 = *v51;
   BYTE1(v52) = BYTE1(*v51) | 4;
   *v51 = v52;
   v53 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[3192], v53);
-  load_object_definition(path, *(Object **)&game->unknown_044100[3228]);
+  set_bod_object((BodBase *)&game->root_bod_catalog.lazer_model, v53);
+  load_object_definition(path, (Object *)game->root_bod_catalog.lazer_model.object);
   p_object = &game->subgame.sub_lazers.slots[0].body.bod.object;
   *(_DWORD *)&v379[36] = 20;
   do
   {
-    set_bod_object((BodBase *)(p_object - 9), *(Object **)&game->unknown_044100[3228]);
+    set_bod_object((BodBase *)(p_object - 9), (Object *)game->root_bod_catalog.lazer_model.object);
     v55 = *p_object;
     *(_DWORD *)&v379[12] = 1060320051;
     *(_DWORD *)&v379[8] = 1065353216;
@@ -780,13 +828,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   }
   while ( !v60 );
   v62 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_044100[19656], v62);
-  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aSaltX, *(Object **)&game->unknown_044100[19692], 1);
+  set_bod_object((BodBase *)&game->root_bod_catalog.salt_model, v62);
+  load_x_mesh(&game->directx_loader, aSaltX, (Object *)game->root_bod_catalog.salt_model.object, 1);
   p_owner_game = &game->subgame.salt_hazards.slots[0].owner_game;
   *(_DWORD *)&v379[36] = 40;
   do
   {
-    set_bod_object((BodBase *)(p_owner_game - 34), *(Object **)&game->unknown_044100[19692]);
+    set_bod_object((BodBase *)(p_owner_game - 34), (Object *)game->root_bod_catalog.salt_model.object);
     *(_DWORD *)&v379[12] = 1063675494;
     *(_DWORD *)&v379[8] = 1065353216;
     *(_DWORD *)&v379[4] = 1065353216;
@@ -823,7 +871,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
       *(_DWORD *)&v379[12] = 1;
       *(_DWORD *)&v379[8] = v66;
     }
-    load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPostofficestop, *(Object **)&v379[8], *(int *)&v379[12]);
+    load_x_mesh(&game->directx_loader, aPostofficestop, *(Object **)&v379[8], *(int *)&v379[12]);
 LABEL_31:
     v68 = *(_DWORD **)&v379[36];
     *(_DWORD *)(*(_DWORD *)&v379[36] + 3987120) = 0;
@@ -2601,7 +2649,7 @@ LABEL_31:
   debug_report_stub();
   v240 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_43284A + 2], v240);
-  case_insensitive_substring = find_case_insensitive_substring(aTest, *(char **)&game->unknown_044100[19712]);
+  case_insensitive_substring = find_case_insensitive_substring(aTest, game->directx_loader.animation_bytes);
   if ( case_insensitive_substring )
   {
     v242 = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
@@ -2627,77 +2675,61 @@ LABEL_31:
   {
     rstrcpy_checked_ascii(ArgList, aTurboBase000X);
   }
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    ArgList,
-    *(Object **)((char *)&loc_432870 + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)((char *)&loc_432870 + (_DWORD)game));
   v248 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4326FF + 1], v248);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    ArgList,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432720 + 4]);
+  load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)&game->unknown_000000[(_DWORD)&loc_432720 + 4]);
   v249 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4328C8 + 4], v249);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    mesh_name,
-    *(Object **)((char *)&loc_4328F0 + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, mesh_name, *(Object **)((char *)&loc_4328F0 + (_DWORD)game));
   v250 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_43294C + (_DWORD)game), v250);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aTurboBobalong0,
-    *(Object **)((char *)&loc_432970 + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, aTurboBobalong0, *(Object **)((char *)&loc_432970 + (_DWORD)game));
   v251 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_4329CC + (_DWORD)game), v251);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboLookbackl,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_4329EE + 2]);
   v252 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432A4A + 2], v252);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboLookbackr,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432A6D + 3]);
   v253 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432ACB + 1], v253);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboFall000X,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432AEF + 1]);
   v254 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432B49 + 3], v254);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboDamaged00,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432B6E + 2]);
   v255 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432BCA + 2], v255);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboIntoshell,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432BEF + 1]);
   v256 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432C48 + 4], v256);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboSkidstop0,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432C6D + 3]);
   v257 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432CCA + 2], v257);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aTurboTalk000X,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432CE9 + 7]);
   v258 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433D46 + 6], v258);
-  load_x_mesh(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aTurbohotspotsX,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433D6F + 1],
-    2);
+  load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)&game->unknown_000000[(_DWORD)&loc_433D6F + 1], 2);
   build_snail_hotspots((int)&game->unknown_000000[(_DWORD)&loc_4326FF + 1]);
   *(_DWORD *)&v379[36] = 10;
   *(_DWORD *)&v379[32] = (char *)&loc_432870 + (_DWORD)game;
@@ -2729,21 +2761,15 @@ LABEL_31:
   v265 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4338DE + 2], v265);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aJetpackBase000,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433902 + 2]);
   v266 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433A2C + 4], v266);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aJetpackBase000,
-    *(Object **)((char *)&loc_433A54 + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, aJetpackBase000, *(Object **)((char *)&loc_433A54 + (_DWORD)game));
   v267 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v267);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aJetpackDraw000,
-    *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, aJetpackDraw000, *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
   *(_DWORD *)&v379[36] = 2;
   *(_DWORD *)&v379[32] = (char *)&loc_433A54 + (_DWORD)game;
   do
@@ -2774,37 +2800,34 @@ LABEL_31:
   v274 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&byte_432D4C[(_DWORD)game], v274);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlasterleftBas,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432D6D + 3]);
   v275 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432E9A + 2], v275);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlasterleftBas,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_432EBF + 1]);
   v276 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432F1A + 2], v276);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aBlasterleftDra,
-    *(Object **)((char *)&loc_432F40 + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, aBlasterleftDra, *(Object **)((char *)&loc_432F40 + (_DWORD)game));
   v277 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432F9B + 1], v277);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlasterleftFir,
     *(Object **)((char *)find_registered_sound_sample_id_by_name + (_DWORD)game));
   v278 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_43301C + (_DWORD)game), v278);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aLaserleftBase0,
     *(Object **)((char *)get_authored_view_height + (_DWORD)game));
   v279 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_43309C + (_DWORD)game), v279);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aLaserleftDraw0,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_4330BF + 1]);
   *(_DWORD *)&v379[36] = 5;
@@ -2836,38 +2859,32 @@ LABEL_31:
   *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 136) = 0;
   v286 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433127 + 1], v286);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aBlasterrightBa,
-    *(Object **)((char *)&loc_43314C + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, aBlasterrightBa, *(Object **)((char *)&loc_43314C + (_DWORD)game));
   v287 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433275 + 3], v287);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlasterrightBa,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_43329B + 1]);
   v288 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4332F7 + 1], v288);
-  load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aBlasterrightDr,
-    *(Object **)((char *)&loc_43331C + (_DWORD)game));
+  load_x_animation_clip(&game->directx_loader, aBlasterrightDr, *(Object **)((char *)&loc_43331C + (_DWORD)game));
   v289 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433378 + (_DWORD)game), v289);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlasterrightFi,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_43339A + 2]);
   v290 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_4333F8 + (_DWORD)game), v290);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aLaserrightBase,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433417 + 5]);
   v291 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433475 + 3], v291);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aLaserrightDraw,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433499 + 3]);
   *(_DWORD *)&v379[36] = 5;
@@ -2900,37 +2917,37 @@ LABEL_31:
   v298 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433504 + (_DWORD)game), v298);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlastertopBase,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433523 + 5]);
   v299 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433654 + (_DWORD)game), v299);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlastertopBase,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433677 + 1]);
   v300 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4336D0 + 4], v300);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlastertopDraw,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_4336F6 + 2]);
   v301 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433751 + 3], v301);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aBlastertopFire,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433777 + 1]);
   v302 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4337D3 + 1], v302);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aRocketlauncher,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_4337F6 + 2]);
   v303 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433853 + 1], v303);
   load_x_animation_clip(
-    (DirectXLoader *)&game->unknown_044100[19712],
+    &game->directx_loader,
     aRocketlauncher_0,
     *(Object **)&game->unknown_000000[(_DWORD)&loc_433877 + 1]);
   *(_DWORD *)&v379[36] = 5;
@@ -2981,19 +2998,11 @@ LABEL_31:
                                                                 *(int16_t *)&v379[12]);
   v313 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433F94 + (_DWORD)game), v313);
-  load_x_mesh(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aInvincibleBase,
-    *(Object **)((char *)&loc_433FB8 + (_DWORD)game),
-    1);
+  load_x_mesh(&game->directx_loader, aInvincibleBase, *(Object **)((char *)&loc_433FB8 + (_DWORD)game), 1);
   *(_DWORD *)(*(_DWORD *)((char *)&loc_433FB8 + (_DWORD)game) + 16) &= ~0x100000u;
   v314 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4302E3 + 1], v314);
-  load_x_mesh(
-    (DirectXLoader *)&game->unknown_044100[19712],
-    aRocketBase000X,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_430306 + 2],
-    1);
+  load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)&game->unknown_000000[(_DWORD)&loc_430306 + 2], 1);
   v315 = &game->unknown_000000[(_DWORD)&loc_43026E + 2];
   *(_DWORD *)&v379[36] = 12;
   do
@@ -3176,7 +3185,7 @@ LABEL_31:
   game->subgame.barrier.bod.object->blend_mode = 7;
   initialize_track_render_cache_manager(&game->subgame.segment_cache);
   *(_DWORD *)&v379[36] = 0;
-  v361 = &game->unknown_044100[3284];
+  v361 = &game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object;
   do
   {
     *(_DWORD *)&v379[56] = 0;
@@ -3204,7 +3213,7 @@ LABEL_31:
         ++*(_DWORD *)&v379[32];
       }
       while ( *(int *)&v379[32] < 3 );
-      v361 = (uint8_t *)v362;
+      v361 = (void **)v362;
       ++*(_DWORD *)&v379[56];
     }
     while ( *(int *)&v379[56] < 4 );

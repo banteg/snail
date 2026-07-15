@@ -121,7 +121,7 @@ int32_t __thiscall update_subgoldy(Player *player)
   int valuea; // [esp+4h] [ebp-54h]
   float valueb; // [esp+4h] [ebp-54h]
   float valuec; // [esp+4h] [ebp-54h]
-  int valued; // [esp+4h] [ebp-54h]
+  float valued; // [esp+4h] [ebp-54h]
   float source_celld; // [esp+18h] [ebp-40h]
   TrackRowCell *source_cell; // [esp+18h] [ebp-40h]
   float source_cella; // [esp+18h] [ebp-40h]
@@ -888,8 +888,8 @@ LABEL_287:
               }
             }
           }
-          *(float *)&valued = player->body.transform.position.z / (double)player->game->runtime_row_count;
-          set_backdrop_progress_fraction(&g_game_base->unknown_044100[43792], valued);
+          valued = player->body.transform.position.z / (double)player->game->runtime_row_count;
+          set_backdrop_progress_fraction(&g_game_base->backdrop, valued);
           v94 = (double)player->game->completion_row_start - 30.0;
           source_cellc = player->body.transform.position.z - 8.0;
           if ( v94 >= source_cellc )

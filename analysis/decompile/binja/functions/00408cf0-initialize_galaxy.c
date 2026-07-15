@@ -3,17 +3,9 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_galaxy @ 0x408cf0 */
 
-00408cf8        struct tColour color_2
-00408cf8        int32_t entry_ebx
-00408cf8        color_2.r = entry_ebx
-00408cf9        int32_t esi
-00408cf9        int32_t var_18 = esi
-00408cfc        int32_t edi
-00408cfc        int32_t var_1c = edi
 00408d03        hide_star_field(&g_game_base->star_manager)
 00408d15        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
-00408d1a        g_game_base
-00408d2e        int32_t eax = load_landscape_script_by_name("StarMap.txt")
+00408d2e        int32_t eax = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "StarMap.txt")
 00408d3a        struct GameRoot* game_base_1 = g_game_base
 00408d4d        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax * 0x124 + 0x106c7bc], 0)
 00408d5e        set_border_justify_centre(&g_game_base->border_manager, 0f)
@@ -35,6 +27,7 @@
 00408dd6        galaxy->route_mode = 2
 00408de2        galaxy->selected_index = g_runtime_config.landscape_backdrop_variant_selector
 00408e13        galaxy->route_title_widget = allocate_border(&g_game_base->border_manager)
+00408e19        struct tColour color_2
 00408e19        struct tColour* color_3 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
 00408e3b        initialize_frontend_widget(galaxy->route_title_widget, &__dos_header, "Intergalactic Delivery Route", 0x14, 15f, 15f, color_3, 0, 0f)
 00408e46        galaxy->route_title_widget->font_scale = 0.829999983f
@@ -47,15 +40,15 @@
 00408ed8        struct tColour* color
 00408ed8        if (galaxy->route_mode != 1)
 00408f05        color = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00408f06        int32_t var_30_1 = 0x43d20000
-00408f0b        int32_t var_34_1 = 0x41a00000
-00408f10        int32_t var_38_1 = 0x14
+00408f06        int32_t var_2c_1 = 0x43d20000
+00408f0b        int32_t var_30_1 = 0x41a00000
+00408f10        int32_t var_34_1 = 0x14
 00408f12        text = "Back"
 00408f17        widget_flags = 0x60000014
 00408ee3        color = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00408ee4        int32_t var_30 = 0x43d20000
-00408ee9        int32_t var_34 = 0x41a00000
-00408eee        int32_t var_38 = 0x14
+00408ee4        int32_t var_2c = 0x43d20000
+00408ee9        int32_t var_30 = 0x41a00000
+00408eee        int32_t var_34 = 0x14
 00408ef0        text = "Exit"
 00408ef5        widget_flags = 0x20000014
 00408f22        initialize_frontend_widget(galaxy->exit_or_back_widget, widget_flags, text, 0x14, 20f, 420f, color, 0, 0f)
@@ -120,14 +113,14 @@
 004091c5        struct tColour* color_1
 004091c5        if (galaxy->level_progress_base->level_mode != 0)
 004091ed        color_1 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-004091ee        int32_t var_30_3 = 0x43dc0000
-004091f3        int32_t var_34_3 = 0x43960000
-004091f8        int32_t var_38_3 = 0x14
+004091ee        int32_t var_2c_3 = 0x43dc0000
+004091f3        int32_t var_30_3 = 0x43960000
+004091f8        int32_t var_34_3 = 0x14
 004091fa        text_1 = "Play"
 004091d0        color_1 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-004091d1        int32_t var_30_2 = 0x43dc0000
-004091d6        int32_t var_34_2 = 0x43960000
-004091db        int32_t var_38_2 = 0x14
+004091d1        int32_t var_2c_2 = 0x43dc0000
+004091d6        int32_t var_30_2 = 0x43960000
+004091db        int32_t var_34_2 = 0x14
 004091dd        text_1 = "Deliver!"
 0040920a        initialize_frontend_widget(galaxy->play_or_deliver_widget, 0x60000014, text_1, 0x14, 300f, 440f, color_1, 2, 100f)
 00409215        hide_border_init(galaxy->play_or_deliver_widget)

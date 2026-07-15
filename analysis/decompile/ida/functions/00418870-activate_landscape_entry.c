@@ -9,13 +9,13 @@ uint8_t *__thiscall activate_landscape_entry(char *this, int a2)
   int v4; // ebp
   char *v5; // edi
   char *v6; // esi
-  uint8_t *v7; // eax
+  BodBase *p_landscape_slice_list_head; // eax
   int v8; // eax
   int v9; // eax
   int v10; // eax
   _DWORD *v11; // edi
   uint8_t *result; // eax
-  char v13; // [esp+Ch] [ebp-8h]
+  uint8_t v13; // [esp+Ch] [ebp-8h]
   int v14; // [esp+10h] [ebp-4h]
 
   level_mode = g_game_base->subgame.level_mode;
@@ -44,16 +44,16 @@ uint8_t *__thiscall activate_landscape_entry(char *this, int a2)
     }
     else
     {
-      v7 = &g_game_base->subgame.unknown_000044[3496960];
+      p_landscape_slice_list_head = &g_game_base->subgame.landscape_slice_list_head;
       if ( (*(_DWORD *)v6 & 0x200) != 0 )
       {
         report_errorf(aListAddafter);
       }
       else
       {
-        *((_DWORD *)v6 + 1) = v7;
-        *((_DWORD *)v6 + 2) = *((_DWORD *)v7 + 3);
-        *((_DWORD *)v7 + 3) = v6 - 4;
+        *((_DWORD *)v6 + 1) = p_landscape_slice_list_head;
+        *((_DWORD *)v6 + 2) = p_landscape_slice_list_head->bod.list_next;
+        p_landscape_slice_list_head->bod.list_next = (struct BodNode *)(v6 - 4);
         v8 = *((_DWORD *)v6 + 2);
         if ( v8 )
           *(_DWORD *)(v8 + 8) = v6 - 4;
@@ -65,7 +65,7 @@ uint8_t *__thiscall activate_landscape_entry(char *this, int a2)
       v10 = *(_DWORD *)v6;
       LOBYTE(v10) = *(_DWORD *)v6 | 0x20;
       *(_DWORD *)v6 = v10;
-      set_bod_object((BodBase *)(v6 - 4), *(Object **)&g_game_base->unknown_044100[188 * *((_DWORD *)v5 + 428) + 19756]);
+      set_bod_object((BodBase *)(v6 - 4), g_game_base->directx_loader.cached_x_mesh_slots[*((_DWORD *)v5 + 428)].object);
       *((float *)v6 + 33) = *(float *)(*((_DWORD *)v6 + 8) + 184) - *(float *)(*((_DWORD *)v6 + 8) + 172);
       set_matrix_identity((TransformMatrix *)(v6 + 52));
       *((float *)v6 + 27) = ((double)v14 - 0.5) * *((float *)v6 + 33);
@@ -76,7 +76,7 @@ uint8_t *__thiscall activate_landscape_entry(char *this, int a2)
     v14 = v4;
   }
   while ( v4 < 10 );
-  change_backdrop((int)&g_game_base->unknown_044100[43792], (int)(v5 + 1444), v13);
+  change_backdrop(&g_game_base->backdrop, (LandscapeScriptRecord *)(v5 + 1444), v13);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
   v11 = v5 + 1716;
   result = &g_game_base->unknown_000000[20];

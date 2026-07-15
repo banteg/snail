@@ -4,9 +4,16 @@ import re
 import sys
 
 import ida_funcs
+import ida_kernwin
 import ida_name
 import ida_pro
 import idc
+
+SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
+if str(SCRIPT_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_ROOT))
+
+from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 TRUSTED_DECLARATIONS = [
@@ -379,6 +386,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    game_root_owner_graph = sync_game_root_owner_graph(require=False)
+    if game_root_owner_graph.get("status") == "failed":
+        failed.append({"selector": "GameRoot", "owner_graph": game_root_owner_graph})
+
     print(
         json.dumps(
             {
@@ -389,6 +400,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
+                "game_root_owner_graph": game_root_owner_graph,
                 "missing": missing,
                 "failed": failed,
             },
@@ -409,7 +421,12 @@ def main() -> None:
         return
 
     header_path = pathlib.Path(argv[1]).resolve()
-    ida_pro.qexit(_sync_types(header_path))
+    exit_code = _sync_types(header_path)
+    try:
+        idc.save_database(idc.get_idb_path(), 0)
+    except Exception as exc:  # pragma: no cover - IDA runtime dependent
+        ida_kernwin.msg(f"warning: failed to save database explicitly: {exc}\n")
+    ida_pro.qexit(exit_code)
 
 
 if __name__ == "__main__":

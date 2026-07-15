@@ -4,8 +4,7 @@
 /* function: initialize_help_screen @ 0x416800 */
 
 00416812        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
-00416817        g_game_base
-0041682a        int32_t eax_1 = load_landscape_script_by_name("Help.txt")
+0041682a        int32_t eax_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Help.txt")
 00416837        struct GameRoot* game_base_1 = g_game_base
 0041684a        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_1 * 0x124 + 0x106c7bc], 0)
 0041685d        set_border_justify_centre(&g_game_base->border_manager, 0f)

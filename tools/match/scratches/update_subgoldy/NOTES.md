@@ -571,3 +571,13 @@ The same regeneration exposed an HLIL-only false owner for the pre-biased
 `segment_slots[event_id - 1]` message addresses. Three replayed register views
 now keep those accesses as byte arithmetic instead of pretending they belong
 to `SegmentCache` or `Tutorial`; no overlapping convenience field was added.
+
+## 2026-07-15 complete root composer preservation
+
+Subgame-runtime replays now preserve the exact catalog, loader, front-end, and
+tail components in the same guarded `GameRoot` graph instead of shrinking the
+database back to a partial view. This function does not consume the catalog or
+loader directly, but its regenerated IDA listing proves the later gameplay
+lane retains the established player, subgame, and tip-manager owners. The
+matching source remains unchanged at 74.30%, 2,072/2,087 instructions, prefix
+12/2,087, with 290 clean operands and the same bounded jump-table mismatch.

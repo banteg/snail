@@ -134,3 +134,12 @@ run scanner, not evidence for a separate container.
 
 This analysis-only correction leaves the honest matcher result at 67.50%,
 284/276 instructions, with all 12 operands clean.
+
+## 2026-07-15 root catalog owner replay
+
+The IDA listing now reaches the universe-hole, warning-slice, and pillar
+objects through the exact `RootBodCatalog` embedded at `GameRoot +0x44100`.
+That `0x4d00`-byte extent ends exactly where the independently recovered
+`DirectXLoader` begins, so these names describe real root ownership rather
+than a broad pointer overlay. The scratch source is unchanged; focused output
+remains 67.50%, 284/276 instructions, with all 12 operands clean.

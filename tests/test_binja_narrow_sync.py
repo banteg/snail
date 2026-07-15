@@ -85,7 +85,7 @@ def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     assert 'struct_name="GameRoot"' in high_score_sync
 
 
-def test_ida_replays_compose_the_complete_game_root_frontend_and_tail() -> None:
+def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() -> None:
     owner_sync = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
     path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
@@ -106,6 +106,11 @@ def test_ida_replays_compose_the_complete_game_root_frontend_and_tail() -> None:
 
     assert '"SubgameRuntime": 0x1272838' in owner_sync
     for owner in (
+        '(0x44100, 0x4D00, "root_bod_catalog", "RootBodCatalog")',
+        '(0x48E00, 0x5E10, "directx_loader", "DirectXLoader")',
+    ):
+        assert owner in owner_sync
+    for owner in (
         '(0x4EC10, 0x6CC, "backdrop", "Backdrop")',
         '(0x4F2DC, 0x48, "intro", "Intro")',
         '(0x4F324, 0x18, "main_menu", "MainMenu")',
@@ -123,6 +128,7 @@ def test_ida_replays_compose_the_complete_game_root_frontend_and_tail() -> None:
     assert '"root_global": root_global' in owner_sync
     assert "root.del_udm" in owner_sync
     assert "root.add_udm" in owner_sync
+    assert 'owner_scope = "catalog_loader_frontend_and_tail"' in owner_sync
     assert 'owner_scope = "frontend_and_tail"' in owner_sync
     assert 'owner_scope = "tail_only"' in owner_sync
     assert '"owner_span_overlaps_proved_member"' in owner_sync
@@ -143,7 +149,7 @@ def test_ida_replays_compose_the_complete_game_root_frontend_and_tail() -> None:
     for header in frame_headers:
         assert "uint8_t unknown_12727d8[0x1272838 - 0x12727d8];" in header
         assert "uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];" in header
-        assert "unknown_12e6df0" not in header
+    assert "unknown_12e6df0" not in header
 
     bn_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -191,6 +197,28 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     assert "void __thiscall render_backdrop(Backdrop* backdrop);" in backdrop_apply
     assert "int32_t __thiscall update_backdrop(Backdrop* backdrop);" in backdrop_apply
     assert 'analysis/headers/bn_backdrop_types.h' in backdrop_sync
+
+
+def test_ida_catalog_and_loader_lanes_replay_the_shared_root_graph() -> None:
+    catalog_apply = (IDA_DIR / "apply_root_bod_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+    catalog_sync = (IDA_DIR / "sync_root_bod_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+    object_apply = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for source in (catalog_apply, object_apply):
+        assert "from game_root_owner import sync_game_root_owner_graph" in source
+        assert "sync_game_root_owner_graph(require=False)" in source
+        assert '"game_root_owner_graph": game_root_owner_graph' in source
+
+    assert '"RootBodCatalogEntry": 0x38' in catalog_apply
+    assert '"RootTrackFringeBodCatalog": 0x3F00' in catalog_apply
+    assert '"RootBodCatalog": 0x4D00' in catalog_apply
+    assert 'analysis/headers/bn_root_bod_catalog_types.h' in catalog_sync
 
 
 def test_parse_struct_layout_size() -> None:

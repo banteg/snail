@@ -74,3 +74,12 @@ All five owner/consumer listings remain byte-identical:
 - activator: `613ba51711ebb72a5edce6f185f9bb72c835a3fd95c02686784fa704efd04be2`
 - active-entry clear: `a663ed2ee953e6f01b4857d201b800bc443ea2d205c28751ee62c5fecbe956f0`
 - runtime constructor: `755c2d4b3862bccde9a1fae74b792b0500699dda1c378c9f673ef0c27b829bba`
+
+## 2026-07-15 durable DirectX loader owner
+
+The IDA root graph now carries the exact `DirectXLoader +0x48e00` owner into
+this consumer, so the selected mesh comes from
+`directx_loader.cached_x_mesh_slots` rather than root-relative arithmetic.
+Its `0x5e10`-byte extent terminates exactly at `Backdrop +0x4ec10`. This
+analysis-only replay leaves the matching source and its honest 99.19%,
+123/123-instruction, 20-clean-operand frontier unchanged.

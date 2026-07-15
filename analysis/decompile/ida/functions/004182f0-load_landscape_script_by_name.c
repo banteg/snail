@@ -24,16 +24,16 @@ int __thiscall load_landscape_script_by_name(char *this, char *ArgList)
   char *v20; // eax
   char v21; // dl
   char *v22; // ecx
-  char *v23; // eax
+  GameRoot *v23; // eax
   _BYTE *v24; // ecx
   char *v25; // eax
-  char *v26; // [esp+10h] [ebp-708h] BYREF
+  char *cursor; // [esp+10h] [ebp-708h] BYREF
   int v27; // [esp+14h] [ebp-704h]
   char v28[128]; // [esp+18h] [ebp-700h] BYREF
   char v29[128]; // [esp+98h] [ebp-680h] BYREF
   char Buffer[512]; // [esp+118h] [ebp-600h] BYREF
   char v31[512]; // [esp+318h] [ebp-400h] BYREF
-  char v32[512]; // [esp+518h] [ebp-200h] BYREF
+  char mesh_name[512]; // [esp+518h] [ebp-200h] BYREF
 
   sprintf(Buffer, "Backgrounds/%s", ArgList);
   v3 = 0;
@@ -45,11 +45,11 @@ LABEL_5:
     {
       rstrcpy_checked_ascii(this + 292 * *((_DWORD *)this + 360) + 1448, ArgList);
       case_insensitive_substring = find_case_insensitive_substring(aId, file_bytes);
-      v26 = case_insensitive_substring;
+      cursor = case_insensitive_substring;
       if ( case_insensitive_substring )
       {
-        v26 = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
-        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = parse_next_signed_int(&v26);
+        cursor = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
+        *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = parse_next_signed_int(&cursor);
       }
       else
       {
@@ -57,33 +57,33 @@ LABEL_5:
         *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 361) = 0;
       }
       v8 = find_case_insensitive_substring(aFog, file_bytes);
-      v26 = v8;
+      cursor = v8;
       if ( v8 )
       {
-        v26 = find_case_insensitive_substring(asc_4A1644, v8);
-        v27 = parse_next_signed_int(&v26);
+        cursor = find_case_insensitive_substring(asc_4A1644, v8);
+        v27 = parse_next_signed_int(&cursor);
         *((float *)this + 73 * *((_DWORD *)this + 360) + 429) = (double)v27 * 0.0039215689;
-        v27 = parse_next_signed_int(&v26);
+        v27 = parse_next_signed_int(&cursor);
         *((float *)this + 73 * *((_DWORD *)this + 360) + 430) = (double)v27 * 0.0039215689;
-        v27 = parse_next_signed_int(&v26);
+        v27 = parse_next_signed_int(&cursor);
         *((float *)this + 73 * *((_DWORD *)this + 360) + 431) = (double)v27 * 0.0039215689;
       }
       else
       {
         report_errorf("Landscape. Cannot find Fog: %s", Buffer);
-        set_color_black((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 429);
+        set_color_black((tColour *)(this + 292 * *((_DWORD *)this + 360) + 1716));
       }
       v9 = find_case_insensitive_substring(aPicture, file_bytes);
-      v26 = v9;
+      cursor = v9;
       if ( v9 )
       {
         v10 = find_case_insensitive_substring(asc_4A1644, v9) + 1;
-        v26 = v10;
+        cursor = v10;
         v11 = v31;
         for ( i = *v10; *v10 != 46; i = *v10 )
         {
           *v11++ = i;
-          v26 = ++v10;
+          cursor = ++v10;
         }
         v13 = *((_DWORD *)this + 360);
         *v11 = 0;
@@ -133,18 +133,18 @@ LABEL_5:
           register_sprite_texture(this + 292 * v15 + 1581, *((_DWORD *)this + 73 * v15 + 394), 1024);
           *(this + 292 * *((_DWORD *)this + 360) + 1580) = 0;
         }
-        sub_449C00();
+        debug_report_stub();
       }
       else
       {
         report_errorf("Landscape. Cannot find Picture: in %s", Buffer);
       }
       v19 = find_case_insensitive_substring(aLandscape, file_bytes);
-      v26 = v19;
+      cursor = v19;
       if ( v19 )
       {
         v20 = find_case_insensitive_substring(asc_4A1644, v19) + 1;
-        v26 = v20;
+        cursor = v20;
         v21 = *v20;
         if ( *v20 <= 32 )
         {
@@ -152,23 +152,25 @@ LABEL_5:
         }
         else
         {
-          v22 = v32;
+          v22 = mesh_name;
           if ( v21 != 46 )
           {
             do
             {
               *v22++ = v21;
-              v26 = ++v20;
+              cursor = ++v20;
               v21 = *v20;
             }
             while ( *v20 != 46 );
           }
-          v23 = (char *)MEMORY[0x4DF904];
+          v23 = g_game_base;
           *v22 = 46;
           v24 = v22 + 1;
           *v24 = 120;
           v24[1] = 0;
-          *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 428) = load_or_reuse_cached_x_mesh(v23 + 298496, v32);
+          *((_DWORD *)this + 73 * *((_DWORD *)this + 360) + 428) = load_or_reuse_cached_x_mesh(
+                                                                     &v23->directx_loader,
+                                                                     mesh_name);
         }
       }
       else
@@ -176,18 +178,18 @@ LABEL_5:
         report_errorf("Landscape. Cannot find Landscape: in %s", Buffer);
       }
       v25 = find_case_insensitive_substring(aDistort, file_bytes);
-      v26 = v25;
+      cursor = v25;
       if ( v25 )
       {
-        v26 = find_case_insensitive_substring(asc_4A1644, v25) + 1;
-        *((float *)this + 73 * *((_DWORD *)this + 360) + 433) = parse_next_float32(&v26);
+        cursor = find_case_insensitive_substring(asc_4A1644, v25) + 1;
+        *((float *)this + 73 * *((_DWORD *)this + 360) + 433) = parse_next_float32(&cursor);
       }
       else
       {
         report_errorf("Landscape. Cannot find Distort: in %s", Buffer);
       }
       ++*((_DWORD *)this + 360);
-      sub_449C00();
+      debug_report_stub();
       return *((_DWORD *)this + 360) - 1;
     }
     else
@@ -199,7 +201,7 @@ LABEL_5:
   else
   {
     v4 = this + 1448;
-    while ( !sub_44E6C0(v4, ArgList) )
+    while ( !strings_equal_case_insensitive_path(v4, ArgList) )
     {
       ++v3;
       v4 += 292;
@@ -209,4 +211,3 @@ LABEL_5:
     return v3;
   }
 }
-

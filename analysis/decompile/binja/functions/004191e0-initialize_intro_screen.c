@@ -5,8 +5,7 @@
 
 004191ea        int32_t i_1 = 0
 004191f9        cache_music_file("music/introtext.ogg", 0, &g_blank_text)
-004191fe        g_game_base
-00419211        int32_t eax_1 = load_landscape_script_by_name("SpaceRed.txt")
+00419211        int32_t eax_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceRed.txt")
 0041921d        struct GameRoot* game_base_1 = g_game_base
 00419230        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_1 * 0x124 + 0x106c7bc], 0)
 00419242        set_border_justify_centre(&g_game_base->border_manager, 0f)

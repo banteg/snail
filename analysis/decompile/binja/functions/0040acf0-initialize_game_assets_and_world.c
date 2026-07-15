@@ -103,9 +103,9 @@
 0040ae8e        initialize_directx_loader(&game->directx_loader)
 0040ae9b        reset_landscape_manager(&game->subgame.landscape_manager)
 0040aea6        load_segment_definitions(&game->subgame.sm_tracks)
-0040aeb2        load_landscape_script_by_name("Starmap.txt")
-0040aebe        load_landscape_script_by_name("Splash.txt")
-0040aeca        load_landscape_script_by_name("Help.txt")
+0040aeb2        load_landscape_script_by_name(&game->subgame.landscape_manager, "Starmap.txt")
+0040aebe        load_landscape_script_by_name(&game->subgame.landscape_manager, "Splash.txt")
+0040aeca        load_landscape_script_by_name(&game->subgame.landscape_manager, "Help.txt")
 0040aed5        game->subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector
 0040aee1        bind_subgame_owner(&game->subgame.gui)
 0040aeec        bind_subgame_owner(&game->subgame.thanks_screen)
@@ -116,8 +116,7 @@
 0040af26        initialize_voice_manager(0x751498)
 0040af31        int16_t x87control = apply_audio_config_volumes(&game->options)
 0040af3c        load_level_definitions(&game->subgame.sm_tracks)
-0040af41        g_game_base
-0040af52        load_landscape_script_by_name("Menubg.txt")
+0040af52        load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Menubg.txt")
 0040af62        load_builtin_segment_definitions(&game->subgame.level_definition_scratch, &data_4a63d0)
 0040af72        game->render_camera_slots[1].sort_key = 1
 0040af7f        game->render_camera_slots[1].flags = 0x2000001

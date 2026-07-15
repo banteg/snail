@@ -5,8 +5,7 @@
 
 00433fe1        hide_star_field(&g_game_base->star_manager)
 00433ff2        cache_music_file("music/introtext.ogg", 0, &g_blank_text)
-00433ff7        g_game_base
-0043400b        int32_t eax = load_landscape_script_by_name("Splash.txt")
+0043400b        int32_t eax = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Splash.txt")
 00434018        struct GameRoot* game_base_1 = g_game_base
 0043402b        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax * 0x124 + 0x106c7bc], 0)
 0043403d        set_border_justify_centre(&g_game_base->border_manager, 0f)

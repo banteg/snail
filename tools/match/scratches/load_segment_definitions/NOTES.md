@@ -147,3 +147,13 @@ model `Velocity=` deliberately share `0x08`; the enum preserves that overload
 instead of fakematching two independent bits. Focused output is byte-identical
 at 62.24%, 573/571 instructions, prefix 5/571, 80 clean operands, and the same
 five shifted call/string mismatches.
+
+## 2026-07-15 durable DirectX loader owner
+
+The IDA consumer now receives the independently bounded
+`DirectXLoader +0x48e00` member from the shared root composer, preserving
+`load_or_reuse_cached_x_mesh(&v36->directx_loader, ...)` across later narrow
+replays. Its exact `0x5e10` bytes meet `Backdrop +0x4ec10` with no invented
+padding. This analysis-only change leaves the focused result at 62.24%,
+573/571 instructions, prefix 5/571, 80 clean operands, and the same five
+honest mismatches.

@@ -139,6 +139,9 @@ intentional.
 - `uv run python tools/binja/sync_overlay_types.py` (after the presentation/path-template lane)
 - `bn_root_bod_catalog_types.h`
 - `uv run python tools/binja/sync_root_bod_catalog_types.py`
+- `uv run python tools/ida/sync_root_bod_catalog_types.py`
+  - Width-gates the constructor-proven 352-entry, 0x4d00-byte catalog and
+    composes it with the adjacent 0x5e10-byte `DirectXLoader` owner in IDA.
 - `bn_subgame_hazard_pool_types.h`
 - `uv run python tools/binja/sync_subgame_hazard_pool_types.py`
 - `bn_subgame_pool_types.h`
@@ -261,15 +264,18 @@ That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database
 without pretending to solve global type sync.
 
-The IDA frame, front-end, path-template, and subgame-runtime replays share
+The IDA frame, object-render, root-catalog, front-end, path-template, and
+subgame-runtime replays share
 `tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
-component types are present, it composes the contiguous `Backdrop +0x4ec10`,
+component types are present, it composes the contiguous
+`RootBodCatalog +0x44100`, `DirectXLoader +0x48e00`, `Backdrop +0x4ec10`,
 `Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
 and `Logo` block through `+0x74618`, followed by the complete
 `SubgameRuntime` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
-the exact `0x12e6ff4` root. Bootstrap databases missing a front-end type retain
-the prior tail-only composition until the relevant narrow replay supplies it.
+the exact `0x12e6ff4` root. Bootstrap databases missing the catalog/loader types
+retain the front-end-plus-tail composition; databases also missing a front-end
+type retain tail-only until the relevant narrow replay supplies it.
 The helper refuses to replace a proved overlapping member, immediately
 repairs the sparse frame compatibility view after imports, and reapplies the
 `g_game_base` pointer because IDA retains the earlier pointed-to type snapshot

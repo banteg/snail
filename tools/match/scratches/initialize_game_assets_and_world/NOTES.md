@@ -817,3 +817,17 @@ type is available.
 
 This ownership-only improvement leaves the focused native frontier at 80.50%
 (5,392/5,411 instructions; 1,550 clean and 101 mismatched operands).
+
+## 2026-07-15 catalog and loader root composition
+
+The guarded IDA root replay now composes the constructor-proven
+`RootBodCatalog +0x44100` (exactly `0x4d00` bytes) and
+`DirectXLoader +0x48e00` (exactly `0x5e10` bytes) immediately before
+`Backdrop +0x4ec10`. The initializer consequently exposes the catalog's real
+corner, slice, pillar, fringe, and universe-hole owners together with the
+loader's cached-mesh and animation storage. There is no invented gap or
+overlapping convenience view between these independently bounded owners.
+
+This is an analysis-only replay: the matching source is unchanged and the
+focused frontier remains 80.50% (5,392/5,411 instructions; 1,550 clean and
+101 mismatched operands).
