@@ -1,21 +1,13 @@
 // log_startup_timestamp @ 0x406d30 (cdecl)
 
-struct TimeBuffer
-{
-    int time;
-    unsigned short millitm;
-    short timezone;
-    short dstflag;
-};
-
-void _ftime();
-char* ctime();
+#include <sys/timeb.h>
+#include <time.h>
 
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 int log_startup_timestamp()
 {
-    struct TimeBuffer time_buffer;
+    struct _timeb time_buffer;
     char* time_text;
 
     _ftime(&time_buffer);
