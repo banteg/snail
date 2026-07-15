@@ -9,6 +9,10 @@ Focused match: 100%, 56/56 instructions, with ten clean masked operands.
 
 This scratch compiles as C (`/TC`). C-mode MSVC 6.5 keeps the `_getcwd`
 arguments live across the failure `printf` argument setup, coalescing cleanup
-into the native `add esp, 0x14`. The source keeps C/C++ compatible opaque
-`File` declarations and uses a top-of-function `File* file` local for C89
-declaration ordering.
+into the native `add esp, 0x14`.
+
+2026-07-15 CRT ownership: the scratch now gets `FILE`, the stream calls,
+`printf`, and `getcwd` from VC6's authentic `<stdio.h>` and `<direct.h>` headers.
+The top-of-function `FILE*` local retains C89 ordering, and removing the opaque
+`File` plus five hand-written declarations preserves the exact 56/56 object and
+all ten masked operands.

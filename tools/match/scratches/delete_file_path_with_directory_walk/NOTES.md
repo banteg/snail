@@ -18,3 +18,8 @@ target: 84 insns, candidate: 84 insns
 prefix: 84/84 target insns
 masked operands: 14 ok, 0 unresolved, 0 mismatch
 ```
+
+2026-07-15 CRT ownership: VC6's `<stdio.h>` and `<direct.h>` now own the
+`FILE*`, `fopen`/`fclose`/`remove`, and directory calls. The exact 84/84 object
+and 14 clean masked operands survive removal of the opaque `File` and six local
+CRT declarations.

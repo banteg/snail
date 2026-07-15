@@ -1,26 +1,15 @@
 // load_file_bytes_into_optional_buffer @ 0x4051d0 (cdecl)
 
-typedef struct File File;
+#include <direct.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-unsigned int __cdecl fread(void* buffer, unsigned int element_size, unsigned int element_count, File* file);
-void* __cdecl malloc(unsigned int size);
-char* __cdecl getcwd(char* buffer, int size);
-#ifdef __cplusplus
-}
-#endif
-
-int printf(char* format, ...);
-int get_stream_length_preserve_position(File* file);
+int get_stream_length_preserve_position(FILE* file);
 
 char* __cdecl load_file_bytes_into_optional_buffer(char* file_name, char* buffer, int* out_size)
 {
     char current_directory[512];
-    File* file;
+    FILE* file;
     int byte_count;
     char* bytes;
 

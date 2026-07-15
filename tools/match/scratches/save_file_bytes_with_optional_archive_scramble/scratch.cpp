@@ -1,25 +1,14 @@
 // save_file_bytes_with_optional_archive_scramble @ 0x4052a0 (cdecl)
 
-typedef struct File File;
+#include <direct.h>
+#include <stdio.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-unsigned int __cdecl fwrite(void* buffer, unsigned int element_size, unsigned int element_count, File* file);
-char* __cdecl getcwd(char* buffer, int size);
-#ifdef __cplusplus
-}
-#endif
-
-int printf(char* format, ...);
 void scramble_archive_bytes_in_place(char* bytes, int size);
 
 int __cdecl save_file_bytes_with_optional_archive_scramble(char* file_name, void* bytes, int byte_count, char should_scramble)
 {
     char current_directory[512];
-    File* file;
+    FILE* file;
 
     if (should_scramble != 0) {
         scramble_archive_bytes_in_place((char*)bytes, byte_count);

@@ -1,18 +1,7 @@
 // write_file_bytes @ 0x431650 (cdecl)
 
-typedef struct File File;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-unsigned int __cdecl fwrite(void* buffer, unsigned int element_size, unsigned int element_count, File* file);
-char* __cdecl getcwd(char* buffer, int size);
-int __cdecl chdir(char* path);
-#ifdef __cplusplus
-}
-#endif
+#include <direct.h>
+#include <stdio.h>
 
 int report_messagef(char* format, ...);
 int set_current_directory_with_drive_fallback(char* path);
@@ -25,7 +14,7 @@ int __cdecl write_file_bytes(char* path, void* bytes, int byte_count)
     char* cursor;
     int index;
     char c;
-    File* file;
+    FILE* file;
 
     getcwd(original_directory, 512);
     cursor = path;

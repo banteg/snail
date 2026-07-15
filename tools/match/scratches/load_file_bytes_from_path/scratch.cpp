@@ -1,26 +1,15 @@
 // load_file_bytes_from_path @ 0x42f490 (cdecl)
 
-typedef struct File File;
+#include <direct.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-unsigned int __cdecl fread(void* buffer, unsigned int element_size, unsigned int element_count, File* file);
-void* __cdecl malloc(unsigned int size);
-char* __cdecl getcwd(char* buffer, int size);
-#ifdef __cplusplus
-}
-#endif
-
-int printf(char* format, ...);
-int get_stream_length_preserve_position(File* file);
+int get_stream_length_preserve_position(FILE* file);
 
 char* __cdecl load_file_bytes_from_path(char* file_name, char* buffer, int* out_size, int byte_count)
 {
     char current_directory[512];
-    File* file;
+    FILE* file;
     char* bytes;
 
     file = fopen(file_name, "rb");

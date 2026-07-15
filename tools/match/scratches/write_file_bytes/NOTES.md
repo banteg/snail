@@ -22,3 +22,8 @@ masked operands: 10 ok, 0 unresolved, 0 mismatch
 iOS `RShell.o` names the public contract `RShellSaveFile(char*, void*, int)`.
 Using that caller-owned buffer and signed 32-bit length directly is
 codegen-neutral for the exact Windows implementation.
+
+2026-07-15 CRT ownership: the stream, directory, and write operations now come
+from VC6's real `<stdio.h>` and `<direct.h>` declarations. Replacing the opaque
+`File` and five local CRT prototypes with `FILE*` keeps the exact 74/74 object
+and ten clean masked operands.

@@ -6,3 +6,8 @@ scramble data or report save failures; the failure path only calls `_getcwd`
 into a 512-byte stack buffer and returns that CRT result.
 
 Match status: 100%, 31/31 target instructions, 5 masked operands ok.
+
+2026-07-15 CRT ownership: this helper now uses VC6's authentic `<stdio.h>` and
+`<direct.h>` declarations, including `FILE*`, instead of an opaque `File` and
+four local CRT prototypes. The focused 31/31 object and five clean masked
+operands are unchanged.

@@ -1,18 +1,7 @@
 // delete_file_path_with_directory_walk @ 0x431540 (cdecl)
 
-typedef struct File File;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-int __cdecl remove(char* path);
-char* __cdecl getcwd(char* buffer, int size);
-int __cdecl chdir(char* path);
-#ifdef __cplusplus
-}
-#endif
+#include <direct.h>
+#include <stdio.h>
 
 int report_messagef(char* format, ...);
 int set_current_directory_with_drive_fallback(char* path);
@@ -25,7 +14,7 @@ int __cdecl delete_file_path_with_directory_walk(char* path)
     char* cursor;
     int index;
     char c;
-    File* file;
+    FILE* file;
 
     getcwd(original_directory, 512);
     cursor = path;

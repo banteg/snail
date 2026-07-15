@@ -8,3 +8,8 @@ Focused match: 100%, 56/56 instructions, with nine clean masked operands.
 
 This scratch compiles as C (`/TC`) for the same `_getcwd`/`printf` cleanup shape
 used by `save_file_bytes_with_optional_archive_scramble`.
+
+2026-07-15 CRT ownership: VC6's `<stdio.h>`, `<stdlib.h>`, and `<direct.h>` now
+own `FILE`, the stream calls, `malloc`, and `getcwd`. Removing the opaque
+scratch `File` and six approximate declarations preserves the exact 56/56
+instruction object and all nine masked operands.
