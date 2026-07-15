@@ -16,7 +16,7 @@ struct TrackRenderCacheSlotCursor {
     BodBase bod; // SegmentCache::slots[0][TRACK_RENDER_CACHE_FLOOR].bod
 };
 
-void* SegmentCache::initialize_track_render_cache_manager()
+void SegmentCache::initialize_track_render_cache_manager()
 {
     max_vertex_counts[TRACK_RENDER_CACHE_FLOOR] = 560;
     max_index_counts[TRACK_RENDER_CACHE_FLOOR] = 1280;
@@ -89,5 +89,4 @@ void* SegmentCache::initialize_track_render_cache_manager()
         --count;
     } while (count != 0);
 
-    return result;
 }

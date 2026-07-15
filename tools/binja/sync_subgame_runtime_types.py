@@ -237,7 +237,7 @@ PROTO_UPDATES = (
     ("switch_track_mirror", "bool __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
     (
         "rebuild_track_runtime_from_segments",
-        "int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
     ),
     ("set_subgame_rate", "void __thiscall set_subgame_rate(SubgameRuntime* runtime, float rate)"),
     ("calc_subgame_rate", "void __thiscall calc_subgame_rate(SubgameRuntime* runtime)"),

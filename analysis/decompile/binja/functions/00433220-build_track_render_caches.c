@@ -60,7 +60,7 @@
 00433317        color_2.r = manager->skirt_color_bgra.r
 00433317        color_2.a = manager->skirt_color_bgra.a
 00433349        append_track_cache_object(manager, row_index, *(edx_7 + 0x24), &owner_subgame->runtime_cells[0][0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &vertex_count_4, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], color_2, 0)
-00433373        **((&manager->slots[0][4].bod.object)[esi_1 * 0x4b] + 0xd0) = *(*(*(*(manager->owner_subgame + ebp_1) + 0x24) + 0x5c) + 0xc)
+00433373        *(&manager->slots[0][4].bod.object)[esi_1 * 0x4b]->group_texture_refs = *(*(*(*(manager->owner_subgame + ebp_1) + 0x24) + 0x5c) + 0xc)
 00433378        *(manager->owner_subgame + ebp_1) = 0
 00433383        ebp_1 += 4
 00433386        cond:2_1 = var_44_1 != 1

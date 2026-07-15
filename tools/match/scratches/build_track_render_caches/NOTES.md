@@ -191,3 +191,12 @@ still passes the same four packed bytes by value. Focused Wibo remains at the
 honest 99.79%, 475/475 instructions, with all 20 operands clean and only the
 equivalent SIB base/index ordering unresolved. Binary Ninja readback also
 retains the borrowed `SubgameRuntime*` backlink alongside `tColourSmall`.
+
+## 2026-07-15 authored void contract
+
+The sole Windows call is the final cache edge in exact
+`cRSubGame::GenerateLevel(int)`; its caller `StartLevel(int)` immediately
+compares unrelated subgame state. Android has the same discarded final-callee
+pattern through `cRWorld::ReSet`. Removing the synthetic debug-report return
+keeps the honest cache builder byte-for-byte at 99.79%, 475/475 instructions,
+with 20 clean operands and only the equivalent runtime-cell SIB ordering.

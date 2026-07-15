@@ -70,7 +70,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "rebuild_track_runtime_from_segments",
-        "int __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int level_index);",
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
     ),
     (
         "set_subgame_rate",
@@ -131,6 +131,13 @@ TRUSTED_DECLARATIONS = [
 ]
 
 
+REQUIRED_CANONICAL_OWNER_MARKERS = (
+    "SegmentCache segment_cache;",
+    "TrackRowCell runtime_cells[3200][8];",
+    "SubRow runtime_rows[3200];",
+)
+
+
 def _resolve_function(selector: str) -> tuple[int | None, str]:
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
@@ -166,6 +173,33 @@ def _named_struct_size(name: str) -> int | None:
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
+    header_text = header_path.read_text(encoding="utf-8")
+    missing_owner_markers = [
+        marker for marker in REQUIRED_CANONICAL_OWNER_MARKERS if marker not in header_text
+    ]
+    if missing_owner_markers:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "applied": 0,
+                    "missing_owner_markers": missing_owner_markers,
+                    "failed": [
+                        {
+                            "reason": "noncanonical_subgame_runtime_header",
+                            "detail": (
+                                "refusing to replace the recovered SubgameRuntime owner "
+                                "with a sparse compatibility header"
+                            ),
+                        }
+                    ],
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     contact_header_path = header_path.with_name("contact_target_types.h")
     contact_parse_errors = idc.parse_decls(str(contact_header_path), idc.PT_FILE)
     parse_errors = contact_parse_errors + idc.parse_decls(str(header_path), idc.PT_FILE)

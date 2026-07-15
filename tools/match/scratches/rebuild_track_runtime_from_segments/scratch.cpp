@@ -6,7 +6,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
+void SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
 {
     level_mode_arg = level_index;
     set_subgame_features();
@@ -23,5 +23,5 @@ int SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
     tColour skirt_color;
     tColour* resolved_color =
         g_game->subgame.get_track_skirt_color(&skirt_color);
-    return segment_cache.build_track_render_caches(*resolved_color);
+    segment_cache.build_track_render_caches(*resolved_color);
 }

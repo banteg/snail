@@ -3,10 +3,10 @@
 /* selector: rebuild_track_runtime_from_segments */
 
 // Exact Windows implementation of authored `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes.
-int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)
+void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)
 {
-  int v4[4]; // [esp+4h] [ebp-10h] BYREF
-  tColour v5; // 0:^0.16
+  tColour out; // [esp+4h] [ebp-10h] BYREF
+  tColour v4; // 0:^0.16
 
   game->level_mode_arg = level_index;
   set_subgame_features(game);
@@ -19,7 +19,6 @@ int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int
   merge_track_tile_runs(game);
   mark_track_warning_zones(game);
   build_track_fringe_objects(game);
-  v5 = *get_track_skirt_color((SubgameRuntime *)((char *)g_game_base + 476696), (tColour *)v4);
-  return build_track_render_caches(&game->segment_cache, v5);
+  v4 = *get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &out);
+  build_track_render_caches(&game->segment_cache, v4);
 }
-

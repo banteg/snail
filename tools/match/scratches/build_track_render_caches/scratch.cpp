@@ -20,7 +20,7 @@ int debug_report_stub(const char* format, ...);
 #define RUNTIME_CELL_OFFSET(field) \
     ((int)offsetof(SubgameRuntime, runtime_cells[0][0].field))
 
-int SegmentCache::build_track_render_caches(tColour skirt_color)
+void SegmentCache::build_track_render_caches(tColour skirt_color)
 {
     enum {
         MAX_INDEX_COUNT_LANE =
@@ -322,7 +322,6 @@ int SegmentCache::build_track_render_caches(tColour skirt_color)
     next_cache_row_index = 0;
 
     int family_index = 0;
-    int result;
     do {
         int max_vertices_seen = 0;
         int max_indices_seen = 0;
@@ -363,13 +362,11 @@ int SegmentCache::build_track_render_caches(tColour skirt_color)
             break;
         }
 
-        result = debug_report_stub(
+        debug_report_stub(
             "Max Cache Type=%s Vertices=%i   Indices=%i\n",
             cache_name,
             max_vertices_seen,
             max_indices_seen);
         ++family_index;
     } while (family_index < TRACK_RENDER_CACHE_FAMILY_COUNT);
-
-    return result;
 }

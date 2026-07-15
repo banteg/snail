@@ -37,8 +37,8 @@ typedef char TrackRenderCacheSlot_must_be_0x3c[
 
 class SegmentCache {
 public:
-    void* initialize_track_render_cache_manager();       // @ 0x433060
-    int build_track_render_caches(tColour skirt_color); // @ 0x433220
+    void initialize_track_render_cache_manager();       // @ 0x433060
+    void build_track_render_caches(tColour skirt_color); // @ 0x433220
     void update_track_render_cache_rows();              // @ 0x433b30
     void remove_track_render_cache_bods();              // @ 0x433f20
     int add_track_cache_vertex(

@@ -72,7 +72,7 @@ The practical read is that the game does not play directly on the authored text 
 The cross-port symbols also recover the authored builder hierarchy:
 
 - Windows `populate_runtime_track_cells_from_segments` is `cRSubGame::BuildLevel()`; it chooses segments and materializes their rows and glyphs into the runtime slabs
-- exact Windows `rebuild_track_runtime_from_segments` is `cRSubGame::GenerateLevel(int)`; it wraps `BuildLevel()` with feature, colour, parcel, normalization, warning, fringe, and cache passes
+- exact Windows `rebuild_track_runtime_from_segments` is the void `cRSubGame::GenerateLevel(int)`; it wraps `BuildLevel()` with feature, colour, parcel, normalization, warning, fringe, and cache passes
 - outer Windows `build_subgame_level` is `cRSubGame::StartLevel(int)`; it loads the level and managers, calls `GenerateLevel(int)`, and then establishes landscape, player, HUD, music, and active-list state
 
 Current high-confidence render-normalization read:
@@ -86,7 +86,7 @@ Current high-confidence render-normalization read:
   - it begins by calling `initialize_fringe_manager`
   - then uses `allocate_fringe_object` to draw from a 7000-entry pool of 0x38-byte fringe objects
   - each emitted fringe object takes its RGBA skirt colour from `get_track_skirt_color`
-- `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches
+- void `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches; its final debug-report value is incidental, just as the initializer's final allocation pointer is incidental
 
 Current Zig port status for this slice:
 

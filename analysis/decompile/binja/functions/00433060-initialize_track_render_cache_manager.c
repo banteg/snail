@@ -37,13 +37,11 @@
 004331cc        do while (cond:1_1)
 004331d2        struct ObjectRenderVertex* (* esi_2)[0x5] = &manager->shared_vertex_buffers
 004331d5        int32_t i_2 = 5
-0043320a        void* result
 0043320a        int32_t i_1
 004331ee        (esi_2 - 0x2c)->shared_vertex_buffers[0] = allocate_tracked_memory((esi_2 - 0x2c)->max_vertex_counts[0] * 0x18, "GDX Cache Vertex Buffer")
-004331fb        result = allocate_tracked_memory((esi_2 - 0x2c)->max_index_counts[0] << 1, "GDX Cache Index Buffer")
-00433200        (esi_2 - 0x2c)->shared_index_buffers[0] = result
+00433200        (esi_2 - 0x2c)->shared_index_buffers[0] = allocate_tracked_memory((esi_2 - 0x2c)->max_index_counts[0] << 1, "GDX Cache Index Buffer")
 00433206        esi_2 = &(*esi_2)[1]
 00433209        i_1 = i_2
 00433209        i_2 -= 1
 0043320a        do while (i_1 != 1)
-00433213        return result
+00433213        return

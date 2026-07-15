@@ -65,8 +65,10 @@ Current checked-in example:
 - `uv run python tools/ida/sync_frontend_replay_types.py`
 - `ida_high_score_bank_types.h`
 - `uv run python tools/ida/sync_high_score_bank_types.py`
-- `ida_subgame_runtime_types.h`
 - `uv run python tools/ida/sync_subgame_runtime_types.py`
+  - Reuses canonical `path_template_types.h` while replaying the narrower
+    subgame-helper prototype set, so it cannot replace the recovered runtime
+    children with the older sparse compatibility view.
 - `star_manager_types.h`
 - `uv run python tools/ida/sync_star_manager_types.py`
 - `vapour_trail_types.h`

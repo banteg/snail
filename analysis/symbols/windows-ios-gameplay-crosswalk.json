@@ -509,7 +509,7 @@
       "android_symbol": "cRSubGame::GenerateLevel(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The mobile dispatcher stores the level argument and calls SetFeatures, BuildColours, BuildLevel, PlaceParcels, SmoothTrack, WarnTrack, SlideSmoothTrack, CondenseTrack, and FringeEdgeTrack in the same nested rebuild order. Windows adds its platform-specific promotion and render-cache passes."
+      "notes": "The mobile dispatcher stores the level argument and calls SetFeatures, BuildColours, BuildLevel, PlaceParcels, SmoothTrack, WarnTrack, SlideSmoothTrack, CondenseTrack, and FringeEdgeTrack in the same nested rebuild order. Windows adds its platform-specific promotion and render-cache passes. Both StartLevel callers immediately continue from unrelated state, so Android's final cRWorld::ReSet value and Windows' final cache-builder value are incidental: the authored member is void."
     },
     {
       "address": "0x437eb0",

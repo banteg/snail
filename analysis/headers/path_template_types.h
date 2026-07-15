@@ -2333,7 +2333,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime* game);
 
 void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);
 
-int32_t __thiscall rebuild_track_runtime_from_segments(
+void __thiscall rebuild_track_runtime_from_segments(
     SubgameRuntime* game,
     int32_t level_index
 );
@@ -2343,9 +2343,9 @@ void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);
 int32_t __thiscall place_parcels_on_track(SubgameRuntime* game);
 int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);
 
-void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
+void __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 
-int32_t __thiscall build_track_render_caches(
+void __thiscall build_track_render_caches(
     SegmentCache* manager,
     tColour skirt_color
 );

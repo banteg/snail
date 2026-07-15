@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    current_prototypes,
     emit_summary,
     types_declare_if_missing,
 )
@@ -54,9 +55,12 @@ SYMBOL_UPDATES = (
     ("0x433960", "append_track_cache_object"),
 )
 
+DEFERRED_PROTO_UPDATES = (
+    ("build_track_render_caches", "void __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color)"),
+)
+
 PROTO_UPDATES = (
-    ("initialize_track_render_cache_manager", "void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager)"),
-    ("build_track_render_caches", "int32_t __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color)"),
+    ("initialize_track_render_cache_manager", "void __thiscall initialize_track_render_cache_manager(SegmentCache* manager)"),
     ("add_track_cache_vertex", "int32_t __thiscall add_track_cache_vertex(SegmentCache* manager, Object* source, Vec3* position, int32_t source_index, float u, float v, ObjectRenderVertex* vertices, int32_t* vertex_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
     ("append_track_cache_object", "int32_t __thiscall append_track_cache_object(SegmentCache* manager, int32_t row_index, Object* source, Vec3* position, ObjectRenderVertex* vertices, int32_t* vertex_count, uint16_t* indices, int32_t* index_count, int32_t max_vertices, int32_t max_indices, uint32_t color, uint8_t project_uv)"),
     ("update_track_render_cache_rows", "void __thiscall update_track_render_cache_rows(SegmentCache* manager)"),
@@ -66,6 +70,27 @@ PROTO_UPDATES = (
     ("is_sub_loc_ramp", "int32_t __fastcall is_sub_loc_ramp(TrackRowCell* cell)"),
     ("is_sub_loc_empty", "int32_t __fastcall is_sub_loc_empty(TrackRowCell* cell)"),
 )
+
+
+def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
+    observed_prototypes = current_prototypes(
+        REPO_ROOT,
+        target=target,
+        identifiers=(
+            identifier for identifier, _prototype in DEFERRED_PROTO_UPDATES
+        ),
+    )
+    return [
+        {
+            "op": "proto_owner_deferred",
+            "status": "deferred",
+            "reason": "stale explicit by-value aggregate signature requires guarded recreation",
+            "identifier": identifier,
+            "desired_prototype": prototype,
+            "observed_prototype": observed_prototypes.get(identifier),
+        }
+        for identifier, prototype in DEFERRED_PROTO_UPDATES
+    ]
 
 
 def parse_args() -> argparse.Namespace:
@@ -112,6 +137,7 @@ def main() -> int:
     )
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES))
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
+    operations.extend(report_deferred_prototypes(target=args.target))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 

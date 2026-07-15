@@ -278,11 +278,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_track_render_cache_manager",
-        "void* __thiscall initialize_track_render_cache_manager(SegmentCache* manager);",
+        "void __thiscall initialize_track_render_cache_manager(SegmentCache* manager);",
     ),
     (
         "build_track_render_caches",
-        "int32_t __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color);",
+        "void __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color);",
     ),
     (
         "add_track_cache_vertex",
@@ -826,7 +826,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "rebuild_track_runtime_from_segments",
-        "int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
     ),
     (
         "place_parcels_on_track",

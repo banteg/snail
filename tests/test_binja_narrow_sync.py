@@ -2643,3 +2643,77 @@ def test_apply_proto_updates_batches_only_stale_prototypes(monkeypatch) -> None:
             ],
         )
     ]
+
+
+def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
+    track_sync = (BINJA_DIR / "sync_track_render_cache_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_runner = (IDA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+
+    expected = (
+        "void __thiscall initialize_track_render_cache_manager(SegmentCache* manager)",
+        "void __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color)",
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
+    )
+    assert expected[0] in track_sync
+    assert expected[1] in track_sync
+    assert expected[2] in runtime_sync
+    assert "DEFERRED_PROTO_UPDATES = (" in track_sync
+    assert "report_deferred_prototypes" in track_sync
+    direct_track_prototypes = track_sync.split("\nPROTO_UPDATES = (", 1)[1].split(
+        "\n)\n\n\ndef report_deferred_prototypes", 1
+    )[0]
+    deferred_track_prototypes = track_sync.split(
+        "DEFERRED_PROTO_UPDATES = (", 1
+    )[1].split("\n)\n\nPROTO_UPDATES", 1)[0]
+    assert "initialize_track_render_cache_manager" in direct_track_prototypes
+    assert "build_track_render_caches" not in direct_track_prototypes
+    assert "build_track_render_caches" in deferred_track_prototypes
+    assert expected[0] + ";" in ida_path_sync
+    assert expected[1] + ";" in ida_path_sync
+    assert (
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);"
+        in ida_path_sync
+    )
+    assert (
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);"
+        in ida_runtime_sync
+    )
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"'
+        in ida_runtime_runner
+    )
+    assert "REQUIRED_CANONICAL_OWNER_MARKERS = (" in ida_runtime_sync
+    for marker in (
+        "SegmentCache segment_cache;",
+        "TrackRowCell runtime_cells[3200][8];",
+        "SubRow runtime_rows[3200];",
+    ):
+        assert marker in ida_runtime_sync
+    assert "noncanonical_subgame_runtime_header" in ida_runtime_sync
+    assert expected[0] + ";" in header
+    assert expected[1].split("(SegmentCache", 1)[0] in header
+    assert "void __thiscall rebuild_track_runtime_from_segments(" in header
+
+    for stale in (
+        "void* __thiscall initialize_track_render_cache_manager",
+        "int32_t __thiscall build_track_render_caches",
+        "int32_t __thiscall rebuild_track_runtime_from_segments",
+    ):
+        assert stale not in track_sync
+        assert stale not in runtime_sync
+        assert stale not in ida_path_sync
+        assert stale not in header

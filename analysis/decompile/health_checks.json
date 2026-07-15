@@ -1729,6 +1729,7 @@
       "name": "ida_track_cache_builder_local_view",
       "artifact": "analysis/decompile/ida/functions/00433220-build_track_render_caches.c",
       "required_substrings": [
+        "void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_color)",
         "tColour skirt_color",
         "TrackRenderCacheBuildLocals locals",
         "manager->owner_subgame",
@@ -1736,6 +1737,8 @@
         "append_track_cache_object"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall build_track_render_caches",
+        "return result",
         "ObjectVertexBufferVtbl",
         "PathTemplateStripMesh",
         "sub_433960",
@@ -1789,7 +1792,8 @@
       "required_substrings": [
         "manager->owner_subgame = &g_game_base->subgame",
         "create_vertex_buffer(&g_direct3d_renderer",
-        "create_index_buffer(&g_direct3d_renderer.index_buffer_factory"
+        "create_index_buffer(&g_direct3d_renderer.index_buffer_factory",
+        "00433213        return"
       ],
       "forbidden_substrings": [
         "g_game_base[0x74618]",
@@ -1798,6 +1802,24 @@
         "create_object_vertex_buffer_resource",
         "create_object_index_buffer_resource",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_track_cache_manager_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00433060-initialize_track_render_cache_manager.c",
+      "required_substrings": [
+        "void __thiscall initialize_track_render_cache_manager(SegmentCache *manager)",
+        "manager->owner_subgame = (SubgameRuntime *)&g_game_base->subgame",
+        "manager->shared_vertex_buffers",
+        "allocate_tracked_memory"
+      ],
+      "forbidden_substrings": [
+        "void *__thiscall initialize_track_render_cache_manager",
+        "return result",
+        "TrackRenderCacheManager",
+        "TrackRenderGrid",
+        "__asm",
+        "_ET1"
       ]
     },
     {
@@ -2609,13 +2631,14 @@
       "name": "ida_generate_level_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00437de0-rebuild_track_runtime_from_segments.c",
       "required_substrings": [
-        "int32_t __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)",
+        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)",
         "populate_runtime_track_cells_from_segments(game)",
         "mark_track_warning_zones(game)",
         "build_track_fringe_objects(game)"
       ],
       "forbidden_substrings": [
         "rebuild_track_runtime_from_segments(Game *game",
+        "return build_track_render_caches",
         "__asm",
         "_ET1"
       ]
@@ -3538,7 +3561,8 @@
       ],
       "forbidden_substrings": [
         "runtime->__offset(0x5c)",
-        "&g_game_base[0x74618]"
+        "&g_game_base[0x74618]",
+        "return build_track_render_caches"
       ]
     },
     {

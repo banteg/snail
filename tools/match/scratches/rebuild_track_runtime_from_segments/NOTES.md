@@ -35,3 +35,12 @@ at `track_state_latch +0xa854`. Installing that existing aggregate in the live
 analysis lets this dispatcher pass `&runtime->segment_cache` directly to
 `build_track_render_caches`; the prior `runtime->__offset(0x5c)` was stale
 analysis presentation, not evidence for a second manager or allocation.
+
+## 2026-07-15 authored void contract
+
+Both Windows and Android `StartLevel(int)` callers continue from unrelated
+state immediately after `GenerateLevel(int)`. Android's apparent return is the
+incidental result of its final `cRWorld::ReSet` call; Windows similarly leaves
+the final cache-builder/debug-report state in EAX. Modeling the member and its
+cache edge as void preserves the exact 44/44 Windows instruction stream with
+all 13 operands clean.

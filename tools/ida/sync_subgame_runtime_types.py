@@ -9,13 +9,16 @@ import sys
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
 
-DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/ida_subgame_runtime_types.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_subgame_runtime_types.py"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply recovered subgame runtime helper prototypes to an IDA database."
+        description=(
+            "Apply recovered subgame runtime helper prototypes through the canonical "
+            "path-template ownership header."
+        )
     )
     parser.add_argument(
         "--ida-bin",
@@ -31,7 +34,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Path to the narrow IDA type-import header.",
+        help="Path to the canonical IDA type-import header.",
     )
     return parser.parse_args()
 

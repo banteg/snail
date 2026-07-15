@@ -20,4 +20,4 @@
 00437e5c        float b = eax->b
 00437e5f        float a = eax->a
 00437e65        build_track_render_caches(&runtime->segment_cache, eax->r)
-00437e6e        return 0
+00437e6e        return

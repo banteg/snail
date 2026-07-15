@@ -1954,12 +1954,12 @@
     {
       "address": "0x433060",
       "name": "initialize_track_render_cache_manager",
-      "description": "Initializes the embedded cRSegmentCache owner: a fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its complete 0xa7f8-byte extent matches the Windows runtime size ledger."
+      "description": "Authored void initializer for the embedded cRSegmentCache owner: constructs its fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its sole Windows caller discards the incidental final allocation pointer, and its complete 0xa7f8-byte extent matches the Windows runtime size ledger."
     },
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Builds the cRSegmentCache Floor, Slide, Warn, Ramp, and Fringe families from the owning SubgameRuntime’s fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position."
+      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime’s fixed runtime-cell slab and uses each embedded TrackRowCell anchor as the mesh-instance position. The final debug-report result is incidental call state."
     },
     {
       "address": "0x433830",
@@ -2215,7 +2215,7 @@
     {
       "address": "0x437de0",
       "name": "rebuild_track_runtime_from_segments",
-      "description": "Exact Windows implementation of authored `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes."
+      "description": "Exact authored void `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes. Windows and Android `StartLevel(int)` discard its incidental final callee result."
     },
     {
       "address": "0x437e80",

@@ -135,3 +135,11 @@ repeating `+0x58`, `-0x28`, `-0x14`, or `[5]` as unexplained layout facts.
 
 Focused output remains at the honest 99.18%, 122/122 baseline with all 18
 operands clean; the sole residual is the equivalent slot-index SIB ordering.
+
+## 2026-07-15 authored void contract
+
+The only Windows call at `0x40ffd6` immediately overwrites the last allocation
+pointer with unrelated world-initialization state. Removing the synthetic
+return preserves the complete 122/122 instruction stream at 99.18%, with all
+18 operands clean and only the equivalent slot-index SIB ordering remaining.
+The Binary Ninja and IDA replay lanes now carry the real void initializer ABI.
