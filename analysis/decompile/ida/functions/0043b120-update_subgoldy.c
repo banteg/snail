@@ -117,8 +117,8 @@ int32_t __thiscall update_subgoldy(Player *player)
   float z; // [esp-Ch] [ebp-64h]
   float v113; // [esp-Ch] [ebp-64h]
   float v114; // [esp+0h] [ebp-58h]
-  int value; // [esp+4h] [ebp-54h]
-  int valuea; // [esp+4h] [ebp-54h]
+  SubLoc *value; // [esp+4h] [ebp-54h]
+  SubLoc *valuea; // [esp+4h] [ebp-54h]
   float valueb; // [esp+4h] [ebp-54h]
   float valuec; // [esp+4h] [ebp-54h]
   float valued; // [esp+4h] [ebp-54h]
@@ -401,14 +401,16 @@ LABEL_101:
                   v126 = player->velocity.x * 1.05;
                   v129 = player->velocity.y * 1.05;
                   v132 = player->velocity.z * 1.05;
-                  value = *(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * get_track_cell_row_index(v41));
+                  value = *(SubLoc **)((char *)unk_5CCB6C
+                                     + (unsigned int)player->game
+                                     + 244 * get_track_cell_row_index(v41));
                   x = p_position->x;
                   y = p_position->y;
                   z = p_position->z;
                   track_cell_row_index = get_track_cell_row_index(v41);
                   try_enter_track_attachment_from_swept_motion(
-                    *(_DWORD **)(*(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * track_cell_row_index)
-                               + 56),
+                    *(Path **)(*(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * track_cell_row_index)
+                             + 56),
                     x,
                     y,
                     z,
@@ -423,14 +425,15 @@ LABEL_101:
                   v127 = player->velocity.x * 1.05;
                   v130 = player->velocity.y * 1.05;
                   v133 = player->velocity.z * 1.05;
-                  valuea = *(int *)((char *)unk_5CCB70 + (unsigned int)player->game
-                                                       + 244 * get_track_cell_row_index(v41));
+                  valuea = *(SubLoc **)((char *)unk_5CCB70
+                                      + (unsigned int)player->game
+                                      + 244 * get_track_cell_row_index(v41));
                   v109 = p_position->x;
                   v111 = p_position->y;
                   v113 = p_position->z;
                   v44 = get_track_cell_row_index(v41);
                   try_enter_track_attachment_from_swept_motion(
-                    *(_DWORD **)(*(int *)((char *)unk_5CCB70 + (unsigned int)player->game + 244 * v44) + 56),
+                    *(Path **)(*(int *)((char *)unk_5CCB70 + (unsigned int)player->game + 244 * v44) + 56),
                     v109,
                     v111,
                     v113,
@@ -1003,7 +1006,7 @@ LABEL_287:
             {
 LABEL_359:
               play_movement_state_sound((int)player);
-              update_movement_flag_emitters((char *)player, (int)player);
+              update_movement_flag_emitters(player, player);
               player->movement_fire_progress = player->movement_fire_progress_step + 0.30000001;
               goto LABEL_365;
             }
@@ -1012,7 +1015,7 @@ LABEL_359:
 LABEL_364:
               player->movement_fire_progress = player->movement_fire_progress_step;
               play_movement_state_sound((int)player);
-              update_movement_flag_emitters((char *)player, (int)player);
+              update_movement_flag_emitters(player, player);
             }
           }
 LABEL_365:

@@ -67,7 +67,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   struct BodNode *v60; // ecx
   struct BodNode *v61; // ecx
   uint32_t v62; // ecx
-  int *golb_shots; // esi
+  GolbShot *golb_shots; // esi
   int v64; // edi
 
   v1 = game->runtime_cells[0];
@@ -467,13 +467,13 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     game->player.movement_mode_selector = 0;
     noop_runtime_ai();
   }
-  golb_shots = (int *)game->player.golb_shots;
+  golb_shots = game->player.golb_shots;
   v64 = 12;
   do
   {
-    if ( golb_shots[145] == 1 )
+    if ( golb_shots->state == 1 )
       kill_golb(golb_shots);
-    golb_shots += 186;
+    ++golb_shots;
     --v64;
   }
   while ( v64 );

@@ -80,6 +80,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index);",
     ),
     (
+        "update_movement_flag_emitters",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source);",
+    ),
+    (
         "spawn_golb_trail_sprite",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position);",
     ),

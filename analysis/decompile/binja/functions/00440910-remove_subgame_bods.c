@@ -298,12 +298,12 @@
 00440eea        recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.weapon_channels[2])
 00440f02        recycle_bod_to_free_list(&g_game_base->active_bod_list, &game->player.presentation.invincible_shell)
 00440f09        game->player.movement_mode_selector = 0
-00440f14        struct GolbShot (* esi_8)[0xc] = &game->player.golb_shots
+00440f14        struct GolbShot (* shot)[0xc] = &game->player.golb_shots
 00440f1a        int32_t i_11 = 0xc
 00440f3a        int32_t i_5
-00440f2a        if ((esi_8 - 0x3bbbb4)->player.golb_shots[0].state == 1)
-00440f2e        kill_golb(esi_8)
-00440f33        esi_8 = &(*esi_8)[1]
+00440f2a        if ((shot - 0x3bbbb4)->player.golb_shots[0].state == 1)
+00440f2e        kill_golb(shot)
+00440f33        shot = &(*shot)[1]
 00440f39        i_5 = i_11
 00440f39        i_11 -= 1
 00440f3a        do while (i_5 != 1)

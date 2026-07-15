@@ -2296,7 +2296,7 @@
     {
       "address": "0x43a300",
       "name": "update_movement_flag_emitters",
-      "description": "Iterates the 12 Golb emitter slots at player+0x450 and seeds one, two, or three live shot actors based on the current movement_flags family."
+      "description": "Exact void `Player` member that iterates its 12 owned `GolbShot` slots at +0x450 and seeds one, two, or three live actors from an explicit `Player*` movement source. Both callers pass the same player as receiver and source."
     },
     {
       "address": "0x43a370",

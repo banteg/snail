@@ -956,6 +956,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
         "void __thiscall kill_golb(GolbShot* shot)",
         "void __thiscall update_golb_ai(GolbShot* shot)",
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
+        "void __thiscall update_movement_flag_emitters(Player* owner, Player* movement_source)",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position)",

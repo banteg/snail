@@ -1,24 +1,32 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "create_golb",
-      "address": "0x415280"
+      "name": "update_movement_flag_emitters",
+      "address": "0x43a300"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "remove_subgame_bods",
+      "address": "0x440910"
     }
   ],
   "health_check_count": 324,

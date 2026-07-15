@@ -31,3 +31,15 @@ and `remove_subgame_bods` later tears down the same 12 records with
 named Player field at `+0x2730`. The method now belongs to `Player` and scans
 its owned `golb_shots` bank directly while remaining exact at 39/39 with its
 single operand clean.
+
+## 2026-07-16 receiver/source ABI closure
+
+Both `update_subgoldy` callsites execute `push ebp; mov ecx, ebp` before this
+function. The callee reads movement flags from the one explicit stack argument,
+keeps ECX as the owner of `golb_shots`, and returns with `ret 4`; its only
+outbound call is the independently proven void `GolbShot::create_golb`.
+Together with the exact source, this establishes
+`void __thiscall update_movement_flag_emitters(Player* owner, Player*
+movement_source)`. Both replay catalogs now replace Binary Ninja's false cdecl
+two-stack-argument result and IDA's integer movement-source placeholder. The
+39/39 matcher remains exact.
