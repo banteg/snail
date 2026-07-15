@@ -11,7 +11,6 @@
 #include <stddef.h>
 
 #include "attachment_sample.h"
-#include "app_shell.h"
 #include "audio_system.h"
 #include "backdrop.h"
 #include "cheat_state.h"
@@ -46,6 +45,7 @@ inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
 
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
+extern GameRoot* g_game;                  // data_4df904
 
 enum {
     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
@@ -90,7 +90,7 @@ void Player::update_subgoldy()
 {
     SubgameRuntime* current_game = game;
     if (current_game->subgame_pause_gate) {
-        if (g_app->frontend_state != 9) {
+        if (g_game->players[0].frontend_state != 9) {
             damage_gauge.update_damage_gauge();
             progress_bar.update_progress_bar();
             warning.update_warning();
@@ -159,10 +159,10 @@ void Player::update_subgoldy()
                 ->run_records[game->replay_update_cursor]
                 .flags
             & 8) {
-            g_app->frontend_state = 26;
-            g_app->frontend_substate = 10;
-            g_app->skip_flag = 1;
-            g_app->fade.begin_frontend_fade_in();
+            g_game->players[0].frontend_state = 26;
+            g_game->players[0].saved_frontend_state = 10;
+            g_game->players[0].redispatch_requested = 1;
+            g_game->fade.begin_frontend_fade_in();
             return;
         }
     } else {
@@ -332,8 +332,7 @@ steering_stored:
                         ->level_definition
                         .segment_slots[definition - 1]
                         .message_sample_id);
-            ((GameRoot*)g_app)->tip_manager.enqueue_tip_message(
-                &row_event.definition, 1);
+            g_game->tip_manager.enqueue_tip_message(&row_event.definition, 1);
         }
     }
 
@@ -767,9 +766,9 @@ steering_stored:
                     completion_handoff_timer - completion_handoff_timer_step;
         }
         if (completion_handoff_timer > 5.0f) {
-            int fade_state = g_app->fade.state;
+            int fade_state = g_game->fade.state;
             if (!fade_state) {
-                g_app->fade.begin_frontend_fade_out(0);
+                g_game->fade.begin_frontend_fade_out(0);
             } else if (fade_state == 4) {
                 SubgameRuntime* finish_game = game;
                 if (finish_game->completion.state != COMPLETION_STATE_INACTIVE)
@@ -777,10 +776,10 @@ steering_stored:
                 SubgameRuntime* dispatch_game = game;
                 if (!dispatch_game->level_mode) {
                     if (dispatch_game->level_mode_arg
-                        == ((GameRoot*)g_app)->subgame.galaxy.record_count - 1) {
+                        == g_game->subgame.galaxy.record_count - 1) {
                         dispatch_game->complete_subgame(1);
-                        g_app->frontend_substate = 29;
-                        g_app->frontend_state = 26;
+                        g_game->players[0].saved_frontend_state = 29;
+                        g_game->players[0].frontend_state = 26;
                         return;
                     }
                     dispatch_game->complete_subgame(0);
@@ -790,16 +789,17 @@ steering_stored:
                 }
                 SubgameRuntime* exit_game = game;
                 if (exit_game->level_mode == 7) {
-                    g_app->frontend_state = 26;
-                    g_app->frontend_substate = 2;
+                    g_game->players[0].frontend_state = 26;
+                    g_game->players[0].saved_frontend_state = 2;
                 } else {
                     unsigned char persistent =
                         exit_game->selected_level_record_persistent;
-                    g_app->frontend_substate = g_app->frontend_state;
+                    g_game->players[0].saved_frontend_state =
+                        g_game->players[0].frontend_state;
                     if (persistent)
-                        g_app->frontend_state = 26;
+                        g_game->players[0].frontend_state = 26;
                     else
-                        g_app->frontend_state = 27;
+                        g_game->players[0].frontend_state = 27;
                 }
                 return;
             }
@@ -811,9 +811,10 @@ steering_stored:
         *p_position = follow_state.output_position;
     sub_hover.update_jetpack_gauge();
     if (completion_handoff_active) {
-        g_app->hud_target = g_app->hud_source;
-        g_app->hud_target.scroll_progress =
-            g_app->hud_target.scroll_progress - 1.0f;
+        g_game->players[0].completion_handoff_transform =
+            g_game->players[0].transform;
+        g_game->players[0].completion_handoff_transform.position.y =
+            g_game->players[0].completion_handoff_transform.position.y - 1.0f;
     }
     damage_gauge.update_damage_gauge();
     progress_bar.update_progress_bar();
@@ -906,7 +907,7 @@ steering_stored:
     }
 
     float backdrop_zoom = transform.position.z / (float)game->runtime_row_count;
-    ((GameRoot*)g_app)->backdrop.set_backdrop_zoom(backdrop_zoom);
+    g_game->backdrop.set_backdrop_zoom(backdrop_zoom);
 
     SubgameRuntime* horizon_game = game;
     float interaction_limit = (float)horizon_game->completion_row_start - 30.0f;
@@ -979,7 +980,7 @@ steering_stored:
     game->parcel_manager.update_track_parcels();
     presentation.initialize_cutscene();
     update_player_movement_flags();
-    if (((GameRoot*)g_app)->subgame.replay_update_cursor < 10)
+    if (g_game->subgame.replay_update_cursor < 10)
         movement_fire_progress = movement_fire_progress_step;
 
     SubgameRuntime* emitter_game = game;

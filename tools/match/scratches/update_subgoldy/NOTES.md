@@ -127,9 +127,10 @@ stride 0xf4), `current_high_score_record`, selected-record replay state,
 message lanes are `SubTracks::segment_slots[event_id - 1]` fields rather than
 an anonymous +0xa670/16928 table. Root fields now use
 `GameRoot::{backdrop,tip_manager}` and
-`GameRoot::subgame.{galaxy.record_count,replay_update_cursor}`. `AppShell`
-owns the copied 0x40-byte HUD rows and names the +0x34 lane
-`scroll_progress`; its destination lands at root +0x300.
+`GameRoot::subgame.{galaxy.record_count,replay_update_cursor}`. The copied
+0x40-byte completion handoff is a `TransformMatrix` snapshot from inherited
+`GamePlayer::transform` to `GamePlayer::completion_handoff_transform`; the
+destination Y position lands at root `+0x300`.
 
 2026-06-16 controller consolidation audit: row-event, warning, and nuke all
 have shared headers (`completion.h`, `warning.h`,
@@ -221,9 +222,9 @@ source-shape issue is solved.
   `AnimManager` at channel `+0x108`, and the channel stride is `0x3dc`.
   `update_subgoldy` can use the shared channel header without changing its
   headline score; this replaces the stale local `WeaponChannel` view.
-- 2026-06-20 app-shell consolidation: `AppShell` now lives in
-  `app_shell.h`, with the shared `FrontendFade` split out of the former sparse
-  border-delay view so this scratch does not pull in
+- 2026-06-20 app-shell consolidation, superseded 2026-07-14: the temporary
+  `AppShell` lived in `app_shell.h`, with the shared `FrontendFade` split out
+  of the former sparse border-delay view so this scratch did not pull in
   `frontend_widget.h`/`sprite.h`. `update_subgoldy` remains 72.51% with the
   same masked jump-table mismatch; `update_subgoldy_resurrect` and the small
   fade callers stayed exact. The type report no longer has an `AppShell`
@@ -321,8 +322,8 @@ guidance without perturbing this scheduling-sensitive body:
   `subgame_rebuild_selector`, `Completion`, `TimesUp`, and `ParcelManager`
   members of `SubgameRuntime`.
 - Root accesses now name `GameRoot::backdrop`, `tip_manager`, the Galaxy record
-  count, and the replay cursor. `AppShellHudRow::scroll_progress` closes the
-  copied HUD row's live +0x34 lane.
+  count, and the replay cursor. The temporary `AppShellHudRow` interpretation
+  was retired by the root-owner proof below.
 - The Time Trial ghost bank still uses an offset-preserving base followed by a
   canonical `SubSolution` view. Spelling the same object directly through
   `SubgameRuntime::sub_high_score.time_trial_route_records[level_mode_arg]`
@@ -332,6 +333,26 @@ guidance without perturbing this scheduling-sensitive body:
 Focused Wibo remains `72.51%`, `2067/2087`, with 290 clean masked operands and
 the same one honest `update_subgoldy_follow_jump_table` mismatch. No waiver,
 assembly shim, or other fakematch was added.
+
+## 2026-07-14 frontend bridge root-owner closure
+
+The duplicate `AppShell` lens is retired in favor of the canonical `GameRoot`
+and its first owned `GamePlayer`:
+
+- Root `+0x1b8/+0x1bc` are player-relative `+0x94/+0x98`, the existing
+  `frontend_state` and `saved_frontend_state` fields.
+- Root `+0x30c/+0x30d` are player-relative `+0x1e8/+0x1e9`, the existing
+  `redispatch_requested` and `high_score_entry_pending` flags.
+- Native copies `0x40` bytes from root `+0x15c` (player-relative `+0x38`, the
+  inherited `RenderableBod::transform`) to root `+0x2cc` (player-relative
+  `+0x1a8`), then subtracts `1.0f` from destination `+0x34`. That is exactly
+  `TransformMatrix::position.y`, proving the destination as
+  `completion_handoff_transform` rather than a synthetic HUD row.
+
+Focused compilation remains an honest partial at `74.30%` (target `2087`,
+candidate `2072`), with `290` clean masked operands and the same one
+`update_subgoldy_follow_jump_table` mismatch. No score-shaping change or
+fakematch was added.
 
 ## Named residuals (all register-allocation / micro-shape class)
 

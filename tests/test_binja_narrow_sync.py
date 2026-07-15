@@ -1232,6 +1232,64 @@ def test_font_system_ownership_stays_aligned() -> None:
     assert by_address[0x7772F8]["name"] == "g_font_sheets"
 
 
+def test_frontend_bridge_root_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    binja_header = (HEADER_DIR / "bn_frame_renderer_types.h").read_text(
+        encoding="utf-8"
+    )
+    ida_header = (HEADER_DIR / "frame_renderer_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    overlay_sync = (BINJA_DIR / "sync_overlay_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "TransformMatrix completion_handoff_transform; // +0x1a8" in matcher_header
+    for header in (binja_header, ida_header):
+        assert "FrameTransformMatrix completion_handoff_transform;" in header
+
+    assert '("0x4df904", "GameRoot*")' in binja_sync
+    assert (
+        '("0x1a8", "completion_handoff_transform", "FrameTransformMatrix")'
+        in binja_sync
+    )
+    assert "0x4DF904" in ida_sync
+    assert '"GameRoot *g_game_base;"' in ida_sync
+    assert "0x4df904" not in overlay_sync.lower()
+    assert not (repo_root / "tools/match/include/app_shell.h").exists()
+    assert "TransformMatrix transform;" in path_header
+    assert "uint8_t transform[0x40];" not in path_header
+
+    update_source = (
+        repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    resurrect_source = (
+        repo_root / "tools/match/scratches/update_subgoldy_resurrect/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    for source in (update_source, resurrect_source):
+        assert "extern GameRoot* g_game;" in source
+        assert "g_game->players[0].frontend_state" in source
+        assert "g_app" not in source
+        assert "AppShell" not in source
+
+    assert "g_game->players[0].completion_handoff_transform =" in update_source
+    assert "completion_handoff_transform.position.y" in update_source
+    assert "g_game->players[0].redispatch_requested" in update_source
+    assert "route_app->players[0].high_score_entry_pending" in resurrect_source
+
+
 def test_cut_scene_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (repo_root / "tools/match/include/cut_scene.h").read_text(

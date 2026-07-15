@@ -47,7 +47,9 @@ public:
     GameInput* game_input; // +0x168, borrows the matching root input owner
     MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
     FrontendOverlayColorLerp frontend_overlay; // +0x184, root player 0 overlay
-    char unknown_1a8[0x1e8 - 0x1a8];
+    // During the gameplay completion handoff, update_subgoldy snapshots the
+    // inherited transform here and lowers the copied Y position by one unit.
+    TransformMatrix completion_handoff_transform; // +0x1a8
     unsigned char redispatch_requested; // +0x1e8
     unsigned char high_score_entry_pending; // +0x1e9
     char unknown_1ea[0x1ec - 0x1ea];

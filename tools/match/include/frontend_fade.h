@@ -1,4 +1,4 @@
-// Shared frontend fade overlay controller at AppShell +0x24.
+// Shared frontend fade overlay controller at GameRoot +0x24.
 #ifndef FRONTEND_FADE_H
 #define FRONTEND_FADE_H
 

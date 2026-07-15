@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,35 +15,15 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "draw_queued_font_quad_instance",
-      "address": "0x44a6d0"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     },
     {
-      "name": "draw_font_text_queue",
-      "address": "0x44a730"
-    },
-    {
-      "name": "queue_font_text_instance",
-      "address": "0x44a790"
-    },
-    {
-      "name": "queue_axis_aligned_textured_quad",
-      "address": "0x44a8b0"
-    },
-    {
-      "name": "queue_axis_aligned_textured_quad_uv",
-      "address": "0x44a9b0"
-    },
-    {
-      "name": "queue_textured_quad_corners",
-      "address": "0x44aac0"
-    },
-    {
-      "name": "layout_and_queue_wrapped_font_text",
-      "address": "0x44abe0"
+      "name": "update_subgoldy_resurrect",
+      "address": "0x441fd0"
     }
   ],
-  "health_check_count": 118,
+  "health_check_count": 122,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

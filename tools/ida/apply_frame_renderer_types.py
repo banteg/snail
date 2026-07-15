@@ -55,6 +55,11 @@ TRUSTED_FUNCTION_DECLARATIONS = [
 
 TRUSTED_DATA_DECLARATIONS = [
     (
+        0x4DF904,
+        "g_game_base",
+        "GameRoot *g_game_base;",
+    ),
+    (
         0x4E5510,
         "g_sprite_depth_nodes",
         "SpriteDepthNode g_sprite_depth_nodes[3000];",

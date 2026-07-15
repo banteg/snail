@@ -25,6 +25,13 @@ typedef struct Vec4 {
     float w;
 } Vec4;
 
+typedef struct TransformMatrix {
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 position;
+} TransformMatrix;
+
 typedef struct tColour {
     float r;
     float g;
@@ -66,7 +73,7 @@ typedef struct AnimManager AnimManager;
 
 typedef struct RenderableBod {
     BodBase bod;
-    uint8_t transform[0x40];
+    TransformMatrix transform;
     /* Borrowed only when BodNode.list_flags has the render-sync bit 0x800. */
     AnimManager* render_animation_manager;
     uint8_t unknown_7c[0x4];
@@ -92,7 +99,6 @@ typedef struct FrontendWidgetTextBuffer FrontendWidgetTextBuffer;
 typedef struct Sprite Sprite;
 typedef struct TrackRowCell TrackRowCell;
 typedef struct TrackRowCell SubLoc;
-typedef struct TransformMatrix TransformMatrix;
 
 typedef enum FrontendWidgetFlag {
     FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED = 0x00000020,
@@ -1045,13 +1051,6 @@ typedef struct ObjectFaceQuad {
     TextureRef* texture_ref;
     ObjectUv uv[4];
 } ObjectFaceQuad;
-
-typedef struct TransformMatrix {
-    Vec4 basis_right;
-    Vec4 basis_up;
-    Vec4 basis_forward;
-    Vec4 position;
-} TransformMatrix;
 
 /* Authored four-float Windows AxisAngle value; Android calls it tAxis. */
 typedef struct AxisAngle {

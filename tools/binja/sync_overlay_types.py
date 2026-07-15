@@ -7,13 +7,11 @@ from pathlib import Path
 import sys
 
 from _target import DEFAULT_TARGET
-from _narrow_sync import apply_data_var_updates, apply_proto_updates, emit_summary, types_declare
+from _narrow_sync import apply_proto_updates, emit_summary, types_declare
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_overlay_types.h"
-
-DATA_VAR_UPDATES = (("0x4df904", "char*"),)
 
 PROTO_UPDATES = (
     ("initialize_overlay", "void __thiscall initialize_overlay(Overlay* overlay)"),
@@ -42,7 +40,6 @@ def main() -> int:
 
     operations: list[dict[str, object]] = [
         types_declare(REPO_ROOT, target=args.target, header_path=header_path),
-        *apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES),
         *apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES),
     ]
     return emit_summary(

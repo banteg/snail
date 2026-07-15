@@ -7,7 +7,7 @@
         "selected_level_record_active",
         "selected_level_record",
         "replay_sample_count",
-        "replay_samples",
+        "run_records",
         "control_override_active"
       ],
       "forbidden_substrings": [
@@ -25,7 +25,7 @@
       "required_substrings": [
         "control_override_active",
         "attachment_exit_pending",
-        "live_matrix.position",
+        "body.transform.position",
         "track_state_latch"
       ],
       "forbidden_substrings": [
@@ -33,6 +33,70 @@
         "_ET1",
         "unimplemented",
         "__offset("
+      ]
+    },
+    {
+      "name": "bn_update_subgoldy_frontend_bridge_owner",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "g_game_base->players[0].frontend_state",
+        "g_game_base->players[0].saved_frontend_state",
+        "g_game_base->players[0].redispatch_requested",
+        "game_base_4->players[0].completion_handoff_transform",
+        "game_base_4->players[0].transform",
+        "g_game_base->players[0].completion_handoff_transform.position.y"
+      ],
+      "forbidden_substrings": [
+        "g_game_base + 0x1b8",
+        "g_game_base[0x30c]",
+        "game_base_4[0x2cc]"
+      ]
+    },
+    {
+      "name": "ida_update_subgoldy_frontend_bridge_owner",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "g_game_base->players[0].frontend_state",
+        "g_game_base->players[0].saved_frontend_state",
+        "g_game_base->players[0].redispatch_requested",
+        "g_game_base->players[0].completion_handoff_transform",
+        "g_game_base->players[0].transform",
+        "completion_handoff_transform.position.y"
+      ],
+      "forbidden_substrings": [
+        "g_game_base + 440",
+        "g_game_base + 716",
+        "g_game_base + 768"
+      ]
+    },
+    {
+      "name": "bn_update_subgoldy_resurrect_frontend_bridge_owner",
+      "artifact": "analysis/decompile/binja/functions/00441fd0-update_subgoldy_resurrect.c",
+      "required_substrings": [
+        "g_game_base->fade.state",
+        "players[0].frontend_state",
+        "players[0].saved_frontend_state",
+        "players[0].high_score_entry_pending"
+      ],
+      "forbidden_substrings": [
+        "g_game_base + 0x1b8",
+        "g_game_base + 0x1bc",
+        "g_game_base + 0x30d"
+      ]
+    },
+    {
+      "name": "ida_update_subgoldy_resurrect_frontend_bridge_owner",
+      "artifact": "analysis/decompile/ida/functions/00441fd0-update_subgoldy_resurrect.c",
+      "required_substrings": [
+        "g_game_base->fade.state",
+        "players[0].frontend_state",
+        "players[0].saved_frontend_state",
+        "players[0].high_score_entry_pending"
+      ],
+      "forbidden_substrings": [
+        "g_game_base + 440",
+        "g_game_base + 444",
+        "g_game_base + 781"
       ]
     },
     {

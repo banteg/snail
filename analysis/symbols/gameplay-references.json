@@ -3248,7 +3248,7 @@
         "g_app",
         "g_game"
       ],
-      "description": "Global storage for the live game/application root pointer."
+      "description": "Canonical global storage for the live GameRoot pointer; g_app and g_game are historical scratch aliases for the same root owner."
     },
     {
       "address": "0x4df90c",

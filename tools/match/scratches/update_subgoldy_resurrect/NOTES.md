@@ -12,11 +12,10 @@ Exact match.
   `complete_subgame(1)`, then route either through selected-level replay state
   `0x1a`, arcade continue state `0x1a/2`, or fallback state `0x1b`.
 - The exact source shape keeps the respawn/final-loss branches explicit so VC6
-  can hoist shared `game`/`g_app` loads between condition tests and branches.
-- 2026-06-20 shared view: the local `AppShell`/`FrontendFade` slice was
-  replaced with `app_shell.h` plus `frontend_fade.h`. The exact 76-instruction
-  match is unchanged, and the final arcade route now names
-  `high_score_entry_pending` at app offset `+0x30d`.
+  can hoist shared `game`/`g_game` loads between condition tests and branches.
+- 2026-06-20 shared view, superseded 2026-07-14: the temporary `AppShell`
+  slice introduced `app_shell.h` plus `frontend_fade.h` and first named
+  `high_score_entry_pending` at root offset `+0x30d`.
 - 2026-06-21 owner cleanup: the sparse owner view is now named
   `SubgoldyResurrectGameView` instead of the generic scratch-local `Game`.
   Replacing it with broad `SubgameRuntime*` casts was rejected because it
@@ -30,3 +29,8 @@ Exact match.
   scheduling regression, so the synthetic `SubgoldyResurrectGameView` can be
   retired while the scratch remains exact at `100.00%`, `76/76`, with `13`
   clean masked operands.
+- 2026-07-14 root-owner closure: `app_shell.h` is retired. The frontend state
+  lanes are canonical `GameRoot::players[0]` fields: root `+0x1b8/+0x1bc`
+  are `GamePlayer::frontend_state/saved_frontend_state`, and root `+0x30d`
+  is `GamePlayer::high_score_entry_pending`. The helper remains exact at
+  `100.00%`, `76/76`, with all `13` masked operands clean.

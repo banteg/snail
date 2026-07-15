@@ -141,7 +141,7 @@ typedef struct GamePlayer {
     GameInput* game_input;
     MouseCursorState mouse_cursor;
     FrontendOverlayColorLerp frontend_overlay;
-    uint8_t unknown_1a8[0x40];
+    FrameTransformMatrix completion_handoff_transform;
     uint8_t redispatch_requested;
     uint8_t high_score_entry_pending;
     uint8_t unknown_1ea[0x02];

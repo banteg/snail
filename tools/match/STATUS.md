@@ -767,7 +767,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | complete_subgame | 0x438700 | 323 | 90/88 | 75.28% | 7/88 | 8 ok |  |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.75% | 9/1033 | 2 mismatch, 117 ok |  |
 | 🚧 | update_jet_particles | 0x43a690 | 670 | 174/181 | 52.96% | 0/181 | 16 ok |  |
-| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2075/2087 | 74.20% | 12/2087 | 1 mismatch, 290 ok |  |
+| 🚧 | update_subgoldy | 0x43b120 | 8456 | 2072/2087 | 74.30% | 12/2087 | 1 mismatch, 290 ok |  |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 327/347 | 64.09% | 3/347 | 10 mismatch, 48 ok |  |
 | 🚧 | update_slug_hazard_ai | 0x43f930 | 1772 | 434/464 | 66.15% | 0/464 | 2 mismatch, 47 ok |  |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 495/501 | 67.67% | 6/501 | 2 mismatch, 63 ok |  |

@@ -53,6 +53,7 @@ FUNCTION_SYMBOL_UPDATES = (
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4df904", "GameRoot*"),
     ("0x4e5510", "SpriteDepthNode[3000]"),
     ("0x4f7050", "SpriteDepthNode*[256]"),
 )
@@ -113,6 +114,7 @@ GAME_PLAYER_FIELD_UPDATES = (
     ("0x168", "game_input", "GameInput*"),
     ("0x16c", "mouse_cursor", "MouseCursorState"),
     ("0x184", "frontend_overlay", "FrontendOverlayColorLerp"),
+    ("0x1a8", "completion_handoff_transform", "FrameTransformMatrix"),
     ("0x1e8", "redispatch_requested", "uint8_t"),
     ("0x1e9", "high_score_entry_pending", "uint8_t"),
     ("0x1ec", "selected_high_score_rank", "int32_t"),
