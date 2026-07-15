@@ -36,6 +36,7 @@ REQUIRED_STRUCTS = (
     "FrameContactTargetRegistry",
     "FrameSubgameRuntime",
     "TextureSetSelector",
+    "FrameBorderManager",
     "GameRoot",
 )
 
@@ -139,6 +140,13 @@ FRAME_SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x40", "level_mode", "int32_t"),
 )
 
+BORDER_MANAGER_PREFIX_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x08", "list_prev", "FrontendWidget*"),
+    ("0x0c", "list_next", "FrontendWidget*"),
+)
+
 GAME_ROOT_FIELD_UPDATES = (
     ("0x24", "fade", "FrontendFade"),
     ("0x38", "frontend_quit_requested", "int32_t"),
@@ -154,20 +162,44 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x5a8", "active_bod_list", "FrameBodList"),
     ("0x5b4", "render_camera_slots", "FrameRenderCameraSlot[5]"),
     ("0xb24", "texture_set_selector", "TextureSetSelector"),
+    ("0xb48", "unknown_000b48", "int32_t"),
+    ("0xb4c", "border_manager", "FrameBorderManager"),
     ("0x74618", "subgame", "FrameSubgameRuntime"),
 )
 
 
 def resolved_game_root_field_updates(*, target: str) -> tuple[tuple[str, str, str], ...]:
-    """Prefer the canonical cRSubGame owner after its full type is available."""
+    """Prefer complete root subowners after their canonical types are available."""
+    border_manager_type = (
+        "BorderManager"
+        if struct_exists(REPO_ROOT, target=target, struct_name="BorderManager")
+        else "FrameBorderManager"
+    )
     subgame_type = (
         "SubgameRuntime"
         if struct_exists(REPO_ROOT, target=target, struct_name="SubgameRuntime")
         else "FrameSubgameRuntime"
     )
     return tuple(
-        (offset, name, subgame_type if name == "subgame" else field_type)
+        (
+            offset,
+            name,
+            border_manager_type
+            if name == "border_manager"
+            else subgame_type
+            if name == "subgame"
+            else field_type,
+        )
         for offset, name, field_type in GAME_ROOT_FIELD_UPDATES
+    )
+
+
+def resolved_border_manager_struct_name(*, target: str) -> str:
+    """Use the complete manager owner when available, otherwise its frame bootstrap."""
+    return (
+        "BorderManager"
+        if struct_exists(REPO_ROOT, target=target, struct_name="BorderManager")
+        else "FrameBorderManager"
     )
 
 
@@ -209,6 +241,10 @@ def main() -> int:
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
+                (
+                    resolved_border_manager_struct_name(target=args.target),
+                    BORDER_MANAGER_PREFIX_FIELD_UPDATES,
+                ),
                 ("GameRoot", resolved_game_root_field_updates(target=args.target)),
             ),
             proto_updates=PROTO_UPDATES,

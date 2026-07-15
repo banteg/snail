@@ -1677,7 +1677,7 @@ def test_frontend_widget_input_text_owner_replay_stays_aligned() -> None:
     assert "_pad_6fc" not in ida_path_header
 
 
-def test_frontend_widget_reposition_void_replay_stays_direct() -> None:
+def test_frontend_widget_void_replays_stay_direct() -> None:
     frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
         encoding="utf-8"
     )
@@ -1685,7 +1685,6 @@ def test_frontend_widget_reposition_void_replay_stays_direct() -> None:
         encoding="utf-8"
     )
 
-    expected = "void __thiscall layout_frontend_widget(FrontendWidget* widget)"
     deferred = frontend_sync.split("\nDEFERRED_PROTO_UPDATES = (", 1)[1].split(
         "\nPROTO_UPDATES = (", 1
     )[0]
@@ -1693,9 +1692,30 @@ def test_frontend_widget_reposition_void_replay_stays_direct() -> None:
         "\nUSER_VAR_UPDATES = (", 1
     )[0]
 
-    assert expected not in deferred
-    assert expected in direct
-    assert f'"{expected};"' in ida_path_sync
+    expected = (
+        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
+        "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
+    )
+    for prototype in expected:
+        assert prototype not in deferred
+        assert prototype in direct
+        assert f'"{prototype};"' in ida_path_sync
+    assert (
+        '"initialize_frontend_widget",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        851,\n"
+        "        66,\n"
+        '        "hot_text_color_source",\n'
+        '        "tColour*",'
+    ) in frontend_sync
+    assert (
+        '"initialize_frontend_widget",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        1680,\n"
+        "        66,\n"
+        '        "slider_less_color",\n'
+        '        "tColour*",'
+    ) in frontend_sync
 
 
 def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
@@ -1974,14 +1994,38 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "TransformMatrix completion_handoff_transform; // +0x1a8" in matcher_header
     for header in (binja_header, ida_header):
         assert "FrameTransformMatrix completion_handoff_transform;" in header
+        assert "typedef struct FrameBorderManager" in header
+        assert "void* vtable;" in header
+        assert "uint32_t list_flags;" in header
+        assert "void* list_prev;" in header
+        assert "void* list_next;" in header
+        assert "uint8_t unknown_000010[0x435b0 - 0x10];" in header
+        assert "float justify_centre;" in header
+        assert "int32_t unknown_000b48;" in header
+        assert "FrameBorderManager border_manager;" in header
+        assert "uint8_t unknown_044100[0x74618 - 0x44100];" in header
+        assert "unknown_000b48[0x74618 - 0xb48]" not in header
 
     assert '("0x4df904", "GameRoot*")' in binja_sync
     assert (
         '("0x1a8", "completion_handoff_transform", "FrameTransformMatrix")'
         in binja_sync
     )
+    assert '"FrameBorderManager",' in binja_sync
+    assert '("0xb48", "unknown_000b48", "int32_t")' in binja_sync
+    assert '("0xb4c", "border_manager", "FrameBorderManager")' in binja_sync
+    assert 'BORDER_MANAGER_PREFIX_FIELD_UPDATES = (' in binja_sync
+    assert '("0x08", "list_prev", "FrontendWidget*")' in binja_sync
+    assert '("0x0c", "list_next", "FrontendWidget*")' in binja_sync
+    assert "def resolved_border_manager_struct_name" in binja_sync
+    assert 'struct_name="BorderManager"' in binja_sync
+    assert 'else "FrameBorderManager"' in binja_sync
     assert "0x4DF904" in ida_sync
     assert '"GameRoot *g_game_base;"' in ida_sync
+    assert (
+        '"FrontendWidget *__thiscall allocate_border(FrameBorderManager *manager);"'
+        in ida_sync
+    )
     assert "0x4df904" not in overlay_sync.lower()
     for field_update in (
         '("0x67c", "overlay_0", "Overlay")',

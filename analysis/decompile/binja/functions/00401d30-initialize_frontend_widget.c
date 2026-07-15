@@ -9,7 +9,7 @@
 00401d4f        widget->render_inset_delta = 0f
 00401d55        widget->render_inset_base = 20f
 00401d5f        widget->render_inset_dynamic = 0
-00401d6e        struct FrontendWidget* eax = &g_game_base[0xb4c]
+00401d6e        struct BorderManager* eax = &g_game_base->border_manager
 00401d7b        if ((0x200 & widget->list_flags) == 0)
 00401d8c        widget->list_prev = eax
 00401d92        widget->list_next = eax->list_next
@@ -68,27 +68,27 @@
 00402128        widget->hot_padding = 13f
 00402132        widget->stack_gap = 26f
 0040213c        struct tColour color_7
-0040213c        struct tColour* eax_19 = set_color_rgba(&color_7, 1f, 0.521568656f, 0f, 0.699999988f)
-00402153        widget->idle_text_color.r = eax_19->r
-00402162        widget->idle_text_color.g = eax_19->g
-00402168        widget->idle_text_color.b = eax_19->b
-0040216e        widget->idle_text_color.a = eax_19->a
+0040213c        struct tColour* eax_18 = set_color_rgba(&color_7, 1f, 0.521568656f, 0f, 0.699999988f)
+00402153        widget->idle_text_color.r = eax_18->r
+00402162        widget->idle_text_color.g = eax_18->g
+00402168        widget->idle_text_color.b = eax_18->b
+0040216e        widget->idle_text_color.a = eax_18->a
 00402178        struct tColour color_9
-00402178        struct tColour* eax_21 = set_color_rgba(&color_9, 1f, 1f, 1f, 1f)
-00402184        widget->hot_text_color.r = eax_21->r
-00402193        widget->hot_text_color.g = eax_21->g
-0040219e        widget->hot_text_color.b = eax_21->b
-004021ab        widget->hot_text_color.a = eax_21->a
+00402178        struct tColour* eax_20 = set_color_rgba(&color_9, 1f, 1f, 1f, 1f)
+00402184        widget->hot_text_color.r = eax_20->r
+00402193        widget->hot_text_color.g = eax_20->g
+0040219e        widget->hot_text_color.b = eax_20->b
+004021ab        widget->hot_text_color.a = eax_20->a
 004021ae        struct tColour color_11
-004021ae        struct tColour* eax_22 = set_color_rgba(&color_11, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
+004021ae        struct tColour* eax_21 = set_color_rgba(&color_11, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
 004021bb        int32_t var_118_4 = 0x3f800000
 004021c0        int32_t var_11c_4 = 0x3f31b1b2
-004021c5        widget->idle_fill_color.r = eax_22->r
+004021c5        widget->idle_fill_color.r = eax_21->r
 004021ca        int32_t var_120_4 = 0x3e9e9e9f
 004021cf        int32_t var_124_4 = 0x3f1b9b9c
-004021d4        widget->idle_fill_color.g = eax_22->g
-004021da        widget->idle_fill_color.b = eax_22->b
-004021e0        widget->idle_fill_color.a = eax_22->a
+004021d4        widget->idle_fill_color.g = eax_21->g
+004021da        widget->idle_fill_color.b = eax_21->b
+004021e0        widget->idle_fill_color.a = eax_21->a
 004021e3        color_15 = &color_1
 00401f03        case 0x16
 00401f03        widget->render_inset_base = 20f
@@ -136,28 +136,28 @@
 00402076        widget->idle_text_color.b = eax_14->b
 0040207c        widget->idle_text_color.a = eax_14->a
 00402083        struct tColour color_3
-00402083        struct tColour* eax_16 = set_color_rgba(&color_3, 1f, 1f, 1f, 1f)
-0040208f        widget->hot_text_color.r = eax_16->r
-0040209e        widget->hot_text_color.g = eax_16->g
-004020a9        widget->hot_text_color.b = eax_16->b
-004020b3        widget->hot_text_color.a = eax_16->a
+00402083        struct tColour* hot_text_color_source = set_color_rgba(&color_3, 1f, 1f, 1f, 1f)
+0040208f        widget->hot_text_color.r = hot_text_color_source->r
+0040209e        widget->hot_text_color.g = hot_text_color_source->g
+004020a9        widget->hot_text_color.b = hot_text_color_source->b
+004020b3        widget->hot_text_color.a = hot_text_color_source->a
 004020b6        struct tColour color_4
-004020b6        struct tColour* eax_17 = set_color_rgba(&color_4, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
+004020b6        struct tColour* eax_16 = set_color_rgba(&color_4, 0.329411775f, 0.223529413f, 0.501960814f, 0.699999988f)
 004020c3        int32_t var_118_3 = 0x3f800000
 004020c8        int32_t var_11c_3 = 0x3f31b1b2
-004020cd        widget->idle_fill_color.r = eax_17->r
+004020cd        widget->idle_fill_color.r = eax_16->r
 004020d2        int32_t var_120_3 = 0x3e9e9e9f
 004020d7        int32_t var_124_3 = 0x3f1b9b9c
-004020dc        widget->idle_fill_color.g = eax_17->g
-004020e2        widget->idle_fill_color.b = eax_17->b
-004020e8        widget->idle_fill_color.a = eax_17->a
+004020dc        widget->idle_fill_color.g = eax_16->g
+004020e2        widget->idle_fill_color.b = eax_16->b
+004020e8        widget->idle_fill_color.a = eax_16->a
 004020eb        void var_90
 004020eb        color_15 = &var_90
-004021e7        struct tColour* eax_24 = set_color_rgba(color_15, 0.607843161f, 0.309803933f, 0.694117665f, 1f)
-004021ee        widget->hot_fill_color.r = eax_24->r
-004021f4        widget->hot_fill_color.g = eax_24->g
-004021fa        widget->hot_fill_color.b = eax_24->b
-00402200        widget->hot_fill_color.a = eax_24->a
+004021e7        struct tColour* eax_23 = set_color_rgba(color_15, 0.607843161f, 0.309803933f, 0.694117665f, 1f)
+004021ee        widget->hot_fill_color.r = eax_23->r
+004021f4        widget->hot_fill_color.g = eax_23->g
+004021fa        widget->hot_fill_color.b = eax_23->b
+00402200        widget->hot_fill_color.a = eax_23->a
 0040221e        widget->slider_position_target = 0.5f
 00402224        widget->slider_position_current = 0.5f
 0040222a        widget->_pad_10[0x28] = 1
@@ -167,10 +167,10 @@
 0040222d        unhide_border_init(widget)
 00402241        rstrcpy_checked_ascii(&widget->text_buffer, text)
 00402254        widget->layout_anchor_y = y
-0040225a        char eax_27 = widget->widget_flags.b
+0040225a        char eax_26 = widget->widget_flags.b
 00402263        widget->layout_anchor_x = x
 0040226b        widget->hover_blend_target = 1f
-00402277        if ((eax_27 & 2) == 0)
+00402277        if ((eax_26 & 2) == 0)
 00402280        unhighlight_border(widget)
 00402279        highlight_border(widget)
 00402285        long double x87_r7 = fconvert.t(widget->idle_padding)
@@ -182,29 +182,30 @@
 004022c4        widget->text_alignment = text_alignment
 004022ca        widget->anchor_x = anchor_x
 004022dc        bool cond:0 = (widget->widget_flags & 0x100000) == 0
-004022e1        long double x87_r7_2 = fconvert.t(anchor_x) + fconvert.t(*(g_game_base + 0x440fc))
+004022e1        long double x87_r7_2 = fconvert.t(anchor_x) + fconvert.t(g_game_base->border_manager..justify_centre_bits)
 004022e7        widget->mouse_history_warmup_frames = 1
 004022ed        widget->anchor_x = fconvert.s(x87_r7_2)
 004022f3        if (not(cond:0))
 0040232e        float var_104_1 = fconvert.s(fconvert.t(y) + fconvert.t(40f))
-00402336        widget->slider_more_widget = allocate_border(&g_game_base[0xb4c])
-0040233c        struct tColour* eax_31
+00402336        widget->slider_more_widget = allocate_border(&g_game_base->border_manager)
+0040233c        struct tColour* eax_30
 0040233c        int32_t ecx_43
-0040233c        eax_31, ecx_43 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
+0040233c        eax_30, ecx_43 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 0040234c        int32_t var_128_1 = ecx_43
-00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x2a, fconvert.s(fconvert.t(*(g_game_base + 0x440fc)) + fconvert.t(458f)), var_104_1, eax_31, 0f, 4)
+00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x2a, fconvert.s(fconvert.t(g_game_base->border_manager..justify_centre_bits) + fconvert.t(458f)), var_104_1, eax_30, 0f, 4)
 00402389        border_sprite_extend(widget->slider_more_widget, 0x2c, 0x2b, 0x2d, 1)
-004023ba        widget->slider_less_widget = allocate_border(&g_game_base[0xb4c])
-004023c0        int32_t* eax_34
+004023ba        widget->slider_less_widget = allocate_border(&g_game_base->border_manager)
+004023c0        struct tColour* slider_less_color
 004023c0        int32_t ecx_51
-004023c0        eax_34, ecx_51 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
+004023c0        slider_less_color, ecx_51 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 004023cc        int32_t var_128_3 = ecx_51
-004023f7        initialize_frontend_sprite_button(widget->slider_less_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x26, fconvert.s(fconvert.t(*(g_game_base + 0x440fc)) + fconvert.t(118f)), var_104_1, eax_34, 0f, 4)
+004023f7        initialize_frontend_sprite_button(widget->slider_less_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x26, fconvert.s(fconvert.t(g_game_base->border_manager..justify_centre_bits) + fconvert.t(118f)), var_104_1, slider_less_color, 0f, 4)
 00402409        border_sprite_extend(widget->slider_less_widget, 0x28, 0x27, 0x29, 0)
-0040243a        widget->slider_value_widget = allocate_border(&g_game_base[0xb4c])
-00402440        struct Color4f* color_14
+0040243a        widget->slider_value_widget = allocate_border(&g_game_base->border_manager)
+00402440        struct tColour* color_14
 00402440        int32_t ecx_59
 00402440        color_14, ecx_59 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00402452        int32_t var_124_7 = ecx_59
 00402469        initialize_frontend_widget(widget->slider_value_widget, &__dos_header, "00%", 0x15, 0f, fconvert.s(fconvert.t(widget->layout_anchor_y) + fconvert.t(40f)), color_14, 2, 0f)
-0040247f        return layout_frontend_widget(widget)
+00402470        layout_frontend_widget(widget)
+0040247f        return

@@ -122,10 +122,6 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
 
 DEFERRED_PROTO_UPDATES = (
     (
-        "initialize_frontend_widget",
-        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
-    ),
-    (
         "0x402790",
         "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)",
     ),
@@ -157,6 +153,10 @@ DEFERRED_PROTO_UPDATES = (
 
 PROTO_UPDATES = (
     (
+        "initialize_frontend_widget",
+        "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
+    ),
+    (
         "border_mouse_test",
         "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
     ),
@@ -169,6 +169,22 @@ PROTO_UPDATES = (
 )
 
 USER_VAR_UPDATES = (
+    (
+        "initialize_frontend_widget",
+        "RegisterVariableSourceType",
+        851,
+        66,
+        "hot_text_color_source",
+        "tColour*",
+    ),
+    (
+        "initialize_frontend_widget",
+        "RegisterVariableSourceType",
+        1680,
+        66,
+        "slider_less_color",
+        "tColour*",
+    ),
     (
         "draw_frontend_widget",
         "RegisterVariableSourceType",

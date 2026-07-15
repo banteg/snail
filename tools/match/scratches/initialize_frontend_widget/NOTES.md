@@ -123,6 +123,24 @@ the former Exit/HighScore tail returns only propagated incidental call state.
 The shared method is now `void`. Focused matching remains 99.30%, 429/429,
 prefix 55, with 49 clean operands and the same bounded jump-table mismatch.
 
+## 2026-07-15 persisted constructor receiver
+
+The iOS symbol inventory independently preserves the same
+`cRBorder::Init(int, char*, int, float, float, tColour, int, float)` member as
+Android. The repository's rollback-safe Binary Ninja preview verified the
+authored `void` receiver and restored the old scalar type before apply. The
+durable sync now owns the `FrontendWidget*` receiver, `tColour*` argument, and
+void result directly; persistence requires a saved snapshot plus independent
+prototype readback. IDA already carries the same contract. None of this changes
+the scratch: it remains the honest 99.30%, 429/429-instruction transcription
+with 49 clean operands and one bounded jump-table mismatch.
+
+The Binary Ninja replay also pins the two `set_color_rgba` EAX values that its
+HLIL otherwise merges with integer outgoing-stack lanes. Both calls return the
+same proven `tColour*` as the other constructor color initializers; the narrow
+user-variable annotations prevent later root-layout reanalysis from degrading
+those two values back to `int32_t*`.
+
 ## 2026-07-14 final raw-lane cleanup
 
 Text copying, all flag tests, and both slider-child flag derivations now use

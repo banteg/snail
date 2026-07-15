@@ -180,6 +180,20 @@ typedef struct TextureSetSelector {
 } TextureSetSelector;
 
 /*
+ * Standalone bootstrap view used only until the complete BorderManager owner
+ * is present.  The sync promotes GameRoot::border_manager to that canonical
+ * type instead of keeping this sparse frame-renderer projection.
+ */
+typedef struct FrameBorderManager {
+    void* vtable;
+    uint32_t list_flags;
+    void* list_prev;
+    void* list_next;
+    uint8_t unknown_000010[0x435b0 - 0x10];
+    float justify_centre;
+} FrameBorderManager;
+
+/*
  * Standalone bootstrap view used only until the canonical SubgameRuntime is
  * present.  The sync promotes GameRoot::subgame to that complete owner rather
  * than keeping this sparse frame-renderer view as a parallel identity.
@@ -221,7 +235,9 @@ typedef struct GameRoot {
     FrameRenderCameraSlot render_camera_slots[5];
     uint8_t unknown_00067c[0xb24 - 0x67c];
     TextureSetSelector texture_set_selector;
-    uint8_t unknown_000b48[0x74618 - 0xb48];
+    int32_t unknown_000b48;
+    FrameBorderManager border_manager;
+    uint8_t unknown_044100[0x74618 - 0x44100];
     FrameSubgameRuntime subgame;
     uint8_t unknown_12e6df0[0x12e6ff4 - 0x12e6df0];
 } GameRoot;

@@ -24,6 +24,10 @@ TRUSTED_NAMES = [
 
 TRUSTED_FUNCTION_DECLARATIONS = [
     (
+        "allocate_border",
+        "FrontendWidget *__thiscall allocate_border(FrameBorderManager *manager);",
+    ),
+    (
         "initialize_game_player",
         "GamePlayer *__thiscall initialize_game_player(GamePlayer *player);",
     ),

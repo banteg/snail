@@ -177,6 +177,20 @@ typedef struct TextureSetSelector {
     int32_t current_texture_set;
 } TextureSetSelector;
 
+/*
+ * Sparse frame-owner view of the exact 0x435b4-byte cRBorderManager.  The
+ * constructor lane only needs its final authored float; keeping the complete
+ * pool opaque avoids creating a competing definition of BorderManager.
+ */
+typedef struct FrameBorderManager {
+    void* vtable;
+    uint32_t list_flags;
+    void* list_prev;
+    void* list_next;
+    uint8_t unknown_000010[0x435b0 - 0x10];
+    float justify_centre;
+} FrameBorderManager;
+
 typedef struct FrameSubgameRuntime {
     uint8_t scan_reset;
     uint8_t camera_snap_requested;
@@ -214,7 +228,9 @@ typedef struct GameRoot {
     FrameRenderCameraSlot render_camera_slots[5];
     uint8_t unknown_00067c[0xb24 - 0x67c];
     TextureSetSelector texture_set_selector;
-    uint8_t unknown_000b48[0x74618 - 0xb48];
+    int32_t unknown_000b48;
+    FrameBorderManager border_manager;
+    uint8_t unknown_044100[0x74618 - 0x44100];
     FrameSubgameRuntime subgame;
     uint8_t unknown_12e6df0[0x12e6ff4 - 0x12e6df0];
 } GameRoot;

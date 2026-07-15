@@ -71,7 +71,8 @@
     },
     {
       "address": "0x4032a0",
-      "name": "allocate_border"
+      "name": "allocate_border",
+      "description": "Exact cRBorderManager allocator: scans the fixed 150-record pool for the first inactive cRBorder-sized slot, stamps GameRoot::frame_counter, and returns that backing record through the authored cRBorder view. The iOS inventory preserves this owner method as cRBorderManager::GetBorder()."
     },
     {
       "address": "0x403300",

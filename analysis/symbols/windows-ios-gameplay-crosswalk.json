@@ -37,6 +37,7 @@
     {
       "address": "0x401d30",
       "windows_name": "initialize_frontend_widget",
+      "ios_symbol": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
       "android_symbol": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
       "source_object": "Border.o",
       "confidence": "high",
@@ -91,6 +92,14 @@
       "source_object": "Border.o",
       "confidence": "high",
       "notes": "Android and iOS preserve the same cRBorder flag snapshot, active-list removal, mouse and shortcut dispatch, tooltip/twinkle/RePosition/Draw sequence, sound IDs 8/9, text-input branch, and slider-child propagation. Windows exposes this body only through the cRBorder slot-zero callback table, and run_frame_update invokes that slot through the shared void AI contract."
+    },
+    {
+      "address": "0x4032a0",
+      "windows_name": "allocate_border",
+      "ios_symbol": "cRBorderManager::GetBorder()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact Windows allocator scans the manager-owned 150-record cRBorder pool, stamps the chosen slot from GameRoot::frame_counter, and returns that record through the FrontendWidget/cRBorder view."
     },
     {
       "address": "0x403410",

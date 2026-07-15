@@ -291,14 +291,47 @@
         "void __thiscall initialize_frontend_widget(",
         "tColour *color",
         "tColour *p_hot_text_color",
+        "p_border_manager = (FrontendWidget *)&g_game_base->border_manager",
         "widget->border_texture_id",
         "widget->hot_text_color",
-        "widget->idle_fill_color"
+        "widget->idle_fill_color",
+        "g_game_base->border_manager.justify_centre",
+        "allocate_border(&g_game_base->border_manager)",
+        "layout_frontend_widget(widget);"
       ],
       "forbidden_substrings": [
         "Color4f",
         "int32_t __thiscall initialize_frontend_widget",
+        "unknown_000b48",
+        "return layout_frontend_widget",
         "_pad_10[56]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00401d30-initialize_frontend_widget.c",
+      "required_substrings": [
+        "struct BorderManager* eax = &g_game_base->border_manager",
+        "widget->list_next = eax->list_next",
+        "struct tColour color_1",
+        "struct tColour* hot_text_color_source",
+        "struct tColour* slider_less_color",
+        "widget->slider_more_widget = allocate_border(&g_game_base->border_manager)",
+        "layout_frontend_widget(widget)",
+        "0040247f        return"
+      ],
+      "forbidden_substrings": [
+        "Color4f",
+        "int32_t* eax_16",
+        "int32_t* eax_34",
+        "eax->bod_base",
+        "g_game_base[0xb4c]",
+        "unknown_000b48",
+        "return layout_frontend_widget",
+        "arg1->",
+        "unimplemented",
         "__asm",
         "_ET1"
       ]

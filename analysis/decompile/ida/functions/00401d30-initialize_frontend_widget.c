@@ -14,7 +14,7 @@ void __thiscall initialize_frontend_widget(
         int32_t text_alignment,
         float anchor_x)
 {
-  FrontendWidget *v10; // eax
+  FrontendWidget *p_border_manager; // eax
   FrontendWidget *list_next; // eax
   tColour *p_hot_text_color; // edi
   tColour *v13; // eax
@@ -24,7 +24,7 @@ void __thiscall initialize_frontend_widget(
   tColour *v17; // eax
   char v18; // al
   double idle_padding; // st7
-  uint32_t v20; // eax
+  FrontendWidgetFlag v20; // eax
   double v21; // st7
   tColour *v22; // eax
   tColour *v23; // eax
@@ -56,16 +56,16 @@ void __thiscall initialize_frontend_widget(
   widget->render_inset_delta = 0.0;
   widget->render_inset_base = 20.0;
   widget->render_inset_dynamic = 0;
-  v10 = (FrontendWidget *)((char *)g_game_base + 2892);
+  p_border_manager = (FrontendWidget *)&g_game_base->border_manager;
   if ( (widget->list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    widget->list_prev = v10;
-    widget->list_next = v10->list_next;
-    v10->list_next = widget;
+    widget->list_prev = p_border_manager;
+    widget->list_next = p_border_manager->list_next;
+    p_border_manager->list_next = widget;
     list_next = widget->list_next;
     if ( list_next )
       list_next->list_prev = widget;
@@ -175,15 +175,15 @@ LABEL_11:
   widget->text_alignment = text_alignment;
   widget->anchor_x = anchor_x;
   v20 = widget->widget_flags;
-  v21 = anchor_x + *((float *)g_game_base + 69695);
+  v21 = anchor_x + g_game_base->border_manager.justify_centre;
   widget->mouse_history_warmup_frames = 1;
   widget->anchor_x = v21;
   if ( (v20 & 0x100000) != 0 )
   {
     *(float *)&ArgList = y + 40.0;
-    widget->slider_more_widget = (FrontendWidget *)allocate_border((_DWORD *)g_game_base + 723);
+    widget->slider_more_widget = allocate_border(&g_game_base->border_manager);
     v22 = set_color_rgba(&v29, 1.0, 1.0, 1.0, 1.0);
-    *(float *)&v25 = *((float *)g_game_base + 69695) + 458.0;
+    *(float *)&v25 = g_game_base->border_manager.justify_centre + 458.0;
     initialize_frontend_sprite_button(
       (int)widget->slider_more_widget,
       (unsigned int)&unk_800000 & widget->widget_flags | 0x20400814,
@@ -194,9 +194,9 @@ LABEL_11:
       0.0,
       4);
     border_sprite_extend((int)widget->slider_more_widget, 44, 43, 45, 1);
-    widget->slider_less_widget = (FrontendWidget *)allocate_border((_DWORD *)g_game_base + 723);
+    widget->slider_less_widget = allocate_border(&g_game_base->border_manager);
     v23 = set_color_rgba(&v29, 1.0, 1.0, 1.0, 1.0);
-    *(float *)&v26 = *((float *)g_game_base + 69695) + 118.0;
+    *(float *)&v26 = g_game_base->border_manager.justify_centre + 118.0;
     initialize_frontend_sprite_button(
       (int)widget->slider_less_widget,
       (unsigned int)&unk_800000 & widget->widget_flags | 0x20400814,
@@ -207,11 +207,10 @@ LABEL_11:
       0.0,
       4);
     border_sprite_extend((int)widget->slider_less_widget, 40, 39, 41, 0);
-    widget->slider_value_widget = (FrontendWidget *)allocate_border((_DWORD *)g_game_base + 723);
+    widget->slider_value_widget = allocate_border(&g_game_base->border_manager);
     v24 = set_color_rgba(&v29, 1.0, 1.0, 1.0, 1.0);
     v27 = widget->layout_anchor_y + 40.0;
     initialize_frontend_widget(widget->slider_value_widget, 0x400000u, ::text, 21, 0.0, v27, v24, 2, 0.0);
   }
   layout_frontend_widget(widget);
 }
-
