@@ -96,10 +96,10 @@ typedef char SubSegment_must_be_0x4220[
 // cRSubTracks::Init(cRSubSegmentRaw**) symbol.
 struct SubSegmentRaw {
     int row_count;                 // +0x00, filled after measuring row 0
-    char unknown_04[0x18];
+    int metadata_words[6];         // +0x04, authored static metadata unused here
     int path_index;                // +0x1c
     char* source_name;             // +0x20
-    int unknown_24;                // +0x24
+    char* marker_row;              // +0x24, one '*' across the segment width
     char* glyph_rows[8];           // +0x28
 };
 

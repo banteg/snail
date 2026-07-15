@@ -3006,7 +3006,7 @@
     {
       "address": "0x448060",
       "name": "load_builtin_segment_definitions",
-      "description": "Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. The inconsistent incidental return register proves the Windows member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`."
+      "description": "Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. Every live 0x48-byte raw record also owns a distinct `marker_row` pointer at +0x24 whose width matches the glyph rows and whose text contains one `*`; Windows does not consume that lane or the preceding six metadata dwords here. The inconsistent incidental return register proves the member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`."
     },
     {
       "address": "0x448160",

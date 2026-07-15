@@ -6,8 +6,10 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_pro
+import ida_typeinf
 import idc
 
 
@@ -65,6 +67,103 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _sync_builtin_grid_offset_lvar() -> dict[str, object]:
+    selector = "load_builtin_segment_definitions"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_stk_var()
+        and (
+            lvar.name in {"builtins", "grid_offset"}
+            or "BuiltinSegmentDefinition" in str(lvar.type())
+        )
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_local_candidates",
+            "candidate_count": len(candidates),
+            "selector": selector,
+        }
+
+    lvar = candidates[0]
+    observed_type = _normalize_type_text(str(lvar.type()))
+    if lvar.name == "grid_offset" and observed_type in {"int", "int32_t"}:
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "selector": selector,
+        }
+
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        "int32_t grid_offset;",
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_grid_offset_type_failed",
+            "selector": selector,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = "grid_offset"
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_user_lvar_info_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_candidates = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if candidate.is_stk_var() and candidate.name == "grid_offset"
+    ]
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "grid_offset_readback_failed",
+            "candidate_count": len(verified_candidates),
+            "selector": selector,
+        }
+
+    verified = verified_candidates[0]
+    verified_type = _normalize_type_text(str(verified.type()))
+    if verified_type not in {"int", "int32_t"}:
+        return {
+            "status": "failed",
+            "reason": "grid_offset_type_readback_failed",
+            "observed_type": str(verified.type()),
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied",
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified.name,
+        "type": str(verified.type()),
+        "selector": selector,
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
@@ -118,6 +217,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    grid_offset_lvar = _sync_builtin_grid_offset_lvar()
+    if grid_offset_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "load_builtin_segment_definitions",
+                "grid_offset_lvar": grid_offset_lvar,
+            }
+        )
+
     print(
         json.dumps(
             {
@@ -126,6 +234,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parse_errors": parse_errors,
                 "applied": applied,
                 "unchanged": unchanged,
+                "grid_offset_lvar": grid_offset_lvar,
                 "missing": missing,
                 "failed": failed,
             },

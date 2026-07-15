@@ -5392,6 +5392,23 @@
       ]
     },
     {
+      "name": "ida_load_builtin_segment_raw_owner",
+      "artifact": "analysis/decompile/ida/functions/00448060-load_builtin_segment_definitions.c",
+      "required_substrings": [
+        "void __thiscall load_builtin_segment_definitions(",
+        "SubTracks *tracks",
+        "SubSegmentRaw **raw_segments",
+        "int32_t grid_offset",
+        "tracks->segment_slots",
+        "raw_segments[tracks->segment_count]->glyph_rows[0]"
+      ],
+      "forbidden_substrings": [
+        "BuiltinSegmentDefinition",
+        "_BYTE *__thiscall load_builtin_segment_definitions",
+        "int *this, int a2"
+      ]
+    },
+    {
       "name": "ida_render_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/00411040-render_backdrop.c",
       "required_substrings": [

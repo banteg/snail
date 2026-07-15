@@ -102,10 +102,10 @@ typedef struct SubTracks {
 /* Windows layout of the cRSubSegmentRaw parameter records. */
 typedef struct SubSegmentRaw {
     int32_t row_count;
-    uint8_t unknown_04[0x18];
+    int32_t metadata_words[6];
     int32_t path_index;
     char* source_name;
-    int32_t unknown_24;
+    char* marker_row;
     char* glyph_rows[8];
 } SubSegmentRaw;
 

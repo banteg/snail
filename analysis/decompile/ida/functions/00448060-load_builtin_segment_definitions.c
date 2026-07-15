@@ -2,64 +2,60 @@
 /* function: load_builtin_segment_definitions @ 0x448060 */
 /* selector: load_builtin_segment_definitions */
 
-// Initializes the secondary SubTracks owner from the shipped SubSegmentRaw pointer table at `0x4a63d0`. The empty and populated paths leave incompatible incidental values in eax, proving the authored member is void despite this stale decompiler-inferred return type; iOS names the overload `cRSubTracks::Init(cRSubSegmentRaw**)`.
-_BYTE *__thiscall load_builtin_segment_definitions(int *this, int a2)
+// Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. The inconsistent incidental return register proves the Windows member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`.
+void __thiscall load_builtin_segment_definitions(SubTracks *tracks, SubSegmentRaw **raw_segments)
 {
-  _BYTE *result; // eax
-  _BYTE *v4; // esi
-  int v5; // eax
-  int v6; // edi
-  int v7; // eax
-  int v8; // esi
-  char v9; // dl
-  int v10; // ebp
-  int v11; // esi
-  int v12; // [esp+8h] [ebp+4h]
+  char *v3; // esi
+  int32_t v4; // eax
+  int v5; // edi
+  int32_t segment_count; // eax
+  int v7; // esi
+  char v8; // dl
+  int v9; // ebp
+  int32_t v10; // esi
+  int32_t grid_offset; // [esp+8h] [ebp+4h]
 
-  *this = 0;
-  *(this + 431665) = 1000;
-  result = *(_BYTE **)a2;
-  if ( **(_BYTE **)(*(_DWORD *)a2 + 40) )
+  tracks->segment_count = 0;
+  tracks->random_length = 1000;
+  if ( *(*raw_segments)->glyph_rows[0] )
   {
     do
     {
-      v4 = *(_BYTE **)(*(_DWORD *)(a2 + 4 * *this) + 40);
-      v5 = 0;
-      if ( *v4 )
+      v3 = raw_segments[tracks->segment_count]->glyph_rows[0];
+      v4 = 0;
+      if ( *v3 )
       {
         do
-          ++v5;
-        while ( v4[v5] );
+          ++v4;
+        while ( v3[v4] );
       }
-      v12 = 0;
-      v6 = 40;
-      *(this + 4232 * *this + 2) = v5;
-      **(_DWORD **)(a2 + 4 * *this) = v5;
+      grid_offset = 0;
+      v5 = 40;
+      tracks->segment_slots[tracks->segment_count].row_count = v4;
+      raw_segments[tracks->segment_count]->row_count = v4;
       do
       {
-        v7 = *this;
-        v8 = 0;
-        v9 = **(_BYTE **)(*(_DWORD *)(a2 + 4 * *this) + v6);
+        segment_count = tracks->segment_count;
+        v7 = 0;
+        v8 = **(_BYTE **)((char *)&raw_segments[tracks->segment_count]->row_count + v5);
         do
         {
-          v10 = v8 + v12 + 16928 * v7;
-          ++v8;
-          *((_BYTE *)this + v10 + 24) = v9;
-          v7 = *this;
-          v9 = *(_BYTE *)(*(_DWORD *)(*(_DWORD *)(a2 + 4 * *this) + v6) + v8);
+          v9 = v7 + grid_offset + 16928 * segment_count;
+          ++v7;
+          tracks->segment_slots[0].glyph_rows[0][v9] = v8;
+          segment_count = tracks->segment_count;
+          v8 = *(_BYTE *)(*(int32_t *)((char *)&raw_segments[tracks->segment_count]->row_count + v5) + v7);
         }
-        while ( v9 );
-        v6 += 4;
-        v12 += 256;
+        while ( v8 );
+        v5 += 4;
+        grid_offset += 256;
       }
-      while ( v6 < 72 );
-      *(this + 4232 * v7 + 5) = *(_DWORD *)(*(_DWORD *)(a2 + 4 * v7) + 32);
-      *(this + 4232 * *this + 4) = *(_DWORD *)(*(_DWORD *)(a2 + 4 * *this) + 28);
-      v11 = *this + 1;
-      *this = v11;
-      result = *(_BYTE **)(*(_DWORD *)(a2 + 4 * v11) + 40);
+      while ( v5 < 72 );
+      tracks->segment_slots[segment_count].source_name = raw_segments[segment_count]->source_name;
+      tracks->segment_slots[tracks->segment_count].path_index = raw_segments[tracks->segment_count]->path_index;
+      v10 = tracks->segment_count + 1;
+      tracks->segment_count = v10;
     }
-    while ( *result );
+    while ( *raw_segments[v10]->glyph_rows[0] );
   }
-  return result;
 }

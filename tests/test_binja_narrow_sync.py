@@ -1256,6 +1256,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     matcher_segment_header = (
         repo_root / "tools/match/include/segment_catalog_types.h"
     ).read_text(encoding="utf-8")
+    ida_segment_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
 
     assert '"AuthoredSegmentRowFlag",' in binja_source
     assert '"SubRowFlag",' in binja_source
@@ -1273,6 +1276,16 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "AUTHORED_SEGMENT_ROW_FLAG_NO_FALL = 0x0100" in header
         assert "AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP = 0x2000" in header
         assert "AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF = 0x8000" in header
+
+    for header in (analysis_segment_header, matcher_segment_header):
+        assert "metadata_words[6]" in header
+        assert "marker_row" in header
+        assert "unknown_04" not in header
+        assert "unknown_24" not in header
+
+    assert "_sync_builtin_grid_offset_lvar" in ida_segment_sync
+    assert '"int32_t grid_offset;"' in ida_segment_sync
+    assert 'info.name = "grid_offset"' in ida_segment_sync
 
     for header in (analysis_path_header, matcher_row_header):
         assert "SUBROW_FLAG_PARCEL_CANDIDATE = 0x0001" in header

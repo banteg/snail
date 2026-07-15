@@ -83,3 +83,26 @@ Status:
 - The only remaining difference is the commutative ModRM spelling
   `[esi+eax]` versus `[eax+esi]` in the row-0 length scan. Equivalent pointer
   syntax compiles identically, so the clear indexed source is retained.
+
+## 2026-07-15 raw marker-row ownership
+
+A read-only decode of all 32 pointers in `g_builtin_segment_definitions`
+closes the raw record's former `+0x24` dword as a `char* marker_row`. Each of
+the 31 live records points to a string whose width matches its longitudinal
+glyph strings and which contains exactly one `*`; the terminating record
+points to an empty string. The six dwords at `+0x04..+0x1b` are likewise real
+static metadata words rather than byte padding, but this Windows initializer
+never reads them and no surviving consumer proves stronger names, so their
+roles remain deliberately generic.
+
+This is a type/ownership correction only. `marker_row` is adjacent to, not a
+member of, the eight-pointer `glyph_rows` array beginning at `+0x28`; the
+focused body remains honestly 98.91%, 92/92 instructions, with the sole
+equivalent `[esi+eax]` versus `[eax+esi]` ModRM ordering residual.
+
+Refreshing the IDA lane exposed a stale manually typed stack alias named
+`BuiltinSegmentDefinition** builtins`. It is the compiler-reused slot for the
+scratch's integer `grid_offset`: native clears it, advances it by `0x100` per
+glyph lane, and uses it only in destination address formation. The segment
+catalog replay now replaces that synthetic owner with `int32_t grid_offset`
+and verifies the local name/type after re-decompilation.
