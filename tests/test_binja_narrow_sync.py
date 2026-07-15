@@ -1438,6 +1438,13 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "0x4DF904" in ida_sync
     assert '"GameRoot *g_game_base;"' in ida_sync
     assert "0x4df904" not in overlay_sync.lower()
+    for field_update in (
+        '("0x67c", "overlay_0", "Overlay")',
+        '("0x7c8", "overlay_1", "Overlay")',
+        '("0x914", "overlay_2", "Overlay")',
+    ):
+        assert field_update in overlay_sync
+    assert "apply_struct_and_proto_updates" in overlay_sync
     assert not (repo_root / "tools/match/include/app_shell.h").exists()
     assert "TransformMatrix transform;" in path_header
     assert "uint8_t transform[0x40];" not in path_header

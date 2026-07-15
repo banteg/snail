@@ -7,11 +7,21 @@ from pathlib import Path
 import sys
 
 from _target import DEFAULT_TARGET
-from _narrow_sync import apply_proto_updates, emit_summary, types_declare
+from _narrow_sync import (
+    apply_struct_and_proto_updates,
+    emit_summary,
+    types_declare,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_overlay_types.h"
+
+GAME_ROOT_FIELD_UPDATES = (
+    ("0x67c", "overlay_0", "Overlay"),
+    ("0x7c8", "overlay_1", "Overlay"),
+    ("0x914", "overlay_2", "Overlay"),
+)
 
 PROTO_UPDATES = (
     ("initialize_overlay", "void __thiscall initialize_overlay(Overlay* overlay)"),
@@ -40,7 +50,12 @@ def main() -> int:
 
     operations: list[dict[str, object]] = [
         types_declare(REPO_ROOT, target=args.target, header_path=header_path),
-        *apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES),
+        *apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(("GameRoot", GAME_ROOT_FIELD_UPDATES),),
+            proto_updates=PROTO_UPDATES,
+        ),
     ]
     return emit_summary(
         repo_root=REPO_ROOT,

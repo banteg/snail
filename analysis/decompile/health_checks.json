@@ -593,6 +593,25 @@
       ]
     },
     {
+      "name": "bn_game_initializer_overlay_ownership",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "game->render_camera_slots[0].source = &game->overlay_0.camera",
+        "initialize_overlay(&game->overlay_0)",
+        "game->render_camera_slots[3].source = &game->overlay_2.camera",
+        "initialize_overlay(&game->overlay_2)",
+        "game->render_camera_slots[2].source = &game->overlay_1.camera",
+        "initialize_overlay(&game->overlay_1)"
+      ],
+      "forbidden_substrings": [
+        "game->__offset(0x67c)",
+        "game->__offset(0x7c8)",
+        "game->__offset(0x914)",
+        "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "ida_root_frame_update_ownership",
       "artifact": "analysis/decompile/ida/functions/0040a2a0-run_frame_update.c",
       "required_substrings": [

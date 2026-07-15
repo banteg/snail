@@ -736,3 +736,17 @@ the same high-byte mask.
 Replacing the seven startup literals with those named owners is codegen-neutral
 at the existing 80.50% frontier (5,392/5,411 instructions, 1,550 clean operands,
 101 known broad mismatches).
+
+## 2026-07-15 live root-overlay replay
+
+The narrow Binary Ninja overlay sync now persists the same three constructor-
+proven `GameRoot` owners used by the matcher: `overlay_0 +0x67c`,
+`overlay_1 +0x7c8`, and `overlay_2 +0x914`. The sync applies those fields and
+the overlay prototypes through one previewed batch, avoiding a separate full
+analysis/save cycle for every field.
+
+Refreshing the initializer recovered its previously skipped 2,432-line HLIL
+body. The tracked export now spells every camera loan and constructor call
+through the corresponding overlay owner, while a focused health check rejects
+regression to raw `+0x67c/+0x7c8/+0x914` root offsets or an unavailable body.
+No matcher source changed, so the existing 80.50% frontier is preserved.
