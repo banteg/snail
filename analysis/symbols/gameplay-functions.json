@@ -1087,12 +1087,12 @@
     {
       "address": "0x4176a0",
       "name": "add_arcade_high_score",
-      "description": "Attempts to insert one completed postal or arcade run into the ordered top-10 bank, then arms the high-score entry screen when the run places. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddArcade(int)`."
+      "description": "Void `SubHighScore` member that attempts to insert one completed postal or arcade run into the ordered top-10 bank, then arms the high-score entry screen when the run places. Its sole `complete_subgame` caller consumes no result; the no-place rank and inserted-path root pointer left in EAX are unrelated residues. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddArcade(int)`."
     },
     {
       "address": "0x417780",
       "name": "add_survival_high_score",
-      "description": "Attempts to insert one completed challenge or survival run into the ordered top-10 bank, mirrors the pending entry into the challenge bank overlay, and arms the high-score entry screen when the run places. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddSurvival()`."
+      "description": "Void `SubHighScore` member that attempts to insert one completed challenge or survival run into the ordered top-10 bank, mirrors the pending entry into the challenge bank overlay, and arms the high-score entry screen when the run places. Its sole `complete_subgame` caller consumes no result; the no-place rank and inserted-path root pointer left in EAX are unrelated residues. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddSurvival()`."
     },
     {
       "address": "0x4178b0",

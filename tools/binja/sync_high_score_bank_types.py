@@ -28,11 +28,11 @@ PROTO_UPDATES = (
     ),
     (
         "add_arcade_high_score",
-        "int32_t __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int32_t level_arg)",
+        "void __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int32_t level_arg)",
     ),
     (
         "add_survival_high_score",
-        "int32_t __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record)",
+        "void __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record)",
     ),
     (
         "add_time_trial_high_score",

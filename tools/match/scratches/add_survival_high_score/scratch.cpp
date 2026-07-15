@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int SubHighScore::add_survival_high_score(SubSolution* record)
+void SubHighScore::add_survival_high_score(SubSolution* record)
 {
     int shift_rank;
     SubHighScore* bank = this;
@@ -25,12 +25,12 @@ int SubHighScore::add_survival_high_score(SubSolution* record)
         ++rank;
         score_cursor += SUB_SOLUTION_STRIDE / sizeof(int);
     }
-    return rank;
+    return;
 
 insert_record:
     shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
     if (rank >= shift_rank)
-        return rank;
+        return;
 
     SubSolution* shift_cursor = &bank->survival_records[shift_rank];
     do {
@@ -48,7 +48,6 @@ insert_record:
     g_game->players[0].frontend_state = 20;
     g_game->players[0].high_score_entry_pending = 1;
 
-    int result = rank;
     if (rank != -1) {
         record->high_score_mode_tag = 1;
         bank->survival_records[rank].high_score_mode_tag = 1;
@@ -57,8 +56,5 @@ insert_record:
         g_game->players[0].high_score_entry_rank = rank;
         GameRoot* game = g_game;
         game->players[0].high_score_entry_bank = 1;
-        result = (int)game;
     }
-
-    return result;
 }

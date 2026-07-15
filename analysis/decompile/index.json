@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 24,
+  "function_count": 32,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 24,
-  "ida_exported": 24,
+  "bn_exported": 32,
+  "ida_exported": 32,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -31,6 +31,38 @@
     {
       "name": "update_golb_ai",
       "address": "0x414820"
+    },
+    {
+      "name": "initialize_high_score_tables",
+      "address": "0x417540"
+    },
+    {
+      "name": "load_high_scores_from_file",
+      "address": "0x4175e0"
+    },
+    {
+      "name": "add_arcade_high_score",
+      "address": "0x4176a0"
+    },
+    {
+      "name": "add_survival_high_score",
+      "address": "0x417780"
+    },
+    {
+      "name": "add_time_trial_high_score",
+      "address": "0x4178b0"
+    },
+    {
+      "name": "save_high_scores_and_config",
+      "address": "0x417940"
+    },
+    {
+      "name": "initialize_high_score_entry",
+      "address": "0x417a70"
+    },
+    {
+      "name": "mini_delete_high_score_entry",
+      "address": "0x417af0"
     },
     {
       "name": "populate_runtime_track_cells_from_segments",

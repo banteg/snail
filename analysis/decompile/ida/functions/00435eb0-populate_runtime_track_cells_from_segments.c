@@ -145,7 +145,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     {
       if ( v5 == 3 )
         initialize_high_score_entry(
-          (HighScoreRecord *)&game->current_high_score_record,
+          &game->current_high_score_record,
           runtime_build_seed,
           game->level_mode_arg,
           game->rate_or_level_arg.level_arg_tail,
@@ -156,7 +156,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     else
     {
       initialize_high_score_entry(
-        (HighScoreRecord *)&game->current_high_score_record,
+        &game->current_high_score_record,
         runtime_build_seed,
         game->level_mode_arg,
         game->rate_or_level_arg.level_arg_tail,
@@ -168,7 +168,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   else
   {
     initialize_high_score_entry(
-      (HighScoreRecord *)&game->current_high_score_record,
+      &game->current_high_score_record,
       runtime_build_seed,
       game->level_mode_arg,
       game->rate_or_level_arg.level_arg_tail,

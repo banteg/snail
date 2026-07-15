@@ -31,12 +31,12 @@
 004387f2        if (startup_track_index.b != 0 || completed != 1)
 004387f2        return
 004387f7        if (level_mode == 0)
-00438839        add_arcade_high_score(&game->sub_high_score.active_record_bank, &game->current_high_score_record, game->level_mode_arg)
+00438839        add_arcade_high_score(&game->sub_high_score, &game->current_high_score_record, game->level_mode_arg)
 00438839        return
 004387fa        if (level_mode == 1)
-00438824        add_survival_high_score(&game->sub_high_score.active_record_bank, &game->current_high_score_record)
+00438824        add_survival_high_score(&game->sub_high_score, &game->current_high_score_record)
 0043882b        return
 004387ff        if (level_mode == 4)
 00438801        startup_track_index.b = game->player.completion_handoff_active
-00438813        add_time_trial_high_score(&game->sub_high_score, &game->current_high_score_record.active, game->level_mode_arg, startup_track_index.b)
+00438813        add_time_trial_high_score(&game->sub_high_score, &game->current_high_score_record, game->level_mode_arg, startup_track_index.b)
 00438840        return

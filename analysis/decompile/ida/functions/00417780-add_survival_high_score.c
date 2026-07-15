@@ -2,52 +2,48 @@
 /* function: add_survival_high_score @ 0x417780 */
 /* selector: add_survival_high_score */
 
-// Attempts to insert one completed challenge or survival run into the ordered top-10 bank, mirrors the pending entry into the challenge bank overlay, and arms the high-score entry screen when the run places. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddSurvival()`.
-int __thiscall sub_417780(_DWORD *this, _DWORD *a2)
+// Void `SubHighScore` member that attempts to insert one completed challenge or survival run into the ordered top-10 bank, mirrors the pending entry into the challenge bank overlay, and arms the high-score entry screen when the run places. Its sole `complete_subgame` caller consumes no result; the no-place rank and inserted-path root pointer left in EAX are unrelated residues. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddSurvival()`.
+void __thiscall add_survival_high_score(SubHighScore *bank, SubSolution *record)
 {
-  int result; // eax
-  _DWORD *i; // ecx
+  int32_t v3; // eax
+  int32_t *i; // ecx
   int v5; // ebx
-  _DWORD *v6; // ebp
-  void *v7; // edi
-  _DWORD *v8; // ebx
+  SubSolution *v6; // ebp
+  SubSolution *v7; // edi
+  SubSolution **v8; // ebx
 
-  result = 0;
-  a2[15] = 1;
-  a2[16] = 0;
-  a2[17] = 0;
-  qmemcpy(this + 2367538, a2, 0x1FAC0u);
-  qmemcpy(this + 2399970, a2, 0x1FAC0u);
-  for ( i = this + 356755; a2[1] <= *i; i += 32432 )
+  v3 = 0;
+  record->high_score_mode_tag = 1;
+  record->route_or_rank_index = 0;
+  record->replay_cursor = 0;
+  qmemcpy(&bank->current_result_record, record, sizeof(bank->current_result_record));
+  qmemcpy(&bank->survival_pending_record, record, sizeof(bank->survival_pending_record));
+  for ( i = &bank->survival_records[0].score; record->score <= *i; i += 32432 )
   {
-    if ( ++result >= 10 )
-      return result;
+    if ( ++v3 >= 10 )
+      return;
   }
   v5 = 10;
-  v6 = this + 681074;
+  v6 = &bank->survival_records[10];
   do
   {
-    v7 = v6;
-    v6 -= 32432;
-    qmemcpy(v7, v6, 0x1FAC0u);
-    v6[32448] = v5--;
+    v7 = v6--;
+    qmemcpy(v7, v6, sizeof(SubSolution));
+    v6[1].route_or_rank_index = v5--;
   }
-  while ( v5 > result );
-  v8 = this + 32432 * result;
-  qmemcpy(v8 + 356754, a2, 0x1FAC0u);
-  v8[356769] = 1;
-  v8[356770] = result;
-  *((_DWORD *)MEMORY[0x4DF904] + 110) = 20;
-  *((_BYTE *)MEMORY[0x4DF904] + 781) = 1;
-  if ( result != -1 )
+  while ( v5 > v3 );
+  v8 = &bank->active_record_bank + 32432 * v3;
+  qmemcpy(v8 + 356754, record, 0x1FAC0u);
+  v8[356769] = (SubSolution *)1;
+  v8[356770] = (SubSolution *)v3;
+  g_game_base->players[0].frontend_state = 20;
+  g_game_base->players[0].high_score_entry_pending = 1;
+  if ( v3 != -1 )
   {
-    a2[15] = 1;
-    v8[356769] = 1;
-    *(int *)((char *)&byte_6FFAE0 + (_DWORD)MEMORY[0x4DF904]) = (int)(this + 356754);
-    *((_DWORD *)MEMORY[0x4DF904] + 196) = result;
-    result = (int)MEMORY[0x4DF904];
-    *((_DWORD *)MEMORY[0x4DF904] + 197) = 1;
+    record->high_score_mode_tag = 1;
+    v8[356769] = (SubSolution *)1;
+    *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] = bank->survival_records;
+    g_game_base->players[0].selected_high_score_rank = v3;
+    g_game_base->players[0].selected_high_score_mode = 1;
   }
-  return result;
 }
-

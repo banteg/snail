@@ -15,10 +15,10 @@ class SubHighScore {
 public:
     void initialize_high_score_tables(); // @ 0x417540
     void load_high_scores_from_file(char* file_name); // @ 0x4175e0
-    int add_arcade_high_score(
+    void add_arcade_high_score(
         SubSolution* record,
         int level_arg); // @ 0x4176a0, cRSubHighScore::AddArcade
-    int add_survival_high_score(
+    void add_survival_high_score(
         SubSolution* record); // @ 0x417780, cRSubHighScore::AddSurvival
     void add_time_trial_high_score(
         SubSolution* record,

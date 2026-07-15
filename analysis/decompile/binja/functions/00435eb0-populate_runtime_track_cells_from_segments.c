@@ -16,13 +16,13 @@
 00435f08        int32_t level_mode_arg
 00435f08        if (level_mode_1 == 0)
 00435f21        level_mode_arg = game->level_mode_arg
-00435f36        initialize_high_score_entry(&game->current_high_score_record.active, runtime_build_seed, level_mode_arg, game->rate_or_level_arg.base_rate, game->runtime_flags, 0, level_mode_arg)
+00435f36        initialize_high_score_entry(&game->current_high_score_record, runtime_build_seed, level_mode_arg, game->rate_or_level_arg.base_rate, game->runtime_flags, 0, level_mode_arg)
 00435f0b        if (level_mode_1 == 1)
 00435f19        level_mode_arg = game->level_mode_arg
-00435f36        initialize_high_score_entry(&game->current_high_score_record.active, runtime_build_seed, level_mode_arg, game->rate_or_level_arg.base_rate, game->runtime_flags, 1, level_mode_arg)
+00435f36        initialize_high_score_entry(&game->current_high_score_record, runtime_build_seed, level_mode_arg, game->rate_or_level_arg.base_rate, game->runtime_flags, 1, level_mode_arg)
 00435f0f        if (level_mode_1 == 4)
 00435f11        level_mode_arg = game->level_mode_arg
-00435f36        initialize_high_score_entry(&game->current_high_score_record.active, runtime_build_seed, level_mode_arg, game->rate_or_level_arg.base_rate, game->runtime_flags, 2, level_mode_arg)
+00435f36        initialize_high_score_entry(&game->current_high_score_record, runtime_build_seed, level_mode_arg, game->rate_or_level_arg.base_rate, game->runtime_flags, 2, level_mode_arg)
 00435f3b        int32_t subgame_rebuild_selector = game->subgame_rebuild_selector
 00435f41        game->replay_update_cursor = 0
 00435f49        if (subgame_rebuild_selector == 3)

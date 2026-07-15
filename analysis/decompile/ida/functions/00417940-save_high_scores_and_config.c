@@ -2,84 +2,86 @@
 /* function: save_high_scores_and_config @ 0x417940 */
 /* selector: save_high_scores_and_config */
 
-char *__thiscall save_high_scores_and_config(char *this, char a2)
+// Serializes the cRSubHighScore owner’s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob.
+char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8 save_mask)
 {
-  _BYTE *v3; // esi
+  CompletionResultScreen *tracked_memory; // esi
   int v4; // eax
-  int v5; // ebp
-  char *v6; // edi
+  FrontendWidget *v5; // ebp
+  char *postal_records; // edi
   int v7; // eax
-  int v8; // ebp
-  char *v9; // edi
-  char *v10; // edi
+  FrontendWidget *v8; // ebp
+  char *survival_records; // edi
+  char *time_trial_route_records; // edi
   int v11; // eax
-  int v12; // ebp
+  FrontendWidget *v12; // ebp
   int v13; // ebx
   int v15; // [esp+10h] [ebp-4h]
   int v16; // [esp+10h] [ebp-4h]
 
-  v3 = allocate_tracked_memory((int)&unk_4C4B40, (int)aHighScoreTable);
-  if ( (a2 & 1) != 0 )
+  tracked_memory = (CompletionResultScreen *)allocate_tracked_memory(
+                                               (int)&k_high_score_save_buffer_size,
+                                               (int)aHighScoreTable);
+  if ( (save_mask & 1) != 0 )
   {
-    v4 = (int)v3;
-    v5 = 0;
-    v6 = this + 8;
+    v4 = (int)tracked_memory;
+    v5 = nullptr;
+    postal_records = (char *)bank->postal_records;
     v15 = 11;
     do
     {
-      if ( *(_DWORD *)v6 == 1 )
+      if ( *(_DWORD *)postal_records == 1 )
       {
-        v5 += serialize_compact_high_score_record(v6, v4);
-        v4 = (int)&v3[v5];
+        v5 = (FrontendWidget *)((char *)v5 + serialize_compact_high_score_record(postal_records, v4));
+        v4 = (int)v5 + (_DWORD)tracked_memory;
       }
-      v6 += 129728;
+      postal_records += 129728;
       --v15;
     }
     while ( v15 );
-    xor_decode_buffer_with_index(v3, v5);
-    write_file_bytes(aScoreaDat, v3, v5);
+    xor_decode_buffer_with_index(tracked_memory, (int)v5);
+    write_file_bytes(aScoreaDat, tracked_memory, v5);
   }
-  if ( (a2 & 2) != 0 )
+  if ( (save_mask & 2) != 0 )
   {
-    v7 = (int)v3;
-    v8 = 0;
-    v9 = this + 1427016;
+    v7 = (int)tracked_memory;
+    v8 = nullptr;
+    survival_records = (char *)bank->survival_records;
     v16 = 11;
     do
     {
-      if ( *(_DWORD *)v9 == 1 )
+      if ( *(_DWORD *)survival_records == 1 )
       {
-        v8 += serialize_compact_high_score_record(v9, v7);
-        v7 = (int)&v3[v8];
+        v8 = (FrontendWidget *)((char *)v8 + serialize_compact_high_score_record(survival_records, v7));
+        v7 = (int)v8 + (_DWORD)tracked_memory;
       }
-      v9 += 129728;
+      survival_records += 129728;
       --v16;
     }
     while ( v16 );
-    xor_decode_buffer_with_index(v3, v8);
-    write_file_bytes(aScorebDat, v3, v8);
+    xor_decode_buffer_with_index(tracked_memory, (int)v8);
+    write_file_bytes(aScorebDat, tracked_memory, v8);
   }
-  if ( (a2 & 8) != 0 )
+  if ( (save_mask & 8) != 0 )
   {
-    v10 = this + 2854024;
-    v11 = (int)v3;
-    v12 = 0;
+    time_trial_route_records = (char *)bank->time_trial_route_records;
+    v11 = (int)tracked_memory;
+    v12 = nullptr;
     v13 = 51;
     do
     {
-      if ( *(_DWORD *)v10 == 1 )
+      if ( *(_DWORD *)time_trial_route_records == 1 )
       {
-        v12 += serialize_compact_high_score_record(v10, v11);
-        v11 = (int)&v3[v12];
+        v12 = (FrontendWidget *)((char *)v12 + serialize_compact_high_score_record(time_trial_route_records, v11));
+        v11 = (int)v12 + (_DWORD)tracked_memory;
       }
-      v10 += 129728;
+      time_trial_route_records += 129728;
       --v13;
     }
     while ( v13 );
-    xor_decode_buffer_with_index(v3, v12);
-    write_file_bytes(aScorecDat, v3, v12);
+    xor_decode_buffer_with_index(tracked_memory, (int)v12);
+    write_file_bytes(aScorecDat, tracked_memory, v12);
   }
-  free_tracked_memory((int)v3);
-  return (char *)save_config_file(aSnailmailCfg, &unk_4DF918, 196);
+  free_tracked_memory((int)tracked_memory);
+  return save_config_file(aSnailmailCfg, (CompletionResultScreen *)&g_runtime_config, (FrontendWidget *)0xC4);
 }
-

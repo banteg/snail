@@ -1,0 +1,30 @@
+/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
+/* function: mini_delete_high_score_entry @ 0x417af0 */
+/* selector: mini_delete_high_score_entry */
+
+// Deletes a canceled pending top-ten row by shifting later records upward through the active bank. Cross-port iOS symbols match this owner method to `cRSubHighScore::MiniDelete(int)`.
+void __thiscall mini_delete_high_score_entry(SubHighScore *bank, int rank)
+{
+  int v2; // ebp
+  int v3; // eax
+  SubSolution *v4; // ebx
+  SubSolution *v5; // edi
+  SubSolution *v6; // esi
+
+  v2 = rank;
+  if ( rank < 10 )
+  {
+    v3 = rank;
+    v4 = &bank->survival_records[rank + 1];
+    do
+    {
+      v5 = &bank->active_record_bank[v3];
+      v6 = v4;
+      ++v3;
+      ++v4;
+      qmemcpy(v5, v6, sizeof(SubSolution));
+      bank->active_record_bank[v3 - 1].route_or_rank_index = v2++;
+    }
+    while ( v3 < 10 );
+  }
+}

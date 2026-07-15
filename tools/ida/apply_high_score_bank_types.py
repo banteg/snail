@@ -24,11 +24,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "add_arcade_high_score",
-        "int __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int level_arg);",
+        "void __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int level_arg);",
     ),
     (
         "add_survival_high_score",
-        "int __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record);",
+        "void __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record);",
     ),
     (
         "add_time_trial_high_score",
@@ -47,8 +47,12 @@ TRUSTED_DECLARATIONS = [
 TRUSTED_NAMES = [
     (0x417AF0, "mini_delete_high_score_entry"),
     (0x4DF904, "g_game_base"),
-    (0x4DF9C0, "g_high_score_selected_bank"),
 ]
+
+# 0x4DF9C0 is the selected-bank lane at g_runtime_config + 0xA8, inside
+# IDA's existing aggregate data item. The reference manifest carries its
+# field alias; idc.set_name cannot create a standalone name at that interior
+# address.
 
 
 def _resolve_function(selector: str) -> tuple[int | None, str]:
@@ -94,10 +98,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
             names_unchanged += 1
             continue
         if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
+            existing_name_address = idc.get_name_ea_simple(name)
             failed.append(
                 {
                     "selector": name,
                     "address": hex(address),
+                    "current_name": current_name,
+                    "existing_name_address": (
+                        None
+                        if existing_name_address == idc.BADADDR
+                        else hex(existing_name_address)
+                    ),
                     "reason": "rename_failed",
                 }
             )

@@ -9,7 +9,7 @@ Behavior:
   the scratch/current result as arcade (`high_score_mode_tag = 0`), and copies
   the full 0x1fac0 record into `SubHighScore::current_result_record`.
 - Scans `postal_records[0..9]` by descending `score`. If the new score does not
-  place, returns the rank cursor (`10`).
+  place, exits after the rank cursor reaches `10`.
 - If it places, shifts lower records down through the spare eleventh storage
   slot, updates each shifted record's `route_or_rank_index`, copies the new
   record into the selected rank, and arms the high-score entry frontend state.
@@ -23,6 +23,12 @@ explicitly before value-copying it into the owned postal array.
 
 Match status: 100.00%, 70/70 instructions, full exact prefix, four masked
 operands resolved.
+
+2026-07-16 void ABI recovery: the sole `complete_subgame` caller discards EAX,
+and the two native exits preserve incompatible incidental values: rank `10` on
+the no-place path and the root pointer used by the final frontend store on the
+inserted path. Replacing both synthetic integer returns with natural void exits
+keeps the helper byte-exact at 70/70 and leaves `complete_subgame` unchanged.
 
 Accepted source-shape notes:
 

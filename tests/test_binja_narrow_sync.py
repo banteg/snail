@@ -1010,6 +1010,38 @@ def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
         assert stale_declaration not in header
 
 
+def test_high_score_replays_preserve_void_insertion_abis() -> None:
+    binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "bn_high_score_bank_types.h").read_text(
+        encoding="utf-8"
+    )
+    compact_header = "".join(header.split())
+
+    binja_declarations = (
+        "void __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int32_t level_arg)",
+        "void __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record)",
+    )
+    ida_declarations = (
+        "void __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int level_arg);",
+        "void __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record);",
+    )
+    for declaration in binja_declarations:
+        assert declaration in binja_source
+        assert "".join(f"{declaration};".split()) in compact_header
+    for declaration in ida_declarations:
+        assert f'"{declaration}"' in ida_source
+
+    assert "int32_t __thiscall add_arcade_high_score" not in binja_source
+    assert "int32_t __thiscall add_survival_high_score" not in binja_source
+    assert '"int __thiscall add_arcade_high_score' not in ida_source
+    assert '"int __thiscall add_survival_high_score' not in ida_source
+
+
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

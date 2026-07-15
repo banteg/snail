@@ -3255,7 +3255,7 @@
       "android_symbol": "cRSubHighScore::AddArcade(int)",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "All ports insert a postal or arcade result through the cRSubHighScore owner. Windows receives the working cRSubSolution explicitly before value-copying it into the owned top-ten array."
+      "notes": "All ports insert a postal or arcade result through the cRSubHighScore owner. Windows receives the working cRSubSolution explicitly before value-copying it into the owned top-ten array. The sole Windows caller consumes no result, while the two exits preserve incompatible rank and root-pointer residues, proving the authored contract is void."
     },
     {
       "address": "0x417780",
@@ -3264,7 +3264,7 @@
       "android_symbol": "cRSubHighScore::AddSurvival()",
       "source_object": "HighScore.o",
       "confidence": "high",
-      "notes": "The Windows member copies the working cRSubSolution into the cRSubHighScore survival result and pending-entry storage before ordered insertion; mobile versions source the current solution internally."
+      "notes": "The Windows member copies the working cRSubSolution into the cRSubHighScore survival result and pending-entry storage before ordered insertion; mobile versions source the current solution internally. The sole Windows caller consumes no result, while the exits preserve incompatible rank and root-pointer residues, proving the authored contract is void."
     },
     {
       "address": "0x4178b0",

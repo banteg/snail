@@ -75,4 +75,14 @@ typedef struct SubHighScore {
     SubSolution survival_pending_record;
 } SubHighScore;
 
+void __thiscall add_arcade_high_score(
+    SubHighScore* bank,
+    SubSolution* record,
+    int32_t level_arg
+);
+void __thiscall add_survival_high_score(
+    SubHighScore* bank,
+    SubSolution* record
+);
+
 #endif

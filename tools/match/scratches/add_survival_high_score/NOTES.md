@@ -9,7 +9,7 @@ Behavior:
   route/rank and replay cursor fields, then copies the full 0x1fac0 record into
   both `current_result_record` and `survival_pending_record`.
 - Scans `survival_records[0..9]` by descending `score`. If the run does not
-  place, returns the rank cursor (`10`).
+  place, exits after the rank cursor reaches `10`.
 - If it places, shifts lower records into the spare eleventh storage slot,
   writes the new record at the selected rank, points the frontend
   `active_record_bank` at `survival_records`, and marks the pending entry as
@@ -20,6 +20,12 @@ rank search only produces non-negative ranks.
 
 Honest match status: 89.41%, 86/84 candidate/target instructions, 36/84 exact
 prefix, and six clean masked operands.
+
+2026-07-16 void ABI recovery: the sole `complete_subgame` caller discards EAX,
+and the native exits preserve incompatible incidental values: rank `10` on the
+no-place path and the root pointer used by the final frontend store after an
+insertion. Natural void exits keep the honest 89.41% source shape and leave the
+caller unchanged; no return-value fakematch remains.
 
 Residual:
 

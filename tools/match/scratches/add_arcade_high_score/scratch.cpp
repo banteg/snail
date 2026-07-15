@@ -5,7 +5,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-int SubHighScore::add_arcade_high_score(SubSolution* record, int level_arg)
+void SubHighScore::add_arcade_high_score(SubSolution* record, int level_arg)
 {
     SubHighScore* bank = this;
     int rank = 0;
@@ -22,7 +22,7 @@ int SubHighScore::add_arcade_high_score(SubSolution* record, int level_arg)
         ++rank;
         score_cursor += SUB_SOLUTION_STRIDE / sizeof(int);
     }
-    return rank;
+    return;
 
 insert_record:
     int shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
@@ -40,5 +40,4 @@ insert_record:
     g_game->players[0].high_score_entry_rank = rank;
     GameRoot* result_view = g_game;
     result_view->players[0].high_score_entry_bank = 0;
-    return (int)result_view;
 }

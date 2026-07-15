@@ -2,40 +2,30 @@
 /* function: initialize_high_score_tables @ 0x417540 */
 /* selector: initialize_high_score_tables */
 
-// Seeds the postal, challenge, and completion high-score banks with blank cRSubHighScore records before ScoreA/B/C overlays are loaded.
-_WORD *__thiscall sub_417540(char *this)
+// Seeds the cRSubHighScore owner’s postal, challenge, and completion arrays with blank cRSubSolution entries before ScoreA/B/C overlays are loaded.
+void __thiscall initialize_high_score_tables(SubHighScore *bank)
 {
   int v2; // esi
-  char *v3; // edi
+  SubSolution *postal_records; // edi
   int v4; // esi
-  char *v5; // edi
+  SubSolution *survival_records; // edi
   int v6; // esi
-  char *v7; // edi
+  SubSolution *time_trial_route_records; // edi
 
   v2 = 0;
-  v3 = this + 8;
+  postal_records = bank->postal_records;
   do
-  {
-    initialize_high_score_entry(v3, 0, 0, 1065353216, 0, 0, v2++);
-    v3 += 129728;
-  }
+    initialize_high_score_entry(postal_records++, 0, 0, 1065353216, 0, 0, v2++);
   while ( v2 < 11 );
   v4 = 0;
-  v5 = this + 1427016;
+  survival_records = bank->survival_records;
   do
-  {
-    initialize_high_score_entry(v5, 0, 0, 1065353216, 0, 1, v4++);
-    v5 += 129728;
-  }
+    initialize_high_score_entry(survival_records++, 0, 0, 1065353216, 0, 1, v4++);
   while ( v4 < 11 );
   v6 = 0;
-  v7 = this + 2854024;
+  time_trial_route_records = bank->time_trial_route_records;
   do
-  {
-    initialize_high_score_entry(v7, 0, 0, 1065353216, 0, 2, v6++);
-    v7 += 129728;
-  }
+    initialize_high_score_entry(time_trial_route_records++, 0, 0, 1065353216, 0, 2, v6++);
   while ( v6 < 51 );
-  return initialize_high_score_entry(this + 9470152, 0, 0, 1065353216, 0, 0, 0);
+  initialize_high_score_entry(&bank->current_result_record, 0, 0, 1065353216, 0, 0, 0);
 }
-

@@ -5,7 +5,7 @@
 
 00417af1        int32_t rank_1 = rank
 00417afa        if (rank_1 s>= 0xa)
-00417afa        return 
+00417afa        return
 00417b12        int32_t i = rank_1 * 0x1fac0
 00417b15        void* ebx_1 = &bank->survival_records[1] + i
 00417b23        void* edi_2 = i + bank->active_record_bank

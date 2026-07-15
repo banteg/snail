@@ -2,46 +2,45 @@
 /* function: load_high_scores_from_file @ 0x4175e0 */
 /* selector: load_high_scores_from_file */
 
-char __thiscall sub_4175E0(char *this, char *FileName)
+// Loads one encoded ScoreA/B/C high-score overlay into the embedded cRSubHighScore owner, decodes compact cRSubSolutionHeader records, and dispatches each expanded solution into the postal, survival, or per-route time-trial array. The function is side-effect-only; known callers ignore the incidental register return.
+void __thiscall load_high_scores_from_file(SubHighScore *bank, char *file_name)
 {
   char *v2; // esi
-  int v4; // eax
-  unsigned int v5; // esi
-  char *v6; // ebx
+  unsigned int file_bytes; // esi
+  char *v5; // ebx
+  int v6; // eax
   int v7; // eax
-  int v8; // eax
 
-  v2 = FileName;
-  LOBYTE(v4) = archive_or_file_exists(FileName, 1);
-  if ( (_BYTE)v4 )
+  v2 = file_name;
+  if ( archive_or_file_exists(file_name, 1) )
   {
-    v5 = (unsigned int)load_file_bytes(v2, (#83 *)&FileName);
-    v6 = &FileName[v5];
-    for ( LOBYTE(v4) = (unsigned __int8)xor_decode_buffer_with_index((_BYTE *)v5, (int)FileName);
-          v5 < (unsigned int)v6;
-          v5 += *(_DWORD *)v5 )
+    file_bytes = (unsigned int)load_file_bytes(v2, (CompletionResultScreen *)&file_name);
+    v5 = &file_name[file_bytes];
+    xor_decode_buffer_with_index((_BYTE *)file_bytes, (int)file_name);
+    for ( ; file_bytes < (unsigned int)v5; file_bytes += *(_DWORD *)file_bytes )
     {
-      v7 = *(_DWORD *)(v5 + 60);
-      if ( v7 )
+      v6 = *(_DWORD *)(file_bytes + 60);
+      if ( v6 )
       {
-        v8 = v7 - 1;
-        if ( v8 )
+        v7 = v6 - 1;
+        if ( v7 )
         {
-          v4 = v8 - 1;
-          if ( !v4 )
-            LOBYTE(v4) = deserialize_compact_high_score_record(this + 129728 * *(_DWORD *)(v5 + 64) + 2854024, v5);
+          if ( v7 == 1 )
+            deserialize_compact_high_score_record(
+              (char *)&bank->time_trial_route_records[*(_DWORD *)(file_bytes + 64)],
+              file_bytes);
         }
         else
         {
-          LOBYTE(v4) = deserialize_compact_high_score_record(this + 129728 * *(_DWORD *)(v5 + 64) + 1427016, v5);
+          deserialize_compact_high_score_record(
+            (char *)&bank->survival_records[*(_DWORD *)(file_bytes + 64)],
+            file_bytes);
         }
       }
       else
       {
-        LOBYTE(v4) = deserialize_compact_high_score_record(this + 129728 * *(_DWORD *)(v5 + 64) + 8, v5);
+        deserialize_compact_high_score_record((char *)&bank->postal_records[*(_DWORD *)(file_bytes + 64)], file_bytes);
       }
     }
   }
-  return v4;
 }
-
