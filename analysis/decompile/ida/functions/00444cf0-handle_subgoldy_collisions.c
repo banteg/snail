@@ -135,7 +135,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             k->collision_side = 1;
           else
             k->collision_side = 2;
-          add_subgoldy_score((int *)player, 0, 0);
+          add_subgoldy_score(player, 0, 0);
           apply_damage_gauge_delta((float *)&player->damage_gauge, 0.039999999, 0);
           v10 = (__int64)((double)next_math_random_value() * -0.000061035156);
           play_sound_effect(39 - v10);
@@ -219,7 +219,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
         v69 = vector;
         if ( v27 < 1.0 && normalize_vector(&v69) < 1.24 )
         {
-          add_subgoldy_score((int *)player, 3, 0);
+          add_subgoldy_score(player, 3, 0);
           play_voice_manager((int)g_voice_manager, 10, 1u, -1);
           play_sound_effect(27);
           player->game->parcel_manager.slots[n].state = PARCEL_STATE_COLLECT_PENDING;
@@ -357,7 +357,7 @@ LABEL_105:
               v54 = 6;
 LABEL_106:
             play_sound_effect(v54 + 1);
-            add_subgoldy_score((int *)player, 2, 0);
+            add_subgoldy_score(player, 2, 0);
             continue;
           case SUB_RING_KIND_POWER_UP_AUTHORED:
             v53 = player->movement_flag_selector;
@@ -375,12 +375,12 @@ LABEL_106:
               goto LABEL_105;
             goto LABEL_106;
           case SUB_RING_KIND_UNKNOWN_1:
-            add_subgoldy_score((int *)player, 2, 0);
+            add_subgoldy_score(player, 2, 0);
             play_sound_effect(1);
             break;
           case SUB_RING_KIND_EXPLODE_RAMP:
           case SUB_RING_KIND_EXPLODE_AUTHORED:
-            add_subgoldy_score((int *)player, 2, 0);
+            add_subgoldy_score(player, 2, 0);
             play_sound_effect(42);
             player->nuke_effect_progress = player->nuke_effect_progress_step;
             initialize_nuke(&player->nuke);

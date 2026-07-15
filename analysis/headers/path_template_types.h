@@ -2115,10 +2115,22 @@ void __thiscall initialize_jet_particles(SubHover* sub_hover);
 void __thiscall update_jet_particles(SubHover* sub_hover);
 void __thiscall initialize_jetpack_gauge(SubHover* sub_hover, int32_t player_slot);
 void __thiscall arm_jetpack_gauge(SubHover* sub_hover);
+void __thiscall show_subgoldy_lives(Player* player);
+void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner);
 void __thiscall update_subgoldy(Player* player);
 void __thiscall play_movement_state_sound(Player* player);
-Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
+void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);
+void __thiscall add_subgoldy_score(
+    Player* player,
+    int32_t score_kind,
+    int32_t bonus_score
+);
+void __thiscall clear_subgoldy_score_buckets(Player* player);
+void __thiscall display_score_stats(Player* player);
+void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss);
 void __thiscall handle_subgoldy_collisions(Player* player);
+void __thiscall kill_subgoldy(Player* player);
+void __thiscall initialize_subgoldy_death(Player* player);
 void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags);
 void __thiscall set_snail_jetpack(Snail* snail, int32_t state);
 void __thiscall initialize_cutscene(Snail* snail);

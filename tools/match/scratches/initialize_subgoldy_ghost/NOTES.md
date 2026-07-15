@@ -6,7 +6,9 @@ slots (`sprite_id 159`) for the player slot, marks the sprite dword flags with
 RGBA into `color`, sets both scales to `0.5`, and places the pair at
 `position.x = +/-4.5`, `position.y = 1.0`, `position.z = 0.0`.
 
-The final visibility-flag clear needs the second sprite clear expressed as the
-returned compound assignment. With that source shape, VC6.5 materializes the
-shared `0xffffffbf` mask in `ecx` and emits the target dword `and` sequence for
-both sprite flag clears.
+The final visibility-flag clear is a natural compound-assignment statement.
+Even with the authored void contract, VC6.5 materializes the shared
+`0xffffffbf` mask in `ecx` and emits the target dword `and` sequence for both
+sprite flag clears. The previous synthetic returned assignment was unnecessary:
+the void source remains exact at 108/108 instructions with all six operands
+clean.

@@ -22,3 +22,9 @@ induction register, so the scratch derives the start/end offsets from the
 `Game::life_stock_widgets` member expression but still performs a byte-offset
 load from `game`. A direct pointer iterator over the array regressed to 40% by
 changing register ownership and loop shape.
+
+2026-07-16 void receiver replay: the sole `update_subgoldy` caller discards
+EAX, whose terminal value is only the last widget flag mutation. BN and IDA now
+preserve the authored `void __thiscall(Player*)` method instead of a fastcall
+scalar inference. The matching source was already void and remains exact at
+23/23 instructions with both operands clean.

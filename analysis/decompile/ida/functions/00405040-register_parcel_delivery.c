@@ -2,28 +2,22 @@
 /* function: register_parcel_delivery @ 0x405040 */
 /* selector: register_parcel_delivery */
 
-// Records one delivered parcel on the gameplay row-event display controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives.
-int32_t __fastcall register_parcel_delivery(RowEventDisplayController *controller)
+// Exact Windows `Completion::register_parcel_delivery`: records one delivered parcel, awards the per-parcel score event, and dispatches the final bonus. Android and iOS retain this member as `cRCompletion::RegisterParcel()`.
+void __thiscall register_parcel_delivery(Completion *completion)
 {
-  int32_t result; // eax
-
-  result = controller->delivered_parcel_count;
-  if ( result != controller->parcel_target_count )
+  if ( completion->delivered_parcel_count != completion->parcel_target_count )
   {
-    add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
-    ++controller->delivered_parcel_count;
+    add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 4, 0);
+    ++completion->delivered_parcel_count;
     play_sound_effect(45);
-    result = controller->parcel_target_count;
-    if ( controller->delivered_parcel_count == result )
+    if ( completion->delivered_parcel_count == completion->parcel_target_count )
     {
-      result = controller->bonus_enabled;
-      if ( result )
+      if ( completion->bonus_enabled )
       {
-        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_BONUS, controller->bonus_score);
+        add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 5, completion->bonus_score);
         play_sound_effect(49);
       }
-      controller->state = 3;
+      completion->state = COMPLETION_STATE_SUMMARY_PENDING;
     }
   }
-  return result;
 }

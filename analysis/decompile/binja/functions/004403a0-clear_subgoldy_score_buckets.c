@@ -3,5 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: clear_subgoldy_score_buckets @ 0x4403a0 */
 
-004403ae        __builtin_memset(arg1 + 0x310, 0, 0x18)
-004403b1        return 0
+004403ae        __builtin_memset(&player->score_buckets, 0, 0x18)
+004403b1        return

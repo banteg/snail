@@ -50,7 +50,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
             sub_garbage->collision_side = 2;
           else
             sub_garbage->collision_side = 1;
-          add_subgoldy_score((int *)owner_player, 0, 0);
+          add_subgoldy_score(owner_player, 0, 0);
         }
         append_subgame_contact_target(
           &sub_garbage->owner_game->enemy_manager,

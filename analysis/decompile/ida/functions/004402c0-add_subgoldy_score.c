@@ -2,44 +2,44 @@
 /* function: add_subgoldy_score @ 0x4402c0 */
 /* selector: add_subgoldy_score */
 
-// Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly.
-void __thiscall add_subgoldy_score(Player *player, int score_kind, int bonus_score)
+// Void `Player` member that adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. All 14 direct Windows callsites discard EAX. Cross-port evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly.
+void __thiscall add_subgoldy_score(Player *player, int32_t score_kind, int32_t bonus_score)
 {
-  int points; // eax
-  int old_total; // edi
-  int visible_life_stock; // eax
+  int32_t v4; // eax
+  int32_t total_score; // edi
+  int32_t visible_life_stock; // eax
 
   switch ( score_kind )
   {
-    case SUBGOLDY_SCORE_GARBAGE:
-      points = 10;
+    case 0:
+      v4 = 10;
       break;
-    case SUBGOLDY_SCORE_SLUG:
-      points = 500;
+    case 1:
+      v4 = 500;
       break;
-    case SUBGOLDY_SCORE_RING:
-    case SUBGOLDY_SCORE_PARCEL_COLLECT:
-    case SUBGOLDY_SCORE_PARCEL_DELIVER:
-      points = 100;
+    case 2:
+    case 3:
+    case 4:
+      v4 = 100;
       break;
-    case SUBGOLDY_SCORE_BONUS:
-      points = bonus_score;
+    case 5:
+      v4 = bonus_score;
       break;
     default:
       report_errorf(aUnknownScoreTy);
-      points = 0;
+      v4 = 0;
       break;
   }
-  player->score_buckets[score_kind] += points;
-  old_total = player->total_score;
-  player->total_score = old_total + points;
-  if ( old_total / 50000 != (old_total + points) / 50000 )
+  player->score_buckets[score_kind] += v4;
+  total_score = player->total_score;
+  player->total_score = total_score + v4;
+  if ( total_score / 50000 != (total_score + v4) / 50000 )
   {
     visible_life_stock = player->visible_life_stock;
     if ( visible_life_stock < 9 )
     {
       player->visible_life_stock = visible_life_stock + 1;
-      if ( !*((_DWORD *)MEMORY[0x4DF904] + 119190) && !*((_DWORD *)MEMORY[0x4DF904] + 9) )
+      if ( !g_game_base->subgame.level_mode && !g_game_base->fade.state )
         play_sound_effect(44);
     }
   }

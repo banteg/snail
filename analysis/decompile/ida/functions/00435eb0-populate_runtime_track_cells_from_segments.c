@@ -182,7 +182,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   {
     game->subgame_rebuild_selector = 1;
     game->player.total_score = 0;
-    clear_subgoldy_score_buckets((int)&game->player);
+    clear_subgoldy_score_buckets(&game->player);
     game->player.visible_life_stock = 3;
   }
   zero_timer_counters(&game->player.stopwatch);

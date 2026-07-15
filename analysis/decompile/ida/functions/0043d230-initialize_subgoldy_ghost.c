@@ -2,62 +2,43 @@
 /* function: initialize_subgoldy_ghost @ 0x43d230 */
 /* selector: initialize_subgoldy_ghost */
 
-unsigned int __thiscall sub_43D230(_DWORD *this, int a2)
+// Void `Player` member that initializes Goldy's paired ghost sprites for the active player slot. Its sole caller discards EAX and the terminal value is only the second sprite's cleared visibility flags. Cross-port iOS symbols match this helper to `cRSubGoldy::GhostInit(int)` in v1.5 and `cRSubGoldy::GhostInit(int, int)` in v1.9.
+void __thiscall initialize_subgoldy_ghost(Player *player, int32_t owner)
 {
-  _DWORD *v3; // eax
-  int v4; // ecx
-  _DWORD *v5; // eax
-  _DWORD *v6; // ecx
-  _DWORD *v7; // eax
-  int v8; // ecx
-  _DWORD *v9; // eax
-  _DWORD *v10; // ecx
-  int v11; // esi
-  unsigned int result; // eax
-  _DWORD v13[4]; // [esp+10h] [ebp-10h] BYREF
+  Sprite *sprite; // eax
+  SpriteFlag flags; // ecx
+  Sprite *v5; // eax
+  SpriteFlag v6; // ecx
+  Color4f color; // [esp+10h] [ebp-10h] BYREF
 
-  v3 = allocate_sprite(g_sprite_manager, a2, 159, -1, -1);
-  *(this + 38) = v3;
-  v4 = v3[1];
-  BYTE1(v4) |= 8u;
-  v3[1] = v4;
-  *(_DWORD *)(*(this + 38) + 104) = 0;
-  *(_DWORD *)(*(this + 38) + 108) = 0;
-  *(_DWORD *)(*(this + 38) + 120) = 0;
-  v5 = set_color_rgba(v13, 1065353216, 1065353216, 1065353216, 1065353216);
-  v6 = (_DWORD *)(*(this + 38) + 44);
-  *v6 = *v5;
-  v6[1] = v5[1];
-  v6[2] = v5[2];
-  v6[3] = v5[3];
-  *(_DWORD *)(*(this + 38) + 96) = 1056964608;
-  *(_DWORD *)(*(this + 38) + 100) = 1056964608;
-  *(_DWORD *)(*(this + 38) + 72) = 1083179008;
-  *(_DWORD *)(*(this + 38) + 76) = 1065353216;
-  *(_DWORD *)(*(this + 38) + 80) = 0;
-  v7 = allocate_sprite(g_sprite_manager, a2, 159, -1, -1);
-  *(this + 39) = v7;
-  v8 = v7[1];
-  BYTE1(v8) |= 8u;
-  v7[1] = v8;
-  *(_DWORD *)(*(this + 39) + 104) = 0;
-  *(_DWORD *)(*(this + 39) + 108) = 0;
-  *(_DWORD *)(*(this + 39) + 120) = 0;
-  v9 = set_color_rgba(v13, 1065353216, 1065353216, 1065353216, 1065353216);
-  v10 = (_DWORD *)(*(this + 39) + 44);
-  *v10 = *v9;
-  v10[1] = v9[1];
-  v10[2] = v9[2];
-  v10[3] = v9[3];
-  *(_DWORD *)(*(this + 39) + 96) = 1056964608;
-  *(_DWORD *)(*(this + 39) + 100) = 1056964608;
-  *(_DWORD *)(*(this + 39) + 72) = -1064304640;
-  *(_DWORD *)(*(this + 39) + 76) = 1065353216;
-  *(_DWORD *)(*(this + 39) + 80) = 0;
-  *(_DWORD *)(*(this + 38) + 4) &= ~0x40u;
-  v11 = *(this + 39);
-  result = *(_DWORD *)(v11 + 4) & 0xFFFFFFBF;
-  *(_DWORD *)(v11 + 4) = result;
-  return result;
+  sprite = (Sprite *)allocate_sprite(g_sprite_manager, owner, 159, -1, -1);
+  player->ghost_sprite_a = sprite;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
+  player->ghost_sprite_a->progress = 0.0;
+  player->ghost_sprite_a->progress_step = 0.0;
+  player->ghost_sprite_a->gravity_step = 0.0;
+  player->ghost_sprite_a->color = *set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  player->ghost_sprite_a->size_start = 0.5;
+  player->ghost_sprite_a->size_end = 0.5;
+  player->ghost_sprite_a->position.x = 4.5;
+  player->ghost_sprite_a->position.y = 1.0;
+  player->ghost_sprite_a->position.z = 0.0;
+  v5 = (Sprite *)allocate_sprite(g_sprite_manager, owner, 159, -1, -1);
+  player->ghost_sprite_b = v5;
+  v6 = v5->flags;
+  BYTE1(v6) |= 8u;
+  v5->flags = v6;
+  player->ghost_sprite_b->progress = 0.0;
+  player->ghost_sprite_b->progress_step = 0.0;
+  player->ghost_sprite_b->gravity_step = 0.0;
+  player->ghost_sprite_b->color = *set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  player->ghost_sprite_b->size_start = 0.5;
+  player->ghost_sprite_b->size_end = 0.5;
+  player->ghost_sprite_b->position.x = -4.5;
+  player->ghost_sprite_b->position.y = 1.0;
+  player->ghost_sprite_b->position.z = 0.0;
+  player->ghost_sprite_a->flags &= ~0x40u;
+  player->ghost_sprite_b->flags &= ~0x40u;
 }
-

@@ -2,7 +2,8 @@
 /* function: update_times_up @ 0x445e20 */
 /* selector: update_times_up */
 
-void __thiscall sub_445E20(int this)
+// Exact Windows `TimesUp::update_times_up` state machine: advances the message timer, tears the message down, and kills Goldy when the terminal phase completes. Android and iOS retain this member as `cRTimesUp::AI()`.
+void __thiscall update_times_up(int this)
 {
   double v2; // st7
 
@@ -18,9 +19,8 @@ void __thiscall sub_445E20(int this)
     else if ( *(_DWORD *)this == 2 )
     {
       uninit_times_up((_DWORD **)this);
-      kill_subgoldy((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]);
+      kill_subgoldy((Player *)((char *)&g_player_block + (_DWORD)g_game_base));
       *(_DWORD *)this = 0;
     }
   }
 }
-

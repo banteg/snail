@@ -2,10 +2,8 @@
 /* function: clear_subgoldy_score_buckets @ 0x4403a0 */
 /* selector: clear_subgoldy_score_buckets */
 
-// Clears the six per-type score buckets that `add_subgoldy_score` and `display_score_stats` read on the live subgame runner owner, without touching the separate total-score or life lanes.
-int __thiscall sub_4403A0(int this)
+// Void `Player` member that clears the six per-type score buckets shared by `add_subgoldy_score` and `display_score_stats`, without touching total score or life state. Both callers discard the final zero-register residue.
+void __thiscall clear_subgoldy_score_buckets(Player *player)
 {
-  memset((void *)(this + 784), 0, 0x18u);
-  return 0;
+  memset(player->score_buckets, 0, sizeof(player->score_buckets));
 }
-

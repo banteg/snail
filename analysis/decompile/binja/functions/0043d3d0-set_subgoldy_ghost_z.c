@@ -4,10 +4,9 @@
 /* function: set_subgoldy_ghost_z @ 0x43d3d0 */
 
 0043d3d0        struct Sprite* ghost_sprite_a = player->ghost_sprite_a
-0043d3e1        ghost_sprite_a->flags |= 0x40
+0043d3e1        ghost_sprite_a->flags |= SPRITE_FLAG_RENDER_ENABLED
 0043d3e4        struct Sprite* ghost_sprite_b = player->ghost_sprite_b
-0043d3f3        ghost_sprite_b->flags |= 0x40
+0043d3f3        ghost_sprite_b->flags |= SPRITE_FLAG_RENDER_ENABLED
 0043d3fd        player->ghost_sprite_a->position.z = ghost_z
-0043d400        struct Sprite* ghost_sprite_b_1 = player->ghost_sprite_b
-0043d408        ghost_sprite_b_1->position.z = ghost_z
-0043d40b        return ghost_sprite_b_1
+0043d408        player->ghost_sprite_b->position.z = ghost_z
+0043d40b        return

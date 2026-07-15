@@ -74,7 +74,7 @@ void __thiscall reset_subgame(_DWORD *this)
     if ( *(this + 4834290) == 2 )
     {
       *(this + 978578) = 0;
-      clear_subgoldy_score_buckets((int)(this + 978393));
+      clear_subgoldy_score_buckets((Player *)(this + 978393));
     }
     zero_timer_counters((Time *)(this + 978579));
     *(this + 978585) = 0;

@@ -2341,7 +2341,7 @@
     {
       "address": "0x43af10",
       "name": "show_subgoldy_lives",
-      "description": "Refreshes the nine-slot Goldy life display by showing the first `current_lives` widgets and hiding the rest. Windows `update_subgoldy` only calls it for gameplay mode 0, matching the mode-gated `cRSubGoldy::ShowLives()` helper in the Android and iOS ports."
+      "description": "Void `Player` member that refreshes the nine-slot Goldy life display by showing the first `current_lives` widgets and hiding the rest. Windows `update_subgoldy` discards its incidental terminal widget-flag value and only calls it for gameplay mode 0, matching the mode-gated `cRSubGoldy::ShowLives()` helper in the Android and iOS ports."
     },
     {
       "address": "0x43af60",
@@ -2361,12 +2361,12 @@
     {
       "address": "0x43d230",
       "name": "initialize_subgoldy_ghost",
-      "description": "Initializes Goldy's paired ghost sprites for the active player slot. Cross-port iOS symbols match this helper to `cRSubGoldy::GhostInit(int)` in v1.5 and `cRSubGoldy::GhostInit(int, int)` in v1.9."
+      "description": "Void `Player` member that initializes Goldy's paired ghost sprites for the active player slot. Its sole caller discards EAX and the terminal value is only the second sprite's cleared visibility flags. Cross-port iOS symbols match this helper to `cRSubGoldy::GhostInit(int)` in v1.5 and `cRSubGoldy::GhostInit(int, int)` in v1.9."
     },
     {
       "address": "0x43d3d0",
       "name": "set_subgoldy_ghost_z",
-      "description": "Marks the two cached SubGoldy ghost sprites visible with flag 0x40 and writes the supplied ghost z into each Sprite::position.z lane."
+      "description": "Void `Player` member that marks the two cached SubGoldy ghost sprites visible with flag 0x40 and writes the supplied ghost z into each `Sprite::position.z` lane. `update_subgoldy` immediately reloads its own game/root values after the call, proving the residual second-sprite pointer is not a result."
     },
     {
       "address": "0x43d410",
@@ -2519,17 +2519,17 @@
     {
       "address": "0x4402c0",
       "name": "add_subgoldy_score",
-      "description": "Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
+      "description": "Void `Player` member that adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. All 14 direct Windows callsites discard EAX. Cross-port evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
     },
     {
       "address": "0x4403a0",
       "name": "clear_subgoldy_score_buckets",
-      "description": "Clears the six per-type score buckets owned by the embedded cRSubGoldy/Player that `add_subgoldy_score` and `display_score_stats` share, without touching its total-score or life lanes."
+      "description": "Void `Player` member that clears the six per-type score buckets shared by `add_subgoldy_score` and `display_score_stats`, without touching total score or life state. Both callers discard the final zero-register residue."
     },
     {
       "address": "0x4403c0",
       "name": "display_score_stats",
-      "description": "Formats and displays Goldy's per-event score buckets. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsDisplay()` in `SubGame.o`."
+      "description": "Void `Player` member that formats and displays Goldy's per-event score buckets. Its sole `complete_subgame` caller discards EAX; the terminal value is only the last debug-report call residue. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsDisplay()` in `SubGame.o`."
     },
     {
       "address": "0x4404c0",
@@ -2656,7 +2656,7 @@
     {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
-      "description": "Seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
+      "description": "Void `Player` member that seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. `initialize_subgoldy_death` tail-forwards into it, but both external death callers discard the selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
     },
     {
       "address": "0x441fd0",
@@ -2840,7 +2840,8 @@
     },
     {
       "address": "0x445840",
-      "name": "kill_subgoldy"
+      "name": "kill_subgoldy",
+      "description": "Void `Player` member that hides both cached ghost sprites and clears Goldy's active render flag. Its sole `update_times_up` caller discards the final flag-clear residue."
     },
     {
       "address": "0x445860",
@@ -2928,7 +2929,7 @@
     {
       "address": "0x446e30",
       "name": "initialize_subgoldy_death",
-      "description": "Chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
+      "description": "Void `Player` member that chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Both direct callers discard EAX; its tail paths only preserve the downstream selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
     },
     {
       "address": "0x446e80",

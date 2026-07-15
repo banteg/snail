@@ -2,12 +2,9 @@
 /* function: kill_subgoldy @ 0x445840 */
 /* selector: kill_subgoldy */
 
-int __thiscall sub_445840(_DWORD *this)
+// Void `Player` member that hides both cached ghost sprites and clears Goldy's active render flag. Its sole `update_times_up` caller discards the final flag-clear residue.
+void __thiscall kill_subgoldy(Player *player)
 {
-  int result; // eax
-
-  result = begin_post_follow_carryover((int)this);
-  *(this + 27) = -1056964608;
-  return result;
+  begin_post_follow_carryover((int)player);
+  player->body.transform.position.y = -8.0;
 }
-

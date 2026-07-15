@@ -18,7 +18,7 @@ void __thiscall kill_slug_hazard(Slug *slug)
       slug->death_toss_direction = 2;
     else
       slug->death_toss_direction = 1;
-    add_subgoldy_score((int *)&slug->owner_game->player, 1, 0);
+    add_subgoldy_score(&slug->owner_game->player, 1, 0);
     explode_slug_hazard(slug);
   }
 }

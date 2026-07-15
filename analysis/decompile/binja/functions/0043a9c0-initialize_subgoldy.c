@@ -32,7 +32,7 @@
 0043aa4e        player->presentation.weapon_channels[2].selected_state = 0
 0043aa54        player->cutscene_pitch_cycle = 0f
 0043aa5a        player->cutscene_pitch_cycle_step = 0f
-0043aa6c        initialize_object_distort(player->presentation.body.bod.object + 0x80)
+0043aa6c        initialize_object_distort(&player->presentation.body.bod.object->distort)
 0043aa71        player->interaction_max_z = -19f
 0043aa7b        player->movement_sound_variant_sample = 0
 0043aa86        player->presentation.invincible_shell.cutscene_roll_progress = 0f
@@ -45,7 +45,7 @@
 0043aac4        player->startup_voice_timer = 0.0555555522f
 0043aaca        player->attachment_exit_progress = 0f
 0043aad0        player->attachment_exit_progress_step = 0.0166666675f
-0043aadf        if ((*(player->presentation.body.bod.object + 0x10) & 0x200000) == 0)
+0043aadf        if ((player->presentation.body.bod.object->flags & OBJECT_FLAG_HAS_ANIMATION) == 0)
 0043ab31        initialize_anim_manager(&player->presentation.anim_manager)
 0043ab36        player->presentation.anim_manager.state = 0
 0043aae1        uint32_t list_flags = player->presentation.body.bod.bod.list_flags
@@ -57,7 +57,7 @@
 0043ab15        player->presentation.anim_manager.target_model = &player->presentation
 0043ab1b        player->presentation.anim_manager.animation_slots = &player->presentation.cutscene_animation_slots
 0043ab21        player->presentation.anim_manager.queue_count = 0
-0043ab41        if ((*(player->presentation.jetpack_channel.body.bod.object + 0x10) & 0x200000) == 0)
+0043ab41        if ((player->presentation.jetpack_channel.body.bod.object->flags & OBJECT_FLAG_HAS_ANIMATION) == 0)
 0043ab9c        initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager)
 0043aba1        player->presentation.jetpack_channel.anim_manager.state = 0
 0043ab4f        uint32_t ecx_10 = player->presentation.jetpack_channel.body.bod.bod.list_flags & 0xffffffdf
@@ -70,7 +70,7 @@
 0043ab80        player->presentation.jetpack_channel.anim_manager.target_model = &player->presentation.jetpack_channel
 0043ab86        player->presentation.jetpack_channel.anim_manager.animation_slots = &player->presentation.jetpack_channel.animation_slots
 0043ab8c        player->presentation.jetpack_channel.anim_manager.queue_count = 0
-0043abac        if ((*(player->presentation.weapon_channels[0].body.bod.object + 0x10) & 0x200000) == 0)
+0043abac        if ((player->presentation.weapon_channels[0].body.bod.object->flags & OBJECT_FLAG_HAS_ANIMATION) == 0)
 0043ac07        initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager)
 0043ac0c        player->presentation.weapon_channels[0].anim_manager.state = 0
 0043abba        uint32_t edx_4 = player->presentation.weapon_channels[0].body.bod.bod.list_flags & 0xffffffdf
@@ -83,7 +83,7 @@
 0043abeb        player->presentation.weapon_channels[0].anim_manager.target_model = &player->presentation.weapon_channels
 0043abf1        player->presentation.weapon_channels[0].anim_manager.animation_slots = &player->presentation.weapon_channels[0].animation_slots
 0043abf7        player->presentation.weapon_channels[0].anim_manager.queue_count = 0
-0043ac17        if ((*(player->presentation.weapon_channels[1].body.bod.object + 0x10) & 0x200000) == 0)
+0043ac17        if ((player->presentation.weapon_channels[1].body.bod.object->flags & OBJECT_FLAG_HAS_ANIMATION) == 0)
 0043ac71        initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager)
 0043ac76        player->presentation.weapon_channels[1].anim_manager.state = 0
 0043ac19        uint32_t list_flags_1 = player->presentation.weapon_channels[1].body.bod.bod.list_flags
@@ -97,7 +97,7 @@
 0043ac55        player->presentation.weapon_channels[1].anim_manager.target_model = &player->presentation.weapon_channels[1]
 0043ac5b        player->presentation.weapon_channels[1].anim_manager.animation_slots = &player->presentation.weapon_channels[1].animation_slots
 0043ac61        player->presentation.weapon_channels[1].anim_manager.queue_count = 0
-0043ac81        if ((*(player->presentation.weapon_channels[2].body.bod.object + 0x10) & 0x200000) == 0)
+0043ac81        if ((player->presentation.weapon_channels[2].body.bod.object->flags & OBJECT_FLAG_HAS_ANIMATION) == 0)
 0043acdc        initialize_anim_manager(&player->presentation.weapon_channels[2].anim_manager)
 0043ace1        player->presentation.weapon_channels[2].anim_manager.state = 0
 0043ac8f        uint32_t ecx_21 = player->presentation.weapon_channels[2].body.bod.bod.list_flags & 0xffffffdf

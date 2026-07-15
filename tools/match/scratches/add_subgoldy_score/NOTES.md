@@ -44,3 +44,7 @@ operands.
 - 2026-07-14 root gate ownership: the two remaining raw game offsets now use
   `GameRoot::subgame.level_mode` and `GameRoot::fade.state`. Focused Wibo stays
   exact at `58/58` instructions with all six operands clean.
+- 2026-07-16 void receiver replay: all 14 direct callers discard EAX, matching
+  the existing source-authored void mutator. BN and IDA now retain the exact
+  `Player*` receiver and void contract; focused output remains 58/58 with all
+  six operands clean.

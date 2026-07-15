@@ -968,7 +968,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
     assert "no-argument auto prototype" not in binja_source
 
 
-def test_subgoldy_replays_preserve_void_update_abis() -> None:
+def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -976,19 +976,31 @@ def test_subgoldy_replays_preserve_void_update_abis() -> None:
         encoding="utf-8"
     )
     header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    compact_header = "".join(header.split())
 
     declarations = (
+        "void __thiscall show_subgoldy_lives(Player* player)",
+        "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner)",
         "void __thiscall update_subgoldy(Player* player)",
         "void __thiscall play_movement_state_sound(Player* player)",
+        "void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
+        "void __thiscall add_subgoldy_score(Player* player, int32_t score_kind, int32_t bonus_score)",
+        "void __thiscall clear_subgoldy_score_buckets(Player* player)",
+        "void __thiscall display_score_stats(Player* player)",
+        "void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
         "void __thiscall handle_subgoldy_collisions(Player* player)",
+        "void __thiscall kill_subgoldy(Player* player)",
+        "void __thiscall initialize_subgoldy_death(Player* player)",
     )
     for declaration in declarations:
         assert declaration in binja_source
         assert f'"{declaration};"' in ida_source
-        assert f"{declaration};" in header
+        assert "".join(f"{declaration};".split()) in compact_header
 
     for stale_declaration in (
         "int32_t __thiscall update_subgoldy(Player* player)",
+        "Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
+        "int32_t __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
     ):
         assert stale_declaration not in binja_source

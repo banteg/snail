@@ -2,8 +2,9 @@
 
 The helper is semantically pinned: it sets sprite flag `0x40` on the two cached
 SubGoldy ghost sprites at player offsets `+0x98` and `+0x9c`, then writes the
-same ghost z into each sprite's `position.z` lane (`+0x50`) and returns the
-second sprite pointer.
+same ghost z into each sprite's `position.z` lane (`+0x50`). The second pointer
+left in EAX is incidental; `update_subgoldy` immediately reloads its game/root
+values and consumes no result.
 
 2026-06-18 exact source-shape correction: spelling the z write as natural
 `Sprite::position.z` float stores produces a 100% Wibo match. The old raw-dword
@@ -42,9 +43,10 @@ candidate/target insns, no masked operands, and the same final
 slots are allocated `Sprite*` values, and Binary Ninja/readback now names them
 `ghost_sprite_a` and `ghost_sprite_b`.
 
-2026-06-18 cross-scratch sync: the large `update_subgoldy` scratch now declares
-this helper as returning `Sprite*`, matching `player.h`, this scratch, and the
-BN decompile. The callsite still ignores the return, and focused Wibo remains
-72.51% for `update_subgoldy`. The IDA artifact for this helper was updated from
-raw `this+38/39` slots to `Player::ghost_sprite_a` and
-`Player::ghost_sprite_b`.
+2026-07-16 void ABI correction: `player.h`, this exact scratch, and both
+decompiler replay catalogs now preserve `void __thiscall(Player*, float)`.
+Removing the synthetic `return second` leaves the helper byte-exact at 18/18
+instructions and leaves `update_subgoldy` unchanged at its honest 74.30%
+baseline. The regenerated decompiles retain the real
+`Player::ghost_sprite_a` / `Player::ghost_sprite_b` owners without pretending
+the residual second pointer is a result.

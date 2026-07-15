@@ -10,7 +10,7 @@ garbage, slug, ring/special-effect, parcel collect, parcel deliver, and bonus.
 
 The function is source-shaped:
 
-- return `0` immediately when the total score bucket at `+0x2e4` is zero
+- skip the report body when the total score bucket at `+0x2e4` is zero
 - print the total score header through the stripped release `debug_report_stub`
 - print each score bucket as `(bucket * 100) / total`
 - finish with the shared newline string at `data_4a44cc`
@@ -59,10 +59,9 @@ spurious zero materialization. A `score` local, an `else` return, and a `goto`
 spelling are either codegen-neutral with the old epilogue or compile to the
 same early-zero shape.
 
-2026-06-21 guarded-result pass: keeping `result = total_score`, guarding the
-report body with `if (total_score != 0)`, and assigning the final newline report
-result into that local matches native exactly. This recovers the forward
-zero-score branch to the shared epilogue, preserves the batched `add esp, 0x3c`
-cleanup for the stripped report calls, and keeps zero-score returns as the
-already-loaded total score. Focused Wibo is now 100.00%, 67/67 instructions,
-full prefix, and 16 clean masked operands.
+2026-07-16 void ABI correction: the prior guarded-result experiment correctly
+identified the control-flow shape but over-interpreted EAX. Removing the result
+local and simply calling the final newline reporter preserves the same forward
+zero-score branch, batched `add esp, 0x3c` cleanup, and shared epilogue. The
+natural void source remains exact at 67/67 instructions with all 16 operands
+clean; the sole `complete_subgame` caller discards the report-call residue.

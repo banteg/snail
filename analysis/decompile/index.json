@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 23,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 23,
+  "ida_exported": 23,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,16 +17,96 @@
   "strict": false,
   "selected_functions": [
     {
-      "name": "play_movement_state_sound",
-      "address": "0x43afd0"
+      "name": "flush_row_event_display",
+      "address": "0x404830"
+    },
+    {
+      "name": "update_row_event_display",
+      "address": "0x404cf0"
+    },
+    {
+      "name": "register_parcel_delivery",
+      "address": "0x405040"
+    },
+    {
+      "name": "update_golb_ai",
+      "address": "0x414820"
+    },
+    {
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
+    },
+    {
+      "name": "reset_subgame",
+      "address": "0x437b10"
+    },
+    {
+      "name": "complete_subgame",
+      "address": "0x438700"
+    },
+    {
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
+    },
+    {
+      "name": "show_subgoldy_lives",
+      "address": "0x43af10"
     },
     {
       "name": "update_subgoldy",
       "address": "0x43b120"
     },
     {
+      "name": "initialize_subgoldy_ghost",
+      "address": "0x43d230"
+    },
+    {
+      "name": "set_subgoldy_ghost_z",
+      "address": "0x43d3d0"
+    },
+    {
+      "name": "update_garbage_hazard",
+      "address": "0x43f200"
+    },
+    {
+      "name": "kill_slug_hazard",
+      "address": "0x43f8b0"
+    },
+    {
+      "name": "add_subgoldy_score",
+      "address": "0x4402c0"
+    },
+    {
+      "name": "clear_subgoldy_score_buckets",
+      "address": "0x4403a0"
+    },
+    {
+      "name": "display_score_stats",
+      "address": "0x4403c0"
+    },
+    {
+      "name": "initialize_subgoldy_resurrect",
+      "address": "0x441fa0"
+    },
+    {
       "name": "handle_subgoldy_collisions",
       "address": "0x444cf0"
+    },
+    {
+      "name": "kill_subgoldy",
+      "address": "0x445840"
+    },
+    {
+      "name": "update_times_up",
+      "address": "0x445e20"
+    },
+    {
+      "name": "update_cutscene",
+      "address": "0x4466d0"
+    },
+    {
+      "name": "initialize_subgoldy_death",
+      "address": "0x446e30"
     }
   ],
   "health_check_count": 324,

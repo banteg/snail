@@ -3,7 +3,7 @@
 #include "sprite.h"
 #include "player.h"
 
-int Player::initialize_subgoldy_ghost(int owner)
+void Player::initialize_subgoldy_ghost(int owner)
 {
     tColour color;
 
@@ -36,5 +36,5 @@ int Player::initialize_subgoldy_ghost(int owner)
     first_ghost->flags &= clear_visible_mask;
 
     Sprite* second_ghost = ghost_sprite_b;
-    return second_ghost->flags &= clear_visible_mask;
+    second_ghost->flags &= clear_visible_mask;
 }

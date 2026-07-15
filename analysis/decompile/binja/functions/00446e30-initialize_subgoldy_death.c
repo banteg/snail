@@ -7,7 +7,7 @@
 00446e4d        case 0
 00446e4d        if (player->visible_life_stock s<= 0)
 00446e51        initialize_subgoldy_resurrect(player, 1)
-00446e56        return 
+00446e56        return
 00446e59        initialize_subgoldy_resurrect(player, 0)
 00446e51        case 1, 4
 00446e51        initialize_subgoldy_resurrect(player, 1)

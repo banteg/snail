@@ -2,30 +2,25 @@
 /* function: initialize_subgoldy_death @ 0x446e30 */
 /* selector: initialize_subgoldy_death */
 
-// Chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`.
-int __thiscall sub_446E30(_DWORD *this)
+// Void `Player` member that chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Both direct callers discard EAX; its tail paths only preserve the downstream selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`.
+void __thiscall initialize_subgoldy_death(Player *player)
 {
-  int result; // eax
-
-  result = *(_DWORD *)(*(this + 258) + 64);
-  switch ( result )
+  switch ( player->game->level_mode )
   {
     case 0:
-      if ( (int)*(this + 4304) > 0 )
+      if ( player->visible_life_stock > 0 )
         goto LABEL_4;
       goto LABEL_3;
     case 1:
     case 4:
 LABEL_3:
-      result = initialize_subgoldy_resurrect((int)this, 1);
+      initialize_subgoldy_resurrect(player, 1);
       break;
     case 7:
 LABEL_4:
-      result = initialize_subgoldy_resurrect((int)this, 0);
+      initialize_subgoldy_resurrect(player, 0);
       break;
     default:
-      return result;
+      return;
   }
-  return result;
 }
-

@@ -612,12 +612,48 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall initialize_subgoldy(Player* player, int32_t player_slot);",
     ),
     (
+        "show_subgoldy_lives",
+        "void __thiscall show_subgoldy_lives(Player* player);",
+    ),
+    (
+        "initialize_subgoldy_ghost",
+        "void __thiscall initialize_subgoldy_ghost(Player* player, int32_t owner);",
+    ),
+    (
         "update_subgoldy",
         "void __thiscall update_subgoldy(Player* player);",
     ),
     (
         "play_movement_state_sound",
         "void __thiscall play_movement_state_sound(Player* player);",
+    ),
+    (
+        "set_subgoldy_ghost_z",
+        "void __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);",
+    ),
+    (
+        "add_subgoldy_score",
+        "void __thiscall add_subgoldy_score(Player* player, int32_t score_kind, int32_t bonus_score);",
+    ),
+    (
+        "clear_subgoldy_score_buckets",
+        "void __thiscall clear_subgoldy_score_buckets(Player* player);",
+    ),
+    (
+        "display_score_stats",
+        "void __thiscall display_score_stats(Player* player);",
+    ),
+    (
+        "initialize_subgoldy_resurrect",
+        "void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss);",
+    ),
+    (
+        "kill_subgoldy",
+        "void __thiscall kill_subgoldy(Player* player);",
+    ),
+    (
+        "initialize_subgoldy_death",
+        "void __thiscall initialize_subgoldy_death(Player* player);",
     ),
     (
         "end_jetpack_hover",
@@ -646,10 +682,6 @@ TRUSTED_DECLARATIONS = [
     (
         "arm_jetpack_gauge",
         "void __thiscall arm_jetpack_gauge(SubHover* sub_hover);",
-    ),
-    (
-        "set_subgoldy_ghost_z",
-        "Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z);",
     ),
     (
         "firework_shoot",

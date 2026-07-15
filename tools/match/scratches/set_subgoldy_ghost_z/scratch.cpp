@@ -3,12 +3,11 @@
 #include "player.h"
 #include "sprite.h"
 
-Sprite* Player::set_subgoldy_ghost_z(float ghost_z)
+void Player::set_subgoldy_ghost_z(float ghost_z)
 {
     ghost_sprite_a->flags |= 0x40;
     ghost_sprite_b->flags |= 0x40;
     ghost_sprite_a->position.z = ghost_z;
     Sprite* second = ghost_sprite_b;
     second->position.z = ghost_z;
-    return second;
 }

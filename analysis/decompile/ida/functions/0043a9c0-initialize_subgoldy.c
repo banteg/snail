@@ -17,7 +17,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   int32_t v12; // [esp-4h] [ebp-14h]
 
   player->player_slot = player_slot;
-  player->game = (SubgameRuntime *)&g_game_base->subgame;
+  player->game = &g_game_base->subgame;
   player->heading_roll = 0.0;
   player->row_event.id = 0;
   player->control_override_active = 0;
@@ -37,7 +37,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->presentation.weapon_channels[2].selected_state = 0;
   player->cutscene_pitch_cycle = 0.0;
   player->cutscene_pitch_cycle_step = 0.0;
-  initialize_object_distort((_DWORD *)player->presentation.body.bod.object + 32);
+  initialize_object_distort(&player->presentation.body.bod.object->distort.z_wave);
   player->interaction_max_z = -19.0;
   player->movement_sound_variant_sample = 0;
   player->presentation.invincible_shell.cutscene_roll_progress = 0.0;
@@ -50,7 +50,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->startup_voice_timer = 0.055555552;
   player->attachment_exit_progress = 0.0;
   player->attachment_exit_progress_step = 0.016666668;
-  if ( (*((_DWORD *)player->presentation.body.bod.object + 4) & 0x200000) != 0 )
+  if ( (player->presentation.body.bod.object->flags & 0x200000) != 0 )
   {
     list_flags = player->presentation.body.bod.bod.list_flags;
     BYTE1(list_flags) |= 8u;
@@ -67,7 +67,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     initialize_anim_manager(&player->presentation.anim_manager);
     player->presentation.anim_manager.state = 0;
   }
-  if ( (*((_DWORD *)player->presentation.jetpack_channel.body.bod.object + 4) & 0x200000) != 0 )
+  if ( (player->presentation.jetpack_channel.body.bod.object->flags & 0x200000) != 0 )
   {
     v4 = player->presentation.jetpack_channel.body.bod.bod.list_flags & 0xFFFFFFDF;
     BYTE1(v4) |= 8u;
@@ -85,7 +85,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager);
     player->presentation.jetpack_channel.anim_manager.state = 0;
   }
-  if ( (*((_DWORD *)player->presentation.weapon_channels[0].body.bod.object + 4) & 0x200000) != 0 )
+  if ( (player->presentation.weapon_channels[0].body.bod.object->flags & 0x200000) != 0 )
   {
     v5 = player->presentation.weapon_channels[0].body.bod.bod.list_flags & 0xFFFFFFDF;
     BYTE1(v5) |= 8u;
@@ -103,7 +103,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
     player->presentation.weapon_channels[0].anim_manager.state = 0;
   }
-  if ( (*((_DWORD *)player->presentation.weapon_channels[1].body.bod.object + 4) & 0x200000) != 0 )
+  if ( (player->presentation.weapon_channels[1].body.bod.object->flags & 0x200000) != 0 )
   {
     v6 = player->presentation.weapon_channels[1].body.bod.bod.list_flags;
     LOBYTE(v6) = v6 & 0xDF;
@@ -122,7 +122,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
     player->presentation.weapon_channels[1].anim_manager.state = 0;
   }
-  if ( (*((_DWORD *)player->presentation.weapon_channels[2].body.bod.object + 4) & 0x200000) != 0 )
+  if ( (player->presentation.weapon_channels[2].body.bod.object->flags & 0x200000) != 0 )
   {
     v7 = player->presentation.weapon_channels[2].body.bod.bod.list_flags & 0xFFFFFFDF;
     BYTE1(v7) |= 8u;

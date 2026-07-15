@@ -2,48 +2,46 @@
 /* function: flush_row_event_display @ 0x404830 */
 /* selector: flush_row_event_display */
 
-// Fast-forwards the active gameplay row-event display by paying out any remaining row score awards, destroying its widget actors, and clearing the owning controller state.
-int32_t __fastcall flush_row_event_display(RowEventDisplayController *controller)
+// Exact Windows `Completion::flush_row_event_display` teardown for the embedded 0x50-byte `cRCompletion`: pays any remaining parcel awards, destroys its five widgets, restores the display token, and clears state. Android and iOS retain this member as `cRCompletion::UnInit()`.
+void __thiscall flush_row_event_display(Completion *completion)
 {
-  int32_t result; // eax
   int32_t delivered_parcel_count; // eax
   int32_t parcel_target_count; // ecx
-  int32_t v5; // ecx
-  int32_t v6; // eax
+  int32_t v4; // ecx
+  int32_t v5; // eax
+  int32_t display_token; // eax
   _DWORD *widget_a; // [esp-4h] [ebp-8h]
 
-  result = controller->state;
-  if ( result )
+  if ( completion->state )
   {
-    delivered_parcel_count = controller->delivered_parcel_count;
-    parcel_target_count = controller->parcel_target_count;
+    delivered_parcel_count = completion->delivered_parcel_count;
+    parcel_target_count = completion->parcel_target_count;
     if ( delivered_parcel_count != parcel_target_count )
     {
       if ( delivered_parcel_count < parcel_target_count )
       {
         do
         {
-          add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
-          v5 = controller->parcel_target_count;
-          v6 = controller->delivered_parcel_count + 1;
-          controller->delivered_parcel_count = v6;
+          add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 4, 0);
+          v4 = completion->parcel_target_count;
+          v5 = completion->delivered_parcel_count + 1;
+          completion->delivered_parcel_count = v5;
         }
-        while ( v6 < v5 );
+        while ( v5 < v4 );
       }
-      if ( controller->bonus_enabled )
-        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), controller->bonus_score, 0);
+      if ( completion->bonus_enabled )
+        add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), completion->bonus_score, 0);
     }
-    widget_a = controller->widget_a;
-    ++controller->delivered_parcel_count;
+    widget_a = completion->widget_a;
+    ++completion->delivered_parcel_count;
     kill_border(widget_a);
-    kill_border((_DWORD *)controller->delivered_count_widget);
-    kill_border((_DWORD *)controller->widget_d);
-    kill_border((_DWORD *)controller->bonus_widget);
-    kill_border((_DWORD *)controller->continue_widget);
-    result = controller->display_token;
-    if ( *((_DWORD *)MEMORY[0x4DF904] + 1097752) != result )
-      *((_DWORD *)MEMORY[0x4DF904] + 1097752) = result;
+    kill_border((_DWORD *)completion->delivered_count_widget);
+    kill_border((_DWORD *)completion->widget_d);
+    kill_border((_DWORD *)completion->bonus_widget);
+    kill_border((_DWORD *)completion->continue_widget);
+    display_token = completion->display_token;
+    if ( g_game_base->subgame.player.total_score != display_token )
+      g_game_base->subgame.player.total_score = display_token;
   }
-  controller->state = 0;
-  return result;
+  completion->state = COMPLETION_STATE_INACTIVE;
 }

@@ -315,7 +315,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
                 {
                   active_head->state = 2;
                   active_head->collision_side = v62.x >= 0.0 ? 1 : 2;
-                  add_subgoldy_score((int *)shot->owner_player, 0, 0);
+                  add_subgoldy_score(shot->owner_player, 0, 0);
                   if ( shot->kind != 1 )
                     break;
                 }
@@ -343,7 +343,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
                       i->collision_side = 1;
                     else
                       i->collision_side = 2;
-                    add_subgoldy_score((int *)shot->owner_player, 0, 0);
+                    add_subgoldy_score(shot->owner_player, 0, 0);
                   }
                 }
               }

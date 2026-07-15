@@ -2,21 +2,21 @@
 /* function: update_row_event_display @ 0x404cf0 */
 /* selector: update_row_event_display */
 
-// Runs the gameplay row-event display state machine, including staged score payout, widget show or hide transitions, and the final handoff into `flush_row_event_display`.
-void __fastcall update_row_event_display(RowEventDisplayController *controller)
+// Exact Windows `Completion::update_row_event_display`/`cRCompletion::AI()` state machine: stages parcel sprites, drives score and widget transitions, and hands off to the completion phase. Modeling it as the authored member makes all 213 instructions exact; Android and iOS retain the same owner.
+void __thiscall update_row_event_display(Completion *completion)
 {
-  _DWORD *delivered_count_widget; // ecx
+  FrontendWidget *delivered_count_widget; // ecx
   double v3; // st7
   int32_t staged_parcel_count; // eax
-  char *v5; // eax
-  int v6; // ecx
+  Parcel *v5; // eax
+  Sprite *sprite; // ecx
   int32_t parcel_target_count; // eax
   int32_t v8; // ecx
   double v9; // st7
   int32_t bonus_enabled; // eax
-  float *v11; // eax
+  GameRoot *v11; // eax
   double v12; // st7
-  _DWORD *bonus_widget; // ecx
+  FrontendWidget *bonus_widget; // ecx
   int32_t delivered_parcel_count; // ecx
   float v15; // [esp+8h] [ebp-3Ch]
   float v16; // [esp+Ch] [ebp-38h]
@@ -32,133 +32,137 @@ void __fastcall update_row_event_display(RowEventDisplayController *controller)
   float v26; // [esp+3Ch] [ebp-8h]
   float v27; // [esp+40h] [ebp-4h]
 
-  if ( controller->state )
+  if ( completion->state )
   {
-    delivered_count_widget = controller->delivered_count_widget;
-    if ( *((_BYTE *)MEMORY[0x4DF904] + 476705) )
+    delivered_count_widget = (FrontendWidget *)completion->delivered_count_widget;
+    if ( g_game_base->subgame.subgame_pause_gate )
     {
       hide_border_init(delivered_count_widget);
-      hide_border_init(controller->widget_a);
-      hide_border_init((_DWORD *)controller->widget_d);
-      hide_border_init((_DWORD *)controller->bonus_widget);
-      hide_border_init((_DWORD *)controller->continue_widget);
+      hide_border_init((FrontendWidget *)completion->widget_a);
+      hide_border_init((FrontendWidget *)completion->widget_d);
+      hide_border_init((FrontendWidget *)completion->bonus_widget);
+      hide_border_init((FrontendWidget *)completion->continue_widget);
     }
     else
     {
       unhide_border_init(delivered_count_widget);
-      unhide_border_init(controller->widget_a);
-      unhide_border_init((_DWORD *)controller->widget_d);
-      unhide_border_init((_DWORD *)controller->continue_widget);
-      switch ( controller->state )
+      unhide_border_init((FrontendWidget *)completion->widget_a);
+      unhide_border_init((FrontendWidget *)completion->widget_d);
+      unhide_border_init((FrontendWidget *)completion->continue_widget);
+      switch ( completion->state )
       {
-        case 0:
+        case COMPLETION_STATE_INACTIVE:
           return;
-        case 1:
-          v3 = controller->progress_step + controller->progress;
-          controller->progress = v3;
+        case COMPLETION_STATE_STAGING_PARCELS:
+          v3 = completion->progress_step + completion->progress;
+          completion->progress = v3;
           if ( v3 > 1.0 )
           {
-            staged_parcel_count = controller->staged_parcel_count;
-            if ( staged_parcel_count < controller->parcel_target_count )
+            staged_parcel_count = completion->staged_parcel_count;
+            if ( staged_parcel_count < completion->parcel_target_count )
             {
-              controller->staged_parcel_count = staged_parcel_count + 1;
+              completion->staged_parcel_count = staged_parcel_count + 1;
               v5 = spawn_track_parcel(
-                     (int *)MEMORY[0x4DF904] + 119174,
-                     (float *)MEMORY[0x4DF904] + 1101773,
-                     (int)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]);
-              v6 = *((_DWORD *)v5 + 21);
-              *((_DWORD *)v5 + 14) = 6;
-              *(_DWORD *)(v6 + 100) = 0;
-              *(_DWORD *)(*((_DWORD *)v5 + 21) + 96) = 0;
+                     &g_game_base->subgame,
+                     &g_game_base->subgame.player.presentation.snail_hotspots_world[11],
+                     (Player *)((char *)&g_player_block + (_DWORD)g_game_base));
+              sprite = v5->sprite;
+              v5->state = PARCEL_STATE_DELIVERY_PENDING;
+              sprite->size_end = 0.0;
+              v5->sprite->size_start = 0.0;
             }
-            parcel_target_count = controller->parcel_target_count;
-            v8 = controller->staged_parcel_count;
-            controller->progress = 0.0;
+            parcel_target_count = completion->parcel_target_count;
+            v8 = completion->staged_parcel_count;
+            completion->progress = 0.0;
             if ( v8 == parcel_target_count )
             {
               if ( parcel_target_count )
               {
-                controller->state = 2;
+                completion->state = COMPLETION_STATE_WAITING_FOR_DELIVERIES;
               }
               else
               {
-                controller->state = 6;
-                controller->progress = 0.0;
-                controller->progress_step = 0.0083333338;
+                completion->state = COMPLETION_STATE_EMPTY_DELIVERY_DELAY;
+                completion->progress = 0.0;
+                completion->progress_step = 0.0083333338;
               }
             }
           }
           goto LABEL_27;
-        case 3:
-          unhide_border_init((_DWORD *)controller->continue_widget);
-          bonus_enabled = controller->bonus_enabled;
-          controller->gate_18 = 0;
-          controller->state = 4;
+        case COMPLETION_STATE_SUMMARY_PENDING:
+          unhide_border_init((FrontendWidget *)completion->continue_widget);
+          bonus_enabled = completion->bonus_enabled;
+          completion->gate_18 = 0;
+          completion->state = COMPLETION_STATE_SUMMARY_ACTIVE;
           if ( !bonus_enabled )
             goto LABEL_18;
-          unhide_border_init((_DWORD *)controller->bonus_widget);
-          if ( controller->parcel_target_count )
+          unhide_border_init((FrontendWidget *)completion->bonus_widget);
+          if ( completion->parcel_target_count )
             goto LABEL_18;
-          v11 = (float *)MEMORY[0x4DF904];
-          if ( *((_DWORD *)MEMORY[0x4DF904] + 119190) == 1 )
+          v11 = g_game_base;
+          if ( g_game_base->subgame.level_mode == 1 )
           {
-            add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), SUBGOLDY_SCORE_BONUS, controller->bonus_score);
+            add_subgoldy_score((Player *)((char *)&g_player_block + (_DWORD)g_game_base), 5, completion->bonus_score);
             play_sound_effect(49);
 LABEL_18:
-            v11 = (float *)MEMORY[0x4DF904];
+            v11 = g_game_base;
           }
-          if ( controller->bonus_enabled )
+          if ( completion->bonus_enabled )
           {
-            v12 = controller->bonus_blink_step + controller->bonus_blink_progress;
-            controller->bonus_blink_progress = v12;
+            v12 = completion->bonus_blink_step + completion->bonus_blink_progress;
+            completion->bonus_blink_progress = v12;
             if ( v12 > 1.0 )
             {
-              bonus_widget = controller->bonus_widget;
-              controller->bonus_blink_progress = 0.0;
-              if ( (bonus_widget[104] & 0x1000) != 0 )
+              bonus_widget = (FrontendWidget *)completion->bonus_widget;
+              completion->bonus_blink_progress = 0.0;
+              if ( (bonus_widget->widget_flags & 0x1000) != 0 )
                 unhide_border_init(bonus_widget);
               else
                 hide_border_init(bonus_widget);
             }
-            v11 = (float *)MEMORY[0x4DF904];
+            v11 = g_game_base;
           }
-          if ( (*(_DWORD *)(*((_DWORD *)v11 + 163) + 60) & 0x4000) != 0 )
+          if ( (v11->players[0].game_input->input.pressed_buttons & 0x4000) != 0 )
           {
-            controller->state = 5;
+            completion->state = COMPLETION_STATE_CONTINUE_ACCEPTED;
             play_sound_effect(8);
 LABEL_27:
-            v11 = (float *)MEMORY[0x4DF904];
+            v11 = g_game_base;
           }
-          v26 = v11[96] * 6.0;
-          v27 = v11[97] * 6.0;
-          v22 = v11[92] + v11[92];
-          v23 = v11[93] + v11[93];
-          v16 = v11[88] * 7.3000002;
-          v18 = v11[89] * 7.3000002;
-          v20 = v16 + v11[100];
-          v21 = v18 + v11[101];
+          v26 = v11->players[0].transform.basis_forward.y * 6.0;
+          v27 = v11->players[0].transform.basis_forward.z * 6.0;
+          v22 = v11->players[0].transform.basis_up.y + v11->players[0].transform.basis_up.y;
+          v23 = v11->players[0].transform.basis_up.z + v11->players[0].transform.basis_up.z;
+          v16 = v11->players[0].transform.basis_right.y * 7.3000002;
+          v18 = v11->players[0].transform.basis_right.z * 7.3000002;
+          v20 = v16 + v11->players[0].transform.position.y;
+          v21 = v18 + v11->players[0].transform.position.z;
           v24 = v20 + v22;
           v25 = v21 + v23;
-          v15 = v11[91] + v11[91] + v11[87] * 7.3000002 + v11[99] + v11[95] * 6.0;
-          controller->widget_world_x = v15;
+          v15 = v11->players[0].transform.basis_up.x
+              + v11->players[0].transform.basis_up.x
+              + v11->players[0].transform.basis_right.x * 7.3000002
+              + v11->players[0].transform.position.x
+              + v11->players[0].transform.basis_forward.x * 6.0;
+          completion->widget_world.x = v15;
           v17 = v24 + v26;
-          controller->widget_world_y = v17;
+          completion->widget_world.y = v17;
           v19 = v25 + v27;
-          controller->widget_world_z = v19;
-          delivered_parcel_count = controller->delivered_parcel_count;
+          completion->widget_world.z = v19;
+          delivered_parcel_count = completion->delivered_parcel_count;
           if ( delivered_parcel_count >= 10 )
-            *((_BYTE *)controller->delivered_count_widget + 716) = delivered_parcel_count / 10 + 48;
+            *((_BYTE *)completion->delivered_count_widget + 716) = delivered_parcel_count / 10 + 48;
           else
-            *((_BYTE *)controller->delivered_count_widget + 716) = 32;
-          *((_BYTE *)controller->delivered_count_widget + 717) = controller->delivered_parcel_count % 10 + 48;
+            *((_BYTE *)completion->delivered_count_widget + 716) = 32;
+          *((_BYTE *)completion->delivered_count_widget + 717) = completion->delivered_parcel_count % 10 + 48;
           break;
-        case 4:
+        case COMPLETION_STATE_SUMMARY_ACTIVE:
           goto LABEL_18;
-        case 6:
-          v9 = controller->progress_step + controller->progress;
-          controller->progress = v9;
+        case COMPLETION_STATE_EMPTY_DELIVERY_DELAY:
+          v9 = completion->progress_step + completion->progress;
+          completion->progress = v9;
           if ( v9 > 1.0 )
-            controller->state = 3;
+            completion->state = COMPLETION_STATE_SUMMARY_PENDING;
           goto LABEL_27;
         default:
           goto LABEL_27;

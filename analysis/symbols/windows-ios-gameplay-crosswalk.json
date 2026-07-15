@@ -1279,21 +1279,23 @@
       "ios_symbol": "cRSubGoldy::GhostInit(...)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 has GhostInit(int); v1.9 has GhostInit(int, int)."
+      "notes": "v1.5 has GhostInit(int); v1.9 has GhostInit(int, int). The sole Windows caller discards EAX, whose terminal value is only the second sprite's cleared visibility flags, so the recovered Windows contract is void."
     },
     {
       "address": "0x4402c0",
       "windows_name": "add_subgoldy_score",
       "ios_symbol": "cRSubGoldy::ScoreAdd(int, int)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "All 14 direct Windows callsites discard EAX; the authored score mutation contract is void."
     },
     {
       "address": "0x4403c0",
       "windows_name": "display_score_stats",
       "ios_symbol": "cRSubGoldy::ScoreStatsDisplay()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The sole Windows caller discards EAX and the terminal value is only the final debug-report call residue, proving the authored display contract is void."
     },
     {
       "address": "0x441fa0",
@@ -1301,7 +1303,7 @@
       "ios_symbol": "cRSubGoldy::RessurectInit(int)",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only spelling preserves the shipped typo."
+      "notes": "v1.9-only spelling preserves the shipped typo. Windows DeathInit tail-forwards into this helper, but both external death callers discard the selector residue; the recovered contract is void."
     },
     {
       "address": "0x441fd0",
@@ -1405,7 +1407,7 @@
       "ios_symbol": "cRSubGoldy::DeathInit()",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only signature."
+      "notes": "v1.9-only signature. Both direct Windows callers discard EAX, and every tail path only preserves RessurectInit's incidental selector residue, proving the authored contract is void."
     },
     {
       "address": "0x446e80",

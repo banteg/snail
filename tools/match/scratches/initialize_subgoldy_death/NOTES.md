@@ -15,9 +15,11 @@
   declaration preserves the exact instruction stream and switch-table audit
   (`100.00%`, `14/14`, `3 ok / 0`), so this scratch no longer carries a compact
   local `Player` shell.
-- 2026-06-20 Player ABI cleanup: the local method now returns `int`, matching
-  `player.h` and the IDA decompiler's carried `result`. Focused Wibo stays
-  exact at `100.00%`, `14/14`, with `3 ok` masked operands.
+- 2026-07-16 Player ABI correction: both direct callers discard EAX and every
+  branch only tail-forwards the resurrect selector residue. Natural void calls
+  plus source-level returns preserve the exact `14/14` instruction stream and
+  all three clean operands, so `player.h` and both decompilers no longer expose
+  a synthetic integer result.
 - 2026-06-21 subgame owner cleanup: the compact local `Game` view was replaced
   with a `SubgameRuntime` cast at the existing `Player::game` pointer. Focused
   Wibo remains exact at `100.00%`, `14/14`, with `3` clean masked operands.

@@ -127,18 +127,18 @@ public:
     void update_movement_flag_emitters(Player* player); // @ 0x43a300
     void play_movement_state_sound();      // @ 0x43afd0
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
-    int clear_subgoldy_score_buckets();    // @ 0x4403a0
-    int display_score_stats();             // @ 0x4403c0
+    void clear_subgoldy_score_buckets();   // @ 0x4403a0
+    void display_score_stats();            // @ 0x4403c0
     void handle_subgoldy_collisions();      // @ 0x444cf0
     void health_collect_particles(SubHealth* pickup); // @ 0x43a010
     void initialize_subgoldy(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
-    int initialize_subgoldy_ghost(int owner); // @ 0x43d230
-    int initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
+    void initialize_subgoldy_ghost(int owner); // @ 0x43d230
+    void initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
     void update_subgoldy_resurrect();      // @ 0x441fd0
-    int initialize_subgoldy_death();       // @ 0x446e30
+    void initialize_subgoldy_death();      // @ 0x446e30
     void kill_subgoldy();                 // @ 0x445840
     void show_subgoldy_lives();           // @ 0x43af10
-    Sprite* set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
+    void set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
     TransformMatrix* live_transform(); // inherited render transform at +0x38
 
     // Player storage is embedded in SubgameRuntime. Its inherited BOD node is
