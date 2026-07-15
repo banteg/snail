@@ -20,5 +20,5 @@
 004034a4        widget->input_cursor_blink_step = 0.0833333358f
 004034ae        layout_frontend_widget(widget)
 004034b6        if ((flags.b & 0xc) != 0)
-004034be        initialize_input_ok(&widget->tooltip._pad_1c)
+004034be        initialize_input_ok(&widget->tooltip.input_ok_state)
 004034c5        return

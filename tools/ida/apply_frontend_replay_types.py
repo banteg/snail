@@ -17,12 +17,22 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 TRUSTED_NAMES = [
     (0x401130, "draw_frontend_widget"),
+    (0x4034D0, "update_input_ok"),
+    (0x403560, "initialize_input_ok"),
 ]
 
 TRUSTED_DECLARATIONS = [
     (
         "draw_frontend_widget",
         "void __thiscall draw_frontend_widget(FrontendWidget* widget);",
+    ),
+    (
+        "update_input_ok",
+        "void __thiscall update_input_ok(InputOkState* input_ok);",
+    ),
+    (
+        "initialize_input_ok",
+        "void __thiscall initialize_input_ok(InputOkState* input_ok);",
     ),
     (
         "initialize_high_score_screen",

@@ -11,7 +11,7 @@ widget offsets matching `border_input_text_init`.
 
 - Replaced the scratch-local `InputOkState::update_input_ok()` `int` stub with
   `include/input_ok_state.h`; the exact `update_input_ok` and
-  `initialize_input_ok` scratches prove the `FrontendWidget*` return.
+  `initialize_input_ok` scratches pin the shared 0x24-byte receiver layout.
 - Replaced the scratch-local `BorderManager::kill_border(void*)` stub with the
   shared `BorderManager::kill_border(FrontendWidget*)` declaration.
 - Focused matcher stayed at 17.77% with 297/446 candidate/target instructions
@@ -61,6 +61,17 @@ The editor teardown now reaches the embedded root `BorderManager` directly.
 `border_input_text` stays at 64.64% with 442/446 instructions and eight clean
 operands; `border_input_text_init`, `initialize_input_ok`, and
 `update_input_ok` remain exact at 46/46, 23/23, and 32/32 instructions.
+
+## 2026-07-16 InputOK void ABI correction
+
+The exact `update_input_ok` and `initialize_input_ok` bodies remain 32/32 and
+23/23 instructions when expressed as natural `void` members. Both update
+calls continue immediately without reading EAX, while the initializer's sole
+caller enters teardown immediately after the call. The former widget-pointer
+results were incidental source-widget or nested-layout residue. The broader
+editor stays honestly 64.64%, 442/446 instructions, with eight clean operands;
+its register allocation changes under the corrected callee ABI, so no
+return-shaped fakematch is retained.
 
 ## 2026-07-14 root ownership closure
 

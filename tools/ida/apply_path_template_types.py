@@ -19,6 +19,8 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 TRUSTED_NAMES = [
+    (0x4034D0, "update_input_ok"),
+    (0x403560, "initialize_input_ok"),
     (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
     (0x440F80, "update_barrier_ai"),
@@ -543,6 +545,14 @@ TRUSTED_DECLARATIONS = [
     (
         "update_tutorial",
         "void __thiscall update_tutorial(Tutorial* tutorial);",
+    ),
+    (
+        "update_input_ok",
+        "void __thiscall update_input_ok(InputOkState* input_ok);",
+    ),
+    (
+        "initialize_input_ok",
+        "void __thiscall initialize_input_ok(InputOkState* input_ok);",
     ),
     (
         "update_barrier_ai",

@@ -44,6 +44,13 @@ typedef struct FrontendWidgetTextBuffer {
     uint8_t raw[0x420];
 } FrontendWidgetTextBuffer;
 
+/* cRInputOK reuses the final 0x24 bytes of the tooltip interaction block. */
+typedef struct InputOkState {
+    uint8_t _pad_00[0x1c];
+    FrontendWidget* source_widget;
+    FrontendWidget* ok_widget;
+} InputOkState;
+
 typedef struct FrontendWidgetTooltip {
     uint8_t _pad_00[0x4];
     int32_t state;
@@ -52,9 +59,7 @@ typedef struct FrontendWidgetTooltip {
     float delay_progress;
     float delay_step;
     FrontendWidget* tooltip_widget;
-    uint8_t _pad_1c[0x1c];
-    FrontendWidget* owner_widget_38;
-    uint8_t _pad_3c[0x4];
+    InputOkState input_ok_state;
 } FrontendWidgetTooltip;
 
 typedef struct FrontendWidget {

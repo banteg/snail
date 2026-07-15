@@ -6,7 +6,7 @@
 
 extern GameRoot* g_game; // data_4df904
 
-FrontendWidget* InputOkState::initialize_input_ok()
+void InputOkState::initialize_input_ok()
 {
     FrontendWidget* widget =
         g_game->border_manager.allocate_border();
@@ -21,5 +21,5 @@ FrontendWidget* InputOkState::initialize_input_ok()
         &source->idle_fill_color,
         0,
         0.0f);
-    return update_input_ok();
+    update_input_ok();
 }

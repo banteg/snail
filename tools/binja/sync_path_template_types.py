@@ -193,6 +193,7 @@ REQUIRED_HEADER_STRUCTS = (
     "PathManager",
     "FrontendWidgetFlag",
     "TextureRefFlags",
+    "InputOkState",
     "BarrierActor",
     "LandscapeManager",
     "GUI",
@@ -1161,6 +1162,11 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "update_barrier_ai",
         "void __thiscall update_barrier_ai(BarrierActor* barrier)",
+    ),
+    ("update_input_ok", "void __thiscall update_input_ok(InputOkState* input_ok)"),
+    (
+        "initialize_input_ok",
+        "void __thiscall initialize_input_ok(InputOkState* input_ok)",
     ),
     (
         "initialize_track_jetpack_pickup_runtime",

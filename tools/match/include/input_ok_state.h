@@ -6,8 +6,8 @@
 
 class InputOkState {
 public:
-    FrontendWidget* update_input_ok(); // @ 0x4034d0
-    FrontendWidget* initialize_input_ok(); // @ 0x403560
+    void update_input_ok(); // @ 0x4034d0
+    void initialize_input_ok(); // @ 0x403560, Android cRInputOK::Init()
 
     char unknown_00[0x1c];
     FrontendWidget* source_widget; // +0x1c

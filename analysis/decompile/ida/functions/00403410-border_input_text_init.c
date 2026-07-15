@@ -30,5 +30,5 @@ void __thiscall border_input_text_init(FrontendWidget *widget, int32_t capacity,
   widget->input_cursor_blink_step = 0.083333336;
   layout_frontend_widget(widget);
   if ( (flags & 0xC) != 0 )
-    initialize_input_ok((int)widget->tooltip._pad_1c);
+    initialize_input_ok(&widget->tooltip.input_ok_state);
 }

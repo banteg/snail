@@ -2,15 +2,24 @@
 /* function: initialize_input_ok @ 0x403560 */
 /* selector: initialize_input_ok */
 
-int __thiscall sub_403560(int this)
+// Exact void cRInputOK::Init() member: allocates the manager-owned OK widget, binds it to the borrowed source widget, initializes its presentation, and finishes by calling the void layout helper. Its only native caller discards EAX.
+void __thiscall initialize_input_ok(InputOkState *input_ok)
 {
-  int v2; // eax
-  int v3; // ecx
+  FrontendWidget *border; // eax
+  FrontendWidget *source_widget; // ecx
 
-  v2 = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v3 = *(_DWORD *)(this + 28);
-  *(_DWORD *)(this + 32) = v2;
-  initialize_frontend_widget(v2, 20, aOk, *(_DWORD *)(v3 + 124), 0, 0.0, v3 + 444, 0, 0.0);
-  return update_input_ok((float **)this);
+  border = allocate_border(&g_game_base->border_manager);
+  source_widget = input_ok->source_widget;
+  input_ok->ok_widget = border;
+  initialize_frontend_widget(
+    border,
+    0x14u,
+    aOk,
+    source_widget->widget_type,
+    0.0,
+    0.0,
+    &source_widget->idle_fill_color,
+    0,
+    0.0);
+  update_input_ok(input_ok);
 }
-

@@ -2,7 +2,7 @@
 
 #include "input_ok_state.h"
 
-FrontendWidget* InputOkState::update_input_ok()
+void InputOkState::update_input_ok()
 {
     FrontendWidget* source = source_widget;
     unsigned int flags = source->input_flags;
@@ -17,7 +17,7 @@ FrontendWidget* InputOkState::update_input_ok()
         x = x + source->hot_padding;
     } else {
         if ((flags & 8) == 0)
-            return source;
+            return;
 
         ok = ok_widget;
         x = source->layout_x - ok->layout_width - source->hot_padding
@@ -29,5 +29,4 @@ FrontendWidget* InputOkState::update_input_ok()
     ok_widget->layout_anchor_x = ok_widget->layout_x;
     source = source_widget;
     ok_widget->layout_anchor_y = source->layout_anchor_y;
-    return source;
 }

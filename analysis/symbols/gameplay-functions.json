@@ -105,11 +105,13 @@
     },
     {
       "address": "0x4034d0",
-      "name": "update_input_ok"
+      "name": "update_input_ok",
+      "description": "Exact void layout helper for the 0x24-byte InputOkState overlay reused at FrontendWidget::tooltip +0x1c. It borrows the source and manager-owned OK widgets at +0x1c/+0x20; both native callers ignore EAX, whose final source-widget value is incidental."
     },
     {
       "address": "0x403560",
-      "name": "initialize_input_ok"
+      "name": "initialize_input_ok",
+      "description": "Exact void cRInputOK::Init() member: allocates the manager-owned OK widget, binds it to the borrowed source widget, initializes its presentation, and finishes by calling the void layout helper. Its only native caller discards EAX."
     },
     {
       "address": "0x4035b0",

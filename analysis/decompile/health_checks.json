@@ -1057,7 +1057,7 @@
         "widget->input_capacity = capacity",
         "widget->input_cursor_blink_step = 0.0833333358f",
         "layout_frontend_widget(widget)",
-        "initialize_input_ok(&widget->tooltip._pad_1c)",
+        "initialize_input_ok(&widget->tooltip.input_ok_state)",
         "004034c5        return"
       ],
       "forbidden_substrings": [
@@ -1083,7 +1083,7 @@
         "widget->input_capacity = capacity;",
         "widget->input_cursor_blink_step = 0.083333336;",
         "layout_frontend_widget(widget);",
-        "initialize_input_ok((int)widget->tooltip._pad_1c);"
+        "initialize_input_ok(&widget->tooltip.input_ok_state);"
       ],
       "forbidden_substrings": [
         "float *__thiscall border_input_text_init",
@@ -1092,6 +1092,91 @@
         "return result",
         "_pad_6fc",
         "sub_403410",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_input_ok_update_void_overlay_owner",
+      "artifact": "analysis/decompile/binja/functions/004034d0-update_input_ok.c",
+      "required_substrings": [
+        "struct FrontendWidget* source_widget = input_ok->source_widget",
+        "input_ok->ok_widget",
+        "ok_widget_1->layout_left = fconvert.s(x87_r7_4)",
+        "input_ok->ok_widget->layout_top = input_ok->source_widget->layout_top",
+        "input_ok->ok_widget->layout_anchor_y = input_ok->source_widget->layout_anchor_y",
+        "00403558        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t result",
+        "return result",
+        "tooltip._pad_1c",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_input_ok_update_void_overlay_owner",
+      "artifact": "analysis/decompile/ida/functions/004034d0-update_input_ok.c",
+      "required_substrings": [
+        "void __thiscall update_input_ok(InputOkState *input_ok)",
+        "source_widget = input_ok->source_widget;",
+        "ok_widget = input_ok->ok_widget;",
+        "input_ok->ok_widget->layout_top = input_ok->source_widget->layout_top;",
+        "input_ok->ok_widget->layout_anchor_y = input_ok->source_widget->layout_anchor_y;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall update_input_ok",
+        "float *__thiscall update_input_ok",
+        "int this",
+        "return result",
+        "tooltip._pad_1c",
+        "sub_4034D0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_input_ok_initialize_void_overlay_owner",
+      "artifact": "analysis/decompile/binja/functions/00403560-initialize_input_ok.c",
+      "required_substrings": [
+        "struct FrontendWidget* widget = allocate_border(&g_game_base->border_manager)",
+        "struct FrontendWidget* source_widget = input_ok->source_widget",
+        "input_ok->ok_widget = widget",
+        "initialize_frontend_widget(widget, 0x14, \"OK\"",
+        "update_input_ok(input_ok)",
+        "004035a2        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "int32_t result",
+        "return update_input_ok",
+        "tooltip._pad_1c",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_input_ok_initialize_void_overlay_owner",
+      "artifact": "analysis/decompile/ida/functions/00403560-initialize_input_ok.c",
+      "required_substrings": [
+        "void __thiscall initialize_input_ok(InputOkState *input_ok)",
+        "border = allocate_border(&g_game_base->border_manager);",
+        "source_widget = input_ok->source_widget;",
+        "input_ok->ok_widget = border;",
+        "initialize_frontend_widget(",
+        "update_input_ok(input_ok);"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_input_ok",
+        "float *__thiscall initialize_input_ok",
+        "int this",
+        "return update_input_ok",
+        "tooltip._pad_1c",
+        "sub_403560",
         "__asm",
         "_ET1"
       ]

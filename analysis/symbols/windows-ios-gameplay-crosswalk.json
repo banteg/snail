@@ -126,6 +126,14 @@
       "notes": "Android preserves the same text copy, cursor/length scan, marker append, blink/filter/capacity stores, RePosition call, and conditional cRInputOK initialization. Both Windows callers discard EAX, and the corrected void member remains exact at 46/46 instructions."
     },
     {
+      "address": "0x403560",
+      "windows_name": "initialize_input_ok",
+      "android_symbol": "cRInputOK::Init()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact void Windows member allocates and initializes the OK border through the same 0x24-byte overlay reached by cRBorder::InputTextInit. Its sole caller discards EAX, and the final nested layout call supplies only incidental register residue."
+    },
+    {
       "address": "0x4035b0",
       "windows_name": "border_input_text",
       "ios_symbol": "cRBorder::InputText()",

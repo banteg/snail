@@ -40,9 +40,9 @@ void __thiscall border_input_text(FrontendWidget *widget)
   uint8_t v36; // al
   uint8_t *v37; // eax
   int v39; // eax
-  uint8_t v40; // cl
+  char v40; // cl
   uint8_t *v41; // eax
-  uint8_t v42; // dl
+  char v42; // dl
   int n; // eax
   int32_t v44; // ecx
   uint8_t v45; // dl
@@ -76,8 +76,8 @@ void __thiscall border_input_text(FrontendWidget *widget)
 
   repeating_text_input_key_code = read_repeating_text_input_key_code();
   if ( (widget->input_flags & 0xC) == 0
-    || (update_input_ok((float **)widget->tooltip._pad_1c),
-        (*(_BYTE *)(*(_DWORD *)widget->tooltip._pad_3c + 416) & 0x20) == 0) )
+    || (update_input_ok(&widget->tooltip.input_ok_state),
+        (widget->tooltip.input_ok_state.ok_widget->widget_flags & 0x20) == 0) )
   {
     if ( repeating_text_input_key_code != 5 && (widget->widget_flags & 0x8000000) == 0 )
     {
@@ -115,8 +115,10 @@ void __thiscall border_input_text(FrontendWidget *widget)
           if ( input_cursor > 0 )
           {
             v10 = widget->text_buffer.raw[input_cursor];
-            widget->text_buffer.raw[input_cursor] = widget->tooltip._pad_3c[input_cursor + 3];
-            widget->tooltip._pad_3c[input_cursor + 3] = v10;
+            widget->text_buffer.raw[input_cursor] = *((_BYTE *)&widget->tooltip.input_ok_state.ok_widget
+                                                    + input_cursor
+                                                    + 3);
+            *((_BYTE *)&widget->tooltip.input_ok_state.ok_widget + input_cursor + 3) = v10;
             --widget->input_cursor;
           }
           goto LABEL_99;
@@ -250,7 +252,7 @@ void __thiscall border_input_text(FrontendWidget *widget)
           }
           v39 = v35 - 1;
           widget->input_cursor = v35 - 1;
-          v40 = widget->tooltip._pad_3c[v35 + 3];
+          v40 = *((_BYTE *)&widget->tooltip.input_ok_state.ok_widget + v35 + 3);
           v41 = &widget->text_buffer.raw[v39];
           do
           {
@@ -416,5 +418,5 @@ LABEL_99:
   widget->widget_flags = v77;
   layout_frontend_widget(widget);
   if ( (widget->input_flags & 0xC) != 0 )
-    kill_border(*(_DWORD **)widget->tooltip._pad_3c);
+    kill_border(&widget->tooltip.input_ok_state.ok_widget->list_kind);
 }

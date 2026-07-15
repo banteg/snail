@@ -22,6 +22,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
 EXPECTED_STRUCT_SIZES = {
     "tColour": 0x10,
     "TwinkleManager": 0xF8,
+    "InputOkState": 0x24,
     "FrontendWidgetTooltip": 0x40,
     "FrontendWidgetTextBuffer": 0x420,
     "FrontendWidget": 0x724,
@@ -117,7 +118,7 @@ FRONTEND_WIDGET_TOOLTIP_FIELDS = (
     ("0x10", "delay_progress", "float"),
     ("0x14", "delay_step", "float"),
     ("0x18", "tooltip_widget", "FrontendWidget*"),
-    ("0x38", "owner_widget_38", "FrontendWidget*"),
+    ("0x1c", "input_ok_state", "InputOkState"),
 )
 
 DEFERRED_PROTO_UPDATES = (
@@ -163,6 +164,11 @@ PROTO_UPDATES = (
     ),
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
     ("border_input_text", "void __thiscall border_input_text(FrontendWidget* widget)"),
+    ("update_input_ok", "void __thiscall update_input_ok(InputOkState* input_ok)"),
+    (
+        "initialize_input_ok",
+        "void __thiscall initialize_input_ok(InputOkState* input_ok)",
+    ),
     ("reset_tooltip", "void __thiscall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "void __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("0x433050", "int32_t __cdecl launch_alpha72_url(char* url)"),
