@@ -73,3 +73,17 @@ scalar return changes only register allocation: the honest focused result is
 84.18%, 177/177 instructions, prefix 21, with all 20 operands clean. The lower
 sequence score is retained because the shared API now models real ownership
 instead of constraining EAX for the matcher.
+
+## 2026-07-15 persisted RePosition receiver
+
+Both mobile symbol tables retain this member as `cRBorder::RePosition()`
+(`0x3892c` on iOS and `0x52678` on Android). Binary Ninja's transactional
+prototype replay now saves and independently reads back
+`void __thiscall(FrontendWidget*)`, so this member moves out of the deferred
+set. IDA uses the same void receiver contract. A standalone `bn proto set
+--preview` was not accepted as evidence because it left the unsaved preview
+type active in the live session despite reporting a revert; the repository
+sync instead reported `snapshot_saved: true` and a fresh `bn proto get`
+confirmed the durable type. The source scratch remains the honest 84.18%,
+177/177-instruction transcription with all 20 audited operands clean; no EAX
+shaping was reintroduced.

@@ -126,10 +126,6 @@ DEFERRED_PROTO_UPDATES = (
         "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
     ),
     (
-        "layout_frontend_widget",
-        "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
-    ),
-    (
         "0x402790",
         "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)",
     ),
@@ -164,6 +160,7 @@ PROTO_UPDATES = (
         "border_mouse_test",
         "uint8_t __thiscall border_mouse_test(FrontendWidget* widget)",
     ),
+    ("layout_frontend_widget", "void __thiscall layout_frontend_widget(FrontendWidget* widget)"),
     ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
     ("border_input_text", "void __thiscall border_input_text(FrontendWidget* widget)"),
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),

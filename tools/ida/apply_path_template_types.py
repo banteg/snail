@@ -458,7 +458,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "layout_frontend_widget",
-        "int32_t __thiscall layout_frontend_widget(FrontendWidget* widget);",
+        "void __thiscall layout_frontend_widget(FrontendWidget* widget);",
     ),
     (
         "set_frontend_widget_shortcut_key",

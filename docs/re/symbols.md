@@ -25,6 +25,12 @@ Recommended workflow:
 
 The Binary Ninja script uses only identifier-like curated names from the open database. It intentionally skips default `sub_*` labels, jump thunks, and mangled compiler symbols so the manifest stays readable and reviewable in version control.
 
+For prototype ownership, prefer the narrow repository sync scripts over a standalone
+`bn proto set --preview`. The current live-session bridge can leave a previewed type
+active even when it reports that the mutation was reverted. A durable replay must
+report `snapshot_saved: true`, and a fresh `bn proto get` readback must agree with the
+requested prototype; the direct prototype batch helper enforces both conditions.
+
 The IDA sync path is intentionally one-way. Do new rename work in Binary Ninja, validate and commit the manifest, then replay that manifest into `artifacts/ida/SnailMail_unwrapped.exe.i64` so the Windows decompiler views stay aligned across tools.
 
 The preferred tracked snapshot lane now lives under `analysis/decompile/`:

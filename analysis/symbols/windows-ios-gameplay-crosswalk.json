@@ -45,6 +45,7 @@
     {
       "address": "0x4024a0",
       "windows_name": "layout_frontend_widget",
+      "ios_symbol": "cRBorder::RePosition()",
       "android_symbol": "cRBorder::RePosition()",
       "source_object": "Border.o",
       "confidence": "high",

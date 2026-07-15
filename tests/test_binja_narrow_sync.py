@@ -2,6 +2,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
+
 
 BINJA_DIR = Path(__file__).parents[1] / "tools/binja"
 IDA_DIR = Path(__file__).parents[1] / "tools/ida"
@@ -198,6 +200,28 @@ def test_direct_proto_batch_accepts_address_identifiers(monkeypatch) -> None:
     assert "address = int(text, 0)" in code
     assert "function = bv.get_function_at(address)" in code
     assert 'fn = find_function(identifier)' in code
+
+
+def test_direct_proto_batch_requires_saved_snapshot(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_bn",
+        lambda *_args, **_kwargs: {
+            "result": {"applied": [], "snapshot_saved": False}
+        },
+    )
+
+    with pytest.raises(RuntimeError, match="without a saved snapshot"):
+        _narrow_sync.apply_direct_proto_updates_batch(
+            Path("."),
+            target="snail-mail.exe",
+            updates=(
+                (
+                    "layout_frontend_widget",
+                    "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
+                ),
+            ),
+        )
 
 
 def test_current_type_widths_batches_readback(monkeypatch) -> None:
@@ -1651,6 +1675,27 @@ def test_frontend_widget_input_text_owner_replay_stays_aligned() -> None:
     ):
         assert field in ida_path_header
     assert "_pad_6fc" not in ida_path_header
+
+
+def test_frontend_widget_reposition_void_replay_stays_direct() -> None:
+    frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    expected = "void __thiscall layout_frontend_widget(FrontendWidget* widget)"
+    deferred = frontend_sync.split("\nDEFERRED_PROTO_UPDATES = (", 1)[1].split(
+        "\nPROTO_UPDATES = (", 1
+    )[0]
+    direct = frontend_sync.split("\nPROTO_UPDATES = (", 1)[1].split(
+        "\nUSER_VAR_UPDATES = (", 1
+    )[0]
+
+    assert expected not in deferred
+    assert expected in direct
+    assert f'"{expected};"' in ida_path_sync
 
 
 def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:

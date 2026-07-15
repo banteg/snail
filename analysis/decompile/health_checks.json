@@ -388,6 +388,48 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_reposition_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004024a0-layout_frontend_widget.c",
+      "required_substrings": [
+        "slider_value_widget->authored_left",
+        "slider_value_widget->layout_left",
+        "slider_value_widget->texture_hit_x",
+        "slider_value_widget->slider_hit_left",
+        "layout_frontend_widget(slider_value_widget->slider_more_widget)",
+        "layout_frontend_widget(slider_value_widget->slider_less_widget)",
+        "00402784        return"
+      ],
+      "forbidden_substrings": [
+        "return result",
+        "uint32_t result",
+        "arg1",
+        "data_4df934",
+        "__offset(",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_reposition_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004024a0-layout_frontend_widget.c",
+      "required_substrings": [
+        "void __thiscall layout_frontend_widget(FrontendWidget *widget)",
+        "widget->authored_left",
+        "widget->layout_left",
+        "widget->texture_hit_x",
+        "widget->slider_hit_left",
+        "layout_frontend_widget(widget->slider_more_widget)",
+        "layout_frontend_widget(widget->slider_less_widget)"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall layout_frontend_widget",
+        "return result",
+        "sub_4024A0",
+        "int this",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frontend_widget_input_text_owner",
       "artifact": "analysis/decompile/binja/functions/004035b0-border_input_text.c",
       "required_substrings": [

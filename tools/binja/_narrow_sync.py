@@ -527,6 +527,11 @@ result = {{"applied": applied, "snapshot_saved": snapshot_saved}}
         "--code",
         code,
     )
+    payload = result.get("result") if isinstance(result, dict) else None
+    if not isinstance(payload, dict) or payload.get("snapshot_saved") is not True:
+        raise RuntimeError(
+            "direct prototype batch changed the live analysis without a saved snapshot"
+        )
     observed_prototypes = current_prototypes(
         repo_root,
         target=target,

@@ -1007,9 +1007,10 @@ The broader cRBorder construction/layout surface is also authored `void`:
 
 The exact small setters remain 6/6 and 9/9 instructions, and the constructor
 remains 429/429 at 99.30%. `RePosition()` falls honestly to 84.18% at 177/177
-because removing the synthetic result changes register allocation. Binary
-Ninja accepts all four void previews but restores stale scalar inference in
-the live session, so the sync records the desired contracts as deferred.
+because removing the synthetic result changes register allocation. The
+transactional Binary Ninja replay now persists and verifies the authored void
+`RePosition()` contract; the constructor, shortcut setter, and below-link
+setter remain deferred rather than being forced through stale scalar types.
 
 ### Frontend lifecycle return contracts
 
