@@ -380,6 +380,7 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
         '("0x4f324", "main_menu", "MainMenu")',
         '("0x4f388", "options", "Options")',
         '("0x4f3ac", "exit_controller", "Exit")',
+        '("0x4f3c8", "root_bod_4f3c8", "BodBase")',
     ):
         assert owner in source
     for expected_size in (
@@ -396,6 +397,8 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
         assert prototype in source
     assert "apply_struct_and_proto_updates" in source
     assert "types_declare_missing_only" in source
+    assert 'BOD_BASE_EXPECTED_SIZE = 0x38' in source
+    assert 'observed_widths.get("BodBase") != BOD_BASE_EXPECTED_SIZE' in source
     assert "types_declare(" not in source
     assert "typedef struct FrontendWidget FrontendWidget;" in header
     assert "typedef struct MainMenu" in header

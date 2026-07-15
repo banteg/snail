@@ -434,7 +434,7 @@
     {
       "address": "0x407b60",
       "name": "construct_game_runtime",
-      "description": "Allocates the exact `0x12e6ff4`-byte `cRGame` root object with C++ exception cleanup, seeds its embedded managers and callback tables, constructs the fixed 352-entry cRBod array at `+0x44100`, initializes the runtime pools, constructs the owned `TipManager` at `+0x12e6f58`, and publishes the live global game pointer at `data_4df904`."
+      "description": "Allocates the exact `0x12e6ff4`-byte `cRGame` root object with C++ exception cleanup, seeds its embedded managers and callback tables, constructs the fixed 352-entry cRBod array at `+0x44100` and the standalone cRBod at `+0x4f3c8`, initializes the runtime pools, constructs the owned `TipManager` at `+0x12e6f58`, and publishes the live global game pointer at `data_4df904`."
     },
     {
       "address": "0x408000",

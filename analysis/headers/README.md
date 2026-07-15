@@ -83,6 +83,10 @@ intentional.
 
 - `bn_frontend_widget_types.h`
 - `uv run python tools/binja/sync_frontend_widget_types.py`
+- `bn_frontend_menu_types.h`
+- `uv run python tools/binja/sync_frontend_menu_types.py`
+  - Replays the exact MainMenu, Options, and Exit owners plus the adjacent
+    standalone 0x38-byte root BodBase without redefining FrontendWidget.
 - `bn_backdrop_types.h`
 - `uv run python tools/binja/sync_backdrop_types.py`
 - `bn_frame_renderer_types.h`

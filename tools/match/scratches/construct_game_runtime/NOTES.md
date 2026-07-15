@@ -486,3 +486,18 @@ Focused output remains 88.89%, 299/268 candidate/target instructions, prefix
 2/268, with all 120 masked operands clean. The constructor no longer needs a
 byte-shaped receiver; its remaining mismatch is still the documented EH and
 debug-call cleanup shape.
+
+## 2026-07-15 standalone root BOD boundary
+
+The final anonymous interval in the front-end owner block is exactly one
+`BodBase` at `GameRoot +0x4f3c8`. Windows constructs it independently between
+the StarManager and Logo-array setup. Android proves the same separation: it
+constructs a 0x2c-byte cRBod, then passes the immediately following address to
+`cRLogo::Open/Init/AI`, so this record is not a hidden cRLogo base class.
+
+The Binary Ninja menu sync now refuses the replay unless the existing
+`BodBase` is exactly 0x38 bytes and installs the conservative
+`root_bod_4f3c8` field. Its gameplay role remains deliberately unnamed. A
+constructor export preview still keeps the allocation result as an untyped
+dword array, so the tracked artifact is not refreshed merely to expose the
+same raw indexing under a new database field.

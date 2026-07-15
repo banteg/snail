@@ -24,10 +24,13 @@ EXPECTED_STRUCT_SIZES = {
     "Exit": 0x1C,
 }
 
+BOD_BASE_EXPECTED_SIZE = 0x38
+
 GAME_ROOT_FIELD_UPDATES = (
     ("0x4f324", "main_menu", "MainMenu"),
     ("0x4f388", "options", "Options"),
     ("0x4f3ac", "exit_controller", "Exit"),
+    ("0x4f3c8", "root_bod_4f3c8", "BodBase"),
 )
 
 MAIN_MENU_FIELD_UPDATES = (
@@ -112,8 +115,14 @@ def main() -> int:
     observed_widths = current_type_widths(
         REPO_ROOT,
         target=args.target,
-        type_names=EXPECTED_STRUCT_SIZES,
+        type_names=(*EXPECTED_STRUCT_SIZES, "BodBase"),
     )
+    if observed_widths.get("BodBase") != BOD_BASE_EXPECTED_SIZE:
+        raise RuntimeError(
+            "refusing root BOD replay: "
+            f"BodBase width is {observed_widths.get('BodBase')!r}, "
+            f"expected {BOD_BASE_EXPECTED_SIZE:#x}"
+        )
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()

@@ -119,7 +119,9 @@ public:
     StarManager star_manager; // +0x4f33c, exact authored cRStarManager owner
     Options options; // +0x4f388, exact authored cROptions owner
     Exit exit_controller; // +0x4f3ac, exact authored cRExit owner
-    BodBase root_bod_4f3c8; // +0x4f3c8, concrete role not yet established
+    // Windows and Android construct this as a standalone cRBod immediately
+    // before cRLogo; its concrete gameplay role is not yet established.
+    BodBase root_bod_4f3c8; // +0x4f3c8
     Logo logo; // +0x4f400, exact cRLogo owner with both 0x90-byte banks
     SubgameRuntime subgame; // +0x74618, owned cRSubGame runtime
     HighScore high_score; // +0x12e6e50, known cRHighScore storage through +0x12e6f44
