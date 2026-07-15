@@ -25,3 +25,7 @@ the source-shaped `void` helper preserves the native argument-first load order.
 2026-07-14 allocation ownership: the fixed texture-group bank now derives its
 four-byte stride from the owned `int* texture_group_ends` member. Matching
 remains exact at 29/29 instructions with all four operands clean.
+
+2026-07-15 analysis replay: the repeatable Binary Ninja slice now carries the
+proved `void __thiscall(Object*, int)` contract, so callers retain the owned
+`texture_group_*` fields instead of inventing a `void*` result.

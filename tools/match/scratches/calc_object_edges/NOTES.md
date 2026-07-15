@@ -64,5 +64,13 @@ solved.
 - Together these source/ownership corrections raise the focused result from
   71.63% (141/141, 10 clean and three mismatched operands) to 75.62% (142/141,
   all 14 operands clean). Pointer cursors, explicit register hints, and raw
-  address spellings remain rejected; the two-spill versus one-spill allocator
-  residual stays visible rather than being fakematched.
+address spellings remain rejected; the two-spill versus one-spill allocator
+residual stays visible rather than being fakematched.
+
+## 2026-07-15 shared workspace replay
+
+The repeatable Binary Ninja slice now types and names the temporary edge bank
+and count globals. The refreshed artifact follows `ObjectFaceQuad*` input,
+six Object-member edge calls, the shared workspace, and the final retained
+`Object::edges` bank without `arg1` or anonymous `data_5033xx` owners. Matching
+remains honestly partial at 75.62%.

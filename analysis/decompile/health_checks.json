@@ -3045,6 +3045,129 @@
         "analysis skipped",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_object_normal_allocation_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f800-request_object_facequad_normals.c",
+      "required_substrings": [
+        "object->vertex_normals",
+        "object->vertex_count * 0xc",
+        "object->facequad_normals",
+        "object->facequad_count * 0x18",
+        "return facequad_normals"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_texture_group_allocation_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f930-request_object_texture_groups.c",
+      "required_substrings": [
+        "object->texture_group_count",
+        "object->texture_group_capacity",
+        "object->texture_group_ends",
+        "group_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_bounds_owner",
+      "artifact": "analysis/decompile/binja/functions/0042fb10-calc_object_bounding_box.c",
+      "required_substrings": [
+        "&object->bounds_max",
+        "&object->bounds_min",
+        "object->bounding_radius",
+        "object->vertices",
+        "object->vertex_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(object +",
+        "return i",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_facequad_normal_rebuild_owner",
+      "artifact": "analysis/decompile/binja/functions/0042fcb0-calc_object_facequad_normals.c",
+      "required_substrings": [
+        "request_object_facequad_normals(object)",
+        "object->vertices",
+        "object->facequads",
+        "object->facequad_normals",
+        "object->vertex_normals",
+        "object->facequad_count",
+        "object->vertex_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(object +",
+        "return free_tracked_memory",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_texture_group_rebuild_owner",
+      "artifact": "analysis/decompile/binja/functions/004303f0-calc_object_texture_groups.c",
+      "required_substrings": [
+        "struct ObjectFaceQuad* facequads = object->facequads",
+        "facequads->texture_ref",
+        "object->texture_group_ends",
+        "object->facequad_count",
+        "request_object_texture_groups(object"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(object +",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_edge_workspace_owner",
+      "artifact": "analysis/decompile/binja/functions/004308b0-calc_object_edges.c",
+      "required_substrings": [
+        "struct ObjectFaceQuad* facequads = object->facequads",
+        "g_object_edge_build_edges",
+        "g_object_edge_build_count",
+        "add_object_edge(object",
+        "request_object_edges(object",
+        "object->edges"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_503300",
+        "data_503318",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_edge_merge_owner",
+      "artifact": "analysis/decompile/binja/functions/004305a0-add_object_edge.c",
+      "required_substrings": [
+        "object->facequad_normals",
+        "object->vertices",
+        "object->flags",
+        "g_object_edge_build_edges",
+        "g_object_edge_build_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "arg4",
+        "data_503300",
+        "data_503318",
+        "unimplemented"
+      ]
     }
   ]
 }

@@ -4,7 +4,7 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void* Object::request_object_facequad_normals()
+Vector3* Object::request_object_facequad_normals()
 {
     if (vertex_normals == 0)
         vertex_normals =

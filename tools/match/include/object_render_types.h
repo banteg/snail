@@ -160,7 +160,7 @@ struct Object {
     void request_object_vertices(int vertex_count); // @ 0x42f710
     void request_object_vertices_copy(); // @ 0x42f7d0
     void copy_object_vertices(); // @ 0x42f790
-    void* request_object_facequad_normals(); // @ 0x42f800
+    Vector3* request_object_facequad_normals(); // @ 0x42f800
     void request_object_facequads(int facequad_count); // @ 0x42f8c0
     void request_object_texture_groups(int group_count); // @ 0x42f930
     void apply_object_toon(int toon_flags); // @ 0x42fa80

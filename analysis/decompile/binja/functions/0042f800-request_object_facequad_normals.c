@@ -3,10 +3,10 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: request_object_facequad_normals @ 0x42f800 */
 
-0042f808        if (*(arg1 + 0x44) == 0)
-0042f821        *(arg1 + 0x44) = allocate_tracked_memory(*(arg1 + 0x2c) * 0xc, "Object Vertex Normals List")
-0042f824        void* result = *(arg1 + 0x60)
-0042f829        if (result == 0)
-0042f83a        result = allocate_tracked_memory(*(arg1 + 0x54) * 0x18, "Object FaceQuad Normals List")
-0042f842        *(arg1 + 0x60) = result
-0042f846        return result
+0042f808        if (object->vertex_normals == 0)
+0042f821        object->vertex_normals = allocate_tracked_memory(object->vertex_count * 0xc, "Object Vertex Normals List")
+0042f824        struct Vec3* facequad_normals = object->facequad_normals
+0042f829        if (facequad_normals == 0)
+0042f83a        facequad_normals = allocate_tracked_memory(object->facequad_count * 0x18, "Object FaceQuad Normals List")
+0042f842        object->facequad_normals = facequad_normals
+0042f846        return facequad_normals

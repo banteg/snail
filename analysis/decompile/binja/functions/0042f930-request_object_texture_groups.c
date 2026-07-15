@@ -3,14 +3,13 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: request_object_texture_groups @ 0x42f930 */
 
-0042f939        if (*(arg1 + 0x64) == 0)
-0042f94c        void* eax_2 = allocate_tracked_memory(arg2 << 2, "Object FaceQuad Texture Groups")
-0042f954        *(arg1 + 0x68) = arg2
-0042f957        *(arg1 + 0x64) = arg2
-0042f95a        *(arg1 + 0x6c) = eax_2
-0042f95f        return eax_2
-0042f966        int32_t eax_3 = *(arg1 + 0x68)
-0042f96b        if (arg2 s> eax_3)
-0042f972        eax_3 = report_errorf("Fixed FaceQuadTextureGroupsNumber too small")
-0042f97a        *(arg1 + 0x64) = arg2
-0042f97f        return eax_3
+0042f939        if (object->texture_group_count == 0)
+0042f94c        int32_t* eax_2 = allocate_tracked_memory(group_count << 2, "Object FaceQuad Texture Groups")
+0042f954        object->texture_group_capacity = group_count
+0042f957        object->texture_group_count = group_count
+0042f95a        object->texture_group_ends = eax_2
+0042f95f        return
+0042f96b        if (group_count s> object->texture_group_capacity)
+0042f972        report_errorf("Fixed FaceQuadTextureGroupsNumber too small")
+0042f97a        object->texture_group_count = group_count
+0042f97f        return

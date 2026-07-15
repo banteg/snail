@@ -98,3 +98,10 @@ so the register is demonstrably incidental rather than one stable return
 contract. Windows likewise has one build-loop caller which ignores EAX. The
 repeatable BN/IDA type slice now records `void __thiscall(Object*)`; the focused
 scratch remains at the honest 98.18% SIB-encoding residual.
+
+## 2026-07-15 checked-in owner replay
+
+The refreshed Binary Ninja artifact now exposes the `ObjectFaceQuad` texture
+references and the `Object::texture_group_ends` producer directly. The helper
+call is the proved void Object method; no incidental EAX result remains in the
+checked-in ownership view.

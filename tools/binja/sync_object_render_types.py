@@ -76,6 +76,8 @@ SYMBOL_UPDATES = (
     ("0x5031bc", "g_object_grouped_vertex_cursor"),
     ("0x5031c4", "g_object_grouped_vertex_scratch"),
     ("0x5031d8", "g_object_texture_transform_matrix"),
+    ("0x503300", "g_object_edge_build_edges"),
+    ("0x503318", "g_object_edge_build_count"),
 )
 
 FUNCTION_SYMBOL_UPDATES = (
@@ -96,6 +98,8 @@ DATA_VAR_UPDATES = (
     ("0x5031bc", "int32_t"),
     ("0x5031c4", "ObjectGroupedVertex*"),
     ("0x5031d8", "TransformMatrix"),
+    ("0x503300", "ObjectToonEdge*"),
+    ("0x503318", "int32_t"),
 )
 
 # `load_object_definition` is declared in the canonical header, but the live
@@ -136,8 +140,16 @@ PROTO_UPDATES = (
         "void __fastcall request_object_vertex_colours(Object* object)",
     ),
     (
+        "request_object_facequad_normals",
+        "Vec3* __thiscall request_object_facequad_normals(Object* object)",
+    ),
+    (
         "request_object_facequads",
         "void __thiscall request_object_facequads(Object* object, int32_t facequad_count)",
+    ),
+    (
+        "request_object_texture_groups",
+        "void __thiscall request_object_texture_groups(Object* object, int32_t group_count)",
     ),
     (
         "request_object_edges",

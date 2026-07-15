@@ -643,6 +643,47 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
         assert f'"{function_name}"' in path_sync
 
 
+def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> None:
+    repo_root = Path(__file__).parents[1]
+    sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+    matcher_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+
+    for address, name, data_type in (
+        ("0x503300", "g_object_edge_build_edges", "ObjectToonEdge*"),
+        ("0x503318", "g_object_edge_build_count", "int32_t"),
+    ):
+        assert f'("{address}", "{name}")' in sync_source
+        assert f'("{address}", "{data_type}")' in sync_source
+        for header in analysis_headers:
+            assert name in header
+
+    for function_name in (
+        "request_object_facequad_normals",
+        "request_object_texture_groups",
+        "request_object_edges",
+        "calc_object_bounding_box",
+        "calc_object_facequad_normals",
+        "calc_object_texture_groups",
+        "add_object_edge",
+        "calc_object_edges",
+    ):
+        assert f'"{function_name}"' in sync_source
+
+    assert "Vec3* __thiscall request_object_facequad_normals(Object* object)" in sync_source
+    assert "Vector3* request_object_facequad_normals();" in matcher_header
+    for header in analysis_headers:
+        assert "Vec3* __thiscall request_object_facequad_normals(Object* object);" in header
+        assert "void __thiscall request_object_texture_groups(" in header
+
+
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"

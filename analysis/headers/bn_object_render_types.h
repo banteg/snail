@@ -289,7 +289,9 @@ Object* __thiscall add_object_to_list(ObjectList* object_list);
 void __thiscall apply_object_toon(Object* object, int32_t toon_flags);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
+Vec3* __thiscall request_object_facequad_normals(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);
+void __thiscall request_object_texture_groups(Object* object, int32_t group_count);
 void __thiscall request_object_edges(Object* object, int32_t edge_count);
 void __cdecl load_object_definition(char* path, Object* object);
 
@@ -326,3 +328,6 @@ ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
 ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(
     IndexBufferFactory* factory, int32_t index_count);
+
+extern ObjectToonEdge* g_object_edge_build_edges;
+extern int32_t g_object_edge_build_count;

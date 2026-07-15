@@ -97,3 +97,10 @@ radius zero before the counter spill and vertex-count test, while the candidate
 sinks that independent store to just after the comparison. No volatile store
 or artificial dependency is used to force the final instruction across the
 test.
+
+## 2026-07-15 checked-in owner replay
+
+The refreshed Binary Ninja artifact now renders the receiver as `Object*` and
+names `vertices`, `vertex_count`, `bounding_radius`, `bounds_min`, and
+`bounds_max`. A health check rejects the old raw-offset receiver and synthetic
+integer return while the honest 99.16% scheduling residual stays unchanged.

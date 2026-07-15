@@ -16,3 +16,10 @@ alongside exact `request_object_vertices`, `request_object_vertex_colours`, and
 2026-07-14 allocation ownership: both banks now derive their extents from the
 shared `Vector3` element type. Matching remains exact at 26/26 instructions
 with all four operands clean.
+
+2026-07-15 return ownership: both native branches leave the retained
+`facequad_normals` bank in EAX, so the member now exposes the coherent
+`Vector3*` result instead of erasing it to `void*`. The two Windows callers
+discard that result and consume the same bank through `Object +0x60`; the
+signature correction remains exact at 26/26 instructions with four clean
+operands.

@@ -3,9 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: request_object_edges @ 0x430570 */
 
-00430573        void* result = *(arg1 + 0x70)
-00430578        if (result == 0)
-00430583        *(arg1 + 0x70) = arg2
-0043058d        result = allocate_tracked_memory(arg2 * 0x24, "Object Edges")
-00430595        *(arg1 + 0x74) = result
-00430599        return result
+00430578        if (object->edge_count == 0)
+00430583        object->edge_count = edge_count
+00430595        object->edges = allocate_tracked_memory(edge_count * 0x24, "Object Edges")
+00430599        return

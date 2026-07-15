@@ -77,3 +77,11 @@ The merge-path dot operand now uses the recovered const-reference member
 surface directly. VC6 emits the same 231/227 candidate/target instructions,
 73.36% score, and 29 clean operands, so the ownership clarification introduces
 no new matching scaffolding.
+
+## 2026-07-15 shared workspace replay
+
+The two temporary globals are now named and typed in the repeatable Binary
+Ninja slice as `g_object_edge_build_edges: ObjectToonEdge*` and
+`g_object_edge_build_count: int32_t`. The refreshed artifact keeps the Object
+receiver and those borrowed globals visible; the honest 73.36% block-layout
+residual is unchanged.

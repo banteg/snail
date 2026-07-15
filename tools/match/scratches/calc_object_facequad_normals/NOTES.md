@@ -61,3 +61,9 @@ EAX and consume the rebuilt normal arrays through the same `Object`. The
 analysis headers and repeatable BN/IDA sync now use the source-shaped void
 thiscall instead of a synthetic integer fastcall. This is an ownership/ABI
 correction only and does not hide the 90.03% stack-allocation residual.
+
+## 2026-07-15 checked-in owner replay
+
+The refreshed Binary Ninja artifact now carries `Object*` through the normal
+allocator, vertex/facequad banks, counts, and final free. Its health check
+rejects the prior `arg1`/raw-offset form without changing the 90.03% scratch.
