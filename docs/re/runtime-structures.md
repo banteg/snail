@@ -969,9 +969,10 @@ Android preserves the adjacent authored API as `cRBorder::HideInit()`,
 Windows state transitions, and every Windows callsite discards EAX. The shared
 members therefore use the real `void` contracts; values left in EAX by the
 Windows store schedules are incidental, not ownership-bearing returns.
-The narrow Binary Ninja replay applies the complete field layout but reports
-these five prototypes as deferred: the live session restores its stale scalar
-forms during verification, so the script does not force or misreport them.
+The transactional Binary Ninja replay now persists and verifies the four
+visibility/highlight transitions directly. `SpriteExtend(...)` remains
+deferred because the live session still restores its stale scalar form during
+verification, so the script does not force or misreport it.
 
 Android also preserves the exact `cRBorder::InputTextInit(int, char*, int)`
 body. Both Windows callers discard EAX, while each platform exits with the

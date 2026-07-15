@@ -2,14 +2,12 @@
 /* function: unhighlight_border @ 0x4027e0 */
 /* selector: unhighlight_border */
 
-// Clears the active highlight state on one frontend border/widget and restores its non-highlighted visual bits.
-int32_t __thiscall unhighlight_border(FrontendWidget *widget)
+// Stable Windows harness identity for the authored void cRBorder::UnHighlight() member. It clears the hover blend target and restores idle padding; the copied float bits left in EAX are incidental.
+void __thiscall unhighlight_border(FrontendWidget *widget)
 {
-  int32_t result; // eax
+  float idle_padding; // eax
 
-  result = LODWORD(widget->idle_padding);
+  idle_padding = widget->idle_padding;
   widget->hover_blend_target = 0.0;
-  LODWORD(widget->target_padding) = result;
-  return result;
+  widget->target_padding = idle_padding;
 }
-

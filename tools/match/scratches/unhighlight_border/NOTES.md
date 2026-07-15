@@ -9,3 +9,10 @@ merely left in that register are not an authored result. Correcting the member
 to `void` remains byte-exact.
 
 Exact match: 100.00%, 4/4 instructions, no masked operands.
+
+## 2026-07-15 persisted member ABI
+
+The rollback-safe Binary Ninja replay now applies and independently verifies
+the authored `void cRBorder::UnHighlight()` contract. IDA carries the same
+typed receiver and void result. The exact 4/4 scratch is unchanged; the copied
+idle-padding bits remain incidental EAX state.

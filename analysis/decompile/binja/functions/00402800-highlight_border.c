@@ -6,4 +6,4 @@
 00402800        float hot_padding = widget->hot_padding
 00402806        widget->hover_blend_target = 1f
 00402810        widget->target_padding = hot_padding
-00402816        return hot_padding
+00402816        return

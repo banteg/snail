@@ -2,14 +2,13 @@
 /* function: unhide_border_init @ 0x401110 */
 /* selector: unhide_border_init */
 
-__int16 __thiscall sub_401110(_DWORD *this)
+// Stable Windows harness identity for the authored void cRBorder::UnHideInit() member. It restores hide_blend to one and clears the 0x1000 hide-transition flag.
+void __thiscall unhide_border_init(FrontendWidget *widget)
 {
-  int v1; // eax
+  FrontendWidgetFlag widget_flags; // eax
 
-  v1 = *(this + 104);
-  *(this + 17) = 1065353216;
-  BYTE1(v1) &= ~0x10u;
-  *(this + 104) = v1;
-  return v1;
+  widget_flags = widget->widget_flags;
+  widget->hide_blend = 1.0;
+  BYTE1(widget_flags) &= ~0x10u;
+  widget->widget_flags = widget_flags;
 }
-

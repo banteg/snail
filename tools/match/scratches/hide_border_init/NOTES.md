@@ -10,3 +10,10 @@ Exact authored `cRBorder::HideInit()` transition on the shared
 - Every Windows caller discards EAX. Correcting the synthetic integer result
   to `void` preserves the exact 9/9 instruction stream and its one clean call
   operand.
+
+## 2026-07-15 persisted member ABI
+
+The rollback-safe Binary Ninja replay now applies and independently verifies
+the authored `void cRBorder::HideInit()` contract on a typed `FrontendWidget*`
+receiver. IDA carries the same name and prototype. The exact 9/9 scratch and
+its clean tooltip call operand are unchanged.

@@ -538,6 +538,158 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_hide_init_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004010e0-hide_border_init.c",
+      "required_substrings": [
+        "enum FrontendWidgetFlag widget_flags = widget->widget_flags",
+        "widget->hide_blend = 0f",
+        "widget->widget_flags = widget_flags",
+        "reset_tooltip(&widget->tooltip)",
+        "00401106        return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return result",
+        "arg1",
+        "*(widget +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_hide_init_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004010e0-hide_border_init.c",
+      "required_substrings": [
+        "void __thiscall hide_border_init(FrontendWidget *widget)",
+        "widget_flags = widget->widget_flags;",
+        "widget->hide_blend = 0.0;",
+        "widget->widget_flags = widget_flags;",
+        "reset_tooltip(&widget->tooltip);"
+      ],
+      "forbidden_substrings": [
+        "sub_4010E0",
+        "_DWORD *this",
+        "int32_t __fastcall hide_border_init",
+        "return result",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_unhide_init_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00401110-unhide_border_init.c",
+      "required_substrings": [
+        "enum FrontendWidgetFlag widget_flags = widget->widget_flags",
+        "widget->hide_blend = 1f",
+        "widget->widget_flags = widget_flags",
+        "00401126        return"
+      ],
+      "forbidden_substrings": [
+        "int32_t result",
+        "return result",
+        "arg1",
+        "*(widget +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_unhide_init_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00401110-unhide_border_init.c",
+      "required_substrings": [
+        "void __thiscall unhide_border_init(FrontendWidget *widget)",
+        "widget_flags = widget->widget_flags;",
+        "widget->hide_blend = 1.0;",
+        "widget->widget_flags = widget_flags;"
+      ],
+      "forbidden_substrings": [
+        "sub_401110",
+        "_DWORD *this",
+        "__int16 __thiscall",
+        "return v1",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_unhighlight_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004027e0-unhighlight_border.c",
+      "required_substrings": [
+        "float idle_padding = widget->idle_padding",
+        "widget->hover_blend_target = 0f",
+        "widget->target_padding = idle_padding",
+        "004027f6        return"
+      ],
+      "forbidden_substrings": [
+        "return idle_padding",
+        "arg1",
+        "*(widget +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_unhighlight_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004027e0-unhighlight_border.c",
+      "required_substrings": [
+        "void __thiscall unhighlight_border(FrontendWidget *widget)",
+        "idle_padding = widget->idle_padding;",
+        "widget->hover_blend_target = 0.0;",
+        "widget->target_padding = idle_padding;"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall unhighlight_border",
+        "return result",
+        "LODWORD(widget->target_padding)",
+        "sub_4027E0",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_highlight_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00402800-highlight_border.c",
+      "required_substrings": [
+        "float hot_padding = widget->hot_padding",
+        "widget->hover_blend_target = 1f",
+        "widget->target_padding = hot_padding",
+        "00402816        return"
+      ],
+      "forbidden_substrings": [
+        "return hot_padding",
+        "arg1",
+        "*(widget +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_highlight_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00402800-highlight_border.c",
+      "required_substrings": [
+        "void __thiscall highlight_border(FrontendWidget *widget)",
+        "hot_padding = widget->hot_padding;",
+        "widget->hover_blend_target = 1.0;",
+        "widget->target_padding = hot_padding;"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall highlight_border",
+        "return result",
+        "LODWORD(widget->target_padding)",
+        "sub_402800",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frontend_widget_input_text_owner",
       "artifact": "analysis/decompile/binja/functions/004035b0-border_input_text.c",
       "required_substrings": [

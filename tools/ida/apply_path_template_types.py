@@ -469,12 +469,20 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall stack_widget_below(FrontendWidget* widget, FrontendWidget* previous_widget);",
     ),
     (
+        "hide_border_init",
+        "void __thiscall hide_border_init(FrontendWidget* widget);",
+    ),
+    (
+        "unhide_border_init",
+        "void __thiscall unhide_border_init(FrontendWidget* widget);",
+    ),
+    (
         "unhighlight_border",
-        "int32_t __thiscall unhighlight_border(FrontendWidget* widget);",
+        "void __thiscall unhighlight_border(FrontendWidget* widget);",
     ),
     (
         "highlight_border",
-        "int32_t __thiscall highlight_border(FrontendWidget* widget);",
+        "void __thiscall highlight_border(FrontendWidget* widget);",
     ),
     (
         "update_frontend_widget_interaction",

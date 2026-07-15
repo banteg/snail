@@ -6,4 +6,4 @@
 004027e0        float idle_padding = widget->idle_padding
 004027e6        widget->hover_blend_target = 0f
 004027f0        widget->target_padding = idle_padding
-004027f6        return idle_padding
+004027f6        return

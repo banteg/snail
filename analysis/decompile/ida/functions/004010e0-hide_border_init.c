@@ -2,17 +2,17 @@
 /* function: hide_border_init @ 0x4010e0 */
 /* selector: hide_border_init */
 
-void __thiscall sub_4010E0(_DWORD *this)
+// Stable Windows harness identity for the authored void cRBorder::HideInit() member. It starts the 0x1000 hide transition once, clears hide_blend, and tail-calls the owned cRToolTip reset.
+void __thiscall hide_border_init(FrontendWidget *widget)
 {
-  int v1; // eax
+  FrontendWidgetFlag widget_flags; // eax
 
-  v1 = *(this + 104);
-  if ( (v1 & 0x1000) == 0 )
+  widget_flags = widget->widget_flags;
+  if ( (BYTE1(widget_flags) & 0x10) == 0 )
   {
-    BYTE1(v1) |= 0x10u;
-    *(this + 17) = 0;
-    *(this + 104) = v1;
-    reset_tooltip((int)(this + 163));
+    BYTE1(widget_flags) |= 0x10u;
+    widget->hide_blend = 0.0;
+    widget->widget_flags = widget_flags;
+    reset_tooltip(&widget->tooltip);
   }
 }
-
