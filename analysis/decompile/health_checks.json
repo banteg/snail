@@ -194,12 +194,51 @@
       "artifact": "analysis/decompile/binja/functions/00435180-merge_track_tile_runs.c",
       "required_substrings": [
         "game_1->runtime_row_count",
+        "game_1->runtime_cells[0][0].lane_and_flags",
         "is_sub_loc_floor",
         "is_sub_loc_slide",
         "g_game_base",
         "0xffff9fff"
       ],
       "forbidden_substrings": [
+        "struct Game",
+        "__offset(Game",
+        "arg1->",
+        "__asm",
+        "_ET1"
+      ],
+      "max_counts": {
+        "__offset(": 0
+      }
+    },
+    {
+      "name": "bn_runtime_row_lookup_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d480-get_track_runtime_cell_at_world_z.c",
+      "required_substrings": [
+        "fconvert.t(position->z)",
+        "return &game->runtime_rows",
+        "return &game->runtime_rows[eax]"
+      ],
+      "forbidden_substrings": [
+        "struct Game",
+        "__offset(",
+        "arg1->",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_runtime_row_lookup_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d480-get_track_runtime_cell_at_world_z.c",
+      "required_substrings": [
+        "TrackAttachmentRuntimeRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 *position)",
+        "position->z",
+        "244 * z"
+      ],
+      "forbidden_substrings": [
+        "Game *game",
+        "int this",
+        "this +",
         "__asm",
         "_ET1"
       ]
@@ -1539,17 +1578,23 @@
       "artifact": "analysis/decompile/binja/functions/00437eb0-build_subgame_level.c",
       "required_substrings": [
         "cache_music_file(path, 0, &g_blank_text)",
+        "game->level_definition",
+        "game->banners.slots",
+        "game->player.damage_gauge",
         "runtime->player.presentation.weapon_channels",
         "runtime->slug_voice_manager",
         "runtime->level_definition.parcel_count",
         "runtime->barrier.owner_player"
       ],
       "forbidden_substrings": [
+        "struct Game",
+        "__offset(Game",
+        "arg1->",
         "__asm",
         "_ET1"
       ],
       "max_counts": {
-        "__offset(": 30
+        "__offset(": 2
       }
     },
     {

@@ -411,3 +411,18 @@ Level start now clears the exact `TimesUp` tail owner through
 `TIMES_UP_STATE_INACTIVE`, pairing this reset with Init, AI, and UnInit. Focused
 output remains byte-identical at 77.67%, 560/555 instructions, prefix 177/555,
 with all 101 operands clean.
+
+## 2026-07-14 analysis receiver closure
+
+The remaining live Binary Ninja `Game*` receiver was a stale same-size named
+type, not a second StartLevel aggregate. The guarded repair recreated only the
+exact known function as `SubgameRuntime*`, preserved both user-defined
+parameters, verified readback, and saved explicitly. The tracked BN decompile
+drops from 28 raw offsets to two and now follows the level definition, replay
+record, runtime pools, landscape manager, banners, Player, presentation
+channels, HUD, barrier, and slug-voice owners directly. The two remaining
+expressions are unresolved Player-internal bytes, not receiver ambiguity.
+
+IDA was already fully typed, so the two decompiler views now agree on the
+outer owner. Matching source is unchanged at the honest 77.67%, 560/555
+frontier with all 101 operands clean.

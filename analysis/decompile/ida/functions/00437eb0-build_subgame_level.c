@@ -20,39 +20,39 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   double completion_row_start; // st7
   Player *p_player; // edi
   PresentationAnimationChannel *p_jetpack_channel; // eax
-  char *v18; // ecx
-  int v19; // edx
-  int v20; // edx
+  FrameBodBase **p_first; // ecx
+  FrameBodBase *first; // edx
+  FrameBodBase *list_prev; // edx
   PresentationAnimationChannel *weapon_channels; // ecx
-  char *v22; // eax
-  int v23; // edx
-  int v24; // edx
+  FrameBodBase **v22; // eax
+  FrameBodBase *v23; // edx
+  FrameBodBase *v24; // edx
   PresentationAnimationChannel *v25; // ecx
-  char *v26; // eax
-  int v27; // edx
-  int v28; // edx
+  FrameBodBase **v26; // eax
+  FrameBodBase *v27; // edx
+  FrameBodBase *v28; // edx
   PresentationAnimationChannel *v29; // ecx
-  char *v30; // eax
-  int v31; // edx
-  int v32; // edx
+  FrameBodBase **v30; // eax
+  FrameBodBase *v31; // edx
+  FrameBodBase *v32; // edx
   Invincible *p_invincible_shell; // ecx
-  char *v34; // eax
-  int v35; // edx
-  int v36; // edx
+  FrameBodBase **v34; // eax
+  FrameBodBase *v35; // edx
+  FrameBodBase *v36; // edx
   uint32_t v37; // ecx
   Snail *p_presentation; // ecx
-  char *v39; // eax
-  int v40; // edx
-  int v41; // edx
-  char *v42; // eax
-  int v43; // ecx
-  int v44; // ecx
+  FrameBodBase **v39; // eax
+  FrameBodBase *v40; // edx
+  FrameBodBase *v41; // edx
+  FrameBodBase **v42; // eax
+  FrameBodBase *v43; // ecx
+  FrameBodBase *v44; // ecx
   BarrierActor *p_barrier; // eax
   struct BodNode *v46; // ecx
   int32_t v47; // eax
   float v48; // [esp+0h] [ebp-14h]
 
-  unhide_star_field((StarManager *)((char *)g_game_base + 324412));
+  unhide_star_field((StarManager *)&g_game_base->unknown_00067c[322752]);
   if ( game->level_mode == 7 )
     hide_gameplay_scores(game);
   else
@@ -78,18 +78,18 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   game->next_slug_voice_trigger_z = 50.0;
   game->slug_voice_trigger_spacing_z = 100.0;
   initialize_enemy_manager(&game->enemy_manager.count);
-  initialize_damage_gauge(&game->player.damage_gauge.state);
+  initialize_damage_gauge(&game->player.damage_gauge);
   noop_runtime_ai();
   initialize_sub_lazer_pool(&game->sub_lazers);
   initialize_salt_hazard_pool(&game->salt_hazards);
   reset_voice_manager(g_voice_manager);
-  load_frontend_level_by_mode_and_index((LevelDefinitionLoader *)&game->level_definition, game->level_mode, level_index);
+  load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index);
   if ( game->selected_level_record_active || game->selected_level_record_persistent )
   {
-    *(float *)&game->_pad_20[16] = game->selected_level_record->replay_speed_scalar;
+    game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
     game->level_mode = game->selected_level_record->replay_mode_id;
-    *(_DWORD *)&game->_pad_20[12] = game->selected_level_record->challenge_difficulty_value;
-    *(_DWORD *)&game->_pad_20[8] = game->selected_level_record->challenge_speed_value;
+    game->completion_bonus_y_source = game->selected_level_record->challenge_difficulty_value;
+    game->completion_bonus_x_source = game->selected_level_record->challenge_speed_value;
     challenge_difficulty_value = (double)game->selected_level_record->challenge_difficulty_value;
     goto LABEL_24;
   }
@@ -97,25 +97,25 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   switch ( level_mode )
   {
     case 3:
-      *(float *)&game->_pad_20[16] = g_config_default_challenge_speed_slider;
+      game->rate_or_level_arg.level_arg_tail = LODWORD(g_runtime_config.default_challenge_speed_slider);
       break;
     case 0:
     case 4:
     case 7:
       if ( game->level_definition.selected_speed_bits == -1082130432 )
-        *(float *)&game->_pad_20[16] = calc_slider_to_rate(0.0);
+        game->rate_or_level_arg.base_rate = calc_slider_to_rate(0.0);
       else
-        *(float *)&game->_pad_20[16] = game->level_definition.selected_speed * 0.0099999998 * 0.90000004 + 0.2;
+        game->rate_or_level_arg.base_rate = game->level_definition.selected_speed * 0.0099999998 * 0.90000004 + 0.2;
       break;
     case 1:
-      v48 = (double)g_completion_bonus_x_source * 0.0099999998;
-      *(float *)&game->_pad_20[16] = calc_slider_to_rate(v48);
-      challenge_difficulty_value = (double)g_completion_bonus_y_source;
+      v48 = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
+      game->rate_or_level_arg.base_rate = calc_slider_to_rate(v48);
+      challenge_difficulty_value = (double)g_runtime_config.completion_bonus_y_source;
 LABEL_24:
       game->challenge_difficulty_scalar = challenge_difficulty_value * 0.0099999998;
       break;
     case 2:
-      *(float *)&game->_pad_20[16] = calc_slider_to_rate(g_config_default_challenge_speed_slider);
+      game->rate_or_level_arg.base_rate = calc_slider_to_rate(g_runtime_config.default_challenge_speed_slider);
       break;
   }
   if ( game->selected_level_record_active || game->selected_level_record_persistent )
@@ -133,12 +133,12 @@ LABEL_24:
     }
     else if ( v5 == 1 )
     {
-      game->garbage_frequency = (double)g_completion_bonus_y_source * 0.0099999998 * 0.80000001;
-      game->salt_frequency = (double)g_completion_bonus_y_source * 0.0099999998 * 0.80000001;
+      game->garbage_frequency = (double)g_runtime_config.completion_bonus_y_source * 0.0099999998 * 0.80000001;
+      game->salt_frequency = (double)g_runtime_config.completion_bonus_y_source * 0.0099999998 * 0.80000001;
     }
   }
   initialize_track_parcel_slots(&game->parcel_manager);
-  if ( *((_BYTE *)g_game_base + 324320) == 1 )
+  if ( g_game_base->unknown_00067c[322660] == 1 )
   {
     hide_border_init(&game->top_score_widget->list_kind);
     hide_border_init(&game->bottom_score_widget->list_kind);
@@ -149,23 +149,31 @@ LABEL_24:
     switch ( (unsigned int)(__int64)random_float_below(4.0) )
     {
       case 0u:
-        landscape_script_by_name = load_landscape_script_by_name((char *)g_game_base + 17220120, aSpaceblueswhor);
+        landscape_script_by_name = load_landscape_script_by_name(
+                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     aSpaceblueswhor);
         break;
       case 1u:
-        landscape_script_by_name = load_landscape_script_by_name((char *)g_game_base + 17220120, aSpacegreenwarp);
+        landscape_script_by_name = load_landscape_script_by_name(
+                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     aSpacegreenwarp);
         break;
       case 2u:
-        landscape_script_by_name = load_landscape_script_by_name((char *)g_game_base + 17220120, aSpacepurpleTxt);
+        landscape_script_by_name = load_landscape_script_by_name(
+                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     aSpacepurpleTxt);
         break;
       case 3u:
-        landscape_script_by_name = load_landscape_script_by_name((char *)g_game_base + 17220120, aSpaceredTxt);
+        landscape_script_by_name = load_landscape_script_by_name(
+                                     (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                     aSpaceredTxt);
         break;
       default:
         landscape_script_by_name = level_index;
         break;
     }
     activate_landscape_entry((char *)&game->landscape_manager, landscape_script_by_name);
-    *((_BYTE *)g_game_base + 322660) = random_float_below(1.0) > 0.5;
+    g_game_base->unknown_00067c[321000] = random_float_below(1.0) > 0.5;
   }
   else
   {
@@ -224,10 +232,10 @@ LABEL_24:
   game->banners.slots[1].bod.color.a = 0.99900001;
   game->track_state_latch = 0;
   game->replay_update_cursor = 0;
-  game->times_up.state = 0;
+  game->times_up.state = TIMES_UP_STATE_INACTIVE;
   game->subgame_state = 2;
-  *((_DWORD *)g_game_base + 347) = 1;
-  release_mouse_cursor((MouseCursorState *)((char *)g_game_base + 656));
+  g_game_base->render_skip_count = 1;
+  release_mouse_cursor(&g_game_base->players[0].mouse_cursor);
   game->player.movement_mode_selector = 1;
   game->player.steering_mode_selector = 0;
   initialize_subgoldy(&game->player, 1);
@@ -238,21 +246,21 @@ LABEL_24:
   }
   else
   {
-    v18 = (char *)g_game_base + 1452;
-    v19 = *((_DWORD *)g_game_base + 363);
-    if ( v19 )
+    p_first = &g_game_base->active_bod_list.first;
+    first = g_game_base->active_bod_list.first;
+    if ( first )
     {
-      *(_DWORD *)(v19 + 8) = p_jetpack_channel;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v18 + 8) + 12) = *(_DWORD *)v18;
-      v20 = *(_DWORD *)(*(_DWORD *)v18 + 8);
-      *(_DWORD *)v18 = v20;
-      *(_DWORD *)(v20 + 8) = 0;
+      first->bod.list_prev = (FrameBodBase *)p_jetpack_channel;
+      (*p_first)->bod.list_prev->bod.list_next = *p_first;
+      list_prev = (*p_first)->bod.list_prev;
+      *p_first = list_prev;
+      list_prev->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v18 = p_jetpack_channel;
+      *p_first = (FrameBodBase *)p_jetpack_channel;
       game->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v18 + 12) = 0;
+      (*p_first)->bod.list_next = nullptr;
     }
     game->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200u;
   }
@@ -263,21 +271,21 @@ LABEL_24:
   }
   else
   {
-    v22 = (char *)g_game_base + 1452;
-    v23 = *((_DWORD *)g_game_base + 363);
+    v22 = &g_game_base->active_bod_list.first;
+    v23 = g_game_base->active_bod_list.first;
     if ( v23 )
     {
-      *(_DWORD *)(v23 + 8) = weapon_channels;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v22 + 8) + 12) = *(_DWORD *)v22;
-      v24 = *(_DWORD *)(*(_DWORD *)v22 + 8);
-      *(_DWORD *)v22 = v24;
-      *(_DWORD *)(v24 + 8) = 0;
+      v23->bod.list_prev = (FrameBodBase *)weapon_channels;
+      (*v22)->bod.list_prev->bod.list_next = *v22;
+      v24 = (*v22)->bod.list_prev;
+      *v22 = v24;
+      v24->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v22 = weapon_channels;
+      *v22 = (FrameBodBase *)weapon_channels;
       game->player.presentation.weapon_channels[0].body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v22 + 12) = 0;
+      (*v22)->bod.list_next = nullptr;
     }
     game->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200u;
   }
@@ -288,21 +296,21 @@ LABEL_24:
   }
   else
   {
-    v26 = (char *)g_game_base + 1452;
-    v27 = *((_DWORD *)g_game_base + 363);
+    v26 = &g_game_base->active_bod_list.first;
+    v27 = g_game_base->active_bod_list.first;
     if ( v27 )
     {
-      *(_DWORD *)(v27 + 8) = v25;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v26 + 8) + 12) = *(_DWORD *)v26;
-      v28 = *(_DWORD *)(*(_DWORD *)v26 + 8);
-      *(_DWORD *)v26 = v28;
-      *(_DWORD *)(v28 + 8) = 0;
+      v27->bod.list_prev = (FrameBodBase *)v25;
+      (*v26)->bod.list_prev->bod.list_next = *v26;
+      v28 = (*v26)->bod.list_prev;
+      *v26 = v28;
+      v28->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v26 = v25;
+      *v26 = (FrameBodBase *)v25;
       game->player.presentation.weapon_channels[1].body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v26 + 12) = 0;
+      (*v26)->bod.list_next = nullptr;
     }
     game->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200u;
   }
@@ -313,21 +321,21 @@ LABEL_24:
   }
   else
   {
-    v30 = (char *)g_game_base + 1452;
-    v31 = *((_DWORD *)g_game_base + 363);
+    v30 = &g_game_base->active_bod_list.first;
+    v31 = g_game_base->active_bod_list.first;
     if ( v31 )
     {
-      *(_DWORD *)(v31 + 8) = v29;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v30 + 8) + 12) = *(_DWORD *)v30;
-      v32 = *(_DWORD *)(*(_DWORD *)v30 + 8);
-      *(_DWORD *)v30 = v32;
-      *(_DWORD *)(v32 + 8) = 0;
+      v31->bod.list_prev = (FrameBodBase *)v29;
+      (*v30)->bod.list_prev->bod.list_next = *v30;
+      v32 = (*v30)->bod.list_prev;
+      *v30 = v32;
+      v32->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v30 = v29;
+      *v30 = (FrameBodBase *)v29;
       game->player.presentation.weapon_channels[2].body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v30 + 12) = 0;
+      (*v30)->bod.list_next = nullptr;
     }
     game->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200u;
   }
@@ -338,21 +346,21 @@ LABEL_24:
   }
   else
   {
-    v34 = (char *)g_game_base + 1452;
-    v35 = *((_DWORD *)g_game_base + 363);
+    v34 = &g_game_base->active_bod_list.first;
+    v35 = g_game_base->active_bod_list.first;
     if ( v35 )
     {
-      *(_DWORD *)(v35 + 8) = p_invincible_shell;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v34 + 8) + 12) = *(_DWORD *)v34;
-      v36 = *(_DWORD *)(*(_DWORD *)v34 + 8);
-      *(_DWORD *)v34 = v36;
-      *(_DWORD *)(v36 + 8) = 0;
+      v35->bod.list_prev = (FrameBodBase *)p_invincible_shell;
+      (*v34)->bod.list_prev->bod.list_next = *v34;
+      v36 = (*v34)->bod.list_prev;
+      *v34 = v36;
+      v36->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v34 = p_invincible_shell;
+      *v34 = (FrameBodBase *)p_invincible_shell;
       game->player.presentation.invincible_shell.body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v34 + 12) = 0;
+      (*v34)->bod.list_next = nullptr;
     }
     game->player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x200u;
   }
@@ -366,21 +374,21 @@ LABEL_24:
   }
   else
   {
-    v39 = (char *)g_game_base + 1452;
-    v40 = *((_DWORD *)g_game_base + 363);
+    v39 = &g_game_base->active_bod_list.first;
+    v40 = g_game_base->active_bod_list.first;
     if ( v40 )
     {
-      *(_DWORD *)(v40 + 8) = p_presentation;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v39 + 8) + 12) = *(_DWORD *)v39;
-      v41 = *(_DWORD *)(*(_DWORD *)v39 + 8);
-      *(_DWORD *)v39 = v41;
-      *(_DWORD *)(v41 + 8) = 0;
+      v40->bod.list_prev = (FrameBodBase *)p_presentation;
+      (*v39)->bod.list_prev->bod.list_next = *v39;
+      v41 = (*v39)->bod.list_prev;
+      *v39 = v41;
+      v41->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v39 = p_presentation;
+      *v39 = (FrameBodBase *)p_presentation;
       game->player.presentation.body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v39 + 12) = 0;
+      (*v39)->bod.list_next = nullptr;
     }
     game->player.presentation.body.bod.bod.list_flags |= 0x200u;
   }
@@ -390,21 +398,21 @@ LABEL_24:
   }
   else
   {
-    v42 = (char *)g_game_base + 1452;
-    v43 = *((_DWORD *)g_game_base + 363);
+    v42 = &g_game_base->active_bod_list.first;
+    v43 = g_game_base->active_bod_list.first;
     if ( v43 )
     {
-      *(_DWORD *)(v43 + 8) = p_player;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v42 + 8) + 12) = *(_DWORD *)v42;
-      v44 = *(_DWORD *)(*(_DWORD *)v42 + 8);
-      *(_DWORD *)v42 = v44;
-      *(_DWORD *)(v44 + 8) = 0;
+      v43->bod.list_prev = (FrameBodBase *)p_player;
+      (*v42)->bod.list_prev->bod.list_next = *v42;
+      v44 = (*v42)->bod.list_prev;
+      *v42 = v44;
+      v44->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v42 = p_player;
+      *v42 = (FrameBodBase *)p_player;
       game->player.body.bod.bod.list_prev = nullptr;
-      *(_DWORD *)(*(_DWORD *)v42 + 12) = 0;
+      (*v42)->bod.list_next = nullptr;
     }
     game->player.body.bod.bod.list_flags |= 0x200u;
   }
@@ -439,4 +447,3 @@ LABEL_24:
   game->_pad_00[0] = 1;
   calc_subgame_rate(game);
 }
-

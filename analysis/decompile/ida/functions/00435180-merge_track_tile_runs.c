@@ -109,7 +109,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
               while ( v29 < 8 );
               if ( v27 > 1 )
               {
-                set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 14 * v27 + 69999));
+                set_bod_object(v7 - 16, *(_DWORD *)&g_game_base->unknown_00067c[56 * v27 + 278336]);
                 v30 = *v7;
                 BYTE1(v30) = BYTE1(*v7) & 0xF0;
                 v31 = v30 | ((v27 & 0xF) << 8);
@@ -137,7 +137,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
               *v7 = v35;
               if ( v1->level_mode == 2 )
               {
-                set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 69705));
+                set_bod_object(v7 - 16, *(_DWORD *)&g_game_base->unknown_00067c[277160]);
               }
               else
               {
@@ -168,7 +168,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
             while ( v8 < 8 );
             if ( v18 > 1 )
             {
-              set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 14 * v18 + 70335));
+              set_bod_object(v7 - 16, *(_DWORD *)&g_game_base->unknown_00067c[56 * v18 + 279680]);
               v21 = v18 - 1;
               if ( v21 > 0 )
               {
@@ -211,7 +211,7 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
           while ( v11 < 8 );
           if ( v10 > 1 )
           {
-            set_bod_object(v7 - 16, *((_DWORD *)g_game_base + 14 * v10 + 70111));
+            set_bod_object(v7 - 16, *(_DWORD *)&g_game_base->unknown_00067c[56 * v10 + 278784]);
             v15 = v10 - 1;
             if ( v15 > 0 )
             {
@@ -252,4 +252,3 @@ int32_t __thiscall merge_track_tile_runs(SubgameRuntime *game)
   }
   return result;
 }
-

@@ -42,3 +42,19 @@ historical `TrackAttachmentRuntimeRow` compatibility alias has been removed.
 The nine affected focused targets retained their prior instruction counts,
 similarity, prefixes, and masked-operand results; the two exact consumers
 remain exact.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja `Game*` receiver was a stale same-size identity. The
+guarded repair recreated only this exact lookup as a `SubgameRuntime*` method,
+preserved both user-defined parameters, verified readback, and saved. Its
+tracked decompile now expresses the clamp as direct
+`game->runtime_rows[row]` ownership with no raw offsets; IDA agrees on the
+receiver and 0xf4 stride. This closes the final entry in the guarded receiver
+catalog.
+
+No matcher source changed. The accessor remains exact at 23/23 instructions
+with all three operands clean. The analysis-only row type still uses the older
+`TrackAttachmentRuntimeRow` spelling; canonicalizing it to authored `SubRow`
+is a separate, bounded type-name migration rather than part of this receiver
+repair.

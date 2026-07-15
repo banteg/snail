@@ -15,19 +15,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "destroy_subgame",
-      "address": "0x438850"
+      "name": "merge_track_tile_runs",
+      "address": "0x435180"
     },
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "build_subgame_level",
+      "address": "0x437eb0"
     },
     {
-      "name": "remove_subgame_bods",
-      "address": "0x440910"
+      "name": "get_track_runtime_cell_at_world_z",
+      "address": "0x43d480"
     }
   ],
-  "health_check_count": 98,
+  "health_check_count": 100,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -121,3 +121,16 @@ The `SubRow::flags` byte reached from the attachment-body cursor now tests
 render/list lanes, remove its uncached-body state, and suppress the row-owned
 attachment body. Focused output remains 67.50%, 284/276 instructions, with all
 12 operands clean.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja `Game*` receiver was a stale same-size named identity.
+The guarded repair recreated only this exact function with the proven
+`SubgameRuntime*` receiver and preserved its sole user-defined parameter. Both
+tracked decompilers now expose `runtime_row_count`, `runtime_cells`,
+`runtime_rows`, and `level_mode` through that owner with no raw aggregate
+offsets. The remaining field-first cursor arithmetic is the native eight-lane
+run scanner, not evidence for a separate container.
+
+This analysis-only correction leaves the honest matcher result at 67.50%,
+284/276 instructions, with all 12 operands clean.
