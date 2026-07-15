@@ -943,7 +943,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         assert declaration in ida_source
 
 
-def test_golb_emitter_replays_preserve_real_receiver_and_returns() -> None:
+def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -952,6 +952,9 @@ def test_golb_emitter_replays_preserve_real_receiver_and_returns() -> None:
     )
 
     declarations = (
+        "GolbShot* __thiscall initialize_golb_shot(GolbShot* shot)",
+        "void __thiscall kill_golb(GolbShot* shot)",
+        "void __thiscall update_golb_ai(GolbShot* shot)",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position)",
@@ -959,6 +962,8 @@ def test_golb_emitter_replays_preserve_real_receiver_and_returns() -> None:
     for declaration in declarations:
         assert declaration in binja_source
         assert f'"{declaration};"' in ida_source
+
+    assert "no-argument auto prototype" not in binja_source
 
 
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:

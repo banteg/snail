@@ -701,10 +701,19 @@ def ensure_golb_path_follow_state(*, target: str) -> dict[str, object]:
         ),
     }
 
-# update_golb_ai can retain a no-argument auto prototype in older databases.
-# The bridge cannot preview that cdecl-to-thiscall replacement,
-# so keep it out of the replay instead of applying an unpreviewable direct override.
 GOLB_PROTO_UPDATES = (
+    (
+        "initialize_golb_shot",
+        "GolbShot* __thiscall initialize_golb_shot(GolbShot* shot)",
+    ),
+    (
+        "kill_golb",
+        "void __thiscall kill_golb(GolbShot* shot)",
+    ),
+    (
+        "update_golb_ai",
+        "void __thiscall update_golb_ai(GolbShot* shot)",
+    ),
     (
         "create_golb",
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",

@@ -515,3 +515,12 @@ already-rejected typed iterator spelling.
 Focused output remains 73.34% (645/694 instructions, prefix 9, 68 clean
 operands). Saved pre-change and rebuilt normalized candidate listings share
 SHA-256 `7595f3ce942ff8bd3b221494ebff32aadd992ea6fdaf74a71fa2b13a0e50ea8d`.
+
+## 2026-07-16 lifecycle receiver contract
+
+The callback table installed by exact `initialize_golb_shot`, all teardown
+edges into exact `kill_golb`, and mobile `cRSubGolb::AI()` independently close
+this function as `void __thiscall update_golb_ai(GolbShot*)`. The Binary Ninja
+and IDA replay catalogs now replace the analyzer's incidental integer/pointer
+return guesses with the real owned receiver contract. This is an analysis-only
+ownership correction; the focused 73.34% matcher body remains byte-stable.

@@ -33,3 +33,11 @@ exact 132/132 body and all 16 clean operands.
 The kind-0 `+0x248` owner is now shared as `GolbShot::render_sprite` across
 creation, per-tick position updates, and this exact teardown. Replacing the
 last local cast preserves the exact 132/132 body and all 16 clean operands.
+
+## 2026-07-16 lifecycle receiver contract
+
+The exact teardown paths and mobile `cRSubGolb::Kill()` symbol establish
+`void __thiscall kill_golb(GolbShot*)`: the inherited body/list operations do
+not make the receiver a `FrameBodBase`, and none of the callers consume a
+result. Both analysis replay catalogs now preserve that owner and void return.
+The exact 132/132 match remains unchanged.

@@ -17,16 +17,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "spawn_golb_trail_sprite",
-      "address": "0x415bb0"
+      "name": "initialize_golb_shot",
+      "address": "0x408690"
     },
     {
-      "name": "spawn_golb_smoke",
-      "address": "0x415c60"
+      "name": "kill_golb",
+      "address": "0x414670"
     },
     {
-      "name": "spawn_golb_impact_sprite",
-      "address": "0x415d80"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     }
   ],
   "health_check_count": 324,

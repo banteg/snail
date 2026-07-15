@@ -26,3 +26,12 @@ The three independent lifecycle passes now close the parent boundary:
 `12 * 0x2e8` ends exactly at `Player +0x2730`, the next independently named
 movement-fire field. The bank is therefore owned storage in `Player`, not a
 borrowed emitter view or a separate SubgameRuntime pool.
+
+## 2026-07-16 lifecycle receiver contract
+
+The exact constructor body, its `sizeof(GolbShot) == 0x2e8` array-constructor
+caller, and the independent mobile `cRSubGolb` class symbols close the ABI as
+`GolbShot* __thiscall initialize_golb_shot(GolbShot*)`. The Binary Ninja and
+IDA replay catalogs now preserve that concrete receiver and same-slot return
+instead of their legacy `BodBase*` inference. The exact 17/17 match is
+unchanged.

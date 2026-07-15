@@ -64,6 +64,18 @@ TRUSTED_DATA_DECLARATIONS = [
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_golb_shot",
+        "GolbShot* __thiscall initialize_golb_shot(GolbShot* shot);",
+    ),
+    (
+        "kill_golb",
+        "void __thiscall kill_golb(GolbShot* shot);",
+    ),
+    (
+        "update_golb_ai",
+        "void __thiscall update_golb_ai(GolbShot* shot);",
+    ),
+    (
         "spawn_golb_trail_sprite",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position);",
     ),
