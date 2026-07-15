@@ -4,7 +4,7 @@
 /* function: initialize_track_render_cache_manager @ 0x433060 */
 
 00433070        __builtin_memcpy(&manager->max_vertex_counts, "\x30\x02\x00\x00\x30\x02\x00\x00\xa0\x00\x00\x00\x50\x00\x00\x00\x20\x03\x00\x00\x00\x05\x00\x00\x00\x05\x00\x00\xf0\x00\x00\x00\xa0\x00\x00\x00\x00\x05\x00\x00", 0x28)
-004330b4        manager->owner_subgame = &g_game_base[0x74618]
+004330b4        manager->owner_subgame = &g_game_base->subgame
 004330b7        int32_t var_8 = 0
 004330bb        void** var_4 = &manager->slots[0][4].bod.object
 004331cc        bool cond:1_1

@@ -146,10 +146,11 @@
       "artifact": "analysis/decompile/binja/functions/0043a930-initialize_jetpack_gauge.c",
       "required_substrings": [
         "sub_hover->game = &g_game_base->subgame",
-        "sub_hover->player = &g_game_base->subgame"
+        "sub_hover->player = &g_game_base->subgame.player"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "g_game_base->subgame.__offset"
       ]
     },
     {
@@ -203,11 +204,11 @@
       "artifact": "analysis/decompile/binja/functions/00443160-initialize_track_parcel_slots.c",
       "required_substrings": [
         "struct SubgameRuntime**",
-        "slots[0].owner_subgame",
-        "&g_game_base->subgame"
+        "slots[0].owner_subgame = &g_game_base->subgame"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "g_game_base->subgame.scan_reset"
       ]
     },
     {
@@ -227,10 +228,11 @@
       "artifact": "analysis/decompile/binja/functions/00446160-initialize_cameraman.c",
       "required_substrings": [
         "cameraman->game = &g_game_base->subgame",
-        "cameraman->player = &g_game_base->subgame"
+        "cameraman->player = &g_game_base->subgame.player"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "g_game_base->subgame.__offset"
       ]
     },
     {
@@ -287,6 +289,25 @@
         "_pad_10[56]",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "bn_high_score_subgame_record_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00416910-initialize_high_score_screen.c",
+      "required_substrings": [
+        "hide_gameplay_scores(&g_game_base->subgame)",
+        "allocate_border(&g_game_base->border_manager)",
+        "capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)",
+        "g_game_base->subgame.sub_high_score.active_record_bank",
+        "subgame.sub_high_score.postal_records",
+        "subgame.sub_high_score.survival_records",
+        "active_record_bank->player_name",
+        "active_record_bank->score"
+      ],
+      "forbidden_substrings": [
+        "g_game_base[0x74618]",
+        "g_game_base + 0x6ffae0",
+        "unimplemented"
       ]
     },
     {
@@ -923,6 +944,34 @@
       ]
     },
     {
+      "name": "bn_track_cache_manager_subgame_owner",
+      "artifact": "analysis/decompile/binja/functions/00433060-initialize_track_render_cache_manager.c",
+      "required_substrings": [
+        "manager->owner_subgame = &g_game_base->subgame"
+      ],
+      "forbidden_substrings": [
+        "g_game_base[0x74618]",
+        "g_game_base->subgame.scan_reset",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_track_cache_row_runtime_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00433b30-update_track_render_cache_rows.c",
+      "required_substrings": [
+        "subgame.player.body.transform.position.z",
+        "subgame.fringe_attachment_list_head",
+        "get_track_skirt_color(&g_game_base->subgame,",
+        "subgame.track_body_list_head",
+        "manager->next_cache_row_z"
+      ],
+      "forbidden_substrings": [
+        "g_game_base[0x74618]",
+        "g_game_base->subgame.scan_reset",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_track_cache_colour_and_backlink_owner",
       "artifact": "analysis/decompile/binja/functions/00433220-build_track_render_caches.c",
       "required_substrings": [
@@ -1319,11 +1368,14 @@
       "required_substrings": [
         "g_game_base->subgame.subgame_state = 2",
         "g_game_base->subgame.resume_requested = 1",
-        "subgame.level_mode"
+        "subgame.level_mode",
+        "subgame.selected_level_record_persistent",
+        "g_game_base->subgame.subgame_rebuild_selector = 2"
       ],
       "forbidden_substrings": [
         "subgame.unknown_000000",
         "subgame._pad_00",
+        "subgame.__offset",
         "__asm",
         "_ET1"
       ]
@@ -1343,6 +1395,26 @@
         "sub_4407A0",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sub_lazer_attachment_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004417d0-update_sub_lazer_projectile.c",
+      "required_substrings": [
+        "get_track_grid_cell_at_world_position(&g_game_base->subgame,",
+        "get_track_runtime_cell_at_world_z(&g_game_base->subgame,",
+        "struct SubRow*",
+        "->primary_attachment_cell",
+        "->secondary_attachment_cell",
+        "->attachment_template_record",
+        "&g_game_base->active_bod_list"
+      ],
+      "forbidden_substrings": [
+        "g_game_base[0x74618]",
+        "g_game_base->subgame.scan_reset",
+        "*(eax_8 + 0xa4)",
+        "*(eax_8 + 0xa8)",
+        "unimplemented"
       ]
     },
     {
@@ -1591,12 +1663,15 @@
         "update_slug_voice_ai(slot)",
         "slot->player_encounter_latched",
         "slot->engagement_voice_gate",
-        "play_voice_manager"
+        "play_voice_manager",
+        "advance_blink_random(&g_game_base->subgame)"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
-        "struct Game*"
+        "struct Game*",
+        "g_game_base[0x74618]",
+        "g_game_base->subgame.scan_reset"
       ]
     },
     {

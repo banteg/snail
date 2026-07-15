@@ -33,9 +33,9 @@
 00440845        struct GameRoot* game_base_3 = g_game_base
 00440858        if (game_base_3->subgame.level_mode == 7)
 0044085a        game_base_3->__offset(0x4f3ac).d = 7
-00440869        if (game_base_3->subgame.__offset(0xff25d1).b != 1)
+00440869        if (game_base_3->subgame.selected_level_record_persistent != 1)
 00440877        game_base_3->__offset(0x4f3ac).d = 2
 0044086b        game_base_3->__offset(0x4f3ac).d = 3
-00440882        g_game_base->subgame.__offset(0x1270fc8).d = 2
+00440882        g_game_base->subgame.subgame_rebuild_selector = 2
 0044088e        g_game_base->players[0].frontend_state = 8
 00440898        return

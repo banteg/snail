@@ -52,7 +52,7 @@
 0043fad2        slot->blink_progress = 0f
 0043fae3        int32_t edx_5
 0043fae3        long double st0_1
-0043fae3        st0_1, edx_5 = advance_blink_random(&g_game_base->subgame.scan_reset)
+0043fae3        st0_1, edx_5 = advance_blink_random(&g_game_base->subgame)
 0043fae8        slot->blink_step = fconvert.s(st0_1)
 0043f99e        long double x87_r7_3 = fconvert.t(slot->hit_flash_progress_step) + fconvert.t(slot->hit_flash_progress)
 0043f9a4        slot->hit_flash_progress = fconvert.s(x87_r7_3)
