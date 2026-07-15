@@ -276,6 +276,51 @@
       ]
     },
     {
+      "name": "bn_save_high_scores_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00417940-save_high_scores_and_config.c",
+      "required_substrings": [
+        "struct SubHighScore* bank_1 = bank",
+        "&bank->postal_records",
+        "&bank->survival_records",
+        "&bank->time_trial_route_records",
+        "save_config_file(\"SnailMail.cfg\", &g_runtime_config, 0xc4)"
+      ],
+      "forbidden_substrings": [
+        "return save_config_file",
+        "struct HighScoreBank",
+        "void* arg1"
+      ]
+    },
+    {
+      "name": "ida_save_high_scores_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00417940-save_high_scores_and_config.c",
+      "required_substrings": [
+        "void __thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8 save_mask)",
+        "bank->postal_records",
+        "bank->survival_records",
+        "bank->time_trial_route_records"
+      ],
+      "forbidden_substrings": [
+        "char *__thiscall save_high_scores_and_config",
+        "return save_config_file",
+        "HighScoreBank"
+      ]
+    },
+    {
+      "name": "bn_game_shutdown_sub_high_score_owner",
+      "artifact": "analysis/decompile/binja/functions/00406dc0-game_startup_and_main_loop.c",
+      "required_substrings": [
+        "load_config_file(\"SnailMail.cfg\", &g_runtime_config)",
+        "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1)",
+        "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 0x10)"
+      ],
+      "forbidden_substrings": [
+        "data_4df904 + 0x6ffae0",
+        "&data_4df918",
+        "data_4df920"
+      ]
+    },
+    {
       "name": "bn_complete_subgame_high_score_owner",
       "artifact": "analysis/decompile/binja/functions/00438700-complete_subgame.c",
       "required_substrings": [

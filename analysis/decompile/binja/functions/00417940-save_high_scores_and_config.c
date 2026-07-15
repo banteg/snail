@@ -51,4 +51,5 @@
 00417a30        xor_decode_buffer_with_index(pointer, ebp_3)
 00417a3c        write_file_bytes("ScoreC.dat", pointer, ebp_3)
 00417a45        free_tracked_memory(pointer)
-00417a66        return save_config_file("SnailMail.cfg", &g_runtime_config, 0xc4)
+00417a59        save_config_file("SnailMail.cfg", &g_runtime_config, 0xc4)
+00417a66        return

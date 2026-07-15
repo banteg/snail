@@ -25,7 +25,7 @@ public:
         int route_index,
         unsigned char route_active); // @ 0x4178b0, cRSubHighScore::AddTimeTrial
     void mini_delete_high_score_entry(int rank); // @ 0x417af0, cRSubHighScore::MiniDelete
-    char* save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
+    void save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
     void noop_runtime_ai(); // shared empty lifecycle hook @ 0x407b50
 
     // The add helpers borrow their caller-owned record for the duration of the

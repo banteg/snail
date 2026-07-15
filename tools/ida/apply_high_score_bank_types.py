@@ -40,7 +40,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "save_high_scores_and_config",
-        "char* __thiscall save_high_scores_and_config(SubHighScore* bank, unsigned char save_mask);",
+        "void __thiscall save_high_scores_and_config(SubHighScore* bank, unsigned char save_mask);",
     ),
 ]
 

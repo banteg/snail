@@ -1102,7 +1102,7 @@
     {
       "address": "0x417940",
       "name": "save_high_scores_and_config",
-      "description": "Serializes the cRSubHighScore owner’s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob."
+      "description": "Void `cRSubHighScore::MiniSave(int)`: serializes the owner’s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob. All five Windows callers discard EAX; the final `save_config_file` result is incidental tail residue."
     },
     {
       "address": "0x417a70",

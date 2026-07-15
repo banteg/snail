@@ -145,7 +145,7 @@
       "address": "0x446e30"
     }
   ],
-  "health_check_count": 324,
+  "health_check_count": 330,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

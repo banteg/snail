@@ -84,5 +84,9 @@ void __thiscall add_survival_high_score(
     SubHighScore* bank,
     SubSolution* record
 );
+void __thiscall save_high_scores_and_config(
+    SubHighScore* bank,
+    uint8_t save_mask
+);
 
 #endif

@@ -1025,10 +1025,12 @@ def test_high_score_replays_preserve_void_insertion_abis() -> None:
     binja_declarations = (
         "void __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int32_t level_arg)",
         "void __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record)",
+        "void __thiscall save_high_scores_and_config(SubHighScore* bank, uint8_t save_mask)",
     )
     ida_declarations = (
         "void __thiscall add_arcade_high_score(SubHighScore* bank, SubSolution* record, int level_arg);",
         "void __thiscall add_survival_high_score(SubHighScore* bank, SubSolution* record);",
+        "void __thiscall save_high_scores_and_config(SubHighScore* bank, unsigned char save_mask);",
     )
     for declaration in binja_declarations:
         assert declaration in binja_source
@@ -1038,8 +1040,10 @@ def test_high_score_replays_preserve_void_insertion_abis() -> None:
 
     assert "int32_t __thiscall add_arcade_high_score" not in binja_source
     assert "int32_t __thiscall add_survival_high_score" not in binja_source
+    assert "char* __thiscall save_high_scores_and_config" not in binja_source
     assert '"int __thiscall add_arcade_high_score' not in ida_source
     assert '"int __thiscall add_survival_high_score' not in ida_source
+    assert '"char* __thiscall save_high_scores_and_config' not in ida_source
 
 
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:

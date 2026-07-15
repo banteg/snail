@@ -1266,9 +1266,7 @@
       "address": "0x417af0",
       "name": "mini_delete_high_score_entry",
       "artifact": "analysis/decompile/ida/functions/00417af0-mini_delete_high_score_entry.c",
-      "removed_stale_artifacts": [
-        "analysis/decompile/ida/functions/00417af0-commit_high_score_entry_into_top_ten.c"
-      ]
+      "removed_stale_artifacts": []
     },
     {
       "selector": "exit_high_score_screen",

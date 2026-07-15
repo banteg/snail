@@ -2,8 +2,8 @@
 /* function: save_high_scores_and_config @ 0x417940 */
 /* selector: save_high_scores_and_config */
 
-// Serializes the cRSubHighScore owner’s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob.
-char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8 save_mask)
+// Void `cRSubHighScore::MiniSave(int)`: serializes the owner’s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob. All five Windows callers discard EAX; the final `save_config_file` result is incidental tail residue.
+void __thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8 save_mask)
 {
   CompletionResultScreen *tracked_memory; // esi
   int v4; // eax
@@ -16,8 +16,8 @@ char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8
   int v11; // eax
   FrontendWidget *v12; // ebp
   int v13; // ebx
+  int v14; // [esp+10h] [ebp-4h]
   int v15; // [esp+10h] [ebp-4h]
-  int v16; // [esp+10h] [ebp-4h]
 
   tracked_memory = (CompletionResultScreen *)allocate_tracked_memory(
                                                (int)&k_high_score_save_buffer_size,
@@ -27,7 +27,7 @@ char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8
     v4 = (int)tracked_memory;
     v5 = nullptr;
     postal_records = (char *)bank->postal_records;
-    v15 = 11;
+    v14 = 11;
     do
     {
       if ( *(_DWORD *)postal_records == 1 )
@@ -36,9 +36,9 @@ char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8
         v4 = (int)v5 + (_DWORD)tracked_memory;
       }
       postal_records += 129728;
-      --v15;
+      --v14;
     }
-    while ( v15 );
+    while ( v14 );
     xor_decode_buffer_with_index(tracked_memory, (int)v5);
     write_file_bytes(aScoreaDat, tracked_memory, v5);
   }
@@ -47,7 +47,7 @@ char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8
     v7 = (int)tracked_memory;
     v8 = nullptr;
     survival_records = (char *)bank->survival_records;
-    v16 = 11;
+    v15 = 11;
     do
     {
       if ( *(_DWORD *)survival_records == 1 )
@@ -56,9 +56,9 @@ char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8
         v7 = (int)v8 + (_DWORD)tracked_memory;
       }
       survival_records += 129728;
-      --v16;
+      --v15;
     }
-    while ( v16 );
+    while ( v15 );
     xor_decode_buffer_with_index(tracked_memory, (int)v8);
     write_file_bytes(aScorebDat, tracked_memory, v8);
   }
@@ -83,5 +83,5 @@ char *__thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8
     write_file_bytes(aScorecDat, tracked_memory, v12);
   }
   free_tracked_memory((int)tracked_memory);
-  return save_config_file(aSnailmailCfg, (CompletionResultScreen *)&g_runtime_config, (FrontendWidget *)0xC4);
+  save_config_file(aSnailmailCfg, (CompletionResultScreen *)&g_runtime_config, (FrontendWidget *)0xC4);
 }
