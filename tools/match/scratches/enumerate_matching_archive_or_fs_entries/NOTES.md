@@ -51,6 +51,19 @@ Cross-port ownership:
   DAT/filesystem enumeration locally; no body equivalence is claimed beyond
   the shared public contract.
 
+2026-07-15 CRT ownership closure:
+
+- The filesystem record is the bundled MSVC6 CRT's real `struct _finddata_t`,
+  not a Snail Mail-owned `FindData`. Its `time_t` and `_fsize_t` fields keep the
+  native 32-bit ABI, placing `name[260]` at `+0x14` in the `0x118`-byte record.
+- The scratch now includes `<io.h>` and `<direct.h>` and calls the authored
+  `_findfirst`, `_findnext`, `_getcwd`, and `_chdir` interfaces with the CRT's
+  real `long` search handle. No project-local compatibility header is added for
+  a third-party-owned layout.
+- Focused matching is byte-stable at 81.52%, 186/182 candidate/target
+  instructions, 7/182 prefix, and 26 clean operands. The local-type inventory
+  no longer reports the retired synthetic `FindData` owner.
+
 Rejected probes:
 
 - branching to the filesystem path before clearing `g_enumerated_entry_count` regressed to 34.41%;
