@@ -83,3 +83,21 @@ through the two `Path` sample arrays moves focused Wibo from 21.67% (569/677)
 to 24.72% (577/677). The masked audit remains 33 ok, 0 unresolved,
 3 mismatch; all three pre-existing constant pairings are unchanged. The delta
 loop retains its local sample pointers.
+
+2026-07-15 handedness and endpoint ownership: both target exports type the
+third explicit argument as a byte, and native reads it with `mov al, byte [...]`.
+The shared `Path` declaration and scratch now use `char handedness`. Endpoint
+initialization is also written directly through `primary_samples[0/51]` and
+`secondary_samples[0/51]`, preserving `center_x` as the source of endpoint and
+secondary X instead of routing the values through scratch-only scalar helpers.
+The interior secondary sample now likewise sources X from `center_x` and Z
+from the live logical counter. That final ownership correction is a deliberate
+0.02-point fuzzy tradeoff versus reloading primary transform Z.
+
+Focused result after the retained changes:
+
+```text
+match: 27.72%
+target: 677 insns, candidate: 593 insns
+masked operands: 40 ok, 0 unresolved, 0 mismatch
+```

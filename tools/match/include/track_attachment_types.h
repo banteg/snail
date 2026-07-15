@@ -204,14 +204,14 @@ struct Path : public BodBase {
     void initialize_twister_path_template_pair(
         float height,
         int width_cells_,
-        int handedness,
+        char handedness,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
     void initialize_twister2_path_template_pair(
         float height,
         int width_cells_,
-        int handedness,
+        char handedness,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);

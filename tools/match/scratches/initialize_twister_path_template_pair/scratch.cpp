@@ -12,31 +12,6 @@ float cosine(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 
-static __forceinline void initialize_sample(
-    PathTemplateSample* sample, float center_x, float x, float y, float z)
-{
-    sample->center_x = center_x;
-    sample->rotation_scalar_98 = 0.0f;
-    sample->rotation_scalar_94 = 0.0f;
-    sample->special_scalar = 0.0f;
-    sample->lateral_scale = 1.0f;
-    set_matrix_identity(&sample->transform);
-    sample->transform.position.x = x;
-    sample->transform.position.y = y;
-    sample->transform.position.z = z;
-}
-
-static __forceinline void initialize_secondary_flat(Path* path, int index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->transform.position.x;
-    secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
-    secondary->transform.position.z = primary->transform.position.z;
-}
-
 static __forceinline void orient_previous_sample_pair(Path* path, int current_index)
 {
     PathTemplateSample* primary = &path->primary_samples[current_index - 1];
@@ -186,7 +161,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 }
 
 void Path::initialize_twister_path_template_pair(
-    float height, int width_cells_, int handedness,
+    float height, int width_cells_, char handedness,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
     kind = 0x2b;
@@ -199,18 +174,37 @@ void Path::initialize_twister_path_template_pair(
     allocate_path_template_samples();
 
     has_entry_mesh_transition = 0;
-    float end_center = (float)width_cells * 0.5f - 4.0f;
+    primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;
     if (!handedness)
-        end_center = end_center * -1.0f;
+        primary_samples[0].center_x = primary_samples[0].center_x * -1.0f;
+    primary_samples[0].rotation_scalar_98 = 0.0f;
+    primary_samples[0].rotation_scalar_94 = 0.0f;
+    primary_samples[0].special_scalar = 0.0f;
+    primary_samples[0].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.position.x = primary_samples[0].center_x;
+    primary_samples[0].transform.position.y = 0.0f;
+    primary_samples[0].transform.position.z = 0.0f;
+    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.position.x = primary_samples[0].center_x;
+    secondary_samples[0].transform.position.y = 0.49000001f;
+    secondary_samples[0].transform.position.z = 0.0f;
 
-    initialize_sample(&primary_samples[0], end_center, end_center, 0.0f, 0.0f);
-    initialize_secondary_flat(this, 0);
-    float last_center = (float)width_cells * 0.5f - 4.0f;
+    primary_samples[33].center_x = (float)width_cells * 0.5f - 4.0f;
     if (!handedness)
-        last_center = last_center * -1.0f;
-
-    initialize_sample(&primary_samples[33], last_center, last_center, 0.0f, 33.0f);
-    initialize_secondary_flat(this, 33);
+        primary_samples[33].center_x = primary_samples[33].center_x * -1.0f;
+    primary_samples[33].rotation_scalar_98 = 0.0f;
+    primary_samples[33].rotation_scalar_94 = 0.0f;
+    primary_samples[33].special_scalar = 0.0f;
+    primary_samples[33].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[33].transform);
+    primary_samples[33].transform.position.x = primary_samples[33].center_x;
+    primary_samples[33].transform.position.y = 0.0f;
+    primary_samples[33].transform.position.z = 33.0f;
+    set_matrix_identity(&secondary_samples[33].transform);
+    secondary_samples[33].transform.position.x = primary_samples[33].center_x;
+    secondary_samples[33].transform.position.y = 0.49000001f;
+    secondary_samples[33].transform.position.z = 33.0f;
 
     int local_index = 0;
     for (int i = 1; i < 33; ++i) {
@@ -236,7 +230,11 @@ void Path::initialize_twister_path_template_pair(
         ++local_index;
         primary->transform.position.y = sine(half_angle) * angle_sine * height;
         primary->transform.position.z = (float)local_index;
-        initialize_secondary_flat(this, i);
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y =
+            primary_samples[i].transform.position.y + 0.49000001f;
+        secondary_samples[i].transform.position.z = (float)local_index;
         orient_previous_sample_pair(this, i);
     }
 
