@@ -87,3 +87,20 @@ instead of extending a shared `terminal_index` lifetime, then moves focused
 Wibo to 32.70% (559/652) and clears the masked audit to 34 ok, 0 unresolved,
 0 mismatch. This recovers a real `Path` ownership boundary and the native
 count-relative terminal addressing; it is not a register or scheduling shim.
+
+2026-07-15 mesh and departure ownership: unlike the rejected aggregate probe,
+the native scalar mesh spelling separates the extrapolated terminal row from
+ordinary rows. That moves focused Wibo from 32.70% (559/652) to 32.87%
+(565/652). The native face-column `do/while` reaches 33.09% (563/652), and a
+mutating three-sample lead-out reaches 33.17% (566/652), with all 34 masked
+operands still clean.
+
+2026-07-15 center and curve-counter ownership: both fixed edge loops recompute
+their center from `width_cells` inside each iteration, rather than retaining
+shared `left` and `right` values across matrix calls. Recovering both lifetimes
+reaches 33.28% (562/652). The curved body now also retains the native
+zero-based 24-sample logical counter separately from sample indices 3..26.
+That target-backed induction variable leaves the final focused result at
+33.20% (565/652), with 34 clean masked operands and no unresolved or mismatched
+operands. The small fuzzy tradeoff is retained as an ownership clarification,
+not compensated with a synthetic scheduling hint.

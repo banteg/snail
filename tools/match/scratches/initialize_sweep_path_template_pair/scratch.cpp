@@ -51,18 +51,24 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     for (row = 0; row <= path->segment_count; ++row) {
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
-            PathTemplateSample* sample = &path->primary_samples[row];
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row == path->segment_count)
-                sample = &path->primary_samples[row - 1];
-
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z
-                + (row == path->segment_count ? 1.0f : 0.0f);
+            if (row == path->segment_count) {
+                PathTemplateSample* previous = &path->primary_samples[row - 1];
+                vertex->x = previous->transform.position.x
+                    + lateral * previous->transform.basis_right.x;
+                vertex->y = previous->transform.position.y
+                    + lateral * previous->transform.basis_right.y;
+                vertex->z = previous->transform.position.z + 1.0f
+                    + lateral * previous->transform.basis_right.z;
+            } else {
+                PathTemplateSample* sample = &path->primary_samples[row];
+                vertex->x = sample->transform.position.x
+                    + lateral * sample->transform.basis_right.x;
+                vertex->y = sample->transform.position.y
+                    + lateral * sample->transform.basis_right.y;
+                vertex->z = sample->transform.position.z
+                    + lateral * sample->transform.basis_right.z;
+            }
         }
     }
 
@@ -70,7 +76,10 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
         if (path->width_cells > 0) {
             float v0 = (float)(row % 8) * 0.125f;
             float v1 = (float)(row % 8 + 1) * 0.125f;
-            for (column = 0; column < path->width_cells; ++column) {
+            column = 0;
+            int next_column;
+            do {
+                next_column = column + 1;
                 float u0 = (float)column * 0.125f;
                 float u1 = (float)(column + 1) * 0.125f;
                 int face_index;
@@ -113,7 +122,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     }
                     face->uv[3].v = v1;
                 }
-            }
+                column = next_column;
+            } while (next_column < path->width_cells);
         }
     }
 }
@@ -137,13 +147,11 @@ void Path::initialize_sweep_path_template_pair(
     has_entry_mesh_transition = 0;
 
     int i;
-    float left = (float)width_cells * 0.5f - 4.0f;
-
     for (i = 0; i < 3; ++i) {
         PathTemplateSample* primary = &primary_samples[i];
         PathTemplateSample* secondary = &secondary_samples[i];
 
-        primary->center_x = left;
+        primary->center_x = (float)width_cells * 0.5f - 4.0f;
         primary->rotation_scalar_98 = 0.0f;
         primary->rotation_scalar_94 = 0.0f;
         primary->special_scalar = 0.0f;
@@ -160,19 +168,18 @@ void Path::initialize_sweep_path_template_pair(
         secondary->transform.position.z = z;
     }
 
-    float right = 4.0f - (float)width_cells * 0.5f;
+    int departure_index = 27;
+    do {
+        PathTemplateSample* primary = &primary_samples[departure_index];
+        PathTemplateSample* secondary = &secondary_samples[departure_index];
 
-    for (i = 27; i < 30; ++i) {
-        PathTemplateSample* primary = &primary_samples[i];
-        PathTemplateSample* secondary = &secondary_samples[i];
-
-        primary->center_x = right;
+        primary->center_x = 4.0f - (float)width_cells * 0.5f;
         primary->rotation_scalar_98 = 0.0f;
         primary->rotation_scalar_94 = 0.0f;
         primary->special_scalar = 0.0f;
         primary->lateral_scale = 1.0f;
         set_matrix_identity(&primary->transform);
-        float z = (float)i;
+        float z = (float)departure_index;
         primary->transform.position.x = primary->center_x;
         primary->transform.position.y = 0.0f;
         primary->transform.position.z = z;
@@ -181,10 +188,12 @@ void Path::initialize_sweep_path_template_pair(
         secondary->transform.position.x = primary->center_x;
         secondary->transform.position.y = 0.49000001f;
         secondary->transform.position.z = z;
-    }
+        ++departure_index;
+    } while (departure_index - 27 < 3);
 
+    int curve_index = 0;
     for (i = 3; i < 27; ++i) {
-        float angle = (float)(i - 3) * 0.1308997f;
+        float angle = (float)curve_index * 0.1308997f;
         PathTemplateSample* primary = &primary_samples[i];
         PathTemplateSample* secondary = &secondary_samples[i];
 
@@ -196,7 +205,7 @@ void Path::initialize_sweep_path_template_pair(
         set_matrix_identity(&primary->transform);
         primary->transform.position.x = primary->center_x;
         primary->transform.position.y = sine(angle) * -0.30000001f;
-        float z = (float)i;
+        float z = (float)(curve_index + 3);
         primary->transform.position.z = z;
 
         set_matrix_identity(&secondary->transform);
@@ -205,6 +214,7 @@ void Path::initialize_sweep_path_template_pair(
         secondary->transform.position.z = z;
         orient_previous_with_up(primary_samples, i, 3, 0.0f);
         orient_previous_with_up(secondary_samples, i, 3, 0.0f);
+        ++curve_index;
     }
 
     int delta_index = 0;

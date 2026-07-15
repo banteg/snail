@@ -792,7 +792,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 619/685 | 39.88% | 0/685 | 32 ok |  |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 627/696 | 28.42% | 0/696 | 27 ok |  |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 617/696 | 28.64% | 0/696 | 27 ok |  |
-| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 559/652 | 32.70% | 0/652 | 34 ok |  |
+| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 565/652 | 33.20% | 0/652 | 34 ok |  |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 562/652 | 30.15% | 0/652 | 37 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 538/552 | 43.49% | 15/552 | 1 mismatch, 22 ok |  |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 588/683 | 29.90% | 0/683 | 3 mismatch, 32 ok |  |
