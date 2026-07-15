@@ -109,6 +109,13 @@ def test_normalize_prototype_treats_default_cdecl_as_equivalent() -> None:
         identifier="initialize_global_identity_matrix",
     )
 
+    assert _narrow_sync.normalize_prototype(
+        "int32_t(char* url)", identifier="0x433050"
+    ) == _narrow_sync.normalize_prototype(
+        "int32_t __cdecl launch_alpha72_url(char* url)",
+        identifier="0x433050",
+    )
+
 
 def test_current_struct_size_reads_layout(monkeypatch) -> None:
     monkeypatch.setattr(
@@ -162,6 +169,35 @@ def test_ensure_function_entry_verifies_created_boundary(monkeypatch) -> None:
     assert len(calls) == 1
     assert calls[0][:2] == ("py", "exec")
     assert "bv.add_function(address)" in calls[0][-1]
+
+
+def test_direct_proto_batch_accepts_address_identifiers(monkeypatch) -> None:
+    calls = []
+    prototype = "int32_t __cdecl launch_alpha72_url(char* url)"
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {"result": {"applied": [], "snapshot_saved": True}}
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_prototypes",
+        lambda *_args, **_kwargs: {"0x433050": "int32_t(char* url)"},
+    )
+
+    result = _narrow_sync.apply_direct_proto_updates_batch(
+        Path("."),
+        target="snail-mail.exe",
+        updates=(("0x433050", prototype),),
+    )
+
+    assert result["operation_count"] == 1
+    assert len(calls) == 1
+    code = calls[0][-1]
+    assert "address = int(text, 0)" in code
+    assert "function = bv.get_function_at(address)" in code
+    assert 'fn = find_function(identifier)' in code
 
 
 def test_current_type_widths_batches_readback(monkeypatch) -> None:
@@ -1567,6 +1603,28 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_frontend_widget_draw_owner_replay_stays_aligned() -> None:
+    frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_frontend_sync = (
+        IDA_DIR / "apply_frontend_replay_types.py"
+    ).read_text(encoding="utf-8")
+
+    expected = "void __thiscall draw_frontend_widget(FrontendWidget* widget)"
+    assert expected in frontend_sync
+    assert "EXPECTED_STRUCT_SIZES" in frontend_sync
+    assert "types_declare_missing_only" in frontend_sync
+    assert "apply_struct_and_proto_updates" in frontend_sync
+    assert "apply_user_var_updates" in frontend_sync
+    assert '"RegisterVariableSourceType"' in frontend_sync
+    assert '"widget",\n        "FrontendWidget*"' in frontend_sync
+    assert "proto_owner_deferred" in frontend_sync
+    assert "stale explicit function type requires guarded recreation" in frontend_sync
+    assert f'"{expected};"' in ida_frontend_sync
+    assert '(0x401130, "draw_frontend_widget")' in ida_frontend_sync
+
+
 def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     sync_sources = {
@@ -2324,6 +2382,99 @@ def test_previewed_batch_can_transactionally_undefine_an_exact_symbol() -> None:
     assert "refusing to undefine unexpected symbol" in code
     assert 'entry["verified"] = observed is None' in code
     assert "bv.revert_undo_actions(state)" in code
+
+
+def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "user_var_set",
+                "identifier": "draw_frontend_widget",
+                "source_type": "RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "variable_name": "widget",
+                "variable_type": "FrontendWidget*",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "function.create_user_var(variable, expected_type, expected_name)" in code
+    assert '"user_defined": bool(function.is_var_user_defined(variable))' in code
+    assert 'str(variable.source_type).split(".")[-1] == expected_source' in code
+    assert 'entry["verified"] = observed == entry["expected"]' in code
+    assert "bv.revert_undo_actions(state)" in code
+
+
+def test_user_variable_replay_skips_apply_when_current(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn_batch(_repo_root, *, target, operations, preview):
+        calls.append((target, operations, preview))
+        return {
+            "success": True,
+            "preview": preview,
+            "committed": not preview,
+            "affected_functions": ["draw_frontend_widget"],
+            "results": [{"changed": False}],
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn_batch", fake_run_bn_batch)
+    result = _narrow_sync.apply_user_var_updates(
+        Path("."),
+        target="snail-mail.exe",
+        updates=(
+            (
+                "draw_frontend_widget",
+                "RegisterVariableSourceType",
+                0,
+                67,
+                "widget",
+                "FrontendWidget*",
+            ),
+        ),
+    )
+
+    assert len(calls) == 1
+    assert calls[0][2] is True
+    assert result[0]["status"] == "skipped"
+    assert result[0]["reason"] == "already current"
+
+
+def test_user_variable_replay_previews_before_apply(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn_batch(_repo_root, *, target, operations, preview):
+        calls.append((target, operations, preview))
+        return {
+            "success": True,
+            "preview": preview,
+            "committed": not preview,
+            "message": "ok",
+            "affected_functions": ["draw_frontend_widget"],
+            "results": [{"changed": True}],
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn_batch", fake_run_bn_batch)
+    result = _narrow_sync.apply_user_var_updates(
+        Path("."),
+        target="snail-mail.exe",
+        updates=(
+            (
+                "draw_frontend_widget",
+                "RegisterVariableSourceType",
+                0,
+                67,
+                "widget",
+                "FrontendWidget*",
+            ),
+        ),
+    )
+
+    assert [preview for _target, _operations, preview in calls] == [True, False]
+    assert result[0]["op"] == "user_var_batch"
+    assert result[0]["operation_count"] == 1
 
 
 def test_apply_proto_updates_batches_only_stale_prototypes(monkeypatch) -> None:

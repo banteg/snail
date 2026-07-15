@@ -15,11 +15,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "replace_object_list_texture_refs",
-      "address": "0x430d90"
+      "name": "draw_frontend_widget",
+      "address": "0x401130"
     }
   ],
-  "health_check_count": 216,
+  "health_check_count": 218,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

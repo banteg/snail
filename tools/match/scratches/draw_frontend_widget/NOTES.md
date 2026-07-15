@@ -99,3 +99,22 @@ Both delayed-glow paths now reach the canonical `GameRoot*` and its embedded
 The manager owns the delayed-widget handle, active latch, and progress scalar;
 the widget only borrows that state while drawing. Focused output is unchanged
 at 67.28%, 694/712 instructions, with all 61 operands clean.
+
+## 2026-07-15 authored draw replay
+
+iOS and Android both retain this renderer as `cRBorder::Draw()`, with the same
+slider, sprite, nine-slice, shadow, and selected-widget glow branches. The sole
+Windows call at `0x4030ea` loads the widget into `ecx`, calls this function,
+and immediately overwrites `eax`; the mobile exits likewise preserve unrelated
+constructor or quad-queue results. The authored contract is therefore a void
+member on the complete `FrontendWidget` owner, not a scalar render result.
+
+The IDA front-end lane now replays that receiver and ABI. Binary Ninja exposes
+one unique register-backed `ecx` parameter after bounded timeout reanalysis, so
+the width-gated narrow lane safely replays its `FrontendWidget* widget`
+annotation and the complete field graph. Binary Ninja still retains a stale
+explicit return/calling-convention shell; the authored void ABI remains guarded
+function-recreation debt instead of being claimed without verification. This is
+ownership recovery only: the focused scratch remains honestly partial at
+67.28%, 694/712 instructions, prefix 3/712, with all 61 operands clean and no
+source-shape coercion.

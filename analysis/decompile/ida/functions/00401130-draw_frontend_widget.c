@@ -2,81 +2,81 @@
 /* function: draw_frontend_widget @ 0x401130 */
 /* selector: draw_frontend_widget */
 
-// Renders one shell-font front-end widget, including nine-slice border styles, slider-track strips, optional glow overlay, icon sprites, and the final text draw.
-void __thiscall sub_401130(int this)
+// Authored void `cRBorder::Draw()` renderer for one owned front-end widget: emits slider strips, sprite/icon quads, the nine-slice border body, shadow, and the BorderManager-owned delayed glow. Android preserves the same receiver and render branches; the sole Windows caller discards EAX.
+void __thiscall draw_frontend_widget(FrontendWidget *widget)
 {
-  int v2; // eax
-  int v3; // ebx
-  double v4; // st7
-  int v5; // edx
+  FrontendWidgetFlag widget_flags; // eax
+  int32_t v3; // ebx
+  double slider_position_current; // st7
+  float g; // edx
   double v6; // st7
   double v7; // st6
   double v8; // st7
-  int *v9; // eax
+  tColour *v9; // eax
   double v10; // st7
   double v11; // st7
-  int v12; // edi
-  int v13; // ebp
-  int v14; // ebx
-  int v15; // ebp
-  int v16; // esi
-  int v17; // [esp-Ch] [ebp-C4h]
-  int v18; // [esp+0h] [ebp-B8h]
-  int v19; // [esp+0h] [ebp-B8h]
+  float v12; // edi
+  float v13; // ebp
+  float v14; // ebx
+  float v15; // ebp
+  float v16; // esi
+  int32_t v17; // [esp-Ch] [ebp-C4h]
+  float v18; // [esp+0h] [ebp-B8h]
+  float v19; // [esp+0h] [ebp-B8h]
   int v20; // [esp+0h] [ebp-B8h]
-  int v21; // [esp+0h] [ebp-B8h]
-  int v22; // [esp+0h] [ebp-B8h]
-  int v23; // [esp+4h] [ebp-B4h]
-  int v24; // [esp+4h] [ebp-B4h]
+  float v21; // [esp+0h] [ebp-B8h]
+  float v22; // [esp+0h] [ebp-B8h]
+  float v23; // [esp+4h] [ebp-B4h]
+  float v24; // [esp+4h] [ebp-B4h]
   int v25; // [esp+4h] [ebp-B4h]
-  int v26; // [esp+4h] [ebp-B4h]
-  int v27; // [esp+4h] [ebp-B4h]
-  int v28; // [esp+8h] [ebp-B0h]
-  int v29; // [esp+8h] [ebp-B0h]
-  int v30; // [esp+8h] [ebp-B0h]
-  int v31; // [esp+8h] [ebp-B0h]
-  int v32; // [esp+8h] [ebp-B0h]
-  int v33; // [esp+Ch] [ebp-ACh]
-  int v34; // [esp+Ch] [ebp-ACh]
-  int v35; // [esp+Ch] [ebp-ACh]
-  int *v36; // [esp+14h] [ebp-A4h]
-  int v37; // [esp+28h] [ebp-90h]
-  float v38; // [esp+2Ch] [ebp-8Ch]
-  int v39; // [esp+2Ch] [ebp-8Ch]
-  int v40; // [esp+40h] [ebp-78h]
-  int v41; // [esp+44h] [ebp-74h]
-  int v42; // [esp+48h] [ebp-70h]
-  int v43; // [esp+4Ch] [ebp-6Ch]
-  int v44; // [esp+50h] [ebp-68h]
-  float v45; // [esp+54h] [ebp-64h]
-  int v46; // [esp+58h] [ebp-60h]
+  float v26; // [esp+4h] [ebp-B4h]
+  float v27; // [esp+4h] [ebp-B4h]
+  float v28; // [esp+8h] [ebp-B0h]
+  float v29; // [esp+8h] [ebp-B0h]
+  float v30; // [esp+8h] [ebp-B0h]
+  float v31; // [esp+8h] [ebp-B0h]
+  float v32; // [esp+8h] [ebp-B0h]
+  float v33; // [esp+Ch] [ebp-ACh]
+  float v34; // [esp+Ch] [ebp-ACh]
+  float v35; // [esp+Ch] [ebp-ACh]
+  tColour *p_current_text_color; // [esp+14h] [ebp-A4h]
+  int32_t texture_layer; // [esp+28h] [ebp-90h]
+  float a; // [esp+2Ch] [ebp-8Ch]
+  float aa; // [esp+2Ch] [ebp-8Ch]
+  int texture_hit_y_low; // [esp+40h] [ebp-78h]
+  int texture_hit_x_low; // [esp+44h] [ebp-74h]
+  int32_t v42; // [esp+48h] [ebp-70h]
+  float layout_height; // [esp+4Ch] [ebp-6Ch]
+  float layout_width; // [esp+50h] [ebp-68h]
+  float current_padding; // [esp+54h] [ebp-64h]
+  int slider_position_current_low; // [esp+58h] [ebp-60h]
   float v47; // [esp+58h] [ebp-60h]
   int v48; // [esp+58h] [ebp-60h]
   float v49; // [esp+5Ch] [ebp-5Ch]
-  int v50; // [esp+5Ch] [ebp-5Ch]
-  int v51; // [esp+5Ch] [ebp-5Ch]
-  int v52; // [esp+60h] [ebp-58h]
-  int v53; // [esp+60h] [ebp-58h]
+  float v50; // [esp+5Ch] [ebp-5Ch]
+  float v51; // [esp+5Ch] [ebp-5Ch]
+  float v52; // [esp+60h] [ebp-58h]
+  float v53; // [esp+60h] [ebp-58h]
   float v54; // [esp+64h] [ebp-54h]
-  int v55; // [esp+64h] [ebp-54h]
-  int v56; // [esp+64h] [ebp-54h]
-  int v57[4]; // [esp+68h] [ebp-50h] BYREF
-  int v58[4]; // [esp+78h] [ebp-40h] BYREF
-  int v59[4]; // [esp+88h] [ebp-30h] BYREF
+  float v55; // [esp+64h] [ebp-54h]
+  float v56; // [esp+64h] [ebp-54h]
+  Color4f color; // [esp+68h] [ebp-50h] BYREF
+  tColour self; // [esp+78h] [ebp-40h] BYREF
+  tColour r; // [esp+88h] [ebp-30h] BYREF
   _BYTE v60[12]; // [esp+98h] [ebp-20h] BYREF
   int v61; // [esp+A4h] [ebp-14h]
   _BYTE v62[16]; // [esp+A8h] [ebp-10h] BYREF
 
-  Iostream_init::Iostream_init((#93 *)v59);
-  Iostream_init::Iostream_init((#93 *)v58);
-  Iostream_init::Iostream_init((#93 *)v62);
-  Iostream_init::Iostream_init((#93 *)v60);
-  if ( unk_4B7236 )
+  noop_this_constructor(&r);
+  noop_this_constructor(&self);
+  noop_this_constructor(v62);
+  noop_this_constructor(v60);
+  if ( g_render_queue_active )
   {
-    v2 = *(_DWORD *)(this + 416);
-    if ( (v2 & 0x1000) == 0 )
+    widget_flags = widget->widget_flags;
+    if ( (BYTE1(widget_flags) & 0x10) == 0 )
     {
-      if ( (byte_4DF934 & 0x80u) != 0 )
+      if ( SLOBYTE(g_runtime_config.render_flags) < 0 )
       {
         v42 = 3;
         v3 = 3;
@@ -84,387 +84,452 @@ void __thiscall sub_401130(int this)
       else
       {
         v3 = 0;
-        v59[3] = 1065353216;
+        r.a = 1.0;
         v61 = 1065353216;
         v42 = 0;
       }
-      v44 = *(int *)(this + 584);
-      v43 = *(int *)(this + 588);
-      if ( (v2 & 0x100000) != 0 )
+      layout_width = widget->layout_width;
+      layout_height = widget->layout_height;
+      if ( (widget_flags & 0x100000) != 0 )
       {
-        v4 = *(float *)(this + 384);
-        v46 = *(int *)(this + 384);
-        v5 = *(_DWORD *)(this + 480);
-        v58[0] = *(_DWORD *)(this + 476);
-        v58[1] = v5;
-        v58[2] = *(_DWORD *)(this + 484);
-        v58[3] = *(_DWORD *)(this + 488);
-        if ( v4 > 0.0 )
+        slider_position_current = widget->slider_position_current;
+        slider_position_current_low = SLODWORD(widget->slider_position_current);
+        g = widget->current_text_color.g;
+        self.r = widget->current_text_color.r;
+        self.g = g;
+        self.b = widget->current_text_color.b;
+        self.a = widget->current_text_color.a;
+        if ( slider_position_current > 0.0 )
         {
-          *(float *)&v28 = *(float *)(this + 384) * 256.0;
-          *(float *)&v23 = *(float *)(this + 580) + 50.0;
-          *(float *)&v18 = *(float *)&v44 * 0.5 + *(float *)(this + 576) - 128.0;
+          v28 = widget->slider_position_current * 256.0;
+          v23 = widget->texture_hit_y + 50.0;
+          v18 = layout_width * 0.5 + widget->texture_hit_x - 128.0;
           queue_axis_aligned_textured_quad_uv(
             37,
             v18,
             v23,
             v28,
-            1107296256,
-            0x1000000,
-            v58,
-            0,
-            0,
-            v46,
-            1065353216,
+            32.0,
+            0x1000000u,
+            &self,
+            0.0,
+            0.0,
+            *(float *)&slider_position_current_low,
+            1.0,
             v3,
-            0);
+            0.0);
         }
-        if ( *(float *)(this + 384) < 1.0 )
+        if ( widget->slider_position_current < 1.0 )
         {
-          *(float *)&v29 = (1.0 - *(float *)(this + 384)) * 256.0;
-          *(float *)&v24 = *(float *)(this + 580) + 50.0;
-          *(float *)&v19 = *(float *)&v44 * 0.5 + *(float *)(this + 576) - 128.0 + *(float *)(this + 384) * 256.0;
+          v29 = (1.0 - widget->slider_position_current) * 256.0;
+          v24 = widget->texture_hit_y + 50.0;
+          v19 = layout_width * 0.5 + widget->texture_hit_x - 128.0 + widget->slider_position_current * 256.0;
           queue_axis_aligned_textured_quad_uv(
             36,
             v19,
             v24,
             v29,
-            1107296256,
-            0x1000000,
-            v58,
-            COERCE_INT(*(float *)(this + 384)),
-            0,
-            1065353216,
-            1065353216,
+            32.0,
+            0x1000000u,
+            &self,
+            widget->slider_position_current,
+            0.0,
+            1.0,
+            1.0,
             v3,
-            0);
+            0.0);
         }
       }
-      if ( *(_BYTE *)(this + 92) )
+      if ( widget->texture_hit_test_enabled )
       {
         v6 = 0.0;
-        if ( *((_BYTE *)MEMORY[0x4DF904] + 278764) )
+        if ( g_game_base->unknown_000b48[275876] )
         {
-          if ( this == *((_DWORD *)MEMORY[0x4DF904] + 69694) )
+          if ( widget == *(FrontendWidget **)&g_game_base->unknown_000b48[275888] )
           {
-            v38 = *((float *)MEMORY[0x4DF904] + 69692) * 3.1415927;
-            v6 = sine(v38) * 3.0;
-            if ( !*(_BYTE *)(this + 93) )
+            a = *(float *)&g_game_base->unknown_000b48[275880] * 3.1415927;
+            v6 = sine(a) * 3.0;
+            if ( !widget->sprite_wobble_positive )
               v6 = v6 * -1.0;
           }
         }
-        v7 = *(float *)(this + 600) * 0.5;
-        v37 = *(_DWORD *)(this + 628);
-        v36 = (int *)(this + 476);
-        *(float *)&v33 = *(float *)(this + 596) + *(float *)(this + 600);
-        *(float *)&v30 = *(float *)(this + 592) + *(float *)(this + 600);
-        *(float *)&v25 = *(float *)(this + 580) - v7;
-        *(float *)&v20 = v6 + *(float *)(this + 576) - v7;
-        if ( (*(_BYTE *)(this + 416) & 2) != 0 )
+        v7 = widget->border_edge * 0.5;
+        texture_layer = widget->texture_layer;
+        p_current_text_color = &widget->current_text_color;
+        v33 = widget->texture_hit_height + widget->border_edge;
+        v30 = widget->texture_hit_width + widget->border_edge;
+        *(float *)&v25 = widget->texture_hit_y - v7;
+        *(float *)&v20 = v6 + widget->texture_hit_x - v7;
+        if ( (widget->widget_flags & 2) != 0 )
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 96),
-            v20,
-            v25,
+            widget->background_texture_id,
+            *(float *)&v20,
+            *(float *)&v25,
             v30,
             v33,
-            0x1000000,
-            v36,
-            0,
-            0,
-            1065353216,
-            1065353216,
-            v37,
-            0);
+            0x1000000u,
+            p_current_text_color,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            texture_layer,
+            0.0);
         else
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 624),
-            v20,
-            v25,
+            widget->texture_id,
+            *(float *)&v20,
+            *(float *)&v25,
             v30,
             v33,
-            0x1000000,
-            v36,
-            0,
-            0,
-            1065353216,
-            1065353216,
-            v37,
-            0);
+            0x1000000u,
+            p_current_text_color,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            texture_layer,
+            0.0);
       }
       else
       {
-        if ( (*(_DWORD *)(this + 416) & 0x800) != 0 )
+        if ( (widget->widget_flags & 0x800) != 0 )
         {
-          v8 = *(float *)(this + 600) * 0.5;
-          *(float *)&v34 = *(float *)(this + 596) + *(float *)(this + 600);
-          *(float *)&v31 = *(float *)(this + 600) + *(float *)(this + 592);
-          *(float *)&v26 = *(float *)(this + 580) - v8;
-          *(float *)&v21 = *(float *)(this + 576) - v8;
+          v8 = widget->border_edge * 0.5;
+          v34 = widget->texture_hit_height + widget->border_edge;
+          v31 = widget->border_edge + widget->texture_hit_width;
+          v26 = widget->texture_hit_y - v8;
+          v21 = widget->texture_hit_x - v8;
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 624),
+            widget->texture_id,
             v21,
             v26,
             v31,
             v34,
-            0x1000000,
-            (int *)(this + 476),
-            0,
-            0,
-            1065353216,
-            1065353216,
-            *(_DWORD *)(this + 628),
-            0);
-          if ( *(float *)(this + 376) > 0.0 )
+            0x1000000u,
+            &widget->current_text_color,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            widget->texture_layer,
+            0.0);
+          if ( widget->sprite_shadow_offset > 0.0 )
           {
-            v54 = *(float *)(this + 600) * 0.5;
-            v9 = set_color_rgba(v57, 0, 0, 0, 1063675494);
-            *(float *)&v35 = *(float *)(this + 596) + *(float *)(this + 600);
-            *(float *)&v32 = *(float *)(this + 600) + *(float *)(this + 592);
-            *(float *)&v27 = *(float *)(this + 376) + *(float *)(this + 580) - v54;
-            *(float *)&v22 = *(float *)(this + 376) + *(float *)(this + 576) - v54;
+            v54 = widget->border_edge * 0.5;
+            v9 = set_color_rgba((tColour *)&color, 0.0, 0.0, 0.0, 0.89999998);
+            v35 = widget->texture_hit_height + widget->border_edge;
+            v32 = widget->border_edge + widget->texture_hit_width;
+            v27 = widget->sprite_shadow_offset + widget->texture_hit_y - v54;
+            v22 = widget->sprite_shadow_offset + widget->texture_hit_x - v54;
             queue_axis_aligned_textured_quad_uv(
-              *(_DWORD *)(this + 624),
+              widget->texture_id,
               v22,
               v27,
               v32,
               v35,
-              0x1000000,
+              0x1000000u,
               v9,
-              0,
-              0,
-              1065353216,
-              1065353216,
+              0.0,
+              0.0,
+              1.0,
+              1.0,
               2,
-              0);
+              0.0);
           }
         }
-        if ( (*(_DWORD *)(this + 416) & 0x400000) == 0 )
+        if ( (widget->widget_flags & 0x400000) == 0 )
         {
-          if ( *(_BYTE *)(this + 564) )
+          if ( widget->render_inset_dynamic )
           {
-            v45 = 4.0;
+            current_padding = 4.0;
             v47 = 0.1;
             v49 = 0.89999998;
-            *(float *)&v41 = *(float *)(this + 576) + 4.0;
-            *(float *)&v40 = *(float *)(this + 580) + 3.0;
-            *(float *)&v44 = *(float *)&v44 - 8.0;
-            *(float *)&v43 = *(float *)&v43 - 6.0;
+            *(float *)&texture_hit_x_low = widget->texture_hit_x + 4.0;
+            *(float *)&texture_hit_y_low = widget->texture_hit_y + 3.0;
+            layout_width = layout_width - 8.0;
+            layout_height = layout_height - 6.0;
           }
-          else if ( *(float *)(this + 544) >= (double)*(float *)(this + 560) )
+          else if ( widget->current_padding >= (double)widget->render_inset_base )
           {
-            v41 = *(int *)(this + 576);
-            v40 = *(int *)(this + 580);
-            v45 = *(float *)(this + 544);
+            texture_hit_x_low = SLODWORD(widget->texture_hit_x);
+            texture_hit_y_low = SLODWORD(widget->texture_hit_y);
+            current_padding = widget->current_padding;
             v47 = 0.2;
             v49 = 0.80000001;
           }
           else
           {
-            v10 = *(float *)(this + 560) - *(float *)(this + 544);
-            v45 = *(float *)(this + 560);
-            *(float *)(this + 556) = v10;
-            *(float *)&v41 = v10 + *(float *)(this + 576);
-            *(float *)&v40 = v10 + *(float *)(this + 580);
+            v10 = widget->render_inset_base - widget->current_padding;
+            current_padding = widget->render_inset_base;
+            widget->render_inset_delta = v10;
+            *(float *)&texture_hit_x_low = v10 + widget->texture_hit_x;
+            *(float *)&texture_hit_y_low = v10 + widget->texture_hit_y;
             v11 = v10 + v10;
-            *(float *)&v44 = *(float *)&v44 - v11;
-            *(float *)&v43 = *(float *)&v43 - v11;
-            v47 = v45 * 0.0078125;
+            layout_width = layout_width - v11;
+            layout_height = layout_height - v11;
+            v47 = current_padding * 0.0078125;
             v49 = 1.0 - v47;
           }
-          v12 = LODWORD(v47);
-          v13 = LODWORD(v45);
-          *(float *)&v52 = *(float *)&v40 - v45;
-          *(float *)&v55 = *(float *)&v41 - v45;
+          v12 = v47;
+          v13 = current_padding;
+          v52 = *(float *)&texture_hit_y_low - current_padding;
+          v55 = *(float *)&texture_hit_x_low - current_padding;
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
+            widget->border_texture_id,
             v55,
             v52,
-            SLODWORD(v45),
-            SLODWORD(v45),
-            0x1000000,
-            (int *)(this + 428),
-            0,
-            0,
-            SLODWORD(v47),
-            SLODWORD(v47),
+            current_padding,
+            current_padding,
+            0x1000000u,
+            &widget->current_fill_color,
+            0.0,
+            0.0,
+            v47,
+            v47,
             v3,
-            0);
+            0.0);
           v17 = v3;
-          v14 = LODWORD(v49);
+          v14 = v49;
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
-            v41,
+            widget->border_texture_id,
+            *(float *)&texture_hit_x_low,
             v52,
-            v44,
-            SLODWORD(v45),
-            0x1000000,
-            (int *)(this + 428),
+            layout_width,
+            current_padding,
+            0x1000000u,
+            &widget->current_fill_color,
             v12,
-            0,
-            SLODWORD(v49),
+            0.0,
+            v49,
             v12,
             v17,
-            0);
-          *(float *)&v50 = *(float *)&v44 + *(float *)&v41;
+            0.0);
+          v50 = layout_width + *(float *)&texture_hit_x_low;
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
+            widget->border_texture_id,
             v50,
             v52,
             v13,
             v13,
-            0x1000000,
-            (int *)(this + 428),
+            0x1000000u,
+            &widget->current_fill_color,
             v14,
-            0,
-            1065353216,
-            SLODWORD(v47),
+            0.0,
+            1.0,
+            v47,
             v42,
-            0);
+            0.0);
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
+            widget->border_texture_id,
             v55,
-            v40,
-            SLODWORD(v45),
-            v43,
-            0x1000000,
-            (int *)(this + 428),
-            0,
+            *(float *)&texture_hit_y_low,
+            current_padding,
+            layout_height,
+            0x1000000u,
+            &widget->current_fill_color,
+            0.0,
             v12,
             v12,
             v14,
             v42,
-            0);
+            0.0);
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
-            v41,
-            v40,
-            v44,
-            v43,
-            0x1000000,
-            (int *)(this + 428),
+            widget->border_texture_id,
+            *(float *)&texture_hit_x_low,
+            *(float *)&texture_hit_y_low,
+            layout_width,
+            layout_height,
+            0x1000000u,
+            &widget->current_fill_color,
             v12,
             v12,
             v14,
             v14,
             v42,
-            0);
+            0.0);
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
+            widget->border_texture_id,
             v50,
-            v40,
-            SLODWORD(v45),
-            v43,
-            0x1000000,
-            (int *)(this + 428),
+            *(float *)&texture_hit_y_low,
+            current_padding,
+            layout_height,
+            0x1000000u,
+            &widget->current_fill_color,
             v14,
-            SLODWORD(v47),
-            1065353216,
+            v47,
+            1.0,
             v14,
             v42,
-            0);
-          *(float *)&v48 = *(float *)&v43 + *(float *)&v40;
+            0.0);
+          *(float *)&v48 = layout_height + *(float *)&texture_hit_y_low;
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
+            widget->border_texture_id,
             v55,
-            v48,
+            *(float *)&v48,
             v13,
             v13,
-            0x1000000,
-            (int *)(this + 428),
-            0,
+            0x1000000u,
+            &widget->current_fill_color,
+            0.0,
             v14,
             v12,
-            1065353216,
+            1.0,
             v42,
-            0);
+            0.0);
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
-            v41,
-            v48,
-            v44,
-            SLODWORD(v45),
-            0x1000000,
-            (int *)(this + 428),
+            widget->border_texture_id,
+            *(float *)&texture_hit_x_low,
+            *(float *)&v48,
+            layout_width,
+            current_padding,
+            0x1000000u,
+            &widget->current_fill_color,
             v12,
             v14,
             v14,
-            1065353216,
+            1.0,
             v42,
-            0);
+            0.0);
           v15 = v50;
           queue_axis_aligned_textured_quad_uv(
-            *(_DWORD *)(this + 72),
+            widget->border_texture_id,
             v50,
-            v48,
-            SLODWORD(v45),
-            SLODWORD(v45),
-            0x1000000,
-            (int *)(this + 428),
+            *(float *)&v48,
+            current_padding,
+            current_padding,
+            0x1000000u,
+            &widget->current_fill_color,
             v14,
             v14,
-            1065353216,
-            1065353216,
+            1.0,
+            1.0,
             v42,
-            0);
-          if ( *((_BYTE *)MEMORY[0x4DF904] + 278764) )
+            0.0);
+          if ( g_game_base->unknown_000b48[275876] )
           {
-            if ( this == *((_DWORD *)MEMORY[0x4DF904] + 69694) )
+            if ( widget == *(FrontendWidget **)&g_game_base->unknown_000b48[275888] )
             {
-              Iostream_init::Iostream_init((#93 *)v57);
-              set_color_white(v59);
-              *(float *)&v39 = 1.0 - *((float *)MEMORY[0x4DF904] + 69692);
-              store_color4f(v57, v59[0], v59[1], v59[2], v39);
-              *(float *)&v56 = (*((float *)MEMORY[0x4DF904] + 69692) * 0.69999999 + 1.0) * v45;
+              noop_this_constructor(&color);
+              set_color_white(&r);
+              aa = 1.0 - *(float *)&g_game_base->unknown_000b48[275880];
+              store_color4f((tColour *)&color, r.r, r.g, r.b, aa);
+              v56 = (*(float *)&g_game_base->unknown_000b48[275880] * 0.69999999 + 1.0) * current_padding;
               v16 = v56;
-              *(float *)&v53 = *(float *)&v40 - *(float *)&v56;
-              *(float *)&v51 = *(float *)&v41 - *(float *)&v56;
-              queue_axis_aligned_textured_quad_uv(99, v51, v53, v56, v56, 0x1000000, v57, 0, 0, v12, v12, 3, 0);
-              queue_axis_aligned_textured_quad_uv(99, v41, v53, v44, v56, 0x1000000, v57, v12, 0, v14, v12, 3, 0);
-              queue_axis_aligned_textured_quad_uv(99, v15, v53, v16, v16, 0x1000000, v57, v14, 0, 1065353216, v12, 3, 0);
-              queue_axis_aligned_textured_quad_uv(99, v51, v40, v56, v43, 0x1000000, v57, 0, v12, v12, v14, 3, 0);
+              v53 = *(float *)&texture_hit_y_low - v56;
+              v51 = *(float *)&texture_hit_x_low - v56;
+              queue_axis_aligned_textured_quad_uv(
+                99,
+                v51,
+                v53,
+                v56,
+                v56,
+                0x1000000u,
+                (tColour *)&color,
+                0.0,
+                0.0,
+                v12,
+                v12,
+                3,
+                0.0);
+              queue_axis_aligned_textured_quad_uv(
+                99,
+                *(float *)&texture_hit_x_low,
+                v53,
+                layout_width,
+                v56,
+                0x1000000u,
+                (tColour *)&color,
+                v12,
+                0.0,
+                v14,
+                v12,
+                3,
+                0.0);
               queue_axis_aligned_textured_quad_uv(
                 99,
                 v15,
-                v40,
-                v56,
-                v43,
-                0x1000000,
-                v57,
+                v53,
+                v16,
+                v16,
+                0x1000000u,
+                (tColour *)&color,
                 v14,
+                0.0,
+                1.0,
                 v12,
-                1065353216,
-                v14,
                 3,
-                0);
-              queue_axis_aligned_textured_quad_uv(99, v51, v48, v16, v16, 0x1000000, v57, 0, v14, v12, 1065353216, 3, 0);
+                0.0);
               queue_axis_aligned_textured_quad_uv(
                 99,
-                v41,
-                v48,
-                v44,
+                v51,
+                *(float *)&texture_hit_y_low,
                 v56,
-                0x1000000,
-                v57,
+                layout_height,
+                0x1000000u,
+                (tColour *)&color,
+                0.0,
+                v12,
                 v12,
                 v14,
-                v14,
-                1065353216,
                 3,
-                0);
+                0.0);
               queue_axis_aligned_textured_quad_uv(
                 99,
                 v15,
-                v48,
-                v16,
-                v16,
-                0x1000000,
-                v57,
+                *(float *)&texture_hit_y_low,
+                v56,
+                layout_height,
+                0x1000000u,
+                (tColour *)&color,
                 v14,
+                v12,
+                1.0,
                 v14,
-                1065353216,
-                1065353216,
                 3,
-                0);
+                0.0);
+              queue_axis_aligned_textured_quad_uv(
+                99,
+                v51,
+                *(float *)&v48,
+                v16,
+                v16,
+                0x1000000u,
+                (tColour *)&color,
+                0.0,
+                v14,
+                v12,
+                1.0,
+                3,
+                0.0);
+              queue_axis_aligned_textured_quad_uv(
+                99,
+                *(float *)&texture_hit_x_low,
+                *(float *)&v48,
+                layout_width,
+                v56,
+                0x1000000u,
+                (tColour *)&color,
+                v12,
+                v14,
+                v14,
+                1.0,
+                3,
+                0.0);
+              queue_axis_aligned_textured_quad_uv(
+                99,
+                v15,
+                *(float *)&v48,
+                v16,
+                v16,
+                0x1000000u,
+                (tColour *)&color,
+                v14,
+                v14,
+                1.0,
+                1.0,
+                3,
+                0.0);
             }
           }
         }
@@ -472,4 +537,3 @@ void __thiscall sub_401130(int this)
     }
   }
 }
-

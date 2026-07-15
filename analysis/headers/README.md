@@ -83,6 +83,10 @@ intentional.
 
 - `bn_frontend_widget_types.h`
 - `uv run python tools/binja/sync_frontend_widget_types.py`
+  - Width-gates the complete `FrontendWidget` field owner, replays the unique
+    `cRBorder::Draw()` receiver annotation, and records its authored void ABI as
+    guarded function-recreation debt while Binary Ninja retains a stale
+    explicit function type.
 - `bn_frontend_menu_types.h`
 - `uv run python tools/binja/sync_frontend_menu_types.py`
   - Replays the exact MainMenu, Options, and Exit owners plus the adjacent

@@ -20,6 +20,7 @@ SymbolUpdate = tuple[str, str]
 SymbolRemoval = tuple[str, str]
 DataVarUpdate = tuple[str, str]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
+UserVarUpdate = tuple[str, str, int, int, str, str]
 
 
 def _read_bn_spill(stdout: str, stderr: str) -> tuple[Path | None, object | None]:
@@ -173,6 +174,25 @@ def find_member(type_obj, offset):
     return None
 
 
+def find_variable(function, operation):
+    expected_source = str(operation["source_type"]).split(".")[-1]
+    expected_index = int(operation["index"])
+    expected_storage = int(operation["storage"])
+    candidates = [
+        variable
+        for variable in function.vars
+        if str(variable.source_type).split(".")[-1] == expected_source
+        and int(variable.index) == expected_index
+        and int(variable.storage) == expected_storage
+    ]
+    if len(candidates) != 1:
+        raise RuntimeError(
+            f"expected one {expected_source} variable at index {expected_index}, "
+            f"storage {expected_storage}, found {len(candidates)}"
+        )
+    return candidates[0]
+
+
 state = bv.begin_undo_actions()
 undo_closed = False
 results = []
@@ -225,6 +245,41 @@ try:
             affected_functions.append(str(function.name))
             continue
 
+        if kind == "user_var_set":
+            function = find_function(operation["identifier"])
+            variable = find_variable(function, operation)
+            expected_type, _ = bv.parse_type_string(str(operation["variable_type"]))
+            expected_name = str(operation["variable_name"])
+            before = {
+                "name": str(variable.name),
+                "type": str(variable.type),
+                "user_defined": bool(function.is_var_user_defined(variable)),
+            }
+            expected = {
+                "name": expected_name,
+                "type": str(expected_type),
+                "user_defined": True,
+            }
+            changed = before != expected
+            if changed:
+                function.create_user_var(variable, expected_type, expected_name)
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(int(function.start)),
+                "source_type": str(operation["source_type"]),
+                "index": int(operation["index"]),
+                "storage": int(operation["storage"]),
+                "variable_name": expected_name,
+                "variable_type": str(expected_type),
+                "before": before,
+                "expected": expected,
+                "changed": changed,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
         if kind == "struct_field_set":
             struct_name = str(operation["struct_name"])
             type_obj = bv.get_type_by_name(struct_name)
@@ -273,6 +328,16 @@ try:
             observed = str(function.type)
             entry["observed"] = observed
             entry["verified"] = observed == entry["expected"]
+        elif entry["op"] == "user_var_set":
+            function = find_function(entry["identifier"])
+            variable = find_variable(function, entry)
+            observed = {
+                "name": str(variable.name),
+                "type": str(variable.type),
+                "user_defined": bool(function.is_var_user_defined(variable)),
+            }
+            entry["observed"] = observed
+            entry["verified"] = observed == entry["expected"]
         else:
             type_obj = bv.get_type_by_name(entry["struct_name"])
             member = (
@@ -293,9 +358,13 @@ try:
             }
         if not entry["verified"]:
             raise RuntimeError(f"batch verification failed: {entry!r}")
-        if entry["op"] == "undefine_symbol" and not entry["changed"]:
+        if entry["op"] in {"undefine_symbol", "user_var_set"} and not entry["changed"]:
             entry["status"] = "skipped"
-            entry["reason"] = "already absent"
+            entry["reason"] = (
+                "already absent"
+                if entry["op"] == "undefine_symbol"
+                else "already current"
+            )
         else:
             entry["status"] = "verified"
 
@@ -400,16 +469,30 @@ def apply_direct_proto_updates_batch(
     update_list = list(updates)
     code = f"""
 updates = {json.dumps(update_list)}
+
+
+def find_function(identifier):
+    text = str(identifier)
+    try:
+        address = int(text, 0)
+    except ValueError:
+        functions = list(bv.get_functions_by_name(text))
+        if len(functions) != 1:
+            raise RuntimeError(
+                f"expected one function named {{text}}, found {{len(functions)}}"
+            )
+        return functions[0]
+    function = bv.get_function_at(address)
+    if function is None:
+        raise RuntimeError(f"function not found at {{address:#x}}")
+    return function
+
+
 state = bv.begin_undo_actions()
 applied = []
 try:
     for identifier, prototype in updates:
-        functions = list(bv.get_functions_by_name(identifier))
-        if len(functions) != 1:
-            raise RuntimeError(
-                f"expected one function named {{identifier}}, found {{len(functions)}}"
-            )
-        fn = functions[0]
+        fn = find_function(identifier)
         before = str(fn.type)
         parsed_type, _ = bv.parse_type_string(prototype)
         fn.set_user_type(parsed_type)
@@ -420,7 +503,7 @@ try:
         }})
     bv.update_analysis_and_wait()
     for entry in applied:
-        fn = list(bv.get_functions_by_name(entry["identifier"]))[0]
+        fn = find_function(entry["identifier"])
         entry["after"] = str(fn.type)
         entry["verified"] = entry["after"] == entry["requested"]
     if not all(entry["verified"] for entry in applied):
@@ -811,6 +894,10 @@ def normalize_prototype(prototype: str, *, identifier: str) -> str:
     # reapply every ordinary C helper on each replay.
     normalized = re.sub(r"\s+__cdecl\b", "", normalized)
     normalized = normalized.replace(f" {identifier}(", "(")
+    # Address-selected mutations cannot use the selector itself to remove the
+    # declaration name. Binary Ninja readback prints only the function type,
+    # so strip one remaining C/C++ declarator name immediately before `(`.
+    normalized = re.sub(r"\s+[A-Za-z_][A-Za-z0-9_:]*(?=\()", "", normalized, count=1)
     return normalize_type_name(normalized)
 
 
@@ -1248,6 +1335,79 @@ def apply_struct_and_proto_updates(
             },
             "applied": applied,
         },
+    ]
+
+
+def apply_user_var_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[UserVarUpdate],
+) -> list[dict[str, object]]:
+    operations = [
+        {
+            "op": "user_var_set",
+            "identifier": identifier,
+            "source_type": source_type,
+            "index": index,
+            "storage": storage,
+            "variable_name": variable_name,
+            "variable_type": variable_type,
+        }
+        for (
+            identifier,
+            source_type,
+            index,
+            storage,
+            variable_name,
+            variable_type,
+        ) in updates
+    ]
+    if not operations:
+        return []
+
+    preview = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=True,
+    )
+    preview_results = preview.get("results")
+    if not isinstance(preview_results, list):
+        raise RuntimeError(f"Binary Ninja user-variable preview is malformed: {preview!r}")
+    if all(
+        isinstance(entry, dict) and entry.get("changed") is False
+        for entry in preview_results
+    ):
+        return [
+            {
+                **operation,
+                "status": "skipped",
+                "reason": "already current",
+            }
+            for operation in operations
+        ]
+
+    applied = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=False,
+    )
+    return [
+        {
+            "op": "user_var_batch",
+            "operation_count": len(operations),
+            "operations": operations,
+            "preview": {
+                "success": preview.get("success"),
+                "message": preview.get("message"),
+                "affected_function_count": len(
+                    preview.get("affected_functions", ())
+                ),
+            },
+            "result": applied,
+        }
     ]
 
 

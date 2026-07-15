@@ -1,22 +1,32 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
-    apply_proto_updates,
-    apply_struct_field_updates,
+    apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     current_prototypes,
+    current_type_widths,
     emit_summary,
-    types_declare,
+    types_declare_missing_only,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
-TARGET = DEFAULT_TARGET
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
+
+EXPECTED_STRUCT_SIZES = {
+    "tColour": 0x10,
+    "TwinkleManager": 0xF8,
+    "FrontendWidgetTooltip": 0x40,
+    "FrontendWidgetTextBuffer": 0x420,
+    "FrontendWidget": 0x724,
+    "Exit": 0x1C,
+}
 
 FRONTEND_WIDGET_FIELDS = (
     ("0x00", "list_kind", "uint32_t"),
@@ -143,6 +153,10 @@ DEFERRED_PROTO_UPDATES = (
         "border_input_text_init",
         "void __thiscall border_input_text_init(FrontendWidget* widget, int32_t capacity, char* text, int32_t flags)",
     ),
+    (
+        "draw_frontend_widget",
+        "void __thiscall draw_frontend_widget(FrontendWidget* widget)",
+    ),
 )
 
 PROTO_UPDATES = (
@@ -154,6 +168,17 @@ PROTO_UPDATES = (
     ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("update_tooltip", "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
     ("0x433050", "int32_t __cdecl launch_alpha72_url(char* url)"),
+)
+
+USER_VAR_UPDATES = (
+    (
+        "draw_frontend_widget",
+        "RegisterVariableSourceType",
+        0,
+        67,
+        "widget",
+        "FrontendWidget*",
+    ),
 )
 
 SYMBOL_UPDATES = (
@@ -173,7 +198,7 @@ def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
         {
             "op": "proto_owner_deferred",
             "status": "deferred",
-            "reason": "Binary Ninja restores the stale scalar prototype during live verification",
+            "reason": "stale explicit function type requires guarded recreation",
             "identifier": identifier,
             "desired_prototype": prototype,
             "observed_prototype": observed_prototypes.get(identifier),
@@ -182,16 +207,87 @@ def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
     ]
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Replay the complete FrontendWidget owner and directly mutable member ABIs."
+    )
+    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
+    parser.add_argument(
+        "--header",
+        type=Path,
+        default=DEFAULT_HEADER_PATH,
+        help="Narrow Binary Ninja type header.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
-    operations = [
-        types_declare(REPO_ROOT, target=TARGET, header_path=HEADER_PATH),
-        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidget", updates=FRONTEND_WIDGET_FIELDS),
-        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidgetTooltip", updates=FRONTEND_WIDGET_TOOLTIP_FIELDS),
-        *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
-        *report_deferred_prototypes(target=TARGET),
-        *apply_symbol_updates(REPO_ROOT, target=TARGET, updates=SYMBOL_UPDATES, kind="function"),
+    args = parse_args()
+    header_path = args.header.resolve()
+    if not header_path.is_file():
+        raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
+
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=EXPECTED_STRUCT_SIZES,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in EXPECTED_STRUCT_SIZES.items()
+        if observed_widths.get(name) != expected_size
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=EXPECTED_STRUCT_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: EXPECTED_STRUCT_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "front-end widget owner sizes already current",
+            "header": str(header_path),
+            "expected_sizes": EXPECTED_STRUCT_SIZES,
+        }
+
+    operations: list[dict[str, object]] = [
+        type_operation,
+        *apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(
+                ("FrontendWidget", FRONTEND_WIDGET_FIELDS),
+                ("FrontendWidgetTooltip", FRONTEND_WIDGET_TOOLTIP_FIELDS),
+            ),
+            proto_updates=PROTO_UPDATES,
+        ),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=USER_VAR_UPDATES,
+        ),
+        *report_deferred_prototypes(target=args.target),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SYMBOL_UPDATES,
+            kind="function",
+        ),
     ]
-    return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)
+    return emit_summary(
+        repo_root=REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+        operations=operations,
+    )
 
 
 if __name__ == "__main__":

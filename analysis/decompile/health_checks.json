@@ -304,6 +304,48 @@
       ]
     },
     {
+      "name": "ida_frontend_widget_draw_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00401130-draw_frontend_widget.c",
+      "required_substrings": [
+        "void __thiscall draw_frontend_widget(FrontendWidget *widget)",
+        "widget->widget_flags",
+        "widget->current_text_color",
+        "widget->current_fill_color",
+        "widget->border_edge",
+        "widget->render_inset_dynamic"
+      ],
+      "forbidden_substrings": [
+        "sub_401130",
+        "int this",
+        "this +",
+        "return result",
+        "final text draw",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_draw_receiver_and_manager_owner",
+      "artifact": "analysis/decompile/binja/functions/00401130-draw_frontend_widget.c",
+      "required_substrings": [
+        "widget->widget_flags",
+        "widget->current_text_color",
+        "widget->current_fill_color",
+        "widget->border_edge",
+        "border_manager.delayed_widget_active",
+        "border_manager.delayed_widget_progress",
+        "border_manager.delayed_widget"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(widget +",
+        "data_4df904",
+        "0x440ec",
+        "0x440f0",
+        "0x440f8"
+      ]
+    },
+    {
       "name": "bn_high_score_subgame_record_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00416910-initialize_high_score_screen.c",
       "required_substrings": [

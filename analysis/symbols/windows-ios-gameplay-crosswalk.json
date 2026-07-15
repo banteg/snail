@@ -26,6 +26,15 @@
       "notes": "Android preserves the same hide-blend restore and 0x1000 flag clear. Every Windows caller discards EAX, and the void member remains exact at 5/5 instructions."
     },
     {
+      "address": "0x401130",
+      "windows_name": "draw_frontend_widget",
+      "ios_symbol": "cRBorder::Draw()",
+      "android_symbol": "cRBorder::Draw()",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "Both mobile builds retain the authored cRBorder renderer and the same slider, sprite, nine-slice, shadow, and selected-widget glow branches. The sole Windows caller invokes it on a FrontendWidget receiver and immediately overwrites EAX, proving the render helper has a void contract."
+    },
+    {
       "address": "0x401d30",
       "windows_name": "initialize_frontend_widget",
       "android_symbol": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
