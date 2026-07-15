@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 8,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 8,
-  "ida_exported": 8,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,39 +15,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "build_track_fringe_objects",
-      "address": "0x434be0"
-    },
-    {
-      "name": "promote_track_tiles_to_fringe_variants",
-      "address": "0x4355f0"
-    },
-    {
-      "name": "harmonize_center_lane_floor_slide_variants",
-      "address": "0x4356f0"
-    },
-    {
-      "name": "select_track_tile_edge_variants",
-      "address": "0x435a80"
-    },
-    {
-      "name": "get_track_grid_cell_at_world_position",
-      "address": "0x43d410"
-    },
-    {
-      "name": "sample_track_floor_height_at_position",
-      "address": "0x43d4d0"
-    },
-    {
-      "name": "spawn_track_health_pickup",
-      "address": "0x43d6c0"
-    },
-    {
-      "name": "spawn_track_jetpack_pickup",
-      "address": "0x43d890"
+      "name": "replace_object_list_texture_refs",
+      "address": "0x430d90"
     }
   ],
-  "health_check_count": 143,
+  "health_check_count": 216,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

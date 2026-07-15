@@ -2242,6 +2242,14 @@
       "notes": "Windows and Android validate caller-owned cRBodPos keyframes, retain an ObjectAnimation/frame graph on the destination Object, and generate vertices from current plus a scaled next-minus-current delta. Android's 0x74-byte keyframes and 0x18-byte animation record are port-specific; Windows proves 0x80-byte keyframes and a 0x14-byte ObjectAnimation."
     },
     {
+      "address": "0x430d90",
+      "windows_name": "replace_object_list_texture_refs",
+      "android_symbol": "cRObjects::ReTextureObjects",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "notes": "Both implementations walk the owned contiguous object bank, replace matching face-quad texture references, and repair already-built grouped-render texture tables. Their empty and populated exits preserve incompatible incidental values, supporting the void method contract."
+    },
+    {
       "address": "0x430e40",
       "windows_name": "initialize_game_data_archive",
       "ios_symbol": "RShellInit()",

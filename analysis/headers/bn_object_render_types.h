@@ -453,6 +453,8 @@ void __thiscall initialize_object(Object* object);
 void __thiscall initialize_object_list(ObjectList* object_list, int32_t capacity);
 void __thiscall build_all_objects(ObjectList* object_list);
 Object* __thiscall add_object_to_list(ObjectList* object_list);
+void __thiscall replace_object_list_texture_refs(
+    ObjectList* object_list, TextureRef* new_texture, TextureRef* old_texture);
 void __thiscall apply_object_toon(Object* object, int32_t toon_flags);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __thiscall copy_object_vertices(Object* object);

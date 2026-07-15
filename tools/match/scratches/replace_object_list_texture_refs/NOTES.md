@@ -64,3 +64,23 @@ raw field loads, or a vertex-count pointer are all codegen-neutral once the
 tail-order fix is present. They keep `objects` in `ecx` instead of native's
 `add eax, [objects]`, so the retained typed byte-cursor source is still the
 best evidence-backed shape.
+
+## 2026-07-15 authored owner and void ABI
+
+Android retains this method as `cRObjects::ReTextureObjects`. Its body walks
+the owner-provided contiguous object allocation, replaces matching face-quad
+texture references, and updates the built grouped-render texture table. The
+Android object and face records have port-specific widths, but the same two
+container strides are explicit there; the Windows source now derives its
+`0xdc` object and `0x30` face advances from `sizeof(Object)` and
+`sizeof(ObjectFaceQuad)` instead of duplicating layout constants.
+
+Neither build has a stable result: Windows leaves the final object byte offset
+in `eax`, while Android's empty and populated exits preserve unrelated pointer
+residue. The sole Windows caller discards the value. The existing void
+`ObjectList` method is therefore the authored contract, and the repeatable
+Binary Ninja/IDA object-render lanes now replay that receiver and its two
+borrowed `TextureRef*` arguments. Focused matching remains honestly partial at
+74.77%, 54/53 candidate/target instructions, prefix 14/53, with one clean
+masked operand; the residual is still the documented object-address register
+allocation.

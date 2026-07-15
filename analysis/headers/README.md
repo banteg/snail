@@ -126,6 +126,9 @@ The object-render lane owns the complete shared `Object`, `tColourSmall`, and
 grouped-buffer layouts plus the trusted render contracts. It also replays the
 complete `Direct3DRenderer` singleton, its nested buffer factories,
 presentation/caps blocks, and the recovered Direct3D 8 COM vtable surface.
+The same lane types the `cRObjects::ReTextureObjects` equivalent as the void
+`ObjectList::replace_object_list_texture_refs` owner walk, including its two
+borrowed texture references and retained grouped-render repair.
 The index-buffer matcher alias at `0x5000fc` remains the renderer field at
 `+0x8ca4`, and the device matcher alias at `0x502fec` remains the renderer field
 at `+0xbb94`; the lane deliberately removes or avoids both standalone data

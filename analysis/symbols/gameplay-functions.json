@@ -1674,7 +1674,7 @@
     {
       "address": "0x430d90",
       "name": "replace_object_list_texture_refs",
-      "description": "Walks the global object list and replaces one texture reference with another across face quads and any already-built grouped-render texture tables."
+      "description": "Void Windows cRObjects texture-replacement member: walks the owned contiguous Object list and replaces one borrowed TextureRef with another across face quads and any already-built grouped-render texture tables. Android retains the same owner and behavior as cRObjects::ReTextureObjects."
     },
     {
       "address": "0x430e20",

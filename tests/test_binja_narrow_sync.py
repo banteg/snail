@@ -787,6 +787,9 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
+    ida_sync_source = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
     analysis_headers = [
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
@@ -799,6 +802,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         "copy_object_vertices",
         "request_object_vertices_copy",
         "apply_distort_to_object",
+        "replace_object_list_texture_refs",
         "get_or_append_object_texture_group_vertex",
         "refresh_object_vertex_buffer",
         "build_object_texture_group_buffers",
@@ -813,10 +817,21 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         "int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, "
         "int32_t vertex_index, float u, float v)"
     ) in sync_source
+    assert (
+        "void __thiscall replace_object_list_texture_refs(ObjectList* object_list, "
+        "TextureRef* new_texture, TextureRef* old_texture)"
+    ) in sync_source
+    assert (
+        "void __thiscall replace_object_list_texture_refs(ObjectList* object_list, "
+        "TextureRef* new_texture, TextureRef* old_texture);"
+    ) in ida_sync_source
+    assert '"void __thiscall initialize_object(Object* object);"' in ida_sync_source
+    assert 're.sub(r"\\(void\\)$", "()", normalized)' in ida_sync_source
     for header in analysis_headers:
         assert "typedef struct ObjectRenderVertex" in header
         assert "void __thiscall copy_object_vertices(Object* object);" in header
         assert "ObjectDistort* distort, Object* object);" in header
+        assert "void __thiscall replace_object_list_texture_refs(" in header
         assert "extern int32_t g_object_grouped_vertex_cursor;" in header
         assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in header
 

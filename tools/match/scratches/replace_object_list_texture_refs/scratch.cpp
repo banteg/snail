@@ -26,14 +26,14 @@ void ObjectList::replace_object_list_texture_refs(TextureRef* new_texture,
                         quad->texture_ref = new_texture;
                     }
                     ++face_index;
-                    face_offset += 0x30;
+                    face_offset += sizeof(ObjectFaceQuad);
                 } while (face_index < object->facequad_count);
             }
 
             replace_object_group_texture_refs(object, new_texture, old_texture);
         }
         ++object_index;
-        object_cursor = object_offset + 0xdc;
+        object_cursor = object_offset + sizeof(Object);
         object_offset = object_cursor;
     } while (object_index < count);
 }

@@ -238,6 +238,10 @@ PROTO_UPDATES = (
         "Object* __thiscall add_object_to_list(ObjectList* object_list)",
     ),
     (
+        "replace_object_list_texture_refs",
+        "void __thiscall replace_object_list_texture_refs(ObjectList* object_list, TextureRef* new_texture, TextureRef* old_texture)",
+    ),
+    (
         "apply_object_toon",
         "void __thiscall apply_object_toon(Object* object, int32_t toon_flags)",
     ),

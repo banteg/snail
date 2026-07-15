@@ -95,7 +95,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_object",
-        "int __thiscall initialize_object(Object* object);",
+        "void __thiscall initialize_object(Object* object);",
     ),
     (
         "initialize_object_list",
@@ -108,6 +108,10 @@ TRUSTED_DECLARATIONS = [
     (
         "add_object_to_list",
         "Object* __thiscall add_object_to_list(ObjectList* object_list);",
+    ),
+    (
+        "replace_object_list_texture_refs",
+        "void __thiscall replace_object_list_texture_refs(ObjectList* object_list, TextureRef* new_texture, TextureRef* old_texture);",
     ),
     (
         "initialize_directx_loader",
@@ -213,6 +217,7 @@ TRUSTED_NAMES = [
     (0x414500, "bind_texture_ref"),
     (0x414600, "query_direct3d_device_caps"),
     (0x414650, "reset_render_counters"),
+    (0x430D90, "replace_object_list_texture_refs"),
     (0x4F7450, "g_render_triangle_count"),
     (0x4F7454, "g_render_successful_primitive_count"),
     (0x4F7458, "g_direct3d_renderer"),
@@ -255,7 +260,8 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\s*\*\s*", " *", normalized)
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
-    return normalized.strip()
+    normalized = normalized.strip()
+    return re.sub(r"\(void\)$", "()", normalized)
 
 
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:

@@ -3175,6 +3175,24 @@
       ]
     },
     {
+      "name": "bn_object_list_texture_replace_owner",
+      "artifact": "analysis/decompile/binja/functions/00430d90-replace_object_list_texture_refs.c",
+      "required_substrings": [
+        "object_list->count",
+        "object_list->objects",
+        "new_texture",
+        "old_texture",
+        "replace_object_group_texture_refs(eax_1, new_texture, old_texture)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "return result",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_object_vertex_copy_owner",
       "artifact": "analysis/decompile/binja/functions/0042f790-copy_object_vertices.c",
       "required_substrings": [
