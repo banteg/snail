@@ -2,8 +2,7 @@
 
 #include "border_manager.h"
 
-int BorderManager::set_border_justify_centre(int justify_centre_bits_)
+void BorderManager::set_border_justify_centre(float justify_centre_)
 {
-    justify_centre_bits = justify_centre_bits_;
-    return justify_centre_bits_;
+    justify_centre = justify_centre_;
 }

@@ -70,7 +70,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
     } while (index < LANDSCAPE_ACTIVE_ENTRY_COUNT);
 
     g_game->backdrop.change_backdrop(&scripts[script_index], flip);
-    g_game->border_manager.set_border_justify_centre(0);
+    g_game->border_manager.set_border_justify_centre(0.0f);
 
     tColour* source = &scripts[script_index].fog_color;
     tColour* destination = &g_game->fog_color;

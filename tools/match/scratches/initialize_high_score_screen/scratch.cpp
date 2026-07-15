@@ -48,7 +48,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                            .load_landscape_script_by_name(g_menu_background_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(0x41c80000);
+    g_game->border_manager.set_border_justify_centre(25.0f);
     g_game->players[0].mouse_cursor.capture_mouse_cursor();
 
     title_widget = g_game->border_manager.allocate_border();

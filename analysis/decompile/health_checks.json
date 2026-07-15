@@ -4539,6 +4539,57 @@
         "return (char *)save_config_file",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_border_manager_justify_float_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00404730-set_border_justify_centre.c",
+      "required_substrings": [
+        "manager->justify_centre = justify_centre",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "justify_centre_bits",
+        "return justify_centre",
+        "arg1",
+        "arg2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_border_manager_justify_float_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00404730-set_border_justify_centre.c",
+      "required_substrings": [
+        "void __thiscall set_border_justify_centre(FrameBorderManager *manager, float justify_centre)",
+        "manager->justify_centre = justify_centre;"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall set_border_justify_centre",
+        "justify_centre_bits",
+        "return justify_centre",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_subgame_justify_float_call",
+      "artifact": "analysis/decompile/binja/functions/004374b0-initialize_subgame.c",
+      "required_substrings": [
+        "set_border_justify_centre(&g_game_base->border_manager, 25f)"
+      ],
+      "forbidden_substrings": [
+        "set_border_justify_centre(&g_game_base->border_manager, 0x41c80000)",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_subgame_justify_float_call",
+      "artifact": "analysis/decompile/ida/functions/004374b0-initialize_subgame.c",
+      "required_substrings": [
+        "set_border_justify_centre(&g_game_base->border_manager, 25.0);"
+      ],
+      "forbidden_substrings": [
+        "set_border_justify_centre(&g_game_base->border_manager, 1103626240)",
+        "unimplemented"
+      ]
     }
   ]
 }

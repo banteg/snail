@@ -2,13 +2,13 @@
 /* function: initialize_intro_screen @ 0x4191e0 */
 /* selector: initialize_intro_screen */
 
-// Windows cRLogo::Init(char*): loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into LogoLetters on the tilted crawl plane, derives the shared scroll delta from Duration, and releases the script buffer.
-int __thiscall sub_4191E0(_DWORD *this, char *FileName)
+// Void Windows `cRLogo::Init(char*)`: loads SpaceRed plus INTROTEXT.OGG, parses an intro or credits script into the root-owned 1024-entry LogoLetter bank, borrows sequential preloaded image objects, derives each velocity from Duration, and releases the script through void `RShellMemoryFree`.
+void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
 {
-  int v2; // ebx
-  int v4; // eax
+  int32_t v2; // ebx
+  int landscape_script_by_name; // eax
   char *v5; // esi
-  char *v6; // eax
+  char *case_insensitive_substring; // eax
   char *v7; // eax
   char *v8; // ecx
   char v9; // al
@@ -19,124 +19,129 @@ int __thiscall sub_4191E0(_DWORD *this, char *FileName)
   char *v14; // eax
   char i; // dl
   _BYTE *v16; // eax
-  int v17; // ecx
-  int v18; // eax
-  char *v19; // ecx
-  int v20; // edx
-  int v21; // edx
+  int32_t renderable_count; // ecx
+  LogoLetter *v18; // eax
+  FrameBodBase **p_first; // ecx
+  FrameBodBase *first; // edx
+  FrameBodBase *list_prev; // edx
   float v22; // esi
-  int v23; // eax
-  _DWORD *v24; // ecx
+  int32_t v23; // eax
+  Vec4 *p_position; // ecx
   double v25; // st7
-  int v26; // edx
+  float v26; // edx
   double v27; // st7
   double v28; // st7
   double v29; // st6
-  int v30; // ecx
-  _DWORD *v31; // eax
+  Object *object; // ecx
+  Vec3 *p_velocity; // eax
   double v32; // st7
   char v33; // al
   double v34; // st7
-  int v35; // ecx
-  int v36; // eax
-  int v37; // ecx
-  char *v38; // eax
-  int v39; // edx
-  int v40; // edx
-  int v41; // eax
+  int32_t v35; // ecx
+  uint32_t list_flags; // eax
+  LogoLetter *v37; // ecx
+  FrameBodBase **v38; // eax
+  FrameBodBase *v39; // edx
+  FrameBodBase *v40; // edx
+  uint32_t v41; // eax
   int v42; // eax
   double v43; // st7
-  float *v44; // eax
+  Vec4 *v44; // eax
   int v45; // edx
   float v46; // ecx
-  _DWORD *v47; // eax
+  Vec3 *v47; // eax
   int v48; // eax
   double v49; // st7
   double v50; // st7
-  int v51; // eax
+  int32_t v51; // eax
   int v52; // ecx
-  float *v53; // eax
-  float *v54; // edx
+  Vec3 *v53; // eax
+  float *p_x; // edx
   float v55; // edi
-  char *v57; // [esp+10h] [ebp-178h] BYREF
-  float v58; // [esp+14h] [ebp-174h]
-  float v59; // [esp+18h] [ebp-170h]
-  float v60; // [esp+1Ch] [ebp-16Ch]
-  float v61; // [esp+20h] [ebp-168h]
-  float v62; // [esp+24h] [ebp-164h]
-  int v63; // [esp+28h] [ebp-160h]
-  int v64; // [esp+2Ch] [ebp-15Ch]
-  float v65; // [esp+30h] [ebp-158h]
-  char *v66; // [esp+34h] [ebp-154h]
-  int v67; // [esp+38h] [ebp-150h]
-  int v68; // [esp+3Ch] [ebp-14Ch]
-  int v69; // [esp+40h] [ebp-148h]
-  char *v70; // [esp+44h] [ebp-144h]
-  int v71[16]; // [esp+48h] [ebp-140h] BYREF
-  char v72[128]; // [esp+88h] [ebp-100h] BYREF
+  char *cursor; // [esp+10h] [ebp-178h] BYREF
+  float v57; // [esp+14h] [ebp-174h]
+  float v58; // [esp+18h] [ebp-170h]
+  float v59; // [esp+1Ch] [ebp-16Ch]
+  float v60; // [esp+20h] [ebp-168h]
+  float v61; // [esp+24h] [ebp-164h]
+  float v62; // [esp+28h] [ebp-160h]
+  int v63; // [esp+2Ch] [ebp-15Ch]
+  float v64; // [esp+30h] [ebp-158h]
+  char *file_bytes; // [esp+34h] [ebp-154h]
+  int v66; // [esp+38h] [ebp-150h]
+  int v67; // [esp+3Ch] [ebp-14Ch]
+  float v68; // [esp+40h] [ebp-148h]
+  char *v69; // [esp+44h] [ebp-144h]
+  TransformMatrix transform; // [esp+48h] [ebp-140h] BYREF
+  char v71[128]; // [esp+88h] [ebp-100h] BYREF
   char Buffer[128]; // [esp+108h] [ebp-80h] BYREF
 
   v2 = 0;
-  cache_music_file(aMusicIntrotext);
-  v4 = load_landscape_script_by_name((char *)MEMORY[0x4DF904] + 17220120, aSpaceredTxt);
-  change_backdrop((int)MEMORY[0x4DF904] + 322576, (int)MEMORY[0x4DF904] + 292 * v4 + 17221564, 0);
-  set_border_justify_centre((_DWORD *)MEMORY[0x4DF904] + 723, 0);
-  unhide_star_field((int *)MEMORY[0x4DF904] + 81103);
-  v66 = load_file_bytes(FileName, nullptr);
-  *(this + 3) = byte_4DF934;
+  cache_music_file(aMusicIntrotext, 0, (char *)g_blank_text);
+  landscape_script_by_name = load_landscape_script_by_name(
+                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               aSpaceredTxt);
+  change_backdrop(
+    (int)&g_game_base->unknown_044100[43792],
+    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
+    0);
+  set_border_justify_centre(&g_game_base->border_manager, 0.0);
+  unhide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  file_bytes = load_file_bytes(file_name, nullptr);
+  logo->saved_render_flags = g_runtime_config.render_flags;
   qmemcpy(
-    (char *)MEMORY[0x4DF904] + 348,
+    &g_game_base->players[0].transform,
     initialize_matrix_from_values(
-      v71,
-      1065353216,
-      0,
-      0,
-      0,
-      0,
-      1059219348,
-      1061544956,
-      0,
-      0,
-      -1085938692,
-      1059219348,
-      0,
-      0,
-      0,
-      0,
-      1065353216),
-    0x40u);
-  *((_DWORD *)MEMORY[0x4DF904] + 161) = 1120403456;
-  *this = 0;
-  *(this + 1) = 987395086;
-  release_mouse_cursor((_DWORD *)MEMORY[0x4DF904] + 164);
-  v5 = v66;
-  *(this + 2) = 0;
-  v60 = 0.2;
-  *(this + 5) = 0;
-  v6 = find_case_insensitive_substring(aTextStart, v5);
-  v57 = find_case_insensitive_substring(asc_4A1644, v6) + 1;
+      &transform,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.63439298,
+      0.77301002,
+      0.0,
+      0.0,
+      -0.77301002,
+      0.63439298,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0),
+    sizeof(g_game_base->players[0].transform));
+  g_game_base->players[0].camera.fov_degrees = 100.0;
+  logo->progress = 0.0;
+  logo->progress_step = 0.0016666667;
+  release_mouse_cursor(&g_game_base->players[0].mouse_cursor);
+  v5 = file_bytes;
+  logo->state = 0;
+  v59 = 0.2;
+  logo->renderable_count = 0;
+  case_insensitive_substring = find_case_insensitive_substring(aTextStart, v5);
+  cursor = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring) + 1;
   v7 = find_case_insensitive_substring(aTextEnd, v5);
-  v8 = v57;
-  v70 = v7;
-  if ( v57 < v7 )
+  v8 = cursor;
+  v69 = v7;
+  if ( cursor < v7 )
   {
-    LODWORD(v61) = this + 36879;
+    LODWORD(v60) = &logo->image_donors[0].renderable.bod.object;
     do
     {
       v9 = *v8;
       v10 = 0.0;
       v11 = *v8 == 42;
-      v62 = 0.0;
+      v61 = 0.0;
       v12 = v8;
       if ( v11 )
       {
         v13 = v8 + 1;
-        v14 = v72;
-        v57 = v13;
+        v14 = v71;
+        cursor = v13;
         for ( i = *v13; *v13 != 46; i = *v13 )
         {
           *v14++ = i;
-          v57 = ++v13;
+          cursor = ++v13;
         }
         *v14 = 46;
         v16 = v14 + 1;
@@ -144,90 +149,92 @@ int __thiscall sub_4191E0(_DWORD *this, char *FileName)
         *v16++ = 103;
         *v16 = 97;
         v16[1] = 0;
-        v57 = v13 + 1;
-        v59 = parse_next_float32(&v57);
-        v58 = parse_next_float32(&v57);
-        sprintf(Buffer, "Intro/%s", v72);
-        v17 = 144 * *(this + 5);
-        v18 = (int)this + v17 + 24;
-        if ( (*(_DWORD *)((char *)this + v17 + 28) & 0x200) != 0 )
+        cursor = v13 + 1;
+        v58 = parse_next_float32(&cursor);
+        v57 = parse_next_float32(&cursor);
+        sprintf(Buffer, "Intro/%s", v71);
+        renderable_count = logo->renderable_count;
+        v18 = &logo->letters[renderable_count];
+        if ( (logo->letters[renderable_count].renderable.bod.bod.list_flags & 0x200) != 0 )
         {
           report_errorf(aListAdd);
         }
         else
         {
-          v19 = (char *)MEMORY[0x4DF904] + 1452;
-          v20 = *((_DWORD *)MEMORY[0x4DF904] + 363);
-          if ( v20 )
+          p_first = &g_game_base->active_bod_list.first;
+          first = g_game_base->active_bod_list.first;
+          if ( first )
           {
-            *(_DWORD *)(v20 + 8) = v18;
-            *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v19 + 8) + 12) = *(_DWORD *)v19;
-            v21 = *(_DWORD *)(*(_DWORD *)v19 + 8);
-            *(_DWORD *)v19 = v21;
-            *(_DWORD *)(v21 + 8) = 0;
+            first->bod.list_prev = (FrameBodBase *)v18;
+            (*p_first)->bod.list_prev->bod.list_next = *p_first;
+            list_prev = (*p_first)->bod.list_prev;
+            *p_first = list_prev;
+            list_prev->bod.list_prev = nullptr;
           }
           else
           {
-            *(_DWORD *)v19 = v18;
-            *(_DWORD *)(v18 + 8) = 0;
-            *(_DWORD *)(*(_DWORD *)v19 + 12) = 0;
+            *p_first = (FrameBodBase *)v18;
+            v18->renderable.bod.bod.list_prev = nullptr;
+            (*p_first)->bod.list_next = nullptr;
           }
-          *(_DWORD *)(v18 + 4) |= 0x200u;
+          v18->renderable.bod.bod.list_flags |= 0x200u;
         }
-        v22 = v61;
-        set_bod_object(this + 36 * *(this + 5) + 6, *(_DWORD *)LODWORD(v61));
-        *(_DWORD *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 92) + 12) = get_or_create_texture_ref(
-                                                                                &texture_list,
-                                                                                Buffer,
-                                                                                0,
-                                                                                0);
-        set_matrix_identity(this + 36 * *(this + 5) + 20);
-        v23 = *(this + 5);
-        v67 = 0;
-        v68 = -1065353216;
-        v69 = 0;
-        v24 = this + 36 * v23 + 32;
-        v25 = v58 * 0.5;
-        *v24 = 0;
-        v26 = v69;
-        v24[1] = -1065353216;
-        v61 = v25;
-        v27 = v60;
-        v24[2] = v26;
-        *((float *)this + 36 * *(this + 5) + 34) = v27 - v61 + *((float *)this + 36 * *(this + 5) + 34);
-        set_color_white(this + 36 * *(this + 5) + 16);
-        v28 = v59 * 0.5;
-        *(this + 36 * *(this + 5) + 19) = 1065336439;
-        *((_BYTE *)this + 144 * *(this + 5) + 164) = -1;
-        **(float **)(*(this + 36 * *(this + 5) + 15) + 56) = v28;
-        v29 = v59 * -0.5;
-        *(float *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 56) + 8) = v61;
-        *(float *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 56) + 12) = v29;
-        *(float *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 56) + 20) = v61;
-        *(float *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 56) + 24) = v29;
-        v30 = *(this + 36 * *(this + 5) + 15);
-        v59 = v58 * -0.5;
-        *(float *)(*(_DWORD *)(v30 + 56) + 32) = v59;
-        *(float *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 56) + 36) = v28;
-        *(float *)(*(_DWORD *)(*(this + 36 * *(this + 5) + 15) + 56) + 44) = v59;
-        v31 = this + 36 * *(this + 5) + 38;
-        v31[2] = 0;
-        v31[1] = 0;
-        *v31 = 0;
-        (*(void (__thiscall **)(_DWORD *))*(this + 36 * *(this + 5) + 6))(this + 36 * *(this + 5) + 6);
-        v8 = v57;
-        v32 = v60 - v58;
-        LODWORD(v61) = LODWORD(v22) + 144;
-        ++*(this + 5);
+        v22 = v60;
+        set_bod_object(&logo->letters[logo->renderable_count].renderable.bod, *(Object **)LODWORD(v60));
+        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(
+                                                                                                &g_texture_refs,
+                                                                                                Buffer,
+                                                                                                0,
+                                                                                                0);
+        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform);
+        v23 = logo->renderable_count;
+        v66 = 0;
+        v67 = -1065353216;
+        v68 = 0.0;
+        p_position = &logo->letters[v23].renderable.transform.position;
+        v25 = v57 * 0.5;
+        p_position->x = 0.0;
+        v26 = v68;
+        p_position->y = -4.0;
+        v60 = v25;
+        v27 = v59;
+        p_position->z = v26;
+        logo->letters[logo->renderable_count].renderable.transform.position.z = v27
+                                                                              - v60
+                                                                              + logo->letters[logo->renderable_count].renderable.transform.position.z;
+        set_color_white(&logo->letters[logo->renderable_count].renderable.bod.color);
+        v28 = v58 * 0.5;
+        logo->letters[logo->renderable_count].renderable.bod.color.a = 0.99900001;
+        logo->letters[logo->renderable_count].glyph = -1;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices->x = v28;
+        v29 = v58 * -0.5;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices->z = v60;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices[1].x = v29;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices[1].z = v60;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices[2].x = v29;
+        object = logo->letters[logo->renderable_count].renderable.bod.object;
+        v58 = v57 * -0.5;
+        object->vertices[2].z = v58;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices[3].x = v28;
+        logo->letters[logo->renderable_count].renderable.bod.object->vertices[3].z = v58;
+        p_velocity = &logo->letters[logo->renderable_count].velocity;
+        p_velocity->z = 0.0;
+        p_velocity->y = 0.0;
+        p_velocity->x = 0.0;
+        (*(void (__thiscall **)(LogoLetter *))logo->letters[logo->renderable_count].renderable.bod.bod.vtable)(&logo->letters[logo->renderable_count]);
+        v8 = cursor;
+        v32 = v59 - v57;
+        LODWORD(v60) = LODWORD(v22) + 144;
+        ++logo->renderable_count;
         v33 = *v8;
-        v60 = v32;
+        v59 = v32;
         if ( v33 )
         {
           do
           {
             if ( v33 == 13 )
               break;
-            v57 = ++v8;
+            cursor = ++v8;
             v33 = *v8;
           }
           while ( *v8 );
@@ -239,115 +246,117 @@ int __thiscall sub_4191E0(_DWORD *this, char *FileName)
         {
           if ( v9 == 13 )
             break;
-          v34 = v62 + unk_7770E8[font_slot_index_for_char(v9)];
+          v34 = v61 + g_font3d_scales[font_slot_index_for_char(v9)];
           ++LODWORD(v10);
-          v8 = v57 + 1;
-          v57 = v8;
+          v8 = cursor + 1;
+          cursor = v8;
           v9 = *v8;
-          v62 = v34;
+          v61 = v34;
         }
         while ( v9 );
         if ( SLODWORD(v10) > 0 )
         {
-          v63 = 0;
-          v64 = -1065353216;
-          v65 = 0.0;
-          v59 = v10;
-          v58 = v62 * 0.5 * 0.80000001;
+          v62 = 0.0;
+          v63 = -1065353216;
+          v64 = 0.0;
+          v58 = v10;
+          v57 = v61 * 0.5 * 0.80000001;
           do
           {
-            v35 = 144 * *(this + 5);
-            v36 = *(_DWORD *)((char *)this + v35 + 28);
-            v37 = (int)this + v35 + 24;
-            if ( (v36 & 0x200) != 0 )
+            v35 = logo->renderable_count;
+            list_flags = logo->letters[v35].renderable.bod.bod.list_flags;
+            v37 = &logo->letters[v35];
+            if ( (list_flags & 0x200) != 0 )
             {
               report_errorf(aListAdd);
             }
             else
             {
-              v38 = (char *)MEMORY[0x4DF904] + 1452;
-              v39 = *((_DWORD *)MEMORY[0x4DF904] + 363);
+              v38 = &g_game_base->active_bod_list.first;
+              v39 = g_game_base->active_bod_list.first;
               if ( v39 )
               {
-                *(_DWORD *)(v39 + 8) = v37;
-                *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v38 + 8) + 12) = *(_DWORD *)v38;
-                v40 = *(_DWORD *)(*(_DWORD *)v38 + 8);
-                *(_DWORD *)v38 = v40;
-                *(_DWORD *)(v40 + 8) = 0;
+                v39->bod.list_prev = (FrameBodBase *)v37;
+                (*v38)->bod.list_prev->bod.list_next = *v38;
+                v40 = (*v38)->bod.list_prev;
+                *v38 = v40;
+                v40->bod.list_prev = nullptr;
               }
               else
               {
-                *(_DWORD *)v38 = v37;
-                *(_DWORD *)(v37 + 8) = 0;
-                *(_DWORD *)(*(_DWORD *)v38 + 12) = 0;
+                *v38 = (FrameBodBase *)v37;
+                v37->renderable.bod.bod.list_prev = nullptr;
+                (*v38)->bod.list_next = nullptr;
               }
-              v41 = *(_DWORD *)(v37 + 4);
+              v41 = v37->renderable.bod.bod.list_flags;
               BYTE1(v41) |= 2u;
-              *(_DWORD *)(v37 + 4) = v41;
+              v37->renderable.bod.bod.list_flags = v41;
             }
             v42 = font_slot_index_for_char(*v12);
-            set_bod_object(this + 36 * *(this + 5) + 6, unk_77550C[14 * v42]);
-            set_matrix_identity(this + 36 * *(this + 5) + 20);
-            v43 = v58;
-            v44 = (float *)(this + 36 * *(this + 5) + 32);
-            v45 = v64;
-            *(_DWORD *)v44 = v63;
-            v46 = v65;
-            *((_DWORD *)v44 + 1) = v45;
-            v44[2] = v46;
-            *((float *)this + 36 * *(this + 5) + 32) = v43 + *((float *)this + 36 * *(this + 5) + 32);
-            *((float *)this + 36 * *(this + 5) + 34) = v60 + *((float *)this + 36 * *(this + 5) + 34);
-            set_color_white(this + 36 * *(this + 5) + 16);
-            *(this + 36 * *(this + 5) + 19) = 1065336439;
-            v47 = this + 36 * *(this + 5) + 38;
-            v47[2] = 0;
-            v47[1] = 0;
-            *v47 = 0;
-            *((_BYTE *)this + 144 * *(this + 5) + 164) = *v12;
-            (*(void (__thiscall **)(_DWORD *))*(this + 36 * *(this + 5) + 6))(this + 36 * *(this + 5) + 6);
+            set_bod_object(&logo->letters[logo->renderable_count].renderable.bod, g_font3d_bods[v42].object);
+            set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform);
+            v43 = v57;
+            v44 = &logo->letters[logo->renderable_count].renderable.transform.position;
+            v45 = v63;
+            v44->x = v62;
+            v46 = v64;
+            LODWORD(v44->y) = v45;
+            v44->z = v46;
+            logo->letters[logo->renderable_count].renderable.transform.position.x = v43
+                                                                                  + logo->letters[logo->renderable_count].renderable.transform.position.x;
+            logo->letters[logo->renderable_count].renderable.transform.position.z = v59
+                                                                                  + logo->letters[logo->renderable_count].renderable.transform.position.z;
+            set_color_white(&logo->letters[logo->renderable_count].renderable.bod.color);
+            logo->letters[logo->renderable_count].renderable.bod.color.a = 0.99900001;
+            v47 = &logo->letters[logo->renderable_count].velocity;
+            v47->z = 0.0;
+            v47->y = 0.0;
+            v47->x = 0.0;
+            logo->letters[logo->renderable_count].glyph = *v12;
+            (*(void (__thiscall **)(LogoLetter *))logo->letters[logo->renderable_count].renderable.bod.bod.vtable)(&logo->letters[logo->renderable_count]);
             v48 = font_slot_index_for_char(*v12++);
-            v49 = v58 - unk_7770E8[v48] * 0.80000001;
-            ++*(this + 5);
-            v58 = v49;
-            --LODWORD(v59);
+            v49 = v57 - g_font3d_scales[v48] * 0.80000001;
+            ++logo->renderable_count;
+            v57 = v49;
+            --LODWORD(v58);
           }
-          while ( v59 != 0.0 );
-          v8 = v57;
+          while ( v58 != 0.0 );
+          v8 = cursor;
         }
       }
       if ( *v8 == 13 )
       {
         v8 += 2;
-        v57 = v8;
-        v60 = v60 - 1.0;
+        cursor = v8;
+        v59 = v59 - 1.0;
       }
     }
-    while ( v8 < v70 );
-    v5 = v66;
+    while ( v8 < v69 );
+    v5 = file_bytes;
   }
-  v57 = find_case_insensitive_substring(aDuration, v5);
-  v57 = find_case_insensitive_substring(asc_4A1644, v57);
-  v50 = parse_next_float32(&v57);
-  *((float *)this + 4) = v50;
-  v51 = *(this + 5);
+  cursor = find_case_insensitive_substring(aDuration, v5);
+  cursor = find_case_insensitive_substring(asc_4A1644, cursor);
+  v50 = parse_next_float32(&cursor);
+  logo->duration_seconds = v50;
+  v51 = logo->renderable_count;
+  v62 = 0.0;
   v63 = 0;
-  v64 = 0;
-  v65 = 1.0 / (v50 * 60.0) * (3.0 - v60);
+  v64 = 1.0 / (v50 * 60.0) * (3.0 - v59);
   if ( v51 > 0 )
   {
-    v52 = v64;
-    v53 = (float *)(this + 38);
+    v52 = v63;
+    v53 = &logo->letters[0].velocity;
     do
     {
-      v54 = v53;
+      p_x = &v53->x;
       ++v2;
-      v53 += 36;
-      *(_DWORD *)v54 = v63;
-      v55 = v65;
-      *((_DWORD *)v54 + 1) = v52;
-      v54[2] = v55;
+      v53 += 12;
+      *p_x = v62;
+      v55 = v64;
+      *((_DWORD *)p_x + 1) = v52;
+      p_x[2] = v55;
     }
-    while ( v2 < *(this + 5) );
+    while ( v2 < logo->renderable_count );
   }
-  return free_tracked_memory((int)v5);
+  free_tracked_memory((int)v5);
 }

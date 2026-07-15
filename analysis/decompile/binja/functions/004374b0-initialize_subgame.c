@@ -27,7 +27,7 @@
 00437516        int32_t eax_2 = load_landscape_script_by_name("Menubg.txt")
 00437522        struct GameRoot* game_base_1 = g_game_base
 00437535        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_2 * 0x124 + 0x106c7bc], 0)
-0043754b        set_border_justify_centre(&g_game_base->border_manager, 0x41c80000)
+0043754b        set_border_justify_centre(&g_game_base->border_manager, 25f)
 00437550        int32_t level_mode = game->level_mode
 00437555        struct SubSolution (* eax_6)[0x33]
 00437555        if (level_mode == 0)
@@ -114,7 +114,7 @@
 004378fe        format_time_trial_string(&game->time_trial, &game->active_level_timer)
 00437911        rstrcpy_checked_ascii(&game->bottom_score_widget->text_buffer, 0x751478)
 00437931        struct GameRoot* game_base_2 = g_game_base
-00437941        if (game_base_2->__offset(0x4f2e0).b != 0 || game->level_mode == 7)
+00437941        if (game_base_2->intro.hide_for_replay_latch != 0 || game->level_mode == 7)
 00437949        hide_border_init(game->bottom_score_widget)
 00437954        hide_border_init(game->top_score_widget)
 00437959        game_base_2 = g_game_base

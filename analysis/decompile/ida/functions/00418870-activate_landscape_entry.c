@@ -2,34 +2,34 @@
 /* function: activate_landscape_entry @ 0x418870 */
 /* selector: activate_landscape_entry */
 
-// Binds one cached landscape entry into the shared backdrop manager, applies its texture or model handles, chooses the random variant flag, and copies its fog color into the global render state.
-_DWORD *__thiscall sub_418870(char *this, int a2)
+// Selects one cached landscape script, activates up to ten repeated 0x90-byte landscape BOD slices for its object index, chooses the backdrop variant flag, and copies the script fog color into global render state.
+uint8_t *__thiscall activate_landscape_entry(char *this, int a2)
 {
-  int v2; // eax
+  int32_t level_mode; // eax
   int v4; // ebp
   char *v5; // edi
   char *v6; // esi
-  char *v7; // eax
+  uint8_t *v7; // eax
   int v8; // eax
   int v9; // eax
   int v10; // eax
   _DWORD *v11; // edi
-  _DWORD *result; // eax
+  uint8_t *result; // eax
   char v13; // [esp+Ch] [ebp-8h]
   int v14; // [esp+10h] [ebp-4h]
 
-  v2 = *((_DWORD *)MEMORY[0x4DF904] + 119190);
-  if ( v2 == 7 )
+  level_mode = g_game_base->subgame.level_mode;
+  if ( level_mode == 7 )
   {
     v13 = 0;
   }
-  else if ( v2 == 1 )
+  else if ( level_mode == 1 )
   {
     v13 = (double)next_math_random_value() * 0.000030517578 <= 0.5;
   }
   else
   {
-    v13 = unk_4DF9BC & 1;
+    v13 = g_runtime_config.landscape_backdrop_variant_selector & 1;
   }
   v4 = 0;
   v14 = 0;
@@ -40,11 +40,11 @@ _DWORD *__thiscall sub_418870(char *this, int a2)
     if ( *((_DWORD *)v5 + 428) == -1 )
     {
       *(_DWORD *)v6 &= ~0x20u;
-      set_bod_object((_DWORD *)v6 - 1, 0);
+      set_bod_object((BodBase *)(v6 - 4), nullptr);
     }
     else
     {
-      v7 = (char *)MEMORY[0x4DF904] + 3973724;
+      v7 = &g_game_base->subgame.unknown_000044[3496960];
       if ( (*(_DWORD *)v6 & 0x200) != 0 )
       {
         report_errorf(aListAddafter);
@@ -65,25 +65,24 @@ _DWORD *__thiscall sub_418870(char *this, int a2)
       v10 = *(_DWORD *)v6;
       LOBYTE(v10) = *(_DWORD *)v6 | 0x20;
       *(_DWORD *)v6 = v10;
-      set_bod_object((_DWORD *)v6 - 1, *((_DWORD *)MEMORY[0x4DF904] + 47 * *((_DWORD *)v5 + 428) + 74635));
+      set_bod_object((BodBase *)(v6 - 4), *(Object **)&g_game_base->unknown_044100[188 * *((_DWORD *)v5 + 428) + 19756]);
       *((float *)v6 + 33) = *(float *)(*((_DWORD *)v6 + 8) + 184) - *(float *)(*((_DWORD *)v6 + 8) + 172);
-      set_matrix_identity((_DWORD *)v6 + 13);
+      set_matrix_identity((TransformMatrix *)(v6 + 52));
       *((float *)v6 + 27) = ((double)v14 - 0.5) * *((float *)v6 + 33);
-      *((_DWORD *)v6 + 34) = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
+      *((_DWORD *)v6 + 34) = (char *)&g_player_block + (_DWORD)g_game_base;
     }
     ++v4;
     v6 += 144;
     v14 = v4;
   }
   while ( v4 < 10 );
-  change_backdrop((int)MEMORY[0x4DF904] + 322576, (int)(v5 + 1444), v13);
-  set_border_justify_centre((_DWORD *)MEMORY[0x4DF904] + 723, 0);
+  change_backdrop((int)&g_game_base->unknown_044100[43792], (int)(v5 + 1444), v13);
+  set_border_justify_centre(&g_game_base->border_manager, 0.0);
   v11 = v5 + 1716;
-  result = (char *)MEMORY[0x4DF904] + 20;
-  *((_DWORD *)MEMORY[0x4DF904] + 5) = *v11;
-  result[1] = v11[1];
-  result[2] = v11[2];
-  result[3] = v11[3];
+  result = &g_game_base->unknown_000000[20];
+  *(_DWORD *)&g_game_base->unknown_000000[20] = *v11;
+  *((_DWORD *)result + 1) = v11[1];
+  *((_DWORD *)result + 2) = v11[2];
+  *((_DWORD *)result + 3) = v11[3];
   return result;
 }
-

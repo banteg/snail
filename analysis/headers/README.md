@@ -104,6 +104,9 @@ intentional.
 - `uv run python tools/binja/sync_backdrop_types.py`
 - `bn_frame_renderer_types.h`
 - `uv run python tools/binja/sync_frame_renderer_types.py`
+  - Promotes the complete `BorderManager` owner when available, including its
+    final `float justify_centre` field and the exact void
+    `SetJustifyCentre(float)` ABI.
 - `bn_object_render_types.h`
 - `uv run python tools/binja/sync_object_render_types.py`
 - `bn_input_state_types.h`

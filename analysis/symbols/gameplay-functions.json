@@ -80,7 +80,8 @@
     },
     {
       "address": "0x403360",
-      "name": "kill_border"
+      "name": "kill_border",
+      "description": "Exact cRBorderManager::Kill(cRBorder*) recursive teardown request over the manager-owned widget tree. Every audited Windows caller discards EAX, and the native exits leave incompatible incidental values, but a direct VC6 void transcription tail-recurses the third child and falls to 73.33%; the matcher therefore keeps its isolated result-shaped compiler harness until a natural authored source shape is recovered."
     },
     {
       "address": "0x4033c0",
@@ -173,7 +174,8 @@
     },
     {
       "address": "0x404730",
-      "name": "set_border_justify_centre"
+      "name": "set_border_justify_centre",
+      "description": "Exact void cRBorderManager::SetJustifyCentre(float): stores the authored float at the manager's final +0x435b0 field. All ten Windows callers discard EAX and pass either 0.0f or 25.0f, proving the apparent returned argument is compiler residue rather than an owned result."
     },
     {
       "address": "0x404740",

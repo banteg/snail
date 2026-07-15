@@ -102,6 +102,14 @@
       "notes": "The exact Windows allocator scans the manager-owned 150-record cRBorder pool, stamps the chosen slot from GameRoot::frame_counter, and returns that record through the FrontendWidget/cRBorder view."
     },
     {
+      "address": "0x403360",
+      "windows_name": "kill_border",
+      "ios_symbol": "cRBorderManager::Kill(cRBorder*)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "The exact Windows helper marks one manager-owned cRBorder for teardown and recursively visits its three child widgets. Every audited caller discards EAX, while the native exits leave incompatible incidental values. A direct VC6 void transcription tail-recurses the final child, so the exact matcher keeps a documented result-shaped compiler harness pending a natural authored source shape."
+    },
+    {
       "address": "0x4033c0",
       "windows_name": "kill_all_borders",
       "ios_symbol": "cRBorderManager::KillBorders()",
@@ -167,6 +175,14 @@
       "source_object": "Border.o",
       "confidence": "high",
       "notes": "The exact Windows helper is a FrontendWidget method over the cRBorder layout; it tests either the padded layout bounds or the widget's authored texture-hit mask against player zero's saved cursor position."
+    },
+    {
+      "address": "0x404730",
+      "windows_name": "set_border_justify_centre",
+      "ios_symbol": "cRBorderManager::SetJustifyCentre(float)",
+      "source_object": "Border.o",
+      "confidence": "high",
+      "notes": "All ten Windows callers discard EAX and pass only 0.0f or 25.0f. The natural void(float) member remains exact at 3/3 instructions, proving that the argument bits left in EAX are compiler residue and that BorderManager +0x435b0 is the authored float field."
     },
     {
       "address": "0x404830",

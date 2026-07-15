@@ -49,3 +49,11 @@ tail-recurses the third child call into a loop, so the final source assigns
 `result = kill_border(child2)` and then deliberately falls off the end. The
 candidate now matches exactly after the matcher normalizes relocated local
 self-calls as `L0` instead of external `ADDR`.
+
+2026-07-15 ownership audit: the iOS inventory independently names this owner as
+`cRBorderManager::Kill(cRBorder*)`, and the Windows caller sweep found no result
+consumer. A fresh direct `void` transcription still tail-recurses the third
+child into the function loop and falls to 73.33% despite retaining 30/30
+instructions. Because adding a synthetic post-call use would only hide that
+compiler behavior, the exact result-shaped harness remains explicit debt rather
+than being presented as recovered source ownership.

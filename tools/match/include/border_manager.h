@@ -52,7 +52,8 @@ public:
     char queue_frontend_widget_flag_after_delay(
         FrontendWidget* widget, int queued_flags); // @ 0x403f60
     void update_border_manager(); // @ 0x403fc0
-    int set_border_justify_centre(int justify_centre_bits); // @ 0x404730
+    void set_border_justify_centre(
+        float justify_centre); // @ 0x404730, cRBorderManager::SetJustifyCentre
 
     BorderStack border_stack; // +0x38, exact cRBorderStack owner/link history
     BorderRecord borders[BORDER_RECORD_COUNT]; // +0x684
@@ -65,10 +66,7 @@ public:
     float delayed_widget_progress; // +0x435a4
     float delayed_widget_progress_step; // +0x435a8
     FrontendWidget* delayed_widget; // +0x435ac, borrowed border handle
-    union {
-        int justify_centre_bits; // +0x435b0, mutator preserves raw float bits
-        float justify_centre; // +0x435b0, added to authored widget anchors
-    };
+    float justify_centre; // +0x435b0, added to authored widget anchors
 };
 
 typedef char BorderManager_must_be_0x435b4[

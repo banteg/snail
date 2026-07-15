@@ -47,7 +47,7 @@
 0040adb8        game->inactive_bod_sentinel.bod.list_next = nullptr
 0040adbb        game->active_bod_list.free_top = &game->inactive_bod_sentinel
 0040adc1        game->active_bod_list.first = nullptr
-0040add3        game->__offset(0xb48).d = 0
+0040add3        game->unknown_000b48 = 0
 0040add9        __builtin_memset(&g_sprite_depth_buckets, 0, 0x400)
 0040addb        game->render_camera_slots[0].sort_key = 0
 0040ade7        game->render_camera_slots[0].flags = 0x1000003
@@ -488,23 +488,23 @@
 0040bf85        list_flags_1:1.b |= 2
 0040bf88        game->subgame.track_body_list_head.bod.list_flags = list_flags_1
 0040bf47        report_errorf("List ADD")
-0040bf9a        if (((game->subgame.barrier_sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
-0040bfab        game->subgame.barrier_sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
-0040bfb1        game->subgame.barrier_sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
-0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.barrier_sub_lazer_list_head
-0040bfb7        struct BodNode* list_next_7 = game->subgame.barrier_sub_lazer_list_head.bod.list_next
+0040bf9a        if (((game->subgame.sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
+0040bfab        game->subgame.sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
+0040bfb1        game->subgame.sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
+0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.sub_lazer_list_head
+0040bfb7        struct BodNode* list_next_7 = game->subgame.sub_lazer_list_head.bod.list_next
 0040bfbc        if (list_next_7 != 0)
-0040bfbe        list_next_7->list_prev = &game->subgame.barrier_sub_lazer_list_head
+0040bfbe        list_next_7->list_prev = &game->subgame.sub_lazer_list_head
 0040bfc1        int32_t eax_82
-0040bfc1        eax_82.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f0.b
-0040bfc1        eax_82:1.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f1.b
-0040bfc1        eax_82:2.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f2.b
-0040bfc1        eax_82:3.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f3.b
+0040bfc1        eax_82.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f0.b
+0040bfc1        eax_82:1.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f1.b
+0040bfc1        eax_82:2.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f2.b
+0040bfc1        eax_82:3.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f3.b
 0040bfc3        eax_82:1.b |= 2
-0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f0.b = eax_82.b
-0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f1.b = eax_82:1.b
-0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f2.b = eax_82:2.b
-0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f3.b = eax_82:3.b
+0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f0.b = eax_82.b
+0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f1.b = eax_82:1.b
+0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f2.b = eax_82:2.b
+0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f3.b = eax_82:3.b
 0040bfa1        report_errorf("List ADDafter")
 0040bfd7        if (((game->subgame.salt_hazard_list_head.bod.list_flags).w:1.b & 2) == 0)
 0040bfe8        game->subgame.salt_hazard_list_head.bod.list_prev = &game->subgame.track_body_list_head
@@ -2323,7 +2323,7 @@
 00410277        MemBlock::`default constructor closure'(&game->border_manager.border_stack)
 0041027c        game->border_manager.border_stack.owner = &game->border_manager
 00410289        game->border_manager.delayed_widget_active = 0
-0041028f        set_border_justify_centre(&game->border_manager, 0x41c80000)
+0041028f        set_border_justify_centre(&game->border_manager, 25f)
 00410294        int32_t* eax_379 = &game->border_manager.borders[0].flags
 0041029a        int32_t i_4 = 0x96
 004102a7        int32_t i_3

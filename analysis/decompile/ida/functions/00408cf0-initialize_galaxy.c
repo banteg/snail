@@ -2,34 +2,39 @@
 /* function: initialize_galaxy @ 0x408cf0 */
 /* selector: initialize_galaxy */
 
-// Builds the Star Map galaxy screen, seeds its selected route from SnailMail.cfg, and wires the Deliver/Play, replay, and back controls. Cross-port Android and iOS symbols match this helper to `cRGalaxy::Init()`.
-int __thiscall sub_408CF0(int this)
+// Exact void Windows `Galaxy::initialize_galaxy`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve `cRGalaxy::Init()`.
+int __thiscall initialize_galaxy(int this)
 {
-  int v2; // eax
+  int landscape_script_by_name; // eax
   _DWORD *v3; // eax
   int v4; // ecx
-  _DWORD *v5; // eax
-  _DWORD *v6; // eax
+  tColour *v5; // eax
+  tColour *v6; // eax
   int v7; // ecx
   _DWORD *v8; // eax
-  _DWORD *v9; // eax
-  _DWORD *v10; // eax
-  _DWORD *v11; // eax
-  _DWORD *v12; // eax
-  _DWORD *v13; // eax
-  _DWORD *v15; // [esp-Ch] [ebp-28h]
-  _DWORD *v16; // [esp-Ch] [ebp-28h]
-  _DWORD *v17; // [esp-Ch] [ebp-28h]
-  _DWORD *v18; // [esp-Ch] [ebp-28h]
-  _DWORD v19[4]; // [esp+Ch] [ebp-10h] BYREF
+  tColour *v9; // eax
+  tColour *v10; // eax
+  tColour *v11; // eax
+  tColour *v12; // eax
+  tColour *v13; // eax
+  tColour *v15; // [esp-Ch] [ebp-28h]
+  tColour *v16; // [esp-Ch] [ebp-28h]
+  tColour *v17; // [esp-Ch] [ebp-28h]
+  tColour *v18; // [esp-Ch] [ebp-28h]
+  Color4f color; // [esp+Ch] [ebp-10h] BYREF
 
-  hide_star_field((int *)MEMORY[0x4DF904] + 81103);
-  cache_music_file(aMusicMainmenuO);
-  v2 = load_landscape_script_by_name((char *)MEMORY[0x4DF904] + 17220120, aStarmapTxt_0);
-  change_backdrop((int)MEMORY[0x4DF904] + 322576, (int)MEMORY[0x4DF904] + 292 * v2 + 17221564, 0);
-  set_border_justify_centre((_DWORD *)MEMORY[0x4DF904] + 723, 0);
-  capture_mouse_cursor((float *)MEMORY[0x4DF904] + 164);
-  *((_DWORD *)MEMORY[0x4DF904] + 347) = 2;
+  hide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
+  landscape_script_by_name = load_landscape_script_by_name(
+                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               aStarmapTxt_0);
+  change_backdrop(
+    (int)&g_game_base->unknown_044100[43792],
+    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
+    0);
+  set_border_justify_centre(&g_game_base->border_manager, 0.0);
+  capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);
+  g_game_base->render_skip_count = 2;
   v3 = *(_DWORD **)(this + 69488);
   if ( !v3[16] )
   {
@@ -38,7 +43,7 @@ int __thiscall sub_408CF0(int this)
     {
       *(_DWORD *)(this + 8) = 0;
       *(_DWORD *)(this + 4) = 0;
-      *(_DWORD *)(this + 69504) = unk_4DF9BC;
+      *(_DWORD *)(this + 69504) = g_runtime_config.landscape_backdrop_variant_selector;
     }
     if ( v3[4834290] == 1 )
     {
@@ -51,34 +56,43 @@ int __thiscall sub_408CF0(int this)
   {
     *(_DWORD *)(this + 8) = 0;
     *(_DWORD *)(this + 4) = 2;
-    *(_DWORD *)(this + 69504) = unk_4DF9BC;
+    *(_DWORD *)(this + 69504) = g_runtime_config.landscape_backdrop_variant_selector;
   }
-  *(_DWORD *)(this + 69496) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v5 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
-  initialize_frontend_widget(
-    *(_DWORD *)(this + 69496),
-    0x400000,
-    aIntergalacticD,
-    20,
-    1097859072,
-    15.0,
-    (int)v5,
-    0,
-    0.0);
+  *(_DWORD *)(this + 69496) = allocate_border(&g_game_base->border_manager);
+  v5 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  initialize_frontend_widget(*(FrontendWidget **)(this + 69496), 0x400000u, aIntergalacticD, 20, 15.0, 15.0, v5, 0, 0.0);
   *(_DWORD *)(*(_DWORD *)(this + 69496) + 1776) = 1062501089;
-  *(_DWORD *)(this + 69500) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v6 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+  *(_DWORD *)(this + 69500) = allocate_border(&g_game_base->border_manager);
+  v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_sprite_button(*(_DWORD *)(this + 69500), 541067266, 138, 1136197632, 1092616192, v6, 0.0, 4);
-  *(_DWORD *)(this + 69492) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+  *(_DWORD *)(this + 69492) = allocate_border(&g_game_base->border_manager);
   if ( *(_DWORD *)(this + 4) == 1 )
   {
-    v15 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(_DWORD *)(this + 69492), 536870932, aExit, 20, 1101004800, 420.0, (int)v15, 0, 0.0);
+    v15 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(
+      *(FrontendWidget **)(this + 69492),
+      0x20000014u,
+      g_exit_text,
+      20,
+      20.0,
+      420.0,
+      v15,
+      0,
+      0.0);
   }
   else
   {
-    v16 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(_DWORD *)(this + 69492), 1610612756, aBack, 20, 1101004800, 420.0, (int)v16, 0, 0.0);
+    v16 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(
+      *(FrontendWidget **)(this + 69492),
+      0x60000014u,
+      g_back_text,
+      20,
+      20.0,
+      420.0,
+      v16,
+      0,
+      0.0);
   }
   v7 = 0;
   if ( *(int *)(this + 12) > 0 )
@@ -93,109 +107,108 @@ int __thiscall sub_408CF0(int this)
     }
     while ( v7 < *(_DWORD *)(this + 12) );
   }
-  *(_DWORD *)(this + 69516) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v9 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+  *(_DWORD *)(this + 69516) = allocate_border(&g_game_base->border_manager);
+  v9 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    *(_DWORD *)(this + 69516),
-    536936450,
-    MEMORY[0x4DFB08],
+    *(FrontendWidget **)(this + 69516),
+    0x20010002u,
+    (char *)g_blank_text,
     20,
-    1106247680,
+    30.0,
     80.0,
-    (int)v9,
+    v9,
     0,
     0.0);
-  store_color4f((_DWORD *)(*(_DWORD *)(this + 69516) + 460), 1065353216, 1065353216, 1065353216, 1065353216);
-  hide_border_init(*(_DWORD **)(this + 69516));
+  store_color4f((tColour *)(*(_DWORD *)(this + 69516) + 460), 1.0, 1.0, 1.0, 1.0);
+  hide_border_init(*(FrontendWidget **)(this + 69516));
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 72) = 152;
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 76) = 1134559232;
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 80) = 1131413504;
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 84) = 1128792064;
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 88) = 1120403456;
-  *(_DWORD *)(this + 69520) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v10 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+  *(_DWORD *)(this + 69520) = allocate_border(&g_game_base->border_manager);
+  v10 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    *(_DWORD *)(this + 69520),
-    541065218,
-    MEMORY[0x4DFB08],
+    *(FrontendWidget **)(this + 69520),
+    0x20400002u,
+    (char *)g_blank_text,
     20,
-    1120403456,
+    100.0,
     80.0,
-    (int)v10,
+    v10,
     0,
     0.0);
-  hide_border_init(*(_DWORD **)(this + 69520));
+  hide_border_init(*(FrontendWidget **)(this + 69520));
   *(_DWORD *)(*(_DWORD *)(this + 69520) + 1776) = 1063675494;
   *(_DWORD *)(*(_DWORD *)(this + 69520) + 620) = 0;
-  *(_DWORD *)(this + 69524) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v11 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+  *(_DWORD *)(this + 69524) = allocate_border(&g_game_base->border_manager);
+  v11 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    *(_DWORD *)(this + 69524),
-    541065218,
-    MEMORY[0x4DFB08],
+    *(FrontendWidget **)(this + 69524),
+    0x20400002u,
+    (char *)g_blank_text,
     20,
-    1133903872,
+    300.0,
     440.0,
-    (int)v11,
+    v11,
     0,
     0.0);
-  hide_border_init(*(_DWORD **)(this + 69524));
+  hide_border_init(*(FrontendWidget **)(this + 69524));
   *(_DWORD *)(*(_DWORD *)(this + 69524) + 1776) = 1063675494;
   *(_DWORD *)(*(_DWORD *)(this + 69524) + 620) = 0;
-  *(_DWORD *)(this + 69528) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v12 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+  *(_DWORD *)(this + 69528) = allocate_border(&g_game_base->border_manager);
+  v12 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    *(_DWORD *)(this + 69528),
-    541065218,
-    MEMORY[0x4DFB08],
+    *(FrontendWidget **)(this + 69528),
+    0x20400002u,
+    (char *)g_blank_text,
     20,
-    1133903872,
+    300.0,
     440.0,
-    (int)v12,
+    v12,
     0,
     0.0);
-  hide_border_init(*(_DWORD **)(this + 69528));
+  hide_border_init(*(FrontendWidget **)(this + 69528));
   *(_DWORD *)(*(_DWORD *)(this + 69528) + 1776) = 1060320051;
   *(_DWORD *)(*(_DWORD *)(this + 69528) + 620) = 0;
-  *(_DWORD *)(this + 69532) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+  *(_DWORD *)(this + 69532) = allocate_border(&g_game_base->border_manager);
   if ( *(_DWORD *)(*(_DWORD *)(this + 69488) + 64) )
   {
-    v18 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(_DWORD *)(this + 69532), 1610612756, aPlay, 20, 1133903872, 440.0, (int)v18, 2, 100.0);
+    v18 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(*(FrontendWidget **)(this + 69532), 0x60000014u, aPlay, 20, 300.0, 440.0, v18, 2, 100.0);
   }
   else
   {
-    v17 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+    v17 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(
-      *(_DWORD *)(this + 69532),
-      1610612756,
+      *(FrontendWidget **)(this + 69532),
+      0x60000014u,
       aDeliver,
       20,
-      1133903872,
+      300.0,
       440.0,
-      (int)v17,
+      v17,
       2,
       100.0);
   }
-  hide_border_init(*(_DWORD **)(this + 69532));
+  hide_border_init(*(FrontendWidget **)(this + 69532));
   *(_DWORD *)(*(_DWORD *)(this + 69532) + 620) = 1101004800;
-  *(_DWORD *)(this + 69536) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v13 = set_color_rgba(v19, 1065353216, 1065353216, 1065353216, 1065353216);
+  *(_DWORD *)(this + 69536) = allocate_border(&g_game_base->border_manager);
+  v13 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    *(_DWORD *)(this + 69536),
-    1610612756,
+    *(FrontendWidget **)(this + 69536),
+    0x60000014u,
     aWatchBestTrial,
     20,
-    1133903872,
+    300.0,
     440.0,
-    (int)v13,
+    v13,
     2,
     0.0);
-  hide_border_init(*(_DWORD **)(this + 69536));
+  hide_border_init(*(FrontendWidget **)(this + 69536));
   *(_DWORD *)(*(_DWORD *)(this + 69536) + 620) = 1092616192;
   *(_DWORD *)(*(_DWORD *)(this + 69536) + 1776) = 1061997773;
   *(_DWORD *)(*(_DWORD *)(this + 69536) + 532) = 1082130432;
   *(_DWORD *)(*(_DWORD *)(this + 69536) + 532) = 1090519040;
   return open_galaxy_route(this, *(float *)(this + 69504));
 }
-

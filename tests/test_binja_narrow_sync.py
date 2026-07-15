@@ -2055,9 +2055,10 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert '"FrameBorderManager",' in binja_sync
     assert '("0xb48", "unknown_000b48", "int32_t")' in binja_sync
     assert '("0xb4c", "border_manager", "FrameBorderManager")' in binja_sync
-    assert 'BORDER_MANAGER_PREFIX_FIELD_UPDATES = (' in binja_sync
+    assert 'BORDER_MANAGER_FIELD_UPDATES = (' in binja_sync
     assert '("0x08", "list_prev", "FrontendWidget*")' in binja_sync
     assert '("0x0c", "list_next", "FrontendWidget*")' in binja_sync
+    assert '("0x435b0", "justify_centre", "float")' in binja_sync
     assert "def resolved_border_manager_struct_name" in binja_sync
     assert 'struct_name="BorderManager"' in binja_sync
     assert 'else "FrameBorderManager"' in binja_sync
@@ -2784,6 +2785,11 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert '"kill_all_borders"' in frame_sync
     assert "void __thiscall kill_all_borders" in frame_sync
     assert "void __thiscall kill_all_borders" in ida_frame_sync
+    assert '"set_border_justify_centre"' in frame_sync
+    assert "void __thiscall set_border_justify_centre" in frame_sync
+    assert "float justify_centre" in frame_sync
+    assert "void __thiscall set_border_justify_centre" in ida_frame_sync
+    assert "float justify_centre" in ida_frame_sync
     assert "void __thiscall destroy_help_screen(Help* help)" in runtime_sync
     assert "void __thiscall destroy_options_menu(Options* options)" in menu_sync
     assert "void __thiscall destroy_intro_screen(Logo* logo)" in logo_sync
@@ -2838,4 +2844,8 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     # kill_border has a separate VC6 recursion-shape constraint and is not
     # widened into this lifecycle proof.
     assert "int kill_border(FrontendWidget* border);" in matcher_border_header
+    assert "void set_border_justify_centre(" in matcher_border_header
+    assert "float justify_centre);" in matcher_border_header
+    assert "int set_border_justify_centre" not in matcher_border_header
+    assert "justify_centre_bits" not in matcher_border_header
     assert '"kill_border",' not in frame_sync

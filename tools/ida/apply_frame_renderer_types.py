@@ -28,6 +28,11 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall kill_all_borders(FrameBorderManager *manager);",
     ),
     (
+        "set_border_justify_centre",
+        "void __thiscall set_border_justify_centre("
+        "FrameBorderManager *manager, float justify_centre);",
+    ),
+    (
         "allocate_border",
         "FrontendWidget *__thiscall allocate_border(FrameBorderManager *manager);",
     ),

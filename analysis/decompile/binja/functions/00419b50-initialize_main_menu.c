@@ -9,7 +9,7 @@
 00419b8b        int32_t eax = load_landscape_script_by_name("Menubg.txt")
 00419b98        struct GameRoot* game_base_1 = g_game_base
 00419bab        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax * 0x124 + 0x106c7bc], 0)
-00419bc0        set_border_justify_centre(&g_game_base->border_manager, 0x41c80000)
+00419bc0        set_border_justify_centre(&g_game_base->border_manager, 25f)
 00419bcb        g_game_base->render_skip_count = 2
 00419c02        menu->new_game_widget = allocate_border(&g_game_base->border_manager)
 00419c04        struct tColour color

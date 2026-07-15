@@ -3,25 +3,29 @@
 /* selector: initialize_thanks_for_playing_screen */
 
 // Initializes the post-run Thanks For Playing owner, including the Splash backdrop, INTROTEXT.OGG, and the first shell-font message widget before state 30 begins updating it.
-float *__thiscall sub_433FD0(int *this)
+float *__thiscall initialize_thanks_for_playing_screen(int *this)
 {
-  int v2; // eax
-  _DWORD *v3; // eax
+  int landscape_script_by_name; // eax
+  tColour *v3; // eax
   float *result; // eax
-  _DWORD v5[4]; // [esp+4h] [ebp-10h] BYREF
+  Color4f color; // [esp+4h] [ebp-10h] BYREF
 
-  hide_star_field((int *)MEMORY[0x4DF904] + 81103);
-  cache_music_file(aMusicIntrotext);
-  v2 = load_landscape_script_by_name((char *)MEMORY[0x4DF904] + 17220120, aSplashTxt);
-  change_backdrop((int)MEMORY[0x4DF904] + 322576, (int)MEMORY[0x4DF904] + 292 * v2 + 17221564, 0);
-  set_border_justify_centre((_DWORD *)MEMORY[0x4DF904] + 723, 0);
-  *(this + 1) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v3 = set_color_rgba(v5, 1065353216, 1065353216, 1065353216, 1065353216);
-  result = initialize_frontend_widget(*(this + 1), 541065218, aThanksForPlayi, 20, 0, 435.0, (int)v3, 2, 0.0);
+  hide_star_field((StarManager *)&g_game_base->unknown_044100[45628]);
+  cache_music_file(aMusicIntrotext, 0, (char *)g_blank_text);
+  landscape_script_by_name = load_landscape_script_by_name(
+                               (char *)&g_game_base->subgame.unknown_000044[16743356],
+                               aSplashTxt);
+  change_backdrop(
+    (int)&g_game_base->unknown_044100[43792],
+    (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
+    0);
+  set_border_justify_centre(&g_game_base->border_manager, 0.0);
+  *(this + 1) = (int)allocate_border(&g_game_base->border_manager);
+  v3 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  initialize_frontend_widget((FrontendWidget *)*(this + 1), 0x20400002u, aThanksForPlayi, 20, 0.0, 435.0, v3, 2, 0.0);
   *(_DWORD *)(*(this + 1) + 1776) = 1067030938;
   *(this + 3) = 0;
   *(this + 4) = 998803593;
   *(this + 2) = 0;
   return result;
 }
-

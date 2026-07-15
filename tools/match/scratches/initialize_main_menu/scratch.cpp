@@ -27,7 +27,7 @@ void MainMenu::initialize_main_menu()
                            .load_landscape_script_by_name(g_menu_background_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(0x41c80000);
+    g_game->border_manager.set_border_justify_centre(25.0f);
     g_game->render_skip_countdown = 2;
 
     new_game_widget = g_game->border_manager.allocate_border();

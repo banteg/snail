@@ -61,10 +61,10 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
                                  (char *)&g_game_base->subgame.unknown_000044[16743356],
                                  g_menu_background_script_path);
     change_backdrop(
-      (int)&g_game_base->unknown_000b48[319688],
+      (int)&g_game_base->unknown_044100[43792],
       (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
       0);
-    set_border_justify_centre(&g_game_base->unknown_000b48[4], 1103626240);
+    set_border_justify_centre(&g_game_base->border_manager, 25.0);
   }
   level_mode = game->level_mode;
   if ( !level_mode )
@@ -98,7 +98,7 @@ LABEL_16:
   noop_runtime_ai();
   game->subgame_state = 0;
   game->times_up.state = TIMES_UP_STATE_INACTIVE;
-  game->top_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
+  game->top_score_widget = allocate_border(&g_game_base->border_manager);
   v11 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
   initialize_frontend_widget(game->top_score_widget, 0x400002u, a0, 20, 400.0, 14.0, v11, 3, 300.0);
   game->top_score_widget->font_scale = 1.5;
@@ -106,27 +106,27 @@ LABEL_16:
   game->top_score_widget->text_buffer.raw[0] = 0;
   if ( !game->level_mode )
   {
-    game->lives_icon_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
+    game->lives_icon_widget = allocate_border(&g_game_base->border_manager);
     v12 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_sprite_button((int)game->lives_icon_widget, 4196352, 122, 0, 1114112000, v12, 0.0, 4);
-    hide_border_init(&game->lives_icon_widget->list_kind);
+    hide_border_init(game->lives_icon_widget);
     game->lives_icon_widget->sprite_shadow_offset = 0.0;
-    game->lives_text_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
+    game->lives_text_widget = allocate_border(&g_game_base->border_manager);
     v13 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
     initialize_frontend_widget(game->lives_text_widget, 0x400002u, a0, 20, 47.0, 80.0, v13, 0, 0.0);
-    hide_border_init(&game->lives_text_widget->list_kind);
+    hide_border_init(game->lives_text_widget);
     v14 = 0;
     v28 = 0;
     life_stock_widgets = (int *)game->life_stock_widgets;
     game->lives_text_widget->font_scale = 0.69999999;
     do
     {
-      *life_stock_widgets = (int)allocate_border(&g_game_base->unknown_000b48[4]);
+      *life_stock_widgets = (int)allocate_border(&g_game_base->border_manager);
       v16 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
       *(float *)&v27 = (double)v28 * 24.0 + 13.0;
       initialize_frontend_sprite_button(*life_stock_widgets, 4196352, 123, v27, 1138163712, v16, 0.0, 4);
       *(_DWORD *)(*life_stock_widgets + 376) = 0;
-      hide_border_init((_DWORD *)*life_stock_widgets);
+      hide_border_init((FrontendWidget *)*life_stock_widgets);
       ++v14;
       ++life_stock_widgets;
       v28 = v14;
@@ -157,7 +157,7 @@ LABEL_24:
     border_add_text_number(game->top_score_widget, 0);
   }
 LABEL_29:
-  game->bottom_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
+  game->bottom_score_widget = allocate_border(&g_game_base->border_manager);
   v20 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
   initialize_frontend_widget(game->bottom_score_widget, 0x400002u, a0, 20, 40.0, 14.0, v20, 3, -71.0);
   game->bottom_score_widget->font_scale = 1.5;
@@ -171,8 +171,8 @@ LABEL_29:
       break;
     case 2:
     case 3:
-      hide_border_init(&game->bottom_score_widget->list_kind);
-      hide_border_init(&game->top_score_widget->list_kind);
+      hide_border_init(game->bottom_score_widget);
+      hide_border_init(game->top_score_widget);
       break;
     case 4:
       v21 = format_time_trial_string(&game->time_trial, &game->active_level_timer);
@@ -182,10 +182,10 @@ LABEL_29:
       break;
   }
   v22 = g_game_base;
-  if ( g_game_base->unknown_000b48[321432] || game->level_mode == 7 )
+  if ( g_game_base->unknown_044100[45536] || game->level_mode == 7 )
   {
-    hide_border_init(&game->bottom_score_widget->list_kind);
-    hide_border_init(&game->top_score_widget->list_kind);
+    hide_border_init(game->bottom_score_widget);
+    hide_border_init(game->top_score_widget);
     v22 = g_game_base;
   }
   if ( !v22->players[0].high_score_entry_pending )

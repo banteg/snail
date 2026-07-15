@@ -39,7 +39,7 @@ void Logo::initialize_intro_screen(char* file_name)
                            .load_landscape_script_by_name((char*)"SpaceRed.txt");
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(0);
+    g_game->border_manager.set_border_justify_centre(0.0f);
     g_game->star_manager.unhide_star_field();
 
     char* file_bytes = load_file_bytes(file_name, 0);

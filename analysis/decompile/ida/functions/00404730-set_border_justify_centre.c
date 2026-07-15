@@ -2,9 +2,7 @@
 /* function: set_border_justify_centre @ 0x404730 */
 /* selector: set_border_justify_centre */
 
-int __thiscall sub_404730(_DWORD *this, int a2)
+void __thiscall set_border_justify_centre(FrameBorderManager *manager, float justify_centre)
 {
-  *(this + 68972) = a2;
-  return a2;
+  manager->justify_centre = justify_centre;
 }
-

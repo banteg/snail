@@ -24,7 +24,7 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
                            .load_landscape_script_by_name("Splash.txt");
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(0);
+    g_game->border_manager.set_border_justify_centre(0.0f);
 
     message_widget = g_game->border_manager.allocate_border();
     message_widget->initialize_frontend_widget(

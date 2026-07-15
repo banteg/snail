@@ -3,256 +3,207 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_intro_screen @ 0x4191e0 */
 
-004191ea        int32_t i = 0
-004191ec        void* var_18c = &data_4dfb08
-004191f1        int32_t var_190 = 0
-004191f9        cache_music_file("music/introtext.ogg")
-00419211        int32_t eax_1 = load_landscape_script_by_name(data_4df904 + 0x106c218, "SpaceRed.txt")
-0041921d        void* eax_2 = data_4df904
-00419230        change_backdrop(eax_2 + 0x4ec10, eax_2 + eax_1 * 0x124 + 0x106c7bc, 0)
-00419242        set_border_justify_centre(data_4df904 + 0xb4c, 0)
-00419252        unhide_star_field(data_4df904 + 0x4f33c)
-00419260        char* eax_4 = load_file_bytes(arg2, nullptr)
-0041929e        arg1[3] = data_4df934.d
+004191ea        int32_t i_1 = 0
+004191f9        cache_music_file("music/introtext.ogg", 0, &g_blank_text)
+004191fe        g_game_base
+00419211        int32_t eax_1 = load_landscape_script_by_name("SpaceRed.txt")
+0041921d        struct GameRoot* game_base_1 = g_game_base
+00419230        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_1 * 0x124 + 0x106c7bc], 0)
+00419242        set_border_justify_centre(&g_game_base->border_manager, 0f)
+00419252        unhide_star_field(&g_game_base->star_manager)
+00419260        void* pointer_1 = load_file_bytes(file_name, nullptr)
+0041929e        logo->saved_render_flags = g_runtime_config.render_flags
 004192a1        struct TransformMatrix transform
-004192a1        struct TransformMatrix* eax_5 = initialize_matrix_from_values(&transform, 1f, 0f, 0f, 0f, 0f, 0.634392977f, 0.773010015f, 0f, 0f, -0.773010015f, 0.634392977f, 0f, 0f, 0f, 0f, 1f)
-004192b9        __builtin_memcpy(data_4df904 + 0x15c, eax_5, 0x40)
-004192c1        *(data_4df904 + 0x284) = 0x42c80000
-004192cb        *arg1 = 0
-004192ce        arg1[1] = 0x3ada740e
-004192e0        release_mouse_cursor(data_4df904 + 0x290)
-004192e5        char* esi_1 = eax_4
-004192e9        arg1[2] = 0
-004192f2        int32_t var_16c = 0x3e4ccccd
-004192fa        arg1[5] = 0
-004192fd        char* cursor_1 = find_case_insensitive_substring("Text Start:", esi_1)
+004192a1        struct TransformMatrix* eax_3 = initialize_matrix_from_values(&transform, 1f, 0f, 0f, 0f, 0f, 0.634392977f, 0.773010015f, 0f, 0f, -0.773010015f, 0.634392977f, 0f, 0f, 0f, 0f, 1f)
+004192b9        __builtin_memcpy(&g_game_base->players[0].transform, eax_3, 0x40)
+004192c1        g_game_base->players[0].camera.fov_degrees = 100f
+004192cb        logo->progress = 0
+004192ce        logo->progress_step = 0.00166666671f
+004192e0        release_mouse_cursor(&g_game_base->players[0].mouse_cursor)
+004192e5        void* pointer = pointer_1
+004192e9        logo->state = 0
+004192f2        float var_16c = 0.200000003f
+004192fa        logo->renderable_count = 0
+004192fd        char* cursor_1 = find_case_insensitive_substring("Text Start:", pointer)
 00419308        char* cursor = cursor_1
 00419312        cursor = &find_case_insensitive_substring(":", cursor_1)[1]
-0041931c        char* eax_9 = find_case_insensitive_substring("Text End:", esi_1)
+0041931c        char* eax_7 = find_case_insensitive_substring("Text End:", pointer)
 00419321        char* cursor_3 = cursor
-0041932a        char* var_144 = eax_9
-0041932e        if (cursor_3 u< eax_9)
-0041933a        int32_t* var_168_1 = &arg1[0x900f]
-0041933e        eax_9.b = *cursor_3
+0041932a        char* var_144 = eax_7
+0041932e        if (cursor_3 u< eax_7)
+0041933a        struct Object** var_168_1 = &logo->image_donors[0].renderable.bod.object
+0041933e        eax_7.b = *cursor_3
 00419340        char* edi_1 = nullptr
-00419344        int32_t var_164_1 = 0
+00419344        float var_164_1 = 0f
 00419348        char* cursor_5 = cursor_3
-0041934a        int16_t top
-0041934a        if (eax_9.b == 0x2a)
+0041934a        if (eax_7.b == 0x2a)
 00419350        char* cursor_4 = &cursor_3[1]
 00419351        void var_100
-00419351        char* eax_10 = &var_100
+00419351        char* eax_8 = &var_100
 00419358        cursor = cursor_4
-0041935c        int32_t* edx_4
-0041935c        edx_4.b = *cursor_4
-00419361        while (edx_4.b != 0x2e)
-00419363        *eax_10 = edx_4.b
-00419365        eax_10 = &eax_10[1]
+0041935c        char i = *cursor_4
+00419361        while (i != 0x2e)
+00419363        *eax_8 = i
+00419365        eax_8 = &eax_8[1]
 00419366        cursor_4 = &cursor_4[1]
 00419367        cursor = cursor_4
-0041936b        edx_4.b = *cursor_4
-00419372        *eax_10 = 0x2e
-00419376        eax_10[1] = 0x74
-0041937a        eax_10[2] = 0x67
-0041937f        eax_10[3] = 0x61
-00419382        eax_10[4] = 0
+0041936b        i = *cursor_4
+00419372        *eax_8 = 0x2e
+00419376        eax_8[1] = 0x74
+0041937a        eax_8[2] = 0x67
+0041937f        eax_8[3] = 0x61
+00419382        eax_8[4] = 0
 00419389        cursor = &cursor_4[1]
-0041938e        parse_next_float32(&cursor)
-0041938e        unimplemented  {call 0x431f20}
-00419393        float var_170_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
-00419393        unimplemented  {fstp dword [esp+0x1c], st0}
-0041939c        parse_next_float32(&cursor)
-0041939c        unimplemented  {call 0x431f20}
-004193a1        float var_174_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
-004193a1        unimplemented  {fstp dword [esp+0x1c], st0}
+00419393        float var_170_1 = fconvert.s(parse_next_float32(&cursor))
+004193a1        float var_174_1 = fconvert.s(parse_next_float32(&cursor))
 004193b3        void* var_194_1 = &var_100
 004193ba        void texture_path
-004193ba        sub_48b32c(&texture_path, "Intro/%s")
-004193bf        arg1[5]
-004193da        if ((0x200 & arg1[arg1[5] * 0x24 + 7]) == 0)
-004193eb        void* edx_5 = data_4df904
-004193f7        void* edx_6 = *(edx_5 + 0x5ac)
-004193ff        if (edx_6 != 0)
-0041940d        *(edx_6 + 8) = &arg1[arg1[5] * 0x24 + 6]
-00419410        void* edx_7 = *(edx_5 + 0x5ac)
-00419415        *(*(edx_7 + 8) + 0xc) = edx_7
-0041941a        void* edx_9 = *(*(edx_5 + 0x5ac) + 8)
-0041941d        *(edx_5 + 0x5ac) = edx_9
-0041941f        *(edx_9 + 8) = 0
-00419401        *(edx_5 + 0x5ac) = &arg1[arg1[5] * 0x24 + 6]
-00419403        arg1[arg1[5] * 0x24 + 8] = 0
-00419408        *(*(edx_5 + 0x5ac) + 0xc) = 0
-00419422        arg1[arg1[5] * 0x24 + 7] |= 0x200
+004193ba        sprintf(&texture_path, "Intro/%s")
+004193bf        logo->renderable_count
+004193da        if ((0x200 & logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags) == 0)
+004193eb        struct GameRoot* game_base_2 = g_game_base
+004193f7        struct FrameBodBase* first = game_base_2->active_bod_list.first
+004193ff        if (first != 0)
+0041940d        first->bod.list_prev = &logo->letters[logo->:0x14.d]
+00419410        void* first_1 = game_base_2->active_bod_list.first
+00419415        *(*(first_1 + 8) + 0xc) = first_1
+0041941a        void* list_prev = game_base_2->active_bod_list.first->bod.list_prev
+0041941d        game_base_2->active_bod_list.first = list_prev
+0041941f        *(list_prev + 8) = 0
+00419401        game_base_2->active_bod_list.first = &logo->letters[logo->:0x14.d]
+00419403        logo->letters[logo->:0x14.d].renderable.o.list_prev = nullptr
+00419408        game_base_2->active_bod_list.first->bod.list_next = 0
+00419422        logo->letters[logo->:0x14.d].renderable.o.list_flags |= 0x200
 004193e1        report_errorf("List ADD")
-00419439        set_bod_object(&arg1[arg1[5] * 0x24 + 6], *var_168_1)
-00419462        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x5c) + 0xc) = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
-00419472        set_matrix_identity(&arg1[arg1[5] * 0x24 + 0x14])
-00419477        int32_t eax_20 = arg1[5]
-00419491        int32_t var_148_1 = 0
-0041949c        unimplemented  {fld st0, dword [esp+0x14]}
-004194ab        unimplemented  {fmul st0, dword [0x497228]}
-004194b1        arg1[eax_20 * 0x24 + 0x20] = 0
-004194b7        arg1[eax_20 * 0x24 + 0x21] = 0xc0800000
-004194ba        float var_168_2 = fconvert.s(unimplemented  {fstp dword [esp+0x20], st0})
-004194ba        unimplemented  {fstp dword [esp+0x20], st0}
-004194be        unimplemented  {fld st0, dword [esp+0x1c]}
-004194c2        arg1[eax_20 * 0x24 + 0x22] = var_148_1
-004194c8        unimplemented  {fsub st0, dword [esp+0x20]}
-004194d2        unimplemented  {fadd dword [eax+ebp+0x88]}
-004194e0        arg1[arg1[5] * 0x24 + 0x22] = fconvert.s(unimplemented  {fstp dword [eax], st0})
-004194e0        unimplemented  {fstp dword [eax], st0}
-004194ef        set_color_white()
-004194f7        unimplemented  {fld st0, dword [esp+0x18]}
-00419501        unimplemented  {fmul st0, dword [0x497228]}
-00419507        arg1[arg1[5] * 0x24 + 0x13] = 0x3f7fbe77
-00419518        arg1[arg1[5] * 0x24 + 0x29].b = 0xff
-00419530        **(arg1[arg1[5] * 0x24 + 0xf] + 0x38) = fconvert.s(unimplemented  {fst dword [eax], st0})
-00419535        unimplemented  {fld st0, dword [esp+0x18]}
-0041953f        unimplemented  {fmul st0, dword [0x497380]}
-00419550        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 8) = var_168_2
-00419563        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0xc) = fconvert.s(unimplemented  {fst dword [ecx+0xc], st0})
-0041957a        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x14) = var_168_2
-0041958d        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x18) = fconvert.s(unimplemented  {fstp dword [edx+0x18], st0})
-0041958d        unimplemented  {fstp dword [edx+0x18], st0}
-00419593        unimplemented  {fld st0, dword [esp+0x14]}
-00419597        unimplemented  {fmul st0, dword [0x497380]}
-004195a7        float var_170_2 = fconvert.s(unimplemented  {fst dword [esp+0x18], st0})
-004195ae        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x20) = fconvert.s(unimplemented  {fstp dword [edx+0x20], st0})
-004195ae        unimplemented  {fstp dword [edx+0x20], st0}
-004195c1        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x24) = fconvert.s(unimplemented  {fstp dword [edx+0x24], st0})
-004195c1        unimplemented  {fstp dword [edx+0x24], st0}
-004195d8        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x2c) = var_170_2
-004195db        int32_t eax_53 = arg1[5]
-004195eb        arg1[eax_53 * 0x24 + 0x28] = 0
-004195ee        arg1[eax_53 * 0x24 + 0x27] = 0
-004195f1        arg1[eax_53 * 0x24 + 0x26] = 0
-00419604        eax_9, edx_4 = (*arg1[arg1[5] * 0x24 + 6])()
-00419606        unimplemented  {fld st0, dword [esp+0x1c]}
+00419439        set_bod_object(&logo->letters[logo->renderable_count], (var_168_1 - 0x2403c)->image_donors[0].renderable.bod.object)
+00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
+00419472        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
+00419477        int32_t renderable_count = logo->renderable_count
+004194b1        logo->letters[renderable_count].renderable.transform.position.x = 0
+004194b7        logo->letters[renderable_count].renderable.transform.position.y = 0xc0800000
+004194ba        float var_168_2 = fconvert.s(fconvert.t(var_174_1) * fconvert.t(0.5f))
+004194c2        logo->letters[renderable_count].renderable.transform.position.z = 0
+004194c5        logo->renderable_count
+004194e0        logo->letters[logo->:0x14.d].renderable.transform.position.z = fconvert.s(fconvert.t(var_16c) - fconvert.t(var_168_2) + fconvert.t(logo->letters[logo->:0x14.d].renderable.transform.position.z))
+004194ef        set_color_white(&logo->letters[logo->renderable_count].renderable.bod.color)
+00419501        long double x87_r7_9 = fconvert.t(var_170_1) * fconvert.t(0.5f)
+00419507        logo->letters[logo->renderable_count].renderable.bod.color.a = 0x3f7fbe77
+00419518        logo->letters[logo->renderable_count].glyph = 0xff
+00419530        logo->letters[logo->renderable_count].renderable.bod.object->vertices->x = fconvert.s(x87_r7_9)
+0041953f        long double x87_r6_2 = fconvert.t(var_170_1) * fconvert.t(-0.5f)
+00419550        logo->letters[logo->renderable_count].renderable.bod.object->vertices->z = var_168_2
+00419563        logo->letters[logo->renderable_count].renderable.bod.object->vertices[1].x = fconvert.s(x87_r6_2)
+0041957a        *(logo->letters[logo->renderable_count].renderable.bod.object->vertices + 0x14) = var_168_2
+0041958d        logo->letters[logo->renderable_count].renderable.bod.object->vertices[2].x = fconvert.s(x87_r6_2)
+00419597        long double x87_r6_4 = fconvert.t(var_174_1) * fconvert.t(-0.5f)
+004195a7        float var_170_2 = fconvert.s(x87_r6_4)
+004195ae        *(logo->letters[logo->renderable_count].renderable.bod.object->vertices + 0x20) = fconvert.s(x87_r6_4)
+004195c1        logo->letters[logo->renderable_count].renderable.bod.object->vertices[3].x = fconvert.s(x87_r7_9)
+004195d8        *(logo->letters[logo->renderable_count].renderable.bod.object->vertices + 0x2c) = var_170_2
+004195db        int32_t renderable_count_1 = logo->renderable_count
+004195eb        logo->letters[renderable_count_1].velocity.z = 0
+004195ee        logo->letters[renderable_count_1].velocity.y = 0
+004195f1        logo->letters[renderable_count_1].velocity.x = 0
+00419604        eax_7 = (*logo->letters[logo->renderable_count].renderable.bod.bod.vtable)()
 0041960a        cursor_3 = cursor
-00419614        unimplemented  {fsub st0, dword [esp+0x14]}
 00419618        var_168_1 = &var_168_1[0x24]
-00419620        arg1[5] += 1
-00419623        eax_9.b = *cursor_3
-00419625        float var_16c_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
-00419625        unimplemented  {fstp dword [esp+0x1c], st0}
-00419625        top -= 1
-0041962b        if (eax_9.b != 0)
-00419633        while (eax_9.b != 0xd)
+00419620        logo->renderable_count += 1
+00419623        eax_7.b = *cursor_3
+00419625        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(var_174_1))
+0041962b        if (eax_7.b != 0)
+00419633        while (eax_7.b != 0xd)
 00419639        cursor_3 = &cursor_3[1]
 0041963a        cursor = cursor_3
-0041963e        eax_9.b = *cursor_3
-00419642        if (eax_9.b == 0)
+0041963e        eax_7.b = *cursor_3
+00419642        if (eax_7.b == 0)
 00419642        break
-0041964b        if (eax_9.b != 0)
-00419653        while (eax_9.b != 0xd)
-00419662        unimplemented  {fld st0, dword [esp+0x24]}
-00419666        unimplemented  {fadd dword [eax*4+0x7770e8]}
+0041964b        if (eax_7.b != 0)
+00419653        while (eax_7.b != 0xd)
+00419656        eax_7 = font_slot_index_for_char(eax_7.b)
+00419666        long double x87_r7_13 = fconvert.t(var_164_1) + fconvert.t(g_font3d_scales[eax_7])
 0041966d        edi_1 = &edi_1[1]
 0041966e        cursor_3 = &cursor[1]
 0041966f        cursor = cursor_3
-00419673        eax_9.b = *cursor_3
-00419675        float var_164_2 = fconvert.s(unimplemented  {fstp dword [esp+0x24], st0})
-00419675        unimplemented  {fstp dword [esp+0x24], st0}
-0041967b        if (eax_9.b == 0)
+00419673        eax_7.b = *cursor_3
+00419675        var_164_1 = fconvert.s(x87_r7_13)
+0041967b        if (eax_7.b == 0)
 0041967b        break
 0041967f        if (edi_1 s> 0)
-00419685        unimplemented  {fld st0, dword [esp+0x24]}
-00419689        unimplemented  {fmul st0, dword [0x497228]}
 0041968f        int32_t var_160_1 = 0
 00419697        int32_t var_15c_1 = 0xc0800000
 0041969f        int32_t var_158_1 = 0
 004196a7        char* var_170_3 = edi_1
-004196ab        unimplemented  {fmul st0, dword [0x497250]}
-004196b1        float var_174_2 = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
-004196b1        unimplemented  {fstp dword [esp+0x14], st0}
+004196b1        float var_174_2 = fconvert.s(fconvert.t(var_164_1) * fconvert.t(0.5f) * fconvert.t(0.800000012f))
 00419849        bool cond:3_1
-004196b5        arg1[5]
-004196c9        int32_t eax_59
-004196c9        if (((arg1[arg1[5] * 0x24 + 7]).w:1.b & 2) == 0)
-004196da        void* edx_29 = data_4df904
-004196e6        void* edx_30 = *(edx_29 + 0x5ac)
-004196ee        if (edx_30 != 0)
-004196fc        *(edx_30 + 8) = &arg1[arg1[5] * 0x24 + 6]
-004196ff        void* edx_31 = *(edx_29 + 0x5ac)
-00419704        *(*(edx_31 + 8) + 0xc) = edx_31
-00419709        void* edx_33 = *(*(edx_29 + 0x5ac) + 8)
-0041970c        *(edx_29 + 0x5ac) = edx_33
-0041970e        *(edx_33 + 8) = 0
-004196f0        *(edx_29 + 0x5ac) = &arg1[arg1[5] * 0x24 + 6]
-004196f2        arg1[arg1[5] * 0x24 + 8] = 0
-004196f7        *(*(edx_29 + 0x5ac) + 0xc) = 0
-00419714        eax_59:1.b = arg1[arg1[5] * 0x24 + 7]:1.b | 2
-00419717        arg1[arg1[5] * 0x24 + 7] = eax_59
-004196d0        report_errorf("List ADD")
-0041971a        eax_59.b = *cursor_5
-0041971d        int32_t eax_62 = font_slot_index_for_char(eax_59.b)
-00419743        set_bod_object(&arg1[arg1[5] * 0x24 + 6], *(eax_62 * 0x38 + &data_77550c))
-00419755        set_matrix_identity(&arg1[arg1[5] * 0x24 + 0x14])
-0041975a        int32_t eax_67 = arg1[5]
-00419761        unimplemented  {fld st0, dword [esp+0x14]}
-00419776        arg1[eax_67 * 0x24 + 0x20] = var_160_1
-0041977c        arg1[eax_67 * 0x24 + 0x21] = var_15c_1
-0041977f        arg1[eax_67 * 0x24 + 0x22] = var_158_1
-0041978b        unimplemented  {fadd dword [edx+ebp+0x80]}
-00419799        arg1[arg1[5] * 0x24 + 0x20] = fconvert.s(unimplemented  {fstp dword [eax], st0})
-00419799        unimplemented  {fstp dword [eax], st0}
-0041979e        unimplemented  {fld st0, dword [esp+0x1c]}
-004197a8        unimplemented  {fadd dword [eax+ebp+0x88]}
-004197b6        arg1[arg1[5] * 0x24 + 0x22] = fconvert.s(unimplemented  {fstp dword [eax], st0})
-004197b6        unimplemented  {fstp dword [eax], st0}
-004197c5        set_color_white()
-004197d3        arg1[arg1[5] * 0x24 + 0x13] = 0x3f7fbe77
-004197db        int32_t eax_77 = arg1[5]
-004197eb        arg1[eax_77 * 0x24 + 0x28] = 0
-004197ee        arg1[eax_77 * 0x24 + 0x27] = 0
-004197f1        arg1[eax_77 * 0x24 + 0x26] = 0
-004197f6        int32_t edx_41
-004197f6        edx_41.b = *cursor_5
-004197fe        arg1[arg1[5] * 0x24 + 0x29].b = edx_41.b
-00419816        (*arg1[arg1[5] * 0x24 + 6])()
-00419820        unimplemented  {fld st0, dword [eax*4+0x7770e8]}
-00419827        unimplemented  {fmul st0, dword [0x497250]}
+004196b5        logo->renderable_count
+004196c9        uint32_t list_flags
+004196c9        if (((logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags).w:1.b & 2) == 0)
+004196da        struct GameRoot* game_base_3 = g_game_base
+004196e6        struct FrameBodBase* first_2 = game_base_3->active_bod_list.first
+004196ee        if (first_2 != 0)
+004196fc        first_2->bod.list_prev = &logo->letters[logo->:0x14.d]
+004196ff        void* first_3 = game_base_3->active_bod_list.first
+00419704        *(*(first_3 + 8) + 0xc) = first_3
+00419709        void* list_prev_1 = game_base_3->active_bod_list.first->bod.list_prev
+0041970c        game_base_3->active_bod_list.first = list_prev_1
+0041970e        *(list_prev_1 + 8) = 0
+004196f0        game_base_3->active_bod_list.first = &logo->letters[logo->:0x14.d]
+004196f2        logo->letters[logo->:0x14.d].renderable.o.list_prev = nullptr
+004196f7        game_base_3->active_bod_list.first->bod.list_next = 0
+00419711        list_flags = logo->letters[logo->:0x14.d].renderable.o.list_flags
+00419714        list_flags:1.b |= 2
+00419717        logo->letters[logo->:0x14.d].renderable.o.list_flags = list_flags
+004196d0        list_flags = report_errorf("List ADD")
+0041971a        list_flags.b = *cursor_5
+0041971d        int32_t eax_57 = font_slot_index_for_char(list_flags.b)
+00419743        set_bod_object(&logo->letters[logo->renderable_count], g_font3d_bods[eax_57].object)
+00419755        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
+0041975a        int32_t renderable_count_2 = logo->renderable_count
+00419776        logo->letters[renderable_count_2].renderable.transform.position.x = var_160_1
+0041977c        logo->letters[renderable_count_2].renderable.transform.position.y = var_15c_1
+0041977f        logo->letters[renderable_count_2].renderable.transform.position.z = var_158_1
+00419782        logo->renderable_count
+00419799        logo->letters[logo->:0x14.d].renderable.transform.position.x = fconvert.s(fconvert.t(var_174_2) + fconvert.t(logo->letters[logo->:0x14.d].renderable.transform.position.x))
+0041979b        logo->renderable_count
+004197b6        logo->letters[logo->:0x14.d].renderable.transform.position.z = fconvert.s(fconvert.t(var_16c) + fconvert.t(logo->letters[logo->:0x14.d].renderable.transform.position.z))
+004197c5        set_color_white(&logo->letters[logo->renderable_count].renderable.bod.color)
+004197d3        logo->letters[logo->renderable_count].renderable.bod.color.a = 0x3f7fbe77
+004197db        int32_t renderable_count_3 = logo->renderable_count
+004197eb        logo->letters[renderable_count_3].velocity.z = 0
+004197ee        logo->letters[renderable_count_3].velocity.y = 0
+004197f1        logo->letters[renderable_count_3].velocity.x = 0
+004197fe        logo->letters[logo->renderable_count].glyph = *cursor_5
+00419816        (*logo->letters[logo->renderable_count].renderable.bod.bod.vtable)()
+00419827        long double x87_r7_22 = fconvert.t(g_font3d_scales[font_slot_index_for_char(*cursor_5)]) * fconvert.t(0.800000012f)
 00419833        cursor_5 = &cursor_5[1]
-00419835        unimplemented  {fsubr st0, dword [esp+0x14]}
-00419839        arg1[5] += 1
-0041983c        float var_174_3 = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
-0041983c        unimplemented  {fstp dword [esp+0x14], st0}
-0041983c        top -= 1
+00419839        logo->renderable_count += 1
+0041983c        var_174_2 = fconvert.s(fconvert.t(var_174_2) - x87_r7_22)
+00419844        eax_7 = var_170_3 - 1
 00419844        cond:3_1 = var_170_3 != 1
-00419845        var_170_3 -= 1
+00419845        var_170_3 = eax_7
 00419849        do while (cond:3_1)
 0041984f        cursor_3 = cursor
 00419856        if (*cursor_3 == 0xd)
-00419858        unimplemented  {fld st0, dword [esp+0x1c]}
-0041985c        unimplemented  {fsub st0, dword [0x497220]}
 00419862        cursor_3 = &cursor_3[2]
 00419865        cursor = cursor_3
-00419869        float var_16c_2 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
-00419869        unimplemented  {fstp dword [esp+0x1c], st0}
+00419869        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(1f))
 00419871        do while (cursor_3 u< var_144)
-00419877        esi_1 = eax_4
-00419881        char* cursor_2 = find_case_insensitive_substring("Duration:", esi_1)
+00419877        pointer = pointer_1
+00419881        char* cursor_2 = find_case_insensitive_substring("Duration:", pointer)
 0041988c        cursor = cursor_2
 00419899        cursor = find_case_insensitive_substring(":", cursor_2)
-0041989e        parse_next_float32(&cursor)
-0041989e        unimplemented  {call 0x431f20}
-004198a3        arg1[4] = fconvert.s(unimplemented  {fst dword [ebp+0x10], st0})
-004198a6        unimplemented  {fmul st0, dword [0x497298]}
+0041989e        long double st0_3 = parse_next_float32(&cursor)
+004198a3        logo->duration_seconds = fconvert.s(st0_3)
 004198b4        int32_t var_160_2 = 0
-004198bc        unimplemented  {fdivr st0, dword [0x497220]}
-004198ca        unimplemented  {fld st0, dword [0x497218]}
-004198d0        unimplemented  {fsub st0, dword [esp+0x1c]}
-004198d4        unimplemented  {fmulp st1, st0}
-004198d4        unimplemented  {fmulp st1, st0}
-004198d6        float var_158_2 = fconvert.s(unimplemented  {fstp dword [esp+0x30], st0})
-004198d6        unimplemented  {fstp dword [esp+0x30], st0}
-004198da        if (arg1[5] s> 0)
-004198e0        int32_t* eax_89 = &arg1[0x26]
-004198ea        int32_t* edx_43 = eax_89
-004198ec        i += 1
-004198ed        eax_89 = &eax_89[0x24]
-004198f2        *edx_43 = var_160_2
-004198f8        edx_43[1] = 0
-004198fb        edx_43[2] = var_158_2
-00419903        do while (i s< arg1[5])
-00419918        return free_tracked_memory(esi_1)
+004198d6        float var_158_2 = fconvert.s(fconvert.t(1f) / (st0_3 * fconvert.t(60f)) * (fconvert.t(3f) - fconvert.t(var_16c)))
+004198da        if (logo->renderable_count s> 0)
+004198e0        int32_t* eax_83 = &logo->letters[0].velocity
+004198ea        int32_t* edx_36 = eax_83
+004198ec        i_1 += 1
+004198ed        eax_83 = &eax_83[0x24]
+004198f2        *edx_36 = var_160_2
+004198f8        edx_36[1] = 0
+004198fb        edx_36[2] = var_158_2
+00419903        do while (i_1 s< logo->renderable_count)
+00419906        free_tracked_memory(pointer)
+00419918        return

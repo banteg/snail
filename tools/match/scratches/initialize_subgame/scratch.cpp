@@ -58,7 +58,7 @@ void SubgameRuntime::initialize_subgame()
         g_game->backdrop.change_backdrop(
                 &g_game->subgame.landscape_manager.scripts[script_index],
                 0);
-        g_game->border_manager.set_border_justify_centre(0x41c80000);
+        g_game->border_manager.set_border_justify_centre(25.0f);
     }
 
     int level_mode = this->level_mode;

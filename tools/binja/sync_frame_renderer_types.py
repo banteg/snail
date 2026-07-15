@@ -140,11 +140,12 @@ FRAME_SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x40", "level_mode", "int32_t"),
 )
 
-BORDER_MANAGER_PREFIX_FIELD_UPDATES = (
+BORDER_MANAGER_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
     ("0x04", "list_flags", "uint32_t"),
     ("0x08", "list_prev", "FrontendWidget*"),
     ("0x0c", "list_next", "FrontendWidget*"),
+    ("0x435b0", "justify_centre", "float"),
 )
 
 GAME_ROOT_FIELD_UPDATES = (
@@ -212,6 +213,11 @@ def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
             "kill_all_borders",
             f"void __thiscall kill_all_borders({border_manager_type}* manager)",
         ),
+        (
+            "set_border_justify_centre",
+            "void __thiscall set_border_justify_centre("
+            f"{border_manager_type}* manager, float justify_centre)",
+        ),
     )
 
 
@@ -255,7 +261,7 @@ def main() -> int:
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
                 (
                     resolved_border_manager_struct_name(target=args.target),
-                    BORDER_MANAGER_PREFIX_FIELD_UPDATES,
+                    BORDER_MANAGER_FIELD_UPDATES,
                 ),
                 ("GameRoot", resolved_game_root_field_updates(target=args.target)),
             ),
