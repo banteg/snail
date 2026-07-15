@@ -1009,8 +1009,8 @@ The exact small setters remain 6/6 and 9/9 instructions, and the constructor
 remains 429/429 at 99.30%. `RePosition()` falls honestly to 84.18% at 177/177
 because removing the synthetic result changes register allocation. The
 transactional Binary Ninja replay now persists and verifies the authored void
-`Init(...)` and `RePosition()` contracts; the shortcut setter and below-link
-setter remain deferred rather than being forced through stale scalar types.
+`Init(...)`, `RePosition()`, `SetKeyLeft(int)`, and `SetBelow(cRBorder*)`
+contracts, including the typed previous-widget receiver for the below-link.
 
 ### Frontend lifecycle return contracts
 

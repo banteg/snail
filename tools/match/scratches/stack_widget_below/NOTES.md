@@ -12,3 +12,10 @@ operand resolved.
 performs the same anchor stores and tail-calls the void `RePosition()` member.
 All 36 Windows callers discard EAX. Modeling both members as `void` preserves
 the exact 9/9 result and removes the false pointer/scalar return ownership.
+
+## 2026-07-15 persisted member ABI
+
+The rollback-safe Binary Ninja replay now applies and independently verifies
+`void cRBorder::SetBelow(cRBorder*)` with typed current and previous
+`FrontendWidget*` owners. IDA carries the same contract. The exact 9/9 scratch
+is unchanged; its tail call remains the authored void `RePosition()` member.

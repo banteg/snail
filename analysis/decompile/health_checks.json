@@ -463,6 +463,81 @@
       ]
     },
     {
+      "name": "bn_frontend_widget_shortcut_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00402790-set_frontend_widget_shortcut_key.c",
+      "required_substrings": [
+        "widget->shortcut_key_code = shortcut_key_code",
+        "widget->widget_flags |= FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED",
+        "004027ab        return"
+      ],
+      "forbidden_substrings": [
+        "uint32_t result",
+        "return result",
+        "arg1",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_shortcut_void_owner",
+      "artifact": "analysis/decompile/ida/functions/00402790-set_frontend_widget_shortcut_key.c",
+      "required_substrings": [
+        "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget *widget, int32_t shortcut_key_code)",
+        "widget->shortcut_key_code = shortcut_key_code;",
+        "widget->widget_flags |= 0x80000u;"
+      ],
+      "forbidden_substrings": [
+        "int32_t __thiscall set_frontend_widget_shortcut_key",
+        "return result",
+        "arg1",
+        "this +",
+        "sub_402790",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_frontend_widget_below_link_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004027b0-stack_widget_below.c",
+      "required_substrings": [
+        "widget->layout_anchor_x = previous_widget->layout_anchor_x",
+        "previous_widget->layout_anchor_y",
+        "previous_widget->layout_height",
+        "layout_frontend_widget(widget)",
+        "004027dd        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return layout_frontend_widget",
+        "*(previous_widget +",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_frontend_widget_below_link_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004027b0-stack_widget_below.c",
+      "required_substrings": [
+        "void __thiscall stack_widget_below(FrontendWidget *widget, FrontendWidget *previous_widget)",
+        "widget->layout_anchor_x = previous_widget->layout_anchor_x;",
+        "previous_widget->layout_anchor_y",
+        "previous_widget->layout_height",
+        "layout_frontend_widget(widget);"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall stack_widget_below",
+        "return layout_frontend_widget",
+        "sub_4027B0",
+        "int this",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frontend_widget_input_text_owner",
       "artifact": "analysis/decompile/binja/functions/004035b0-border_input_text.c",
       "required_substrings": [

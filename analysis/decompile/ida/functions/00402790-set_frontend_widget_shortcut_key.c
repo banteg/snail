@@ -2,14 +2,9 @@
 /* function: set_frontend_widget_shortcut_key @ 0x402790 */
 /* selector: set_frontend_widget_shortcut_key */
 
-// Stores one keyboard shortcut code on a front-end widget and enables the matching flag so `update_frontend_widget_interaction` dispatches the widget when `read_pressed_text_input_key_code()` returns that code.
-int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget *widget, int32_t shortcut_key_code)
+// Exact void `cRBorder::SetKeyLeft(int)`: stores one keyboard shortcut code and enables the matching dispatch flag. All five Windows callers discard the updated flags left incidentally in EAX.
+void __thiscall set_frontend_widget_shortcut_key(FrontendWidget *widget, int32_t shortcut_key_code)
 {
-  int32_t result; // eax
-
   widget->shortcut_key_code = shortcut_key_code;
-  result = widget->widget_flags | 0x80000;
-  widget->widget_flags = result;
-  return result;
+  widget->widget_flags |= 0x80000u;
 }
-

@@ -1695,6 +1695,8 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
     expected = (
         "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
         "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
+        "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)",
+        "void __thiscall stack_widget_below(FrontendWidget* widget, FrontendWidget* previous_widget)",
     )
     for prototype in expected:
         assert prototype not in deferred

@@ -462,7 +462,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_frontend_widget_shortcut_key",
-        "int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code);",
+        "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code);",
+    ),
+    (
+        "stack_widget_below",
+        "void __thiscall stack_widget_below(FrontendWidget* widget, FrontendWidget* previous_widget);",
     ),
     (
         "unhighlight_border",
