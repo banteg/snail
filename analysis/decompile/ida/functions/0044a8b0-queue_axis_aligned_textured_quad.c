@@ -3,43 +3,74 @@
 /* selector: queue_axis_aligned_textured_quad */
 
 // Appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags.
-void __cdecl sub_44A8B0(int a1, int a2, int a3, int a4, int a5, int a6, int *a7, int a8)
+int32_t __cdecl queue_axis_aligned_textured_quad(
+        int32_t texture_id,
+        float x,
+        float y,
+        float width,
+        float height,
+        uint32_t flags,
+        tColour *color,
+        int32_t blend_mode)
 {
-  int v8; // ecx
-  int v9; // eax
-  int *v10; // esi
-  int v11; // edi
+  int32_t result; // eax
+  int32_t v9; // ecx
+  __int16 v10; // fps
+  bool v11; // c0
+  char v12; // c2
+  bool v13; // c3
+  __int16 v14; // fps
+  bool v15; // c0
+  char v16; // c2
+  bool v17; // c3
+  tColour *p_color; // esi
+  float a; // edi
 
-  if ( unk_4B7236 )
+  LOBYTE(result) = g_render_queue_active;
+  if ( g_render_queue_active )
   {
-    v8 = unk_777B24;
-    if ( unk_777B24 == 1024 )
+    v9 = g_font_queue_count;
+    if ( g_font_queue_count == 1024 )
     {
-      report_errorf(aFontPrintBuffe);
+      return report_errorf(aFontPrintBuffe);
     }
-    else if ( *(float *)&a4 != 0.0 && *(float *)&a5 != 0.0 )
+    else
     {
-      v9 = 33 * unk_777B24;
-      unk_7544E8[v9] = a6 | 2;
-      unk_754538[v9] = a1;
-      v10 = &unk_754554[33 * v8];
-      *v10 = *a7;
-      v10[1] = a7[1];
-      v10[2] = a7[2];
-      v11 = a7[3];
-      unk_777B24 = v8 + 1;
-      v10[3] = v11;
-      unk_7544EC[v9] = a2;
-      unk_7544F0[v9] = a3;
-      unk_75453C[v9] = a4;
-      unk_754540[v9] = a5;
-      unk_754544[v9] = 0;
-      unk_754548[v9] = 0;
-      unk_75454C[v9] = 1065353216;
-      unk_754550[v9] = 1065353216;
-      unk_754564[v9] = a8;
-      unk_754568[v9] = 0;
+      v11 = width < 0.0;
+      v12 = 0;
+      v13 = width == 0.0;
+      LOWORD(result) = v10;
+      if ( width != 0.0 )
+      {
+        v15 = height < 0.0;
+        v16 = 0;
+        v17 = height == 0.0;
+        LOWORD(result) = v14;
+        if ( height != 0.0 )
+        {
+          result = 132 * g_font_queue_count;
+          g_font_queue[result / 0x84u].flags = flags | 2;
+          g_font_queue[result / 0x84u].texture_id = texture_id;
+          p_color = &g_font_queue[v9].color;
+          p_color->r = color->r;
+          p_color->g = color->g;
+          p_color->b = color->b;
+          a = color->a;
+          g_font_queue_count = v9 + 1;
+          p_color->a = a;
+          g_font_queue[result / 0x84u].x0 = x;
+          g_font_queue[result / 0x84u].y0 = y;
+          g_font_queue[result / 0x84u].width = width;
+          g_font_queue[result / 0x84u].height = height;
+          g_font_queue[result / 0x84u].u0 = 0.0;
+          g_font_queue[result / 0x84u].v0 = 0.0;
+          g_font_queue[result / 0x84u].u1 = 1.0;
+          g_font_queue[result / 0x84u].v1 = 1.0;
+          g_font_queue[result / 0x84u].blend_mode = blend_mode;
+          g_font_queue[result / 0x84u].rotation = 0.0;
+        }
+      }
     }
   }
+  return result;
 }
-

@@ -20,8 +20,8 @@ int queue_axis_aligned_textured_quad_uv(
     float v0,
     float u1,
     float v1,
-    int layer,
-    int blend);
+    int blend_mode,
+    float rotation);
 
 void FrontendWidget::draw_frontend_widget()
 {
@@ -42,16 +42,16 @@ void FrontendWidget::draw_frontend_widget()
     if ((flags & FRONTEND_WIDGET_FLAG_HIDDEN) != 0)
         return;
 
-    int layer;
-    int glow_layer;
+    int blend_mode;
+    int glow_blend_mode;
     if ((g_runtime_config.render_flags & 0x80) == 0) {
-        layer = 0;
+        blend_mode = 0;
         white.a = 1.0f;
         reserved_color_0.a = 1.0f;
-        glow_layer = layer;
+        glow_blend_mode = blend_mode;
     } else {
-        glow_layer = 3;
-        layer = glow_layer;
+        glow_blend_mode = 3;
+        blend_mode = glow_blend_mode;
     }
 
     float width = layout_width;
@@ -74,7 +74,7 @@ void FrontendWidget::draw_frontend_widget()
                 0.0f,
                 slider,
                 1.0f,
-                layer,
+                blend_mode,
                 0);
         }
         if (slider < 1.0f) {
@@ -90,7 +90,7 @@ void FrontendWidget::draw_frontend_widget()
                 0.0f,
                 1.0f,
                 1.0f,
-                layer,
+                blend_mode,
                 0);
         }
     }
@@ -200,17 +200,17 @@ void FrontendWidget::draw_frontend_widget()
     float top = y - edge;
     float left = x - edge;
 
-    queue_axis_aligned_textured_quad_uv(border_texture_id, left, top, edge, edge, 0x1000000, &current_fill_color, 0.0f, 0.0f, u0, u0, layer, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, x, top, width, edge, 0x1000000, &current_fill_color, u0, 0.0f, u1, u0, layer, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, left, top, edge, edge, 0x1000000, &current_fill_color, 0.0f, 0.0f, u0, u0, blend_mode, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, x, top, width, edge, 0x1000000, &current_fill_color, u0, 0.0f, u1, u0, blend_mode, 0);
     float right = x + width;
-    queue_axis_aligned_textured_quad_uv(border_texture_id, right, top, edge, edge, 0x1000000, &current_fill_color, u1, 0.0f, 1.0f, u0, glow_layer, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, left, y, edge, height, 0x1000000, &current_fill_color, 0.0f, u0, u0, u1, glow_layer, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, x, y, width, height, 0x1000000, &current_fill_color, u0, u0, u1, u1, glow_layer, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, right, y, edge, height, 0x1000000, &current_fill_color, u1, u0, 1.0f, u1, glow_layer, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, right, top, edge, edge, 0x1000000, &current_fill_color, u1, 0.0f, 1.0f, u0, glow_blend_mode, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, left, y, edge, height, 0x1000000, &current_fill_color, 0.0f, u0, u0, u1, glow_blend_mode, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, x, y, width, height, 0x1000000, &current_fill_color, u0, u0, u1, u1, glow_blend_mode, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, right, y, edge, height, 0x1000000, &current_fill_color, u1, u0, 1.0f, u1, glow_blend_mode, 0);
     float bottom = y + height;
-    queue_axis_aligned_textured_quad_uv(border_texture_id, left, bottom, edge, edge, 0x1000000, &current_fill_color, 0.0f, u1, u0, 1.0f, glow_layer, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, glow_layer, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, glow_layer, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, left, bottom, edge, edge, 0x1000000, &current_fill_color, 0.0f, u1, u0, 1.0f, glow_blend_mode, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, glow_blend_mode, 0);
+    queue_axis_aligned_textured_quad_uv(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, glow_blend_mode, 0);
 
     if (g_game->border_manager.delayed_widget_active != 0
         && this == g_game->border_manager.delayed_widget) {

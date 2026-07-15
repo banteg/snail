@@ -22,3 +22,12 @@ to each of the five render camera slots, and `cRGame::Render()` passes that
 slot word to this queue drain after BOD and sprite filtering. The mask is now
 shared with those consumers instead of repeated as a font-local literal. The
 focused object remains exact at 31/31 instructions with four clean references.
+
+## 2026-07-14 font queue ownership closure
+
+Both analysis databases now type the backward cursor as a
+`cFontPrintBuffer*`, resolve the queue base as `g_font_queue`, and dispatch its
+entries through the two recovered void draw owners. Binary Ninja's one-past
+cursor still renders one subtraction as an `__offset(-0x84)` artifact, while
+IDA expresses the same loop as `v1[-1]`; neither is evidence for another
+record type. The matcher source remains exact at `31/31`.

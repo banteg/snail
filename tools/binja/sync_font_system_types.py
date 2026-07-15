@@ -78,8 +78,8 @@ FONT_PRINT_BUFFER_FIELD_UPDATES = (
     ("0x64", "u1", "float"),
     ("0x68", "v1", "float"),
     ("0x6c", "color", "tColour"),
-    ("0x7c", "layer", "int32_t"),
-    ("0x80", "blend", "int32_t"),
+    ("0x7c", "blend_mode", "int32_t"),
+    ("0x80", "rotation", "float"),
 )
 
 FUNCTION_SYMBOL_UPDATES = (
@@ -90,10 +90,18 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x449e90", "measure_font_text_width"),
     ("0x449f50", "register_font_texture_sheet"),
     ("0x44a360", "draw_font_text_instance"),
+    ("0x44a6d0", "draw_queued_font_quad_instance"),
+    ("0x44a730", "draw_font_text_queue"),
+    ("0x44a790", "queue_font_text_instance"),
+    ("0x44a8b0", "queue_axis_aligned_textured_quad"),
+    ("0x44a9b0", "queue_axis_aligned_textured_quad_uv"),
+    ("0x44aac0", "queue_textured_quad_corners"),
+    ("0x44abe0", "layout_and_queue_wrapped_font_text"),
     ("0x44ae10", "initialize_font3d_objects"),
 )
 
 DATA_SYMBOL_UPDATES = (
+    ("0x4b7236", "g_render_queue_active"),
     ("0x753ce8", "g_font_text_buffer"),
     ("0x7544e8", "g_font_queue"),
     ("0x7754e8", "g_font3d_bods"),
@@ -109,6 +117,7 @@ DATA_SYMBOL_UPDATES = (
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4b7236", "uint8_t"),
     ("0x753ce8", "char[0x800]"),
     ("0x7544e8", "cFontPrintBuffer[0x400]"),
     ("0x7754e8", "BodBase[0x80]"),
@@ -151,6 +160,34 @@ PROTO_UPDATES = (
     (
         "draw_font_text_instance",
         "void __cdecl draw_font_text_instance(cFontPrintBuffer* entry)",
+    ),
+    (
+        "draw_queued_font_quad_instance",
+        "void __cdecl draw_queued_font_quad_instance(cFontPrintBuffer* entry)",
+    ),
+    (
+        "draw_font_text_queue",
+        "void __cdecl draw_font_text_queue(uint32_t render_mask)",
+    ),
+    (
+        "queue_font_text_instance",
+        "void __cdecl queue_font_text_instance(char* text, int32_t font_id, float text_scale, float x, float y, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, float text_wave_amplitude, uint8_t text_wave_enabled)",
+    ),
+    (
+        "queue_axis_aligned_textured_quad",
+        "int32_t __cdecl queue_axis_aligned_textured_quad(int32_t texture_id, float x, float y, float width, float height, uint32_t flags, tColour* color, int32_t blend_mode)",
+    ),
+    (
+        "queue_axis_aligned_textured_quad_uv",
+        "int32_t __cdecl queue_axis_aligned_textured_quad_uv(int32_t texture_id, float x, float y, float width, float height, uint32_t flags, tColour* color, float u0, float v0, float u1, float v1, int32_t blend_mode, float rotation)",
+    ),
+    (
+        "queue_textured_quad_corners",
+        "int32_t __cdecl queue_textured_quad_corners(int32_t texture_id, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, int32_t unused_28, int32_t unused_2c, uint32_t flags, tColour* color, float u0, float v0, float u1, float v1, int32_t blend_mode, float rotation)",
+    ),
+    (
+        "layout_and_queue_wrapped_font_text",
+        "float* __cdecl layout_and_queue_wrapped_font_text(char* text, int32_t font_id, float text_scale, float x, float y, float* out_x, float* out_y, float* out_width, float* out_height, float text_wave_amplitude, uint8_t text_wave_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour* color, uint8_t measure_only, uint8_t pulse_alpha)",
     ),
     (
         "initialize_font3d_objects",

@@ -43,3 +43,11 @@ terminator/advance reserve from those shared capacities.
 The exact function remains byte-identical (`73/73`, 24 clean operands), with
 normalized candidate hash
 `8259fdafd19a39e9657714750580a1474f2bc296f9b84087f797edf5c14597d7`.
+
+## 2026-07-14 font queue ownership closure
+
+The live Binary Ninja and IDA views now recover this as the void producer for
+`g_font_queue`: the `g_render_queue_active` gate, fixed text bank, queue count,
+and all authored text/color/alignment fields are named directly. This is an
+analysis-ownership improvement only; the proof-grade `73/73` candidate and its
+24 clean operands remain byte-identical.

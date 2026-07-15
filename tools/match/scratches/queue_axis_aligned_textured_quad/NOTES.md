@@ -18,7 +18,7 @@ Recovered relationships:
 - Skips when the queue is inactive, full, or width/height compare equal to
   zero.
 - Seeds UVs to `[0, 0, 1, 1]`, ORs record flags with `2`, copies a `tColour`,
-  stores the texture id, layer, and clears blend.
+  stores the texture id and blend mode, and clears rotation.
 
 2026-06-20 render-queue chunk: native skip exits share the existing return
 register rather than materializing `return 0`, but removing the final source
@@ -34,8 +34,9 @@ stores. Keep the aggregate color copy and explicit final zero for now.
 `g_font_queue_count = index + 1` later in the entry-fill sequence improves the
 default-UV helper from 69.70% to 89.39%, with 67 candidate instructions versus
 65 target instructions and 17 clean masked operands. The best source shape
-publishes the count after the caller-provided `layer` store and before clearing
-the default `blend`; moving it after `blend` was slightly worse at 87.88%.
+publishes the count after the caller-provided `blend_mode` store and before
+clearing the default `rotation`; moving it after `rotation` was slightly worse
+at 87.88%.
 The remaining residual is the same zero-return epilogue plus count-store
 scheduling around the aggregate color copy.
 - 2026-06-21 raw color-lane retry: splitting the color copy into integer lanes
@@ -45,4 +46,12 @@ scheduling around the aggregate color copy.
   count-store residual.
 
 2026-07-09 family sync: count-at-end (UV order) drops to 87.88%. Combined
-`width && height` guard is neutral at 89.39%. Keep blend-after-count.
+`width && height` guard is neutral at 89.39%. Keep rotation after count.
+
+## 2026-07-14 font queue ownership closure
+
+The shared queue record and both decompilers now establish that the final
+authored argument is an integer `blend_mode`; this default-UV producer clears
+the separate float `rotation` field. The focused result remains honestly
+partial at `89.39%` (`67/65`, 17 clean operands). Its documented count-store
+and incidental-return scheduling residuals were not forced into a fake match.

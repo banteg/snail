@@ -20,8 +20,8 @@ int queue_textured_quad_corners(
     float v0,
     float u1,
     float v1,
-    int layer,
-    int blend)
+    int blend_mode,
+    float rotation)
 {
     (void)unused_28;
     (void)unused_2c;
@@ -51,8 +51,8 @@ int queue_textured_quad_corners(
         entry->v0 = v0;
         entry->u1 = u1;
         entry->v1 = v1;
-        entry->layer = layer;
-        entry->blend = blend;
+        entry->blend_mode = blend_mode;
+        entry->rotation = rotation;
         return offset;
     }
     return 0;

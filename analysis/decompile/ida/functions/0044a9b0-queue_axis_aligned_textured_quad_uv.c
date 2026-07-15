@@ -3,56 +3,79 @@
 /* selector: queue_axis_aligned_textured_quad_uv */
 
 // Appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper.
-void __cdecl sub_44A9B0(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int *a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13)
+int32_t __cdecl queue_axis_aligned_textured_quad_uv(
+        int32_t texture_id,
+        float x,
+        float y,
+        float width,
+        float height,
+        uint32_t flags,
+        tColour *color,
+        float u0,
+        float v0,
+        float u1,
+        float v1,
+        int32_t blend_mode,
+        float rotation)
 {
-  int v13; // ecx
-  int v14; // eax
-  int *v15; // edx
-  int v16; // esi
+  int32_t result; // eax
+  int32_t v14; // ecx
+  __int16 v15; // fps
+  bool v16; // c0
+  char v17; // c2
+  bool v18; // c3
+  __int16 v19; // fps
+  bool v20; // c0
+  char v21; // c2
+  bool v22; // c3
+  tColour *p_color; // edx
+  float a; // esi
 
-  if ( unk_4B7236 )
+  LOBYTE(result) = g_render_queue_active;
+  if ( g_render_queue_active )
   {
-    v13 = unk_777B24;
-    if ( unk_777B24 == 1024 )
+    v14 = g_font_queue_count;
+    if ( g_font_queue_count == 1024 )
     {
-      report_errorf(aFontPrintBuffe);
+      return report_errorf(aFontPrintBuffe);
     }
-    else if ( *(float *)&a4 != 0.0 && *(float *)&a5 != 0.0 )
+    else
     {
-      v14 = 33 * unk_777B24;
-      unk_7544E8[v14] = a6 | 2;
-      unk_754538[v14] = a1;
-      v15 = &unk_754554[33 * v13];
-      *v15 = *a7;
-      v15[1] = a7[1];
-      v15[2] = a7[2];
-      v16 = a7[3];
-      unk_777B24 = v13 + 1;
-      v15[3] = v16;
-      unk_7544EC[v14] = a2;
-      unk_7544F0[v14] = a3;
-      unk_75453C[v14] = a4;
-      unk_754540[v14] = a5;
-      unk_754544[v14] = a8;
-      unk_754548[v14] = a9;
-      unk_75454C[v14] = a10;
-      unk_754550[v14] = a11;
-      unk_754564[v14] = a12;
-      unk_754568[v14] = a13;
+      v16 = width < 0.0;
+      v17 = 0;
+      v18 = width == 0.0;
+      LOWORD(result) = v15;
+      if ( width != 0.0 )
+      {
+        v20 = height < 0.0;
+        v21 = 0;
+        v22 = height == 0.0;
+        LOWORD(result) = v19;
+        if ( height != 0.0 )
+        {
+          result = 132 * g_font_queue_count;
+          g_font_queue[result / 0x84u].flags = flags | 2;
+          g_font_queue[result / 0x84u].texture_id = texture_id;
+          p_color = &g_font_queue[v14].color;
+          p_color->r = color->r;
+          p_color->g = color->g;
+          p_color->b = color->b;
+          a = color->a;
+          g_font_queue_count = v14 + 1;
+          p_color->a = a;
+          g_font_queue[result / 0x84u].x0 = x;
+          g_font_queue[result / 0x84u].y0 = y;
+          g_font_queue[result / 0x84u].width = width;
+          g_font_queue[result / 0x84u].height = height;
+          g_font_queue[result / 0x84u].u0 = u0;
+          g_font_queue[result / 0x84u].v0 = v0;
+          g_font_queue[result / 0x84u].u1 = u1;
+          g_font_queue[result / 0x84u].v1 = v1;
+          g_font_queue[result / 0x84u].blend_mode = blend_mode;
+          g_font_queue[result / 0x84u].rotation = rotation;
+        }
+      }
     }
   }
+  return result;
 }
-

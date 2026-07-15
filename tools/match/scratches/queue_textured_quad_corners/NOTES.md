@@ -16,8 +16,8 @@ Recovered relationships:
 - Appends a quad entry (`flags | 2`) into the shared `cFontPrintBuffer` array.
 - Stores texture id (`+0x50`), all four authored corner pairs (`+0x04/+0x08`,
   `+0x10/+0x14`, `+0x1c/+0x20`, `+0x28/+0x2c`), explicit UV bounds
-  (`+0x5c..+0x68`), `tColour` (`+0x6c`), layer (`+0x7c`), and blend
-  (`+0x80`).
+  (`+0x5c..+0x68`), `tColour` (`+0x6c`), integer blend mode (`+0x7c`), and
+  float rotation (`+0x80`).
 - Both known callers pass two zero stack slots after the corner pairs and
   before the flags/color arguments; the helper does not consume them.
 - Clears the axis-aligned width/height lanes (`+0x54/+0x58`) so the draw
@@ -28,7 +28,8 @@ decompiler's incidental-return shape in spirit, but Wibo aborts through the
 MSVC missing-return warning path (`missing import lstrcpynA`) before producing
 an object. This is the same harness limitation documented for other incidental
 return scratches, so the explicit final zero remains. The residual masked
-operand mismatches are still queue-store scheduling around the UV/layer/blend
+operand mismatches are still queue-store scheduling around the
+UV/blend-mode/rotation
 tail, not evidence that the two unused zero arguments are consumed.
 
 2026-06-21 count-store sweep: moving `g_font_queue_count = index + 1` later in
@@ -49,6 +50,15 @@ plus post-`y3` count store remains the best corner-quad source shape.
 
 2026-07-09 field-order campaign: count-after-width/height still cleans the
 masked audit at 81.43% (worse score). Count-at-end, color-after-corners,
-UV-helper order, blend-before-layer, and early width/height all score ≤87.14%
-and usually dirty the UV/layer/blend offsets. Keep post-`y3` count at 87.14%
+UV-helper order, rotation-before-blend-mode, and early width/height all score
+≤87.14% and usually dirty the UV/blend-mode/rotation offsets. Keep post-`y3`
+count at 87.14%
 with the two known masked schedule mismatches.
+
+## 2026-07-14 font queue ownership closure
+
+The recovered producer ABI now names the final fields as integer `blend_mode`
+and float `rotation`, matching their downstream renderer types in both
+analysis databases. The focused candidate stays at `87.14%` (`71/69`, 18 clean
+operands and two real scheduling mismatches). No source distortion was added
+to conceal the remaining aggregate-color/count-store ordering gap.

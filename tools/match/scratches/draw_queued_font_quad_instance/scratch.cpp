@@ -21,6 +21,6 @@ void draw_queued_font_quad_instance(cFontPrintBuffer* entry)
         entry->u1,
         entry->v1,
         &entry->color,
-        entry->layer,
-        entry->blend);
+        entry->blend_mode,
+        entry->rotation);
 }

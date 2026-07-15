@@ -17,7 +17,7 @@ int queue_axis_aligned_textured_quad(
     float height,
     unsigned int color,
     tColour* tint,
-    int layer);
+    int blend_mode);
 
 int GameRoot::run_frame_update()
 {

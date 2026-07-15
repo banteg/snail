@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 8,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 8,
-  "ida_exported": 8,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,39 +15,35 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_global_font3d_bods_thunk",
-      "address": "0x449c10"
+      "name": "draw_queued_font_quad_instance",
+      "address": "0x44a6d0"
     },
     {
-      "name": "initialize_global_font3d_bods",
-      "address": "0x449c20"
+      "name": "draw_font_text_queue",
+      "address": "0x44a730"
     },
     {
-      "name": "initialize_global_font_queue_colors_thunk",
-      "address": "0x449c40"
+      "name": "queue_font_text_instance",
+      "address": "0x44a790"
     },
     {
-      "name": "initialize_global_font_queue_colors",
-      "address": "0x449c50"
+      "name": "queue_axis_aligned_textured_quad",
+      "address": "0x44a8b0"
     },
     {
-      "name": "measure_font_text_width",
-      "address": "0x449e90"
+      "name": "queue_axis_aligned_textured_quad_uv",
+      "address": "0x44a9b0"
     },
     {
-      "name": "register_font_texture_sheet",
-      "address": "0x449f50"
+      "name": "queue_textured_quad_corners",
+      "address": "0x44aac0"
     },
     {
-      "name": "draw_font_text_instance",
-      "address": "0x44a360"
-    },
-    {
-      "name": "initialize_font3d_objects",
-      "address": "0x44ae10"
+      "name": "layout_and_queue_wrapped_font_text",
+      "address": "0x44abe0"
     }
   ],
-  "health_check_count": 108,
+  "health_check_count": 118,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

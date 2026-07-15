@@ -6,7 +6,7 @@ Initial scratch for the explicit-UV 2D textured quad queue helper at
 Wibo result: 76.12%, 66 target instructions versus 68 candidate instructions.
 The helper matches the non-UV queue shape; remaining residual is the same
 shared-zero epilogue distance, color alpha/count store scheduling, and stack
-argument register choice for the UV/layer/blend stores.
+argument register choice for the UV/blend-mode/rotation stores.
 
 Recovered relationships:
 
@@ -36,13 +36,14 @@ copy sequence.
 entry field stores improves focused Wibo from 76.12% to 92.54%, with 68
 candidate instructions versus 66 target instructions and all 19 masked operands
 clean. Intermediate placements monotonically recovered the queue-field offsets;
-the retained after-`blend` spelling removes the previous masked offset
+the retained after-`rotation` spelling removes the previous masked offset
 mismatches while preserving the aggregate color copy. The residual is now only
 the moved count store plus the known shared zero-return epilogue.
 
 2026-06-21 granular count-store retry: placements before color and after each
-field through `layer` were retested. Scores rise monotonically from 59.09% to
-89.55% as the store moves later, but only the retained after-`blend` placement
+field through `blend_mode` were retested. Scores rise monotonically from 59.09%
+to 89.55% as the store moves later, but only the retained after-`rotation`
+placement
 reaches 92.54% and keeps all 19 masked operands clean. Native's earlier count
 publish remains a scheduling tradeoff; moving it back reintroduces field-offset
 mismatches.
@@ -54,5 +55,14 @@ focused match to 24.43%. Removing only the success `return offset` keeps the
 current runnable `int` source with the explicit skip return despite the native
 incidental return register.
 
-2026-07-09 family sync: count-before-blend (axis-aligned non-UV order) drops to
-89.55%. Early-out rewrite is neutral at 92.54%. Keep blend-before-count.
+2026-07-09 family sync: count-before-rotation (axis-aligned non-UV order) drops
+to 89.55%. Early-out rewrite is neutral at 92.54%. Keep rotation before count.
+
+## 2026-07-14 font queue ownership closure
+
+Android's `G0RenderFont(..., int, float)` signature and the exact queued-quad
+forwarder independently resolve this producer's final pair as integer
+`blend_mode` followed by float `rotation`. Binary Ninja and IDA now emit those
+typed queue fields directly. The source remains at the honest `92.54%`
+frontier (`68/66`, all 19 masked operands clean); the known count-store and
+return-register scheduling differences remain documented rather than shaped.

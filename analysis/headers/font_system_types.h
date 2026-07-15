@@ -6,6 +6,7 @@
  *
  * The global layout is contiguous and independently bounded:
  *
+ *   0x4b7236  uint8_t render_queue_active
  *   0x753ce8  char text_buffer[0x800]
  *   0x7544e8  cFontPrintBuffer queue[0x400]
  *   0x7754e8  BodBase font3d_bods[0x80]
@@ -101,8 +102,8 @@ typedef struct cFontPrintBuffer {
     float u1;
     float v1;
     tColour color;
-    int32_t layer;
-    int32_t blend;
+    int32_t blend_mode;
+    float rotation;
 } cFontPrintBuffer;
 
 void __cdecl initialize_global_font3d_bods_thunk(void);
@@ -116,6 +117,81 @@ int32_t __cdecl register_font_texture_sheet(
     float width_scale,
     float height_scale);
 void __cdecl draw_font_text_instance(cFontPrintBuffer* entry);
+void __cdecl draw_queued_font_quad_instance(cFontPrintBuffer* entry);
+void __cdecl draw_font_text_queue(uint32_t render_mask);
+void __cdecl queue_font_text_instance(
+    char* text,
+    int32_t font_id,
+    float text_scale,
+    float x,
+    float y,
+    int32_t horizontal_align,
+    float anchor_x,
+    uint32_t flags,
+    tColour* color,
+    float text_wave_amplitude,
+    uint8_t text_wave_enabled);
+int32_t __cdecl queue_axis_aligned_textured_quad(
+    int32_t texture_id,
+    float x,
+    float y,
+    float width,
+    float height,
+    uint32_t flags,
+    tColour* color,
+    int32_t blend_mode);
+int32_t __cdecl queue_axis_aligned_textured_quad_uv(
+    int32_t texture_id,
+    float x,
+    float y,
+    float width,
+    float height,
+    uint32_t flags,
+    tColour* color,
+    float u0,
+    float v0,
+    float u1,
+    float v1,
+    int32_t blend_mode,
+    float rotation);
+int32_t __cdecl queue_textured_quad_corners(
+    int32_t texture_id,
+    float x0,
+    float y0,
+    float x1,
+    float y1,
+    float x2,
+    float y2,
+    float x3,
+    float y3,
+    int32_t unused_28,
+    int32_t unused_2c,
+    uint32_t flags,
+    tColour* color,
+    float u0,
+    float v0,
+    float u1,
+    float v1,
+    int32_t blend_mode,
+    float rotation);
+float* __cdecl layout_and_queue_wrapped_font_text(
+    char* text,
+    int32_t font_id,
+    float text_scale,
+    float x,
+    float y,
+    float* out_x,
+    float* out_y,
+    float* out_width,
+    float* out_height,
+    float text_wave_amplitude,
+    uint8_t text_wave_enabled,
+    int32_t horizontal_align,
+    float anchor_x,
+    uint32_t flags,
+    tColour* color,
+    uint8_t measure_only,
+    uint8_t pulse_alpha);
 void __cdecl initialize_font3d_objects(int16_t font_id);
 
 #endif

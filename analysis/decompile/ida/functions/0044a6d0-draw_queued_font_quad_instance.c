@@ -2,27 +2,26 @@
 /* function: draw_queued_font_quad_instance @ 0x44a6d0 */
 /* selector: draw_queued_font_quad_instance */
 
-// Draws one queued explicit font-quad record by forwarding its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper.
-int __cdecl sub_44A6D0(int a1)
+// Void OSDPrintReal counterpart over one cFontPrintBuffer: forwards its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper. The queue drain discards EAX.
+void __cdecl draw_queued_font_quad_instance(cFontPrintBuffer *entry)
 {
-  return draw_textured_quad_immediate(
-           LODWORD(g_sprite_texture_table[*(_DWORD *)(a1 + 80)]),
-           *(float *)(a1 + 4),
-           *(float *)(a1 + 8),
-           *(float *)(a1 + 16),
-           *(float *)(a1 + 20),
-           *(float *)(a1 + 28),
-           *(float *)(a1 + 32),
-           *(float *)(a1 + 40),
-           *(float *)(a1 + 44),
-           *(float *)(a1 + 84),
-           *(float *)(a1 + 88),
-           *(float *)(a1 + 92),
-           *(float *)(a1 + 96),
-           *(float *)(a1 + 100),
-           *(float *)(a1 + 104),
-           (float *)(a1 + 108),
-           *(_DWORD *)(a1 + 124),
-           *(float *)(a1 + 128));
+  draw_textured_quad_immediate(
+    LODWORD(g_sprite_texture_table[entry->texture_id]),
+    entry->x0,
+    entry->y0,
+    entry->x1,
+    entry->y1,
+    entry->x2,
+    entry->y2,
+    entry->x3,
+    entry->y3,
+    entry->width,
+    entry->height,
+    entry->u0,
+    entry->v0,
+    entry->u1,
+    entry->v1,
+    (Color4f *)&entry->color,
+    entry->blend_mode,
+    entry->rotation);
 }
-

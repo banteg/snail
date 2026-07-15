@@ -43,3 +43,11 @@ were unresolved or mismatched in the initial run.
   floats, and adding `register` hints for the text cursors are neutral or worse.
   The retained residual remains early local store order and line-buffer cursor
   register choice, not a missing line-layout branch.
+
+## 2026-07-14 font queue ownership closure
+
+Both decompilers now expose the typed `FontSheet` line-step expression through
+`height_scale`, `spacing_scale`, and `line_marker_y`, and the queue call resolves
+to the recovered void `queue_font_text_instance` owner. The focused matcher is
+unchanged at `94.19%` (`155/155`, 12 clean operands); its residual is still the
+documented local/cursor scheduling shape, not missing ownership or behavior.

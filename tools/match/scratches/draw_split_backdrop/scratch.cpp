@@ -16,8 +16,8 @@ int queue_axis_aligned_textured_quad_uv(
     float v0,
     float u1,
     float v1,
-    int layer,
-    int blend);
+    int blend_mode,
+    float rotation);
 
 int Backdrop::draw_split_backdrop()
 {

@@ -1144,7 +1144,7 @@
       "android_symbol": "OSDPrintReal(cFontPrintBuffer*)",
       "source_object": null,
       "confidence": "high",
-      "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both forward the explicit quad coordinates, texture, UVs, color, layer, and blend fields; the only Windows caller discards EAX, and the exact forwarder remains byte-identical as void."
+      "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both forward the explicit quad coordinates, texture, UVs, color, integer blend mode, and float rotation fields; the only Windows caller discards EAX, and the exact forwarder remains byte-identical as void."
     },
     {
       "address": "0x44a730",

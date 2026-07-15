@@ -3,70 +3,69 @@
 /* selector: queue_textured_quad_corners */
 
 // Appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. The backdrop and galaxy-line renderers use this helper.
-char __cdecl sub_44AAC0(
-        int a1,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int *a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17,
-        int a18,
-        int a19)
+int32_t __cdecl queue_textured_quad_corners(
+        int32_t texture_id,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
+        float x2,
+        float y2,
+        float x3,
+        float y3,
+        int32_t unused_28,
+        int32_t unused_2c,
+        uint32_t flags,
+        tColour *color,
+        float u0,
+        float v0,
+        float u1,
+        float v1,
+        int32_t blend_mode,
+        float rotation)
 {
-  unsigned int v19; // eax
-  int v20; // ecx
-  int *v21; // esi
-  int v22; // edi
+  int32_t result; // eax
+  int32_t v20; // ecx
+  tColour *p_color; // esi
+  float a; // edi
 
-  LOBYTE(v19) = unk_4B7236;
-  if ( unk_4B7236 )
+  LOBYTE(result) = g_render_queue_active;
+  if ( g_render_queue_active )
   {
-    v20 = unk_777B24;
-    if ( unk_777B24 == 1024 )
+    v20 = g_font_queue_count;
+    if ( g_font_queue_count == 1024 )
     {
-      LOBYTE(v19) = report_errorf(aFontPrintBuffe);
+      return report_errorf(aFontPrintBuffe);
     }
     else
     {
-      v19 = 132 * unk_777B24;
-      unk_7544E8[v19 / 4] = a12 | 2;
-      unk_754538[v19 / 4] = a1;
-      v21 = &unk_754554[33 * v20];
-      *v21 = *a13;
-      v21[1] = a13[1];
-      v21[2] = a13[2];
-      v22 = a13[3];
-      unk_777B24 = v20 + 1;
-      v21[3] = v22;
-      unk_7544EC[v19 / 4] = a2;
-      unk_7544F0[v19 / 4] = a3;
-      unk_7544F8[v19 / 4] = a4;
-      unk_7544FC[v19 / 4] = a5;
-      unk_754504[v19 / 4] = a6;
-      unk_754508[v19 / 4] = a7;
-      unk_754510[v19 / 4] = a8;
-      unk_754514[v19 / 4] = a9;
-      unk_75453C[v19 / 4] = 0;
-      unk_754540[v19 / 4] = 0;
-      unk_754544[v19 / 4] = a14;
-      unk_754548[v19 / 4] = a15;
-      unk_75454C[v19 / 4] = a16;
-      unk_754550[v19 / 4] = a17;
-      unk_754564[v19 / 4] = a18;
-      unk_754568[v19 / 4] = a19;
+      result = 132 * g_font_queue_count;
+      g_font_queue[result / 0x84u].flags = flags | 2;
+      g_font_queue[result / 0x84u].texture_id = texture_id;
+      p_color = &g_font_queue[v20].color;
+      p_color->r = color->r;
+      p_color->g = color->g;
+      p_color->b = color->b;
+      a = color->a;
+      g_font_queue_count = v20 + 1;
+      p_color->a = a;
+      g_font_queue[result / 0x84u].x0 = x0;
+      g_font_queue[result / 0x84u].y0 = y0;
+      g_font_queue[result / 0x84u].x1 = x1;
+      g_font_queue[result / 0x84u].y1 = y1;
+      g_font_queue[result / 0x84u].x2 = x2;
+      g_font_queue[result / 0x84u].y2 = y2;
+      g_font_queue[result / 0x84u].x3 = x3;
+      g_font_queue[result / 0x84u].y3 = y3;
+      g_font_queue[result / 0x84u].width = 0.0;
+      g_font_queue[result / 0x84u].height = 0.0;
+      g_font_queue[result / 0x84u].u0 = u0;
+      g_font_queue[result / 0x84u].v0 = v0;
+      g_font_queue[result / 0x84u].u1 = u1;
+      g_font_queue[result / 0x84u].v1 = v1;
+      g_font_queue[result / 0x84u].blend_mode = blend_mode;
+      g_font_queue[result / 0x84u].rotation = rotation;
     }
   }
-  return v19;
+  return result;
 }
-

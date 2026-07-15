@@ -43,8 +43,8 @@ int queue_axis_aligned_textured_quad_uv(
     float v0,
     float u1,
     float v1,
-    int layer,
-    int blend);
+    int blend_mode,
+    float rotation);
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 

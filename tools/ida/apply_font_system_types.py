@@ -21,7 +21,15 @@ TRUSTED_NAMES = (
     (0x449E90, "measure_font_text_width"),
     (0x449F50, "register_font_texture_sheet"),
     (0x44A360, "draw_font_text_instance"),
+    (0x44A6D0, "draw_queued_font_quad_instance"),
+    (0x44A730, "draw_font_text_queue"),
+    (0x44A790, "queue_font_text_instance"),
+    (0x44A8B0, "queue_axis_aligned_textured_quad"),
+    (0x44A9B0, "queue_axis_aligned_textured_quad_uv"),
+    (0x44AAC0, "queue_textured_quad_corners"),
+    (0x44ABE0, "layout_and_queue_wrapped_font_text"),
     (0x44AE10, "initialize_font3d_objects"),
+    (0x4B7236, "g_render_queue_active"),
     (0x753CE8, "g_font_text_buffer"),
     (0x7544E8, "g_font_queue"),
     (0x7754E8, "g_font3d_bods"),
@@ -66,12 +74,41 @@ TRUSTED_FUNCTION_DECLARATIONS = (
         "void __cdecl draw_font_text_instance(cFontPrintBuffer *entry);",
     ),
     (
+        "draw_queued_font_quad_instance",
+        "void __cdecl draw_queued_font_quad_instance(cFontPrintBuffer *entry);",
+    ),
+    (
+        "draw_font_text_queue",
+        "void __cdecl draw_font_text_queue(uint32_t render_mask);",
+    ),
+    (
+        "queue_font_text_instance",
+        "void __cdecl queue_font_text_instance(char *text, int32_t font_id, float text_scale, float x, float y, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, float text_wave_amplitude, uint8_t text_wave_enabled);",
+    ),
+    (
+        "queue_axis_aligned_textured_quad",
+        "int32_t __cdecl queue_axis_aligned_textured_quad(int32_t texture_id, float x, float y, float width, float height, uint32_t flags, tColour *color, int32_t blend_mode);",
+    ),
+    (
+        "queue_axis_aligned_textured_quad_uv",
+        "int32_t __cdecl queue_axis_aligned_textured_quad_uv(int32_t texture_id, float x, float y, float width, float height, uint32_t flags, tColour *color, float u0, float v0, float u1, float v1, int32_t blend_mode, float rotation);",
+    ),
+    (
+        "queue_textured_quad_corners",
+        "int32_t __cdecl queue_textured_quad_corners(int32_t texture_id, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, int32_t unused_28, int32_t unused_2c, uint32_t flags, tColour *color, float u0, float v0, float u1, float v1, int32_t blend_mode, float rotation);",
+    ),
+    (
+        "layout_and_queue_wrapped_font_text",
+        "float *__cdecl layout_and_queue_wrapped_font_text(char *text, int32_t font_id, float text_scale, float x, float y, float *out_x, float *out_y, float *out_width, float *out_height, float text_wave_amplitude, uint8_t text_wave_enabled, int32_t horizontal_align, float anchor_x, uint32_t flags, tColour *color, uint8_t measure_only, uint8_t pulse_alpha);",
+    ),
+    (
         "initialize_font3d_objects",
         "void __cdecl initialize_font3d_objects(int16_t font_id);",
     ),
 )
 
 TRUSTED_DATA_DECLARATIONS = (
+    (0x4B7236, "g_render_queue_active", "uint8_t g_render_queue_active;"),
     (0x753CE8, "g_font_text_buffer", "char g_font_text_buffer[0x800];"),
     (0x7544E8, "g_font_queue", "cFontPrintBuffer g_font_queue[0x400];"),
     (0x7754E8, "g_font3d_bods", "BodBase g_font3d_bods[0x80];"),
@@ -90,6 +127,13 @@ DIRTY_FUNCTIONS = (
     0x449E90,
     0x449F50,
     0x44A360,
+    0x44A6D0,
+    0x44A730,
+    0x44A790,
+    0x44A8B0,
+    0x44A9B0,
+    0x44AAC0,
+    0x44ABE0,
     0x44AE10,
 )
 

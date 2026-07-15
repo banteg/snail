@@ -33,8 +33,8 @@ int queue_axis_aligned_textured_quad_uv(
     float v0,
     float u1,
     float v1,
-    int layer,
-    int blend); // @ 0x44a9b0
+    int blend_mode,
+    float rotation); // @ 0x44a9b0
 int Galaxy::update_galaxy()
 {
     tColour color;

@@ -61,8 +61,8 @@ struct cFontPrintBuffer {
     float u1;               // +0x64
     float v1;               // +0x68
     tColour color;          // +0x6c
-    int layer;              // +0x7c
-    int blend;              // +0x80
+    int blend_mode;         // +0x7c
+    float rotation;         // +0x80
 };
 
 typedef char cFontPrintBuffer_must_be_0x84[
@@ -98,8 +98,8 @@ void draw_textured_quad_immediate(
     float u0, float v0,
     float u1, float v1,
     tColour* color,
-    int layer,
-    int blend); // @ 0x413030
+    int blend_mode,
+    float rotation); // @ 0x413030
 void draw_font_text_instance(cFontPrintBuffer* entry); // @ 0x44a360
 void draw_queued_font_quad_instance(cFontPrintBuffer* entry); // @ 0x44a6d0
 void draw_font_text_queue(unsigned int render_mask); // @ 0x44a730
@@ -111,7 +111,21 @@ int queue_axis_aligned_textured_quad(
     float height,
     unsigned int flags,
     tColour* color,
-    int layer); // @ 0x44a8b0
+    int blend_mode); // @ 0x44a8b0
+int queue_axis_aligned_textured_quad_uv(
+    int texture_id,
+    float x,
+    float y,
+    float width,
+    float height,
+    unsigned int flags,
+    tColour* color,
+    float u0,
+    float v0,
+    float u1,
+    float v1,
+    int blend_mode,
+    float rotation); // @ 0x44a9b0
 void queue_font_text_instance(
     char* text,
     int font_id,
@@ -136,7 +150,7 @@ int queue_textured_quad_corners(
     tColour* color,
     float u0, float v0,
     float u1, float v1,
-    int layer,
-    int blend); // @ 0x44aac0
+    int blend_mode,
+    float rotation); // @ 0x44aac0
 
 #endif

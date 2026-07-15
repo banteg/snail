@@ -14,8 +14,8 @@ int queue_axis_aligned_textured_quad_uv(
     float v0,
     float u1,
     float v1,
-    int layer,
-    int blend)
+    int blend_mode,
+    float rotation)
 {
     if (g_render_queue_active != 0) {
         int index = g_font_queue_count;
@@ -36,8 +36,8 @@ int queue_axis_aligned_textured_quad_uv(
                 entry->v0 = v0;
                 entry->u1 = u1;
                 entry->v1 = v1;
-                entry->layer = layer;
-                entry->blend = blend;
+                entry->blend_mode = blend_mode;
+                entry->rotation = rotation;
                 g_font_queue_count = index + 1;
                 return offset;
             }
