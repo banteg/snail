@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_bod_object @ 0x42f5d0 */
 
-0042f5d4        *(arg1 + 0x24) = arg2
-0042f5da        int32_t result
-0042f5da        result.b = (*(arg1 + 4)).b | 2
-0042f5dc        *(arg1 + 4) = result
-0042f5df        return result
+0042f5d4        bod->object = object
+0042f5d7        uint32_t list_flags = bod->bod.list_flags
+0042f5da        list_flags.b |= 2
+0042f5dc        bod->bod.list_flags = list_flags
+0042f5df        return list_flags

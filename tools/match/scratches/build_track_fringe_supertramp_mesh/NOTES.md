@@ -83,3 +83,13 @@ The generated `Object*` now comes directly from
 `Path::fringe_mesh_bod.object`; the former cast was a stale holdover from when
 that embedded BOD field was untyped. Focused output remains byte-identical at
 92.87%, 421/421 instructions, prefix 69/421, with all 25 operands clean.
+
+## 2026-07-15 Binary Ninja object-owner replay
+
+The repeatable Binary Ninja path/object replay now carries the canonical
+`Object*` through `BodBase +0x24`, `set_bod_object`, and the vertex/face
+allocation helpers. The tracked decompile exposes the generated object's flags,
+blend mode, vertices, and facequads plus the sampled
+`self->bod.object->vertices` source bank; `PathTemplateStripMesh` no longer
+appears. The remaining raw offsets are derived row/face cursor expressions,
+not an unresolved owner. Focused matching remains byte-identical at 92.87%.

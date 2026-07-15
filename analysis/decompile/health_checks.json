@@ -2961,6 +2961,90 @@
         "TrackParcelRuntime",
         "result->world_position"
       ]
+    },
+    {
+      "name": "bn_bod_object_attachment_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f5d0-set_bod_object.c",
+      "required_substrings": [
+        "bod->object = object",
+        "bod->bod.list_flags",
+        "return list_flags"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "*(bod +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_vertex_allocation_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f710-request_object_vertices.c",
+      "required_substrings": [
+        "object->vertex_count",
+        "object->vertices",
+        "request_object_vertex_colours(object)"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "mesh->",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_facequad_allocation_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f8c0-request_object_facequads.c",
+      "required_substrings": [
+        "object->facequad_count",
+        "object->facequad_capacity",
+        "object->facequads"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "mesh->",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_track_fringe_mesh_object_owners",
+      "artifact": "analysis/decompile/binja/functions/004246a0-build_track_fringe_mesh.c",
+      "required_substrings": [
+        "set_bod_object(&self->fringe_mesh_bod",
+        "struct Object* object = self->fringe_mesh_bod.object",
+        "self->fringe_mesh_bod.color.r",
+        "object->flags | OBJECT_FLAG_DISABLE_CULLING",
+        "object->blend_mode = 5",
+        "self->bod.object->vertices",
+        "object->facequads",
+        "self->segment_count",
+        "self->width_cells"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "arg1",
+        "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_track_fringe_supertramp_object_owners",
+      "artifact": "analysis/decompile/binja/functions/00424ad0-build_track_fringe_supertramp_mesh.c",
+      "required_substrings": [
+        "set_bod_object(&self->fringe_mesh_bod",
+        "struct Object* object = self->fringe_mesh_bod.object",
+        "object->flags = flags | OBJECT_FLAG_DISABLE_CULLING",
+        "object->blend_mode = 5",
+        "self->bod.object->vertices",
+        "object->facequads",
+        "self->segment_count",
+        "self->width_cells"
+      ],
+      "forbidden_substrings": [
+        "PathTemplateStripMesh",
+        "arg1",
+        "analysis skipped",
+        "unimplemented"
+      ]
     }
   ]
 }

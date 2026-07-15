@@ -499,7 +499,6 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "get_track_runtime_cell_at_world_z",
     ):
         assert f'"{function_name}"' in deferred_prototypes
-
     assert (
         '"initialize_subgame", "void __thiscall '
         'initialize_subgame(SubgameRuntime* game)"'
@@ -600,6 +599,48 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         declaration = f"void __thiscall {function_name}(SubgameRuntime* game);"
         assert declaration in header
         assert declaration in ida_source
+
+
+def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    object_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    object_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+    matcher_header = (repo_root / "tools/match/include/bod_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert '("0x24", "object", "Object*")' in path_sync
+    assert '("BodBase", BOD_BASE_FIELD_UPDATES)' in path_sync
+    assert '("FringeObject", FRINGE_OBJECT_FIELD_UPDATES)' in path_sync
+    assert "Object* object;" in path_header
+    assert "int set_bod_object(Object* object);" in matcher_header
+    for function_name in (
+        "request_object_vertices",
+        "request_object_vertex_colours",
+        "request_object_facequads",
+    ):
+        assert f'"{function_name}"' in object_sync
+        for header in object_headers:
+            assert function_name in header
+    for function_name in (
+        "set_bod_object",
+        "initialize_bod_base",
+        "apply_bod_position",
+        "build_track_fringe_mesh",
+        "build_track_fringe_supertramp_mesh",
+    ):
+        assert f'"{function_name}"' in path_sync
 
 
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:

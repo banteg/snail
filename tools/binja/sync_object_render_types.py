@@ -128,6 +128,18 @@ PROTO_UPDATES = (
         "void __thiscall apply_object_toon(Object* object, int32_t toon_flags)",
     ),
     (
+        "request_object_vertices",
+        "void __thiscall request_object_vertices(Object* object, int32_t vertex_count)",
+    ),
+    (
+        "request_object_vertex_colours",
+        "void __fastcall request_object_vertex_colours(Object* object)",
+    ),
+    (
+        "request_object_facequads",
+        "void __thiscall request_object_facequads(Object* object, int32_t facequad_count)",
+    ),
+    (
         "request_object_edges",
         "void __thiscall request_object_edges(Object* object, int32_t edge_count)",
     ),

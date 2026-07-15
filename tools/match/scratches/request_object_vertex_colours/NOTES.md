@@ -17,3 +17,7 @@ one-instruction ordering residual.
 2026-07-14 allocation ownership: the color bank now derives its 16-byte stride
 from `tColour`. Matching remains exact at 30/30 instructions with both operands
 clean.
+
+2026-07-15 Binary Ninja replay: the live fastcall prototype and tracked
+artifact now retain the canonical `Object* object` receiver. Matching remains
+exact.

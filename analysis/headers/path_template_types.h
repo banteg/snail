@@ -7,6 +7,8 @@ typedef unsigned int uint32_t;
 typedef short int16_t;
 typedef int int32_t;
 
+typedef struct Object Object;
+
 /* Empty C++ cRPathManager occupies one byte in the Windows root layout. */
 typedef struct PathManager {
     uint8_t _empty;
@@ -65,7 +67,7 @@ typedef struct BodBase {
     Vec3 position;
     float render_arg_1c;
     float render_arg_20;
-    void* object;
+    Object* object;
     tColour color;
 } BodBase;
 
@@ -84,12 +86,11 @@ typedef struct FringeObject {
     Vec3 position;
     float render_arg_1c;
     float render_arg_20;
-    void* object;
+    Object* object;
     tColour color;
 } FringeObject;
 
 typedef struct Player Player;
-typedef struct Object Object;
 typedef struct SubSegment SubSegment;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct Snail Snail;
@@ -1969,9 +1970,24 @@ void __thiscall compute_kind42_attachment_transform(
 void __thiscall uninit_pause_menu(SubPause* pause);
 void __thiscall initialize_pause_menu(SubPause* pause);
 void __thiscall update_pause_menu(SubPause* pause);
+int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
+BodBase* __thiscall initialize_bod_base(BodBase* bod);
+Object* __thiscall apply_bod_position(
+    BodBase* bod,
+    TransformMatrix* matrix
+);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);
+void __thiscall build_track_fringe_mesh(
+    Path* self,
+    char* texture_path,
+    float clamp_side
+);
+void __thiscall build_track_fringe_supertramp_mesh(
+    Path* self,
+    char* texture_path
+);
 tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a);
 void __thiscall set_color_alpha(tColour* color, float alpha);
 void __thiscall set_color_grayscale(tColour* color, float intensity);

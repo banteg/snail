@@ -95,3 +95,14 @@ colour borrow reloads the canonical `GameRoot* g_game` and calls the embedded
 `subgame`, replacing the equivalent `char* + 0x74618` reconstruction while
 preserving the native singleton access. Focused output is byte-identical at
 89.31%, 318/318 instructions, prefix 18/318, with all 23 operands clean.
+
+## 2026-07-15 Binary Ninja object-owner replay
+
+The repeatable Binary Ninja path/object replay now installs `Object*` on the
+shared `BodBase +0x24` slot and on the object allocation helpers. The tracked
+decompile consequently resolves the generated owner as
+`self->fringe_mesh_bod.object`, its `ObjectFlag` word and blend mode, the source
+bank as `self->bod.object->vertices`, and both allocation calls without the
+obsolete 0x60-byte `PathTemplateStripMesh` prefix. The remaining raw offsets
+are derived row/face cursor expressions; they do not represent an unresolved
+object owner. Focused matching remains byte-identical at 89.31%.

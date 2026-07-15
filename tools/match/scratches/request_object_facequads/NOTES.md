@@ -18,3 +18,7 @@ layout.
 2026-07-14 allocation ownership: the face bank now derives its complete
 0x30-byte stride from the shared `ObjectFaceQuad` type. Matching remains exact
 at 40/40 instructions with all five operands clean.
+
+2026-07-15 Binary Ninja replay: the live prototype and tracked artifact now
+retain the canonical `Object* object` receiver instead of the obsolete
+path-strip prefix. Matching remains exact.

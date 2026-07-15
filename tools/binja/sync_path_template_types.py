@@ -507,12 +507,20 @@ SNAIL_VISUAL_FIELD_UPDATES = (
     ("0x88", "squidge_secondary", "float"),
 )
 
+BOD_BASE_FIELD_UPDATES = (
+    ("0x24", "object", "Object*"),
+)
+
+FRINGE_OBJECT_FIELD_UPDATES = (
+    ("0x24", "object", "Object*"),
+)
+
 TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x00", "bod", "BodNode"),
     ("0x10", "anchor_position", "Vec3"),
     ("0x1c", "render_arg_1c", "int32_t"),
     ("0x20", "render_arg_20", "float"),
-    ("0x24", "object", "void*"),
+    ("0x24", "object", "Object*"),
     ("0x28", "color", "tColour"),
     ("0x38", "attachment_template_record", "Path*"),
     ("0x3c", "tile_id", "uint8_t"),
@@ -690,6 +698,26 @@ CUT_SCENE_PROTO_UPDATES = (
 )
 
 PROTO_UPDATES = GOLB_PROTO_UPDATES + (
+    (
+        "set_bod_object",
+        "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
+    ),
+    (
+        "initialize_bod_base",
+        "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
+    ),
+    (
+        "apply_bod_position",
+        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
+    ),
+    (
+        "build_track_fringe_mesh",
+        "void __thiscall build_track_fringe_mesh(Path* self, char* texture_path, float clamp_side)",
+    ),
+    (
+        "build_track_fringe_supertramp_mesh",
+        "void __thiscall build_track_fringe_supertramp_mesh(Path* self, char* texture_path)",
+    ),
     (
         "cache_music_file",
         "char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path)",
@@ -1367,6 +1395,8 @@ def main() -> int:
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
+                ("BodBase", BOD_BASE_FIELD_UPDATES),
+                ("FringeObject", FRINGE_OBJECT_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("SubRow", SUB_ROW_FIELD_UPDATES),
                 ("Path", PATH_FIELD_UPDATES),
