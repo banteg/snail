@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import sys
+import tempfile
 
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
@@ -32,7 +34,73 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_MANIFEST_PATH,
         help="Path to the tracked gameplay function manifest.",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="Optional function selector(s) to sync. Matches manifest name or hex address.",
+    )
     return parser.parse_args()
+
+
+def _parse_address(value: object) -> int:
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        return int(value, 0)
+    raise TypeError(f"unsupported address value: {value!r}")
+
+
+def _select_manifest_functions(
+    manifest: dict[str, object], selectors: list[str]
+) -> dict[str, object]:
+    if not selectors:
+        return manifest
+
+    functions = manifest.get("functions")
+    if not isinstance(functions, list):
+        raise ValueError("manifest field 'functions' must be a list")
+
+    requested = {selector.lower() for selector in selectors}
+    selected: list[object] = []
+    matched: set[str] = set()
+    for function in functions:
+        if not isinstance(function, dict):
+            raise ValueError("manifest function entries must be objects")
+        name = function.get("name")
+        address = function.get("address")
+        if not isinstance(name, str) or not name:
+            raise ValueError("manifest function entry has an invalid name")
+        address_hex = f"0x{_parse_address(address):x}"
+        selectors_for_function = {name.lower(), address_hex.lower()}
+        hits = requested & selectors_for_function
+        if hits:
+            selected.append(function)
+            matched.update(hits)
+
+    missing = sorted(requested - matched)
+    if missing:
+        raise RuntimeError(
+            "manifest does not contain requested function selector(s): "
+            + ", ".join(missing)
+        )
+
+    filtered = dict(manifest)
+    filtered["functions"] = selected
+    return filtered
+
+
+def _write_filtered_manifest(
+    manifest_path: Path, selectors: list[str], directory: Path
+) -> Path:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("manifest root must be an object")
+    filtered = _select_manifest_functions(manifest, selectors)
+    directory.mkdir(parents=True, exist_ok=True)
+    filtered_path = directory / manifest_path.name
+    filtered_path.write_text(json.dumps(filtered, indent=2) + "\n", encoding="utf-8")
+    return filtered_path
 
 
 def main() -> int:
@@ -48,13 +116,22 @@ def main() -> int:
     if not IDAPYTHON_SCRIPT_PATH.is_file():
         raise FileNotFoundError(f"IDAPython sync script not found: {IDAPYTHON_SCRIPT_PATH}")
 
-    exit_code, log_text = run_ida_script(
-        ida_bin=ida_bin,
-        script_path=IDAPYTHON_SCRIPT_PATH,
-        db_path=db_path,
-        script_args=[str(manifest_path)],
-        log_stem="sync-symbols",
-    )
+    with tempfile.TemporaryDirectory(prefix="snail-ida-symbols-") as temp_dir:
+        selected_manifest_path = manifest_path
+        if args.only:
+            selected_manifest_path = _write_filtered_manifest(
+                manifest_path,
+                list(args.only),
+                Path(temp_dir),
+            )
+
+        exit_code, log_text = run_ida_script(
+            ida_bin=ida_bin,
+            script_path=IDAPYTHON_SCRIPT_PATH,
+            db_path=db_path,
+            script_args=[str(selected_manifest_path)],
+            log_stem="sync-symbols",
+        )
     sys.stdout.write(log_text)
     return exit_code
 

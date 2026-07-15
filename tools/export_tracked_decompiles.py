@@ -51,6 +51,30 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
+def _build_ida_sync_command(
+    *,
+    manifest_path: Path,
+    ida_bin: str | None,
+    ida_db: Path | None,
+    selectors: list[str],
+) -> list[str]:
+    command = [
+        "uv",
+        "run",
+        "python",
+        "tools/ida/sync_symbols.py",
+        "--manifest",
+        str(manifest_path),
+    ]
+    if ida_bin:
+        command.extend(["--ida-bin", ida_bin])
+    if ida_db:
+        command.extend(["--db", str(ida_db.resolve())])
+    for selector in selectors:
+        command.extend(["--only", selector])
+    return command
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Refresh tracked Binary Ninja and IDA decompile artifacts for all named functions in the manifest."
@@ -159,13 +183,13 @@ def main() -> int:
     selected_functions = _select_manifest_functions(manifest, list(args.only))
 
     if args.sync_ida_symbols:
-        sync_args = ["--manifest", str(manifest_path)]
-        if args.ida_bin:
-            sync_args.extend(["--ida-bin", args.ida_bin])
-        if args.ida_db:
-            sync_args.extend(["--db", str(args.ida_db.resolve())])
         subprocess.run(
-            ["uv", "run", "python", "tools/ida/sync_symbols.py", *sync_args],
+            _build_ida_sync_command(
+                manifest_path=manifest_path,
+                ida_bin=args.ida_bin,
+                ida_db=args.ida_db,
+                selectors=list(args.only),
+            ),
             cwd=REPO_ROOT,
             check=True,
             text=True,

@@ -78,6 +78,8 @@ Notes:
 - reruns prune stale `.c` files from the tracked output trees when a manifest name changes
 - inspect mismatch entries first when one tool appears to “miss” a function; they often indicate real database drift rather than an export failure
 - the health check is intentionally narrow and only guards a few high-value tracked exports where type/prototype regressions have caused real readability loss before
-- `--only` matches manifest names or hex addresses and is forwarded to both export lanes
+- `--only` matches manifest names or hex addresses and is forwarded to both export lanes;
+  with `--sync-ida-symbols`, the IDA replay is restricted to the same selection so an
+  unrelated malformed function boundary cannot block a focused refresh
 - `--strict` exits nonzero when either lane reports mismatches or any health check fails
 - when `--root` points outside the repo, the summary and per-tool indexes keep absolute artifact paths instead of forcing repo-relative ones

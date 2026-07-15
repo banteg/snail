@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import types
@@ -63,6 +64,101 @@ def test_tracked_export_defaults_to_the_pinned_binja_target(
     monkeypatch.setattr(sys, "argv", ["export_tracked_decompiles.py"])
 
     assert module.parse_args().bn_target == "SnailMail_unwrapped.exe.bndb"
+
+
+def test_tracked_export_forwards_focused_selectors_to_ida_sync(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/export_tracked_decompiles.py",
+        "test_export_tracked_decompiles_ida_sync",
+    )
+    manifest = tmp_path / "functions.json"
+    database = tmp_path / "game.i64"
+
+    command = module._build_ida_sync_command(
+        manifest_path=manifest,
+        ida_bin="idat64",
+        ida_db=database,
+        selectors=["update_frontend_widget_interaction", "0x402820"],
+    )
+
+    assert command == [
+        "uv",
+        "run",
+        "python",
+        "tools/ida/sync_symbols.py",
+        "--manifest",
+        str(manifest),
+        "--ida-bin",
+        "idat64",
+        "--db",
+        str(database),
+        "--only",
+        "update_frontend_widget_interaction",
+        "--only",
+        "0x402820",
+    ]
+
+
+def test_ida_symbol_sync_filters_manifest_by_name_and_address(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/ida/sync_symbols.py",
+        "test_ida_sync_symbols_focused_manifest",
+    )
+    manifest = tmp_path / "functions.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "name": "test symbols",
+                "functions": [
+                    {"address": "0x402820", "name": "update_frontend_widget_interaction"},
+                    {"address": "0x4035b0", "name": "border_input_text"},
+                    {"address": "0x406da0", "name": "remove_tail_failed"},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    filtered_path = module._write_filtered_manifest(
+        manifest,
+        ["update_frontend_widget_interaction", "0x4035b0"],
+        tmp_path / "filtered",
+    )
+    filtered = json.loads(filtered_path.read_text(encoding="utf-8"))
+
+    assert filtered["name"] == "test symbols"
+    assert [function["name"] for function in filtered["functions"]] == [
+        "update_frontend_widget_interaction",
+        "border_input_text",
+    ]
+
+
+def test_ida_symbol_sync_rejects_unknown_focused_selector(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/ida/sync_symbols.py",
+        "test_ida_sync_symbols_unknown_selector",
+    )
+
+    with pytest.raises(RuntimeError, match="missing_function"):
+        module._select_manifest_functions(
+            {
+                "functions": [
+                    {"address": "0x402820", "name": "update_frontend_widget_interaction"}
+                ]
+            },
+            ["missing_function"],
+        )
 
 
 def test_binja_focused_export_retires_stale_same_address_artifacts(
