@@ -300,11 +300,26 @@ from binaryninja import FunctionAnalysisSkipOverride
 
 addresses = {json.dumps(addresses)}
 reanalyzed = []
+interior_aliases = []
 unresolved = []
 for address in addresses:
     function = bv.get_function_at(address)
     if function is None:
-        unresolved.append({{"address": hex(address), "reason": "missing_function"}})
+        containing = list(bv.get_functions_containing(address))
+        if len(containing) == 1:
+            owner = containing[0]
+            if not owner.analysis_skipped and owner.hlil is not None:
+                interior_aliases.append({{
+                    "address": hex(address),
+                    "owner_address": hex(owner.start),
+                    "owner_name": owner.name,
+                }})
+                continue
+        unresolved.append({{
+            "address": hex(address),
+            "reason": "missing_function",
+            "containing_count": len(containing),
+        }})
         continue
     if not function.analysis_skipped:
         continue
@@ -330,6 +345,7 @@ if reanalyzed:
 
 result = {{
     "reanalyzed": reanalyzed,
+    "interior_aliases": interior_aliases,
     "unresolved": unresolved,
     "snapshot_saved": snapshot_saved,
 }}
@@ -346,8 +362,13 @@ result = {{
     if not isinstance(result, dict):
         raise RuntimeError(f"unexpected timed-out analysis replay output: {payload!r}")
     reanalyzed = result.get("reanalyzed")
+    interior_aliases = result.get("interior_aliases")
     unresolved = result.get("unresolved")
-    if not isinstance(reanalyzed, list) or not isinstance(unresolved, list):
+    if (
+        not isinstance(reanalyzed, list)
+        or not isinstance(interior_aliases, list)
+        or not isinstance(unresolved, list)
+    ):
         raise RuntimeError(f"unexpected timed-out analysis replay result: {result!r}")
     failed = [
         entry

@@ -39,9 +39,18 @@ def _load_manifest(path):
 
 def _get_or_create_exact_function(address):
     func = ida_funcs.get_func(address)
+    truncated_main_chunk = None
     if func is not None and func.start_ea != address:
         if not ida_funcs.remove_func_tail(func, address):
-            return None, "remove_tail_failed"
+            original_end = func.end_ea
+            if not ida_bytes.is_code(ida_bytes.get_flags(address)):
+                return None, "split_address_not_code"
+            if not ida_funcs.set_func_end(func.start_ea, address):
+                return None, "split_main_chunk_failed"
+            if ida_funcs.get_func(address) is not None:
+                ida_funcs.set_func_end(func.start_ea, original_end)
+                return None, "split_main_chunk_verification_failed"
+            truncated_main_chunk = (func.start_ea, original_end)
         func = ida_funcs.get_func(address)
 
     if func is None:
@@ -49,6 +58,9 @@ def _get_or_create_exact_function(address):
         if ida_bytes.is_code(flags) and ida_funcs.add_func(address):
             func = ida_funcs.get_func(address)
         if func is None:
+            if truncated_main_chunk is not None:
+                start, original_end = truncated_main_chunk
+                ida_funcs.set_func_end(start, original_end)
             return None, "missing_function"
 
     if func.start_ea != address:

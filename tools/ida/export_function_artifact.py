@@ -132,7 +132,10 @@ def main():
             indent=2,
         )
     )
-    ida_pro.qexit(1 if failed else 0)
+    # Per-function decompiler failures are part of the export result, not a
+    # process failure. The outer exporter turns them into explicit mismatches,
+    # and its strict mode remains responsible for rejecting a partial refresh.
+    ida_pro.qexit(0)
 
 
 if __name__ == "__main__":

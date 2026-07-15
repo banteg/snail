@@ -323,8 +323,17 @@ def main() -> int:
     if not isinstance(exported_entries, list):
         raise RuntimeError(f"unexpected exported payload shape: {payload!r}")
     exported_entries = _relativize_exported_entries(exported_entries)
+    existing_index = (
+        _load_existing_index(args.index.resolve()) if args.index is not None else {}
+    )
+    indexed_entries = _merge_focused_exports(
+        manifest.functions,
+        exported_entries,
+        out_dir=out_dir,
+        existing_index=existing_index,
+    )
     expected_paths: set[Path] = set()
-    for entry in exported_entries:
+    for entry in indexed_entries:
         if not isinstance(entry, dict):
             continue
         artifact = entry.get("artifact")
@@ -351,16 +360,9 @@ def main() -> int:
         index_path = args.index.resolve()
         index_path.parent.mkdir(parents=True, exist_ok=True)
         index_summary = dict(summary)
-        if args.only:
-            indexed_entries = _merge_focused_exports(
-                manifest.functions,
-                exported_entries,
-                out_dir=out_dir,
-                existing_index=_load_existing_index(index_path),
-            )
-            index_summary["selected_count"] = len(indexed_entries)
-            index_summary["function_count"] = len(indexed_entries)
-            index_summary["exported"] = indexed_entries
+        index_summary["selected_count"] = len(indexed_entries)
+        index_summary["function_count"] = len(indexed_entries)
+        index_summary["exported"] = indexed_entries
         index_path.write_text(json.dumps(index_summary, indent=2) + "\n", encoding="utf-8")
         summary = _command_summary(
             index_summary,

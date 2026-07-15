@@ -51,6 +51,18 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
+def _load_lane_result(index_path: Path, *, lane: str) -> dict[str, object]:
+    if not index_path.is_file():
+        raise RuntimeError(f"cannot skip {lane}: index does not exist: {index_path}")
+    try:
+        value = json.loads(index_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"cannot skip {lane}: invalid index JSON: {index_path}") from exc
+    if not isinstance(value, dict):
+        raise RuntimeError(f"cannot skip {lane}: invalid index payload: {index_path}")
+    return value
+
+
 def _build_ida_sync_command(
     *,
     manifest_path: Path,
@@ -116,6 +128,16 @@ def parse_args() -> argparse.Namespace:
         help="Skip the tracked decompile hotspot health checks after refreshing exports.",
     )
     parser.add_argument(
+        "--skip-binja",
+        action="store_true",
+        help="Reuse the current Binary Ninja index and refresh only the IDA lane.",
+    )
+    parser.add_argument(
+        "--skip-ida",
+        action="store_true",
+        help="Reuse the current IDA index and refresh only the Binary Ninja lane.",
+    )
+    parser.add_argument(
         "--only",
         action="append",
         default=[],
@@ -172,6 +194,10 @@ def _failing_health_checks(health_result: dict[str, object] | None) -> list[dict
 
 def main() -> int:
     args = parse_args()
+    if args.skip_binja and args.skip_ida:
+        raise RuntimeError("cannot skip both decompile lanes")
+    if args.skip_ida and args.sync_ida_symbols:
+        raise RuntimeError("cannot sync IDA symbols while skipping the IDA lane")
     manifest_path = args.manifest.resolve()
     root = args.root.resolve()
     bn_root = root / "binja"
@@ -195,17 +221,21 @@ def main() -> int:
             text=True,
         )
 
-    bn_result = _run_python(
-        REPO_ROOT / "tools/binja/export_manifest_functions.py",
-        "--manifest",
-        str(manifest_path),
-        "--target",
-        args.bn_target,
-        "--out-dir",
-        str((bn_root / "functions").resolve()),
-        "--index",
-        str(bn_index),
-        *[item for selector in args.only for item in ("--only", selector)],
+    bn_result = (
+        _load_lane_result(bn_index, lane="Binary Ninja")
+        if args.skip_binja
+        else _run_python(
+            REPO_ROOT / "tools/binja/export_manifest_functions.py",
+            "--manifest",
+            str(manifest_path),
+            "--target",
+            args.bn_target,
+            "--out-dir",
+            str((bn_root / "functions").resolve()),
+            "--index",
+            str(bn_index),
+            *[item for selector in args.only for item in ("--only", selector)],
+        )
     )
 
     ida_args = [
@@ -220,10 +250,14 @@ def main() -> int:
         ida_args.extend(["--ida-bin", args.ida_bin])
     if args.ida_db:
         ida_args.extend(["--db", str(args.ida_db.resolve())])
-    ida_result = _run_python(
-        REPO_ROOT / "tools/ida/export_manifest_functions.py",
-        *ida_args,
-        *[item for selector in args.only for item in ("--only", selector)],
+    ida_result = (
+        _load_lane_result(ida_index, lane="IDA")
+        if args.skip_ida
+        else _run_python(
+            REPO_ROOT / "tools/ida/export_manifest_functions.py",
+            *ida_args,
+            *[item for selector in args.only for item in ("--only", selector)],
+        )
     )
 
     health_result: dict[str, object] | None = None
@@ -249,6 +283,8 @@ def main() -> int:
         "total_mismatch_count": bn_result.get("mismatch_count", 0) + ida_result.get("mismatch_count", 0),
         "has_mismatches": bool(bn_result.get("mismatch_count", 0) or ida_result.get("mismatch_count", 0)),
         "sync_ida_symbols": args.sync_ida_symbols,
+        "binja_refreshed": not args.skip_binja,
+        "ida_refreshed": not args.skip_ida,
         "health_check_ran": not args.skip_health_check,
         "strict": args.strict,
     }

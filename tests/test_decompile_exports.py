@@ -66,6 +66,36 @@ def test_tracked_export_defaults_to_the_pinned_binja_target(
     assert module.parse_args().bn_target == "SnailMail_unwrapped.exe.bndb"
 
 
+def test_tracked_export_can_reuse_one_lane_index(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/export_tracked_decompiles.py",
+        "test_export_tracked_decompiles_lane_reuse",
+    )
+    index_path = tmp_path / "index.json"
+    expected = {"tool": "binary_ninja", "exports": [{"address": "0x401000"}]}
+    index_path.write_text(json.dumps(expected), encoding="utf-8")
+
+    assert module._load_lane_result(index_path, lane="Binary Ninja") == expected
+
+
+def test_tracked_export_rejects_missing_reused_lane_index(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/export_tracked_decompiles.py",
+        "test_export_tracked_decompiles_missing_lane_index",
+    )
+
+    with pytest.raises(RuntimeError, match="cannot skip IDA"):
+        module._load_lane_result(tmp_path / "missing.json", lane="IDA")
+
+
 def test_tracked_export_forwards_focused_selectors_to_ida_sync(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -243,6 +273,7 @@ def test_binja_export_reanalyzes_timed_out_functions(
                         "verified": True,
                     }
                 ],
+                "interior_aliases": [],
                 "unresolved": [],
                 "snapshot_saved": True,
             }
@@ -256,6 +287,49 @@ def test_binja_export_reanalyzes_timed_out_functions(
     assert result["snapshot_saved"] is True
     assert calls[0][:4] == ("py", "exec", "--target", "snail-mail.bndb")
     assert "NeverSkipFunctionAnalysis" in calls[0][-1]
+    assert "get_functions_containing" in calls[0][-1]
+
+
+def test_binja_export_accepts_decompilable_interior_manifest_target(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_interior_alias",
+    )
+    monkeypatch.setattr(
+        module,
+        "_run_bn_json",
+        lambda *_args: {
+            "result": {
+                "reanalyzed": [],
+                "interior_aliases": [
+                    {
+                        "address": "0x406da0",
+                        "owner_address": "0x406d70",
+                        "owner_name": "initialize_main_loop_display_state",
+                    }
+                ],
+                "unresolved": [],
+                "snapshot_saved": False,
+            }
+        },
+    )
+    function = module.FunctionSymbol(
+        address=0x406DA0,
+        name="initialize_main_loop_timing_state",
+    )
+
+    result = module._reanalyze_timed_out_functions("snail-mail.bndb", [function])
+
+    assert result["interior_aliases"] == [
+        {
+            "address": "0x406da0",
+            "owner_address": "0x406d70",
+            "owner_name": "initialize_main_loop_display_state",
+        }
+    ]
 
 
 def test_binja_export_rejects_unresolved_skipped_function(
@@ -272,6 +346,7 @@ def test_binja_export_rejects_unresolved_skipped_function(
         lambda *_args: {
             "result": {
                 "reanalyzed": [],
+                "interior_aliases": [],
                 "unresolved": [
                     {"address": "0x43f930", "reason": "manual_skip"}
                 ],
@@ -283,6 +358,17 @@ def test_binja_export_rejects_unresolved_skipped_function(
 
     with pytest.raises(RuntimeError, match="left selected functions without HLIL"):
         module._reanalyze_timed_out_functions("snail-mail.bndb", [function])
+
+
+def test_ida_symbol_sync_can_split_a_main_function_chunk() -> None:
+    source = (REPO_ROOT / "tools/ida/apply_symbol_manifest.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "ida_funcs.remove_func_tail(func, address)" in source
+    assert "ida_funcs.set_func_end(func.start_ea, address)" in source
+    assert "split_main_chunk_verification_failed" in source
+    assert "ida_funcs.set_func_end(start, original_end)" in source
 
 
 def test_ida_focused_summary_reports_only_refreshed_exports(
@@ -314,6 +400,67 @@ def test_ida_focused_summary_reports_only_refreshed_exports(
     assert summary["exported"] == refreshed
 
 
+def test_ida_partial_export_preserves_last_known_good_artifact(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/ida/export_manifest_functions.py",
+        "test_ida_export_manifest_functions_partial_preservation",
+    )
+    out_dir = tmp_path / "functions"
+    out_dir.mkdir()
+    fresh = types.SimpleNamespace(
+        address=0x401000,
+        address_hex="0x401000",
+        name="fresh_function",
+    )
+    failed = types.SimpleNamespace(
+        address=0x402000,
+        address_hex="0x402000",
+        name="failed_function",
+    )
+    fresh_artifact = out_dir / "00401000-fresh_function.c"
+    failed_artifact = out_dir / "00402000-failed_function.c"
+    fresh_artifact.write_text("fresh\n", encoding="utf-8")
+    failed_artifact.write_text("cached\n", encoding="utf-8")
+    refreshed = [
+        {
+            "selector": fresh.name,
+            "address": fresh.address_hex,
+            "name": fresh.name,
+            "artifact": str(fresh_artifact),
+        }
+    ]
+    existing_index = {
+        "exported": [
+            {
+                "selector": failed.name,
+                "address": failed.address_hex,
+                "name": failed.name,
+                "artifact": str(failed_artifact),
+            }
+        ]
+    }
+
+    merged = module._merge_focused_exports(
+        [fresh, failed],
+        refreshed,
+        out_dir=out_dir,
+        existing_index=existing_index,
+    )
+    expected_paths = {Path(entry["artifact"]) for entry in merged}
+    removed = module._prune_stale_artifacts(out_dir, expected_paths)
+
+    assert [entry["address"] for entry in merged] == [
+        fresh.address_hex,
+        failed.address_hex,
+    ]
+    assert removed == []
+    assert failed_artifact.read_text(encoding="utf-8") == "cached\n"
+
+
 def test_ida_artifact_normalization_strips_trailing_blank_lines(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -332,3 +479,15 @@ def test_ida_artifact_normalization_strips_trailing_blank_lines(
     )
 
     assert module._normalize_pseudocode("line 1  \nline 2\n\n") == "line 1\nline 2"
+
+
+def test_ida_artifact_export_reports_partial_failures_without_process_abort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source = (REPO_ROOT / "tools/ida/export_function_artifact.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"failed": failed' in source
+    assert "ida_pro.qexit(0)" in source
+    assert "ida_pro.qexit(1 if failed else 0)" not in source

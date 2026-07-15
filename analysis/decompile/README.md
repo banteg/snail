@@ -55,6 +55,14 @@ Refresh only a narrow touched subset and fail fast on mismatch or health regress
 uv run python tools/export_tracked_decompiles.py --only update_subgoldy --only update_cameraman --strict
 ```
 
+Retry only one decompiler lane after a partial refresh while reusing the other
+lane's existing index and artifacts:
+
+```bash
+uv run python tools/export_tracked_decompiles.py --skip-binja
+uv run python tools/export_tracked_decompiles.py --skip-ida
+```
+
 Probe a live subset into a scratch tree without touching the tracked exports with:
 
 ```bash
@@ -82,4 +90,8 @@ Notes:
   with `--sync-ida-symbols`, the IDA replay is restricted to the same selection so an
   unrelated malformed function boundary cannot block a focused refresh
 - `--strict` exits nonzero when either lane reports mismatches or any health check fails
+- `--skip-binja` and `--skip-ida` require a reusable index from the skipped lane;
+  they are intended for bounded retries after one exporter fails or times out
+- a partial IDA refresh reports every failed selector but retains its last-known-good
+  indexed artifact until Hex-Rays can replace it successfully
 - when `--root` points outside the repo, the summary and per-tool indexes keep absolute artifact paths instead of forcing repo-relative ones
