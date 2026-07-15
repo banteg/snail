@@ -84,3 +84,15 @@ Rejected probes:
   only `source_name` remains as a borrowed pointer into the stable catalog
   entry. The receiver can pass an ordinary slot, `first_segment`, or
   `last_segment`, matching the three callsite families.
+
+## 2026-07-15 durable IDA ownership
+
+The live IDA prototype already carried the recovered member ABI, but its
+checked-in decompile still showed the old global `__stdcall` returning an
+incidental `_DWORD*`. A focused strict refresh now exposes the unused
+`SubTracks*` receiver, root-owned `SMTracks`, caller-owned `SubSegment`, inline
+glyph rows, authored row bank, and void error path. A health check rejects the
+stale raw global form so later narrow exports cannot silently lose this owner
+graph. Matcher source remains unchanged at the honest 85.60% frontier: all
+125 instructions and five masked operands agree, while the remaining register
+schedule is not being reshaped for score.

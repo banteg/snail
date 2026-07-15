@@ -5409,6 +5409,24 @@
       ]
     },
     {
+      "name": "ida_copy_segment_definition_owner",
+      "artifact": "analysis/decompile/ida/functions/00447300-copy_segment_definition_to_level_slot.c",
+      "required_substrings": [
+        "void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks",
+        "SMTracks *p_sm_tracks",
+        "&g_game_base->subgame.sm_tracks",
+        "segment->glyph_rows[0]",
+        "segment->row_count",
+        "message_sample_id = -1"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__stdcall copy_segment_definition_to_level_slot",
+        "char *ArgList, _DWORD *a2",
+        "MEMORY[0x4DF904]",
+        "return (_DWORD *)report_errorf"
+      ]
+    },
+    {
       "name": "ida_render_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/00411040-render_backdrop.c",
       "required_substrings": [

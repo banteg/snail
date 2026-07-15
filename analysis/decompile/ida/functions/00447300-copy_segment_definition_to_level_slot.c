@@ -2,103 +2,106 @@
 /* function: copy_segment_definition_to_level_slot @ 0x447300 */
 /* selector: copy_segment_definition_to_level_slot */
 
-// Finds a segment catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a Windows SubSegment, and copies the authored position/velocity vectors, path template, and ring-speed fields. The symbol-preserving iOS counterpart is the void member `cRSubTracks::ImportSegment(char*, cRSubSegment*)`; Windows staticizes the catalog lookup and owns the 0x4220-byte payload inline.
-_DWORD *__stdcall copy_segment_definition_to_level_slot(char *ArgList, _DWORD *a2)
+// Implements the void `cRSubTracks::ImportSegment(char*, cRSubSegment*)` member: finds a root-owned catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a caller-selected SubSegment, and copies the authored row metadata including position and velocity vectors, path template, and ring-speed fields. The Windows body does not read its receiver, but all three callers establish the SubTracks owner in ECX before passing an ordinary, First, or Last 0x4220-byte inline destination.
+void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *segment_name, SubSegment *segment)
 {
-  _DWORD *v2; // edi
-  int v3; // esi
-  char *v4; // ebp
-  _DWORD *result; // eax
-  _DWORD *v6; // ebp
-  _DWORD *v7; // edx
-  _DWORD *v8; // edi
+  SMTracks *p_sm_tracks; // edi
+  int32_t v4; // esi
+  char *filename; // ebp
+  SubSegment *v6; // ebp
+  char *v7; // edx
+  char *v8; // edi
   char *v9; // ecx
   int v10; // eax
   char *v11; // esi
   char v12; // bl
   int v13; // esi
-  _DWORD *v14; // ecx
-  _DWORD *v15; // edi
-  _DWORD *v16; // ebx
-  int ArgLista; // [esp+14h] [ebp+4h]
+  int32_t *p_object_id; // ecx
+  int32_t *v15; // eax
+  int32_t *v16; // edi
+  int32_t *v17; // ebx
+  int ArgList; // [esp+14h] [ebp+4h]
 
-  v2 = (char *)MEMORY[0x4DF904] + 17259236;
-  v3 = 0;
-  if ( *((int *)MEMORY[0x4DF904] + 4314809) > 0 )
+  p_sm_tracks = &g_game_base->subgame.sm_tracks;
+  v4 = 0;
+  if ( g_game_base->subgame.sm_tracks.count > 0 )
   {
-    v4 = (char *)MEMORY[0x4DF904] + 17259304;
+    filename = g_game_base->subgame.sm_tracks.entries[0].filename;
     do
     {
-      if ( strings_equal_case_insensitive_path(ArgList, v4) == 1 )
+      if ( strings_equal_case_insensitive_path(segment_name, filename) )
         break;
-      ++v3;
-      v4 += 16520;
+      ++v4;
+      filename += 16520;
     }
-    while ( v3 < *v2 );
+    while ( v4 < p_sm_tracks->count );
   }
-  if ( v3 == *v2 )
-    return (_DWORD *)report_errorf("Cannot find segment %s for %s", ArgList, unk_74EC74);
-  v6 = a2;
-  ArgLista = 8;
-  v7 = &v2[4130 * v3];
-  v8 = a2 + 5;
-  v9 = (char *)(v7 + 35);
-  do
+  if ( v4 == p_sm_tracks->count )
   {
-    v10 = 0;
-    if ( (int)v7[34] > 0 )
+    report_errorf("Cannot find segment %s for %s", segment_name, g_current_level_definition_name);
+  }
+  else
+  {
+    v6 = segment;
+    ArgList = 8;
+    v7 = (char *)p_sm_tracks + 16520 * v4;
+    v8 = segment->glyph_rows[0];
+    v9 = v7 + 140;
+    do
     {
-      v11 = v9;
+      v10 = 0;
+      if ( *((int *)v7 + 34) > 0 )
+      {
+        v11 = v9;
+        do
+        {
+          v12 = *v11;
+          v11 += 8;
+          v8[v10++] = v12;
+        }
+        while ( v10 < *((_DWORD *)v7 + 34) );
+      }
+      ++v9;
+      v8 += 256;
+      --ArgList;
+    }
+    while ( ArgList );
+    v13 = 0;
+    segment->row_count = *((_DWORD *)v7 + 34);
+    segment->source_name = v7 + 68;
+    segment->angle_radians.bits = 0;
+    segment->path_index = *((_DWORD *)v7 + 33);
+    if ( *((int *)v7 + 34) > 0 )
+    {
+      p_object_id = &segment->rows[0].object_id;
+      v15 = (int32_t *)(v7 + 2208);
       do
       {
-        v12 = *v11;
-        v11 += 8;
-        *((_BYTE *)v8 + v10++) = v12;
+        *(p_object_id - 5) = *(v15 - 5);
+        *p_object_id = *v15;
+        ++v13;
+        p_object_id[1] = v15[1];
+        p_object_id[2] = v15[2];
+        p_object_id[3] = v15[3];
+        p_object_id[4] = v15[4];
+        p_object_id[5] = v15[5];
+        p_object_id[6] = v15[6];
+        *(p_object_id - 4) = *(v15 - 4);
+        v16 = v15 - 3;
+        v17 = p_object_id - 3;
+        v15 += 14;
+        p_object_id += 14;
+        *v17 = *v16;
+        v17[1] = v16[1];
+        v17[2] = v16[2];
+        *(p_object_id - 7) = *(v15 - 7);
+        *(p_object_id - 6) = *(v15 - 6);
       }
-      while ( v10 < v7[34] );
+      while ( v13 < *((_DWORD *)v7 + 34) );
+      v6 = segment;
     }
-    ++v9;
-    v8 += 64;
-    --ArgLista;
+    v6->message_text[0] = 0;
+    v6->message_duration.bits = 0;
+    v6->message_sample_id = -1;
   }
-  while ( ArgLista );
-  v13 = 0;
-  a2[1] = v7[34];
-  a2[4] = v7 + 17;
-  a2[4101] = 0;
-  a2[3] = v7[33];
-  result = (_DWORD *)v7[34];
-  if ( (int)result > 0 )
-  {
-    v14 = a2 + 522;
-    result = v7 + 552;
-    do
-    {
-      *(v14 - 5) = *(result - 5);
-      *v14 = *result;
-      ++v13;
-      v14[1] = result[1];
-      v14[2] = result[2];
-      v14[3] = result[3];
-      v14[4] = result[4];
-      v14[5] = result[5];
-      v14[6] = result[6];
-      *(v14 - 4) = *(result - 4);
-      v15 = result - 3;
-      v16 = v14 - 3;
-      result += 14;
-      v14 += 14;
-      *v16 = *v15;
-      v16[1] = v15[1];
-      v16[2] = v15[2];
-      *(v14 - 7) = *(result - 7);
-      *(v14 - 6) = *(result - 6);
-    }
-    while ( v13 < v7[34] );
-    v6 = a2;
-  }
-  *((_BYTE *)v6 + 16408) = 0;
-  v6[4230] = 0;
-  v6[4231] = -1;
-  return result;
 }
