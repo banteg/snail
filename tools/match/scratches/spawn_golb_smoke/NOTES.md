@@ -73,3 +73,14 @@ Rejected source-shaped probes:
   candidate instructions, 43/72 prefix, and eight clean masked operands.
 
 Keep pinned unless a new source idiom explains the delayed sprite-base advance.
+
+## 2026-07-16 analysis receiver and ABI replay
+
+The shared Golb ownership replay now applies
+`void __thiscall spawn_golb_smoke(GolbShot*, Vec3*)` in both Binary Ninja and
+IDA. The Windows callers ignore EAX and the success path merely leaves the
+copied position-z bits there, so the previous inferred float result was not an
+owned contract. Replaying the void mutator also resolves `game`,
+`owner_player`, and `velocity` through the complete `GolbShot` owner. Focused
+matching remains honestly pinned at 84.29%, 68/72 instructions, with all eight
+masked operands clean.

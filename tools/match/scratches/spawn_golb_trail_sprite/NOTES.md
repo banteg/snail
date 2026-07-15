@@ -24,3 +24,11 @@ Type consolidation:
   `tools/match/include/golb.h`, sharing `object_ref +0x274` and
   `owner_player +0x278` with `spawn_golb_smoke`,
   `spawn_golb_impact_sprite`, and `kill_golb`. The match stays exact.
+
+## 2026-07-16 analysis receiver replay
+
+The durable Binary Ninja and IDA ownership replays now preserve this helper as
+`Sprite* __thiscall(GolbShot*, Vec3*)`. That agrees with the exact Windows
+body, whose success path returns the allocated sprite, and prevents either
+decompiler from falling back to a generic receiver when the shared Golb types
+are replayed. The exact 47/47 matcher result is unchanged.

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -13,28 +13,24 @@
   "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": false,
+  "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "enumerate_input_controllers",
-      "address": "0x44b3c0"
+      "name": "spawn_golb_trail_sprite",
+      "address": "0x415bb0"
     },
     {
-      "name": "append_enumerated_input_controller_callback",
-      "address": "0x44b490"
+      "name": "spawn_golb_smoke",
+      "address": "0x415c60"
     },
     {
-      "name": "configure_input_controller_axis_range_callback",
-      "address": "0x44b4e0"
-    },
-    {
-      "name": "update_joystick_input",
-      "address": "0x44b570"
-    },
-    {
-      "name": "release_input_controllers",
-      "address": "0x44b770"
+      "name": "spawn_golb_impact_sprite",
+      "address": "0x415d80"
     }
-  ]
+  ],
+  "health_check_count": 324,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

@@ -1001,16 +1001,17 @@
     {
       "address": "0x415bb0",
       "name": "spawn_golb_trail_sprite",
-      "description": "Allocates one short-lived trail sprite for the straight-flight Golb family at the supplied world position. `update_golb_ai` emits it in a short three-point chain behind the projectile each tick."
+      "description": "`GolbShot` member that allocates and returns one short-lived trail sprite for the straight-flight Golb family at the supplied world position. `update_golb_ai` emits it in a short three-point chain behind the projectile each tick."
     },
     {
       "address": "0x415c60",
-      "name": "spawn_golb_smoke"
+      "name": "spawn_golb_smoke",
+      "description": "Side-effect-only `GolbShot` smoke emitter that borrows the owning subgame rate and projectile velocity to seed one sprite at the supplied world position."
     },
     {
       "address": "0x415d80",
       "name": "spawn_golb_impact_sprite",
-      "description": "Allocates the short-lived impact sprite used when a Golb shot is killed or reaches a terminal collision point, seeded from the supplied world position."
+      "description": "Side-effect-only `GolbShot` member that allocates the short-lived impact sprite used when a shot is killed or reaches a terminal collision point, seeded from the supplied world position."
     },
     {
       "address": "0x415e20",

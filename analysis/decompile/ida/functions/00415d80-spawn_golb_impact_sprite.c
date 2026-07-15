@@ -2,35 +2,28 @@
 /* function: spawn_golb_impact_sprite @ 0x415d80 */
 /* selector: spawn_golb_impact_sprite */
 
-// Allocates the short-lived impact sprite used when a Golb shot is killed or reaches a terminal collision point, seeded from the supplied world position.
-char __thiscall sub_415D80(_DWORD *this, _DWORD *a2)
+// Side-effect-only `GolbShot` member that allocates the short-lived impact sprite used when a shot is killed or reaches a terminal collision point, seeded from the supplied world position.
+void __thiscall spawn_golb_impact_sprite(GolbShot *shot, Vec3 *position)
 {
-  _DWORD *v2; // eax
-  _DWORD *v3; // eax
-  int v4; // ecx
+  Vec3 *sprite; // eax
+  float y; // ecx
 
-  LOBYTE(v2) = byte_4DF934;
-  if ( (byte_4DF934 & 0x10) != 0 )
+  if ( (g_runtime_config.render_flags & 0x10) != 0 )
   {
-    v3 = allocate_sprite(g_sprite_manager, *(_DWORD *)(*(this + 158) + 896), 33, -1, -1);
-    v4 = v3[1];
-    BYTE1(v4) |= 8u;
-    v3[1] = v4;
-    v3[26] = 0;
-    v3[21] = 0;
-    v3[28] = 0;
-    v3[22] = 1028443341;
-    v3[30] = 0;
-    v3[27] = 1029934648;
-    v3[29] = 1062557014;
-    v3[24] = 1056964608;
-    v3[25] = 1065353216;
-    v3[23] = 0;
-    v2 = v3 + 18;
-    *v2 = *a2;
-    v2[1] = a2[1];
-    v2[2] = a2[2];
+    sprite = (Vec3 *)allocate_sprite(g_sprite_manager, shot->owner_player->player_slot, 33, -1, -1);
+    y = sprite->y;
+    BYTE1(y) |= 8u;
+    sprite->y = y;
+    sprite[8].z = 0.0;
+    sprite[7].x = 0.0;
+    sprite[9].y = 0.0;
+    sprite[7].y = 0.050000001;
+    sprite[10].x = 0.0;
+    sprite[9].x = 0.055555552;
+    sprite[9].z = 0.83333337;
+    sprite[8].x = 0.5;
+    sprite[8].y = 1.0;
+    sprite[7].z = 0.0;
+    sprite[6] = *position;
   }
-  return (char)v2;
 }
-

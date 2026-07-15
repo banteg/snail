@@ -710,6 +710,18 @@ GOLB_PROTO_UPDATES = (
         "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
     ),
     (
+        "spawn_golb_trail_sprite",
+        "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
+    ),
+    (
+        "spawn_golb_smoke",
+        "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
+    ),
+    (
+        "spawn_golb_impact_sprite",
+        "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position)",
+    ),
+    (
         "initialize_path_follow_golb",
         "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot)",
     ),

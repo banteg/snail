@@ -84,3 +84,15 @@ Rejected source-shaped probes:
 
 Keep this as a structure-first map unless a stronger source idiom explains the
 native saved-`esi` velocity-copy schedule.
+
+## 2026-07-16 analysis receiver and ABI replay
+
+The shared Golb ownership replay now applies
+`void __thiscall spawn_golb_impact_sprite(GolbShot*, Vec3*)` in both Binary
+Ninja and IDA. Every native caller discards EAX, while the disabled path leaves
+the render flag byte and the enabled path leaves the copied position pointer;
+those incompatible incidental values rule out the old inferred `Vec3*`/byte
+result. The decompilers can now recover `owner_player` through the complete
+`GolbShot` receiver without inventing a generic projectile shell. Focused
+matching remains the honest 63.64%, 43/45 instruction frontier with all three
+masked operands clean.

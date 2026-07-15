@@ -64,6 +64,18 @@ TRUSTED_DATA_DECLARATIONS = [
 
 TRUSTED_DECLARATIONS = [
     (
+        "spawn_golb_trail_sprite",
+        "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position);",
+    ),
+    (
+        "spawn_golb_smoke",
+        "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position);",
+    ),
+    (
+        "spawn_golb_impact_sprite",
+        "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position);",
+    ),
+    (
         "d3dx_create_texture_from_file_in_memory_ex",
         "int32_t __stdcall d3dx_create_texture_from_file_in_memory_ex(void* device, void* source_data, uint32_t source_size, uint32_t width, uint32_t height, uint32_t mip_levels, uint32_t usage, uint32_t format, uint32_t pool, uint32_t filter, uint32_t mip_filter, uint32_t color_key, void* source_info, void* palette, void** texture);",
     ),

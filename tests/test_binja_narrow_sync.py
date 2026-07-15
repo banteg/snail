@@ -943,6 +943,24 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         assert declaration in ida_source
 
 
+def test_golb_emitter_replays_preserve_real_receiver_and_returns() -> None:
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    declarations = (
+        "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
+        "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
+        "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position)",
+    )
+    for declaration in declarations:
+        assert declaration in binja_source
+        assert f'"{declaration};"' in ida_source
+
+
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

@@ -2,53 +2,46 @@
 /* function: spawn_golb_smoke @ 0x415c60 */
 /* selector: spawn_golb_smoke */
 
-int __thiscall sub_415C60(int this, float *a2)
+// Side-effect-only `GolbShot` smoke emitter that borrows the owning subgame rate and projectile velocity to seed one sprite at the supplied world position.
+void __thiscall spawn_golb_smoke(GolbShot *shot, Vec3 *position)
 {
-  float *v3; // esi
+  float *sprite; // esi
   int v4; // ecx
   double v5; // st7
-  float *v6; // eax
-  int v7; // eax
+  tColour *v6; // eax
+  float a; // eax
   float *v8; // ecx
   double v9; // st7
-  float v10; // eax
-  int result; // eax
-  float v12; // [esp+8h] [ebp-10h] BYREF
-  float v13; // [esp+Ch] [ebp-Ch]
-  float v14; // [esp+10h] [ebp-8h]
+  float g; // eax
+  Color4f color; // [esp+8h] [ebp-10h] BYREF
 
-  v3 = (float *)allocate_sprite(g_sprite_manager, *(_DWORD *)(*(_DWORD *)(this + 632) + 896), 128, -1, -1);
-  v4 = *((_DWORD *)v3 + 1);
-  v3[26] = 0.0;
+  sprite = (float *)allocate_sprite(g_sprite_manager, shot->owner_player->player_slot, 128, -1, -1);
+  v4 = *((_DWORD *)sprite + 1);
+  sprite[26] = 0.0;
   BYTE1(v4) |= 8u;
-  *((_DWORD *)v3 + 1) = v4;
-  v5 = *(float *)(*(_DWORD *)(this + 624) + 56) * 0.16666667;
-  v3[28] = 0.0;
-  v3[27] = v5;
-  v3[29] = *(float *)(*(_DWORD *)(this + 624) + 56) * 0.41666669;
-  v6 = (float *)set_color_rgba(&v12, 1065353216, 1065353216, 1065353216, 1065353216);
-  v3[11] = *v6;
-  v3[12] = v6[1];
-  v3[13] = v6[2];
-  v7 = *((_DWORD *)v6 + 3);
-  v3[24] = 0.1;
-  v3[25] = 0.5;
-  *((_DWORD *)v3 + 14) = v7;
-  v8 = v3 + 21;
-  v3 += 18;
-  v12 = *(float *)(this + 588) * 0.40000001;
-  v13 = *(float *)(this + 592) * 0.40000001;
-  v9 = *(float *)(this + 596) * 0.40000001;
-  v10 = v13;
-  *v8 = v12;
-  v3[12] = 0.0;
-  v8[1] = v10;
-  v14 = v9;
-  v8[2] = v14;
-  *v3 = *a2;
-  v3[1] = a2[1];
-  result = *((_DWORD *)a2 + 2);
-  *((_DWORD *)v3 + 2) = result;
-  return result;
+  *((_DWORD *)sprite + 1) = v4;
+  v5 = shot->game->subgame_rate * 0.16666667;
+  sprite[28] = 0.0;
+  sprite[27] = v5;
+  sprite[29] = shot->game->subgame_rate * 0.41666669;
+  v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  sprite[11] = v6->r;
+  sprite[12] = v6->g;
+  sprite[13] = v6->b;
+  a = v6->a;
+  sprite[24] = 0.1;
+  sprite[25] = 0.5;
+  sprite[14] = a;
+  v8 = sprite + 21;
+  sprite += 18;
+  color.r = shot->velocity.x * 0.40000001;
+  color.g = shot->velocity.y * 0.40000001;
+  v9 = shot->velocity.z * 0.40000001;
+  g = color.g;
+  *v8 = color.r;
+  sprite[12] = 0.0;
+  v8[1] = g;
+  color.b = v9;
+  v8[2] = color.b;
+  *(Vec3 *)sprite = *position;
 }
-
