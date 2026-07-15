@@ -4,6 +4,10 @@ DirectInput device-enumeration callback for joystick discovery. It appends each
 created joystick device into the four-entry `g_joystick_devices` array and keeps
 enumerating until four devices have been accepted.
 
+The callback argument now uses the complete SDK `DIDEVICEINSTANCEA` owner. The
+device GUID consumed by `CreateDevice` is its `guidInstance` member at `+0x04`,
+not a scratch-local 16-byte byte array.
+
 ## 2026-07-14 joystick-bank ownership closure
 
 The process-owned DirectInput pointer, accepted-device count, and fixed

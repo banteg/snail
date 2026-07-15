@@ -1914,6 +1914,109 @@
       ]
     },
     {
+      "name": "bn_directinput_device_enumeration_owner",
+      "artifact": "analysis/decompile/binja/functions/0044b490-append_enumerated_input_controller_callback.c",
+      "required_substrings": [
+        "struct IDirectInput8A* joystick_input_1",
+        "->lpVtbl->CreateDevice(",
+        "&instance->guidInstance",
+        "&g_joystick_devices[joystick_count_1]"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 4",
+        "*(*joystick_input_1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_directinput_device_enumeration_owner",
+      "artifact": "analysis/decompile/ida/functions/0044b490-append_enumerated_input_controller_callback.c",
+      "required_substrings": [
+        "append_enumerated_input_controller_callback(DIDEVICEINSTANCEA *instance",
+        "g_joystick_input->lpVtbl->CreateDevice(",
+        "&instance->guidInstance"
+      ],
+      "forbidden_substrings": [
+        "int *instance",
+        "instance + 1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_directinput_axis_range_owner",
+      "artifact": "analysis/decompile/binja/functions/0044b4e0-configure_input_controller_axis_range_callback.c",
+      "required_substrings": [
+        "instance->dwType",
+        "struct DIPROPRANGE range",
+        "range.diph.dwSize",
+        "range.lMin",
+        "->lpVtbl->SetProperty("
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x18",
+        "var_18",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_directinput_axis_range_owner",
+      "artifact": "analysis/decompile/ida/functions/0044b4e0-configure_input_controller_axis_range_callback.c",
+      "required_substrings": [
+        "configure_input_controller_axis_range_callback(DIDEVICEOBJECTINSTANCEA *instance",
+        "struct DIPROPRANGE range",
+        "range.diph.dwObj = instance->dwType",
+        "range.lMin = -1000",
+        "->lpVtbl->SetProperty("
+      ],
+      "forbidden_substrings": [
+        "int *instance",
+        "char range[24]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_directinput_joystick_state_owner",
+      "artifact": "analysis/decompile/binja/functions/0044b570-update_joystick_input.c",
+      "required_substrings": [
+        "struct DIJOYSTATE2 state",
+        "->lpVtbl->Poll(",
+        "->lpVtbl->GetDeviceState(",
+        "state.lX",
+        "state.lY",
+        "state.rgbButtons[0xc]"
+      ],
+      "forbidden_substrings": [
+        "state_out",
+        "char var_e0",
+        "*(*eax + 0x64)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_directinput_joystick_state_owner",
+      "artifact": "analysis/decompile/ida/functions/0044b570-update_joystick_input.c",
+      "required_substrings": [
+        "struct DIJOYSTATE2 state",
+        "->lpVtbl->Poll(",
+        "->lpVtbl->GetDeviceState(",
+        "state.lX",
+        "state.lY",
+        "state.rgbButtons[12]"
+      ],
+      "forbidden_substrings": [
+        "_DWORD v9[12]",
+        "char v10[",
+        "(*(*v1 + 100))",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_frame_renderer_workspace_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/0040a490-render_game_frame.c",
       "required_substrings": [

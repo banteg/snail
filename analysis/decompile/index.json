@@ -1,28 +1,40 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 702,
-  "ida_exported": 1,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
-  "binja_refreshed": false,
+  "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": true,
+  "health_check_ran": false,
   "strict": true,
   "selected_functions": [
     {
-      "name": "copy_segment_definition_to_level_slot",
-      "address": "0x447300"
+      "name": "enumerate_input_controllers",
+      "address": "0x44b3c0"
+    },
+    {
+      "name": "append_enumerated_input_controller_callback",
+      "address": "0x44b490"
+    },
+    {
+      "name": "configure_input_controller_axis_range_callback",
+      "address": "0x44b4e0"
+    },
+    {
+      "name": "update_joystick_input",
+      "address": "0x44b570"
+    },
+    {
+      "name": "release_input_controllers",
+      "address": "0x44b770"
     }
-  ],
-  "health_check_count": 318,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  ]
 }

@@ -7,15 +7,19 @@ extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module
 extern "C" int __stdcall DirectInput8Create(
     HINSTANCE module,
     unsigned int version,
-    void* iid,
+    const DirectInputGuid* iid,
     DirectInput** out_input,
     void* outer_unknown);
 
-int __stdcall append_enumerated_input_controller_callback(void* instance, void* context);
-int __stdcall configure_input_controller_axis_range_callback(void* instance, void* context);
+int __stdcall append_enumerated_input_controller_callback(
+    DIDEVICEINSTANCEA* instance,
+    void* context);
+int __stdcall configure_input_controller_axis_range_callback(
+    DIDEVICEOBJECTINSTANCEA* instance,
+    void* context);
 
-extern char g_directinput8_iid; // data_49b0c0
-extern char g_directinput_joystick_data_format; // data_49b2fc
+extern DirectInputGuid g_directinput8_iid; // data_49b0c0
+extern DIDATAFORMAT g_directinput_joystick_data_format; // data_49b2fc
 
 int enumerate_input_controllers(HWND hwnd, int* out_count)
 {

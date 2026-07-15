@@ -8,7 +8,7 @@ extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module
 extern "C" int __stdcall DirectInput8Create(
     HINSTANCE module,
     unsigned int version,
-    void* iid,
+    const DirectInputGuid* iid,
     DirectInput** out_input,
     void* outer_unknown);
 extern "C" void* memset(void* destination, int value, unsigned int count);
@@ -19,9 +19,9 @@ extern DirectInput* g_keyboard_input; // data_777d4c
 extern DirectInputDevice* g_keyboard_device; // data_777d50
 extern unsigned char g_keyboard_previous_state[0x100]; // data_777b4c
 extern unsigned char g_keyboard_current_state[0x100]; // data_777c4c
-extern char g_directinput8_iid; // data_49b0c0
-extern char g_directinput_keyboard_guid; // data_49b010
-extern char g_directinput_keyboard_data_format; // data_49b504
+extern DirectInputGuid g_directinput8_iid; // data_49b0c0
+extern DirectInputGuid g_directinput_keyboard_guid; // data_49b010
+extern DIDATAFORMAT g_directinput_keyboard_data_format; // data_49b504
 
 int initialize_keyboard_input(HWND hwnd)
 {

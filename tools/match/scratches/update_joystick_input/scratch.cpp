@@ -2,21 +2,6 @@
 
 #include "direct_input_view.h"
 
-struct JoystickState {
-    int x;
-    int y;
-    int z;
-    int rx;
-    int ry;
-    int rz;
-    int slider[2];
-    unsigned int pov[4];
-    signed char buttons[0x110 - 0x30];
-};
-
-typedef char JoystickState_must_be_0x110[
-    (sizeof(JoystickState) == 0x110) ? 1 : -1];
-
 int update_input_controller_slot_button_axes(int slot, int buttons, float axis_x, float axis_y);
 
 int update_joystick_input()
@@ -34,54 +19,54 @@ int update_joystick_input()
                 return 0;
             }
 
-            JoystickState state;
-            int result = (*device_ref)->GetDeviceState(0x110, &state);
+            DIJOYSTATE2 state;
+            int result = (*device_ref)->GetDeviceState(sizeof(state), &state);
             if (result < 0)
                 return result;
 
-            float axis_x = (float)state.x * 0.001f;
+            float axis_x = (float)state.lX * 0.001f;
             if (axis_x > 1000.0f) {
                 axis_x = 1000.0f;
             } else if (axis_x <= -1000.0f) {
                 axis_x = -1000.0f;
             }
 
-            float axis_y = (float)state.y * 0.001f;
+            float axis_y = (float)state.lY * 0.001f;
             if (axis_y > 1000.0f) {
                 axis_y = 1000.0f;
             } else if (axis_y <= -1000.0f) {
                 axis_y = -1000.0f;
             }
 
-            unsigned char first_button = state.buttons[12];
+            unsigned char first_button = state.rgbButtons[12];
             int buttons = 0;
             if ((first_button & 0x80) != 0)
                 buttons = 1;
-            if ((state.buttons[14] & 0x80) != 0)
+            if ((state.rgbButtons[14] & 0x80) != 0)
                 buttons |= 2;
-            if ((state.buttons[15] & 0x80) != 0)
+            if ((state.rgbButtons[15] & 0x80) != 0)
                 buttons |= 4;
-            if ((state.buttons[13] & 0x80) != 0)
+            if ((state.rgbButtons[13] & 0x80) != 0)
                 buttons |= 8;
-            if ((state.buttons[2] & 0x80) != 0)
+            if ((state.rgbButtons[2] & 0x80) != 0)
                 buttons |= 0x10;
-            if ((state.buttons[3] & 0x80) != 0)
+            if ((state.rgbButtons[3] & 0x80) != 0)
                 buttons |= 0x20;
-            if ((state.buttons[1] & 0x80) != 0)
+            if ((state.rgbButtons[1] & 0x80) != 0)
                 buttons |= 0x40;
-            if ((state.buttons[0] & 0x80) != 0)
+            if ((state.rgbButtons[0] & 0x80) != 0)
                 buttons |= 0x80;
-            if ((state.buttons[6] & 0x80) != 0)
+            if ((state.rgbButtons[6] & 0x80) != 0)
                 buttons |= 0x100;
-            if ((state.buttons[7] & 0x80) != 0)
+            if ((state.rgbButtons[7] & 0x80) != 0)
                 buttons |= 0x200;
-            if ((state.buttons[4] & 0x80) != 0)
+            if ((state.rgbButtons[4] & 0x80) != 0)
                 buttons |= 0x1000;
-            if ((state.buttons[5] & 0x80) != 0)
+            if ((state.rgbButtons[5] & 0x80) != 0)
                 buttons |= 0x2000;
-            if ((state.buttons[11] & 0x80) != 0)
+            if ((state.rgbButtons[11] & 0x80) != 0)
                 buttons |= 0x400;
-            if ((state.buttons[8] & 0x80) != 0)
+            if ((state.rgbButtons[8] & 0x80) != 0)
                 buttons |= 0x800;
 
             update_input_controller_slot_button_axes(slot, buttons, axis_x, axis_y);

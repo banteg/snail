@@ -9,6 +9,7 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     emit_summary,
     types_declare,
 )
@@ -64,6 +65,26 @@ MOUSE_FUNCTION_SYMBOL_UPDATES = (
     ("0x44c310", "initialize_mouse_input"),
 )
 
+CONTROLLER_DATA_SYMBOL_UPDATES = (
+    ("0x777b2c", "g_joystick_count"),
+    ("0x777b30", "g_joystick_input"),
+    ("0x777b34", "g_joystick_devices"),
+)
+
+CONTROLLER_DATA_VAR_UPDATES = (
+    ("0x777b2c", "int32_t"),
+    ("0x777b30", "IDirectInput8A*"),
+    ("0x777b34", "IDirectInputDevice8A*[4]"),
+)
+
+CONTROLLER_FUNCTION_SYMBOL_UPDATES = (
+    ("0x44b3c0", "enumerate_input_controllers"),
+    ("0x44b490", "append_enumerated_input_controller_callback"),
+    ("0x44b4e0", "configure_input_controller_axis_range_callback"),
+    ("0x44b570", "update_joystick_input"),
+    ("0x44b770", "release_input_controllers"),
+)
+
 INPUT_STATE_FIELDS = (
     ("0x00", "controller_slot", "int32_t"),
     ("0x04", "pressed_buttons", "int32_t"),
@@ -103,6 +124,39 @@ PROTO_UPDATES = (
     ("0x44c100", "void __cdecl convert_mouse_screen_xy(int32_t sensitivity_slot, float* x, float* y)"),
     ("0x44c2c0", "int32_t __cdecl release_mouse_input()"),
     ("0x44c310", "int32_t __cdecl initialize_mouse_input(int32_t window_handle)"),
+    (
+        "0x44b3c0",
+        "int32_t __cdecl enumerate_input_controllers(int32_t window_handle, int32_t* out_count)",
+    ),
+    (
+        "0x44b490",
+        "int32_t __stdcall append_enumerated_input_controller_callback(DIDEVICEINSTANCEA* instance, void* context)",
+    ),
+    (
+        "0x44b4e0",
+        "int32_t __stdcall configure_input_controller_axis_range_callback(DIDEVICEOBJECTINSTANCEA* instance, void* context)",
+    ),
+    ("0x44b570", "int32_t __cdecl update_joystick_input()"),
+    ("0x44b770", "int32_t __cdecl release_input_controllers()"),
+)
+
+CONTROLLER_USER_VAR_UPDATES = (
+    (
+        "configure_input_controller_axis_range_callback",
+        "StackVariableSourceType",
+        0,
+        -24,
+        "range",
+        "DIPROPRANGE",
+    ),
+    (
+        "update_joystick_input",
+        "StackVariableSourceType",
+        0,
+        -272,
+        "state",
+        "DIJOYSTATE2",
+    ),
 )
 
 
@@ -149,7 +203,29 @@ def main() -> int:
             updates=MOUSE_FUNCTION_SYMBOL_UPDATES,
             kind="function",
         ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=CONTROLLER_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=CONTROLLER_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=CONTROLLER_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=CONTROLLER_USER_VAR_UPDATES,
+        ),
     ]
     return emit_summary(
         repo_root=REPO_ROOT,

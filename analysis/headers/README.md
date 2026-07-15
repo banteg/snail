@@ -82,6 +82,11 @@ Current checked-in example:
 - `uv run python tools/ida/sync_vapour_trail_types.py`
 - `ida_input_state_types.h`
 - `uv run python tools/ida/sync_input_state_types.py`
+  - Replays the process-owned DirectInput controller interface, fixed four-slot
+    device bank, SDK device/object enumeration records, axis-range property,
+    and complete 0x110-byte `DIJOYSTATE2` stack owner. The callback and polling
+    prototypes keep `guidInstance`, `dwType`, `lX`, `lY`, and `rgbButtons`
+    visible instead of anonymous offsets and byte arrays.
 
 Current checked-in Binary Ninja companion:
 
@@ -122,6 +127,10 @@ intentional.
 - `uv run python tools/binja/sync_object_render_types.py`
 - `bn_input_state_types.h`
 - `uv run python tools/binja/sync_input_state_types.py`
+  - Mirrors the same DirectInput controller owners and aggregate stack locals
+    into Binary Ninja; the paired IDA replay above is deliberately kept narrow
+    so both decompilers preserve the SDK layout without importing a full
+    platform header universe.
 - `path_template_types.h`
 - `uv run python tools/binja/sync_path_template_types.py`
   - Owns the canonical `SubSolution` replay record and nested `Player` layout.

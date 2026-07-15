@@ -29,6 +29,9 @@
 #define DISCL_FOREGROUND 0x00000004u
 #define DISCL_BACKGROUND 0x00000008u
 
+#define DIDFT_AXIS 0x00000003u
+#define DIPH_BYID 2u
+
 typedef struct DIOBJECTDATAFORMAT {
     const GUID *pguid;
     DWORD dwOfs;
@@ -65,6 +68,45 @@ typedef struct DIPROPDWORD {
     DIPROPHEADER diph;
     DWORD dwData;
 } DIPROPDWORD;
+
+typedef struct DIPROPRANGE {
+    DIPROPHEADER diph;
+    LONG lMin;
+    LONG lMax;
+} DIPROPRANGE;
+
+typedef struct DIJOYSTATE2 {
+    LONG lX;
+    LONG lY;
+    LONG lZ;
+    LONG lRx;
+    LONG lRy;
+    LONG lRz;
+    LONG rglSlider[2];
+    DWORD rgdwPOV[4];
+    BYTE rgbButtons[128];
+    LONG lVX;
+    LONG lVY;
+    LONG lVZ;
+    LONG lVRx;
+    LONG lVRy;
+    LONG lVRz;
+    LONG rglVSlider[2];
+    LONG lAX;
+    LONG lAY;
+    LONG lAZ;
+    LONG lARx;
+    LONG lARy;
+    LONG lARz;
+    LONG rglASlider[2];
+    LONG lFX;
+    LONG lFY;
+    LONG lFZ;
+    LONG lFRx;
+    LONG lFRy;
+    LONG lFRz;
+    LONG rglFSlider[2];
+} DIJOYSTATE2;
 
 typedef struct DIDEVICEINSTANCEA {
     DWORD dwSize;
@@ -117,6 +159,18 @@ struct IDirectInputDevice8AVtbl {
     HRESULT (STDMETHODCALLTYPE *SetDataFormat)(IDirectInputDevice8A *self, const DIDATAFORMAT *data_format);
     HRESULT (STDMETHODCALLTYPE *SetEventNotification)(IDirectInputDevice8A *self, HANDLE event_handle);
     HRESULT (STDMETHODCALLTYPE *SetCooperativeLevel)(IDirectInputDevice8A *self, HWND window, DWORD flags);
+    HRESULT (STDMETHODCALLTYPE *GetObjectInfo)(IDirectInputDevice8A *self, DIDEVICEOBJECTINSTANCEA *object_out, DWORD object_id, DWORD how);
+    HRESULT (STDMETHODCALLTYPE *GetDeviceInfo)(IDirectInputDevice8A *self, DIDEVICEINSTANCEA *instance_out);
+    HRESULT (STDMETHODCALLTYPE *RunControlPanel)(IDirectInputDevice8A *self, HWND owner, DWORD flags);
+    HRESULT (STDMETHODCALLTYPE *Initialize)(IDirectInputDevice8A *self, HINSTANCE instance, DWORD version, REFGUID guid);
+    HRESULT (STDMETHODCALLTYPE *CreateEffect)(IDirectInputDevice8A *self, REFGUID guid, void *effect, void **effect_out, IUnknown *outer_unknown);
+    HRESULT (STDMETHODCALLTYPE *EnumEffects)(IDirectInputDevice8A *self, void *callback, void *user, DWORD effect_type);
+    HRESULT (STDMETHODCALLTYPE *GetEffectInfo)(IDirectInputDevice8A *self, void *effect_info, REFGUID guid);
+    HRESULT (STDMETHODCALLTYPE *GetForceFeedbackState)(IDirectInputDevice8A *self, DWORD *state_out);
+    HRESULT (STDMETHODCALLTYPE *SendForceFeedbackCommand)(IDirectInputDevice8A *self, DWORD flags);
+    HRESULT (STDMETHODCALLTYPE *EnumCreatedEffectObjects)(IDirectInputDevice8A *self, void *callback, void *user, DWORD flags);
+    HRESULT (STDMETHODCALLTYPE *Escape)(IDirectInputDevice8A *self, void *escape);
+    HRESULT (STDMETHODCALLTYPE *Poll)(IDirectInputDevice8A *self);
 };
 
 struct IDirectInputDevice8A {

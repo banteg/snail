@@ -7,7 +7,7 @@ extern "C" __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char* module
 extern "C" int __stdcall DirectInput8Create(
     HINSTANCE module,
     unsigned int version,
-    void* iid,
+    const DirectInputGuid* iid,
     DirectInput** out_input,
     void* outer_unknown);
 
@@ -18,9 +18,9 @@ extern float g_mouse_live_y[]; // data_777d60
 extern char g_hide_system_cursor_flag; // data_777d70
 extern DirectInput* g_mouse_input; // data_777d98
 extern DirectInputDevice* g_mouse_device; // data_777d9c
-extern char g_directinput8_iid; // data_49b0c0
-extern char g_directinput_mouse_guid; // data_49b020
-extern char g_directinput_mouse_data_format; // data_49b70c
+extern DirectInputGuid g_directinput8_iid; // data_49b0c0
+extern DirectInputGuid g_directinput_mouse_guid; // data_49b020
+extern DIDATAFORMAT g_directinput_mouse_data_format; // data_49b70c
 
 int initialize_mouse_input(HWND hwnd)
 {

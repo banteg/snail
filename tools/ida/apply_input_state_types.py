@@ -5,8 +5,10 @@ import sys
 
 import ida_bytes
 import ida_funcs
+import ida_hexrays
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 
@@ -21,6 +23,14 @@ TRUSTED_NAMES = [
     (0x44C100, "convert_mouse_screen_xy"),
     (0x44C2C0, "release_mouse_input"),
     (0x44C310, "initialize_mouse_input"),
+    (0x44B3C0, "enumerate_input_controllers"),
+    (0x44B490, "append_enumerated_input_controller_callback"),
+    (0x44B4E0, "configure_input_controller_axis_range_callback"),
+    (0x44B570, "update_joystick_input"),
+    (0x44B770, "release_input_controllers"),
+    (0x777B2C, "g_joystick_count"),
+    (0x777B30, "g_joystick_input"),
+    (0x777B34, "g_joystick_devices"),
     (0x777D58, "g_mouse_live_x"),
     (0x777D60, "g_mouse_live_y"),
     (0x777D68, "g_mouse_screen_to_authored_y_scale"),
@@ -87,6 +97,26 @@ TRUSTED_DECLARATIONS = [
         "initialize_mouse_input",
         "int __cdecl initialize_mouse_input(int window_handle);",
     ),
+    (
+        "enumerate_input_controllers",
+        "int __cdecl enumerate_input_controllers(int window_handle, int *out_count);",
+    ),
+    (
+        "append_enumerated_input_controller_callback",
+        "int __stdcall append_enumerated_input_controller_callback(DIDEVICEINSTANCEA *instance, void *context);",
+    ),
+    (
+        "configure_input_controller_axis_range_callback",
+        "int __stdcall configure_input_controller_axis_range_callback(DIDEVICEOBJECTINSTANCEA *instance, void *context);",
+    ),
+    (
+        "update_joystick_input",
+        "int __cdecl update_joystick_input();",
+    ),
+    (
+        "release_input_controllers",
+        "int __cdecl release_input_controllers();",
+    ),
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
@@ -101,6 +131,13 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x777D88, "g_mouse_clip_rect", "MouseScreenRect g_mouse_clip_rect;"),
     (0x777D98, "g_mouse_input", "void *g_mouse_input;"),
     (0x777D9C, "g_mouse_device", "void *g_mouse_device;"),
+    (0x777B2C, "g_joystick_count", "int g_joystick_count;"),
+    (0x777B30, "g_joystick_input", "IDirectInput8A *g_joystick_input;"),
+    (
+        0x777B34,
+        "g_joystick_devices",
+        "IDirectInputDevice8A *g_joystick_devices[4];",
+    ),
 ]
 
 TRUSTED_DATA_ITEMS = [
@@ -115,7 +152,20 @@ TRUSTED_DATA_ITEMS = [
     (0x777D88, 16),
     (0x777D98, 4),
     (0x777D9C, 4),
+    (0x777B2C, 4),
+    (0x777B30, 4),
+    (0x777B34, 16),
 ]
+
+TRUSTED_STRUCT_LVARS = (
+    (
+        "configure_input_controller_axis_range_callback",
+        20,
+        "range",
+        "DIPROPRANGE",
+    ),
+    ("update_joystick_input", 60, "state", "DIJOYSTATE2"),
+)
 
 
 def _resolve_function(selector: str) -> tuple[int | None, str]:
@@ -167,6 +217,101 @@ def _ensure_data_item(address: int, size: int) -> str:
     if not ida_bytes.is_head(flags) or ida_bytes.get_item_size(address) != size:
         return "verification_failed"
     return "verified"
+
+
+def _sync_struct_lvar(
+    selector: str,
+    stack_offset: int,
+    expected_name: str,
+    type_name: str,
+) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "selector": selector, "reason": "missing_function"}
+
+    cfunc = ida_hexrays.decompile(address)
+    stack_locals = [lvar for lvar in cfunc.get_lvars() if lvar.is_stk_var()]
+    candidates = [
+        lvar for lvar in stack_locals if lvar.get_stkoff() == stack_offset
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "unexpected_local_candidates",
+            "stack_offset": stack_offset,
+            "candidate_count": len(candidates),
+            "available": [
+                {
+                    "name": lvar.name,
+                    "stack_offset": lvar.get_stkoff(),
+                    "width": lvar.width,
+                    "type": str(lvar.type()),
+                }
+                for lvar in stack_locals
+            ],
+        }
+
+    lvar = candidates[0]
+    if lvar.name == expected_name and type_name in str(lvar.type()):
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+        }
+
+    local_type = ida_typeinf.tinfo_t()
+    if not local_type.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "missing_local_type",
+            "type": type_name,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = expected_name
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "modify_user_lvar_info_failed",
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if candidate.is_stk_var()
+        and candidate.get_stkoff() == stack_offset
+        and candidate.name == expected_name
+        and type_name in str(candidate.type())
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "selector": selector,
+            "reason": "local_readback_failed",
+            "stack_offset": stack_offset,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -286,6 +431,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    struct_lvars = [
+        _sync_struct_lvar(selector, stack_offset, expected_name, type_name)
+        for selector, stack_offset, expected_name, type_name in TRUSTED_STRUCT_LVARS
+    ]
+    failed_struct_lvars = [
+        result for result in struct_lvars if result.get("status") == "failed"
+    ]
+    failed.extend(
+        {"selector": result.get("selector"), "struct_lvar": result}
+        for result in failed_struct_lvars
+    )
+
     print(
         json.dumps(
             {
@@ -298,6 +455,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "data_items_applied": data_items_applied,
                 "data_items_unchanged": data_items_unchanged,
+                "struct_lvars": struct_lvars,
                 "missing": missing,
                 "failed": failed,
             },
