@@ -24,3 +24,33 @@ against 4 and selects the loop wiggle before starting the `curve_source *
 conversion. Delaying `PATH_CURVE_COUNT` and `width_or_scale` to match that
 order keeps focused Wibo at 35.74% (639/721) but improves the masked audit from
 39 ok to 40 ok, with 0 unresolved and 0 mismatch.
+
+## 2026-07-15 ownership and source-shape recovery
+
+The variant-0 builder now owns its fixed approach and departure samples
+directly. The former `initialize_sample_pair` abstraction hid the native
+indexed `AttachmentSample` writes, identity-transform calls, primary-center
+copy, secondary Y offset, and per-sample unit length. Expanding those writes
+also established that the departure center is grouped as the loop wiggle plus
+`(4.0f - width * 0.5f)` and that the circular section updates `center_x` in two
+steps.
+
+The circular samples now build their actual orientation members in place:
+fixed world-X right, normalized radial up, and a forward cross product. The
+generated mesh likewise uses the recovered `Vector3` arithmetic rather than
+three unrelated scalar stores. Keeping a real vertex temporary and assigning
+`basis_right * lateral + position` recovers the native `0x54` stack frame.
+
+The face grid retains the source family's do/while column traversal and its
+parity-controlled duplicate texture calls. The two arms intentionally select
+the same front or back texture: the target contains both branches and the same
+residue is independently present in the Cage2 builder, so this is preserved as
+authored source shape rather than collapsed as a semantic simplification.
+
+Focused Wibo improves from 35.74% (639/721) to 64.75% (706/721), with a
+9-instruction exact prefix and 46 masked operands ok, 0 unresolved, and 0
+mismatch. A direct texture-call simplification briefly scored 66.01%, but was
+rejected because it removes control flow proven by both the target and sibling
+source-family evidence. Remaining differences are register allocation, x87
+operation order, and local lifetime scheduling; none justify artificial
+padding or volatile qualifiers.
