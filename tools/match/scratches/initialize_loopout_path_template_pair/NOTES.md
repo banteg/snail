@@ -33,3 +33,25 @@ from 37.64% (637/718) to 36.46% (637/718). The masked audit worsened from
 43 ok, 0 unresolved, 0 mismatch to 41 ok, 0 unresolved, 2 mismatch, pairing
 the native `request_object_vertices` and `request_object_facequads` calls in
 the wrong order. Keep loopout vertices-first.
+
+2026-07-15 ownership pass: the retained departure boundary is now named
+`departure_start` and shared by both the four-sample departure builder and the
+curved-section interpolation. This recovers the native retained byte offset
+instead of recomputing `curve_count + 10`, and is the largest single gain in
+the pass. The ten approach and four departure pairs are written directly, the
+curved samples own their right/up/forward basis construction, and strip
+vertices use the native `Vector3` multiply/add shape. The native face builder
+also proves that its parity tests are authored even though both sides request
+the same texture; they are retained rather than simplified away. Focused Wibo
+moves from 37.64% (637/718) to 55.77% (702/718), with the masked audit improving
+from 43 ok to 45 ok and remaining fully clean.
+
+Rejected source shapes: keeping `orient_loop_sample` hides the two samples'
+separate basis ownership and reaches only 38.10%; assigning aggregate
+`basis_up` temporaries reaches 41.55%; naming separate persistent right-axis
+locals reaches 52.61% and loses two native instructions. Moving
+`curve_count` initialization to its declaration changes the real metadata and
+conversion order and falls to 47.32%. Removing the semantic delta-loop guard
+changes VC6's whole-function allocation and falls to 41.64%. A `do`/`while`
+face-column loop was also rejected: unlike the two LoopTheLoop siblings, the
+LoopOut target retains the ordinary `for` control-flow shape.
