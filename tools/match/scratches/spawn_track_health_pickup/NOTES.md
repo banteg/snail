@@ -205,3 +205,13 @@ The free-slot scan now explicitly accepts only
 `cRSubHealth` slot with `TRACK_PICKUP_STATE_ACTIVE`. Focused output is
 byte-stable at 90.08%, 120/122 instructions, prefix 6, with all seven operands
 clean.
+
+## 2026-07-14 analysis receiver and ABI closure
+
+Binary Ninja still exported this as `TrackPickupRuntime* __thiscall(Game*,
+...)`, contradicting Android `cRSubGame::AddHealth`, the Windows callers, and
+the already honest matcher source. Guarded recreation now installs
+`void __thiscall(SubgameRuntime*, TrackRowCell*, Player*)`; IDA is replayed and
+verified with the same receiver lvar and declaration. Both tracked artifacts
+expose the owned eight-slot `health_pickups` array and ordinary `return;`
+paths. No incidental EAX value is promoted into a fake result.

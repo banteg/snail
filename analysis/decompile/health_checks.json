@@ -1731,14 +1731,257 @@
       ]
     },
     {
-      "name": "bn_build_track_fringe_body_available",
+      "name": "bn_build_track_fringe_runtime_owner",
       "artifact": "analysis/decompile/binja/functions/00434be0-build_track_fringe_objects.c",
       "required_substrings": [
+        "struct SubgameRuntime* game_1 = game",
         "initialize_fringe_manager",
         "allocate_fringe_object",
-        "game_1->runtime_row_count"
+        "game_1->runtime_row_count",
+        "&game_1->runtime_rows",
+        "&game_1->runtime_cells",
+        "runtime_cells[0][0].fringe_front"
       ],
       "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "data_4df904 +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_build_track_fringe_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/00434be0-build_track_fringe_objects.c",
+      "required_substrings": [
+        "int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)",
+        "v1->runtime_row_count",
+        "v4 = v1->runtime_cells[0]",
+        "v4->fringe_front",
+        "FringeObject *fringe_back"
+      ],
+      "forbidden_substrings": [
+        "build_track_fringe_objects(Game *game)",
+        "sub_434BE0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_promote_track_tiles_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/004355f0-promote_track_tiles_to_fringe_variants.c",
+      "required_substrings": [
+        "game->runtime_row_count",
+        "&game->runtime_cells[0][0].object",
+        "runtime_cells[0][0].lane_and_flags"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_promote_track_tiles_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/004355f0-promote_track_tiles_to_fringe_variants.c",
+      "required_substrings": [
+        "int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)",
+        "game->runtime_row_count",
+        "&game->runtime_cells[0][0].object"
+      ],
+      "forbidden_substrings": [
+        "promote_track_tiles_to_fringe_variants(Game *game)",
+        "sub_4355F0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_harmonize_track_tiles_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
+      "required_substrings": [
+        "struct SubgameRuntime* game_1 = game",
+        "game_1->runtime_row_count",
+        "game_1->runtime_cells[0][0].lane_and_flags"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_harmonize_track_tiles_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
+      "required_substrings": [
+        "int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)",
+        "game->runtime_row_count",
+        "v1->runtime_cells[0][v5].lane_and_flags"
+      ],
+      "forbidden_substrings": [
+        "harmonize_center_lane_floor_slide_variants(Game *game)",
+        "sub_4356F0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_select_track_tiles_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/00435a80-select_track_tile_edge_variants.c",
+      "required_substrings": [
+        "game->runtime_row_count",
+        "&game->runtime_cells[0][0].tile_id",
+        "runtime_cells[0][0].lane_and_flags"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_select_track_tiles_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/00435a80-select_track_tile_edge_variants.c",
+      "required_substrings": [
+        "int32_t __thiscall select_track_tile_edge_variants(SubgameRuntime *game)",
+        "game->runtime_row_count",
+        "&game->runtime_cells[0][0].tile_id"
+      ],
+      "forbidden_substrings": [
+        "select_track_tile_edge_variants(Game *game)",
+        "sub_435A80",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_grid_cell_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d410-get_track_grid_cell_at_world_position.c",
+      "required_substrings": [
+        "position->x",
+        "position->z",
+        "return &game->runtime_cells"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_grid_cell_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d410-get_track_grid_cell_at_world_position.c",
+      "required_substrings": [
+        "TrackRowCell *__thiscall get_track_grid_cell_at_world_position(SubgameRuntime *game, Vec3 *position)",
+        "return &game->runtime_cells[z][v2]"
+      ],
+      "forbidden_substrings": [
+        "get_track_grid_cell_at_world_position(Game *game",
+        "sub_43D410",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_floor_sample_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d4d0-sample_track_floor_height_at_position.c",
+      "required_substrings": [
+        "get_track_grid_cell_at_world_position(game, position)",
+        "eax->tile_id",
+        "eax->anchor_position.y"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_floor_sample_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d4d0-sample_track_floor_height_at_position.c",
+      "required_substrings": [
+        "double __thiscall sample_track_floor_height_at_position(SubgameRuntime *game, Vec3 *position)",
+        "get_track_grid_cell_at_world_position(game, position)",
+        "track_grid_cell_at_world_position->anchor_position.y"
+      ],
+      "forbidden_substrings": [
+        "sample_track_floor_height_at_position(Game *game",
+        "sub_43D4D0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_health_pickup_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d6c0-spawn_track_health_pickup.c",
+      "required_substrings": [
+        "&game->health_pickups[0].state",
+        "TRACK_PICKUP_STATE_INACTIVE",
+        "cell_1->anchor_position",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "TrackPickupRuntime",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_health_pickup_void_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d6c0-spawn_track_health_pickup.c",
+      "required_substrings": [
+        "void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "&game->health_pickups[0].state",
+        "game->health_pickups[v3].bob_phase_step",
+        "return;"
+      ],
+      "forbidden_substrings": [
+        "TrackPickupRuntime",
+        "spawn_track_health_pickup(Game *game",
+        "sub_43D6C0",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_track_jetpack_pickup_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/0043d890-spawn_track_jetpack_pickup.c",
+      "required_substrings": [
+        "&game->jetpack_pickup.state",
+        "TRACK_PICKUP_STATE_INACTIVE",
+        "cell->anchor_position",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "TrackPickupRuntime",
+        "__offset(Game",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_track_jetpack_pickup_void_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/0043d890-spawn_track_jetpack_pickup.c",
+      "required_substrings": [
+        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "&game->jetpack_pickup.state",
+        "cell->anchor_position",
+        "return;"
+      ],
+      "forbidden_substrings": [
+        "TrackPickupRuntime",
+        "spawn_track_jetpack_pickup(Game *game",
+        "sub_43D890",
+        "return result",
         "__asm",
         "_ET1"
       ]

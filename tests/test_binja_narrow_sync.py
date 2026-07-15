@@ -395,6 +395,14 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "destroy_subgame",
         "update_subgame",
         "remove_subgame_bods",
+        "build_track_fringe_objects",
+        "promote_track_tiles_to_fringe_variants",
+        "harmonize_center_lane_floor_slide_variants",
+        "select_track_tile_edge_variants",
+        "get_track_grid_cell_at_world_position",
+        "sample_track_floor_height_at_position",
+        "spawn_track_health_pickup",
+        "spawn_track_jetpack_pickup",
         "get_track_runtime_cell_at_world_z",
     ):
         assert f'"{function_name}"' in deferred_prototypes
@@ -422,6 +430,14 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "update_subgame",
         "remove_subgame_bods",
         "merge_track_tile_runs",
+        "build_track_fringe_objects",
+        "promote_track_tiles_to_fringe_variants",
+        "harmonize_center_lane_floor_slide_variants",
+        "select_track_tile_edge_variants",
+        "get_track_grid_cell_at_world_position",
+        "sample_track_floor_height_at_position",
+        "spawn_track_health_pickup",
+        "spawn_track_jetpack_pickup",
         "get_track_runtime_cell_at_world_z",
     ):
         assert f'"{function_name}": {{' in repair_source
@@ -432,6 +448,14 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "0x438B90",
         "0x440910",
         "0x435180",
+        "0x434BE0",
+        "0x4355F0",
+        "0x4356F0",
+        "0x435A80",
+        "0x43D410",
+        "0x43D4D0",
+        "0x43D6C0",
+        "0x43D890",
         "0x43D480",
     ):
         assert f'"address": {address}' in repair_source
@@ -447,8 +471,26 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
         'SubgameRuntime* game, Vec3* position);"'
     ) in ida_source
+    for function_name in (
+        "spawn_track_health_pickup",
+        "spawn_track_jetpack_pickup",
+    ):
+        declaration = (
+            f"void __thiscall {function_name}(SubgameRuntime* game, "
+            "TrackRowCell* cell, Player* player);"
+        )
+        assert declaration in header
+        assert declaration in ida_source
+        assert declaration.removesuffix(";") in deferred_prototypes
+    assert '"spawn_track_health_pickup": 3' in ida_source
+    assert '"spawn_track_jetpack_pickup": 3' in ida_source
+    assert '"get_track_grid_cell_at_world_position": 2' in ida_source
+    assert '"sample_track_floor_height_at_position": 2' in ida_source
     assert "if stale and comments:" in repair_source
     assert "if stale and tags:" in repair_source
+    assert '"allowed_auto_tag_types": ("Unresolved Stack Pointer Value",)' in repair_source
+    assert "restore_preserved_auto_tags(repaired, preserved_auto_tags)" in repair_source
+    assert "record[\"auto\"] and record[\"type\"] in ALLOWED_AUTO_TAG_TYPES" in repair_source
     assert "function_has_unpreserved_user_vars" in repair_source
     assert "def restore_old_function():" in repair_source
     assert '"--apply"' in repair_source

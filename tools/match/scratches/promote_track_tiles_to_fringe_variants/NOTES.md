@@ -64,3 +64,12 @@ instructions, prefix 11/75, with all six operands clean. The documented
 object-field cursor residual remains intentionally unresolved: direct
 object-slot source makes VC6 steal the live promoted-flag register and is not
 an ownership improvement.
+
+## 2026-07-14 analysis receiver closure
+
+The live BN receiver is now the matcher- and cross-port-proven
+`SubgameRuntime*`, replacing the stale same-size `Game*` identity. Both tracked
+decompilers now expose `runtime_row_count`, `runtime_cells`, the object slot,
+and packed `lane_and_flags` under that owner. This is analysis metadata only;
+the honest 81.33%, 75/75 matcher result and its documented cursor residual are
+unchanged.

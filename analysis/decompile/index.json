@@ -15,39 +15,39 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "switch_track_mirror",
-      "address": "0x435e60"
+      "name": "build_track_fringe_objects",
+      "address": "0x434be0"
     },
     {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
+      "name": "promote_track_tiles_to_fringe_variants",
+      "address": "0x4355f0"
     },
     {
-      "name": "initialize_subgame",
-      "address": "0x4374b0"
+      "name": "harmonize_center_lane_floor_slide_variants",
+      "address": "0x4356f0"
     },
     {
-      "name": "reset_subgame",
-      "address": "0x437b10"
+      "name": "select_track_tile_edge_variants",
+      "address": "0x435a80"
     },
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "get_track_grid_cell_at_world_position",
+      "address": "0x43d410"
     },
     {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
+      "name": "sample_track_floor_height_at_position",
+      "address": "0x43d4d0"
     },
     {
-      "name": "update_pause_menu",
-      "address": "0x4407a0"
+      "name": "spawn_track_health_pickup",
+      "address": "0x43d6c0"
     },
     {
-      "name": "update_subgame_camera",
-      "address": "0x446020"
+      "name": "spawn_track_jetpack_pickup",
+      "address": "0x43d890"
     }
   ],
-  "health_check_count": 128,
+  "health_check_count": 143,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

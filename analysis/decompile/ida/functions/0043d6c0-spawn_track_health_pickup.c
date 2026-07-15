@@ -2,93 +2,86 @@
 /* function: spawn_track_health_pickup @ 0x43d6c0 */
 /* selector: spawn_track_health_pickup */
 
-// Allocates and seeds one live health pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
-_DWORD *__fastcall sub_43D6C0(int a1, int a2, int a3, int a4)
+// Allocates and seeds one live `SubHealth` from the eight-record owned array. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction now keeps the honest void contract instead of exporting incompatible incidental register values.
+void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)
 {
-  int v4; // ebx
-  _DWORD *result; // eax
-  int v6; // ebp
-  int v7; // esi
-  int v8; // eax
-  char *v9; // ecx
-  int v10; // edx
-  int v11; // edx
-  int v12; // ecx
-  _DWORD *v13; // eax
-  int v14; // ecx
-  _DWORD *v15; // ecx
-  int v16; // ebx
-  float v18; // [esp+Ch] [ebp-8h]
-  int v19; // [esp+10h] [ebp-4h]
+  int v3; // ebx
+  TrackPickupState *i; // eax
+  TrackRowCell *v5; // ebp
+  FrameBodBase *v6; // esi
+  FrameBodBase *v7; // eax
+  FrameBodBase **p_first; // ecx
+  FrameBodBase *first; // edx
+  FrameBodBase *list_prev; // edx
+  uint32_t list_flags; // ecx
+  _DWORD *sprite; // eax
+  int v13; // ecx
+  _DWORD *v14; // ecx
+  float v16; // [esp+Ch] [ebp-8h]
+  float z; // [esp+10h] [ebp-4h]
 
-  v4 = 0;
-  result = (_DWORD *)(a1 + 3498040);
-  while ( *result )
+  v3 = 0;
+  for ( i = &game->health_pickups[0].state; *i; i += 29 )
   {
-    ++v4;
-    result += 29;
-    if ( v4 >= 8 )
-      return result;
+    if ( ++v3 >= 8 )
+      return;
   }
-  v6 = a3;
-  v7 = a1 + 116 * v4;
-  *(_DWORD *)(v7 + 3498040) = 1;
-  *(_DWORD *)(v7 + 3498044) = a4;
-  v19 = *(_DWORD *)(a3 + 24);
-  v18 = *(float *)(a3 + 20) + 0.60000002;
-  *(_DWORD *)(v7 + 3498000) = *(_DWORD *)(a3 + 16);
-  *(float *)(v7 + 3498004) = v18;
-  *(_DWORD *)(v7 + 3498008) = v19;
-  v8 = v7 + 3497984;
-  if ( (*(_DWORD *)(v7 + 3497988) & 0x200) != 0 )
+  v5 = cell;
+  v6 = (FrameBodBase *)((char *)game + 116 * v3);
+  v6[62465].bod.vtable = (void **)1;
+  v6[62465].bod.list_flags = (uint32_t)player;
+  z = cell->anchor_position.z;
+  v16 = cell->anchor_position.y + 0.60000002;
+  v6[62464].position.x = cell->anchor_position.x;
+  v6[62464].position.y = v16;
+  v6[62464].position.z = z;
+  v7 = v6 + 62464;
+  if ( (v6[62464].bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
   else
   {
-    v9 = (char *)MEMORY[0x4DF904] + 1452;
-    v10 = *((_DWORD *)MEMORY[0x4DF904] + 363);
-    if ( v10 )
+    p_first = &g_game_base->active_bod_list.first;
+    first = g_game_base->active_bod_list.first;
+    if ( first )
     {
-      *(_DWORD *)(v10 + 8) = v8;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v9 + 8) + 12) = *(_DWORD *)v9;
-      v6 = a3;
-      v11 = *(_DWORD *)(*(_DWORD *)v9 + 8);
-      *(_DWORD *)v9 = v11;
-      *(_DWORD *)(v11 + 8) = 0;
+      first->bod.list_prev = v7;
+      (*p_first)->bod.list_prev->bod.list_next = *p_first;
+      v5 = cell;
+      list_prev = (*p_first)->bod.list_prev;
+      *p_first = list_prev;
+      list_prev->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v9 = v8;
-      *(_DWORD *)(v7 + 3497992) = 0;
-      *(_DWORD *)(*(_DWORD *)v9 + 12) = 0;
+      *p_first = v7;
+      v6[62464].bod.list_prev = nullptr;
+      (*p_first)->bod.list_next = nullptr;
     }
-    v12 = *(_DWORD *)(v7 + 3497988);
-    BYTE1(v12) |= 2u;
-    *(_DWORD *)(v7 + 3497988) = v12;
+    list_flags = v6[62464].bod.list_flags;
+    BYTE1(list_flags) |= 2u;
+    v6[62464].bod.list_flags = list_flags;
   }
-  v13 = allocate_sprite(g_sprite_manager, *(_DWORD *)(a4 + 896), 57, -1, -1);
-  *(_DWORD *)(v7 + 3498084) = v13;
-  v14 = v13[1];
-  BYTE1(v14) |= 8u;
-  v13[1] = v14;
-  *(_DWORD *)(*(_DWORD *)(v7 + 3498084) + 120) = 0;
-  *(_DWORD *)(*(_DWORD *)(v7 + 3498084) + 104) = 0;
-  *(_DWORD *)(*(_DWORD *)(v7 + 3498084) + 108) = 0;
-  *(_DWORD *)(*(_DWORD *)(v7 + 3498084) + 96) = 1058642330;
-  *(_DWORD *)(*(_DWORD *)(v7 + 3498084) + 100) = 1058642330;
-  v15 = (_DWORD *)(*(_DWORD *)(v7 + 3498084) + 72);
-  *v15 = *(_DWORD *)(v7 + 3498000);
-  v15[1] = *(_DWORD *)(v7 + 3498004);
-  v15[2] = *(_DWORD *)(v7 + 3498008);
-  *(_DWORD *)(v7 + 3498088) = v6;
-  *(_DWORD *)(v7 + 3498092) = 0;
-  if ( ((__int64)*(float *)(v7 + 3498008) & 1) != 0 )
-    *(_DWORD *)(v7 + 3498092) = 0;
+  sprite = allocate_sprite(g_sprite_manager, player->player_slot, 57, -1, -1);
+  LODWORD(v6[62465].color.g) = sprite;
+  v13 = sprite[1];
+  BYTE1(v13) |= 8u;
+  sprite[1] = v13;
+  *(_DWORD *)(LODWORD(v6[62465].color.g) + 120) = 0;
+  *(_DWORD *)(LODWORD(v6[62465].color.g) + 104) = 0;
+  *(_DWORD *)(LODWORD(v6[62465].color.g) + 108) = 0;
+  *(_DWORD *)(LODWORD(v6[62465].color.g) + 96) = 1058642330;
+  *(_DWORD *)(LODWORD(v6[62465].color.g) + 100) = 1058642330;
+  v14 = (_DWORD *)(LODWORD(v6[62465].color.g) + 72);
+  *v14 = LODWORD(v6[62464].position.x);
+  v14[1] = LODWORD(v6[62464].position.y);
+  v14[2] = LODWORD(v6[62464].position.z);
+  LODWORD(v6[62465].color.b) = v5;
+  v6[62465].color.a = 0.0;
+  if ( ((__int64)v6[62464].position.z & 1) != 0 )
+    v6[62465].color.a = 0.0;
   else
-    *(_DWORD *)(v7 + 3498092) = 1056964608;
-  v16 = v4 + 30156;
-  *(_DWORD *)(a1 + 116 * v16) = 1012010273;
-  return (_DWORD *)(7 * v16);
+    v6[62465].color.a = 0.5;
+  game->health_pickups[v3].bob_phase_step = 0.012820513;
 }
-

@@ -3,7 +3,7 @@
 /* selector: sample_track_floor_height_at_position */
 
 // Evaluates the runtime floor-height sampler for the current gameplay-grid cell, including ramp tiles and the special cell-stored height used by tile 0x16.
-double __thiscall sample_track_floor_height_at_position(Game *game, Vec3 *position)
+double __thiscall sample_track_floor_height_at_position(SubgameRuntime *game, Vec3 *position)
 {
   TrackRowCell *track_grid_cell_at_world_position; // eax
   uint8_t tile_id; // cl
@@ -35,4 +35,3 @@ double __thiscall sample_track_floor_height_at_position(Game *game, Vec3 *positi
   }
   return -100.0;
 }
-

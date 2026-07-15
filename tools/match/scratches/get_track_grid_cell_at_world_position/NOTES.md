@@ -43,3 +43,12 @@ hashes remain byte-identical:
 - `build_track_fringe_objects`: `d55f1a1237a5ad176ee5c81d70bf0d40949f5a089e62216f948bc14009d1955f`
 - `update_subgame`: `e1887d3b83450fded5caa113d3c715e21e8b95836047df3cb9a6fc6f81eca4bd`
 - `construct_game_runtime`: `bceb7d6c64d021b062effa8a55727c717e9314946286378f76f5667099405c35`
+
+## 2026-07-14 analysis receiver closure
+
+The exact 34/34 implementation is now also authoritative in both analysis
+databases: `TrackRowCell* __thiscall(SubgameRuntime*, Vec3*)`. Binary Ninja's
+stale `Game*` identity was guardedly recreated, and both exports now return
+directly from `game->runtime_cells`. This exact helper is the strongest local
+proof that the surrounding normalization and pickup helpers share the same
+subgame owner.

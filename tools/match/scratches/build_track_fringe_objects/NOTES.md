@@ -206,3 +206,18 @@ copy of the authored `*` marker. They clear directional fringe ownership for
 that row without conflating the flag with any per-cell `SubLoc` bit. Focused
 output remains byte-identical at 60.39%, 492/495 instructions, prefix 3/495,
 with all 48 operands clean.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja function still pinned a separate same-sized `Game*`
+receiver even though the matcher source, Android `cRSubGame::FringeEdgeTrack`,
+and every runtime-grid access establish `SubgameRuntime`. A guarded function
+recreation now installs `SubgameRuntime*` without discarding user annotations.
+The refreshed BN export consequently exposes `runtime_rows`, `runtime_cells`,
+and the four directional `FringeObject*` fields instead of the former
+`__offset(Game, ...)` owner shell; IDA independently retains the same receiver.
+
+The only pre-repair tag was Binary Ninja's analyzer-owned unresolved-stack
+diagnostic. The repair preserved it through recreation, and a fresh analysis
+then retired it because the condition no longer reproduced. No matcher source
+or bytes changed in this ownership-only closure.

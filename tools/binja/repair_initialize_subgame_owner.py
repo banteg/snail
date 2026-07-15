@@ -131,6 +131,226 @@ FUNCTION_SPECS = {
             },
         ),
     },
+    "build_track_fringe_objects": {
+        "address": 0x434BE0,
+        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        # Binary Ninja derives this address tag from the function's mismatched
+        # incoming stack states. It is analyzer-owned evidence, not a user
+        # annotation. The guarded recreation preserves it through mutation so
+        # fresh analysis, rather than the repair itself, decides whether it remains.
+        "allowed_auto_tag_types": ("Unresolved Stack Pointer Value",),
+        "declaration": (
+            "int32_t __thiscall build_track_fringe_objects(SubgameRuntime* game)"
+        ),
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "promote_track_tiles_to_fringe_variants": {
+        "address": 0x4355F0,
+        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "declaration": (
+            "int32_t __thiscall promote_track_tiles_to_fringe_variants("
+            "SubgameRuntime* game)"
+        ),
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "harmonize_center_lane_floor_slide_variants": {
+        "address": 0x4356F0,
+        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "declaration": (
+            "int32_t __thiscall harmonize_center_lane_floor_slide_variants("
+            "SubgameRuntime* game)"
+        ),
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "select_track_tile_edge_variants": {
+        "address": 0x435A80,
+        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "declaration": (
+            "int32_t __thiscall select_track_tile_edge_variants("
+            "SubgameRuntime* game)"
+        ),
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "get_track_grid_cell_at_world_position": {
+        "address": 0x43D410,
+        "expected_prototype": (
+            "struct TrackRowCell* __thiscall("
+            "struct SubgameRuntime* game, struct Vec3* position)"
+        ),
+        "stale_prototype": (
+            "struct TrackRowCell* __thiscall("
+            "struct Game* game, struct Vec3* position)"
+        ),
+        "declaration": (
+            "TrackRowCell* __thiscall get_track_grid_cell_at_world_position("
+            "SubgameRuntime* game, Vec3* position)"
+        ),
+        "parameter_count": 2,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "position",
+                "type": "struct Vec3*",
+            },
+        ),
+    },
+    "sample_track_floor_height_at_position": {
+        "address": 0x43D4D0,
+        "expected_prototype": (
+            "double __thiscall(struct SubgameRuntime* game, struct Vec3* position)"
+        ),
+        "stale_prototype": (
+            "double __thiscall(struct Game* game, struct Vec3* position)"
+        ),
+        "declaration": (
+            "double __thiscall sample_track_floor_height_at_position("
+            "SubgameRuntime* game, Vec3* position)"
+        ),
+        "parameter_count": 2,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "position",
+                "type": "struct Vec3*",
+            },
+        ),
+    },
+    "spawn_track_health_pickup": {
+        "address": 0x43D6C0,
+        "expected_prototype": (
+            "void __thiscall(struct SubgameRuntime* game, "
+            "struct TrackRowCell* cell, struct Player* player)"
+        ),
+        "stale_prototype": (
+            "struct TrackPickupRuntime* __thiscall(struct Game* game, "
+            "struct TrackRowCell* cell, struct Player* player)"
+        ),
+        "declaration": (
+            "void __thiscall spawn_track_health_pickup("
+            "SubgameRuntime* game, TrackRowCell* cell, Player* player)"
+        ),
+        "parameter_count": 3,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "cell",
+                "type": "struct TrackRowCell*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 8,
+                "name": "player",
+                "type": "struct Player*",
+            },
+        ),
+    },
+    "spawn_track_jetpack_pickup": {
+        "address": 0x43D890,
+        "expected_prototype": (
+            "void __thiscall(struct SubgameRuntime* game, "
+            "struct TrackRowCell* cell, struct Player* player)"
+        ),
+        "stale_prototype": (
+            "struct TrackPickupRuntime* __thiscall(struct Game* game, "
+            "struct TrackRowCell* cell, struct Player* player)"
+        ),
+        "declaration": (
+            "void __thiscall spawn_track_jetpack_pickup("
+            "SubgameRuntime* game, TrackRowCell* cell, Player* player)"
+        ),
+        "parameter_count": 3,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "cell",
+                "type": "struct TrackRowCell*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 8,
+                "name": "player",
+                "type": "struct Player*",
+            },
+        ),
+    },
     "get_track_runtime_cell_at_world_z": {
         "address": 0x43D480,
         "expected_prototype": (
@@ -183,6 +403,7 @@ STALE_PROTOTYPES = {STALE_PROTOTYPE, *SPEC.get("legacy_prototypes", ())}
 DECLARATION = SPEC["declaration"]
 EXPECTED_PARAMETER_COUNT = SPEC["parameter_count"]
 EXPECTED_VARIABLES = SPEC["variables"]
+ALLOWED_AUTO_TAG_TYPES = set(SPEC.get("allowed_auto_tag_types", ()))
 SUBGAME_RUNTIME_SIZE = __SUBGAME_RUNTIME_SIZE__
 APPLY = __APPLY__
 
@@ -196,6 +417,58 @@ def variable_record(fn, var):
         "storage": int(var.storage),
         "user_defined": bool(fn.is_var_user_defined(var)),
     }
+
+
+def tag_record(fn, entry):
+    arch, address, tag = entry
+    auto_tags = fn.get_tags_at(address, arch, auto=True)
+    return {
+        "architecture": str(arch.name),
+        "address": hex(int(address)),
+        "type": str(tag.type.name),
+        "data": str(tag.data),
+        "auto": any(candidate.id == tag.id for candidate in auto_tags),
+    }
+
+
+def restore_preserved_auto_tags(fn, entries):
+    if not entries:
+        return
+
+    for arch, address, tag in entries:
+        current = fn.get_tags_at(address, arch, auto=True)
+        if any(
+            str(candidate.type.name) == str(tag.type.name)
+            and str(candidate.data) == str(tag.data)
+            for candidate in current
+        ):
+            continue
+        fn.add_tag(
+            str(tag.type.name),
+            str(tag.data),
+            int(address),
+            auto=True,
+            arch=arch,
+        )
+    bv.update_analysis_and_wait()
+
+    missing = []
+    for arch, address, tag in entries:
+        current = fn.get_tags_at(address, arch, auto=True)
+        if not any(
+            str(candidate.type.name) == str(tag.type.name)
+            and str(candidate.data) == str(tag.data)
+            for candidate in current
+        ):
+            missing.append(
+                {
+                    "address": hex(int(address)),
+                    "type": str(tag.type.name),
+                    "data": str(tag.data),
+                }
+            )
+    if missing:
+        raise RuntimeError(f"failed to preserve auto tags: {missing!r}")
 
 
 def find_variable(fn, record):
@@ -277,7 +550,13 @@ if fn is None:
 else:
     owner_type = bv.get_type_by_name("SubgameRuntime")
     comments = {hex(int(address)): str(text) for address, text in fn.comments.items()}
-    tags = [str(tag) for tag in fn.tags]
+    tag_entries = list(fn.tags)
+    tags = [tag_record(fn, entry) for entry in tag_entries]
+    preserved_auto_tags = [
+        entry
+        for entry, record in zip(tag_entries, tags)
+        if record["auto"] and record["type"] in ALLOWED_AUTO_TAG_TYPES
+    ]
     user_vars = [variable_record(fn, var) for var in fn.vars if fn.is_var_user_defined(var)]
     before_annotations = annotations(fn)
     observed_prototype = str(fn.type)
@@ -315,7 +594,15 @@ else:
     if stale and comments:
         conflicts.append("function_has_comments")
     if stale and tags:
-        conflicts.append("function_has_tags")
+        unexpected_tags = [
+            record
+            for record in tags
+            if not (
+                record["auto"] and record["type"] in ALLOWED_AUTO_TAG_TYPES
+            )
+        ]
+        if unexpected_tags:
+            conflicts.append("function_has_tags")
     if stale and unexpected_user_vars:
         conflicts.append("function_has_unpreserved_user_vars")
     if before_annotations["parameter_count"] != EXPECTED_PARAMETER_COUNT:
@@ -408,7 +695,7 @@ else:
                 var = find_variable(restored, record)
                 var_type, _ = bv.parse_type_string(record["type"])
                 restored.create_user_var(var, var_type, record["name"])
-            bv.update_analysis_and_wait()
+            restore_preserved_auto_tags(restored, preserved_auto_tags)
             bv.file.save_auto_snapshot()
 
         try:
@@ -427,6 +714,7 @@ else:
             repaired.set_user_type(expected_type)
             bv.update_analysis_and_wait()
             apply_annotations(repaired)
+            restore_preserved_auto_tags(repaired, preserved_auto_tags)
 
             after_annotations = annotations(repaired)
             after_prototype = str(repaired.type)

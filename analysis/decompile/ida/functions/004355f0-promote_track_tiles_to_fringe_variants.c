@@ -2,12 +2,12 @@
 /* function: promote_track_tiles_to_fringe_variants @ 0x4355f0 */
 /* selector: promote_track_tiles_to_fringe_variants */
 
-int32_t __thiscall promote_track_tiles_to_fringe_variants(Game *game)
+int32_t __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)
 {
   int32_t result; // eax
-  uint8_t *v2; // esi
+  void **p_object; // esi
   int v3; // ebp
-  char *v4; // eax
+  GameRoot *v4; // eax
   int i; // edi
   int j; // edi
   int32_t v7; // [esp+0h] [ebp-8h]
@@ -16,36 +16,38 @@ int32_t __thiscall promote_track_tiles_to_fringe_variants(Game *game)
   v7 = 0;
   if ( result > 0 )
   {
-    v2 = &game->_pad_74622[3454154];
+    p_object = &game->runtime_cells[0][0].object;
     do
     {
       v3 = 8;
       do
       {
-        *((_DWORD *)v2 + 7) &= ~0x20u;
-        if ( is_sub_loc_empty(v2 + 636) )
+        p_object[7] = (void *)((unsigned int)p_object[7] & 0xFFFFFFDF);
+        if ( (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_object + 159)) )
         {
-          v4 = (char *)MEMORY[0x4DF904];
+          v4 = g_game_base;
           for ( i = 0; i < 448; i += 56 )
           {
-            if ( *(_DWORD *)v2 == *(_DWORD *)&v4[i + 280500] || *(_DWORD *)v2 == *(_DWORD *)&v4[i + 281396] )
+            if ( *p_object == *(void **)&v4->unknown_000b48[i + 277612]
+              || *p_object == *(void **)&v4->unknown_000b48[i + 278508] )
             {
-              set_bod_object((_DWORD *)v2 - 9, *(_DWORD *)&v4[i + 280948]);
-              *((_DWORD *)v2 + 7) |= 0x20u;
-              v4 = (char *)MEMORY[0x4DF904];
+              set_bod_object(p_object - 9, *(_DWORD *)&v4->unknown_000b48[i + 278060]);
+              p_object[7] = (void *)((unsigned int)p_object[7] | 0x20);
+              v4 = g_game_base;
             }
           }
           for ( j = 0; j < 224; j += 56 )
           {
-            if ( *(_DWORD *)v2 == *(_DWORD *)&v4[j + 279100] || *(_DWORD *)v2 == *(_DWORD *)&v4[j + 279548] )
+            if ( *p_object == *(void **)&v4->unknown_000b48[j + 276212]
+              || *p_object == *(void **)&v4->unknown_000b48[j + 276660] )
             {
-              set_bod_object((_DWORD *)v2 - 9, *(_DWORD *)&v4[j + 279324]);
-              *((_DWORD *)v2 + 7) |= 0x20u;
-              v4 = (char *)MEMORY[0x4DF904];
+              set_bod_object(p_object - 9, *(_DWORD *)&v4->unknown_000b48[j + 276436]);
+              p_object[7] = (void *)((unsigned int)p_object[7] | 0x20);
+              v4 = g_game_base;
             }
           }
         }
-        v2 += 84;
+        p_object += 21;
         --v3;
       }
       while ( v3 );
@@ -56,4 +58,3 @@ int32_t __thiscall promote_track_tiles_to_fringe_variants(Game *game)
   }
   return result;
 }
-

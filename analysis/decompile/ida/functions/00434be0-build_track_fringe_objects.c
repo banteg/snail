@@ -2,66 +2,58 @@
 /* function: build_track_fringe_objects @ 0x434be0 */
 /* selector: build_track_fringe_objects */
 
-// Allocates directional fringe objects around runtime cells for the post-build renderer, using the shared fringe-manager pool at `data_4df904 + 0x3d01d4`.
-int32_t __thiscall build_track_fringe_objects(Game *game)
+// Windows `cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime SubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android preserves the owner and method name.
+int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)
 {
-  Game *v1; // ebp
+  SubgameRuntime *v1; // ebp
   int v2; // ebx
   char *v3; // edx
-  uint8_t *v4; // esi
-  uint8_t v5; // cl
+  TrackRowCell *v4; // esi
+  uint8_t open_edge_mask; // cl
   int v6; // edi
-  uint8_t v7; // al
+  uint8_t tile_id; // al
   int v8; // ebp
-  _DWORD *fringe_object; // eax
-  _DWORD *v10; // eax
-  _DWORD *track_skirt_color; // eax
-  _DWORD *v12; // edx
-  int v13; // ebp
-  _DWORD *v14; // eax
-  _DWORD *v15; // eax
-  _DWORD *v16; // eax
-  _DWORD *v17; // edx
-  int v18; // ebp
-  _DWORD *v19; // eax
-  _DWORD *v20; // eax
-  _DWORD *v21; // eax
-  _DWORD *v22; // edx
-  int v23; // ebp
-  _DWORD *v24; // eax
-  _DWORD *v25; // eax
-  _DWORD *v26; // eax
-  _DWORD *v27; // edx
-  int v28; // eax
-  int v29; // eax
-  int v30; // eax
-  int v31; // eax
-  bool v32; // cc
-  int v35; // [esp+Ch] [ebp-4Ch]
-  int v36; // [esp+10h] [ebp-48h]
-  char *v37; // [esp+14h] [ebp-44h]
-  _DWORD v38[4]; // [esp+18h] [ebp-40h] BYREF
-  _DWORD v39[4]; // [esp+28h] [ebp-30h] BYREF
-  _DWORD v40[4]; // [esp+38h] [ebp-20h] BYREF
-  _DWORD v41[4]; // [esp+48h] [ebp-10h] BYREF
+  FringeObject *fringe_object; // eax
+  Vec3 *p_position; // eax
+  int v11; // ebp
+  FringeObject *v12; // eax
+  Vec3 *v13; // eax
+  int v14; // ebp
+  FringeObject *v15; // eax
+  Vec3 *v16; // eax
+  int v17; // ebp
+  FringeObject *v18; // eax
+  Vec3 *v19; // eax
+  FringeObject *fringe_front; // eax
+  FringeObject *fringe_back; // eax
+  FringeObject *fringe_right; // eax
+  FringeObject *fringe_left; // eax
+  bool v24; // cc
+  int v27; // [esp+Ch] [ebp-4Ch]
+  int v28; // [esp+10h] [ebp-48h]
+  char *v29; // [esp+14h] [ebp-44h]
+  tColour out; // [esp+18h] [ebp-40h] BYREF
+  tColour v31; // [esp+28h] [ebp-30h] BYREF
+  tColour v32; // [esp+38h] [ebp-20h] BYREF
+  tColour v33; // [esp+48h] [ebp-10h] BYREF
 
   v1 = game;
-  initialize_fringe_manager((_DWORD *)MEMORY[0x4DF904] + 999541);
+  initialize_fringe_manager(&g_game_base->subgame.unknown_000044[3521400]);
   v2 = 0;
-  v36 = 0;
+  v28 = 0;
   if ( v1->runtime_row_count > 0 )
   {
     v3 = &byte_5CCAC8[(_DWORD)v1];
-    v4 = &v1->_pad_74622[3454118];
-    v37 = &byte_5CCAC8[(_DWORD)v1];
+    v4 = v1->runtime_cells[0];
+    v29 = &byte_5CCAC8[(_DWORD)v1];
     do
     {
-      v35 = 8;
+      v27 = 8;
       do
       {
-        v5 = v4[61];
+        open_edge_mask = v4->open_edge_mask;
         v6 = 0;
-        switch ( v5 )
+        switch ( open_edge_mask )
         {
           case 9u:
             v6 = 1;
@@ -76,27 +68,27 @@ int32_t __thiscall build_track_fringe_objects(Game *game)
             v6 = 4;
             break;
         }
-        v7 = v4[60];
-        if ( v7 == 2 || v7 == 8 || v7 == 5 )
+        tile_id = v4->tile_id;
+        if ( tile_id == 2 || tile_id == 8 || tile_id == 5 )
           v6 = 5;
-        if ( v7 == 3 || v7 == 9 || v7 == 11 || v7 == 12 || v7 == 13 || v7 == 6 )
+        if ( tile_id == 3 || tile_id == 9 || tile_id == 11 || tile_id == 12 || tile_id == 13 || tile_id == 6 )
           v6 = 6;
-        if ( v7 == 4 || v7 == 10 || v7 == 7 )
+        if ( tile_id == 4 || tile_id == 10 || tile_id == 7 )
           v6 = 7;
-        if ( (*v3 & 4) != 0 || !v5 || v7 == 32 || (byte_4DF934 & 0x20) == 0 )
+        if ( (*v3 & 4) != 0 || !open_edge_mask || tile_id == 32 || (g_runtime_config.render_flags & 0x20) == 0 )
         {
-          *((_DWORD *)v4 + 17) = 0;
-          *((_DWORD *)v4 + 18) = 0;
-          *((_DWORD *)v4 + 19) = 0;
+          v4->fringe_front = nullptr;
+          v4->fringe_right = nullptr;
+          v4->fringe_left = nullptr;
 LABEL_64:
-          *((_DWORD *)v4 + 20) = 0;
+          v4->fringe_back = nullptr;
           goto LABEL_65;
         }
         if ( !is_neighbor_cell_solid(v1, v4, 0, 0) )
           goto LABEL_65;
         if ( is_neighbor_cell_solid(v1, v4, 0, 1) )
         {
-          *((_DWORD *)v4 + 17) = 0;
+          v4->fringe_front = nullptr;
         }
         else
         {
@@ -106,138 +98,119 @@ LABEL_64:
             v8 = 0;
           else
             v8 = !is_neighbor_cell_solid(v1, v4, -1, 0) + 1;
-          fringe_object = allocate_fringe_object((_DWORD *)MEMORY[0x4DF904] + 999541);
-          *((_DWORD *)v4 + 17) = fringe_object;
+          fringe_object = (FringeObject *)allocate_fringe_object(&g_game_base->subgame.unknown_000044[3521400]);
+          v4->fringe_front = fringe_object;
           set_bod_object(
             fringe_object,
-            *((_DWORD *)MEMORY[0x4DF904] + 336 * v6 + 168 * v6 + 28 * v2 + 14 * v8 + 14 * v2 + 70517));
-          *(_DWORD *)(*((_DWORD *)v4 + 17) + 4) |= 0x20u;
-          v10 = (_DWORD *)(*((_DWORD *)v4 + 17) + 16);
-          *v10 = *((_DWORD *)v4 + 4);
-          v10[1] = *((_DWORD *)v4 + 5);
-          v10[2] = *((_DWORD *)v4 + 6);
-          track_skirt_color = get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v38);
-          v12 = (_DWORD *)(*((_DWORD *)v4 + 17) + 40);
+            *(_DWORD *)&g_game_base->unknown_000b48[1344 * v6 + 279180 + 672 * v6 + 112 * v2 + 56 * v8 + 56 * v2]);
+          v4->fringe_front->bod.list_flags |= 0x20u;
+          p_position = &v4->fringe_front->position;
+          p_position->x = v4->anchor_position.x;
+          p_position->y = v4->anchor_position.y;
+          p_position->z = v4->anchor_position.z;
           v1 = game;
           v2 = 0;
-          *v12 = *track_skirt_color;
-          v12[1] = track_skirt_color[1];
-          v12[2] = track_skirt_color[2];
-          v12[3] = track_skirt_color[3];
+          v4->fringe_front->color = *get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &out);
         }
         if ( is_neighbor_cell_solid(v1, v4, 1, 0) )
         {
-          *((_DWORD *)v4 + 18) = 0;
+          v4->fringe_right = nullptr;
         }
         else
         {
           if ( !is_neighbor_cell_solid(v1, v4, 1, -1) )
             v2 = !is_neighbor_cell_solid(v1, v4, 0, -1) + 1;
           if ( is_neighbor_cell_solid(v1, v4, 1, 1) )
-            v13 = 0;
+            v11 = 0;
           else
-            v13 = !is_neighbor_cell_solid(v1, v4, 0, 1) + 1;
-          v14 = allocate_fringe_object((_DWORD *)MEMORY[0x4DF904] + 999541);
-          *((_DWORD *)v4 + 18) = v14;
+            v11 = !is_neighbor_cell_solid(v1, v4, 0, 1) + 1;
+          v12 = (FringeObject *)allocate_fringe_object(&g_game_base->subgame.unknown_000044[3521400]);
+          v4->fringe_right = v12;
           set_bod_object(
-            v14,
-            *((_DWORD *)MEMORY[0x4DF904] + 336 * v6 + 168 * v6 + 28 * v2 + 14 * v13 + 14 * v2 + 70643));
-          *(_DWORD *)(*((_DWORD *)v4 + 18) + 4) |= 0x20u;
-          v15 = (_DWORD *)(*((_DWORD *)v4 + 18) + 16);
-          *v15 = *((_DWORD *)v4 + 4);
-          v15[1] = *((_DWORD *)v4 + 5);
-          v15[2] = *((_DWORD *)v4 + 6);
-          v16 = get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v39);
-          v17 = (_DWORD *)(*((_DWORD *)v4 + 18) + 40);
+            v12,
+            *(_DWORD *)&g_game_base->unknown_000b48[1344 * v6 + 279684 + 672 * v6 + 112 * v2 + 56 * v11 + 56 * v2]);
+          v4->fringe_right->bod.list_flags |= 0x20u;
+          v13 = &v4->fringe_right->position;
+          v13->x = v4->anchor_position.x;
+          v13->y = v4->anchor_position.y;
+          v13->z = v4->anchor_position.z;
           v1 = game;
           v2 = 0;
-          *v17 = *v16;
-          v17[1] = v16[1];
-          v17[2] = v16[2];
-          v17[3] = v16[3];
+          v4->fringe_right->color = *get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &v31);
         }
         if ( is_neighbor_cell_solid(v1, v4, -1, 0) )
         {
-          *((_DWORD *)v4 + 19) = 0;
+          v4->fringe_left = nullptr;
         }
         else
         {
           if ( !is_neighbor_cell_solid(v1, v4, -1, 1) )
             v2 = !is_neighbor_cell_solid(v1, v4, 0, 1) + 1;
           if ( is_neighbor_cell_solid(v1, v4, -1, -1) )
-            v18 = 0;
+            v14 = 0;
           else
-            v18 = !is_neighbor_cell_solid(v1, v4, 0, -1) + 1;
-          v19 = allocate_fringe_object((_DWORD *)MEMORY[0x4DF904] + 999541);
-          *((_DWORD *)v4 + 19) = v19;
+            v14 = !is_neighbor_cell_solid(v1, v4, 0, -1) + 1;
+          v15 = (FringeObject *)allocate_fringe_object(&g_game_base->subgame.unknown_000044[3521400]);
+          v4->fringe_left = v15;
           set_bod_object(
-            v19,
-            *((_DWORD *)MEMORY[0x4DF904] + 336 * v6 + 168 * v6 + 28 * v2 + 14 * v18 + 14 * v2 + 70769));
-          *(_DWORD *)(*((_DWORD *)v4 + 19) + 4) |= 0x20u;
-          v20 = (_DWORD *)(*((_DWORD *)v4 + 19) + 16);
-          *v20 = *((_DWORD *)v4 + 4);
-          v20[1] = *((_DWORD *)v4 + 5);
-          v20[2] = *((_DWORD *)v4 + 6);
-          v21 = get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v40);
-          v22 = (_DWORD *)(*((_DWORD *)v4 + 19) + 40);
+            v15,
+            *(_DWORD *)&g_game_base->unknown_000b48[1344 * v6 + 280188 + 672 * v6 + 112 * v2 + 56 * v14 + 56 * v2]);
+          v4->fringe_left->bod.list_flags |= 0x20u;
+          v16 = &v4->fringe_left->position;
+          v16->x = v4->anchor_position.x;
+          v16->y = v4->anchor_position.y;
+          v16->z = v4->anchor_position.z;
           v1 = game;
           v2 = 0;
-          *v22 = *v21;
-          v22[1] = v21[1];
-          v22[2] = v21[2];
-          v22[3] = v21[3];
+          v4->fringe_left->color = *get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &v32);
         }
         if ( is_neighbor_cell_solid(v1, v4, 0, -1) )
           goto LABEL_64;
         if ( !is_neighbor_cell_solid(v1, v4, -1, -1) )
           v2 = !is_neighbor_cell_solid(v1, v4, -1, 0) + 1;
         if ( is_neighbor_cell_solid(v1, v4, 1, -1) )
-          v23 = 0;
+          v17 = 0;
         else
-          v23 = !is_neighbor_cell_solid(v1, v4, 1, 0) + 1;
-        v24 = allocate_fringe_object((_DWORD *)MEMORY[0x4DF904] + 999541);
-        *((_DWORD *)v4 + 20) = v24;
-        set_bod_object(v24, *((_DWORD *)MEMORY[0x4DF904] + 336 * v6 + 168 * v6 + 28 * v2 + 14 * v23 + 14 * v2 + 70895));
-        *(_DWORD *)(*((_DWORD *)v4 + 20) + 4) |= 0x20u;
-        v25 = (_DWORD *)(*((_DWORD *)v4 + 20) + 16);
-        *v25 = *((_DWORD *)v4 + 4);
-        v25[1] = *((_DWORD *)v4 + 5);
-        v25[2] = *((_DWORD *)v4 + 6);
-        v26 = get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v41);
-        v27 = (_DWORD *)(*((_DWORD *)v4 + 20) + 40);
+          v17 = !is_neighbor_cell_solid(v1, v4, 1, 0) + 1;
+        v18 = (FringeObject *)allocate_fringe_object(&g_game_base->subgame.unknown_000044[3521400]);
+        v4->fringe_back = v18;
+        set_bod_object(
+          v18,
+          *(_DWORD *)&g_game_base->unknown_000b48[1344 * v6 + 280692 + 672 * v6 + 112 * v2 + 56 * v17 + 56 * v2]);
+        v4->fringe_back->bod.list_flags |= 0x20u;
+        v19 = &v4->fringe_back->position;
+        v19->x = v4->anchor_position.x;
+        v19->y = v4->anchor_position.y;
+        v19->z = v4->anchor_position.z;
         v1 = game;
         v2 = 0;
-        *v27 = *v26;
-        v27[1] = v26[1];
-        v27[2] = v26[2];
-        v27[3] = v26[3];
+        v4->fringe_back->color = *get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &v33);
 LABEL_65:
-        v3 = v37;
-        if ( (*v37 & 4) != 0 )
+        v3 = v29;
+        if ( (*v29 & 4) != 0 )
         {
-          v28 = *((_DWORD *)v4 + 17);
-          if ( v28 )
-            *(_DWORD *)(v28 + 4) &= ~0x20u;
-          v29 = *((_DWORD *)v4 + 20);
-          if ( v29 )
-            *(_DWORD *)(v29 + 4) &= ~0x20u;
-          v30 = *((_DWORD *)v4 + 18);
-          if ( v30 )
-            *(_DWORD *)(v30 + 4) &= ~0x20u;
-          v31 = *((_DWORD *)v4 + 19);
-          if ( v31 )
-            *(_DWORD *)(v31 + 4) &= ~0x20u;
+          fringe_front = v4->fringe_front;
+          if ( fringe_front )
+            fringe_front->bod.list_flags &= ~0x20u;
+          fringe_back = v4->fringe_back;
+          if ( fringe_back )
+            fringe_back->bod.list_flags &= ~0x20u;
+          fringe_right = v4->fringe_right;
+          if ( fringe_right )
+            fringe_right->bod.list_flags &= ~0x20u;
+          fringe_left = v4->fringe_left;
+          if ( fringe_left )
+            fringe_left->bod.list_flags &= ~0x20u;
         }
-        v4 += 84;
-        --v35;
+        ++v4;
+        --v27;
       }
-      while ( v35 );
-      v3 = v37 + 244;
-      v32 = ++v36 < v1->runtime_row_count;
-      v37 += 244;
+      while ( v27 );
+      v3 = v29 + 244;
+      v24 = ++v28 < v1->runtime_row_count;
+      v29 += 244;
     }
-    while ( v32 );
+    while ( v24 );
   }
-  return sub_449C00();
+  return debug_report_stub();
 }
-

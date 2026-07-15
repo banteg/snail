@@ -58,3 +58,11 @@ The adjacent dword remains one packed owner rather than a C++ bitfield.
 This producer proves `SUBLOC_FLAG_CORNER_OBJECT` (`0x8000`), and the broader
 producer/consumer pass records the independently owned lane, hazard, cache,
 merged-run, AI, and uncached-body masks in `SubLocFlag`.
+
+## 2026-07-14 analysis receiver closure
+
+The exact 220/220 matcher and cross-port `cRSubGame::SmoothTrack()` ownership
+now reach the live BN prototype as `SubgameRuntime*`; the old same-size `Game*`
+identity is gone. Refreshed BN and IDA artifacts both expose
+`runtime_row_count`, `runtime_cells`, `tile_id`, and `lane_and_flags` under the
+canonical owner. Matcher bytes remain exact and unchanged.

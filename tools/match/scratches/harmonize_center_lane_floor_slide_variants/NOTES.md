@@ -68,3 +68,12 @@ All substitutions are byte-identical at 58.98%, 225/226 instructions, prefix
 9/226. The audit remains 20 clean plus the four documented alignment
 mismatches caused by retaining the evidence-backed floor/slide predicate
 semantics; those calls are not reversed for a greener report.
+
+## 2026-07-14 analysis receiver closure
+
+The live BN function no longer carries the stale `Game*` receiver. Guarded
+recreation installs the matcher- and Android-proven `SubgameRuntime*`, and the
+BN/IDA exports now agree on the runtime-grid owner and packed cell flags. This
+does not alter the deliberately evidence-backed floor/slide predicate order or
+the honest 58.98% matcher result; reversing those calls remains rejected as
+fakematching.

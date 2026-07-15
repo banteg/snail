@@ -153,3 +153,13 @@ The singleton availability test now names
 `cRJetPack` owner to `TRACK_PICKUP_STATE_ACTIVE`. Focused output remains
 byte-stable at 84.72%, 144/144 instructions, prefix 7, with all nine operands
 clean.
+
+## 2026-07-14 analysis receiver and ABI closure
+
+The stale BN `TrackPickupRuntime* __thiscall(Game*, ...)` prototype is replaced
+by the cross-port- and caller-proven
+`void __thiscall(SubgameRuntime*, TrackRowCell*, Player*)`. IDA replay verifies
+the same declaration and receiver lvar. Refreshed artifacts now expose the
+owned `jetpack_pickup` singleton, its lifecycle state, and honest empty
+`return;` paths; incompatible incidental register values remain deliberately
+unexported.

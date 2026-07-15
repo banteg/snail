@@ -637,6 +637,14 @@ TRUSTED_DECLARATIONS = [
         "double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);",
     ),
     (
+        "spawn_track_health_pickup",
+        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+    ),
+    (
+        "spawn_track_jetpack_pickup",
+        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+    ),
+    (
         "begin_track_attachment_follow_state",
         "void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);",
     ),
@@ -924,18 +932,23 @@ def _sync_color_lvars(selector: str) -> dict[str, object]:
     }
 
 
-def _sync_subgame_receiver_lvar(selector: str) -> dict[str, object]:
+def _sync_subgame_receiver_lvar(
+    selector: str,
+    *,
+    argument_count: int,
+) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
 
     cfunc = ida_hexrays.decompile(address)
     candidates = [lvar for lvar in cfunc.get_lvars() if lvar.is_arg_var]
-    if len(candidates) != 1:
+    if len(candidates) != argument_count:
         return {
             "status": "failed",
             "reason": "unexpected_argument_candidates",
             "candidate_count": len(candidates),
+            "expected_argument_count": argument_count,
             "selector": selector,
         }
 
@@ -994,11 +1007,12 @@ def _sync_subgame_receiver_lvar(selector: str) -> dict[str, object]:
     verified_candidates = [
         candidate for candidate in verified_cfunc.get_lvars() if candidate.is_arg_var
     ]
-    if len(verified_candidates) != 1:
+    if len(verified_candidates) != argument_count:
         return {
             "status": "failed",
             "reason": "unexpected_verified_argument_candidates",
             "candidate_count": len(verified_candidates),
+            "expected_argument_count": argument_count,
             "selector": selector,
         }
 
@@ -1182,14 +1196,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "color_lvars": get_track_skirt_color_lvars,
             }
         )
+    subgame_receiver_lvar_specs = {
+        "initialize_subgame": 1,
+        "destroy_subgame": 1,
+        "update_subgame": 1,
+        "remove_subgame_bods": 1,
+        "build_track_fringe_objects": 1,
+        "promote_track_tiles_to_fringe_variants": 1,
+        "harmonize_center_lane_floor_slide_variants": 1,
+        "select_track_tile_edge_variants": 1,
+        "get_track_grid_cell_at_world_position": 2,
+        "sample_track_floor_height_at_position": 2,
+        "spawn_track_health_pickup": 3,
+        "spawn_track_jetpack_pickup": 3,
+    }
     subgame_receiver_lvars = {
-        selector: _sync_subgame_receiver_lvar(selector)
-        for selector in (
-            "initialize_subgame",
-            "destroy_subgame",
-            "update_subgame",
-            "remove_subgame_bods",
+        selector: _sync_subgame_receiver_lvar(
+            selector,
+            argument_count=argument_count,
         )
+        for selector, argument_count in subgame_receiver_lvar_specs.items()
     }
     for selector, receiver_lvar in subgame_receiver_lvars.items():
         if receiver_lvar.get("status") == "failed":
