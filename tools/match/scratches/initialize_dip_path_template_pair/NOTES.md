@@ -30,3 +30,23 @@ from 30.19% (564/655) to 23.50% (579/655). The masked audit also dropped from
 remaining call mismatch still pairing native `cosine` against matrix identity
 setup. The scratch keeps the shared `initialize_sample_pair` spelling for the
 middle loop until the surrounding endpoint/local lifetime is isolated.
+
+2026-07-15 ownership recovery: the endpoint index is now retained as
+`curve_count + 1`, both endpoint sample pairs are initialized through their
+owned fields, and the curved middle uses the native explicit sample-byte cursor
+and `do/while` lifetime. The middle initializer increments its logical index
+between matrix identity and Y/Z placement, then orients the preceding pair.
+Together these target-backed changes raise focused Wibo from 30.19% (564/655)
+to 33.41% (596/655), while recovering 25 clean masked operands and reducing the
+temporary four call mismatches back to the single pre-existing alignment
+mismatch.
+
+2026-07-15 mesh ownership recovery: the native acquires `facequads` before
+`vertices`, retains an aggregate `Vector3` for ordinary rows, uses a
+face-column `do/while`, and contains explicit parity branches even though both
+arms currently request the same texture. Preserving those source facts raises
+focused Wibo from 33.41% (596/655) to 34.74% (600/655), with 25 clean masked
+operands and one mismatch. The remaining audit issue pairs the native first mesh
+allocation call with the candidate's second call because the still-shorter
+sample-orientation region shifts structural alignment; it is kept visible
+rather than hidden with a dummy relocation or reordered behavior.
