@@ -17,3 +17,11 @@ follow the canonical `GameRoot` graph through `star_manager`,
 `subgame.landscape_manager`, `backdrop`, `border_manager`, and
 `render_skip_countdown`. The initializer remains exact at 172/172 instructions
 with all 48 operands clean.
+
+## 2026-07-15 Binary Ninja root replay
+
+The repeatable StarManager sync now installs the exact 0x4c-byte owner at
+`GameRoot +0x4f33c`. Refreshing this consumer replaces the raw singleton-plus-
+offset receiver with `g_game_base->star_manager` and preserves the already
+recovered backdrop, border-manager, and render-skip ownership. Matcher source
+and its exact 172/172 result are unchanged.

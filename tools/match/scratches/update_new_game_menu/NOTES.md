@@ -67,3 +67,11 @@ its selected record, three owned `SubHighScore` banks, replay-launch slot, and
 `level_mode` all belong to `SubgameRuntime`. Removing the remaining raw
 `GameRoot` casts preserves native's independent loads and keeps the method
 exact at 273/273 with all 62 operands clean.
+
+## 2026-07-15 Binary Ninja Intro replay
+
+The repeatable root sync now installs the exact `Intro` receiver used by the
+authored `cRIntro::AI()` body. Its refreshed artifact retains the six named
+buttons, replay timers, and bank cursor while also exposing the canonical
+player, SubHighScore, and replay-handoff graph. This is analysis replay only;
+the exact 273/273 matcher source does not change.

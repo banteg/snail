@@ -30,3 +30,11 @@ The star field, landscape bank, backdrop, border pool, and render-skip
 countdown now use canonical `GameRoot` members. Removing the screen-local
 `NewGameBorderManager` view keeps the initializer exact at 182/182 with all 48
 operands clean.
+
+## 2026-07-15 Binary Ninja Intro and StarManager replay
+
+The live database now carries both exact root owners used by this method:
+`Intro +0x4f2dc` and `StarManager +0x4f33c`. The refreshed artifact exposes
+the star-field hide through the root and all six widget allocations through
+the method's `Intro*` receiver, with no raw root arithmetic or synthetic
+`NewGameMenu` owner. The exact matcher body remains unchanged.

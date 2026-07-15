@@ -8,16 +8,21 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
-    apply_proto_updates,
-    apply_struct_field_updates,
+    apply_struct_and_proto_updates,
     apply_symbol_updates,
+    current_struct_size,
     emit_summary,
-    types_declare,
+    types_declare_missing_only,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_logo_types.h"
+
+EXPECTED_STRUCT_SIZES = {
+    "LogoLetter": 0x90,
+    "Logo": 0x25218,
+}
 
 GAME_ROOT_FIELD_UPDATES = (
     ("0x4f400", "logo", "Logo"),
@@ -66,25 +71,47 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = []
-    operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
-    operations.extend(
-        apply_struct_field_updates(
+    mismatched_types = tuple(
+        name
+        for name, expected_size in EXPECTED_STRUCT_SIZES.items()
+        if current_struct_size(REPO_ROOT, target=args.target, struct_name=name) != expected_size
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
             REPO_ROOT,
             target=args.target,
-            struct_name="GameRoot",
-            updates=GAME_ROOT_FIELD_UPDATES,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=EXPECTED_STRUCT_SIZES,
         )
-    )
-    operations.extend(
-        apply_symbol_updates(
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: EXPECTED_STRUCT_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "logo owner sizes already current",
+            "header": str(header_path),
+            "expected_sizes": EXPECTED_STRUCT_SIZES,
+        }
+
+    operations: list[dict[str, object]] = [
+        type_operation,
+        *apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(("GameRoot", GAME_ROOT_FIELD_UPDATES),),
+            proto_updates=PROTO_UPDATES,
+        ),
+        *apply_symbol_updates(
             REPO_ROOT,
             target=args.target,
             updates=DATA_SYMBOL_UPDATES,
             kind="data",
-        )
-    )
-    operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))
+        ),
+    ]
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

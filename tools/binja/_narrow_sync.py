@@ -433,9 +433,55 @@ result = {{"applied": applied, "snapshot_saved": snapshot_saved}}
 
 
 def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[str, object]:
+    preview = run_bn(
+        repo_root,
+        "types",
+        "declare",
+        "--preview",
+        "--target",
+        target,
+        "--file",
+        str(header_path),
+        "--format",
+        "json",
+    )
+    if (
+        not isinstance(preview, dict)
+        or preview.get("success") is not True
+        or preview.get("preview") is not True
+        or preview.get("committed") is not False
+    ):
+        raise RuntimeError(f"type declaration preview failed for {header_path}: {preview!r}")
+
+    zero_width_regressions = []
+    for affected_type in preview.get("affected_types", ()):
+        if not isinstance(affected_type, dict) or affected_type.get("changed") is not True:
+            continue
+        before_width = parse_struct_layout_size(str(affected_type.get("before_layout", "")))
+        after_width = parse_struct_layout_size(str(affected_type.get("after_layout", "")))
+        if before_width not in (None, 0) and after_width == 0:
+            zero_width_regressions.append(
+                {
+                    "type_name": affected_type.get("type_name"),
+                    "before_width": before_width,
+                    "after_width": after_width,
+                }
+            )
+    if zero_width_regressions:
+        raise RuntimeError(
+            f"refusing type declaration that erases complete owners: {zero_width_regressions!r}"
+        )
+
+    result = run_bn(repo_root, "types", "declare", "--target", target, "--file", str(header_path))
     return {
         "op": "types_declare",
-        "result": run_bn(repo_root, "types", "declare", "--target", target, "--file", str(header_path)),
+        "preview": {
+            "success": preview.get("success"),
+            "message": preview.get("message"),
+            "affected_type_count": len(preview.get("affected_types", ())),
+            "affected_function_count": len(preview.get("affected_functions", ())),
+        },
+        "result": result,
     }
 
 

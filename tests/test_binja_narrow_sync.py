@@ -372,6 +372,44 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "types_declare(" not in source
 
 
+def test_broad_type_declaration_rejects_complete_to_forward_regression(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        if args[:3] == ("types", "declare", "--preview"):
+            return {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "message": "Preview verified and reverted.",
+                "affected_types": [
+                    {
+                        "type_name": "FrontendWidget",
+                        "before_layout": "struct FrontendWidget // size=0x724",
+                        "after_layout": "struct FrontendWidget // size=0x0",
+                        "changed": True,
+                    }
+                ],
+                "affected_functions": [],
+            }
+        raise AssertionError("unsafe declaration should not be committed")
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    try:
+        _narrow_sync.types_declare(
+            Path("."), target="snail-mail.exe", header_path=Path("intro_types.h")
+        )
+    except RuntimeError as exc:
+        assert "erases complete owners" in str(exc)
+        assert "FrontendWidget" in str(exc)
+    else:
+        raise AssertionError("expected a zero-width ownership regression to be rejected")
+
+    assert len(calls) == 1
+
+
 def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     source = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     repair_source = (BINJA_DIR / "repair_initialize_subgame_owner.py").read_text(
@@ -1425,6 +1463,11 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     root_catalog_sync = (
         BINJA_DIR / "sync_root_bod_catalog_types.py"
     ).read_text(encoding="utf-8")
+    intro_sync = (BINJA_DIR / "sync_intro_types.py").read_text(encoding="utf-8")
+    logo_sync = (BINJA_DIR / "sync_logo_types.py").read_text(encoding="utf-8")
+    star_sync = (BINJA_DIR / "sync_star_manager_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
         encoding="utf-8"
     )
@@ -1460,6 +1503,17 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
         in root_catalog_sync
     )
     assert "apply_struct_and_proto_updates" in root_catalog_sync
+    for owner, sync_source in (
+        ('("0x4f2dc", "intro", "Intro")', intro_sync),
+        ('("0x4f33c", "star_manager", "StarManager")', star_sync),
+        ('("0x4f400", "logo", "Logo")', logo_sync),
+    ):
+        assert owner in sync_source
+        assert "apply_struct_and_proto_updates" in sync_source
+    assert "types_declare_missing_only" in intro_sync
+    assert "types_declare(" not in intro_sync
+    assert "types_declare_missing_only" in logo_sync
+    assert "types_declare(" not in logo_sync
     assert not (repo_root / "tools/match/include/app_shell.h").exists()
     assert "TransformMatrix transform;" in path_header
     assert "uint8_t transform[0x40];" not in path_header

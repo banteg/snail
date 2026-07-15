@@ -85,6 +85,16 @@ Historical recovery notes:
   coordinates before the camera transform snapshot.
 - The corrected ownership remains exact at 180/180 with 69 clean operands.
 
+## 2026-07-15 presentation owner replay
+
+Binary Ninja now resolves the state-machine receivers through the exact root
+`Intro` and `Logo` owners, alongside the existing Subgame, HighScore, Help,
+and ThanksScreen graph. The tracked artifact is deliberately not refreshed in
+this slice: current lifting regresses the final authored input-coordinate copy
+to six `unimplemented` x87 lines. Keeping the prior healthy artifact while the
+live owner fields remain installed avoids trading ownership clarity for a
+known decompile-health regression.
+
 2026-07-14 cRPlayer::AI return-contract closure:
 
 - `run_frame_update` dispatches both Windows player records through the shared

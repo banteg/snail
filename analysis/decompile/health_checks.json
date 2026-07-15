@@ -609,7 +609,11 @@
         "load_x_animation_clip(&game->directx_loader",
         "game->root_bod_catalog.pillars[0].object",
         "game->root_bod_catalog.floor_corners.storage[0].object",
-        "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object"
+        "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
+        "game->intro.hide_for_replay_latch = 0",
+        "open_logo(&game->logo)",
+        "sub_4113b0(&g_game_base->active_bod_list, &game->star_manager)",
+        "open_star_field(&game->star_manager, 0x24)"
       ],
       "forbidden_substrings": [
         "game->__offset(0x67c)",
@@ -618,7 +622,63 @@
         "game->__offset(0x44100)",
         "game->__offset(0x445d0)",
         "game->__offset(0x48e00)",
+        "game->__offset(0x4f2dc)",
+        "game->__offset(0x4f33c)",
+        "game->__offset(0x4f400)",
         "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_initialize_new_game_menu_root_ownership",
+      "artifact": "analysis/decompile/binja/functions/00417bc0-initialize_new_game_menu.c",
+      "required_substrings": [
+        "hide_star_field(&g_game_base->star_manager)",
+        "change_backdrop(&game_base_1->backdrop",
+        "set_border_justify_centre(&g_game_base->border_manager",
+        "intro->tutorial_button = allocate_border",
+        "intro->time_trial_button = allocate_border",
+        "intro->back_button = allocate_border"
+      ],
+      "forbidden_substrings": [
+        "data_4df904 + 0x4f33c",
+        "struct NewGameMenu",
+        "__offset(",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_update_new_game_menu_intro_ownership",
+      "artifact": "analysis/decompile/binja/functions/00417eb0-update_new_game_menu.c",
+      "required_substrings": [
+        "struct Intro* intro_1 = intro",
+        "intro->hide_for_replay_latch",
+        "intro->time_trial_button",
+        "g_game_base->subgame.selected_level_record",
+        "game_base_3->subgame.sub_high_score.postal_records",
+        "game_base_1->subgame.sub_high_score.time_trial_route_records"
+      ],
+      "forbidden_substrings": [
+        "struct NewGameMenu",
+        "menu->",
+        "data_4df904 +",
+        "__offset(",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_initialize_main_menu_root_ownership",
+      "artifact": "analysis/decompile/binja/functions/00419b50-initialize_main_menu.c",
+      "required_substrings": [
+        "hide_star_field(&g_game_base->star_manager)",
+        "change_backdrop(&game_base_1->backdrop",
+        "set_border_justify_centre(&g_game_base->border_manager",
+        "g_game_base->render_skip_count = 2",
+        "allocate_border(&g_game_base->border_manager)"
+      ],
+      "forbidden_substrings": [
+        "data_4df904 + 0x4f33c",
+        "__offset(",
         "unimplemented"
       ]
     },

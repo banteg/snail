@@ -781,3 +781,17 @@ Health checks pin representative pillar, corner, slice, ramp, universe-hole,
 and fringe accesses; `construct_game_runtime` was inspected but deliberately
 left unexported because its HLIL did not improve. Matcher output remains at the
 byte-stable 80.50% initializer frontier.
+
+## 2026-07-15 front-end presentation owner replay
+
+The remaining constructor-proven presentation block is now durable in Binary
+Ninja: `Intro +0x4f2dc` spans exactly 0x48 bytes, `StarManager +0x4f33c`
+spans exactly 0x4c bytes, and `Logo +0x4f400` spans exactly 0x25218 bytes to
+the independently proven `SubgameRuntime +0x74618` boundary. The refreshed
+initializer consequently names its replay latch, logo open, active-list
+insertion, and star-field open through those real embedded owners.
+
+The shared declaration helper now previews broad header imports and refuses a
+complete-struct to zero-width regression. Intro and Logo additionally replay
+only their owned exact-size types, preventing their dependency declarations
+from replacing richer canonical rendering or widget layouts.

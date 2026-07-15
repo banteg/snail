@@ -30,7 +30,7 @@
 0040ad41        game->unknown_000521[0x47] = 0
 0040ad47        game->subgame.subgame_pause_gate = 0
 0040ad4d        initialize_cheat(&data_4b2f40)
-0040ad58        game->__offset(0x4f2e0).b = 0
+0040ad58        game->intro.hide_for_replay_latch = 0
 0040ad60        initialize_blink_random(&game->subgame)
 0040ad6c        set_subgame_rate(&game->subgame, 1.10000002f)
 0040ad71        game->render_skip_count = 2
@@ -111,7 +111,7 @@
 0040aeec        bind_subgame_owner(&game->subgame.thanks_screen)
 0040aef7        load_galaxy_layout(&game->subgame.galaxy)
 0040af02        initialize_cameraman(&game->subgame.player.cameraman)
-0040af0d        open_logo(&game->__offset(0x4f400).d)
+0040af0d        open_logo(&game->logo)
 0040af1c        initialize_sound_bank(&data_4a2140)
 0040af26        initialize_voice_manager(0x751498)
 0040af31        int16_t x87control = apply_audio_config_volumes()
@@ -2313,8 +2313,8 @@
 0041020a        game->subgame.selected_level_record_active = 0
 00410210        initialize_tip_manager(&game->tip_manager)
 0041021e        sub_4113b0(&game->active_bod_list, &game->tip_manager)
-00410235        sub_4113b0(&g_game_base->active_bod_list, &game->__offset(0x4f33c).d)
-0041023e        open_star_field(&game->__offset(0x4f33c).d, 0x24)
+00410235        sub_4113b0(&g_game_base->active_bod_list, &game->star_manager)
+0041023e        open_star_field(&game->star_manager, 0x24)
 00410249        game->subgame.bottom_score_widget = nullptr
 00410252        game->subgame.top_score_widget = nullptr
 00410258        sub_4113b0(&game->active_bod_list, &game->backdrop)

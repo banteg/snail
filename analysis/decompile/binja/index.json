@@ -16,7 +16,7 @@
   "function_count": 685,
   "mismatch_count": 0,
   "mismatches": [],
-  "analysis_refreshed": true,
+  "analysis_refreshed": false,
   "timed_out_function_reanalysis": {
     "reanalyzed": [],
     "snapshot_saved": false,

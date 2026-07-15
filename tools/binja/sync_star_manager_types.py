@@ -19,6 +19,10 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
 
+GAME_ROOT_FIELD_UPDATES = (
+    ("0x4f33c", "star_manager", "StarManager"),
+)
+
 EXPECTED_STRUCT_SIZES = {
     "Vec3": 0xC,
     "tColour": 0x10,
@@ -233,6 +237,7 @@ def main() -> int:
         ("SpriteManager", SPRITE_MANAGER_FIELD_UPDATES),
         ("StarManagerEntry", STAR_MANAGER_ENTRY_FIELD_UPDATES),
         ("StarManager", STAR_MANAGER_FIELD_UPDATES),
+        ("GameRoot", GAME_ROOT_FIELD_UPDATES),
     )
     operations: list[dict[str, object]] = [
         type_operation,
