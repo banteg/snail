@@ -492,9 +492,9 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         primary->special_scalar = 0.0f;
         primary->lateral_scale = 1.0f;
         set_matrix_identity(&primary->transform);
+        float z = (float)i;
         primary->transform.position.x = primary->center_x;
         primary->transform.position.y = 0.0f;
-        float z = (float)i;
         primary->transform.position.z = z;
 
         set_matrix_identity(&secondary->transform);
@@ -503,10 +503,10 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         secondary->transform.position.z = z;
     }
 
-    for (i = 0; i < 4; ++i) {
-        int sample_index = lead_out_start + i;
-        PathAttachmentSample* primary = &primary_samples[sample_index];
-        PathAttachmentSample* secondary = &secondary_samples[sample_index];
+    int departure_index = lead_out_start;
+    do {
+        PathAttachmentSample* primary = &primary_samples[departure_index];
+        PathAttachmentSample* secondary = &secondary_samples[departure_index];
 
         primary->center_x = 0.0f;
         primary->rotation_scalar_98 = 0.0f;
@@ -515,15 +515,16 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         primary->lateral_scale = 1.0f;
         set_matrix_identity(&primary->transform);
         primary->transform.position.x = primary->center_x;
+        float z = (float)departure_index;
         primary->transform.position.y = 0.0f;
-        float z = (float)(curve_count + 4 + i);
         primary->transform.position.z = z;
 
         set_matrix_identity(&secondary->transform);
         secondary->transform.position.x = primary->center_x;
         secondary->transform.position.y = 0.49000001f;
         secondary->transform.position.z = z;
-    }
+        ++departure_index;
+    } while (departure_index - 4 - curve_count < 4);
 
     if (curve_count > 0) {
         float curve_count_f = (float)curve_count;
@@ -552,7 +553,6 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
                 secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
             } else {
-                float roll = primary_samples[sample_index - 1].center_x * 0.2617994f;
                 PathAttachmentSample* primary_previous = &primary_samples[sample_index - 1];
                 PathAttachmentSample* primary_current = &primary_samples[sample_index];
                 PathAttachmentSample* secondary_previous = &secondary_samples[sample_index - 1];
@@ -570,6 +570,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                 primary_previous->transform.basis_right.cross_vectors(
                     &primary_previous->transform.basis_up,
                     &primary_previous->transform.basis_forward);
+                float primary_roll = primary_previous->center_x * 0.2617994f;
+                primary_previous->transform.rotate_matrix_local_z(primary_roll);
 
                 secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
                 secondary_previous->transform.basis_forward = Vector3(
@@ -584,8 +586,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     &secondary_previous->transform.basis_up,
                     &secondary_previous->transform.basis_forward);
 
-                primary_previous->transform.rotate_matrix_local_z(roll);
-                secondary_previous->transform.rotate_matrix_local_z(roll);
+                float secondary_roll = primary_previous->center_x * 0.2617994f;
+                secondary_previous->transform.rotate_matrix_local_z(secondary_roll);
             }
         }
     }
@@ -623,8 +625,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
     strip_mesh->request_object_vertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->request_object_facequads(2 * width_cells * segment_count);
 
-    Vector3* vertices = strip_mesh->vertices;
     ObjectFaceQuad* facequads = strip_mesh->facequads;
+    Vector3* vertices = strip_mesh->vertices;
 
     int mesh_row;
     int mesh_column;
@@ -646,12 +648,14 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     + lateral * previous->transform.basis_right.z;
             } else {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
-                vertex->x = sample->transform.position.x
-                    + lateral * sample->transform.basis_right.x;
-                vertex->y = sample->transform.position.y
-                    + lateral * sample->transform.basis_right.y;
-                vertex->z = sample->transform.position.z
-                    + lateral * sample->transform.basis_right.z;
+                Vector3 generated_position(
+                    sample->transform.position.x
+                        + lateral * sample->transform.basis_right.x,
+                    sample->transform.position.y
+                        + lateral * sample->transform.basis_right.y,
+                    sample->transform.position.z
+                        + lateral * sample->transform.basis_right.z);
+                *vertex = generated_position;
             }
         }
     }
@@ -660,7 +664,10 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         if (width_cells > 0) {
             float v0 = (float)(face_row % 8) * 0.125f;
             float v1 = (float)(face_row % 8 + 1) * 0.125f;
-            for (face_column = 0; face_column < width_cells; ++face_column) {
+            face_column = 0;
+            int next_column;
+            do {
+                next_column = face_column + 1;
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
@@ -702,7 +709,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     }
                     face->uv[3].v = v1;
                 }
-            }
+                face_column = next_column;
+            } while (next_column < width_cells);
         }
     }
 

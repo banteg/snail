@@ -58,3 +58,26 @@ before rotating either frame moves focused Wibo from 21.46% (618/696) to
 to 28 ok, 0 unresolved, 1 mismatch. The remaining pairing is still an
 orientation-schedule mismatch, now native `normalize_vector` against candidate
 `rotate_matrix_world_z`, so the broader call-alignment debt remains explicit.
+
+2026-07-15 mesh and departure ownership: the native retains the first trailing
+sample index as a mutating four-sample `do/while`, acquires `facequads` before
+`vertices`, advances face columns with a `do/while`, and materializes ordinary
+row positions as `Vector3` values. The acquisition order is codegen-neutral;
+the face-column lifetime reaches 27.40% (618/696), the aggregate reaches 28.31%
+(625/696), and the departure lifetime reaches 28.46% (625/696), without adding
+an audit problem.
+
+2026-07-15 orientation ownership correction: the native completes and rotates
+the primary frame before building the secondary frame, then recomputes the
+roll from the primary lane for the secondary rotation. Recovering those two
+independent roll lifetimes removes the remaining `normalize_vector` versus
+`rotate_matrix_world_z` call mismatch. The retained focused result is 28.42%
+(627/696), with 27 clean masked operands and no unresolved or mismatched
+operands. This tiny score tradeoff is retained because it restores the observed
+per-lane call order and clears the proof audit rather than optimizing only the
+fuzzy alignment.
+
+2026-07-15 curved initializer expansion rejection: moving the curved sample's
+Z conversion into an expanded direct initializer regressed the clean result to
+28.29% (626/696) and 26 clean operands. The inline helper remains until the
+surrounding sample-pointer lifetime explains that schedule.
