@@ -8,8 +8,9 @@ Initial source-shaped scratch reconstructs the slug hazard runtime update:
 - active-state hit flash, blink texture toggles, encounter voice randomization,
   pass-player latch, engagement voice trigger, sprite position sync, nuke kill,
   and contact-target registration;
-- lateral sine state with the same pass-player, removal, nuke, and contact
-  tail as the active state;
+- lateral sine state with pass-player, removal, and nuke handling before the
+  shared presentation tail; unlike the active state, it does not register a
+  contact target;
 - death-toss setup using the `SDI` random signed-float tag and subgame-rate
   timing lanes at `+0x9c`, `+0xa0`, `+0xa4`, and `+0xa8`;
 - shared facing-angle/follow-orientation tail before `update_slug_voice_ai()`;
@@ -32,7 +33,7 @@ Recovered shape changes that improved the scratch:
 - Native does not set `passed_player` in the engagement voice gate; only the
   direct pass-player z comparison sets that latch.
 
-Remaining residuals:
+Residuals at the 66.15% baseline, all resolved by the exact closure below:
 
 - Native reserves a `0x14` stack frame while the best retained source reserves
   `0x10`. The extra native dword appears tied to state-2 x87/temporary staging,
@@ -131,3 +132,30 @@ The stale `unknown_00[0x68]` prefix is replaced by the inherited
 decompiler output. Binary Ninja retains its ABI-equivalent one-ECX-argument
 `fastcall` presentation for this method; IDA and the authored matcher retain
 `thiscall`. The `unknown_9c` teardown scratch remains deliberately unnamed.
+
+## 2026-07-15 exact lifecycle and value-flow closure
+
+Windows has three real inlined `BodList::remove_bod` sites: one in the active
+state, one in the lateral-active state, and one shared by the death-toss and
+teardown states. Calling the owned inline method directly recovers all three
+error/success paths and removes the hand-expanded removal macro. The state-2
+block falls through to state 3, matching the shared teardown relation also
+visible in iOS `cRSlug::AI()`.
+
+The active state alone registers a contact target. The lateral state joins the
+same facing/voice update tail immediately after its nuke check; expressing
+that shared tail in the switch recovers the native physical block order and
+corrects the previous extra lateral registration call.
+
+State 2 constructs `velocity` from a by-value `Vector3(x, y, z)`. VC6 evaluates
+the constructor arguments right-to-left, explaining the native Z/Y/X random
+call order, the `0x14` frame, and the temporary-vector copy. The subsequent X
+direction correction and sign classification use the same source idiom as the
+already exact `SubGarbage::update_garbage_hazard`: unknown direction values
+skip the adjusted-X assignment, while zero is distinguished with `!= 0.0f`.
+This is shared gameplay logic, not compiler padding.
+
+Focused matching is now exact: **100.00%, 464/464 instructions, full 464/464
+prefix, and 71 clean masked operands with zero mismatches**. The four teardown
+scratch lanes at `+0x9c..+0xa8` remain deliberately unnamed because exact
+codegen does not establish their downstream ownership.
