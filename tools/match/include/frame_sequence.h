@@ -5,6 +5,14 @@
 
 #include "object_render_types.h"
 
+enum FrameSequenceFlag {
+    FRAME_SEQUENCE_COMPLETE = 0x01,
+    FRAME_SEQUENCE_LOOP = 0x02,
+    FRAME_SEQUENCE_PING_PONG = 0x04,
+    FRAME_SEQUENCE_REVERSE = 0x08,
+    FRAME_SEQUENCE_PAUSED = 0x10,
+};
+
 class FrameSequence : public Object {
 public:
     void advance_frame_sequence(); // @ 0x430470

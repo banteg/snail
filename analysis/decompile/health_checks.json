@@ -5954,6 +5954,222 @@
         "return result",
         "*(_DWORD *)(result + 112)"
       ]
+    },
+    {
+      "name": "bn_frame_sequence_object_owner",
+      "artifact": "analysis/decompile/binja/functions/00430470-advance_frame_sequence.c",
+      "required_substrings": [
+        "sequence->object.facequads",
+        "sequence->object.facequad_count",
+        "sequence->sequence_flags",
+        "sequence->current_frame_index",
+        "sequence->current_texture_ref"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x",
+        "return result",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_frame_sequence_object_owner",
+      "artifact": "analysis/decompile/ida/functions/00430470-advance_frame_sequence.c",
+      "required_substrings": [
+        "void __thiscall advance_frame_sequence(FrameSequence *sequence)",
+        "sequence->object.facequads",
+        "sequence->object.facequad_count",
+        "sequence->current_texture_ref"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall sub_430470",
+        "int __thiscall advance_frame_sequence",
+        "sequence->_storage",
+        "this + 224"
+      ]
+    },
+    {
+      "name": "bn_smtrack_animator_owner",
+      "artifact": "analysis/decompile/binja/functions/00441f60-update_smtracks.c",
+      "required_substrings": [
+        "advance_frame_sequence(&animator->frame_sequence)",
+        "animator->bod.object->facequads->texture_ref",
+        "animator->frame_sequence.current_texture_ref",
+        "sample_smtrack_heightmap(animator->bod.object"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x38",
+        "arg1 + 0x124",
+        "return sample_smtrack_heightmap"
+      ]
+    },
+    {
+      "name": "ida_smtrack_animator_owner",
+      "artifact": "analysis/decompile/ida/functions/00441f60-update_smtracks.c",
+      "required_substrings": [
+        "void __thiscall update_smtracks(SmtrackHeightfieldAnimator *animator)",
+        "advance_frame_sequence(&animator->frame_sequence)",
+        "animator->bod.object->facequads->texture_ref",
+        "animator->frame_sequence.current_texture_ref"
+      ],
+      "forbidden_substrings": [
+        "update_smtracks(int *this)",
+        "frame_sequence._storage",
+        "sample_smtrack_heightmap((int)"
+      ]
+    },
+    {
+      "name": "bn_smtrack_heightmap_object_fields",
+      "artifact": "analysis/decompile/binja/functions/0041a360-sample_smtrack_heightmap.c",
+      "required_substrings": [
+        "replacement->texture_ref",
+        "source_1->heightmap_sample_count",
+        "source_1->heightmap_sample_scale",
+        "source_1->heightmap_sample_divisor",
+        "source_1->vertices"
+      ],
+      "forbidden_substrings": [
+        "source_1->_pad_1c",
+        "arg1 + 0x1c",
+        "arg4 + 0x98"
+      ]
+    },
+    {
+      "name": "ida_smtrack_heightmap_object_fields",
+      "artifact": "analysis/decompile/ida/functions/0041a360-sample_smtrack_heightmap.c",
+      "required_substrings": [
+        "void __cdecl sample_smtrack_heightmap(Object *source, float base, float scale, TextureRef *replacement, char cubic)",
+        "source->heightmap_sample_count",
+        "source->heightmap_sample_scale",
+        "source->heightmap_sample_divisor",
+        "source->vertices"
+      ],
+      "forbidden_substrings": [
+        "source->_pad_1c",
+        "void *__cdecl sample_smtrack_heightmap"
+      ]
+    },
+    {
+      "name": "bn_object_animation_graph_owner",
+      "artifact": "analysis/decompile/binja/functions/00430a70-request_object_animation.c",
+      "required_substrings": [
+        "struct XAnimationKeyframe* keyframes_2 = keyframes",
+        "object->animation->frames",
+        "object->animation->progress_step",
+        "object->facequad_normals",
+        "calc_object_facequad_normals(object)"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0xbc",
+        "arg2 s>",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_object_animation_graph_owner",
+      "artifact": "analysis/decompile/ida/functions/00430a70-request_object_animation.c",
+      "required_substrings": [
+        "void __thiscall request_object_animation(",
+        "Object *object",
+        "XAnimationKeyframe *keyframes",
+        "object->animation->frames",
+        "object->facequad_normals"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall sub_430A70",
+        "int *this",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_animation_manager_queue_owner",
+      "artifact": "analysis/decompile/binja/functions/004447d0-update_anim_manager.c",
+      "required_substrings": [
+        "manager->active_animation",
+        "manager->queued_animations",
+        "manager->animation_slots",
+        "manager->target_model",
+        "g_game_base->subgame.rate_or_level_arg.base_rate"
+      ],
+      "forbidden_substrings": [
+        "arg1[",
+        "data_4df904 + 0x74648",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_animation_manager_queue_owner",
+      "artifact": "analysis/decompile/ida/functions/004447d0-update_anim_manager.c",
+      "required_substrings": [
+        "void __thiscall update_anim_manager(AnimManager *manager)",
+        "manager->active_animation",
+        "manager->queued_animations",
+        "manager->animation_slots",
+        "manager->target_model"
+      ],
+      "forbidden_substrings": [
+        "AnimationDispatchState",
+        "MEMORY[0x4DF904]",
+        "queue_sentinel",
+        "self_ref"
+      ]
+    },
+    {
+      "name": "bn_animation_manager_init_owner",
+      "artifact": "analysis/decompile/binja/functions/004447c0-initialize_anim_manager.c",
+      "required_substrings": [
+        "manager->progress = 0f",
+        "manager->progress_step = 0f",
+        "manager->state = 0",
+        "manager->completed = 0"
+      ],
+      "forbidden_substrings": [
+        "arg1[",
+        "return 0"
+      ]
+    },
+    {
+      "name": "ida_animation_manager_init_owner",
+      "artifact": "analysis/decompile/ida/functions/004447c0-initialize_anim_manager.c",
+      "required_substrings": [
+        "void __thiscall initialize_anim_manager(AnimManager *manager)",
+        "manager->progress = 0.0",
+        "manager->progress_step = 0.0",
+        "manager->state = 0",
+        "manager->completed = 0"
+      ],
+      "forbidden_substrings": [
+        "AnimationDispatchState",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_weapon_animation_channel_owner",
+      "artifact": "analysis/decompile/binja/functions/004446e0-set_weapon_animation.c",
+      "required_substrings": [
+        "weapon->anim_manager.queued_animations",
+        "weapon->animation_slots[animation_id].body.bod.object->animation",
+        "weapon->anim_manager.target_model"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x108",
+        "arg1 + 0x150",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_weapon_animation_channel_owner",
+      "artifact": "analysis/decompile/ida/functions/004446e0-set_weapon_animation.c",
+      "required_substrings": [
+        "void __thiscall set_weapon_animation(Weapon *weapon",
+        "weapon->anim_manager.queued_animations",
+        "weapon->animation_slots[animation_id].body.bod.object->animation",
+        "weapon->anim_manager.target_model"
+      ],
+      "forbidden_substrings": [
+        "set_weapon_animation(int *this",
+        "AnimationDispatchState",
+        "return result"
+      ]
     }
   ]
 }

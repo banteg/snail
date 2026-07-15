@@ -181,6 +181,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall request_object_animation(Object* object, int keyframe_count, XAnimationKeyframe* keyframes, float progress_step, int flags);",
     ),
     (
+        "advance_frame_sequence",
+        "void __thiscall advance_frame_sequence(FrameSequence* sequence);",
+    ),
+    (
         "build_object_texture_group_buffers",
         "void __cdecl build_object_texture_group_buffers(Object* object);",
     ),

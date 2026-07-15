@@ -47,3 +47,16 @@ instruction shape, and all 12 clean operands.
   VC6 register scheduling: native reserves `ebp` for the borrowed vertex
   cursor while the candidate spills that cursor and uses `ebp` for the texel
   offset.
+
+## 2026-07-16 ABI and Object-field promotion
+
+- The only native caller passes a borrowed `Object*`, two floats, the current
+  `TextureRef*`, and a byte flag, then discards EAX. Replaying that exact void
+  cdecl contract removes the former pointer-result/floating-argument fiction in
+  both decompilers.
+- `Object +0x1c/+0x24/+0x28` are promoted into the shared analysis owner as
+  `heightmap_sample_count`, `heightmap_sample_divisor`, and
+  `heightmap_sample_scale`. The complete 0xdc-byte Object extent is unchanged.
+- Focused matching honestly remains 60.36%, 113/109 instructions, with all 12
+  operands clean. This pass recovers ownership and ABI only; it does not hide
+  the remaining VC6 register-scheduling difference.

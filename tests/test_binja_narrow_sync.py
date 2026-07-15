@@ -1307,6 +1307,71 @@ def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "ObjectAnimationFrame** frames;" in header
 
 
+def test_frame_sequence_ownership_stays_aligned_across_replay_lanes() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_object_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_object_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    binja_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = (
+        (HEADER_DIR / "bn_object_render_types.h").read_text(encoding="utf-8"),
+        (HEADER_DIR / "object_render_types.h").read_text(encoding="utf-8"),
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/frame_sequence.h"
+    ).read_text(encoding="utf-8")
+
+    assert "FRAME_SEQUENCE_FIELDS = (" in binja_object_sync
+    assert '("0x00", "object", "Object")' in binja_object_sync
+    assert '("0xec", "current_texture_ref", "TextureRef*")' in binja_object_sync
+    for source in (
+        binja_object_sync,
+        ida_object_sync,
+        binja_path_sync,
+        ida_path_sync,
+    ):
+        assert "advance_frame_sequence" in source
+        assert "FrameSequence* sequence" in source
+    for source in (binja_path_sync, ida_path_sync):
+        assert "update_smtracks" in source
+        assert "SmtrackHeightfieldAnimator* animator" in source
+        assert "sample_smtrack_heightmap" in source
+        assert "TextureRef* replacement" in source
+
+    for header in (*analysis_headers, path_header, matcher_header):
+        assert "FRAME_SEQUENCE_COMPLETE = 0x01" in header
+        assert "FRAME_SEQUENCE_LOOP = 0x02" in header
+        assert "FRAME_SEQUENCE_PING_PONG = 0x04" in header
+        assert "FRAME_SEQUENCE_REVERSE = 0x08" in header
+        assert "FRAME_SEQUENCE_PAUSED = 0x10" in header
+    for header in analysis_headers:
+        assert "typedef struct FrameSequence" in header
+        assert "Object object;" in header
+        assert "TextureRef* current_texture_ref;" in header
+        assert "int32_t heightmap_sample_count;" in header
+        assert "float heightmap_sample_divisor;" in header
+        assert "float heightmap_sample_scale;" in header
+    assert '("0x1c", "heightmap_sample_count", "int32_t")' in binja_object_sync
+    assert '("0x24", "heightmap_sample_divisor", "float")' in binja_object_sync
+    assert '("0x28", "heightmap_sample_scale", "float")' in binja_object_sync
+    assert "typedef struct FrameSequenceObjectView" in path_header
+    assert "ObjectFaceQuad* facequads;" in path_header
+    assert "FrameSequenceObjectView object;" in path_header
+    assert "TextureRef* current_texture_ref;" in path_header
+    assert "uint8_t _storage[0xf0];" not in path_header
+
+
 def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(

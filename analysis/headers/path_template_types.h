@@ -8,6 +8,7 @@ typedef short int16_t;
 typedef int int32_t;
 
 typedef struct Object Object;
+typedef struct ObjectFaceQuad ObjectFaceQuad;
 
 /* Empty C++ cRPathManager occupies one byte in the Windows root layout. */
 typedef struct PathManager {
@@ -945,9 +946,35 @@ typedef struct LandscapeManager {
     LandscapeScriptRecord scripts[128];
 } LandscapeManager;
 
-/* Exact FrameSequence extent; its internals are owned by the renderer lane. */
+/*
+ * Bounded view of the Object prefix inherited by FrameSequence. The renderer
+ * lane owns the complete Object declaration; this path/subgame lane only needs
+ * the independently consumed face array and count.
+ */
+typedef struct FrameSequenceObjectView {
+    uint8_t _pad_00[0x54];
+    int32_t facequad_count;
+    int32_t facequad_capacity;
+    ObjectFaceQuad* facequads;
+    uint8_t _pad_60[0xdc - 0x60];
+} FrameSequenceObjectView;
+
+typedef enum FrameSequenceFlag {
+    FRAME_SEQUENCE_COMPLETE = 0x01,
+    FRAME_SEQUENCE_LOOP = 0x02,
+    FRAME_SEQUENCE_PING_PONG = 0x04,
+    FRAME_SEQUENCE_REVERSE = 0x08,
+    FRAME_SEQUENCE_PAUSED = 0x10,
+} FrameSequenceFlag;
+
+/* Exact 0xf0-byte Object-derived animated texture sequence. */
 typedef struct FrameSequence {
-    uint8_t _storage[0xf0];
+    FrameSequenceObjectView object;
+    int32_t sequence_flags;
+    int32_t current_frame_index;
+    float phase;
+    float phase_step;
+    TextureRef* current_texture_ref;
 } FrameSequence;
 
 typedef struct SmtrackHeightfieldAnimator {
@@ -2104,6 +2131,14 @@ void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
 void __thiscall update_snail_skin(Snail* snail);
 void __thiscall initialize_anim_manager(AnimManager* manager);
 void __thiscall update_anim_manager(AnimManager* manager);
+void __thiscall advance_frame_sequence(FrameSequence* sequence);
+void __thiscall update_smtracks(SmtrackHeightfieldAnimator* animator);
+void __cdecl sample_smtrack_heightmap(
+    Object* source,
+    float base,
+    float scale,
+    TextureRef* replacement,
+    char cubic);
 void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);

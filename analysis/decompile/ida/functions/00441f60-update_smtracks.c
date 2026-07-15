@@ -2,11 +2,10 @@
 /* function: update_smtracks @ 0x441f60 */
 /* selector: update_smtracks */
 
-// Advances the `cRSMTracks` manager's active frame sequence, copies the live replacement scalar into the selected SMTrack texture slot, and resamples the active source texture into the runtime height grid.
-void __thiscall update_smtracks(int *this)
+// Advances the embedded 0x128-byte SMTrack height-field animator, installs the current sequence `TextureRef*` on its borrowed mesh, and resamples that texture's retained TGA bytes into the mesh vertex-y grid.
+void __thiscall update_smtracks(SmtrackHeightfieldAnimator *animator)
 {
-  advance_frame_sequence((int)(this + 14));
-  *(_DWORD *)(*(_DWORD *)(*(this + 9) + 92) + 12) = *(this + 73);
-  sample_smtrack_heightmap(*(this + 9), 0.0, 5.0, *(this + 73), 0);
+  advance_frame_sequence(&animator->frame_sequence);
+  animator->bod.object->facequads->texture_ref = animator->frame_sequence.current_texture_ref;
+  sample_smtrack_heightmap(animator->bod.object, 0.0, 5.0, animator->frame_sequence.current_texture_ref, 0);
 }
-

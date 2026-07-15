@@ -194,7 +194,7 @@ void __thiscall update_subgoldy(Player *player)
       if ( replay_update_cursor < selected_level_record->replay_sample_count
         && player->click_start.state != CLICK_START_STATE_WAITING_FOR_START )
       {
-        p_position = (Vec3 *)&player->body.transform.position;
+        p_position = &player->body.transform.position;
         player->body.transform.position.x = convert_math_type16_to_32(
                                               selected_level_record->run_records[replay_update_cursor].lateral_x,
                                               16.0);
@@ -1086,7 +1086,7 @@ LABEL_40:
         player->body.transform.position.x = player->game->subgame_rate * 0.2 * (v17 - player->body.transform.position.x)
                                           + player->body.transform.position.x;
     }
-    p_position = (Vec3 *)&player->body.transform.position;
+    p_position = &player->body.transform.position;
     v18 = convert_math_type32_to_16(player->body.transform.position.x, 16.0);
     source_celld = convert_math_type16_to_32(v18, 16.0);
     player->body.transform.position.x = source_celld;

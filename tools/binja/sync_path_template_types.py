@@ -973,6 +973,18 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "void __thiscall update_anim_manager(AnimManager* manager)",
     ),
     (
+        "advance_frame_sequence",
+        "void __thiscall advance_frame_sequence(FrameSequence* sequence)",
+    ),
+    (
+        "update_smtracks",
+        "void __thiscall update_smtracks(SmtrackHeightfieldAnimator* animator)",
+    ),
+    (
+        "sample_smtrack_heightmap",
+        "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, char cubic)",
+    ),
+    (
         "set_snail_weapon",
         "void __thiscall set_snail_weapon(Snail* snail, int32_t movement_flags)",
     ),

@@ -2,50 +2,53 @@
 /* function: update_anim_manager @ 0x4447d0 */
 /* selector: update_anim_manager */
 
-// Advances one queued presentation animation channel, applying loop, bounce, or clamp flags and starting the next queued entry when the current one finishes.
-void __thiscall update_anim_manager(AnimationDispatchState *manager)
+// Exact Windows `cRAnimManager::AI()`: advances the authored 0x48-byte queue owner, applies loop, bounce, or clamp flags, then installs the next owned RenderableBod slot's Object and ObjectAnimation on its borrowed Snail or animation-channel target. Android independently preserves the same ownership chain with port-specific slot layout.
+void __thiscall update_anim_manager(AnimManager *manager)
 {
-  int32_t active; // eax
+  int32_t state; // eax
   int32_t v2; // edx
   bool v3; // zf
-  __int16 v4; // ax
-  _BYTE *active_keyframe; // eax
+  ObjectAnimationFlags flags; // ax
+  ObjectAnimation *active_animation; // eax
   double v6; // st7
   double progress; // st7
-  int32_t *queued_animation_ids; // eax
-  _DWORD *self_ref; // esi
-  char *v10; // esi
-  float *v11; // edi
+  int32_t *queued_animations; // eax
+  RenderableBod *target_model; // esi
+  Object **p_object; // esi
+  ObjectAnimation *animation; // edi
   int32_t v12; // esi
   float v13; // [esp+8h] [ebp-4h]
 
-  active = manager->active;
+  state = manager->state;
   v2 = 0;
-  v3 = manager->active == 0;
-  manager->edge_latched = 0;
+  v3 = manager->state == 0;
+  manager->completed = 0;
   if ( !v3 )
   {
-    if ( active == 1 )
+    if ( state == 1 )
     {
-      v13 = (*((float *)MEMORY[0x4DF904] + 119186) + *((float *)MEMORY[0x4DF904] + 119186) - 0.2 + 1.0)
+      v13 = (g_game_base->subgame.rate_or_level_arg.base_rate
+           + g_game_base->subgame.rate_or_level_arg.base_rate
+           - 0.2
+           + 1.0)
           * manager->progress_step
           + manager->progress;
       manager->progress = v13;
       if ( v13 >= 1.0 )
       {
-        v4 = *(_WORD *)manager->active_keyframe;
-        if ( (v4 & 1) != 0 )
+        flags = manager->active_animation->flags;
+        if ( (flags & 1) != 0 )
         {
-          manager->edge_latched = 1;
+          manager->completed = 1;
           manager->progress = v13 - 1.0;
         }
-        else if ( (v4 & 4) != 0 )
+        else if ( (flags & 4) != 0 )
         {
           manager->progress = 0.99900001;
           manager->progress_step = 0.0;
-          manager->edge_latched = 1;
+          manager->completed = 1;
         }
-        else if ( (v4 & 2) != 0 )
+        else if ( (flags & 2) != 0 )
         {
           manager->progress = 2.0 - v13;
           manager->progress_step = manager->progress_step * -1.0;
@@ -53,19 +56,19 @@ void __thiscall update_anim_manager(AnimationDispatchState *manager)
       }
       if ( manager->progress < 0.0 )
       {
-        active_keyframe = manager->active_keyframe;
-        if ( (*active_keyframe & 2) != 0 )
+        active_animation = manager->active_animation;
+        if ( (active_animation->flags & 2) != 0 )
         {
           manager->progress = -manager->progress;
           v6 = manager->progress_step * -1.0;
-          manager->edge_latched = 1;
+          manager->completed = 1;
           manager->progress_step = v6;
         }
-        if ( (*active_keyframe & 8) != 0 )
+        if ( (active_animation->flags & 8) != 0 )
         {
           manager->progress = 0.0;
           manager->progress_step = 0.0;
-          manager->edge_latched = 1;
+          manager->completed = 1;
         }
       }
       if ( manager->progress >= 0.0 )
@@ -81,39 +84,38 @@ void __thiscall update_anim_manager(AnimationDispatchState *manager)
       }
       manager->progress = progress;
     }
-    if ( manager->edge_latched && manager->queued_animation_count > 0 )
+    if ( manager->completed && manager->queue_count > 0 )
     {
-      queued_animation_ids = manager->queued_animation_ids;
-      if ( manager->queued_animation_ids[0] == -1 )
+      queued_animations = manager->queued_animations;
+      if ( manager->queued_animations[0] == -1 )
       {
-        self_ref = manager->self_ref;
+        target_model = manager->target_model;
         manager->progress = 0.0;
         manager->progress_step = 0.0;
-        self_ref[1] &= ~0x20u;
+        target_model->bod.bod.list_flags &= ~0x20u;
       }
       else
       {
-        *((_DWORD *)manager->self_ref + 1) |= 0x20u;
-        v10 = (char *)manager->queue_sentinel + 128 * *queued_animation_ids + 36;
-        v11 = *(float **)(*(_DWORD *)v10 + 188);
+        manager->target_model->bod.bod.list_flags |= 0x20u;
+        p_object = &manager->animation_slots[*queued_animations].body.bod.object;
+        animation = (*p_object)->animation;
         manager->progress = 0.0;
-        manager->active_keyframe = v11;
-        manager->progress_step = v11[4];
-        *((_DWORD *)manager->self_ref + 9) = *(_DWORD *)v10;
+        manager->active_animation = animation;
+        manager->progress_step = animation->progress_step;
+        manager->target_model->bod.object = *p_object;
       }
-      v12 = manager->queued_animation_count - 1;
-      manager->queued_animation_count = v12;
+      v12 = manager->queue_count - 1;
+      manager->queue_count = v12;
       if ( v12 > 0 )
       {
         do
         {
           ++v2;
-          *queued_animation_ids = queued_animation_ids[1];
-          ++queued_animation_ids;
+          *queued_animations = queued_animations[1];
+          ++queued_animations;
         }
-        while ( v2 < manager->queued_animation_count );
+        while ( v2 < manager->queue_count );
       }
     }
   }
 }
-

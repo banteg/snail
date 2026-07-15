@@ -58,3 +58,15 @@ Source-shape corrections made while matching:
   `update_smtracks` installs on the active mesh.
 - Modeling `FrameSequence : Object` preserves the exact 65/65 method while
   retiring the duplicate prefix and generic integer payload.
+
+## 2026-07-16 analysis-owner closure
+
+- The exact 0xf0-byte `FrameSequence` is now replayed into both analysis lanes
+  with its complete `Object` base and five-field tail. The path/subgame replay
+  carries a bounded Object-prefix view so a later broad replay cannot replace
+  the recovered type with the former size-only byte shell.
+- The five proven state bits are shared as `FrameSequenceFlag` constants, and
+  the sole Windows caller proves the method's `void` thiscall contract.
+- Focused matching remains exact at 65/65 instructions with two clean operands;
+  strict paired export now renders `object.facequads`, `object.facequad_count`,
+  and `current_texture_ref` in both tools.

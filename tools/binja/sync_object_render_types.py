@@ -35,6 +35,9 @@ OBJECT_FIELDS = (
     ("0x10", "flags", "ObjectFlag"),
     ("0x14", "blend_mode", "int32_t"),
     ("0x18", "override_texture_ref", "TextureRef*"),
+    ("0x1c", "heightmap_sample_count", "int32_t"),
+    ("0x24", "heightmap_sample_divisor", "float"),
+    ("0x28", "heightmap_sample_scale", "float"),
     ("0x2c", "vertex_count", "int32_t"),
     ("0x38", "vertices", "Vec3*"),
     ("0x3c", "copied_vertices", "Vec3*"),
@@ -62,6 +65,15 @@ OBJECT_FIELDS = (
     ("0xd0", "group_texture_refs", "TextureRef**"),
     ("0xd4", "group_primitive_counts", "int32_t*"),
     ("0xd8", "toon_index_buffer", "ObjectIndexBuffer*"),
+)
+
+FRAME_SEQUENCE_FIELDS = (
+    ("0x00", "object", "Object"),
+    ("0xdc", "sequence_flags", "int32_t"),
+    ("0xe0", "current_frame_index", "int32_t"),
+    ("0xe4", "phase", "float"),
+    ("0xe8", "phase_step", "float"),
+    ("0xec", "current_texture_ref", "TextureRef*"),
 )
 
 OBJECT_LIST_FIELDS = (
@@ -334,6 +346,10 @@ PROTO_UPDATES = (
         "void __thiscall request_object_animation(Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes, float progress_step, int32_t flags)",
     ),
     (
+        "advance_frame_sequence",
+        "void __thiscall advance_frame_sequence(FrameSequence* sequence)",
+    ),
+    (
         "build_object_texture_group_buffers",
         "void __cdecl build_object_texture_group_buffers(Object* object)",
     ),
@@ -400,6 +416,7 @@ def main() -> int:
             struct_updates=(
                 ("Direct3DRenderer", DIRECT3D_RENDERER_FIELDS),
                 ("Object", OBJECT_FIELDS),
+                ("FrameSequence", FRAME_SEQUENCE_FIELDS),
                 ("TextureRef", TEXTURE_REF_FIELDS),
                 ("ObjectList", OBJECT_LIST_FIELDS),
                 ("GameRoot", GAME_ROOT_FIELDS),

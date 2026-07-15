@@ -3,40 +3,38 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: advance_frame_sequence @ 0x430470 */
 
-00430471        int32_t esi = *(arg1 + 0xe0)
-00430478        int32_t edi = *(arg1 + 0x5c)
-0043047e        int32_t result = esi * 0x30
-00430485        *(arg1 + 0xec) = *(result + edi + 0xc)
-0043048b        int32_t edx_1 = *(arg1 + 0xdc)
-00430494        if ((edx_1.b & 0x11) == 0)
-004304a0        long double x87_r7_2 = fconvert.t(*(arg1 + 0xe8)) + fconvert.t(*(arg1 + 0xe4))
+00430471        int32_t current_frame_index = sequence->current_frame_index
+00430478        struct ObjectFaceQuad* facequads = sequence->object.facequads
+00430485        sequence->current_texture_ref = facequads[current_frame_index].texture_ref
+0043048b        int32_t sequence_flags = sequence->sequence_flags
+00430494        if ((sequence_flags.b & 0x11) != 0)
+00430494        return
+004304a0        long double x87_r7_2 = fconvert.t(sequence->phase_step) + fconvert.t(sequence->phase)
 004304a6        long double temp0_1 = fconvert.t(1f)
 004304a6        x87_r7_2 - temp0_1
-004304ac        *(arg1 + 0xe4) = fconvert.s(x87_r7_2)
-004304ac        bool c1_1 = unimplemented  {fst dword [ecx+0xe4], st0}
-004304b2        result.w = (x87_r7_2 < temp0_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_2, temp0_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp0_1 ? 1 : 0) << 0xe | 0x3800
-004304b7        if ((result:1.b & 0x41) == 0)
-004304c6        *(arg1 + 0xe4) = fconvert.s(x87_r7_2 - fconvert.t(1f))
-004304cc        if ((edx_1.b & 8) == 0)
-0043050a        int32_t esi_1 = *(arg1 + 0x54)
-0043050f        *(arg1 + 0xe0) = esi + 1
-00430515        if (esi + 1 == esi_1)
-0043051a        if ((edx_1.b & 4) != 0)
-00430522        *(arg1 + 0xe0) = esi_1 - 2
-00430528        *(arg1 + 0xdc) = edx_1 | 8
-00430533        if ((edx_1.b & 2) != 0)
-0043053e        *(arg1 + 0xe0) = 0
-00430538        *(arg1 + 0xdc) = edx_1 | 1
-0043053e        *(arg1 + 0xe0) = 0
-004304d4        *(arg1 + 0xe0) = esi - 1
-004304da        if (esi == 0)
-004304df        if ((edx_1.b & 4) != 0)
-004304e4        *(arg1 + 0xe0) = 1
-004304ee        *(arg1 + 0xdc) = edx_1 & 0xfffffff7
-004304f9        if ((edx_1.b & 2) == 0)
-00430538        *(arg1 + 0xdc) = edx_1 | 1
-0043053e        *(arg1 + 0xe0) = 0
-004304ff        *(arg1 + 0xe0) = *(arg1 + 0x54) - 1
-00430558        result = *(*(arg1 + 0xe0) * 0x30 + edi + 0xc)
-0043055c        *(arg1 + 0xec) = result
-00430564        return result
+004304ac        sequence->phase = fconvert.s(x87_r7_2)
+004304ac        bool c1_1 = unknown  {fst dword [ecx+0xe4], st0}
+004304b7        if ((((x87_r7_2 < temp0_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_2, temp0_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp0_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
+004304c6        sequence->phase = fconvert.s(x87_r7_2 - fconvert.t(1f))
+004304cc        if ((sequence_flags.b & 8) == 0)
+0043050a        int32_t facequad_count = sequence->object.facequad_count
+0043050f        sequence->current_frame_index = current_frame_index + 1
+00430515        if (current_frame_index + 1 == facequad_count)
+0043051a        if ((sequence_flags.b & 4) != 0)
+00430522        sequence->current_frame_index = facequad_count - 2
+00430528        sequence->sequence_flags = sequence_flags | 8
+00430533        if ((sequence_flags.b & 2) != 0)
+0043053e        sequence->current_frame_index = 0
+00430538        sequence->sequence_flags = sequence_flags | 1
+0043053e        sequence->current_frame_index = 0
+004304d4        sequence->current_frame_index = current_frame_index - 1
+004304da        if (current_frame_index == 0)
+004304df        if ((sequence_flags.b & 4) != 0)
+004304e4        sequence->current_frame_index = 1
+004304ee        sequence->sequence_flags = sequence_flags & 0xfffffff7
+004304f9        if ((sequence_flags.b & 2) == 0)
+00430538        sequence->sequence_flags = sequence_flags | 1
+0043053e        sequence->current_frame_index = 0
+004304ff        sequence->current_frame_index = sequence->object.facequad_count - 1
+0043055c        sequence->current_texture_ref = facequads[sequence->current_frame_index].texture_ref
+00430564        return

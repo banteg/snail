@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 43,
+  "function_count": 51,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 43,
-  "ida_exported": 43,
+  "bn_exported": 51,
+  "ida_exported": 51,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
@@ -61,6 +61,10 @@
       "address": "0x405040"
     },
     {
+      "name": "load_x_animation_clip",
+      "address": "0x405d60"
+    },
+    {
       "name": "update_golb_ai",
       "address": "0x414820"
     },
@@ -95,6 +99,18 @@
     {
       "name": "mini_delete_high_score_entry",
       "address": "0x417af0"
+    },
+    {
+      "name": "sample_smtrack_heightmap",
+      "address": "0x41a360"
+    },
+    {
+      "name": "advance_frame_sequence",
+      "address": "0x430470"
+    },
+    {
+      "name": "request_object_animation",
+      "address": "0x430a70"
     },
     {
       "name": "populate_runtime_track_cells_from_segments",
@@ -157,12 +173,28 @@
       "address": "0x440f80"
     },
     {
+      "name": "update_smtracks",
+      "address": "0x441f60"
+    },
+    {
       "name": "initialize_subgoldy_resurrect",
       "address": "0x441fa0"
     },
     {
       "name": "update_subgoldy_resurrect",
       "address": "0x441fd0"
+    },
+    {
+      "name": "set_weapon_animation",
+      "address": "0x4446e0"
+    },
+    {
+      "name": "initialize_anim_manager",
+      "address": "0x4447c0"
+    },
+    {
+      "name": "update_anim_manager",
+      "address": "0x4447d0"
     },
     {
       "name": "handle_subgoldy_collisions",
@@ -189,7 +221,7 @@
       "address": "0x448de0"
     }
   ],
-  "health_check_count": 346,
+  "health_check_count": 360,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

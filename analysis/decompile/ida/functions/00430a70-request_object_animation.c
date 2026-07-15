@@ -2,152 +2,154 @@
 /* function: request_object_animation @ 0x430a70 */
 /* selector: request_object_animation */
 
-int __thiscall sub_430A70(int *this, int a2, _DWORD *a3, float a4, __int16 a5)
+// Void Windows `cRObject::RequestAnim(int, cRBodPos*, float, int)`: validates borrowed keyframe Objects, allocates and retains the ObjectAnimation/frame graph, interpolates each vertex as a scaled next-minus-current delta, and regenerates per-frame facequad normals.
+void __thiscall request_object_animation(
+        Object *object,
+        int keyframe_count,
+        XAnimationKeyframe *keyframes,
+        float progress_step,
+        int flags)
 {
   int v5; // eax
-  int v8; // edx
-  _DWORD *v9; // ecx
+  int32_t vertex_count; // edx
+  Object **v9; // ecx
   int v10; // ebp
-  _BYTE *v11; // eax
-  int result; // eax
-  int v13; // edi
-  int v14; // ecx
-  _DWORD *v15; // ebx
+  ObjectAnimation *tracked_memory; // eax
+  int v12; // edi
+  int32_t *p_frame_number; // ecx
+  Object **p_object; // ebx
   double X; // st7
-  int v17; // edx
-  int v18; // eax
-  int v19; // edx
-  _DWORD *v20; // ecx
-  _DWORD *v21; // eax
-  float *v22; // ecx
-  int v23; // eax
-  double v24; // st7
-  double v25; // st6
-  float *v26; // eax
-  float *v27; // eax
-  int v28; // eax
-  float v29; // [esp+18h] [ebp-38h]
+  Object *v16; // edx
+  Object *v17; // eax
+  int v18; // edx
+  float *p_x; // ecx
+  Vec3 *v20; // eax
+  float *v21; // ecx
+  Vec3 *vertices; // eax
+  double v23; // st7
+  double v24; // st6
+  float *v25; // eax
+  Vec3 *v26; // eax
+  ObjectAnimation *animation; // eax
+  float v28; // [esp+18h] [ebp-38h]
   float i; // [esp+18h] [ebp-38h]
-  int v31; // [esp+1Ch] [ebp-34h]
-  int v32; // [esp+20h] [ebp-30h]
-  _DWORD *v33; // [esp+24h] [ebp-2Ch]
-  float v34; // [esp+28h] [ebp-28h]
-  float v35; // [esp+2Ch] [ebp-24h]
-  float v36; // [esp+30h] [ebp-20h]
-  float v37; // [esp+34h] [ebp-1Ch]
-  float v38; // [esp+3Ch] [ebp-14h]
-  float v39; // [esp+40h] [ebp-10h]
-  float v40; // [esp+48h] [ebp-8h]
-  float v41; // [esp+4Ch] [ebp-4h]
-  int v42; // [esp+58h] [ebp+8h]
-  int v43; // [esp+5Ch] [ebp+Ch]
-  int v44; // [esp+60h] [ebp+10h]
+  int v30; // [esp+1Ch] [ebp-34h]
+  int32_t v31; // [esp+20h] [ebp-30h]
+  int32_t *v32; // [esp+24h] [ebp-2Ch]
+  float v33; // [esp+28h] [ebp-28h]
+  float v34; // [esp+2Ch] [ebp-24h]
+  float v35; // [esp+30h] [ebp-20h]
+  float v36; // [esp+34h] [ebp-1Ch]
+  float v37; // [esp+3Ch] [ebp-14h]
+  float v38; // [esp+40h] [ebp-10h]
+  float v39; // [esp+48h] [ebp-8h]
+  float v40; // [esp+4Ch] [ebp-4h]
+  XAnimationKeyframe *keyframesa; // [esp+58h] [ebp+8h]
+  int32_t progress_stepa; // [esp+5Ch] [ebp+Ch]
+  int32_t flagsa; // [esp+60h] [ebp+10h]
 
   v5 = 0;
-  if ( a2 <= 0 )
+  if ( keyframe_count <= 0 )
   {
 LABEL_5:
-    *(this + 4) |= 0x200000u;
-    v10 = (__int64)(1.0 / a4);
-    v31 = v10;
-    v11 = allocate_tracked_memory(20, (int)aObjectAnimatio);
-    *(this + 47) = (int)v11;
-    *((_DWORD *)v11 + 1) = v10;
-    *(_WORD *)*(this + 47) = a5;
-    *(_DWORD *)(*(this + 47) + 12) = 0;
-    *(float *)(*(this + 47) + 16) = a4;
-    v42 = 0;
-    *(_DWORD *)(*(this + 47) + 8) = allocate_tracked_memory(4 * v10, (int)aObjectAnimatio_0);
-    v44 = a3[31];
-    if ( a2 == 1 )
-      v43 = a3[31];
+    object->flags |= 0x200000u;
+    v10 = (__int64)(1.0 / progress_step);
+    v30 = v10;
+    tracked_memory = (ObjectAnimation *)allocate_tracked_memory(20, (int)aObjectAnimatio);
+    object->animation = tracked_memory;
+    tracked_memory->generated_frame_count = v10;
+    object->animation->flags = flags;
+    object->animation->progress = 0.0;
+    object->animation->progress_step = progress_step;
+    keyframesa = nullptr;
+    object->animation->frames = (ObjectAnimationFrame **)allocate_tracked_memory(4 * v10, (int)aObjectAnimatio_0);
+    flagsa = keyframes->frame_number;
+    if ( keyframe_count == 1 )
+      progress_stepa = keyframes->frame_number;
     else
-      v43 = a3[63];
-    v13 = 0;
+      progress_stepa = keyframes[1].frame_number;
+    v12 = 0;
     if ( v10 > 0 )
     {
-      v34 = (float)v10;
-      v14 = (int)&a3[32 * a2 - 1];
-      v15 = a3 + 9;
-      v33 = (_DWORD *)v14;
+      v33 = (float)v10;
+      p_frame_number = &keyframes[keyframe_count - 1].frame_number;
+      p_object = &keyframes->object;
+      v32 = p_frame_number;
       do
       {
-        *(_DWORD *)(*(_DWORD *)(*(this + 47) + 8) + 4 * v13) = allocate_tracked_memory(8, (int)aObjectAnimatio_1);
-        **(_DWORD **)(*(_DWORD *)(*(this + 47) + 8) + 4 * v13) = allocate_tracked_memory(
-                                                                   12 * *(this + 11),
-                                                                   (int)aObjectAnimatio_2);
-        *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(*(this + 47) + 8) + 4 * v13) + 4) = allocate_tracked_memory(
-                                                                                  24 * *(this + 21),
-                                                                                  (int)aObjectAnimatio_3);
-        X = (double)(v13 * *v33) / v34;
-        v29 = X;
-        if ( (int)(__int64)floor(X) >= v43 && v42 < a2 - 1 )
+        object->animation->frames[v12] = (ObjectAnimationFrame *)allocate_tracked_memory(8, (int)aObjectAnimatio_1);
+        object->animation->frames[v12]->vertices = (Vec3 *)allocate_tracked_memory(
+                                                             12 * object->vertex_count,
+                                                             (int)aObjectAnimatio_2);
+        object->animation->frames[v12]->facequad_normals = (Vec3 *)allocate_tracked_memory(
+                                                                     24 * object->facequad_count,
+                                                                     (int)aObjectAnimatio_3);
+        X = (double)(v12 * *v32) / v33;
+        v28 = X;
+        if ( (int)(__int64)floor(X) >= progress_stepa && (int)keyframesa < keyframe_count - 1 )
         {
-          v17 = v15[54];
-          v18 = v15[86];
-          v15 += 32;
-          ++v42;
-          v44 = v17;
-          v43 = v18;
+          v16 = p_object[54];
+          v17 = p_object[86];
+          p_object += 32;
+          keyframesa = (XAnimationKeyframe *)((char *)keyframesa + 1);
+          flagsa = (int32_t)v16;
+          progress_stepa = (int32_t)v17;
         }
-        v19 = 0;
-        v32 = 0;
-        for ( i = (v29 - (double)v44) / (double)(v43 - v44); v32 < *(this + 11); ++v32 )
+        v18 = 0;
+        v31 = 0;
+        for ( i = (v28 - (double)flagsa) / (double)(progress_stepa - flagsa); v31 < object->vertex_count; ++v31 )
         {
-          if ( a2 == 1 )
+          if ( keyframe_count == 1 )
           {
-            v20 = (_DWORD *)(v19 + *(_DWORD *)(*v15 + 56));
-            v21 = (_DWORD *)(v19 + **(_DWORD **)(*(_DWORD *)(*(this + 47) + 8) + 4 * v13));
-            *v21 = *v20;
-            v21[1] = v20[1];
-            v10 = v31;
-            v21[2] = v20[2];
+            p_x = &(*p_object)->vertices[v18].x;
+            v20 = &object->animation->frames[v12]->vertices[v18];
+            v20->x = *p_x;
+            v20->y = p_x[1];
+            v10 = v30;
+            v20->z = p_x[2];
           }
           else
           {
-            v22 = (float *)(v19 + *(_DWORD *)(v15[32] + 56));
-            v23 = *(_DWORD *)(*v15 + 56);
-            v24 = *v22 - *(float *)(v23 + v19);
-            v25 = v22[1] - *(float *)(v23 + v19 + 4);
-            v26 = (float *)(v19 + v23);
-            v38 = v25;
-            v39 = v22[2] - v26[2];
+            v21 = &p_object[32]->vertices[v18].x;
+            vertices = (*p_object)->vertices;
+            v23 = *v21 - vertices[v18].x;
+            v24 = v21[1] - vertices[v18].y;
+            v25 = &vertices[v18].x;
+            v37 = v24;
+            v38 = v21[2] - v25[2];
+            v39 = v37 * i;
             v40 = v38 * i;
-            v41 = v39 * i;
-            v35 = v24 * i + *v26;
-            v36 = v40 + v26[1];
-            v37 = v41 + v26[2];
-            v27 = (float *)(v19 + **(_DWORD **)(*(_DWORD *)(*(this + 47) + 8) + 4 * v13));
-            *v27 = v35;
-            v27[1] = v36;
-            v27[2] = v37;
+            v34 = v23 * i + *v25;
+            v35 = v39 + v25[1];
+            v36 = v40 + v25[2];
+            v26 = &object->animation->frames[v12]->vertices[v18];
+            v26->x = v34;
+            v26->y = v35;
+            v26->z = v36;
           }
-          v19 += 12;
+          ++v18;
         }
-        v28 = *(this + 47);
-        *(this + 14) = **(_DWORD **)(*(_DWORD *)(v28 + 8) + 4 * v13);
-        *(this + 24) = *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(v28 + 8) + 4 * v13) + 4);
-        calc_object_facequad_normals(this);
-        ++v13;
+        animation = object->animation;
+        object->vertices = animation->frames[v12]->vertices;
+        object->facequad_normals = animation->frames[v12]->facequad_normals;
+        calc_object_facequad_normals(object);
+        ++v12;
       }
-      while ( v13 < v10 );
+      while ( v12 < v10 );
     }
-    result = *(this + 47);
-    *(_DWORD *)(result + 12) = 0;
+    object->animation->progress = 0.0;
   }
   else
   {
-    v8 = *(this + 11);
-    v9 = a3 + 9;
-    while ( *(_DWORD *)(*v9 + 44) == v8 )
+    vertex_count = object->vertex_count;
+    v9 = &keyframes->object;
+    while ( (*v9)->vertex_count == vertex_count )
     {
       ++v5;
       v9 += 32;
-      if ( v5 >= a2 )
+      if ( v5 >= keyframe_count )
         goto LABEL_5;
     }
-    return report_errorf("Anim tween Vertices don't match Frame %i", a3[32 * v5 + 31]);
+    report_errorf("Anim tween Vertices don't match Frame %i", keyframes[v5].frame_number);
   }
-  return result;
 }
-

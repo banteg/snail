@@ -19,3 +19,16 @@ The 2026-07-13 owner-boundary pass replaced the enclosing runtime pad with
 these two exact objects. A previewed Binary Ninja declaration preserved the
 `0x128` animator, the following catalog address, and the complete
 `0x1272838`-byte `SubgameRuntime`; the focused matcher remains byte-identical.
+
+## 2026-07-16 frame/sampler handoff closure
+
+- Both analysis databases now receive the authored
+  `void SmtrackHeightfieldAnimator::update_smtracks()` receiver rather than a
+  raw integer base. The complete handoff reads as
+  `animator -> FrameSequence -> TextureRef -> borrowed Object`.
+- The sole sampler call proves
+  `void sample_smtrack_heightmap(Object*, float, float, TextureRef*, char)`;
+  the old analysis prototype incorrectly modeled its fourth argument as a
+  float and promised an unused pointer result.
+- The exact 19/19 body and both operands remain unchanged. Paired strict export
+  now contains no raw `+0x38`/`+0x124` reconstruction or result forwarding.

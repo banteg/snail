@@ -218,7 +218,10 @@ typedef struct Object {
     ObjectFlag flags;
     int32_t blend_mode;
     TextureRef* override_texture_ref;
-    uint8_t _pad_1c[0x2c - 0x1c];
+    int32_t heightmap_sample_count;
+    uint8_t _pad_20[0x24 - 0x20];
+    float heightmap_sample_divisor;
+    float heightmap_sample_scale;
     int32_t vertex_count;
     uint8_t _pad_30[0x38 - 0x30];
     Vec3* vertices;
@@ -251,6 +254,24 @@ typedef struct Object {
     int32_t* group_primitive_counts;
     ObjectIndexBuffer* toon_index_buffer;
 } Object;
+
+typedef enum FrameSequenceFlag {
+    FRAME_SEQUENCE_COMPLETE = 0x01,
+    FRAME_SEQUENCE_LOOP = 0x02,
+    FRAME_SEQUENCE_PING_PONG = 0x04,
+    FRAME_SEQUENCE_REVERSE = 0x08,
+    FRAME_SEQUENCE_PAUSED = 0x10,
+} FrameSequenceFlag;
+
+/* Authored Object-derived animated texture sequence, exact size 0xf0. */
+typedef struct FrameSequence {
+    Object object;
+    int32_t sequence_flags;
+    int32_t current_frame_index;
+    float phase;
+    float phase_step;
+    TextureRef* current_texture_ref;
+} FrameSequence;
 
 typedef struct XAnimationKeyframe {
     uint8_t _pad_00[0x24];
@@ -489,6 +510,7 @@ void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);
 void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int32_t flags);
+void __thiscall advance_frame_sequence(FrameSequence* sequence);
 void __cdecl build_object_texture_group_buffers(Object* object);
 int32_t __cdecl get_or_append_object_texture_group_vertex(
     Object* object, int32_t vertex_index, float u, float v);

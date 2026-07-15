@@ -490,6 +490,18 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_anim_manager(AnimManager* manager);",
     ),
     (
+        "advance_frame_sequence",
+        "void __thiscall advance_frame_sequence(FrameSequence* sequence);",
+    ),
+    (
+        "update_smtracks",
+        "void __thiscall update_smtracks(SmtrackHeightfieldAnimator* animator);",
+    ),
+    (
+        "sample_smtrack_heightmap",
+        "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, char cubic);",
+    ),
+    (
         "set_weapon_animation",
         "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
     ),
