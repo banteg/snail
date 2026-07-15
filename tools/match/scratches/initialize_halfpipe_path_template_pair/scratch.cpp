@@ -156,8 +156,8 @@ void Path::initialize_halfpipe_path_template_pair(
     secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
+    strip_mesh->request_object_vertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->request_object_facequads(2 * segment_count * width_cells);
-    strip_mesh->request_object_vertices((segment_count + 1) * (width_cells + 1));
 
     Vector3* vertices = strip_mesh->vertices;
     ObjectFaceQuad* facequads = strip_mesh->facequads;

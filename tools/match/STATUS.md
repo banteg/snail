@@ -803,7 +803,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 615/679 | 44.05% | 0/679 | 33 ok |  |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 628/687 | 48.06% | 0/687 | 41 ok |  |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 564/600 | 49.66% | 0/600 | 30 ok |  |
-| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 659/707 | 37.34% | 0/707 | 46 ok |  |
+| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 659/707 | 37.04% | 0/707 | 46 ok |  |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 577/677 | 24.72% | 0/677 | 36 ok |  |
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 577/677 | 24.72% | 0/677 | 36 ok |  |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 597/663 | 27.94% | 1/663 | 2 mismatch, 22 ok |  |

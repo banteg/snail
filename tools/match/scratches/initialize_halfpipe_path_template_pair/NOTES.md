@@ -121,7 +121,7 @@ shape. It drops one audited masked operand compared with the vertex-grid pass,
 but keeps the same single relocation mismatch and materially improves the
 focused fuzzy score.
 
-## 2026-07-03 mesh request-order pass
+## 2026-07-03 mesh request-order pass (superseded)
 
 Focused matcher after requesting facequads before vertices:
 
@@ -131,10 +131,11 @@ target: 707 insns, candidate: 659 insns
 masked operands: 46 ok, 0 unresolved, 0 mismatch
 ```
 
-Unlike the rejected/neutral sibling probes, the kind-42 target really does align
-better with the strip-mesh allocation calls in facequads-before-vertices order.
-The retained spelling clears the single masked relocation mismatch while moving
-focused Wibo from 37.04% to 37.34%.
+This source order was retained because it cleared the old audit mismatch and
+moved focused Wibo from 37.04% to 37.34%. It was later rejected: both target
+exports show vertices requested before facequads, so the higher score came from
+ambiguous alignment of two normalized `call ADDR` instructions rather than
+recovered behavior.
 
 ## 2026-07-04 middle-loop byte-offset retest
 
@@ -159,3 +160,20 @@ masked operands: 46 ok, 0 unresolved, 0 mismatch
 
 The native-looking byte-offset ownership is therefore not portable to this loop
 without also solving the surrounding stack-frame and transform-copy lifetime.
+
+## 2026-07-15 honest mesh request-order correction
+
+The target calls `request_object_vertices` at `0x42a10b`, followed by
+`request_object_facequads` at `0x42a11d`. The scratch now preserves that order
+and the target's multiplication ownership:
+
+```text
+match: 37.04%
+target: 707 insns, candidate: 659 insns
+masked operands: 46 ok, 0 unresolved, 0 mismatch
+```
+
+The 37.34% facequads-first version is intentionally rejected despite its higher
+fuzzy score. The reference-aware masked-operand aligner now associates these
+repeated `call ADDR` sites with their actual callees, so the evidence-backed
+order remains audit-clean without a metric-driven source reordering.
