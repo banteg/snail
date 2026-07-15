@@ -277,6 +277,69 @@ def test_current_symbol_names_batches_readback(monkeypatch) -> None:
     assert "get_symbols_by_name" in calls[0][-1]
 
 
+def test_symbol_removals_batch_only_the_expected_stale_alias(monkeypatch) -> None:
+    captured = []
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_symbol_names",
+        lambda *_args, **_kwargs: {
+            "0x5000fc": "g_object_index_buffer_factory",
+            "0x502fec": None,
+        },
+    )
+
+    def fake_previewed_batch(_repo_root, *, target, operations):
+        captured.append((target, operations))
+        return {"preview": {"success": True}, "apply": {"committed": True}}
+
+    monkeypatch.setattr(_narrow_sync, "run_previewed_bn_batch", fake_previewed_batch)
+
+    result = _narrow_sync.apply_symbol_removals(
+        Path("."),
+        target="snail-mail.exe",
+        removals=(
+            ("0x5000fc", "g_object_index_buffer_factory"),
+            ("0x502fec", "g_d3d_device"),
+        ),
+    )
+
+    assert result[0]["status"] == "skipped"
+    assert result[0]["reason"] == "already absent"
+    assert result[1]["op"] == "symbol_undefine_batch"
+    assert captured == [
+        (
+            "snail-mail.exe",
+            [
+                {
+                    "op": "undefine_symbol",
+                    "address": "0x5000fc",
+                    "expected_name": "g_object_index_buffer_factory",
+                }
+            ],
+        )
+    ]
+
+
+def test_symbol_removals_refuse_an_unexpected_owner(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_symbol_names",
+        lambda *_args, **_kwargs: {"0x5000fc": "index_buffer_factory"},
+    )
+
+    try:
+        _narrow_sync.apply_symbol_removals(
+            Path("."),
+            target="snail-mail.exe",
+            removals=(("0x5000fc", "g_object_index_buffer_factory"),),
+        )
+    except RuntimeError as error:
+        assert "refusing to undefine unexpected symbol" in str(error)
+        assert "index_buffer_factory" in str(error)
+    else:
+        raise AssertionError("unexpected owner symbol was accepted for removal")
+
+
 def test_data_var_updates_skip_current_types(monkeypatch) -> None:
     calls = []
 
@@ -783,6 +846,7 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
 
     for address, name, data_type in (
         ("0x4f7450", "g_render_triangle_count", "int32_t"),
+        ("0x4f7454", "g_render_successful_primitive_count", "int32_t"),
         ("0x4f7458", "g_direct3d_renderer", "Direct3DRenderer"),
         ("0x503170", "g_draw_primitive_call_count", "int32_t"),
         ("0x503174", "g_current_texture_ref", "TextureRef*"),
@@ -797,8 +861,19 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
     assert '("0xbb98", "present", "D3DPresentParameters")' in binja_sync
     assert '("0xbbcc", "device_caps", "D3DDeviceCaps8")' in binja_sync
     assert '("0x502fec",' not in binja_sync
+    symbol_updates = binja_sync.split("SYMBOL_UPDATES = (", 1)[1].split(
+        "\n)\n\nSYMBOL_REMOVALS", 1
+    )[0]
+    assert '"0x5000fc"' not in symbol_updates
+    assert (
+        'SYMBOL_REMOVALS = (\n'
+        '    ("0x5000fc", "g_object_index_buffer_factory"),\n'
+        ")"
+    ) in binja_sync
 
     for function_name in (
+        "create_vertex_buffer",
+        "create_index_buffer",
         "release_direct3d_renderer_resources",
         "direct3d_renderer_set_cull_mode",
         "initialize_d3d8_device",
@@ -809,6 +884,9 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
         "restore_texture_ref_stage_states",
         "bind_texture_ref",
         "query_direct3d_device_caps",
+        "set_blend_mode",
+        "set_immediate_blend_mode",
+        "draw_textured_quad_immediate",
     ):
         assert f'"{function_name}"' in binja_sync
         assert f'"{function_name}"' in ida_sync
@@ -822,7 +900,12 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
         assert "D3DDeviceCaps8 device_caps;" in header
         assert "extern Direct3DRenderer g_direct3d_renderer;" in header
         assert "extern Direct3DDevice8* g_d3d_device;" not in header
+        assert "extern IndexBufferFactory g_object_index_buffer_factory;" not in header
+        assert "extern int32_t g_render_successful_primitive_count;" in header
         assert "void __cdecl bind_texture_ref(TextureRef* texture);" in header
+        assert "ObjectRenderBuffers* __thiscall create_vertex_buffer(" in header
+        assert "ObjectIndexBuffer* __thiscall create_index_buffer(" in header
+        assert "void __cdecl draw_textured_quad_immediate(" in header
 
     assert "VertexBufferFactory vertex_buffer_factory; // +0x0000" in matcher_header
     assert "IndexBufferFactory index_buffer_factory; // +0x8ca4" in matcher_header
@@ -2208,6 +2291,24 @@ def test_previewed_batch_uses_one_transactional_python_preview_and_apply(monkeyp
     assert "preview = True" in calls[0][calls[0].index("--code") + 1]
     assert "preview = False" in calls[1][calls[1].index("--code") + 1]
     assert result["apply"]["committed"] is True
+
+
+def test_previewed_batch_can_transactionally_undefine_an_exact_symbol() -> None:
+    code = _narrow_sync._batch_python_code(
+        [
+            {
+                "op": "undefine_symbol",
+                "address": "0x5000fc",
+                "expected_name": "g_object_index_buffer_factory",
+            }
+        ],
+        preview=True,
+    )
+
+    assert "bv.undefine_user_symbol(symbol)" in code
+    assert "refusing to undefine unexpected symbol" in code
+    assert 'entry["verified"] = observed is None' in code
+    assert "bv.revert_undo_actions(state)" in code
 
 
 def test_apply_proto_updates_batches_only_stale_prototypes(monkeypatch) -> None:

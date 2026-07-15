@@ -30,3 +30,11 @@ tail-merges nine instructions from the shared call suffix. Ordinary `break`s,
 explicit case `goto`s, the real virtual-interface syntax, and VC6 RTM all keep
 that merge. The residual is therefore bounded compiler-layout debt, not forced
 with volatile state or byte-shaped dispatch arithmetic.
+
+2026-07-15 replay closure: the manifest/source name `create_vertex_buffer` is
+now canonical in both decompiler replay lanes. Binary Ninja readback confirms
+the `VertexBufferFactory*` receiver and resolves every device access through
+`g_direct3d_renderer.device`; direct callers now show the allocator rooted at
+the renderer singleton instead of the older verbose resource-helper alias.
+This is ownership/ABI recovery only: focused output remains 76.68% with all ten
+masked operands clean.

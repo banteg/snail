@@ -496,9 +496,9 @@ void __cdecl set_object_color(Object* object, tColour color);
 int32_t __cdecl render_object(
     Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites);
-ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(
+ObjectRenderBuffers* __thiscall create_vertex_buffer(
     VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf);
-ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(
+ObjectIndexBuffer* __thiscall create_index_buffer(
     IndexBufferFactory* factory, int32_t index_count);
 void __thiscall initialize_direct3d_renderer_defaults(Direct3DRenderer* renderer);
 void __thiscall release_direct3d_renderer_resources(Direct3DRenderer* renderer);
@@ -510,6 +510,13 @@ void __thiscall reset_direct3d_render_state(Direct3DRenderer* renderer);
 void __thiscall release_direct3d_device_interfaces(Direct3DRenderer* renderer);
 uint8_t __cdecl initialize_direct3d_renderer(void);
 int32_t __cdecl set_cull_mode(int32_t cull_front);
+void __cdecl set_blend_mode(int32_t blend_mode);
+void __cdecl set_immediate_blend_mode(int32_t blend_mode);
+void __cdecl draw_textured_quad_immediate(
+    TextureRef* texture, float x0, float y0, float x1, float y1,
+    float x2, float y2, float x3, float y3, float width, float height,
+    float u0, float v0, float u1, float v1, tColour* color,
+    int32_t blend_mode, float rotation);
 void __cdecl release_global_direct3d_renderer_resources(void);
 int32_t __cdecl present_backbuffer(void);
 void __cdecl set_fullscreen_mode(int32_t enabled);
@@ -526,6 +533,7 @@ extern int32_t g_object_grouped_vertex_cursor;
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;
 extern Direct3DRenderer g_direct3d_renderer;
 extern int32_t g_render_triangle_count;
+extern int32_t g_render_successful_primitive_count;
 extern int32_t g_draw_primitive_call_count;
 extern TextureRef* g_current_texture_ref;
 extern int32_t g_texture_bind_call_count;

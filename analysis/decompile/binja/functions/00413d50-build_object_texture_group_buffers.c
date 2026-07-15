@@ -129,8 +129,8 @@
 00414085        break
 00413ebb        ecx_1 = var_14
 00414097        object_1->grouped_vertex_count = g_object_grouped_vertex_cursor
-004140b4        object_1->render_buffers = create_object_vertex_buffer_resource(&g_direct3d_renderer, g_object_grouped_vertex_cursor, 0x142)
-004140ba        struct ObjectIndexBuffer* eax_45 = create_object_index_buffer_resource(&g_object_index_buffer_factory, index_count)
+004140b4        object_1->render_buffers = create_vertex_buffer(&g_direct3d_renderer, g_object_grouped_vertex_cursor, 0x142)
+004140ba        struct ObjectIndexBuffer* eax_45 = create_index_buffer(&g_direct3d_renderer.index_buffer_factory, index_count)
 004140bf        struct ObjectRenderBuffers* render_buffers = object_1->render_buffers
 004140ca        object_1->index_buffer = eax_45
 004140d0        struct ObjectVertexBuffer* vertex_buffer = render_buffers->vertex_buffer
@@ -167,5 +167,5 @@
 004141a4        struct ObjectIndexBufferResource* buffer_1 = object_1->index_buffer->buffer
 004141a9        buffer_1->vtbl->Unlock(buffer_1)
 004141b3        if (((object_1->flags).w:1.b & 0x40) != 0)
-004141c0        object_1->toon_index_buffer = create_object_index_buffer_resource(&g_object_index_buffer_factory, index_count)
+004141c0        object_1->toon_index_buffer = create_index_buffer(&g_direct3d_renderer.index_buffer_factory, index_count)
 004141cc        return

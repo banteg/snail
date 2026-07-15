@@ -8,15 +8,15 @@
 004126e4        result = object->vertex_count
 004126e9        if (result != 0)
 004126f0        refresh_object_vertex_buffer(object)
-004126f9        int32_t* eax = data_502fec
-0041270e        void var_40
-0041270e        __builtin_memcpy(&var_40, matrix, 0x40)
-00412719        (*(*eax + 0x94))(eax, 0x100, &var_40)
-00412726        char var_54_3
+004126f9        struct Direct3DDevice8* device = g_direct3d_renderer.device
+0041270e        struct TransformMatrix matrix_1
+0041270e        __builtin_memcpy(&matrix_1, matrix, 0x40)
+00412719        device->vtbl->SetTransform(device, 0x100, &matrix_1)
+00412726        int32_t cull_front
 00412726        if ((object->flags & OBJECT_FLAG_DISABLE_CULLING) == 0)
-0041272c        var_54_3 = 1
-00412728        var_54_3 = 0
-0041272e        set_cull_mode(var_54_3)
+0041272c        cull_front = 1
+00412728        cull_front = 0
+0041272e        set_cull_mode(cull_front)
 00412739        int32_t i = 0
 0041273d        if (object->texture_group_count s> 0)
 0041274b        char ecx_3 = data_503260
@@ -31,17 +31,17 @@
 004127a9        override_texture_ref = object->override_texture_ref
 004127ad        bind_texture_ref(override_texture_ref)
 004127ba        if ((object->flags.b & 0x80) == 0)
-00412801        int32_t* eax_9 = data_502fec
-0041280f        (*(*eax_9 + 0xfc))(eax_9, 0, 0x18, 0)
-004127ca        int32_t* eax_7 = data_502fec
+00412801        struct Direct3DDevice8* device_3 = g_direct3d_renderer.device
+0041280f        device_3->vtbl->SetTextureStageState(device_3, 0, 0x18, 0)
+004127ca        struct Direct3DDevice8* device_1 = g_direct3d_renderer.device
 004127cf        g_object_texture_transform_matrix.basis_forward.x = texture_u
 004127dd        g_object_texture_transform_matrix.basis_forward.y = fconvert.s(fconvert.t(1f) - fconvert.t(texture_v))
-004127e5        (*(*eax_7 + 0x94))(eax_7, 0x10, &g_object_texture_transform_matrix)
-004127eb        int32_t* eax_8 = data_502fec
-004127f9        (*(*eax_8 + 0xfc))(eax_8, 0, 0x18, 2)
+004127e5        device_1->vtbl->SetTransform(device_1, 0x10, &g_object_texture_transform_matrix)
+004127eb        struct Direct3DDevice8* device_2 = g_direct3d_renderer.device
+004127f9        device_2->vtbl->SetTextureStageState(device_2, 0, 0x18, 2)
 0041282d        if (color->a == 0x3f800000 || (object->group_texture_refs[i]->flags & 0x10000) == 0)
-0041286f        int32_t* eax_11 = data_502fec
-0041287b        (*(*eax_11 + 0xc8))(eax_11, 0x1b, 0)
+0041286f        struct Direct3DDevice8* device_4 = g_direct3d_renderer.device
+0041287b        device_4->vtbl->SetRenderState(device_4, 0x1b, 0)
 00412833        set_blend_mode(object->blend_mode)
 00412838        enum ObjectFlag flags = object->flags
 00412840        if ((flags.b & 0x50) != 0)
@@ -51,18 +51,18 @@
 0041285c        float b = color->b
 00412862        float a = color->a
 00412865        set_object_color(object, color->r)
-00412887        int32_t* eax_12 = data_502fec
-00412897        (*(*eax_12 + 0x14c))(eax_12, 0, object->render_buffers->vertex_buffer, 0x18)
-0041289d        int32_t* eax_13 = data_502fec
-004128aa        (*(*eax_13 + 0x130))(eax_13, 0x142)
-004128b6        int32_t* eax_14 = data_502fec
-004128c3        (*(*eax_14 + 0x154))(eax_14, object->index_buffer->buffer, 0)
-004128cf        int32_t* eax_15 = data_502fec
-004128f0        (*(*eax_15 + 0x11c))(eax_15, 4, 0, object->grouped_vertex_count, object->group_index_starts[i], object->group_primitive_counts[i])
+00412887        struct Direct3DDevice8* device_5 = g_direct3d_renderer.device
+00412897        device_5->vtbl->SetStreamSource(device_5, 0, object->render_buffers->vertex_buffer, 0x18)
+0041289d        struct Direct3DDevice8* device_6 = g_direct3d_renderer.device
+004128aa        device_6->vtbl->SetVertexShader(device_6, 0x142)
+004128b6        struct Direct3DDevice8* device_7 = g_direct3d_renderer.device
+004128c3        device_7->vtbl->SetIndices(device_7, object->index_buffer->buffer, 0)
+004128cf        struct Direct3DDevice8* device_8 = g_direct3d_renderer.device
+004128f0        device_8->vtbl->DrawIndexedPrimitive(device_8, 4, 0, object->grouped_vertex_count, object->group_index_starts[i], object->group_primitive_counts[i])
 0041290c        ecx_3 = data_503260
-00412912        int32_t eax_18 = data_503170 + 1
-00412913        data_4f7450 += object->group_primitive_counts[i]
-00412919        data_503170 = eax_18
+00412912        int32_t eax_9 = g_draw_primitive_call_count + 1
+00412913        g_render_triangle_count += object->group_primitive_counts[i]
+00412919        g_draw_primitive_call_count = eax_9
 00412769        if (after_sprites != 1 || (object->group_texture_refs[i]->flags & 0x10000) == 0)
 00412758        goto label_412795
 00412921        i += 1

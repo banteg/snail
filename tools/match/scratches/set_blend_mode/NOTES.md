@@ -64,3 +64,9 @@ splits it into this object-rendering helper and the immediate-quad variant at
 Direct3D return forwarding with ordinary calls plus `return;` is byte-identical:
 92.39%, 92/92 instructions, fifteen clean operands, and the existing honest
 jump-table mismatch.
+
+2026-07-15 replay closure: the void ABI and canonical name now replay in both
+BN and IDA lanes, and the refreshed BN artifact resolves all render-state calls
+through `g_direct3d_renderer.device`. Fresh `break`/`return` and shared-suffix
+probes were byte-neutral, so the 92.39% result and honest jump-table mismatch
+remain rather than forcing compiler layout.

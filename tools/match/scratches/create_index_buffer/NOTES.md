@@ -16,3 +16,10 @@ Focused match is exact: 36/36 instructions with all five masked operands clean.
 vtable were partial duplicates, not a distinct owner. `IndexBufferFactory`
 continues to own the returned 3000 interface slots; the device only creates
 each COM resource.
+
+2026-07-15 replay closure: the function now replays under the canonical
+`create_index_buffer` name, and live callers resolve its receiver as
+`g_direct3d_renderer.index_buffer_factory`. The stale standalone symbol at
+`0x5000fc` was removed with an exact-name, previewed mutation; readback resolves
+that address to the enclosing `g_direct3d_renderer` data variable. The exact
+36/36 match is unchanged.

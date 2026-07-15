@@ -126,8 +126,12 @@ The object-render lane owns the complete shared `Object`, `tColourSmall`, and
 grouped-buffer layouts plus the trusted render contracts. It also replays the
 complete `Direct3DRenderer` singleton, its nested buffer factories,
 presentation/caps blocks, and the recovered Direct3D 8 COM vtable surface.
-The device pointer at `0x502fec` remains the renderer field at `+0xbb94`; the
-lane deliberately does not recreate it as a standalone data variable. Its retained
+The index-buffer matcher alias at `0x5000fc` remains the renderer field at
+`+0x8ca4`, and the device matcher alias at `0x502fec` remains the renderer field
+at `+0xbb94`; the lane deliberately removes or avoids both standalone data
+owners. The buffer allocators replay under their manifest names,
+`create_vertex_buffer` and `create_index_buffer`, while the blend-state and
+immediate-quad helpers replay their recovered void contracts. Its retained
 `ObjectAnimation` record keeps a two-byte `ObjectAnimationFlags` field, while
 the named stored-bit enum stays separate from the selector-only `-1`
 preserve-current override. Its retained frame bank is consistently typed as

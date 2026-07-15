@@ -83,3 +83,10 @@ and the explicit-quad forwarder discard EAX; after recovering that forwarder as
 void, no consumer remains for the incidental DrawPrimitive/report register.
 The shared declaration is now void as well, matching the existing body and
 preserving the 98.34% focused result with 26 clean operands.
+
+2026-07-15 replay closure: Binary Ninja's stale `int32_t`/`Color4f*` prototype
+was replaced with the cross-port-supported void contract using `TextureRef*`
+and `tColour*`. Readback and refreshed artifacts now expose the renderer-owned
+staging buffer, device, and named success counter without standalone interior
+globals. No source-shape change was retained; the focused result remains
+98.34%, 331/332, with all 26 masked operands clean.

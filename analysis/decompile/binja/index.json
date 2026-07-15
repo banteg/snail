@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 685,
-  "function_count": 685,
+  "selected_count": 702,
+  "function_count": 702,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": false,
@@ -520,6 +520,11 @@
       "artifact": "analysis/decompile/binja/functions/00408860-initialize_track_parcel_runtime.c"
     },
     {
+      "address": "0x408880",
+      "name": "initialize_galaxy_route_name_record",
+      "artifact": "analysis/decompile/binja/functions/00408880-initialize_galaxy_route_name_record.c"
+    },
+    {
       "address": "0x4088a0",
       "name": "abort_startup_with_3d_error",
       "artifact": "analysis/decompile/binja/functions/004088a0-abort_startup_with_3d_error.c"
@@ -553,6 +558,11 @@
       "address": "0x409b00",
       "name": "draw_galaxy_line",
       "artifact": "analysis/decompile/binja/functions/00409b00-draw_galaxy_line.c"
+    },
+    {
+      "address": "0x409bd0",
+      "name": "update_galaxy_route_record",
+      "artifact": "analysis/decompile/binja/functions/00409bd0-update_galaxy_route_record.c"
     },
     {
       "address": "0x409bf0",
@@ -705,14 +715,54 @@
       "artifact": "analysis/decompile/binja/functions/004112f0-update_backdrop.c"
     },
     {
+      "address": "0x4114b0",
+      "name": "create_vertex_buffer",
+      "artifact": "analysis/decompile/binja/functions/004114b0-create_vertex_buffer.c"
+    },
+    {
+      "address": "0x4115d0",
+      "name": "create_index_buffer",
+      "artifact": "analysis/decompile/binja/functions/004115d0-create_index_buffer.c"
+    },
+    {
+      "address": "0x411630",
+      "name": "initialize_direct3d_renderer_defaults",
+      "artifact": "analysis/decompile/binja/functions/00411630-initialize_direct3d_renderer_defaults.c"
+    },
+    {
+      "address": "0x4116f0",
+      "name": "release_direct3d_renderer_resources",
+      "artifact": "analysis/decompile/binja/functions/004116f0-release_direct3d_renderer_resources.c"
+    },
+    {
+      "address": "0x411700",
+      "name": "direct3d_renderer_set_cull_mode",
+      "artifact": "analysis/decompile/binja/functions/00411700-direct3d_renderer_set_cull_mode.c"
+    },
+    {
       "address": "0x411730",
       "name": "initialize_d3d8_device",
       "artifact": "analysis/decompile/binja/functions/00411730-initialize_d3d8_device.c"
     },
     {
+      "address": "0x4118b0",
+      "name": "reset_direct3d_render_state",
+      "artifact": "analysis/decompile/binja/functions/004118b0-reset_direct3d_render_state.c"
+    },
+    {
+      "address": "0x411960",
+      "name": "release_direct3d_device_interfaces",
+      "artifact": "analysis/decompile/binja/functions/00411960-release_direct3d_device_interfaces.c"
+    },
+    {
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "artifact": "analysis/decompile/binja/functions/004119d0-initialize_game_window_and_input.c"
+    },
+    {
+      "address": "0x411d70",
+      "name": "release_global_direct3d_renderer_resources",
+      "artifact": "analysis/decompile/binja/functions/00411d70-release_global_direct3d_renderer_resources.c"
     },
     {
       "address": "0x411d80",
@@ -740,6 +790,11 @@
       "artifact": "analysis/decompile/binja/functions/004126c0-render_object.c"
     },
     {
+      "address": "0x4129c0",
+      "name": "initialize_direct3d_renderer",
+      "artifact": "analysis/decompile/binja/functions/004129c0-initialize_direct3d_renderer.c"
+    },
+    {
       "address": "0x4129f0",
       "name": "set_cull_mode",
       "artifact": "analysis/decompile/binja/functions/004129f0-set_cull_mode.c"
@@ -750,9 +805,19 @@
       "artifact": "analysis/decompile/binja/functions/00412d00-set_blend_mode.c"
     },
     {
+      "address": "0x412e50",
+      "name": "set_immediate_blend_mode",
+      "artifact": "analysis/decompile/binja/functions/00412e50-set_immediate_blend_mode.c"
+    },
+    {
       "address": "0x413030",
       "name": "draw_textured_quad_immediate",
       "artifact": "analysis/decompile/binja/functions/00413030-draw_textured_quad_immediate.c"
+    },
+    {
+      "address": "0x413520",
+      "name": "present_backbuffer",
+      "artifact": "analysis/decompile/binja/functions/00413520-present_backbuffer.c"
     },
     {
       "address": "0x413670",
@@ -785,6 +850,16 @@
       "artifact": "analysis/decompile/binja/functions/00414260-set_fullscreen_mode.c"
     },
     {
+      "address": "0x414270",
+      "name": "direct3d_renderer_set_fullscreen_mode",
+      "artifact": "analysis/decompile/binja/functions/00414270-direct3d_renderer_set_fullscreen_mode.c"
+    },
+    {
+      "address": "0x4143c0",
+      "name": "restore_texture_ref_stage_states",
+      "artifact": "analysis/decompile/binja/functions/004143c0-restore_texture_ref_stage_states.c"
+    },
+    {
       "address": "0x414500",
       "name": "bind_texture_ref",
       "artifact": "analysis/decompile/binja/functions/00414500-bind_texture_ref.c"
@@ -793,6 +868,16 @@
       "address": "0x4145c0",
       "name": "replace_object_group_texture_refs",
       "artifact": "analysis/decompile/binja/functions/004145c0-replace_object_group_texture_refs.c"
+    },
+    {
+      "address": "0x414600",
+      "name": "query_direct3d_device_caps",
+      "artifact": "analysis/decompile/binja/functions/00414600-query_direct3d_device_caps.c"
+    },
+    {
+      "address": "0x414650",
+      "name": "reset_render_counters",
+      "artifact": "analysis/decompile/binja/functions/00414650-reset_render_counters.c"
     },
     {
       "address": "0x414670",

@@ -3723,7 +3723,7 @@
       "aliases": [
         "data_5000fc"
       ],
-      "description": "Direct3DRenderer +0x8ca4 embedded 3000-entry index-buffer factory used by object and track-cache buffer construction."
+      "description": "Matcher/reference alias for the Direct3DRenderer +0x8ca4 embedded 3000-entry index-buffer factory used by object and track-cache buffer construction, not a standalone global owner."
     },
     {
       "address": "0x502fe0",

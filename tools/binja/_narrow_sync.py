@@ -17,6 +17,7 @@ STRUCT_SIZE_RE = re.compile(r"^struct\s+\S+\s+//\s+size=(?P<size>0x[0-9a-fA-F]+|
 FieldUpdate = tuple[str, str, str]
 ProtoUpdate = tuple[str, str]
 SymbolUpdate = tuple[str, str]
+SymbolRemoval = tuple[str, str]
 DataVarUpdate = tuple[str, str]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 
@@ -181,6 +182,28 @@ snapshot_saved = False
 try:
     for operation in operations:
         kind = operation["op"]
+        if kind == "undefine_symbol":
+            address = int(str(operation["address"]), 0)
+            expected_name = str(operation["expected_name"])
+            symbol = bv.get_symbol_at(address)
+            before = str(symbol.name) if symbol is not None else None
+            if symbol is not None and before != expected_name:
+                raise RuntimeError(
+                    f"refusing to undefine unexpected symbol at {address:#x}: "
+                    f"expected {expected_name}, found {before}"
+                )
+            changed = symbol is not None
+            if changed:
+                bv.undefine_user_symbol(symbol)
+            results.append({
+                "op": kind,
+                "address": hex(address),
+                "expected_name": expected_name,
+                "before": before,
+                "changed": changed,
+            })
+            continue
+
         if kind == "set_prototype":
             function = find_function(operation["identifier"])
             expected_type, _ = bv.parse_type_string(str(operation["prototype"]))
@@ -240,7 +263,12 @@ try:
 
     bv.update_analysis_and_wait()
     for entry in results:
-        if entry["op"] == "set_prototype":
+        if entry["op"] == "undefine_symbol":
+            symbol = bv.get_symbol_at(int(entry["address"], 0))
+            observed = str(symbol.name) if symbol is not None else None
+            entry["observed"] = observed
+            entry["verified"] = observed is None
+        elif entry["op"] == "set_prototype":
             function = find_function(entry["identifier"])
             observed = str(function.type)
             entry["observed"] = observed
@@ -265,7 +293,11 @@ try:
             }
         if not entry["verified"]:
             raise RuntimeError(f"batch verification failed: {entry!r}")
-        entry["status"] = "verified"
+        if entry["op"] == "undefine_symbol" and not entry["changed"]:
+            entry["status"] = "skipped"
+            entry["reason"] = "already absent"
+        else:
+            entry["status"] = "verified"
 
     if preview:
         bv.revert_undo_actions(state)
@@ -1304,6 +1336,66 @@ def apply_symbol_updates(
             }
         )
     return operations
+
+
+def apply_symbol_removals(
+    repo_root: Path,
+    *,
+    target: str,
+    removals: Iterable[SymbolRemoval],
+) -> list[dict[str, object]]:
+    removal_list = list(removals)
+    if not removal_list:
+        return []
+
+    current_names = current_symbol_names(
+        repo_root,
+        target=target,
+        identifiers=(identifier for identifier, _name in removal_list),
+    )
+    skipped: list[dict[str, object]] = []
+    batch_ops: list[dict[str, object]] = []
+    for identifier, expected_name in removal_list:
+        current_name = current_names.get(identifier)
+        if current_name is None:
+            skipped.append(
+                {
+                    "op": "symbol_undefine",
+                    "status": "skipped",
+                    "reason": "already absent",
+                    "address": identifier,
+                    "expected_name": expected_name,
+                }
+            )
+            continue
+        if current_name != expected_name:
+            raise RuntimeError(
+                f"refusing to undefine unexpected symbol at {identifier}: "
+                f"expected {expected_name}, found {current_name}"
+            )
+        batch_ops.append(
+            {
+                "op": "undefine_symbol",
+                "address": identifier,
+                "expected_name": expected_name,
+            }
+        )
+
+    if not batch_ops:
+        return skipped
+    return [
+        *skipped,
+        {
+            "op": "symbol_undefine_batch",
+            "operation_count": len(batch_ops),
+            "operations": batch_ops,
+            "result": run_previewed_bn_batch(
+                repo_root,
+                target=target,
+                operations=batch_ops,
+            ),
+        },
+    ]
 
 
 def apply_data_var_updates(

@@ -65,3 +65,9 @@ splits it into this immediate-quad helper and the object-rendering variant at
 and discards EAX. Replacing synthetic Direct3D return forwarding with ordinary
 calls plus `return;` is byte-identical: 85.50%, 126/136 instructions, nineteen
 clean operands, and the existing honest jump-table mismatch.
+
+2026-07-15 replay closure: the void ABI now replays repeatably and the refreshed
+artifact resolves every state write through `g_direct3d_renderer.device`.
+Case-local `break`/`return` variants and a full switch-wide return variant were
+byte-neutral; the retained semantic switch stays at 85.50% with its honest
+tail-sharing/jump-table residual.

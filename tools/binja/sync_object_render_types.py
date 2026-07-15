@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_direct_proto_update,
+    apply_symbol_removals,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     emit_summary,
@@ -91,8 +92,8 @@ DIRECT3D_RENDERER_FIELDS = (
 SYMBOL_UPDATES = (
     ("0x4b7648", "g_object_list"),
     ("0x4f7450", "g_render_triangle_count"),
+    ("0x4f7454", "g_render_successful_primitive_count"),
     ("0x4f7458", "g_direct3d_renderer"),
-    ("0x5000fc", "g_object_index_buffer_factory"),
     ("0x503170", "g_draw_primitive_call_count"),
     ("0x503174", "g_current_texture_ref"),
     ("0x5031bc", "g_object_grouped_vertex_cursor"),
@@ -104,10 +105,14 @@ SYMBOL_UPDATES = (
     ("0x503318", "g_object_edge_build_count"),
 )
 
+SYMBOL_REMOVALS = (
+    ("0x5000fc", "g_object_index_buffer_factory"),
+)
+
 FUNCTION_SYMBOL_UPDATES = (
     ("0x41aa30", "initialize_object_distort"),
-    ("0x4114b0", "create_object_vertex_buffer_resource"),
-    ("0x4115d0", "create_object_index_buffer_resource"),
+    ("0x4114b0", "create_vertex_buffer"),
+    ("0x4115d0", "create_index_buffer"),
     ("0x411630", "initialize_direct3d_renderer_defaults"),
     ("0x4116f0", "release_direct3d_renderer_resources"),
     ("0x411700", "direct3d_renderer_set_cull_mode"),
@@ -117,6 +122,9 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x411d70", "release_global_direct3d_renderer_resources"),
     ("0x4129c0", "initialize_direct3d_renderer"),
     ("0x4129f0", "set_cull_mode"),
+    ("0x412d00", "set_blend_mode"),
+    ("0x412e50", "set_immediate_blend_mode"),
+    ("0x413030", "draw_textured_quad_immediate"),
     ("0x413520", "present_backbuffer"),
     ("0x414260", "set_fullscreen_mode"),
     ("0x414270", "direct3d_renderer_set_fullscreen_mode"),
@@ -129,6 +137,7 @@ FUNCTION_SYMBOL_UPDATES = (
 DATA_VAR_UPDATES = (
     ("0x4b7648", "ObjectList"),
     ("0x4f7450", "int32_t"),
+    ("0x4f7454", "int32_t"),
     ("0x4f7458", "Direct3DRenderer"),
     ("0x503170", "int32_t"),
     ("0x503174", "TextureRef*"),
@@ -175,6 +184,15 @@ PROTO_UPDATES = (
         "uint8_t __cdecl initialize_direct3d_renderer()",
     ),
     ("set_cull_mode", "int32_t __cdecl set_cull_mode(int32_t cull_front)"),
+    ("set_blend_mode", "void __cdecl set_blend_mode(int32_t blend_mode)"),
+    (
+        "set_immediate_blend_mode",
+        "void __cdecl set_immediate_blend_mode(int32_t blend_mode)",
+    ),
+    (
+        "draw_textured_quad_immediate",
+        "void __cdecl draw_textured_quad_immediate(TextureRef* texture, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, float width, float height, float u0, float v0, float u1, float v1, tColour* color, int32_t blend_mode, float rotation)",
+    ),
     (
         "release_global_direct3d_renderer_resources",
         "void __cdecl release_global_direct3d_renderer_resources()",
@@ -300,12 +318,12 @@ PROTO_UPDATES = (
         "void __thiscall calc_object_edges(Object* object)",
     ),
     (
-        "create_object_vertex_buffer_resource",
-        "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf)",
+        "create_vertex_buffer",
+        "ObjectRenderBuffers* __thiscall create_vertex_buffer(VertexBufferFactory* factory, int32_t vertex_count, int32_t fvf)",
     ),
     (
-        "create_object_index_buffer_resource",
-        "ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(IndexBufferFactory* factory, int32_t index_count)",
+        "create_index_buffer",
+        "ObjectIndexBuffer* __thiscall create_index_buffer(IndexBufferFactory* factory, int32_t index_count)",
     ),
     (
         "request_object_animation",
@@ -385,7 +403,21 @@ def main() -> int:
             proto_updates=PROTO_UPDATES,
         )
     )
-    operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES, kind="data"))
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SYMBOL_UPDATES,
+            kind="data",
+        )
+    )
+    operations.extend(
+        apply_symbol_removals(
+            REPO_ROOT,
+            target=args.target,
+            removals=SYMBOL_REMOVALS,
+        )
+    )
     operations.extend(apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES))
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 

@@ -1164,11 +1164,16 @@
       "name": "bn_track_cache_manager_subgame_owner",
       "artifact": "analysis/decompile/binja/functions/00433060-initialize_track_render_cache_manager.c",
       "required_substrings": [
-        "manager->owner_subgame = &g_game_base->subgame"
+        "manager->owner_subgame = &g_game_base->subgame",
+        "create_vertex_buffer(&g_direct3d_renderer",
+        "create_index_buffer(&g_direct3d_renderer.index_buffer_factory"
       ],
       "forbidden_substrings": [
         "g_game_base[0x74618]",
         "g_game_base->subgame.scan_reset",
+        "g_object_index_buffer_factory",
+        "create_object_vertex_buffer_resource",
+        "create_object_index_buffer_resource",
         "unimplemented"
       ]
     },
@@ -3262,14 +3267,18 @@
         "g_object_grouped_vertex_cursor = 0",
         "get_or_append_object_texture_group_vertex(object_1",
         "object_1->grouped_vertex_count = g_object_grouped_vertex_cursor",
-        "object_1->render_buffers = create_object_vertex_buffer_resource",
+        "object_1->render_buffers = create_vertex_buffer",
         "object_1->index_buffer = eax_45",
-        "object_1->toon_index_buffer = create_object_index_buffer_resource"
+        "create_index_buffer(&g_direct3d_renderer.index_buffer_factory",
+        "object_1->toon_index_buffer = create_index_buffer"
       ],
       "forbidden_substrings": [
         "get_or_append_object_texture_group_vertex(ebx",
         "data_5031bc",
         "data_5031c4",
+        "g_object_index_buffer_factory",
+        "create_object_vertex_buffer_resource",
+        "create_object_index_buffer_resource",
         "unimplemented"
       ]
     },
@@ -3430,16 +3439,99 @@
       ]
     },
     {
+      "name": "bn_vertex_buffer_factory_owner",
+      "artifact": "analysis/decompile/binja/functions/004114b0-create_vertex_buffer.c",
+      "required_substrings": [
+        "factory->buffers[factory->count].fvf = fvf",
+        "g_direct3d_renderer.device",
+        "CreateVertexBuffer",
+        "factory->count"
+      ],
+      "forbidden_substrings": [
+        "create_object_vertex_buffer_resource",
+        "data_502fec",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_index_buffer_factory_owner",
+      "artifact": "analysis/decompile/binja/functions/004115d0-create_index_buffer.c",
+      "required_substrings": [
+        "g_direct3d_renderer.device",
+        "CreateIndexBuffer",
+        "&factory->buffers[factory->count]",
+        "factory->count"
+      ],
+      "forbidden_substrings": [
+        "g_object_index_buffer_factory",
+        "create_object_index_buffer_resource",
+        "data_5000fc",
+        "data_502fec",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_direct3d_renderer_composition_root",
       "artifact": "analysis/decompile/binja/functions/004129c0-initialize_direct3d_renderer.c",
       "required_substrings": [
         "initialize_direct3d_renderer_defaults(&g_direct3d_renderer)",
         "initialize_d3d8_device(&g_direct3d_renderer, 0)",
-        "g_direct3d_renderer.renderer_state = create_object_vertex_buffer_resource"
+        "g_direct3d_renderer.renderer_state = create_vertex_buffer"
       ],
       "forbidden_substrings": [
         "data_4f7458",
         "data_502fe0",
+        "create_object_vertex_buffer_resource",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_blend_mode_owner",
+      "artifact": "analysis/decompile/binja/functions/00412d00-set_blend_mode.c",
+      "required_substrings": [
+        "switch (ecx_1)",
+        "g_direct3d_renderer.device",
+        "SetRenderState"
+      ],
+      "forbidden_substrings": [
+        "data_502fec",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_immediate_blend_mode_owner",
+      "artifact": "analysis/decompile/binja/functions/00412e50-set_immediate_blend_mode.c",
+      "required_substrings": [
+        "switch (blend_mode)",
+        "g_direct3d_renderer.device",
+        "SetRenderState",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "data_502fec",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_direct3d_immediate_quad_owner",
+      "artifact": "analysis/decompile/binja/functions/00413030-draw_textured_quad_immediate.c",
+      "required_substrings": [
+        "bind_texture_ref(texture)",
+        "set_immediate_blend_mode(blend_mode)",
+        "pack_color_rgba_u8(&out, color)",
+        "g_direct3d_renderer.renderer_state->vertex_buffer",
+        "g_direct3d_renderer.device",
+        "g_render_successful_primitive_count += 1"
+      ],
+      "forbidden_substrings": [
+        "struct Color4f* arg16",
+        "data_502fe0",
+        "data_502fec",
+        "arg16",
         "unimplemented"
       ]
     },

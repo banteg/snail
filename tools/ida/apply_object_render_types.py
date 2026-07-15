@@ -43,6 +43,21 @@ TRUSTED_DECLARATIONS = [
         "int32_t __cdecl set_cull_mode(int32_t cull_front);",
     ),
     (
+        "set_blend_mode",
+        "void __cdecl set_blend_mode(int32_t blend_mode);",
+    ),
+    (
+        "set_immediate_blend_mode",
+        "void __cdecl set_immediate_blend_mode(int32_t blend_mode);",
+    ),
+    (
+        "draw_textured_quad_immediate",
+        "void __cdecl draw_textured_quad_immediate(TextureRef* texture, "
+        "float x0, float y0, float x1, float y1, float x2, float y2, "
+        "float x3, float y3, float width, float height, float u0, float v0, "
+        "float u1, float v1, tColour* color, int32_t blend_mode, float rotation);",
+    ),
+    (
         "release_global_direct3d_renderer_resources",
         "void __cdecl release_global_direct3d_renderer_resources(void);",
     ),
@@ -143,12 +158,12 @@ TRUSTED_DECLARATIONS = [
         "void __cdecl load_object_definition(char* path, Object* object);",
     ),
     (
-        "create_object_vertex_buffer_resource",
-        "ObjectRenderBuffers* __thiscall create_object_vertex_buffer_resource(VertexBufferFactory* factory, int vertex_count, int fvf);",
+        "create_vertex_buffer",
+        "ObjectRenderBuffers* __thiscall create_vertex_buffer(VertexBufferFactory* factory, int vertex_count, int fvf);",
     ),
     (
-        "create_object_index_buffer_resource",
-        "ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(IndexBufferFactory* factory, int index_count);",
+        "create_index_buffer",
+        "ObjectIndexBuffer* __thiscall create_index_buffer(IndexBufferFactory* factory, int index_count);",
     ),
     (
         "request_object_animation",
@@ -177,8 +192,8 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
-    (0x4114B0, "create_object_vertex_buffer_resource"),
-    (0x4115D0, "create_object_index_buffer_resource"),
+    (0x4114B0, "create_vertex_buffer"),
+    (0x4115D0, "create_index_buffer"),
     (0x411630, "initialize_direct3d_renderer_defaults"),
     (0x4116F0, "release_direct3d_renderer_resources"),
     (0x411700, "direct3d_renderer_set_cull_mode"),
@@ -188,6 +203,9 @@ TRUSTED_NAMES = [
     (0x411D70, "release_global_direct3d_renderer_resources"),
     (0x4129C0, "initialize_direct3d_renderer"),
     (0x4129F0, "set_cull_mode"),
+    (0x412D00, "set_blend_mode"),
+    (0x412E50, "set_immediate_blend_mode"),
+    (0x413030, "draw_textured_quad_immediate"),
     (0x413520, "present_backbuffer"),
     (0x414260, "set_fullscreen_mode"),
     (0x414270, "direct3d_renderer_set_fullscreen_mode"),
@@ -196,6 +214,7 @@ TRUSTED_NAMES = [
     (0x414600, "query_direct3d_device_caps"),
     (0x414650, "reset_render_counters"),
     (0x4F7450, "g_render_triangle_count"),
+    (0x4F7454, "g_render_successful_primitive_count"),
     (0x4F7458, "g_direct3d_renderer"),
     (0x503170, "g_draw_primitive_call_count"),
     (0x503174, "g_current_texture_ref"),
@@ -205,6 +224,11 @@ TRUSTED_NAMES = [
 
 TRUSTED_DATA_DECLARATIONS = [
     (0x4F7450, "g_render_triangle_count", "int32_t g_render_triangle_count;"),
+    (
+        0x4F7454,
+        "g_render_successful_primitive_count",
+        "int32_t g_render_successful_primitive_count;",
+    ),
     (0x4F7458, "g_direct3d_renderer", "Direct3DRenderer g_direct3d_renderer;"),
     (0x503170, "g_draw_primitive_call_count", "int32_t g_draw_primitive_call_count;"),
     (0x503174, "g_current_texture_ref", "TextureRef* g_current_texture_ref;"),
