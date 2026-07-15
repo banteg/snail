@@ -5,7 +5,7 @@
 
 00434bea        struct SubgameRuntime* game_1 = game
 00434bf2        struct SubgameRuntime* game_2 = game_1
-00434bf6        initialize_fringe_manager(&g_game_base->subgame.__offset(0x35bbbc).d)
+00434bf6        initialize_fringe_manager(&g_game_base->subgame.fringe_manager)
 00434bfe        int32_t ebx = 0
 00434c02        int32_t var_48 = 0
 00434c06        if (game_1->runtime_row_count s> 0)
@@ -54,7 +54,7 @@
 00434d2e        eax_11.b = neg.b(eax_11.b)
 00434d35        ebp = neg.d(sbb.d(eax_11, eax_11, temp2_1 != 0)) + 1
 00434d1c        ebp = 0
-00434d43        struct FringeObject* eax_15 = allocate_fringe_object(&g_game_base->subgame.__offset(0x35bbbc).d)
+00434d43        struct FringeObject* eax_15 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434d4b        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front = eax_15
 00434d70        set_bod_object(eax_15, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp) * 0x38 + 0x44dd4))
 00434d75        struct FringeObject* fringe_front = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front
@@ -88,7 +88,7 @@
 00434e32        eax_27.b = neg.b(eax_27.b)
 00434e39        ebp_3 = neg.d(sbb.d(eax_27, eax_27, temp4_1 != 0)) + 1
 00434e20        ebp_3 = 0
-00434e47        struct FringeObject* eax_31 = allocate_fringe_object(&g_game_base->subgame.__offset(0x35bbbc).d)
+00434e47        struct FringeObject* eax_31 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434e4f        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right = eax_31
 00434e74        set_bod_object(eax_31, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp_3) * 0x38 + 0x44fcc))
 00434e79        struct FringeObject* fringe_right = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right
@@ -122,7 +122,7 @@
 00434f36        eax_43.b = neg.b(eax_43.b)
 00434f3d        ebp_6 = neg.d(sbb.d(eax_43, eax_43, temp6_1 != 0)) + 1
 00434f24        ebp_6 = 0
-00434f4b        struct FringeObject* eax_47 = allocate_fringe_object(&g_game_base->subgame.__offset(0x35bbbc).d)
+00434f4b        struct FringeObject* eax_47 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434f53        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left = eax_47
 00434f78        set_bod_object(eax_47, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp_6) * 0x38 + 0x451c4))
 00434f7d        struct FringeObject* fringe_left = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left
@@ -156,7 +156,7 @@
 0043503a        eax_59.b = neg.b(eax_59.b)
 00435041        ebp_9 = neg.d(sbb.d(eax_59, eax_59, temp8_1 != 0)) + 1
 00435028        ebp_9 = 0
-0043504f        struct FringeObject* eax_63 = allocate_fringe_object(&g_game_base->subgame.__offset(0x35bbbc).d)
+0043504f        struct FringeObject* eax_63 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00435057        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back = eax_63
 0043507c        set_bod_object(eax_63, *(g_game_base + ((ebx + edi_1 * 0xc) * 3 + ebp_9) * 0x38 + 0x453bc))
 00435081        struct FringeObject* fringe_back = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back
@@ -166,7 +166,7 @@
 0043509d        eax_65->y = *(esi_1 + 0x14)
 004350a3        eax_65->z = *(esi_1 + 0x18)
 004350b7        struct tColour out_3
-004350b7        int32_t* eax_66 = get_track_skirt_color(&g_game_base->subgame.scan_reset, &out_3)
+004350b7        int32_t* eax_66 = get_track_skirt_color(&g_game_base->subgame, &out_3)
 004350c1        struct Color4f* edx_33 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back->color
 004350c4        game_1 = game_2
 004350c8        ebx = 0

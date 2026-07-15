@@ -15,9 +15,9 @@
 00437e25        mark_track_warning_zones(runtime)
 00437e2c        build_track_fringe_objects(runtime)
 00437e42        struct tColour out
-00437e42        struct tColour* eax = get_track_skirt_color(&g_game_base[0x74618], &out)
+00437e42        struct tColour* eax = get_track_skirt_color(&g_game_base->subgame, &out)
 00437e53        float g = eax->g
 00437e5c        float b = eax->b
 00437e5f        float a = eax->a
-00437e65        build_track_render_caches(&runtime->__offset(0x5c).d, eax->r)
+00437e65        build_track_render_caches(&runtime->segment_cache, eax->r)
 00437e6e        return 0

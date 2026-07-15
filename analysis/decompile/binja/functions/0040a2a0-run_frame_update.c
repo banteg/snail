@@ -17,13 +17,13 @@
 0040a305        int32_t var_14 = 0
 0040a310        if (is_mouse_captured(&game->players[0].mouse_cursor) != 0)
 0040a31a        if (game->players[0].mouse_cursor.suppress_next_draw == 0)
-0040a33e        struct Color4f color
-0040a33e        int32_t* eax_2
+0040a33e        struct tColour color
+0040a33e        struct tColour* color_1
 0040a33e        int32_t ecx_4
-0040a33e        eax_2, ecx_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+0040a33e        color_1, ecx_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 0040a35f        int32_t var_34_1 = ecx_4
 0040a36f        int32_t var_38_1 = ecx_4
-0040a375        queue_axis_aligned_textured_quad(0x16, fconvert.s(fconvert.t(game->players[0].mouse_cursor.saved_x) - fconvert.t(8f)), fconvert.s(fconvert.t(game->players[0].mouse_cursor.saved_y) - fconvert.t(7f)), 64f, 64f, 0x1000000, eax_2, 7)
+0040a375        queue_axis_aligned_textured_quad(0x16, fconvert.s(fconvert.t(game->players[0].mouse_cursor.saved_x) - fconvert.t(8f)), fconvert.s(fconvert.t(game->players[0].mouse_cursor.saved_y) - fconvert.t(7f)), 64f, 64f, 0x1000000, color_1, 7)
 0040a31c        game->players[0].mouse_cursor.suppress_next_draw = 0
 0040a37d        long double x87_r7_6 = fconvert.t(game->fixed_update_accumulator)
 0040a383        long double temp0 = fconvert.t(1f)
@@ -69,7 +69,7 @@
 0040a437        sprite = j
 0040a43b        do while (j != 0)
 0040a43d        i = &i[1]
-0040a44e        initialize_enemy_manager(&game->subgame.contact_targets)
+0040a44e        initialize_enemy_manager(&game->subgame.enemy_manager)
 0040a453        x87_r7_9 = fconvert.t(game->fixed_update_accumulator)
 0040a459        temp1_1 = fconvert.t(1f)
 0040a459        x87_r7_9 - temp1_1

@@ -393,6 +393,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x50", "first_block_row_count", "int32_t"),
     ("0x54", "runtime_row_count", "int32_t"),
     ("0x58", "completion_row_start", "int32_t"),
+    ("0x5c", "segment_cache", "SegmentCache"),
     ("0xa854", "track_state_latch", "uint8_t"),
     ("0xa858", "tutorial", "Tutorial"),
     ("0xa874", "level_definition", "SubTracks"),

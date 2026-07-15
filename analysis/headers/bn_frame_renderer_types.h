@@ -179,6 +179,11 @@ typedef struct TextureSetSelector {
     int32_t current_texture_set;
 } TextureSetSelector;
 
+/*
+ * Standalone bootstrap view used only until the canonical SubgameRuntime is
+ * present.  The sync promotes GameRoot::subgame to that complete owner rather
+ * than keeping this sparse frame-renderer view as a parallel identity.
+ */
 typedef struct FrameSubgameRuntime {
     uint8_t scan_reset;
     uint8_t camera_snap_requested;

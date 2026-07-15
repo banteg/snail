@@ -12,6 +12,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     emit_summary,
+    struct_exists,
     types_declare_if_missing,
 )
 
@@ -157,6 +158,19 @@ GAME_ROOT_FIELD_UPDATES = (
 )
 
 
+def resolved_game_root_field_updates(*, target: str) -> tuple[tuple[str, str, str], ...]:
+    """Prefer the canonical cRSubGame owner after its full type is available."""
+    subgame_type = (
+        "SubgameRuntime"
+        if struct_exists(REPO_ROOT, target=target, struct_name="SubgameRuntime")
+        else "FrameSubgameRuntime"
+    )
+    return tuple(
+        (offset, name, subgame_type if name == "subgame" else field_type)
+        for offset, name, field_type in GAME_ROOT_FIELD_UPDATES
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the root frame-renderer ownership slice to Binary Ninja."
@@ -195,7 +209,7 @@ def main() -> int:
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
-                ("GameRoot", GAME_ROOT_FIELD_UPDATES),
+                ("GameRoot", resolved_game_root_field_updates(target=args.target)),
             ),
             proto_updates=PROTO_UPDATES,
         )

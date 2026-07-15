@@ -134,3 +134,13 @@ while the current node's virtual AI runs, then cleared before advancing;
 `BodList::remove_bod` independently rejects removal of that protected node with
 the native `List remove NEXTBOD` diagnostic. The shared names preserve the
 exact 135/135 instruction stream and all 23 audited operands.
+
+## 2026-07-14 canonical subgame analysis owner
+
+Binary Ninja's frame bootstrap originally left `GameRoot::subgame` typed as a
+sparse `FrameSubgameRuntime`, even after the complete `SubgameRuntime` owner
+was available. The replay now promotes that root member to the canonical
+runtime when present. The fixed-step tail consequently resets
+`subgame.enemy_manager`, matching the matcher source and retiring the parallel
+`contact_targets` presentation identity. The sparse frame type remains only
+for standalone bootstrap imports.

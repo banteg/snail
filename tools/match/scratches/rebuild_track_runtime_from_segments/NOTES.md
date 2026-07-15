@@ -27,3 +27,11 @@ stores the incoming level argument and calls `SetFeatures`, `BuildColours`,
 its platform-specific tile-promotion and render-cache calls around that shared
 pipeline. The callee at `0x435eb0` is therefore authored `BuildLevel()`, while
 the outer caller at `0x437eb0` is authored `StartLevel(int)`.
+
+## Segment-cache ownership (2026-07-14)
+
+The complete `SegmentCache` begins at `SubgameRuntime +0x5c` and ends exactly
+at `track_state_latch +0xa854`. Installing that existing aggregate in the live
+analysis lets this dispatcher pass `&runtime->segment_cache` directly to
+`build_track_render_caches`; the prior `runtime->__offset(0x5c)` was stale
+analysis presentation, not evidence for a second manager or allocation.

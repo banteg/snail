@@ -763,6 +763,9 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     assert "FRAME_SUBGAME_RUNTIME_FIELD_UPDATES" in frame_sync
     assert '("0x08", "resume_requested", "uint8_t")' in frame_sync
     assert '("0x3c", "subgame_state", "int32_t")' in frame_sync
+    assert "def resolved_game_root_field_updates" in frame_sync
+    assert 'struct_name="SubgameRuntime"' in frame_sync
+    assert 'else "FrameSubgameRuntime"' in frame_sync
     assert "apply_struct_and_proto_updates" in frame_sync
     assert "apply_struct_field_updates" not in frame_sync
     assert (
@@ -774,6 +777,7 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
         in ida_sync
     )
     assert "char __thiscall update_subgame_camera" not in ida_sync
+    assert '("0x5c", "segment_cache", "SegmentCache")' in path_sync
 
     consumers = {
         "reset_subgame": ("scan_reset", "camera_snap_requested"),
