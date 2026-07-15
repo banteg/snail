@@ -27,6 +27,15 @@ def test_binja_scripts_do_not_default_to_active_target() -> None:
     ).read_text(encoding="utf-8")
 
 
+def test_owner_syncs_keep_subgame_runtime_as_the_canonical_backlink() -> None:
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+
+    assert 'TUTORIAL_FIELD_UPDATES = (\n    ("0x0c", "game", "SubgameRuntime*"),' in path_sync
+    assert '("Tutorial", TUTORIAL_FIELD_UPDATES),' in path_sync
+    assert "SubgameRuntime* game;" in path_header
+
+
 def test_parse_struct_layout_size() -> None:
     assert _narrow_sync.parse_struct_layout_size("struct Runtime // size=0x1272838") == 0x1272838
     assert _narrow_sync.parse_struct_layout_size("struct Tiny // size=1") == 1

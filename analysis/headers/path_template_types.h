@@ -1441,7 +1441,7 @@ typedef struct Tutorial {
     int32_t state;
     int32_t _pad_04;
     int32_t _pad_08;
-    void* game;
+    SubgameRuntime* game;
     uint8_t _pad_10[0xc];
 } Tutorial;
 

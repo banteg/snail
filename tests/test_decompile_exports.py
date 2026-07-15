@@ -52,6 +52,19 @@ def test_binja_focused_summary_reports_only_refreshed_exports(
     assert summary["exports"] == refreshed
 
 
+def test_tracked_export_defaults_to_the_pinned_binja_target(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/export_tracked_decompiles.py",
+        "test_export_tracked_decompiles_target",
+    )
+    monkeypatch.setattr(sys, "argv", ["export_tracked_decompiles.py"])
+
+    assert module.parse_args().bn_target == "SnailMail_unwrapped.exe.bndb"
+
+
 def test_binja_focused_export_retires_stale_same_address_artifacts(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -77,6 +90,103 @@ def test_binja_focused_export_retires_stale_same_address_artifacts(
     assert not stale.exists()
     assert keep.is_file()
     assert other.is_file()
+
+
+def test_binja_export_refreshes_dependent_analysis(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_refresh",
+    )
+    calls = []
+
+    def fake_run_bn_json(*args: str):
+        calls.append(args)
+        return {"refreshed": True}
+
+    monkeypatch.setattr(module, "_run_bn_json", fake_run_bn_json)
+
+    assert module._refresh_analysis("snail-mail.bndb") == {"refreshed": True}
+    assert calls == [("refresh", "--target", "snail-mail.bndb")]
+
+
+def test_binja_export_rejects_failed_analysis_refresh(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_failed_refresh",
+    )
+    monkeypatch.setattr(module, "_run_bn_json", lambda *_args: {"refreshed": False})
+
+    with pytest.raises(RuntimeError, match="unexpected `bn refresh"):
+        module._refresh_analysis("snail-mail.bndb")
+
+
+def test_binja_export_reanalyzes_timed_out_functions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_reanalysis",
+    )
+    calls = []
+
+    def fake_run_bn_json(*args: str):
+        calls.append(args)
+        return {
+            "result": {
+                "reanalyzed": [
+                    {
+                        "address": "0x43f930",
+                        "name": "update_slug_hazard_ai",
+                        "verified": True,
+                    }
+                ],
+                "unresolved": [],
+                "snapshot_saved": True,
+            }
+        }
+
+    monkeypatch.setattr(module, "_run_bn_json", fake_run_bn_json)
+    function = module.FunctionSymbol(address=0x43F930, name="update_slug_hazard_ai")
+
+    result = module._reanalyze_timed_out_functions("snail-mail.bndb", [function])
+
+    assert result["snapshot_saved"] is True
+    assert calls[0][:4] == ("py", "exec", "--target", "snail-mail.bndb")
+    assert "NeverSkipFunctionAnalysis" in calls[0][-1]
+
+
+def test_binja_export_rejects_unresolved_skipped_function(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_script(
+        monkeypatch,
+        "tools/binja/export_manifest_functions.py",
+        "test_binja_export_manifest_functions_unresolved_reanalysis",
+    )
+    monkeypatch.setattr(
+        module,
+        "_run_bn_json",
+        lambda *_args: {
+            "result": {
+                "reanalyzed": [],
+                "unresolved": [
+                    {"address": "0x43f930", "reason": "manual_skip"}
+                ],
+                "snapshot_saved": False,
+            }
+        },
+    )
+    function = module.FunctionSymbol(address=0x43F930, name="update_slug_hazard_ai")
+
+    with pytest.raises(RuntimeError, match="left selected functions without HLIL"):
+        module._reanalyze_timed_out_functions("snail-mail.bndb", [function])
 
 
 def test_ida_focused_summary_reports_only_refreshed_exports(

@@ -12,7 +12,8 @@
       ],
       "forbidden_substrings": [
         "__asm",
-        "_ET1"
+        "_ET1",
+        "struct Game*"
       ],
       "max_counts": {
         "__offset(": 220,
@@ -113,7 +114,123 @@
         "__asm",
         "_ET1",
         "unimplemented",
-        "__offset("
+        "__offset(",
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_update_tutorial_owner",
+      "artifact": "analysis/decompile/binja/functions/00448de0-update_tutorial.c",
+      "required_substrings": [
+        "struct SubgameRuntime* game = tutorial->game",
+        "game->player.body.transform.position"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_jet_particle_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a690-update_jet_particles.c",
+      "required_substrings": [
+        "struct SubgameRuntime* game = sub_hover->game",
+        "game->player.presentation.jetpack_channel",
+        "sub_hover->game->player.presentation.snail_hotspots_world"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_jetpack_gauge_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a930-initialize_jetpack_gauge.c",
+      "required_substrings": [
+        "sub_hover->game = &g_game_base->subgame",
+        "sub_hover->player = &g_game_base->subgame"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_collision_owner",
+      "artifact": "analysis/decompile/binja/functions/00444cf0-handle_subgoldy_collisions.c",
+      "required_substrings": [
+        "struct SubgameRuntime* game",
+        "player->game->garbage_hazards.active_head"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_destroy_garbage_owner",
+      "artifact": "analysis/decompile/binja/functions/0043f130-destroy_garbage_hazard.c",
+      "required_substrings": [
+        "struct SubgameRuntime* owner_game",
+        "owner_game->garbage_hazards.active_head"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_update_garbage_owner",
+      "artifact": "analysis/decompile/binja/functions/0043f200-update_garbage_hazard.c",
+      "required_substrings": [
+        "slot->owner_game->subgame_pause_gate",
+        "struct SubgameRuntime* owner_game",
+        "owner_game->subgame_rate"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_rate_owner",
+      "artifact": "analysis/decompile/binja/functions/004404d0-calc_subgame_rate.c",
+      "required_substrings": [
+        "struct SubgameRuntime* runtime_1",
+        "runtime->player.body.transform.position.z",
+        "runtime->subgame_rate"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_parcel_slot_owner",
+      "artifact": "analysis/decompile/binja/functions/00443160-initialize_track_parcel_slots.c",
+      "required_substrings": [
+        "struct SubgameRuntime**",
+        "slots[0].owner_subgame",
+        "&g_game_base->subgame"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_update_parcel_owner",
+      "artifact": "analysis/decompile/binja/functions/004431d0-update_track_parcel.c",
+      "required_substrings": [
+        "struct SubgameRuntime* owner_subgame",
+        "parcel->owner_subgame",
+        "owner_subgame->player.presentation.snail_hotspots_world"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_nested_subgame_initialize_cameraman_owner",
+      "artifact": "analysis/decompile/binja/functions/00446160-initialize_cameraman.c",
+      "required_substrings": [
+        "cameraman->game = &g_game_base->subgame",
+        "cameraman->player = &g_game_base->subgame"
+      ],
+      "forbidden_substrings": [
+        "struct Game*"
       ]
     },
     {
@@ -1476,7 +1593,8 @@
       ],
       "forbidden_substrings": [
         "__asm",
-        "_ET1"
+        "_ET1",
+        "struct Game*"
       ]
     },
     {

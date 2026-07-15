@@ -16,6 +16,12 @@
   "function_count": 685,
   "mismatch_count": 0,
   "mismatches": [],
+  "analysis_refreshed": true,
+  "timed_out_function_reanalysis": {
+    "reanalyzed": [],
+    "snapshot_saved": false,
+    "unresolved": []
+  },
   "removed_stale_artifacts": [],
   "exports": [
     {

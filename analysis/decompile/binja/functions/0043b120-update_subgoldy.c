@@ -217,7 +217,7 @@
 0043b73a        player->row_event.id = eax_27
 0043b764        if (*((&game_59->runtime_rows[0].row_event_id)[eax_32] * 0x4220 + player->game + 0xa670) != 0)
 0043b76a        player->row_event.tip_definition.flags = 2
-0043b796        player->row_event.tip_definition.text = &player->game->unknown_000000[(&game_59->runtime_rows[0].row_event_id)[eax_32] * 0x4220 + 0xa670]
+0043b796        player->row_event.tip_definition.text = (&game_59->runtime_rows[0].row_event_id)[eax_32] * 0x4220 + player->game + 0xa670
 0043b79c        player->row_event.tip_definition.layout_y = 0f
 0043b7a6        player->row_event.tip_definition.text_scale = 30f
 0043b7d2        player->row_event.tip_definition.dismiss_seconds = *(&player->game->tutorial._pad_10[8] + (&game_59->runtime_rows[0].row_event_id)[eax_32] * 0x4220)
@@ -357,7 +357,7 @@
 0043bb1a        player->velocity.x = 0
 0043bb24        eax_41.b = player->completion_handoff_active
 0043bb2c        if (eax_41.b == 0)
-0043bb32        struct Game* game_14 = player->game
+0043bb32        struct SubgameRuntime* game_14 = player->game
 0043bb38        y = y_6
 0043bb42        if (get_track_grid_cell_at_world_position(game_14, y)->tile_id == 0xf)
 0043bba0        label_43bba0:
@@ -391,20 +391,20 @@
 0043bbe3        unimplemented  {fadd dword [0x497220]}
 0043bbe9        player->slide_extension_threshold_z = fconvert.s(unimplemented  {fstp dword [ebp+0x2738], st0})
 0043bbe9        unimplemented  {fstp dword [ebp+0x2738], st0}
-0043bb44        struct Game* game_15 = player->game
+0043bb44        struct SubgameRuntime* game_15 = player->game
 0043bb4a        y = y_6
 0043bb54        if (get_track_grid_cell_at_world_position(game_15, y)->tile_id == 0x10)
 0043bb54        goto label_43bba0
-0043bb56        struct Game* game_16 = player->game
+0043bb56        struct SubgameRuntime* game_16 = player->game
 0043bb5c        y = y_6
 0043bb66        if (get_track_grid_cell_at_world_position(game_16, y)->tile_id == 0x12)
 0043bb66        goto label_43bba0
-0043bb68        struct Game* game_17 = player->game
+0043bb68        struct SubgameRuntime* game_17 = player->game
 0043bb6e        y = y_6
 0043bb78        if (get_track_grid_cell_at_world_position(game_17, y)->tile_id == 0x13)
 0043bb78        goto label_43bba0
 0043bb81        if (player->damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING)
-0043bb83        struct Game* game_18 = player->game
+0043bb83        struct SubgameRuntime* game_18 = player->game
 0043bb89        y = y_6
 0043bb98        if (is_sub_loc_floor(get_track_grid_cell_at_world_position(game_18, y)) != 0)
 0043bb98        goto label_43bba0
@@ -440,7 +440,7 @@
 0043bc82        unimplemented  {fstp dword [ebp+0x410], st0}
 0043bc82        int16_t top_66 = top_13
 0043bc90        if (player->boost_one_tick == 0)
-0043bcc1        struct Game* game_19 = player->game
+0043bcc1        struct SubgameRuntime* game_19 = player->game
 0043bcc7        y = y_6
 0043bcc8        struct TrackRowCell* cell
 0043bcc8        int16_t x87control_1
@@ -590,7 +590,7 @@
 0043bffc        eax_90.b = player->attachment_exit_pending
 0043c004        if (eax_90.b == 0)
 0043c008        begin_post_follow_carryover(player)
-0043c011        struct Game* game_20 = player->game
+0043c011        struct SubgameRuntime* game_20 = player->game
 0043c01b        if (game_20->level_mode == 3)
 0043c01d        y = y_6
 0043c01e        get_track_grid_cell_at_world_position(game_20, y)
@@ -700,7 +700,7 @@
 0043c3ea        player->attachment_exit_pending = 0
 0043c3f1        player->trampoline_bounce_active = 1
 0043c3f8        play_sound_effect(y)
-0043c0e2        struct Game* game_21 = player->game
+0043c0e2        struct SubgameRuntime* game_21 = player->game
 0043c0e8        y = y_6
 0043c0e9        st0_1 = sample_track_floor_height_at_position(game_21, y)
 0043c0e9        unimplemented  {call 0x43d4d0}
@@ -738,7 +738,7 @@
 0043c115        player->body.transform.position.y = fconvert.s(unimplemented  {fstp dword [ebp+0x6c], st0})
 0043c115        unimplemented  {fstp dword [ebp+0x6c], st0}
 0043c115        top_105 = top_66
-0043c11c        struct Game* game_22 = player->game
+0043c11c        struct SubgameRuntime* game_22 = player->game
 0043c122        y = y_6
 0043c12c        if (get_track_grid_cell_at_world_position(game_22, y)->tile_id == 8)
 0043c2ea        label_43c2ea:
@@ -746,27 +746,27 @@
 0043c2ed        unimplemented  {fmul st0, dword [0x4973d8]}
 0043c2f3        player->velocity.y = fconvert.s(unimplemented  {fstp dword [ebp+0x414], st0})
 0043c2f3        unimplemented  {fstp dword [ebp+0x414], st0}
-0043c132        struct Game* game_23 = player->game
+0043c132        struct SubgameRuntime* game_23 = player->game
 0043c138        y = y_6
 0043c142        if (get_track_grid_cell_at_world_position(game_23, y)->tile_id == 9)
 0043c142        goto label_43c2ea
-0043c148        struct Game* game_24 = player->game
+0043c148        struct SubgameRuntime* game_24 = player->game
 0043c14e        y = y_6
 0043c158        if (get_track_grid_cell_at_world_position(game_24, y)->tile_id == 0xa)
 0043c158        goto label_43c2ea
-0043c15e        struct Game* game_25 = player->game
+0043c15e        struct SubgameRuntime* game_25 = player->game
 0043c164        y = y_6
 0043c16e        if (get_track_grid_cell_at_world_position(game_25, y)->tile_id == 0xb)
 0043c16e        goto label_43c2ea
-0043c174        struct Game* game_26 = player->game
+0043c174        struct SubgameRuntime* game_26 = player->game
 0043c17a        y = y_6
 0043c184        if (get_track_grid_cell_at_world_position(game_26, y)->tile_id == 0xc)
 0043c184        goto label_43c2ea
-0043c18a        struct Game* game_27 = player->game
+0043c18a        struct SubgameRuntime* game_27 = player->game
 0043c190        y = y_6
 0043c19a        if (get_track_grid_cell_at_world_position(game_27, y)->tile_id == 0xd)
 0043c19a        goto label_43c2ea
-0043c1a0        struct Game* game_28 = player->game
+0043c1a0        struct SubgameRuntime* game_28 = player->game
 0043c1a6        y = y_6
 0043c1b0        if (get_track_grid_cell_at_world_position(game_28, y)->tile_id == 2)
 0043c271        label_43c271:
@@ -801,33 +801,33 @@
 0043c2d0        dispatch_cutscene_animation(&player->presentation, animation_id_1, 1, y)
 0043c2d5        y = 0xffffffff
 0043c2dd        dispatch_cutscene_animation(&player->presentation, 1, 0, y)
-0043c1b6        struct Game* game_29 = player->game
+0043c1b6        struct SubgameRuntime* game_29 = player->game
 0043c1bc        y = y_6
 0043c1c6        if (get_track_grid_cell_at_world_position(game_29, y)->tile_id == 3)
 0043c1c6        goto label_43c271
-0043c1cc        struct Game* game_30 = player->game
+0043c1cc        struct SubgameRuntime* game_30 = player->game
 0043c1d2        y = y_6
 0043c1dc        if (get_track_grid_cell_at_world_position(game_30, y)->tile_id == 4)
 0043c1dc        goto label_43c271
-0043c1e2        struct Game* game_31 = player->game
+0043c1e2        struct SubgameRuntime* game_31 = player->game
 0043c1e8        y = y_6
 0043c1f2        if (get_track_grid_cell_at_world_position(game_31, y)->tile_id == 5)
 0043c1f2        goto label_43c271
-0043c1f4        struct Game* game_32 = player->game
+0043c1f4        struct SubgameRuntime* game_32 = player->game
 0043c1fa        y = y_6
 0043c204        if (get_track_grid_cell_at_world_position(game_32, y)->tile_id == 6)
 0043c204        goto label_43c271
-0043c206        struct Game* game_33 = player->game
+0043c206        struct SubgameRuntime* game_33 = player->game
 0043c20c        y = y_6
 0043c216        if (get_track_grid_cell_at_world_position(game_33, y)->tile_id == 7)
 0043c216        goto label_43c271
-0043c218        struct Game* game_34 = player->game
+0043c218        struct SubgameRuntime* game_34 = player->game
 0043c21e        y = y_6
 0043c229        if (get_track_grid_cell_at_world_position(game_34, y)->tile_id != 0)
-0043c22f        struct Game* game_35 = player->game
+0043c22f        struct SubgameRuntime* game_35 = player->game
 0043c235        y = y_6
 0043c23f        if (get_track_grid_cell_at_world_position(game_35, y)->tile_id != 0x23)
-0043c245        struct Game* game_36 = player->game
+0043c245        struct SubgameRuntime* game_36 = player->game
 0043c24b        y = y_6
 0043c255        if (get_track_grid_cell_at_world_position(game_36, y)->tile_id != 0x16)
 0043c25b        player->trampoline_bounce_active = 0
@@ -1067,7 +1067,7 @@
 0043c5ae        y = y_6
 0043c5b8        if (get_track_grid_cell_at_world_position(game_45, y)->tile_id == 0xb)
 0043c5b8        goto label_43c5d0
-0043c5ba        struct Game* game_46 = player->game
+0043c5ba        struct SubgameRuntime* game_46 = player->game
 0043c5c0        y = y_6
 0043c5ca        if (get_track_grid_cell_at_world_position(game_46, y)->tile_id == 0xd)
 0043c5ca        goto label_43c5d0
@@ -1468,7 +1468,7 @@
 0043cccb        uninit_nuke(&player->nuke)
 0043cce1        struct SubgameRuntime* game_54 = player->game
 0043cceb        if (game_54->level_mode == 4)
-0043cd07        void* eax_137 = &game_54->unknown_000000[game_54->level_mode_arg * 0x1fac0]
+0043cd07        void* eax_137 = game_54->level_mode_arg * 0x1fac0 + game_54
 0043cd1e        if (*(eax_137 + 0x944150) == 1 && game_54->selected_level_record_active == 0)
 0043cd24        int32_t replay_update_cursor = game_54->replay_update_cursor
 0043cd2a        int32_t replay_update_cursor_1 = *(eax_137 + 0x9441bc)

@@ -93,8 +93,9 @@ intentional.
 - `uv run python tools/binja/sync_input_state_types.py`
 - `path_template_types.h`
 - `uv run python tools/binja/sync_path_template_types.py`
-- `bn_selected_level_record_types.h`
-- `uv run python tools/binja/sync_selected_level_record_types.py`
+  - Owns the canonical `SubSolution` replay record and nested `Player` layout.
+    The older selected-level sync was retired because it recreated a parallel
+    `Game` owner and flattened overlapping player fields.
 - `bn_garbage_hazard_types.h`
 - `uv run python tools/binja/sync_garbage_hazard_types.py`
 - `bn_high_score_bank_types.h`

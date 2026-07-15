@@ -580,6 +580,10 @@ TIP_MANAGER_FIELD_UPDATES = (
     ("0x38", "tips", "Tip[0x3]"),
 )
 
+TUTORIAL_FIELD_UPDATES = (
+    ("0x0c", "game", "SubgameRuntime*"),
+)
+
 TIP_DATA_VAR_UPDATES = (
     ("0x4ac5c8", "TipData"),
 )
@@ -1360,6 +1364,7 @@ def main() -> int:
                 ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
                 ("SubHover", SUB_HOVER_FIELD_UPDATES),
                 ("TipManager", TIP_MANAGER_FIELD_UPDATES),
+                ("Tutorial", TUTORIAL_FIELD_UPDATES),
                 ("Player", PLAYER_FIELD_UPDATES),
                 ("Snail", SNAIL_FIELD_UPDATES),
                 (

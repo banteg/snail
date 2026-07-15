@@ -282,6 +282,86 @@ def _load_live_function_map(target_selector: str) -> dict[int, dict[str, object]
     return live
 
 
+def _refresh_analysis(target_selector: str) -> dict[str, object]:
+    """Force dependent HLIL to observe the latest user type graph before export."""
+    payload = _run_bn_json("refresh", "--target", target_selector)
+    if not isinstance(payload, dict) or payload.get("refreshed") is not True:
+        raise RuntimeError(f"unexpected `bn refresh --format json` output: {payload!r}")
+    return payload
+
+
+def _reanalyze_timed_out_functions(
+    target_selector: str, functions: list[FunctionSymbol]
+) -> dict[str, object]:
+    """Retry selected functions that the ordinary refresh abandoned on timeout."""
+    addresses = [function.address for function in functions]
+    code = f"""
+from binaryninja import FunctionAnalysisSkipOverride
+
+addresses = {json.dumps(addresses)}
+reanalyzed = []
+unresolved = []
+for address in addresses:
+    function = bv.get_function_at(address)
+    if function is None:
+        unresolved.append({{"address": hex(address), "reason": "missing_function"}})
+        continue
+    if not function.analysis_skipped:
+        continue
+    reason = str(function.analysis_skip_reason)
+    if reason != "AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason":
+        unresolved.append({{"address": hex(address), "reason": reason}})
+        continue
+    function.analysis_skip_override = FunctionAnalysisSkipOverride.NeverSkipFunctionAnalysis
+    function.reanalyze()
+    reanalyzed.append({{"address": hex(address), "name": function.name, "reason": reason}})
+
+snapshot_saved = False
+if reanalyzed:
+    bv.update_analysis_and_wait()
+    for entry in reanalyzed:
+        function = bv.get_function_at(int(entry["address"], 0))
+        entry["verified"] = bool(
+            function is not None
+            and not function.analysis_skipped
+            and function.hlil is not None
+        )
+    snapshot_saved = bv.file.save_auto_snapshot()
+
+result = {{
+    "reanalyzed": reanalyzed,
+    "unresolved": unresolved,
+    "snapshot_saved": snapshot_saved,
+}}
+"""
+    payload = _run_bn_json(
+        "py",
+        "exec",
+        "--target",
+        target_selector,
+        "--code",
+        code,
+    )
+    result = payload.get("result") if isinstance(payload, dict) else None
+    if not isinstance(result, dict):
+        raise RuntimeError(f"unexpected timed-out analysis replay output: {payload!r}")
+    reanalyzed = result.get("reanalyzed")
+    unresolved = result.get("unresolved")
+    if not isinstance(reanalyzed, list) or not isinstance(unresolved, list):
+        raise RuntimeError(f"unexpected timed-out analysis replay result: {result!r}")
+    failed = [
+        entry
+        for entry in reanalyzed
+        if not isinstance(entry, dict) or entry.get("verified") is not True
+    ]
+    if unresolved or failed:
+        raise RuntimeError(
+            f"Binary Ninja left selected functions without HLIL: "
+            f"unresolved={unresolved!r}, failed={failed!r}"
+        )
+    return result
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Export all named gameplay functions from the tracked manifest into Binary Ninja decompile artifacts."
@@ -314,6 +394,11 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=[],
         help="Optional function selector(s) to export. Matches manifest name or hex address.",
+    )
+    parser.add_argument(
+        "--skip-analysis-refresh",
+        action="store_true",
+        help="Skip the pre-export Binary Ninja analysis refresh when the target is already known fresh.",
     )
     return parser.parse_args()
 
@@ -358,9 +443,10 @@ def main() -> int:
 
     target_metadata = _load_target_metadata(args.target)
     target_selector = str(target_metadata.get("target_id") or args.target)
-    live_functions = _load_live_function_map(target_selector)
-
     selected_functions = _select_functions(manifest.functions, list(args.only))
+    refresh_result = None if args.skip_analysis_refresh else _refresh_analysis(target_selector)
+    reanalysis_result = _reanalyze_timed_out_functions(target_selector, selected_functions)
+    live_functions = _load_live_function_map(target_selector)
     existing_index = _load_existing_index(index_path)
 
     exported: list[dict[str, object]] = []
@@ -437,6 +523,8 @@ def main() -> int:
         "function_count": len(indexed_exports),
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
+        "analysis_refreshed": refresh_result is not None,
+        "timed_out_function_reanalysis": reanalysis_result,
         "removed_stale_artifacts": removed,
         "exports": indexed_exports,
     }

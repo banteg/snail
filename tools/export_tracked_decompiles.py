@@ -63,8 +63,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--bn-target",
-        default="active",
-        help="Binary Ninja target selector for the BN export lane.",
+        default="SnailMail_unwrapped.exe.bndb",
+        help="Binary Ninja target selector for the BN export lane. Defaults to the pinned Snail Mail database.",
     )
     parser.add_argument(
         "--ida-bin",
