@@ -16,3 +16,11 @@ The compiler-shaped pointer/offset loop from the decompiler note does compile
 once the shared declaration is `void`, but VC6 pins the loop index in `edi` and
 regresses to 28.07%. The note was right about the fake return and the 12-byte
 vertex struct; explicit field stores are just not the matching source shape.
+
+## 2026-07-15 retained-copy ownership replay
+
+The exact `void Object::copy_object_vertices()` ABI is now shared across the
+matcher and repeatable Binary Ninja sync. The refreshed decompile reads the
+source `vertices` view and writes the Object-owned `copied_vertices` bank for
+exactly `vertex_count` entries; the old untyped fastcall/`void*` view is gone.
+Focused matching remains exact at 28/28 instructions.

@@ -89,3 +89,12 @@ justified.
 of raw `+4`/`+0x1c` constants. It preserves the same 83.14%, 128/127
 instruction frontier, prefix 25, and all 18 clean operands; the honest
 loop-exit block-placement residual is unchanged.
+
+## 2026-07-15 shared-workspace ABI replay
+
+The helper declaration and both workspace globals now live in the shared
+Object header. Repeatable Binary Ninja sync types the first argument as the
+borrowed `Object*`, names the vertex/UV arguments, and preserves
+`g_object_grouped_vertex_scratch` plus its append cursor as builder-owned global
+workspace. Focused matching remains 83.14% with all 18 operands clean; the
+honest loop-exit block-placement residual is unchanged.

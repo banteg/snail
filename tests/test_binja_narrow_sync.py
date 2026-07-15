@@ -684,6 +684,49 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         assert "void __thiscall request_object_texture_groups(" in header
 
 
+def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+    matcher_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+
+    for function_name in (
+        "copy_object_vertices",
+        "request_object_vertices_copy",
+        "apply_distort_to_object",
+        "get_or_append_object_texture_group_vertex",
+        "refresh_object_vertex_buffer",
+        "build_object_texture_group_buffers",
+    ):
+        assert f'"{function_name}"' in sync_source
+
+    assert (
+        "void __thiscall apply_distort_to_object(ObjectDistort* distort, "
+        "Object* object)"
+    ) in sync_source
+    assert (
+        "int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, "
+        "int32_t vertex_index, float u, float v)"
+    ) in sync_source
+    for header in analysis_headers:
+        assert "typedef struct ObjectRenderVertex" in header
+        assert "void __thiscall copy_object_vertices(Object* object);" in header
+        assert "ObjectDistort* distort, Object* object);" in header
+        assert "extern int32_t g_object_grouped_vertex_cursor;" in header
+        assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in header
+
+    assert "int get_or_append_object_texture_group_vertex(" in matcher_header
+    assert "extern int g_object_grouped_vertex_cursor;" in matcher_header
+    assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in matcher_header
+
+
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"

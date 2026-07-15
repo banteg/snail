@@ -6,9 +6,6 @@
 
 int report_errorf(char* format, ...);
 
-extern int g_object_grouped_vertex_cursor; // data_5031bc
-extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
-
 int get_or_append_object_texture_group_vertex(
     Object* object, int vertex_index, float u, float v)
 {

@@ -112,6 +112,10 @@ PROTO_UPDATES = (
         "void __thiscall initialize_object_distort(ObjectDistort* distort)",
     ),
     (
+        "apply_distort_to_object",
+        "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object)",
+    ),
+    (
         "initialize_object",
         "void __thiscall initialize_object(Object* object)",
     ),
@@ -134,6 +138,14 @@ PROTO_UPDATES = (
     (
         "request_object_vertices",
         "void __thiscall request_object_vertices(Object* object, int32_t vertex_count)",
+    ),
+    (
+        "copy_object_vertices",
+        "void __thiscall copy_object_vertices(Object* object)",
+    ),
+    (
+        "request_object_vertices_copy",
+        "void __thiscall request_object_vertices_copy(Object* object)",
     ),
     (
         "request_object_vertex_colours",
@@ -214,6 +226,10 @@ PROTO_UPDATES = (
     (
         "build_object_texture_group_buffers",
         "void __cdecl build_object_texture_group_buffers(Object* object)",
+    ),
+    (
+        "get_or_append_object_texture_group_vertex",
+        "int32_t __cdecl get_or_append_object_texture_group_vertex(Object* object, int32_t vertex_index, float u, float v)",
     ),
     (
         "refresh_object_vertex_buffer",

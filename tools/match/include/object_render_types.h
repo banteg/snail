@@ -234,12 +234,16 @@ struct ObjectList {
 void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
     TextureRef* old_texture); // @ 0x4145c0
 void load_object_definition(char* path, Object* object); // @ 0x44c420
+int get_or_append_object_texture_group_vertex(
+    Object* object, int vertex_index, float u, float v); // @ 0x413bb0
 void build_object_texture_group_buffers(Object* object); // @ 0x413d50
 void refresh_object_vertex_buffer(Object* object); // @ 0x412250
 int render_object(Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites); // @ 0x4126c0
 
 extern ObjectList g_object_list; // data_4b7648
+extern int g_object_grouped_vertex_cursor; // data_5031bc
+extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 extern ObjectToonEdge* g_object_edge_build_edges; // data_503300
 extern int g_object_edge_build_count; // data_503318
 

@@ -39,3 +39,12 @@ Current scratch status:
   and reading all three distort fields through it is codegen-neutral at 52.15%.
   VC6 still anchors `this` in `ebp` instead of native `edi`; a simple owner
   name does not free `ebp` for the loop/index role.
+
+## 2026-07-15 receiver replay
+
+The repeatable Binary Ninja sync now records both real owners:
+`ObjectDistort*` is the `this` receiver and `Object*` is the borrowed geometry
+target. The refreshed artifact names all three distortion controls, the Object
+bounds/live/copy views, and the final simple-normal rebuild. This replaces the
+old `int(float*, float)` interpretation without changing the honest 95.43%
+matcher frontier or its nine equivalent SIB base/index order residuals.

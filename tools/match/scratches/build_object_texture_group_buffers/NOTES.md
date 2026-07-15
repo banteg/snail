@@ -95,3 +95,11 @@ from their destination element types; vertex and index uploads use
 `sizeof(ObjectRenderVertex)` and `sizeof(unsigned short)`. This removes the
 duplicated 4/0x18/2 representation widths while preserving the exact 373/373
 instructions and all 29 operands.
+
+## 2026-07-15 shared-workspace declaration replay
+
+The exact builder now consumes the shared declaration for its private append
+helper and the shared typed workspace globals instead of redeclaring them in
+this translation unit. Binary Ninja replay shows the same temporary stream
+flowing into the Object-retained vertex/index buffers. Focused matching remains
+exact at 373/373 instructions with all 29 operands clean.

@@ -3168,6 +3168,110 @@
         "data_503318",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_object_vertex_copy_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f790-copy_object_vertices.c",
+      "required_substrings": [
+        "object->vertex_count",
+        "object->vertices",
+        "object->copied_vertices"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(object +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_vertex_copy_allocation_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f7d0-request_object_vertices_copy.c",
+      "required_substrings": [
+        "object->copied_vertices = allocate_tracked_memory",
+        "object->vertex_count * 0xc",
+        "copy_object_vertices(object)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return copy_object_vertices",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_distort_owner",
+      "artifact": "analysis/decompile/binja/functions/0041aa50-apply_distort_to_object.c",
+      "required_substrings": [
+        "struct ObjectDistort* distort_3 = distort",
+        "struct Object* object_1 = object",
+        "distort_3->z_wave",
+        "distort_3->y_squash",
+        "distort_3->xyz_scale",
+        "object_1->copied_vertices",
+        "object_1->vertices = object_1->copied_vertices",
+        "calc_object_facequad_normals_simple(object_1)"
+      ],
+      "forbidden_substrings": [
+        "float* edi = arg1",
+        "struct Object* esi = arg2",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_dynamic_upload_owner",
+      "artifact": "analysis/decompile/binja/functions/00412250-refresh_object_vertex_buffer.c",
+      "required_substrings": [
+        "object_1->animation",
+        "object_1->vertices = animation->frames",
+        "object_1->facequad_normals = animation->frames",
+        "apply_distort_to_object(&object_1->distort, object_1)",
+        "object_1->render_buffers->vertex_buffer",
+        "object_1->grouped_vertex_count"
+      ],
+      "forbidden_substrings": [
+        "apply_distort_to_object(esi i+ 0x80",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_grouped_vertex_workspace_owner",
+      "artifact": "analysis/decompile/binja/functions/00413bb0-get_or_append_object_texture_group_vertex.c",
+      "required_substrings": [
+        "vertex_index s>= object->vertex_count",
+        "struct Vec3* vertices = object->vertices",
+        "object->flags & OBJECT_FLAG_DYNAMIC_VERTICES",
+        "object->flags & OBJECT_FLAG_USE_VERTEX_COLOURS",
+        "g_object_grouped_vertex_scratch",
+        "g_object_grouped_vertex_cursor",
+        "object->vertex_colours[vertex_index]"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "arg4",
+        "data_5031bc",
+        "data_5031c4",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_object_render_buffer_build_owner",
+      "artifact": "analysis/decompile/binja/functions/00413d50-build_object_texture_group_buffers.c",
+      "required_substrings": [
+        "g_object_grouped_vertex_scratch = get_archive_data_base()",
+        "g_object_grouped_vertex_cursor = 0",
+        "get_or_append_object_texture_group_vertex(object_1",
+        "object_1->grouped_vertex_count = g_object_grouped_vertex_cursor",
+        "object_1->render_buffers = create_object_vertex_buffer_resource",
+        "object_1->index_buffer = eax_45",
+        "object_1->toon_index_buffer = create_object_index_buffer_resource"
+      ],
+      "forbidden_substrings": [
+        "get_or_append_object_texture_group_vertex(ebx",
+        "data_5031bc",
+        "data_5031c4",
+        "unimplemented"
+      ]
     }
   ]
 }

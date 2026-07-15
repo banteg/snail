@@ -75,6 +75,15 @@ typedef struct ObjectGroupedVertex {
     int32_t source_vertex;
 } ObjectGroupedVertex;
 
+typedef struct ObjectRenderVertex {
+    float x;
+    float y;
+    float z;
+    uint32_t diffuse;
+    float u;
+    float v;
+} ObjectRenderVertex;
+
 typedef struct TransformMatrix {
     Vec3 basis_right;
     float basis_right_w;
@@ -289,6 +298,8 @@ void __thiscall build_all_objects(ObjectList* object_list);
 Object* __thiscall add_object_to_list(ObjectList* object_list);
 void __thiscall apply_object_toon(Object* object, int32_t toon_flags);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
+void __thiscall copy_object_vertices(Object* object);
+void __thiscall request_object_vertices_copy(Object* object);
 void __fastcall request_object_vertex_colours(Object* object);
 Vec3* __thiscall request_object_facequad_normals(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);
@@ -313,11 +324,14 @@ void __thiscall calc_object_texture_groups(Object* object);
 void __thiscall add_object_edge(
     Object* object, int32_t vertex_a, int32_t vertex_b, int32_t normal_index);
 void __thiscall calc_object_edges(Object* object);
+void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);
 
 void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int32_t flags);
 void __cdecl build_object_texture_group_buffers(Object* object);
+int32_t __cdecl get_or_append_object_texture_group_vertex(
+    Object* object, int32_t vertex_index, float u, float v);
 void __cdecl refresh_object_vertex_buffer(Object* object);
 tColourSmall* __thiscall pack_color_rgba_u8(
     tColourSmall* out, tColour* color);
@@ -332,3 +346,5 @@ ObjectIndexBuffer* __thiscall create_object_index_buffer_resource(
 
 extern ObjectToonEdge* g_object_edge_build_edges;
 extern int32_t g_object_edge_build_count;
+extern int32_t g_object_grouped_vertex_cursor;
+extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;

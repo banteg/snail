@@ -3,5 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: request_object_vertices_copy @ 0x42f7d0 */
 
-0042f7ec        *(arg1 + 0x3c) = allocate_tracked_memory(*(arg1 + 0x2c) * 0xc, "Object Vertex List")
-0042f7f5        return copy_object_vertices(arg1)
+0042f7ec        object->copied_vertices = allocate_tracked_memory(object->vertex_count * 0xc, "Object Vertex List")
+0042f7ef        copy_object_vertices(object)
+0042f7f5        return
