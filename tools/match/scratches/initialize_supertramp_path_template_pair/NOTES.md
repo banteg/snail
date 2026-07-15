@@ -9,9 +9,9 @@ uses the final allocated sample directly in the mesh. The scratch models the
 flat approach, circular supertramp arc, separate secondary radius, direct mesh
 rows, deltas, and finalization.
 
-The retained scratch now matches 43.49% (538/552 candidate/target
+The retained scratch now matches 51.62% (529/552 candidate/target
 instructions), with a 15-instruction exact prefix, an exact 0x2c stack frame,
-and masked operands at 22 ok, 0 unresolved, 1 mismatch. Residuals are primarily
+and masked operands at 32 ok, 0 unresolved, 0 mismatch. Residuals are primarily
 register allocation and store scheduling; this is not an exact match.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
@@ -130,3 +130,21 @@ and argument 7 owns the terminal cap texture. Both front parity arms select
 argument 4, both back parity arms select argument 5, and only the final row's
 front face selects argument 7. The shared `Path` declaration now records those
 owners as `texture_a`, `texture_b`, `unused_texture`, and `cap_texture`.
+
+2026-07-15 arc ownership follow-up: the native curved section does not write
+the secondary sample's five scalar fields before initializing its transform.
+Removing those stale scratch stores first moves focused Wibo from 43.49%
+(538/552) to 45.00% (528/552). Reloading primary position X from the authored
+`center_x` field, as the target does, then realigns the arc calls and reaches
+51.39% (530/552), while clearing the old call mismatch and producing 31 ok,
+0 unresolved, 0 mismatch.
+
+The target guards the circular arc before deriving its secondary radius and
+owns a post-tested logical curve loop. Recovering that guard and `do/while`
+reaches 51.43% (529/552) and 32 clean audited operands. Materializing the
+shared floating curve count is codegen-neutral but retained because the target
+uses the same value for both radius construction and angle division. Finally,
+placing the flat lead-in Z conversion after the target-backed center-X reload
+reaches 51.62% (529/552), with the 15-instruction prefix and exact 0x2c frame
+preserved. This supersedes the pre-cascade secondary-scalar and center-X probe
+results above; all retained changes now agree with both current decompilers.

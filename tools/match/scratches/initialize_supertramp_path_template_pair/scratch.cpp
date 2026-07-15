@@ -159,7 +159,8 @@ void Path::initialize_supertramp_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = last_segment_index + 1;
     segment_count_f = (float)last_segment_index;
-    float radius = (float)curve_segments * 0.95588547f;
+    float curve_segments_f = (float)curve_segments;
+    float radius = curve_segments_f * 0.95588547f;
     allocate_path_template_samples();
     has_entry_mesh_transition = 0;
     segment_count = segment_count - 1;
@@ -172,8 +173,8 @@ void Path::initialize_supertramp_path_template_pair(
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[i].transform);
-        float z = (float)i;
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        float z = (float)i;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
         primary_samples[i].delta_length = 1.0f;
@@ -185,59 +186,59 @@ void Path::initialize_supertramp_path_template_pair(
         secondary_samples[i].delta_length = 1.0f;
     }
 
-    float secondary_radius = radius - 0.49000001f;
-    for (i = 0; i <= curve_segments; ++i) {
-        int sample_index = i + 7;
-        float angle = (float)i * 1.0461504f / (float)curve_segments;
+    if (curve_segments >= 0) {
+        float secondary_radius = radius - 0.49000001f;
+        i = 0;
+        do {
+            int sample_index = i + 7;
+            float angle = (float)i * 1.0461504f / curve_segments_f;
 
-        primary_samples[sample_index].center_x = 0.0f;
-        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[sample_index].special_scalar = 0.0f;
-        primary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[sample_index].transform);
-        primary_samples[sample_index].transform.position.x = 0.0f;
-        primary_samples[sample_index].transform.position.z =
-            sine(angle) * radius + 7.0f;
-        primary_samples[sample_index].transform.position.y =
-            radius - cosine(angle) * radius;
+            primary_samples[sample_index].center_x = 0.0f;
+            primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+            primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+            primary_samples[sample_index].special_scalar = 0.0f;
+            primary_samples[sample_index].lateral_scale = 1.0f;
+            set_matrix_identity(&primary_samples[sample_index].transform);
+            primary_samples[sample_index].transform.position.x =
+                primary_samples[sample_index].center_x;
+            primary_samples[sample_index].transform.position.z =
+                sine(angle) * radius + 7.0f;
+            primary_samples[sample_index].transform.position.y =
+                radius - cosine(angle) * radius;
 
-        secondary_samples[sample_index].center_x = 0.0f;
-        secondary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        secondary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        secondary_samples[sample_index].special_scalar = 0.0f;
-        secondary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&secondary_samples[sample_index].transform);
-        secondary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        secondary_samples[sample_index].transform.position.z =
-            sine(angle) * secondary_radius + 7.0f;
-        secondary_samples[sample_index].transform.position.y =
-            radius - cosine(angle) * secondary_radius;
+            set_matrix_identity(&secondary_samples[sample_index].transform);
+            secondary_samples[sample_index].transform.position.x =
+                primary_samples[sample_index].center_x;
+            secondary_samples[sample_index].transform.position.z =
+                sine(angle) * secondary_radius + 7.0f;
+            secondary_samples[sample_index].transform.position.y =
+                radius - cosine(angle) * secondary_radius;
 
-        primary_samples[sample_index].transform.basis_right =
-            Vector3(1.0f, 0.0f, 0.0f);
-        primary_samples[sample_index].transform.basis_up.x = 0.0f;
-        primary_samples[sample_index].transform.basis_up.y =
-            radius - primary_samples[sample_index].transform.position.y;
-        primary_samples[sample_index].transform.basis_up.z =
-            7.0f - primary_samples[sample_index].transform.position.z;
-        primary_samples[sample_index].transform.basis_up.normalize_vector();
-        primary_samples[sample_index].transform.basis_forward.cross_vectors(
-            &primary_samples[sample_index].transform.basis_right,
-            &primary_samples[sample_index].transform.basis_up);
+            primary_samples[sample_index].transform.basis_right =
+                Vector3(1.0f, 0.0f, 0.0f);
+            primary_samples[sample_index].transform.basis_up.x = 0.0f;
+            primary_samples[sample_index].transform.basis_up.y =
+                radius - primary_samples[sample_index].transform.position.y;
+            primary_samples[sample_index].transform.basis_up.z =
+                7.0f - primary_samples[sample_index].transform.position.z;
+            primary_samples[sample_index].transform.basis_up.normalize_vector();
+            primary_samples[sample_index].transform.basis_forward.cross_vectors(
+                &primary_samples[sample_index].transform.basis_right,
+                &primary_samples[sample_index].transform.basis_up);
 
-        secondary_samples[sample_index].transform.basis_right =
-            Vector3(1.0f, 0.0f, 0.0f);
-        secondary_samples[sample_index].transform.basis_up.x = 0.0f;
-        secondary_samples[sample_index].transform.basis_up.y =
-            radius - secondary_samples[sample_index].transform.position.y;
-        secondary_samples[sample_index].transform.basis_up.z =
-            7.0f - secondary_samples[sample_index].transform.position.z;
-        secondary_samples[sample_index].transform.basis_up.normalize_vector();
-        secondary_samples[sample_index].transform.basis_forward.cross_vectors(
-            &secondary_samples[sample_index].transform.basis_right,
-            &secondary_samples[sample_index].transform.basis_up);
+            secondary_samples[sample_index].transform.basis_right =
+                Vector3(1.0f, 0.0f, 0.0f);
+            secondary_samples[sample_index].transform.basis_up.x = 0.0f;
+            secondary_samples[sample_index].transform.basis_up.y =
+                radius - secondary_samples[sample_index].transform.position.y;
+            secondary_samples[sample_index].transform.basis_up.z =
+                7.0f - secondary_samples[sample_index].transform.position.z;
+            secondary_samples[sample_index].transform.basis_up.normalize_vector();
+            secondary_samples[sample_index].transform.basis_forward.cross_vectors(
+                &secondary_samples[sample_index].transform.basis_right,
+                &secondary_samples[sample_index].transform.basis_up);
+            ++i;
+        } while (i <= curve_segments);
     }
 
     int delta_index = 0;
