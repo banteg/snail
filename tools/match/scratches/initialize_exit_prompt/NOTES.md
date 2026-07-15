@@ -44,3 +44,8 @@
   body and all 109 clean operands. Binary Ninja now has the exact 0x1c-byte
   `Exit` owner; its void prototype preview verifies but live analysis restores
   the stale scalar form, so the sync script reports it as deferred.
+
+- 2026-07-15 live analysis replay: installing the complete neighboring menu
+  ABIs lets Binary Ninja retain the exact void `Exit*` initializer prototype.
+  The refreshed artifact names the 0x1c-byte receiver and its state, prompt-y,
+  and three widget fields without borrowing the subgame Completion owner.

@@ -56,3 +56,9 @@ The four teardown paths now reach the authored `SubPause` embedded at
 `SubgameRuntime +0x14`. Mobile `cRSubPause::UnInit()` provenance and Android's
 matching three-pointer layout close that child owner while preserving the
 exact 207/207 stream and all 69 clean operands.
+
+2026-07-15 live analysis replay: the exact `Exit*` receiver and adjacent
+`MainMenu` root field now survive analysis together. The tracked state machine
+uses `exit_controller` for prompt state and widgets, and its two menu lifecycle
+calls use `g_game_base->main_menu`; no synthetic CompletionPrompt owner or raw
+front-end offsets remain.

@@ -23,3 +23,8 @@ adjacent `Exit`, and the initializer remains exact at 127/127.
 `GameRoot::border_manager` and `GameRoot::frontend_link_latch`; the latter is
 the byte formerly reached as root +0x568. The complete owner graph remains
 exact at 127/127 instructions with 32 clean operands.
+
+2026-07-15 live analysis replay: the exact 0x24-byte `Options` type is now
+installed without flattening its complete `FrontendWidget` dependency. The
+refreshed artifact names all four widget pointers and the sample-volume
+snapshot through the real receiver.

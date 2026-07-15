@@ -27,3 +27,8 @@ codegen-neutral at the exact 73/73 baseline.
 the typed `GameRoot` directly to clear `frontend_link_latch` and restore
 `players[0].frontend_state`. The function remains exact at 73/73 instructions
 with all 19 operands clean.
+
+2026-07-15 live analysis replay: Binary Ninja now applies the exact `Options*`
+receiver to the update and audio-helper ABIs. Slider state, the fullscreen
+widget, previous front-end state, and preview-volume snapshot all remain under
+the same 0x24-byte owner in the tracked artifact.

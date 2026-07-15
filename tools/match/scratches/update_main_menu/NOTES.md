@@ -23,3 +23,8 @@ Scores now reload the typed `GameRoot*` global and follow the owned player,
 `Exit`, `Options`, and `HighScore` members. Native's callback-separated root
 reloads are preserved; output remains exact at 68/68 with all 16 operands
 clean.
+
+2026-07-15 live analysis replay: Binary Ninja now carries the exact 0x18-byte
+`MainMenu` receiver and the adjacent `Options`/`Exit` root fields. The tracked
+artifact therefore preserves the authored menu receiver while naming both
+outbound state owners, with no raw root offsets or synthetic cross-owner view.

@@ -3,5 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: apply_audio_config_volumes @ 0x41b070 */
 
-0041b08c        int32_t var_4_1 = set_global_sample_volume_config(data_4df918)
-0041b09a        return set_global_stream_volume_config(fconvert.s(fconvert.t(data_753c64) * fconvert.t(data_4df91c)))
+0041b08c        int32_t var_4_1 = set_global_sample_volume_config(g_runtime_config.sample_volume)
+0041b095        set_global_stream_volume_config(fconvert.s(fconvert.t(data_753c64) * fconvert.t(g_runtime_config.stream_volume)))
+0041b09a        return

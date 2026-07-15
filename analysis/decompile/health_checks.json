@@ -611,6 +611,7 @@
         "game->root_bod_catalog.floor_corners.storage[0].object",
         "game->root_bod_catalog.fringe_catalog.entries[0][0][0][0].object",
         "game->intro.hide_for_replay_latch = 0",
+        "apply_audio_config_volumes(&game->options)",
         "open_logo(&game->logo)",
         "sub_4113b0(&g_game_base->active_bod_list, &game->star_manager)",
         "open_star_field(&game->star_manager, 0x24)"
@@ -624,6 +625,7 @@
         "game->__offset(0x48e00)",
         "game->__offset(0x4f2dc)",
         "game->__offset(0x4f33c)",
+        "game->__offset(0x4f388)",
         "game->__offset(0x4f400)",
         "analysis skipped",
         "unimplemented"
@@ -680,6 +682,119 @@
         "data_4df904 + 0x4f33c",
         "__offset(",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_frontend_state_machine_menu_owners",
+      "artifact": "analysis/decompile/binja/functions/004107d0-update_frontend_state_machine.c",
+      "required_substrings": [
+        "initialize_main_menu(&g_game_base->main_menu)",
+        "update_main_menu(&g_game_base->main_menu)",
+        "initialize_options_menu(&g_game_base->options)",
+        "update_options_menu(&g_game_base->options)",
+        "initialize_exit_prompt(&g_game_base->exit_controller)",
+        "update_completion_screen(&g_game_base->exit_controller)"
+      ],
+      "forbidden_substrings": [
+        "__offset(0x4f324)",
+        "__offset(0x4f388)",
+        "__offset(0x4f3ac)",
+        "analysis skipped",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_main_menu_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00419e00-update_main_menu.c",
+      "required_substrings": [
+        "menu->new_game_widget",
+        "menu->exit_widget->layout_top",
+        "game_base_1->exit_controller.previous_frontend_state",
+        "g_game_base->exit_controller.prompt_y",
+        "g_game_base->options.active = 1",
+        "game_base_2->options.previous_frontend_state"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "__offset(0x4f324)",
+        "__offset(0x4f388)",
+        "__offset(0x4f3ac)",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_initialize_options_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/0041ace0-initialize_options_menu.c",
+      "required_substrings": [
+        "options->fullscreen_widget",
+        "options->sound_volume_widget",
+        "options->music_volume_widget",
+        "options->back_widget",
+        "options->previous_sample_volume"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "__offset(0x4f388)",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_options_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/0041af60-update_options_menu.c",
+      "required_substrings": [
+        "options->music_volume_widget->slider_position_target",
+        "options->sound_volume_widget->slider_position_target",
+        "options->fullscreen_widget",
+        "options->previous_frontend_state",
+        "apply_audio_config_volumes(options)",
+        "options->previous_sample_volume"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "__offset(0x4f388)",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_exit_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004067e0-update_completion_screen.c",
+      "required_substrings": [
+        "exit_controller->state",
+        "exit_controller->yes_button",
+        "exit_controller->no_button",
+        "exit_controller->previous_frontend_state",
+        "update_main_menu(&g_game_base->main_menu)",
+        "destroy_main_menu(&g_game_base->main_menu)"
+      ],
+      "forbidden_substrings": [
+        "struct CompletionPrompt",
+        "__offset(0x4f324)",
+        "__offset(0x4f3ac)",
+        "unimplemented",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_galaxy_exit_owner",
+      "artifact": "analysis/decompile/binja/functions/004092f0-update_galaxy.c",
+      "required_substrings": [
+        "game_base_1->exit_controller.previous_frontend_state",
+        "g_game_base->exit_controller.state = 0xb"
+      ],
+      "forbidden_substrings": [
+        "__offset(0x4f3ac)",
+        "unimplemented",
+        "__asm",
+        "_ET1"
       ]
     },
     {
@@ -1472,12 +1587,18 @@
         "g_game_base->subgame.resume_requested = 1",
         "subgame.level_mode",
         "subgame.selected_level_record_persistent",
-        "g_game_base->subgame.subgame_rebuild_selector = 2"
+        "g_game_base->subgame.subgame_rebuild_selector = 2",
+        "g_game_base->options.active = 0",
+        "game_base_1->options.previous_frontend_state",
+        "game_base_2->exit_controller.previous_frontend_state",
+        "game_base_3->exit_controller.state"
       ],
       "forbidden_substrings": [
         "subgame.unknown_000000",
         "subgame._pad_00",
         "subgame.__offset",
+        "__offset(0x4f388)",
+        "__offset(0x4f3ac)",
         "__asm",
         "_ET1"
       ]

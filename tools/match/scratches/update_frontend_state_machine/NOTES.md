@@ -104,4 +104,13 @@ known decompile-health regression.
   `tMatrix::Invert(tMatrix const&)`; that matrix helper is independently void.
   The decompiler's integer result was therefore only propagated register state.
 - Spelling both members `void` removes the synthetic tail return while keeping
-  this Windows scratch byte-exact at 180/180 with all 69 masked operands clean.
+ this Windows scratch byte-exact at 180/180 with all 69 masked operands clean.
+
+## 2026-07-15 complete menu-owner replay
+
+Installing the exact `MainMenu`, `Options`, and `Exit` layouts alongside the
+presentation owners repairs the x87 tail lift noted above. The tracked Binary
+Ninja artifact is now refreshed and health-clean: every state dispatch reaches
+the contiguous root owners directly, and the final input-coordinate copy no
+longer contains `unimplemented` expressions. This supersedes the earlier
+decision to retain the stale artifact while only Intro and Logo were live.

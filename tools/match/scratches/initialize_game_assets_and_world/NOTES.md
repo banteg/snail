@@ -795,3 +795,12 @@ The shared declaration helper now previews broad header imports and refuses a
 complete-struct to zero-width regression. Intro and Logo additionally replay
 only their owned exact-size types, preventing their dependency declarations
 from replacing richer canonical rendering or widget layouts.
+
+## 2026-07-15 front-end menu owner replay
+
+The constructor-proven control block is now complete around the presentation
+owners: `MainMenu +0x4f324` is exactly 0x18 bytes, `Options +0x4f388` is
+exactly 0x24 bytes, and `Exit +0x4f3ac` is exactly 0x1c bytes. The initializer
+now reaches the audio configuration helper through `game->options`; the
+remaining incidental scalar assignment is Binary Ninja's x87-control lift,
+not an authored return contract.

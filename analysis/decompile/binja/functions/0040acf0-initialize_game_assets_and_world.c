@@ -114,7 +114,7 @@
 0040af0d        open_logo(&game->logo)
 0040af1c        initialize_sound_bank(&data_4a2140)
 0040af26        initialize_voice_manager(0x751498)
-0040af31        int16_t x87control = apply_audio_config_volumes()
+0040af31        int16_t x87control = apply_audio_config_volumes(&game->options)
 0040af3c        load_level_definitions(&game->subgame.sm_tracks)
 0040af41        g_game_base
 0040af52        load_landscape_script_by_name("Menubg.txt")

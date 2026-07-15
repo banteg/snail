@@ -372,6 +372,37 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "types_declare(" not in source
 
 
+def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
+    source = (BINJA_DIR / "sync_frontend_menu_types.py").read_text(encoding="utf-8")
+    header = (HEADER_DIR / "bn_frontend_menu_types.h").read_text(encoding="utf-8")
+
+    for owner in (
+        '("0x4f324", "main_menu", "MainMenu")',
+        '("0x4f388", "options", "Options")',
+        '("0x4f3ac", "exit_controller", "Exit")',
+    ):
+        assert owner in source
+    for expected_size in (
+        '"MainMenu": 0x18',
+        '"Options": 0x24',
+        '"Exit": 0x1C',
+    ):
+        assert expected_size in source
+    for prototype in (
+        "void __thiscall initialize_main_menu(MainMenu* menu)",
+        "void __thiscall update_options_menu(Options* options)",
+        "void __thiscall initialize_exit_prompt(Exit* exit_controller)",
+    ):
+        assert prototype in source
+    assert "apply_struct_and_proto_updates" in source
+    assert "types_declare_missing_only" in source
+    assert "types_declare(" not in source
+    assert "typedef struct FrontendWidget FrontendWidget;" in header
+    assert "typedef struct MainMenu" in header
+    assert "typedef struct Options" in header
+    assert "typedef struct Exit" in header
+
+
 def test_broad_type_declaration_rejects_complete_to_forward_regression(monkeypatch) -> None:
     calls = []
 

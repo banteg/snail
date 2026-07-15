@@ -3,5 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: destroy_main_menu @ 0x419b30 */
 
-00419b3b        kill_all_borders(data_4df904 + 0xb4c)
-00419b45        return kill_game_sprites() __tailcall
+00419b3b        kill_all_borders(&g_game_base->border_manager)
+00419b45        return kill_game_sprites(&g_sprite_manager) __tailcall
