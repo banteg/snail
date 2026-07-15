@@ -380,3 +380,16 @@ The narrow Binary Ninja replay now batches its verified field and prototype
 updates. The same ownership replay that previously reanalyzed after every
 item completes in one analysis batch while preserving direct user types and
 readback verification.
+
+## 2026-07-15 shared front-end root ownership
+
+IDA now composes the constructor-proven front-end block into the same
+`GameRoot` used by the subgame tail. This function consequently reaches the
+embedded `StarManager` and both `Intro` replay fields directly. The row and
+cell induction registers remain byte offsets: treating them as `SubRow *` or
+`TrackRowCell *` would invent ownership, so the replay deliberately leaves
+them alone.
+
+This is analysis-only. The honest focused frontier remains 79.75% at
+1,036/1,033 instructions, with 117 clean operands and the same two jump-table
+identity mismatches.

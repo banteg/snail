@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 22,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 22,
+  "ida_exported": 22,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,24 +15,92 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_sub_loc",
-      "address": "0x4088c0"
+      "name": "destroy_completion_screen",
+      "address": "0x406060"
     },
     {
-      "name": "remove_sub_loc",
-      "address": "0x439bc0"
+      "name": "initialize_exit_prompt",
+      "address": "0x4060d0"
     },
     {
-      "name": "update_sub_loc",
-      "address": "0x439d50"
+      "name": "update_completion_screen",
+      "address": "0x4067e0"
     },
     {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     },
     {
-      "name": "update_cutscene",
-      "address": "0x4466d0"
+      "name": "update_frontend_state_machine",
+      "address": "0x4107d0"
+    },
+    {
+      "name": "set_backdrop_progress_fraction",
+      "address": "0x410c30"
+    },
+    {
+      "name": "set_backdrop_distort",
+      "address": "0x410c40"
+    },
+    {
+      "name": "change_backdrop",
+      "address": "0x410d50"
+    },
+    {
+      "name": "change_backdrop_real",
+      "address": "0x410dc0"
+    },
+    {
+      "name": "initialize_backdrop",
+      "address": "0x410e20"
+    },
+    {
+      "name": "set_backdrop_texture_target",
+      "address": "0x410f40"
+    },
+    {
+      "name": "render_backdrop",
+      "address": "0x411040"
+    },
+    {
+      "name": "update_backdrop",
+      "address": "0x4112f0"
+    },
+    {
+      "name": "destroy_main_menu",
+      "address": "0x419b30"
+    },
+    {
+      "name": "initialize_main_menu",
+      "address": "0x419b50"
+    },
+    {
+      "name": "update_main_menu",
+      "address": "0x419e00"
+    },
+    {
+      "name": "initialize_options_menu",
+      "address": "0x41ace0"
+    },
+    {
+      "name": "destroy_options_menu",
+      "address": "0x41aee0"
+    },
+    {
+      "name": "update_options_menu",
+      "address": "0x41af60"
+    },
+    {
+      "name": "apply_audio_config_volumes",
+      "address": "0x41b070"
+    },
+    {
+      "name": "initialize_subgame",
+      "address": "0x4374b0"
+    },
+    {
+      "name": "update_subgame",
+      "address": "0x438b90"
     }
   ],
   "health_check_count": 288,

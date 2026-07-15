@@ -2,10 +2,9 @@
 /* function: update_frontend_state_machine @ 0x4107d0 */
 /* selector: update_frontend_state_machine */
 
-// Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and the post-run Thanks For Playing owner at states 29/30.
-int __thiscall update_frontend_state_machine(GamePlayer *player)
+// Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded MouseCursorState saved position from the active camera anchor.
+void __thiscall update_frontend_state_machine(GamePlayer *player)
 {
-  TransformMatrix *v1; // edx
   int32_t frontend_state; // eax
   int32_t saved_frontend_state; // eax
   GameInput *game_input; // eax
@@ -23,96 +22,96 @@ int __thiscall update_frontend_state_machine(GamePlayer *player)
       case 1:
         player->frontend_state = 0;
         capture_mouse_cursor(&player->mouse_cursor);
-        *((_DWORD *)g_game_base + 81079) = 0;
-        initialize_new_game_menu((NewGameMenu *)((char *)g_game_base + 324316));
+        g_game_base->intro.replay_attract_bank_cursor = 0;
+        initialize_new_game_menu(&g_game_base->intro);
         break;
       case 2:
         player->frontend_state = 0;
         capture_mouse_cursor(&player->mouse_cursor);
-        initialize_new_game_menu((NewGameMenu *)((char *)g_game_base + 324316));
+        initialize_new_game_menu(&g_game_base->intro);
 LABEL_10:
-        update_new_game_menu((NewGameMenu *)((char *)g_game_base + 324316));
+        update_new_game_menu(&g_game_base->intro);
         break;
       case 3:
         player->frontend_state = 5;
         capture_mouse_cursor(&player->mouse_cursor);
-        initialize_main_menu((int *)g_game_base + 81097);
+        initialize_main_menu(&g_game_base->main_menu);
         break;
       case 4:
         player->frontend_state = 5;
         capture_mouse_cursor(&player->mouse_cursor);
-        initialize_main_menu((int *)g_game_base + 81097);
+        initialize_main_menu(&g_game_base->main_menu);
         goto LABEL_13;
       case 5:
 LABEL_13:
-        update_main_menu((_DWORD *)g_game_base + 81097);
+        update_main_menu(&g_game_base->main_menu);
         break;
       case 6:
         player->frontend_state = 7;
-        initialize_options_menu((int)g_game_base + 324488);
+        initialize_options_menu(&g_game_base->options);
         goto LABEL_15;
       case 7:
 LABEL_15:
-        update_options_menu((int)g_game_base + 324488, 32);
+        update_options_menu(&g_game_base->options);
         break;
       case 8:
-        initialize_exit_prompt((CompletionPrompt *)((char *)g_game_base + 324524));
+        initialize_exit_prompt(&g_game_base->exit_controller);
         player->frontend_state = 9;
         goto LABEL_17;
       case 9:
 LABEL_17:
-        update_completion_screen((CompletionPrompt *)((char *)g_game_base + 324524));
+        update_completion_screen(&g_game_base->exit_controller);
         break;
       case 10:
-        *((_DWORD *)g_game_base + 4267083) = 0;
-        initialize_subgame((int)g_game_base + 476696);
+        g_game_base->subgame.current_high_score_record.score = 0;
+        initialize_subgame(&g_game_base->subgame);
         player->frontend_state = 11;
         goto LABEL_4;
       case 11:
 LABEL_4:
-        update_subgame((int)g_game_base + 476696);
+        update_subgame(&g_game_base->subgame);
         break;
       case 12:
-        initialize_intro_screen((float *)g_game_base + 81152, g_intro_intro_script_path);
+        initialize_intro_screen(&g_game_base->logo, g_intro_intro_script_path);
         player->frontend_state = 13;
         break;
       case 13:
       case 15:
-        update_intro_screen((int)g_game_base + 324608);
+        update_intro_screen(&g_game_base->logo);
         break;
       case 14:
-        initialize_intro_screen((float *)g_game_base + 81152, g_intro_credits_script_path);
+        initialize_intro_screen(&g_game_base->logo, g_intro_credits_script_path);
         player->frontend_state = 15;
         break;
       case 18:
-        initialize_high_score_screen((int)g_game_base + 19820112, g_high_score_selected_bank, -1);
+        initialize_high_score_screen(&g_game_base->high_score, g_runtime_config.high_score_selected_bank, -1);
         player->frontend_state = 19;
         break;
       case 19:
       case 21:
-        update_high_score_screen((HighScoreScreen *)g_game_base + 95289);
+        update_high_score_screen(&g_game_base->high_score);
         break;
       case 20:
         initialize_high_score_screen(
-          (int)g_game_base + 19820112,
-          *((_DWORD *)g_game_base + 197),
-          *((_DWORD *)g_game_base + 196));
+          &g_game_base->high_score,
+          g_game_base->players[0].selected_high_score_mode,
+          g_game_base->players[0].selected_high_score_rank);
         player->frontend_state = 21;
         break;
       case 25:
-        *((_DWORD *)g_game_base + 14) = 1;
+        g_game_base->frontend_quit_requested = 1;
         break;
       case 26:
-        destroy_subgame((int)g_game_base + 476696);
+        destroy_subgame(&g_game_base->subgame);
         goto LABEL_26;
       case 27:
-        destroy_subgame((int)g_game_base + 476696);
+        destroy_subgame(&g_game_base->subgame);
         goto LABEL_25;
       case 28:
-        destroy_subgame((int)g_game_base + 476696);
-        *((_DWORD *)g_game_base + 4953464) = 0;
+        destroy_subgame(&g_game_base->subgame);
+        g_game_base->subgame.subgame_rebuild_selector = 0;
 LABEL_25:
-        initialize_subgame((int)g_game_base + 476696);
+        initialize_subgame(&g_game_base->subgame);
 LABEL_26:
         saved_frontend_state = player->saved_frontend_state;
         if ( saved_frontend_state != -1 )
@@ -120,19 +119,19 @@ LABEL_26:
         break;
       case 29:
         player->frontend_state = 30;
-        initialize_thanks_for_playing_screen((int *)g_game_base + 4936073);
+        initialize_thanks_for_playing_screen((int *)&g_game_base->subgame.thanks_screen);
         goto LABEL_29;
       case 30:
 LABEL_29:
-        update_thanks_for_playing_screen((int)g_game_base + 19744292);
+        update_thanks_for_playing_screen((int)&g_game_base->subgame.thanks_screen);
         break;
       case 31:
         player->frontend_state = 32;
-        initialize_help_screen((FrontendWidget **)g_game_base + 4936072);
+        initialize_help_screen(&g_game_base->subgame.help.back_button);
         goto LABEL_31;
       case 32:
 LABEL_31:
-        update_help_screen((char *)g_game_base + 19744288);
+        update_help_screen(&g_game_base->subgame.help);
         break;
       default:
         break;
@@ -144,6 +143,5 @@ LABEL_31:
   authored_y = game_input->input.authored_y;
   qmemcpy(&player->camera.transform, &player->transform, sizeof(player->camera.transform));
   player->mouse_cursor.saved_y = authored_y;
-  return (int)invert_matrix_from_source((TransformMatrix *)&player->camera.view_matrix, v1);
+  invert_matrix_from_source((TransformMatrix *)&player->camera.view_matrix, (const TransformMatrix *)&player->transform);
 }
-

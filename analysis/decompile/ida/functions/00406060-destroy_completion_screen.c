@@ -2,16 +2,12 @@
 /* function: destroy_completion_screen @ 0x406060 */
 /* selector: destroy_completion_screen */
 
-// Tears down the active completion-screen widgets and restores the owning front-end state once the current exit choice resolves. Cross-port Android and iOS symbols match this helper to `cRCompletion::UnInit()`.
-int __thiscall destroy_completion_screen(CompletionPrompt *prompt)
+// Exact void Windows `Exit::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`.
+void __thiscall destroy_completion_screen(Exit *exit_controller)
 {
-  int result; // eax
-
-  kill_border(prompt->prompt_title->_pad_00);
-  kill_border(prompt->yes_button->_pad_00);
-  kill_border(prompt->no_button->_pad_00);
-  result = unhide_all_borders((int *)MEMORY[0x4DF904] + 723);
-  *((_DWORD *)MEMORY[0x4DF904] + 110) = prompt->previous_frontend_state;
-  return result;
+  kill_border(&exit_controller->prompt_title->list_kind);
+  kill_border(&exit_controller->yes_button->list_kind);
+  kill_border(&exit_controller->no_button->list_kind);
+  unhide_all_borders((int *)&g_game_base->border_manager);
+  g_game_base->players[0].frontend_state = exit_controller->previous_frontend_state;
 }
-

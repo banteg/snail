@@ -114,3 +114,10 @@ Ninja artifact is now refreshed and health-clean: every state dispatch reaches
 the contiguous root owners directly, and the final input-coordinate copy no
 longer contains `unimplemented` expressions. This supersedes the earlier
 decision to retain the stale artifact while only Intro and Logo were live.
+
+## 2026-07-15 shared front-end root ownership
+
+IDA now installs the same contiguous `Intro`, `MainMenu`, `Options`, `Exit`,
+and `Logo` owners under `GameRoot`, so every state transition names its real
+embedded receiver instead of a root-relative byte offset. The focused native
+match remains proof-grade at 180/180 instructions with all 69 operands clean.

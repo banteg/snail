@@ -58,11 +58,11 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
   {
     cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
     landscape_script_by_name = load_landscape_script_by_name(
-                                 (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                 (char *)&g_game_base->subgame.landscape_manager,
                                  g_menu_background_script_path);
     change_backdrop(
-      (int)&g_game_base->unknown_044100[43792],
-      (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
+      &g_game_base->backdrop,
+      &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name],
       0);
     set_border_justify_centre(&g_game_base->border_manager, 25.0);
   }
@@ -182,7 +182,7 @@ LABEL_29:
       break;
   }
   v22 = g_game_base;
-  if ( g_game_base->unknown_044100[45536] || game->level_mode == 7 )
+  if ( g_game_base->intro.hide_for_replay_latch || game->level_mode == 7 )
   {
     hide_border_init(game->bottom_score_widget);
     hide_border_init(game->top_score_widget);

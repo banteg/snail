@@ -488,23 +488,23 @@
 0040bf85        list_flags_1:1.b |= 2
 0040bf88        game->subgame.track_body_list_head.bod.list_flags = list_flags_1
 0040bf47        report_errorf("List ADD")
-0040bf9a        if (((game->subgame.sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
-0040bfab        game->subgame.sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
-0040bfb1        game->subgame.sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
-0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.sub_lazer_list_head
-0040bfb7        struct BodNode* list_next_7 = game->subgame.sub_lazer_list_head.bod.list_next
+0040bf9a        if (((game->subgame.barrier_sub_lazer_list_head.bod.list_flags).w:1.b & 2) == 0)
+0040bfab        game->subgame.barrier_sub_lazer_list_head.bod.list_prev = &game->subgame.track_body_list_head
+0040bfb1        game->subgame.barrier_sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next
+0040bfb4        game->subgame.track_body_list_head.bod.list_next = &game->subgame.barrier_sub_lazer_list_head
+0040bfb7        struct BodNode* list_next_7 = game->subgame.barrier_sub_lazer_list_head.bod.list_next
 0040bfbc        if (list_next_7 != 0)
-0040bfbe        list_next_7->list_prev = &game->subgame.sub_lazer_list_head
+0040bfbe        list_next_7->list_prev = &game->subgame.barrier_sub_lazer_list_head
 0040bfc1        int32_t eax_82
-0040bfc1        eax_82.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f0.b
-0040bfc1        eax_82:1.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f1.b
-0040bfc1        eax_82:2.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f2.b
-0040bfc1        eax_82:3.b = (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f3.b
+0040bfc1        eax_82.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f0.b
+0040bfc1        eax_82:1.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f1.b
+0040bfc1        eax_82:2.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f2.b
+0040bfc1        eax_82:3.b = (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f3.b
 0040bfc3        eax_82:1.b |= 2
-0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f0.b = eax_82.b
-0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f1.b = eax_82:1.b
-0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f2.b = eax_82:2.b
-0040bfc6        (&game->subgame.sub_lazer_list_head - 0xec)->:0x3ca1f3.b = eax_82:3.b
+0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f0.b = eax_82.b
+0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f1.b = eax_82:1.b
+0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f2.b = eax_82:2.b
+0040bfc6        (&game->subgame.barrier_sub_lazer_list_head - 0xec)->:0x3ca1f3.b = eax_82:3.b
 0040bfa1        report_errorf("List ADDafter")
 0040bfd7        if (((game->subgame.salt_hazard_list_head.bod.list_flags).w:1.b & 2) == 0)
 0040bfe8        game->subgame.salt_hazard_list_head.bod.list_prev = &game->subgame.track_body_list_head

@@ -3,8 +3,7 @@
 /* selector: set_backdrop_progress_fraction */
 
 // Stores the active backdrop zoom at +0x6c8. Windows `update_subgoldy` drives it from the normalized current track-row payload ratio, while symbol-preserving iOS builds name the corresponding authored member `cRBackdrop::SetZoom(float)`.
-int __thiscall sub_410C30(_DWORD *this, int a2)
+void __thiscall set_backdrop_progress_fraction(Backdrop *backdrop, float zoom)
 {
-  *(this + 434) = a2;
-  return a2;
+  backdrop->zoom = zoom;
 }

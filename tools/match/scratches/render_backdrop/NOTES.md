@@ -53,3 +53,11 @@ The 7x7 quad bounds and cell-row multiplier now derive from the owned 8x8
 distortion grid. The normalized listing remains byte-identical
 (`112316678a1762b5135e27a350402ae953dd0d86d18baf2ffff2ac820acc2c40`)
 at the honest 86.61% result (`189/192`, prefix `12/192`, 26 clean operands).
+
+## 2026-07-15 IDA backdrop receiver ownership
+
+The shared exact-size `Backdrop` declaration now replays into IDA as well as
+Binary Ninja. The tracked decompile names the `active_flip` and texture owner
+through a real `Backdrop *` receiver instead of `int this` arithmetic. This is
+analysis-only: the honest result remains 86.61% at 189/192 instructions, with
+26 clean operands and no masked-operand mismatches.

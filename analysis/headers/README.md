@@ -98,8 +98,10 @@ intentional.
     explicit function type.
 - `bn_frontend_menu_types.h`
 - `uv run python tools/binja/sync_frontend_menu_types.py`
+- `uv run python tools/ida/sync_frontend_menu_types.py`
   - Replays the exact MainMenu, Options, and Exit owners plus the adjacent
-    standalone 0x38-byte root BodBase without redefining FrontendWidget.
+    standalone 0x38-byte root BodBase without redefining FrontendWidget. The
+    same narrow header now feeds both databases.
 - `bn_loading_bar_types.h`
 - `uv run python tools/binja/sync_loading_bar_types.py`
   - Width-gates the exact 0x0c-byte global cRLoadingBar owner, names its
@@ -107,6 +109,9 @@ intentional.
     and AI contracts without importing unrelated renderer state.
 - `bn_backdrop_types.h`
 - `uv run python tools/binja/sync_backdrop_types.py`
+- `uv run python tools/ida/sync_backdrop_types.py`
+  - Width-gates the exact 0x6cc-byte Backdrop and replays its authored
+    lifecycle/render receiver contracts into IDA as well as Binary Ninja.
 - `bn_frame_renderer_types.h`
 - `uv run python tools/binja/sync_frame_renderer_types.py`
   - Promotes the complete `BorderManager` owner when available, including its
@@ -256,17 +261,19 @@ That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database
 without pretending to solve global type sync.
 
-The IDA frame, path-template, and subgame-runtime replays share
-`tools/ida/game_root_owner.py` for the root tail. It preserves every proved
-`GameRoot` member before `+0x74618`, then composes the complete
+The IDA frame, front-end, path-template, and subgame-runtime replays share
+`tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
+component types are present, it composes the contiguous `Backdrop +0x4ec10`,
+`Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
+and `Logo` block through `+0x74618`, followed by the complete
 `SubgameRuntime` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
-the exact `0x12e6ff4` root. The sparse frame compatibility view now reaches the
-same runtime end, so it cannot truncate `Completion` or `TimesUp`; the shared
-helper immediately restores the canonical owner after any frame import. It
-also reapplies the `g_game_base` pointer after composition because IDA retains
-the earlier pointed-to type snapshot even when its rendered declaration is
-still `GameRoot *`.
+the exact `0x12e6ff4` root. Bootstrap databases missing a front-end type retain
+the prior tail-only composition until the relevant narrow replay supplies it.
+The helper refuses to replace a proved overlapping member, immediately
+repairs the sparse frame compatibility view after imports, and reapplies the
+`g_game_base` pointer because IDA retains the earlier pointed-to type snapshot
+even when its rendered declaration is still `GameRoot *`.
 
 The Binary Ninja path replay also retains three bounded register views in
 `update_subgoldy`'s row-event block. Native code uses pre-biased byte addresses

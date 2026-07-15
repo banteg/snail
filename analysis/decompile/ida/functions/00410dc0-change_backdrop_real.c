@@ -3,37 +3,36 @@
 /* selector: change_backdrop_real */
 
 // Commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the current split-vs-single draw flags into the active renderer state. Cross-port Android and iOS symbols match this helper to `cRBackdrop::ChangeReal()`.
-char __thiscall sub_410DC0(int this)
+void __thiscall change_backdrop_real(Backdrop *backdrop)
 {
-  int v2; // eax
-  char v3; // dl
-  int v4; // eax
-  char v5; // dl
+  int32_t pending_primary_texture_id; // eax
+  uint8_t pending_flip; // dl
+  uint8_t pending_split_backdrop_pair; // al
+  uint8_t v5; // dl
+  int v6; // eax
 
-  v2 = *(_DWORD *)(this + 64);
-  if ( v2 )
+  pending_primary_texture_id = backdrop->pending_primary_texture_id;
+  if ( pending_primary_texture_id )
   {
-    if ( v2 != *(_DWORD *)(this + 60) )
+    if ( pending_primary_texture_id != backdrop->active_primary_texture_id )
     {
-      *(_DWORD *)(this + 60) = v2;
-      *(_DWORD *)(this + 68) = *(_DWORD *)(this + 72);
+      backdrop->active_primary_texture_id = pending_primary_texture_id;
+      backdrop->active_secondary_texture_id = backdrop->pending_secondary_texture_id;
     }
-    *(_DWORD *)(this + 1736) = 0;
-    set_backdrop_distort((float *)this, *(float *)(this + 80));
-    v3 = *(_BYTE *)(this + 84);
-    LOBYTE(v4) = *(_BYTE *)(this + 57);
-    *(_DWORD *)(this + 1624) = 1;
-    *(_BYTE *)(this + 85) = v3;
-    *(_BYTE *)(this + 56) = v4;
+    backdrop->zoom = 0.0;
+    set_backdrop_distort(backdrop, backdrop->pending_distort);
+    pending_flip = backdrop->pending_flip;
+    pending_split_backdrop_pair = backdrop->pending_split_backdrop_pair;
+    backdrop->backdrop_render_enabled = 1;
+    backdrop->active_flip = pending_flip;
+    backdrop->active_split_backdrop_pair = pending_split_backdrop_pair;
   }
   else
   {
-    v5 = *(_BYTE *)(this + 84);
-    v4 = *(unsigned __int8 *)(this + 57);
-    *(_DWORD *)(this + 1624) = 0;
-    *(_BYTE *)(this + 85) = v5;
-    *(_BYTE *)(this + 56) = v4;
+    v5 = backdrop->pending_flip;
+    v6 = backdrop->pending_split_backdrop_pair;
+    backdrop->backdrop_render_enabled = 0;
+    backdrop->active_flip = v5;
+    backdrop->active_split_backdrop_pair = v6;
   }
-  return v4;
 }
-

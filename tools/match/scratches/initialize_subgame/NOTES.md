@@ -517,3 +517,10 @@ tracked BN and IDA artifacts now expose the same initializer owner graph.
 
 No matcher source changed in this analysis-only closure. The native function
 remains proof-grade at 396/396 instructions with all 85 operands clean.
+
+## 2026-07-15 shared front-end root ownership
+
+The tracked IDA decompile now reaches the embedded `Backdrop` used for menu
+landscape changes and the `Intro` replay latch through the complete shared
+`GameRoot` graph. No matcher source changed; the function remains proof-grade
+at 396/396 instructions with all 85 operands clean.

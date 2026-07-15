@@ -63,6 +63,10 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "void __thiscall release_mouse_cursor(MouseCursorState *mouse);",
     ),
     (
+        "initialize_game_assets_and_world",
+        "uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game);",
+    ),
+    (
         "run_frame_update",
         "int __thiscall run_frame_update(GameRoot *game);",
     ),

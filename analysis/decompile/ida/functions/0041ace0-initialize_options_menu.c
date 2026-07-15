@@ -3,40 +3,37 @@
 /* selector: initialize_options_menu */
 
 // Constructs the Options screen widgets, seeds them from SnailMail.cfg, and links the fullscreen, sounds, music, and back controls. Cross-port Android and iOS symbols match this helper to `cROptions::Init()`.
-float *__thiscall sub_41ACE0(int this)
+void __thiscall initialize_options_menu(Options *options)
 {
-  _DWORD *v2; // eax
-  _DWORD *v3; // eax
-  _DWORD *v4; // eax
-  _DWORD *v5; // eax
-  float *result; // eax
-  _DWORD v7[4]; // [esp+4h] [ebp-10h] BYREF
+  tColour *v2; // eax
+  tColour *v3; // eax
+  tColour *v4; // eax
+  tColour *v5; // eax
+  Color4f color; // [esp+4h] [ebp-10h] BYREF
 
-  hide_all_borders((int *)MEMORY[0x4DF904] + 723);
-  *((_BYTE *)MEMORY[0x4DF904] + 1384) = 1;
-  *(_DWORD *)(this + 20) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v2 = set_color_rgba(v7, 1065353216, 1065353216, 1065353216, 1065353216);
-  initialize_frontend_widget(*(_DWORD *)(this + 20), 20, MEMORY[0x4DFB08], 20, 1119092736, 75.0, (int)v2, 2, 0.0);
-  *(float *)(*(_DWORD *)(this + 20) + 1784) = *(float *)(*(_DWORD *)(this + 20) + 1784) + 8.0;
-  *(_DWORD *)(this + 24) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v3 = set_color_rgba(v7, 1065353216, 1065353216, 1065353216, 1065353216);
-  initialize_frontend_widget(*(_DWORD *)(this + 24), 9437188, aSoundsVolume, 20, 1119092736, 400.0, (int)v3, 2, 0.0);
-  stack_widget_below(*(_DWORD *)(this + 24), *(_DWORD *)(this + 20));
-  *(float *)(*(_DWORD *)(this + 24) + 380) = unk_4DF918;
-  *(float *)(*(_DWORD *)(this + 24) + 384) = unk_4DF918;
-  (***(void (__thiscall ****)(_DWORD))(this + 24))(*(_DWORD *)(this + 24));
-  *(_DWORD *)(this + 28) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v4 = set_color_rgba(v7, 1065353216, 1065353216, 1065353216, 1065353216);
-  initialize_frontend_widget(*(_DWORD *)(this + 28), 1048580, aMusicVolume, 20, 1119092736, 400.0, (int)v4, 2, 0.0);
-  stack_widget_below(*(_DWORD *)(this + 28), *(_DWORD *)(this + 24));
-  *(float *)(*(_DWORD *)(this + 28) + 380) = unk_4DF91C;
-  *(float *)(*(_DWORD *)(this + 28) + 384) = unk_4DF91C;
-  (***(void (__thiscall ****)(_DWORD))(this + 28))(*(_DWORD *)(this + 28));
-  *(_DWORD *)(this + 16) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v5 = set_color_rgba(v7, 1065353216, 1065353216, 1065353216, 1065353216);
-  initialize_frontend_widget(*(_DWORD *)(this + 16), 20, aBack, 20, 1119092736, 400.0, (int)v5, 2, 0.0);
-  result = stack_widget_below(*(_DWORD *)(this + 16), *(_DWORD *)(this + 28));
-  *(float *)(this + 32) = unk_4DF918;
-  return result;
+  hide_all_borders((int *)&g_game_base->border_manager);
+  g_game_base->unknown_000521[71] = 1;
+  options->fullscreen_widget = allocate_border(&g_game_base->border_manager);
+  v2 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  initialize_frontend_widget(options->fullscreen_widget, 0x14u, (char *)g_blank_text, 20, 90.0, 75.0, v2, 2, 0.0);
+  options->fullscreen_widget->layout_anchor_y = options->fullscreen_widget->layout_anchor_y + 8.0;
+  options->sound_volume_widget = allocate_border(&g_game_base->border_manager);
+  v3 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  initialize_frontend_widget(options->sound_volume_widget, 0x900004u, g_sounds_volume_text, 20, 90.0, 400.0, v3, 2, 0.0);
+  stack_widget_below(options->sound_volume_widget, options->fullscreen_widget);
+  options->sound_volume_widget->slider_position_target = g_runtime_config.sample_volume;
+  options->sound_volume_widget->slider_position_current = g_runtime_config.sample_volume;
+  (*(void (__thiscall **)(FrontendWidget *))options->sound_volume_widget->list_kind)(options->sound_volume_widget);
+  options->music_volume_widget = allocate_border(&g_game_base->border_manager);
+  v4 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  initialize_frontend_widget(options->music_volume_widget, 0x100004u, g_music_volume_text, 20, 90.0, 400.0, v4, 2, 0.0);
+  stack_widget_below(options->music_volume_widget, options->sound_volume_widget);
+  options->music_volume_widget->slider_position_target = g_runtime_config.stream_volume;
+  options->music_volume_widget->slider_position_current = g_runtime_config.stream_volume;
+  (*(void (__thiscall **)(FrontendWidget *))options->music_volume_widget->list_kind)(options->music_volume_widget);
+  options->back_widget = allocate_border(&g_game_base->border_manager);
+  v5 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  initialize_frontend_widget(options->back_widget, 0x14u, g_back_text, 20, 90.0, 400.0, v5, 2, 0.0);
+  stack_widget_below(options->back_widget, options->music_volume_widget);
+  options->previous_sample_volume = g_runtime_config.sample_volume;
 }
-

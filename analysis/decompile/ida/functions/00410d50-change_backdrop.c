@@ -3,39 +3,34 @@
 /* selector: change_backdrop */
 
 // Binds one parsed background script entry into the shared backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Change(cRLandscape*, bool)`.
-char __thiscall sub_410D50(int this, int a2, char a3)
+void __thiscall change_backdrop(Backdrop *backdrop, LandscapeScriptRecord *record, uint8_t flip)
 {
-  char result; // al
-  int v4; // edx
-  int v5; // esi
+  int32_t v3; // edx
+  int32_t backdrop_texture_id; // esi
 
-  result = a2;
-  v4 = 0;
-  v5 = *(_DWORD *)(a2 + 132);
-  if ( *(_BYTE *)(a2 + 136) )
+  v3 = 0;
+  backdrop_texture_id = record->backdrop_texture_id;
+  if ( record->split_backdrop_texture_pair )
   {
-    if ( v5 )
+    if ( backdrop_texture_id )
     {
-      v4 = 1;
-      *(_BYTE *)(this + 57) = 1;
-      *(_BYTE *)(this + 76) = 1;
-      *(_DWORD *)(this + 64) = *(_DWORD *)(a2 + 132);
-      *(_DWORD *)(this + 72) = *(_DWORD *)(a2 + 132) + 1;
+      v3 = 1;
+      backdrop->pending_split_backdrop_pair = 1;
+      backdrop->backdrop_change_queued = 1;
+      backdrop->pending_primary_texture_id = record->backdrop_texture_id;
+      backdrop->pending_secondary_texture_id = record->backdrop_texture_id + 1;
 LABEL_6:
-      *(_DWORD *)(this + 80) = *(_DWORD *)(a2 + 288);
-      result = a3;
-      *(_BYTE *)(this + 84) = a3;
+      backdrop->pending_distort = record->distort;
+      backdrop->pending_flip = flip;
     }
   }
-  else if ( v5 )
+  else if ( backdrop_texture_id )
   {
-    *(_BYTE *)(this + 57) = 0;
-    v4 = 1;
-    *(_BYTE *)(this + 76) = 1;
-    *(_DWORD *)(this + 64) = *(_DWORD *)(a2 + 132);
+    backdrop->pending_split_backdrop_pair = 0;
+    v3 = 1;
+    backdrop->backdrop_change_queued = 1;
+    backdrop->pending_primary_texture_id = record->backdrop_texture_id;
     goto LABEL_6;
   }
-  *(_DWORD *)(this + 1624) = v4;
-  return result;
+  backdrop->backdrop_render_enabled = v3;
 }
-

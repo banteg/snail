@@ -804,3 +804,16 @@ exactly 0x24 bytes, and `Exit +0x4f3ac` is exactly 0x1c bytes. The initializer
 now reaches the audio configuration helper through `game->options`; the
 remaining incidental scalar assignment is Binary Ninja's x87-control lift,
 not an authored return contract.
+
+## 2026-07-15 shared front-end root ownership
+
+The IDA receiver is now `GameRoot *`, and the complete constructor-proven
+front-end block composes with `SubgameRuntime`, `HighScore`, `TipManager`, and
+the other established tail owners in one guarded graph. The initializer now
+names its path-template bank, tip manager, star manager, and backdrop through
+their real embedded owners. The replay refuses to overwrite any independently
+typed overlap and falls back to the tail-only graph until every exact front-end
+type is available.
+
+This ownership-only improvement leaves the focused native frontier at 80.50%
+(5,392/5,411 instructions; 1,550 clean and 101 mismatched operands).

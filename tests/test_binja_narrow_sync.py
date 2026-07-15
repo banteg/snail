@@ -85,7 +85,7 @@ def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     assert 'struct_name="GameRoot"' in high_score_sync
 
 
-def test_ida_replays_compose_the_complete_game_root_tail() -> None:
+def test_ida_replays_compose_the_complete_game_root_frontend_and_tail() -> None:
     owner_sync = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
     path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
@@ -105,6 +105,17 @@ def test_ida_replays_compose_the_complete_game_root_tail() -> None:
     )
 
     assert '"SubgameRuntime": 0x1272838' in owner_sync
+    for owner in (
+        '(0x4EC10, 0x6CC, "backdrop", "Backdrop")',
+        '(0x4F2DC, 0x48, "intro", "Intro")',
+        '(0x4F324, 0x18, "main_menu", "MainMenu")',
+        '(0x4F33C, 0x4C, "star_manager", "StarManager")',
+        '(0x4F388, 0x24, "options", "Options")',
+        '(0x4F3AC, 0x1C, "exit_controller", "Exit")',
+        '(0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase")',
+        '(0x4F400, 0x25218, "logo", "Logo")',
+    ):
+        assert owner in owner_sync
     assert '(0x12E6E50, 0xF4, "high_score", "HighScore")' in owner_sync
     assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in owner_sync
     assert "GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904" in owner_sync
@@ -112,6 +123,13 @@ def test_ida_replays_compose_the_complete_game_root_tail() -> None:
     assert '"root_global": root_global' in owner_sync
     assert "root.del_udm" in owner_sync
     assert "root.add_udm" in owner_sync
+    assert 'owner_scope = "frontend_and_tail"' in owner_sync
+    assert 'owner_scope = "tail_only"' in owner_sync
+    assert '"owner_span_overlaps_proved_member"' in owner_sync
+    assert (
+        "uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game);"
+        in frame_sync
+    )
     assert "typedef struct HighScore" in path_header
     assert "FrontendWidget* replay_row_widgets[10];" in path_header
     for source, required in (
@@ -134,6 +152,45 @@ def test_ida_replays_compose_the_complete_game_root_tail() -> None:
     assert '"game_bytes_for_message"' in bn_path_sync
     assert '"game_bytes_for_duration"' in bn_path_sync
     assert "updates=UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+
+
+def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
+    replay_sources = tuple(
+        (IDA_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "apply_frontend_replay_types.py",
+            "apply_star_manager_types.py",
+            "apply_logo_types.py",
+            "apply_frontend_menu_types.py",
+            "apply_backdrop_types.py",
+        )
+    )
+    for source in replay_sources:
+        assert "from game_root_owner import sync_game_root_owner_graph" in source
+        assert "sync_game_root_owner_graph(require=False)" in source
+        assert '"game_root_owner_graph": game_root_owner_graph' in source
+
+    menu_apply = (IDA_DIR / "apply_frontend_menu_types.py").read_text(
+        encoding="utf-8"
+    )
+    menu_sync = (IDA_DIR / "sync_frontend_menu_types.py").read_text(
+        encoding="utf-8"
+    )
+    backdrop_apply = (IDA_DIR / "apply_backdrop_types.py").read_text(
+        encoding="utf-8"
+    )
+    backdrop_sync = (IDA_DIR / "sync_backdrop_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert '"MainMenu": 0x18' in menu_apply
+    assert '"Options": 0x24' in menu_apply
+    assert '"Exit": 0x1C' in menu_apply
+    assert 'analysis/headers/bn_frontend_menu_types.h' in menu_sync
+    assert "EXPECTED_BACKDROP_SIZE = 0x6CC" in backdrop_apply
+    assert "void __thiscall render_backdrop(Backdrop* backdrop);" in backdrop_apply
+    assert "int32_t __thiscall update_backdrop(Backdrop* backdrop);" in backdrop_apply
+    assert 'analysis/headers/bn_backdrop_types.h' in backdrop_sync
 
 
 def test_parse_struct_layout_size() -> None:

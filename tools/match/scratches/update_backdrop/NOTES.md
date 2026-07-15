@@ -52,3 +52,11 @@ Both traversal counts and the column stride now derive from the owned 8x8
 grid. The normalized listing remains byte-identical
 (`b5b59c2093a28f393046d4be57d18a8987c73251700d05abc1d775a1684eae8f`)
 at the honest 88.24% result (`69/67`, prefix `17/67`, seven clean operands).
+
+## 2026-07-15 IDA backdrop receiver ownership
+
+The shared exact-size `Backdrop` declaration now replays into IDA as well as
+Binary Ninja. The tracked decompile names the queued change, 8x8 distortion
+grid, and active texture through a real `Backdrop *` receiver. This is
+analysis-only: the honest result remains 88.24% at 69/67 instructions, with
+seven clean operands and no masked-operand mismatches.

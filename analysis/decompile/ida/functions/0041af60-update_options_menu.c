@@ -3,60 +3,59 @@
 /* selector: update_options_menu */
 
 // Runs the Options-screen state machine, including fullscreen toggles, slider updates, audio-volume refresh, save, and return to the owning front-end state. Cross-port Android and iOS symbols match this helper to `cROptions::AI()`.
-void __usercall sub_41AF60(int a1@<ecx>, int a2@<edi>)
+void __thiscall update_options_menu(Options *options)
 {
-  int v3; // ecx
-  int v4; // eax
-  int v5; // ecx
-  int v6; // eax
-  int v7; // ecx
-  int v8; // eax
+  FrontendWidget *fullscreen_widget; // ecx
+  FrontendWidgetFlag widget_flags; // eax
+  FrontendWidget *sound_volume_widget; // ecx
+  FrontendWidgetFlag v5; // eax
+  FrontendWidget *back_widget; // ecx
+  FrontendWidgetFlag v7; // eax
 
-  unk_4DF91C = *(float *)(*(_DWORD *)(a1 + 28) + 380);
-  unk_4DF918 = *(float *)(*(_DWORD *)(a1 + 24) + 380);
-  if ( byte_4DF920 )
-    rstrcpy_checked_ascii((char *)(*(_DWORD *)(a1 + 20) + 716), aFullScreenOn);
+  g_runtime_config.stream_volume = options->music_volume_widget->slider_position_target;
+  g_runtime_config.sample_volume = options->sound_volume_widget->slider_position_target;
+  if ( g_runtime_config.fullscreen_enabled )
+    rstrcpy_checked_ascii((char *)&options->fullscreen_widget->text_buffer, g_fullscreen_on_text);
   else
-    rstrcpy_checked_ascii((char *)(*(_DWORD *)(a1 + 20) + 716), aFullScreenOff);
-  v3 = *(_DWORD *)(a1 + 20);
-  v4 = *(_DWORD *)(v3 + 416);
-  if ( (v4 & 0x20) != 0 )
+    rstrcpy_checked_ascii((char *)&options->fullscreen_widget->text_buffer, g_fullscreen_off_text);
+  fullscreen_widget = options->fullscreen_widget;
+  widget_flags = fullscreen_widget->widget_flags;
+  if ( (widget_flags & 0x20) != 0 )
   {
-    LOBYTE(v4) = v4 & 0xDF;
-    *(_DWORD *)(v3 + 416) = v4;
-    if ( byte_4DF920 )
+    LOBYTE(widget_flags) = widget_flags & 0xDF;
+    fullscreen_widget->widget_flags = widget_flags;
+    if ( g_runtime_config.fullscreen_enabled )
     {
-      set_fullscreen_mode(a2, 0);
-      byte_4DF920 = 0;
+      set_fullscreen_mode(0);
+      g_runtime_config.fullscreen_enabled = 0;
     }
     else
     {
-      set_fullscreen_mode(a2, 1);
-      byte_4DF920 = 1;
+      set_fullscreen_mode(1);
+      g_runtime_config.fullscreen_enabled = 1;
     }
   }
-  v5 = *(_DWORD *)(a1 + 24);
-  v6 = *(_DWORD *)(v5 + 416);
-  if ( (v6 & 0x20) != 0 )
+  sound_volume_widget = options->sound_volume_widget;
+  v5 = sound_volume_widget->widget_flags;
+  if ( (v5 & 0x20) != 0 )
   {
-    LOBYTE(v6) = v6 & 0xDF;
-    *(_DWORD *)(v5 + 416) = v6;
+    LOBYTE(v5) = v5 & 0xDF;
+    sound_volume_widget->widget_flags = v5;
   }
-  v7 = *(_DWORD *)(a1 + 16);
-  v8 = *(_DWORD *)(v7 + 416);
-  if ( (v8 & 0x20) != 0 )
+  back_widget = options->back_widget;
+  v7 = back_widget->widget_flags;
+  if ( (v7 & 0x20) != 0 )
   {
-    LOBYTE(v8) = v8 & 0xDF;
-    *(_DWORD *)(v7 + 416) = v8;
-    destroy_options_menu((_DWORD **)a1);
-    *((_BYTE *)MEMORY[0x4DF904] + 1384) = 0;
-    *((_DWORD *)MEMORY[0x4DF904] + 110) = *(_DWORD *)a1;
+    LOBYTE(v7) = v7 & 0xDF;
+    back_widget->widget_flags = v7;
+    destroy_options_menu(options);
+    g_game_base->unknown_000521[71] = 0;
+    g_game_base->players[0].frontend_state = options->previous_frontend_state;
   }
-  apply_audio_config_volumes();
-  if ( *(float *)(a1 + 32) != unk_4DF918 )
+  apply_audio_config_volumes(options);
+  if ( options->previous_sample_volume != g_runtime_config.sample_volume )
   {
     play_sound_effect(8);
-    *(float *)(a1 + 32) = unk_4DF918;
+    options->previous_sample_volume = g_runtime_config.sample_volume;
   }
 }
-

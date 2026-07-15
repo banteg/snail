@@ -3,27 +3,27 @@
 /* selector: initialize_game_assets_and_world */
 
 // Bootstraps the shared app world, front-end managers, score tables, star field, and the embedded 63-pair path-template bank. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt.
-char __thiscall initialize_game_assets_and_world(int this)
+uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
 {
-  FrameBodBase *v2; // eax
-  int *v3; // edx
+  FrameOverlay *p_overlay_0; // eax
+  uint32_t *p_list_flags; // edx
   FrameBodBase **p_first; // ecx
   FrameBodBase *first; // edi
   FrameBodBase *list_prev; // eax
-  int v7; // eax
-  FrameBodBase *v8; // eax
-  int v9; // edx
+  uint32_t v7; // eax
+  FrameOverlay *p_overlay_2; // eax
+  uint32_t list_flags; // edx
   FrameBodBase **v10; // ecx
   FrameBodBase *v11; // edx
   FrameBodBase *v12; // eax
   int v13; // ecx
-  FrameBodBase *v14; // ecx
-  int v15; // edx
+  FrameOverlay *p_overlay_1; // ecx
+  uint32_t v15; // edx
   FrameBodBase **v16; // eax
   FrameBodBase *v17; // edx
   FrameBodBase *v18; // ecx
   int v19; // ecx
-  int v20; // edi
+  char *v20; // edi
   Object *v21; // eax
   Object *v22; // eax
   Object *v23; // eax
@@ -57,58 +57,58 @@ char __thiscall initialize_game_assets_and_world(int this)
   int *v51; // eax
   int v52; // ecx
   Object *v53; // eax
-  int *v54; // edi
-  int v55; // edx
-  int v56; // eax
-  int *v57; // eax
-  int v58; // ecx
-  int v59; // ecx
+  Object **p_object; // edi
+  Object *v55; // edx
+  ObjectFaceQuad *facequads; // eax
+  TextureRef *texture_ref; // eax
+  TextureRefFlags flags; // ecx
+  Object *v59; // ecx
   bool v60; // zf
   int v61; // eax
   Object *v62; // eax
-  tColour *v63; // edi
+  SubgameRuntime **p_owner_game; // edi
   int i; // edi
   Object *v65; // eax
-  int v66; // ecx
-  int v67; // edx
+  Object *v66; // ecx
+  Object *object; // edx
   _DWORD *v68; // eax
-  int v69; // edi
-  int v70; // ecx
-  int v71; // eax
-  int v72; // ecx
-  int v73; // eax
-  int v74; // eax
-  int *v75; // ecx
-  int v76; // edx
-  int v77; // eax
-  int v78; // eax
-  int *v79; // edx
-  int v80; // ecx
-  int v81; // eax
-  int v82; // eax
-  int *v83; // edx
-  int v84; // ecx
-  int v85; // eax
-  int v86; // eax
-  int *v87; // edx
-  int v88; // ecx
-  int v89; // eax
-  int v90; // eax
-  int *v91; // edx
-  int v92; // ecx
-  int v93; // eax
-  int v94; // eax
-  int *v95; // edx
-  int v96; // ecx
-  int v97; // eax
-  int v98; // eax
-  int *v99; // edx
-  int v100; // ecx
-  int v101; // eax
-  int v102; // eax
-  int *v103; // edx
-  int v104; // ecx
-  int v105; // eax
+  BodBase *p_track_body_list_head; // edi
+  FrameBodBase *v70; // ecx
+  FrameBodBase **v71; // eax
+  FrameBodBase *v72; // ecx
+  uint32_t v73; // eax
+  BodBase *p_barrier_sub_lazer_list_head; // eax
+  uint32_t *v75; // ecx
+  struct BodNode *list_next; // edx
+  uint32_t v77; // eax
+  BodBase *p_salt_hazard_list_head; // eax
+  uint32_t *v79; // edx
+  struct BodNode *v80; // ecx
+  uint32_t v81; // eax
+  BodBase *p_golb_vapour_list_head; // eax
+  uint32_t *v83; // edx
+  struct BodNode *v84; // ecx
+  uint32_t v85; // eax
+  BodBase *p_fringe_attachment_list_head; // eax
+  uint32_t *v87; // edx
+  struct BodNode *v88; // ecx
+  uint32_t v89; // eax
+  BodBase *p_special_track_cell_list_head; // eax
+  uint32_t *v91; // edx
+  struct BodNode *v92; // ecx
+  uint32_t v93; // eax
+  BodBase *p_unknown_bod_355cec; // eax
+  uint32_t *v95; // edx
+  struct BodNode *v96; // ecx
+  uint32_t v97; // eax
+  BodBase *p_landscape_slice_list_head; // eax
+  uint32_t *v99; // edx
+  struct BodNode *v100; // ecx
+  uint32_t v101; // eax
+  BodBase *p_unknown_bod_355c7c; // eax
+  uint32_t *v103; // edx
+  struct BodNode *v104; // ecx
+  uint32_t v105; // eax
   Object *v106; // eax
   Object *v107; // eax
   Object *v108; // eax
@@ -213,17 +213,17 @@ char __thiscall initialize_game_assets_and_world(int this)
   Object *v207; // eax
   Object *v208; // eax
   Object *v209; // eax
-  int v210; // ecx
-  int v211; // edx
-  int v212; // eax
+  Object *v210; // ecx
+  Object *v211; // edx
+  Object *v212; // eax
   Object *v213; // eax
   Object *v214; // eax
-  int v215; // edx
-  int v216; // eax
+  Object *v215; // edx
+  Object *v216; // eax
   Object *v217; // eax
   Object *v218; // eax
-  int v219; // eax
-  int v220; // ecx
+  Object *v219; // eax
+  Object *v220; // ecx
   Object *v221; // eax
   Object *v222; // eax
   Object *v223; // eax
@@ -242,7 +242,7 @@ char __thiscall initialize_game_assets_and_world(int this)
   Object *v236; // eax
   Object *v237; // eax
   Object *v238; // eax
-  int v239; // edx
+  Object *v239; // edx
   Object *v240; // eax
   char *case_insensitive_substring; // eax
   char *v242; // eax
@@ -314,14 +314,14 @@ char __thiscall initialize_game_assets_and_world(int this)
   int v308; // eax
   int v309; // eax
   int v310; // edx
-  TextureRef *texture_ref; // eax
+  TextureRef *v311; // eax
   TextureRef *v312; // eax
   Object *v313; // eax
   Object *v314; // eax
-  char *v315; // esi
+  uint8_t *v315; // esi
   Object *v316; // eax
   TextureRef *v317; // eax
-  TextureRefFlags flags; // ecx
+  TextureRefFlags v318; // ecx
   TextureRef *v319; // eax
   TextureRefFlags v320; // ecx
   TextureRef *v321; // eax
@@ -364,22 +364,22 @@ char __thiscall initialize_game_assets_and_world(int this)
   TextureRef *v358; // eax
   TextureRef *v359; // eax
   Object *v360; // eax
-  PathTemplateStripMesh **v361; // eax
+  uint8_t *v361; // eax
   PathTemplateStripMesh **v362; // esi
   int j; // edi
   Object *v364; // eax
   PathTemplateStripMesh *v365; // eax
   TextureRef *v366; // eax
   TextureRefFlags v367; // ecx
-  InputState *v368; // esi
+  InputState *p_input; // esi
   int v369; // edi
-  int v370; // eax
-  int v371; // esi
-  int v372; // edx
+  int32_t player_count; // eax
+  char *v371; // esi
+  GameInput *v372; // edx
   int v373; // eax
   int v374; // eax
-  int v375; // ecx
-  _DWORD *v376; // eax
+  int32_t v375; // ecx
+  uint8_t *v376; // eax
   int v377; // ecx
   _BYTE v379[92]; // [esp-10h] [ebp-14Ch] BYREF
   int transform_48; // [esp+5Ch] [ebp-E0h]
@@ -388,43 +388,43 @@ char __thiscall initialize_game_assets_and_world(int this)
   TransformMatrix v383; // [esp+FCh] [ebp-40h] BYREF
 
   noop_this_constructor(self);
-  store_color4f((tColour *)(this + 20), 1.0, 1.0, 1.0, 1.0);
-  *(_DWORD *)(this + 16) = 1065353216;
-  *(_DWORD *)(this + 8) = 1106247680;
-  *(_DWORD *)(this + 12) = 1112014848;
-  *(_BYTE *)(this + 4) = 1;
-  *(_DWORD *)(this + 64) = 2;
-  initialize_border_stack(this + 36);
-  *(_BYTE *)(this + 1384) = 0;
-  *(_BYTE *)(this + 476705) = 0;
+  store_color4f((tColour *)&game->unknown_000000[20], 1.0, 1.0, 1.0, 1.0);
+  *(_DWORD *)&game->unknown_000000[16] = 1065353216;
+  *(_DWORD *)&game->unknown_000000[8] = 1106247680;
+  *(_DWORD *)&game->unknown_000000[12] = 1112014848;
+  game->unknown_000000[4] = 1;
+  game->player_count = 2;
+  initialize_border_stack(&game->fade);
+  game->unknown_000521[71] = 0;
+  game->subgame.subgame_pause_gate = 0;
   initialize_cheat(&g_cheat_state);
-  *(_BYTE *)(this + 324320) = 0;
-  initialize_blink_random((float *)(this + 476696));
-  set_subgame_rate((SubgameRuntime *)(this + 476696), 1.1);
-  *(_DWORD *)(this + 1388) = 2;
+  game->intro.hide_for_replay_latch = 0;
+  initialize_blink_random((float *)&game->subgame.scan_reset);
+  set_subgame_rate(&game->subgame, 1.1);
+  game->render_skip_count = 2;
   *(_DWORD *)&v379[12] = 500;
-  *(_DWORD *)(this + 60) = 1;
+  game->fixed_update_count = 1;
   initialize_texture_list(&g_texture_refs, *(int *)&v379[12]);
   initialize_object_list(&g_object_list, 3000);
-  *(_DWORD *)(this + 1300) = 0;
-  *(_DWORD *)(this + 1304) = 0;
-  *(_DWORD *)(this + 1308) = 0;
-  *(_DWORD *)(this + 1404) = 0;
-  *(_DWORD *)(this + 1456) = this + 1392;
-  *(_DWORD *)(this + 1452) = 0;
-  *(_DWORD *)(this + 2888) = 0;
+  *(_DWORD *)game->unknown_000514 = 0;
+  game->fixed_update_accumulator = 0.0;
+  game->frame_counter = 0;
+  game->inactive_bod_sentinel.bod.list_next = nullptr;
+  game->active_bod_list.free_top = &game->inactive_bod_sentinel;
+  game->active_bod_list.first = nullptr;
+  game->unknown_000b48 = 0;
   memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
-  *(_DWORD *)(this + 1464) = 0;
-  *(_DWORD *)(this + 1468) = 16777219;
-  *(_DWORD *)(this + 1492) = this + 1788;
-  *(_DWORD *)(this + 1472) = 0;
-  *(_DWORD *)(this + 1476) = 0;
-  *(_DWORD *)(this + 1480) = 1065353216;
-  *(_DWORD *)(this + 1484) = 1065353216;
-  *(_BYTE *)(this + 1576) = 0;
-  v2 = (FrameBodBase *)(this + 1660);
-  v3 = (int *)(this + 1664);
-  if ( (*(_DWORD *)(this + 1664) & 0x200) != 0 )
+  game->render_camera_slots[0].sort_key = 0;
+  game->render_camera_slots[0].flags = 16777219;
+  game->render_camera_slots[0].source = &game->overlay_0.camera;
+  game->render_camera_slots[0].viewport_x = 0.0;
+  game->render_camera_slots[0].viewport_y = 0.0;
+  game->render_camera_slots[0].viewport_width = 1.0;
+  game->render_camera_slots[0].viewport_height = 1.0;
+  game->render_camera_slots[2].draw_world = 0;
+  p_overlay_0 = &game->overlay_0;
+  p_list_flags = &game->overlay_0.bod.bod.bod.list_flags;
+  if ( (game->overlay_0.bod.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -434,7 +434,7 @@ char __thiscall initialize_game_assets_and_world(int this)
     first = g_game_base->active_bod_list.first;
     if ( first )
     {
-      first->bod.list_prev = v2;
+      first->bod.list_prev = &p_overlay_0->bod.bod;
       (*p_first)->bod.list_prev->bod.list_next = *p_first;
       list_prev = (*p_first)->bod.list_prev;
       *p_first = list_prev;
@@ -442,55 +442,57 @@ char __thiscall initialize_game_assets_and_world(int this)
     }
     else
     {
-      *p_first = v2;
-      *(_DWORD *)(this + 1668) = 0;
+      *p_first = &p_overlay_0->bod.bod;
+      game->overlay_0.bod.bod.bod.list_prev = nullptr;
       (*p_first)->bod.list_next = nullptr;
     }
-    v7 = *v3;
-    BYTE1(v7) = BYTE1(*v3) | 2;
-    *v3 = v7;
+    v7 = *p_list_flags;
+    BYTE1(v7) = BYTE1(*p_list_flags) | 2;
+    *p_list_flags = v7;
   }
-  initialize_overlay(this + 1660);
+  initialize_overlay((int)&game->overlay_0);
   memset(&g_directx_loader_scratch, 0, 0x15Cu);
-  initialize_directx_loader((DirectXLoader *)(this + 298496));
-  reset_landscape_manager((_DWORD *)(this + 17220120));
-  load_segment_definitions((SMTracks *)(this + 17259236));
-  load_landscape_script_by_name((char *)(this + 17220120), aStarmapTxt);
-  load_landscape_script_by_name((char *)(this + 17220120), aSplashTxt);
-  load_landscape_script_by_name((char *)(this + 17220120), g_help_script_path);
-  *(_DWORD *)(this + 476764) = g_runtime_config.landscape_backdrop_variant_selector;
-  bind_subgame_owner((SubgameOwnerLink *)(this + 19744248));
-  bind_subgame_owner((SubgameOwnerLink *)(this + 19744292));
-  load_galaxy_layout((char *)(this + 19744312));
-  initialize_cameraman((Cameraman *)((char *)&loc_42FF7C + this));
-  open_logo((Logo *)(this + 324608));
+  initialize_directx_loader((DirectXLoader *)&game->unknown_044100[19712]);
+  reset_landscape_manager(&game->subgame.landscape_manager);
+  load_segment_definitions(&game->subgame.sm_tracks);
+  load_landscape_script_by_name((char *)&game->subgame.landscape_manager, aStarmapTxt);
+  load_landscape_script_by_name((char *)&game->subgame.landscape_manager, aSplashTxt);
+  load_landscape_script_by_name((char *)&game->subgame.landscape_manager, g_help_script_path);
+  game->subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
+  bind_subgame_owner((SubgameOwnerLink *)&game->subgame.gui);
+  bind_subgame_owner((SubgameOwnerLink *)&game->subgame.thanks_screen);
+  load_galaxy_layout((char *)&game->subgame.galaxy);
+  initialize_cameraman((Cameraman *)((char *)&loc_42FF7C + (_DWORD)game));
+  open_logo(&game->logo);
   initialize_sound_bank(&g_sound_bank_entries);
   initialize_voice_manager(g_voice_manager);
-  apply_audio_config_volumes();
-  load_level_definitions((SMTracks *)(this + 17259236));
-  load_landscape_script_by_name((char *)&g_game_base->subgame.unknown_000044[16743356], g_menu_background_script_path);
-  load_builtin_segment_definitions((SubTracks *)(this + 2246660), (SubSegmentRaw **)&g_builtin_segment_definitions);
-  *(_DWORD *)(this + 1504) = 1;
-  *(_DWORD *)&v379[12] = this + 452;
-  *(_DWORD *)(this + 1508) = 33554433;
-  attach_render_camera_source((_DWORD *)(this + 1500), *(int *)&v379[12]);
-  *(_DWORD *)(this + 648) = 0x2000000;
-  *(_DWORD *)&v379[12] = this + 956;
-  *(_DWORD *)(this + 1624) = 1;
-  *(_DWORD *)(this + 1628) = 268435459;
-  attach_render_camera_source((_DWORD *)(this + 1620), *(int *)&v379[12]);
-  *(_DWORD *)(this + 1152) = 0x10000000;
-  *(_DWORD *)(this + 1584) = 3;
-  *(_DWORD *)(this + 1588) = 134217731;
-  *(_DWORD *)(this + 1612) = this + 2452;
-  *(_DWORD *)(this + 1592) = 0;
-  *(_DWORD *)(this + 1596) = 0;
-  *(_DWORD *)(this + 1600) = 1065353216;
-  *(_DWORD *)(this + 1604) = 1065353216;
-  v8 = (FrameBodBase *)(this + 2324);
-  v9 = *(_DWORD *)(this + 2328);
-  *(_DWORD *)&v379[36] = this + 2328;
-  if ( (v9 & 0x200) != 0 )
+  apply_audio_config_volumes(&game->options);
+  load_level_definitions(&game->subgame.sm_tracks);
+  load_landscape_script_by_name((char *)&g_game_base->subgame.landscape_manager, g_menu_background_script_path);
+  load_builtin_segment_definitions(
+    &game->subgame.level_definition_scratch,
+    (SubSegmentRaw **)&g_builtin_segment_definitions);
+  game->render_camera_slots[1].sort_key = 1;
+  *(_DWORD *)&v379[12] = &game->players[0].camera;
+  game->render_camera_slots[1].flags = 33554433;
+  attach_render_camera_source(&game->render_camera_slots[1].unknown_00, *(int *)&v379[12]);
+  game->players[0].camera.render_mask = 0x2000000;
+  *(_DWORD *)&v379[12] = &game->players[1].camera;
+  game->render_camera_slots[4].sort_key = 1;
+  game->render_camera_slots[4].flags = 268435459;
+  attach_render_camera_source(&game->render_camera_slots[4].unknown_00, *(int *)&v379[12]);
+  game->players[1].camera.render_mask = 0x10000000;
+  game->render_camera_slots[3].sort_key = 3;
+  game->render_camera_slots[3].flags = 134217731;
+  game->render_camera_slots[3].source = &game->overlay_2.camera;
+  game->render_camera_slots[3].viewport_x = 0.0;
+  game->render_camera_slots[3].viewport_y = 0.0;
+  game->render_camera_slots[3].viewport_width = 1.0;
+  game->render_camera_slots[3].viewport_height = 1.0;
+  p_overlay_2 = &game->overlay_2;
+  list_flags = game->overlay_2.bod.bod.bod.list_flags;
+  *(_DWORD *)&v379[36] = &game->overlay_2.bod.bod.bod.list_flags;
+  if ( (list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -500,7 +502,7 @@ char __thiscall initialize_game_assets_and_world(int this)
     v11 = g_game_base->active_bod_list.first;
     if ( v11 )
     {
-      v11->bod.list_prev = v8;
+      v11->bod.list_prev = &p_overlay_2->bod.bod;
       (*v10)->bod.list_prev->bod.list_next = *v10;
       v12 = (*v10)->bod.list_prev;
       *v10 = v12;
@@ -508,25 +510,25 @@ char __thiscall initialize_game_assets_and_world(int this)
     }
     else
     {
-      *v10 = v8;
-      *(_DWORD *)(this + 2332) = 0;
+      *v10 = &p_overlay_2->bod.bod;
+      game->overlay_2.bod.bod.bod.list_prev = nullptr;
       (*v10)->bod.list_next = nullptr;
     }
     v13 = **(_DWORD **)&v379[36];
     BYTE1(v13) = BYTE1(**(_DWORD **)&v379[36]) | 2;
     **(_DWORD **)&v379[36] = v13;
   }
-  initialize_overlay(this + 2324);
-  *(_DWORD *)(this + 1544) = 2;
-  *(_DWORD *)(this + 1548) = 67108867;
-  *(_DWORD *)(this + 1572) = this + 2120;
-  *(_DWORD *)(this + 1552) = 0;
-  *(_DWORD *)(this + 1556) = 0;
-  v14 = (FrameBodBase *)(this + 1992);
-  *(_DWORD *)(this + 1560) = 1065353216;
-  *(_DWORD *)(this + 1564) = 1065353216;
-  v15 = *(_DWORD *)(this + 1996);
-  *(_DWORD *)&v379[36] = this + 1996;
+  initialize_overlay((int)&game->overlay_2);
+  game->render_camera_slots[2].sort_key = 2;
+  game->render_camera_slots[2].flags = 67108867;
+  game->render_camera_slots[2].source = &game->overlay_1.camera;
+  game->render_camera_slots[2].viewport_x = 0.0;
+  game->render_camera_slots[2].viewport_y = 0.0;
+  p_overlay_1 = &game->overlay_1;
+  game->render_camera_slots[2].viewport_width = 1.0;
+  game->render_camera_slots[2].viewport_height = 1.0;
+  v15 = game->overlay_1.bod.bod.bod.list_flags;
+  *(_DWORD *)&v379[36] = &game->overlay_1.bod.bod.bod.list_flags;
   if ( (v15 & 0x200) != 0 )
   {
     report_errorf(aListAdd);
@@ -537,7 +539,7 @@ char __thiscall initialize_game_assets_and_world(int this)
     v17 = g_game_base->active_bod_list.first;
     if ( v17 )
     {
-      v17->bod.list_prev = v14;
+      v17->bod.list_prev = &p_overlay_1->bod.bod;
       (*v16)->bod.list_prev->bod.list_next = *v16;
       v18 = (*v16)->bod.list_prev;
       *v16 = v18;
@@ -545,15 +547,15 @@ char __thiscall initialize_game_assets_and_world(int this)
     }
     else
     {
-      *v16 = v14;
-      *(_DWORD *)(this + 2000) = 0;
+      *v16 = &p_overlay_1->bod.bod;
+      game->overlay_1.bod.bod.bod.list_prev = nullptr;
       (*v16)->bod.list_next = nullptr;
     }
     v19 = **(_DWORD **)&v379[36];
     BYTE1(v19) = BYTE1(**(_DWORD **)&v379[36]) | 2;
     **(_DWORD **)&v379[36] = v19;
   }
-  initialize_overlay(this + 1992);
+  initialize_overlay((int)&game->overlay_1);
   register_font_texture_sheet_wrapper(aObjectsFontFon, 2, 1061158912, 1065353216);
   initialize_font3d_objects(0);
   initialize_font_wave_state();
@@ -627,1373 +629,1430 @@ char __thiscall initialize_game_assets_and_world(int this)
   *(_DWORD *)&v379[32] = 0;
   do
   {
-    v20 = this + 56 * (__int64)*(float *)&v379[32];
+    v20 = (char *)game + 56 * (__int64)*(float *)&v379[32];
     v21 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v20 + 280464), v21);
-    initialize_backdrop_slice_quad(*(PathTemplateStripMesh **)(v20 + 280500), aObjectsWorld00, *(float *)&v379[32]);
+    initialize_backdrop_slice_quad(*((PathTemplateStripMesh **)v20 + 70125), aObjectsWorld00, *(float *)&v379[32]);
     v22 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v20 + 280912), v22);
-    initialize_backdrop_slice_quad(*(PathTemplateStripMesh **)(v20 + 280948), aObjectsWorld00_0, *(float *)&v379[32]);
+    initialize_backdrop_slice_quad(*((PathTemplateStripMesh **)v20 + 70237), aObjectsWorld00_0, *(float *)&v379[32]);
     v23 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v20 + 281360), v23);
-    initialize_backdrop_slice_quad(*(PathTemplateStripMesh **)(v20 + 281396), texture_a, *(float *)&v379[32]);
+    initialize_backdrop_slice_quad(*((PathTemplateStripMesh **)v20 + 70349), texture_a, *(float *)&v379[32]);
     v24 = *(float *)&v379[32] + 1.0;
     *(float *)&v379[32] = v24;
   }
   while ( v24 < 8.0 );
   set_matrix_identity((TransformMatrix *)&v379[60]);
   v25 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280016), v25);
-  load_x_mesh((DirectXLoader *)(this + 298496), mesh_path, *(Object **)(this + 280052), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1232], v25);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], mesh_path, *(Object **)&game->unknown_044100[1268], 1);
   transform_48 = 0;
-  apply_bod_position((BodBase *)(this + 280016), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1232], (TransformMatrix *)&v379[60]);
   v26 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280072), v26);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar2X, *(Object **)(this + 280108), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1288], v26);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar2X, *(Object **)&game->unknown_044100[1324], 1);
   transform_48 = 1056964608;
-  apply_bod_position((BodBase *)(this + 280072), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1288], (TransformMatrix *)&v379[60]);
   v27 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280128), v27);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar3X, *(Object **)(this + 280164), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1344], v27);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar3X, *(Object **)&game->unknown_044100[1380], 1);
   transform_48 = 1065353216;
-  apply_bod_position((BodBase *)(this + 280128), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1344], (TransformMatrix *)&v379[60]);
   v28 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280184), v28);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar4X, *(Object **)(this + 280220), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1400], v28);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar4X, *(Object **)&game->unknown_044100[1436], 1);
   transform_48 = 1069547520;
-  apply_bod_position((BodBase *)(this + 280184), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1400], (TransformMatrix *)&v379[60]);
   v29 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280240), v29);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar5X, *(Object **)(this + 280276), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1456], v29);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar5X, *(Object **)&game->unknown_044100[1492], 1);
   transform_48 = 0x40000000;
-  apply_bod_position((BodBase *)(this + 280240), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1456], (TransformMatrix *)&v379[60]);
   v30 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280296), v30);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar6X, *(Object **)(this + 280332), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1512], v30);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar6X, *(Object **)&game->unknown_044100[1548], 1);
   transform_48 = 1075838976;
-  apply_bod_position((BodBase *)(this + 280296), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1512], (TransformMatrix *)&v379[60]);
   v31 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280352), v31);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar7X, *(Object **)(this + 280388), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1568], v31);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar7X, *(Object **)&game->unknown_044100[1604], 1);
   transform_48 = 1077936128;
-  apply_bod_position((BodBase *)(this + 280352), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1568], (TransformMatrix *)&v379[60]);
   v32 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 280408), v32);
-  load_x_mesh((DirectXLoader *)(this + 298496), aPillar8X, *(Object **)(this + 280444), 1);
+  set_bod_object((BodBase *)&game->unknown_044100[1624], v32);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPillar8X, *(Object **)&game->unknown_044100[1660], 1);
   transform_48 = 1080033280;
-  apply_bod_position((BodBase *)(this + 280408), (TransformMatrix *)&v379[60]);
+  apply_bod_position((BodBase *)&game->unknown_044100[1624], (TransformMatrix *)&v379[60]);
   v33 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 281808), v33);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)(this + 281844), aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(-1, *(_DWORD *)(this + 281844));
+  set_bod_object((BodBase *)&game->unknown_044100[3024], v33);
+  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[3060], aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(-1, *(_DWORD *)&game->unknown_044100[3060]);
   v34 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 281864), v34);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)(this + 281900), aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(0, *(_DWORD *)(this + 281900));
+  set_bod_object((BodBase *)&game->unknown_044100[3080], v34);
+  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[3116], aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(0, *(_DWORD *)&game->unknown_044100[3116]);
   v35 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 281920), v35);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)(this + 281956), aObjectsUnivers, 0.0);
-  raise_backdrop_quad_edge_pair(1, *(_DWORD *)(this + 281956));
+  set_bod_object((BodBase *)&game->unknown_044100[3136], v35);
+  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[3172], aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(1, *(_DWORD *)&game->unknown_044100[3172]);
   v36 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279064), v36);
-  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)(this + 279100), aObjectsWorld00);
+  set_bod_object((BodBase *)&game->unknown_044100[280], v36);
+  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)&game->unknown_044100[316], aObjectsWorld00);
   v37 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279120), v37);
-  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)(this + 279156), aObjectsWorld00);
+  set_bod_object((BodBase *)&game->unknown_044100[336], v37);
+  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)&game->unknown_044100[372], aObjectsWorld00);
   v38 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279232), v38);
-  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)(this + 279268), aObjectsWorld00);
+  set_bod_object((BodBase *)&game->unknown_044100[448], v38);
+  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)&game->unknown_044100[484], aObjectsWorld00);
   v39 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279176), v39);
-  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)(this + 279212), aObjectsWorld00);
+  set_bod_object((BodBase *)&game->unknown_044100[392], v39);
+  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)&game->unknown_044100[428], aObjectsWorld00);
   v40 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279288), v40);
-  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)(this + 279324), aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->unknown_044100[504], v40);
+  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)&game->unknown_044100[540], aObjectsWorld00_0);
   v41 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279344), v41);
-  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)(this + 279380), aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->unknown_044100[560], v41);
+  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)&game->unknown_044100[596], aObjectsWorld00_0);
   v42 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279456), v42);
-  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)(this + 279492), aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->unknown_044100[672], v42);
+  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)&game->unknown_044100[708], aObjectsWorld00_0);
   v43 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279400), v43);
-  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)(this + 279436), aObjectsWorld00_0);
+  set_bod_object((BodBase *)&game->unknown_044100[616], v43);
+  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)&game->unknown_044100[652], aObjectsWorld00_0);
   v44 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279512), v44);
-  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)(this + 279548), texture_a);
+  set_bod_object((BodBase *)&game->unknown_044100[728], v44);
+  initialize_backdrop_corner_quad(0, *(PathTemplateStripMesh **)&game->unknown_044100[764], texture_a);
   v45 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279568), v45);
-  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)(this + 279604), texture_a);
+  set_bod_object((BodBase *)&game->unknown_044100[784], v45);
+  initialize_backdrop_corner_quad(1, *(PathTemplateStripMesh **)&game->unknown_044100[820], texture_a);
   v46 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279680), v46);
-  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)(this + 279716), texture_a);
+  set_bod_object((BodBase *)&game->unknown_044100[896], v46);
+  initialize_backdrop_corner_quad(2, *(PathTemplateStripMesh **)&game->unknown_044100[932], texture_a);
   v47 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279624), v47);
-  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)(this + 279660), texture_a);
+  set_bod_object((BodBase *)&game->unknown_044100[840], v47);
+  initialize_backdrop_corner_quad(3, *(PathTemplateStripMesh **)&game->unknown_044100[876], texture_a);
   v48 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 279736), v48);
-  load_x_mesh((DirectXLoader *)(this + 298496), aTrampX, *(Object **)(this + 279772), 1);
-  *(_DWORD *)(*(_DWORD *)(this + 279772) + 20) = 6;
-  v49 = *(_DWORD **)(*(_DWORD *)(*(_DWORD *)(this + 279772) + 92) + 12);
+  set_bod_object((BodBase *)&game->unknown_044100[952], v48);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aTrampX, *(Object **)&game->unknown_044100[988], 1);
+  *(_DWORD *)(*(_DWORD *)&game->unknown_044100[988] + 20) = 6;
+  v49 = *(_DWORD **)(*(_DWORD *)(*(_DWORD *)&game->unknown_044100[988] + 92) + 12);
   *v49 |= 0x400u;
   v50 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 278784), v50);
-  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)(this + 278820), aObjectsUnivers_0, 0.0);
-  *(_DWORD *)(*(_DWORD *)(this + 278820) + 20) = 5;
-  v51 = *(int **)(*(_DWORD *)(*(_DWORD *)(this + 278820) + 92) + 12);
+  set_bod_object((BodBase *)game->unknown_044100, v50);
+  initialize_textured_backdrop_quad(*(PathTemplateStripMesh **)&game->unknown_044100[36], aObjectsUnivers_0, 0.0);
+  *(_DWORD *)(*(_DWORD *)&game->unknown_044100[36] + 20) = 5;
+  v51 = *(int **)(*(_DWORD *)(*(_DWORD *)&game->unknown_044100[36] + 92) + 12);
   v52 = *v51;
   BYTE1(v52) = BYTE1(*v51) | 4;
   *v51 = v52;
   v53 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 281976), v53);
-  load_object_definition(path, *(Object **)(this + 282012));
-  v54 = (int *)(this + 3977532);
+  set_bod_object((BodBase *)&game->unknown_044100[3192], v53);
+  load_object_definition(path, *(Object **)&game->unknown_044100[3228]);
+  p_object = &game->subgame.sub_lazers.slots[0].body.bod.object;
   *(_DWORD *)&v379[36] = 20;
   do
   {
-    set_bod_object((BodBase *)(v54 - 9), *(Object **)(this + 282012));
-    v55 = *v54;
+    set_bod_object((BodBase *)(p_object - 9), *(Object **)&game->unknown_044100[3228]);
+    v55 = *p_object;
     *(_DWORD *)&v379[12] = 1060320051;
     *(_DWORD *)&v379[8] = 1065353216;
     *(_DWORD *)&v379[4] = 1065353216;
-    v56 = *(_DWORD *)(v55 + 92);
+    facequads = v55->facequads;
     *(_DWORD *)v379 = 1065353216;
-    v57 = *(int **)(v56 + 12);
-    v58 = *v57;
-    BYTE1(v58) = BYTE1(*v57) | 4;
-    *v57 = v58;
-    v54[25] = this + 476696;
-    store_color4f((tColour *)(v54 + 1), *(float *)v379, *(float *)&v379[4], *(float *)&v379[8], *(float *)&v379[12]);
-    v59 = *v54;
-    v54 += 44;
+    texture_ref = facequads->texture_ref;
+    flags = texture_ref->flags;
+    BYTE1(flags) = ((unsigned __int16)texture_ref->flags >> 8) | 4;
+    texture_ref->flags = flags;
+    p_object[25] = (Object *)&game->subgame;
+    store_color4f(
+      (tColour *)(p_object + 1),
+      *(float *)v379,
+      *(float *)&v379[4],
+      *(float *)&v379[8],
+      *(float *)&v379[12]);
+    v59 = *p_object;
+    p_object += 44;
     v61 = *(_DWORD *)&v379[36] - 1;
     v60 = *(_DWORD *)&v379[36] == 1;
-    *(_DWORD *)(v59 + 20) = 9;
+    v59->blend_mode = 9;
     *(_DWORD *)&v379[36] = v61;
   }
   while ( !v60 );
   v62 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 298440), v62);
-  load_x_mesh((DirectXLoader *)(this + 298496), aSaltX, *(Object **)(this + 298476), 1);
-  v63 = (tColour *)(this + 3981152);
+  set_bod_object((BodBase *)&game->unknown_044100[19656], v62);
+  load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aSaltX, *(Object **)&game->unknown_044100[19692], 1);
+  p_owner_game = &game->subgame.salt_hazards.slots[0].owner_game;
   *(_DWORD *)&v379[36] = 40;
   do
   {
-    set_bod_object((BodBase *)&v63[-9].b, *(Object **)(this + 298476));
+    set_bod_object((BodBase *)(p_owner_game - 34), *(Object **)&game->unknown_044100[19692]);
     *(_DWORD *)&v379[12] = 1063675494;
     *(_DWORD *)&v379[8] = 1065353216;
     *(_DWORD *)&v379[4] = 1065353216;
     *(_DWORD *)v379 = 1065353216;
-    LODWORD(v63->r) = this + 476696;
-    store_color4f(v63 - 6, *(float *)v379, *(float *)&v379[4], *(float *)&v379[8], *(float *)&v379[12]);
-    *(_DWORD *)(LODWORD(v63[-7].a) + 20) = 12;
-    set_matrix_identity((TransformMatrix *)&v63[-5]);
-    v63 = (tColour *)((char *)v63 + 152);
+    *p_owner_game = &game->subgame;
+    store_color4f(
+      (tColour *)p_owner_game - 6,
+      *(float *)v379,
+      *(float *)&v379[4],
+      *(float *)&v379[8],
+      *(float *)&v379[12]);
+    (*(p_owner_game - 25))->sub_pause.options_widget = (FrontendWidget *)12;
+    set_matrix_identity((TransformMatrix *)(p_owner_game - 20));
+    p_owner_game += 38;
     --*(_DWORD *)&v379[36];
   }
   while ( *(_DWORD *)&v379[36] );
   for ( i = 0; i < 2; ++i )
   {
-    *(_DWORD *)&v379[36] = this + 96 * i;
+    *(_DWORD *)&v379[36] = (char *)game + 96 * i;
     v65 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(*(_DWORD *)&v379[36] + 3987096), v65);
     if ( i )
     {
       if ( i != 1 )
         goto LABEL_31;
-      v67 = *(_DWORD *)(this + 3987228);
+      object = game->subgame.banners.slots[1].bod.object;
       *(_DWORD *)&v379[12] = 1;
-      *(_DWORD *)&v379[8] = v67;
+      *(_DWORD *)&v379[8] = object;
     }
     else
     {
-      v66 = *(_DWORD *)(this + 3987132);
+      v66 = game->subgame.banners.slots[0].bod.object;
       *(_DWORD *)&v379[12] = 1;
       *(_DWORD *)&v379[8] = v66;
     }
-    load_x_mesh((DirectXLoader *)(this + 298496), aPostofficestop, *(Object **)&v379[8], *(int *)&v379[12]);
+    load_x_mesh((DirectXLoader *)&game->unknown_044100[19712], aPostofficestop, *(Object **)&v379[8], *(int *)&v379[12]);
 LABEL_31:
     v68 = *(_DWORD **)&v379[36];
     *(_DWORD *)(*(_DWORD *)&v379[36] + 3987120) = 0;
     v68[996779] = 0;
     v68[996778] = 0;
-    *(_DWORD *)(32 * (3 * i + 124599) + this) = this + 476696;
+    *(_DWORD *)&game->subgame.banners.slots[i]._pad_3c[12] = &game->subgame;
     v68[996788] = i;
     v68[996796] = 0;
     v68[996797] = 1004768824;
   }
-  v69 = this + 3973556;
-  if ( (*(_DWORD *)(this + 3973560) & 0x200) != 0 )
+  p_track_body_list_head = &game->subgame.track_body_list_head;
+  if ( (game->subgame.track_body_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
   else
   {
-    v70 = *(_DWORD *)(this + 1452);
-    v71 = this + 1452;
+    v70 = game->active_bod_list.first;
+    v71 = &game->active_bod_list.first;
     if ( v70 )
     {
-      *(_DWORD *)(v70 + 8) = v69;
-      *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v71 + 8) + 12) = *(_DWORD *)v71;
-      v72 = *(_DWORD *)(*(_DWORD *)v71 + 8);
-      *(_DWORD *)v71 = v72;
-      *(_DWORD *)(v72 + 8) = 0;
+      v70->bod.list_prev = (FrameBodBase *)p_track_body_list_head;
+      (*v71)->bod.list_prev->bod.list_next = *v71;
+      v72 = (*v71)->bod.list_prev;
+      *v71 = v72;
+      v72->bod.list_prev = nullptr;
     }
     else
     {
-      *(_DWORD *)v71 = v69;
-      *(_DWORD *)(this + 3973564) = 0;
-      *(_DWORD *)(*(_DWORD *)v71 + 12) = 0;
+      *v71 = (FrameBodBase *)p_track_body_list_head;
+      game->subgame.track_body_list_head.bod.list_prev = nullptr;
+      (*v71)->bod.list_next = nullptr;
     }
-    v73 = *(_DWORD *)(this + 3973560);
+    v73 = game->subgame.track_body_list_head.bod.list_flags;
     BYTE1(v73) |= 2u;
-    *(_DWORD *)(this + 3973560) = v73;
+    game->subgame.track_body_list_head.bod.list_flags = v73;
   }
-  v74 = this + 3973612;
-  v75 = (int *)(this + 3973616);
-  if ( (*(_DWORD *)(this + 3973616) & 0x200) != 0 )
+  p_barrier_sub_lazer_list_head = &game->subgame.barrier_sub_lazer_list_head;
+  v75 = &game->subgame.barrier_sub_lazer_list_head.bod.list_flags;
+  if ( (game->subgame.barrier_sub_lazer_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973620) = v69;
-    *(_DWORD *)(this + 3973624) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v74;
-    v76 = *(_DWORD *)(this + 3973624);
-    if ( v76 )
-      *(_DWORD *)(v76 + 8) = v74;
+    game->subgame.barrier_sub_lazer_list_head.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.barrier_sub_lazer_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_barrier_sub_lazer_list_head->bod;
+    list_next = game->subgame.barrier_sub_lazer_list_head.bod.list_next;
+    if ( list_next )
+      list_next->list_prev = &p_barrier_sub_lazer_list_head->bod;
     v77 = *v75;
     BYTE1(v77) = BYTE1(*v75) | 2;
     *v75 = v77;
   }
-  v78 = this + 3973668;
-  v79 = (int *)(this + 3973672);
-  if ( (*(_DWORD *)(this + 3973672) & 0x200) != 0 )
+  p_salt_hazard_list_head = &game->subgame.salt_hazard_list_head;
+  v79 = &game->subgame.salt_hazard_list_head.bod.list_flags;
+  if ( (game->subgame.salt_hazard_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973676) = v69;
-    *(_DWORD *)(this + 3973680) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v78;
-    v80 = *(_DWORD *)(this + 3973680);
+    game->subgame.salt_hazard_list_head.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.salt_hazard_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_salt_hazard_list_head->bod;
+    v80 = game->subgame.salt_hazard_list_head.bod.list_next;
     if ( v80 )
-      *(_DWORD *)(v80 + 8) = v78;
+      v80->list_prev = &p_salt_hazard_list_head->bod;
     v81 = *v79;
     BYTE1(v81) = BYTE1(*v79) | 2;
     *v79 = v81;
   }
-  v82 = this + 3973948;
-  v83 = (int *)(this + 3973952);
-  if ( (*(_DWORD *)(this + 3973952) & 0x200) != 0 )
+  p_golb_vapour_list_head = &game->subgame.golb_vapour_list_head;
+  v83 = &game->subgame.golb_vapour_list_head.bod.list_flags;
+  if ( (game->subgame.golb_vapour_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973956) = v69;
-    *(_DWORD *)(this + 3973960) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v82;
-    v84 = *(_DWORD *)(this + 3973960);
+    game->subgame.golb_vapour_list_head.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.golb_vapour_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_golb_vapour_list_head->bod;
+    v84 = game->subgame.golb_vapour_list_head.bod.list_next;
     if ( v84 )
-      *(_DWORD *)(v84 + 8) = v82;
+      v84->list_prev = &p_golb_vapour_list_head->bod;
     v85 = *v83;
     BYTE1(v85) = BYTE1(*v83) | 2;
     *v83 = v85;
   }
-  v86 = this + 3973500;
-  v87 = (int *)(this + 3973504);
-  if ( (*(_DWORD *)(this + 3973504) & 0x200) != 0 )
+  p_fringe_attachment_list_head = &game->subgame.fringe_attachment_list_head;
+  v87 = &game->subgame.fringe_attachment_list_head.bod.list_flags;
+  if ( (game->subgame.fringe_attachment_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973508) = v69;
-    *(_DWORD *)(this + 3973512) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v86;
-    v88 = *(_DWORD *)(this + 3973512);
+    game->subgame.fringe_attachment_list_head.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.fringe_attachment_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_fringe_attachment_list_head->bod;
+    v88 = game->subgame.fringe_attachment_list_head.bod.list_next;
     if ( v88 )
-      *(_DWORD *)(v88 + 8) = v86;
+      v88->list_prev = &p_fringe_attachment_list_head->bod;
     v89 = *v87;
     BYTE1(v89) = BYTE1(*v87) | 2;
     *v87 = v89;
   }
-  v90 = this + 3973836;
-  v91 = (int *)(this + 3973840);
-  if ( (*(_DWORD *)(this + 3973840) & 0x200) != 0 )
+  p_special_track_cell_list_head = &game->subgame.special_track_cell_list_head;
+  v91 = &game->subgame.special_track_cell_list_head.bod.list_flags;
+  if ( (game->subgame.special_track_cell_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973844) = v69;
-    *(_DWORD *)(this + 3973848) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v90;
-    v92 = *(_DWORD *)(this + 3973848);
+    game->subgame.special_track_cell_list_head.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.special_track_cell_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_special_track_cell_list_head->bod;
+    v92 = game->subgame.special_track_cell_list_head.bod.list_next;
     if ( v92 )
-      *(_DWORD *)(v92 + 8) = v90;
+      v92->list_prev = &p_special_track_cell_list_head->bod;
     v93 = *v91;
     BYTE1(v93) = BYTE1(*v91) | 2;
     *v91 = v93;
   }
-  v94 = this + 3973892;
-  v95 = (int *)(this + 3973896);
-  if ( (*(_DWORD *)(this + 3973896) & 0x200) != 0 )
+  p_unknown_bod_355cec = &game->subgame.unknown_bod_355cec;
+  v95 = &game->subgame.unknown_bod_355cec.bod.list_flags;
+  if ( (game->subgame.unknown_bod_355cec.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973900) = v69;
-    *(_DWORD *)(this + 3973904) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v94;
-    v96 = *(_DWORD *)(this + 3973904);
+    game->subgame.unknown_bod_355cec.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.unknown_bod_355cec.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_unknown_bod_355cec->bod;
+    v96 = game->subgame.unknown_bod_355cec.bod.list_next;
     if ( v96 )
-      *(_DWORD *)(v96 + 8) = v94;
+      v96->list_prev = &p_unknown_bod_355cec->bod;
     v97 = *v95;
     BYTE1(v97) = BYTE1(*v95) | 2;
     *v95 = v97;
   }
-  v98 = this + 3973724;
-  v99 = (int *)(this + 3973728);
-  if ( (*(_DWORD *)(this + 3973728) & 0x200) != 0 )
+  p_landscape_slice_list_head = &game->subgame.landscape_slice_list_head;
+  v99 = &game->subgame.landscape_slice_list_head.bod.list_flags;
+  if ( (game->subgame.landscape_slice_list_head.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973732) = v69;
-    *(_DWORD *)(this + 3973736) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v98;
-    v100 = *(_DWORD *)(this + 3973736);
+    game->subgame.landscape_slice_list_head.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.landscape_slice_list_head.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_landscape_slice_list_head->bod;
+    v100 = game->subgame.landscape_slice_list_head.bod.list_next;
     if ( v100 )
-      *(_DWORD *)(v100 + 8) = v98;
+      v100->list_prev = &p_landscape_slice_list_head->bod;
     v101 = *v99;
     BYTE1(v101) = BYTE1(*v99) | 2;
     *v99 = v101;
   }
-  v102 = this + 3973780;
-  v103 = (int *)(this + 3973784);
-  if ( (*(_DWORD *)(this + 3973784) & 0x200) != 0 )
+  p_unknown_bod_355c7c = &game->subgame.unknown_bod_355c7c;
+  v103 = &game->subgame.unknown_bod_355c7c.bod.list_flags;
+  if ( (game->subgame.unknown_bod_355c7c.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
   }
   else
   {
-    *(_DWORD *)(this + 3973788) = v69;
-    *(_DWORD *)(this + 3973792) = *(_DWORD *)(this + 3973568);
-    *(_DWORD *)(this + 3973568) = v102;
-    v104 = *(_DWORD *)(this + 3973792);
+    game->subgame.unknown_bod_355c7c.bod.list_prev = &p_track_body_list_head->bod;
+    game->subgame.unknown_bod_355c7c.bod.list_next = game->subgame.track_body_list_head.bod.list_next;
+    game->subgame.track_body_list_head.bod.list_next = &p_unknown_bod_355c7c->bod;
+    v104 = game->subgame.unknown_bod_355c7c.bod.list_next;
     if ( v104 )
-      *(_DWORD *)(v104 + 8) = v102;
+      v104->list_prev = &p_unknown_bod_355c7c->bod;
     v105 = *v103;
     BYTE1(v105) = BYTE1(*v103) | 2;
     *v103 = v105;
   }
   debug_report_stub();
   v106 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17198892), v106);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17198892), 6.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17198916) = 0;
-  *(_DWORD *)(this + 17198912) = 0;
-  *(_DWORD *)(this + 17198908) = 0;
+  set_bod_object(&game->subgame.path_pairs[0].primary.bod, v106);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[0].primary, 6.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[0].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[0].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[0].primary.bod.position.x = 0.0;
   v107 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17199060), v107);
-  mirror_path_template_pair_x((Path *)(this + 17199060), (Path *)(this + 17198892));
+  set_bod_object(&game->subgame.path_pairs[0].secondary.bod, v107);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[0].secondary, &game->subgame.path_pairs[0].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17199084) = 0;
-  *(_DWORD *)(this + 17199080) = 0;
-  *(_DWORD *)(this + 17199076) = 0;
-  build_track_fringe_mesh((Path *)(this + 17198892), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[0].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[0].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[0].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[0].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17199012) = 0;
-  *(_DWORD *)(this + 17199008) = 0;
-  *(_DWORD *)(this + 17199004) = 0;
-  build_track_fringe_mesh((Path *)(this + 17199060), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17199180) = 0;
-  *(_DWORD *)(this + 17199176) = 0;
-  *(_DWORD *)(this + 17199172) = 0;
+  game->subgame.path_pairs[0].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[0].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[0].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[0].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[0].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[0].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[0].secondary.fringe_mesh_bod.position.x = 0.0;
   v108 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17199228), v108);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17199228), 6.0, 2, (char *)1, texture_a);
-  *(_DWORD *)(this + 17199252) = 0;
-  *(_DWORD *)(this + 17199248) = 0;
-  *(_DWORD *)(this + 17199244) = 0;
+  set_bod_object(&game->subgame.path_pairs[1].primary.bod, v108);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[1].primary, 6.0, 2, (char *)1, texture_a);
+  game->subgame.path_pairs[1].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[1].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[1].primary.bod.position.x = 0.0;
   v109 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17199396), v109);
-  mirror_path_template_pair_x((Path *)(this + 17199396), (Path *)(this + 17199228));
+  set_bod_object(&game->subgame.path_pairs[1].secondary.bod, v109);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[1].secondary, &game->subgame.path_pairs[1].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17199420) = 0;
-  *(_DWORD *)(this + 17199416) = 0;
-  *(_DWORD *)(this + 17199412) = 0;
-  build_track_fringe_mesh((Path *)(this + 17199228), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17199348) = 0;
-  *(_DWORD *)(this + 17199344) = 0;
-  *(_DWORD *)(this + 17199340) = 0;
-  build_track_fringe_mesh((Path *)(this + 17199396), aObjectsUnivers_1, 0.0);
-  *(_DWORD *)(this + 17199516) = 0;
-  *(_DWORD *)(this + 17199512) = 0;
-  *(_DWORD *)(this + 17199508) = 0;
+  game->subgame.path_pairs[1].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[1].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[1].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[1].primary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[1].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[1].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[1].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[1].secondary, aObjectsUnivers_1, 0.0);
+  game->subgame.path_pairs[1].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[1].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[1].secondary.fringe_mesh_bod.position.x = 0.0;
   v110 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17199564), v110);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17199564), 8.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17199588) = 0;
-  *(_DWORD *)(this + 17199584) = 0;
-  *(_DWORD *)(this + 17199580) = 0;
+  set_bod_object(&game->subgame.path_pairs[2].primary.bod, v110);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[2].primary, 8.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[2].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[2].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[2].primary.bod.position.x = 0.0;
   v111 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17199732), v111);
-  mirror_path_template_pair_x((Path *)(this + 17199732), (Path *)(this + 17199564));
+  set_bod_object(&game->subgame.path_pairs[2].secondary.bod, v111);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[2].secondary, &game->subgame.path_pairs[2].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17199756) = 0;
-  *(_DWORD *)(this + 17199752) = 0;
-  *(_DWORD *)(this + 17199748) = 0;
-  build_track_fringe_mesh((Path *)(this + 17199564), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[2].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[2].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[2].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[2].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17199684) = 0;
-  *(_DWORD *)(this + 17199680) = 0;
-  *(_DWORD *)(this + 17199676) = 0;
-  build_track_fringe_mesh((Path *)(this + 17199732), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17199852) = 0;
-  *(_DWORD *)(this + 17199848) = 0;
-  *(_DWORD *)(this + 17199844) = 0;
+  game->subgame.path_pairs[2].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[2].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[2].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[2].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[2].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[2].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[2].secondary.fringe_mesh_bod.position.x = 0.0;
   v112 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17200908), v112);
-  initialize_looptheloopw_path_template_pair((Path *)(this + 17200908), 8.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17200932) = 0;
-  *(_DWORD *)(this + 17200928) = 0;
-  *(_DWORD *)(this + 17200924) = 0;
+  set_bod_object(&game->subgame.path_pairs[6].primary.bod, v112);
+  initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[6].primary, 8.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[6].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[6].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[6].primary.bod.position.x = 0.0;
   v113 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17201076), v113);
-  mirror_path_template_pair_x((Path *)(this + 17201076), (Path *)(this + 17200908));
+  set_bod_object(&game->subgame.path_pairs[6].secondary.bod, v113);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[6].secondary, &game->subgame.path_pairs[6].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17201100) = 0;
-  *(_DWORD *)(this + 17201096) = 0;
-  *(_DWORD *)(this + 17201092) = 0;
-  build_track_fringe_mesh((Path *)(this + 17200908), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17201028) = 0;
+  game->subgame.path_pairs[6].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[6].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[6].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[6].primary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[6].primary.fringe_mesh_bod.position.z = 0.0;
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17201024) = 0;
-  *(_DWORD *)(this + 17201020) = 0;
-  build_track_fringe_mesh((Path *)(this + 17201076), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17201196) = 0;
-  *(_DWORD *)(this + 17201192) = 0;
-  *(_DWORD *)(this + 17201188) = 0;
+  game->subgame.path_pairs[6].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[6].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[6].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[6].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[6].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[6].secondary.fringe_mesh_bod.position.x = 0.0;
   v114 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17199900), v114);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17199900), 3.0, 2, (char *)1, texture_a);
-  *(_DWORD *)(this + 17199924) = 0;
-  *(_DWORD *)(this + 17199920) = 0;
-  *(_DWORD *)(this + 17199916) = 0;
+  set_bod_object(&game->subgame.path_pairs[3].primary.bod, v114);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[3].primary, 3.0, 2, (char *)1, texture_a);
+  game->subgame.path_pairs[3].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[3].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[3].primary.bod.position.x = 0.0;
   v115 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17200068), v115);
-  mirror_path_template_pair_x((Path *)(this + 17200068), (Path *)(this + 17199900));
+  set_bod_object(&game->subgame.path_pairs[3].secondary.bod, v115);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[3].secondary, &game->subgame.path_pairs[3].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17200092) = 0;
-  *(_DWORD *)(this + 17200088) = 0;
-  *(_DWORD *)(this + 17200084) = 0;
-  build_track_fringe_mesh((Path *)(this + 17199900), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[3].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[3].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[3].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[3].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17200020) = 0;
-  *(_DWORD *)(this + 17200016) = 0;
-  *(_DWORD *)(this + 17200012) = 0;
-  build_track_fringe_mesh((Path *)(this + 17200068), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17200188) = 0;
-  *(_DWORD *)(this + 17200184) = 0;
-  *(_DWORD *)(this + 17200180) = 0;
+  game->subgame.path_pairs[3].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[3].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[3].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[3].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[3].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[3].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[3].secondary.fringe_mesh_bod.position.x = 0.0;
   v116 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17200236), v116);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17200236), 3.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17200260) = 0;
-  *(_DWORD *)(this + 17200256) = 0;
-  *(_DWORD *)(this + 17200252) = 0;
+  set_bod_object(&game->subgame.path_pairs[4].primary.bod, v116);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[4].primary, 3.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[4].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[4].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[4].primary.bod.position.x = 0.0;
   v117 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17200404), v117);
-  mirror_path_template_pair_x((Path *)(this + 17200404), (Path *)(this + 17200236));
+  set_bod_object(&game->subgame.path_pairs[4].secondary.bod, v117);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[4].secondary, &game->subgame.path_pairs[4].primary);
   *(_DWORD *)&v379[12] = 0;
-  *(_DWORD *)(this + 17200428) = 0;
-  *(_DWORD *)(this + 17200424) = 0;
-  *(_DWORD *)(this + 17200420) = 0;
-  build_track_fringe_mesh((Path *)(this + 17200236), aObjectsUnivers_1, *(float *)&v379[12]);
+  game->subgame.path_pairs[4].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[4].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[4].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[4].primary, aObjectsUnivers_1, *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17200356) = 0;
-  *(_DWORD *)(this + 17200352) = 0;
-  *(_DWORD *)(this + 17200348) = 0;
-  build_track_fringe_mesh((Path *)(this + 17200404), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17200524) = 0;
-  *(_DWORD *)(this + 17200520) = 0;
-  *(_DWORD *)(this + 17200516) = 0;
+  game->subgame.path_pairs[4].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[4].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[4].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[4].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[4].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[4].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[4].secondary.fringe_mesh_bod.position.x = 0.0;
   v118 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17200572), v118);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17200572), 3.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17200596) = 0;
-  *(_DWORD *)(this + 17200592) = 0;
-  *(_DWORD *)(this + 17200588) = 0;
+  set_bod_object(&game->subgame.path_pairs[5].primary.bod, v118);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[5].primary, 3.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[5].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[5].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[5].primary.bod.position.x = 0.0;
   v119 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17200740), v119);
-  mirror_path_template_pair_x((Path *)(this + 17200740), (Path *)(this + 17200572));
+  set_bod_object(&game->subgame.path_pairs[5].secondary.bod, v119);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[5].secondary, &game->subgame.path_pairs[5].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17200764) = 0;
-  *(_DWORD *)(this + 17200760) = 0;
-  *(_DWORD *)(this + 17200756) = 0;
-  build_track_fringe_mesh((Path *)(this + 17200572), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[5].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[5].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[5].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[5].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17200692) = 0;
-  *(_DWORD *)(this + 17200688) = 0;
-  *(_DWORD *)(this + 17200684) = 0;
-  build_track_fringe_mesh((Path *)(this + 17200740), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17200860) = 0;
-  *(_DWORD *)(this + 17200856) = 0;
-  *(_DWORD *)(this + 17200852) = 0;
+  game->subgame.path_pairs[5].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[5].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[5].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[5].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[5].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[5].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[5].secondary.fringe_mesh_bod.position.x = 0.0;
   v120 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17201244), v120);
-  initialize_loopbow_path_template_pair((Path *)(this + 17201244), 6.0, 4u, (char *)1, texture_a);
-  *(_DWORD *)(this + 17201268) = 0;
-  *(_DWORD *)(this + 17201264) = 0;
-  *(_DWORD *)(this + 17201260) = 0;
+  set_bod_object(&game->subgame.path_pairs[7].primary.bod, v120);
+  initialize_loopbow_path_template_pair(&game->subgame.path_pairs[7].primary, 6.0, 4u, (char *)1, texture_a);
+  game->subgame.path_pairs[7].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[7].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[7].primary.bod.position.x = 0.0;
   v121 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17201412), v121);
-  mirror_path_template_pair_x((Path *)(this + 17201412), (Path *)(this + 17201244));
-  *(_DWORD *)(this + 17201436) = 0;
-  *(_DWORD *)(this + 17201432) = 0;
+  set_bod_object(&game->subgame.path_pairs[7].secondary.bod, v121);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[7].secondary, &game->subgame.path_pairs[7].primary);
+  game->subgame.path_pairs[7].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[7].secondary.bod.position.y = 0.0;
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17201428) = 0;
-  build_track_fringe_mesh((Path *)(this + 17201244), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[7].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[7].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17201364) = 0;
-  *(_DWORD *)(this + 17201360) = 0;
-  *(_DWORD *)(this + 17201356) = 0;
-  build_track_fringe_mesh((Path *)(this + 17201412), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17201532) = 0;
-  *(_DWORD *)(this + 17201528) = 0;
-  *(_DWORD *)(this + 17201524) = 0;
+  game->subgame.path_pairs[7].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[7].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[7].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[7].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[7].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[7].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[7].secondary.fringe_mesh_bod.position.x = 0.0;
   v122 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17211324), v122);
-  initialize_turnover_path_template_pair((Path *)(this + 17211324), 6.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17211348) = 0;
-  *(_DWORD *)(this + 17211344) = 0;
-  *(_DWORD *)(this + 17211340) = 0;
+  set_bod_object(&game->subgame.path_pairs[37].primary.bod, v122);
+  initialize_turnover_path_template_pair(&game->subgame.path_pairs[37].primary, 6.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[37].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[37].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[37].primary.bod.position.x = 0.0;
   v123 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17211492), v123);
-  mirror_path_template_pair_x((Path *)(this + 17211492), (Path *)(this + 17211324));
+  set_bod_object(&game->subgame.path_pairs[37].secondary.bod, v123);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[37].secondary, &game->subgame.path_pairs[37].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17211516) = 0;
-  *(_DWORD *)(this + 17211512) = 0;
-  *(_DWORD *)(this + 17211508) = 0;
-  build_track_fringe_mesh((Path *)(this + 17211324), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[37].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[37].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[37].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[37].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17211444) = 0;
-  *(_DWORD *)(this + 17211440) = 0;
-  *(_DWORD *)(this + 17211436) = 0;
-  build_track_fringe_mesh((Path *)(this + 17211492), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17211612) = 0;
-  *(_DWORD *)(this + 17211608) = 0;
-  *(_DWORD *)(this + 17211604) = 0;
+  game->subgame.path_pairs[37].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[37].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[37].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[37].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[37].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[37].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[37].secondary.fringe_mesh_bod.position.x = 0.0;
   v124 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17211660), v124);
-  initialize_turnoverdouble_path_template_pair((Path *)(this + 17211660), 6.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17211684) = 0;
-  *(_DWORD *)(this + 17211680) = 0;
-  *(_DWORD *)(this + 17211676) = 0;
+  set_bod_object(&game->subgame.path_pairs[38].primary.bod, v124);
+  initialize_turnoverdouble_path_template_pair(&game->subgame.path_pairs[38].primary, 6.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[38].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[38].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[38].primary.bod.position.x = 0.0;
   v125 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17211828), v125);
-  mirror_path_template_pair_x((Path *)(this + 17211828), (Path *)(this + 17211660));
+  set_bod_object(&game->subgame.path_pairs[38].secondary.bod, v125);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[38].secondary, &game->subgame.path_pairs[38].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17211852) = 0;
-  *(_DWORD *)(this + 17211848) = 0;
-  *(_DWORD *)(this + 17211844) = 0;
-  build_track_fringe_mesh((Path *)(this + 17211660), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[38].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[38].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[38].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[38].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17211780) = 0;
-  *(_DWORD *)(this + 17211776) = 0;
-  *(_DWORD *)(this + 17211772) = 0;
-  build_track_fringe_mesh((Path *)(this + 17211828), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17211948) = 0;
-  *(_DWORD *)(this + 17211944) = 0;
-  *(_DWORD *)(this + 17211940) = 0;
+  game->subgame.path_pairs[38].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[38].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[38].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[38].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[38].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[38].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[38].secondary.fringe_mesh_bod.position.x = 0.0;
   v126 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17213340), v126);
-  initialize_twister_path_template_pair((Path *)(this + 17213340), 2.5, 3, 1, texture_a, texture_b);
-  *(_DWORD *)(this + 17213364) = 0;
-  *(_DWORD *)(this + 17213360) = 0;
-  *(_DWORD *)(this + 17213356) = 0;
+  set_bod_object(&game->subgame.path_pairs[43].primary.bod, v126);
+  initialize_twister_path_template_pair(&game->subgame.path_pairs[43].primary, 2.5, 3, 1, texture_a, texture_b);
+  game->subgame.path_pairs[43].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[43].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[43].primary.bod.position.x = 0.0;
   v127 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17213508), v127);
-  mirror_path_template_pair_x((Path *)(this + 17213508), (Path *)(this + 17213340));
+  set_bod_object(&game->subgame.path_pairs[43].secondary.bod, v127);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[43].secondary, &game->subgame.path_pairs[43].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17213532) = 0;
-  *(_DWORD *)(this + 17213528) = 0;
-  *(_DWORD *)(this + 17213524) = 0;
-  build_track_fringe_mesh((Path *)(this + 17213340), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[43].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[43].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[43].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[43].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17213460) = 0;
-  *(_DWORD *)(this + 17213456) = 0;
-  *(_DWORD *)(this + 17213452) = 0;
-  build_track_fringe_mesh((Path *)(this + 17213508), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17213628) = 0;
-  *(_DWORD *)(this + 17213624) = 0;
-  *(_DWORD *)(this + 17213620) = 0;
+  game->subgame.path_pairs[43].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[43].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[43].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[43].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[43].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[43].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[43].secondary.fringe_mesh_bod.position.x = 0.0;
   v128 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17213676), v128);
-  initialize_twister_path_template_pair((Path *)(this + 17213676), 2.5, 3, 0, texture_a, texture_b);
-  *(_DWORD *)(this + 17213700) = 0;
-  *(_DWORD *)(this + 17213696) = 0;
-  *(_DWORD *)(this + 17213692) = 0;
+  set_bod_object(&game->subgame.path_pairs[44].primary.bod, v128);
+  initialize_twister_path_template_pair(&game->subgame.path_pairs[44].primary, 2.5, 3, 0, texture_a, texture_b);
+  game->subgame.path_pairs[44].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[44].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[44].primary.bod.position.x = 0.0;
   v129 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17213844), v129);
-  mirror_path_template_pair_x((Path *)(this + 17213844), (Path *)(this + 17213676));
+  set_bod_object(&game->subgame.path_pairs[44].secondary.bod, v129);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[44].secondary, &game->subgame.path_pairs[44].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17213868) = 0;
-  *(_DWORD *)(this + 17213864) = 0;
-  *(_DWORD *)(this + 17213860) = 0;
-  build_track_fringe_mesh((Path *)(this + 17213676), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[44].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[44].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[44].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[44].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17213796) = 0;
-  *(_DWORD *)(this + 17213792) = 0;
-  *(_DWORD *)(this + 17213788) = 0;
-  build_track_fringe_mesh((Path *)(this + 17213844), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17213964) = 0;
-  *(_DWORD *)(this + 17213960) = 0;
-  *(_DWORD *)(this + 17213956) = 0;
+  game->subgame.path_pairs[44].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[44].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[44].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[44].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[44].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[44].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[44].secondary.fringe_mesh_bod.position.x = 0.0;
   v130 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17214012), v130);
-  initialize_twister2_path_template_pair((Path *)(this + 17214012), 2.5, 3, 1, texture_a, texture_b);
-  *(_DWORD *)(this + 17214036) = 0;
-  *(_DWORD *)(this + 17214032) = 0;
-  *(_DWORD *)(this + 17214028) = 0;
+  set_bod_object(&game->subgame.path_pairs[45].primary.bod, v130);
+  initialize_twister2_path_template_pair(&game->subgame.path_pairs[45].primary, 2.5, 3, 1, texture_a, texture_b);
+  game->subgame.path_pairs[45].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[45].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[45].primary.bod.position.x = 0.0;
   v131 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17214180), v131);
-  mirror_path_template_pair_x((Path *)(this + 17214180), (Path *)(this + 17214012));
+  set_bod_object(&game->subgame.path_pairs[45].secondary.bod, v131);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[45].secondary, &game->subgame.path_pairs[45].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17214204) = 0;
-  *(_DWORD *)(this + 17214200) = 0;
-  *(_DWORD *)(this + 17214196) = 0;
-  build_track_fringe_mesh((Path *)(this + 17214012), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[45].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[45].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[45].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[45].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17214132) = 0;
-  *(_DWORD *)(this + 17214128) = 0;
-  *(_DWORD *)(this + 17214124) = 0;
-  build_track_fringe_mesh((Path *)(this + 17214180), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17214300) = 0;
-  *(_DWORD *)(this + 17214296) = 0;
-  *(_DWORD *)(this + 17214292) = 0;
+  game->subgame.path_pairs[45].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[45].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[45].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[45].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[45].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[45].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[45].secondary.fringe_mesh_bod.position.x = 0.0;
   v132 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17214348), v132);
-  initialize_twister2_path_template_pair((Path *)(this + 17214348), 2.5, 3, 0, texture_a, texture_b);
-  *(_DWORD *)(this + 17214372) = 0;
-  *(_DWORD *)(this + 17214368) = 0;
-  *(_DWORD *)(this + 17214364) = 0;
+  set_bod_object(&game->subgame.path_pairs[46].primary.bod, v132);
+  initialize_twister2_path_template_pair(&game->subgame.path_pairs[46].primary, 2.5, 3, 0, texture_a, texture_b);
+  game->subgame.path_pairs[46].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[46].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[46].primary.bod.position.x = 0.0;
   v133 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17214516), v133);
-  mirror_path_template_pair_x((Path *)(this + 17214516), (Path *)(this + 17214348));
+  set_bod_object(&game->subgame.path_pairs[46].secondary.bod, v133);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[46].secondary, &game->subgame.path_pairs[46].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17214540) = 0;
-  *(_DWORD *)(this + 17214536) = 0;
-  *(_DWORD *)(this + 17214532) = 0;
-  build_track_fringe_mesh((Path *)(this + 17214348), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[46].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[46].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[46].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[46].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17214468) = 0;
-  *(_DWORD *)(this + 17214464) = 0;
-  *(_DWORD *)(this + 17214460) = 0;
-  build_track_fringe_mesh((Path *)(this + 17214516), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17214636) = 0;
-  *(_DWORD *)(this + 17214632) = 0;
-  *(_DWORD *)(this + 17214628) = 0;
+  game->subgame.path_pairs[46].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[46].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[46].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[46].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[46].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[46].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[46].secondary.fringe_mesh_bod.position.x = 0.0;
   v134 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17211996), v134);
-  initialize_turnunder_path_template_pair((Path *)(this + 17211996), 6.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17212020) = 0;
-  *(_DWORD *)(this + 17212016) = 0;
-  *(_DWORD *)(this + 17212012) = 0;
+  set_bod_object(&game->subgame.path_pairs[39].primary.bod, v134);
+  initialize_turnunder_path_template_pair(&game->subgame.path_pairs[39].primary, 6.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[39].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[39].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[39].primary.bod.position.x = 0.0;
   v135 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17212164), v135);
-  mirror_path_template_pair_x((Path *)(this + 17212164), (Path *)(this + 17211996));
+  set_bod_object(&game->subgame.path_pairs[39].secondary.bod, v135);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[39].secondary, &game->subgame.path_pairs[39].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17212188) = 0;
-  *(_DWORD *)(this + 17212184) = 0;
-  *(_DWORD *)(this + 17212180) = 0;
-  build_track_fringe_mesh((Path *)(this + 17211996), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[39].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[39].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[39].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[39].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17212116) = 0;
-  *(_DWORD *)(this + 17212112) = 0;
-  *(_DWORD *)(this + 17212108) = 0;
-  build_track_fringe_mesh((Path *)(this + 17212164), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17212284) = 0;
-  *(_DWORD *)(this + 17212280) = 0;
-  *(_DWORD *)(this + 17212276) = 0;
+  game->subgame.path_pairs[39].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[39].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[39].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[39].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[39].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[39].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[39].secondary.fringe_mesh_bod.position.x = 0.0;
   v136 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17212668), v136);
-  initialize_invert_path_template_pair((Path *)(this + 17212668), 1086324736, (char *)8, (char *)1);
-  *(_DWORD *)(this + 17212692) = 0;
-  *(_DWORD *)(this + 17212688) = 0;
-  *(_DWORD *)(this + 17212684) = 0;
+  set_bod_object(&game->subgame.path_pairs[41].primary.bod, v136);
+  initialize_invert_path_template_pair(&game->subgame.path_pairs[41].primary, 1086324736, (char *)8, (char *)1);
+  game->subgame.path_pairs[41].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[41].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[41].primary.bod.position.x = 0.0;
   v137 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17212836), v137);
-  mirror_path_template_pair_x((Path *)(this + 17212836), (Path *)(this + 17212668));
+  set_bod_object(&game->subgame.path_pairs[41].secondary.bod, v137);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[41].secondary, &game->subgame.path_pairs[41].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17212860) = 0;
-  *(_DWORD *)(this + 17212856) = 0;
-  *(_DWORD *)(this + 17212852) = 0;
-  build_track_fringe_mesh((Path *)(this + 17212668), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[41].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[41].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[41].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[41].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17212788) = 0;
-  *(_DWORD *)(this + 17212784) = 0;
-  *(_DWORD *)(this + 17212780) = 0;
-  build_track_fringe_mesh((Path *)(this + 17212836), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17212956) = 0;
-  *(_DWORD *)(this + 17212952) = 0;
-  *(_DWORD *)(this + 17212948) = 0;
+  game->subgame.path_pairs[41].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[41].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[41].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[41].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[41].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[41].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[41].secondary.fringe_mesh_bod.position.x = 0.0;
   v138 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17213004), v138);
-  initialize_halfpipe_path_template_pair((Path *)(this + 17213004), 1086324736, (char *)8, (char *)1);
-  *(_DWORD *)(this + 17213028) = 0;
-  *(_DWORD *)(this + 17213024) = 0;
-  *(_DWORD *)(this + 17213020) = 0;
+  set_bod_object(&game->subgame.path_pairs[42].primary.bod, v138);
+  initialize_halfpipe_path_template_pair(&game->subgame.path_pairs[42].primary, 1086324736, (char *)8, (char *)1);
+  game->subgame.path_pairs[42].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[42].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[42].primary.bod.position.x = 0.0;
   v139 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17213172), v139);
-  mirror_path_template_pair_x((Path *)(this + 17213172), (Path *)(this + 17213004));
+  set_bod_object(&game->subgame.path_pairs[42].secondary.bod, v139);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[42].secondary, &game->subgame.path_pairs[42].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17213196) = 0;
-  *(_DWORD *)(this + 17213192) = 0;
-  *(_DWORD *)(this + 17213188) = 0;
-  build_track_fringe_mesh((Path *)(this + 17213004), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[42].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[42].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[42].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[42].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17213124) = 0;
-  *(_DWORD *)(this + 17213120) = 0;
-  *(_DWORD *)(this + 17213116) = 0;
-  build_track_fringe_mesh((Path *)(this + 17213172), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17213292) = 0;
-  *(_DWORD *)(this + 17213288) = 0;
-  *(_DWORD *)(this + 17213284) = 0;
+  game->subgame.path_pairs[42].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[42].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[42].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[42].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[42].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[42].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[42].secondary.fringe_mesh_bod.position.x = 0.0;
   v140 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17212332), v140);
-  initialize_wibble_path_template_pair((Path *)(this + 17212332), 1086324736, (char *)8, (char *)1);
-  *(_DWORD *)(this + 17212356) = 0;
-  *(_DWORD *)(this + 17212352) = 0;
-  *(_DWORD *)(this + 17212348) = 0;
+  set_bod_object(&game->subgame.path_pairs[40].primary.bod, v140);
+  initialize_wibble_path_template_pair(&game->subgame.path_pairs[40].primary, 1086324736, (char *)8, (char *)1);
+  game->subgame.path_pairs[40].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[40].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[40].primary.bod.position.x = 0.0;
   v141 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17212500), v141);
-  mirror_path_template_pair_x((Path *)(this + 17212500), (Path *)(this + 17212332));
+  set_bod_object(&game->subgame.path_pairs[40].secondary.bod, v141);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[40].secondary, &game->subgame.path_pairs[40].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17212524) = 0;
-  *(_DWORD *)(this + 17212520) = 0;
-  *(_DWORD *)(this + 17212516) = 0;
-  build_track_fringe_mesh((Path *)(this + 17212332), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[40].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[40].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[40].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[40].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17212452) = 0;
-  *(_DWORD *)(this + 17212448) = 0;
-  *(_DWORD *)(this + 17212444) = 0;
-  build_track_fringe_mesh((Path *)(this + 17212500), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17212620) = 0;
-  *(_DWORD *)(this + 17212616) = 0;
-  *(_DWORD *)(this + 17212612) = 0;
+  game->subgame.path_pairs[40].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[40].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[40].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[40].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[40].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[40].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[40].secondary.fringe_mesh_bod.position.x = 0.0;
   v142 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17209308), v142);
-  initialize_supertramp_path_template_pair((Path *)(this + 17209308), 6.0, 2, (char *)1, texture_a, texture_b);
+  set_bod_object(&game->subgame.path_pairs[31].primary.bod, v142);
+  initialize_supertramp_path_template_pair(
+    &game->subgame.path_pairs[31].primary,
+    6.0,
+    2,
+    (char *)1,
+    texture_a,
+    texture_b);
   *(_DWORD *)&v379[12] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17209332) = 0;
-  *(_DWORD *)(this + 17209328) = 0;
-  *(_DWORD *)(this + 17209324) = 0;
-  build_track_fringe_supertramp_mesh((Path *)(this + 17209308), *(char **)&v379[12]);
-  *(_DWORD *)(this + 17209428) = 0;
-  *(_DWORD *)(this + 17209424) = 0;
-  *(_DWORD *)(this + 17209420) = 0;
+  game->subgame.path_pairs[31].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[31].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[31].primary.bod.position.x = 0.0;
+  build_track_fringe_supertramp_mesh(&game->subgame.path_pairs[31].primary, *(char **)&v379[12]);
+  game->subgame.path_pairs[31].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[31].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[31].primary.fringe_mesh_bod.position.x = 0.0;
   v143 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17209476), v143);
-  initialize_supertramp_path_template_pair((Path *)(this + 17209476), 6.0, 2, (char *)1, texture_a, texture_b);
+  set_bod_object(&game->subgame.path_pairs[31].secondary.bod, v143);
+  initialize_supertramp_path_template_pair(
+    &game->subgame.path_pairs[31].secondary,
+    6.0,
+    2,
+    (char *)1,
+    texture_a,
+    texture_b);
   *(_DWORD *)&v379[12] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17209500) = 0;
-  *(_DWORD *)(this + 17209496) = 0;
-  *(_DWORD *)(this + 17209492) = 0;
-  build_track_fringe_supertramp_mesh((Path *)(this + 17209476), *(char **)&v379[12]);
-  *(_DWORD *)(this + 17209596) = 0;
-  *(_DWORD *)(this + 17209592) = 0;
-  *(_DWORD *)(this + 17209588) = 0;
+  game->subgame.path_pairs[31].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[31].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[31].secondary.bod.position.x = 0.0;
+  build_track_fringe_supertramp_mesh(&game->subgame.path_pairs[31].secondary, *(char **)&v379[12]);
+  game->subgame.path_pairs[31].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[31].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[31].secondary.fringe_mesh_bod.position.x = 0.0;
   v144 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17210988), v144);
-  initialize_start_path_template_pair((Path *)(this + 17210988), 4.0, 8, (char *)1);
+  set_bod_object(&game->subgame.path_pairs[36].primary.bod, v144);
+  initialize_start_path_template_pair(&game->subgame.path_pairs[36].primary, 4.0, 8, (char *)1);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17211012) = 0;
-  *(_DWORD *)(this + 17211008) = 0;
-  *(_DWORD *)(this + 17211004) = 0;
-  build_track_fringe_mesh((Path *)(this + 17210988), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17211108) = 0;
-  *(_DWORD *)(this + 17211104) = 0;
-  *(_DWORD *)(this + 17211100) = 0;
+  game->subgame.path_pairs[36].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[36].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[36].primary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[36].primary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[36].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[36].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[36].primary.fringe_mesh_bod.position.x = 0.0;
   v145 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17211156), v145);
-  initialize_start_path_template_pair((Path *)(this + 17211156), 4.0, 8, (char *)1);
+  set_bod_object(&game->subgame.path_pairs[36].secondary.bod, v145);
+  initialize_start_path_template_pair(&game->subgame.path_pairs[36].secondary, 4.0, 8, (char *)1);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17211180) = 0;
-  *(_DWORD *)(this + 17211176) = 0;
-  *(_DWORD *)(this + 17211172) = 0;
-  build_track_fringe_mesh((Path *)(this + 17211156), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17211276) = 0;
-  *(_DWORD *)(this + 17211272) = 0;
-  *(_DWORD *)(this + 17211268) = 0;
+  game->subgame.path_pairs[36].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[36].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[36].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[36].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[36].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[36].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[36].secondary.fringe_mesh_bod.position.x = 0.0;
   v146 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207292), v146);
-  initialize_loopout_path_template_pair((Path *)(this + 17207292), 3.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17207316) = 0;
-  *(_DWORD *)(this + 17207312) = 0;
-  *(_DWORD *)(this + 17207308) = 0;
+  set_bod_object(&game->subgame.path_pairs[25].primary.bod, v146);
+  initialize_loopout_path_template_pair(&game->subgame.path_pairs[25].primary, 3.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[25].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[25].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[25].primary.bod.position.x = 0.0;
   v147 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207460), v147);
-  mirror_path_template_pair_x((Path *)(this + 17207460), (Path *)(this + 17207292));
+  set_bod_object(&game->subgame.path_pairs[25].secondary.bod, v147);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[25].secondary, &game->subgame.path_pairs[25].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17207484) = 0;
-  *(_DWORD *)(this + 17207480) = 0;
-  *(_DWORD *)(this + 17207476) = 0;
-  build_track_fringe_mesh((Path *)(this + 17207292), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17207412) = 0;
-  *(_DWORD *)(this + 17207408) = 0;
-  *(_DWORD *)(this + 17207404) = 0;
-  build_track_fringe_mesh((Path *)(this + 17207460), aObjectsUnivers_1, 0.0);
-  *(_DWORD *)(this + 17207580) = 0;
-  *(_DWORD *)(this + 17207576) = 0;
-  *(_DWORD *)(this + 17207572) = 0;
+  game->subgame.path_pairs[25].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[25].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[25].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[25].primary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[25].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[25].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[25].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[25].secondary, aObjectsUnivers_1, 0.0);
+  game->subgame.path_pairs[25].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[25].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[25].secondary.fringe_mesh_bod.position.x = 0.0;
   v148 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207964), v148);
-  initialize_loopout_path_template_pair((Path *)(this + 17207964), 5.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17207988) = 0;
-  *(_DWORD *)(this + 17207984) = 0;
-  *(_DWORD *)(this + 17207980) = 0;
+  set_bod_object(&game->subgame.path_pairs[27].primary.bod, v148);
+  initialize_loopout_path_template_pair(&game->subgame.path_pairs[27].primary, 5.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[27].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[27].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[27].primary.bod.position.x = 0.0;
   v149 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17208132), v149);
-  mirror_path_template_pair_x((Path *)(this + 17208132), (Path *)(this + 17207964));
+  set_bod_object(&game->subgame.path_pairs[27].secondary.bod, v149);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[27].secondary, &game->subgame.path_pairs[27].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17208156) = 0;
-  *(_DWORD *)(this + 17208152) = 0;
-  *(_DWORD *)(this + 17208148) = 0;
-  build_track_fringe_mesh((Path *)(this + 17207964), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[27].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[27].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[27].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[27].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17208084) = 0;
-  *(_DWORD *)(this + 17208080) = 0;
-  *(_DWORD *)(this + 17208076) = 0;
-  build_track_fringe_mesh((Path *)(this + 17208132), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17208252) = 0;
-  *(_DWORD *)(this + 17208248) = 0;
-  *(_DWORD *)(this + 17208244) = 0;
+  game->subgame.path_pairs[27].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[27].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[27].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[27].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[27].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[27].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[27].secondary.fringe_mesh_bod.position.x = 0.0;
   v150 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207628), v150);
-  initialize_loopout_path_template_pair((Path *)(this + 17207628), 3.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17207652) = 0;
-  *(_DWORD *)(this + 17207648) = 0;
-  *(_DWORD *)(this + 17207644) = 0;
+  set_bod_object(&game->subgame.path_pairs[26].primary.bod, v150);
+  initialize_loopout_path_template_pair(&game->subgame.path_pairs[26].primary, 3.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[26].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[26].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[26].primary.bod.position.x = 0.0;
   v151 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207796), v151);
-  mirror_path_template_pair_x((Path *)(this + 17207796), (Path *)(this + 17207628));
+  set_bod_object(&game->subgame.path_pairs[26].secondary.bod, v151);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[26].secondary, &game->subgame.path_pairs[26].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17207820) = 0;
-  *(_DWORD *)(this + 17207816) = 0;
-  *(_DWORD *)(this + 17207812) = 0;
-  build_track_fringe_mesh((Path *)(this + 17207628), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17207748) = 0;
+  game->subgame.path_pairs[26].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[26].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[26].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[26].primary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[26].primary.fringe_mesh_bod.position.z = 0.0;
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17207744) = 0;
-  *(_DWORD *)(this + 17207740) = 0;
-  build_track_fringe_mesh((Path *)(this + 17207796), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17207916) = 0;
-  *(_DWORD *)(this + 17207912) = 0;
-  *(_DWORD *)(this + 17207908) = 0;
+  game->subgame.path_pairs[26].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[26].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[26].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[26].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[26].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[26].secondary.fringe_mesh_bod.position.x = 0.0;
   v152 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17204268), v152);
-  initialize_hump_path_template_pair((Path *)(this + 17204268), 4.0, 1.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17204292) = 0;
-  *(_DWORD *)(this + 17204288) = 0;
-  *(_DWORD *)(this + 17204284) = 0;
+  set_bod_object(&game->subgame.path_pairs[16].primary.bod, v152);
+  initialize_hump_path_template_pair(&game->subgame.path_pairs[16].primary, 4.0, 1.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[16].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[16].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[16].primary.bod.position.x = 0.0;
   v153 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17204436), v153);
-  mirror_path_template_pair_x((Path *)(this + 17204436), (Path *)(this + 17204268));
+  set_bod_object(&game->subgame.path_pairs[16].secondary.bod, v153);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[16].secondary, &game->subgame.path_pairs[16].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17204460) = 0;
-  *(_DWORD *)(this + 17204456) = 0;
-  *(_DWORD *)(this + 17204452) = 0;
-  build_track_fringe_mesh((Path *)(this + 17204268), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[16].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[16].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[16].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[16].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17204388) = 0;
-  *(_DWORD *)(this + 17204384) = 0;
-  *(_DWORD *)(this + 17204380) = 0;
-  build_track_fringe_mesh((Path *)(this + 17204436), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17204556) = 0;
-  *(_DWORD *)(this + 17204552) = 0;
-  *(_DWORD *)(this + 17204548) = 0;
+  game->subgame.path_pairs[16].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[16].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[16].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[16].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[16].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[16].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[16].secondary.fringe_mesh_bod.position.x = 0.0;
   v154 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17204604), v154);
-  initialize_dump_path_template_pair((Path *)(this + 17204604), 4.0, 1.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17204628) = 0;
-  *(_DWORD *)(this + 17204624) = 0;
-  *(_DWORD *)(this + 17204620) = 0;
+  set_bod_object(&game->subgame.path_pairs[17].primary.bod, v154);
+  initialize_dump_path_template_pair(&game->subgame.path_pairs[17].primary, 4.0, 1.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[17].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[17].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[17].primary.bod.position.x = 0.0;
   v155 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17204772), v155);
-  mirror_path_template_pair_x((Path *)(this + 17204772), (Path *)(this + 17204604));
-  *(_DWORD *)(this + 17204796) = 0;
-  *(_DWORD *)(this + 17204792) = 0;
-  *(_DWORD *)(this + 17204788) = 0;
-  build_track_fringe_mesh((Path *)(this + 17204604), aObjectsUnivers_1, 0.0);
+  set_bod_object(&game->subgame.path_pairs[17].secondary.bod, v155);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[17].secondary, &game->subgame.path_pairs[17].primary);
+  game->subgame.path_pairs[17].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[17].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[17].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[17].primary, aObjectsUnivers_1, 0.0);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17204724) = 0;
-  *(_DWORD *)(this + 17204720) = 0;
-  *(_DWORD *)(this + 17204716) = 0;
-  build_track_fringe_mesh((Path *)(this + 17204772), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17204892) = 0;
-  *(_DWORD *)(this + 17204888) = 0;
-  *(_DWORD *)(this + 17204884) = 0;
+  game->subgame.path_pairs[17].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[17].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[17].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[17].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[17].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[17].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[17].secondary.fringe_mesh_bod.position.x = 0.0;
   v156 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17204940), v156);
-  initialize_hump_path_template_pair((Path *)(this + 17204940), 4.0, 0.30000001, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17204964) = 0;
-  *(_DWORD *)(this + 17204960) = 0;
-  *(_DWORD *)(this + 17204956) = 0;
+  set_bod_object(&game->subgame.path_pairs[18].primary.bod, v156);
+  initialize_hump_path_template_pair(&game->subgame.path_pairs[18].primary, 4.0, 0.30000001, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[18].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[18].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[18].primary.bod.position.x = 0.0;
   v157 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17205108), v157);
-  mirror_path_template_pair_x((Path *)(this + 17205108), (Path *)(this + 17204940));
+  set_bod_object(&game->subgame.path_pairs[18].secondary.bod, v157);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[18].secondary, &game->subgame.path_pairs[18].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17205132) = 0;
-  *(_DWORD *)(this + 17205128) = 0;
-  *(_DWORD *)(this + 17205124) = 0;
-  build_track_fringe_mesh((Path *)(this + 17204940), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[18].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[18].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[18].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[18].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17205060) = 0;
-  *(_DWORD *)(this + 17205056) = 0;
-  *(_DWORD *)(this + 17205052) = 0;
-  build_track_fringe_mesh((Path *)(this + 17205108), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17205228) = 0;
-  *(_DWORD *)(this + 17205224) = 0;
-  *(_DWORD *)(this + 17205220) = 0;
+  game->subgame.path_pairs[18].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[18].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[18].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[18].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[18].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[18].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[18].secondary.fringe_mesh_bod.position.x = 0.0;
   v158 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17205276), v158);
-  initialize_dump_path_template_pair((Path *)(this + 17205276), 4.0, 0.30000001, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17205300) = 0;
-  *(_DWORD *)(this + 17205296) = 0;
-  *(_DWORD *)(this + 17205292) = 0;
+  set_bod_object(&game->subgame.path_pairs[19].primary.bod, v158);
+  initialize_dump_path_template_pair(&game->subgame.path_pairs[19].primary, 4.0, 0.30000001, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[19].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[19].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[19].primary.bod.position.x = 0.0;
   v159 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17205444), v159);
-  mirror_path_template_pair_x((Path *)(this + 17205444), (Path *)(this + 17205276));
+  set_bod_object(&game->subgame.path_pairs[19].secondary.bod, v159);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[19].secondary, &game->subgame.path_pairs[19].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17205468) = 0;
-  *(_DWORD *)(this + 17205464) = 0;
-  *(_DWORD *)(this + 17205460) = 0;
-  build_track_fringe_mesh((Path *)(this + 17205276), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[19].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[19].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[19].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[19].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17205396) = 0;
-  *(_DWORD *)(this + 17205392) = 0;
-  *(_DWORD *)(this + 17205388) = 0;
-  build_track_fringe_mesh((Path *)(this + 17205444), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17205564) = 0;
-  *(_DWORD *)(this + 17205560) = 0;
-  *(_DWORD *)(this + 17205556) = 0;
+  game->subgame.path_pairs[19].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[19].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[19].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[19].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[19].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[19].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[19].secondary.fringe_mesh_bod.position.x = 0.0;
   v160 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17201580), v160);
-  initialize_hill_valley_path_template_pair((Path *)(this + 17201580), 8, 4.0, 20.0, 1, texture_a, texture_a);
-  *(_DWORD *)(this + 17201604) = 0;
-  *(_DWORD *)(this + 17201600) = 0;
-  *(_DWORD *)(this + 17201596) = 0;
+  set_bod_object(&game->subgame.path_pairs[8].primary.bod, v160);
+  initialize_hill_valley_path_template_pair(&game->subgame.path_pairs[8].primary, 8, 4.0, 20.0, 1, texture_a, texture_a);
+  game->subgame.path_pairs[8].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[8].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[8].primary.bod.position.x = 0.0;
   v161 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17201748), v161);
-  mirror_path_template_pair_x((Path *)(this + 17201748), (Path *)(this + 17201580));
+  set_bod_object(&game->subgame.path_pairs[8].secondary.bod, v161);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[8].secondary, &game->subgame.path_pairs[8].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17201772) = 0;
-  *(_DWORD *)(this + 17201768) = 0;
-  *(_DWORD *)(this + 17201764) = 0;
-  build_track_fringe_mesh((Path *)(this + 17201580), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[8].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[8].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[8].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[8].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17201700) = 0;
-  *(_DWORD *)(this + 17201696) = 0;
-  *(_DWORD *)(this + 17201692) = 0;
-  build_track_fringe_mesh((Path *)(this + 17201748), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17201868) = 0;
-  *(_DWORD *)(this + 17201864) = 0;
-  *(_DWORD *)(this + 17201860) = 0;
+  game->subgame.path_pairs[8].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[8].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[8].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[8].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[8].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[8].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[8].secondary.fringe_mesh_bod.position.x = 0.0;
   v162 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17202252), v162);
-  initialize_hill_valley_path_template_pair((Path *)(this + 17202252), 4, 4.0, 20.0, 0, texture_a, texture_b);
-  *(_DWORD *)(this + 17202276) = 0;
-  *(_DWORD *)(this + 17202272) = 0;
-  *(_DWORD *)(this + 17202268) = 0;
+  set_bod_object(&game->subgame.path_pairs[10].primary.bod, v162);
+  initialize_hill_valley_path_template_pair(
+    &game->subgame.path_pairs[10].primary,
+    4,
+    4.0,
+    20.0,
+    0,
+    texture_a,
+    texture_b);
+  game->subgame.path_pairs[10].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[10].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[10].primary.bod.position.x = 0.0;
   v163 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17202420), v163);
-  mirror_path_template_pair_x((Path *)(this + 17202420), (Path *)(this + 17202252));
+  set_bod_object(&game->subgame.path_pairs[10].secondary.bod, v163);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[10].secondary, &game->subgame.path_pairs[10].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17202444) = 0;
-  *(_DWORD *)(this + 17202440) = 0;
-  *(_DWORD *)(this + 17202436) = 0;
-  build_track_fringe_mesh((Path *)(this + 17202252), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[10].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[10].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[10].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[10].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17202372) = 0;
-  *(_DWORD *)(this + 17202368) = 0;
-  *(_DWORD *)(this + 17202364) = 0;
-  build_track_fringe_mesh((Path *)(this + 17202420), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17202540) = 0;
-  *(_DWORD *)(this + 17202536) = 0;
-  *(_DWORD *)(this + 17202532) = 0;
+  game->subgame.path_pairs[10].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[10].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[10].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[10].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[10].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[10].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[10].secondary.fringe_mesh_bod.position.x = 0.0;
   v164 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17201916), v164);
-  initialize_hill_valley_path_template_pair((Path *)(this + 17201916), 4, 4.0, 20.0, 1, texture_a, texture_b);
-  *(_DWORD *)(this + 17201940) = 0;
-  *(_DWORD *)(this + 17201936) = 0;
-  *(_DWORD *)(this + 17201932) = 0;
+  set_bod_object(&game->subgame.path_pairs[9].primary.bod, v164);
+  initialize_hill_valley_path_template_pair(&game->subgame.path_pairs[9].primary, 4, 4.0, 20.0, 1, texture_a, texture_b);
+  game->subgame.path_pairs[9].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[9].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[9].primary.bod.position.x = 0.0;
   v165 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17202084), v165);
-  mirror_path_template_pair_x((Path *)(this + 17202084), (Path *)(this + 17201916));
+  set_bod_object(&game->subgame.path_pairs[9].secondary.bod, v165);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[9].secondary, &game->subgame.path_pairs[9].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17202108) = 0;
-  *(_DWORD *)(this + 17202104) = 0;
-  *(_DWORD *)(this + 17202100) = 0;
-  build_track_fringe_mesh((Path *)(this + 17201916), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[9].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[9].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[9].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[9].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17202036) = 0;
-  *(_DWORD *)(this + 17202032) = 0;
-  *(_DWORD *)(this + 17202028) = 0;
-  build_track_fringe_mesh((Path *)(this + 17202084), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17202204) = 0;
-  *(_DWORD *)(this + 17202200) = 0;
-  *(_DWORD *)(this + 17202196) = 0;
+  game->subgame.path_pairs[9].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[9].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[9].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[9].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[9].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[9].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[9].secondary.fringe_mesh_bod.position.x = 0.0;
   v166 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17203596), v166);
-  initialize_sbend_path_template_pair((Path *)(this + 17203596), 8u, 8.0, 14.0, 1, aObjectsWorld00, aObjectsWorld00);
-  *(_DWORD *)(this + 17203620) = 0;
-  *(_DWORD *)(this + 17203616) = 0;
-  *(_DWORD *)(this + 17203612) = 0;
+  set_bod_object(&game->subgame.path_pairs[14].primary.bod, v166);
+  initialize_sbend_path_template_pair(
+    &game->subgame.path_pairs[14].primary,
+    8u,
+    8.0,
+    14.0,
+    1,
+    aObjectsWorld00,
+    aObjectsWorld00);
+  game->subgame.path_pairs[14].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[14].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[14].primary.bod.position.x = 0.0;
   v167 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17203764), v167);
-  mirror_path_template_pair_x((Path *)(this + 17203764), (Path *)(this + 17203596));
+  set_bod_object(&game->subgame.path_pairs[14].secondary.bod, v167);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[14].secondary, &game->subgame.path_pairs[14].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17203788) = 0;
-  *(_DWORD *)(this + 17203784) = 0;
-  *(_DWORD *)(this + 17203780) = 0;
-  build_track_fringe_mesh((Path *)(this + 17203596), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[14].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[14].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[14].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[14].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17203716) = 0;
-  *(_DWORD *)(this + 17203712) = 0;
-  *(_DWORD *)(this + 17203708) = 0;
-  build_track_fringe_mesh((Path *)(this + 17203764), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17203884) = 0;
-  *(_DWORD *)(this + 17203880) = 0;
-  *(_DWORD *)(this + 17203876) = 0;
+  game->subgame.path_pairs[14].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[14].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[14].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[14].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[14].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[14].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[14].secondary.fringe_mesh_bod.position.x = 0.0;
   v168 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17202588), v168);
-  initialize_hill_valley_path_template_pair((Path *)(this + 17202588), 8, -4.0, 20.0, 1, texture_a, texture_a);
-  *(_DWORD *)(this + 17202612) = 0;
-  *(_DWORD *)(this + 17202608) = 0;
-  *(_DWORD *)(this + 17202604) = 0;
+  set_bod_object(&game->subgame.path_pairs[11].primary.bod, v168);
+  initialize_hill_valley_path_template_pair(
+    &game->subgame.path_pairs[11].primary,
+    8,
+    -4.0,
+    20.0,
+    1,
+    texture_a,
+    texture_a);
+  game->subgame.path_pairs[11].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[11].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[11].primary.bod.position.x = 0.0;
   v169 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17202756), v169);
-  mirror_path_template_pair_x((Path *)(this + 17202756), (Path *)(this + 17202588));
+  set_bod_object(&game->subgame.path_pairs[11].secondary.bod, v169);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[11].secondary, &game->subgame.path_pairs[11].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17202780) = 0;
-  *(_DWORD *)(this + 17202776) = 0;
-  *(_DWORD *)(this + 17202772) = 0;
-  build_track_fringe_mesh((Path *)(this + 17202588), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[11].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[11].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[11].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[11].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17202708) = 0;
-  *(_DWORD *)(this + 17202704) = 0;
-  *(_DWORD *)(this + 17202700) = 0;
-  build_track_fringe_mesh((Path *)(this + 17202756), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17202876) = 0;
-  *(_DWORD *)(this + 17202872) = 0;
-  *(_DWORD *)(this + 17202868) = 0;
+  game->subgame.path_pairs[11].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[11].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[11].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[11].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[11].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[11].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[11].secondary.fringe_mesh_bod.position.x = 0.0;
   v170 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17203260), v170);
-  initialize_hill_valley_path_template_pair((Path *)(this + 17203260), 4, -4.0, 20.0, 0, texture_a, texture_a);
-  *(_DWORD *)(this + 17203284) = 0;
-  *(_DWORD *)(this + 17203280) = 0;
-  *(_DWORD *)(this + 17203276) = 0;
+  set_bod_object(&game->subgame.path_pairs[13].primary.bod, v170);
+  initialize_hill_valley_path_template_pair(
+    &game->subgame.path_pairs[13].primary,
+    4,
+    -4.0,
+    20.0,
+    0,
+    texture_a,
+    texture_a);
+  game->subgame.path_pairs[13].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[13].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[13].primary.bod.position.x = 0.0;
   v171 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17203428), v171);
-  mirror_path_template_pair_x((Path *)(this + 17203428), (Path *)(this + 17203260));
+  set_bod_object(&game->subgame.path_pairs[13].secondary.bod, v171);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[13].secondary, &game->subgame.path_pairs[13].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17203452) = 0;
-  *(_DWORD *)(this + 17203448) = 0;
-  *(_DWORD *)(this + 17203444) = 0;
-  build_track_fringe_mesh((Path *)(this + 17203260), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[13].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[13].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[13].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[13].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17203380) = 0;
-  *(_DWORD *)(this + 17203376) = 0;
-  *(_DWORD *)(this + 17203372) = 0;
-  build_track_fringe_mesh((Path *)(this + 17203428), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17203548) = 0;
-  *(_DWORD *)(this + 17203544) = 0;
-  *(_DWORD *)(this + 17203540) = 0;
+  game->subgame.path_pairs[13].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[13].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[13].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[13].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[13].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[13].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[13].secondary.fringe_mesh_bod.position.x = 0.0;
   v172 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17202924), v172);
-  initialize_hill_valley_path_template_pair((Path *)(this + 17202924), 4, -4.0, 20.0, 1, texture_a, texture_a);
-  *(_DWORD *)(this + 17202948) = 0;
-  *(_DWORD *)(this + 17202944) = 0;
-  *(_DWORD *)(this + 17202940) = 0;
+  set_bod_object(&game->subgame.path_pairs[12].primary.bod, v172);
+  initialize_hill_valley_path_template_pair(
+    &game->subgame.path_pairs[12].primary,
+    4,
+    -4.0,
+    20.0,
+    1,
+    texture_a,
+    texture_a);
+  game->subgame.path_pairs[12].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[12].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[12].primary.bod.position.x = 0.0;
   v173 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17203092), v173);
-  mirror_path_template_pair_x((Path *)(this + 17203092), (Path *)(this + 17202924));
+  set_bod_object(&game->subgame.path_pairs[12].secondary.bod, v173);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[12].secondary, &game->subgame.path_pairs[12].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17203116) = 0;
-  *(_DWORD *)(this + 17203112) = 0;
-  *(_DWORD *)(this + 17203108) = 0;
-  build_track_fringe_mesh((Path *)(this + 17202924), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[12].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[12].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[12].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[12].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17203044) = 0;
-  *(_DWORD *)(this + 17203040) = 0;
-  *(_DWORD *)(this + 17203036) = 0;
-  build_track_fringe_mesh((Path *)(this + 17203092), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17203212) = 0;
-  *(_DWORD *)(this + 17203208) = 0;
-  *(_DWORD *)(this + 17203204) = 0;
+  game->subgame.path_pairs[12].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[12].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[12].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[12].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[12].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[12].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[12].secondary.fringe_mesh_bod.position.x = 0.0;
   v174 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17205612), v174);
-  initialize_dip_path_template_pair((Path *)(this + 17205612), 4.0, 2, (char *)1, texture_a);
-  *(_DWORD *)(this + 17205636) = 0;
-  *(_DWORD *)(this + 17205632) = 0;
-  *(_DWORD *)(this + 17205628) = 0;
+  set_bod_object(&game->subgame.path_pairs[20].primary.bod, v174);
+  initialize_dip_path_template_pair(&game->subgame.path_pairs[20].primary, 4.0, 2, (char *)1, texture_a);
+  game->subgame.path_pairs[20].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[20].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[20].primary.bod.position.x = 0.0;
   v175 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17205780), v175);
-  mirror_path_template_pair_x((Path *)(this + 17205780), (Path *)(this + 17205612));
+  set_bod_object(&game->subgame.path_pairs[20].secondary.bod, v175);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[20].secondary, &game->subgame.path_pairs[20].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17205804) = 0;
-  *(_DWORD *)(this + 17205800) = 0;
-  *(_DWORD *)(this + 17205796) = 0;
-  build_track_fringe_mesh((Path *)(this + 17205612), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[20].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[20].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[20].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[20].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17205732) = 0;
-  *(_DWORD *)(this + 17205728) = 0;
-  *(_DWORD *)(this + 17205724) = 0;
-  build_track_fringe_mesh((Path *)(this + 17205780), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17205900) = 0;
-  *(_DWORD *)(this + 17205896) = 0;
-  *(_DWORD *)(this + 17205892) = 0;
+  game->subgame.path_pairs[20].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[20].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[20].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[20].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[20].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[20].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[20].secondary.fringe_mesh_bod.position.x = 0.0;
   v176 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17205948), v176);
-  initialize_screw_path_template_pair((Path *)(this + 17205948), 24, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17205972) = 0;
-  *(_DWORD *)(this + 17205968) = 0;
-  *(_DWORD *)(this + 17205964) = 0;
+  set_bod_object(&game->subgame.path_pairs[21].primary.bod, v176);
+  initialize_screw_path_template_pair(&game->subgame.path_pairs[21].primary, 24, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[21].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[21].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[21].primary.bod.position.x = 0.0;
   v177 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17206116), v177);
-  mirror_path_template_pair_x((Path *)(this + 17206116), (Path *)(this + 17205948));
+  set_bod_object(&game->subgame.path_pairs[21].secondary.bod, v177);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[21].secondary, &game->subgame.path_pairs[21].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17206140) = 0;
-  *(_DWORD *)(this + 17206136) = 0;
-  *(_DWORD *)(this + 17206132) = 0;
-  build_track_fringe_mesh((Path *)(this + 17205948), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[21].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[21].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[21].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[21].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17206068) = 0;
-  *(_DWORD *)(this + 17206064) = 0;
-  *(_DWORD *)(this + 17206060) = 0;
-  build_track_fringe_mesh((Path *)(this + 17206116), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17206236) = 0;
-  *(_DWORD *)(this + 17206232) = 0;
-  *(_DWORD *)(this + 17206228) = 0;
+  game->subgame.path_pairs[21].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[21].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[21].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[21].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[21].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[21].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[21].secondary.fringe_mesh_bod.position.x = 0.0;
   v178 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17206284), v178);
-  initialize_slalom_path_template_pair((Path *)(this + 17206284), 32, 4u, (char *)1, texture_a);
-  *(_DWORD *)(this + 17206308) = 0;
-  *(_DWORD *)(this + 17206304) = 0;
-  *(_DWORD *)(this + 17206300) = 0;
+  set_bod_object(&game->subgame.path_pairs[22].primary.bod, v178);
+  initialize_slalom_path_template_pair(&game->subgame.path_pairs[22].primary, 32, 4u, (char *)1, texture_a);
+  game->subgame.path_pairs[22].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[22].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[22].primary.bod.position.x = 0.0;
   v179 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17206452), v179);
-  mirror_path_template_pair_x((Path *)(this + 17206452), (Path *)(this + 17206284));
+  set_bod_object(&game->subgame.path_pairs[22].secondary.bod, v179);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[22].secondary, &game->subgame.path_pairs[22].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17206476) = 0;
-  *(_DWORD *)(this + 17206472) = 0;
-  *(_DWORD *)(this + 17206468) = 0;
-  build_track_fringe_mesh((Path *)(this + 17206284), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[22].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[22].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[22].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[22].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17206404) = 0;
-  *(_DWORD *)(this + 17206400) = 0;
-  *(_DWORD *)(this + 17206396) = 0;
-  build_track_fringe_mesh((Path *)(this + 17206452), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17206572) = 0;
-  *(_DWORD *)(this + 17206568) = 0;
-  *(_DWORD *)(this + 17206564) = 0;
+  game->subgame.path_pairs[22].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[22].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[22].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[22].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[22].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[22].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[22].secondary.fringe_mesh_bod.position.x = 0.0;
   v180 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17206620), v180);
-  initialize_slalombig_path_template_pair((Path *)(this + 17206620), 32, 4u, (char *)1, texture_a);
-  *(_DWORD *)(this + 17206644) = 0;
-  *(_DWORD *)(this + 17206640) = 0;
-  *(_DWORD *)(this + 17206636) = 0;
+  set_bod_object(&game->subgame.path_pairs[23].primary.bod, v180);
+  initialize_slalombig_path_template_pair(&game->subgame.path_pairs[23].primary, 32, 4u, (char *)1, texture_a);
+  game->subgame.path_pairs[23].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[23].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[23].primary.bod.position.x = 0.0;
   v181 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17206788), v181);
-  mirror_path_template_pair_x((Path *)(this + 17206788), (Path *)(this + 17206620));
+  set_bod_object(&game->subgame.path_pairs[23].secondary.bod, v181);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[23].secondary, &game->subgame.path_pairs[23].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17206812) = 0;
-  *(_DWORD *)(this + 17206808) = 0;
-  *(_DWORD *)(this + 17206804) = 0;
-  build_track_fringe_mesh((Path *)(this + 17206620), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[23].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[23].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[23].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[23].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17206740) = 0;
-  *(_DWORD *)(this + 17206736) = 0;
-  *(_DWORD *)(this + 17206732) = 0;
-  build_track_fringe_mesh((Path *)(this + 17206788), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17206908) = 0;
-  *(_DWORD *)(this + 17206904) = 0;
-  *(_DWORD *)(this + 17206900) = 0;
+  game->subgame.path_pairs[23].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[23].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[23].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[23].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[23].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[23].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[23].secondary.fringe_mesh_bod.position.x = 0.0;
   v182 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17209644), v182);
+  set_bod_object(&game->subgame.path_pairs[32].primary.bod, v182);
   *(_DWORD *)&v379[4] = texture_a;
-  initialize_slalomdouble_path_template_pair((Path *)(this + 17209644), 32, (char *)4, (char *)1);
-  *(_DWORD *)(this + 17209668) = 0;
-  *(_DWORD *)(this + 17209664) = 0;
-  *(_DWORD *)(this + 17209660) = 0;
+  initialize_slalomdouble_path_template_pair(&game->subgame.path_pairs[32].primary, 32, (char *)4, (char *)1);
+  game->subgame.path_pairs[32].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[32].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[32].primary.bod.position.x = 0.0;
   v183 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17209812), v183);
-  mirror_path_template_pair_x((Path *)(this + 17209812), (Path *)(this + 17209644));
+  set_bod_object(&game->subgame.path_pairs[32].secondary.bod, v183);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[32].secondary, &game->subgame.path_pairs[32].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17209836) = 0;
-  *(_DWORD *)(this + 17209832) = 0;
-  *(_DWORD *)(this + 17209828) = 0;
-  build_track_fringe_mesh((Path *)(this + 17209644), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[32].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[32].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[32].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[32].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17209764) = 0;
-  *(_DWORD *)(this + 17209760) = 0;
-  *(_DWORD *)(this + 17209756) = 0;
-  build_track_fringe_mesh((Path *)(this + 17209812), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17209932) = 0;
-  *(_DWORD *)(this + 17209928) = 0;
-  *(_DWORD *)(this + 17209924) = 0;
+  game->subgame.path_pairs[32].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[32].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[32].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[32].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[32].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[32].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[32].secondary.fringe_mesh_bod.position.x = 0.0;
   v184 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17206956), v184);
-  initialize_worm_path_template_pair((Path *)(this + 17206956), aObjectsWorld00_4);
-  *(_DWORD *)(this + 17206980) = 0;
-  *(_DWORD *)(this + 17206976) = 0;
-  *(_DWORD *)(this + 17206972) = 0;
+  set_bod_object(&game->subgame.path_pairs[24].primary.bod, v184);
+  initialize_worm_path_template_pair(&game->subgame.path_pairs[24].primary, aObjectsWorld00_4);
+  game->subgame.path_pairs[24].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[24].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[24].primary.bod.position.x = 0.0;
   v185 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207124), v185);
-  mirror_path_template_pair_x((Path *)(this + 17207124), (Path *)(this + 17206956));
-  *(_DWORD *)(this + 17207148) = 0;
-  *(_DWORD *)(this + 17207144) = 0;
-  *(_DWORD *)(this + 17207140) = 0;
+  set_bod_object(&game->subgame.path_pairs[24].secondary.bod, v185);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[24].secondary, &game->subgame.path_pairs[24].primary);
+  game->subgame.path_pairs[24].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[24].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[24].secondary.bod.position.x = 0.0;
   v186 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207052), v186);
-  disable_object_rendering(*(_DWORD *)(this + 17207088));
+  set_bod_object(&game->subgame.path_pairs[24].primary.fringe_mesh_bod, v186);
+  disable_object_rendering((int)game->subgame.path_pairs[24].primary.fringe_mesh_bod.object);
   v187 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17207220), v187);
-  disable_object_rendering(*(_DWORD *)(this + 17207256));
-  *(_DWORD *)(*(_DWORD *)(this + 17206992) + 20) = 8;
-  *(_DWORD *)(*(_DWORD *)(this + 17207160) + 20) = 8;
+  set_bod_object(&game->subgame.path_pairs[24].secondary.fringe_mesh_bod, v187);
+  disable_object_rendering((int)game->subgame.path_pairs[24].secondary.fringe_mesh_bod.object);
+  game->subgame.path_pairs[24].primary.bod.object->blend_mode = 8;
+  game->subgame.path_pairs[24].secondary.bod.object->blend_mode = 8;
   v188 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17208300), v188);
-  initialize_sweep_path_template_pair((Path *)(this + 17208300), 1082130432, (char *)4, (char *)1);
-  *(_DWORD *)(this + 17208324) = 0;
-  *(_DWORD *)(this + 17208320) = 0;
-  *(_DWORD *)(this + 17208316) = 0;
+  set_bod_object(&game->subgame.path_pairs[28].primary.bod, v188);
+  initialize_sweep_path_template_pair(&game->subgame.path_pairs[28].primary, 1082130432, (char *)4, (char *)1);
+  game->subgame.path_pairs[28].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[28].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[28].primary.bod.position.x = 0.0;
   v189 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17208468), v189);
-  mirror_path_template_pair_x((Path *)(this + 17208468), (Path *)(this + 17208300));
+  set_bod_object(&game->subgame.path_pairs[28].secondary.bod, v189);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[28].secondary, &game->subgame.path_pairs[28].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17208492) = 0;
-  *(_DWORD *)(this + 17208488) = 0;
-  *(_DWORD *)(this + 17208484) = 0;
-  build_track_fringe_mesh((Path *)(this + 17208300), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[28].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[28].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[28].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[28].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17208420) = 0;
-  *(_DWORD *)(this + 17208416) = 0;
-  *(_DWORD *)(this + 17208412) = 0;
-  build_track_fringe_mesh((Path *)(this + 17208468), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17208588) = 0;
-  *(_DWORD *)(this + 17208584) = 0;
-  *(_DWORD *)(this + 17208580) = 0;
+  game->subgame.path_pairs[28].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[28].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[28].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[28].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[28].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[28].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[28].secondary.fringe_mesh_bod.position.x = 0.0;
   v190 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17203932), v190);
-  initialize_cage2_path_template_pair((Path *)(this + 17203932), 3, texture_a, texture_b);
-  *(_DWORD *)(this + 17203956) = 0;
-  *(_DWORD *)(this + 17203952) = 0;
-  *(_DWORD *)(this + 17203948) = 0;
+  set_bod_object(&game->subgame.path_pairs[15].primary.bod, v190);
+  initialize_cage2_path_template_pair(&game->subgame.path_pairs[15].primary, 3, texture_a, texture_b);
+  game->subgame.path_pairs[15].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[15].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[15].primary.bod.position.x = 0.0;
   v191 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17204100), v191);
-  mirror_path_template_pair_x((Path *)(this + 17204100), (Path *)(this + 17203932));
+  set_bod_object(&game->subgame.path_pairs[15].secondary.bod, v191);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[15].secondary, &game->subgame.path_pairs[15].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17204124) = 0;
-  *(_DWORD *)(this + 17204120) = 0;
-  *(_DWORD *)(this + 17204116) = 0;
-  build_track_fringe_mesh((Path *)(this + 17203932), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[15].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[15].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[15].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[15].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17204052) = 0;
-  *(_DWORD *)(this + 17204048) = 0;
-  *(_DWORD *)(this + 17204044) = 0;
-  build_track_fringe_mesh((Path *)(this + 17204100), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17204220) = 0;
-  *(_DWORD *)(this + 17204216) = 0;
-  *(_DWORD *)(this + 17204212) = 0;
+  game->subgame.path_pairs[15].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[15].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[15].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[15].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[15].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[15].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[15].secondary.fringe_mesh_bod.position.x = 0.0;
   v192 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17209980), v192);
+  set_bod_object(&game->subgame.path_pairs[33].primary.bod, v192);
   initialize_p_path_template_pair(
-    (Path *)(this + 17209980),
+    &game->subgame.path_pairs[33].primary,
     0,
     0x40800000u,
     COERCE_FLOAT(3),
@@ -2001,31 +2060,31 @@ LABEL_31:
     -1071644672,
     (char *)0xE,
     texture_a);
-  *(_DWORD *)(this + 17210004) = 0;
-  *(_DWORD *)(this + 17210000) = 0;
-  *(_DWORD *)(this + 17209996) = 0;
+  game->subgame.path_pairs[33].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[33].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[33].primary.bod.position.x = 0.0;
   v193 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17210148), v193);
-  mirror_path_template_pair_x((Path *)(this + 17210148), (Path *)(this + 17209980));
+  set_bod_object(&game->subgame.path_pairs[33].secondary.bod, v193);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[33].secondary, &game->subgame.path_pairs[33].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17210172) = 0;
-  *(_DWORD *)(this + 17210168) = 0;
-  *(_DWORD *)(this + 17210164) = 0;
-  build_track_fringe_mesh((Path *)(this + 17209980), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[33].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[33].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[33].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[33].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17210100) = 0;
-  *(_DWORD *)(this + 17210096) = 0;
-  *(_DWORD *)(this + 17210092) = 0;
-  build_track_fringe_mesh((Path *)(this + 17210148), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17210268) = 0;
-  *(_DWORD *)(this + 17210264) = 0;
-  *(_DWORD *)(this + 17210260) = 0;
+  game->subgame.path_pairs[33].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[33].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[33].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[33].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[33].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[33].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[33].secondary.fringe_mesh_bod.position.x = 0.0;
   v194 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17210316), v194);
+  set_bod_object(&game->subgame.path_pairs[34].primary.bod, v194);
   initialize_p_path_template_pair(
-    (Path *)(this + 17210316),
+    &game->subgame.path_pairs[34].primary,
     1,
     0x40800000u,
     COERCE_FLOAT(3),
@@ -2033,31 +2092,31 @@ LABEL_31:
     1075838976,
     (char *)0xE,
     texture_a);
-  *(_DWORD *)(this + 17210340) = 0;
-  *(_DWORD *)(this + 17210336) = 0;
-  *(_DWORD *)(this + 17210332) = 0;
+  game->subgame.path_pairs[34].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[34].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[34].primary.bod.position.x = 0.0;
   v195 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17210484), v195);
-  mirror_path_template_pair_x((Path *)(this + 17210484), (Path *)(this + 17210316));
+  set_bod_object(&game->subgame.path_pairs[34].secondary.bod, v195);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[34].secondary, &game->subgame.path_pairs[34].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17210508) = 0;
-  *(_DWORD *)(this + 17210504) = 0;
-  *(_DWORD *)(this + 17210500) = 0;
-  build_track_fringe_mesh((Path *)(this + 17210316), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[34].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[34].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[34].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[34].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17210436) = 0;
-  *(_DWORD *)(this + 17210432) = 0;
-  *(_DWORD *)(this + 17210428) = 0;
-  build_track_fringe_mesh((Path *)(this + 17210484), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17210604) = 0;
-  *(_DWORD *)(this + 17210600) = 0;
-  *(_DWORD *)(this + 17210596) = 0;
+  game->subgame.path_pairs[34].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[34].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[34].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[34].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[34].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[34].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[34].secondary.fringe_mesh_bod.position.x = 0.0;
   v196 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17210652), v196);
+  set_bod_object(&game->subgame.path_pairs[35].primary.bod, v196);
   initialize_p_path_template_pair(
-    (Path *)(this + 17210652),
+    &game->subgame.path_pairs[35].primary,
     2,
     0x40800000u,
     COERCE_FLOAT(3),
@@ -2065,484 +2124,484 @@ LABEL_31:
     1056964608,
     (char *)0xE,
     texture_a);
-  *(_DWORD *)(this + 17210676) = 0;
-  *(_DWORD *)(this + 17210672) = 0;
-  *(_DWORD *)(this + 17210668) = 0;
+  game->subgame.path_pairs[35].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[35].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[35].primary.bod.position.x = 0.0;
   v197 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17210820), v197);
-  mirror_path_template_pair_x((Path *)(this + 17210820), (Path *)(this + 17210652));
+  set_bod_object(&game->subgame.path_pairs[35].secondary.bod, v197);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[35].secondary, &game->subgame.path_pairs[35].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17210844) = 0;
-  *(_DWORD *)(this + 17210840) = 0;
-  *(_DWORD *)(this + 17210836) = 0;
-  build_track_fringe_mesh((Path *)(this + 17210652), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[35].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[35].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[35].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[35].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17210772) = 0;
-  *(_DWORD *)(this + 17210768) = 0;
-  *(_DWORD *)(this + 17210764) = 0;
-  build_track_fringe_mesh((Path *)(this + 17210820), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17210940) = 0;
-  *(_DWORD *)(this + 17210936) = 0;
-  *(_DWORD *)(this + 17210932) = 0;
+  game->subgame.path_pairs[35].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[35].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[35].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[35].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[35].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[35].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[35].secondary.fringe_mesh_bod.position.x = 0.0;
   v198 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17208636), v198);
-  initialize_snake_path_template_pair((Path *)(this + 17208636), 0x40000000, (char *)4, (char *)1);
-  *(_DWORD *)(this + 17208660) = 0;
-  *(_DWORD *)(this + 17208656) = 0;
-  *(_DWORD *)(this + 17208652) = 0;
+  set_bod_object(&game->subgame.path_pairs[29].primary.bod, v198);
+  initialize_snake_path_template_pair(&game->subgame.path_pairs[29].primary, 0x40000000, (char *)4, (char *)1);
+  game->subgame.path_pairs[29].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[29].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[29].primary.bod.position.x = 0.0;
   v199 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17208804), v199);
-  mirror_path_template_pair_x((Path *)(this + 17208804), (Path *)(this + 17208636));
+  set_bod_object(&game->subgame.path_pairs[29].secondary.bod, v199);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[29].secondary, &game->subgame.path_pairs[29].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17208828) = 0;
-  *(_DWORD *)(this + 17208824) = 0;
-  *(_DWORD *)(this + 17208820) = 0;
-  build_track_fringe_mesh((Path *)(this + 17208636), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[29].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[29].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[29].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[29].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17208756) = 0;
-  *(_DWORD *)(this + 17208752) = 0;
-  *(_DWORD *)(this + 17208748) = 0;
-  build_track_fringe_mesh((Path *)(this + 17208804), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17208924) = 0;
-  *(_DWORD *)(this + 17208920) = 0;
-  *(_DWORD *)(this + 17208916) = 0;
+  game->subgame.path_pairs[29].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[29].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[29].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[29].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[29].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[29].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[29].secondary.fringe_mesh_bod.position.x = 0.0;
   v200 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17214684), v200);
-  initialize_toad_path_template_pair((Path *)(this + 17214684), 1, texture_a, aObjectsWorld00);
-  *(_DWORD *)(this + 17214708) = 0;
-  *(_DWORD *)(this + 17214704) = 0;
-  *(_DWORD *)(this + 17214700) = 0;
+  set_bod_object(&game->subgame.path_pairs[47].primary.bod, v200);
+  initialize_toad_path_template_pair(&game->subgame.path_pairs[47].primary, 1, texture_a, aObjectsWorld00);
+  game->subgame.path_pairs[47].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[47].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[47].primary.bod.position.x = 0.0;
   v201 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17214852), v201);
-  mirror_path_template_pair_x((Path *)(this + 17214852), (Path *)(this + 17214684));
+  set_bod_object(&game->subgame.path_pairs[47].secondary.bod, v201);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[47].secondary, &game->subgame.path_pairs[47].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17214876) = 0;
-  *(_DWORD *)(this + 17214872) = 0;
-  *(_DWORD *)(this + 17214868) = 0;
-  build_track_fringe_mesh((Path *)(this + 17214684), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[47].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[47].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[47].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[47].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17214804) = 0;
-  *(_DWORD *)(this + 17214800) = 0;
-  *(_DWORD *)(this + 17214796) = 0;
-  build_track_fringe_mesh((Path *)(this + 17214852), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17214972) = 0;
-  *(_DWORD *)(this + 17214968) = 0;
-  *(_DWORD *)(this + 17214964) = 0;
+  game->subgame.path_pairs[47].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[47].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[47].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[47].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[47].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[47].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[47].secondary.fringe_mesh_bod.position.x = 0.0;
   v202 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17215020), v202);
-  initialize_toad_path_template_pair((Path *)(this + 17215020), 0, texture_a, aObjectsWorld00);
-  *(_DWORD *)(this + 17215044) = 0;
-  *(_DWORD *)(this + 17215040) = 0;
-  *(_DWORD *)(this + 17215036) = 0;
+  set_bod_object(&game->subgame.path_pairs[48].primary.bod, v202);
+  initialize_toad_path_template_pair(&game->subgame.path_pairs[48].primary, 0, texture_a, aObjectsWorld00);
+  game->subgame.path_pairs[48].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[48].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[48].primary.bod.position.x = 0.0;
   v203 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17215188), v203);
-  mirror_path_template_pair_x((Path *)(this + 17215188), (Path *)(this + 17215020));
+  set_bod_object(&game->subgame.path_pairs[48].secondary.bod, v203);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[48].secondary, &game->subgame.path_pairs[48].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17215212) = 0;
-  *(_DWORD *)(this + 17215208) = 0;
-  *(_DWORD *)(this + 17215204) = 0;
-  build_track_fringe_mesh((Path *)(this + 17215020), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[48].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[48].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[48].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[48].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17215140) = 0;
-  *(_DWORD *)(this + 17215136) = 0;
-  *(_DWORD *)(this + 17215132) = 0;
-  build_track_fringe_mesh((Path *)(this + 17215188), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17215308) = 0;
-  *(_DWORD *)(this + 17215304) = 0;
-  *(_DWORD *)(this + 17215300) = 0;
+  game->subgame.path_pairs[48].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[48].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[48].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[48].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[48].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[48].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[48].secondary.fringe_mesh_bod.position.x = 0.0;
   v204 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17215356), v204);
-  initialize_toad_path_template_pair((Path *)(this + 17215356), 1, texture_a, aObjectsWorld00);
-  *(_DWORD *)(this + 17215380) = 0;
-  *(_DWORD *)(this + 17215376) = 0;
-  *(_DWORD *)(this + 17215372) = 0;
+  set_bod_object(&game->subgame.path_pairs[49].primary.bod, v204);
+  initialize_toad_path_template_pair(&game->subgame.path_pairs[49].primary, 1, texture_a, aObjectsWorld00);
+  game->subgame.path_pairs[49].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[49].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[49].primary.bod.position.x = 0.0;
   v205 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17215524), v205);
-  mirror_path_template_pair_x((Path *)(this + 17215524), (Path *)(this + 17215356));
+  set_bod_object(&game->subgame.path_pairs[49].secondary.bod, v205);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[49].secondary, &game->subgame.path_pairs[49].primary);
   *(_DWORD *)&v379[12] = -1082130432;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17215548) = 0;
-  *(_DWORD *)(this + 17215544) = 0;
-  *(_DWORD *)(this + 17215540) = 0;
-  build_track_fringe_mesh((Path *)(this + 17215356), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[49].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[49].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[49].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[49].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 1065353216;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17215476) = 0;
-  *(_DWORD *)(this + 17215472) = 0;
-  *(_DWORD *)(this + 17215468) = 0;
-  build_track_fringe_mesh((Path *)(this + 17215524), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17215644) = 0;
-  *(_DWORD *)(this + 17215640) = 0;
-  *(_DWORD *)(this + 17215636) = 0;
+  game->subgame.path_pairs[49].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[49].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[49].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[49].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[49].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[49].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[49].secondary.fringe_mesh_bod.position.x = 0.0;
   v206 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17215692), v206);
-  initialize_toad_path_template_pair((Path *)(this + 17215692), 0, texture_a, aObjectsWorld00);
-  *(_DWORD *)(this + 17215716) = 0;
-  *(_DWORD *)(this + 17215712) = 0;
-  *(_DWORD *)(this + 17215708) = 0;
+  set_bod_object(&game->subgame.path_pairs[50].primary.bod, v206);
+  initialize_toad_path_template_pair(&game->subgame.path_pairs[50].primary, 0, texture_a, aObjectsWorld00);
+  game->subgame.path_pairs[50].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[50].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[50].primary.bod.position.x = 0.0;
   v207 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17215860), v207);
-  mirror_path_template_pair_x((Path *)(this + 17215860), (Path *)(this + 17215692));
+  set_bod_object(&game->subgame.path_pairs[50].secondary.bod, v207);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[50].secondary, &game->subgame.path_pairs[50].primary);
   *(_DWORD *)&v379[12] = 1065353216;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17215884) = 0;
-  *(_DWORD *)(this + 17215880) = 0;
-  *(_DWORD *)(this + 17215876) = 0;
-  build_track_fringe_mesh((Path *)(this + 17215692), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[50].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[50].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[50].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[50].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = -1082130432;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17215812) = 0;
-  *(_DWORD *)(this + 17215808) = 0;
-  *(_DWORD *)(this + 17215804) = 0;
-  build_track_fringe_mesh((Path *)(this + 17215860), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17215980) = 0;
-  *(_DWORD *)(this + 17215976) = 0;
-  *(_DWORD *)(this + 17215972) = 0;
+  game->subgame.path_pairs[50].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[50].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[50].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[50].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[50].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[50].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[50].secondary.fringe_mesh_bod.position.x = 0.0;
   noop_this_constructor(&v379[40]);
   store_color4f((tColour *)&v379[40], 1.0, 1.0, 1.0, 0.60000002);
   v208 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17216028), v208);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17216028), 6.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17216052) = 0;
-  *(_DWORD *)(this + 17216048) = 0;
-  *(_DWORD *)(this + 17216044) = 0;
+  set_bod_object(&game->subgame.path_pairs[51].primary.bod, v208);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[51].primary, 6.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[51].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[51].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[51].primary.bod.position.x = 0.0;
   v209 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17216196), v209);
-  mirror_path_template_pair_x((Path *)(this + 17216196), (Path *)(this + 17216028));
+  set_bod_object(&game->subgame.path_pairs[51].secondary.bod, v209);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[51].secondary, &game->subgame.path_pairs[51].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17216220) = 0;
-  *(_DWORD *)(this + 17216216) = 0;
-  *(_DWORD *)(this + 17216212) = 0;
-  build_track_fringe_mesh((Path *)(this + 17216028), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[51].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[51].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[51].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[51].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17216148) = 0;
-  *(_DWORD *)(this + 17216144) = 0;
-  *(_DWORD *)(this + 17216140) = 0;
-  build_track_fringe_mesh((Path *)(this + 17216196), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17216316) = 0;
-  *(_DWORD *)(this + 17216312) = 0;
-  *(_DWORD *)(this + 17216308) = 0;
-  v210 = *(_DWORD *)(this + 17198928);
-  v211 = *(_DWORD *)(this + 17216232);
-  *(_DWORD *)(this + 17199052) = *(_DWORD *)(this + 17216064);
-  v212 = *(_DWORD *)(this + 17199096);
-  *(_DWORD *)(this + 17199056) = v210;
-  *(_DWORD *)(this + 17199220) = v211;
-  *(_DWORD *)(this + 17199224) = v212;
+  game->subgame.path_pairs[51].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[51].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[51].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[51].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[51].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[51].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[51].secondary.fringe_mesh_bod.position.x = 0.0;
+  v210 = game->subgame.path_pairs[0].primary.bod.object;
+  v211 = game->subgame.path_pairs[51].secondary.bod.object;
+  game->subgame.path_pairs[0].primary.entry_transition_strip_mesh = game->subgame.path_pairs[51].primary.bod.object;
+  v212 = game->subgame.path_pairs[0].secondary.bod.object;
+  game->subgame.path_pairs[0].primary.entry_base_strip_mesh = v210;
+  game->subgame.path_pairs[0].secondary.entry_transition_strip_mesh = v211;
+  game->subgame.path_pairs[0].secondary.entry_base_strip_mesh = v212;
   v213 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17216364), v213);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17216364), 6.0, 2, (char *)1, texture_a);
-  *(_DWORD *)(this + 17216388) = 0;
-  *(_DWORD *)(this + 17216384) = 0;
-  *(_DWORD *)(this + 17216380) = 0;
+  set_bod_object(&game->subgame.path_pairs[52].primary.bod, v213);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[52].primary, 6.0, 2, (char *)1, texture_a);
+  game->subgame.path_pairs[52].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[52].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[52].primary.bod.position.x = 0.0;
   v214 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17216532), v214);
-  mirror_path_template_pair_x((Path *)(this + 17216532), (Path *)(this + 17216364));
+  set_bod_object(&game->subgame.path_pairs[52].secondary.bod, v214);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[52].secondary, &game->subgame.path_pairs[52].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17216556) = 0;
-  *(_DWORD *)(this + 17216552) = 0;
-  *(_DWORD *)(this + 17216548) = 0;
-  build_track_fringe_mesh((Path *)(this + 17216364), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[52].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[52].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[52].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[52].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17216484) = 0;
-  *(_DWORD *)(this + 17216480) = 0;
-  *(_DWORD *)(this + 17216476) = 0;
-  build_track_fringe_mesh((Path *)(this + 17216532), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17216652) = 0;
-  *(_DWORD *)(this + 17216648) = 0;
-  *(_DWORD *)(this + 17216644) = 0;
-  v215 = *(_DWORD *)(this + 17199264);
-  v216 = *(_DWORD *)(this + 17216568);
-  *(_DWORD *)(this + 17199388) = *(_DWORD *)(this + 17216400);
-  *(_DWORD *)(this + 17199560) = *(_DWORD *)(this + 17199432);
-  *(_DWORD *)(this + 17199392) = v215;
-  *(_DWORD *)(this + 17199556) = v216;
+  game->subgame.path_pairs[52].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[52].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[52].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[52].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[52].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[52].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[52].secondary.fringe_mesh_bod.position.x = 0.0;
+  v215 = game->subgame.path_pairs[1].primary.bod.object;
+  v216 = game->subgame.path_pairs[52].secondary.bod.object;
+  game->subgame.path_pairs[1].primary.entry_transition_strip_mesh = game->subgame.path_pairs[52].primary.bod.object;
+  game->subgame.path_pairs[1].secondary.entry_base_strip_mesh = game->subgame.path_pairs[1].secondary.bod.object;
+  game->subgame.path_pairs[1].primary.entry_base_strip_mesh = v215;
+  game->subgame.path_pairs[1].secondary.entry_transition_strip_mesh = v216;
   v217 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17216700), v217);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17216700), 8.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17216724) = 0;
-  *(_DWORD *)(this + 17216720) = 0;
-  *(_DWORD *)(this + 17216716) = 0;
+  set_bod_object(&game->subgame.path_pairs[53].primary.bod, v217);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[53].primary, 8.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[53].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[53].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[53].primary.bod.position.x = 0.0;
   v218 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17216868), v218);
-  mirror_path_template_pair_x((Path *)(this + 17216868), (Path *)(this + 17216700));
+  set_bod_object(&game->subgame.path_pairs[53].secondary.bod, v218);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[53].secondary, &game->subgame.path_pairs[53].primary);
   *(_DWORD *)&v379[12] = 0;
-  *(_DWORD *)(this + 17216892) = 0;
-  *(_DWORD *)(this + 17216888) = 0;
-  *(_DWORD *)(this + 17216884) = 0;
-  build_track_fringe_mesh((Path *)(this + 17216700), aObjectsUnivers_1, *(float *)&v379[12]);
+  game->subgame.path_pairs[53].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[53].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[53].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[53].primary, aObjectsUnivers_1, *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17216820) = 0;
-  *(_DWORD *)(this + 17216816) = 0;
-  *(_DWORD *)(this + 17216812) = 0;
-  build_track_fringe_mesh((Path *)(this + 17216868), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17216988) = 0;
-  *(_DWORD *)(this + 17216984) = 0;
-  *(_DWORD *)(this + 17216980) = 0;
-  v219 = *(_DWORD *)(this + 17199600);
-  v220 = *(_DWORD *)(this + 17216904);
-  *(_DWORD *)(this + 17199724) = *(_DWORD *)(this + 17216736);
-  *(_DWORD *)(this + 17199728) = v219;
-  *(_DWORD *)(this + 17199892) = v220;
-  *(_DWORD *)(this + 17199896) = *(_DWORD *)(this + 17199768);
+  game->subgame.path_pairs[53].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[53].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[53].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[53].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[53].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[53].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[53].secondary.fringe_mesh_bod.position.x = 0.0;
+  v219 = game->subgame.path_pairs[2].primary.bod.object;
+  v220 = game->subgame.path_pairs[53].secondary.bod.object;
+  game->subgame.path_pairs[2].primary.entry_transition_strip_mesh = game->subgame.path_pairs[53].primary.bod.object;
+  game->subgame.path_pairs[2].primary.entry_base_strip_mesh = v219;
+  game->subgame.path_pairs[2].secondary.entry_transition_strip_mesh = v220;
+  game->subgame.path_pairs[2].secondary.entry_base_strip_mesh = game->subgame.path_pairs[2].secondary.bod.object;
   v221 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17218044), v221);
-  initialize_looptheloopw_path_template_pair((Path *)(this + 17218044), 8.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17218068) = 0;
-  *(_DWORD *)(this + 17218064) = 0;
-  *(_DWORD *)(this + 17218060) = 0;
+  set_bod_object(&game->subgame.path_pairs[57].primary.bod, v221);
+  initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[57].primary, 8.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[57].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[57].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[57].primary.bod.position.x = 0.0;
   v222 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17218212), v222);
-  mirror_path_template_pair_x((Path *)(this + 17218212), (Path *)(this + 17218044));
+  set_bod_object(&game->subgame.path_pairs[57].secondary.bod, v222);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[57].secondary, &game->subgame.path_pairs[57].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17218236) = 0;
-  *(_DWORD *)(this + 17218232) = 0;
-  *(_DWORD *)(this + 17218228) = 0;
-  build_track_fringe_mesh((Path *)(this + 17218044), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[57].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[57].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[57].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[57].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17218164) = 0;
-  *(_DWORD *)(this + 17218160) = 0;
-  *(_DWORD *)(this + 17218156) = 0;
-  build_track_fringe_mesh((Path *)(this + 17218212), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17218332) = 0;
-  *(_DWORD *)(this + 17218328) = 0;
-  *(_DWORD *)(this + 17218324) = 0;
-  *(_DWORD *)(this + 17201068) = *(_DWORD *)(this + 17218080);
-  *(_DWORD *)(this + 17201072) = *(_DWORD *)(this + 17200944);
-  *(_DWORD *)(this + 17201236) = *(_DWORD *)(this + 17218248);
-  *(_DWORD *)(this + 17201240) = *(_DWORD *)(this + 17201112);
+  game->subgame.path_pairs[57].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[57].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[57].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[57].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[57].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[57].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[57].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[6].primary.entry_transition_strip_mesh = game->subgame.path_pairs[57].primary.bod.object;
+  game->subgame.path_pairs[6].primary.entry_base_strip_mesh = game->subgame.path_pairs[6].primary.bod.object;
+  game->subgame.path_pairs[6].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[57].secondary.bod.object;
+  game->subgame.path_pairs[6].secondary.entry_base_strip_mesh = game->subgame.path_pairs[6].secondary.bod.object;
   v223 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17217036), v223);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17217036), 3.0, 2, (char *)1, texture_a);
-  *(_DWORD *)(this + 17217060) = 0;
-  *(_DWORD *)(this + 17217056) = 0;
-  *(_DWORD *)(this + 17217052) = 0;
+  set_bod_object(&game->subgame.path_pairs[54].primary.bod, v223);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[54].primary, 3.0, 2, (char *)1, texture_a);
+  game->subgame.path_pairs[54].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[54].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[54].primary.bod.position.x = 0.0;
   v224 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17217204), v224);
-  mirror_path_template_pair_x((Path *)(this + 17217204), (Path *)(this + 17217036));
+  set_bod_object(&game->subgame.path_pairs[54].secondary.bod, v224);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[54].secondary, &game->subgame.path_pairs[54].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17217228) = 0;
-  *(_DWORD *)(this + 17217224) = 0;
-  *(_DWORD *)(this + 17217220) = 0;
-  build_track_fringe_mesh((Path *)(this + 17217036), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[54].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[54].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[54].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[54].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17217156) = 0;
-  *(_DWORD *)(this + 17217152) = 0;
-  *(_DWORD *)(this + 17217148) = 0;
-  build_track_fringe_mesh((Path *)(this + 17217204), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17217324) = 0;
-  *(_DWORD *)(this + 17217320) = 0;
-  *(_DWORD *)(this + 17217316) = 0;
-  *(_DWORD *)(this + 17200060) = *(_DWORD *)(this + 17217072);
-  *(_DWORD *)(this + 17200064) = *(_DWORD *)(this + 17199936);
-  *(_DWORD *)(this + 17200228) = *(_DWORD *)(this + 17217240);
-  *(_DWORD *)(this + 17200232) = *(_DWORD *)(this + 17200104);
+  game->subgame.path_pairs[54].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[54].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[54].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[54].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[54].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[54].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[54].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[3].primary.entry_transition_strip_mesh = game->subgame.path_pairs[54].primary.bod.object;
+  game->subgame.path_pairs[3].primary.entry_base_strip_mesh = game->subgame.path_pairs[3].primary.bod.object;
+  game->subgame.path_pairs[3].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[54].secondary.bod.object;
+  game->subgame.path_pairs[3].secondary.entry_base_strip_mesh = game->subgame.path_pairs[3].secondary.bod.object;
   v225 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17217372), v225);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17217372), 3.0, 3, (char *)1, texture_a);
-  *(_DWORD *)(this + 17217396) = 0;
-  *(_DWORD *)(this + 17217392) = 0;
-  *(_DWORD *)(this + 17217388) = 0;
+  set_bod_object(&game->subgame.path_pairs[55].primary.bod, v225);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[55].primary, 3.0, 3, (char *)1, texture_a);
+  game->subgame.path_pairs[55].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[55].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[55].primary.bod.position.x = 0.0;
   v226 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17217540), v226);
-  mirror_path_template_pair_x((Path *)(this + 17217540), (Path *)(this + 17217372));
+  set_bod_object(&game->subgame.path_pairs[55].secondary.bod, v226);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[55].secondary, &game->subgame.path_pairs[55].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17217564) = 0;
-  *(_DWORD *)(this + 17217560) = 0;
-  *(_DWORD *)(this + 17217556) = 0;
-  build_track_fringe_mesh((Path *)(this + 17217372), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[55].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[55].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[55].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[55].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17217492) = 0;
-  *(_DWORD *)(this + 17217488) = 0;
-  *(_DWORD *)(this + 17217484) = 0;
-  build_track_fringe_mesh((Path *)(this + 17217540), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17217660) = 0;
-  *(_DWORD *)(this + 17217656) = 0;
-  *(_DWORD *)(this + 17217652) = 0;
-  *(_DWORD *)(this + 17200396) = *(_DWORD *)(this + 17217408);
-  *(_DWORD *)(this + 17200400) = *(_DWORD *)(this + 17200272);
-  *(_DWORD *)(this + 17200564) = *(_DWORD *)(this + 17217576);
-  *(_DWORD *)(this + 17200568) = *(_DWORD *)(this + 17200440);
+  game->subgame.path_pairs[55].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[55].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[55].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[55].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[55].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[55].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[55].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[4].primary.entry_transition_strip_mesh = game->subgame.path_pairs[55].primary.bod.object;
+  game->subgame.path_pairs[4].primary.entry_base_strip_mesh = game->subgame.path_pairs[4].primary.bod.object;
+  game->subgame.path_pairs[4].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[55].secondary.bod.object;
+  game->subgame.path_pairs[4].secondary.entry_base_strip_mesh = game->subgame.path_pairs[4].secondary.bod.object;
   v227 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17217708), v227);
-  initialize_looptheloop_path_template_pair((Path *)(this + 17217708), 3.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17217732) = 0;
-  *(_DWORD *)(this + 17217728) = 0;
-  *(_DWORD *)(this + 17217724) = 0;
+  set_bod_object(&game->subgame.path_pairs[56].primary.bod, v227);
+  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[56].primary, 3.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[56].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[56].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[56].primary.bod.position.x = 0.0;
   v228 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17217876), v228);
-  mirror_path_template_pair_x((Path *)(this + 17217876), (Path *)(this + 17217708));
+  set_bod_object(&game->subgame.path_pairs[56].secondary.bod, v228);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[56].secondary, &game->subgame.path_pairs[56].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17217900) = 0;
-  *(_DWORD *)(this + 17217896) = 0;
-  *(_DWORD *)(this + 17217892) = 0;
-  build_track_fringe_mesh((Path *)(this + 17217708), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[56].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[56].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[56].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[56].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17217828) = 0;
-  *(_DWORD *)(this + 17217824) = 0;
-  *(_DWORD *)(this + 17217820) = 0;
-  build_track_fringe_mesh((Path *)(this + 17217876), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17217996) = 0;
-  *(_DWORD *)(this + 17217992) = 0;
-  *(_DWORD *)(this + 17217988) = 0;
-  *(_DWORD *)(this + 17200732) = *(_DWORD *)(this + 17217744);
-  *(_DWORD *)(this + 17200736) = *(_DWORD *)(this + 17200608);
-  *(_DWORD *)(this + 17200900) = *(_DWORD *)(this + 17217912);
-  *(_DWORD *)(this + 17200904) = *(_DWORD *)(this + 17200776);
+  game->subgame.path_pairs[56].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[56].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[56].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[56].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[56].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[56].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[56].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[5].primary.entry_transition_strip_mesh = game->subgame.path_pairs[56].primary.bod.object;
+  game->subgame.path_pairs[5].primary.entry_base_strip_mesh = game->subgame.path_pairs[5].primary.bod.object;
+  game->subgame.path_pairs[5].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[56].secondary.bod.object;
+  game->subgame.path_pairs[5].secondary.entry_base_strip_mesh = game->subgame.path_pairs[5].secondary.bod.object;
   v229 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17218380), v229);
-  initialize_loopbow_path_template_pair((Path *)(this + 17218380), 6.0, 4u, (char *)1, texture_a);
-  *(_DWORD *)(this + 17218404) = 0;
-  *(_DWORD *)(this + 17218400) = 0;
-  *(_DWORD *)(this + 17218396) = 0;
+  set_bod_object(&game->subgame.path_pairs[58].primary.bod, v229);
+  initialize_loopbow_path_template_pair(&game->subgame.path_pairs[58].primary, 6.0, 4u, (char *)1, texture_a);
+  game->subgame.path_pairs[58].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[58].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[58].primary.bod.position.x = 0.0;
   v230 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17218548), v230);
-  mirror_path_template_pair_x((Path *)(this + 17218548), (Path *)(this + 17218380));
+  set_bod_object(&game->subgame.path_pairs[58].secondary.bod, v230);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[58].secondary, &game->subgame.path_pairs[58].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17218572) = 0;
-  *(_DWORD *)(this + 17218568) = 0;
-  *(_DWORD *)(this + 17218564) = 0;
-  build_track_fringe_mesh((Path *)(this + 17218380), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[58].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[58].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[58].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[58].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17218500) = 0;
-  *(_DWORD *)(this + 17218496) = 0;
-  *(_DWORD *)(this + 17218492) = 0;
-  build_track_fringe_mesh((Path *)(this + 17218548), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17218668) = 0;
-  *(_DWORD *)(this + 17218664) = 0;
-  *(_DWORD *)(this + 17218660) = 0;
-  *(_DWORD *)(this + 17201404) = *(_DWORD *)(this + 17218416);
-  *(_DWORD *)(this + 17201408) = *(_DWORD *)(this + 17201280);
-  *(_DWORD *)(this + 17201572) = *(_DWORD *)(this + 17218584);
-  *(_DWORD *)(this + 17201576) = *(_DWORD *)(this + 17201448);
+  game->subgame.path_pairs[58].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[58].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[58].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[58].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[58].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[58].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[58].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[7].primary.entry_transition_strip_mesh = game->subgame.path_pairs[58].primary.bod.object;
+  game->subgame.path_pairs[7].primary.entry_base_strip_mesh = game->subgame.path_pairs[7].primary.bod.object;
+  game->subgame.path_pairs[7].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[58].secondary.bod.object;
+  game->subgame.path_pairs[7].secondary.entry_base_strip_mesh = game->subgame.path_pairs[7].secondary.bod.object;
   v231 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17219724), v231);
+  set_bod_object(&game->subgame.path_pairs[62].primary.bod, v231);
   *(_DWORD *)&v379[4] = texture_a;
-  initialize_invert_path_template_pair((Path *)(this + 17219724), 1086324736, (char *)8, (char *)1);
-  *(_DWORD *)(this + 17219748) = 0;
-  *(_DWORD *)(this + 17219744) = 0;
-  *(_DWORD *)(this + 17219740) = 0;
+  initialize_invert_path_template_pair(&game->subgame.path_pairs[62].primary, 1086324736, (char *)8, (char *)1);
+  game->subgame.path_pairs[62].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[62].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[62].primary.bod.position.x = 0.0;
   v232 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17219892), v232);
-  mirror_path_template_pair_x((Path *)(this + 17219892), (Path *)(this + 17219724));
+  set_bod_object(&game->subgame.path_pairs[62].secondary.bod, v232);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[62].secondary, &game->subgame.path_pairs[62].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17219916) = 0;
-  *(_DWORD *)(this + 17219912) = 0;
-  *(_DWORD *)(this + 17219908) = 0;
-  build_track_fringe_mesh((Path *)(this + 17219724), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[62].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[62].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[62].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[62].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17219844) = 0;
-  *(_DWORD *)(this + 17219840) = 0;
-  *(_DWORD *)(this + 17219836) = 0;
-  build_track_fringe_mesh((Path *)(this + 17219892), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17220012) = 0;
-  *(_DWORD *)(this + 17220008) = 0;
-  *(_DWORD *)(this + 17220004) = 0;
-  *(_DWORD *)(this + 17212828) = *(_DWORD *)(this + 17219760);
-  *(_DWORD *)(this + 17212832) = *(_DWORD *)(this + 17212704);
-  *(_DWORD *)(this + 17212996) = *(_DWORD *)(this + 17219928);
-  *(_DWORD *)(this + 17213000) = *(_DWORD *)(this + 17212872);
+  game->subgame.path_pairs[62].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[62].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[62].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[62].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[62].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[62].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[62].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[41].primary.entry_transition_strip_mesh = game->subgame.path_pairs[62].primary.bod.object;
+  game->subgame.path_pairs[41].primary.entry_base_strip_mesh = game->subgame.path_pairs[41].primary.bod.object;
+  game->subgame.path_pairs[41].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[62].secondary.bod.object;
+  game->subgame.path_pairs[41].secondary.entry_base_strip_mesh = game->subgame.path_pairs[41].secondary.bod.object;
   v233 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17218716), v233);
-  initialize_loopout_path_template_pair((Path *)(this + 17218716), 3.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17218740) = 0;
-  *(_DWORD *)(this + 17218736) = 0;
-  *(_DWORD *)(this + 17218732) = 0;
+  set_bod_object(&game->subgame.path_pairs[59].primary.bod, v233);
+  initialize_loopout_path_template_pair(&game->subgame.path_pairs[59].primary, 3.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[59].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[59].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[59].primary.bod.position.x = 0.0;
   v234 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17218884), v234);
-  mirror_path_template_pair_x((Path *)(this + 17218884), (Path *)(this + 17218716));
+  set_bod_object(&game->subgame.path_pairs[59].secondary.bod, v234);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[59].secondary, &game->subgame.path_pairs[59].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17218908) = 0;
-  *(_DWORD *)(this + 17218904) = 0;
-  *(_DWORD *)(this + 17218900) = 0;
-  build_track_fringe_mesh((Path *)(this + 17218716), *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[59].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[59].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[59].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[59].primary, *(char **)&v379[8], *(float *)&v379[12]);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17218836) = 0;
-  *(_DWORD *)(this + 17218832) = 0;
-  *(_DWORD *)(this + 17218828) = 0;
-  build_track_fringe_mesh((Path *)(this + 17218884), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17219004) = 0;
-  *(_DWORD *)(this + 17219000) = 0;
-  *(_DWORD *)(this + 17218996) = 0;
-  *(_DWORD *)(this + 17207452) = *(_DWORD *)(this + 17218752);
-  *(_DWORD *)(this + 17207456) = *(_DWORD *)(this + 17207328);
-  *(_DWORD *)(this + 17207620) = *(_DWORD *)(this + 17218920);
-  *(_DWORD *)(this + 17207624) = *(_DWORD *)(this + 17207496);
+  game->subgame.path_pairs[59].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[59].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[59].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[59].secondary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[59].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[59].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[59].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[25].primary.entry_transition_strip_mesh = game->subgame.path_pairs[59].primary.bod.object;
+  game->subgame.path_pairs[25].primary.entry_base_strip_mesh = game->subgame.path_pairs[25].primary.bod.object;
+  game->subgame.path_pairs[25].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[59].secondary.bod.object;
+  game->subgame.path_pairs[25].secondary.entry_base_strip_mesh = game->subgame.path_pairs[25].secondary.bod.object;
   v235 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17219388), v235);
-  initialize_loopout_path_template_pair((Path *)(this + 17219388), 5.0, 4, (char *)1, texture_a);
-  *(_DWORD *)(this + 17219412) = 0;
-  *(_DWORD *)(this + 17219408) = 0;
-  *(_DWORD *)(this + 17219404) = 0;
+  set_bod_object(&game->subgame.path_pairs[61].primary.bod, v235);
+  initialize_loopout_path_template_pair(&game->subgame.path_pairs[61].primary, 5.0, 4, (char *)1, texture_a);
+  game->subgame.path_pairs[61].primary.bod.position.z = 0.0;
+  game->subgame.path_pairs[61].primary.bod.position.y = 0.0;
+  game->subgame.path_pairs[61].primary.bod.position.x = 0.0;
   v236 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17219556), v236);
-  mirror_path_template_pair_x((Path *)(this + 17219556), (Path *)(this + 17219388));
+  set_bod_object(&game->subgame.path_pairs[61].secondary.bod, v236);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[61].secondary, &game->subgame.path_pairs[61].primary);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = aObjectsUnivers_1;
-  *(_DWORD *)(this + 17219580) = 0;
-  *(_DWORD *)(this + 17219576) = 0;
-  *(_DWORD *)(this + 17219572) = 0;
-  build_track_fringe_mesh((Path *)(this + 17219388), *(char **)&v379[8], *(float *)&v379[12]);
-  *(_DWORD *)(this + 17219508) = 0;
-  *(_DWORD *)(this + 17219504) = 0;
-  *(_DWORD *)(this + 17219500) = 0;
-  build_track_fringe_mesh((Path *)(this + 17219556), aObjectsUnivers_1, 0.0);
-  *(_DWORD *)(this + 17219676) = 0;
-  *(_DWORD *)(this + 17219672) = 0;
-  *(_DWORD *)(this + 17219668) = 0;
-  *(_DWORD *)(this + 17208124) = *(_DWORD *)(this + 17219424);
-  *(_DWORD *)(this + 17208128) = *(_DWORD *)(this + 17208000);
-  *(_DWORD *)(this + 17208292) = *(_DWORD *)(this + 17219592);
-  *(_DWORD *)(this + 17208296) = *(_DWORD *)(this + 17208168);
+  game->subgame.path_pairs[61].secondary.bod.position.z = 0.0;
+  game->subgame.path_pairs[61].secondary.bod.position.y = 0.0;
+  game->subgame.path_pairs[61].secondary.bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[61].primary, *(char **)&v379[8], *(float *)&v379[12]);
+  game->subgame.path_pairs[61].primary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[61].primary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[61].primary.fringe_mesh_bod.position.x = 0.0;
+  build_track_fringe_mesh(&game->subgame.path_pairs[61].secondary, aObjectsUnivers_1, 0.0);
+  game->subgame.path_pairs[61].secondary.fringe_mesh_bod.position.z = 0.0;
+  game->subgame.path_pairs[61].secondary.fringe_mesh_bod.position.y = 0.0;
+  game->subgame.path_pairs[61].secondary.fringe_mesh_bod.position.x = 0.0;
+  game->subgame.path_pairs[27].primary.entry_transition_strip_mesh = game->subgame.path_pairs[61].primary.bod.object;
+  game->subgame.path_pairs[27].primary.entry_base_strip_mesh = game->subgame.path_pairs[27].primary.bod.object;
+  game->subgame.path_pairs[27].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[61].secondary.bod.object;
+  game->subgame.path_pairs[27].secondary.entry_base_strip_mesh = game->subgame.path_pairs[27].secondary.bod.object;
   v237 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17219052), v237);
-  initialize_loopout_path_template_pair((Path *)(this + 17219052), 3.0, 3, (char *)1, texture_a);
-  zero_vector3((_DWORD *)(this + 17219068));
+  set_bod_object(&game->subgame.path_pairs[60].primary.bod, v237);
+  initialize_loopout_path_template_pair(&game->subgame.path_pairs[60].primary, 3.0, 3, (char *)1, texture_a);
+  zero_vector3(&game->subgame.path_pairs[60].primary.bod.position.x);
   v238 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17219220), v238);
-  mirror_path_template_pair_x((Path *)(this + 17219220), (Path *)(this + 17219052));
-  zero_vector3((_DWORD *)(this + 17219236));
-  build_track_fringe_mesh((Path *)(this + 17219052), aObjectsUnivers_1, 0.0);
-  zero_vector3((_DWORD *)(this + 17219164));
-  build_track_fringe_mesh((Path *)(this + 17219220), aObjectsUnivers_1, 0.0);
-  zero_vector3((_DWORD *)(this + 17219332));
-  v239 = *(_DWORD *)(this + 17219088);
+  set_bod_object(&game->subgame.path_pairs[60].secondary.bod, v238);
+  mirror_path_template_pair_x(&game->subgame.path_pairs[60].secondary, &game->subgame.path_pairs[60].primary);
+  zero_vector3(&game->subgame.path_pairs[60].secondary.bod.position.x);
+  build_track_fringe_mesh(&game->subgame.path_pairs[60].primary, aObjectsUnivers_1, 0.0);
+  zero_vector3(&game->subgame.path_pairs[60].primary.fringe_mesh_bod.position.x);
+  build_track_fringe_mesh(&game->subgame.path_pairs[60].secondary, aObjectsUnivers_1, 0.0);
+  zero_vector3(&game->subgame.path_pairs[60].secondary.fringe_mesh_bod.position.x);
+  v239 = game->subgame.path_pairs[60].primary.bod.object;
   *(_DWORD *)&v379[12] = aPathGeneration_0;
-  *(_DWORD *)(this + 17207788) = v239;
-  *(_DWORD *)(this + 17207792) = *(_DWORD *)(this + 17207664);
-  *(_DWORD *)(this + 17207956) = *(_DWORD *)(this + 17219256);
-  *(_DWORD *)(this + 17207960) = *(_DWORD *)(this + 17207832);
+  game->subgame.path_pairs[26].primary.entry_transition_strip_mesh = v239;
+  game->subgame.path_pairs[26].primary.entry_base_strip_mesh = game->subgame.path_pairs[26].primary.bod.object;
+  game->subgame.path_pairs[26].secondary.entry_transition_strip_mesh = game->subgame.path_pairs[60].secondary.bod.object;
+  game->subgame.path_pairs[26].secondary.entry_base_strip_mesh = game->subgame.path_pairs[26].secondary.bod.object;
   debug_report_stub();
   v240 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43284A + this + 2), v240);
-  case_insensitive_substring = find_case_insensitive_substring(aTest, *(char **)(this + 298496));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_43284A + 2], v240);
+  case_insensitive_substring = find_case_insensitive_substring(aTest, *(char **)&game->unknown_044100[19712]);
   if ( case_insensitive_substring )
   {
     v242 = find_case_insensitive_substring(asc_4A1644, case_insensitive_substring);
@@ -2568,43 +2627,80 @@ LABEL_31:
   {
     rstrcpy_checked_ascii(ArgList, aTurboBase000X);
   }
-  load_x_animation_clip((DirectXLoader *)(this + 298496), ArgList, *(Object **)((char *)&loc_432870 + this));
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    ArgList,
+    *(Object **)((char *)&loc_432870 + (_DWORD)game));
   v248 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4326FF + this + 1), v248);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), ArgList, *(Object **)((char *)&loc_432720 + this + 4));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4326FF + 1], v248);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    ArgList,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432720 + 4]);
   v249 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4328C8 + this + 4), v249);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), mesh_name, *(Object **)((char *)&loc_4328F0 + this));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4328C8 + 4], v249);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    mesh_name,
+    *(Object **)((char *)&loc_4328F0 + (_DWORD)game));
   v250 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43294C + this), v250);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboBobalong0, *(Object **)((char *)&loc_432970 + this));
+  set_bod_object((BodBase *)((char *)&loc_43294C + (_DWORD)game), v250);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboBobalong0,
+    *(Object **)((char *)&loc_432970 + (_DWORD)game));
   v251 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4329CC + this), v251);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboLookbackl, *(Object **)((char *)&loc_4329EE + this + 2));
+  set_bod_object((BodBase *)((char *)&loc_4329CC + (_DWORD)game), v251);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboLookbackl,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_4329EE + 2]);
   v252 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432A4A + this + 2), v252);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboLookbackr, *(Object **)((char *)&loc_432A6D + this + 3));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432A4A + 2], v252);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboLookbackr,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432A6D + 3]);
   v253 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432ACB + this + 1), v253);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboFall000X, *(Object **)((char *)&loc_432AEF + this + 1));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432ACB + 1], v253);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboFall000X,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432AEF + 1]);
   v254 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432B49 + this + 3), v254);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboDamaged00, *(Object **)((char *)&loc_432B6E + this + 2));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432B49 + 3], v254);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboDamaged00,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432B6E + 2]);
   v255 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432BCA + this + 2), v255);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboIntoshell, *(Object **)((char *)&loc_432BEF + this + 1));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432BCA + 2], v255);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboIntoshell,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432BEF + 1]);
   v256 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432C48 + this + 4), v256);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboSkidstop0, *(Object **)((char *)&loc_432C6D + this + 3));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432C48 + 4], v256);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboSkidstop0,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432C6D + 3]);
   v257 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432CCA + this + 2), v257);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aTurboTalk000X, *(Object **)((char *)&loc_432CE9 + this + 7));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432CCA + 2], v257);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurboTalk000X,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432CE9 + 7]);
   v258 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433D46 + this + 6), v258);
-  load_x_mesh((DirectXLoader *)(this + 298496), aTurbohotspotsX, *(Object **)((char *)&loc_433D6F + this + 1), 2);
-  build_snail_hotspots((int)&loc_4326FF + this + 1);
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433D46 + 6], v258);
+  load_x_mesh(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aTurbohotspotsX,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433D6F + 1],
+    2);
+  build_snail_hotspots((int)&game->unknown_000000[(_DWORD)&loc_4326FF + 1]);
   *(_DWORD *)&v379[36] = 10;
-  *(_DWORD *)&v379[32] = (char *)&loc_432870 + this;
+  *(_DWORD *)&v379[32] = (char *)&loc_432870 + (_DWORD)game;
   do
   {
     v259 = *(Object ***)&v379[32];
@@ -2623,24 +2719,33 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v263;
   }
   while ( !v60 );
-  v264 = *(_DWORD *)((char *)&loc_432720 + this + 4);
+  v264 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4];
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v264 + 16) |= 4u;
-  apply_object_toon(*(Object **)((char *)&loc_432720 + this + 4), *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_432720 + this + 4) + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_432720 + this + 4) + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_432720 + this + 4) + 136) = 0;
+  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_432720 + 4], *(int32_t *)&v379[12]);
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4] + 128) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4] + 132) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4] + 136) = 0;
   v265 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4338DE + this + 2), v265);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aJetpackBase000, *(Object **)((char *)&loc_433902 + this + 2));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4338DE + 2], v265);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aJetpackBase000,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433902 + 2]);
   v266 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433A2C + this + 4), v266);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aJetpackBase000, *(Object **)((char *)&loc_433A54 + this));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433A2C + 4], v266);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aJetpackBase000,
+    *(Object **)((char *)&loc_433A54 + (_DWORD)game));
   v267 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433AB0 + this), v267);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aJetpackDraw000, *(Object **)((char *)&loc_433AD4 + this));
+  set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v267);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aJetpackDraw000,
+    *(Object **)((char *)&loc_433AD4 + (_DWORD)game));
   *(_DWORD *)&v379[36] = 2;
-  *(_DWORD *)&v379[32] = (char *)&loc_433A54 + this;
+  *(_DWORD *)&v379[32] = (char *)&loc_433A54 + (_DWORD)game;
   do
   {
     v268 = *(Object ***)&v379[32];
@@ -2659,39 +2764,51 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v272;
   }
   while ( !v60 );
-  v273 = *(_DWORD *)((char *)&loc_433902 + this + 2);
+  v273 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2];
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v273 + 16) |= 4u;
-  apply_object_toon(*(Object **)((char *)&loc_433902 + this + 2), *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433902 + this + 2) + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433902 + this + 2) + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433902 + this + 2) + 136) = 0;
+  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_433902 + 2], *(int32_t *)&v379[12]);
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2] + 128) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2] + 132) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2] + 136) = 0;
   v274 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&byte_432D4C[this], v274);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterleftBas, *(Object **)((char *)&loc_432D6D + this + 3));
+  set_bod_object((BodBase *)&byte_432D4C[(_DWORD)game], v274);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterleftBas,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432D6D + 3]);
   v275 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432E9A + this + 2), v275);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterleftBas, *(Object **)((char *)&loc_432EBF + this + 1));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432E9A + 2], v275);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterleftBas,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_432EBF + 1]);
   v276 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432F1A + this + 2), v276);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterleftDra, *(Object **)((char *)&loc_432F40 + this));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432F1A + 2], v276);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterleftDra,
+    *(Object **)((char *)&loc_432F40 + (_DWORD)game));
   v277 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_432F9B + this + 1), v277);
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432F9B + 1], v277);
   load_x_animation_clip(
-    (DirectXLoader *)(this + 298496),
+    (DirectXLoader *)&game->unknown_044100[19712],
     aBlasterleftFir,
-    *(Object **)((char *)find_registered_sound_sample_id_by_name + this));
+    *(Object **)((char *)find_registered_sound_sample_id_by_name + (_DWORD)game));
   v278 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43301C + this), v278);
+  set_bod_object((BodBase *)((char *)&loc_43301C + (_DWORD)game), v278);
   load_x_animation_clip(
-    (DirectXLoader *)(this + 298496),
+    (DirectXLoader *)&game->unknown_044100[19712],
     aLaserleftBase0,
-    *(Object **)((char *)get_authored_view_height + this));
+    *(Object **)((char *)get_authored_view_height + (_DWORD)game));
   v279 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_43309C + this), v279);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aLaserleftDraw0, *(Object **)((char *)&loc_4330BF + this + 1));
+  set_bod_object((BodBase *)((char *)&loc_43309C + (_DWORD)game), v279);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aLaserleftDraw0,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_4330BF + 1]);
   *(_DWORD *)&v379[36] = 5;
-  *(_DWORD *)&v379[32] = (char *)&loc_432EBF + this + 1;
+  *(_DWORD *)&v379[32] = (char *)game + (_DWORD)&loc_432EBF + 1;
   do
   {
     v280 = *(Object ***)&v379[32];
@@ -2710,33 +2827,51 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v284;
   }
   while ( !v60 );
-  v285 = *(_DWORD *)((char *)&loc_432D6D + this + 3);
+  v285 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3];
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v285 + 16) |= 4u;
-  apply_object_toon(*(Object **)((char *)&loc_432D6D + this + 3), *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_432D6D + this + 3) + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_432D6D + this + 3) + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_432D6D + this + 3) + 136) = 0;
+  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_432D6D + 3], *(int32_t *)&v379[12]);
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 128) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 132) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 136) = 0;
   v286 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433127 + this + 1), v286);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterrightBa, *(Object **)((char *)&loc_43314C + this));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433127 + 1], v286);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterrightBa,
+    *(Object **)((char *)&loc_43314C + (_DWORD)game));
   v287 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433275 + this + 3), v287);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterrightBa, *(Object **)((char *)&loc_43329B + this + 1));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433275 + 3], v287);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterrightBa,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_43329B + 1]);
   v288 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4332F7 + this + 1), v288);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterrightDr, *(Object **)((char *)&loc_43331C + this));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4332F7 + 1], v288);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterrightDr,
+    *(Object **)((char *)&loc_43331C + (_DWORD)game));
   v289 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433378 + this), v289);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlasterrightFi, *(Object **)((char *)&loc_43339A + this + 2));
+  set_bod_object((BodBase *)((char *)&loc_433378 + (_DWORD)game), v289);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlasterrightFi,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_43339A + 2]);
   v290 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4333F8 + this), v290);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aLaserrightBase, *(Object **)((char *)&loc_433417 + this + 5));
+  set_bod_object((BodBase *)((char *)&loc_4333F8 + (_DWORD)game), v290);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aLaserrightBase,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433417 + 5]);
   v291 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433475 + this + 3), v291);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aLaserrightDraw, *(Object **)((char *)&loc_433499 + this + 3));
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433475 + 3], v291);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aLaserrightDraw,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433499 + 3]);
   *(_DWORD *)&v379[36] = 5;
-  *(_DWORD *)&v379[32] = (char *)&loc_43329B + this + 1;
+  *(_DWORD *)&v379[32] = (char *)game + (_DWORD)&loc_43329B + 1;
   do
   {
     v292 = *(Object ***)&v379[32];
@@ -2755,36 +2890,51 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v296;
   }
   while ( !v60 );
-  v297 = *(_DWORD *)((char *)&loc_43314C + this);
+  v297 = *(_DWORD *)((char *)&loc_43314C + (_DWORD)game);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v297 + 16) |= 4u;
-  apply_object_toon(*(Object **)((char *)&loc_43314C + this), *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + this) + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + this) + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + this) + 136) = 0;
+  apply_object_toon(*(Object **)((char *)&loc_43314C + (_DWORD)game), *(int32_t *)&v379[12]);
+  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 128) = 0;
+  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 132) = 0;
+  *(_DWORD *)(*(_DWORD *)((char *)&loc_43314C + (_DWORD)game) + 136) = 0;
   v298 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433504 + this), v298);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlastertopBase, *(Object **)((char *)&loc_433523 + this + 5));
-  v299 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433654 + this), v299);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlastertopBase, *(Object **)((char *)&loc_433677 + this + 1));
-  v300 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4336D0 + this + 4), v300);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlastertopDraw, *(Object **)((char *)&loc_4336F6 + this + 2));
-  v301 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433751 + this + 3), v301);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aBlastertopFire, *(Object **)((char *)&loc_433777 + this + 1));
-  v302 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4337D3 + this + 1), v302);
-  load_x_animation_clip((DirectXLoader *)(this + 298496), aRocketlauncher, *(Object **)((char *)&loc_4337F6 + this + 2));
-  v303 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433853 + this + 1), v303);
+  set_bod_object((BodBase *)((char *)&loc_433504 + (_DWORD)game), v298);
   load_x_animation_clip(
-    (DirectXLoader *)(this + 298496),
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlastertopBase,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433523 + 5]);
+  v299 = add_object_to_list(&g_object_list);
+  set_bod_object((BodBase *)((char *)&loc_433654 + (_DWORD)game), v299);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlastertopBase,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433677 + 1]);
+  v300 = add_object_to_list(&g_object_list);
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4336D0 + 4], v300);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlastertopDraw,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_4336F6 + 2]);
+  v301 = add_object_to_list(&g_object_list);
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433751 + 3], v301);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aBlastertopFire,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433777 + 1]);
+  v302 = add_object_to_list(&g_object_list);
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4337D3 + 1], v302);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aRocketlauncher,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_4337F6 + 2]);
+  v303 = add_object_to_list(&g_object_list);
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433853 + 1], v303);
+  load_x_animation_clip(
+    (DirectXLoader *)&game->unknown_044100[19712],
     aRocketlauncher_0,
-    *(Object **)((char *)&loc_433877 + this + 1));
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_433877 + 1]);
   *(_DWORD *)&v379[36] = 5;
-  *(_DWORD *)&v379[32] = (char *)&loc_433677 + this + 1;
+  *(_DWORD *)&v379[32] = (char *)game + (_DWORD)&loc_433677 + 1;
   do
   {
     v304 = *(Object ***)&v379[32];
@@ -2803,44 +2953,48 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v308;
   }
   while ( !v60 );
-  v309 = *(_DWORD *)((char *)&loc_433523 + this + 5);
+  v309 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5];
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v309 + 16) |= 4u;
-  apply_object_toon(*(Object **)((char *)&loc_433523 + this + 5), *(int32_t *)&v379[12]);
-  v310 = *(_DWORD *)((char *)&loc_433523 + this + 5);
+  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_433523 + 5], *(int32_t *)&v379[12]);
+  v310 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5];
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aXSnailTurboTga_0;
   *(_DWORD *)(v310 + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433523 + this + 5) + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433523 + this + 5) + 136) = 0;
-  texture_ref = get_or_create_texture_ref(
-                  &g_texture_refs,
-                  *(char **)&v379[4],
-                  *(int32_t *)&v379[8],
-                  *(int16_t *)&v379[12]);
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5] + 132) = 0;
+  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5] + 136) = 0;
+  v311 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aXSnailTurboDam;
-  *(_DWORD *)((char *)&loc_434037 + this + 5) = texture_ref;
+  *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_434037 + 5] = v311;
   v312 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aXSnailTurboInv;
-  *(_DWORD *)((char *)&loc_43403D + this + 3) = v312;
-  *(_DWORD *)((char *)&loc_434042 + this + 2) = get_or_create_texture_ref(
-                                                  &g_texture_refs,
-                                                  *(char **)&v379[4],
-                                                  *(int32_t *)&v379[8],
-                                                  *(int16_t *)&v379[12]);
+  *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_43403D + 3] = v312;
+  *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_434042 + 2] = get_or_create_texture_ref(
+                                                                &g_texture_refs,
+                                                                *(char **)&v379[4],
+                                                                *(int32_t *)&v379[8],
+                                                                *(int16_t *)&v379[12]);
   v313 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_433F94 + this), v313);
-  load_x_mesh((DirectXLoader *)(this + 298496), aInvincibleBase, *(Object **)((char *)&loc_433FB8 + this), 1);
-  *(_DWORD *)(*(_DWORD *)((char *)&loc_433FB8 + this) + 16) &= ~0x100000u;
+  set_bod_object((BodBase *)((char *)&loc_433F94 + (_DWORD)game), v313);
+  load_x_mesh(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aInvincibleBase,
+    *(Object **)((char *)&loc_433FB8 + (_DWORD)game),
+    1);
+  *(_DWORD *)(*(_DWORD *)((char *)&loc_433FB8 + (_DWORD)game) + 16) &= ~0x100000u;
   v314 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)((char *)&loc_4302E3 + this + 1), v314);
-  load_x_mesh((DirectXLoader *)(this + 298496), aRocketBase000X, *(Object **)((char *)&loc_430306 + this + 2), 1);
-  v315 = (char *)&loc_43026E + this + 2;
+  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4302E3 + 1], v314);
+  load_x_mesh(
+    (DirectXLoader *)&game->unknown_044100[19712],
+    aRocketBase000X,
+    *(Object **)&game->unknown_000000[(_DWORD)&loc_430306 + 2],
+    1);
+  v315 = &game->unknown_000000[(_DWORD)&loc_43026E + 2];
   *(_DWORD *)&v379[36] = 12;
   do
   {
@@ -2850,17 +3004,17 @@ LABEL_31:
     *(_DWORD *)(*(_DWORD *)v315 + 20) = 9;
     load_object_definition(aObjectsVapourl, *(Object **)v315);
     initialize_vapour((Vapour *)(v315 - 36), *(Object **)v315, 0.16);
-    set_bod_object((BodBase *)(v315 + 116), *(Object **)((char *)&loc_430306 + this + 2));
+    set_bod_object((BodBase *)(v315 + 116), *(Object **)&game->unknown_000000[(_DWORD)&loc_430306 + 2]);
     v315 += 744;
     --*(_DWORD *)&v379[36];
   }
   while ( *(_DWORD *)&v379[36] );
   v317 = get_or_create_texture_ref(&g_texture_refs, aObjectsVapourl_0, 0, 0);
-  flags = v317->flags;
+  v318 = v317->flags;
   *(_WORD *)&v379[12] = 0;
-  BYTE1(flags) |= 4u;
+  BYTE1(v318) |= 4u;
   *(_DWORD *)&v379[8] = 0;
-  v317->flags = flags;
+  v317->flags = v318;
   v319 = get_or_create_texture_ref(&g_texture_refs, aObjectsWorld00_4, *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   v320 = v319->flags;
   *(_WORD *)&v379[12] = 0;
@@ -2926,43 +3080,43 @@ LABEL_31:
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = texture_a;
-  *(_DWORD *)(this + 2852) = v342;
+  game->texture_set_selector.primary_textures[0] = v342;
   v343 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aObjectsWorld00_5;
-  *(_DWORD *)(this + 2868) = v343;
+  game->texture_set_selector.secondary_textures[0] = v343;
   v344 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aObjectsWorld00_6;
-  *(_DWORD *)(this + 2856) = v344;
+  game->texture_set_selector.primary_textures[1] = v344;
   v345 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aObjectsWorld00_7;
-  *(_DWORD *)(this + 2872) = v345;
+  game->texture_set_selector.secondary_textures[1] = v345;
   v346 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aObjectsWorld00_8;
-  *(_DWORD *)(this + 2860) = v346;
+  game->texture_set_selector.primary_textures[2] = v346;
   v347 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aObjectsWorld00_9;
-  *(_DWORD *)(this + 2876) = v347;
+  game->texture_set_selector.secondary_textures[2] = v347;
   v348 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aObjectsWorld00_10;
-  *(_DWORD *)(this + 2864) = v348;
+  game->texture_set_selector.primary_textures[3] = v348;
   v349 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
-  *(_DWORD *)(this + 2880) = v349;
+  game->texture_set_selector.secondary_textures[3] = v349;
   *(_DWORD *)&v379[4] = texture_b;
-  *(_DWORD *)(this + 2884) = 0;
+  game->texture_set_selector.current_texture_set = 0;
   v350 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
@@ -3015,21 +3169,21 @@ LABEL_31:
   v359->unknown_a0 = 2;
   get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12])->unknown_a0 = 2;
   v360 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)(this + 17220060), v360);
-  load_object_definition(aObjectsBarrier, *(Object **)(this + 17220096));
-  zero_vector3((_DWORD *)(this + 17220076));
-  store_color4f((tColour *)(this + 17220100), 1.0, 1.0, 1.0, 0.80000001);
-  *(_DWORD *)(*(_DWORD *)(this + 17220096) + 20) = 7;
-  initialize_track_render_cache_manager((SegmentCache *)(this + 476788));
+  set_bod_object(&game->subgame.barrier.bod, v360);
+  load_object_definition(aObjectsBarrier, game->subgame.barrier.bod.object);
+  zero_vector3(&game->subgame.barrier.bod.position.x);
+  store_color4f(&game->subgame.barrier.bod.color, 1.0, 1.0, 1.0, 0.80000001);
+  game->subgame.barrier.bod.object->blend_mode = 7;
+  initialize_track_render_cache_manager(&game->subgame.segment_cache);
   *(_DWORD *)&v379[36] = 0;
-  v361 = (PathTemplateStripMesh **)(this + 282068);
+  v361 = &game->unknown_044100[3284];
   do
   {
     *(_DWORD *)&v379[56] = 0;
     do
     {
       *(_DWORD *)&v379[32] = 0;
-      v362 = v361;
+      v362 = (PathTemplateStripMesh **)v361;
       do
       {
         for ( j = 0; j < 3; ++j )
@@ -3050,7 +3204,7 @@ LABEL_31:
         ++*(_DWORD *)&v379[32];
       }
       while ( *(int *)&v379[32] < 3 );
-      v361 = v362;
+      v361 = (uint8_t *)v362;
       ++*(_DWORD *)&v379[56];
     }
     while ( *(int *)&v379[56] < 4 );
@@ -3059,26 +3213,26 @@ LABEL_31:
   while ( *(int *)&v379[36] < 8 );
   v366 = get_or_create_texture_ref(&g_texture_refs, aObjectsUnivers_1, 0, 0);
   v367 = v366->flags;
-  v368 = (InputState *)(this + 124);
+  p_input = &game->game_inputs[0].input;
   BYTE1(v367) = ((unsigned __int16)v366->flags >> 8) | 4;
   v369 = 0;
   v366->flags = v367;
   do
   {
-    add_bod_to_front((_DWORD *)(this + 1448), (int)&v368[-1]);
-    v368->controller_slot = v369;
-    initialize_input(v368);
+    add_bod_to_front(&game->active_bod_list.unknown_00, (int)&p_input[-1]);
+    p_input->controller_slot = v369;
+    initialize_input(p_input);
     ++v369;
-    v368 += 2;
+    p_input += 2;
   }
   while ( v369 < 2 );
-  v370 = *(_DWORD *)(this + 64);
+  player_count = game->player_count;
   *(_DWORD *)&v379[32] = 0;
-  if ( v370 > 0 )
+  if ( player_count > 0 )
   {
     do
     {
-      v371 = this + 504 * *(_DWORD *)&v379[32];
+      v371 = (char *)game + 504 * *(_DWORD *)&v379[32];
       *(_DWORD *)&v379[36] = v371;
       set_matrix_identity((TransformMatrix *)(v371 + 348));
       set_matrix_identity((TransformMatrix *)(v371 + 508));
@@ -3086,11 +3240,11 @@ LABEL_31:
       *(_DWORD *)&v379[8] = 1083131627;
       *(_DWORD *)&v379[4] = 1078412299;
       *(_DWORD *)v379 = -1056307500;
-      v372 = 112 * *(_DWORD *)&v379[32] + this + 68;
-      *(_DWORD *)(v371 + 644) = 1121714176;
-      *(_DWORD *)(v371 + 652) = v372;
+      v372 = &game->game_inputs[*(_DWORD *)&v379[32]];
+      *((_DWORD *)v371 + 161) = 1121714176;
+      *((_DWORD *)v371 + 163) = v372;
       qmemcpy(
-        (void *)(v371 + 348),
+        v371 + 348,
         initialize_matrix_from_values(
           &v383,
           0.073343001,
@@ -3115,48 +3269,48 @@ LABEL_31:
       v373 = *(_DWORD *)&v379[32];
       *(_BYTE *)(*(_DWORD *)&v379[36] + 676) = 0;
       if ( !v373 )
-        *(_DWORD *)(this + 440) = 12;
+        game->players[0].frontend_state = 12;
       v374 = *(_DWORD *)&v379[36];
       *(_DWORD *)&v379[12] = g_runtime_config.last_entered_player_name;
       *(_BYTE *)(*(_DWORD *)&v379[36] + 781) = 0;
       *(_DWORD *)(v374 + 784) = 0;
       rstrcpy_checked_ascii((char *)(v374 + 420), *(char **)&v379[12]);
-      v375 = *(_DWORD *)(this + 64);
+      v375 = game->player_count;
       ++*(_DWORD *)&v379[32];
     }
     while ( *(int *)&v379[32] < v375 );
   }
-  initialize_high_score_tables((HighScoreBank *)&byte_6FFAE0[this]);
+  initialize_high_score_tables((HighScoreBank *)&byte_6FFAE0[(_DWORD)game]);
   *(_DWORD *)&v379[12] = aScoreaDat;
-  load_high_scores_from_file(&byte_6FFAE0[this], *(CompletionResultScreen *)&v379[12]);
+  load_high_scores_from_file(&byte_6FFAE0[(_DWORD)game], *(CompletionResultScreen *)&v379[12]);
   *(_DWORD *)&v379[12] = aScorebDat;
-  load_high_scores_from_file(&byte_6FFAE0[this], *(CompletionResultScreen *)&v379[12]);
+  load_high_scores_from_file(&byte_6FFAE0[(_DWORD)game], *(CompletionResultScreen *)&v379[12]);
   *(_DWORD *)&v379[12] = aScorecDat;
-  load_high_scores_from_file(&byte_6FFAE0[this], *(CompletionResultScreen *)&v379[12]);
-  *(_BYTE *)(this + 17198057) = 0;
-  *(_BYTE *)(this + 17198056) = 0;
-  initialize_tip_manager((TipManager *)(this + 19820376));
-  add_bod_to_front((_DWORD *)(this + 1448), this + 19820376);
-  add_bod_to_front(&g_game_base->active_bod_list.unknown_00, this + 324412);
-  open_star_field((StarManager *)(this + 324412), 36);
-  *(_DWORD *)(this + 3998116) = 0;
-  *(_DWORD *)&v379[12] = this + 322576;
-  *(_DWORD *)(this + 3998112) = 0;
-  add_bod_to_front((_DWORD *)(this + 1448), *(int *)&v379[12]);
-  *(_DWORD *)&v379[12] = this + 2892;
-  *(_DWORD *)(this + 324200) = 0;
-  append_bod_to_end((_DWORD *)(this + 1448), *(_DWORD **)&v379[12]);
-  initialize_border_stack(this + 2948);
-  *(_DWORD *)(this + 4556) = this + 2892;
+  load_high_scores_from_file(&byte_6FFAE0[(_DWORD)game], *(CompletionResultScreen *)&v379[12]);
+  game->subgame.selected_level_record_persistent = 0;
+  game->subgame.selected_level_record_active = 0;
+  initialize_tip_manager(&game->tip_manager);
+  add_bod_to_front(&game->active_bod_list.unknown_00, (int)&game->tip_manager);
+  add_bod_to_front(&g_game_base->active_bod_list.unknown_00, (int)&game->star_manager);
+  open_star_field(&game->star_manager, 36);
+  game->subgame.bottom_score_widget = nullptr;
+  *(_DWORD *)&v379[12] = &game->backdrop;
+  game->subgame.top_score_widget = nullptr;
+  add_bod_to_front(&game->active_bod_list.unknown_00, *(int *)&v379[12]);
+  *(_DWORD *)&v379[12] = &game->border_manager;
+  game->backdrop.backdrop_render_enabled = 0;
+  append_bod_to_end(&game->active_bod_list.unknown_00, *(_DWORD **)&v379[12]);
+  initialize_border_stack(&game->border_manager.unknown_000010[40]);
+  *(_DWORD *)&game->border_manager.unknown_000010[1648] = &game->border_manager;
   *(_DWORD *)&v379[12] = 1103626240;
-  *(_BYTE *)(this + 278764) = 0;
-  set_border_justify_centre((FrameBorderManager *)(this + 2892), *(float *)&v379[12]);
-  v376 = (_DWORD *)(this + 4976);
+  game->border_manager.unknown_000010[275856] = 0;
+  set_border_justify_centre(&game->border_manager, *(float *)&v379[12]);
+  v376 = &game->border_manager.unknown_000010[2068];
   v377 = 150;
   do
   {
-    *v376 = 0;
-    v376 += 457;
+    *(_DWORD *)v376 = 0;
+    v376 += 1828;
     --v377;
   }
   while ( v377 );
@@ -3165,124 +3319,124 @@ LABEL_31:
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17216064), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[51].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17216232), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[51].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17216400), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[52].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17216568), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[52].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17216736), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[53].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17216904), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[53].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17218080), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[57].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17218248), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[57].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17217072), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[54].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17217240), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[54].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17217408), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[55].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17217576), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[55].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17217744), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[56].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17217912), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[56].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17218416), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[58].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17218584), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[58].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17219760), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[62].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17219928), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[62].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17218752), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[59].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17218920), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[59].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17219424), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[61].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17219592), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[61].secondary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17219088), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[60].primary.bod.object, *(tColour *)v379);
   *(_DWORD *)v379 = *(_DWORD *)&v379[40];
   *(_DWORD *)&v379[4] = *(_DWORD *)&v379[44];
   *(_DWORD *)&v379[8] = *(_DWORD *)&v379[48];
   *(_DWORD *)&v379[12] = *(_DWORD *)&v379[52];
-  set_object_color(*(Object **)(this + 17219256), *(tColour *)v379);
+  set_object_color(game->subgame.path_pairs[60].secondary.bod.object, *(tColour *)v379);
   set_input_controller_pointer_authored_xy(0, 320.0, 240.0);
   set_input_controller_pointer_authored_xy(1, 320.0, 240.0);
-  *(_DWORD *)(this + 19813856) = 2;
+  game->subgame.subgame_rebuild_selector = 2;
   return 1;
 }

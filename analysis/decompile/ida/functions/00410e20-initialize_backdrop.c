@@ -3,53 +3,52 @@
 /* selector: initialize_backdrop */
 
 // Initializes the shared backdrop renderer, seeds its texture-transition state, and primes its distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Init(int)`.
-float *__thiscall sub_410E20(int this, int a2)
+void __thiscall initialize_backdrop(Backdrop *backdrop, int32_t last_mode)
 {
-  *(_DWORD *)(this + 1628) = 1;
-  *(_BYTE *)(this + 1632) = 0;
-  *(_DWORD *)(this + 60) = -1;
-  *(_BYTE *)(this + 76) = 0;
-  *(_DWORD *)(this + 1736) = 0;
-  *(_DWORD *)(this + 1732) = 5;
-  *(_DWORD *)(this + 1724) = 0;
-  *(_DWORD *)(this + 1728) = 995783694;
-  set_backdrop_texture_target(this, 5);
-  if ( (byte_4DF934 & 1) != 0 )
+  backdrop->unknown_65c = 1;
+  backdrop->unknown_660 = 0;
+  backdrop->active_primary_texture_id = -1;
+  backdrop->backdrop_change_queued = 0;
+  backdrop->zoom = 0.0;
+  backdrop->unknown_6c4 = 5;
+  backdrop->unknown_6bc = 0.0;
+  backdrop->unknown_6c0 = 0.0033333334;
+  set_backdrop_texture_target(backdrop, 5);
+  if ( (g_runtime_config.render_flags & 1) != 0 )
   {
-    *(_DWORD *)(this + 1624) = 1;
-    *(_DWORD *)(this + 1636) = 1065353216;
+    backdrop->backdrop_render_enabled = 1;
+    backdrop->unknown_664 = 1.0;
   }
   else
   {
-    *(_DWORD *)(this + 1624) = 0;
-    *(_DWORD *)(this + 1636) = 0;
+    backdrop->backdrop_render_enabled = 0;
+    backdrop->unknown_664 = 0.0;
   }
-  *(_DWORD *)(this + 1640) = 1017817771;
-  if ( !a2 )
+  backdrop->unknown_668 = 0.020833334;
+  if ( !last_mode )
   {
-    *(_DWORD *)(this + 1644) = 0;
-    *(_DWORD *)(this + 1648) = 984322726;
-    *(_DWORD *)(this + 1652) = 0;
-    *(_DWORD *)(this + 1656) = 988070793;
+    backdrop->unknown_66c = 0.0;
+    backdrop->unknown_670 = 0.0013089969;
+    backdrop->unknown_674 = 0.0;
+    backdrop->unknown_678 = 0.0017453294;
     goto LABEL_8;
   }
-  if ( a2 == 1 )
+  if ( last_mode == 1 )
   {
-    *(_DWORD *)(this + 1644) = 0;
-    *(_DWORD *)(this + 1648) = -1154772314;
-    *(_DWORD *)(this + 1652) = 0;
-    *(_DWORD *)(this + 1656) = -1151024247;
+    backdrop->unknown_66c = 0.0;
+    backdrop->unknown_670 = -0.0026179939;
+    backdrop->unknown_674 = 0.0;
+    backdrop->unknown_678 = -0.0034906587;
 LABEL_8:
-    *(_DWORD *)(this + 1684) = 0;
-    *(_DWORD *)(this + 1688) = 0;
-    *(_DWORD *)(this + 1676) = 1065353216;
-    *(_DWORD *)(this + 1680) = 1001786209;
-    *(_DWORD *)(this + 1716) = 0;
-    *(_DWORD *)(this + 1720) = 0;
-    *(_DWORD *)(this + 1708) = 1065353216;
-    *(_DWORD *)(this + 1712) = 998803593;
+    backdrop->primary_world_blend.previous_world = 0;
+    backdrop->primary_world_blend.current_world = 0;
+    backdrop->primary_world_blend.blend = 1.0;
+    backdrop->primary_world_blend.blend_step = 0.0055555557;
+    backdrop->secondary_world_blend.previous_world = 0;
+    backdrop->secondary_world_blend.current_world = 0;
+    backdrop->secondary_world_blend.blend = 1.0;
+    backdrop->secondary_world_blend.blend_step = 0.0041666669;
   }
-  set_backdrop_texture_target(this, 0);
-  return set_backdrop_distort((float *)this, 0.0);
+  set_backdrop_texture_target(backdrop, 0);
+  set_backdrop_distort(backdrop, 0.0);
 }
-

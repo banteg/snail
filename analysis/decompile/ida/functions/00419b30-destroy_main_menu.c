@@ -2,10 +2,9 @@
 /* function: destroy_main_menu @ 0x419b30 */
 /* selector: destroy_main_menu */
 
-// Clears the active menu shell-font scene and tears down the current main-menu widget set before control leaves the front-end. Cross-port Android and iOS symbols match the owning flow to `cRMainMenu::UnInit()`.
-void sub_419B30()
+// Exact body shared by linker-folded `MainMenu::destroy_main_menu` and `Intro::destroy_new_game_menu`: both clear the global border and game-sprite scene. Windows callers pass the distinct embedded owners, while Android retains separate byte-identical `cRMainMenu::UnInit()` and `cRIntro::UnInit()` methods.
+void __thiscall destroy_main_menu(MainMenu *menu)
 {
-  kill_all_borders((int *)MEMORY[0x4DF904] + 723);
+  kill_all_borders(&g_game_base->border_manager);
   kill_game_sprites();
 }
-

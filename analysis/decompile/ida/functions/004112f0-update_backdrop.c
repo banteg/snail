@@ -3,49 +3,55 @@
 /* selector: update_backdrop */
 
 // Advances the shared backdrop renderer, updates its distortion grid, and dispatches the split or warped draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`.
-void __thiscall sub_4112F0(int this)
+int32_t __thiscall update_backdrop(Backdrop *backdrop)
 {
-  float *v2; // ebx
-  float *v3; // esi
+  BackdropDistortCell *v2; // ebx
+  float *p_phase; // esi
   int v4; // edi
   double v5; // st7
-  float v6; // [esp+4h] [ebp-8h]
-  int v7; // [esp+8h] [ebp-4h]
+  int32_t result; // eax
+  float v7; // [esp+4h] [ebp-8h]
+  int v8; // [esp+8h] [ebp-4h]
 
-  if ( *(_BYTE *)(this + 76) )
+  if ( backdrop->backdrop_change_queued )
   {
-    change_backdrop_real(this);
-    *(_BYTE *)(this + 76) = 0;
+    change_backdrop_real(backdrop);
+    backdrop->backdrop_change_queued = 0;
   }
-  v2 = (float *)(this + 88);
-  v7 = 8;
+  v2 = backdrop->distort_grid[0];
+  v8 = 8;
   do
   {
-    v3 = v2;
+    p_phase = &v2->phase;
     v4 = 8;
     do
     {
-      v6 = v3[1] + *v3;
-      *v3 = v6;
-      if ( v6 > 6.2831855 )
-        *v3 = v6 - 6.2831855;
-      v3[4] = sine(*v3) * v3[2];
-      v5 = cosine(*v3) * v3[3];
-      v3 += 48;
+      v7 = p_phase[1] + *p_phase;
+      *p_phase = v7;
+      if ( v7 > 6.2831855 )
+        *p_phase = v7 - 6.2831855;
+      p_phase[4] = sine(*p_phase) * p_phase[2];
+      v5 = cosine(*p_phase) * p_phase[3];
+      p_phase += 48;
       --v4;
-      *(v3 - 43) = v5;
+      *(p_phase - 43) = v5;
     }
     while ( v4 );
-    v2 += 6;
-    --v7;
+    ++v2;
+    --v8;
   }
-  while ( v7 );
-  if ( *(_DWORD *)(this + 60) != -1 && *(_DWORD *)(this + 1624) == 1 )
+  while ( v8 );
+  result = backdrop->active_primary_texture_id;
+  if ( result != -1 )
   {
-    if ( *(_BYTE *)(this + 56) )
-      draw_split_backdrop((int *)this);
-    else
-      render_backdrop(this);
+    result = backdrop->backdrop_render_enabled - 1;
+    if ( backdrop->backdrop_render_enabled == 1 )
+    {
+      if ( backdrop->active_split_backdrop_pair )
+        draw_split_backdrop((int *)backdrop);
+      else
+        render_backdrop(backdrop);
+    }
   }
+  return result;
 }
-

@@ -7,14 +7,37 @@ import idc
 
 
 GAME_ROOT_SIZE = 0x12E6FF4
+GAME_ROOT_FRONTEND_OFFSET = 0x4EC10
 GAME_ROOT_SUBGAME_OFFSET = 0x74618
 GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904
 
-_REQUIRED_TYPE_SIZES = {
+_TAIL_TYPE_SIZES = {
     "SubgameRuntime": 0x1272838,
     "HighScore": 0xF4,
     "TipManager": 0x98,
 }
+
+_FRONTEND_TYPE_SIZES = {
+    "Backdrop": 0x6CC,
+    "Intro": 0x48,
+    "MainMenu": 0x18,
+    "StarManager": 0x4C,
+    "Options": 0x24,
+    "Exit": 0x1C,
+    "BodBase": 0x38,
+    "Logo": 0x25218,
+}
+
+_CANONICAL_FRONTEND = (
+    (0x4EC10, 0x6CC, "backdrop", "Backdrop"),
+    (0x4F2DC, 0x48, "intro", "Intro"),
+    (0x4F324, 0x18, "main_menu", "MainMenu"),
+    (0x4F33C, 0x4C, "star_manager", "StarManager"),
+    (0x4F388, 0x24, "options", "Options"),
+    (0x4F3AC, 0x1C, "exit_controller", "Exit"),
+    (0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase"),
+    (0x4F400, 0x25218, "logo", "Logo"),
+)
 
 _CANONICAL_TAIL = (
     (0x74618, 0x1272838, "subgame", "SubgameRuntime"),
@@ -38,7 +61,7 @@ def _named_type(name: str) -> ida_typeinf.tinfo_t | None:
     return tif if tif.get_named_type(None, name) else None
 
 
-def _tail_snapshot(root: ida_typeinf.tinfo_t) -> list[dict[str, object]] | None:
+def _member_snapshot(root: ida_typeinf.tinfo_t) -> list[dict[str, object]] | None:
     udt = ida_typeinf.udt_type_data_t()
     if not root.get_udt_details(udt):
         return None
@@ -51,14 +74,29 @@ def _tail_snapshot(root: ida_typeinf.tinfo_t) -> list[dict[str, object]] | None:
             "type": _normalize_type(member.type.dstr()),
         }
         for index, member in enumerate(udt)
-        if int(member.offset) // 8 >= GAME_ROOT_SUBGAME_OFFSET
     ]
 
 
-def _readback(root: ida_typeinf.tinfo_t) -> dict[str, object]:
-    snapshot = _tail_snapshot(root)
+def _region_snapshot(
+    root: ida_typeinf.tinfo_t, start: int, *, include_overlap: bool = False
+) -> list[dict[str, object]] | None:
+    snapshot = _member_snapshot(root)
+    if snapshot is None:
+        return None
+    if include_overlap:
+        return [
+            member
+            for member in snapshot
+            if int(member["offset"]) + int(member["size"]) > start
+        ]
+    return [member for member in snapshot if int(member["offset"]) >= start]
+
+
+def _readback(root: ida_typeinf.tinfo_t, start: int) -> dict[str, object]:
+    snapshot = _region_snapshot(root, start)
     return {
         "size": root.get_size(),
+        "start": hex(start),
         "members": []
         if snapshot is None
         else [
@@ -73,8 +111,12 @@ def _readback(root: ida_typeinf.tinfo_t) -> dict[str, object]:
     }
 
 
-def _is_canonical(root: ida_typeinf.tinfo_t) -> bool:
-    snapshot = _tail_snapshot(root)
+def _is_canonical(
+    root: ida_typeinf.tinfo_t,
+    start: int,
+    expected: tuple[tuple[int, int, str, str], ...],
+) -> bool:
+    snapshot = _region_snapshot(root, start)
     if root.get_size() != GAME_ROOT_SIZE or snapshot is None:
         return False
     observed = tuple(
@@ -86,7 +128,7 @@ def _is_canonical(root: ida_typeinf.tinfo_t) -> bool:
         )
         for member in snapshot
     )
-    return observed == _CANONICAL_TAIL
+    return observed == expected
 
 
 def _error_text(code: int) -> str:
@@ -118,13 +160,89 @@ def _rebind_game_root_global() -> dict[str, object]:
     }
 
 
+def _is_replaceable_padding(member: dict[str, object]) -> bool:
+    name = str(member["name"])
+    type_name = str(member["type"])
+    return (
+        name.startswith(("unknown_", "_pad_"))
+        and (type_name.startswith("uint8_t[") or type_name.startswith("unsigned char["))
+    )
+
+
+def _compose_owner_graph(
+    root: ida_typeinf.tinfo_t,
+    *,
+    start: int,
+    expected: tuple[tuple[int, int, str, str], ...],
+    types: dict[str, ida_typeinf.tinfo_t | None],
+) -> dict[str, object]:
+    snapshot = _region_snapshot(root, start, include_overlap=True)
+    if snapshot is None:
+        return {
+            "status": "failed",
+            "reason": "missing_game_root_members",
+            "readback": _readback(root, start),
+        }
+
+    prefix_fragments: list[tuple[int, int, str]] = []
+    for member in snapshot:
+        offset = int(member["offset"])
+        if offset >= start:
+            continue
+        if not _is_replaceable_padding(member):
+            return {
+                "status": "failed",
+                "reason": "owner_span_overlaps_proved_member",
+                "member": member,
+                "readback": _readback(root, start),
+            }
+        prefix_fragments.append((offset, start - offset, str(member["name"])))
+
+    try:
+        for member in reversed(snapshot):
+            code = root.del_udm(int(member["index"]))
+            if code != ida_typeinf.TERR_OK:
+                raise RuntimeError(f"delete {member['name']}: {_error_text(code)}")
+
+        for offset, size, name in prefix_fragments:
+            code = root.add_udm(
+                ida_typeinf.udm_t(name, f"uint8_t[{size:#x}]", offset * 8)
+            )
+            if code != ida_typeinf.TERR_OK:
+                raise RuntimeError(f"restore {name}: {_error_text(code)}")
+
+        for offset, _size, name, type_name in expected:
+            member_type = types.get(type_name)
+            if member_type is None:
+                member_type = type_name
+            code = root.add_udm(ida_typeinf.udm_t(name, member_type, offset * 8))
+            if code != ida_typeinf.TERR_OK:
+                raise RuntimeError(f"add {name}: {_error_text(code)}")
+    except (RuntimeError, ValueError) as exc:
+        return {
+            "status": "failed",
+            "reason": "mutation_failed",
+            "error": str(exc),
+            "readback": _readback(root, start),
+        }
+
+    if not _is_canonical(root, start, expected):
+        return {
+            "status": "failed",
+            "reason": "verification_failed",
+            "readback": _readback(root, start),
+        }
+    return {"status": "applied", "readback": _readback(root, start)}
+
+
 def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
     """Compose recovered root owners without replacing the proved prefix."""
 
-    required_names = ("GameRoot", *_REQUIRED_TYPE_SIZES)
-    types = {name: _named_type(name) for name in required_names}
-    missing = [name for name, tif in types.items() if tif is None]
-    if missing:
+    type_sizes = {**_TAIL_TYPE_SIZES, **_FRONTEND_TYPE_SIZES}
+    types = {name: _named_type(name) for name in ("GameRoot", *type_sizes)}
+    missing_tail = [name for name in _TAIL_TYPE_SIZES if types[name] is None]
+    if types["GameRoot"] is None or missing_tail:
+        missing = (["GameRoot"] if types["GameRoot"] is None else []) + missing_tail
         return {
             "status": "failed" if require else "deferred",
             "reason": "missing_named_types",
@@ -133,16 +251,6 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
 
     root = types["GameRoot"]
     assert root is not None
-    if _is_canonical(root):
-        root_global = _rebind_game_root_global()
-        if root_global["status"] == "failed":
-            return root_global
-        return {
-            "status": "unchanged",
-            "readback": _readback(root),
-            "root_global": root_global,
-        }
-
     if root.get_size() != GAME_ROOT_SIZE:
         return {
             "status": "failed",
@@ -152,7 +260,7 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
         }
 
     size_mismatches = {}
-    for name, expected_size in _REQUIRED_TYPE_SIZES.items():
+    for name, expected_size in _TAIL_TYPE_SIZES.items():
         tif = types[name]
         assert tif is not None
         if tif.get_size() != expected_size:
@@ -167,53 +275,49 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
             "types": size_mismatches,
         }
 
-    snapshot = _tail_snapshot(root)
-    if snapshot is None or not any(
-        member["offset"] == GAME_ROOT_SUBGAME_OFFSET and member["name"] == "subgame"
-        for member in snapshot
-    ):
-        return {
-            "status": "failed",
-            "reason": "missing_subgame_member",
-            "readback": _readback(root),
-        }
+    frontend_missing = [name for name in _FRONTEND_TYPE_SIZES if types[name] is None]
+    frontend_size_mismatches = {}
+    for name, expected_size in _FRONTEND_TYPE_SIZES.items():
+        tif = types[name]
+        if tif is not None and tif.get_size() != expected_size:
+            frontend_size_mismatches[name] = {
+                "observed": tif.get_size(),
+                "expected": expected_size,
+            }
 
-    try:
-        for member in reversed(snapshot):
-            code = root.del_udm(int(member["index"]))
-            if code != ida_typeinf.TERR_OK:
-                raise RuntimeError(f"delete {member['name']}: {_error_text(code)}")
+    frontend_ready = not frontend_missing and not frontend_size_mismatches
+    if frontend_ready:
+        start = GAME_ROOT_FRONTEND_OFFSET
+        expected = (*_CANONICAL_FRONTEND, *_CANONICAL_TAIL)
+        owner_scope = "frontend_and_tail"
+    else:
+        start = GAME_ROOT_SUBGAME_OFFSET
+        expected = _CANONICAL_TAIL
+        owner_scope = "tail_only"
 
-        member_types: tuple[tuple[str, object, int], ...] = (
-            ("subgame", types["SubgameRuntime"], 0x74618),
-            ("high_score", types["HighScore"], 0x12E6E50),
-            ("_pad_12e6f44", "uint8_t[0x14]", 0x12E6F44),
-            ("tip_manager", types["TipManager"], 0x12E6F58),
-            ("_pad_12e6ff0", "uint8_t[0x4]", 0x12E6FF0),
+    if _is_canonical(root, start, expected):
+        mutation = {"status": "unchanged", "readback": _readback(root, start)}
+    else:
+        mutation = _compose_owner_graph(
+            root,
+            start=start,
+            expected=expected,
+            types=types,
         )
-        for name, member_type, offset in member_types:
-            code = root.add_udm(ida_typeinf.udm_t(name, member_type, offset * 8))
-            if code != ida_typeinf.TERR_OK:
-                raise RuntimeError(f"add {name}: {_error_text(code)}")
-    except (RuntimeError, ValueError) as exc:
-        return {
-            "status": "failed",
-            "reason": "mutation_failed",
-            "error": str(exc),
-            "readback": _readback(root),
-        }
+    if mutation["status"] == "failed":
+        return mutation
 
-    if not _is_canonical(root):
-        return {
-            "status": "failed",
-            "reason": "verification_failed",
-            "readback": _readback(root),
-        }
     root_global = _rebind_game_root_global()
     if root_global["status"] == "failed":
         return root_global
     return {
-        "status": "applied",
-        "readback": _readback(root),
+        "status": mutation["status"],
+        "owner_scope": owner_scope,
+        "readback": mutation["readback"],
+        "frontend_types": {
+            "status": "ready" if frontend_ready else "deferred",
+            "missing": frontend_missing,
+            "size_mismatches": frontend_size_mismatches,
+        },
         "root_global": root_global,
     }

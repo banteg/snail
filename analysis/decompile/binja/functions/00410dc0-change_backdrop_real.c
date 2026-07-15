@@ -5,10 +5,10 @@
 
 00410dc5        int32_t eax = *(arg1 + 0x40)
 00410dca        if (eax == 0)
-00410e03        char edx = *(arg1 + 0x54)
+00410e03        char edx_2 = *(arg1 + 0x54)
 00410e06        eax.b = *(arg1 + 0x39)
 00410e09        *(arg1 + 0x658) = 0
-00410e0f        *(arg1 + 0x55) = edx
+00410e0f        *(arg1 + 0x55) = edx_2
 00410e12        *(arg1 + 0x38) = eax.b
 00410e16        return eax
 00410dcf        if (eax != *(arg1 + 0x3c))

@@ -12,7 +12,7 @@
 00410e52        *(arg1 + 0x6bc) = 0
 00410e58        *(arg1 + 0x6c0) = 0x3b5a740e
 00410e62        set_backdrop_texture_target(arg1, 5)
-00410e73        if ((data_4df934 & 1) == 0)
+00410e73        if ((g_runtime_config.render_flags.b & 1) == 0)
 00410e87        *(arg1 + 0x658) = 0
 00410e8d        *(arg1 + 0x664) = 0
 00410e75        *(arg1 + 0x658) = 1

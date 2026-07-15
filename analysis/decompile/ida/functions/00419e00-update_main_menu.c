@@ -3,85 +3,78 @@
 /* selector: update_main_menu */
 
 // Handles main-menu selection, front-end screen transitions, and the tutorial launch handoff. Cross-port Android and iOS symbols match this helper to `cRMainMenu::AI()`.
-void *__thiscall sub_419E00(_DWORD *this)
+void __thiscall update_main_menu(MainMenu *menu)
 {
-  int v1; // eax
-  void *result; // eax
-  int v3; // edx
-  int v4; // eax
-  int v5; // edx
-  int v6; // eax
-  int v7; // edx
-  int v8; // eax
-  int v9; // edx
+  FrontendWidgetFlag widget_flags; // eax
+  FrontendWidget *credits_widget; // edx
+  FrontendWidgetFlag v3; // eax
+  FrontendWidget *exit_widget; // edx
+  FrontendWidgetFlag v5; // eax
+  FrontendWidget *options_widget; // edx
+  FrontendWidgetFlag v7; // eax
+  FrontendWidget *high_scores_widget; // edx
+  FrontendWidgetFlag v9; // eax
 
-  v1 = *(_DWORD *)(*this + 416);
-  if ( (v1 & 0x20) != 0 )
+  widget_flags = menu->new_game_widget->widget_flags;
+  if ( (widget_flags & 0x20) != 0 )
   {
-    LOBYTE(v1) = v1 & 0xDF;
-    *(_DWORD *)(*this + 416) = v1;
-    destroy_main_menu();
-    result = MEMORY[0x4DF904];
-    *((_DWORD *)MEMORY[0x4DF904] + 110) = 2;
-    *((_BYTE *)MEMORY[0x4DF904] + 780) = 1;
+    LOBYTE(widget_flags) = widget_flags & 0xDF;
+    menu->new_game_widget->widget_flags = widget_flags;
+    destroy_main_menu(menu);
+    g_game_base->players[0].frontend_state = 2;
+    g_game_base->players[0].redispatch_requested = 1;
   }
   else
   {
-    v3 = *(this + 3);
-    v4 = *(_DWORD *)(v3 + 416);
-    if ( (v4 & 0x20) != 0 )
+    credits_widget = menu->credits_widget;
+    v3 = credits_widget->widget_flags;
+    if ( (v3 & 0x20) != 0 )
     {
-      LOBYTE(v4) = v4 & 0xDF;
-      *(_DWORD *)(v3 + 416) = v4;
-      destroy_main_menu();
-      *((_DWORD *)MEMORY[0x4DF904] + 110) = 14;
-      result = MEMORY[0x4DF904];
-      *((_BYTE *)MEMORY[0x4DF904] + 780) = 1;
+      LOBYTE(v3) = v3 & 0xDF;
+      credits_widget->widget_flags = v3;
+      destroy_main_menu(menu);
+      g_game_base->players[0].frontend_state = 14;
+      g_game_base->players[0].redispatch_requested = 1;
     }
     else
     {
-      v5 = *(this + 5);
-      v6 = *(_DWORD *)(v5 + 416);
-      if ( (v6 & 0x20) != 0 )
+      exit_widget = menu->exit_widget;
+      v5 = exit_widget->widget_flags;
+      if ( (v5 & 0x20) != 0 )
       {
-        LOBYTE(v6) = v6 & 0xDF;
-        *(_DWORD *)(v5 + 416) = v6;
-        *((_DWORD *)MEMORY[0x4DF904] + 81133) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-        *((_DWORD *)MEMORY[0x4DF904] + 81134) = *(_DWORD *)(*(this + 5) + 572);
-        result = MEMORY[0x4DF904];
-        *((_DWORD *)MEMORY[0x4DF904] + 81131) = 10;
-        *((_DWORD *)MEMORY[0x4DF904] + 110) = 8;
+        LOBYTE(v5) = v5 & 0xDF;
+        exit_widget->widget_flags = v5;
+        g_game_base->exit_controller.previous_frontend_state = g_game_base->players[0].frontend_state;
+        g_game_base->exit_controller.prompt_y = menu->exit_widget->layout_top;
+        g_game_base->exit_controller.state = 10;
+        g_game_base->players[0].frontend_state = 8;
       }
       else
       {
-        v7 = *(this + 2);
-        v8 = *(_DWORD *)(v7 + 416);
-        if ( (v8 & 0x20) != 0 )
+        options_widget = menu->options_widget;
+        v7 = options_widget->widget_flags;
+        if ( (v7 & 0x20) != 0 )
         {
-          LOBYTE(v8) = v8 & 0xDF;
-          *(_DWORD *)(v7 + 416) = v8;
-          *((_BYTE *)MEMORY[0x4DF904] + 324492) = 1;
-          result = MEMORY[0x4DF904];
-          *((_DWORD *)MEMORY[0x4DF904] + 81122) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-          *((_DWORD *)MEMORY[0x4DF904] + 110) = 6;
+          LOBYTE(v7) = v7 & 0xDF;
+          options_widget->widget_flags = v7;
+          g_game_base->options.active = 1;
+          g_game_base->options.previous_frontend_state = g_game_base->players[0].frontend_state;
+          g_game_base->players[0].frontend_state = 6;
         }
         else
         {
-          v9 = *(this + 1);
-          result = *(void **)(v9 + 416);
-          if ( ((unsigned __int8)result & 0x20) != 0 )
+          high_scores_widget = menu->high_scores_widget;
+          v9 = high_scores_widget->widget_flags;
+          if ( (v9 & 0x20) != 0 )
           {
-            LOBYTE(result) = (unsigned __int8)result & 0xDF;
-            *(_DWORD *)(v9 + 416) = result;
-            destroy_main_menu();
-            result = MEMORY[0x4DF904];
-            *((_DWORD *)MEMORY[0x4DF904] + 110) = 18;
-            *((_DWORD *)MEMORY[0x4DF904] + 4955029) = 0;
+            LOBYTE(v9) = v9 & 0xDF;
+            high_scores_widget->widget_flags = v9;
+            destroy_main_menu(menu);
+            g_game_base->players[0].frontend_state = 18;
+            g_game_base->high_score.mode = 0;
           }
         }
       }
     }
   }
-  return result;
 }
-
