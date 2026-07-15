@@ -12,51 +12,6 @@ float cosine(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 
-static __forceinline void initialize_pair_sample(
-    Path* path, int index, float center_x, float y, int z_index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    primary->center_x = center_x;
-    primary->rotation_scalar_98 = 0.0f;
-    primary->rotation_scalar_94 = 0.0f;
-    primary->special_scalar = 0.0f;
-    primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
-    float z = (float)z_index;
-    primary->transform.position.x = primary->center_x;
-    primary->transform.position.y = y;
-    primary->transform.position.z = z;
-
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->center_x;
-    secondary->transform.position.y = y + 0.49000001f;
-    secondary->transform.position.z = z;
-}
-
-static __forceinline void orient_previous_with_right(
-    PathTemplateSample* samples, int current_index, int first_index)
-{
-    PathTemplateSample* previous = &samples[current_index - 1];
-    PathTemplateSample* current = &samples[current_index];
-
-    if (current_index <= first_index) {
-        previous->transform.set_matrix_rotation_identity();
-        return;
-    }
-
-    previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-    previous->transform.basis_forward = Vector3(
-        current->transform.position.x - previous->transform.position.x,
-        current->transform.position.y - previous->transform.position.y,
-        current->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
-    previous->transform.basis_up.cross_vectors(
-        &previous->transform.basis_forward,
-        &previous->transform.basis_right);
-}
-
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_vertices(
@@ -72,17 +27,24 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     for (row = 0; row <= path->segment_count; ++row) {
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
-            PathTemplateSample* sample = &path->primary_samples[row];
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row == path->segment_count)
-                sample = &path->primary_samples[row - 1];
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z
-                + (row == path->segment_count ? 1.0f : 0.0f);
+            if (row == path->segment_count) {
+                PathTemplateSample* previous = &path->primary_samples[row - 1];
+                vertex->x = previous->transform.position.x
+                    + lateral * previous->transform.basis_right.x;
+                vertex->y = previous->transform.position.y
+                    + lateral * previous->transform.basis_right.y;
+                vertex->z = previous->transform.position.z + 1.0f
+                    + lateral * previous->transform.basis_right.z;
+            } else {
+                PathTemplateSample* sample = &path->primary_samples[row];
+                vertex->x = sample->transform.position.x
+                    + lateral * sample->transform.basis_right.x;
+                vertex->y = sample->transform.position.y
+                    + lateral * sample->transform.basis_right.y;
+                vertex->z = sample->transform.position.z
+                    + lateral * sample->transform.basis_right.z;
+            }
         }
     }
 
@@ -90,9 +52,12 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
         if (path->width_cells > 0) {
             float v0 = (float)(row % 8) * 0.125f;
             float v1 = (float)(row % 8 + 1) * 0.125f;
-            for (column = 0; column < path->width_cells; ++column) {
+            column = 0;
+            int next_column;
+            do {
+                next_column = column + 1;
                 float u0 = (float)column * 0.125f;
-                float u1 = (float)(column + 1) * 0.125f;
+                float u1 = (float)next_column * 0.125f;
                 int face_index;
                 for (face_index = 0; face_index < 2; ++face_index) {
                     ObjectFaceQuad* face =
@@ -133,7 +98,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     }
                     face->uv[3].v = v1;
                 }
-            }
+                column = next_column;
+            } while (next_column < path->width_cells);
         }
     }
 }
@@ -158,16 +124,53 @@ void Path::initialize_snake_path_template_pair(
 
     int i;
 
-    for (i = 0; i < 6; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
+    for (i = 0; i < 6; ++i) {
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
 
-    float right = 4.0f - (float)width_cells * 0.5f;
+        primary->center_x = 0.0f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        float z = (float)i;
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
 
-    for (i = 24; i < 27; ++i)
-        initialize_pair_sample(this, i, right, 0.0f, i);
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
+    }
 
+    int departure_index = 24;
+    do {
+        PathTemplateSample* primary = &primary_samples[departure_index];
+        PathTemplateSample* secondary = &secondary_samples[departure_index];
+
+        primary->center_x = 4.0f - (float)width_cells * 0.5f;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        float z = (float)departure_index;
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 0.0f;
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y = 0.49000001f;
+        secondary->transform.position.z = z;
+        ++departure_index;
+    } while (departure_index - 24 < 3);
+
+    int curve_index = 0;
     for (i = 6; i < 24; ++i) {
-        float angle = (float)(i - 6) * 0.34906587f;
+        float angle = (float)curve_index * 0.34906587f;
         PathTemplateSample* primary = &primary_samples[i];
         PathTemplateSample* secondary = &secondary_samples[i];
         primary->center_x = (0.5f - cosine(angle * 0.5f) * 0.5f)
@@ -179,7 +182,7 @@ void Path::initialize_snake_path_template_pair(
         set_matrix_identity(&primary->transform);
         primary->transform.position.x = primary->center_x;
         primary->transform.position.y = -(1.0f - cosine(angle));
-        float z = (float)i;
+        float z = (float)(curve_index + 6);
         primary->transform.position.z = z;
 
         set_matrix_identity(&secondary->transform);
@@ -215,6 +218,7 @@ void Path::initialize_snake_path_template_pair(
                 &secondary_previous->transform.basis_forward,
                 &secondary_previous->transform.basis_right);
         }
+        ++curve_index;
     }
 
     int delta_index = 0;

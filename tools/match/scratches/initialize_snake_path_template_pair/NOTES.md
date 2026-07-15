@@ -111,3 +111,31 @@ the method owner, and addressing terminal samples directly as
 30.15% (562/652). The masked audit improves from 35 ok, 0 unresolved,
 1 mismatch to 37 ok, 0 unresolved, 0 mismatch. This is shared `Path` source
 shape confirmed by a second target, not a copied register-lifetime trick.
+
+2026-07-15 mesh ownership: the native vertex builder has distinct terminal-row
+and ordinary-row scalar branches. Splitting the collapsed sample selection and
+terminal Z ternary moves focused Wibo from 30.15% (562/652) to 30.33%
+(568/652). Replacing the guarded face-column `for` with the native mutating
+`do/while` then reaches 30.54% (566/652). Both changes preserve the clean
+37 ok, 0 unresolved, 0 mismatch audit.
+
+2026-07-15 induction ownership: the three departure samples recompute
+`4.0 - width * 0.5` in their loop, and the native loop owns separate sample and
+logical curve induction. Recomputing the departure center reaches 30.59%, and
+the mutating departure `do/while` reaches 30.68%. Recovering the separate
+zero-based curve counter finishes at 30.61% (570/652), a small fuzzy tradeoff
+for source shape directly supported by both decompilers. Expanding the lead-in
+and departure setup out of the obsolete scratch-local pair helper is codegen
+neutral at that final score and makes the constructor's ownership explicit.
+The masked audit remains 37 ok, 0 unresolved, 0 mismatch.
+
+Rejected: changing the six-sample lead-in from its constant-bound `for` to an
+explicit mutating `do/while` regressed focused Wibo from 30.61% (570/652) to
+30.51% (574/652) without changing the clean audit. The compiler already emits
+the required post-tested machine loop, so the smaller source form remains.
+
+Not modeled: the target contains parity tests in each face branch, but both
+outcomes push the same texture argument (`texture_a` for the first face and
+`texture_b` for the second). Synthesizing a source-level no-op conditional
+would be fakematching rather than recovered semantics, so the scratch leaves
+that scheduling artifact as an honest residual.
