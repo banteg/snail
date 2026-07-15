@@ -62,3 +62,14 @@ special scalars remain primary-owned. Removing those non-native secondary
 copies moves focused Wibo from 27.69% (608/663) to 27.94% (597/663). The
 1-instruction prefix and masked audit remain unchanged at 22 ok, 0 unresolved,
 2 mismatch.
+
+2026-07-15 lane and interior ownership: the native flat secondary samples own
+only their transform and `delta_length`; their X comes from the primary
+`center_x`, Y is the authored constant `0.49000001f`, and Z shares the loop's
+converted logical index. Rebuilding both flat loops around those direct array
+writes, then spelling the 26-sample interior in native order, recovers the
+primary-only scalar initialization, identity-before-sine schedule, local-Z
+rotation, 0x40-byte transform copy, and basis-up offset. Focused Wibo rises
+from 27.94% (597/663) to 45.89% (601/663), while the masked audit improves from
+22 ok / 2 mismatch to 27 ok / 0 mismatch. A direct-array rewrite of the delta
+loop regressed to 41.35%, so its better local sample-pointer shape remains.

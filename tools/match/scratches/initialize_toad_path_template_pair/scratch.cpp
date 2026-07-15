@@ -12,64 +12,6 @@ float cosine(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 
-static __forceinline void initialize_sample(
-    PathTemplateSample* sample, float center_x, float x, float y, float z)
-{
-    sample->center_x = center_x;
-    sample->rotation_scalar_94 = 0.0f;
-    sample->rotation_scalar_98 = 0.0f;
-    sample->lateral_scale = 1.0f;
-    sample->special_scalar = 0.0f;
-    set_matrix_identity(&sample->transform);
-    sample->transform.position.x = x;
-    sample->transform.position.y = y;
-    sample->transform.position.z = z;
-}
-
-static __forceinline void initialize_secondary_flat(Path* path, int index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    secondary->center_x = primary->center_x;
-    secondary->rotation_scalar_94 = primary->rotation_scalar_94;
-    secondary->rotation_scalar_98 = primary->rotation_scalar_98;
-    secondary->lateral_scale = primary->lateral_scale;
-    secondary->special_scalar = primary->special_scalar;
-    secondary->lateral_source = primary->lateral_source;
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->transform.position.x;
-    secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
-    secondary->transform.position.z = primary->transform.position.z;
-}
-
-static __forceinline void copy_secondary_from_primary(Path* path, int index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    secondary->transform = primary->transform;
-    secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
-    secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
-    secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
-}
-
-static __forceinline void orient_current_with_previous(Path* path, int index, float angle)
-{
-    PathTemplateSample* sample = &path->primary_samples[index];
-    PathTemplateSample* previous = &path->primary_samples[index - 1];
-
-    sample->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-    sample->transform.basis_forward = Vector3(
-        sample->transform.position.x - previous->transform.position.x,
-        sample->transform.position.y - previous->transform.position.y,
-        sample->transform.position.z - previous->transform.position.z);
-    sample->transform.basis_forward.normalize_vector();
-    sample->transform.basis_right.cross_vectors(
-        &sample->transform.basis_up, &sample->transform.basis_forward);
-    sample->transform.rotate_matrix_local_z(angle);
-}
-
 static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
@@ -205,17 +147,43 @@ void Path::initialize_toad_path_template_pair(
 
     has_entry_mesh_transition = 0;
     for (int i = 0; i < lead_count; ++i) {
-        initialize_sample(&primary_samples[i], start_x, start_x, 0.0f, (float)i);
+        primary_samples[i].center_x = start_x;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        float z = (float)i;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
         primary_samples[i].delta_length = 1.0f;
-        initialize_secondary_flat(this, i);
+
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
         secondary_samples[i].delta_length = 1.0f;
     }
 
     for (int tail = 0; tail < tail_count; ++tail) {
         int index = lead_count + 26 + tail;
-        initialize_sample(&primary_samples[index], start_x, start_x, 0.0f, (float)index);
+        primary_samples[index].center_x = start_x;
+        primary_samples[index].rotation_scalar_98 = 0.0f;
+        primary_samples[index].rotation_scalar_94 = 0.0f;
+        primary_samples[index].special_scalar = 0.0f;
+        primary_samples[index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[index].transform);
+        float z = (float)index;
+        primary_samples[index].transform.position.x = primary_samples[index].center_x;
+        primary_samples[index].transform.position.y = 0.0f;
+        primary_samples[index].transform.position.z = z;
         primary_samples[index].delta_length = 1.0f;
-        initialize_secondary_flat(this, index);
+
+        set_matrix_identity(&secondary_samples[index].transform);
+        secondary_samples[index].transform.position.x = primary_samples[index].center_x;
+        secondary_samples[index].transform.position.y = 0.49000001f;
+        secondary_samples[index].transform.position.z = z;
         secondary_samples[index].delta_length = 1.0f;
     }
 
@@ -224,12 +192,39 @@ void Path::initialize_toad_path_template_pair(
         float phase = (float)k * 0.24166098f;
         float angle = (1.0f - cosine(phase)) * 0.5f;
         angle = angle * turn_sign * 1.5707964f;
-        float x = start_x + 2.0f * sine(angle);
 
-        initialize_sample(
-            &primary_samples[index], start_x, x, 0.0f, (float)(lead_count + k));
-        orient_current_with_previous(this, index, angle);
-        copy_secondary_from_primary(this, index);
+        primary_samples[index].center_x = start_x;
+        primary_samples[index].rotation_scalar_98 = 0.0f;
+        primary_samples[index].rotation_scalar_94 = 0.0f;
+        primary_samples[index].special_scalar = 0.0f;
+        primary_samples[index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[index].transform);
+        float turn_x = sine(angle);
+        primary_samples[index].transform.position.x = turn_x + turn_x + start_x;
+        primary_samples[index].transform.position.z = (float)(lead_count + k);
+        primary_samples[index].transform.position.y = 0.0f;
+
+        primary_samples[index].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+        primary_samples[index].transform.basis_forward = Vector3(
+            primary_samples[index].transform.position.x -
+                primary_samples[index - 1].transform.position.x,
+            primary_samples[index].transform.position.y -
+                primary_samples[index - 1].transform.position.y,
+            primary_samples[index].transform.position.z -
+                primary_samples[index - 1].transform.position.z);
+        primary_samples[index].transform.basis_forward.normalize_vector();
+        primary_samples[index].transform.basis_right.cross_vectors(
+            &primary_samples[index].transform.basis_up,
+            &primary_samples[index].transform.basis_forward);
+        primary_samples[index].transform.rotate_matrix_local_z(angle);
+
+        secondary_samples[index].transform = primary_samples[index].transform;
+        secondary_samples[index].transform.position.x +=
+            primary_samples[index].transform.basis_up.x * 0.49000001f;
+        secondary_samples[index].transform.position.y +=
+            primary_samples[index].transform.basis_up.y * 0.49000001f;
+        secondary_samples[index].transform.position.z +=
+            primary_samples[index].transform.basis_up.z * 0.49000001f;
     }
 
     compute_path_deltas(this);
