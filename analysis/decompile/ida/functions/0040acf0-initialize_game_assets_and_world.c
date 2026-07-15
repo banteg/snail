@@ -318,7 +318,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v312; // eax
   Object *v313; // eax
   Object *v314; // eax
-  uint8_t *v315; // esi
+  char *v315; // esi
   Object *v316; // eax
   TextureRef *v317; // eax
   TextureRefFlags v318; // ecx
@@ -379,7 +379,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   int v373; // eax
   int v374; // eax
   int32_t v375; // ecx
-  uint8_t *v376; // eax
+  int32_t *p_flags; // eax
   int v377; // ecx
   _BYTE v379[92]; // [esp-10h] [ebp-14Ch] BYREF
   int transform_48; // [esp+5Ch] [ebp-E0h]
@@ -388,14 +388,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TransformMatrix v383; // [esp+FCh] [ebp-40h] BYREF
 
   noop_this_constructor(self);
-  store_color4f((tColour *)&game->unknown_000000[20], 1.0, 1.0, 1.0, 1.0);
-  *(_DWORD *)&game->unknown_000000[16] = 1065353216;
-  *(_DWORD *)&game->unknown_000000[8] = 1106247680;
-  *(_DWORD *)&game->unknown_000000[12] = 1112014848;
-  game->unknown_000000[4] = 1;
+  store_color4f((tColour *)&game->fog_color, 1.0, 1.0, 1.0, 1.0);
+  game->fog_density = 1.0;
+  game->fog_start = 30.0;
+  game->fog_end = 50.0;
+  game->fog_enabled = 1;
   game->player_count = 2;
   initialize_border_stack(&game->fade);
-  game->unknown_000521[71] = 0;
+  game->frontend_link_latch = 0;
   game->subgame.subgame_pause_gate = 0;
   initialize_cheat(&g_cheat_state);
   game->intro.hide_for_replay_latch = 0;
@@ -406,7 +406,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->fixed_update_count = 1;
   initialize_texture_list(&g_texture_refs, *(int *)&v379[12]);
   initialize_object_list(&g_object_list, 3000);
-  *(_DWORD *)game->unknown_000514 = 0;
+  game->unknown_000514 = 0;
   game->fixed_update_accumulator = 0.0;
   game->frame_counter = 0;
   game->inactive_bod_sentinel.bod.list_next = nullptr;
@@ -2648,7 +2648,7 @@ LABEL_31:
   game->subgame.path_pairs[26].secondary.entry_base_strip_mesh = game->subgame.path_pairs[26].secondary.bod.object;
   debug_report_stub();
   v240 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_43284A + 2], v240);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_43284A + 2), v240);
   case_insensitive_substring = find_case_insensitive_substring(aTest, game->directx_loader.animation_bytes);
   if ( case_insensitive_substring )
   {
@@ -2677,10 +2677,10 @@ LABEL_31:
   }
   load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)((char *)&loc_432870 + (_DWORD)game));
   v248 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4326FF + 1], v248);
-  load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)&game->unknown_000000[(_DWORD)&loc_432720 + 4]);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4326FF + 1), v248);
+  load_x_animation_clip(&game->directx_loader, ArgList, *(Object **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4));
   v249 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4328C8 + 4], v249);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4328C8 + 4), v249);
   load_x_animation_clip(&game->directx_loader, mesh_name, *(Object **)((char *)&loc_4328F0 + (_DWORD)game));
   v250 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_43294C + (_DWORD)game), v250);
@@ -2690,47 +2690,47 @@ LABEL_31:
   load_x_animation_clip(
     &game->directx_loader,
     aTurboLookbackl,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_4329EE + 2]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4329EE + 2));
   v252 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432A4A + 2], v252);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432A4A + 2), v252);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboLookbackr,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432A6D + 3]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432A6D + 3));
   v253 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432ACB + 1], v253);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432ACB + 1), v253);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboFall000X,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432AEF + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432AEF + 1));
   v254 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432B49 + 3], v254);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432B49 + 3), v254);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboDamaged00,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432B6E + 2]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432B6E + 2));
   v255 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432BCA + 2], v255);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432BCA + 2), v255);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboIntoshell,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432BEF + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432BEF + 1));
   v256 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432C48 + 4], v256);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432C48 + 4), v256);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboSkidstop0,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432C6D + 3]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432C6D + 3));
   v257 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432CCA + 2], v257);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432CCA + 2), v257);
   load_x_animation_clip(
     &game->directx_loader,
     aTurboTalk000X,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432CE9 + 7]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432CE9 + 7));
   v258 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433D46 + 6], v258);
-  load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)&game->unknown_000000[(_DWORD)&loc_433D6F + 1], 2);
-  build_snail_hotspots((int)&game->unknown_000000[(_DWORD)&loc_4326FF + 1]);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433D46 + 6), v258);
+  load_x_mesh(&game->directx_loader, aTurbohotspotsX, *(Object **)((char *)&game->vtable + (_DWORD)&loc_433D6F + 1), 2);
+  build_snail_hotspots((int)game + (_DWORD)&loc_4326FF + 1);
   *(_DWORD *)&v379[36] = 10;
   *(_DWORD *)&v379[32] = (char *)&loc_432870 + (_DWORD)game;
   do
@@ -2751,21 +2751,21 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v263;
   }
   while ( !v60 );
-  v264 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4];
+  v264 = *(int *)((char *)&game->vtable + (_DWORD)&loc_432720 + 4);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v264 + 16) |= 4u;
-  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_432720 + 4], *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4] + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4] + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432720 + 4] + 136) = 0;
+  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4), *(int32_t *)&v379[12]);
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[32] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[33] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432720 + 4))[34] = 0;
   v265 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4338DE + 2], v265);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4338DE + 2), v265);
   load_x_animation_clip(
     &game->directx_loader,
     aJetpackBase000,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433902 + 2]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2));
   v266 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433A2C + 4], v266);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433A2C + 4), v266);
   load_x_animation_clip(&game->directx_loader, aJetpackBase000, *(Object **)((char *)&loc_433A54 + (_DWORD)game));
   v267 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433AB0 + (_DWORD)game), v267);
@@ -2790,30 +2790,30 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v272;
   }
   while ( !v60 );
-  v273 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2];
+  v273 = *(int *)((char *)&game->vtable + (_DWORD)&loc_433902 + 2);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v273 + 16) |= 4u;
-  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_433902 + 2], *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2] + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2] + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433902 + 2] + 136) = 0;
+  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2), *(int32_t *)&v379[12]);
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[32] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[33] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433902 + 2))[34] = 0;
   v274 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&byte_432D4C[(_DWORD)game], v274);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterleftBas,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432D6D + 3]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3));
   v275 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432E9A + 2], v275);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432E9A + 2), v275);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterleftBas,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_432EBF + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_432EBF + 1));
   v276 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432F1A + 2], v276);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432F1A + 2), v276);
   load_x_animation_clip(&game->directx_loader, aBlasterleftDra, *(Object **)((char *)&loc_432F40 + (_DWORD)game));
   v277 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_432F9B + 1], v277);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_432F9B + 1), v277);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterleftFir,
@@ -2829,7 +2829,7 @@ LABEL_31:
   load_x_animation_clip(
     &game->directx_loader,
     aLaserleftDraw0,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_4330BF + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4330BF + 1));
   *(_DWORD *)&v379[36] = 5;
   *(_DWORD *)&v379[32] = (char *)game + (_DWORD)&loc_432EBF + 1;
   do
@@ -2850,43 +2850,43 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v284;
   }
   while ( !v60 );
-  v285 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3];
+  v285 = *(int *)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v285 + 16) |= 4u;
-  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_432D6D + 3], *(int32_t *)&v379[12]);
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_432D6D + 3] + 136) = 0;
+  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3), *(int32_t *)&v379[12]);
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[32] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[33] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_432D6D + 3))[34] = 0;
   v286 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433127 + 1], v286);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433127 + 1), v286);
   load_x_animation_clip(&game->directx_loader, aBlasterrightBa, *(Object **)((char *)&loc_43314C + (_DWORD)game));
   v287 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433275 + 3], v287);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433275 + 3), v287);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterrightBa,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_43329B + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_43329B + 1));
   v288 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4332F7 + 1], v288);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4332F7 + 1), v288);
   load_x_animation_clip(&game->directx_loader, aBlasterrightDr, *(Object **)((char *)&loc_43331C + (_DWORD)game));
   v289 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433378 + (_DWORD)game), v289);
   load_x_animation_clip(
     &game->directx_loader,
     aBlasterrightFi,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_43339A + 2]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_43339A + 2));
   v290 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_4333F8 + (_DWORD)game), v290);
   load_x_animation_clip(
     &game->directx_loader,
     aLaserrightBase,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433417 + 5]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433417 + 5));
   v291 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433475 + 3], v291);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433475 + 3), v291);
   load_x_animation_clip(
     &game->directx_loader,
     aLaserrightDraw,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433499 + 3]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433499 + 3));
   *(_DWORD *)&v379[36] = 5;
   *(_DWORD *)&v379[32] = (char *)game + (_DWORD)&loc_43329B + 1;
   do
@@ -2919,37 +2919,37 @@ LABEL_31:
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopBase,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433523 + 5]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5));
   v299 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433654 + (_DWORD)game), v299);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopBase,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433677 + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433677 + 1));
   v300 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4336D0 + 4], v300);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4336D0 + 4), v300);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopDraw,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_4336F6 + 2]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4336F6 + 2));
   v301 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433751 + 3], v301);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433751 + 3), v301);
   load_x_animation_clip(
     &game->directx_loader,
     aBlastertopFire,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433777 + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433777 + 1));
   v302 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4337D3 + 1], v302);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4337D3 + 1), v302);
   load_x_animation_clip(
     &game->directx_loader,
     aRocketlauncher,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_4337F6 + 2]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_4337F6 + 2));
   v303 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_433853 + 1], v303);
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_433853 + 1), v303);
   load_x_animation_clip(
     &game->directx_loader,
     aRocketlauncher_0,
-    *(Object **)&game->unknown_000000[(_DWORD)&loc_433877 + 1]);
+    *(Object **)((char *)&game->vtable + (_DWORD)&loc_433877 + 1));
   *(_DWORD *)&v379[36] = 5;
   *(_DWORD *)&v379[32] = (char *)game + (_DWORD)&loc_433677 + 1;
   do
@@ -2970,40 +2970,40 @@ LABEL_31:
     *(_DWORD *)&v379[36] = v308;
   }
   while ( !v60 );
-  v309 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5];
+  v309 = *(int *)((char *)&game->vtable + (_DWORD)&loc_433523 + 5);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)(v309 + 16) |= 4u;
-  apply_object_toon(*(Object **)&game->unknown_000000[(_DWORD)&loc_433523 + 5], *(int32_t *)&v379[12]);
-  v310 = *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5];
+  apply_object_toon(*(Object **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5), *(int32_t *)&v379[12]);
+  v310 = *(int *)((char *)&game->vtable + (_DWORD)&loc_433523 + 5);
   *(_DWORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aXSnailTurboTga_0;
   *(_DWORD *)(v310 + 128) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5] + 132) = 0;
-  *(_DWORD *)(*(_DWORD *)&game->unknown_000000[(_DWORD)&loc_433523 + 5] + 136) = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[33] = 0;
+  (*(_DWORD **)((char *)&game->vtable + (_DWORD)&loc_433523 + 5))[34] = 0;
   v311 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aXSnailTurboDam;
-  *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_434037 + 5] = v311;
+  *(void **)((char *)&game->vtable + (_DWORD)&loc_434037 + 5) = v311;
   v312 = get_or_create_texture_ref(&g_texture_refs, *(char **)&v379[4], *(int32_t *)&v379[8], *(int16_t *)&v379[12]);
   *(_WORD *)&v379[12] = 0;
   *(_DWORD *)&v379[8] = 0;
   *(_DWORD *)&v379[4] = aXSnailTurboInv;
-  *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_43403D + 3] = v312;
-  *(_DWORD *)&game->unknown_000000[(_DWORD)&loc_434042 + 2] = get_or_create_texture_ref(
-                                                                &g_texture_refs,
-                                                                *(char **)&v379[4],
-                                                                *(int32_t *)&v379[8],
-                                                                *(int16_t *)&v379[12]);
+  *(void **)((char *)&game->vtable + (_DWORD)&loc_43403D + 3) = v312;
+  *(void **)((char *)&game->vtable + (_DWORD)&loc_434042 + 2) = get_or_create_texture_ref(
+                                                                  &g_texture_refs,
+                                                                  *(char **)&v379[4],
+                                                                  *(int32_t *)&v379[8],
+                                                                  *(int16_t *)&v379[12]);
   v313 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)((char *)&loc_433F94 + (_DWORD)game), v313);
   load_x_mesh(&game->directx_loader, aInvincibleBase, *(Object **)((char *)&loc_433FB8 + (_DWORD)game), 1);
   *(_DWORD *)(*(_DWORD *)((char *)&loc_433FB8 + (_DWORD)game) + 16) &= ~0x100000u;
   v314 = add_object_to_list(&g_object_list);
-  set_bod_object((BodBase *)&game->unknown_000000[(_DWORD)&loc_4302E3 + 1], v314);
-  load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)&game->unknown_000000[(_DWORD)&loc_430306 + 2], 1);
-  v315 = &game->unknown_000000[(_DWORD)&loc_43026E + 2];
+  set_bod_object((BodBase *)((char *)game + (_DWORD)&loc_4302E3 + 1), v314);
+  load_x_mesh(&game->directx_loader, aRocketBase000X, *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2), 1);
+  v315 = (char *)game + (_DWORD)&loc_43026E + 2;
   *(_DWORD *)&v379[36] = 12;
   do
   {
@@ -3013,7 +3013,7 @@ LABEL_31:
     *(_DWORD *)(*(_DWORD *)v315 + 20) = 9;
     load_object_definition(aObjectsVapourl, *(Object **)v315);
     initialize_vapour((Vapour *)(v315 - 36), *(Object **)v315, 0.16);
-    set_bod_object((BodBase *)(v315 + 116), *(Object **)&game->unknown_000000[(_DWORD)&loc_430306 + 2]);
+    set_bod_object((BodBase *)(v315 + 116), *(Object **)((char *)&game->vtable + (_DWORD)&loc_430306 + 2));
     v315 += 744;
     --*(_DWORD *)&v379[36];
   }
@@ -3309,17 +3309,17 @@ LABEL_31:
   *(_DWORD *)&v379[12] = &game->border_manager;
   game->backdrop.backdrop_render_enabled = 0;
   append_bod_to_end(&game->active_bod_list.unknown_00, *(_DWORD **)&v379[12]);
-  initialize_border_stack(&game->border_manager.unknown_000010[40]);
-  *(_DWORD *)&game->border_manager.unknown_000010[1648] = &game->border_manager;
+  initialize_border_stack(&game->border_manager.border_stack);
+  game->border_manager.border_stack.owner = &game->border_manager;
   *(_DWORD *)&v379[12] = 1103626240;
-  game->border_manager.unknown_000010[275856] = 0;
+  game->border_manager.delayed_widget_active = 0;
   set_border_justify_centre(&game->border_manager, *(float *)&v379[12]);
-  v376 = &game->border_manager.unknown_000010[2068];
+  p_flags = &game->border_manager.borders[0].flags;
   v377 = 150;
   do
   {
-    *(_DWORD *)v376 = 0;
-    v376 += 1828;
+    *p_flags = 0;
+    p_flags += 457;
     --v377;
   }
   while ( v377 );

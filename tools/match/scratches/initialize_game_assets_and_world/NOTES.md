@@ -831,3 +831,15 @@ overlapping convenience view between these independently bounded owners.
 This is an analysis-only replay: the matching source is unchanged and the
 focused frontier remains 80.50% (5,392/5,411 instructions; 1,550 clean and
 101 mismatched operands).
+
+## 2026-07-15 root prefix and border-pool composition
+
+The guarded BN/IDA replay now closes the exact root prefix before the existing
+catalog graph: callback/fog state through `+0x24`, `frontend_link_latch` at
+`+0x568`, three overlays, the standalone no-op renderable, and the complete
+`BorderManager +0xb4c`. The manager names its `BorderStack`, 150 exact
+`BorderRecord` backing slots, and delayed-widget tail without conflating those
+slots with the `FrontendWidget*` view returned to callers.
+
+This remains analysis-only. A fresh focused compile is unchanged at 80.50%
+(5,392/5,411 instructions, 1,550 clean and 101 mismatched operands).

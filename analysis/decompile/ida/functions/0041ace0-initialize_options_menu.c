@@ -11,8 +11,8 @@ void __thiscall initialize_options_menu(Options *options)
   tColour *v5; // eax
   Color4f color; // [esp+4h] [ebp-10h] BYREF
 
-  hide_all_borders((int *)&g_game_base->border_manager);
-  g_game_base->unknown_000521[71] = 1;
+  hide_all_borders(&g_game_base->border_manager);
+  g_game_base->frontend_link_latch = 1;
   options->fullscreen_widget = allocate_border(&g_game_base->border_manager);
   v2 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(options->fullscreen_widget, 0x14u, (char *)g_blank_text, 20, 90.0, 75.0, v2, 2, 0.0);

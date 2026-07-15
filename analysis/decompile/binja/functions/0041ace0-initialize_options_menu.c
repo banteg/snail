@@ -4,7 +4,7 @@
 /* function: initialize_options_menu @ 0x41ace0 */
 
 0041acf1        hide_all_borders(&g_game_base->border_manager)
-0041acfc        g_game_base->unknown_000521[0x47] = 1
+0041acfc        g_game_base->frontend_link_latch = 1
 0041ad30        options->fullscreen_widget = allocate_border(&g_game_base->border_manager)
 0041ad33        struct tColour color
 0041ad33        struct tColour* color_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)

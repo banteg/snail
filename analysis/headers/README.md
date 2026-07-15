@@ -236,6 +236,16 @@ view keeps the folded challenge/thanks startup binding typed without asserting
 a shared concrete screen base class. The IDA frame-root replay mirrors the
 same three overlays at `GameRoot +0x67c`, `+0x7c8`, and `+0x914`, replacing the
 older opaque `0x4a8`-byte block without inventing fields past their exact end.
+The shared frame-root replay now closes the rest of that exact prefix too: the
+root callback/fog block through `+0x24`, the front-end link latch at `+0x568`,
+and the standalone `RenderableBod +0xa60` between the overlays and texture-set
+selector. Replaying a later owner lane therefore no longer degrades these
+independently bounded fields back into byte arrays.
+The same replay now owns the complete `BorderManager +0xb4c`: its embedded
+`BorderStack`, fixed 150-entry `BorderRecord` pool, and delayed-widget state.
+`BorderRecord` remains the exact backing-storage identity while allocator and
+front-end callsites deliberately consume each returned slot as a
+`FrontendWidget`; the replay does not collapse those two proven views.
 
 The star-manager lane records the cross-port `cRStarManager` owner, its
 constructed `BodBase` prefix, the `0x2c` entry stride, and the lifecycle fields

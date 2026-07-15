@@ -83,3 +83,11 @@ this consumer, so the selected mesh comes from
 Its `0x5e10`-byte extent terminates exactly at `Backdrop +0x4ec10`. This
 analysis-only replay leaves the matching source and its honest 99.19%,
 123/123-instruction, 20-clean-operand frontier unchanged.
+
+## 2026-07-15 fog owner readback
+
+Both tracked decompilers now render the final script-color copy through
+`GameRoot::fog_color +0x14`; the older root-relative byte-array access is
+forbidden by the health checks. No matching source changed, and the focused
+result remains 99.19% with 123/123 instructions and 20 clean operands; the
+sole residual is still the existing instruction-order swap at target index 65.

@@ -28,3 +28,8 @@ exact at 127/127 instructions with 32 clean operands.
 installed without flattening its complete `FrontendWidget` dependency. The
 refreshed artifact names all four widget pointers and the sample-volume
 snapshot through the real receiver.
+
+2026-07-15 root-prefix replay: BN and IDA now both retain the exact
+`frontend_link_latch` byte and canonical `BorderManager` receiver, including
+the typed hide and allocation calls. The source remains exact at 127/127 with
+32 clean operands.

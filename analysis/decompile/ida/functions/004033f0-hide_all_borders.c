@@ -2,8 +2,8 @@
 /* function: hide_all_borders @ 0x4033f0 */
 /* selector: hide_all_borders */
 
-int __thiscall sub_4033F0(int *this)
+// Exact void cRBorderManager::HideBorders() wrapper that pushes a nested 0x1000 visibility transition through the embedded BorderStack.
+void __thiscall hide_all_borders(BorderManager *manager)
 {
-  return sub_404360(this + 14, 0);
+  apply_all_border_visibility_mode(&manager->border_stack.generation, 0);
 }
-

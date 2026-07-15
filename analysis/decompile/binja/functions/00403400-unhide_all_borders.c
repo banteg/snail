@@ -3,4 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: unhide_all_borders @ 0x403400 */
 
-0040340a        return sub_404360(arg1 + 0x38, 1)
+00403405        apply_all_border_visibility_mode(&manager->border_stack, 1)
+0040340a        return

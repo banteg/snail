@@ -149,7 +149,31 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     for header in frame_headers:
         assert "uint8_t unknown_12727d8[0x1272838 - 0x12727d8];" in header
         assert "uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];" in header
+        assert "uint8_t unknown_000000[0x24];" not in header
+        for field in (
+            "uint8_t fog_enabled;",
+            "float fog_start;",
+            "float fog_end;",
+            "float fog_density;",
+            "FrameColor4f fog_color;",
+            "uint8_t frontend_link_latch;",
+            "FrameRenderableBod root_noop_renderable;",
+        ):
+            assert field in header
     assert "unknown_12e6df0" not in header
+
+    bn_frame_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    for update in (
+        '("0x04", "fog_enabled", "uint8_t")',
+        '("0x14", "fog_color", "FrameColor4f")',
+        '("0x568", "frontend_link_latch", "uint8_t")',
+        '("0xa60", "root_noop_renderable", "FrameRenderableBod")',
+    ):
+        assert update in bn_frame_sync
+    assert 'struct_name="Overlay"' in bn_frame_sync
+    assert 'struct_name="RenderableBod"' in bn_frame_sync
 
     bn_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -2189,15 +2213,20 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "TransformMatrix completion_handoff_transform; // +0x1a8" in matcher_header
     for header in (binja_header, ida_header):
         assert "FrameTransformMatrix completion_handoff_transform;" in header
-        assert "typedef struct FrameBorderManager" in header
-        assert "void* vtable;" in header
-        assert "uint32_t list_flags;" in header
-        assert "void* list_prev;" in header
-        assert "void* list_next;" in header
-        assert "uint8_t unknown_000010[0x435b0 - 0x10];" in header
+        assert "typedef struct BorderStackEntry" in header
+        assert "BorderStackEntry entries[200];" in header
+        assert "typedef struct BorderRecord" in header
+        assert "FrameColor4f color_06c;" in header
+        assert "int32_t created_time;" in header
+        assert "struct BorderManager" in header
+        assert "BorderStack border_stack;" in header
+        assert "BorderRecord borders[150];" in header
+        assert "int32_t delayed_widget_flags;" in header
+        assert "FrontendWidget* delayed_widget;" in header
         assert "float justify_centre;" in header
         assert "int32_t unknown_000b48;" in header
-        assert "FrameBorderManager border_manager;" in header
+        assert "BorderManager border_manager;" in header
+        assert "FrameBorderManager" not in header
         assert "uint8_t unknown_044100[0x74618 - 0x44100];" in header
         assert "unknown_000b48[0x74618 - 0xb48]" not in header
 
@@ -2213,20 +2242,23 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
         '("0x1a8", "completion_handoff_transform", "FrameTransformMatrix")'
         in binja_sync
     )
-    assert '"FrameBorderManager",' in binja_sync
+    assert '"BorderManager",' in binja_sync
     assert '("0xb48", "unknown_000b48", "int32_t")' in binja_sync
-    assert '("0xb4c", "border_manager", "FrameBorderManager")' in binja_sync
+    assert '("0xb4c", "border_manager", "BorderManager")' in binja_sync
+    assert 'BORDER_RECORD_FIELD_UPDATES = (' in binja_sync
     assert 'BORDER_MANAGER_FIELD_UPDATES = (' in binja_sync
-    assert '("0x08", "list_prev", "FrontendWidget*")' in binja_sync
-    assert '("0x0c", "list_next", "FrontendWidget*")' in binja_sync
+    assert '("0x08", "list_prev", "FrameBodBase*")' in binja_sync
+    assert '("0x38", "border_stack", "BorderStack")' in binja_sync
+    assert '("0x684", "borders", "BorderRecord[150]")' in binja_sync
+    assert '("0x435ac", "delayed_widget", "FrontendWidget*")' in binja_sync
     assert '("0x435b0", "justify_centre", "float")' in binja_sync
     assert "def resolved_border_manager_struct_name" in binja_sync
     assert 'struct_name="BorderManager"' in binja_sync
-    assert 'else "FrameBorderManager"' in binja_sync
+    assert 'return "BorderManager"' in binja_sync
     assert "0x4DF904" in ida_sync
     assert '"GameRoot *g_game_base;"' in ida_sync
     assert (
-        '"FrontendWidget *__thiscall allocate_border(FrameBorderManager *manager);"'
+        '"FrontendWidget *__thiscall allocate_border(BorderManager *manager);"'
         in ida_sync
     )
     assert "0x4df904" not in overlay_sync.lower()
@@ -2951,6 +2983,21 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "float justify_centre" in frame_sync
     assert "void __thiscall set_border_justify_centre" in ida_frame_sync
     assert "float justify_centre" in ida_frame_sync
+    for function_name in (
+        "allocate_border",
+        "activate_all_borders",
+        "hide_all_borders",
+        "unhide_all_borders",
+        "queue_frontend_widget_flag_after_delay",
+        "update_border_manager",
+        "initialize_border_record",
+    ):
+        assert f'"{function_name}"' in frame_sync
+        assert f'"{function_name}"' in ida_frame_sync
+    assert "FrontendWidget* widget" in frame_sync
+    assert "BorderManager *manager, FrontendWidget *widget" in ida_frame_sync
+    assert "BorderRecord* record" in frame_sync
+    assert "BorderRecord *record" in ida_frame_sync
     assert "void __thiscall destroy_help_screen(Help* help)" in runtime_sync
     assert "void __thiscall destroy_options_menu(Options* options)" in menu_sync
     assert "void __thiscall destroy_intro_screen(Logo* logo)" in logo_sync

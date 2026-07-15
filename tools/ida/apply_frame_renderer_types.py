@@ -9,6 +9,7 @@ import ida_funcs
 import ida_kernwin
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
@@ -16,6 +17,26 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+
+
+EXPECTED_OWNER_SIZES = {
+    "FrameColor4f": 0x10,
+    "FrontendFade": 0x14,
+    "GameInput": 0x70,
+    "GamePlayer": 0x1F8,
+    "FrameBodBase": 0x38,
+    "FrameBodList": 0xC,
+    "FrameRenderableBod": 0x80,
+    "FrameRenderCamera": 0xC8,
+    "FrameOverlay": 0x14C,
+    "FrameRenderCameraSlot": 0x28,
+    "TextureSetSelector": 0x24,
+    "BorderStackEntry": 0x8,
+    "BorderStack": 0x64C,
+    "BorderRecord": 0x724,
+    "BorderManager": 0x435B4,
+    "GameRoot": 0x12E6FF4,
+}
 
 
 TRUSTED_NAMES = [
@@ -31,16 +52,41 @@ TRUSTED_NAMES = [
 TRUSTED_FUNCTION_DECLARATIONS = [
     (
         "kill_all_borders",
-        "void __thiscall kill_all_borders(FrameBorderManager *manager);",
+        "void __thiscall kill_all_borders(BorderManager *manager);",
     ),
     (
         "set_border_justify_centre",
         "void __thiscall set_border_justify_centre("
-        "FrameBorderManager *manager, float justify_centre);",
+        "BorderManager *manager, float justify_centre);",
     ),
     (
         "allocate_border",
-        "FrontendWidget *__thiscall allocate_border(FrameBorderManager *manager);",
+        "FrontendWidget *__thiscall allocate_border(BorderManager *manager);",
+    ),
+    (
+        "activate_all_borders",
+        "void __thiscall activate_all_borders(BorderManager *manager);",
+    ),
+    (
+        "hide_all_borders",
+        "void __thiscall hide_all_borders(BorderManager *manager);",
+    ),
+    (
+        "unhide_all_borders",
+        "void __thiscall unhide_all_borders(BorderManager *manager);",
+    ),
+    (
+        "queue_frontend_widget_flag_after_delay",
+        "char __thiscall queue_frontend_widget_flag_after_delay("
+        "BorderManager *manager, FrontendWidget *widget, int32_t queued_flags);",
+    ),
+    (
+        "update_border_manager",
+        "void __thiscall update_border_manager(BorderManager *manager);",
+    ),
+    (
+        "initialize_border_record",
+        "BorderRecord *__thiscall initialize_border_record(BorderRecord *record);",
     ),
     (
         "initialize_game_player",
@@ -114,14 +160,31 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
     applied = 0
     unchanged = 0
     renamed = 0
     names_unchanged = 0
     missing = []
-    failed = []
+    failed = [
+        {
+            "selector": name,
+            "reason": "owner_size_mismatch",
+            "expected": expected,
+            "observed": owner_sizes[name],
+        }
+        for name, expected in EXPECTED_OWNER_SIZES.items()
+        if owner_sizes[name] != expected
+    ]
 
     for address, name in TRUSTED_NAMES:
         if idc.get_name(address) == name:
@@ -191,6 +254,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "owner_sizes": owner_sizes,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

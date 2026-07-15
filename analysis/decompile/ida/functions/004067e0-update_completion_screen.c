@@ -108,7 +108,7 @@ void __thiscall update_completion_screen(Exit *exit_controller)
         v17->widget_flags = v18;
         launch_alpha72_url(aAlpha72Url);
         g_game_base->players[0].frontend_state = 0;
-        g_game_base->unknown_000521[71] = 0;
+        g_game_base->frontend_link_latch = 0;
         destroy_completion_screen(exit_controller);
       }
       break;
@@ -173,7 +173,7 @@ LABEL_24:
     LOBYTE(v20) = v20 & 0xDF;
     no_button->widget_flags = v20;
     g_game_base->players[0].frontend_state = exit_controller->previous_frontend_state;
-    g_game_base->unknown_000521[71] = 0;
+    g_game_base->frontend_link_latch = 0;
     destroy_completion_screen(exit_controller);
   }
 }

@@ -50,25 +50,9 @@
 004189c7        do while (i s< 0xa)
 004189e5        change_backdrop(&g_game_base->backdrop, edi + 0x5a4, var_8)
 004189f8        set_border_justify_centre(&g_game_base->border_manager, 0f)
-00418a08        uint8_t* result = &g_game_base->unknown_000000[0x14]
-00418a0b        int32_t ecx_17 = *(edi + 0x6b4)
-00418a0d        (result - 0x14)->unknown_000000[0x14] = ecx_17.b
-00418a0d        (result - 0x14)->unknown_000000[0x15] = ecx_17:1.b
-00418a0d        (result - 0x14)->unknown_000000[0x16] = ecx_17:2.b
-00418a0d        (result - 0x14)->unknown_000000[0x17] = ecx_17:3.b
-00418a0f        int32_t edx_5 = *(edi + 0x6b8)
-00418a12        (result - 0x14)->unknown_000000[0x18] = edx_5.b
-00418a12        (result - 0x14)->unknown_000000[0x19] = edx_5:1.b
-00418a12        (result - 0x14)->unknown_000000[0x1a] = edx_5:2.b
-00418a12        (result - 0x14)->unknown_000000[0x1b] = edx_5:3.b
-00418a15        int32_t ecx_18 = *(edi + 0x6bc)
-00418a18        (result - 0x14)->unknown_000000[0x1c] = ecx_18.b
-00418a18        (result - 0x14)->unknown_000000[0x1d] = ecx_18:1.b
-00418a18        (result - 0x14)->unknown_000000[0x1e] = ecx_18:2.b
-00418a18        (result - 0x14)->unknown_000000[0x1f] = ecx_18:3.b
-00418a1b        int32_t edx_6 = *(edi + 0x6c0)
-00418a20        (result - 0x14)->unknown_000000[0x20] = edx_6.b
-00418a20        (result - 0x14)->unknown_000000[0x21] = edx_6:1.b
-00418a20        (result - 0x14)->unknown_000000[0x22] = edx_6:2.b
-00418a20        (result - 0x14)->unknown_000000[0x23] = edx_6:3.b
+00418a08        struct FrameColor4f* result = &g_game_base->fog_color
+00418a0d        result->r = *(edi + 0x6b4)
+00418a12        result->g = *(edi + 0x6b8)
+00418a18        result->b = *(edi + 0x6bc)
+00418a20        result->a = *(edi + 0x6c0)
 00418a27        return result

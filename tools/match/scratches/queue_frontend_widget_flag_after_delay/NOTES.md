@@ -14,3 +14,8 @@ wobble/glow is rendered while the lane is active.
 2026-07-14 root-client consolidation: the delayed lane now calls
 `GameRoot::fade.begin_frontend_fade_out()` directly. Focused matching remains
 exact at 22/22 instructions with two clean operands.
+
+2026-07-15 canonical manager replay: both tracked decompilers now retain the
+`BorderManager*` receiver, borrowed `FrontendWidget*`, all five delayed-lane
+fields, and root-owned fade. The source remains exact at 22/22 with two clean
+operands.

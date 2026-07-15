@@ -11,8 +11,8 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    current_struct_size,
     emit_summary,
-    struct_exists,
     types_declare_if_missing,
 )
 
@@ -31,12 +31,17 @@ REQUIRED_STRUCTS = (
     "FrameBodNode",
     "FrameBodList",
     "FrameBodBase",
+    "FrameRenderableBod",
     "FrameRenderCamera",
+    "FrameOverlay",
     "FrameRenderCameraSlot",
     "FrameContactTargetRegistry",
     "FrameSubgameRuntime",
     "TextureSetSelector",
-    "FrameBorderManager",
+    "BorderStackEntry",
+    "BorderStack",
+    "BorderRecord",
+    "BorderManager",
     "GameRoot",
 )
 
@@ -140,46 +145,122 @@ FRAME_SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x40", "level_mode", "int32_t"),
 )
 
+BORDER_STACK_ENTRY_FIELD_UPDATES = (
+    ("0x00", "generation", "int32_t"),
+    ("0x04", "widget", "FrontendWidget*"),
+)
+
+BORDER_STACK_FIELD_UPDATES = (
+    ("0x00", "generation", "int32_t"),
+    ("0x04", "entry_count", "int32_t"),
+    ("0x08", "entries", "BorderStackEntry[200]"),
+    ("0x648", "owner", "BorderManager*"),
+)
+
+BORDER_RECORD_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x08", "list_prev", "FrameBodBase*"),
+    ("0x0c", "list_next", "FrameBodBase*"),
+    ("0x10", "position", "FrameVec3"),
+    ("0x1c", "render_arg_1c", "float"),
+    ("0x20", "render_arg_20", "float"),
+    ("0x24", "object", "void*"),
+    ("0x28", "color", "FrameColor4f"),
+    ("0x6c", "color_06c", "FrameColor4f"),
+    ("0x19c", "created_time", "int32_t"),
+    ("0x1a0", "flags", "int32_t"),
+    ("0x1ac", "color_1ac", "FrameColor4f"),
+    ("0x1bc", "color_1bc", "FrameColor4f"),
+    ("0x1cc", "color_1cc", "FrameColor4f"),
+    ("0x1dc", "color_1dc", "FrameColor4f"),
+    ("0x1ec", "color_1ec", "FrameColor4f"),
+    ("0x1fc", "color_1fc", "FrameColor4f"),
+    ("0x20c", "hover_blend_target", "float"),
+    ("0x210", "hover_blend_current", "float"),
+    ("0x214", "idle_padding", "float"),
+    ("0x218", "hot_padding", "float"),
+    ("0x21c", "target_padding", "float"),
+    ("0x220", "active_padding", "float"),
+)
+
 BORDER_MANAGER_FIELD_UPDATES = (
     ("0x00", "vtable", "void*"),
     ("0x04", "list_flags", "uint32_t"),
-    ("0x08", "list_prev", "FrontendWidget*"),
-    ("0x0c", "list_next", "FrontendWidget*"),
+    ("0x08", "list_prev", "FrameBodBase*"),
+    ("0x0c", "list_next", "FrameBodBase*"),
+    ("0x10", "position", "FrameVec3"),
+    ("0x1c", "render_arg_1c", "float"),
+    ("0x20", "render_arg_20", "float"),
+    ("0x24", "object", "void*"),
+    ("0x28", "color", "FrameColor4f"),
+    ("0x38", "border_stack", "BorderStack"),
+    ("0x684", "borders", "BorderRecord[150]"),
+    ("0x4359c", "delayed_widget_flags", "int32_t"),
+    ("0x435a0", "delayed_widget_active", "uint8_t"),
+    ("0x435a4", "delayed_widget_progress", "float"),
+    ("0x435a8", "delayed_widget_progress_step", "float"),
+    ("0x435ac", "delayed_widget", "FrontendWidget*"),
     ("0x435b0", "justify_centre", "float"),
 )
 
 GAME_ROOT_FIELD_UPDATES = (
+    ("0x00", "vtable", "void*"),
+    ("0x04", "fog_enabled", "uint8_t"),
+    ("0x08", "fog_start", "float"),
+    ("0x0c", "fog_end", "float"),
+    ("0x10", "fog_density", "float"),
+    ("0x14", "fog_color", "FrameColor4f"),
     ("0x24", "fade", "FrontendFade"),
     ("0x38", "frontend_quit_requested", "int32_t"),
     ("0x3c", "fixed_update_count", "int32_t"),
     ("0x40", "player_count", "int32_t"),
     ("0x44", "game_inputs", "GameInput[2]"),
     ("0x124", "players", "GamePlayer[2]"),
+    ("0x514", "unknown_000514", "int32_t"),
     ("0x518", "fixed_update_accumulator", "float"),
     ("0x51c", "frame_counter", "int32_t"),
     ("0x520", "input_sampling_gate", "uint8_t"),
+    ("0x568", "frontend_link_latch", "uint8_t"),
     ("0x56c", "render_skip_count", "int32_t"),
     ("0x570", "inactive_bod_sentinel", "FrameBodBase"),
     ("0x5a8", "active_bod_list", "FrameBodList"),
     ("0x5b4", "render_camera_slots", "FrameRenderCameraSlot[5]"),
+    ("0x67c", "overlay_0", "FrameOverlay"),
+    ("0x7c8", "overlay_1", "FrameOverlay"),
+    ("0x914", "overlay_2", "FrameOverlay"),
+    ("0xa60", "root_noop_renderable", "FrameRenderableBod"),
     ("0xb24", "texture_set_selector", "TextureSetSelector"),
     ("0xb48", "unknown_000b48", "int32_t"),
-    ("0xb4c", "border_manager", "FrameBorderManager"),
+    ("0xb4c", "border_manager", "BorderManager"),
     ("0x74618", "subgame", "FrameSubgameRuntime"),
 )
 
 
 def resolved_game_root_field_updates(*, target: str) -> tuple[tuple[str, str, str], ...]:
     """Prefer complete root subowners after their canonical types are available."""
-    border_manager_type = (
-        "BorderManager"
-        if struct_exists(REPO_ROOT, target=target, struct_name="BorderManager")
-        else "FrameBorderManager"
-    )
+    border_manager_type = resolved_border_manager_struct_name(target=target)
     subgame_type = (
         "SubgameRuntime"
-        if struct_exists(REPO_ROOT, target=target, struct_name="SubgameRuntime")
+        if current_struct_size(
+            REPO_ROOT, target=target, struct_name="SubgameRuntime"
+        )
+        == 0x1272838
         else "FrameSubgameRuntime"
+    )
+    overlay_type = (
+        "Overlay"
+        if current_struct_size(REPO_ROOT, target=target, struct_name="Overlay")
+        == 0x14C
+        else "FrameOverlay"
+    )
+    root_renderable_type = (
+        "RenderableBod"
+        if current_struct_size(
+            REPO_ROOT, target=target, struct_name="RenderableBod"
+        )
+        == 0x80
+        else "FrameRenderableBod"
     )
     return tuple(
         (
@@ -189,6 +270,10 @@ def resolved_game_root_field_updates(*, target: str) -> tuple[tuple[str, str, st
             if name == "border_manager"
             else subgame_type
             if name == "subgame"
+            else overlay_type
+            if name in {"overlay_0", "overlay_1", "overlay_2"}
+            else root_renderable_type
+            if name == "root_noop_renderable"
             else field_type,
         )
         for offset, name, field_type in GAME_ROOT_FIELD_UPDATES
@@ -196,12 +281,16 @@ def resolved_game_root_field_updates(*, target: str) -> tuple[tuple[str, str, st
 
 
 def resolved_border_manager_struct_name(*, target: str) -> str:
-    """Use the complete manager owner when available, otherwise its frame bootstrap."""
-    return (
-        "BorderManager"
-        if struct_exists(REPO_ROOT, target=target, struct_name="BorderManager")
-        else "FrameBorderManager"
+    """Require the exact canonical manager instead of silently degrading ownership."""
+    size = current_struct_size(
+        REPO_ROOT, target=target, struct_name="BorderManager"
     )
+    if size != 0x435B4:
+        raise RuntimeError(
+            "BorderManager must be exactly 0x435b4 bytes after header replay; "
+            f"observed {size!r}"
+        )
+    return "BorderManager"
 
 
 def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
@@ -212,6 +301,36 @@ def resolved_proto_updates(*, target: str) -> tuple[tuple[str, str], ...]:
         (
             "kill_all_borders",
             f"void __thiscall kill_all_borders({border_manager_type}* manager)",
+        ),
+        (
+            "allocate_border",
+            f"FrontendWidget* __thiscall allocate_border({border_manager_type}* manager)",
+        ),
+        (
+            "activate_all_borders",
+            f"void __thiscall activate_all_borders({border_manager_type}* manager)",
+        ),
+        (
+            "hide_all_borders",
+            f"void __thiscall hide_all_borders({border_manager_type}* manager)",
+        ),
+        (
+            "unhide_all_borders",
+            f"void __thiscall unhide_all_borders({border_manager_type}* manager)",
+        ),
+        (
+            "queue_frontend_widget_flag_after_delay",
+            "char __thiscall queue_frontend_widget_flag_after_delay("
+            f"{border_manager_type}* manager, FrontendWidget* widget, "
+            "int32_t queued_flags)",
+        ),
+        (
+            "update_border_manager",
+            f"void __thiscall update_border_manager({border_manager_type}* manager)",
+        ),
+        (
+            "initialize_border_record",
+            "BorderRecord* __thiscall initialize_border_record(BorderRecord* record)",
         ),
         (
             "set_border_justify_centre",
@@ -259,6 +378,9 @@ def main() -> int:
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
+                ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),
+                ("BorderStack", BORDER_STACK_FIELD_UPDATES),
+                ("BorderRecord", BORDER_RECORD_FIELD_UPDATES),
                 (
                     resolved_border_manager_struct_name(target=args.target),
                     BORDER_MANAGER_FIELD_UPDATES,

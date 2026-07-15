@@ -29,6 +29,6 @@ The manager therefore has exact extent `0x435b4`; the duplicate
 exact after changing their source arguments to floats, and the three partial
 callers retain their previous scores and clean-operand counts. Live Binary
 Ninja readback now gives `void __thiscall(struct BorderManager*, float)` and a
-`float justify_centre` field at `+0x435b0`; IDA gives the corresponding
-`FrameBorderManager*` prototype. A strict eleven-function export refreshed the
-setter and all ten callers with zero cross-decompiler mismatches.
+`float justify_centre` field at `+0x435b0`; IDA now uses the same canonical
+`BorderManager*` prototype instead of the retired sparse frame projection. A
+fresh focused compile remains exact at 3/3 with no masked operands.

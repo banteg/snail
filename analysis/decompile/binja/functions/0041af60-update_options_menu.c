@@ -34,7 +34,7 @@
 0041b015        widget_flags_2.b &= 0xdf
 0041b017        back_widget->widget_flags = widget_flags_2
 0041b01f        destroy_options_menu(options)
-0041b029        g_game_base->unknown_000521[0x47] = 0
+0041b029        g_game_base->frontend_link_latch = 0
 0041b038        g_game_base->players[0].frontend_state = options->previous_frontend_state
 0041b040        apply_audio_config_volumes(options)
 0041b045        long double x87_r7 = fconvert.t(options->previous_sample_volume)

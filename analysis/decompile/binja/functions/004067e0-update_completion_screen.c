@@ -73,7 +73,7 @@
 00406b29        yes_button_7->widget_flags = widget_flags_7
 00406b2f        launch_alpha72_url("Alpha72.url")
 00406b3f        g_game_base->players[0].frontend_state = 0
-00406b4a        g_game_base->unknown_000521[0x47] = 0
+00406b4a        g_game_base->frontend_link_latch = 0
 00406b50        destroy_completion_screen(exit_controller)
 004067fb        case 7
 004067fb        struct FrontendWidget* yes_button = exit_controller->yes_button
@@ -117,6 +117,6 @@
 00406b62        widget_flags_8.b &= 0xdf
 00406b64        no_button->widget_flags = widget_flags_8
 00406b73        g_game_base->players[0].frontend_state = exit_controller->previous_frontend_state
-00406b80        g_game_base->unknown_000521[0x47] = 0
+00406b80        g_game_base->frontend_link_latch = 0
 00406b86        destroy_completion_screen(exit_controller)
 00406b8d        return

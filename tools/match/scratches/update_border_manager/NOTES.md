@@ -18,3 +18,7 @@ scalar closes the manager at `+0x435b4`.
 2026-07-14 root-client consolidation: the transition gate now names
 `GameRoot::fade.state` instead of reconstructing the root +0x24 owner. Focused
 matching remains exact at 28/28 instructions with two clean operands.
+
+2026-07-15 canonical manager replay: BN and IDA now preserve every delayed
+transition field and the borrowed widget's `widget_flags` through their real
+owners. The source remains exact at 28/28 with two clean operands.

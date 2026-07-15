@@ -62,3 +62,7 @@ exact 207/207 stream and all 69 clean operands.
 uses `exit_controller` for prompt state and widgets, and its two menu lifecycle
 calls use `g_game_base->main_menu`; no synthetic CompletionPrompt owner or raw
 front-end offsets remain.
+
+2026-07-15 root-prefix replay: both teardown exits retain the exact
+`frontend_link_latch` owner in BN and IDA. The analysis-only improvement leaves
+the source exact at 207/207 with all 69 operands clean.

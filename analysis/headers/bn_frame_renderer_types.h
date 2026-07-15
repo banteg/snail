@@ -119,6 +119,13 @@ struct FrameBodBase {
     FrameColor4f color;
 };
 
+typedef struct FrameRenderableBod {
+    FrameBodBase bod;
+    FrameTransformMatrix transform;
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x04];
+} FrameRenderableBod;
+
 typedef struct FrameRenderCamera {
     uint8_t unknown_00[0x38];
     FrameTransformMatrix transform;
@@ -128,6 +135,12 @@ typedef struct FrameRenderCamera {
     float fov_degrees;
     uint32_t render_mask;
 } FrameRenderCamera;
+
+typedef struct FrameOverlay {
+    FrameRenderableBod bod;
+    FrameRenderCamera camera;
+    float rotation_step;
+} FrameOverlay;
 
 typedef struct GamePlayer {
     void* vtable;
@@ -179,19 +192,88 @@ typedef struct TextureSetSelector {
     int32_t current_texture_set;
 } TextureSetSelector;
 
+typedef struct FrontendWidget FrontendWidget;
+typedef struct BorderManager BorderManager;
+
+typedef struct BorderStackEntry {
+    int32_t generation;
+    FrontendWidget* widget;
+} BorderStackEntry;
+
+typedef struct BorderStack {
+    int32_t generation;
+    int32_t entry_count;
+    BorderStackEntry entries[200];
+    BorderManager* owner;
+} BorderStack;
+
 /*
- * Standalone bootstrap view used only until the complete BorderManager owner
- * is present.  The sync promotes GameRoot::border_manager to that canonical
- * type instead of keeping this sparse frame-renderer projection.
+ * Exact backing record for the manager's fixed pool. Front-end consumers cast
+ * allocated records to the independently recovered FrontendWidget view.
  */
-typedef struct FrameBorderManager {
+typedef struct BorderRecord {
     void* vtable;
     uint32_t list_flags;
-    void* list_prev;
-    void* list_next;
-    uint8_t unknown_000010[0x435b0 - 0x10];
+    FrameBodBase* list_prev;
+    FrameBodBase* list_next;
+    FrameVec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    FrameColor4f color;
+    uint8_t unknown_038[0x6c - 0x38];
+    FrameColor4f color_06c;
+    uint8_t unknown_07c[0x19c - 0x7c];
+    int32_t created_time;
+    int32_t flags;
+    uint8_t unknown_1a4[0x1ac - 0x1a4];
+    FrameColor4f color_1ac;
+    FrameColor4f color_1bc;
+    FrameColor4f color_1cc;
+    FrameColor4f color_1dc;
+    FrameColor4f color_1ec;
+    FrameColor4f color_1fc;
+    float hover_blend_target;
+    float hover_blend_current;
+    float idle_padding;
+    float hot_padding;
+    float target_padding;
+    float active_padding;
+    uint8_t unknown_224[0x724 - 0x224];
+} BorderRecord;
+
+struct BorderManager {
+    void* vtable;
+    uint32_t list_flags;
+    FrameBodBase* list_prev;
+    FrameBodBase* list_next;
+    FrameVec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    FrameColor4f color;
+    BorderStack border_stack;
+    BorderRecord borders[150];
+    int32_t delayed_widget_flags;
+    uint8_t delayed_widget_active;
+    uint8_t unknown_435a1[0x435a4 - 0x435a1];
+    float delayed_widget_progress;
+    float delayed_widget_progress_step;
+    FrontendWidget* delayed_widget;
     float justify_centre;
-} FrameBorderManager;
+};
+
+BorderRecord* __thiscall initialize_border_record(BorderRecord* record);
+FrontendWidget* __thiscall allocate_border(BorderManager* manager);
+void __thiscall activate_all_borders(BorderManager* manager);
+void __thiscall kill_all_borders(BorderManager* manager);
+void __thiscall hide_all_borders(BorderManager* manager);
+void __thiscall unhide_all_borders(BorderManager* manager);
+char __thiscall queue_frontend_widget_flag_after_delay(
+    BorderManager* manager, FrontendWidget* widget, int32_t queued_flags);
+void __thiscall update_border_manager(BorderManager* manager);
+void __thiscall set_border_justify_centre(
+    BorderManager* manager, float justify_centre);
 
 /*
  * Standalone bootstrap view used only until the canonical SubgameRuntime is
@@ -218,26 +300,38 @@ typedef struct FrameSubgameRuntime {
 } FrameSubgameRuntime;
 
 typedef struct GameRoot {
-    uint8_t unknown_000000[0x24];
+    void* vtable;
+    uint8_t fog_enabled;
+    uint8_t unknown_000005[0x08 - 0x05];
+    float fog_start;
+    float fog_end;
+    float fog_density;
+    FrameColor4f fog_color;
     FrontendFade fade;
     int32_t frontend_quit_requested;
     int32_t fixed_update_count;
     int32_t player_count;
     GameInput game_inputs[2];
     GamePlayer players[2];
-    uint8_t unknown_000514[0x518 - 0x514];
+    int32_t unknown_000514;
     float fixed_update_accumulator;
     int32_t frame_counter;
     uint8_t input_sampling_gate;
-    uint8_t unknown_000521[0x56c - 0x521];
+    uint8_t unknown_000521[0x568 - 0x521];
+    uint8_t frontend_link_latch;
+    uint8_t unknown_000569[0x56c - 0x569];
     int32_t render_skip_count;
     FrameBodBase inactive_bod_sentinel;
     FrameBodList active_bod_list;
     FrameRenderCameraSlot render_camera_slots[5];
-    uint8_t unknown_00067c[0xb24 - 0x67c];
+    FrameOverlay overlay_0;
+    FrameOverlay overlay_1;
+    FrameOverlay overlay_2;
+    FrameRenderableBod root_noop_renderable;
+    uint8_t unknown_000ae0[0xb24 - 0xae0];
     TextureSetSelector texture_set_selector;
     int32_t unknown_000b48;
-    FrameBorderManager border_manager;
+    BorderManager border_manager;
     uint8_t unknown_044100[0x74618 - 0x44100];
     FrameSubgameRuntime subgame;
     uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];

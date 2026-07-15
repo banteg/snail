@@ -49,7 +49,7 @@ void __thiscall update_options_menu(Options *options)
     LOBYTE(v7) = v7 & 0xDF;
     back_widget->widget_flags = v7;
     destroy_options_menu(options);
-    g_game_base->unknown_000521[71] = 0;
+    g_game_base->frontend_link_latch = 0;
     g_game_base->players[0].frontend_state = options->previous_frontend_state;
   }
   apply_audio_config_volumes(options);

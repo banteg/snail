@@ -32,3 +32,8 @@ with all 19 operands clean.
 receiver to the update and audio-helper ABIs. Slider state, the fullscreen
 widget, previous front-end state, and preview-volume snapshot all remain under
 the same 0x24-byte owner in the tracked artifact.
+
+2026-07-15 root-prefix replay: the Back transition now survives both tracked
+decompilers as `g_game_base->frontend_link_latch = 0`; health checks reject the
+former root byte-array form. The source remains exact at 73/73 with 19 clean
+operands.

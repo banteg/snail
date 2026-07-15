@@ -2,27 +2,26 @@
 /* function: update_border_manager @ 0x403fc0 */
 /* selector: update_border_manager */
 
-void __thiscall update_border_manager(int this)
+void __thiscall update_border_manager(BorderManager *manager)
 {
   double v1; // st7
-  int v2; // eax
-  int v3; // edx
+  FrontendWidget *delayed_widget; // eax
+  FrontendWidgetFlag widget_flags; // edx
 
-  if ( *(_BYTE *)(this + 275872) )
+  if ( manager->delayed_widget_active )
   {
-    v1 = *(float *)(this + 275880) + *(float *)(this + 275876);
-    *(float *)(this + 275876) = v1;
+    v1 = manager->delayed_widget_progress_step + manager->delayed_widget_progress;
+    manager->delayed_widget_progress = v1;
     if ( v1 > 1.0 )
     {
-      v2 = *(_DWORD *)(this + 275884);
-      *(_DWORD *)(this + 275876) = 1065353216;
-      v3 = *(_DWORD *)(v2 + 416);
-      if ( (v3 & 0x40000000) == 0 || *((_DWORD *)MEMORY[0x4DF904] + 9) == 4 )
+      delayed_widget = manager->delayed_widget;
+      manager->delayed_widget_progress = 1.0;
+      widget_flags = delayed_widget->widget_flags;
+      if ( (widget_flags & 0x40000000) == 0 || g_game_base->fade.state == 4 )
       {
-        *(_DWORD *)(v2 + 416) = v3 | *(_DWORD *)(this + 275868);
-        *(_BYTE *)(this + 275872) = 0;
+        delayed_widget->widget_flags = widget_flags | manager->delayed_widget_flags;
+        manager->delayed_widget_active = 0;
       }
     }
   }
 }
-

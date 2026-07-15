@@ -2,8 +2,8 @@
 /* function: unhide_all_borders @ 0x403400 */
 /* selector: unhide_all_borders */
 
-int __thiscall sub_403400(int *this)
+// Exact void cRBorderManager::UnHideBorders() wrapper that unwinds the newest 0x1000 visibility transition through the embedded BorderStack.
+void __thiscall unhide_all_borders(BorderManager *manager)
 {
-  return sub_404360(this + 14, 1);
+  apply_all_border_visibility_mode(&manager->border_stack.generation, 1);
 }
-
