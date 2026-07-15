@@ -2805,6 +2805,106 @@
       ]
     },
     {
+      "name": "bn_challenge_gui_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00415f50-initialize_challenge_setup_screen.c",
+      "required_substrings": [
+        "struct SubgameRuntime* game = gui->game",
+        "load_frontend_level_by_mode_and_index(&game->level_definition",
+        "gui->difficulty_slider = allocate_border",
+        "gui->game->sub_high_score.survival_pending_record.active",
+        "gui->back_button"
+      ],
+      "forbidden_substrings": [
+        "arg1->",
+        "__offset(",
+        "sub_415F50",
+        "int32_t result"
+      ]
+    },
+    {
+      "name": "ida_challenge_gui_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/00415f50-initialize_challenge_setup_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_challenge_setup_screen(GUI *gui)",
+        "gui->game->level_mode",
+        "gui->difficulty_slider = allocate_border",
+        "gui->replay_button",
+        "gui->back_button"
+      ],
+      "forbidden_substrings": [
+        "float *__thiscall initialize_challenge_setup_screen",
+        "int __thiscall initialize_challenge_setup_screen",
+        "sub_415F50",
+        "this +",
+        "__offset("
+      ]
+    },
+    {
+      "name": "bn_challenge_gui_destroy_owner",
+      "artifact": "analysis/decompile/binja/functions/004161f0-destroy_challenge_setup_screen.c",
+      "required_substrings": [
+        "int32_t level_mode = gui->game->level_mode",
+        "kill_border(gui->next_level_button)",
+        "kill_border(gui->difficulty_slider)",
+        "kill_border(gui->replay_button)"
+      ],
+      "forbidden_substrings": [
+        "arg1->",
+        "__offset(",
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "ida_challenge_gui_destroy_owner",
+      "artifact": "analysis/decompile/ida/functions/004161f0-destroy_challenge_setup_screen.c",
+      "required_substrings": [
+        "void __thiscall destroy_challenge_setup_screen(GUI *gui)",
+        "level_mode = gui->game->level_mode",
+        "gui->difficulty_slider->list_kind",
+        "gui->replay_button->list_kind"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall destroy_challenge_setup_screen",
+        "sub_4161F0",
+        "this +",
+        "__offset("
+      ]
+    },
+    {
+      "name": "bn_challenge_gui_update_owner",
+      "artifact": "analysis/decompile/binja/functions/00416370-update_challenge_setup_screen.c",
+      "required_substrings": [
+        "hide_gameplay_scores(gui->game)",
+        "int32_t level_mode = gui->game->level_mode",
+        "gui->difficulty_slider->slider_position_target",
+        "gui->replay_button",
+        "game_12->selected_level_record",
+        "return 3"
+      ],
+      "forbidden_substrings": [
+        "arg1->",
+        "__offset(",
+        "struct Game*"
+      ]
+    },
+    {
+      "name": "ida_challenge_gui_update_owner",
+      "artifact": "analysis/decompile/ida/functions/00416370-update_challenge_setup_screen.c",
+      "required_substrings": [
+        "int __thiscall update_challenge_setup_screen(GUI *gui)",
+        "level_mode = gui->game->level_mode",
+        "gui->difficulty_slider->slider_position_target",
+        "gui->replay_button",
+        "gui->game->selected_level_record"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "sub_416370",
+        "this +",
+        "__offset("
+      ]
+    },
+    {
       "name": "bn_initialize_subgame_body_available",
       "artifact": "analysis/decompile/binja/functions/004374b0-initialize_subgame.c",
       "required_substrings": [

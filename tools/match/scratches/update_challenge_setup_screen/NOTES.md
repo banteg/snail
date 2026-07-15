@@ -91,3 +91,12 @@ Removing that false local restores the missing instruction and the surrounding
 register schedule across the rest of the method. Focused Wibo advances from
 80.68%, 354/355 instructions, to an exact 100.00%, 355/355 instructions, with
 prefix 355/355 and all 38 masked operands clean.
+
+## 2026-07-15 durable owner replay
+
+The exact 0x28-byte cRGUI layout is now replayed into both decompilers instead
+of living only in the matcher and canonical IDA header. BN readback retains the
+semantic `int __thiscall(GUI*)` result consumed by `update_subgame`, alongside
+typed replay, slider, navigation, and borrowed runtime access. Strict paired
+export passed with zero mismatches and preserves the exact 355/355 matcher
+baseline.

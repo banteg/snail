@@ -25,3 +25,11 @@ same +0x04 through +0x24 widget slots. Windows stays exact at 96/96.
 canonical `GameRoot::border_manager` instead of reconstructing a manager from
 `g_game_base +0xb4c`. The borrowed `GUI::game` still owns the mode selector;
 focused output remains exact at 96/96 with all 32 operands clean.
+
+## 2026-07-15 durable owner replay
+
+Binary Ninja and IDA now both decompile this exact method through the persisted
+0x28-byte cRGUI owner. Live BN readback is `void __thiscall(GUI*)`; the widget
+teardown fields are typed `FrontendWidget*`, while `GUI::game` remains the
+borrowed `SubgameRuntime*` that owns `level_mode`. Strict paired export passed
+without a symbol or address mismatch.

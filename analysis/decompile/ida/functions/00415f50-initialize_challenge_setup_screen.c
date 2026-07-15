@@ -2,58 +2,54 @@
 /* function: initialize_challenge_setup_screen @ 0x415f50 */
 /* selector: initialize_challenge_setup_screen */
 
-// Builds the mode-1 front-end setup screen with Select Difficulty, Select Speed, Play, Watch Replay, and Back controls before challenge gameplay starts.
-float *__thiscall sub_415F50(int *this)
+// Void `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets. The sole Windows caller discards EAX; the honest void transcription is 167/167 instructions at 96.41%.
+void __thiscall initialize_challenge_setup_screen(GUI *gui)
 {
-  float *result; // eax
-  _DWORD *v3; // eax
-  _DWORD *v4; // eax
-  _DWORD *v5; // eax
-  _DWORD *v6; // eax
-  _DWORD *v7; // eax
-  float v8; // [esp+4h] [ebp-54h]
-  _DWORD v9[4]; // [esp+8h] [ebp-50h] BYREF
-  _DWORD v10[4]; // [esp+18h] [ebp-40h] BYREF
-  _DWORD v11[4]; // [esp+28h] [ebp-30h] BYREF
-  _DWORD v12[4]; // [esp+38h] [ebp-20h] BYREF
-  _DWORD v13[4]; // [esp+48h] [ebp-10h] BYREF
+  tColour *v2; // eax
+  tColour *v3; // eax
+  tColour *v4; // eax
+  tColour *v5; // eax
+  tColour *v6; // eax
+  float anchor_x; // [esp+4h] [ebp-54h]
+  Color4f color; // [esp+8h] [ebp-50h] BYREF
+  Color4f v9; // [esp+18h] [ebp-40h] BYREF
+  Color4f v10; // [esp+28h] [ebp-30h] BYREF
+  Color4f v11; // [esp+38h] [ebp-20h] BYREF
+  Color4f v12; // [esp+48h] [ebp-10h] BYREF
 
-  capture_mouse_cursor((float *)MEMORY[0x4DF904] + 164);
-  load_frontend_level_by_mode_and_index((char *)(*this + 43124), *(_DWORD *)(*this + 64), *(_DWORD *)(*this + 68));
-  result = (float *)(*(_DWORD *)(*this + 64) - 1);
-  if ( *(_DWORD *)(*this + 64) == 1 )
+  capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);
+  load_frontend_level_by_mode_and_index(&gui->game->level_definition, gui->game->level_mode, gui->game->level_mode_arg);
+  if ( gui->game->level_mode == 1 )
   {
-    *(this + 8) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v3 = set_color_rgba(v9, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(this + 8), 1048580, aSelectDifficul, 20, 1101004800, 80.0, (int)v3, 2, 0.0);
-    *(float *)(*(this + 8) + 380) = (double)unk_4DF960 * 0.0099999998;
-    *(_DWORD *)(*(this + 8) + 384) = *(_DWORD *)(*(this + 8) + 380);
-    (**(void (__thiscall ***)(_DWORD))*(this + 8))(*(this + 8));
-    *(this + 7) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v4 = set_color_rgba(v10, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(this + 7), 1048580, aSelectSpeed, 20, 1101004800, 145.0, (int)v4, 2, 0.0);
-    *(float *)(*(this + 7) + 380) = (double)unk_4DF958 * 0.0099999998;
-    *(_DWORD *)(*(this + 7) + 384) = *(_DWORD *)(*(this + 7) + 380);
-    stack_widget_below(*(this + 7), *(this + 8));
-    (**(void (__thiscall ***)(_DWORD))*(this + 7))(*(this + 7));
-    v8 = 0.0;
-    if ( *(_DWORD *)(*this + 16461904) == 1 )
-      v8 = 100.0;
-    *(this + 4) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v5 = set_color_rgba(v11, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(this + 4), 1073741846, aPlay, 20, 1101004800, 250.0, (int)v5, 2, v8);
-    stack_widget_below(*(this + 4), *(this + 7));
-    *(this + 9) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v6 = set_color_rgba(v12, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(this + 9), 1073741846, aWatchReplay, 20, 1101004800, 70.0, (int)v6, 2, -100.0);
-    stack_widget_below(*(this + 9), *(this + 7));
-    if ( *(_DWORD *)(*this + 16461904) != 1 )
-      hide_border_init((_DWORD *)*(this + 9));
-    *(this + 6) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v7 = set_color_rgba(v13, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_widget(*(this + 6), 22, aBack, 20, 1101004800, 20.0, (int)v7, 2, 0.0);
-    return stack_widget_below(*(this + 6), *(this + 9));
+    gui->difficulty_slider = allocate_border(&g_game_base->border_manager);
+    v2 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(gui->difficulty_slider, 0x100004u, aSelectDifficul, 20, 20.0, 80.0, v2, 2, 0.0);
+    gui->difficulty_slider->slider_position_target = (double)g_runtime_config.completion_bonus_y_source * 0.0099999998;
+    gui->difficulty_slider->slider_position_current = gui->difficulty_slider->slider_position_target;
+    (*(void (__thiscall **)(FrontendWidget *))gui->difficulty_slider->list_kind)(gui->difficulty_slider);
+    gui->speed_slider = allocate_border(&g_game_base->border_manager);
+    v3 = set_color_rgba((tColour *)&v9, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(gui->speed_slider, 0x100004u, aSelectSpeed, 20, 20.0, 145.0, v3, 2, 0.0);
+    gui->speed_slider->slider_position_target = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
+    gui->speed_slider->slider_position_current = gui->speed_slider->slider_position_target;
+    stack_widget_below(gui->speed_slider, gui->difficulty_slider);
+    (*(void (__thiscall **)(FrontendWidget *))gui->speed_slider->list_kind)(gui->speed_slider);
+    anchor_x = 0.0;
+    if ( gui->game->sub_high_score.survival_pending_record.active == 1 )
+      anchor_x = 100.0;
+    gui->play_button = allocate_border(&g_game_base->border_manager);
+    v4 = set_color_rgba((tColour *)&v10, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(gui->play_button, 0x40000016u, aPlay, 20, 20.0, 250.0, v4, 2, anchor_x);
+    stack_widget_below(gui->play_button, gui->speed_slider);
+    gui->replay_button = allocate_border(&g_game_base->border_manager);
+    v5 = set_color_rgba((tColour *)&v11, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(gui->replay_button, 0x40000016u, aWatchReplay, 20, 20.0, 70.0, v5, 2, -100.0);
+    stack_widget_below(gui->replay_button, gui->speed_slider);
+    if ( gui->game->sub_high_score.survival_pending_record.active != 1 )
+      hide_border_init(gui->replay_button);
+    gui->back_button = allocate_border(&g_game_base->border_manager);
+    v6 = set_color_rgba((tColour *)&v12, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_widget(gui->back_button, 0x16u, g_back_text, 20, 20.0, 20.0, v6, 2, 0.0);
+    stack_widget_below(gui->back_button, gui->replay_button);
   }
-  return result;
 }
-

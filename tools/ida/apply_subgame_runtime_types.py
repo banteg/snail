@@ -110,7 +110,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_challenge_setup_screen",
-        "int __thiscall initialize_challenge_setup_screen(GUI* gui);",
+        "void __thiscall initialize_challenge_setup_screen(GUI* gui);",
     ),
     (
         "destroy_challenge_setup_screen",

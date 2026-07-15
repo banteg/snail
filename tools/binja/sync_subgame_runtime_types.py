@@ -150,6 +150,18 @@ TIMES_UP_FIELD_UPDATES = (
     ("0x00", "state", "TimesUpState"),
 )
 
+GUI_FIELD_UPDATES = (
+    ("0x00", "game", "SubgameRuntime*"),
+    ("0x04", "next_level_button", "FrontendWidget*"),
+    ("0x08", "previous_level_button", "FrontendWidget*"),
+    ("0x0c", "level_name_widget", "FrontendWidget*"),
+    ("0x10", "play_button", "FrontendWidget*"),
+    ("0x18", "back_button", "FrontendWidget*"),
+    ("0x1c", "speed_slider", "FrontendWidget*"),
+    ("0x20", "difficulty_slider", "FrontendWidget*"),
+    ("0x24", "replay_button", "FrontendWidget*"),
+)
+
 PROTO_UPDATES = (
     (
         "initialize_galaxy_route_name_record",
@@ -447,6 +459,7 @@ def main() -> int:
                 ("Completion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),
                 ("TimesUp", TIMES_UP_FIELD_UPDATES),
+                ("GUI", GUI_FIELD_UPDATES),
             ),
             # Several legacy analysis aliases are re-inferred during preview.
             # The batch helper applies prototypes through the same verified

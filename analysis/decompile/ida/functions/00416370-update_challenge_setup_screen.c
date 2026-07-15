@@ -2,196 +2,219 @@
 /* function: update_challenge_setup_screen @ 0x416370 */
 /* selector: update_challenge_setup_screen */
 
-// Runs the mode-1 front-end setup screen, including difficulty and speed changes, replay launch, Play, and Back handoff into `update_subgame` state 1.
-int __thiscall sub_416370(_DWORD **this)
+// Implements result-bearing `cRGUI::AI()`: runs postal, challenge, and time-trial level selection, including navigation, difficulty/speed changes, replay launch, Play, and Back handoffs. `update_subgame` consumes its semantic 0/1/3 result, so this member remains `int`.
+int __thiscall update_challenge_setup_screen(GUI *gui)
 {
-  int v2; // eax
+  int32_t level_mode; // eax
   int v3; // eax
-  int v4; // ecx
-  int v5; // eax
+  FrontendWidget *next_level_button; // ecx
+  FrontendWidgetFlag widget_flags; // eax
   char *v6; // eax
-  int v7; // ecx
-  int v8; // eax
+  FrontendWidget *previous_level_button; // ecx
+  FrontendWidgetFlag v8; // eax
   char *v9; // eax
-  int v10; // eax
-  int v11; // edi
+  FrontendWidget *v10; // eax
+  FrontendWidgetFlag v11; // edi
   unsigned int v12; // edi
-  int v13; // eax
-  _DWORD *v14; // ecx
-  int v15; // ecx
-  int v16; // eax
-  int v17; // ecx
-  int v18; // eax
-  int v19; // ecx
-  int v20; // eax
-  int v22; // ecx
-  int v23; // eax
-  int v24; // ecx
-  int v25; // eax
-  int v26; // ecx
-  int v27; // eax
-  int v28; // eax
-  int v29; // edi
+  FrontendWidget *v13; // eax
+  FrontendWidget *replay_button; // ecx
+  FrontendWidget *back_button; // ecx
+  FrontendWidgetFlag v16; // eax
+  FrontendWidget *play_button; // ecx
+  FrontendWidgetFlag v18; // eax
+  FrontendWidget *v19; // ecx
+  FrontendWidgetFlag v20; // eax
+  FrontendWidget *v22; // ecx
+  FrontendWidgetFlag v23; // eax
+  FrontendWidget *v24; // ecx
+  FrontendWidgetFlag v25; // eax
+  FrontendWidget *v26; // ecx
+  FrontendWidgetFlag v27; // eax
+  FrontendWidget *v28; // eax
+  FrontendWidgetFlag v29; // edi
   unsigned int v30; // edi
-  int v31; // eax
+  FrontendWidget *v31; // eax
 
-  hide_gameplay_scores(*this);
-  v2 = (*this)[16];
-  if ( v2 )
+  hide_gameplay_scores(&gui->game->scan_reset);
+  level_mode = gui->game->level_mode;
+  if ( level_mode )
   {
-    v3 = v2 - 1;
+    v3 = level_mode - 1;
     if ( v3 )
     {
       if ( v3 == 3 )
       {
-        v4 = (int)*(this + 1);
-        v5 = *(_DWORD *)(v4 + 416);
-        if ( (v5 & 0x20) != 0 )
+        next_level_button = gui->next_level_button;
+        widget_flags = next_level_button->widget_flags;
+        if ( (widget_flags & 0x20) != 0 )
         {
-          LOBYTE(v5) = v5 & 0xDF;
-          *(_DWORD *)(v4 + 416) = v5;
-          load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], ++(*this)[17]);
-          rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
-          layout_frontend_widget((int)*(this + 3));
-          v6 = format_time_trial_string((int)&(*this)[32432 * (*this)[17] + 2429014]);
-          rstrcpy_checked_ascii((char *)((*this)[880355] + 716), v6);
+          LOBYTE(widget_flags) = widget_flags & 0xDF;
+          next_level_button->widget_flags = widget_flags;
+          load_frontend_level_by_mode_and_index(
+            &gui->game->level_definition,
+            gui->game->level_mode,
+            ++gui->game->level_mode_arg);
+          rstrcpy_checked_ascii(
+            (char *)&gui->level_name_widget->text_buffer,
+            gui->game->level_definition.level_display_name);
+          layout_frontend_widget(gui->level_name_widget);
+          v6 = format_time_trial_string(
+                 &gui->game->time_trial,
+                 (Time *)&gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].score_or_time);
+          rstrcpy_checked_ascii((char *)&gui->game->bottom_score_widget->text_buffer, v6);
         }
-        v7 = (int)*(this + 2);
-        v8 = *(_DWORD *)(v7 + 416);
+        previous_level_button = gui->previous_level_button;
+        v8 = previous_level_button->widget_flags;
         if ( (v8 & 0x20) != 0 )
         {
           LOBYTE(v8) = v8 & 0xDF;
-          *(_DWORD *)(v7 + 416) = v8;
-          load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], --(*this)[17]);
-          rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
-          layout_frontend_widget((int)*(this + 3));
-          v9 = format_time_trial_string((int)&(*this)[32432 * (*this)[17] + 2429014]);
-          rstrcpy_checked_ascii((char *)((*this)[880355] + 716), v9);
+          previous_level_button->widget_flags = v8;
+          load_frontend_level_by_mode_and_index(
+            &gui->game->level_definition,
+            gui->game->level_mode,
+            --gui->game->level_mode_arg);
+          rstrcpy_checked_ascii(
+            (char *)&gui->level_name_widget->text_buffer,
+            gui->game->level_definition.level_display_name);
+          layout_frontend_widget(gui->level_name_widget);
+          v9 = format_time_trial_string(
+                 &gui->game->time_trial,
+                 (Time *)&gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].score_or_time);
+          rstrcpy_checked_ascii((char *)&gui->game->bottom_score_widget->text_buffer, v9);
         }
-        v10 = (int)*(this + 2);
-        v11 = *(_DWORD *)(v10 + 416);
-        if ( (*this)[17] )
+        v10 = gui->previous_level_button;
+        v11 = v10->widget_flags;
+        if ( gui->game->level_mode_arg )
           v12 = v11 & 0xFFFF7FFF;
         else
           v12 = v11 | 0x8000;
-        *(_DWORD *)(v10 + 416) = v12;
-        v13 = (int)*(this + 1);
-        if ( (*this)[17] == dword_4DF9B8 )
-          *(_DWORD *)(v13 + 416) |= 0x8000u;
+        v10->widget_flags = v12;
+        v13 = gui->next_level_button;
+        if ( gui->game->level_mode_arg == g_runtime_config.highest_galaxy_route_index )
+          v13->widget_flags |= 0x8000u;
         else
-          *(_DWORD *)(v13 + 416) &= ~0x8000u;
-        v14 = *(this + 9);
-        if ( (*this)[32432 * (*this)[17] + 2429012] == 1 )
+          v13->widget_flags &= ~0x8000u;
+        replay_button = gui->replay_button;
+        if ( gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].active == 1 )
         {
-          unhide_border_init(v14);
-          stack_widget_below((int)*(this + 6), (int)*(this + 9));
+          unhide_border_init(replay_button);
+          stack_widget_below(gui->back_button, gui->replay_button);
         }
         else
         {
-          hide_border_init(v14);
-          stack_widget_below((int)*(this + 6), (int)*(this + 4));
+          hide_border_init(replay_button);
+          stack_widget_below(gui->back_button, gui->play_button);
         }
-        v15 = (int)*(this + 6);
-        v16 = *(_DWORD *)(v15 + 416);
+        back_button = gui->back_button;
+        v16 = back_button->widget_flags;
         if ( (v16 & 0x20) != 0 )
           goto LABEL_38;
-        v17 = (int)*(this + 4);
-        v18 = *(_DWORD *)(v17 + 416);
+        play_button = gui->play_button;
+        v18 = play_button->widget_flags;
         if ( (v18 & 0x20) != 0 )
           goto LABEL_40;
-        v19 = (int)*(this + 9);
-        v20 = *(_DWORD *)(v19 + 416);
+        v19 = gui->replay_button;
+        v20 = v19->widget_flags;
         if ( (v20 & 0x20) != 0 )
         {
           LOBYTE(v20) = v20 & 0xDF;
-          *(_DWORD *)(v19 + 416) = v20;
-          destroy_challenge_setup_screen(this);
-          *((_BYTE *)*this + 16721360) = 1;
-          (*this)[4180341] = &(*this)[32432 * (*this)[17] + 2429012];
+          v19->widget_flags = v20;
+          destroy_challenge_setup_screen(gui);
+          gui->game->selected_level_record_active = 1;
+          gui->game->selected_level_record = &gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg];
           return 1;
         }
       }
     }
     else
     {
-      v15 = (int)*(this + 6);
-      v16 = *(_DWORD *)(v15 + 416);
+      back_button = gui->back_button;
+      v16 = back_button->widget_flags;
       if ( (v16 & 0x20) != 0 )
       {
 LABEL_38:
         LOBYTE(v16) = v16 & 0xDF;
-        *(_DWORD *)(v15 + 416) = v16;
-        destroy_challenge_setup_screen(this);
+        back_button->widget_flags = v16;
+        destroy_challenge_setup_screen(gui);
         return 3;
       }
-      v17 = (int)*(this + 4);
-      v18 = *(_DWORD *)(v17 + 416);
+      play_button = gui->play_button;
+      v18 = play_button->widget_flags;
       if ( (v18 & 0x20) != 0 )
         goto LABEL_40;
-      unk_4DF958 = (__int64)(*((float *)*(this + 7) + 95) * 100.0 + 0.1);
-      unk_4DF960 = (__int64)(*((float *)*(this + 8) + 95) * 100.0 + 0.1);
-      v22 = (int)*(this + 9);
-      v23 = *(_DWORD *)(v22 + 416);
+      g_runtime_config.completion_bonus_x_source = (__int64)(gui->speed_slider->slider_position_target * 100.0 + 0.1);
+      g_runtime_config.completion_bonus_y_source = (__int64)(gui->difficulty_slider->slider_position_target * 100.0 + 0.1);
+      v22 = gui->replay_button;
+      v23 = v22->widget_flags;
       if ( (v23 & 0x20) != 0 )
       {
         LOBYTE(v23) = v23 & 0xDF;
-        *(_DWORD *)(v22 + 416) = v23;
-        destroy_challenge_setup_screen(this);
-        *((_BYTE *)*this + 16721360) = 1;
-        (*this)[4180341] = *this + 4115476;
+        v22->widget_flags = v23;
+        destroy_challenge_setup_screen(gui);
+        gui->game->selected_level_record_active = 1;
+        gui->game->selected_level_record = &gui->game->sub_high_score.survival_pending_record;
         return 1;
       }
     }
   }
   else
   {
-    v24 = (int)*(this + 1);
-    v25 = *(_DWORD *)(v24 + 416);
+    v24 = gui->next_level_button;
+    v25 = v24->widget_flags;
     if ( (v25 & 0x20) != 0 )
     {
       LOBYTE(v25) = v25 & 0xDF;
-      *(_DWORD *)(v24 + 416) = v25;
-      load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], ++(*this)[17]);
-      rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
-      layout_frontend_widget((int)*(this + 3));
+      v24->widget_flags = v25;
+      load_frontend_level_by_mode_and_index(
+        &gui->game->level_definition,
+        gui->game->level_mode,
+        ++gui->game->level_mode_arg);
+      rstrcpy_checked_ascii(
+        (char *)&gui->level_name_widget->text_buffer,
+        gui->game->level_definition.level_display_name);
+      layout_frontend_widget(gui->level_name_widget);
     }
-    v26 = (int)*(this + 2);
-    v27 = *(_DWORD *)(v26 + 416);
+    v26 = gui->previous_level_button;
+    v27 = v26->widget_flags;
     if ( (v27 & 0x20) != 0 )
     {
       LOBYTE(v27) = v27 & 0xDF;
-      *(_DWORD *)(v26 + 416) = v27;
-      load_frontend_level_by_mode_and_index((char *)*this + 43124, (*this)[16], --(*this)[17]);
-      rstrcpy_checked_ascii((char *)*(this + 3) + 716, (char *)*this + 1769808);
-      layout_frontend_widget((int)*(this + 3));
+      v26->widget_flags = v27;
+      load_frontend_level_by_mode_and_index(
+        &gui->game->level_definition,
+        gui->game->level_mode,
+        --gui->game->level_mode_arg);
+      rstrcpy_checked_ascii(
+        (char *)&gui->level_name_widget->text_buffer,
+        gui->game->level_definition.level_display_name);
+      layout_frontend_widget(gui->level_name_widget);
     }
-    v28 = (int)*(this + 2);
-    v29 = *(_DWORD *)(v28 + 416);
-    if ( (*this)[17] )
+    v28 = gui->previous_level_button;
+    v29 = v28->widget_flags;
+    if ( gui->game->level_mode_arg )
       v30 = v29 & 0xFFFF7FFF;
     else
       v30 = v29 | 0x8000;
-    *(_DWORD *)(v28 + 416) = v30;
-    v31 = (int)*(this + 1);
-    if ( (*this)[17] == dword_4DF9B8 )
-      *(_DWORD *)(v31 + 416) |= 0x8000u;
+    v28->widget_flags = v30;
+    v31 = gui->next_level_button;
+    if ( gui->game->level_mode_arg == g_runtime_config.highest_galaxy_route_index )
+      v31->widget_flags |= 0x8000u;
     else
-      *(_DWORD *)(v31 + 416) &= ~0x8000u;
-    v15 = (int)*(this + 6);
-    v16 = *(_DWORD *)(v15 + 416);
+      v31->widget_flags &= ~0x8000u;
+    back_button = gui->back_button;
+    v16 = back_button->widget_flags;
     if ( (v16 & 0x20) != 0 )
       goto LABEL_38;
-    v17 = (int)*(this + 4);
-    v18 = *(_DWORD *)(v17 + 416);
+    play_button = gui->play_button;
+    v18 = play_button->widget_flags;
     if ( (v18 & 0x20) != 0 )
     {
 LABEL_40:
       LOBYTE(v18) = v18 & 0xDF;
-      *(_DWORD *)(v17 + 416) = v18;
-      destroy_challenge_setup_screen(this);
+      play_button->widget_flags = v18;
+      destroy_challenge_setup_screen(gui);
       return 1;
     }
   }
   return 0;
 }
-

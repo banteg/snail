@@ -37,3 +37,11 @@ The honest focused result is 96.41%, 167/167 instructions, prefix 14, with all
 36 operands clean. The lost sequence score is register allocation formerly
 anchored by a synthetic return. `cRGUI::AI()` remains `int`: `update_subgame`
 consumes its semantic 0/1/3 state result.
+
+## 2026-07-15 durable owner replay
+
+The narrow Binary Ninja sync now persists the exact 0x28-byte cRGUI layout:
+the borrowed `SubgameRuntime*` at +0x00 and eight `FrontendWidget*` slots
+through +0x24. Live readback kept `Init` as `void __thiscall(GUI*)`. The IDA
+replay corrected its stale result-bearing prototype to the same void contract,
+and a strict three-method export completed with zero BN or IDA mismatches.

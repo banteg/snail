@@ -283,16 +283,16 @@ typedef struct TimeTrial {
 } TimeTrial;
 
 typedef struct GUI {
-    void* game;
-    void* next_level_button;
-    void* previous_level_button;
-    void* level_name_widget;
-    void* play_button;
+    SubgameRuntime* game;
+    FrontendWidget* next_level_button;
+    FrontendWidget* previous_level_button;
+    FrontendWidget* level_name_widget;
+    FrontendWidget* play_button;
     uint8_t unknown_14[0x18 - 0x14];
-    void* back_button;
-    void* speed_slider;
-    void* difficulty_slider;
-    void* replay_button;
+    FrontendWidget* back_button;
+    FrontendWidget* speed_slider;
+    FrontendWidget* difficulty_slider;
+    FrontendWidget* replay_button;
 } GUI;
 
 typedef struct Help {

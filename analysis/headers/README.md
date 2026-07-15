@@ -70,7 +70,9 @@ Current checked-in example:
 - `uv run python tools/ida/sync_subgame_runtime_types.py`
   - Reuses canonical `path_template_types.h` while replaying the narrower
     subgame-helper prototype set, so it cannot replace the recovered runtime
-    children with the older sparse compatibility view.
+    children with the older sparse compatibility view. This lane also persists
+    the exact cRGUI owner and its void `Init`/`UnInit` versus result-bearing
+    `AI` lifecycle contracts.
 - `star_manager_types.h`
 - `uv run python tools/ida/sync_star_manager_types.py`
 - `vapour_trail_types.h`
@@ -122,6 +124,9 @@ intentional.
 - `uv run python tools/binja/sync_high_score_bank_types.py`
 - `bn_subgame_runtime_types.h`
 - `uv run python tools/binja/sync_subgame_runtime_types.py`
+  - Replays the exact 0x28-byte cRGUI owner, including its borrowed
+    `SubgameRuntime*` and eight owned `FrontendWidget*` slots, plus the same
+    `void`/`void`/`int` lifecycle split.
 - `bn_overlay_types.h`
 - `uv run python tools/binja/sync_overlay_types.py` (after the presentation/path-template lane)
 - `bn_root_bod_catalog_types.h`

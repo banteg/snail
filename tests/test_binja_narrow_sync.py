@@ -2849,3 +2849,47 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "int set_border_justify_centre" not in matcher_border_header
     assert "justify_centre_bits" not in matcher_border_header
     assert '"kill_border",' not in frame_sync
+
+
+def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
+    binja_header = (HEADER_DIR / "bn_subgame_runtime_types.h").read_text(
+        encoding="utf-8"
+    )
+    ida_header = (HEADER_DIR / "ida_subgame_runtime_types.h").read_text(
+        encoding="utf-8"
+    )
+    ida_canonical_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for header in (binja_header, ida_header, ida_canonical_header):
+        assert "typedef struct GUI" in header
+        assert "SubgameRuntime* game;" in header
+        for field in (
+            "next_level_button",
+            "previous_level_button",
+            "level_name_widget",
+            "play_button",
+            "back_button",
+            "speed_slider",
+            "difficulty_slider",
+            "replay_button",
+        ):
+            assert f"FrontendWidget* {field};" in header
+
+    assert "GUI_FIELD_UPDATES = (" in binja_sync
+    assert '("0x00", "game", "SubgameRuntime*")' in binja_sync
+    assert '("0x24", "replay_button", "FrontendWidget*")' in binja_sync
+    assert "void __thiscall initialize_challenge_setup_screen(GUI* gui)" in binja_sync
+    assert "void __thiscall initialize_challenge_setup_screen(GUI* gui);" in ida_sync
+    assert "int __thiscall initialize_challenge_setup_screen" not in ida_sync
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in ida_runner

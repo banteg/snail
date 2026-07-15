@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 11,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 11,
-  "ida_exported": 11,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,51 +15,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "set_border_justify_centre",
-      "address": "0x404730"
+      "name": "initialize_challenge_setup_screen",
+      "address": "0x415f50"
     },
     {
-      "name": "initialize_galaxy",
-      "address": "0x408cf0"
+      "name": "destroy_challenge_setup_screen",
+      "address": "0x4161f0"
     },
     {
-      "name": "initialize_game_assets_and_world",
-      "address": "0x40acf0"
-    },
-    {
-      "name": "initialize_help_screen",
-      "address": "0x416800"
-    },
-    {
-      "name": "initialize_high_score_screen",
-      "address": "0x416910"
-    },
-    {
-      "name": "initialize_new_game_menu",
-      "address": "0x417bc0"
-    },
-    {
-      "name": "activate_landscape_entry",
-      "address": "0x418870"
-    },
-    {
-      "name": "initialize_intro_screen",
-      "address": "0x4191e0"
-    },
-    {
-      "name": "initialize_main_menu",
-      "address": "0x419b50"
-    },
-    {
-      "name": "initialize_thanks_for_playing_screen",
-      "address": "0x433fd0"
-    },
-    {
-      "name": "initialize_subgame",
-      "address": "0x4374b0"
+      "name": "update_challenge_setup_screen",
+      "address": "0x416370"
     }
   ],
-  "health_check_count": 265,
+  "health_check_count": 273,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
