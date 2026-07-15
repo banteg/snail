@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 680,
-  "function_count": 680,
+  "selected_count": 684,
+  "function_count": 684,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -3954,6 +3954,34 @@
       "address": "0x449be0",
       "name": "set_audio_normalization_scales",
       "artifact": "analysis/decompile/ida/functions/00449be0-set_audio_normalization_scales.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_font3d_bods_thunk",
+      "address": "0x449c10",
+      "name": "initialize_global_font3d_bods_thunk",
+      "artifact": "analysis/decompile/ida/functions/00449c10-initialize_global_font3d_bods_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_font3d_bods",
+      "address": "0x449c20",
+      "name": "initialize_global_font3d_bods",
+      "artifact": "analysis/decompile/ida/functions/00449c20-initialize_global_font3d_bods.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_font_queue_colors_thunk",
+      "address": "0x449c40",
+      "name": "initialize_global_font_queue_colors_thunk",
+      "artifact": "analysis/decompile/ida/functions/00449c40-initialize_global_font_queue_colors_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_font_queue_colors",
+      "address": "0x449c50",
+      "name": "initialize_global_font_queue_colors",
+      "artifact": "analysis/decompile/ida/functions/00449c50-initialize_global_font_queue_colors.c",
       "removed_stale_artifacts": []
     },
     {

@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 681,
-  "function_count": 681,
+  "selected_count": 685,
+  "function_count": 685,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -2842,6 +2842,26 @@
       "address": "0x449be0",
       "name": "set_audio_normalization_scales",
       "artifact": "analysis/decompile/binja/functions/00449be0-set_audio_normalization_scales.c"
+    },
+    {
+      "address": "0x449c10",
+      "name": "initialize_global_font3d_bods_thunk",
+      "artifact": "analysis/decompile/binja/functions/00449c10-initialize_global_font3d_bods_thunk.c"
+    },
+    {
+      "address": "0x449c20",
+      "name": "initialize_global_font3d_bods",
+      "artifact": "analysis/decompile/binja/functions/00449c20-initialize_global_font3d_bods.c"
+    },
+    {
+      "address": "0x449c40",
+      "name": "initialize_global_font_queue_colors_thunk",
+      "artifact": "analysis/decompile/binja/functions/00449c40-initialize_global_font_queue_colors_thunk.c"
+    },
+    {
+      "address": "0x449c50",
+      "name": "initialize_global_font_queue_colors",
+      "artifact": "analysis/decompile/binja/functions/00449c50-initialize_global_font_queue_colors.c"
     },
     {
       "address": "0x449c70",

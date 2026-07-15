@@ -1712,6 +1712,140 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_font_width_sheet_owners",
+      "artifact": "analysis/decompile/binja/functions/00449e90-measure_font_text_width.c",
+      "required_substrings": [
+        "g_font_sheets[0].glyph_width",
+        "g_font_sheets[font_id].spacing_scale",
+        "g_font_sheets[font_id].width_scale"
+      ],
+      "forbidden_substrings": [
+        "data_777704",
+        "data_777b10",
+        "data_777b14",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_font_width_sheet_owners",
+      "artifact": "analysis/decompile/ida/functions/00449e90-measure_font_text_width.c",
+      "required_substrings": [
+        "float __cdecl measure_font_text_width(char *text, int32_t font_id, float scale)",
+        "g_font_sheets[font_id].glyph_width",
+        "g_font_sheets[font_id].spacing_scale",
+        "g_font_sheets[font_id].width_scale"
+      ],
+      "forbidden_substrings": [
+        "sub_449E90",
+        "unk_777",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_font_registrar_sheet_owners",
+      "artifact": "analysis/decompile/binja/functions/00449f50-register_font_texture_sheet.c",
+      "required_substrings": [
+        "g_registered_font_count",
+        "g_font_sheets[0].glyph_width",
+        "g_font_sheets[0].line_marker_y",
+        "g_font_sheets[0].texture_ref_a",
+        "width_scale",
+        "height_scale"
+      ],
+      "forbidden_substrings": [
+        "data_777704",
+        "data_777b1c",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_font_registrar_sheet_owners",
+      "artifact": "analysis/decompile/ida/functions/00449f50-register_font_texture_sheet.c",
+      "required_substrings": [
+        "float width_scale",
+        "float height_scale",
+        "g_font_sheets[g_registered_font_count].line_marker_y",
+        "g_font_sheets[g_registered_font_count].texture_ref_a",
+        "g_font_sheets[v20].spacing_scale"
+      ],
+      "forbidden_substrings": [
+        "sub_449F50",
+        "unk_777",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_font_draw_queue_owner",
+      "artifact": "analysis/decompile/binja/functions/0044a360-draw_font_text_instance.c",
+      "required_substrings": [
+        "struct cFontPrintBuffer* entry_1 = entry",
+        "entry_1->font_id",
+        "entry_1->text_scale",
+        "entry_1->color",
+        "g_font_sheets[font_id_1].spacing_scale"
+      ],
+      "forbidden_substrings": [
+        "data_7772f8",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_font_draw_queue_owner",
+      "artifact": "analysis/decompile/ida/functions/0044a360-draw_font_text_instance.c",
+      "required_substrings": [
+        "void __cdecl draw_font_text_instance(cFontPrintBuffer *entry)",
+        "entry->font_id",
+        "entry->text_scale",
+        "entry->color",
+        "g_font_sheets[entry->font_id].spacing_scale"
+      ],
+      "forbidden_substrings": [
+        "sub_44A360",
+        "unk_777",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_font3d_fixed_bank_owners",
+      "artifact": "analysis/decompile/binja/functions/0044ae10-initialize_font3d_objects.c",
+      "required_substrings": [
+        "g_font_sheets",
+        "g_font3d_bods[0].object",
+        "g_font3d_scales",
+        "load_object_definition(\"Objects/Font3D\""
+      ],
+      "forbidden_substrings": [
+        "data_77550c",
+        "data_7770e8",
+        "data_7772f8",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_font3d_fixed_bank_owners",
+      "artifact": "analysis/decompile/ida/functions/0044ae10-initialize_font3d_objects.c",
+      "required_substrings": [
+        "void __cdecl initialize_font3d_objects(int16_t font_id)",
+        "g_font_sheets",
+        "g_font3d_bods[0].object",
+        "g_font3d_scales"
+      ],
+      "forbidden_substrings": [
+        "sub_44AE10",
+        "unk_775",
+        "unk_777",
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

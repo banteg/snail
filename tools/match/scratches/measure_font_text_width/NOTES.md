@@ -42,3 +42,8 @@ its three bases now come from `FontSheet::glyph_width`, `spacing_scale`, and
 `width_scale` rather than raw `g_font_sheets +0x40c/+0x818/+0x81c` addresses.
 The field-owned spelling is byte-identical at 60/60 instructions with all nine
 operands clean.
+
+The live Binary Ninja and IDA databases now carry the same `float(char*, int32_t,
+float)` ABI and exact `FontSheet` owner. Their tracked decompiles name all three
+fields directly, so this ownership survives database refreshes without changing
+the already-exact matcher source.

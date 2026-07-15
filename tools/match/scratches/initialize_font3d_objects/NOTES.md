@@ -86,3 +86,15 @@ rewrite regressed to 32.00%, so the register-ownership residual is left visible.
   object reload and x87 constant load move across independent stores, and the
   `v0`/BOD cursor increments swap order. They are left visible rather than
   forced with volatile aliases or dummy dependencies.
+
+2026-07-14 analysis ownership closure:
+
+- Binary Ninja and IDA now share the exact `FontSheet` (`0x828`) and
+  `cFontPrintBuffer` (`0x84`) layouts plus the fixed `g_font3d_bods[128]`,
+  `g_font3d_scales[128]`, and one-sheet font bank extents.
+- Both tracked decompiles recover the authored `void(int16_t)` contract and
+  name all three fixed banks. The old `data_77550c` pointer-lane view is gone
+  from the durable snapshots.
+- This is analysis-only ownership recovery. The matcher source and honest
+  96.83% result remain byte-identical; the two scheduler differences above
+  remain deliberately visible.

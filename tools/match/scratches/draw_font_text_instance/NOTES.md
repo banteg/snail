@@ -43,3 +43,13 @@ unresolved or mismatched in the initial run.
   Recovering the authored `void` contract removes the synthetic return and
   moves the honest focused result marginally from 35.67% (227/272) to 35.70%
   (221/272), with the same 19 clean masked operands.
+
+2026-07-14 analysis ownership closure:
+
+- Android's `cFontPrintBuffer` name is now backed by the exact Windows
+  `0x84`-byte queue record, including its authored `tColour` member at `+0x6c`.
+- Binary Ninja and IDA now agree on the `void(cFontPrintBuffer*)` contract and
+  expose the text, alignment, scale, color, and `FontSheet` fields throughout
+  the tracked decompiles.
+- No matcher source changed. The honest 35.70% result remains visible; this
+  slice recovers durable ownership rather than forcing a compiler schedule.

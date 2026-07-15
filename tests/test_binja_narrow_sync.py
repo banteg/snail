@@ -1151,6 +1151,70 @@ def test_runtime_config_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_font_system_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "font_system_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/font_system.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_font_system_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_font_system_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for header in (analysis_header, matcher_header):
+        assert "typedef struct FontSheet {" in header or "struct FontSheet {" in header
+        assert "float glyph_width[" in header
+        assert "int32_t texture_page[0x80]" in header or "int texture_page[" in header
+        assert "float width_scale" in header
+        assert "float height_scale" in header
+        assert "struct cFontPrintBuffer {" in header
+        assert "text_wave_amplitude" in header
+        assert "text_wave_enabled" in header
+        assert "tColour color" in header
+
+    for source in (binja_sync, ida_sync):
+        assert "g_font_text_buffer" in source
+        assert "g_font_queue" in source
+        assert "g_font3d_bods" in source
+        assert "g_font3d_scales" in source
+        assert "g_font_sheets" in source
+        assert "g_registered_font_count" in source
+        assert "measure_font_text_width" in source
+        assert "register_font_texture_sheet" in source
+        assert "draw_font_text_instance" in source
+        assert "initialize_font3d_objects" in source
+
+    assert '("0x7544e8", "cFontPrintBuffer[0x400]")' in binja_sync
+    assert '("0x7754e8", "BodBase[0x80]")' in binja_sync
+    assert '("0x7770e8", "float[0x80]")' in binja_sync
+    assert '("0x7772f8", "FontSheet[0x1]")' in binja_sync
+    assert '("0x6c", "color", "tColour")' in binja_sync
+    assert "float __cdecl measure_font_text_width" in binja_sync
+    assert "float width_scale, float height_scale" in binja_sync
+    assert "void __cdecl initialize_font3d_objects(int16_t font_id)" in binja_sync
+    assert "cFontPrintBuffer g_font_queue[0x400];" in ida_sync
+    assert "FontSheet g_font_sheets[1];" in ida_sync
+
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    by_address = {
+        int(entry["address"], 0): entry for entry in references["symbols"]
+    }
+    assert by_address[0x753CE8]["name"] == "g_font_text_buffer"
+    assert by_address[0x7544E8]["name"] == "g_font_queue"
+    assert by_address[0x7754E8]["name"] == "g_font3d_bods"
+    assert by_address[0x7770E8]["name"] == "g_font3d_scales"
+    assert by_address[0x7772F8]["name"] == "g_font_sheets"
+
+
 def test_cut_scene_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (repo_root / "tools/match/include/cut_scene.h").read_text(

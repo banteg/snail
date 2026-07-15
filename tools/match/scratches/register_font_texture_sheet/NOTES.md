@@ -69,3 +69,9 @@ byte-for-byte
 (`35f3e3abff48d6ec831ea4e200f079034f640ba6b4e0c16d6668f4af4ed09e49`)
 and the honest 75.41% result (`275/274`, prefix `0/274`, 51 clean operands and
 the existing `slot_count`/`font_kind` owner mismatch).
+
+The analysis databases now agree on the two float scale parameters, the
+`FontSheet` owner, and the one-sheet bank boundary at `g_registered_font_count`.
+The refreshed snapshots expose the atlas, texture-reference, marker, and scale
+fields without altering the matcher source or hiding the documented register
+ownership residual.
