@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 32,
+  "function_count": 35,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 32,
-  "ida_exported": 32,
+  "bn_exported": 35,
+  "ida_exported": 35,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -77,6 +77,10 @@
       "address": "0x438700"
     },
     {
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
       "name": "initialize_subgoldy",
       "address": "0x43a9c0"
     },
@@ -117,6 +121,10 @@
       "address": "0x4403c0"
     },
     {
+      "name": "update_barrier_ai",
+      "address": "0x440f80"
+    },
+    {
       "name": "initialize_subgoldy_resurrect",
       "address": "0x441fa0"
     },
@@ -143,9 +151,13 @@
     {
       "name": "initialize_subgoldy_death",
       "address": "0x446e30"
+    },
+    {
+      "name": "update_tutorial",
+      "address": "0x448de0"
     }
   ],
-  "health_check_count": 330,
+  "health_check_count": 336,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -310,7 +310,7 @@
 00439569        int16_t edx_22 = (*(edi_1 + 0x5ccac8)).w
 00439572        if ((edx_22:1.b & 2) == 0)
 00439578        char ecx_56 = *(edi_3 + 0x3bfb04)
-00439581        enum SubRingKind requested_kind
+00439581        int32_t requested_kind
 00439581        struct Player* player
 00439581        float ring_speed
 00439581        if (ecx_56 != 0x23)
@@ -330,7 +330,7 @@
 004397ff        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 0043983a        label_43983a:
 0043983a        player = &game->player
-0043983b        requested_kind = SUB_RING_KIND_EXPLODE_RAMP
+0043983b        requested_kind = 2
 0043983b        goto label_439846
 00439802        void* var_50_22 = &data_4a4da8
 0043980c        long double st0_7 = random_float_below(1f)
@@ -340,13 +340,13 @@
 00439832        ring_speed = 0f
 00439832        goto label_43983a
 00439676        if ((edx_22:1.b & 0x20) != 0)
-0043969f        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, SUB_RING_KIND_POWER_UP_AUTHORED, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+0043969f        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, 8, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
 00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3c0aa0)
 004396b2        if ((edx_22:1.b & 8) != 0)
-004396db        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, SUB_RING_KIND_EXPLODE_AUTHORED, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+004396db        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, 6, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
 00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3c0aa0)
 004396ee        if ((edx_22:1.b & 0x10) != 0)
-00439717        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, SUB_RING_KIND_SLOW_AUTHORED, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439717        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, 7, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
 00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3c0aa0)
 0043972b        if ((game->runtime_flags.b & 8) != 0)
 00439731        void* var_50_21 = &data_4a4dac
@@ -357,7 +357,7 @@
 00439754        if ((eax_87:1.b & 0x41) == 0 || game->level_mode == 7)
 0043975a        eax_87.b = *(edi_3 + 0x3bfb04)
 00439772        if (eax_87.b != 5 && eax_87.b != 6 && eax_87.b != 7)
-0043978c        spawn_track_ring_or_special_effect(game, edi_3 + 0x3bfac8, SUB_RING_KIND_NORMAL_DEFAULT, &game->player, 0f)
+0043978c        spawn_track_ring_or_special_effect(game, edi_3 + 0x3bfac8, 4, &game->player, 0f)
 00439798        if (game->player.lives s< 0xa)
 00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3bfae0)
 004397aa        game->player.last_ring_spawn_z = fconvert.s(fconvert.t(*(edi_3 + 0x3bfae0)) + fconvert.t(35f))
@@ -365,21 +365,21 @@
 004395b2        if ((edx_22:1.b & 0x20) != 0)
 004395ce        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 004395cf        player = &game->player
-004395d0        requested_kind = SUB_RING_KIND_POWER_UP_AUTHORED
+004395d0        requested_kind = 8
 004395d2        goto label_439846
 004395da        if ((edx_22:1.b & 8) != 0)
 004395f6        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 004395f7        player = &game->player
-004395f8        requested_kind = SUB_RING_KIND_EXPLODE_AUTHORED
+004395f8        requested_kind = 6
 004395fa        goto label_439846
 00439602        if ((edx_22:1.b & 0x10) != 0)
 00439622        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 00439623        player = &game->player
-00439624        requested_kind = SUB_RING_KIND_SLOW_AUTHORED
+00439624        requested_kind = 7
 00439626        goto label_439846
 004395a6        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 004395a7        player = &game->player
-004395a8        requested_kind = SUB_RING_KIND_NORMAL_AUTHORED
+004395a8        requested_kind = 5
 00439846        label_439846:
 00439846        spawn_track_ring_or_special_effect(game, edi_3 + 0x3bfac8, requested_kind, player, ring_speed)
 00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3bfae0)

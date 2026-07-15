@@ -15,7 +15,7 @@ void __thiscall add_time_trial_high_score(
   record->route_or_rank_index = route_index;
   record->replay_cursor = 0;
   if ( !route_active )
-    record->score_or_time.stats.values[0] = 0;
+    record->score_or_time.score_buckets[0] = 0;
   qmemcpy(&bank->current_result_record, record, sizeof(bank->current_result_record));
   if ( route_active )
   {

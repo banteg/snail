@@ -2097,7 +2097,8 @@ Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, in
 void __thiscall update_tip_manager(TipManager* manager);
 void __thiscall initialize_tutorial(Tutorial* tutorial);
 void __thiscall uninit_tutorial(Tutorial* tutorial);
-TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial);
+void __thiscall update_tutorial(Tutorial* tutorial);
+void __thiscall update_barrier_ai(BarrierActor* barrier);
 void __thiscall flush_row_event_display(Completion* completion);
 void __thiscall initialize_completion_screen(
     Completion* completion,

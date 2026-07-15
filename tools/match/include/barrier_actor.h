@@ -7,7 +7,7 @@
 
 class BarrierActor : public BodBase {
 public:
-    void* update_barrier_ai(); // @ 0x440f80, cRBarrier::AI
+    void update_barrier_ai(); // @ 0x440f80, cRBarrier::AI
 
     Player* owner_player; // +0x38, borrowed live-position source
 };

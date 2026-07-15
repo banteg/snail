@@ -21,6 +21,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 TRUSTED_NAMES = [
     (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x440F80, "update_barrier_ai"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
     (0x44CAC0, "multiply_vector_by_matrix_copy"),
@@ -541,7 +542,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_tutorial",
-        "TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial);",
+        "void __thiscall update_tutorial(Tutorial* tutorial);",
+    ),
+    (
+        "update_barrier_ai",
+        "void __thiscall update_barrier_ai(BarrierActor* barrier);",
     ),
     (
         "initialize_frontend_widget",

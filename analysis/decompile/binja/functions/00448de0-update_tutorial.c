@@ -4,4 +4,5 @@
 /* function: update_tutorial @ 0x448de0 */
 
 00448de0        struct SubgameRuntime* game = tutorial->game
-00448def        return get_track_grid_cell_at_world_position(game, &game->player.body.transform.position)
+00448dea        get_track_grid_cell_at_world_position(game, &game->player.body.transform.position)
+00448def        return

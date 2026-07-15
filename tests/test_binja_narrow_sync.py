@@ -3376,3 +3376,40 @@ def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
     assert "void __thiscall initialize_challenge_setup_screen(GUI* gui);" in ida_sync
     assert "int __thiscall initialize_challenge_setup_screen" not in ida_sync
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in ida_runner
+
+
+def test_embedded_subgame_ai_void_abis_are_persisted() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    tutorial_header = (repo_root / "tools/match/include/tutorial.h").read_text(
+        encoding="utf-8"
+    )
+    barrier_header = (repo_root / "tools/match/include/barrier_actor.h").read_text(
+        encoding="utf-8"
+    )
+
+    for prototype in (
+        "void __thiscall update_tutorial(Tutorial* tutorial)",
+        "void __thiscall update_barrier_ai(BarrierActor* barrier)",
+    ):
+        assert prototype in binja_sync
+        assert prototype + ";" in ida_sync
+        assert prototype + ";" in header
+
+    assert '(0x440F80, "update_barrier_ai")' in ida_sync
+    assert "void update_tutorial();" in tutorial_header
+    assert "void update_barrier_ai();" in barrier_header
+
+    for stale in (
+        "TrackRowCell* __thiscall update_tutorial",
+        "void* __thiscall update_barrier_ai",
+    ):
+        assert stale not in binja_sync
+        assert stale not in ida_sync
+        assert stale not in header

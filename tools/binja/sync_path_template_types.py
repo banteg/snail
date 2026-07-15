@@ -1159,6 +1159,10 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "void __thiscall update_banner(Banner* banner)",
     ),
     (
+        "update_barrier_ai",
+        "void __thiscall update_barrier_ai(BarrierActor* barrier)",
+    ),
+    (
         "initialize_track_jetpack_pickup_runtime",
         "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack)",
     ),
@@ -1194,7 +1198,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "update_tutorial",
-        "TrackRowCell* __thiscall update_tutorial(Tutorial* tutorial)",
+        "void __thiscall update_tutorial(Tutorial* tutorial)",
     ),
     (
         "kill_tip_widgets",

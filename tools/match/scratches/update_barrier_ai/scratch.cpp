@@ -2,10 +2,9 @@
 
 #include "barrier_actor.h"
 
-void* BarrierActor::update_barrier_ai()
+void BarrierActor::update_barrier_ai()
 {
     Player* owner = owner_player;
     position.z = owner->transform.position.z;
     position.y = 0.4f;
-    return owner;
 }

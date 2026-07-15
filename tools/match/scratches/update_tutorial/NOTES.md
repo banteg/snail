@@ -26,3 +26,10 @@ anonymous SubgameRuntime padding; its sole operand remains clean.
 2026-07-14 embedded-player ownership: the world-position argument now uses
 `player.transform.position` through the shared runtime, body, and matrix
 layouts instead of preserving the resolved field as a raw byte offset.
+
+2026-07-16 void ABI recovery: the only native callsite, `update_subgame` at
+`0x438eba`, discards the grid-cell lookup result and continues its side-effect
+dispatch. The cross-port `cRTutorial::AI()` lifecycle name agrees with that
+contract, and the natural `void` member remains exact at 5/5 instructions with
+its sole masked call operand clean. EAX is incidental residue from the final
+lookup, not an authored return value.

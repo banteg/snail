@@ -836,6 +836,14 @@
       "confidence": "high"
     },
     {
+      "address": "0x440f80",
+      "windows_name": "update_barrier_ai",
+      "ios_symbol": "cRBarrier::AI()",
+      "source_object": "SubGame.o",
+      "confidence": "high",
+      "notes": "The exact void Windows callback is the sole slot in g_barrier_actor_callback_table. Its embedded 0x3c-byte owner borrows Player* at +0x38 and follows the live player z position; residual EAX is only the borrowed pointer used by the final field read."
+    },
+    {
       "address": "0x442120",
       "windows_name": "get_track_skirt_color",
       "ios_symbol": "cRSubGame::GetSkirtColour(tColourSmall*)",
@@ -1108,7 +1116,7 @@
       "android_symbol": "cRTutorial::AI()",
       "source_object": "Tutorial.o",
       "confidence": "high",
-      "notes": "The exact Windows member samples the live Goldy position through its borrowed SubgameRuntime pointer."
+      "notes": "The exact void Windows member samples the live Goldy position through its borrowed SubgameRuntime pointer. Its sole native caller discards the grid-cell lookup result, so residual EAX is not an authored return."
     },
     {
       "address": "0x448ec0",

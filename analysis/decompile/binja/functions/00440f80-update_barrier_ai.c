@@ -3,8 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_barrier_ai @ 0x440f80 */
 
-00440f80        void* result = *(arg1 + 0x38)
-00440f83        int32_t edx = *(result + 0x70)
-00440f86        *(arg1 + 0x14) = 0x3ecccccd
-00440f8d        *(arg1 + 0x18) = edx
-00440f90        return result
+00440f86        barrier->bod.position.y = 0.400000006f
+00440f8d        barrier->bod.position.z = barrier->owner_player->body.transform.position.z
+00440f90        return

@@ -9,7 +9,7 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
   int32_t score_tail; // eax
   float challenge_difficulty_scalar; // esi
   int32_t completion_bonus_x_source; // ecx
-  int32_t level_arg_tail; // eax
+  RuntimeRateOrLevelArg v7; // eax
   float garbage_frequency; // esi
   int32_t level_mode; // eax
   float salt_frequency; // esi
@@ -33,10 +33,10 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
     completion_bonus_x_source = runtime->completion_bonus_x_source;
     runtime->current_high_score_record.score_tail = score_tail;
     runtime->current_high_score_record.challenge_difficulty_value = runtime->completion_bonus_y_source;
-    level_arg_tail = runtime->rate_or_level_arg.level_arg_tail;
-    *(float *)&runtime->current_high_score_record.challenge_difficulty_scalar_bits = challenge_difficulty_scalar;
+    LODWORD(v7.base_rate) = runtime->rate_or_level_arg;
+    runtime->current_high_score_record.challenge_difficulty_scalar = challenge_difficulty_scalar;
     garbage_frequency = runtime->garbage_frequency;
-    runtime->current_high_score_record.replay_speed_scalar_bits = level_arg_tail;
+    runtime->current_high_score_record.replay_speed_scalar = v7.base_rate;
     level_mode = runtime->level_mode;
     runtime->current_high_score_record.garbage_frequency = garbage_frequency;
     salt_frequency = runtime->salt_frequency;

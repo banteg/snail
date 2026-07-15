@@ -438,7 +438,7 @@ LABEL_65:
                  && runtime_row_scan_begin < game->completion_row_start )
           {
 LABEL_158:
-            spawn_salt_hazard(&game->salt_hazards, (_DWORD *)v23 + 982710);
+            spawn_salt_hazard(&game->salt_hazards, (const Vec3 *)v23 + 327570);
           }
           if ( SLOBYTE(game->runtime_flags) < 0
             && v23[3930884] == 18
@@ -458,7 +458,7 @@ LABEL_158:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3930824),
-                SUB_RING_KIND_NORMAL_AUTHORED,
+                5,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
@@ -468,7 +468,7 @@ LABEL_158:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3930824),
-                SUB_RING_KIND_POWER_UP_AUTHORED,
+                8,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
@@ -478,7 +478,7 @@ LABEL_158:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3930824),
-                SUB_RING_KIND_EXPLODE_AUTHORED,
+                6,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
@@ -488,7 +488,7 @@ LABEL_158:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3930824),
-                SUB_RING_KIND_SLOW_AUTHORED,
+                7,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
@@ -511,7 +511,7 @@ LABEL_158:
                 spawn_track_ring_or_special_effect(
                   game,
                   (TrackRowCell *)(v23 + 3930824),
-                  SUB_RING_KIND_EXPLODE_RAMP,
+                  2,
                   &game->player,
                   *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               }
@@ -523,12 +523,7 @@ LABEL_158:
                 {
                   goto LABEL_209;
                 }
-                spawn_track_ring_or_special_effect(
-                  game,
-                  (TrackRowCell *)(v23 + 3930824),
-                  SUB_RING_KIND_EXPLODE_RAMP,
-                  &game->player,
-                  0.0);
+                spawn_track_ring_or_special_effect(game, (TrackRowCell *)(v23 + 3930824), 2, &game->player, 0.0);
               }
 LABEL_207:
               v43 = *((float *)v23 + 982712);
@@ -541,7 +536,7 @@ LABEL_208:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3934856),
-                SUB_RING_KIND_POWER_UP_AUTHORED,
+                8,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               v43 = *((float *)v23 + 983720);
@@ -552,7 +547,7 @@ LABEL_208:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3934856),
-                SUB_RING_KIND_EXPLODE_AUTHORED,
+                6,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               v43 = *((float *)v23 + 983720);
@@ -563,7 +558,7 @@ LABEL_208:
               spawn_track_ring_or_special_effect(
                 game,
                 (TrackRowCell *)(v23 + 3934856),
-                SUB_RING_KIND_SLOW_AUTHORED,
+                7,
                 &game->player,
                 *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               v43 = *((float *)v23 + 983720);
@@ -574,12 +569,7 @@ LABEL_208:
             v44 = v23[3930884];
             if ( v44 == 5 || v44 == 6 || v44 == 7 )
               goto LABEL_209;
-            spawn_track_ring_or_special_effect(
-              game,
-              (TrackRowCell *)(v23 + 3930824),
-              SUB_RING_KIND_NORMAL_DEFAULT,
-              &game->player,
-              0.0);
+            spawn_track_ring_or_special_effect(game, (TrackRowCell *)(v23 + 3930824), 4, &game->player, 0.0);
             if ( game->player.lives < 10 )
               goto LABEL_207;
             game->player.last_ring_spawn_z = *((float *)v23 + 982712) + 35.0;

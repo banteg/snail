@@ -2571,7 +2571,8 @@
     },
     {
       "address": "0x440f80",
-      "name": "update_barrier_ai"
+      "name": "update_barrier_ai",
+      "description": "Exact void cRBarrier::AI() callback for the embedded 0x3c-byte BarrierActor at SubgameRuntime +0xff7bc4. It borrows Player* at +0x38, follows the player's live z position, and is installed in g_barrier_actor_callback_table; the residual EAX value is not an authored return."
     },
     {
       "address": "0x440fa0",
@@ -3074,7 +3075,7 @@
     {
       "address": "0x448de0",
       "name": "update_tutorial",
-      "description": "Exact Windows `Tutorial::update_tutorial` thunk: samples the live Goldy position through the borrowed containing SubgameRuntime. Android and iOS retain `cRTutorial::AI()`."
+      "description": "Exact void Windows Tutorial::update_tutorial thunk: samples the live Goldy position through the borrowed containing SubgameRuntime. Its only native caller discards the lookup result, and Android/iOS retain cRTutorial::AI()."
     },
     {
       "address": "0x448df0",

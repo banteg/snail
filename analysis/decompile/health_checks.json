@@ -371,7 +371,21 @@
         "game->player.body.transform.position"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "return get_track_grid_cell_at_world_position"
+      ]
+    },
+    {
+      "name": "bn_embedded_barrier_player_owner",
+      "artifact": "analysis/decompile/binja/functions/00440f80-update_barrier_ai.c",
+      "required_substrings": [
+        "barrier->bod.position.y = 0.400000006f",
+        "barrier->bod.position.z = barrier->owner_player->body.transform.position.z"
+      ],
+      "forbidden_substrings": [
+        "void* result",
+        "return result",
+        "*(arg1 + 0x38)"
       ]
     },
     {
@@ -5702,6 +5716,34 @@
       "forbidden_substrings": [
         "g_game_base->unknown_000b48",
         "(char *)g_game_base + 322576"
+      ]
+    },
+    {
+      "name": "ida_tutorial_void_subgame_owner",
+      "artifact": "analysis/decompile/ida/functions/00448de0-update_tutorial.c",
+      "required_substrings": [
+        "void __thiscall update_tutorial(Tutorial *tutorial)",
+        "tutorial->game->player.body.transform.position"
+      ],
+      "forbidden_substrings": [
+        "TrackRowCell *__fastcall update_tutorial",
+        "return get_track_grid_cell_at_world_position",
+        "TutorialController *controller"
+      ]
+    },
+    {
+      "name": "ida_embedded_barrier_void_player_owner",
+      "artifact": "analysis/decompile/ida/functions/00440f80-update_barrier_ai.c",
+      "required_substrings": [
+        "void __thiscall update_barrier_ai(BarrierActor *barrier)",
+        "barrier->owner_player->body.transform.position.z",
+        "barrier->bod.position.y",
+        "barrier->bod.position.z"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall sub_440F80",
+        "return result",
+        "*(_DWORD *)(result + 112)"
       ]
     }
   ]
