@@ -373,6 +373,11 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "repair_subgame_receiver_owner.py" in source
     assert 'f"--function {identifier} --apply"' in source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in source
+    assert '"SubRow",' in source
+    assert '"TrackAttachmentRuntimeRow",' not in source
+    assert "typedef struct SubRow {" in header
+    assert "SubRow runtime_rows[3200];" in header
+    assert "TrackAttachmentRuntimeRow" not in header
     assert '"RingOrSpecialEffectPool"' not in source
     assert '"SubSpeedUp"' not in source
     assert '"SaltHazardSlot"' not in source
@@ -431,6 +436,17 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     ):
         assert f'"address": {address}' in repair_source
     assert "from repair_initialize_subgame_owner import main" in repair_entrypoint
+    assert '"legacy_prototypes": (' in repair_source
+    assert '"struct SubRow* __thiscall("' in repair_source
+    assert '"SubRow* __thiscall "' in repair_source
+    assert (
+        '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
+        'SubgameRuntime* game, Vec3* position)"'
+    ) in deferred_prototypes
+    assert (
+        '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
+        'SubgameRuntime* game, Vec3* position);"'
+    ) in ida_source
     assert "if stale and comments:" in repair_source
     assert "if stale and tags:" in repair_source
     assert "function_has_unpreserved_user_vars" in repair_source

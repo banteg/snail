@@ -358,6 +358,9 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
 - world `z` is quantized with `floor(z)` and clamped to row `0..0xc7f`
 - runtime track rows are stored at `game + 0x5ccac8 + row * 0xf4`
   - the canonical checked-in owner is `SubRow` (`cRSubRow` in symbol-preserving builds)
+  - the shared analysis header and both live databases use that same identity;
+    the retired descriptive `TrackAttachmentRuntimeRow` name is no longer an
+    active consumer type
   - `+0x00`: `flags`
   - `+0x04`: embedded `RowModel`, including the authored 3D row body
   - `+0xb0`: embedded `BodBase attachment_body` used by path strips and fringe

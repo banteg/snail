@@ -630,7 +630,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);",
+        "SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);",
     ),
     (
         "sample_track_floor_height_at_position",

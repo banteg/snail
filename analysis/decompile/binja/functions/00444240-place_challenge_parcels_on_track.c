@@ -66,7 +66,7 @@
 004443c1        int32_t runtime_row_count = game->runtime_row_count
 004443c9        int32_t runtime_row_count_3 = 0
 004443d1        if (runtime_row_count s> 0)
-004443d7        struct TrackAttachmentRuntimeRow (* esi_1)[0xc80] = &game->runtime_rows
+004443d7        struct SubRow (* esi_1)[0xc80] = &game->runtime_rows
 004443dd        uint8_t flags = ((esi_1 - 0x5ccac8)->runtime_rows[0].flags).b
 004443e9        if ((flags & 1) != 0 && (flags & 0x40) != 0)
 004443f5        int32_t eax_5 = get_track_cell_row_index((esi_1 - 0x5ccac8)->runtime_rows[0].primary_attachment_cell)

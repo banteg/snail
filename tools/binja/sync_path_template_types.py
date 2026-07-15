@@ -233,7 +233,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubLocFlag",
     "TrackRowCell",
     "SubRowFlag",
-    "TrackAttachmentRuntimeRow",
+    "SubRow",
     "Path",
     "PathPair",
     "DamageGuageState",
@@ -416,7 +416,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x3bb704", "blink_random_samples", "float[0x18]"),
     ("0x3bb764", "player", "Player"),
     ("0x3bfac8", "runtime_cells", "TrackRowCell[0xc80][8]"),
-    ("0x5ccac8", "runtime_rows", "TrackAttachmentRuntimeRow[0xc80]"),
+    ("0x5ccac8", "runtime_rows", "SubRow[0xc80]"),
     ("0x68b4c8", "sub_high_score", "SubHighScore"),
     ("0xfd2b10", "current_high_score_record", "SubSolution"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
@@ -509,7 +509,7 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x50", "fringe_back", "FringeObject*"),
 )
 
-TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES = (
+SUB_ROW_FIELD_UPDATES = (
     ("0x00", "flags", "uint32_t"),
     ("0x04", "primary_body", "RenderableBod"),
     ("0x84", "authored_object_velocity", "Vec3"),
@@ -1139,7 +1139,7 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
+        "SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
     ),
 )
 
@@ -1316,7 +1316,7 @@ def main() -> int:
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
-                ("TrackAttachmentRuntimeRow", TRACK_ATTACHMENT_RUNTIME_ROW_FIELD_UPDATES),
+                ("SubRow", SUB_ROW_FIELD_UPDATES),
                 ("Path", PATH_FIELD_UPDATES),
                 ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
                 ("SubHover", SUB_HOVER_FIELD_UPDATES),

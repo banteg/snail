@@ -54,7 +54,18 @@ receiver and 0xf4 stride. This closes the final entry in the guarded receiver
 catalog.
 
 No matcher source changed. The accessor remains exact at 23/23 instructions
-with all three operands clean. The analysis-only row type still uses the older
-`TrackAttachmentRuntimeRow` spelling; canonicalizing it to authored `SubRow`
-is a separate, bounded type-name migration rather than part of this receiver
-repair.
+with all three operands clean.
+
+## 2026-07-14 analysis SubRow canonicalization
+
+The analysis header and both live databases now use the authored `SubRow`
+identity for the complete `0xf4` record and the embedded 3200-row slab. Binary
+Ninja reports `SubgameRuntime::runtime_rows` as `SubRow[3200]`; the guarded
+lookup repair preserved its recovered receiver and parameters while changing
+only the legacy return identity. IDA independently emits a `SubRow*` return.
+The tracked parcel-placement consumers also render the slab cursor as
+`SubRow (*)[3200]`, and health checks reject the retired analysis spelling.
+
+No matcher source changed. The exact accessor therefore remains 23/23 with all
+three operands clean; this pass closes analysis naming rather than claiming a
+new code match.

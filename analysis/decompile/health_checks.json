@@ -231,11 +231,12 @@
       "name": "ida_runtime_row_lookup_owner",
       "artifact": "analysis/decompile/ida/functions/0043d480-get_track_runtime_cell_at_world_z.c",
       "required_substrings": [
-        "TrackAttachmentRuntimeRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 *position)",
+        "SubRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 *position)",
         "position->z",
         "244 * z"
       ],
       "forbidden_substrings": [
+        "TrackAttachmentRuntimeRow",
         "Game *game",
         "int this",
         "this +",
@@ -1662,6 +1663,7 @@
         "game->runtime_rows"
       ],
       "forbidden_substrings": [
+        "TrackAttachmentRuntimeRow",
         "struct Game* game",
         "__asm",
         "_ET1"
@@ -1676,6 +1678,7 @@
         "game->runtime_rows"
       ],
       "forbidden_substrings": [
+        "TrackAttachmentRuntimeRow",
         "*(arg1 + 0x28)",
         "__asm",
         "_ET1"

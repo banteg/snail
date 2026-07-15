@@ -134,15 +134,19 @@ FUNCTION_SPECS = {
     "get_track_runtime_cell_at_world_z": {
         "address": 0x43D480,
         "expected_prototype": (
-            "struct TrackAttachmentRuntimeRow* __thiscall("
+            "struct SubRow* __thiscall("
             "struct SubgameRuntime* game, struct Vec3* position)"
         ),
         "stale_prototype": (
             "struct TrackAttachmentRuntimeRow* __thiscall("
             "struct Game* game, struct Vec3* position)"
         ),
+        "legacy_prototypes": (
+            "struct TrackAttachmentRuntimeRow* __thiscall("
+            "struct SubgameRuntime* game, struct Vec3* position)",
+        ),
         "declaration": (
-            "TrackAttachmentRuntimeRow* __thiscall "
+            "SubRow* __thiscall "
             "get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)"
         ),
         "parameter_count": 2,
@@ -175,6 +179,7 @@ ADDRESS = SPEC["address"]
 NAME = SPEC["name"]
 EXPECTED_PROTOTYPE = SPEC["expected_prototype"]
 STALE_PROTOTYPE = SPEC["stale_prototype"]
+STALE_PROTOTYPES = {STALE_PROTOTYPE, *SPEC.get("legacy_prototypes", ())}
 DECLARATION = SPEC["declaration"]
 EXPECTED_PARAMETER_COUNT = SPEC["parameter_count"]
 EXPECTED_VARIABLES = SPEC["variables"]
@@ -293,10 +298,10 @@ else:
         conflicts.append("function_name_changed")
     if owner_type is None or int(owner_type.width) != SUBGAME_RUNTIME_SIZE:
         conflicts.append("SubgameRuntime_layout_changed")
-    if observed_prototype not in {EXPECTED_PROTOTYPE, STALE_PROTOTYPE}:
+    if observed_prototype != EXPECTED_PROTOTYPE and observed_prototype not in STALE_PROTOTYPES:
         conflicts.append("unexpected_prototype")
 
-    stale = observed_prototype == STALE_PROTOTYPE
+    stale = observed_prototype in STALE_PROTOTYPES
     allowed_user_var_keys = {
         (record["source_type"], record["index"], record["storage"])
         for record in EXPECTED_VARIABLES

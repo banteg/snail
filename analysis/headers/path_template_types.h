@@ -977,7 +977,7 @@ typedef enum SubRowFlag {
     SUBROW_FLAG_JETPACK_OFF = 0x8000,
 } SubRowFlag;
 
-typedef struct TrackAttachmentRuntimeRow {
+typedef struct SubRow {
     uint32_t flags;
     RenderableBod primary_body;
     Vec3 authored_object_velocity;
@@ -991,7 +991,7 @@ typedef struct TrackAttachmentRuntimeRow {
     float ring_speed;
     SubSegment* source_segment;
     int32_t row_event_id;
-} TrackAttachmentRuntimeRow;
+} SubRow;
 
 typedef enum PathTemplateKind {
     PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00,
@@ -1819,7 +1819,7 @@ typedef struct SubgameRuntime {
     float blink_random_samples[24];
     Player player;
     TrackRowCell runtime_cells[3200][8];
-    TrackAttachmentRuntimeRow runtime_rows[3200];
+    SubRow runtime_rows[3200];
     SubHighScore sub_high_score;
     SubSolution current_high_score_record;
     uint8_t selected_level_record_active;
@@ -2038,7 +2038,7 @@ void __thiscall initialize_nuke(Nuke* nuke);
 void __thiscall update_nuke(Nuke* nuke);
 void __thiscall uninit_nuke(Nuke* nuke);
 TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
-TrackAttachmentRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
+SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
 double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);
 int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game);
 void __thiscall mark_track_warning_zones(SubgameRuntime* game);

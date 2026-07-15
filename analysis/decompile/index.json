@@ -15,16 +15,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "merge_track_tile_runs",
-      "address": "0x435180"
-    },
-    {
-      "name": "build_subgame_level",
-      "address": "0x437eb0"
-    },
-    {
       "name": "get_track_runtime_cell_at_world_z",
       "address": "0x43d480"
+    },
+    {
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
+    },
+    {
+      "name": "place_challenge_parcels_on_track",
+      "address": "0x444240"
     }
   ],
   "health_check_count": 100,

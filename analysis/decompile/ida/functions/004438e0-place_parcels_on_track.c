@@ -493,4 +493,3 @@ int32_t __thiscall place_parcels_on_track(SubgameRuntime *game)
   }
   return result;
 }
-
