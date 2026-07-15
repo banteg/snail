@@ -74,3 +74,14 @@ facequads-before-vertices stayed neutral at 21.53% (577/668) and simply flipped
 the remaining allocation call mismatch from target vertices vs candidate
 facequads to target facequads vs candidate vertices. Masked operands stayed at
 28 ok, 0 unresolved, 4 mismatch, so the helper keeps vertices-first order.
+
+2026-07-15 endpoint and interior ownership: both endpoint secondary samples
+own only their transforms; their X values come from the corresponding primary
+`center_x`, Y is the authored `0.49000001f`, and Z is the endpoint's logical
+index. Rebuilding those endpoints directly, deriving interior `center_x` from
+primary sample zero, and moving scalar setup ahead of phase calculation removes
+the scratch-only neutral Y/Z writes. Direct terminal sample stores complete the
+same ownership pattern. Focused Wibo rises from 21.53% (577/668) to 23.32%
+(610/668), and the masked audit improves from 32 ok / 1 mismatch to 36 ok /
+0 mismatch. Expanding the already inlined secondary helper was semantically
+neutral but slightly regressed the score, so its local pointer shape remains.

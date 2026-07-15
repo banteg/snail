@@ -11,31 +11,6 @@ float cosine(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 
-static __forceinline void initialize_sample(
-    PathTemplateSample* sample, float center_x, float y, float z)
-{
-    sample->center_x = center_x;
-    sample->rotation_scalar_98 = 0.0f;
-    sample->rotation_scalar_94 = 0.0f;
-    sample->special_scalar = 0.0f;
-    sample->lateral_scale = 1.0f;
-    set_matrix_identity(&sample->transform);
-    sample->transform.position.x = sample->center_x;
-    sample->transform.position.y = y;
-    sample->transform.position.z = z;
-}
-
-static __forceinline void initialize_secondary_flat(Path* path, int index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    set_matrix_identity(&secondary->transform);
-    secondary->transform.position.x = primary->center_x;
-    secondary->transform.position.y = primary->transform.position.y + 0.49000001f;
-    secondary->transform.position.z = primary->transform.position.z;
-}
-
 static __forceinline void initialize_secondary_hill(
     Path* path, int index, float phase, float height)
 {
@@ -101,13 +76,12 @@ static __forceinline void compute_path_deltas(Path* path)
         secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
     }
 
-    PathTemplateSample* primary_last = &path->primary_samples[path->segment_count - 1];
-    primary_last->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_last->delta_length = 1.0f;
-
-    PathTemplateSample* secondary_last = &path->secondary_samples[path->segment_count - 1];
-    secondary_last->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_last->delta_length = 1.0f;
+    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
+    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
@@ -202,20 +176,54 @@ void Path::initialize_hill_valley_path_template_pair(
 
     has_entry_mesh_transition = 0;
 
-    float center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
-    initialize_sample(&primary_samples[0], center_x, 0.0f, 0.0f);
-    initialize_secondary_flat(this, 0);
-    float last_center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
-    initialize_sample(&primary_samples[last], last_center_x, 0.0f, (float)last);
-    initialize_secondary_flat(this, last);
+    if (centered)
+        primary_samples[0].center_x = 0.0f;
+    else
+        primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;
+    primary_samples[0].rotation_scalar_98 = 0.0f;
+    primary_samples[0].rotation_scalar_94 = 0.0f;
+    primary_samples[0].special_scalar = 0.0f;
+    primary_samples[0].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.position.x = primary_samples[0].center_x;
+    primary_samples[0].transform.position.y = 0.0f;
+    primary_samples[0].transform.position.z = 0.0f;
+    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.position.x = primary_samples[0].center_x;
+    secondary_samples[0].transform.position.y = 0.49000001f;
+    secondary_samples[0].transform.position.z = 0.0f;
+
+    if (centered)
+        primary_samples[last].center_x = 0.0f;
+    else
+        primary_samples[last].center_x = (float)width_cells * 0.5f - 4.0f;
+    primary_samples[last].rotation_scalar_98 = 0.0f;
+    primary_samples[last].rotation_scalar_94 = 0.0f;
+    primary_samples[last].special_scalar = 0.0f;
+    primary_samples[last].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[last].transform);
+    primary_samples[last].transform.position.x = primary_samples[last].center_x;
+    float last_z = (float)last;
+    primary_samples[last].transform.position.y = 0.0f;
+    primary_samples[last].transform.position.z = last_z;
+    set_matrix_identity(&secondary_samples[last].transform);
+    secondary_samples[last].transform.position.x = primary_samples[last].center_x;
+    secondary_samples[last].transform.position.y = 0.49000001f;
+    secondary_samples[last].transform.position.z = last_z;
 
     int phase_index = 0;
     for (int i = 1; phase_index < steps; ++i) {
+        primary_samples[i].center_x = primary_samples[0].center_x;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
         float phase = (float)phase_index * 6.2831855f / (float)steps;
-        initialize_sample(&primary_samples[i], center_x, 0.0f, 0.0f);
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        ++phase_index;
         float y = (1.0f - cosine(phase)) * 0.5f * height;
         primary_samples[i].transform.position.y = y;
-        ++phase_index;
         primary_samples[i].transform.position.z = (float)phase_index;
         initialize_secondary_hill(this, i, phase, height);
         orient_previous_hill_pair(this, i);
