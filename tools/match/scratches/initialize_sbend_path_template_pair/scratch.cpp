@@ -11,46 +11,6 @@ float cosine(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 
-static __forceinline void initialize_sample(
-    PathTemplateSample* sample, float center_x, float x, float y, float z)
-{
-    sample->center_x = center_x;
-    sample->rotation_scalar_98 = 0.0f;
-    sample->rotation_scalar_94 = 0.0f;
-    sample->special_scalar = 0.0f;
-    sample->lateral_scale = 1.0f;
-    set_matrix_identity(&sample->transform);
-    sample->transform.position.x = x;
-    sample->transform.position.y = y;
-    sample->transform.position.z = z;
-}
-
-static __forceinline void copy_secondary_from_primary(Path* path, int index)
-{
-    PathTemplateSample* primary = &path->primary_samples[index];
-    PathTemplateSample* secondary = &path->secondary_samples[index];
-
-    secondary->transform = primary->transform;
-    secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
-    secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
-    secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
-}
-
-static __forceinline void orient_current_sbend(Path* path, int index)
-{
-    PathTemplateSample* sample = &path->primary_samples[index];
-    PathTemplateSample* previous = &path->primary_samples[index - 1];
-
-    sample->transform.basis_up = Vector3(1.0f, 0.0f, 0.0f);
-    sample->transform.basis_forward = Vector3(
-        sample->transform.position.x - previous->transform.position.x,
-        sample->transform.position.y - previous->transform.position.y,
-        sample->transform.position.z - previous->transform.position.z);
-    sample->transform.basis_forward.normalize_vector();
-    sample->transform.basis_right.cross_vectors(
-        &sample->transform.basis_up, &sample->transform.basis_forward);
-}
-
 static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
@@ -71,28 +31,28 @@ static __forceinline void compute_path_deltas(Path* path)
         secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
     }
 
-    PathTemplateSample* primary_last = &path->primary_samples[path->segment_count - 1];
-    primary_last->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_last->delta_length = 1.0f;
-
-    PathTemplateSample* secondary_last = &path->secondary_samples[path->segment_count - 1];
-    secondary_last->delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_last->delta_length = 1.0f;
+    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
+    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
 static __forceinline void build_strip_mesh(
     Path* path, char* texture_a, char* texture_b)
 {
-    path->strip_mesh->request_object_facequads(
-        2 * path->width_cells * path->segment_count);
     path->strip_mesh->request_object_vertices(
         (path->width_cells + 1) * (path->segment_count + 1));
+    path->strip_mesh->request_object_facequads(
+        2 * path->width_cells * path->segment_count);
 
     Vector3* vertices = path->strip_mesh->vertices;
     ObjectFaceQuad* facequads = path->strip_mesh->facequads;
 
     int row;
     int column;
+    int face_index;
     for (row = 0; row <= path->segment_count; ++row) {
         PathTemplateSample* sample = &path->primary_samples[row];
         if (row == path->segment_count)
@@ -118,37 +78,39 @@ static __forceinline void build_strip_mesh(
             float u0 = (float)column * 0.125f;
             float u1 = (float)(column + 1) * 0.125f;
 
-            ObjectFaceQuad* face = &facequads[2 * (column + row * path->width_cells)];
-            face->flags = 0;
-            face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
-            face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-            face->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
-            face->uv[0].u = u0;
-            face->uv[0].v = v0;
-            face->uv[1].u = u1;
-            face->uv[1].v = v0;
-            face->uv[2].u = u1;
-            face->uv[2].v = v1;
-            face->uv[3].u = u0;
-            face->uv[3].v = v1;
-
-            ++face;
-            face->flags = 0;
-            face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
-            face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-            face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-            face->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
-            face->uv[0].u = u1;
-            face->uv[0].v = v0;
-            face->uv[1].u = u0;
-            face->uv[1].v = v0;
-            face->uv[2].u = u0;
-            face->uv[2].v = v1;
-            face->uv[3].u = u1;
-            face->uv[3].v = v1;
+            for (face_index = 0; face_index < 2; ++face_index) {
+                ObjectFaceQuad* face =
+                    &facequads[2 * column + 2 * row * path->width_cells + face_index];
+                face->flags = 0;
+                if (face_index == 0) {
+                    face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
+                    face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
+                    face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
+                    face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                    face->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                    face->uv[0].u = u0;
+                    face->uv[0].v = v0;
+                    face->uv[1].u = u1;
+                    face->uv[1].v = v0;
+                    face->uv[2].u = u1;
+                    face->uv[2].v = v1;
+                    face->uv[3].u = u0;
+                } else {
+                    face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
+                    face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
+                    face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                    face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
+                    face->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                    face->uv[0].u = u1;
+                    face->uv[0].v = v0;
+                    face->uv[1].u = u0;
+                    face->uv[1].v = v0;
+                    face->uv[2].u = u0;
+                    face->uv[2].v = v1;
+                    face->uv[3].u = u1;
+                }
+                face->uv[3].v = v1;
+            }
         }
     }
 }
@@ -168,20 +130,59 @@ void Path::initialize_sbend_path_template_pair(
     allocate_path_template_samples();
 
     has_entry_mesh_transition = 0;
-    float center_x = centered ? 0.0f : ((float)width_cells * 0.5f - 4.0f);
-    initialize_sample(&primary_samples[0], center_x, center_x, 0.0f, 0.0f);
-    initialize_sample(&secondary_samples[0], center_x, center_x, 0.49000001f, 0.0f);
+    if (centered)
+        primary_samples[0].center_x = 0.0f;
+    else
+        primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;
+    primary_samples[0].rotation_scalar_98 = 0.0f;
+    primary_samples[0].rotation_scalar_94 = 0.0f;
+    primary_samples[0].special_scalar = 0.0f;
+    primary_samples[0].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.position.x = primary_samples[0].center_x;
+    primary_samples[0].transform.position.y = 0.0f;
+    primary_samples[0].transform.position.z = 0.0f;
+
+    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.position.x = primary_samples[0].center_x;
+    secondary_samples[0].transform.position.y = 0.49000001f;
+    secondary_samples[0].transform.position.z = 0.0f;
 
     for (int i = 1; i <= steps; ++i) {
         float phase = (float)(i - 1) * 6.2831855f / (float)steps;
-        initialize_sample(&primary_samples[i], center_x, center_x, 0.0f, 0.0f);
+        primary_samples[i].center_x = primary_samples[0].center_x;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
         float y = (1.0f - cosine(phase * 0.5f)) * 0.5f * height;
         primary_samples[i].transform.position.y = y;
         float z = (1.0f - cosine(phase * 1.5f)) * 0.5f;
         z = z * z_amplitude * 0.33333334f + 1.0f;
         primary_samples[i].transform.position.z = z;
-        orient_current_sbend(this, i);
-        copy_secondary_from_primary(this, i);
+
+        primary_samples[i].transform.basis_up = Vector3(1.0f, 0.0f, 0.0f);
+        primary_samples[i].transform.basis_forward = Vector3(
+            primary_samples[i].transform.position.x -
+                primary_samples[i - 1].transform.position.x,
+            primary_samples[i].transform.position.y -
+                primary_samples[i - 1].transform.position.y,
+            primary_samples[i].transform.position.z -
+                primary_samples[i - 1].transform.position.z);
+        primary_samples[i].transform.basis_forward.normalize_vector();
+        primary_samples[i].transform.basis_right.cross_vectors(
+            &primary_samples[i].transform.basis_up,
+            &primary_samples[i].transform.basis_forward);
+
+        secondary_samples[i].transform = primary_samples[i].transform;
+        secondary_samples[i].transform.position.x +=
+            primary_samples[i].transform.basis_up.x * 0.49000001f;
+        secondary_samples[i].transform.position.y +=
+            primary_samples[i].transform.basis_up.y * 0.49000001f;
+        secondary_samples[i].transform.position.z +=
+            primary_samples[i].transform.basis_up.z * 0.49000001f;
     }
 
     compute_path_deltas(this);

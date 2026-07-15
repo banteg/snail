@@ -48,3 +48,17 @@ primary sample copied to its secondary peer as exactly 0x40 bytes. Removing the
 scratch-only scalar copies outside `TransformMatrix` moves focused Wibo from
 23.33% (501/579) to 24.67% (491/579), with the masked audit improving from
 25 ok to 29 ok and remaining fully clean.
+
+2026-07-15 sample and mesh ownership: the base secondary sample, like the
+interior lane, owns only its transform; its X comes from the primary base
+sample, while Y and Z are authored constants. Direct base/interior array writes
+recover that split and the primary-derived `center_x`. The native mesh then
+uses a two-iteration face loop and direct terminal sample stores. Recovering
+those shapes raises focused Wibo from 24.67% (491/579) to 40.61% (529/579),
+with 36 clean masked operands.
+
+This pass also supersedes the earlier audit-led request-order note: raw calls at
+`0x42e37c` and `0x42e38e` resolve to `request_object_vertices @ 0x42f710`
+followed by `request_object_facequads @ 0x42f8c0`. Restoring that semantically
+correct order costs less than one point in isolation, remains audit-clean, and
+is retained instead of matching the old alignment artifact.
