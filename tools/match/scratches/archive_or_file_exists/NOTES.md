@@ -19,3 +19,9 @@ Cross-port ownership:
   `RShellFindFile(char*, bool)`.
 - Its boolean formal selects the same DAT-index versus direct-filesystem path
   as the Windows byte formal; the stable harness name remains descriptive.
+
+2026-07-15 CRT ownership: the direct-filesystem probe now consumes the real
+VC6 `<stdio.h>` `FILE` and `fopen`/`fclose` declarations inherited from
+`archive_index.h`, rather than a local opaque `File` approximation. The focused
+object remains byte-exact at 36/36 instructions with seven clean masked
+operands.

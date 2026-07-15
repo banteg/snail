@@ -2,16 +2,13 @@
 
 #include "archive_index.h"
 
-extern "C" File* __cdecl fopen(char* path, char* mode);
-extern "C" int __cdecl fclose(File* file);
-
 ArchiveEntry* find_archive_entry(char* path);
 int report_warningf(char* format, ...);
 
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
     if (g_archive_index_records == 0 || force_filesystem != 0) {
-        File* file = fopen(path, "rb");
+        FILE* file = fopen(path, "rb");
         if (file == 0)
             return 0;
         fclose(file);

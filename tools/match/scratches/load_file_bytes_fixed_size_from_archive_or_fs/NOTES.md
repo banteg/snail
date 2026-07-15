@@ -56,3 +56,10 @@ Retain the `char**` entry-path walk.
 32-bit byte count are now captured in the analysis type sync; the scratch keeps
 its byte-oriented `char*` spelling because that is codegen-neutral and clearer
 inside the decrypt loop.
+
+2026-07-15 CRT ownership: the filesystem and DAT streams now use VC6's real
+`FILE` definition and `fopen`/`fread`/`fseek`/`ftell`/`fclose` declarations from
+`<stdio.h>`, while `_getcwd` ownership comes from `<direct.h>`. The relative
+archive seeks use the authentic `SEEK_CUR` constant. This removes the synthetic
+`File` abstraction and hand-written CRT prototypes without changing the focused
+92.84% object or its 32 clean masked operands.

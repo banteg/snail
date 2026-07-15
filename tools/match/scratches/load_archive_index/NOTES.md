@@ -14,8 +14,8 @@ shape here still stores the global directly from `esi` before the stack cleanup,
 then copies `esi` to `eax` before the rebase loop. The archive semantics and
 entry-pointer rebase loop are otherwise aligned.
 
-2026-06-20 shared header sync: `archive_index.h` now owns the `File` forward
-declaration plus `g_archive_file` and typed `ArchiveIndex* g_archive_index_records`
+2026-06-20 shared header sync: `archive_index.h` took ownership of the stream
+pointer plus `g_archive_file` and typed `ArchiveIndex* g_archive_index_records`
 externs. Removing duplicate local externs from the archive-index consumers is
 codegen-neutral for the focused archive scratches; `load_archive_index` remains
 92.54% with the same store/stack-cleanup residual.
@@ -61,3 +61,12 @@ This separates the on-disk and relocated record owners without changing the
 native transition: the focused result remains 92.54%, 67/67 instructions, a
 40-instruction prefix, and 13 clean masked references, with a byte-identical
 normalized candidate listing.
+
+## 2026-07-15 CRT stream ownership
+
+The backing DAT handle is now owned by the pinned VC6 `<stdio.h>` `FILE` type,
+not a scratch-invented opaque `File`. `archive_index.h` publishes
+`FILE* g_archive_file`, and this loader uses the authentic CRT `fopen`
+declaration instead of a local approximation. All archive-header consumers
+recompile unchanged; the focused object remains 92.54% with 13 clean masked
+references and the same install-store scheduling residual.

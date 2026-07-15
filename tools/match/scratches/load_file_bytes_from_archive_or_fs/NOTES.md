@@ -53,3 +53,10 @@ filesystem topology.
 `RShellLoadFile(char*, void*, int*)`. The live analysis database now carries
 that destination and size-result ownership plus typed `ArchiveIndex` globals;
 the focused source remains byte-oriented to preserve the proven Windows shape.
+
+2026-07-15 CRT ownership: both the filesystem fallback and the shared DAT
+stream now use VC6's real `FILE` owner and `<stdio.h>` function declarations;
+`<direct.h>` owns `getcwd`, and the archive-position deltas use `SEEK_CUR`.
+Removing the opaque scratch `File` type and six hand-written CRT declarations
+is codegen-neutral: focused matching remains 79.23% with 31 clean masked
+operands and the same control-layout, lowercase-fold, and cleanup residuals.

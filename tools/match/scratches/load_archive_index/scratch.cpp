@@ -7,8 +7,6 @@ char* load_file_bytes_fixed_size_from_archive_or_fs(char* path, char* out_buffer
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 void* allocate_tracked_memory(int size, char* name);
 
-File* __cdecl fopen(char* path, char* mode);
-
 char __cdecl load_archive_index(char* path)
 {
     char header[0x7c];

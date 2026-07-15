@@ -2,6 +2,8 @@
 #ifndef ARCHIVE_INDEX_H
 #define ARCHIVE_INDEX_H
 
+#include <stdio.h>
+
 typedef struct ArchiveEntry {
     char* path;      // +0x00
     int data_offset; // +0x04
@@ -53,11 +55,9 @@ typedef char SerializedArchiveEntry_must_be_0x0c[
 typedef char DirectoryEntryName_must_be_0x80[
     (sizeof(DirectoryEntryName) == 0x80) ? 1 : -1];
 
-typedef struct File File;
-
 extern char* g_music_memory_buffer; // data_53c7e8 / iOS RShellMusicMemoryBuffer
 extern void* g_archive_data_base;   // data_53c7ec / iOS RShellScratch
-extern File* g_archive_file; // data_53c7f0 / iOS gDatFP
+extern FILE* g_archive_file; // data_53c7f0 / iOS gDatFP
 extern unsigned char g_archive_startup_flag; // data_53c7f4 / iOS RShellDirectoryStackLevel
 extern ArchiveIndex* g_archive_index_records; // data_53c7f8 / iOS gDat
 

@@ -1,18 +1,11 @@
 // load_file_bytes_fixed_size_from_archive_or_fs @ 0x431030 (cdecl)
 
+#include <direct.h>
+
 #include "archive_index.h"
 #include "loading_bar.h"
 
-extern "C" {
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-int __cdecl fseek(File* file, int offset, int origin);
-int __cdecl ftell(File* file);
-unsigned int __cdecl fread(void* buffer, unsigned int element_size, unsigned int element_count, File* file);
-char* __cdecl getcwd(char* buffer, int size);
-}
-
-int get_stream_length_preserve_position(File* file);
+int get_stream_length_preserve_position(FILE* file);
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 int report_messagef(char* format, ...);
@@ -25,7 +18,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     int count;
     int entry_index;
     char** entry_path;
-    File* file;
+    FILE* file;
     char* result;
 
     g_loading_bar.update_loading_screen();
@@ -70,7 +63,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
                         fseek(g_archive_file,
                             g_archive_index_records->entries[entry_index].data_offset
                                 - current_offset,
-                            1);
+                            SEEK_CUR);
                         fread(allocated, 1, byte_count, g_archive_file);
                         xor_archive_bytes_in_place(
                             g_archive_index_records->entries[entry_index].data_offset,
@@ -82,7 +75,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
                         fseek(g_archive_file,
                             g_archive_index_records->entries[entry_index].data_offset
                                 - current_offset,
-                            1);
+                            SEEK_CUR);
                         fread(buffer, 1, byte_count, g_archive_file);
                         xor_archive_bytes_in_place(
                             g_archive_index_records->entries[entry_index].data_offset,

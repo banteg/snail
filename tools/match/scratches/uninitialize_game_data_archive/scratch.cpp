@@ -3,7 +3,6 @@
 #include "archive_index.h"
 
 void free_tracked_memory(void* pointer);
-extern "C" int __cdecl fclose(File* file);
 
 int uninitialize_game_data_archive()
 {

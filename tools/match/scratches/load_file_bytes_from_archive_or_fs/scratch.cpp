@@ -1,18 +1,11 @@
 // load_file_bytes_from_archive_or_fs @ 0x4312d0 (cdecl)
 
+#include <direct.h>
+
 #include "archive_index.h"
 #include "loading_bar.h"
 
-extern "C" {
-File* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(File* file);
-int __cdecl fseek(File* file, int offset, int origin);
-int __cdecl ftell(File* file);
-unsigned int __cdecl fread(void* buffer, unsigned int element_size, unsigned int element_count, File* file);
-char* __cdecl getcwd(char* buffer, int size);
-}
-
-int get_stream_length_preserve_position(File* file);
+int get_stream_length_preserve_position(FILE* file);
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 int report_messagef(char* format, ...);
@@ -26,7 +19,7 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
     int entry_index;
     char** entry_path;
     char* requested_path;
-    File* file;
+    FILE* file;
     int byte_count;
     char* result;
     char* allocated;
@@ -97,7 +90,7 @@ found_archive_entry:
         int current_offset = ftell(g_archive_file);
         fseek(g_archive_file,
             g_archive_index_records->entries[entry_index].data_offset - current_offset,
-            1);
+            SEEK_CUR);
         fread(allocated,
             1,
             g_archive_index_records->entries[entry_index].byte_count,
@@ -111,7 +104,7 @@ found_archive_entry:
         int current_offset = ftell(g_archive_file);
         fseek(g_archive_file,
             g_archive_index_records->entries[entry_index].data_offset - current_offset,
-            1);
+            SEEK_CUR);
         fread(buffer,
             1,
             g_archive_index_records->entries[entry_index].byte_count,
