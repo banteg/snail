@@ -91,3 +91,33 @@ independent `kind == 0x21` / `0x22` / `0x23` branches, matching the decompiler's
 surface spelling, regressed focused Wibo from 19.40% (558/679) to 19.31%
 (564/679). Masked operands stayed at 19 ok, 0 unresolved, 9 mismatch, so the
 retained source keeps the `else if` branch chain.
+
+2026-07-15 ownership cascade: flattening the delta producer into the constructor
+and indexing `primary_samples` / `secondary_samples` directly recovered the
+native owner and moved focused Wibo from 19.40% to 25.72%. Expanding the two
+endpoint samples then improved the masked call audit from 21 ok, 7 mismatch to
+24 ok, 5 mismatch and nudged Wibo to 25.83%.
+
+Flattening curved-sample initialization was the main unlock: focused Wibo moved
+to 38.76%, with 26 masked operands correct and one mismatch. Recovering the
+native zero-based angle counter plus one-based sample index then moved Wibo to
+40.81% and cleared the masked audit. Finally, direct center stores in an
+explicit three-case `switch` recovered the target's `0x21..0x23` dispatch and
+unknown-kind fallthrough, moving focused Wibo to 44.05% (615/679 candidate/
+target instructions), with 33 masked operands correct and no unresolved or
+mismatched operands.
+
+The target also proves that face headers are initialized as a 16-bit word, so
+the retained direct mesh writer now uses `header_word`. This ownership change
+is score-neutral. The native two-face loop and checkerboard-shaped redundant
+texture branches remain documented family structure, but are not retained yet:
+the simple face loop regressed Wibo to 22.05%, while the fuller shared-family
+loop reached 36.46% (37.47% with explicit terminal vertex branches), both below
+the 40.81% pre-dispatch baseline. Direct orientation array indexing similarly
+regressed to 21.09%; pointer aliases remain retained for compiler scheduling.
+
+Post-cascade radius and vertex probes were also rejected. A float radius local
+produced the visible dword comparison but regressed Wibo from 40.81% to 40.71%
+and reintroduced one masked call mismatch. Explicit terminal/nonterminal vertex
+branches regressed to 40.74%. The x87 radius temporary and collapsed vertex
+selection remain until surrounding stack and mesh ownership moves again.
