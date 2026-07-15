@@ -3,251 +3,251 @@
 /* selector: initialize_subgame */
 
 // Initializes the active gameplay subgame state, including the continuation selector at `+0x1270fc8`, per-mode HUD widgets, replay-backed startup, and the first galaxy, challenge-setup, or gameplay handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`.
-_BYTE *__thiscall initialize_subgame(int this)
+void __thiscall initialize_subgame(SubgameRuntime *game)
 {
   int v1; // edx
-  _DWORD *v3; // eax
+  FringeObject **p_fringe_front; // eax
   int v4; // ecx
-  _DWORD *v5; // edi
-  int v6; // eax
+  FringeObject **v5; // edi
+  int32_t subgame_rebuild_selector; // eax
   int landscape_script_by_name; // eax
-  int v8; // eax
+  int32_t level_mode; // eax
   int v9; // eax
-  char *v10; // eax
-  _DWORD *v11; // eax
-  _DWORD *v12; // eax
-  _DWORD *v13; // eax
+  SubSolution *time_trial_route_records; // eax
+  tColour *v11; // eax
+  tColour *v12; // eax
+  tColour *v13; // eax
   int v14; // edi
-  int *v15; // esi
-  _DWORD *v16; // eax
-  int v17; // eax
-  _DWORD *v18; // edx
+  int *life_stock_widgets; // esi
+  tColour *v16; // eax
+  int32_t v17; // eax
+  SubSolutionScoreOrTime *p_score_or_time; // edx
   char *v19; // eax
-  _DWORD *v20; // eax
+  tColour *v20; // eax
   char *v21; // eax
-  _BYTE *result; // eax
-  int v23; // eax
-  int v24; // eax
-  int v25; // eax
+  GameRoot *v22; // eax
+  float v23; // eax
+  float v24; // eax
+  int32_t v25; // eax
   int v26; // edx
   int v27; // [esp+0h] [ebp-40h]
   int v28; // [esp+24h] [ebp-1Ch]
-  _DWORD v29[6]; // [esp+28h] [ebp-18h] BYREF
+  Time color; // [esp+28h] [ebp-18h] BYREF
 
   v1 = 3200;
-  v3 = (_DWORD *)(this + 3930892);
+  p_fringe_front = &game->runtime_cells[0][0].fringe_front;
   do
   {
     v4 = 8;
     do
     {
-      v5 = v3;
-      v3 += 21;
+      v5 = p_fringe_front;
+      p_fringe_front += 21;
       --v4;
-      *v5 = 0;
-      v5[1] = 0;
-      v5[2] = 0;
-      v5[3] = 0;
+      *v5 = nullptr;
+      v5[1] = nullptr;
+      v5[2] = nullptr;
+      v5[3] = nullptr;
     }
     while ( v4 );
     --v1;
   }
   while ( v1 );
-  v6 = *(_DWORD *)(this + 19337160);
-  if ( v6 == 2 || v6 == 1 )
+  subgame_rebuild_selector = game->subgame_rebuild_selector;
+  if ( subgame_rebuild_selector == 2 || subgame_rebuild_selector == 1 )
   {
-    cache_music_file(aMusicMainmenuO);
-    landscape_script_by_name = load_landscape_script_by_name((char *)MEMORY[0x4DF904] + 17220120, aMenubgTxt);
+    cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
+    landscape_script_by_name = load_landscape_script_by_name(
+                                 (char *)&g_game_base->subgame.unknown_000044[16743356],
+                                 g_menu_background_script_path);
     change_backdrop(
-      (int)MEMORY[0x4DF904] + 322576,
-      (int)MEMORY[0x4DF904] + 292 * landscape_script_by_name + 17221564,
+      (int)&g_game_base->unknown_00067c[320916],
+      (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
       0);
-    set_border_justify_centre((_DWORD *)MEMORY[0x4DF904] + 723, 1103626240);
+    set_border_justify_centre(&g_game_base->unknown_00067c[1232], 1103626240);
   }
-  v8 = *(_DWORD *)(this + 64);
-  if ( !v8 )
+  level_mode = game->level_mode;
+  if ( !level_mode )
   {
-    v10 = (char *)&unk_68B4D0 + this;
+    time_trial_route_records = (SubSolution *)((char *)&unk_68B4D0 + (_DWORD)game);
 LABEL_14:
-    *(_DWORD *)((char *)&unk_68B4C8 + this) = v10;
-    *(_DWORD *)(this + 3497364) = *((_DWORD *)v10 + 1);
+    *(_DWORD *)((char *)&g_high_score_bank + (_DWORD)game) = time_trial_route_records;
+    game->active_level_score = time_trial_route_records->score;
     goto LABEL_15;
   }
-  v9 = v8 - 1;
+  v9 = level_mode - 1;
   if ( v9 )
   {
     if ( v9 != 3 )
       goto LABEL_16;
-    v10 = (char *)(this + 9716048);
+    time_trial_route_records = game->sub_high_score.time_trial_route_records;
     goto LABEL_14;
   }
-  v10 = (char *)&unk_7E7B10 + this;
-  *(_DWORD *)((char *)&unk_68B4C8 + this) = (char *)&unk_7E7B10 + this;
-  *(_DWORD *)(this + 3497364) = *(_DWORD *)((char *)&unk_7E7B10 + this + 4);
+  time_trial_route_records = (SubSolution *)((char *)&unk_7E7B10 + (_DWORD)game);
+  *(_DWORD *)((char *)&g_high_score_bank + (_DWORD)game) = (char *)&unk_7E7B10 + (_DWORD)game;
+  game->active_level_score = *(_DWORD *)((char *)&unk_7E7B10 + (_DWORD)game + 4);
 LABEL_15:
-  qmemcpy((void *)(this + 3497368), v10 + 8, 0x18u);
+  qmemcpy(&game->active_level_timer, &time_trial_route_records->score_or_time, sizeof(game->active_level_timer));
 LABEL_16:
-  if ( *(_BYTE *)(this + 16721361) )
-    *(_DWORD *)(this + 48) = *(_DWORD *)(*(_DWORD *)(this + 16721364) + 72);
-  *(_BYTE *)(this + 9) = 0;
-  *(_BYTE *)(this + 8) = 0;
-  *(_DWORD *)(this + 12) = 0;
-  *(_DWORD *)(this + 16) = 1023969417;
-  noop_runtime_ai((char *)&unk_68B4C8 + this);
-  *(_DWORD *)(this + 60) = 0;
-  *(_DWORD *)(this + 19343400) = 0;
-  *(_DWORD *)(this + 3521416) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v11 = set_color_rgba(v29, 1065353216, 1065353216, 1065353216, 1022739087);
-  initialize_frontend_widget(*(_DWORD *)(this + 3521416), 4194306, a0, 20, 1137180672, 14.0, (int)v11, 3, 300.0);
-  *(_DWORD *)(*(_DWORD *)(this + 3521416) + 1776) = 1069547520;
-  *(_DWORD *)(*(_DWORD *)(this + 3521416) + 628) = 7;
-  *(_BYTE *)(*(_DWORD *)(this + 3521416) + 716) = 0;
-  if ( !*(_DWORD *)(this + 64) )
+  if ( game->selected_level_record_persistent )
+    game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
+  game->subgame_pause_gate = 0;
+  game->_pad_00[8] = 0;
+  *(_DWORD *)&game->_pad_0a[2] = 0;
+  *(_DWORD *)&game->_pad_0a[6] = 1023969417;
+  noop_runtime_ai();
+  game->subgame_state = 0;
+  game->times_up.state = TIMES_UP_STATE_INACTIVE;
+  game->top_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+  v11 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
+  initialize_frontend_widget(game->top_score_widget, 0x400002u, a0, 20, 400.0, 14.0, v11, 3, 300.0);
+  game->top_score_widget->font_scale = 1.5;
+  game->top_score_widget->texture_layer = 7;
+  game->top_score_widget->text_buffer.raw[0] = 0;
+  if ( !game->level_mode )
   {
-    *(_DWORD *)(this + 3521424) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v12 = set_color_rgba(v29, 1065353216, 1065353216, 1065353216, 1065353216);
-    initialize_frontend_sprite_button(*(_DWORD *)(this + 3521424), 4196352, 122, 0, 1114112000, v12, 0.0, 4);
-    hide_border_init(*(_DWORD **)(this + 3521424));
-    *(_DWORD *)(*(_DWORD *)(this + 3521424) + 376) = 0;
-    *(_DWORD *)(this + 3521428) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    v13 = set_color_rgba(v29, 1065353216, 1065353216, 1065353216, 1022739087);
-    initialize_frontend_widget(*(_DWORD *)(this + 3521428), 4194306, a0, 20, 1111228416, 80.0, (int)v13, 0, 0.0);
-    hide_border_init(*(_DWORD **)(this + 3521428));
+    game->lives_icon_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+    v12 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+    initialize_frontend_sprite_button((int)game->lives_icon_widget, 4196352, 122, 0, 1114112000, v12, 0.0, 4);
+    hide_border_init(&game->lives_icon_widget->list_kind);
+    game->lives_icon_widget->sprite_shadow_offset = 0.0;
+    game->lives_text_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+    v13 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
+    initialize_frontend_widget(game->lives_text_widget, 0x400002u, a0, 20, 47.0, 80.0, v13, 0, 0.0);
+    hide_border_init(&game->lives_text_widget->list_kind);
     v14 = 0;
     v28 = 0;
-    v15 = (int *)(this + 3521432);
-    *(_DWORD *)(*(_DWORD *)(this + 3521428) + 1776) = 1060320051;
+    life_stock_widgets = (int *)game->life_stock_widgets;
+    game->lives_text_widget->font_scale = 0.69999999;
     do
     {
-      *v15 = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-      v16 = set_color_rgba(v29, 1065353216, 1065353216, 1065353216, 1065353216);
+      *life_stock_widgets = (int)allocate_border(&g_game_base->unknown_00067c[1232]);
+      v16 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
       *(float *)&v27 = (double)v28 * 24.0 + 13.0;
-      initialize_frontend_sprite_button(*v15, 4196352, 123, v27, 1138163712, v16, 0.0, 4);
-      *(_DWORD *)(*v15 + 376) = 0;
-      hide_border_init((_DWORD *)*v15);
+      initialize_frontend_sprite_button(*life_stock_widgets, 4196352, 123, v27, 1138163712, v16, 0.0, 4);
+      *(_DWORD *)(*life_stock_widgets + 376) = 0;
+      hide_border_init((_DWORD *)*life_stock_widgets);
       ++v14;
-      ++v15;
+      ++life_stock_widgets;
       v28 = v14;
     }
     while ( v14 < 9 );
   }
-  v17 = *(_DWORD *)(this + 64);
-  if ( *(_DWORD *)(this + 16332220) == v17 )
+  v17 = game->level_mode;
+  if ( game->sub_high_score.current_result_record.replay_mode_id == v17 )
   {
     if ( v17 == 4 )
     {
-      v18 = (_DWORD *)(this + 16332184);
+      p_score_or_time = &game->sub_high_score.current_result_record.score_or_time;
 LABEL_24:
-      v19 = format_time_trial_string((int)v18);
-      rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521416) + 716), v19);
+      v19 = format_time_trial_string(&game->time_trial, (Time *)p_score_or_time);
+      rstrcpy_checked_ascii((char *)&game->top_score_widget->text_buffer, v19);
       goto LABEL_29;
     }
-    border_add_text_number(*(_BYTE **)(this + 3521416), *(_DWORD *)(this + 16332180));
+    border_add_text_number(game->top_score_widget, game->sub_high_score.current_result_record.score);
   }
   else
   {
     if ( v17 == 4 )
     {
-      zero_timer_counters(v29);
-      v18 = v29;
+      zero_timer_counters(&color);
+      p_score_or_time = (SubSolutionScoreOrTime *)&color;
       goto LABEL_24;
     }
-    border_add_text_number(*(_BYTE **)(this + 3521416), 0);
+    border_add_text_number(game->top_score_widget, 0);
   }
 LABEL_29:
-  *(_DWORD *)(this + 3521420) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v20 = set_color_rgba(v29, 1065353216, 1065353216, 1065353216, 1022739087);
-  initialize_frontend_widget(*(_DWORD *)(this + 3521420), 4194306, a0, 20, 1109393408, 14.0, (int)v20, 3, -71.0);
-  *(_DWORD *)(*(_DWORD *)(this + 3521420) + 1776) = 1069547520;
-  *(_DWORD *)(*(_DWORD *)(this + 3521420) + 628) = 7;
-  *(_BYTE *)(*(_DWORD *)(this + 3521420) + 716) = 0;
-  switch ( *(_DWORD *)(this + 64) )
+  game->bottom_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+  v20 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
+  initialize_frontend_widget(game->bottom_score_widget, 0x400002u, a0, 20, 40.0, 14.0, v20, 3, -71.0);
+  game->bottom_score_widget->font_scale = 1.5;
+  game->bottom_score_widget->texture_layer = 7;
+  game->bottom_score_widget->text_buffer.raw[0] = 0;
+  switch ( game->level_mode )
   {
     case 0:
     case 1:
-      border_add_text_number(*(_BYTE **)(this + 3521420), *(_DWORD *)(this + 3497364));
+      border_add_text_number(game->bottom_score_widget, game->active_level_score);
       break;
     case 2:
     case 3:
-      hide_border_init(*(_DWORD **)(this + 3521420));
-      hide_border_init(*(_DWORD **)(this + 3521416));
+      hide_border_init(&game->bottom_score_widget->list_kind);
+      hide_border_init(&game->top_score_widget->list_kind);
       break;
     case 4:
-      v21 = format_time_trial_string(this + 3497368);
-      rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521420) + 716), v21);
+      v21 = format_time_trial_string(&game->time_trial, &game->active_level_timer);
+      rstrcpy_checked_ascii((char *)&game->bottom_score_widget->text_buffer, v21);
       break;
     default:
       break;
   }
-  result = MEMORY[0x4DF904];
-  if ( *((_BYTE *)MEMORY[0x4DF904] + 324320) || *(_DWORD *)(this + 64) == 7 )
+  v22 = g_game_base;
+  if ( g_game_base->unknown_00067c[322660] || game->level_mode == 7 )
   {
-    hide_border_init(*(_DWORD **)(this + 3521420));
-    hide_border_init(*(_DWORD **)(this + 3521416));
-    result = MEMORY[0x4DF904];
+    hide_border_init(&game->bottom_score_widget->list_kind);
+    hide_border_init(&game->top_score_widget->list_kind);
+    v22 = g_game_base;
   }
-  if ( !result[781] )
+  if ( !v22->players[0].high_score_entry_pending )
   {
-    result[781] = 0;
-    *((_DWORD *)MEMORY[0x4DF904] + 196) = 0;
-    load_builtin_segment_definitions((int *)(this + 1769964), (int)&off_4A63D0);
-    set_matrix_identity((_DWORD *)(this + 3913628));
-    *(_DWORD *)(this + 3914608) = 0;
-    *(_DWORD *)(this + 3914604) = this;
-    v23 = *(_DWORD *)(this + 3913676);
-    *(_BYTE *)(this + 3914625) = 0;
-    *(_DWORD *)(this + 3924168) = v23;
-    *(_BYTE *)(this + 3914624) = 0;
-    v24 = *(_DWORD *)(this + 3913680);
-    *(_DWORD *)(this + 3914600) = 0;
-    *(_DWORD *)(this + 3924172) = v24;
-    *(_DWORD *)(this + 3924176) = *(_DWORD *)(this + 3913684);
-    *(_DWORD *)(this + 3913576) &= ~0x20u;
-    initialize_warning((int *)(this + 3914584));
-    v25 = *(_DWORD *)(this + 19337160);
+    v22->players[0].high_score_entry_pending = 0;
+    g_game_base->players[0].selected_high_score_rank = 0;
+    load_builtin_segment_definitions(&game->level_definition_scratch, (SubSegmentRaw **)&g_builtin_segment_definitions);
+    set_matrix_identity((TransformMatrix *)game->player.body.transform);
+    game->player.movement_mode_selector = 0;
+    game->player.game = game;
+    v23 = *(float *)&game->player.body.transform[48];
+    game->player.attachment_exit_pending = 0;
+    game->player.cached_camera_target_world.x = v23;
+    game->player.boost_one_tick = 0;
+    v24 = *(float *)&game->player.body.transform[52];
+    game->player.lives = 0;
+    game->player.cached_camera_target_world.y = v24;
+    game->player.cached_camera_target_world.z = *(float *)&game->player.body.transform[56];
+    game->player.body.bod.bod.list_flags &= ~0x20u;
+    initialize_warning((int *)&game->player.warning);
+    v25 = game->subgame_rebuild_selector;
     if ( v25 && v25 != 3 )
     {
-      if ( !*(_BYTE *)(this + 16721361) )
+      if ( !game->selected_level_record_persistent )
       {
-        switch ( *(_DWORD *)(this + 64) )
+        switch ( game->level_mode )
         {
           case 0:
             if ( v25 == 1 )
             {
-              v26 = *(_DWORD *)(this + 68) + 1;
-              *(_DWORD *)(this + 68) = v26;
-              if ( v26 > dword_4DF9B8 )
+              v26 = game->level_mode_arg + 1;
+              game->level_mode_arg = v26;
+              if ( v26 > g_runtime_config.highest_galaxy_route_index )
               {
-                dword_4DF9B8 = v26;
-                save_config_file(aSnailmailCfg, &unk_4DF918, 196);
+                g_runtime_config.highest_galaxy_route_index = v26;
+                save_config_file(aSnailmailCfg, (CompletionResultScreen *)&g_runtime_config, (FrontendWidget *)0xC4);
               }
-              unk_4DF9BC = *(_DWORD *)(this + 68);
+              g_runtime_config.landscape_backdrop_variant_selector = game->level_mode_arg;
             }
             goto LABEL_45;
           case 1:
-            initialize_challenge_setup_screen((int *)(this + 19267552));
-            result = (_BYTE *)reset_subgame((_DWORD *)this);
+            initialize_challenge_setup_screen(&game->gui);
+            reset_subgame(game);
             break;
           case 4:
 LABEL_45:
-            initialize_galaxy(this + 19267616);
-            result = (_BYTE *)reset_subgame((_DWORD *)this);
+            initialize_galaxy((int)&game->galaxy);
+            reset_subgame(game);
             break;
           case 7:
-            *(_DWORD *)(this + 60) = 0;
-            result = (_BYTE *)reset_subgame((_DWORD *)this);
+            game->subgame_state = 0;
+            reset_subgame(game);
             break;
           default:
             report_errorf(aUnknownGameMod);
-            result = (_BYTE *)reset_subgame((_DWORD *)this);
+            reset_subgame(game);
             break;
         }
-        return result;
+        return;
       }
-      *(_DWORD *)(this + 48) = *(_DWORD *)(*(_DWORD *)(this + 16721364) + 72);
+      game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
     }
-    return (_BYTE *)reset_subgame((_DWORD *)this);
+    reset_subgame(game);
   }
-  return result;
 }
-

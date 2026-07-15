@@ -1375,17 +1375,48 @@
       "name": "bn_initialize_subgame_body_available",
       "artifact": "analysis/decompile/binja/functions/004374b0-initialize_subgame.c",
       "required_substrings": [
+        "&game->runtime_cells[0][0].fringe_front",
+        "game->sub_high_score.active_record_bank",
+        "game->top_score_widget",
+        "game->player.game = game",
+        "struct tColour color",
+        "initialize_challenge_setup_screen(&game->gui)",
+        "initialize_galaxy(&game->galaxy)",
         "game->level_mode",
         "game->subgame_state",
         "initialize_frontend_widget"
       ],
       "forbidden_substrings": [
+        "struct Game*",
+        "arg1->",
+        "Color4f",
         "__asm",
         "_ET1"
       ],
       "max_counts": {
-        "__offset(": 90
+        "__offset(": 2
       }
+    },
+    {
+      "name": "ida_initialize_subgame_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004374b0-initialize_subgame.c",
+      "required_substrings": [
+        "void __thiscall initialize_subgame(",
+        "SubgameRuntime *game)",
+        "p_fringe_front = &game->runtime_cells[0][0].fringe_front",
+        "game->sub_high_score.time_trial_route_records",
+        "game->top_score_widget",
+        "game->player.game = game",
+        "initialize_challenge_setup_screen(&game->gui)",
+        "initialize_galaxy((int)&game->galaxy)"
+      ],
+      "forbidden_substrings": [
+        "GameRoot *__thiscall initialize_subgame",
+        "initialize_subgame(int this)",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
     },
     {
       "name": "bn_build_track_fringe_body_available",

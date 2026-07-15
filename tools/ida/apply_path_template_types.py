@@ -765,6 +765,22 @@ TRUSTED_DECLARATIONS = [
         "char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path);",
     ),
     (
+        "initialize_subgame",
+        "void __thiscall initialize_subgame(SubgameRuntime* game);",
+    ),
+    (
+        "destroy_subgame",
+        "void __thiscall destroy_subgame(SubgameRuntime* game);",
+    ),
+    (
+        "update_subgame",
+        "void __thiscall update_subgame(SubgameRuntime* game);",
+    ),
+    (
+        "remove_subgame_bods",
+        "void __thiscall remove_subgame_bods(SubgameRuntime* game);",
+    ),
+    (
         "build_subgame_level",
         "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);",
     ),
@@ -904,6 +920,107 @@ def _sync_color_lvars(selector: str) -> dict[str, object]:
         "updated_count": len(updated),
         "locals": updated,
         "type": "tColour",
+        "selector": selector,
+    }
+
+
+def _sync_subgame_receiver_lvar(selector: str) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [lvar for lvar in cfunc.get_lvars() if lvar.is_arg_var]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_argument_candidates",
+            "candidate_count": len(candidates),
+            "selector": selector,
+        }
+
+    owner_type = ida_typeinf.tinfo_t()
+    if not owner_type.get_named_type(
+        None,
+        "SubgameRuntime",
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_SubgameRuntime_type",
+            "selector": selector,
+        }
+
+    pointer_type = ida_typeinf.tinfo_t()
+    if not pointer_type.create_ptr(owner_type):
+        return {
+            "status": "failed",
+            "reason": "create_SubgameRuntime_pointer_failed",
+            "selector": selector,
+        }
+
+    lvar = candidates[0]
+    expected_type = (_normalize_type_text(str(pointer_type)) or "").removeprefix(
+        "struct "
+    )
+    observed_type = (_normalize_type_text(str(lvar.type())) or "").removeprefix(
+        "struct "
+    )
+    if lvar.name == "game" and observed_type == expected_type:
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "selector": selector,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = "game"
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_user_lvar_info_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_candidates = [
+        candidate for candidate in verified_cfunc.get_lvars() if candidate.is_arg_var
+    ]
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_verified_argument_candidates",
+            "candidate_count": len(verified_candidates),
+            "selector": selector,
+        }
+
+    verified = verified_candidates[0]
+    verified_type = (_normalize_type_text(str(verified.type())) or "").removeprefix(
+        "struct "
+    )
+    if verified.name != "game" or verified_type != expected_type:
+        return {
+            "status": "failed",
+            "reason": "lvar_verification_failed",
+            "observed_name": verified.name,
+            "observed_type": str(verified.type()),
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied",
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified.name,
+        "type": str(verified.type()),
         "selector": selector,
     }
 
@@ -1065,6 +1182,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "color_lvars": get_track_skirt_color_lvars,
             }
         )
+    subgame_receiver_lvars = {
+        selector: _sync_subgame_receiver_lvar(selector)
+        for selector in (
+            "initialize_subgame",
+            "destroy_subgame",
+            "update_subgame",
+            "remove_subgame_bods",
+        )
+    }
+    for selector, receiver_lvar in subgame_receiver_lvars.items():
+        if receiver_lvar.get("status") == "failed":
+            failed.append({"selector": selector, "receiver_lvar": receiver_lvar})
 
     print(
         json.dumps(
@@ -1082,6 +1211,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
+                "subgame_receiver_lvars": subgame_receiver_lvars,
                 "missing": missing,
                 "failed": failed,
             },

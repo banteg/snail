@@ -479,9 +479,18 @@ Practical interpretation:
   - deactivation at the `0.94` warning edge uses `set_weapon_animation(..., 1, 1, 8)` followed by a queued `-1`
 - the recovered asset family for that controller is `JETPACKTHRUST`; the separate `cRSubHover::Jets` nozzle-particle owner is now represented in Zig as the persistent bank above, including native-scaled width/back-offset jitter and the recovered trail-tip detached puff allocation branch
 
-## Game
+## SubgameRuntime
 
-The current high-confidence `Game` fields are:
+The current high-confidence `SubgameRuntime` fields are:
+
+`initialize_subgame @ 0x4374b0` closes the receiver identity: Windows, the
+exact matcher, and the cross-port `cRSubGame::Init()` symbol all describe the
+same `0x1272838`-byte gameplay aggregate. The older Binary Ninja `Game` type
+was a separate named-type identity with the same extent, not a second owner.
+Once the receiver is bound to `SubgameRuntime`, the initializer exposes the
+embedded runtime-cell grid, high-score banks, HUD handles, player backlink,
+GUI, galaxy, completion, and times-up owners directly. `Game` remains useful
+only as historical decompiler spelling in older evidence.
 
 - `+0x34`: `challenge_difficulty_scalar`
 - `+0x38`: `track_center_x`
@@ -1454,5 +1463,10 @@ These names are now safe to use when reading or extending the current Binary Nin
 One local tooling caveat remains:
 
 - the current `bn decompile` output does not always rewrite post-hoc struct-growth sites away from raw `__offset(...)` expressions, even after a manual analysis refresh
-- `bn types show Player`, `bn types show Game`, and `bn types show PathTemplate` are therefore the authoritative typed layouts for now
+- `bn types show Player`, `bn types show SubgameRuntime`, and the recovered
+  path-template types are therefore the authoritative typed layouts for now
+- older databases can retain a same-size `Game*` named-type identity on
+  `initialize_subgame`; inspect it read-only with
+  `uv run tools/binja/repair_initialize_subgame_owner.py`, and use the explicit
+  `--apply` form only after its guards report the exact known stale state
 - the recovered path-template surface now also has a narrow mirrored IDA lane through [`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h) and [`tools/ida/sync_path_template_types.py`](../../tools/ida/sync_path_template_types.py)

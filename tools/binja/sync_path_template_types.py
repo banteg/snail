@@ -15,6 +15,7 @@ from _narrow_sync import (
     apply_symbol_updates,
     current_prototypes,
     emit_summary,
+    normalize_prototype,
     run_bn,
     struct_exists,
     types_declare_if_missing,
@@ -1119,11 +1120,13 @@ CORE_SUBGAME_PROTO_UPDATES = (
 # canonical array. Older BN databases pin a separate user-defined Game*
 # parameter variable on all seven. Both the previewed prototype setter and local
 # retype API reject the owner-only correction, so report the drift instead of
-# claiming a mutation that analysis immediately restores. Preserve BN's
-# inferred calling convention here; the ownership pointer is the only intended
-# future change.
+# claiming a mutation that analysis immediately restores. initialize_subgame
+# has a separately guarded repair because its stale named-type identity required
+# function recreation, which Binary Ninja does not cover with ordinary undo.
+# Preserve BN's inferred calling convention for the other deferred receivers;
+# the ownership pointer is their only intended future change.
 DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
-    ("initialize_subgame", "void __fastcall initialize_subgame(SubgameRuntime* game)"),
+    ("initialize_subgame", "void __thiscall initialize_subgame(SubgameRuntime* game)"),
     (
         "build_subgame_level",
         "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index)",
@@ -1150,17 +1153,31 @@ def report_deferred_subgame_owner_prototypes(*, target: str) -> list[dict[str, o
             identifier for identifier, _prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
         ),
     )
-    return [
-        {
-            "op": "proto_owner_deferred",
-            "status": "deferred",
-            "reason": "existing user-defined Game* parameter is pinned by Binary Ninja",
+    results = []
+    for identifier, prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES:
+        observed = observed_prototypes.get(identifier)
+        current = observed is not None and normalize_prototype(
+            observed,
+            identifier=identifier,
+        ) == normalize_prototype(prototype, identifier=identifier)
+        result = {
+            "op": "proto_owner_current" if current else "proto_owner_deferred",
+            "status": "skipped" if current else "deferred",
+            "reason": (
+                "already current"
+                if current
+                else "existing user-defined Game* parameter is pinned by Binary Ninja"
+            ),
             "identifier": identifier,
             "desired_prototype": prototype,
-            "observed_prototype": observed_prototypes.get(identifier),
+            "observed_prototype": observed,
         }
-        for identifier, prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
-    ]
+        if identifier == "initialize_subgame" and not current:
+            result["repair_command"] = (
+                "uv run tools/binja/repair_initialize_subgame_owner.py --apply"
+            )
+        results.append(result)
+    return results
 
 
 def parse_args() -> argparse.Namespace:

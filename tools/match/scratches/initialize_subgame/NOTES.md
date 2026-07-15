@@ -469,11 +469,12 @@ clean, without trusting private label spelling.
 
 2026-07-13 canonical Binary Ninja replay: the authoritative path-template
 header now supplies the complete `SubgameRuntime` owner map used by this exact
-source. Binary Ninja still pins an older user-defined `Game*` parameter local;
-both prototype and local-retype attempts are restored by analysis, so the sync
-reports the receiver correction as deferred instead of claiming a mutation.
-The matching source remains the ownership authority and stays exact at
-396/396 with all 85 operands clean.
+source. Older Binary Ninja databases pin a separate user-defined `Game*`
+named-type identity; both ordinary prototype and local-retype attempts are
+restored by analysis. The sync reports that exact stale state honestly and
+points to the guarded initializer repair instead of claiming a mutation that
+analysis rejected. The matching source remains the ownership authority and
+stays exact at 396/396 with all 85 operands clean.
 
 2026-07-14 Player renderable inheritance: subgame reset initializes the
 embedded Player's inherited transform and copies its position into the
@@ -486,3 +487,32 @@ instructions with all 85 operands clean.
 Subgame initialization now resets the adjacent tail owner through
 `TIMES_UP_STATE_INACTIVE`. The direct enum constant is codegen-identical and
 the function remains exact at 396/396 instructions with all 85 operands clean.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja `Game*` receiver was not evidence for another aggregate:
+it was a stale named-type identity with the same `0x1272838` extent as
+`SubgameRuntime`. Ordinary prototype and local-variable setters rejected the
+identity-only correction. Recreating this one function with the registered
+`SubgameRuntime` type collapses 96 raw receiver offsets into the existing
+runtime-cell, score-bank, HUD, player, GUI, galaxy, and lifecycle owners; only
+the still-unproved early `+0x0c/+0x10` pair remains raw.
+
+Function removal/recreation is not fully covered by Binary Ninja's undo API,
+so it is not part of the broad ownership replay. The opt-in
+`repair_initialize_subgame_owner.py --apply` path checks the exact address,
+name, stale/current prototype, `SubgameRuntime` extent, comments, tags, and
+user-defined variables first, preserves the receiver and `tColour` workspace,
+verifies readback, saves explicitly, and has a manual rollback path. Its
+default mode is read-only, and apply mode is a no-op once the database is
+current.
+
+IDA had a different persistence layer: the function prototype was already
+correct, but a saved Hex-Rays `int this` lvar overrode it. The type sync now
+repairs and verifies the `SubgameRuntime *game` receiver for initializer,
+update, teardown, and BOD-removal lifecycle functions, invalidates cached
+pseudocode, and is idempotent across IDA's optional `struct` spelling. The
+tracked BN and IDA artifacts now expose the same initializer owner graph.
+
+No matcher source changed in this analysis-only closure. The native function
+remains proof-grade at 396/396 instructions with all 85 operands clean.

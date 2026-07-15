@@ -710,7 +710,7 @@ def types_declare_if_missing(
 
 
 def normalize_type_name(type_name: str) -> str:
-    normalized = re.sub(r"\b(?:struct|enum)\s+", "", type_name)
+    normalized = re.sub(r"\b(?:struct|union|enum)\s+", "", type_name)
     normalized = re.sub(r"\b([A-Za-z_][A-Za-z0-9_:]*)\s+const\s*\*", r"const \1*", normalized)
     normalized = re.sub(
         r"\[(0x[0-9a-fA-F]+|\d+)\]",

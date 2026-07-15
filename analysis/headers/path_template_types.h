@@ -2291,6 +2291,14 @@ char __cdecl cache_music_file(
 
 void* __thiscall noop_this_constructor(void* self);
 
+void __thiscall initialize_subgame(SubgameRuntime* game);
+
+void __thiscall destroy_subgame(SubgameRuntime* game);
+
+void __thiscall update_subgame(SubgameRuntime* game);
+
+void __thiscall remove_subgame_bods(SubgameRuntime* game);
+
 void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);
 
 int32_t __thiscall rebuild_track_runtime_from_segments(

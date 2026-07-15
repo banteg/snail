@@ -40,6 +40,9 @@ def test_normalize_type_name_canonicalizes_array_dimensions() -> None:
     assert _narrow_sync.normalize_type_name(
         "struct PathPair[0x3f]"
     ) == _narrow_sync.normalize_type_name("PathPair[63]")
+    assert _narrow_sync.normalize_type_name(
+        "union RuntimeRateOrLevelArg"
+    ) == _narrow_sync.normalize_type_name("RuntimeRateOrLevelArg")
 
 
 def test_normalize_prototype_treats_default_cdecl_as_equivalent() -> None:
@@ -350,12 +353,21 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
 
 def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     source = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
+    repair_source = (BINJA_DIR / "repair_initialize_subgame_owner.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
 
     assert "CORE_SUBGAME_PROTO_UPDATES" in source
     assert "DEFERRED_SUBGAME_OWNER_PROTO_UPDATES" in source
     assert "proto_owner_deferred" in source
     assert "apply_struct_and_proto_updates" in source
     assert "apply_direct_proto_update" not in source
+    assert "proto_owner_current" in source
+    assert "repair_initialize_subgame_owner.py --apply" in source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in source
     assert '"RingOrSpecialEffectPool"' not in source
     assert '"SubSpeedUp"' not in source
@@ -377,6 +389,32 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "get_track_runtime_cell_at_world_z",
     ):
         assert f'"{function_name}"' in deferred_prototypes
+
+    assert (
+        '"initialize_subgame", "void __thiscall '
+        'initialize_subgame(SubgameRuntime* game)"'
+    ) in deferred_prototypes
+    assert "FUNCTION_ADDRESS = 0x4374B0" in repair_source
+    assert 'EXPECTED_PROTOTYPE = "void __thiscall(struct SubgameRuntime* game)"' in repair_source
+    assert 'STALE_PROTOTYPE = "void __fastcall(struct Game* game)"' in repair_source
+    assert "if stale and comments:" in repair_source
+    assert "if stale and tags:" in repair_source
+    assert "function_has_unpreserved_user_vars" in repair_source
+    assert "def restore_old_function():" in repair_source
+    assert '"--apply"' in repair_source
+    assert "Without this flag the tool" in repair_source
+    assert '"is read-only. Function recreation' in repair_source
+    assert "def _sync_subgame_receiver_lvar" in ida_source
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_source
+    for function_name in (
+        "initialize_subgame",
+        "destroy_subgame",
+        "update_subgame",
+        "remove_subgame_bods",
+    ):
+        declaration = f"void __thiscall {function_name}(SubgameRuntime* game);"
+        assert declaration in header
+        assert declaration in ida_source
 
 
 def test_animation_ownership_stays_aligned_across_replay_lanes() -> None:
