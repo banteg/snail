@@ -621,12 +621,14 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     + lateral * previous->transform.basis_right.z;
             } else {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
-                vertex->x = sample->transform.position.x
-                    + lateral * sample->transform.basis_right.x;
-                vertex->y = sample->transform.position.y
-                    + lateral * sample->transform.basis_right.y;
-                vertex->z = sample->transform.position.z
-                    + lateral * sample->transform.basis_right.z;
+                Vector3 generated_position(
+                    sample->transform.position.x
+                        + lateral * sample->transform.basis_right.x,
+                    sample->transform.position.y
+                        + lateral * sample->transform.basis_right.y,
+                    sample->transform.position.z
+                        + lateral * sample->transform.basis_right.z);
+                *vertex = generated_position;
             }
         }
     }
@@ -635,7 +637,10 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
         if (width_cells > 0) {
             float v0 = (float)(face_row % 8) * 0.125f;
             float v1 = (float)(face_row % 8 + 1) * 0.125f;
-            for (face_column = 0; face_column < width_cells; ++face_column) {
+            face_column = 0;
+            int next_column;
+            do {
+                next_column = face_column + 1;
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
@@ -649,8 +654,12 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_3 =
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
-                        face->texture_ref =
-                            g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                        if ((face_column ^ face_row) & 1)
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                        else
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
                         face->uv[0].u = u0;
                         face->uv[0].v = v0;
                         face->uv[1].u = u1;
@@ -665,8 +674,12 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
                         face->vertex_3 =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->texture_ref =
-                            g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                        if ((face_column ^ face_row) & 1)
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                        else
+                            face->texture_ref =
+                                g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
                         face->uv[0].u = u1;
                         face->uv[0].v = v0;
                         face->uv[1].u = u0;
@@ -677,7 +690,8 @@ void Path::PATH_FUNCTION(PATH_SIGNATURE)
                     }
                     face->uv[3].v = v1;
                 }
-            }
+                face_column = next_column;
+            } while (next_column < width_cells);
         }
     }
 

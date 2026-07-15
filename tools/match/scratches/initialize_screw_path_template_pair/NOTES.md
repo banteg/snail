@@ -33,3 +33,22 @@ setup precede them matched the native-looking entry order more closely, but was
 metric-neutral at 30.95% (601/685) with the masked audit unchanged at 33 ok, 0
 unresolved, 0 mismatch. The scratch keeps the shared header spelling rather
 than adding branch-local boilerplate without a matcher win.
+
+2026-07-15 mesh ownership recovery: the native face builder preserves parity
+branches even though both arms of each orientation currently request the same
+texture, advances face columns with a `do/while`, and materializes an ordinary
+row position as a `Vector3` before storing it. Recovering those source facts
+raises focused Wibo from 30.95% (601/685) to 39.88% (619/685), with 32 clean
+masked operands and no unresolved or mismatched operands. The parity branches
+provide the largest independently measured gain, reaching 39.41% (614/685);
+the face-column lifetime then reaches 39.78% (612/685).
+
+2026-07-15 rejected lifetime probes: an explicit byte cursor for the
+three-sample entrance regressed focused Wibo to 39.63% (617/685), and direct
+array-member spelling regressed it to 39.21% (631/685) while introducing a
+masked call mismatch. An explicit helical byte cursor fell to 33.18% (617/685)
+with four call mismatches; separately duplicating the secondary up-vector trig
+calls fell to 26.77% (630/685) with one call mismatch. A mutating five-sample
+departure loop remained audit-clean but regressed to 39.72% (619/685). These
+forms are not retained until the surrounding orientation lifetimes explain the
+native schedule as a whole.
