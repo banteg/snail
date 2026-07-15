@@ -150,7 +150,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_ring_or_special_effect",
-        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, SubRingKind requested_kind, Player* player, float ring_speed);",
+        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, int32_t requested_kind, Player* player, float ring_speed);",
     ),
     (
         "initialize_ring_or_special_effect_particles",

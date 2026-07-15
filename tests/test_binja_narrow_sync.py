@@ -1457,7 +1457,7 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
             assert field in scratch
 
 
-def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
+def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
         encoding="utf-8"
@@ -1483,7 +1483,7 @@ def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
     assert '"SubRingKind",' in pool_sync
     assert '("0x80", "state", "SubRingState")' in pool_sync
     assert '("0x88", "kind", "SubRingKind")' in pool_sync
-    assert "SubRingKind requested_kind" in pool_sync
+    assert "int32_t requested_kind" in pool_sync
     assert '"SubRingState",' in path_sync
     assert '"SubRingKind",' in path_sync
 
@@ -1508,6 +1508,11 @@ def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
 
     path_header = analysis_headers[1]
     assert "SubRingPool ring_effects;" in path_header
+    for header in analysis_headers:
+        assert "int32_t requested_kind" in header
+    assert "int requested_kind" in (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in ida_runner
     for prototype in (
         "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime",

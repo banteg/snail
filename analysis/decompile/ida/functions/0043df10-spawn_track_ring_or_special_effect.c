@@ -6,14 +6,14 @@
 void __thiscall spawn_track_ring_or_special_effect(
         SubgameRuntime *game,
         TrackRowCell *cell,
-        SubRingKind requested_kind,
+        int32_t requested_kind,
         Player *player,
         float ring_speed)
 {
   int v5; // eax
   SubRingState *i; // ecx
   char *v8; // esi
-  SubRingKind v9; // ebp
+  int32_t v9; // ebp
   double v10; // st7
   double v11; // st7
   double v12; // st7
@@ -57,15 +57,15 @@ void __thiscall spawn_track_ring_or_special_effect(
   set_matrix_identity((TransformMatrix *)(v8 + 3520452));
   v9 = requested_kind;
   *((_DWORD *)v8 + 880132) = player;
-  if ( requested_kind == SUB_RING_KIND_NORMAL_DEFAULT
+  if ( requested_kind == 4
     && (random_float_below(1.0) > 0.93000001 || random_float_below(1.0) > 0.5 && game->level_mode == 4) )
   {
-    v9 = SUB_RING_KIND_SLOW_DEFAULT;
+    v9 = 3;
   }
   switch ( v9 )
   {
-    case SUB_RING_KIND_UNKNOWN_0:
-    case SUB_RING_KIND_NORMAL_DEFAULT:
+    case 0:
+    case 4:
       v25 = cell->anchor_position.y + 2.5;
       v14 = cell->anchor_position.z + 6.0;
       *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
@@ -75,8 +75,8 @@ void __thiscall spawn_track_ring_or_special_effect(
       v15 = random_float_below(1.0);
       *((float *)v8 + 880125) = (v15 - 0.5 + v15 - 0.5) * 3.0;
       goto LABEL_13;
-    case SUB_RING_KIND_UNKNOWN_1:
-    case SUB_RING_KIND_SLOW_DEFAULT:
+    case 1:
+    case 3:
       v24 = cell->anchor_position.y + 2.5;
       v12 = cell->anchor_position.z + 6.0;
       *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
@@ -86,7 +86,7 @@ void __thiscall spawn_track_ring_or_special_effect(
       v13 = random_float_below(1.0);
       *((float *)v8 + 880125) = (v13 - 0.5 + v13 - 0.5) * 3.0;
       goto LABEL_13;
-    case SUB_RING_KIND_EXPLODE_RAMP:
+    case 2:
       v23 = cell->anchor_position.y + 3.5;
       v10 = cell->anchor_position.z + 17.0;
       *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
@@ -99,22 +99,22 @@ LABEL_13:
       *((float *)v8 + 880219) = random_float_below(1.0) * 6.2831855;
       *((float *)v8 + 880220) = v22;
       break;
-    case SUB_RING_KIND_NORMAL_AUTHORED:
+    case 5:
       z = cell->anchor_position.z;
       v26 = cell->anchor_position.y + 2.5;
       *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
       *((float *)v8 + 880126) = v26;
       *((float *)v8 + 880127) = z;
       goto LABEL_19;
-    case SUB_RING_KIND_EXPLODE_AUTHORED:
+    case 6:
       v33 = cell->anchor_position.z;
       v27 = cell->anchor_position.y + 2.5;
       *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
       *((float *)v8 + 880126) = v27;
       *((float *)v8 + 880127) = v33;
       goto LABEL_19;
-    case SUB_RING_KIND_SLOW_AUTHORED:
-    case SUB_RING_KIND_POWER_UP_AUTHORED:
+    case 7:
+    case 8:
       v16 = cell->anchor_position.y + 2.5;
       v34 = cell->anchor_position.z;
       *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);

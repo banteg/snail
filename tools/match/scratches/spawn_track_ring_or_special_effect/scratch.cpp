@@ -16,7 +16,7 @@ int report_errorf(const char* format, ...);
 
 void SubgameRuntime::spawn_track_ring_or_special_effect(
     TrackRowCell* cell,
-    SubRingKind requested_kind,
+    int requested_kind,
     Player* player,
     float ring_speed)
 {
@@ -44,7 +44,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
     Vector3* slot_position;
     set_matrix_identity(&slot->transform);
 
-    SubRingKind kind = requested_kind;
+    int kind = requested_kind;
     slot->owner_player = player;
     if (kind == SUB_RING_KIND_NORMAL_DEFAULT) {
         if (random_float_below(1.0f, "RT") > 0.930000007f ||
@@ -154,7 +154,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
 
     TrackRowCell* result = get_track_grid_cell_at_world_position(slot_position);
     if (result->tile_id != 14) {
-        slot->kind = kind;
+        slot->kind = (SubRingKind)kind;
         slot->owner_lives_snapshot = player->lives;
         slot->state = SUB_RING_STATE_ACTIVE;
         if (random_float_below(1.0f, "RT1") > 0.5f)

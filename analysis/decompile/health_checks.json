@@ -3099,7 +3099,7 @@
       "required_substrings": [
         "enum SubRingState* ecx = &game->ring_effects.slots[0].state",
         "SUB_RING_STATE_INACTIVE",
-        "enum SubRingKind requested_kind_1 = requested_kind",
+        "requested_kind_1 = requested_kind",
         "struct SubRing* ecx_20",
         "initialize_ring_or_special_effect_particles"
       ],
@@ -3132,7 +3132,7 @@
       "required_substrings": [
         "void __thiscall spawn_track_ring_or_special_effect(",
         "SubgameRuntime *game",
-        "SubRingKind requested_kind",
+        "int32_t requested_kind",
         "&game->ring_effects.slots[0].state",
         "initialize_ring_or_special_effect_particles(v18, player->lives)"
       ],

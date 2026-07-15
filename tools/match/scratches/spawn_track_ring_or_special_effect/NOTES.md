@@ -264,3 +264,20 @@ The paired exports agree with the databases and retire IDA's stale raw-integer
 receiver and result-bearing prototype. This is ownership-only: focused output
 remains honestly 64.09%, 327/347 instructions, prefix 3/347, with 48 clean
 operands and the same ten explicit switch-family mismatches.
+
+## 2026-07-15 authored integer kind contract
+
+iOS v1.5/v1.9 preserve `cRSubGame::AddRing(cRSubLoc*, int,
+cRSubGoldy*, float)`, so the public kind argument is an ordinary integer at
+the authored API boundary. Windows code generation is byte-identical when the
+matcher and analysis prototypes use `int`; the selected parent still stores a
+typed `SubRingKind` after the switch validates and normalizes that value.
+
+Restoring the remaining distinct kind-4 `RR8`/`RR9` arm was retested with the
+correct integer signature, but VC6 still exits through its optimizer ICE
+without producing an object. An explicit shared-tail spelling compiles but
+regresses to 61.29%, and a semantic tag-selection spelling regresses to
+60.03%, so both were reverted. The honest frontier remains 64.09%, 327/347
+instructions, with 48 clean operands and ten explicit switch-family
+mismatches; no optimizer barrier, volatile state, or artificial control flow
+is retained.

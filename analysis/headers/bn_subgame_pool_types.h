@@ -296,7 +296,7 @@ SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* rin
 void __thiscall spawn_track_ring_or_special_effect(
     SubgameRuntime* game,
     TrackRowCell* cell,
-    SubRingKind requested_kind,
+    int32_t requested_kind,
     Player* player,
     float ring_speed);
 int32_t __thiscall initialize_ring_or_special_effect_particles(

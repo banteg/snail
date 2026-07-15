@@ -2417,7 +2417,7 @@
     {
       "address": "0x43df10",
       "name": "spawn_track_ring_or_special_effect",
-      "description": "Void Windows `cRSubGame::AddRing(...)`: dispatches authored Ring=* rows into the ring, explode, or slow particle effect families and immediately invokes the selected SubRing's slot-zero AI callback. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result."
+      "description": "Void Windows `cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)`: accepts an ordinary integer kind at the authored public boundary, validates and normalizes it through the switch, then stores the typed `SubRingKind` in the selected owned SubRing. It dispatches authored Ring=* rows into the ring, explode, or slow particle effect families and immediately invokes the selected SubRing's slot-zero AI callback. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result."
     },
     {
       "address": "0x43e470",
