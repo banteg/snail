@@ -106,7 +106,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             for (face_index = 0; face_index < 2; ++face_index) {
                 ObjectFaceQuad* face =
                     &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                face->flags = 0;
+                face->header_word = 0;
                 if (face_index == 0) {
                     face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
                     face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
@@ -156,18 +156,31 @@ void Path::initialize_wibble_path_template_pair(
     allocate_path_template_samples();
 
     has_entry_mesh_transition = 0;
-    initialize_sample(
-        &primary_samples[0], (float)width_cells * 0.5f - 4.0f,
-        (float)width_cells * 0.5f - 4.0f, 0.0f, 0.0f);
+    primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;
+    primary_samples[0].rotation_scalar_98 = 0.0f;
+    primary_samples[0].rotation_scalar_94 = 0.0f;
+    primary_samples[0].special_scalar = 0.0f;
+    primary_samples[0].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.position.x = primary_samples[0].center_x;
+    primary_samples[0].transform.position.y = 0.0f;
+    primary_samples[0].transform.position.z = 0.0f;
     primary_samples[0].delta_length = 1.0f;
     set_matrix_identity(&secondary_samples[0].transform);
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
     secondary_samples[0].delta_length = 1.0f;
-    initialize_sample(
-        &primary_samples[31], 4.0f - (float)width_cells * 0.5f,
-        4.0f - (float)width_cells * 0.5f, 0.0f, 31.0f);
+
+    primary_samples[31].center_x = 4.0f - (float)width_cells * 0.5f;
+    primary_samples[31].rotation_scalar_98 = 0.0f;
+    primary_samples[31].rotation_scalar_94 = 0.0f;
+    primary_samples[31].special_scalar = 0.0f;
+    primary_samples[31].lateral_scale = 1.0f;
+    set_matrix_identity(&primary_samples[31].transform);
+    primary_samples[31].transform.position.x = primary_samples[31].center_x;
+    primary_samples[31].transform.position.y = 0.0f;
+    primary_samples[31].transform.position.z = 31.0f;
     primary_samples[31].delta_length = 1.0f;
     set_matrix_identity(&secondary_samples[31].transform);
     secondary_samples[31].transform.position.x = primary_samples[31].center_x;
@@ -175,34 +188,60 @@ void Path::initialize_wibble_path_template_pair(
     secondary_samples[31].transform.position.z = 31.0f;
     secondary_samples[31].delta_length = 1.0f;
 
-    for (int i = 1; i < 31; ++i) {
-        float local_index = (float)(i - 1);
-        float center = primary_samples[0].center_x
-            + (primary_samples[31].center_x - primary_samples[0].center_x)
-                * local_index * 0.033333335f;
-        float turn_phase = local_index * 0.20943952f;
+    int sample_index = 1;
+    int local_index = 0;
+    do {
+        float t = (float)local_index;
+        float turn_phase = t * 0.20943952f;
         float roll_phase = turn_phase * 3.0f;
-        initialize_sample(&primary_samples[i], center, 0.0f, 0.0f, (float)i);
+
+        primary_samples[sample_index].center_x =
+            (primary_samples[31].center_x - primary_samples[0].center_x) *
+                t * 0.033333335f +
+            primary_samples[0].center_x;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar = 0.0f;
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[sample_index].transform);
+
+        int z_index = local_index + 1;
+        primary_samples[sample_index].transform.position.x = 0.0f;
+        primary_samples[sample_index].transform.position.z = (float)z_index;
+        primary_samples[sample_index].transform.position.y = 0.0f;
+
         float basis_y = cosine(sine(roll_phase) * 0.30000001f);
         float basis_x = sine(sine(roll_phase) * 0.30000001f);
-        primary_samples[i].transform.basis_up.x = basis_x;
-        primary_samples[i].transform.basis_up.y = basis_y;
-        primary_samples[i].transform.basis_up.z = 0.0f;
-        primary_samples[i].transform.basis_forward = Vector3(
-            primary_samples[i].transform.position.x
-                - primary_samples[i - 1].transform.position.x,
-            primary_samples[i].transform.position.y
-                - primary_samples[i - 1].transform.position.y,
-            primary_samples[i].transform.position.z
-                - primary_samples[i - 1].transform.position.z);
-        primary_samples[i].transform.basis_forward.normalize_vector();
-        primary_samples[i].transform.basis_right.cross_vectors(
-            &primary_samples[i].transform.basis_up,
-            &primary_samples[i].transform.basis_forward);
-        copy_secondary_from_primary(this, i);
-    }
+        primary_samples[sample_index].transform.basis_up =
+            Vector3(basis_x, basis_y, 0.0f);
+        primary_samples[sample_index].transform.basis_forward = Vector3(
+            primary_samples[sample_index].transform.position.x -
+                primary_samples[sample_index - 1].transform.position.x,
+            primary_samples[sample_index].transform.position.y -
+                primary_samples[sample_index - 1].transform.position.y,
+            primary_samples[sample_index].transform.position.z -
+                primary_samples[sample_index - 1].transform.position.z);
+        primary_samples[sample_index].transform.basis_forward.normalize_vector();
+        primary_samples[sample_index].transform.basis_right.cross_vectors(
+            &primary_samples[sample_index].transform.basis_up,
+            &primary_samples[sample_index].transform.basis_forward);
+
+        secondary_samples[sample_index].transform =
+            primary_samples[sample_index].transform;
+        ++local_index;
+        secondary_samples[sample_index].transform.position.x +=
+            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;
+        secondary_samples[sample_index].transform.position.y +=
+            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;
+        secondary_samples[sample_index].transform.position.z +=
+            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;
+        ++sample_index;
+    } while (sample_index < 31);
 
     compute_path_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
     finalize_path_template();
+    (void)radius;
+    (void)side_exit;
+    (void)vertical_texture;
 }

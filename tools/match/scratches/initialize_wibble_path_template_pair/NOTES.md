@@ -1,14 +1,16 @@
 # initialize_wibble_path_template_pair
 
-Starter reconstruction for `initialize_wibble_path_template_pair @ 0x4289a0`.
+Ownership reconstruction for `initialize_wibble_path_template_pair @ 0x4289a0`.
 
 Captures the fixed 32-sample wibble template: endpoint samples, sinusoidal
 interior up-vector wobble, secondary sample offset, delta recomputation,
 generated strip mesh, and finalization.
 
-The remaining mismatch is source-shape/codegen debt, especially the decompiler's
-pointer-shaped loop counters and the shared mesh tail. No dummy symbols, inline
-assembly, flag changes, or volatile/register games were introduced.
+Current focused result: 55.68% (545/608 candidate/target instructions), with
+35 masked operands ok, 0 unresolved, and 0 mismatched. The remaining mismatch
+is source-shape/codegen debt, especially the native stack frame, pointer-shaped
+loop counters, delta recomputation, and shared mesh tail. No dummy symbols,
+inline assembly, flag changes, or volatile/register games were introduced.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 9.41% (115/608
@@ -69,3 +71,19 @@ position minus the previous primary position, normalizes it, and derives
 to the secondary lane. Restoring that chain moves focused Wibo from 36.48%
 (483/608) to 37.50% (512/608), with the masked audit still clean at 28 ok,
 0 unresolved, 0 mismatch.
+
+2026-07-15 sample ownership cascade: expanding the endpoint and interior
+sample initializer calls into their directly owned `PathSample` stores recovers
+the native endpoint scalar/identity sequence and the split interior
+`sample_index`/`local_index` traversal. The interpolated center remains sample
+metadata while transform X stays zero, and only the 0x40-byte transform is
+copied into the secondary lane before its basis-up offset. Materializing
+`roll_phase` before those sample stores preserves the already-evidenced native
+trigonometric schedule; leaving it after the stores scored 55.16% but introduced
+a `3.0f`/`0.20943952f` operand mismatch. The retained form moves focused Wibo
+from 37.50% (512/608) to 55.68% (545/608), with the masked audit improving from
+28 to 35 ok and remaining at 0 unresolved, 0 mismatch.
+
+2026-07-15 face-header ownership: the mesh face initializer clears the full
+16-bit `header_word`, not merely the low-byte flag view. Naming the owning field
+makes that width explicit without changing the generated store.
