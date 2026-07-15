@@ -2,11 +2,10 @@
 /* function: initialize_slug_hazard_runtime @ 0x408530 */
 /* selector: initialize_slug_hazard_runtime */
 
-// Constructs one slug-hazard runtime slot by running the shared renderable-body constructor and installing the slug vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 8-slot slug bank whose total footprint matches the native `cRSlug` size ledger.
-_DWORD *__thiscall sub_408530(_DWORD *this)
+// Exact Windows constructor for one authored `Slug` (`cRSlug` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger.
+Slug *__thiscall initialize_slug_hazard_runtime(Slug *slug)
 {
-  initialize_renderable_bod(this);
-  *this = off_497324;
-  return this;
+  initialize_renderable_bod(slug);
+  slug->body.bod.bod.vtable = g_slug_vtable;
+  return slug;
 }
-

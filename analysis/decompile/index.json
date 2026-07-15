@@ -1,38 +1,80 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 14,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 14,
+  "ida_exported": 14,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
-  "health_check_ran": false,
-  "strict": false,
+  "sync_ida_symbols": false,
+  "binja_refreshed": true,
+  "ida_refreshed": true,
+  "health_check_ran": true,
+  "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_player_presentation_controller",
-      "address": "0x4086d0"
+      "name": "initialize_runtime_pools_and_path_template_bank",
+      "address": "0x408060"
     },
     {
-      "name": "build_subgame_level",
-      "address": "0x437eb0"
+      "name": "initialize_slug_hazard_runtime",
+      "address": "0x408530"
     },
     {
-      "name": "set_weapon_animation",
-      "address": "0x4446e0"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     },
     {
-      "name": "set_snail_jetpack",
-      "address": "0x445860"
+      "name": "reset_subgame",
+      "address": "0x437b10"
     },
     {
-      "name": "set_snail_weapon",
-      "address": "0x445920"
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
+      "name": "spawn_slug_hazard",
+      "address": "0x43dc80"
+    },
+    {
+      "name": "update_slug_voice_ai",
+      "address": "0x43f520"
+    },
+    {
+      "name": "play_slug_voice",
+      "address": "0x43f560"
+    },
+    {
+      "name": "hit_slug_hazard",
+      "address": "0x43f620"
+    },
+    {
+      "name": "explode_slug_hazard",
+      "address": "0x43f680"
+    },
+    {
+      "name": "kill_slug_hazard",
+      "address": "0x43f8b0"
+    },
+    {
+      "name": "update_slug_hazard_ai",
+      "address": "0x43f930"
+    },
+    {
+      "name": "remove_subgame_bods",
+      "address": "0x440910"
+    },
+    {
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     }
-  ]
+  ],
+  "health_check_count": 312,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

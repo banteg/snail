@@ -257,7 +257,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     --v26;
   }
   while ( v26 );
-  v31 = &game->slug_hazards.slots[0].bod.bod.bod.list_next;
+  v31 = &game->slug_hazards.slots[0].body.bod.bod.list_next;
   v32 = 8;
   do
   {

@@ -30,7 +30,7 @@
 004081c3        i = i_8
 004081c3        i_8 -= 1
 004081c4        do while (i != 1)
-004081c6        struct SlugHazardRuntime* slug = arg1 + 0x3563a0
+004081c6        struct Slug* slug = arg1 + 0x3563a0
 004081cc        int32_t i_9 = 8
 004081df        int32_t i_1
 004081d3        initialize_slug_hazard_runtime(slug)

@@ -6,17 +6,17 @@
 _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
 {
   _DWORD *v2; // edi
-  _DWORD *v3; // edi
+  SubHealth *v3; // edi
   int v4; // ebx
-  _DWORD *v5; // edi
+  Slug *v5; // edi
   int v6; // ebx
-  _DWORD *v7; // edi
+  BodBase *v7; // edi
   int v8; // ebx
   _DWORD *v9; // edi
   int v10; // ebx
-  _DWORD *v11; // edi
+  SubRing *v11; // edi
   int v12; // ebx
-  _DWORD *v13; // edi
+  SubLoc *v13; // edi
   int v14; // ebx
   char *v15; // edi
   int v16; // ebx
@@ -58,33 +58,31 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     256,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
   noop_this_constructor(this + 874158);
-  initialize_bod_base(this + 874201);
-  initialize_bod_base(this + 874215);
-  initialize_bod_base(this + 874229);
-  initialize_bod_base(this + 874243);
-  initialize_bod_base(this + 874257);
-  initialize_bod_base(this + 874271);
-  initialize_bod_base(this + 874285);
-  initialize_bod_base(this + 874299);
-  initialize_bod_base(this + 874313);
-  initialize_bod_base(this + 874327);
-  initialize_track_speedup_runtime(this + 874348);
-  initialize_track_jetpack_pickup_runtime(this + 874393);
-  v3 = this + 874496;
+  initialize_bod_base((BodBase *)(this + 874201));
+  initialize_bod_base((BodBase *)(this + 874215));
+  initialize_bod_base((BodBase *)(this + 874229));
+  initialize_bod_base((BodBase *)(this + 874243));
+  initialize_bod_base((BodBase *)(this + 874257));
+  initialize_bod_base((BodBase *)(this + 874271));
+  initialize_bod_base((BodBase *)(this + 874285));
+  initialize_bod_base((BodBase *)(this + 874299));
+  initialize_bod_base((BodBase *)(this + 874313));
+  initialize_bod_base((BodBase *)(this + 874327));
+  initialize_track_speedup_runtime((SubSpeedUp *)(this + 874348));
+  initialize_track_jetpack_pickup_runtime((JetPack *)(this + 874393));
+  v3 = (SubHealth *)(this + 874496);
   v4 = 8;
   do
   {
-    initialize_track_health_pickup_runtime(v3);
-    v3 += 29;
+    initialize_track_health_pickup_runtime(v3++);
     --v4;
   }
   while ( v4 );
-  v5 = this + 874728;
+  v5 = (Slug *)(this + 874728);
   v6 = 8;
   do
   {
-    initialize_slug_hazard_runtime(v5);
-    v5 += 59;
+    initialize_slug_hazard_runtime(v5++);
     --v6;
   }
   while ( v6 );
@@ -98,13 +96,13 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     152,
     40,
     (int (__thiscall *)(int))initialize_salt_hazard_runtime);
-  v7 = this + 877600;
+  v7 = (BodBase *)(this + 877600);
   v8 = 2;
   do
   {
     initialize_bod_base(v7);
-    *v7 = &g_banner_callback_table;
-    v7 += 24;
+    v7->bod.vtable = &g_banner_callback_table;
+    v7 = (BodBase *)((char *)v7 + 96);
     --v8;
   }
   while ( v8 );
@@ -117,12 +115,11 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     --v10;
   }
   while ( v10 );
-  v11 = this + 880099;
+  v11 = (SubRing *)(this + 880099);
   v12 = 2;
   do
   {
-    initialize_track_ring_or_special_effect_runtime(v11);
-    v11 += 126;
+    initialize_track_ring_or_special_effect_runtime(v11++);
     --v12;
   }
   while ( v12 );
@@ -132,14 +129,13 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
   noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978521));
   noop_runtime_slot_constructor((ObjectVertexBufferVtbl *)(this + 978618));
   initialize_array_with_constructor((int)(this + 978669), 744, 12, (int (__thiscall *)(int))initialize_golb_shot);
-  initialize_player_presentation_controller((PlayerPresentationController *)(this + 981050));
+  initialize_player_presentation_controller((Snail *)(this + 981050));
   *(this + 978393) = &g_subgoldy_callback_table;
-  v13 = this + 982706;
+  v13 = (SubLoc *)(this + 982706);
   v14 = 25600;
   do
   {
-    initialize_sub_loc(v13);
-    v13 += 21;
+    initialize_sub_loc(v13++);
     --v14;
   }
   while ( v14 );
@@ -161,7 +157,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     --v18;
   }
   while ( v18 );
-  initialize_bod_base(this + 4185841);
+  initialize_bod_base((BodBase *)(this + 4185841));
   *(this + 4185841) = &g_barrier_actor_callback_table;
   initialize_array_with_constructor(
     (int)(this + 4185856),
@@ -169,8 +165,8 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     10,
     (int (__thiscall *)(int))initialize_active_landscape_entry);
   initialize_array_with_constructor((int)(this + 4186217), 292, 128, initialize_landscape_script_record);
-  initialize_bod_base(this + 4195561);
-  initialize_object_constructor_thunk(this + 4195575);
+  initialize_bod_base((BodBase *)(this + 4195561));
+  initialize_object_constructor_thunk((Object *)(this + 4195575));
   *(this + 4195561) = g_smtracks_callback_table;
   initialize_array_with_constructor(
     (int)(this + 4195636),
@@ -187,7 +183,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     672,
     101,
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
-  initialize_array_with_constructor((int)(this + 4833876), 160, 10, initialize_solution_record);
+  initialize_array_with_constructor((int)(this + 4833876), 160, 10, initialize_galaxy_route_name_record);
   initialize_array_with_constructor(
     (int)(this + 4834294),
     24,
@@ -195,4 +191,3 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     (int (__thiscall *)(int))noop_runtime_slot_constructor);
   return this;
 }
-

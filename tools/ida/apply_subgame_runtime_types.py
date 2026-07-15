@@ -53,6 +53,34 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_vapour(Vapour* vapour);",
     ),
     (
+        "initialize_slug_hazard_runtime",
+        "Slug* __thiscall initialize_slug_hazard_runtime(Slug* slug);",
+    ),
+    (
+        "update_slug_voice_ai",
+        "void __thiscall update_slug_voice_ai(Slug* slug);",
+    ),
+    (
+        "play_slug_voice",
+        "void __thiscall play_slug_voice(Slug* slug, int32_t sample_index);",
+    ),
+    (
+        "hit_slug_hazard",
+        "void __thiscall hit_slug_hazard(Slug* slug, int32_t damage);",
+    ),
+    (
+        "explode_slug_hazard",
+        "void __thiscall explode_slug_hazard(Slug* slug);",
+    ),
+    (
+        "kill_slug_hazard",
+        "void __thiscall kill_slug_hazard(Slug* slug);",
+    ),
+    (
+        "update_slug_hazard_ai",
+        "void __thiscall update_slug_hazard_ai(Slug* slug);",
+    ),
+    (
         "initialize_track_ring_or_special_effect_runtime",
         "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);",
     ),

@@ -17,6 +17,7 @@ typedef struct Sprite Sprite;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct TrackRowCell TrackRowCell;
 typedef struct TransformMatrix TransformMatrix;
+typedef struct AnimManager AnimManager;
 
 typedef struct Vec3 {
     float x;
@@ -37,6 +38,36 @@ struct BodNode {
     BodNode* list_prev;
     BodNode* list_next;
 };
+
+typedef struct Vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+} Vec4;
+
+struct TransformMatrix {
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 position;
+};
+
+typedef struct BodBase {
+    BodNode bod;
+    Vec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    Object* object;
+    tColour color;
+} BodBase;
+
+typedef struct RenderableBod {
+    BodBase bod;
+    TransformMatrix transform;
+    AnimManager* render_animation_manager;
+    uint8_t unknown_7c[0x04];
+} RenderableBod;
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
@@ -149,16 +180,15 @@ enum {
     SUB_SLUG_SLOT_CAPACITY = 8,
 };
 
-typedef struct SlugHazardRuntime {
-    uint8_t unknown_00[0x68];
-    Vec3 world_position;
-    uint8_t unknown_74[0x0c];
+/* Exact 0xec-byte authored cRSlug owner. */
+typedef struct Slug {
+    RenderableBod body;
     int32_t state;
     int32_t death_toss_direction;
     SubgameRuntime* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
-    uint8_t unknown_9c[0x10];
+    uint8_t unknown_9c[0xac - 0x9c];
     struct Sprite* sprite;
     struct TrackRowCell* source_cell;
     uint8_t passed_player;
@@ -179,10 +209,10 @@ typedef struct SlugHazardRuntime {
     float voice_progress_step;
     float blink_progress;
     float blink_step;
-} SlugHazardRuntime;
+} Slug;
 
 typedef struct SlugPool {
-    SlugHazardRuntime slots[SUB_SLUG_SLOT_CAPACITY];
+    Slug slots[SUB_SLUG_SLOT_CAPACITY];
 } SlugPool;
 
 typedef enum SubRingState {
@@ -285,5 +315,12 @@ JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);
 void __thiscall update_track_jetpack_pickup(JetPack* jetpack);
 SubHealth* __thiscall initialize_track_health_pickup_runtime(SubHealth* pickup);
 void __thiscall update_track_health_pickup(SubHealth* pickup);
+Slug* __thiscall initialize_slug_hazard_runtime(Slug* slug);
+void __thiscall update_slug_voice_ai(Slug* slug);
+void __thiscall play_slug_voice(Slug* slug, int32_t sample_index);
+void __thiscall hit_slug_hazard(Slug* slug, int32_t damage);
+void __thiscall explode_slug_hazard(Slug* slug);
+void __thiscall kill_slug_hazard(Slug* slug);
+void __thiscall update_slug_hazard_ai(Slug* slug);
 
 #endif

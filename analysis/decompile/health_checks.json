@@ -2747,19 +2747,42 @@
       "name": "bn_slug_hazard_ai_body_available",
       "artifact": "analysis/decompile/binja/functions/0043f930-update_slug_hazard_ai.c",
       "required_substrings": [
-        "slot->state",
-        "update_slug_voice_ai(slot)",
-        "slot->player_encounter_latched",
-        "slot->engagement_voice_gate",
+        "slug->state",
+        "update_slug_voice_ai(slug)",
+        "slug->player_encounter_latched",
+        "slug->engagement_voice_gate",
+        "slug->body.transform.position",
+        "slug->body.bod.bod.list_flags",
         "play_voice_manager",
         "advance_blink_random(&g_game_base->subgame)"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
+        "SlugHazardRuntime",
+        "slug->unknown_00",
         "struct Game*",
         "g_game_base[0x74618]",
         "g_game_base->subgame.scan_reset"
+      ]
+    },
+    {
+      "name": "ida_slug_hazard_owner_and_inherited_bod",
+      "artifact": "analysis/decompile/ida/functions/0043f930-update_slug_hazard_ai.c",
+      "required_substrings": [
+        "void __thiscall update_slug_hazard_ai(Slug *slug)",
+        "slug->state",
+        "update_slug_voice_ai(slug)",
+        "slug->body.transform.position",
+        "slug->body.bod.bod.list_flags",
+        "slug->unknown_9c"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1",
+        "SlugHazardRuntime",
+        "slug->unknown_00",
+        "_DWORD *this"
       ]
     },
     {

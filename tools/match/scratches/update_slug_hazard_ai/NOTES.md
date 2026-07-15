@@ -1,6 +1,6 @@
 # `update_slug_hazard_ai` recovery notes
 
-Target: `SlugHazardRuntime::update_slug_hazard_ai @ 0x43f930` (`thiscall`, 1772 bytes, 464 instructions).
+Target: `Slug::update_slug_hazard_ai @ 0x43f930` (`thiscall`, 1772 bytes, 464 instructions).
 
 Initial source-shaped scratch reconstructs the slug hazard runtime update:
 
@@ -122,3 +122,12 @@ writes at `+0x9c..+0xa8` still have no reader before teardown in either Windows
 or Android and remain deliberately unnamed. The focused result is codegen
 neutral at 66.15%, 434/464 instructions, with the same 47 clean operands and
 two documented structural mismatches.
+
+## 2026-07-15 analysis-lane cRSlug replay
+
+Binary Ninja and IDA now receive the exact `Slug` owner used by the matcher.
+The stale `unknown_00[0x68]` prefix is replaced by the inherited
+`RenderableBod body`, recovering the BOD-list links and transform position in
+decompiler output. Binary Ninja retains its ABI-equivalent one-ECX-argument
+`fastcall` presentation for this method; IDA and the authored matcher retain
+`thiscall`. The `unknown_9c` teardown scratch remains deliberately unnamed.

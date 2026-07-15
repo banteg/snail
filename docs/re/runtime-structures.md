@@ -556,7 +556,8 @@ only as historical decompiler spelling in older evidence.
     `ACTIVE` pickup to `TEARDOWN_PENDING`, and the exact class AI removes its
     inherited BOD and sprite before returning the owner to `INACTIVE`
 - `+0x3563a0`: `slug_hazards`
-  - `8`-slot `SlugHazardRuntime` array in Windows
+  - eight inline exact `0xec`-byte authored `Slug` (`cRSlug`) slots
+  - `SlugPool` owns the complete `0x760`-byte Windows extent
 - `+0x356b00`: `sub_lazers`
   - fixed `20`-slot `SubLazerPool` (`0xb0` stride); startup clones the root
     lazer donor into every slot and stores a borrowed subgame backlink at
@@ -1285,31 +1286,36 @@ Current practical read:
 - `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks the same `next_active` chain rooted at `game + 0x359140`
 - Android `cRSubGame::AddGarbage` confirms the same random scale and active-list pattern, but Windows remains authoritative on the exact storage layout
 
-## Slug Hazard Runtime
+## cRSlug Runtime
 
-The Windows slug hazard pool is now typed as `SlugHazardRuntime`.
+The Windows slug hazard pool is typed as the exact authored `Slug` (`cRSlug`)
+owner. `SlugHazardRuntime` remains only a matcher compatibility alias for older
+scratch vocabulary.
 
 High-confidence current fields:
 
-- `+0x68`: `world_position`
+- `+0x00..+0x7f`: inherited `RenderableBod body`
+- `+0x68`: inherited `body.transform.position`
 - `+0x80`: `state`
 - `+0x84`: `death_toss_direction`
-- `+0x88`: `game`
+- `+0x88`: `owner_game`
 - `+0x8c`: `velocity`
 - `+0x98`: `attachment_facing_angle`
+- `+0x9c..+0xab`: unnamed state-two teardown scratch; writes are proved but no
+  reader is identified
 - `+0xac`: `sprite`
 - `+0xb0`: `source_cell`
 - `+0xb4`: `passed_player`
 - `+0xb8`: `lateral_phase`
 - `+0xbc`: `lateral_phase_step`
-- `+0xc0`: `player`
+- `+0xc0`: `owner_player`
 - `+0xc4`: `engagement_voice_gate`
 - `+0xc8`: `hit_points`
 - `+0xcc`: `hit_flash_pending`
 - `+0xd0`: `hit_flash_progress`
 - `+0xd4`: `hit_flash_progress_step`
 - `+0xd8`: `voice_active`
-- `+0xd9`: `ambient_alert_checked`
+- `+0xd9`: `player_encounter_latched`
 - `+0xdc`: `voice_progress`
 - `+0xe0`: `voice_progress_step`
 - `+0xe4`: `blink_progress`
@@ -1319,7 +1325,7 @@ Current practical read:
 
 - `spawn_slug_hazard` allocates from the `8`-slot Windows pool, projects the spawn onto attachments, and seeds forward velocity from `track_center_x`
 - `handle_subgoldy_collisions` reads the same slots back through the `slug_hazards` array
-- `update_slug_hazard_ai` owns the ambient slug alert: state `1` checks `player->live_matrix.position.z + 1.0 > world_position.z`, latches `ambient_alert_checked`, rolls the native math RNG, and calls `play_slug_voice(slot, 30 - scaled_random)` only when the first roll is above `0.600000024`
+- `update_slug_hazard_ai` owns the ambient slug alert: state `1` checks `player->live_matrix.position.z + 1.0 > world_position.z`, latches `player_encounter_latched`, rolls the native math RNG, and calls `play_slug_voice(slot, 30 - scaled_random)` only when the first roll is above `0.600000024`
 - the same state sets `passed_player` after the slug's world `z` falls behind the player and clears `engagement_voice_gate` before `play_voice_manager(..., 2, 1, -1)` when the player is within `16` rows; this is separate from the direct ambient `play_slug_voice` one-shot
 - `hit_slug_hazard` decrements `hit_points`, latches `hit_flash_pending`, and calls `play_slug_voice(slot, 36 - scaled_random)` while the slot remains alive, mapping to `SLUG-HIT1..3`
 - `kill_slug_hazard` only acts on live state `1`; it calls `play_slug_voice(slot, 28 - scaled_random)` for `SLUG-DEATH1..2`, switches the slot to explosion state `2`, records the left/right toss selector from `world_position.x`, awards slug score, and then calls `explode_slug_hazard`

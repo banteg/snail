@@ -2,15 +2,15 @@
 /* function: play_slug_voice @ 0x43f560 */
 /* selector: play_slug_voice */
 
-void __thiscall sub_43F560(int this, int a2)
+// Exact per-slug voice trigger, gated by the embedded `SlugVoiceManager` and the slug's own cooldown. Android retains the authored member as `cRSlug::VoicePlay(int)`.
+void __thiscall play_slug_voice(Slug *slug, int32_t sample_index)
 {
-  if ( !*(_BYTE *)(this + 216) && !*((_BYTE *)MEMORY[0x4DF904] + 3998100) )
+  if ( !slug->voice_active && !g_game_base->subgame.slug_voice_manager.active )
   {
-    *((_DWORD *)MEMORY[0x4DF904] + 999526) = *((_DWORD *)MEMORY[0x4DF904] + 999527);
-    *((_BYTE *)MEMORY[0x4DF904] + 3998100) = 1;
-    *(_BYTE *)(this + 216) = 1;
-    *(_DWORD *)(this + 220) = 0;
-    play_voice_backend(a2, 1.0, -1.0, 0.0);
+    g_game_base->subgame.slug_voice_manager.progress = g_game_base->subgame.slug_voice_manager.step;
+    g_game_base->subgame.slug_voice_manager.active = 1;
+    slug->voice_active = 1;
+    slug->voice_progress = 0.0;
+    play_voice_backend(sample_index, 1.0, -1.0, 0.0);
   }
 }
-

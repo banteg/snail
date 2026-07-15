@@ -2,7 +2,7 @@
 /* function: update_golb_ai @ 0x414820 */
 /* selector: update_golb_ai */
 
-// Advances one live Golb shot actor, including straight-flight or path-follow motion, collision transitions, burst or smoke aftermath, and the final cleanup path once it passes the player or leaves the valid band.
+// Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and the shared `SubGarbagePool` collision chain for straight-flight or path-follow motion, impact transitions, trail effects, and final cleanup.
 void __thiscall update_golb_ai(int this)
 {
   char *v2; // ecx
@@ -176,7 +176,7 @@ void __thiscall update_golb_ai(int this)
         if ( v16 < *(float *)(this + 692) && *(float *)(this + 504) < 1.0 && *(float *)(this + 504) > 0.0 )
         {
           track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(
-                                                *(Game **)(this + 624),
+                                                *(SubgameRuntime **)(this + 624),
                                                 (Vec3 *)(this + 684));
           v19 = track_grid_cell_at_world_position;
           if ( track_grid_cell_at_world_position->tile_id == 30 )
@@ -221,7 +221,7 @@ void __thiscall update_golb_ai(int this)
         }
         else
         {
-          add_vapour_point((VapourTrail *)(this + 128), (const TransformMatrix *)(this + 636));
+          add_vapour_point((Vapour *)(this + 128), (const TransformMatrix *)(this + 636));
         }
       }
       else
@@ -371,12 +371,12 @@ LABEL_53:
                   case 1:
                     kill_golb((int *)this);
                     spawn_golb_impact_sprite((_DWORD *)this, (_DWORD *)(this + 684));
-                    hit_slug_hazard(*(_DWORD *)(this + 624) + 236 * v47 + 3498912, 2);
+                    hit_slug_hazard((Slug *)(*(_DWORD *)(this + 624) + 236 * v47 + 3498912), 2);
                     return;
                   case 2:
                     kill_golb((int *)this);
                     spawn_golb_impact_sprite((_DWORD *)this, (_DWORD *)(this + 684));
-                    hit_slug_hazard(*(_DWORD *)(this + 624) + 236 * v47 + 3498912, 4);
+                    hit_slug_hazard((Slug *)(*(_DWORD *)(this + 624) + 236 * v47 + 3498912), 4);
                     return;
                   case 0:
                     if ( *(_BYTE *)(this + 445) )
@@ -394,7 +394,7 @@ LABEL_53:
             }
             ++v47;
           }
-          if ( get_track_grid_cell_at_world_position(*(Game **)(this + 624), (Vec3 *)(this + 684))->tile_id != 14 )
+          if ( get_track_grid_cell_at_world_position(*(SubgameRuntime **)(this + 624), (Vec3 *)(this + 684))->tile_id != 14 )
             return;
           v58 = *(float *)(this + 692) - 1.0;
           v59 = *(float *)(this + 688);

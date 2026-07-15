@@ -10,3 +10,11 @@ Android and iOS `cRSlug::AI()` provenance.
 Their exact 0x760 extent is the native `Size of cRSlug` ledger value.
 `SlugHazardRuntime` remains only a compatibility alias for older scratch
 vocabulary.
+
+## 2026-07-15 analysis-lane owner replay
+
+The Binary Ninja and IDA type lanes now use `Slug` as the primary receiver and
+pool element too. The Binary Ninja view replaces the stale anonymous 0x80-byte
+prefix with the exact inherited `RenderableBod body`, so list links and world
+position resolve through the authored base. The state-two writes at
+`+0x9c..+0xab` remain `unknown_9c`; no unobserved ownership was inferred.

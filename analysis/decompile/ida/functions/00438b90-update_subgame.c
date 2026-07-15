@@ -98,7 +98,7 @@ LABEL_14:
       switch ( level_mode )
       {
         case 0:
-          updated = update_galaxy((char *)&game->galaxy);
+          updated = update_galaxy((FrontendWidget ***)&game->galaxy);
           if ( updated == 1 )
           {
             level_mode_arg = game->level_mode_arg;
@@ -130,7 +130,7 @@ LABEL_23:
             goto LABEL_23;
           goto LABEL_214;
         case 4:
-          updated = update_galaxy((char *)&game->galaxy);
+          updated = update_galaxy((FrontendWidget ***)&game->galaxy);
           if ( updated != 1 )
             goto LABEL_22;
           v8 = game->level_mode_arg;

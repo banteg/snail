@@ -2,281 +2,282 @@
 /* function: update_slug_hazard_ai @ 0x43f930 */
 /* selector: update_slug_hazard_ai */
 
-// Runs one live `Slug` through active, lateral, death-toss, and teardown states. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
-void __thiscall update_slug_hazard_ai(int this)
+// Void slot-zero callback running one owned `SlugPool` record through inactive, active, lateral-active, death-toss-pending, and teardown-pending states. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
+void __thiscall update_slug_hazard_ai(Slug *slug)
 {
-  int v2; // ecx
+  float hit_flash_progress_step; // ecx
   double v3; // st7
-  int v4; // edx
+  Sprite *sprite; // edx
   __int64 v5; // rax
-  int v6; // ecx
-  _DWORD *v7; // eax
-  int v8; // ecx
-  int v9; // eax
-  char *v10; // ecx
-  int v11; // eax
-  int v12; // eax
-  int v13; // ecx
+  Player *owner_player; // ecx
+  Vec3 *p_position; // eax
+  Player *v8; // ecx
+  uint32_t list_flags; // eax
+  FrameBodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  Player *v13; // ecx
   double v14; // st7
   unsigned __int8 v16; // c0
   unsigned __int8 v17; // c3
   double v18; // st7
-  int v19; // ecx
-  _DWORD *v20; // edx
-  int v21; // ecx
-  int v22; // eax
-  int v23; // eax
-  int v24; // eax
+  Player *v19; // ecx
+  Vec3 *v20; // edx
+  Player *v21; // ecx
+  uint32_t v22; // eax
+  struct BodNode *v23; // eax
+  struct BodNode *v24; // eax
   double v25; // st7
-  float *v26; // ecx
-  int v27; // eax
-  double v29; // st7
+  Vec3 *p_velocity; // ecx
+  int32_t death_toss_direction; // eax
+  double x; // st7
   char v30; // c0
   double v32; // st7
   char v33; // c0
-  int v34; // eax
+  SubgameRuntime *owner_game; // eax
   double v35; // st7
-  int v36; // eax
-  int v37; // eax
-  int v38; // eax
-  int v39; // eax
-  int v40; // ecx
+  uint32_t v36; // eax
+  struct BodNode *v37; // eax
+  struct BodNode *v38; // eax
+  uint32_t v39; // eax
+  Sprite *v40; // ecx
   float v41; // [esp+Ch] [ebp-14h]
   int v42; // [esp+Ch] [ebp-14h]
   float v43; // [esp+10h] [ebp-10h]
   float v44; // [esp+14h] [ebp-Ch]
 
-  if ( !*(_BYTE *)(*(_DWORD *)(this + 136) + 9) )
+  if ( !slug->owner_game->subgame_pause_gate )
   {
-    switch ( *(_DWORD *)(this + 128) )
+    switch ( slug->state )
     {
       case 0:
         return;
       case 1:
-        if ( *(_BYTE *)(this + 204) && g_render_queue_active )
+        if ( slug->hit_flash_pending && g_render_queue_active )
         {
-          v2 = *(_DWORD *)(this + 212);
-          *(_BYTE *)(this + 204) = 0;
-          *(_DWORD *)(this + 208) = v2;
+          hit_flash_progress_step = slug->hit_flash_progress_step;
+          slug->hit_flash_pending = 0;
+          slug->hit_flash_progress = hit_flash_progress_step;
         }
-        if ( *(float *)(this + 208) == 0.0 )
+        if ( slug->hit_flash_progress == 0.0 )
         {
-          *(float *)(this + 228) = *(float *)(this + 232) + *(float *)(this + 228);
-          if ( *(float *)(this + 232) <= 0.0 )
-            set_sprite_texture_ref(*(_DWORD **)(this + 172), 119, 0);
+          slug->blink_progress = slug->blink_step + slug->blink_progress;
+          if ( slug->blink_step <= 0.0 )
+            set_sprite_texture_ref(&slug->sprite->object_ref, 119, 0);
           else
-            set_sprite_texture_ref(*(_DWORD **)(this + 172), 118, 0);
-          *(_DWORD *)(*(_DWORD *)(this + 172) + 40) = 0;
-          store_color4f((tColour *)(*(_DWORD *)(this + 172) + 44), 1.0, 1.0, 1.0, 1.0);
-          if ( *(float *)(this + 228) >= 0.0 )
+            set_sprite_texture_ref(&slug->sprite->object_ref, 118, 0);
+          slug->sprite->draw_mode = 0;
+          store_color4f(&slug->sprite->color, 1.0, 1.0, 1.0, 1.0);
+          if ( slug->blink_progress >= 0.0 )
           {
-            if ( *(float *)(this + 228) > 1.0 )
+            if ( slug->blink_progress > 1.0 )
             {
-              *(_DWORD *)(this + 228) = 1065353216;
-              *(_DWORD *)(this + 232) = -1104500053;
+              slug->blink_progress = 1.0;
+              slug->blink_step = -0.16666667;
             }
           }
           else
           {
-            *(_DWORD *)(this + 228) = 0;
-            *(float *)(this + 232) = advance_blink_random((float *)g_game_base + 119174);
+            slug->blink_progress = 0.0;
+            slug->blink_step = advance_blink_random((float *)&g_game_base->subgame.scan_reset);
           }
         }
         else
         {
-          v3 = *(float *)(this + 212) + *(float *)(this + 208);
-          *(float *)(this + 208) = v3;
+          v3 = slug->hit_flash_progress_step + slug->hit_flash_progress;
+          slug->hit_flash_progress = v3;
           if ( v3 <= 1.0 )
           {
-            *(_DWORD *)(*(_DWORD *)(this + 172) + 40) = 5;
-            set_sprite_texture_ref(*(_DWORD **)(this + 172), 120, 0);
-            store_color4f((tColour *)(*(_DWORD *)(this + 172) + 44), 1.0, 0.0, 0.0, 0.99000001);
+            slug->sprite->draw_mode = 5;
+            set_sprite_texture_ref(&slug->sprite->object_ref, 120, 0);
+            store_color4f(&slug->sprite->color, 1.0, 0.0, 0.0, 0.99000001);
           }
           else
           {
-            v4 = *(_DWORD *)(this + 172);
-            *(_DWORD *)(this + 208) = 0;
-            *(_DWORD *)(this + 228) = 1065353216;
-            *(_DWORD *)(this + 232) = -1104500053;
-            *(_DWORD *)(v4 + 40) = 0;
-            store_color4f((tColour *)(*(_DWORD *)(this + 172) + 44), 1.0, 1.0, 1.0, 1.0);
-            set_sprite_texture_ref(*(_DWORD **)(this + 172), 119, 0);
+            sprite = slug->sprite;
+            slug->hit_flash_progress = 0.0;
+            slug->blink_progress = 1.0;
+            slug->blink_step = -0.16666667;
+            sprite->draw_mode = 0;
+            store_color4f(&slug->sprite->color, 1.0, 1.0, 1.0, 1.0);
+            set_sprite_texture_ref(&slug->sprite->object_ref, 119, 0);
           }
         }
-        if ( *(float *)(*(_DWORD *)(this + 192) + 112) + 1.0 > *(float *)(this + 112) && !*(_BYTE *)(this + 217) )
+        if ( slug->owner_player->body.transform.position.z + 1.0 > slug->body.transform.position.z
+          && !slug->player_encounter_latched )
         {
-          *(_BYTE *)(this + 217) = 1;
+          slug->player_encounter_latched = 1;
           if ( (double)next_math_random_value() * 0.000030517578 > 0.60000002 )
           {
             v5 = (__int64)((double)next_math_random_value() * -0.00012207031);
-            play_slug_voice(this, 30 - v5);
+            play_slug_voice(slug, 30 - v5);
           }
         }
-        v6 = *(_DWORD *)(this + 192);
-        if ( *(float *)(this + 112) < (double)*(float *)(v6 + 112) && !*(_BYTE *)(this + 180) )
-          *(_BYTE *)(this + 180) = 1;
-        if ( *(_DWORD *)(this + 196) == 1 && *(float *)(v6 + 112) + 16.0 > *(float *)(this + 112) )
+        owner_player = slug->owner_player;
+        if ( slug->body.transform.position.z < (double)owner_player->body.transform.position.z && !slug->passed_player )
+          slug->passed_player = 1;
+        if ( slug->engagement_voice_gate == 1
+          && owner_player->body.transform.position.z + 16.0 > slug->body.transform.position.z )
         {
-          *(_DWORD *)(this + 196) = 0;
+          slug->engagement_voice_gate = 0;
           play_voice_manager((int)g_voice_manager, 2, 1u, -1);
         }
-        v7 = (_DWORD *)(*(_DWORD *)(this + 172) + 72);
-        *v7 = *(_DWORD *)(this + 104);
-        v7[1] = *(_DWORD *)(this + 108);
-        v7[2] = *(_DWORD *)(this + 112);
-        v8 = *(_DWORD *)(this + 192);
-        if ( *(float *)(this + 112) >= (double)*(float *)(v8 + 10624) )
+        p_position = &slug->sprite->position;
+        p_position->x = slug->body.transform.position.x;
+        p_position->y = slug->body.transform.position.y;
+        p_position->z = slug->body.transform.position.z;
+        v8 = slug->owner_player;
+        if ( slug->body.transform.position.z >= (double)v8->interaction_max_z )
         {
-          if ( *(float *)(v8 + 884) > 0.0 )
-            kill_slug_hazard(this);
+          if ( v8->nuke_effect_progress > 0.0 )
+            kill_slug_hazard(slug);
           append_subgame_contact_target(
-            (ContactTargetRegistry *)(*(_DWORD *)(this + 136) + 19337172),
-            (const Vec3 *)(this + 104),
+            &slug->owner_game->enemy_manager,
+            (const Vec3 *)&slug->body.transform.position,
             2.0,
             1,
-            (ContactTargetObject *)this);
+            (ContactTargetObject *)slug);
           goto LABEL_39;
         }
-        v9 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 128) = 0;
-        v10 = (char *)g_game_base + 1448;
-        if ( (v9 & 0x200) == 0 )
+        list_flags = slug->body.bod.bod.list_flags;
+        slug->state = 0;
+        p_active_bod_list = &g_game_base->active_bod_list;
+        if ( (list_flags & 0x200) == 0 )
           goto LABEL_70;
-        if ( (v9 & 0x40) != 0 )
+        if ( (list_flags & 0x40) != 0 )
           goto LABEL_72;
-        v11 = *(_DWORD *)(this + 12);
-        if ( v11 )
-          *(_DWORD *)(v11 + 8) = *(_DWORD *)(this + 8);
-        v12 = *(_DWORD *)(this + 8);
-        if ( v12 )
+        list_next = slug->body.bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = slug->body.bod.bod.list_prev;
+        list_prev = slug->body.bod.bod.list_prev;
+        if ( list_prev )
         {
-          *(_DWORD *)(v12 + 12) = *(_DWORD *)(this + 12);
+          list_prev->list_next = slug->body.bod.bod.list_next;
           goto LABEL_78;
         }
         goto LABEL_77;
       case 2:
-        *(_DWORD *)(this + 128) = 3;
+        slug->state = 3;
         v43 = random_float_below(0.30000001);
         v41 = random_float_below(0.2) + 0.1;
         v25 = random_signed_float_below(0.1);
-        v26 = (float *)(this + 140);
+        p_velocity = &slug->velocity;
         v44 = v25;
-        *(float *)(this + 140) = v44;
-        *(float *)(this + 144) = v41;
-        *(float *)(this + 148) = v43;
-        v27 = *(_DWORD *)(this + 132);
-        if ( v27 == 1 )
+        slug->velocity.x = v44;
+        slug->velocity.y = v41;
+        slug->velocity.z = v43;
+        death_toss_direction = slug->death_toss_direction;
+        if ( death_toss_direction == 1 )
         {
-          v29 = *v26;
+          x = p_velocity->x;
           if ( v30 )
-            v29 = -v29;
+            x = -x;
         }
         else
         {
-          if ( v27 != 2 )
+          if ( death_toss_direction != 2 )
             goto LABEL_65;
-          v32 = *v26;
+          v32 = p_velocity->x;
           if ( v33 )
             v32 = -v32;
-          v29 = -v32;
+          x = -v32;
         }
-        *v26 = v29;
+        p_velocity->x = x;
 LABEL_65:
-        if ( *v26 >= 0.0 )
-          v42 = *v26 != 0.0;
+        if ( p_velocity->x >= 0.0 )
+          v42 = p_velocity->x != 0.0;
         else
           v42 = -1;
-        v34 = *(_DWORD *)(this + 136);
-        *(_DWORD *)(this + 156) = 0;
-        *v26 = (double)v42 * 0.2 + *v26;
-        v35 = *(float *)(v34 + 56) * 0.0083333338;
-        *(_DWORD *)(this + 164) = 0;
-        *(float *)(this + 160) = v35;
-        *(float *)(this + 168) = *(float *)(v34 + 56) * 0.16666667;
+        owner_game = slug->owner_game;
+        *(_DWORD *)slug->unknown_9c = 0;
+        p_velocity->x = (double)v42 * 0.2 + p_velocity->x;
+        v35 = owner_game->subgame_rate * 0.0083333338;
+        *(_DWORD *)&slug->unknown_9c[8] = 0;
+        *(float *)&slug->unknown_9c[4] = v35;
+        *(float *)&slug->unknown_9c[12] = owner_game->subgame_rate * 0.16666667;
 LABEL_69:
-        v36 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 128) = 0;
-        v10 = (char *)g_game_base + 1448;
+        v36 = slug->body.bod.bod.list_flags;
+        slug->state = 0;
+        p_active_bod_list = &g_game_base->active_bod_list;
         if ( (v36 & 0x200) == 0 )
           goto LABEL_70;
         if ( (v36 & 0x40) != 0 )
           goto LABEL_72;
-        v37 = *(_DWORD *)(this + 12);
+        v37 = slug->body.bod.bod.list_next;
         if ( v37 )
-          *(_DWORD *)(v37 + 8) = *(_DWORD *)(this + 8);
-        v38 = *(_DWORD *)(this + 8);
+          v37->list_prev = slug->body.bod.bod.list_prev;
+        v38 = slug->body.bod.bod.list_prev;
         if ( !v38 )
           goto LABEL_77;
-        *(_DWORD *)(v38 + 12) = *(_DWORD *)(this + 12);
+        v38->list_next = slug->body.bod.bod.list_next;
         goto LABEL_78;
       case 3:
         goto LABEL_69;
       case 4:
-        v14 = *(float *)(this + 188) + *(float *)(this + 184);
-        *(float *)(this + 184) = v14;
+        v14 = slug->lateral_phase_step + slug->lateral_phase;
+        slug->lateral_phase = v14;
         if ( !(v16 | v17) )
-          *(float *)(this + 184) = v14 - 6.2831855;
-        v18 = sine(*(float *)(this + 184));
-        v19 = *(_DWORD *)(this + 192);
-        *(float *)(this + 104) = v18 * 3.0;
-        if ( *(float *)(this + 112) < (double)*(float *)(v19 + 112) && !*(_BYTE *)(this + 180) )
-          *(_BYTE *)(this + 180) = 1;
-        v20 = (_DWORD *)(*(_DWORD *)(this + 172) + 72);
-        *v20 = *(_DWORD *)(this + 104);
-        v20[1] = *(_DWORD *)(this + 108);
-        v20[2] = *(_DWORD *)(this + 112);
-        v21 = *(_DWORD *)(this + 192);
-        if ( *(float *)(this + 112) >= (double)*(float *)(v21 + 10624) )
+          slug->lateral_phase = v14 - 6.2831855;
+        v18 = sine(slug->lateral_phase);
+        v19 = slug->owner_player;
+        slug->body.transform.position.x = v18 * 3.0;
+        if ( slug->body.transform.position.z < (double)v19->body.transform.position.z && !slug->passed_player )
+          slug->passed_player = 1;
+        v20 = &slug->sprite->position;
+        v20->x = slug->body.transform.position.x;
+        v20->y = slug->body.transform.position.y;
+        v20->z = slug->body.transform.position.z;
+        v21 = slug->owner_player;
+        if ( slug->body.transform.position.z >= (double)v21->interaction_max_z )
         {
-          if ( *(float *)(v21 + 884) > 0.0 )
-            kill_slug_hazard(this);
+          if ( v21->nuke_effect_progress > 0.0 )
+            kill_slug_hazard(slug);
 LABEL_39:
-          *(float *)(*(_DWORD *)(this + 172) + 124) = *(float *)(*(_DWORD *)(this + 192) + 880) + *(float *)(this + 152);
-          v13 = *(_DWORD *)(this + 192);
-          if ( *(_BYTE *)(v13 + 900) == 1 )
-            *(float *)(*(_DWORD *)(this + 172) + 124) = *(float *)(v13 + 928)
-                                                      + *(float *)(*(_DWORD *)(this + 172) + 124);
-          update_slug_voice_ai(this);
+          slug->sprite->facing_angle = slug->owner_player->heading_roll + slug->attachment_facing_angle;
+          v13 = slug->owner_player;
+          if ( v13->follow_state.active == 1 )
+            slug->sprite->facing_angle = v13->follow_state.orientation_b + slug->sprite->facing_angle;
+          update_slug_voice_ai(slug);
         }
         else
         {
-          v22 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 128) = 0;
-          v10 = (char *)g_game_base + 1448;
+          v22 = slug->body.bod.bod.list_flags;
+          slug->state = 0;
+          p_active_bod_list = &g_game_base->active_bod_list;
           if ( (v22 & 0x200) != 0 )
           {
             if ( (v22 & 0x40) != 0 )
             {
 LABEL_72:
               report_errorf(aListRemoveNext);
-              kill_sprite(*(_DWORD *)(this + 172));
+              kill_sprite((int)slug->sprite);
             }
             else
             {
-              v23 = *(_DWORD *)(this + 12);
+              v23 = slug->body.bod.bod.list_next;
               if ( v23 )
-                *(_DWORD *)(v23 + 8) = *(_DWORD *)(this + 8);
-              v24 = *(_DWORD *)(this + 8);
+                v23->list_prev = slug->body.bod.bod.list_prev;
+              v24 = slug->body.bod.bod.list_prev;
               if ( v24 )
-                *(_DWORD *)(v24 + 12) = *(_DWORD *)(this + 12);
+                v24->list_next = slug->body.bod.bod.list_next;
               else
 LABEL_77:
-                *((_DWORD *)v10 + 1) = *(_DWORD *)(this + 12);
+                p_active_bod_list->first = (FrameBodBase *)slug->body.bod.bod.list_next;
 LABEL_78:
-              *(_DWORD *)(this + 12) = *((_DWORD *)v10 + 2);
-              *((_DWORD *)v10 + 2) = this;
-              v39 = *(_DWORD *)(this + 4);
-              v40 = *(_DWORD *)(this + 172);
+              slug->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
+              p_active_bod_list->free_top = (FrameBodBase *)slug;
+              v39 = slug->body.bod.bod.list_flags;
+              v40 = slug->sprite;
               BYTE1(v39) &= ~2u;
-              *(_DWORD *)(this + 4) = v39;
-              kill_sprite(v40);
+              slug->body.bod.bod.list_flags = v39;
+              kill_sprite((int)v40);
             }
           }
           else
           {
 LABEL_70:
             report_errorf(aListRemove);
-            kill_sprite(*(_DWORD *)(this + 172));
+            kill_sprite((int)slug->sprite);
           }
         }
         break;
@@ -285,4 +286,3 @@ LABEL_70:
     }
   }
 }
-

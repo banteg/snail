@@ -18,6 +18,7 @@
   "mismatches": [],
   "analysis_refreshed": true,
   "timed_out_function_reanalysis": {
+    "interior_aliases": [],
     "reanalyzed": [],
     "snapshot_saved": false,
     "unresolved": []

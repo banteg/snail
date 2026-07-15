@@ -25,7 +25,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Vapour",
     "JetPack",
     "SubHealth",
-    "SlugHazardRuntime",
+    "Slug",
     "SlugPool",
     "SubRingStar",
     "SubRing",
@@ -38,7 +38,9 @@ REQUIRED_POOL_TYPES = (
     "SubRingKind",
 )
 
-RING_TYPE_REPLACEMENTS = (
+TYPE_REPLACEMENTS = (
+    "Slug",
+    "SlugPool",
     "SubRingState",
     "SubRingKind",
     "SubRingStar",
@@ -88,7 +90,8 @@ SUB_HEALTH_FIELD_UPDATES = (
     ("0x44", "owner_game", "SubgameRuntime*"),
 )
 
-SLUG_HAZARD_FIELD_UPDATES = (
+SLUG_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "int32_t"),
     ("0x84", "death_toss_direction", "int32_t"),
     ("0x88", "owner_game", "SubgameRuntime*"),
@@ -113,7 +116,7 @@ PROTO_UPDATES = (
     ("update_track_speedup", "void __thiscall update_track_speedup(SubSpeedUp* speedup)"),
     (
         "initialize_slug_hazard_runtime",
-        "SlugHazardRuntime* __thiscall initialize_slug_hazard_runtime(SlugHazardRuntime* slug)",
+        "Slug* __thiscall initialize_slug_hazard_runtime(Slug* slug)",
     ),
     (
         "spawn_slug_hazard",
@@ -121,23 +124,29 @@ PROTO_UPDATES = (
     ),
     (
         "update_slug_voice_ai",
-        "void __thiscall update_slug_voice_ai(SlugHazardRuntime* slug)",
+        "void __thiscall update_slug_voice_ai(Slug* slug)",
     ),
     (
         "play_slug_voice",
-        "void __thiscall play_slug_voice(SlugHazardRuntime* slug, int32_t sample_index)",
+        "void __thiscall play_slug_voice(Slug* slug, int32_t sample_index)",
     ),
     (
         "hit_slug_hazard",
-        "void __thiscall hit_slug_hazard(SlugHazardRuntime* slug, int32_t damage)",
+        "void __thiscall hit_slug_hazard(Slug* slug, int32_t damage)",
     ),
     (
         "explode_slug_hazard",
-        "void __thiscall explode_slug_hazard(SlugHazardRuntime* slug)",
+        "void __thiscall explode_slug_hazard(Slug* slug)",
     ),
     (
         "kill_slug_hazard",
-        "void __thiscall kill_slug_hazard(SlugHazardRuntime* slug)",
+        "void __thiscall kill_slug_hazard(Slug* slug)",
+    ),
+    # Binary Ninja preserves this one-ECX-argument method as fastcall. Keep the
+    # live ABI while still promoting the exact authored receiver owner.
+    (
+        "update_slug_hazard_ai",
+        "void __fastcall update_slug_hazard_ai(Slug* slug)",
     ),
     (
         "initialize_track_health_pickup_runtime",
@@ -191,7 +200,7 @@ PROTO_UPDATES = (
 DEFERRED_PROTO_UPDATES = (
     (
         "update_slug_hazard_ai",
-        "void __thiscall update_slug_hazard_ai(SlugHazardRuntime* slug)",
+        "void __thiscall update_slug_hazard_ai(Slug* slug)",
     ),
 )
 
@@ -264,7 +273,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            replace_types=RING_TYPE_REPLACEMENTS,
+            replace_types=TYPE_REPLACEMENTS,
         )
     )
 
@@ -274,7 +283,7 @@ def main() -> int:
         ("Vapour", VAPOUR_FIELD_UPDATES),
         ("JetPack", JETPACK_FIELD_UPDATES),
         ("SubHealth", SUB_HEALTH_FIELD_UPDATES),
-        ("SlugHazardRuntime", SLUG_HAZARD_FIELD_UPDATES),
+        ("Slug", SLUG_FIELD_UPDATES),
         ("SubRing", SUB_RING_FIELD_UPDATES),
     ]
     if struct_exists(REPO_ROOT, target=args.target, struct_name="FrameSubgameRuntime"):

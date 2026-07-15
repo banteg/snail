@@ -739,14 +739,14 @@ enum {
     SUB_SLUG_SLOT_CAPACITY = 8,
 };
 
-typedef struct SlugHazardRuntime {
-    RenderableBod bod;
+typedef struct Slug {
+    RenderableBod body;
     int32_t state;
     int32_t death_toss_direction;
     SubgameRuntime* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
-    uint8_t _pad_9c[0xac - 0x9c];
+    uint8_t unknown_9c[0xac - 0x9c];
     Sprite* sprite;
     TrackRowCell* source_cell;
     uint8_t passed_player;
@@ -767,10 +767,10 @@ typedef struct SlugHazardRuntime {
     float voice_progress_step;
     float blink_progress;
     float blink_step;
-} SlugHazardRuntime;
+} Slug;
 
 typedef struct SlugPool {
-    SlugHazardRuntime slots[SUB_SLUG_SLOT_CAPACITY];
+    Slug slots[SUB_SLUG_SLOT_CAPACITY];
 } SlugPool;
 
 typedef struct SubLazerManager {

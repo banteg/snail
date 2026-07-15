@@ -1539,6 +1539,53 @@ def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_crslug_owner_replays_across_analysis_lanes() -> None:
+    repo_root = Path(__file__).parents[1]
+    pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_subgame_pool_types.h", "path_template_types.h")
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/slug_hazard_types.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"Slug",' in pool_sync
+    assert '"SlugPool",' in pool_sync
+    assert '("Slug", SLUG_FIELD_UPDATES)' in pool_sync
+    assert '("0x00", "body", "RenderableBod")' in pool_sync
+    assert "SlugHazardRuntime*" not in pool_sync
+    assert "void __fastcall update_slug_hazard_ai(Slug* slug)" in pool_sync
+    assert "void __thiscall update_slug_hazard_ai(Slug* slug)" in pool_sync
+
+    for header in (*analysis_headers, matcher_header):
+        assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header
+        assert "unknown_9c[0xac - 0x9c]" in header
+
+    for header in analysis_headers:
+        assert "typedef struct Slug" in header
+        assert "RenderableBod body;" in header
+        assert "typedef struct SlugHazardRuntime" not in header
+
+    for function_name in (
+        "initialize_slug_hazard_runtime",
+        "update_slug_voice_ai",
+        "play_slug_voice",
+        "hit_slug_hazard",
+        "explode_slug_hazard",
+        "kill_slug_hazard",
+        "update_slug_hazard_ai",
+    ):
+        assert function_name in pool_sync
+        assert function_name in ida_sync
+    assert "SlugHazardRuntime*" not in ida_sync
+
+
 def test_parcel_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
