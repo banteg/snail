@@ -356,6 +356,9 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     repair_source = (BINJA_DIR / "repair_initialize_subgame_owner.py").read_text(
         encoding="utf-8"
     )
+    repair_entrypoint = (BINJA_DIR / "repair_subgame_receiver_owner.py").read_text(
+        encoding="utf-8"
+    )
     ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -367,7 +370,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "apply_struct_and_proto_updates" in source
     assert "apply_direct_proto_update" not in source
     assert "proto_owner_current" in source
-    assert "repair_initialize_subgame_owner.py --apply" in source
+    assert "repair_subgame_receiver_owner.py" in source
+    assert 'f"--function {identifier} --apply"' in source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in source
     assert '"RingOrSpecialEffectPool"' not in source
     assert '"SubSpeedUp"' not in source
@@ -394,9 +398,39 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         '"initialize_subgame", "void __thiscall '
         'initialize_subgame(SubgameRuntime* game)"'
     ) in deferred_prototypes
-    assert "FUNCTION_ADDRESS = 0x4374B0" in repair_source
-    assert 'EXPECTED_PROTOTYPE = "void __thiscall(struct SubgameRuntime* game)"' in repair_source
-    assert 'STALE_PROTOTYPE = "void __fastcall(struct Game* game)"' in repair_source
+    for function_name in (
+        "destroy_subgame",
+        "update_subgame",
+        "remove_subgame_bods",
+    ):
+        assert (
+            f'"{function_name}", "void __thiscall '
+            f'{function_name}(SubgameRuntime* game)"'
+        ) in deferred_prototypes
+    assert '"address": 0x4374B0' in repair_source
+    assert '"expected_prototype": "void __thiscall(struct SubgameRuntime* game)"' in repair_source
+    assert '"stale_prototype": "void __fastcall(struct Game* game)"' in repair_source
+    for function_name in (
+        "initialize_subgame",
+        "build_subgame_level",
+        "destroy_subgame",
+        "update_subgame",
+        "remove_subgame_bods",
+        "merge_track_tile_runs",
+        "get_track_runtime_cell_at_world_z",
+    ):
+        assert f'"{function_name}": {{' in repair_source
+    for address in (
+        "0x4374B0",
+        "0x437EB0",
+        "0x438850",
+        "0x438B90",
+        "0x440910",
+        "0x435180",
+        "0x43D480",
+    ):
+        assert f'"address": {address}' in repair_source
+    assert "from repair_initialize_subgame_owner import main" in repair_entrypoint
     assert "if stale and comments:" in repair_source
     assert "if stale and tags:" in repair_source
     assert "function_has_unpreserved_user_vars" in repair_source

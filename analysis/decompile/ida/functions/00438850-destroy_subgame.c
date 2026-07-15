@@ -3,168 +3,168 @@
 /* selector: destroy_subgame */
 
 // Tears down the active gameplay subgame state, including runtime lists, HUD widgets, and the current mode handoff state before control returns to the front-end. Cross-port Android and iOS symbols match this helper to `cRSubGame::UnInit()`.
-void __thiscall sub_438850(int this)
+void __thiscall destroy_subgame(SubgameRuntime *game)
 {
-  int v2; // esi
+  struct BodNode **p_list_next; // esi
   int v3; // ebx
   int v4; // eax
-  char *v5; // ecx
+  FrameBodList *p_active_bod_list; // ecx
   int v6; // eax
-  int v7; // eax
-  int v8; // esi
+  struct BodNode *v7; // eax
+  struct BodNode **v8; // esi
   int v9; // ebx
   int v10; // eax
-  char *v11; // ecx
+  FrameBodList *v11; // ecx
   int v12; // eax
-  int v13; // eax
-  int v14; // esi
+  struct BodNode *v13; // eax
+  struct BodNode **v14; // esi
   int v15; // ebx
   int v16; // eax
-  char *v17; // ecx
+  FrameBodList *v17; // ecx
   int v18; // eax
-  int v19; // eax
-  char *v20; // edx
-  int v21; // ecx
-  int v22; // ecx
-  int v23; // ecx
-  int v24; // ecx
-  _DWORD **v25; // esi
+  struct BodNode *v19; // eax
+  FrameBodList *v20; // edx
+  uint32_t list_flags; // ecx
+  struct BodNode *list_next; // ecx
+  struct BodNode *list_prev; // ecx
+  uint32_t v24; // ecx
+  FrontendWidget **life_stock_widgets; // esi
   int v26; // edi
 
-  sub_449C00();
-  *((_DWORD *)MEMORY[0x4DF904] + 81051) = 1;
-  if ( *(_DWORD *)(this + 64) == 7 )
-    uninit_tutorial();
-  uninit_warning((_DWORD **)(this + 3914584));
-  clear_active_landscape_entries((_DWORD *)(this + 16743424));
-  uninit_times_up((_DWORD **)(this + 19343400));
-  remove_subgame_bods(this);
-  if ( *(_DWORD *)(this + 60) != 1 )
+  debug_report_stub();
+  *(_DWORD *)&g_game_base->unknown_00067c[322544] = 1;
+  if ( game->level_mode == 7 )
+    uninit_tutorial(&game->tutorial);
+  uninit_warning(&game->player.warning);
+  clear_active_landscape_entries(&game->landscape_manager);
+  uninit_times_up(&game->times_up);
+  remove_subgame_bods(game);
+  if ( game->subgame_state != 1 )
   {
-    if ( *(_DWORD *)(this + 64) <= 1u )
-      flush_row_event_display((_DWORD *)(this + 19343320));
-    v2 = this + 3500812;
+    if ( game->level_mode <= 1u )
+      flush_row_event_display(&game->completion);
+    p_list_next = &game->sub_lazers.slots[0].body.bod.bod.list_next;
     v3 = 20;
     do
     {
-      v4 = *(_DWORD *)(v2 - 8);
+      v4 = (int)*(p_list_next - 2);
       if ( (v4 & 0x200) != 0 )
       {
-        v5 = (char *)MEMORY[0x4DF904] + 1448;
+        p_active_bod_list = &g_game_base->active_bod_list;
         if ( (v4 & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
         }
         else
         {
-          if ( *(_DWORD *)v2 )
-            *(_DWORD *)(*(_DWORD *)v2 + 8) = *(_DWORD *)(v2 - 4);
-          v6 = *(_DWORD *)(v2 - 4);
+          if ( *p_list_next )
+            (*p_list_next)->list_prev = *(p_list_next - 1);
+          v6 = (int)*(p_list_next - 1);
           if ( v6 )
-            *(_DWORD *)(v6 + 12) = *(_DWORD *)v2;
+            *(_DWORD *)(v6 + 12) = *p_list_next;
           else
-            *((_DWORD *)v5 + 1) = *(_DWORD *)v2;
-          *(_DWORD *)v2 = *((_DWORD *)v5 + 2);
-          *((_DWORD *)v5 + 2) = v2 - 12;
-          v7 = *(_DWORD *)(v2 - 8);
+            p_active_bod_list->first = (FrameBodBase *)*p_list_next;
+          *p_list_next = (struct BodNode *)p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (FrameBodBase *)(p_list_next - 3);
+          v7 = *(p_list_next - 2);
           BYTE1(v7) &= ~2u;
-          *(_DWORD *)(v2 - 8) = v7;
+          *(p_list_next - 2) = v7;
         }
       }
-      v2 += 176;
+      p_list_next += 44;
       --v3;
     }
     while ( v3 );
-    v8 = this + 3504332;
+    v8 = &game->salt_hazards.slots[0].body.bod.bod.list_next;
     v9 = 40;
     do
     {
-      v10 = *(_DWORD *)(v8 - 8);
+      v10 = (int)*(v8 - 2);
       if ( (v10 & 0x200) != 0 )
       {
-        v11 = (char *)MEMORY[0x4DF904] + 1448;
+        v11 = &g_game_base->active_bod_list;
         if ( (v10 & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
         }
         else
         {
-          if ( *(_DWORD *)v8 )
-            *(_DWORD *)(*(_DWORD *)v8 + 8) = *(_DWORD *)(v8 - 4);
-          v12 = *(_DWORD *)(v8 - 4);
+          if ( *v8 )
+            (*v8)->list_prev = *(v8 - 1);
+          v12 = (int)*(v8 - 1);
           if ( v12 )
-            *(_DWORD *)(v12 + 12) = *(_DWORD *)v8;
+            *(_DWORD *)(v12 + 12) = *v8;
           else
-            *((_DWORD *)v11 + 1) = *(_DWORD *)v8;
-          *(_DWORD *)v8 = *((_DWORD *)v11 + 2);
-          *((_DWORD *)v11 + 2) = v8 - 12;
-          v13 = *(_DWORD *)(v8 - 8);
+            v11->first = (FrameBodBase *)*v8;
+          *v8 = (struct BodNode *)v11->free_top;
+          v11->free_top = (FrameBodBase *)(v8 - 3);
+          v13 = *(v8 - 2);
           BYTE1(v13) &= ~2u;
-          *(_DWORD *)(v8 - 8) = v13;
+          *(v8 - 2) = v13;
         }
       }
-      v8 += 152;
+      v8 += 38;
       --v9;
     }
     while ( v9 );
-    v14 = this + 3510412;
+    v14 = &game->banners.slots[0].bod.bod.list_next;
     v15 = 2;
     do
     {
-      v16 = *(_DWORD *)(v14 - 8);
+      v16 = (int)*(v14 - 2);
       if ( (v16 & 0x200) != 0 )
       {
-        v17 = (char *)MEMORY[0x4DF904] + 1448;
+        v17 = &g_game_base->active_bod_list;
         if ( (v16 & 0x40) != 0 )
         {
           report_errorf(aListRemoveNext);
         }
         else
         {
-          if ( *(_DWORD *)v14 )
-            *(_DWORD *)(*(_DWORD *)v14 + 8) = *(_DWORD *)(v14 - 4);
-          v18 = *(_DWORD *)(v14 - 4);
+          if ( *v14 )
+            (*v14)->list_prev = *(v14 - 1);
+          v18 = (int)*(v14 - 1);
           if ( v18 )
-            *(_DWORD *)(v18 + 12) = *(_DWORD *)v14;
+            *(_DWORD *)(v18 + 12) = *v14;
           else
-            *((_DWORD *)v17 + 1) = *(_DWORD *)v14;
-          *(_DWORD *)v14 = *((_DWORD *)v17 + 2);
-          *((_DWORD *)v17 + 2) = v14 - 12;
-          v19 = *(_DWORD *)(v14 - 8);
+            v17->first = (FrameBodBase *)*v14;
+          *v14 = (struct BodNode *)v17->free_top;
+          v17->free_top = (FrameBodBase *)(v14 - 3);
+          v19 = *(v14 - 2);
           BYTE1(v19) &= ~2u;
-          *(_DWORD *)(v14 - 8) = v19;
+          *(v14 - 2) = v19;
         }
       }
-      v14 += 96;
+      v14 += 24;
       --v15;
     }
     while ( v15 );
   }
-  if ( (*(_DWORD *)(this + 16743368) & 0x200) != 0 )
+  if ( (game->barrier.bod.bod.list_flags & 0x200) != 0 )
   {
-    v20 = (char *)MEMORY[0x4DF904] + 1448;
-    v21 = *(_DWORD *)(this + 16743368);
-    if ( (v21 & 0x200) != 0 )
+    v20 = &g_game_base->active_bod_list;
+    list_flags = game->barrier.bod.bod.list_flags;
+    if ( (list_flags & 0x200) != 0 )
     {
-      if ( (v21 & 0x40) != 0 )
+      if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
       }
       else
       {
-        v22 = *(_DWORD *)(this + 16743376);
-        if ( v22 )
-          *(_DWORD *)(v22 + 8) = *(_DWORD *)(this + 16743372);
-        v23 = *(_DWORD *)(this + 16743372);
-        if ( v23 )
-          *(_DWORD *)(v23 + 12) = *(_DWORD *)(this + 16743376);
+        list_next = game->barrier.bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = game->barrier.bod.bod.list_prev;
+        list_prev = game->barrier.bod.bod.list_prev;
+        if ( list_prev )
+          list_prev->list_next = game->barrier.bod.bod.list_next;
         else
-          *((_DWORD *)v20 + 1) = *(_DWORD *)(this + 16743376);
-        *(_DWORD *)(this + 16743376) = *((_DWORD *)v20 + 2);
-        *((_DWORD *)v20 + 2) = this + 16743364;
-        v24 = *(_DWORD *)(this + 16743368);
+          v20->first = (FrameBodBase *)game->barrier.bod.bod.list_next;
+        game->barrier.bod.bod.list_next = (struct BodNode *)v20->free_top;
+        v20->free_top = (FrameBodBase *)&game->barrier;
+        v24 = game->barrier.bod.bod.list_flags;
         BYTE1(v24) &= ~2u;
-        *(_DWORD *)(this + 16743368) = v24;
+        game->barrier.bod.bod.list_flags = v24;
       }
     }
     else
@@ -172,27 +172,26 @@ void __thiscall sub_438850(int this)
       report_errorf(aListRemove);
     }
   }
-  kill_border(*(_DWORD **)(this + 3521416));
-  kill_border(*(_DWORD **)(this + 3521420));
-  if ( *(_BYTE *)(this + 16721361) )
+  kill_border(&game->top_score_widget->list_kind);
+  kill_border(&game->bottom_score_widget->list_kind);
+  if ( game->selected_level_record_persistent )
   {
-    *((_DWORD *)MEMORY[0x4DF904] + 111) = 18;
-    *(_BYTE *)(this + 16721361) = 0;
+    g_game_base->players[0].saved_frontend_state = 18;
+    game->selected_level_record_persistent = 0;
   }
-  if ( *(_DWORD *)(this + 64) == 3 )
-    *((_DWORD *)MEMORY[0x4DF904] + 119190) = 2;
-  if ( !*(_DWORD *)(this + 64) )
+  if ( game->level_mode == 3 )
+    g_game_base->subgame.level_mode = 2;
+  if ( !game->level_mode )
   {
-    kill_border(*(_DWORD **)(this + 3521424));
-    kill_border(*(_DWORD **)(this + 3521428));
-    v25 = (_DWORD **)(this + 3521432);
+    kill_border(&game->lives_icon_widget->list_kind);
+    kill_border(&game->lives_text_widget->list_kind);
+    life_stock_widgets = game->life_stock_widgets;
     v26 = 9;
     do
     {
-      kill_border(*v25++);
+      kill_border(*life_stock_widgets++);
       --v26;
     }
     while ( v26 );
   }
 }
-

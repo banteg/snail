@@ -343,3 +343,19 @@ authored normal/power-up/explode/slow rows map to kinds `5/8/6/7`, ordinary
 ramp rings map to default normal `4`, and explosive ramps map to kind `2`.
 Focused output remains 79.75%, 1,036/1,033 instructions, prefix 9/1,033, 117
 clean operands, and the same two table-identity mismatches.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja receiver was a stale same-size `Game*` named type. The
+guarded catalog repair recreated only the exact known function as a
+`SubgameRuntime*` method and preserved its sole user-defined receiver. The
+tracked decompile drops from 90 raw receiver-offset expressions to 17 while
+recovering the state machine, rebuild and replay selectors, player and
+click-start children, runtime row and cell slabs, pickup/hazard pools, HUD, and
+camera ownership. The remaining raw expressions are unresolved early scalars
+and indexed row lanes; they are not evidence for the retired `Game` aggregate.
+
+IDA's saved receiver lvar now agrees with its prototype and exposes the same
+owner graph without `int this` arithmetic. This is analysis-only: the honest
+focused frontier remains 79.75%, 1,036/1,033 instructions, 117 clean operands,
+and the same two table-identity mismatches.

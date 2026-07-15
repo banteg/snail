@@ -11,19 +11,173 @@ from _target import DEFAULT_TARGET
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-FUNCTION_ADDRESS = 0x4374B0
-FUNCTION_NAME = "initialize_subgame"
-EXPECTED_PROTOTYPE = "void __thiscall(struct SubgameRuntime* game)"
-STALE_PROTOTYPE = "void __fastcall(struct Game* game)"
 SUBGAME_RUNTIME_SIZE = 0x1272838
 
+FUNCTION_SPECS = {
+    "initialize_subgame": {
+        "address": 0x4374B0,
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "void __fastcall(struct Game* game)",
+        "declaration": "void __thiscall initialize_subgame(SubgameRuntime* game)",
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": -24,
+                "name": "color",
+                "type": "struct tColour",
+            },
+        ),
+    },
+    "build_subgame_level": {
+        "address": 0x437EB0,
+        "expected_prototype": (
+            "void __thiscall(struct SubgameRuntime* game, int32_t level_index)"
+        ),
+        "stale_prototype": "void __thiscall(struct Game* game, int32_t level_index)",
+        "declaration": (
+            "void __thiscall build_subgame_level(SubgameRuntime* game, "
+            "int32_t level_index)"
+        ),
+        "parameter_count": 2,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "level_index",
+                "type": "int32_t",
+            },
+        ),
+    },
+    "destroy_subgame": {
+        "address": 0x438850,
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "void __fastcall(struct Game* game)",
+        "declaration": "void __thiscall destroy_subgame(SubgameRuntime* game)",
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "update_subgame": {
+        "address": 0x438B90,
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "void __fastcall(struct Game* game)",
+        "declaration": "void __thiscall update_subgame(SubgameRuntime* game)",
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "remove_subgame_bods": {
+        "address": 0x440910,
+        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "void __fastcall(struct Game* game)",
+        "declaration": "void __thiscall remove_subgame_bods(SubgameRuntime* game)",
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "merge_track_tile_runs": {
+        "address": 0x435180,
+        "expected_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "stale_prototype": "int32_t __thiscall(struct Game* game)",
+        "declaration": (
+            "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game)"
+        ),
+        "parameter_count": 1,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+        ),
+    },
+    "get_track_runtime_cell_at_world_z": {
+        "address": 0x43D480,
+        "expected_prototype": (
+            "struct TrackAttachmentRuntimeRow* __thiscall("
+            "struct SubgameRuntime* game, struct Vec3* position)"
+        ),
+        "stale_prototype": (
+            "struct TrackAttachmentRuntimeRow* __thiscall("
+            "struct Game* game, struct Vec3* position)"
+        ),
+        "declaration": (
+            "TrackAttachmentRuntimeRow* __thiscall "
+            "get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)"
+        ),
+        "parameter_count": 2,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "position",
+                "type": "struct Vec3*",
+            },
+        ),
+    },
+}
 
-def _repair_code(*, apply: bool) -> str:
+
+def _repair_code(
+    *, function_name: str, spec: dict[str, object], apply: bool
+) -> str:
     template = r'''
-ADDRESS = __ADDRESS__
-NAME = __NAME__
-EXPECTED_PROTOTYPE = __EXPECTED_PROTOTYPE__
-STALE_PROTOTYPE = __STALE_PROTOTYPE__
+SPEC = __SPEC__
+ADDRESS = SPEC["address"]
+NAME = SPEC["name"]
+EXPECTED_PROTOTYPE = SPEC["expected_prototype"]
+STALE_PROTOTYPE = SPEC["stale_prototype"]
+DECLARATION = SPEC["declaration"]
+EXPECTED_PARAMETER_COUNT = SPEC["parameter_count"]
+EXPECTED_VARIABLES = SPEC["variables"]
 SUBGAME_RUNTIME_SIZE = __SUBGAME_RUNTIME_SIZE__
 APPLY = __APPLY__
 
@@ -56,52 +210,55 @@ def find_variable(fn, record):
 
 def annotations(fn):
     parameters = list(fn.parameter_vars)
-    receiver = variable_record(fn, parameters[0]) if len(parameters) == 1 else None
-    color_candidates = [
-        var
-        for var in fn.vars
-        if str(var.source_type).endswith("StackVariableSourceType")
-        and int(var.index) == 0
-        and int(var.storage) == -24
-    ]
-    color = variable_record(fn, color_candidates[0]) if len(color_candidates) == 1 else None
+    variables = []
+    for expected in EXPECTED_VARIABLES:
+        candidates = [
+            var
+            for var in fn.vars
+            if str(var.source_type) == expected["source_type"]
+            and int(var.index) == expected["index"]
+            and int(var.storage) == expected["storage"]
+        ]
+        variables.append(
+            {
+                "expected": expected,
+                "candidate_count": len(candidates),
+                "observed": (
+                    variable_record(fn, candidates[0]) if len(candidates) == 1 else None
+                ),
+            }
+        )
     return {
         "parameter_count": len(parameters),
-        "receiver": receiver,
-        "color_candidate_count": len(color_candidates),
-        "color": color,
+        "variables": variables,
     }
 
 
 def annotations_are_current(value):
-    receiver = value["receiver"]
-    color = value["color"]
     return (
-        value["parameter_count"] == 1
-        and receiver is not None
-        and receiver["name"] == "game"
-        and receiver["type"] == "struct SubgameRuntime*"
-        and value["color_candidate_count"] == 1
-        and color is not None
-        and color["name"] == "color"
-        and color["type"] == "struct tColour"
+        value["parameter_count"] == EXPECTED_PARAMETER_COUNT
+        and all(
+            entry["candidate_count"] == 1
+            and entry["observed"] is not None
+            and entry["observed"]["name"] == entry["expected"]["name"]
+            and entry["observed"]["type"] == entry["expected"]["type"]
+            for entry in value["variables"]
+        )
     )
 
 
 def apply_annotations(fn):
     value = annotations(fn)
-    if value["parameter_count"] != 1 or value["receiver"] is None:
-        raise RuntimeError(f"unexpected receiver candidates: {value!r}")
-    if value["color_candidate_count"] != 1 or value["color"] is None:
-        raise RuntimeError(f"unexpected color candidates: {value!r}")
+    if value["parameter_count"] != EXPECTED_PARAMETER_COUNT:
+        raise RuntimeError(f"unexpected parameter count: {value!r}")
+    if any(entry["candidate_count"] != 1 for entry in value["variables"]):
+        raise RuntimeError(f"unexpected variable candidates: {value!r}")
 
-    receiver = list(fn.parameter_vars)[0]
-    receiver_type, _ = bv.parse_type_string("SubgameRuntime*")
-    fn.create_user_var(receiver, receiver_type, "game")
-
-    color_var = find_variable(fn, value["color"])
-    color_type, _ = bv.parse_type_string("tColour")
-    fn.create_user_var(color_var, color_type, "color")
+    for entry in value["variables"]:
+        expected = entry["expected"]
+        var = find_variable(fn, expected)
+        var_type, _ = bv.parse_type_string(expected["type"])
+        fn.create_user_var(var, var_type, expected["name"])
     bv.update_analysis_and_wait()
 
 
@@ -141,8 +298,8 @@ else:
 
     stale = observed_prototype == STALE_PROTOTYPE
     allowed_user_var_keys = {
-        ("VariableSourceType.RegisterVariableSourceType", 0, 67),
-        ("VariableSourceType.StackVariableSourceType", 0, -24),
+        (record["source_type"], record["index"], record["storage"])
+        for record in EXPECTED_VARIABLES
     }
     unexpected_user_vars = [
         record
@@ -156,10 +313,13 @@ else:
         conflicts.append("function_has_tags")
     if stale and unexpected_user_vars:
         conflicts.append("function_has_unpreserved_user_vars")
-    if before_annotations["parameter_count"] != 1:
-        conflicts.append("unexpected_receiver_candidates")
-    if before_annotations["color_candidate_count"] != 1:
-        conflicts.append("unexpected_color_candidates")
+    if before_annotations["parameter_count"] != EXPECTED_PARAMETER_COUNT:
+        conflicts.append("unexpected_parameter_count")
+    if any(
+        entry["candidate_count"] != 1
+        for entry in before_annotations["variables"]
+    ):
+        conflicts.append("unexpected_variable_candidates")
 
     if conflicts:
         result = {
@@ -247,9 +407,7 @@ else:
             bv.file.save_auto_snapshot()
 
         try:
-            expected_type, _ = bv.parse_type_string(
-                "void __thiscall initialize_subgame(SubgameRuntime* game)"
-            )
+            expected_type, _ = bv.parse_type_string(DECLARATION)
             bv.remove_function(fn)
             recreated = True
             repaired = bv.add_function(
@@ -259,7 +417,7 @@ else:
                 func_type=expected_type,
             )
             if repaired is None:
-                raise RuntimeError("failed to recreate initialize_subgame")
+                raise RuntimeError(f"failed to recreate {NAME}")
             repaired.name = NAME
             repaired.set_user_type(expected_type)
             bv.update_analysis_and_wait()
@@ -296,11 +454,13 @@ else:
             "dry_run": False,
         }
 '''
+    embedded_spec = {
+        **spec,
+        "name": function_name,
+        "variables": list(spec["variables"]),
+    }
     return (
-        template.replace("__ADDRESS__", hex(FUNCTION_ADDRESS))
-        .replace("__NAME__", repr(FUNCTION_NAME))
-        .replace("__EXPECTED_PROTOTYPE__", repr(EXPECTED_PROTOTYPE))
-        .replace("__STALE_PROTOTYPE__", repr(STALE_PROTOTYPE))
+        template.replace("__SPEC__", repr(embedded_spec))
         .replace("__SUBGAME_RUNTIME_SIZE__", hex(SUBGAME_RUNTIME_SIZE))
         .replace("__APPLY__", repr(apply))
     )
@@ -317,14 +477,22 @@ def _unwrap_result(payload: object) -> dict[str, object]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Inspect or narrowly repair initialize_subgame when a stale Binary Ninja "
-            "Game* named-type identity blocks the proven SubgameRuntime receiver."
+            "Inspect or narrowly repair a cataloged subgame function when a stale "
+            "Binary Ninja Game* named-type identity blocks its proven SubgameRuntime "
+            "receiver."
         )
     )
     parser.add_argument(
         "--target",
         default=DEFAULT_TARGET,
         help="Binary Ninja target selector.",
+    )
+    parser.add_argument(
+        "--function",
+        dest="function_name",
+        choices=tuple(FUNCTION_SPECS),
+        default="initialize_subgame",
+        help="Cataloged function to inspect or repair. Defaults to initialize_subgame.",
     )
     parser.add_argument(
         "--apply",
@@ -339,6 +507,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    spec = FUNCTION_SPECS[args.function_name]
     payload = run_bn(
         REPO_ROOT,
         "py",
@@ -348,13 +517,18 @@ def main() -> int:
         "--format",
         "json",
         "--code",
-        _repair_code(apply=args.apply),
+        _repair_code(
+            function_name=args.function_name,
+            spec=spec,
+            apply=args.apply,
+        ),
     )
     result = _unwrap_result(payload)
     json.dump(
         {
             "tool": "binary_ninja",
             "target": args.target,
+            "function": args.function_name,
             "apply": args.apply,
             "result": result,
         },

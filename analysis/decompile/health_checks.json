@@ -941,14 +941,117 @@
       ]
     },
     {
-      "name": "bn_game_warning_field_intact",
+      "name": "bn_destroy_subgame_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00438850-destroy_subgame.c",
       "required_substrings": [
-        "game->warning_actor",
-        "game->level_mode",
-        "flush_row_event_display(&game->row_event_display)"
+        "uninit_warning(&game->player.warning)",
+        "clear_active_landscape_entries(&game->landscape_manager)",
+        "flush_row_event_display(&game->completion)",
+        "&game->sub_lazers.slots[0].bod.list_next",
+        "&game->life_stock_widgets"
       ],
       "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "arg1->",
+        "__asm",
+        "_ET1"
+      ],
+      "max_counts": {
+        "__offset(": 0
+      }
+    },
+    {
+      "name": "ida_destroy_subgame_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00438850-destroy_subgame.c",
+      "required_substrings": [
+        "void __thiscall destroy_subgame(SubgameRuntime *game)",
+        "uninit_warning(&game->player.warning)",
+        "clear_active_landscape_entries(&game->landscape_manager)",
+        "flush_row_event_display(&game->completion)",
+        "game->life_stock_widgets"
+      ],
+      "forbidden_substrings": [
+        "sub_438850(int this)",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_subgame_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00438b90-update_subgame.c",
+      "required_substrings": [
+        "calc_subgame_rate(game)",
+        "game->subgame_rebuild_selector",
+        "game->player.click_start.state",
+        "game->runtime_rows",
+        "game->runtime_cells",
+        "game->time_trial"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "arg1->",
+        "__asm",
+        "_ET1"
+      ],
+      "max_counts": {
+        "__offset(": 9
+      }
+    },
+    {
+      "name": "ida_update_subgame_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00438b90-update_subgame.c",
+      "required_substrings": [
+        "void __thiscall update_subgame(SubgameRuntime *game)",
+        "game->subgame_rebuild_selector",
+        "game->player.click_start.state",
+        "game->runtime_rows[0].ring_speed",
+        "game->time_trial"
+      ],
+      "forbidden_substrings": [
+        "sub_438B90(int this)",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_remove_subgame_bods_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00440910-remove_subgame_bods.c",
+      "required_substrings": [
+        "&game->runtime_cells",
+        "&game->runtime_rows[0].primary_body",
+        "&game->health_pickups[0].list_next",
+        "&game->ring_effects.slots[0].bod.list_next",
+        "game->player.body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "struct Game*",
+        "__offset(Game",
+        "arg1->",
+        "__asm",
+        "_ET1"
+      ],
+      "max_counts": {
+        "__offset(": 1
+      }
+    },
+    {
+      "name": "ida_remove_subgame_bods_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00440910-remove_subgame_bods.c",
+      "required_substrings": [
+        "void __thiscall remove_subgame_bods(SubgameRuntime *game)",
+        "game->runtime_cells[0]",
+        "remove_track_render_cache_bods(&game->segment_cache)",
+        "&game->health_pickups[0].bod.list_next",
+        "&game->ring_effects.slots[0].body.bod.bod.list_next",
+        "game->player.body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "sub_440910(int this)",
+        "this +",
         "__asm",
         "_ET1"
       ]

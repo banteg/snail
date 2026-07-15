@@ -2,158 +2,156 @@
 /* function: update_subgame @ 0x438b90 */
 /* selector: update_subgame */
 
-// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live Player movement_state at +0x120 equals 2. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`.
-void __thiscall sub_438B90(int this)
+// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`.
+void __thiscall update_subgame(SubgameRuntime *game)
 {
-  int v2; // eax
-  int v3; // eax
-  int v4; // eax
-  int v5; // eax
-  int v6; // eax
-  int v7; // edx
-  int v8; // edx
+  int32_t subgame_rebuild_selector; // eax
+  SubSolution *selected_level_record; // eax
+  int32_t level_mode; // eax
+  int updated; // eax
+  int32_t level_mode_arg; // eax
+  int32_t v7; // edx
+  int32_t v8; // edx
   int v9; // eax
   double v10; // st7
-  int v11; // eax
-  int v12; // eax
-  int v13; // eax
-  int v14; // edi
-  int v15; // eax
-  int v16; // ebp
-  int v17; // edi
-  char *v18; // ecx
-  char *v19; // eax
-  int v20; // edx
-  int v21; // edx
-  int v22; // eax
-  int v23; // edi
+  int32_t v11; // eax
+  int32_t v12; // eax
+  int32_t v13; // eax
+  int32_t runtime_row_scan_end; // edi
+  int32_t v15; // eax
+  int32_t runtime_row_scan_begin; // ebp
+  char *v17; // edi
+  FrameBodBase *v18; // ecx
+  FrameBodBase **p_first; // eax
+  FrameBodBase *first; // edx
+  FrameBodBase *list_prev; // edx
+  uint32_t list_flags; // eax
+  char *v23; // edi
   char v24; // al
-  int v25; // eax
+  struct BodNode *v25; // eax
   int v26; // ecx
-  int v27; // eax
+  struct BodNode *v27; // eax
   int v28; // ecx
-  _DWORD *v29; // eax
-  int v30; // ecx
-  int v31; // ecx
+  struct BodNode *v29; // eax
+  struct BodNode *list_next; // ecx
+  uint32_t v31; // ecx
   _DWORD *v32; // ebx
-  _DWORD *v33; // ebx
-  _DWORD *v34; // eax
-  int v35; // ecx
-  int v36; // ecx
-  _DWORD *v37; // eax
-  _DWORD *v38; // edx
+  struct BodNode **v33; // ebx
+  struct BodNode *v34; // eax
+  struct BodNode *v35; // ecx
+  uint32_t v36; // ecx
+  char v37; // al
+  char v38; // al
   char v39; // al
   char v40; // al
-  char v41; // al
-  char v42; // al
-  int v43; // edx
-  char v44; // cl
-  int v45; // edx
-  char v46; // al
-  int v47; // eax
+  int v41; // edx
+  char v42; // cl
+  float v43; // edx
+  char v44; // al
+  int32_t v45; // eax
+  char *v46; // eax
+  char *v47; // eax
   char *v48; // eax
-  int v49; // eax
-  char *v50; // eax
-  int v51; // eax
-  int v52; // ecx
-  int *v53; // [esp-1Ch] [ebp-68h]
-  int *v54; // [esp-1Ch] [ebp-68h]
-  int v55; // [esp+10h] [ebp-3Ch]
-  int v56; // [esp+14h] [ebp-38h]
-  int v57; // [esp+18h] [ebp-34h]
-  int v58[4]; // [esp+1Ch] [ebp-30h] BYREF
-  int v59[4]; // [esp+2Ch] [ebp-20h] BYREF
-  int v60[4]; // [esp+3Ch] [ebp-10h] BYREF
+  int32_t total_score; // eax
+  FrontendWidget *bottom_score_widget; // ecx
+  int *v51; // [esp-1Ch] [ebp-68h]
+  int *v52; // [esp-1Ch] [ebp-68h]
+  int v53; // [esp+10h] [ebp-3Ch]
+  int v54; // [esp+14h] [ebp-38h]
+  char *v55; // [esp+18h] [ebp-34h]
+  Color4f color; // [esp+1Ch] [ebp-30h] BYREF
+  Color4f v57; // [esp+2Ch] [ebp-20h] BYREF
+  tColour out; // [esp+3Ch] [ebp-10h] BYREF
 
-  calc_subgame_rate(this);
-  switch ( *(_DWORD *)(this + 60) )
+  calc_subgame_rate(game);
+  switch ( game->subgame_state )
   {
     case 0:
-      v2 = *(_DWORD *)(this + 19337160);
-      *(_DWORD *)(this + 60) = 1;
-      if ( v2 == 1 )
+      subgame_rebuild_selector = game->subgame_rebuild_selector;
+      game->subgame_state = 1;
+      if ( subgame_rebuild_selector == 1 )
         goto LABEL_214;
-      if ( !v2 || v2 == 3 )
+      if ( !subgame_rebuild_selector || subgame_rebuild_selector == 3 )
       {
 LABEL_21:
-        build_subgame_level(this, *(_DWORD *)(this + 68));
+        build_subgame_level(game, game->level_mode_arg);
       }
       else
       {
-        if ( *(_BYTE *)(this + 16721361) != 1 )
+        if ( game->selected_level_record_persistent != 1 )
         {
-          *(_BYTE *)(this + 16721360) = 0;
-          hide_star_field((int *)MEMORY[0x4DF904] + 81103);
+          game->selected_level_record_active = 0;
+          hide_star_field((StarManager *)&g_game_base->unknown_00067c[322752]);
           goto LABEL_14;
         }
-        v3 = *(_DWORD *)(this + 16721364);
-        *(_BYTE *)(this + 16721360) = 1;
-        build_subgame_level(this, *(_DWORD *)(v3 + 40));
+        selected_level_record = game->selected_level_record;
+        game->selected_level_record_active = 1;
+        build_subgame_level(game, selected_level_record->replay_level_index);
       }
       return;
     case 1:
 LABEL_14:
       random_float_below(1.0);
-      v4 = *(_DWORD *)(this + 64);
-      *(_DWORD *)(this + 40) = unk_4DF958;
-      *(_DWORD *)(this + 44) = unk_4DF960;
-      switch ( v4 )
+      level_mode = game->level_mode;
+      game->completion_bonus_x_source = g_runtime_config.completion_bonus_x_source;
+      game->completion_bonus_y_source = g_runtime_config.completion_bonus_y_source;
+      switch ( level_mode )
       {
         case 0:
-          v5 = update_galaxy(this + 19267616);
-          if ( v5 == 1 )
+          updated = update_galaxy((char *)&game->galaxy);
+          if ( updated == 1 )
           {
-            v6 = *(_DWORD *)(this + 68);
-            *(_DWORD *)(this + 19337160) = 3;
-            unk_4DF9BC = v6;
-            build_subgame_level(this, *(_DWORD *)(this + 68));
+            level_mode_arg = game->level_mode_arg;
+            game->subgame_rebuild_selector = 3;
+            g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
+            build_subgame_level(game, game->level_mode_arg);
             return;
           }
-          if ( v5 == 2 )
+          if ( updated == 2 )
           {
-            v7 = *(_DWORD *)(this + 68);
-            *(_DWORD *)(this + 19337160) = 1;
-            unk_4DF9BC = v7;
-            build_subgame_level(this, *(_DWORD *)(this + 68));
+            v7 = game->level_mode_arg;
+            game->subgame_rebuild_selector = 1;
+            g_runtime_config.landscape_backdrop_variant_selector = v7;
+            build_subgame_level(game, game->level_mode_arg);
             return;
           }
 LABEL_22:
-          if ( v5 != 3 )
+          if ( updated != 3 )
             goto LABEL_214;
 LABEL_23:
-          destroy_subgame(this);
-          *((_DWORD *)MEMORY[0x4DF904] + 110) = 2;
+          destroy_subgame(game);
+          g_game_base->players[0].frontend_state = 2;
           break;
         case 1:
-          v9 = update_challenge_setup_screen((_DWORD **)(this + 19267552));
+          v9 = update_challenge_setup_screen(&game->gui);
           if ( v9 == 1 )
             goto LABEL_25;
           if ( v9 == 3 )
             goto LABEL_23;
           goto LABEL_214;
         case 4:
-          v5 = update_galaxy(this + 19267616);
-          if ( v5 != 1 )
+          updated = update_galaxy((char *)&game->galaxy);
+          if ( updated != 1 )
             goto LABEL_22;
-          v8 = *(_DWORD *)(this + 68);
-          *(_DWORD *)(this + 19337160) = 2;
-          unk_4DF9BC = v8;
+          v8 = game->level_mode_arg;
+          game->subgame_rebuild_selector = 2;
+          g_runtime_config.landscape_backdrop_variant_selector = v8;
           goto LABEL_21;
         case 7:
 LABEL_25:
-          *(_DWORD *)(this + 19337160) = 2;
-          build_subgame_level(this, 0);
+          game->subgame_rebuild_selector = 2;
+          build_subgame_level(game, 0);
           return;
         default:
           goto LABEL_214;
       }
       return;
     case 2:
-      if ( *(_BYTE *)(this + 16721360) == 1 && !*((_BYTE *)MEMORY[0x4DF904] + 324320) )
+      if ( game->selected_level_record_active == 1 && !g_game_base->unknown_00067c[322660] )
       {
-        if ( *(_DWORD *)(this + 64) == 3 )
+        if ( game->level_mode == 3 )
         {
-          v53 = set_color_rgba(v58, 1065353216, 1065353216, 1065353216, 1053609165);
+          v51 = (int *)set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.40000001);
           queue_axis_aligned_textured_quad_uv(
             27,
             1141964800,
@@ -161,7 +159,7 @@ LABEL_25:
             1115684864,
             1115684864,
             0x1000000,
-            v53,
+            v51,
             0,
             0,
             1065353216,
@@ -171,7 +169,7 @@ LABEL_25:
         }
         else
         {
-          v54 = set_color_rgba(v59, 1065353216, 1065353216, 1065353216, 1053609165);
+          v52 = (int *)set_color_rgba((tColour *)&v57, 1.0, 1.0, 1.0, 0.40000001);
           queue_axis_aligned_textured_quad_uv(
             27,
             1133510656,
@@ -179,7 +177,7 @@ LABEL_25:
             1115684864,
             1115684864,
             0x1000000,
-            v54,
+            v52,
             0,
             0,
             1065353216,
@@ -188,473 +186,480 @@ LABEL_25:
             0);
         }
       }
-      if ( !*(_BYTE *)(this + 3914660) && *(_DWORD *)(this + 3913860) != 2 )
-        advance_timer_counters((float *)(this + 3914316), 1.0);
-      if ( *(_DWORD *)(this + 64) == 7 )
-        update_tutorial((char **)(this + 43096));
-      update_slug_voice_manager((float *)(this + 3521404));
-      if ( *(_BYTE *)(this + 8) == 1 )
+      if ( !game->player.completion_handoff_active
+        && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START )
       {
-        *(_BYTE *)(this + 9) = 0;
-        *(_BYTE *)(this + 8) = 0;
+        advance_timer_counters(&game->player.stopwatch, 1.0);
+      }
+      if ( game->level_mode == 7 )
+        update_tutorial(&game->tutorial);
+      update_slug_voice_manager((float *)&game->slug_voice_manager.active);
+      if ( game->_pad_00[8] == 1 )
+      {
+        game->subgame_pause_gate = 0;
+        game->_pad_00[8] = 0;
         set_sprite_manager_paused(g_sprite_manager, 0);
       }
-      if ( *(_BYTE *)(this + 16721360)
-        && *(float *)(this + 12) == 0.0
-        && (*(_DWORD *)(*(_DWORD *)(this + 3914656) + 4) & 0x4000) != 0
-        || *((_BYTE *)MEMORY[0x4DF904] + 324320) )
+      if ( game->selected_level_record_active
+        && *(float *)&game->_pad_0a[2] == 0.0
+        && (game->player.control_source->control_flags_a & 0x4000) != 0
+        || g_game_base->unknown_00067c[322660] )
       {
-        if ( *(_BYTE *)(this + 16721361) )
+        if ( game->selected_level_record_persistent )
         {
-          *((_DWORD *)MEMORY[0x4DF904] + 111) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-          *((_DWORD *)MEMORY[0x4DF904] + 110) = 26;
+          g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
+          g_game_base->players[0].frontend_state = 26;
         }
         else
         {
-          *((_DWORD *)MEMORY[0x4DF904] + 111) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-          *((_DWORD *)MEMORY[0x4DF904] + 110) = 27;
+          g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
+          g_game_base->players[0].frontend_state = 27;
         }
-        if ( *((float *)MEMORY[0x4DF904] + 81081) <= 1.0 )
-          *((_BYTE *)MEMORY[0x4DF904] + 324320) = 0;
+        if ( *(float *)&g_game_base->unknown_00067c[322664] <= 1.0 )
+          g_game_base->unknown_00067c[322660] = 0;
         return;
       }
-      if ( (read_pressed_text_input_key_code() == 11 || unk_4B7654 == 1) && !*((_DWORD *)MEMORY[0x4DF904] + 9) )
+      if ( (read_pressed_text_input_key_code() == 11 || g_window_deactivated == 1) && !g_game_base->fade.state )
       {
-        *(_BYTE *)(this + 9) = 1;
-        *(_DWORD *)(this + 60) = 3;
+        game->subgame_pause_gate = 1;
+        game->subgame_state = 3;
         set_sprite_manager_paused(g_sprite_manager, 1);
-        if ( *(_DWORD *)(this + 3913860) == 2 )
-          hide_border_init(*(_DWORD **)(this + 3913864));
+        if ( game->player.click_start.state == CLICK_START_STATE_WAITING_FOR_START )
+          hide_border_init(&game->player.click_start.prompt->list_kind);
         return;
       }
-      if ( *(float *)(this + 12) > 0.0 )
+      if ( *(float *)&game->_pad_0a[2] > 0.0 )
       {
-        v10 = *(float *)(this + 16) + *(float *)(this + 12);
-        *(float *)(this + 12) = v10;
+        v10 = *(float *)&game->_pad_0a[6] + *(float *)&game->_pad_0a[2];
+        *(float *)&game->_pad_0a[2] = v10;
         if ( v10 > 1.0 )
-          *(_DWORD *)(this + 12) = 0;
-        if ( *(_DWORD *)(this + 3913860) == 2 )
-          unhide_border_init(*(_DWORD **)(this + 3913864));
+          *(_DWORD *)&game->_pad_0a[2] = 0;
+        if ( game->player.click_start.state == CLICK_START_STATE_WAITING_FOR_START )
+          unhide_border_init(&game->player.click_start.prompt->list_kind);
       }
-      if ( *(_BYTE *)this )
+      if ( game->_pad_00[0] )
       {
-        v11 = *(_DWORD *)(this + 64);
-        *(_DWORD *)(this + 32) = 0;
+        v11 = game->level_mode;
+        game->runtime_row_scan_begin = 0;
         if ( v11 == 2 )
         {
-          *(_DWORD *)(this + 36) = *(_DWORD *)(this + 84);
+          game->runtime_row_scan_end = game->runtime_row_count;
           goto LABEL_62;
         }
-        v12 = (__int64)*(float *)(this + 3924196) + 46;
+        v12 = (__int64)game->player.interaction_max_z + 46;
 LABEL_61:
-        *(_DWORD *)(this + 36) = v12;
+        game->runtime_row_scan_end = v12;
         goto LABEL_62;
       }
-      v13 = *(_DWORD *)(this + 64);
-      v14 = *(_DWORD *)(this + 36);
-      *(_DWORD *)(this + 32) = v14;
+      v13 = game->level_mode;
+      runtime_row_scan_end = game->runtime_row_scan_end;
+      game->runtime_row_scan_begin = runtime_row_scan_end;
       if ( v13 == 2 )
       {
-        *(_DWORD *)(this + 36) = *(_DWORD *)(this + 84);
+        game->runtime_row_scan_end = game->runtime_row_count;
         goto LABEL_62;
       }
-      v12 = (__int64)*(float *)(this + 3924196) + 46;
-      if ( v12 > v14 )
+      v12 = (__int64)game->player.interaction_max_z + 46;
+      if ( v12 > runtime_row_scan_end )
         goto LABEL_61;
 LABEL_62:
-      v15 = *(_DWORD *)(this + 88) + 20;
-      if ( *(_DWORD *)(this + 36) > v15 )
-        *(_DWORD *)(this + 36) = v15;
-      v16 = *(_DWORD *)(this + 32);
-      if ( v16 < *(_DWORD *)(this + 36) )
+      v15 = game->completion_row_start + 20;
+      if ( game->runtime_row_scan_end > v15 )
+        game->runtime_row_scan_end = v15;
+      runtime_row_scan_begin = game->runtime_row_scan_begin;
+      if ( runtime_row_scan_begin < game->runtime_row_scan_end )
       {
 LABEL_65:
-        v17 = this + 244 * v16;
-        v57 = v17;
-        if ( (*((_BYTE *)byte_5CCAC8 + v17) & 2) != 0 )
+        v17 = (char *)game + 244 * runtime_row_scan_begin;
+        v55 = v17;
+        if ( (byte_5CCAC8[(_DWORD)v17] & 2) != 0 )
         {
-          v18 = (char *)&unk_5CCACC + v17;
-          if ( (*(int *)((char *)&unk_5CCAD0 + v17) & 0x200) != 0 )
+          v18 = (FrameBodBase *)((char *)&unk_5CCACC + (_DWORD)v17);
+          if ( (*(_DWORD *)((_BYTE *)&unk_5CCAD0 + (_DWORD)v17) & 0x200) != 0 )
           {
             report_errorf(aListAdd);
           }
           else
           {
-            v19 = (char *)MEMORY[0x4DF904] + 1452;
-            v20 = *((_DWORD *)MEMORY[0x4DF904] + 363);
-            if ( v20 )
+            p_first = &g_game_base->active_bod_list.first;
+            first = g_game_base->active_bod_list.first;
+            if ( first )
             {
-              *(_DWORD *)(v20 + 8) = v18;
-              *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v19 + 8) + 12) = *(_DWORD *)v19;
-              v21 = *(_DWORD *)(*(_DWORD *)v19 + 8);
-              *(_DWORD *)v19 = v21;
-              *(_DWORD *)(v21 + 8) = 0;
+              first->bod.list_prev = v18;
+              (*p_first)->bod.list_prev->bod.list_next = *p_first;
+              list_prev = (*p_first)->bod.list_prev;
+              *p_first = list_prev;
+              list_prev->bod.list_prev = nullptr;
             }
             else
             {
-              *(_DWORD *)v19 = v18;
-              *((_DWORD *)v18 + 2) = 0;
-              *(_DWORD *)(*(_DWORD *)v19 + 12) = 0;
+              *p_first = v18;
+              v18->bod.list_prev = nullptr;
+              (*p_first)->bod.list_next = nullptr;
             }
-            v22 = *((_DWORD *)v18 + 1);
-            BYTE1(v22) |= 2u;
-            *((_DWORD *)v18 + 1) = v22;
+            list_flags = v18->bod.list_flags;
+            BYTE1(list_flags) |= 2u;
+            v18->bod.list_flags = list_flags;
           }
         }
-        if ( (*((_BYTE *)byte_5CCAC8 + v17) & 0x10) != 0 && ((unsigned int)&unk_800000 & *(_DWORD *)(this + 76)) != 0 )
-          spawn_track_parcel((int *)this, (float *)((char *)&unk_5CCB58 + v17), this + 3913572);
-        v55 = 0;
+        if ( (byte_5CCAC8[(_DWORD)v17] & 0x10) != 0 && ((unsigned int)&unk_800000 & game->runtime_flags) != 0 )
+          spawn_track_parcel(game, (Vec3 *)((char *)&unk_5CCB58 + (_DWORD)v17), &game->player);
+        v53 = 0;
         while ( 1 )
         {
-          if ( v16 < 0 )
+          if ( runtime_row_scan_begin < 0 )
             goto LABEL_209;
-          if ( v16 >= *(_DWORD *)(this + 84) )
+          if ( runtime_row_scan_begin >= game->runtime_row_count )
             goto LABEL_209;
-          v23 = this + 84 * (v55 + 8 * v16);
-          if ( (*(_DWORD *)(v23 + 3930828) & 0x200) != 0 )
+          v23 = (char *)game + 672 * runtime_row_scan_begin + 84 * v53;
+          if ( (*((_DWORD *)v23 + 982707) & 0x200) != 0 )
             goto LABEL_209;
-          if ( (*(_DWORD *)(v23 + 3930888) & 0x4000) != 0 )
+          if ( (*((_DWORD *)v23 + 982722) & 0x4000) != 0 )
           {
-            v24 = *(_BYTE *)(v23 + 3930884);
+            v24 = v23[3930884];
             if ( v24 == 29 || v24 == 30 )
             {
-              if ( *(_DWORD *)(v23 + 3930860) )
+              if ( *((_DWORD *)v23 + 982715) )
               {
-                v27 = v23 + 3930824;
-                if ( (*(_DWORD *)(v23 + 3930828) & 0x200) != 0 )
+                v27 = (struct BodNode *)(v23 + 3930824);
+                if ( (*((_DWORD *)v23 + 982707) & 0x200) != 0 )
                 {
                   report_errorf(aListAddafter);
                 }
                 else
                 {
-                  *(_DWORD *)(v23 + 3930832) = this + 3497140;
-                  *(_DWORD *)(v23 + 3930836) = *(_DWORD *)(this + 3497152);
-                  *(_DWORD *)(this + 3497152) = v27;
-                  v28 = *(_DWORD *)(v23 + 3930836);
+                  *((_DWORD *)v23 + 982708) = &game->special_track_cell_list_head;
+                  *((_DWORD *)v23 + 982709) = game->special_track_cell_list_head.bod.list_next;
+                  game->special_track_cell_list_head.bod.list_next = v27;
+                  v28 = *((_DWORD *)v23 + 982709);
                   if ( v28 )
                     *(_DWORD *)(v28 + 8) = v27;
-                  *(_DWORD *)(v23 + 3930828) |= 0x200u;
+                  *((_DWORD *)v23 + 982707) |= 0x200u;
                 }
-                v29 = (_DWORD *)((char *)&unk_5CCB78 + v57);
-                *(float *)(v23 + 3930856) = (double)(v16 & 7) * 0.125;
-                if ( (*(_DWORD *)((_BYTE *)&unk_5CCB78 + v57 + 4) & 0x200) != 0 )
+                v29 = (struct BodNode *)((char *)&unk_5CCB78 + (_DWORD)v55);
+                *((float *)v23 + 982714) = (double)(runtime_row_scan_begin & 7) * 0.125;
+                if ( (*(_DWORD *)((_BYTE *)&unk_5CCB78 + (_DWORD)v55 + 4) & 0x200) != 0 )
                 {
                   report_errorf(aListAddafter);
                 }
                 else
                 {
-                  v29[2] = this + 3496804;
-                  v29[3] = *(_DWORD *)(this + 3496816);
-                  *(_DWORD *)(this + 3496816) = v29;
-                  v30 = v29[3];
-                  if ( v30 )
-                    *(_DWORD *)(v30 + 8) = v29;
-                  v31 = v29[1];
+                  v29->list_prev = &game->fringe_attachment_list_head.bod;
+                  v29->list_next = game->fringe_attachment_list_head.bod.list_next;
+                  game->fringe_attachment_list_head.bod.list_next = v29;
+                  list_next = v29->list_next;
+                  if ( list_next )
+                    list_next->list_prev = v29;
+                  v31 = v29->list_flags;
                   BYTE1(v31) |= 2u;
-                  v29[1] = v31;
+                  v29->list_flags = v31;
                 }
-                v32 = (int *)((char *)&unk_5CCB88 + v57);
-                *v32 = *(_DWORD *)(v23 + 3930840);
-                v32[1] = *(_DWORD *)(v23 + 3930844);
-                v32[2] = *(_DWORD *)(v23 + 3930848);
+                v32 = (_DWORD *)((char *)&unk_5CCB88 + (_DWORD)v55);
+                *v32 = *((_DWORD *)v23 + 982710);
+                v32[1] = *((_DWORD *)v23 + 982711);
+                v32[2] = *((_DWORD *)v23 + 982712);
               }
             }
             else
             {
-              v25 = v23 + 3930824;
-              if ( (*(_DWORD *)(v23 + 3930828) & 0x200) != 0 )
+              v25 = (struct BodNode *)(v23 + 3930824);
+              if ( (*((_DWORD *)v23 + 982707) & 0x200) != 0 )
               {
                 report_errorf(aListAddafter);
               }
               else
               {
-                *(_DWORD *)(v23 + 3930832) = this + 3496860;
-                *(_DWORD *)(v23 + 3930836) = *(_DWORD *)(this + 3496872);
-                *(_DWORD *)(this + 3496872) = v25;
-                v26 = *(_DWORD *)(v23 + 3930836);
+                *((_DWORD *)v23 + 982708) = &game->track_body_list_head;
+                *((_DWORD *)v23 + 982709) = game->track_body_list_head.bod.list_next;
+                game->track_body_list_head.bod.list_next = v25;
+                v26 = *((_DWORD *)v23 + 982709);
                 if ( v26 )
                   *(_DWORD *)(v26 + 8) = v25;
-                *(_DWORD *)(v23 + 3930828) |= 0x200u;
+                *((_DWORD *)v23 + 982707) |= 0x200u;
               }
             }
-            (**(void (__thiscall ***)(int))(v23 + 3930824))(v23 + 3930824);
+            (**((void (__thiscall ***)(int))v23 + 982706))((int)(v23 + 3930824));
           }
-          v33 = (_DWORD *)(v23 + 3930892);
-          v56 = 4;
+          v33 = (struct BodNode **)(v23 + 3930892);
+          v54 = 4;
           do
           {
-            v34 = (_DWORD *)*v33;
+            v34 = *v33;
             if ( *v33 )
             {
-              if ( (v34[1] & 0x200) != 0 )
+              if ( (v34->list_flags & 0x200) != 0 )
               {
                 report_errorf(aListAddafter);
               }
               else
               {
-                v34[2] = this + 3496804;
-                v34[3] = *(_DWORD *)(this + 3496816);
-                *(_DWORD *)(this + 3496816) = v34;
-                v35 = v34[3];
+                v34->list_prev = &game->fringe_attachment_list_head.bod;
+                v34->list_next = game->fringe_attachment_list_head.bod.list_next;
+                game->fringe_attachment_list_head.bod.list_next = v34;
+                v35 = v34->list_next;
                 if ( v35 )
-                  *(_DWORD *)(v35 + 8) = v34;
-                v36 = v34[1];
+                  v35->list_prev = v34;
+                v36 = v34->list_flags;
                 BYTE1(v36) |= 2u;
-                v34[1] = v36;
+                v34->list_flags = v36;
               }
-              v37 = get_track_skirt_color((int *)MEMORY[0x4DF904] + 119174, v60);
-              v38 = (_DWORD *)(*v33 + 40);
-              *v38 = *v37;
-              v38[1] = v37[1];
-              v38[2] = v37[2];
-              v38[3] = v37[3];
+              *(struct BodNode *)((char *)*v33 + 40) = *(struct BodNode *)get_track_skirt_color(
+                                                                            (SubgameRuntime *)&g_game_base->subgame,
+                                                                            &out);
             }
             ++v33;
-            --v56;
+            --v54;
           }
-          while ( v56 );
-          if ( *(_BYTE *)(v23 + 3930884) == 23
-            && (*(_DWORD *)(this + 76) & 0x800) != 0
-            && v16 >= *(_DWORD *)(this + 80)
-            && v16 < *(_DWORD *)(this + 88) )
+          while ( v54 );
+          if ( v23[3930884] == 23
+            && (game->runtime_flags & 0x800) != 0
+            && runtime_row_scan_begin >= game->first_block_row_count
+            && runtime_row_scan_begin < game->completion_row_start )
           {
-            spawn_track_health_pickup(this, v23 + 3930824, v23 + 3930824, this + 3913572);
+            spawn_track_health_pickup((int)game, (int)(v23 + 3930824), (int)(v23 + 3930824), (int)&game->player);
           }
-          if ( *(_BYTE *)(v23 + 3930884) == 24 && v16 >= *(_DWORD *)(this + 80) && v16 < *(_DWORD *)(this + 88) )
-            spawn_track_speedup(v23 + 3930824, this + 3913572);
-          if ( *(_BYTE *)(v23 + 3930884) == 25 && v16 >= *(_DWORD *)(this + 80) && v16 < *(_DWORD *)(this + 88) )
-            spawn_track_jetpack_pickup((char *)this, v23 + 3930824, this + 3913572);
-          v39 = *(_BYTE *)(v23 + 3930884);
-          if ( v39 == 33
-            || (*(_BYTE *)(v23 + 3930888) & 0x10) == 0
-            && (v39 == 1 || v39 == 21)
-            && (*(_BYTE *)(this + 76) & 2) != 0
-            && (1.0 - *(float *)(this + 19267544)) * 0.2 + 0.80000001 < random_float_below(1.0)
-            && (!v55 || (v40 = *(_BYTE *)(v23 + 3930800), v40 == 1) || v40 == 20 || v40 == 21 || v40 == 32)
-            && (v55 == 7 || (v41 = *(_BYTE *)(v23 + 3930968), v41 == 1) || v41 == 20 || v41 == 21 || v41 == 32)
-            && v16 >= *(_DWORD *)(this + 80)
-            && v16 < *(_DWORD *)(this + 88)
-            && *(_DWORD *)(this + 3913860) != 2
-            && (*(_DWORD *)(this + 64) != 4 || *(float *)(this + 72) * 0.30000001 + 0.69999999 >= random_float_below(1.0))
-            && (*(_DWORD *)(this + 64) || *(float *)(this + 72) * 0.60000002 + 0.40000001 >= random_float_below(1.0)) )
+          if ( v23[3930884] == 24
+            && runtime_row_scan_begin >= game->first_block_row_count
+            && runtime_row_scan_begin < game->completion_row_start )
           {
-            spawn_track_garbage_hazard((_DWORD *)this, v23 + 3930824, this + 3913572);
+            spawn_track_speedup((int)(v23 + 3930824), (int)&game->player);
           }
-          v42 = *(_BYTE *)(v23 + 3930884);
-          if ( v42 == 34 )
+          if ( v23[3930884] == 25
+            && runtime_row_scan_begin >= game->first_block_row_count
+            && runtime_row_scan_begin < game->completion_row_start )
           {
-            if ( v16 >= *(_DWORD *)(this + 80) && v16 < *(_DWORD *)(this + 88) )
+            spawn_track_jetpack_pickup((char *)game, (int)(v23 + 3930824), (int)&game->player);
+          }
+          v37 = v23[3930884];
+          if ( v37 == 33
+            || (v23[3930888] & 0x10) == 0
+            && (v37 == 1 || v37 == 21)
+            && (game->runtime_flags & 2) != 0
+            && (1.0 - game->garbage_frequency) * 0.2 + 0.80000001 < random_float_below(1.0)
+            && (!v53 || (v38 = v23[3930800], v38 == 1) || v38 == 20 || v38 == 21 || v38 == 32)
+            && (v53 == 7 || (v39 = v23[3930968], v39 == 1) || v39 == 20 || v39 == 21 || v39 == 32)
+            && runtime_row_scan_begin >= game->first_block_row_count
+            && runtime_row_scan_begin < game->completion_row_start
+            && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START
+            && (game->level_mode != 4 || game->base_subgame_rate * 0.30000001 + 0.69999999 >= random_float_below(1.0))
+            && (game->level_mode || game->base_subgame_rate * 0.60000002 + 0.40000001 >= random_float_below(1.0)) )
+          {
+            spawn_track_garbage_hazard(game, (TrackRowCell *)(v23 + 3930824), &game->player);
+          }
+          v40 = v23[3930884];
+          if ( v40 == 34 )
+          {
+            if ( runtime_row_scan_begin >= game->first_block_row_count
+              && runtime_row_scan_begin < game->completion_row_start )
+            {
               goto LABEL_158;
+            }
           }
-          else if ( (*(_BYTE *)(v23 + 3930888) & 8) == 0
-                 && (v42 == 1 || v42 == 15)
-                 && *(_DWORD *)(this + 3913860) != 2
-                 && (*(_DWORD *)(this + 76) & 0x10000) != 0
-                 && (1.0 - *(float *)(this + 19267548)) * 0.02 + 0.98000002 < random_float_below(1.0)
-                 && v16 >= *(_DWORD *)(this + 80)
-                 && v16 < *(_DWORD *)(this + 88) )
+          else if ( (v23[3930888] & 8) == 0
+                 && (v40 == 1 || v40 == 15)
+                 && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START
+                 && (game->runtime_flags & 0x10000) != 0
+                 && (1.0 - game->salt_frequency) * 0.02 + 0.98000002 < random_float_below(1.0)
+                 && runtime_row_scan_begin >= game->first_block_row_count
+                 && runtime_row_scan_begin < game->completion_row_start )
           {
 LABEL_158:
-            spawn_salt_hazard((_DWORD *)(this + 3504320), (_DWORD *)(v23 + 3930840));
+            spawn_salt_hazard(&game->salt_hazards, (_DWORD *)v23 + 982710);
           }
-          if ( *(char *)(this + 76) < 0
-            && *(_BYTE *)(v23 + 3930884) == 18
-            && v16 >= *(_DWORD *)(this + 80)
-            && v16 < *(_DWORD *)(this + 88) )
+          if ( SLOBYTE(game->runtime_flags) < 0
+            && v23[3930884] == 18
+            && runtime_row_scan_begin >= game->first_block_row_count
+            && runtime_row_scan_begin < game->completion_row_start )
           {
-            spawn_slug_hazard(this, v23 + 3930824, this + 3913572);
+            spawn_slug_hazard((int)game, (int)(v23 + 3930824), (int)&game->player);
           }
-          v43 = *(int *)((char *)byte_5CCAC8 + v57);
-          if ( (v43 & 0x200) != 0 )
+          v41 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v55];
+          if ( (v41 & 0x200) != 0 )
             goto LABEL_209;
-          v44 = *(_BYTE *)(v23 + 3930884);
-          if ( v44 == 35 )
+          v42 = v23[3930884];
+          if ( v42 == 35 )
           {
-            if ( (v43 & 0x400) != 0 )
+            if ( (v41 & 0x400) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3930824,
+                (#26 *)game,
+                (int)(v23 + 3930824),
                 5,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
             }
-            if ( (v43 & 0x2000) != 0 )
+            if ( (v41 & 0x2000) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3930824,
+                (#26 *)game,
+                (int)(v23 + 3930824),
                 8,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
             }
-            if ( (v43 & 0x800) != 0 )
+            if ( (v41 & 0x800) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3930824,
+                (#26 *)game,
+                (int)(v23 + 3930824),
                 6,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
             }
-            if ( (v43 & 0x1000) != 0 )
+            if ( (v41 & 0x1000) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3930824,
+                (#26 *)game,
+                (int)(v23 + 3930824),
                 7,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               goto LABEL_207;
             }
           }
           else
           {
-            if ( v44 != 2 && v44 != 3 && v44 != 4 && v44 != 5 && v44 != 6 && v44 != 7
-              || *(float *)(this + 3914464) + 10.0 >= *(float *)(v23 + 3930848)
-              || v16 >= *(_DWORD *)(this + 88) )
+            if ( v42 != 2 && v42 != 3 && v42 != 4 && v42 != 5 && v42 != 6 && v42 != 7
+              || game->player.last_ring_spawn_z + 10.0 >= *((float *)v23 + 982712)
+              || runtime_row_scan_begin >= game->completion_row_start )
             {
-              if ( v44 != 8 && v44 != 9 && v44 != 10
-                || *(float *)(this + 3914464) + 10.0 >= *(float *)(v23 + 3930848)
-                || v16 >= *(_DWORD *)(this + 88) )
+              if ( v42 != 8 && v42 != 9 && v42 != 10
+                || game->player.last_ring_spawn_z + 10.0 >= *((float *)v23 + 982712)
+                || runtime_row_scan_begin >= game->completion_row_start )
               {
                 goto LABEL_209;
               }
-              if ( (v43 & 0x800) != 0 )
+              if ( (v41 & 0x800) != 0 )
               {
                 spawn_track_ring_or_special_effect(
-                  this,
-                  v23 + 3930824,
+                  (#26 *)game,
+                  (int)(v23 + 3930824),
                   2,
-                  this + 3913572,
-                  *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
+                  (int)&game->player,
+                  *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
               }
               else
               {
                 if ( random_float_below(1.0) <= 0.69999999
-                  && *(_DWORD *)(this + 64) != 7
-                  && (*(int *)((char *)byte_5CCAC8 + v57) & 0x800) == 0 )
+                  && game->level_mode != 7
+                  && (*(_DWORD *)&byte_5CCAC8[(_DWORD)v55] & 0x800) == 0 )
                 {
                   goto LABEL_209;
                 }
-                spawn_track_ring_or_special_effect(this, v23 + 3930824, 2, this + 3913572, 0.0);
+                spawn_track_ring_or_special_effect((#26 *)game, (int)(v23 + 3930824), 2, (int)&game->player, 0.0);
               }
 LABEL_207:
-              v45 = *(_DWORD *)(v23 + 3930848);
+              v43 = *((float *)v23 + 982712);
 LABEL_208:
-              *(_DWORD *)(this + 3914464) = v45;
+              game->player.last_ring_spawn_z = v43;
               goto LABEL_209;
             }
-            if ( (v43 & 0x2000) != 0 )
+            if ( (v41 & 0x2000) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3934856,
+                (#26 *)game,
+                (int)(v23 + 3934856),
                 8,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
-              v45 = *(_DWORD *)(v23 + 3934880);
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
+              v43 = *((float *)v23 + 983720);
               goto LABEL_208;
             }
-            if ( (v43 & 0x800) != 0 )
+            if ( (v41 & 0x800) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3934856,
+                (#26 *)game,
+                (int)(v23 + 3934856),
                 6,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
-              v45 = *(_DWORD *)(v23 + 3934880);
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
+              v43 = *((float *)v23 + 983720);
               goto LABEL_208;
             }
-            if ( (v43 & 0x1000) != 0 )
+            if ( (v41 & 0x1000) != 0 )
             {
               spawn_track_ring_or_special_effect(
-                this,
-                v23 + 3934856,
+                (#26 *)game,
+                (int)(v23 + 3934856),
                 7,
-                this + 3913572,
-                *(float *)(this + 4 * (v16 + 20 * (3 * v16 + 74772) + 24924)));
-              v45 = *(_DWORD *)(v23 + 3934880);
+                (int)&game->player,
+                *(&game->runtime_rows[0].ring_speed + 60 * runtime_row_scan_begin + runtime_row_scan_begin));
+              v43 = *((float *)v23 + 983720);
               goto LABEL_208;
             }
-            if ( (*(_BYTE *)(this + 76) & 8) == 0
-              || random_float_below(1.0) <= 0.69999999 && *(_DWORD *)(this + 64) != 7 )
-            {
+            if ( (game->runtime_flags & 8) == 0 || random_float_below(1.0) <= 0.69999999 && game->level_mode != 7 )
               goto LABEL_209;
-            }
-            v46 = *(_BYTE *)(v23 + 3930884);
-            if ( v46 == 5 || v46 == 6 || v46 == 7 )
+            v44 = v23[3930884];
+            if ( v44 == 5 || v44 == 6 || v44 == 7 )
               goto LABEL_209;
-            spawn_track_ring_or_special_effect(this, v23 + 3930824, 4, this + 3913572, 0.0);
-            if ( *(int *)(this + 3914600) < 10 )
+            spawn_track_ring_or_special_effect((#26 *)game, (int)(v23 + 3930824), 4, (int)&game->player, 0.0);
+            if ( game->player.lives < 10 )
               goto LABEL_207;
-            *(float *)(this + 3914464) = *(float *)(v23 + 3930848) + 35.0;
+            game->player.last_ring_spawn_z = *((float *)v23 + 982712) + 35.0;
           }
 LABEL_209:
-          if ( ++v55 >= 8 )
+          if ( ++v53 >= 8 )
           {
-            v47 = *(_DWORD *)(this + 36);
-            ++v16;
-            *(_BYTE *)this = 0;
-            if ( v16 >= v47 )
+            v45 = game->runtime_row_scan_end;
+            ++runtime_row_scan_begin;
+            game->_pad_00[0] = 0;
+            if ( runtime_row_scan_begin >= v45 )
               break;
             goto LABEL_65;
           }
         }
       }
-      sub_433B30(this + 92);
-      if ( *(_DWORD *)(this + 64) == 4 )
+      update_track_render_cache_rows(&game->segment_cache);
+      if ( game->level_mode == 4 )
       {
-        v48 = format_time_trial_string(this + 3914316);
-        rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521416) + 716), v48);
-        v49 = this + 129728 * *(_DWORD *)(this + 68);
-        if ( *(_DWORD *)(v49 + 9716048) == 1 )
+        v46 = format_time_trial_string(&game->time_trial, &game->player.stopwatch);
+        rstrcpy_checked_ascii((char *)&game->top_score_widget->text_buffer, v46);
+        v47 = (char *)game + 129728 * game->level_mode_arg;
+        if ( *((_DWORD *)v47 + 2429012) == 1 )
         {
-          v50 = format_time_trial_string(v49 + 9716056);
-          rstrcpy_checked_ascii((char *)(*(_DWORD *)(this + 3521420) + 716), v50);
+          v48 = format_time_trial_string(&game->time_trial, (Time *)(v47 + 9716056));
+          rstrcpy_checked_ascii((char *)&game->bottom_score_widget->text_buffer, v48);
           goto LABEL_214;
         }
-        hide_border_init(*(_DWORD **)(this + 3521420));
-        update_subgame_camera(this);
+        hide_border_init(&game->bottom_score_widget->list_kind);
+        update_subgame_camera(game);
       }
       else
       {
-        *(_BYTE *)(*(_DWORD *)(this + 3521416) + 716) = 0;
-        border_add_text_number(*(_BYTE **)(this + 3521416), *(_DWORD *)(this + 3914312));
-        v51 = *(_DWORD *)(this + 3914312);
-        if ( v51 <= *(_DWORD *)(this + 3497364) )
+        game->top_score_widget->text_buffer.raw[0] = 0;
+        border_add_text_number(game->top_score_widget, game->player.total_score);
+        total_score = game->player.total_score;
+        if ( total_score <= game->active_level_score )
           goto LABEL_214;
-        v52 = *(_DWORD *)(this + 3521420);
-        *(_DWORD *)(this + 3497364) = v51;
-        *(_BYTE *)(v52 + 716) = 0;
-        border_add_text_number(*(_BYTE **)(this + 3521420), *(_DWORD *)(this + 3497364));
-        update_subgame_camera(this);
+        bottom_score_widget = game->bottom_score_widget;
+        game->active_level_score = total_score;
+        bottom_score_widget->text_buffer.raw[0] = 0;
+        border_add_text_number(game->bottom_score_widget, game->active_level_score);
+        update_subgame_camera(game);
       }
       return;
     case 3:
-      *(_DWORD *)(this + 60) = 4;
-      *(_BYTE *)(this + 9) = 1;
-      *(_DWORD *)(this + 12) = *(_DWORD *)(this + 16);
-      initialize_pause_menu((int *)(this + 20));
+      game->subgame_state = 4;
+      game->subgame_pause_gate = 1;
+      *(_DWORD *)&game->_pad_0a[2] = *(_DWORD *)&game->_pad_0a[6];
+      initialize_pause_menu(&game->sub_pause);
       goto LABEL_3;
     case 4:
 LABEL_3:
-      update_pause_menu((_DWORD *)(this + 20));
+      update_pause_menu(&game->sub_pause);
       return;
     case 7:
-      *(_BYTE *)(this + 16721360) = *(_BYTE *)(this + 16721361) == 1;
-      build_subgame_level(this, 0);
-      *(_DWORD *)(this + 60) = 2;
-      *((_DWORD *)MEMORY[0x4DF904] + 347) = 1;
+      game->selected_level_record_active = game->selected_level_record_persistent == 1;
+      build_subgame_level(game, 0);
+      game->subgame_state = 2;
+      g_game_base->render_skip_count = 1;
       return;
     default:
 LABEL_214:
-      update_subgame_camera(this);
+      update_subgame_camera(game);
       return;
   }
 }
-

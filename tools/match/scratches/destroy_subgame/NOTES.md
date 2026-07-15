@@ -104,3 +104,17 @@ from their embedded arrays. Together with the existing `sizeof(SubLazer)`,
 `sizeof(Salt)`, and `sizeof(Banner)` cursor steps, teardown no longer duplicates
 the `20/40/2/9` owner extents in executable source. The function remains exact
 at 246/246 instructions with all 41 masked operands clean.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja `Game*` receiver was the same stale named-type identity
+seen on the initializer, not a distinct aggregate. The guarded catalog repair
+recreated only this exact function as a `SubgameRuntime*` method, preserved its
+sole user-defined receiver, and saved after verified readback. Its tracked
+decompile falls from 28 raw receiver-offset expressions to none and now exposes
+the player warning, landscape manager, completion display, embedded hazard
+pools, barrier, HUD widgets, and replay teardown lane directly.
+
+The saved IDA receiver lvar now agrees with its already-correct prototype, so
+the tracked Hex-Rays artifact also contains no `int this` arithmetic. No matcher
+source changed: teardown remains exact at 246/246 with all 41 operands clean.

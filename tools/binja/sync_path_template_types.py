@@ -1114,26 +1114,25 @@ CORE_SUBGAME_PROTO_UPDATES = (
     ),
 )
 
-# These lifecycle and track-normalization receivers are already SubgameRuntime methods in the
-# exact/working matching sources and in the cross-port cRSubGame symbol
-# evidence. The exact runtime-row lookup has the same owner proof through the
-# canonical array. Older BN databases pin a separate user-defined Game*
+# These lifecycle and track-normalization receivers are already SubgameRuntime
+# methods in the exact/working matching sources and in the cross-port cRSubGame
+# symbol evidence. The exact runtime-row lookup has the same owner proof through
+# the canonical array. Older BN databases pin a separate user-defined Game*
 # parameter variable on all seven. Both the previewed prototype setter and local
 # retype API reject the owner-only correction, so report the drift instead of
-# claiming a mutation that analysis immediately restores. initialize_subgame
-# has a separately guarded repair because its stale named-type identity required
-# function recreation, which Binary Ninja does not cover with ordinary undo.
-# Preserve BN's inferred calling convention for the other deferred receivers;
-# the ownership pointer is their only intended future change.
+# claiming a mutation that analysis immediately restores. The guarded repair
+# catalog handles only the exact known stale identities and defaults to a
+# read-only inspection because function recreation is not covered by ordinary
+# Binary Ninja undo.
 DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ("initialize_subgame", "void __thiscall initialize_subgame(SubgameRuntime* game)"),
     (
         "build_subgame_level",
         "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index)",
     ),
-    ("destroy_subgame", "void __fastcall destroy_subgame(SubgameRuntime* game)"),
-    ("update_subgame", "void __fastcall update_subgame(SubgameRuntime* game)"),
-    ("remove_subgame_bods", "void __fastcall remove_subgame_bods(SubgameRuntime* game)"),
+    ("destroy_subgame", "void __thiscall destroy_subgame(SubgameRuntime* game)"),
+    ("update_subgame", "void __thiscall update_subgame(SubgameRuntime* game)"),
+    ("remove_subgame_bods", "void __thiscall remove_subgame_bods(SubgameRuntime* game)"),
     (
         "merge_track_tile_runs",
         "int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game)",
@@ -1166,15 +1165,16 @@ def report_deferred_subgame_owner_prototypes(*, target: str) -> list[dict[str, o
             "reason": (
                 "already current"
                 if current
-                else "existing user-defined Game* parameter is pinned by Binary Ninja"
+                else "stale user-defined Game* identity requires guarded function recreation"
             ),
             "identifier": identifier,
             "desired_prototype": prototype,
             "observed_prototype": observed,
         }
-        if identifier == "initialize_subgame" and not current:
+        if not current:
             result["repair_command"] = (
-                "uv run tools/binja/repair_initialize_subgame_owner.py --apply"
+                "uv run tools/binja/repair_subgame_receiver_owner.py "
+                f"--function {identifier} --apply"
             )
         results.append(result)
     return results

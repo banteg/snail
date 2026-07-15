@@ -500,12 +500,13 @@ the still-unproved early `+0x0c/+0x10` pair remains raw.
 
 Function removal/recreation is not fully covered by Binary Ninja's undo API,
 so it is not part of the broad ownership replay. The opt-in
-`repair_initialize_subgame_owner.py --apply` path checks the exact address,
-name, stale/current prototype, `SubgameRuntime` extent, comments, tags, and
-user-defined variables first, preserves the receiver and `tColour` workspace,
-verifies readback, saves explicitly, and has a manual rollback path. Its
-default mode is read-only, and apply mode is a no-op once the database is
-current.
+`repair_subgame_receiver_owner.py --function initialize_subgame --apply` path
+checks the exact address, name, stale/current prototype, `SubgameRuntime`
+extent, comments, tags, and user-defined variables first, preserves the
+receiver and `tColour` workspace, verifies readback, saves explicitly, and has
+a manual rollback path. Its default mode is read-only, and apply mode is a
+no-op once the database is current. The older initializer-specific entrypoint
+remains available for compatibility.
 
 IDA had a different persistence layer: the function prototype was already
 correct, but a saved Hex-Rays `int this` lvar overrode it. The type sync now

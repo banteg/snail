@@ -1465,8 +1465,10 @@ One local tooling caveat remains:
 - the current `bn decompile` output does not always rewrite post-hoc struct-growth sites away from raw `__offset(...)` expressions, even after a manual analysis refresh
 - `bn types show Player`, `bn types show SubgameRuntime`, and the recovered
   path-template types are therefore the authoritative typed layouts for now
-- older databases can retain a same-size `Game*` named-type identity on
-  `initialize_subgame`; inspect it read-only with
-  `uv run tools/binja/repair_initialize_subgame_owner.py`, and use the explicit
-  `--apply` form only after its guards report the exact known stale state
+- older databases can retain a same-size `Game*` named-type identity on the
+  cataloged subgame lifecycle and track-normalization receivers; inspect one
+  read-only with
+  `uv run tools/binja/repair_subgame_receiver_owner.py --function <name>`, and
+  use the explicit `--apply` form only after its guards report the exact known
+  stale state
 - the recovered path-template surface now also has a narrow mirrored IDA lane through [`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h) and [`tools/ida/sync_path_template_types.py`](../../tools/ida/sync_path_template_types.py)

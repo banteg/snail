@@ -208,3 +208,19 @@ Bulk teardown now returns the real `cRSubSpeedUp`, `cRJetPack`, and eight
 inherited BOD nodes. Focused output remains byte-stable at 67.67%, 495/501
 instructions, prefix 6/501, with 63 clean operands and the same two documented
 string-order mismatches.
+
+## 2026-07-14 analysis receiver closure
+
+The live Binary Ninja `Game*` receiver was another stale same-size identity.
+The guarded catalog repair recreated only this exact function with its proven
+`SubgameRuntime*` owner and preserved the sole user-defined receiver. The
+tracked decompile falls from 137 raw receiver-offset expressions to one,
+recovering the row/cell slabs, track cache, pickup and hazard pools, ring slots,
+embedded player bodies, projectile bank, and sprite cleanup owners. The one
+remaining `+0x5c` expression is the still-imperfect Binary Ninja spelling of
+the segment-cache child that IDA already resolves as `game->segment_cache`.
+
+IDA's saved receiver lvar now agrees with its prototype and contains no raw
+`int this` arithmetic. No matcher source changed; the honest focused result
+remains 67.67%, 495/501 instructions, 63 clean operands, and the same two
+documented string-order mismatches.
