@@ -394,14 +394,26 @@ typedef union ChallengeDifficultyOrBits {
     int32_t difficulty_scalar_bits;
 } ChallengeDifficultyOrBits;
 
+typedef struct SubPause {
+    FrontendWidget* options_widget;
+    FrontendWidget* end_game_widget;
+    FrontendWidget* resume_widget;
+} SubPause;
+
 typedef struct SubgameRuntime {
-    uint8_t unknown_000000[0x02];
+    uint8_t scan_reset;
+    uint8_t camera_snap_requested;
     uint8_t track_mirror_enabled;
     uint8_t unknown_000003;
     int32_t track_mirror_repeat_count;
-    uint8_t unknown_000008;
+    uint8_t resume_requested;
     uint8_t subgame_pause_gate;
-    uint8_t unknown_00000a[0x28 - 0x0a];
+    uint8_t unknown_00000a[0x0c - 0x0a];
+    float pause_fade;
+    float pause_fade_step;
+    SubPause sub_pause;
+    int32_t runtime_row_scan_begin;
+    int32_t runtime_row_scan_end;
     int32_t completion_bonus_x_source;
     int32_t completion_bonus_y_source;
     RuntimeRateOrLevelArg rate_or_level_arg;

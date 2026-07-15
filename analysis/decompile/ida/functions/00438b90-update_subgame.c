@@ -54,8 +54,8 @@ void __thiscall update_subgame(SubgameRuntime *game)
   char *v48; // eax
   int32_t total_score; // eax
   FrontendWidget *bottom_score_widget; // ecx
-  int *v51; // [esp-1Ch] [ebp-68h]
-  int *v52; // [esp-1Ch] [ebp-68h]
+  tColour *v51; // [esp-1Ch] [ebp-68h]
+  tColour *v52; // [esp-1Ch] [ebp-68h]
   int v53; // [esp+10h] [ebp-3Ch]
   int v54; // [esp+14h] [ebp-38h]
   char *v55; // [esp+18h] [ebp-34h]
@@ -81,7 +81,7 @@ LABEL_21:
         if ( game->selected_level_record_persistent != 1 )
         {
           game->selected_level_record_active = 0;
-          hide_star_field((StarManager *)&g_game_base->unknown_00067c[322752]);
+          hide_star_field((StarManager *)&g_game_base->unknown_000b48[321524]);
           goto LABEL_14;
         }
         selected_level_record = game->selected_level_record;
@@ -147,43 +147,17 @@ LABEL_25:
       }
       return;
     case 2:
-      if ( game->selected_level_record_active == 1 && !g_game_base->unknown_00067c[322660] )
+      if ( game->selected_level_record_active == 1 && !g_game_base->unknown_000b48[321432] )
       {
         if ( game->level_mode == 3 )
         {
-          v51 = (int *)set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.40000001);
-          queue_axis_aligned_textured_quad_uv(
-            27,
-            1141964800,
-            1086324736,
-            1115684864,
-            1115684864,
-            0x1000000,
-            v51,
-            0,
-            0,
-            1065353216,
-            1065353216,
-            1,
-            0);
+          v51 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.40000001);
+          queue_axis_aligned_textured_quad_uv(27, 580.0, 6.0, 64.0, 64.0, 0x1000000u, v51, 0.0, 0.0, 1.0, 1.0, 1, 0.0);
         }
         else
         {
-          v52 = (int *)set_color_rgba((tColour *)&v57, 1.0, 1.0, 1.0, 0.40000001);
-          queue_axis_aligned_textured_quad_uv(
-            27,
-            1133510656,
-            1092616192,
-            1115684864,
-            1115684864,
-            0x1000000,
-            v52,
-            0,
-            0,
-            1065353216,
-            1065353216,
-            1,
-            0);
+          v52 = set_color_rgba((tColour *)&v57, 1.0, 1.0, 1.0, 0.40000001);
+          queue_axis_aligned_textured_quad_uv(27, 288.0, 10.0, 64.0, 64.0, 0x1000000u, v52, 0.0, 0.0, 1.0, 1.0, 1, 0.0);
         }
       }
       if ( !game->player.completion_handoff_active
@@ -194,16 +168,16 @@ LABEL_25:
       if ( game->level_mode == 7 )
         update_tutorial(&game->tutorial);
       update_slug_voice_manager((float *)&game->slug_voice_manager.active);
-      if ( game->_pad_00[8] == 1 )
+      if ( game->resume_requested == 1 )
       {
         game->subgame_pause_gate = 0;
-        game->_pad_00[8] = 0;
+        game->resume_requested = 0;
         set_sprite_manager_paused(g_sprite_manager, 0);
       }
       if ( game->selected_level_record_active
-        && *(float *)&game->_pad_0a[2] == 0.0
+        && game->pause_fade == 0.0
         && (game->player.control_source->control_flags_a & 0x4000) != 0
-        || g_game_base->unknown_00067c[322660] )
+        || g_game_base->unknown_000b48[321432] )
       {
         if ( game->selected_level_record_persistent )
         {
@@ -215,8 +189,8 @@ LABEL_25:
           g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
           g_game_base->players[0].frontend_state = 27;
         }
-        if ( *(float *)&g_game_base->unknown_00067c[322664] <= 1.0 )
-          g_game_base->unknown_00067c[322660] = 0;
+        if ( *(float *)&g_game_base->unknown_000b48[321436] <= 1.0 )
+          g_game_base->unknown_000b48[321432] = 0;
         return;
       }
       if ( (read_pressed_text_input_key_code() == 11 || g_window_deactivated == 1) && !g_game_base->fade.state )
@@ -228,16 +202,16 @@ LABEL_25:
           hide_border_init(&game->player.click_start.prompt->list_kind);
         return;
       }
-      if ( *(float *)&game->_pad_0a[2] > 0.0 )
+      if ( game->pause_fade > 0.0 )
       {
-        v10 = *(float *)&game->_pad_0a[6] + *(float *)&game->_pad_0a[2];
-        *(float *)&game->_pad_0a[2] = v10;
+        v10 = game->pause_fade_step + game->pause_fade;
+        game->pause_fade = v10;
         if ( v10 > 1.0 )
-          *(_DWORD *)&game->_pad_0a[2] = 0;
+          game->pause_fade = 0.0;
         if ( game->player.click_start.state == CLICK_START_STATE_WAITING_FOR_START )
           unhide_border_init(&game->player.click_start.prompt->list_kind);
       }
-      if ( game->_pad_00[0] )
+      if ( game->scan_reset )
       {
         v11 = game->level_mode;
         game->runtime_row_scan_begin = 0;
@@ -605,7 +579,7 @@ LABEL_209:
           {
             v45 = game->runtime_row_scan_end;
             ++runtime_row_scan_begin;
-            game->_pad_00[0] = 0;
+            game->scan_reset = 0;
             if ( runtime_row_scan_begin >= v45 )
               break;
             goto LABEL_65;
@@ -644,7 +618,7 @@ LABEL_209:
     case 3:
       game->subgame_state = 4;
       game->subgame_pause_gate = 1;
-      *(_DWORD *)&game->_pad_0a[2] = *(_DWORD *)&game->_pad_0a[6];
+      game->pause_fade = game->pause_fade_step;
       initialize_pause_menu(&game->sub_pause);
       goto LABEL_3;
     case 4:

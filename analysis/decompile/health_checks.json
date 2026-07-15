@@ -1122,6 +1122,111 @@
       ]
     },
     {
+      "name": "bn_update_subgame_control_prefix_owner",
+      "artifact": "analysis/decompile/binja/functions/00438b90-update_subgame.c",
+      "required_substrings": [
+        "game->resume_requested",
+        "game->subgame_pause_gate",
+        "game->pause_fade",
+        "game->pause_fade_step",
+        "game->scan_reset"
+      ],
+      "forbidden_substrings": [
+        "game->_pad_00",
+        "game->__offset(0xc)",
+        "game->__offset(0x10)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_update_subgame_control_prefix_owner",
+      "artifact": "analysis/decompile/ida/functions/00438b90-update_subgame.c",
+      "required_substrings": [
+        "game->resume_requested",
+        "game->subgame_pause_gate",
+        "game->pause_fade",
+        "game->pause_fade_step",
+        "game->scan_reset"
+      ],
+      "forbidden_substrings": [
+        "game->_pad_00",
+        "game->__offset(0xC)",
+        "game->__offset(0x10)",
+        "this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_subgame_camera_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00446020-update_subgame_camera.c",
+      "required_substrings": [
+        "runtime->camera_snap_requested",
+        "runtime->player.cameraman",
+        "runtime->player.presentation.cutscene",
+        "linear_interpolate_matrix"
+      ],
+      "forbidden_substrings": [
+        "runtime->_pad_00",
+        "runtime->__offset(",
+        "return linear_interpolate_matrix",
+        "struct Game*",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_update_subgame_camera_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00446020-update_subgame_camera.c",
+      "required_substrings": [
+        "void __thiscall update_subgame_camera(SubgameRuntime *runtime)",
+        "runtime->camera_snap_requested",
+        "runtime->player.cameraman",
+        "runtime->player.presentation.cutscene"
+      ],
+      "forbidden_substrings": [
+        "char __thiscall update_subgame_camera",
+        "runtime->_pad_00",
+        "runtime->__offset(",
+        "sub_446020",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_pause_menu_subgame_bridge",
+      "artifact": "analysis/decompile/binja/functions/004407a0-update_pause_menu.c",
+      "required_substrings": [
+        "g_game_base->subgame.subgame_state = 2",
+        "g_game_base->subgame.resume_requested = 1",
+        "subgame.level_mode"
+      ],
+      "forbidden_substrings": [
+        "subgame.unknown_000000",
+        "subgame._pad_00",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_update_pause_menu_subgame_bridge",
+      "artifact": "analysis/decompile/ida/functions/004407a0-update_pause_menu.c",
+      "required_substrings": [
+        "void __thiscall update_pause_menu(SubPause *pause)",
+        "g_game_base->subgame.subgame_state = 2",
+        "g_game_base->subgame.resume_requested = 1",
+        "g_game_base->subgame.level_mode"
+      ],
+      "forbidden_substrings": [
+        "subgame.unknown_000000",
+        "subgame._pad_00",
+        "sub_4407A0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_remove_subgame_bods_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00440910-remove_subgame_bods.c",
       "required_substrings": [
@@ -1502,7 +1607,7 @@
       "name": "bn_subring_pool_backlink_owner",
       "artifact": "analysis/decompile/binja/functions/00437b10-reset_subgame.c",
       "required_substrings": [
-        "ring_effects.slots[0].state = 0",
+        "ring_effects.slots[0].state = SUB_RING_STATE_INACTIVE",
         "ring_effects.slots[0].rate_source = game",
         "game->slug_hazards.slots[0].owner_game"
       ],

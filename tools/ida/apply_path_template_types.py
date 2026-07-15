@@ -830,7 +830,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_subgame_camera",
-        "char __thiscall update_subgame_camera(SubgameRuntime* game);",
+        "void __thiscall update_subgame_camera(SubgameRuntime* runtime);",
     ),
 ]
 

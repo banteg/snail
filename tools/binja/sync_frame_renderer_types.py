@@ -9,8 +9,7 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
-    apply_proto_updates,
-    apply_struct_field_updates,
+    apply_struct_and_proto_updates,
     apply_symbol_updates,
     emit_summary,
     types_declare_if_missing,
@@ -126,6 +125,19 @@ GAME_INPUT_FIELD_UPDATES = (
     ("0x38", "input", "InputState"),
 )
 
+FRAME_SUBGAME_RUNTIME_FIELD_UPDATES = (
+    ("0x00", "scan_reset", "uint8_t"),
+    ("0x01", "camera_snap_requested", "uint8_t"),
+    ("0x02", "track_mirror_enabled", "uint8_t"),
+    ("0x04", "track_mirror_repeat_count", "int32_t"),
+    ("0x08", "resume_requested", "uint8_t"),
+    ("0x09", "subgame_pause_gate", "uint8_t"),
+    ("0x0c", "pause_fade", "float"),
+    ("0x10", "pause_fade_step", "float"),
+    ("0x3c", "subgame_state", "int32_t"),
+    ("0x40", "level_mode", "int32_t"),
+)
+
 GAME_ROOT_FIELD_UPDATES = (
     ("0x24", "fade", "FrontendFade"),
     ("0x38", "frontend_quit_requested", "int32_t"),
@@ -174,43 +186,18 @@ def main() -> int:
         )
     ]
     operations.extend(
-        apply_struct_field_updates(
+        apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="GameInput",
-            updates=GAME_INPUT_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="MouseCursorState",
-            updates=MOUSE_CURSOR_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="FrontendOverlayColorLerp",
-            updates=FRONTEND_OVERLAY_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="GamePlayer",
-            updates=GAME_PLAYER_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="GameRoot",
-            updates=GAME_ROOT_FIELD_UPDATES,
+            struct_updates=(
+                ("GameInput", GAME_INPUT_FIELD_UPDATES),
+                ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
+                ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
+                ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
+                ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
+                ("GameRoot", GAME_ROOT_FIELD_UPDATES),
+            ),
+            proto_updates=PROTO_UPDATES,
         )
     )
     operations.extend(
@@ -234,13 +221,6 @@ def main() -> int:
             target=args.target,
             updates=FUNCTION_SYMBOL_UPDATES,
             kind="function",
-        )
-    )
-    operations.extend(
-        apply_proto_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=PROTO_UPDATES,
         )
     )
     return emit_summary(

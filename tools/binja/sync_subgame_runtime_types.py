@@ -8,8 +8,7 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
-    apply_direct_proto_update,
-    apply_struct_field_updates,
+    apply_struct_and_proto_updates,
     emit_summary,
     struct_exists,
     types_declare_if_missing,
@@ -21,6 +20,17 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
 DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types.h"
 
 SUBGAME_FIELD_UPDATES = (
+    ("0x00", "scan_reset", "uint8_t"),
+    ("0x01", "camera_snap_requested", "uint8_t"),
+    ("0x02", "track_mirror_enabled", "uint8_t"),
+    ("0x04", "track_mirror_repeat_count", "int32_t"),
+    ("0x08", "resume_requested", "uint8_t"),
+    ("0x09", "subgame_pause_gate", "uint8_t"),
+    ("0x0c", "pause_fade", "float"),
+    ("0x10", "pause_fade_step", "float"),
+    ("0x14", "sub_pause", "SubPause"),
+    ("0x20", "runtime_row_scan_begin", "int32_t"),
+    ("0x24", "runtime_row_scan_end", "int32_t"),
     ("0x355e64", "jetpack_pickup", "JetPack"),
     ("0x359080", "banners", "BannerPool"),
     ("0x3bb700", "blink_random_index", "int32_t"),
@@ -192,6 +202,10 @@ PROTO_UPDATES = (
         "format_time_trial_string",
         "char* __thiscall format_time_trial_string(TimeTrial* time_trial, Time* timer)",
     ),
+    (
+        "update_subgame_camera",
+        "void __thiscall update_subgame_camera(SubgameRuntime* runtime)",
+    ),
 )
 
 
@@ -245,6 +259,7 @@ def main() -> int:
             header_path=header_path,
             required_structs=(
                 "SubgameRuntime",
+                "SubPause",
                 "TimeTrial",
                 "GUI",
                 "Help",
@@ -267,77 +282,35 @@ def main() -> int:
                 "TimesUp",
             ),
         ),
-        *apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="SubgameRuntime",
-            updates=SUBGAME_FIELD_UPDATES,
-        ),
     ]
+    subgame_updates = [*SUBGAME_FIELD_UPDATES]
     if struct_exists(REPO_ROOT, target=args.target, struct_name="BodBase"):
-        operations.extend(
-            apply_struct_field_updates(
-                REPO_ROOT,
-                target=args.target,
-                struct_name="SubgameRuntime",
-                updates=SUBGAME_BOD_FIELD_UPDATES,
-            )
-        )
+        subgame_updates.extend(SUBGAME_BOD_FIELD_UPDATES)
     if struct_exists(REPO_ROOT, target=args.target, struct_name="Player"):
-        operations.extend(
-            apply_struct_field_updates(
-                REPO_ROOT,
-                target=args.target,
-                struct_name="SubgameRuntime",
-                updates=SUBGAME_PLAYER_FIELD_UPDATES,
-            )
-        )
+        subgame_updates.extend(SUBGAME_PLAYER_FIELD_UPDATES)
     operations.extend(
-        apply_struct_field_updates(
+        apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
-            struct_name="JetPack",
-            updates=JETPACK_FIELD_UPDATES,
+            struct_updates=(
+                ("SubgameRuntime", subgame_updates),
+                ("JetPack", JETPACK_FIELD_UPDATES),
+                ("Completion", COMPLETION_FIELD_UPDATES),
+                ("Parcel", PARCEL_FIELD_UPDATES),
+                ("TimesUp", TIMES_UP_FIELD_UPDATES),
+            ),
+            # Several legacy analysis aliases are re-inferred during preview.
+            # The batch helper applies prototypes through the same verified
+            # direct-user-type path, but amortizes analysis across the batch.
+            proto_updates=PROTO_UPDATES,
         )
     )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Completion",
-            updates=COMPLETION_FIELD_UPDATES,
-        )
+    return emit_summary(
+        repo_root=REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+        operations=operations,
     )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="Parcel",
-            updates=PARCEL_FIELD_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_struct_field_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_name="TimesUp",
-            updates=TIMES_UP_FIELD_UPDATES,
-        )
-    )
-    # Several legacy analysis aliases (Stopwatch, ContactTargetRegistry,
-    # TrackParcelRuntime, and RowEventDisplayController) are re-inferred while
-    # the generic previewed setter waits for analysis. The direct setter keeps
-    # the requested user type authoritative and verifies it after analysis.
-    operations.extend(
-        apply_direct_proto_update(
-            REPO_ROOT,
-            target=args.target,
-            identifier=identifier,
-            prototype=prototype,
-        )
-        for identifier, prototype in PROTO_UPDATES
-    )
-    return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 
 if __name__ == "__main__":

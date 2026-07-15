@@ -34,7 +34,7 @@
 00435f78        game->player.score_tail = 0
 00435f7e        game->player.movement_flag_selector = 0
 00435f84        set_math_random_seed(runtime_build_seed)
-00435f9f        int16_t x87control_1 = select_level_track_texture_set(&g_game_base[0xb24], game->level_definition.track_texture_set)
+00435f9f        int16_t x87control_1 = select_level_track_texture_set(&g_game_base->texture_set_selector, game->level_definition.track_texture_set)
 00435fa4        int32_t level_mode_2 = game->level_mode
 00435fb8        int32_t var_24
 00435fb8        int32_t random_length_1
@@ -140,7 +140,7 @@
 004361a7        int32_t i_4 = 0
 004361ab        if (segment_count s> 0)
 004361ad        segment_count = &game->level_definition.segment_slots[0].visited
-004361b3        segment_count->unknown_000000[0] = 0
+004361b3        segment_count->scan_reset = 0
 004361bc        i_4 += 1
 004361bd        segment_count = &segment_count->__offset(0x4220).d
 004361c5        do while (i_4 s< game->level_definition.segment_count)
@@ -232,7 +232,7 @@
 0043643f        int32_t ecx_35 = *(&runtime->runtime_rows + (ecx_34 << 2))
 00436446        ecx_35:1.b |= 0x80
 00436449        *(&runtime->runtime_rows + (ecx_34 << 2)) = ecx_35
-00436458        void* ebx_5 = &runtime->unknown_000000[i_5 * 0xf4]
+00436458        void* ebx_5 = runtime + i_5 * 0xf4
 0043645c        *(ebx_5 + 0x5ccbb4) = edx_17
 00436462        *(ebx_5 + 0x5ccbb8) = var_2c
 0043646f        if ((*(esi_9 + 0x814) & 2) != 0)
@@ -266,7 +266,7 @@
 0043652e        edx_17 = var_3c_1
 00436539        if ((*(esi_9 + 0x814) & 1) != 0)
 00436546        *(ebx_5 + 0x5ccac8) |= 0x4001
-0043656b        *(ebx_5 + 0x5ccb64) = *(edx_17 + &segment_count_2->__offset(0x25).d * 0x38)
+0043656b        *(ebx_5 + 0x5ccb64) = *(edx_17 + (&segment_count_2->runtime_row_scan_end + 1) * 0x38)
 00436571        int32_t edx_26 = *(esi_9 + 0x81c)
 00436573        *(ebx_5 + 0x5ccb58) = edx_26.b
 00436573        *(ebx_5 + 0x5ccb59) = edx_26:1.b
@@ -306,7 +306,7 @@
 00436668        ebp_1 = edx_29
 00436657        edx_29 = var_30_1
 00436660        ebp_1 = 7 - edx_29
-00436682        void* esi_11 = &game->unknown_000000[(edx_29 + (j_1 << 3)) * 0x54]
+00436682        void* esi_11 = game + (edx_29 + (j_1 << 3)) * 0x54
 00436685        int32_t eax_69 = *(esi_11 + 0x3bfb08)
 0043668b        eax_69.b &= 0xe0
 0043668f        *(esi_11 + 0x3bfb08) = eax_69 ^ (edx_29 & 7)
@@ -320,7 +320,7 @@
 004366bf        random_length_1.b = 1
 004366ce        set_bod_object(esi_11 + 0x3bfac8, 0)
 004366e4        struct SubSegment* edx_32 = var_3c_1
-004366ee        char* ebp_4 = &edx_32->glyph_rows + &segment_count_2->unknown_000000[ebp_1 << 8]
+004366ee        char* ebp_4 = &edx_32->glyph_rows + (ebp_1 << 8) + segment_count_2
 004366f2        edx_32.b = *ebp_4
 004366f6        char eax_74 = normalize_segment_glyph_for_track_flags(game, edx_32.b, j_1, random_length_1.b)
 00436704        if (sx.d(eax_74) - 0x20 u> 0x5d)
@@ -342,24 +342,24 @@
 0043675a        eax_77.b &= 0xdf
 0043675c        *(esi_11 + 0x3bfacc) = eax_77
 004367e5        case 2
-004367e5        char* game_base_1 = g_game_base
+004367e5        struct GameRoot* game_base_1 = g_game_base
 004367eb        int32_t edx_35
-004367eb        edx_35.b = game_base_1[0x44b34]
-004367eb        edx_35:1.b = game_base_1[0x44b35]
-004367eb        edx_35:2.b = game_base_1[0x44b36]
-004367eb        edx_35:3.b = game_base_1[0x44b37]
+004367eb        edx_35.b = game_base_1->__offset(0x44b34).b
+004367eb        edx_35:1.b = game_base_1->__offset(0x44b35).b
+004367eb        edx_35:2.b = game_base_1->__offset(0x44b36).b
+004367eb        edx_35:3.b = game_base_1->__offset(0x44b37).b
 004367f4        set_bod_object(esi_11 + 0x3bfac8, edx_35)
 004367f9        *(esi_11 + 0x3bfb04) = 0x17
 00436800        int32_t eax_83 = *(esi_11 + 0x3bfacc)
 00436806        eax_83.b |= 0x20
 00436808        *(esi_11 + 0x3bfacc) = eax_83
 004368f7        case 3
-004368f7        char* game_base_3 = g_game_base
+004368f7        struct GameRoot* game_base_3 = g_game_base
 004368fd        int32_t edx_39
-004368fd        edx_39.b = game_base_3[0x447b4]
-004368fd        edx_39:1.b = game_base_3[0x447b5]
-004368fd        edx_39:2.b = game_base_3[0x447b6]
-004368fd        edx_39:3.b = game_base_3[0x447b7]
+004368fd        edx_39.b = game_base_3->__offset(0x447b4).b
+004368fd        edx_39:1.b = game_base_3->__offset(0x447b5).b
+004368fd        edx_39:2.b = game_base_3->__offset(0x447b6).b
+004368fd        edx_39:3.b = game_base_3->__offset(0x447b7).b
 00436906        set_bod_object(esi_11 + 0x3bfac8, edx_39)
 0043690b        *(esi_11 + 0x3bfb04) = 0x22
 00436912        int32_t eax_93 = *(esi_11 + 0x3bfacc)
@@ -378,36 +378,36 @@
 00436aab        eax_103.b &= 0xdf
 00436aad        *(esi_11 + 0x3bfacc) = eax_103
 00436ab3        *(esi_11 + 0x3bfb04) = 0x16
-00436a41        char* game_base_5 = g_game_base
+00436a41        struct GameRoot* game_base_5 = g_game_base
 00436a47        int32_t edx_43
-00436a47        edx_43.b = game_base_5[0x444dc]
-00436a47        edx_43:1.b = game_base_5[0x444dd]
-00436a47        edx_43:2.b = game_base_5[0x444de]
-00436a47        edx_43:3.b = game_base_5[0x444df]
+00436a47        edx_43.b = game_base_5->__offset(0x444dc).b
+00436a47        edx_43:1.b = game_base_5->__offset(0x444dd).b
+00436a47        edx_43:2.b = game_base_5->__offset(0x444de).b
+00436a47        edx_43:3.b = game_base_5->__offset(0x444df).b
 00436a50        set_bod_object(esi_11 + 0x3bfac8, edx_43)
 00436a72        *(esi_11 + 0x3bfacc) |= 0x20
-00436a9a        store_color4f(&game->unknown_000000[(var_30_1 + (j_1 << 3) + 0xb6cc) * 0x54], 1f, 1f, 1f, 0.999000013f)
+00436a9a        store_color4f(game + (var_30_1 + (j_1 << 3) + 0xb6cc) * 0x54, 1f, 1f, 1f, 0.999000013f)
 00436a9f        *(esi_11 + 0x3bfb04) = 0x16
 00436961        case 5
-00436961        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44b34))
+00436961        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44b34).d)
 00436966        *(esi_11 + 0x3bfb04) = 0x18
 0043696d        int32_t eax_97 = *(esi_11 + 0x3bfacc)
 00436973        eax_97.b |= 0x20
 00436975        *(esi_11 + 0x3bfacc) = eax_97
 00436933        case 6
-00436933        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44124))
+00436933        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44124).d)
 00436938        *(esi_11 + 0x3bfb04) = 0x1c
 0043693f        int32_t eax_95 = *(esi_11 + 0x3bfacc)
 00436945        eax_95.b |= 0x20
 00436947        *(esi_11 + 0x3bfacc) = eax_95
 004369bc        case 7
-004369bc        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x447b4))
+004369bc        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x447b4).d)
 004369c1        *(esi_11 + 0x3bfb04) = 0x15
 004369c8        int32_t eax_100 = *(esi_11 + 0x3bfacc)
 004369ce        eax_100.b |= 0x20
 004369d0        *(esi_11 + 0x3bfacc) = eax_100
 004368aa        case 8
-004368aa        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x447b4))
+004368aa        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x447b4).d)
 004368af        *(esi_11 + 0x3bfb04) = 1
 004368b6        int32_t eax_90 = *(esi_11 + 0x3bfacc)
 004368bc        eax_90.b |= 0x20
@@ -431,18 +431,18 @@
 00436ea4        eax_139.b &= 0xdf
 00436ea6        *(esi_11 + 0x3bfacc) = eax_139
 00436eac        *(esi_11 + 0x3bfb04) = 0
-00436e82        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44b34))
+00436e82        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44b34).d)
 00436e87        *(esi_11 + 0x3bfb04) = 0xf
 00436e8e        int32_t eax_138 = *(esi_11 + 0x3bfacc)
 00436e94        eax_138.b |= 0x20
 00436e96        *(esi_11 + 0x3bfacc) = eax_138
 00436c67        case 0xb
-00436c67        char* game_base_8 = g_game_base
+00436c67        struct GameRoot* game_base_8 = g_game_base
 00436c6d        int32_t edx_51
-00436c6d        edx_51.b = game_base_8[0x44d2c]
-00436c6d        edx_51:1.b = game_base_8[0x44d2d]
-00436c6d        edx_51:2.b = game_base_8[0x44d2e]
-00436c6d        edx_51:3.b = game_base_8[0x44d2f]
+00436c6d        edx_51.b = game_base_8->__offset(0x44d2c).b
+00436c6d        edx_51:1.b = game_base_8->__offset(0x44d2d).b
+00436c6d        edx_51:2.b = game_base_8->__offset(0x44d2e).b
+00436c6d        edx_51:3.b = game_base_8->__offset(0x44d2f).b
 00436c76        set_bod_object(esi_11 + 0x3bfac8, edx_51)
 00436c7d        *(esi_11 + 0x3bfae4) = 0
 00436c83        *(esi_11 + 0x3bfae8) = 0
@@ -451,26 +451,26 @@
 00436c96        eax_121.b |= 0x20
 00436c98        *(esi_11 + 0x3bfacc) = eax_121
 004369ea        case 0xc
-004369ea        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x445f4))
+004369ea        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x445f4).d)
 004369ef        *(esi_11 + 0x3bfb04) = 0xe
 004369f6        int32_t eax_102 = *(esi_11 + 0x3bfacc)
 004369fc        eax_102.b |= 0x20
 004369fe        *(esi_11 + 0x3bfacc) = eax_102
 00436ad0        case 0xd
 00436ad0        if (j_1 s<= 0 || *(esi_11 + 0x3bf864) != 3)
-00436b21        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44d2c))
+00436b21        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44d2c).d)
 00436b26        *(esi_11 + 0x3bfae4) = 0
 00436b2c        *(esi_11 + 0x3bfae8) = 0
 00436b32        *(esi_11 + 0x3bfb04) = 3
 00436b39        int32_t eax_111 = *(esi_11 + 0x3bfacc)
 00436b3f        eax_111.b |= 0x20
 00436b41        *(esi_11 + 0x3bfacc) = eax_111
-00436ad2        char* game_base_6 = g_game_base
+00436ad2        struct GameRoot* game_base_6 = g_game_base
 00436ad8        int32_t edx_47
-00436ad8        edx_47.b = game_base_6[0x44d2c]
-00436ad8        edx_47:1.b = game_base_6[0x44d2d]
-00436ad8        edx_47:2.b = game_base_6[0x44d2e]
-00436ad8        edx_47:3.b = game_base_6[0x44d2f]
+00436ad8        edx_47.b = game_base_6->__offset(0x44d2c).b
+00436ad8        edx_47:1.b = game_base_6->__offset(0x44d2d).b
+00436ad8        edx_47:2.b = game_base_6->__offset(0x44d2e).b
+00436ad8        edx_47:3.b = game_base_6->__offset(0x44d2f).b
 00436ae1        set_bod_object(esi_11 + 0x3bfac8, edx_47)
 00436ae6        *(esi_11 + 0x3bfae4) = 0
 00436aec        *(esi_11 + 0x3bfae8) = 0
@@ -486,37 +486,37 @@
 0043677a        *(esi_11 + 0x3bfacc) = eax_78
 00436780        switch_track_mirror(game)
 0043686e        case 0xf
-0043686e        char* game_base_2 = g_game_base
+0043686e        struct GameRoot* game_base_2 = g_game_base
 00436874        int32_t edx_37
-00436874        edx_37.b = game_base_2[0x44b34]
-00436874        edx_37:1.b = game_base_2[0x44b35]
-00436874        edx_37:2.b = game_base_2[0x44b36]
-00436874        edx_37:3.b = game_base_2[0x44b37]
+00436874        edx_37.b = game_base_2->__offset(0x44b34).b
+00436874        edx_37:1.b = game_base_2->__offset(0x44b35).b
+00436874        edx_37:2.b = game_base_2->__offset(0x44b36).b
+00436874        edx_37:3.b = game_base_2->__offset(0x44b37).b
 0043687d        set_bod_object(esi_11 + 0x3bfac8, edx_37)
 00436882        *(esi_11 + 0x3bfb04) = 0x13
 00436889        int32_t eax_88 = *(esi_11 + 0x3bfacc)
 0043688f        eax_88.b |= 0x20
 00436891        *(esi_11 + 0x3bfacc) = eax_88
 00436798        case 0x10
-00436798        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44b34))
+00436798        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44b34).d)
 0043679d        *(esi_11 + 0x3bfb04) = 0x11
 004367a4        int32_t eax_80 = *(esi_11 + 0x3bfacc)
 004367aa        eax_80.b |= 0x20
 004367ac        *(esi_11 + 0x3bfacc) = eax_80
 00436980        case 0x11
-00436980        char* game_base_4 = g_game_base
+00436980        struct GameRoot* game_base_4 = g_game_base
 00436986        int32_t edx_41
-00436986        edx_41.b = game_base_4[0x44b34]
-00436986        edx_41:1.b = game_base_4[0x44b35]
-00436986        edx_41:2.b = game_base_4[0x44b36]
-00436986        edx_41:3.b = game_base_4[0x44b37]
+00436986        edx_41.b = game_base_4->__offset(0x44b34).b
+00436986        edx_41:1.b = game_base_4->__offset(0x44b35).b
+00436986        edx_41:2.b = game_base_4->__offset(0x44b36).b
+00436986        edx_41:3.b = game_base_4->__offset(0x44b37).b
 0043698f        set_bod_object(esi_11 + 0x3bfac8, edx_41)
 00436994        *(esi_11 + 0x3bfb04) = 0x19
 0043699b        int32_t eax_98 = *(esi_11 + 0x3bfacc)
 004369a1        eax_98.b |= 0x20
 004369a3        *(esi_11 + 0x3bfacc) = eax_98
 0043684f        case 0x12
-0043684f        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44b34))
+0043684f        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44b34).d)
 00436854        *(esi_11 + 0x3bfb04) = 0x12
 0043685b        int32_t eax_87 = *(esi_11 + 0x3bfacc)
 00436861        eax_87.b |= 0x20
@@ -571,7 +571,7 @@
 00436740        eax_76.b &= 0xdf
 00436742        *(esi_11 + 0x3bfacc) = eax_76
 00436cb1        case 0x15
-00436cb1        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44cf4))
+00436cb1        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44cf4).d)
 00436cb8        *(esi_11 + 0x3bfae4) = 0
 00436cbe        *(esi_11 + 0x3bfae8) = 0
 00436cc4        *(esi_11 + 0x3bfb04) = 5
@@ -579,33 +579,33 @@
 00436cd1        eax_123.b |= 0x20
 00436cd3        *(esi_11 + 0x3bfacc) = eax_123
 004367c6        case 0x16
-004367c6        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44b34))
+004367c6        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44b34).d)
 004367cb        *(esi_11 + 0x3bfb04) = 0xf
 004367d2        int32_t eax_82 = *(esi_11 + 0x3bfacc)
 004367d8        eax_82.b |= 0x20
 004367da        *(esi_11 + 0x3bfacc) = eax_82
 00436821        case 0x17
-00436821        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44b34))
+00436821        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44b34).d)
 00436826        *(esi_11 + 0x3bfb04) = 0x10
 0043682d        int32_t eax_85 = *(esi_11 + 0x3bfacc)
 00436833        eax_85.b |= 0x20
 00436835        *(esi_11 + 0x3bfacc) = eax_85
 004368d8        case 0x18
-004368d8        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x447b4))
+004368d8        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x447b4).d)
 004368dd        *(esi_11 + 0x3bfb04) = 0x21
 004368e4        int32_t eax_92 = *(esi_11 + 0x3bfacc)
 004368ea        eax_92.b |= 0x20
 004368ec        *(esi_11 + 0x3bfacc) = eax_92
 00436beb        case 0x19
 00436beb        if (j_1 s<= 0 || *(esi_11 + 0x3bf864) != 3)
-00436c3c        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44cf4))
+00436c3c        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44cf4).d)
 00436c41        *(esi_11 + 0x3bfae4) = 0
 00436c47        *(esi_11 + 0x3bfae8) = 0
 00436c4d        *(esi_11 + 0x3bfb04) = 2
 00436c54        int32_t eax_120 = *(esi_11 + 0x3bfacc)
 00436c5a        eax_120.b |= 0x20
 00436c5c        *(esi_11 + 0x3bfacc) = eax_120
-00436bfb        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44cf4))
+00436bfb        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44cf4).d)
 00436c00        *(esi_11 + 0x3bfae4) = 0
 00436c06        *(esi_11 + 0x3bfae8) = 0
 00436c0c        *(esi_11 + 0x3bfb04) = 8
@@ -615,12 +615,12 @@
 00436c21        *(esi_11 + 0x3bf864) = 0xb
 00436b5d        case 0x1a
 00436b5d        if (j_1 s<= 0 || *(esi_11 + 0x3bf864) != 3)
-00436ba0        char* game_base_7 = g_game_base
+00436ba0        struct GameRoot* game_base_7 = g_game_base
 00436ba6        int32_t edx_49
-00436ba6        edx_49.b = game_base_7[0x44d64]
-00436ba6        edx_49:1.b = game_base_7[0x44d65]
-00436ba6        edx_49:2.b = game_base_7[0x44d66]
-00436ba6        edx_49:3.b = game_base_7[0x44d67]
+00436ba6        edx_49.b = game_base_7->__offset(0x44d64).b
+00436ba6        edx_49:1.b = game_base_7->__offset(0x44d65).b
+00436ba6        edx_49:2.b = game_base_7->__offset(0x44d66).b
+00436ba6        edx_49:3.b = game_base_7->__offset(0x44d67).b
 00436baf        set_bod_object(esi_11 + 0x3bfac8, edx_49)
 00436bb4        *(esi_11 + 0x3bfae4) = 0
 00436bba        *(esi_11 + 0x3bfae8) = 0
@@ -628,7 +628,7 @@
 00436bc7        int32_t eax_115 = *(esi_11 + 0x3bfacc)
 00436bcd        eax_115.b |= 0x20
 00436bcf        *(esi_11 + 0x3bfacc) = eax_115
-00436b6e        set_bod_object(esi_11 + 0x3bfac8, *(g_game_base + 0x44d64))
+00436b6e        set_bod_object(esi_11 + 0x3bfac8, g_game_base->__offset(0x44d64).d)
 00436b73        *(esi_11 + 0x3bfae4) = 0
 00436b79        *(esi_11 + 0x3bfae8) = 0
 00436b7f        *(esi_11 + 0x3bfb04) = 0xa
@@ -652,14 +652,14 @@
 00436f6f        var_28_2 = fconvert.s(x87_r7_28)
 00436f73        long double x87_r7_29 = x87_r7_28 - fconvert.t(0.5f)
 00436f79        *(esi_11 + 0x3bfae0) = fconvert.s(x87_r7_29)
-00436f86        if ((data_4df934 & 0x20) == 0)
+00436f86        if ((g_runtime_config.render_flags.b & 0x20) == 0)
 00436ff3        int32_t eax_148 = *(ebx_5 + 0x5ccb7c)
 00436ff9        eax_148.b &= 0xdf
 00436ffd        *(ebx_5 + 0x5ccb7c) = eax_148
 00436f88        *(ebx_5 + 0x5ccb88) = 0
 00436f92        *(ebx_5 + 0x5ccb90) = fconvert.s(x87_r7_29)
 00436fa4        struct tColour out
-00436fa4        struct tColour* eax_146 = get_track_skirt_color(&g_game_base[0x74618], &out)
+00436fa4        struct tColour* eax_146 = get_track_skirt_color(&g_game_base->subgame, &out)
 00436fb4        float r = eax_146->r
 00436fb6        *(ebx_5 + 0x5ccba0) = r.b
 00436fb6        *(ebx_5 + 0x5ccba1) = r:1.b
@@ -727,7 +727,7 @@
 00437143        do while (cond:12_1)
 0043714d        segment_count = game
 00437159        j = j_1 + 1
-0043715a        segment_count_2 = &segment_count_2->unknown_000000[1]
+0043715a        segment_count_2 = &segment_count_2->camera_snap_requested
 00437160        j_1 = j
 00437164        i_5 = j
 00437166        runtime = segment_count

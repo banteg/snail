@@ -369,7 +369,14 @@ PLAYER_FIELD_UPDATES = (
 )
 
 SUBGAME_RUNTIME_FIELD_UPDATES = (
+    ("0x00", "scan_reset", "uint8_t"),
+    ("0x01", "camera_snap_requested", "uint8_t"),
+    ("0x02", "track_mirror_enabled", "uint8_t"),
+    ("0x04", "track_mirror_repeat_count", "int32_t"),
+    ("0x08", "resume_requested", "uint8_t"),
     ("0x09", "subgame_pause_gate", "uint8_t"),
+    ("0x0c", "pause_fade", "float"),
+    ("0x10", "pause_fade_step", "float"),
     ("0x14", "sub_pause", "SubPause"),
     ("0x20", "runtime_row_scan_begin", "int32_t"),
     ("0x24", "runtime_row_scan_end", "int32_t"),

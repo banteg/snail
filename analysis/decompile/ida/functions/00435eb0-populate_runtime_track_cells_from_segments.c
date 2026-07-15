@@ -123,7 +123,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int v118; // [esp+3Ch] [ebp-20h]
   int random_length; // [esp+40h] [ebp-1Ch]
   char v120; // [esp+40h] [ebp-1Ch]
-  int v121[4]; // [esp+4Ch] [ebp-10h] BYREF
+  tColour out; // [esp+4Ch] [ebp-10h] BYREF
 
   if ( game->selected_level_record_active )
   {
@@ -148,7 +148,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           (HighScoreRecord *)&game->current_high_score_record,
           runtime_build_seed,
           game->level_mode_arg,
-          *(_DWORD *)&game->_pad_20[16],
+          game->rate_or_level_arg.level_arg_tail,
           game->runtime_flags,
           2,
           game->level_mode_arg);
@@ -159,7 +159,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
         (HighScoreRecord *)&game->current_high_score_record,
         runtime_build_seed,
         game->level_mode_arg,
-        *(_DWORD *)&game->_pad_20[16],
+        game->rate_or_level_arg.level_arg_tail,
         game->runtime_flags,
         1,
         game->level_mode_arg);
@@ -171,7 +171,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       (HighScoreRecord *)&game->current_high_score_record,
       runtime_build_seed,
       game->level_mode_arg,
-      *(_DWORD *)&game->_pad_20[16],
+      game->rate_or_level_arg.level_arg_tail,
       game->runtime_flags,
       0,
       game->level_mode_arg);
@@ -185,11 +185,11 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     clear_subgoldy_score_buckets((int)&game->player);
     game->player.visible_life_stock = 3;
   }
-  zero_timer_counters(&game->player.stopwatch.total_seconds);
+  zero_timer_counters(&game->player.stopwatch);
   game->player.score_tail = 0;
   game->player.movement_flag_selector = 0;
   set_math_random_seed(runtime_build_seed);
-  select_level_track_texture_set((int *)g_game_base + 713, game->level_definition.track_texture_set);
+  select_level_track_texture_set((int *)&g_game_base->texture_set_selector, game->level_definition.track_texture_set);
   v7 = game->level_mode;
   if ( !v7 || v7 == 7 || v7 == 4 || v7 == 1 )
   {
@@ -238,8 +238,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     game->completion_row_start = v9 - game->level_definition.last_segment.row_count;
     game->completion_row_start = v9 - game->level_definition.last_segment.row_count;
   }
-  game->_pad_00[2] = 0;
-  *(_DWORD *)&game->_pad_00[4] = 0;
+  game->track_mirror_enabled = 0;
+  game->track_mirror_repeat_count = 0;
   v118 = 0;
   v106 = 0;
   v114 = 0;
@@ -415,7 +415,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               }
             }
           }
-          if ( v23->_pad_00[2] )
+          if ( v23->track_mirror_enabled )
             *(_DWORD *)&byte_5CCAC8[(_DWORD)v23 + 244 * v22] |= 0x20u;
           v36 = &v31->row_base + 14 * v111;
           if ( (v36[517] & 0x100) != 0 )
@@ -432,7 +432,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             BYTE1(v40) = BYTE1(*(_DWORD *)v39) | 0x80;
             *(_DWORD *)v39 = v40;
           }
-          v41 = &v23->_pad_00[244 * v22];
+          v41 = &v23->scan_reset + 244 * v22;
           *(_DWORD *)((char *)&unk_5CCBB4 + (_DWORD)v41) = v31;
           *(int *)((char *)unk_5CCBB8 + (_DWORD)v41) = v114;
           if ( (v36[517] & 2) != 0 )
@@ -440,7 +440,9 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             v42 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v41];
             LOBYTE(v42) = v42 | 2;
             *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v42;
-            set_bod_object((char *)&unk_5CCACC + (_DWORD)v41, *((_DWORD *)g_game_base + 47 * v36[522] + 74635));
+            set_bod_object(
+              (char *)&unk_5CCACC + (_DWORD)v41,
+              *(_DWORD *)&g_game_base->unknown_000b48[188 * v36[522] + 295652]);
             set_matrix_identity((TransformMatrix *)((char *)&unk_5CCB04 + (_DWORD)v41));
             v43 = (_DWORD *)((char *)&unk_5CCB34 + (_DWORD)v41);
             *v43 = v36[523];
@@ -502,7 +504,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           *((_DWORD *)&v23->runtime_rows[0].ring_speed + 60 * v22 + v22) = v36[530];
           do
           {
-            if ( game->_pad_00[2] )
+            if ( game->track_mirror_enabled )
               v49 = 7 - v113;
             else
               v49 = v113;
@@ -535,14 +537,14 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 *((_DWORD *)v50 + 982707) = v57;
                 break;
               case '$':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 23;
                 v60 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v60) = v60 | 0x20;
                 *((_DWORD *)v50 + 982707) = v60;
                 break;
               case '&':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70125));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
                 v50[3930884] = 34;
                 v66 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v66) = v66 | 0x20;
@@ -563,7 +565,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 {
                   if ( v72 == 8 )
                   {
-                    set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 69943));
+                    set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[276884]);
                     *((_DWORD *)v50 + 982707) |= 0x20u;
                     store_color4f(&game->runtime_cells[v108][v113].color, 1.0, 1.0, 1.0, 0.99900001);
                   }
@@ -576,28 +578,28 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 }
                 break;
               case '+':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 24;
                 v68 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v68) = v68 | 0x20;
                 *((_DWORD *)v50 + 982707) = v68;
                 break;
               case ',':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 69705));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[275932]);
                 v50[3930884] = 28;
                 v67 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v67) = v67 | 0x20;
                 *((_DWORD *)v50 + 982707) = v67;
                 break;
               case '-':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70125));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
                 v50[3930884] = 21;
                 v70 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v70) = v70 | 0x20;
                 *((_DWORD *)v50 + 982707) = v70;
                 break;
               case '.':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70125));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
                 v50[3930884] = 1;
                 v64 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v64) = v64 | 0x20;
@@ -613,7 +615,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                   *((float *)v41 + 1520342) = (double)v113 - 4.0 + 0.5;
                   *(_DWORD *)((char *)&unk_5CCB5C + (_DWORD)v41) = *((_DWORD *)v50 + 982711);
                   *((float *)v41 + 1520344) = (double)v108 + 0.5;
-                  if ( game->_pad_00[2] )
+                  if ( game->track_mirror_enabled )
                     *((float *)v41 + 1520342) = *((float *)v41 + 1520342) * -1.0;
                 }
                 goto LABEL_173;
@@ -635,7 +637,7 @@ LABEL_173:
                 v50[3930884] = 0;
                 break;
               case '<':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70475));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279012]);
                 *((_DWORD *)v50 + 982713) = 0;
                 *((_DWORD *)v50 + 982714) = 0;
                 v50[3930884] = 6;
@@ -645,7 +647,7 @@ LABEL_173:
                 break;
               case '=':
               case '|':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70013));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277164]);
                 v50[3930884] = 14;
                 v71 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v71) = v71 | 0x20;
@@ -654,7 +656,7 @@ LABEL_173:
               case '>':
                 if ( v108 > 0 && v50[3930212] == 3 )
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70475));
+                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279012]);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 9;
@@ -665,7 +667,7 @@ LABEL_173:
                 }
                 else
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70475));
+                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279012]);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 3;
@@ -682,28 +684,28 @@ LABEL_173:
                 switch_track_mirror(game);
                 break;
               case 'F':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 19;
                 v63 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v63) = v63 | 0x20;
                 *((_DWORD *)v50 + 982707) = v63;
                 break;
               case 'G':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 17;
                 v59 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v59) = v59 | 0x20;
                 *((_DWORD *)v50 + 982707) = v59;
                 break;
               case 'J':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 25;
                 v69 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v69) = v69 | 0x20;
                 *((_DWORD *)v50 + 982707) = v69;
                 break;
               case 'M':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 18;
                 v62 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v62) = v62 | 0x20;
@@ -720,7 +722,7 @@ LABEL_173:
                   v50[3930884] = 29;
                 }
                 v84 = *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)v41);
-                if ( game->_pad_00[2] )
+                if ( game->track_mirror_enabled )
                   p_secondary = (PathPair *)&game->path_pairs[v84].secondary;
                 else
                   p_secondary = &game->path_pairs[v84];
@@ -767,7 +769,7 @@ LABEL_173:
                 *((_DWORD *)v50 + 982707) = v56;
                 break;
               case '[':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70461));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278956]);
                 *((_DWORD *)v50 + 982713) = 0;
                 *((_DWORD *)v50 + 982714) = 0;
                 v50[3930884] = 5;
@@ -777,21 +779,21 @@ LABEL_173:
                 break;
               case '_':
 LABEL_174:
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 15;
                 v90 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v90) = v90 | 0x20;
                 *((_DWORD *)v50 + 982707) = v90;
                 break;
               case 'o':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70349));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
                 v50[3930884] = 16;
                 v61 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v61) = v61 | 0x20;
                 *((_DWORD *)v50 + 982707) = v61;
                 break;
               case 's':
-                set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70125));
+                set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
                 v50[3930884] = 33;
                 v65 = *((_DWORD *)v50 + 982707);
                 LOBYTE(v65) = v65 | 0x20;
@@ -800,7 +802,7 @@ LABEL_174:
               case '{':
                 if ( v108 > 0 && v50[3930212] == 3 )
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70461));
+                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278956]);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 8;
@@ -811,7 +813,7 @@ LABEL_174:
                 }
                 else
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70461));
+                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278956]);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 2;
@@ -823,7 +825,7 @@ LABEL_174:
               case '}':
                 if ( v108 > 0 && v50[3930212] == 3 )
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70489));
+                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279068]);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 10;
@@ -834,7 +836,7 @@ LABEL_174:
                 }
                 else
                 {
-                  set_bod_object((_DWORD *)v50 + 982706, *((_DWORD *)g_game_base + 70489));
+                  set_bod_object((_DWORD *)v50 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[279068]);
                   *((_DWORD *)v50 + 982713) = 0;
                   *((_DWORD *)v50 + 982714) = 0;
                   v50[3930884] = 4;
@@ -863,13 +865,11 @@ LABEL_174:
               v116 = v95;
               v96 = v95 - 0.5;
               *((float *)v50 + 982712) = v96;
-              if ( (g_render_flags & 0x20) != 0 )
+              if ( (g_runtime_config.render_flags & 0x20) != 0 )
               {
                 *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)v41) = 0;
                 *((float *)v41 + 1520356) = v96;
-                track_skirt_color = get_track_skirt_color(
-                                      (SubgameRuntime *)((char *)g_game_base + 476696),
-                                      (tColour *)v121);
+                track_skirt_color = get_track_skirt_color((SubgameRuntime *)&g_game_base->subgame, &out);
                 *(tColour *)((char *)&unk_5CCBA0 + (_DWORD)v41) = *track_skirt_color;
                 set_object_color(*(Object **)((char *)&unk_5CCB9C + (_DWORD)v41), *track_skirt_color);
               }
@@ -957,4 +957,3 @@ LABEL_174:
     while ( v22 < v23->runtime_row_count );
   }
 }
-

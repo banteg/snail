@@ -2,64 +2,60 @@
 /* function: update_pause_menu @ 0x4407a0 */
 /* selector: update_pause_menu */
 
-void *__thiscall sub_4407A0(_DWORD *this)
+// Dispatches Options, Resume, and End Game clicks from the embedded cRSubPause owner. Cross-port iOS and Android symbols identify the side-effect-only method as cRSubPause::AI(); the Windows reconstruction is exact at 55/55 instructions.
+void __thiscall update_pause_menu(SubPause *pause)
 {
-  int v1; // eax
-  void *result; // eax
-  int v3; // edx
-  int v4; // eax
-  int v5; // ecx
+  FrontendWidgetFlag widget_flags; // eax
+  FrontendWidget *resume_widget; // edx
+  FrontendWidgetFlag v3; // eax
+  FrontendWidget *end_game_widget; // ecx
+  FrontendWidgetFlag v5; // eax
 
-  v1 = *(_DWORD *)(*this + 416);
-  if ( (v1 & 0x20) != 0 )
+  widget_flags = pause->options_widget->widget_flags;
+  if ( (widget_flags & 0x20) != 0 )
   {
-    LOBYTE(v1) = v1 & 0xDF;
-    *(_DWORD *)(*this + 416) = v1;
-    *((_BYTE *)MEMORY[0x4DF904] + 324492) = 0;
-    result = MEMORY[0x4DF904];
-    *((_DWORD *)MEMORY[0x4DF904] + 81122) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-    *((_DWORD *)MEMORY[0x4DF904] + 110) = 6;
+    LOBYTE(widget_flags) = widget_flags & 0xDF;
+    pause->options_widget->widget_flags = widget_flags;
+    g_game_base->unknown_000b48[321604] = 0;
+    *(_DWORD *)&g_game_base->unknown_000b48[321600] = g_game_base->players[0].frontend_state;
+    g_game_base->players[0].frontend_state = 6;
   }
   else
   {
-    v3 = *(this + 2);
-    v4 = *(_DWORD *)(v3 + 416);
-    if ( (v4 & 0x20) != 0 )
+    resume_widget = pause->resume_widget;
+    v3 = resume_widget->widget_flags;
+    if ( (v3 & 0x20) != 0 )
     {
-      LOBYTE(v4) = v4 & 0xDF;
-      *(_DWORD *)(v3 + 416) = v4;
-      uninit_pause_menu((_DWORD **)this);
-      result = MEMORY[0x4DF904];
-      *((_DWORD *)MEMORY[0x4DF904] + 119189) = 2;
-      *((_BYTE *)MEMORY[0x4DF904] + 476704) = 1;
+      LOBYTE(v3) = v3 & 0xDF;
+      resume_widget->widget_flags = v3;
+      uninit_pause_menu(pause);
+      g_game_base->subgame.subgame_state = 2;
+      g_game_base->subgame.resume_requested = 1;
     }
     else
     {
-      v5 = *(this + 1);
-      result = *(void **)(v5 + 416);
-      if ( ((unsigned __int8)result & 0x20) != 0 )
+      end_game_widget = pause->end_game_widget;
+      v5 = end_game_widget->widget_flags;
+      if ( (v5 & 0x20) != 0 )
       {
-        LOBYTE(result) = (unsigned __int8)result & 0xDF;
-        *(_DWORD *)(v5 + 416) = result;
-        *((_DWORD *)MEMORY[0x4DF904] + 81133) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-        if ( *((_DWORD *)MEMORY[0x4DF904] + 119190) == 7 )
+        LOBYTE(v5) = v5 & 0xDF;
+        end_game_widget->widget_flags = v5;
+        *(_DWORD *)&g_game_base->unknown_000b48[321644] = g_game_base->players[0].frontend_state;
+        if ( g_game_base->subgame.level_mode == 7 )
         {
-          *((_DWORD *)MEMORY[0x4DF904] + 81131) = 7;
+          *(_DWORD *)&g_game_base->unknown_000b48[321636] = 7;
         }
-        else if ( *((_BYTE *)MEMORY[0x4DF904] + 17198057) == 1 )
+        else if ( g_game_base->subgame.unknown_000044[16721293] == 1 )
         {
-          *((_DWORD *)MEMORY[0x4DF904] + 81131) = 3;
+          *(_DWORD *)&g_game_base->unknown_000b48[321636] = 3;
         }
         else
         {
-          *((_DWORD *)MEMORY[0x4DF904] + 81131) = 2;
+          *(_DWORD *)&g_game_base->unknown_000b48[321636] = 2;
         }
-        result = MEMORY[0x4DF904];
-        *((_DWORD *)MEMORY[0x4DF904] + 4953464) = 2;
-        *((_DWORD *)MEMORY[0x4DF904] + 110) = 8;
+        *(_DWORD *)&g_game_base->subgame.unknown_000044[19337092] = 2;
+        g_game_base->players[0].frontend_state = 8;
       }
     }
   }
-  return result;
 }
-

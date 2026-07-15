@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,15 +15,39 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "switch_track_mirror",
+      "address": "0x435e60"
     },
     {
-      "name": "update_subgoldy_resurrect",
-      "address": "0x441fd0"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
+    },
+    {
+      "name": "initialize_subgame",
+      "address": "0x4374b0"
+    },
+    {
+      "name": "reset_subgame",
+      "address": "0x437b10"
+    },
+    {
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
+    },
+    {
+      "name": "update_pause_menu",
+      "address": "0x4407a0"
+    },
+    {
+      "name": "update_subgame_camera",
+      "address": "0x446020"
     }
   ],
-  "health_check_count": 122,
+  "health_check_count": 128,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -46,3 +46,11 @@ the same handoff semantic. The cutscene branch copies
 The latter was the final unnamed byte in the exact 0xd8-byte Cameraman owner.
 The outer handoff remains exact at 70/70 instructions with all nine operands
 clean.
+
+2026-07-14 analysis ABI closure: the live Binary Ninja prototype had retained
+a stale `char __thiscall(Game*)` inference even though every caller ignores a
+result and the exact source is `void SubgameRuntime::update_subgame_camera()`.
+Both databases now use `void __thiscall(SubgameRuntime*)`. The refreshed BN
+and IDA decompiles expose `camera_snap_requested`, the embedded Cameraman, and
+the cutscene owner without raw receiver offsets or a fabricated return value.
+The matcher remains exact at 70/70 instructions with all nine operands clean.

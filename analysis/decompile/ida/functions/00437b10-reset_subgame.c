@@ -2,90 +2,87 @@
 /* function: reset_subgame @ 0x437b10 */
 /* selector: reset_subgame */
 
-void __thiscall reset_subgame(SubgameRuntime *game)
+void __thiscall reset_subgame(_DWORD *this)
 {
   int v2; // ecx
-  SubgameRuntime **health_owner; // eax
-  SubgameRuntime **garbage_game; // eax
+  _DWORD *v3; // eax
+  _DWORD *v4; // eax
   int v5; // ecx
-  SubgameRuntime **slug_owner; // eax
+  _DWORD *v6; // eax
   int v7; // ecx
-  RingEffectRateSource **ring_rate; // eax
+  _DWORD *v8; // eax
   int v9; // ecx
   int v10; // edx
-  int saved_tail_b; // eax
-  _DWORD *game_words; // scratch view for unresolved score/timer fields
-
-  game_words = (_DWORD *)game;
+  int v11; // eax
 
   v2 = 8;
-  health_owner = &game->health_pickups[0].owner_game;
+  v3 = this + 874513;
   do
   {
-    *(health_owner - 3) = 0; // health_pickups[i].state
-    *health_owner = game; // health_pickups[i].owner_game
-    health_owner += 29;
+    *(v3 - 3) = 0;
+    *v3 = this;
+    v3 += 29;
     --v2;
   }
   while ( v2 );
-  game->speedup_pickup.state = 0;
-  game->speedup_pickup.owner_game = game;
-  game->jetpack_pickup.state = 0;
-  game->jetpack_pickup.owner_game = game;
-  garbage_game = &game->garbage_hazards.slots[0].game;
+  *(this + 874380) = 0;
+  *(this + 874383) = this;
+  *(this + 874407) = 0;
+  *(this + 874410) = this;
+  v4 = this + 877684;
   v5 = 50;
   do
   {
-    *(garbage_game - 2) = 0; // garbage_hazards.slots[i].state
-    *garbage_game = game; // garbage_hazards.slots[i].game
-    *(garbage_game - 3) = 0; // garbage_hazards.slots[i].next_active
-    garbage_game += 49;
+    *(v4 - 2) = 0;
+    *v4 = this;
+    *(v4 - 3) = 0;
+    v4 += 49;
     --v5;
   }
   while ( v5 );
-  slug_owner = &game->slug_slots[0].owner_game;
+  v6 = this + 874762;
   v7 = 8;
   do
   {
-    *(slug_owner - 2) = 0; // slug_slots[i].state
-    *slug_owner = game; // slug_slots[i].owner_game
-    slug_owner += 59;
+    *(v6 - 2) = 0;
+    *v6 = this;
+    v6 += 59;
     --v7;
   }
   while ( v7 );
-  ring_rate = &game->ring_effects.slots[0].rate_source;
+  v8 = this + 880215;
   v9 = 2;
   do
   {
-    *(ring_rate - 84) = 0; // ring_effects.slots[i].state
-    *ring_rate = (RingEffectRateSource *)game; // ring_effects.slots[i].rate_source
-    ring_rate += 126;
+    *(v8 - 84) = 0;
+    *v8 = this;
+    v8 += 126;
     --v9;
   }
   while ( v9 );
-  if ( *((_BYTE *)game_words + 16721360) == 1 && game_words[16] == game_words[4147919] )
+  if ( *((_BYTE *)this + 16721360) == 1 && *(this + 16) == *(this + 4147919) )
   {
-    v10 = game_words[4147916];
-    saved_tail_b = game_words[4147917];
-    game_words[978578] = game_words[4147909];
-    game_words[978585] = v10;
-    qmemcpy(game_words + 978579, game_words + 4147910, 0x18u);
-    game_words[978586] = saved_tail_b;
+    v10 = *(this + 4147916);
+    v11 = *(this + 4147917);
+    *(this + 978578) = *(this + 4147909);
+    *(this + 978585) = v10;
+    qmemcpy(this + 978579, this + 4147910, 0x18u);
+    *(this + 978586) = v11;
   }
   else
   {
-    if ( game_words[4834290] == 2 )
+    if ( *(this + 4834290) == 2 )
     {
-      game_words[978578] = 0;
-      clear_subgoldy_score_buckets((int)(game_words + 978393));
+      *(this + 978578) = 0;
+      clear_subgoldy_score_buckets((int)(this + 978393));
     }
-    zero_timer_counters(game_words + 978579);
-    game_words[978585] = 0;
-    game_words[978586] = 0;
+    zero_timer_counters((Time *)(this + 978579));
+    *(this + 978585) = 0;
+    *(this + 978586) = 0;
   }
-  game_words[978616] = 0;
-  *(_BYTE *)game_words = 1;
-  *((_BYTE *)game_words + 1) = 1;
-  *((_BYTE *)game_words + 16721360) = 0;
-  game->garbage_hazards.active_head = 0;
+  *(this + 978616) = 0;
+  *(_BYTE *)this = 1;
+  *((_BYTE *)this + 1) = 1;
+  *((_BYTE *)this + 16721360) = 0;
+  *(this + 877648) = 0;
 }

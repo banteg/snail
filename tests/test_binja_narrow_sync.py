@@ -640,6 +640,109 @@ def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> N
         assert constant in scratch
 
 
+def test_subgame_control_prefix_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (repo_root / "tools/match/include/subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    frame_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    frame_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "apply_struct_and_proto_updates" in runtime_sync
+    assert "apply_struct_field_updates" not in runtime_sync
+    assert "apply_direct_proto_update" not in runtime_sync
+
+    for header in (*analysis_headers, matcher_header):
+        assert "scan_reset" in header
+        assert "camera_snap_requested" in header
+        assert "track_mirror_enabled" in header
+        assert "track_mirror_repeat_count" in header
+        assert "resume_requested" in header
+        assert "subgame_pause_gate" in header
+        assert "pause_fade" in header
+        assert "pause_fade_step" in header
+        assert "sub_pause" in header
+        assert "runtime_row_scan_begin" in header
+        assert "runtime_row_scan_end" in header
+
+    for sync in (path_sync, runtime_sync):
+        assert '("0x00", "scan_reset", "uint8_t")' in sync
+        assert '("0x01", "camera_snap_requested", "uint8_t")' in sync
+        assert '("0x08", "resume_requested", "uint8_t")' in sync
+        assert '("0x0c", "pause_fade", "float")' in sync
+        assert '("0x10", "pause_fade_step", "float")' in sync
+        assert '("0x14", "sub_pause", "SubPause")' in sync
+        assert '("0x20", "runtime_row_scan_begin", "int32_t")' in sync
+        assert '("0x24", "runtime_row_scan_end", "int32_t")' in sync
+
+    for header in frame_headers:
+        assert "uint8_t scan_reset;" in header
+        assert "uint8_t camera_snap_requested;" in header
+        assert "int32_t track_mirror_repeat_count;" in header
+        assert "uint8_t resume_requested;" in header
+        assert "uint8_t subgame_pause_gate;" in header
+        assert "float pause_fade;" in header
+        assert "float pause_fade_step;" in header
+        assert "int32_t subgame_state;" in header
+        assert "int32_t level_mode;" in header
+        assert "uint8_t unknown_000000[0x40];" not in header
+
+    assert "FRAME_SUBGAME_RUNTIME_FIELD_UPDATES" in frame_sync
+    assert '("0x08", "resume_requested", "uint8_t")' in frame_sync
+    assert '("0x3c", "subgame_state", "int32_t")' in frame_sync
+    assert "apply_struct_and_proto_updates" in frame_sync
+    assert "apply_struct_field_updates" not in frame_sync
+    assert (
+        '"void __thiscall update_subgame_camera(SubgameRuntime* runtime)"'
+        in runtime_sync
+    )
+    assert (
+        '"void __thiscall update_subgame_camera(SubgameRuntime* runtime);"'
+        in ida_sync
+    )
+    assert "char __thiscall update_subgame_camera" not in ida_sync
+
+    consumers = {
+        "reset_subgame": ("scan_reset", "camera_snap_requested"),
+        "update_subgame_camera": ("camera_snap_requested",),
+        "update_pause_menu": ("resume_requested",),
+        "initialize_subgame": ("pause_fade", "pause_fade_step"),
+        "update_subgame": ("scan_reset", "resume_requested", "pause_fade"),
+        "switch_track_mirror": (
+            "track_mirror_enabled",
+            "track_mirror_repeat_count",
+        ),
+    }
+    for function_name, fields in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        for field in fields:
+            assert field in scratch
+
+
 def test_sub_ring_kind_and_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     pool_sync = (BINJA_DIR / "sync_subgame_pool_types.py").read_text(
@@ -869,7 +972,7 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
     assert '("0x1c", "render_arg_1c", "float")' in pool_sync
     assert '("0x355db0", "speedup_pickup", "SubSpeedUp")' in pool_sync
     assert '("0x356000", "health_pickups", "SubHealth[0x8]")' in pool_sync
-    assert 'struct_name="JetPack"' in runtime_sync
+    assert '("JetPack", JETPACK_FIELD_UPDATES)' in runtime_sync
     assert '("0x38", "state", "TrackPickupState")' in runtime_sync
     assert '"TrackPickupState",' in path_sync
     for function_name in (

@@ -1761,9 +1761,16 @@ typedef union RuntimeRateOrLevelArg {
  * represented as ownership rather than flattened score/presentation aliases.
  */
 typedef struct SubgameRuntime {
-    uint8_t _pad_00[0x09];
+    uint8_t scan_reset;
+    uint8_t camera_snap_requested;
+    uint8_t track_mirror_enabled;
+    uint8_t unknown_000003;
+    int32_t track_mirror_repeat_count;
+    uint8_t resume_requested;
     uint8_t subgame_pause_gate;
-    uint8_t _pad_0a[0x14 - 0x0a];
+    uint8_t unknown_00000a[0x0c - 0x0a];
+    float pause_fade;
+    float pause_fade_step;
     SubPause sub_pause;
     int32_t runtime_row_scan_begin;
     int32_t runtime_row_scan_end;

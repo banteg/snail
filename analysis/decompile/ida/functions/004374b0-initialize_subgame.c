@@ -26,8 +26,8 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
   tColour *v20; // eax
   char *v21; // eax
   GameRoot *v22; // eax
-  float v23; // eax
-  float v24; // eax
+  float x; // eax
+  float y; // eax
   int32_t v25; // eax
   int v26; // edx
   int v27; // [esp+0h] [ebp-40h]
@@ -61,10 +61,10 @@ void __thiscall initialize_subgame(SubgameRuntime *game)
                                  (char *)&g_game_base->subgame.unknown_000044[16743356],
                                  g_menu_background_script_path);
     change_backdrop(
-      (int)&g_game_base->unknown_00067c[320916],
+      (int)&g_game_base->unknown_000b48[319688],
       (int)&g_game_base->subgame.unknown_000044[292 * landscape_script_by_name + 16744800],
       0);
-    set_border_justify_centre(&g_game_base->unknown_00067c[1232], 1103626240);
+    set_border_justify_centre(&g_game_base->unknown_000b48[4], 1103626240);
   }
   level_mode = game->level_mode;
   if ( !level_mode )
@@ -92,13 +92,13 @@ LABEL_16:
   if ( game->selected_level_record_persistent )
     game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
   game->subgame_pause_gate = 0;
-  game->_pad_00[8] = 0;
-  *(_DWORD *)&game->_pad_0a[2] = 0;
-  *(_DWORD *)&game->_pad_0a[6] = 1023969417;
+  game->resume_requested = 0;
+  game->pause_fade = 0.0;
+  game->pause_fade_step = 0.033333335;
   noop_runtime_ai();
   game->subgame_state = 0;
   game->times_up.state = TIMES_UP_STATE_INACTIVE;
-  game->top_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+  game->top_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
   v11 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
   initialize_frontend_widget(game->top_score_widget, 0x400002u, a0, 20, 400.0, 14.0, v11, 3, 300.0);
   game->top_score_widget->font_scale = 1.5;
@@ -106,12 +106,12 @@ LABEL_16:
   game->top_score_widget->text_buffer.raw[0] = 0;
   if ( !game->level_mode )
   {
-    game->lives_icon_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+    game->lives_icon_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
     v12 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_sprite_button((int)game->lives_icon_widget, 4196352, 122, 0, 1114112000, v12, 0.0, 4);
     hide_border_init(&game->lives_icon_widget->list_kind);
     game->lives_icon_widget->sprite_shadow_offset = 0.0;
-    game->lives_text_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+    game->lives_text_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
     v13 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
     initialize_frontend_widget(game->lives_text_widget, 0x400002u, a0, 20, 47.0, 80.0, v13, 0, 0.0);
     hide_border_init(&game->lives_text_widget->list_kind);
@@ -121,7 +121,7 @@ LABEL_16:
     game->lives_text_widget->font_scale = 0.69999999;
     do
     {
-      *life_stock_widgets = (int)allocate_border(&g_game_base->unknown_00067c[1232]);
+      *life_stock_widgets = (int)allocate_border(&g_game_base->unknown_000b48[4]);
       v16 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
       *(float *)&v27 = (double)v28 * 24.0 + 13.0;
       initialize_frontend_sprite_button(*life_stock_widgets, 4196352, 123, v27, 1138163712, v16, 0.0, 4);
@@ -157,7 +157,7 @@ LABEL_24:
     border_add_text_number(game->top_score_widget, 0);
   }
 LABEL_29:
-  game->bottom_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_00067c[1232]);
+  game->bottom_score_widget = (FrontendWidget *)allocate_border(&g_game_base->unknown_000b48[4]);
   v20 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 0.029999999);
   initialize_frontend_widget(game->bottom_score_widget, 0x400002u, a0, 20, 40.0, 14.0, v20, 3, -71.0);
   game->bottom_score_widget->font_scale = 1.5;
@@ -182,7 +182,7 @@ LABEL_29:
       break;
   }
   v22 = g_game_base;
-  if ( g_game_base->unknown_00067c[322660] || game->level_mode == 7 )
+  if ( g_game_base->unknown_000b48[321432] || game->level_mode == 7 )
   {
     hide_border_init(&game->bottom_score_widget->list_kind);
     hide_border_init(&game->top_score_widget->list_kind);
@@ -193,17 +193,17 @@ LABEL_29:
     v22->players[0].high_score_entry_pending = 0;
     g_game_base->players[0].selected_high_score_rank = 0;
     load_builtin_segment_definitions(&game->level_definition_scratch, (SubSegmentRaw **)&g_builtin_segment_definitions);
-    set_matrix_identity((TransformMatrix *)game->player.body.transform);
+    set_matrix_identity(&game->player.body.transform);
     game->player.movement_mode_selector = 0;
     game->player.game = game;
-    v23 = *(float *)&game->player.body.transform[48];
+    x = game->player.body.transform.position.x;
     game->player.attachment_exit_pending = 0;
-    game->player.cached_camera_target_world.x = v23;
+    game->player.cached_camera_target_world.x = x;
     game->player.boost_one_tick = 0;
-    v24 = *(float *)&game->player.body.transform[52];
+    y = game->player.body.transform.position.y;
     game->player.lives = 0;
-    game->player.cached_camera_target_world.y = v24;
-    game->player.cached_camera_target_world.z = *(float *)&game->player.body.transform[56];
+    game->player.cached_camera_target_world.y = y;
+    game->player.cached_camera_target_world.z = game->player.body.transform.position.z;
     game->player.body.bod.bod.list_flags &= ~0x20u;
     initialize_warning((int *)&game->player.warning);
     v25 = game->subgame_rebuild_selector;

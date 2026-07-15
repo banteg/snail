@@ -25,9 +25,9 @@
 004374fe        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
 00437503        g_game_base
 00437516        int32_t eax_2 = load_landscape_script_by_name("Menubg.txt")
-00437522        char* game_base_1 = g_game_base
-00437535        change_backdrop(&game_base_1[0x4ec10], &game_base_1[eax_2 * 0x124 + 0x106c7bc], 0)
-0043754b        set_border_justify_centre(&g_game_base[0xb4c], 0x41c80000)
+00437522        struct GameRoot* game_base_1 = g_game_base
+00437535        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_2 * 0x124 + 0x106c7bc], 0)
+0043754b        set_border_justify_centre(&g_game_base->border_manager, 0x41c80000)
 00437550        int32_t level_mode = game->level_mode
 00437555        struct SubSolution (* eax_6)[0x33]
 00437555        if (level_mode == 0)
@@ -47,12 +47,12 @@
 004375a9        if (game->selected_level_record_persistent != 0)
 004375b4        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar_bits
 004375bd        game->subgame_pause_gate = 0
-004375c0        game->unknown_000008 = 0
-004375c3        game->__offset(0xc).d = 0
-004375c6        game->__offset(0x10).d = 0x3d088889
+004375c0        game->resume_requested = 0
+004375c3        game->pause_fade = 0f
+004375c6        game->pause_fade_step = 0.0333333351f
 004375d2        game->subgame_state = 0
 004375d5        game->times_up.state = 0
-0043760b        game->top_score_widget = allocate_border(&g_game_base[0xb4c])
+0043760b        game->top_score_widget = allocate_border(&g_game_base->border_manager)
 00437611        struct tColour color
 00437611        struct tColour* color_1 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 00437633        initialize_frontend_widget(game->top_score_widget, &__dos_header.e_cblp, "0", 0x14, 400f, 14f, color_1, 3, 300f)
@@ -60,12 +60,12 @@
 00437653        game->top_score_widget->texture_layer = 7
 0043765f        game->top_score_widget->text_buffer.raw[0] = 0
 0043766a        if (game->level_mode == 0)
-0043769c        game->lives_icon_widget = allocate_border(&g_game_base[0xb4c])
+0043769c        game->lives_icon_widget = allocate_border(&g_game_base->border_manager)
 004376a2        struct tColour* eax_12 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 004376bb        initialize_frontend_sprite_button(game->lives_icon_widget, 0x400800, 0x7a, 0f, 58f, eax_12, 0f, 4)
 004376c6        hide_border_init(game->lives_icon_widget)
 004376d1        game->lives_icon_widget->sprite_shadow_offset = 0f
-00437702        game->lives_text_widget = allocate_border(&g_game_base[0xb4c])
+00437702        game->lives_text_widget = allocate_border(&g_game_base->border_manager)
 00437708        struct tColour* color_2 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 0043772a        initialize_frontend_widget(game->lives_text_widget, &__dos_header.e_cblp, "0", 0x14, 47f, 80f, color_2, 0, 0f)
 00437735        hide_border_init(game->lives_text_widget)
@@ -73,7 +73,7 @@
 00437742        int32_t i_2 = 0
 00437746        struct FrontendWidget* (* esi_2)[0x9] = &game->life_stock_widgets
 0043774c        __builtin_strncpy(&game->lives_text_widget->font_scale, "333?", 4)
-00437781        (esi_2 - 0x35bb98)->life_stock_widgets[0] = allocate_border(&g_game_base[0xb4c])
+00437781        (esi_2 - 0x35bb98)->life_stock_widgets[0] = allocate_border(&g_game_base->border_manager)
 00437783        int32_t* eax_17
 00437783        int32_t ecx_23
 00437783        eax_17, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
@@ -96,7 +96,7 @@
 00437830        border_add_text_number(game->top_score_widget, game->sub_high_score.current_result_record.score)
 004377f0        format_time_trial_string(&game->time_trial, &game->sub_high_score.current_result_record.score_or_time)
 00437802        rstrcpy_checked_ascii(&game->top_score_widget->text_buffer, 0x751478)
-00437865        game->bottom_score_widget = allocate_border(&g_game_base[0xb4c])
+00437865        game->bottom_score_widget = allocate_border(&g_game_base->border_manager)
 0043786b        struct tColour* color_3 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 0043788d        initialize_frontend_widget(game->bottom_score_widget, &__dos_header.e_cblp, "0", 0x14, 40f, 14f, color_3, 3, -71f)
 00437898        game->bottom_score_widget->font_scale = 1.5f
@@ -113,15 +113,15 @@
 004378fe        case 4
 004378fe        format_time_trial_string(&game->time_trial, &game->active_level_timer)
 00437911        rstrcpy_checked_ascii(&game->bottom_score_widget->text_buffer, 0x751478)
-00437931        char* game_base_2 = g_game_base
-00437941        if (game_base_2[0x4f2e0] != 0 || game->level_mode == 7)
+00437931        struct GameRoot* game_base_2 = g_game_base
+00437941        if (game_base_2->__offset(0x4f2e0).b != 0 || game->level_mode == 7)
 00437949        hide_border_init(game->bottom_score_widget)
 00437954        hide_border_init(game->top_score_widget)
 00437959        game_base_2 = g_game_base
-00437964        if (game_base_2[0x30d] != 0)
+00437964        if (game_base_2->players[0].high_score_entry_pending != 0)
 00437964        return
-0043796a        game_base_2[0x30d] = 0
-00437980        *(g_game_base + 0x310) = 0
+0043796a        game_base_2->players[0].high_score_entry_pending = 0
+00437980        g_game_base->players[0].selected_high_score_rank = 0
 00437986        load_builtin_segment_definitions(&game->level_definition_scratch, &data_4a63d0)
 00437991        set_matrix_identity(&game->player.body.transform)
 004379a2        game->player.movement_mode_selector = 0

@@ -180,7 +180,18 @@ typedef struct TextureSetSelector {
 } TextureSetSelector;
 
 typedef struct FrameSubgameRuntime {
-    uint8_t unknown_000000[0x40];
+    uint8_t scan_reset;
+    uint8_t camera_snap_requested;
+    uint8_t track_mirror_enabled;
+    uint8_t unknown_000003;
+    int32_t track_mirror_repeat_count;
+    uint8_t resume_requested;
+    uint8_t subgame_pause_gate;
+    uint8_t unknown_00000a[0x0c - 0x0a];
+    float pause_fade;
+    float pause_fade_step;
+    uint8_t unknown_000014[0x3c - 0x14];
+    int32_t subgame_state;
     int32_t level_mode;
     uint8_t unknown_000044[0x1270fd4 - 0x44];
     FrameContactTargetRegistry contact_targets;

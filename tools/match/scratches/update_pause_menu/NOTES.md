@@ -46,3 +46,11 @@ native short root reloads, but every reload now has the recovered `GameRoot*`
 type. The state handoffs remain owned by `options`, `exit_controller`,
 `subgame`, and `players[0]`; focused output stays exact at 55/55 instructions
 with all ten operands clean.
+
+2026-07-14 embedded-runtime bridge closure: the sparse
+`FrameSubgameRuntime` view now shares the proven control prefix through
+`subgame_state` and `level_mode`. Both tracked decompilers therefore render
+the Resume writes as `GameRoot::subgame.{subgame_state,resume_requested}`
+instead of byte-array stores. The far replay and rebuild lanes remain sparse;
+this slice does not invent owners for them. Focused output remains exact at
+55/55 instructions with all ten operands clean.

@@ -359,3 +359,24 @@ IDA's saved receiver lvar now agrees with its prototype and exposes the same
 owner graph without `int this` arithmetic. This is analysis-only: the honest
 focused frontier remains 79.75%, 1,036/1,033 instructions, 117 clean operands,
 and the same two table-identity mismatches.
+
+## 2026-07-14 control-prefix ownership closure
+
+The first 0x28 bytes of `SubgameRuntime` now use the same producer/consumer
+names in the matcher, both analysis headers, and both decompilers. This body
+provides the main consumers for `resume_requested`, `subgame_pause_gate`,
+`pause_fade`, `pause_fade_step`, and `scan_reset`; reset, initialization,
+camera, pause-menu, and track-mirror helpers independently witness the other
+prefix fields. The tracked BN/IDA exports no longer flatten these lanes into
+padding or raw offsets.
+
+This is analysis-only and leaves the honest 79.75%, 1,036/1,033 frontier and
+its two table-identity mismatches unchanged. The nearby BodBase heads at
+`+0x355c7c`, `+0x355cec`, and `+0x355d5c` still have no consumer beyond their
+constructor writes, so they remain conservatively unnamed instead of being
+assigned speculative owners.
+
+The narrow Binary Ninja replay now batches its verified field and prototype
+updates. The same ownership replay that previously reanalyzed after every
+item completes in one analysis batch while preserving direct user types and
+readback verification.
