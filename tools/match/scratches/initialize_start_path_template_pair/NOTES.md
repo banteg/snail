@@ -8,10 +8,10 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-The retained scratch now matches 25.65% (536/610 candidate/target
+The retained scratch now matches 60.84% (603/610 candidate/target
 instructions), with masked operands at 31 ok, 0 unresolved, 0 mismatch. The
 candidate still has a 0x48 frame versus the target's 0x44 frame, so the
-prologue and sample-loop register ownership remain open.
+remaining mesh-row register ownership and prologue spill are still open.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
@@ -144,7 +144,41 @@ already recovered two-face writer was byte-identical and was not retained.
 Those loops remain explicit future ownership work rather than being forced to
 share the supertramp spelling.
 
-The paired strip faces still write low-byte flag values `0` and `0x04`.
-`0x04` is not promoted to `ObjectFaceQuadFlag`: this constructor proves an
-authoring distinction but no independent runtime consumer or stable semantic
-name.
+2026-07-15 coordinated sample-owner recovery: direct primary/secondary array
+ownership across the raised lead-in, curved body, and flat tail combines with
+separate logical Z counters to reproduce the native loop lifetimes. The lead-in
+increments its sample and Z owners before writing the secondary delta; the
+curve starts at sample 5 while retaining a zero-based `curve_index`; and the
+tail starts at sample `curve_segments + 5` with its own Z owner. Keeping the
+floating-point curve count live and reusing the incoming `length` argument slot
+for the cosine radius also agrees with the target's stack ownership. Together
+with the face and orientation recovery below, focused Wibo moves from 25.65%
+(536/610) to 60.84% (603/610), while the masked call audit remains fully clean
+at 31 ok, 0 unresolved, 0 mismatch.
+
+The orientation source has a mixed ownership boundary. Two previous-sample
+pointers own only the first curved sample's identity calls; the later vector
+construction is authored through direct indexed arrays. Making all orientation
+accesses direct regressed the focused result to 37.46% and introduced a masked
+call mismatch. Keeping four current/previous pointers reached only 52.57%; one
+previous pointer also regressed to 37.46%; and limiting pointers to the entire
+identity branch reached 41.68%. The retained two-pointer/direct-vector shape is
+the only probe that reaches 60.84% with the call audit clean.
+
+The mesh face header interpretation above is superseded. The native first face
+does not initialize its header in this loop. The reverse face writes the full
+16-bit `header_word` value `4`; no stable semantic enum name has been recovered,
+so the raw field/value remain intentionally unpromoted. Both parity branches
+request the same texture reference. Their duplicated control flow and reversed
+condition spelling are retained because the target contains both branches, not
+to manufacture a semantic distinction that is absent from the binary.
+
+Rejected or neutral during this pass: the face changes alone moved 25.65% to
+24.16%, but became strongly positive as part of the coordinated ownership
+cascade; reusing `length` for the radius moved 52.40% to 52.57%; a separate
+curved `sample_index` regressed 60.84% to 58.81%; direct mesh-component float
+stores regressed 60.84% to 59.88%; and mesh declaration/sample-offset ordering
+was byte-neutral. Reversing the redundant parity condition and spelling the
+curve guard as `curve_index < curve_segments` were score-neutral; both are
+retained because they reflect the observed branch direction and logical owner.
+The candidate frame remains 0x48 versus the target's 0x44.
