@@ -41,15 +41,14 @@ waiting_for_start: {
         if (g_game->subgame.replay_update_cursor > 8)
             g_game->subgame.replay_update_cursor = 8;
 
-        char replay_active = g_game->subgame.replay_launch_active;
-        if (replay_active != 0) {
+        if (g_game->subgame.replay_launch_active != 0) {
             int replay_index = g_game->subgame.replay_update_cursor;
             SubSolution* replay_record = g_game->subgame.replay_launch_record;
             if ((replay_record->run_records[replay_index].flags & 0x20) != 0)
                 goto start_subgame;
         }
 
-        if (replay_active != 0)
+        if (g_game->subgame.replay_launch_active != 0)
             return;
         if (hide_prompt != 0)
             return;

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**620/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96377/317040** bytes (**30.40%**) are proof-grade, and overall fuzzy is **73.04%**.
+**620/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **96377/317040** bytes (**30.40%**) are proof-grade, and overall fuzzy is **73.05%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -709,7 +709,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 144/144 | 84.72% | 7/144 | 9 ok |  |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  |
-| 🚧 | update_click_start | 0x442290 | 624 | 138/138 | 84.06% | 5/138 | 1 unresolved, 23 ok |  |
+| 🚧 | update_click_start | 0x442290 | 624 | 140/138 | 90.65% | 5/138 | 1 mismatch, 23 ok |  |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 5/125 | 31 ok |  |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 mismatch, 11 ok |  |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 173/171 | 81.40% | 0/171 | 33 ok |  |

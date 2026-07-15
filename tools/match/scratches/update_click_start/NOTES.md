@@ -93,3 +93,28 @@ borrowed `owner_player` backlink at `+0x98`, instead of its stale generic
 State one remains explicitly `UNKNOWN_1`: neither Windows nor the available
 mobile writers justify a stronger name. Matcher source and the honest 84.06%,
 138/138-instruction partial are unchanged.
+
+## 2026-07-15 replay dispatch ownership
+
+The two launch-gate tests now read
+`SubgameRuntime::replay_launch_active` directly instead of preserving an
+authored-looking but unsupported scratch local. VC6 folds those reads into the
+native `dl` lifetime around the borrowed replay record, including the native
+`ebp` save/restore and the second `test dl, dl`. This raises the focused match
+from 84.06% (138/138) to 90.65% (140/138), with all 23 ordinary masked
+references still clean.
+
+The native five-entry table at `0x4424ec` is now tracked as
+`update_click_start_state_jump_table`. Independent image inspection gives
+entries `0x4424ea`, `0x4424ea`, `0x4422d8`, `0x4423f4`, and `0x44243f`, mapping
+states 0/1 to the common return and states 2/3/4 to the three recovered bodies.
+The matcher therefore reports one content-audited table mismatch instead of an
+unresolved compiler-local symbol: the candidate's two extra byte load/store
+instructions shift every later table destination by four bytes.
+
+The remaining difference is the already-pinned replay-record byte-OR idiom:
+native uses a direct memory `or`, while contextual VC6 compilation emits
+load/or/store. Typed record pointers, a flattened byte lane, explicit casts,
+signedness, and a 16-bit union view were neutral or worse and were rejected.
+No alias, volatile qualifier, synthetic control flow, or local table alias was
+kept to hide the mismatch.

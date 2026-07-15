@@ -1199,6 +1199,14 @@
       "description": "Exact Windows cRTime::Add(float) entry; the decorated alias preserves the authored method owner in candidate relocations."
     },
     {
+      "address": "0x4424ec",
+      "name": "update_click_start_state_jump_table",
+      "kind": "jump_table",
+      "aliases": [],
+      "size": "0x14",
+      "description": "Compiler-emitted five-entry state switch table used by update_click_start."
+    },
+    {
       "address": "0x44362c",
       "name": "update_track_parcel_state_jump_table",
       "kind": "jump_table",
