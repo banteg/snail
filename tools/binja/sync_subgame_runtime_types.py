@@ -8,6 +8,8 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_data_var_updates,
+    apply_symbol_updates,
     apply_struct_and_proto_updates,
     emit_summary,
     struct_exists,
@@ -18,6 +20,74 @@ from _narrow_sync import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
 DEFAULT_CONTACT_HEADER_PATH = REPO_ROOT / "analysis/headers/contact_target_types.h"
+DEFAULT_OBJECT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
+
+GALAXY_POINT_FIELD_UPDATES = (
+    ("0x00", "x", "float"),
+    ("0x04", "y", "float"),
+)
+
+GALAXY_ROUTE_RECORD_FIELD_UPDATES = (
+    ("0x00", "route_name_index", "int32_t"),
+    ("0x08", "map_x", "float"),
+    ("0x0c", "map_y", "float"),
+    ("0x10", "map_z", "float"),
+    ("0x14", "route_tint_alpha", "float"),
+    ("0x18", "highlight_target", "float"),
+    ("0x1c", "detail_text", "char[0x80]"),
+    ("0x9c", "description_text", "char[0x200]"),
+)
+
+GALAXY_ROUTE_SLOT_FIELD_UPDATES = (
+    ("0x00", "unknown_000", "int32_t"),
+    ("0x04", "record", "GalaxyRouteRecord"),
+)
+
+GALAXY_ROUTE_NAME_FIELD_UPDATES = (
+    ("0x00", "name", "char[0x80]"),
+    ("0x80", "star_count", "int32_t"),
+    ("0x84", "color", "tColour"),
+    ("0x94", "map_x", "float"),
+    ("0x98", "map_y", "float"),
+    ("0x9c", "map_z", "float"),
+)
+
+GALAXY_FIELD_UPDATES = (
+    ("0x00", "active", "uint8_t"),
+    ("0x04", "route_mode", "int32_t"),
+    ("0x08", "route_state", "int32_t"),
+    ("0x0c", "record_count", "int32_t"),
+    ("0x10", "route_slots", "GalaxyRouteSlot[101]"),
+    ("0x10930", "route_names", "GalaxyRouteNameRecord[10]"),
+    ("0x10f70", "level_progress_base", "SubgameRuntime*"),
+    ("0x10f74", "exit_or_back_widget", "FrontendWidget*"),
+    ("0x10f78", "route_title_widget", "FrontendWidget*"),
+    ("0x10f7c", "route_icon_widget", "FrontendWidget*"),
+    ("0x10f80", "selected_index", "int32_t"),
+    ("0x10f84", "hover_state", "int32_t"),
+    ("0x10f8c", "bounds_frame_widget", "FrontendWidget*"),
+    ("0x10f90", "selected_title_widget", "FrontendWidget*"),
+    ("0x10f94", "selected_detail_widget", "FrontendWidget*"),
+    ("0x10f98", "selected_description_widget", "FrontendWidget*"),
+    ("0x10f9c", "play_or_deliver_widget", "FrontendWidget*"),
+    ("0x10fa0", "replay_widget", "FrontendWidget*"),
+    ("0x10fa4", "unknown_10fa4", "int32_t"),
+)
+
+GALAXY_FUNCTION_SYMBOL_UPDATES = (
+    ("0x408880", "initialize_galaxy_route_name_record"),
+    ("0x409bd0", "update_galaxy_route_record"),
+)
+
+GALAXY_DATA_SYMBOL_UPDATES = (
+    ("0x4a1c4c", "g_galaxy_group_points"),
+    ("0x4a1d14", "g_galaxy_route_points"),
+)
+
+GALAXY_DATA_VAR_UPDATES = (
+    ("0x4a1c4c", "GalaxyPoint[10]"),
+    ("0x4a1d14", "GalaxyPoint[101]"),
+)
 
 SUBGAME_FIELD_UPDATES = (
     ("0x00", "scan_reset", "uint8_t"),
@@ -81,6 +151,46 @@ TIMES_UP_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "initialize_galaxy_route_name_record",
+        "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(GalaxyRouteNameRecord* record)",
+    ),
+    (
+        "load_galaxy_layout",
+        "void __thiscall load_galaxy_layout(Galaxy* galaxy)",
+    ),
+    (
+        "destroy_galaxy",
+        "void __thiscall destroy_galaxy(Galaxy* galaxy)",
+    ),
+    (
+        "initialize_galaxy",
+        "void __thiscall initialize_galaxy(Galaxy* galaxy)",
+    ),
+    (
+        "update_galaxy",
+        "int32_t __thiscall update_galaxy(Galaxy* galaxy)",
+    ),
+    (
+        "draw_galaxy_line",
+        "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color)",
+    ),
+    (
+        "update_galaxy_route_record",
+        "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot)",
+    ),
+    (
+        "close_galaxy_route",
+        "void __thiscall close_galaxy_route(Galaxy* galaxy)",
+    ),
+    (
+        "open_galaxy_route",
+        "void __thiscall open_galaxy_route(Galaxy* galaxy, int32_t selected_level_index)",
+    ),
+    (
+        "galaxy_border_bound",
+        "void __thiscall galaxy_border_bound(Galaxy* galaxy, float* min_x, float* max_x, float* min_y, float* max_y, FrontendWidget* widget)",
+    ),
     (
         "zero_timer_counters",
         "void __thiscall zero_timer_counters(Time* time)",
@@ -246,6 +356,12 @@ def main() -> int:
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,
+            header_path=DEFAULT_OBJECT_HEADER_PATH,
+            required_structs=("tColour",),
+        ),
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
             header_path=contact_header_path,
             required_structs=(
                 "ContactTargetObject",
@@ -264,6 +380,7 @@ def main() -> int:
                 "GUI",
                 "Help",
                 "ThanksScreen",
+                "GalaxyPoint",
                 "GalaxyRouteRecord",
                 "GalaxyRouteSlot",
                 "GalaxyRouteNameRecord",
@@ -283,6 +400,29 @@ def main() -> int:
             ),
         ),
     ]
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=GALAXY_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=GALAXY_DATA_SYMBOL_UPDATES,
+            kind="data",
+        )
+    )
+    operations.extend(
+        apply_data_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=GALAXY_DATA_VAR_UPDATES,
+        )
+    )
     subgame_updates = [*SUBGAME_FIELD_UPDATES]
     if struct_exists(REPO_ROOT, target=args.target, struct_name="BodBase"):
         subgame_updates.extend(SUBGAME_BOD_FIELD_UPDATES)
@@ -294,6 +434,11 @@ def main() -> int:
             target=args.target,
             struct_updates=(
                 ("SubgameRuntime", subgame_updates),
+                ("GalaxyPoint", GALAXY_POINT_FIELD_UPDATES),
+                ("GalaxyRouteRecord", GALAXY_ROUTE_RECORD_FIELD_UPDATES),
+                ("GalaxyRouteSlot", GALAXY_ROUTE_SLOT_FIELD_UPDATES),
+                ("GalaxyRouteNameRecord", GALAXY_ROUTE_NAME_FIELD_UPDATES),
+                ("Galaxy", GALAXY_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("Completion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),

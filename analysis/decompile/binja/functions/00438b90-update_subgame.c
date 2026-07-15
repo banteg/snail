@@ -20,7 +20,7 @@
 00438d6c        return
 00438c6d        if (game->selected_level_record_persistent != 1)
 00438c8f        game->selected_level_record_active = 0
-00438ca2        hide_star_field(&g_game_base->__offset(0x4f33c).d)
+00438ca2        hide_star_field(&g_game_base->star_manager)
 00438c6d        goto label_438ca7
 00438c6f        struct SubSolution* selected_level_record = game->selected_level_record
 00438c75        game->selected_level_record_active = 1
@@ -39,7 +39,7 @@
 00438cd6        int32_t eax_2
 00438cd6        switch (level_mode)
 00438ce3        case 0
-00438ce3        eax_2 = update_galaxy()
+00438ce3        eax_2 = update_galaxy(&game->galaxy)
 00438cea        if (eax_2 == 1)
 00438cec        int32_t level_mode_arg = game->level_mode_arg
 00438cef        game->subgame_rebuild_selector = 3
@@ -66,7 +66,7 @@
 004398fa        update_subgame_camera(game)
 00439906        return
 00438d3e        case 4
-00438d3e        eax_2 = update_galaxy()
+00438d3e        eax_2 = update_galaxy(&game->galaxy)
 00438d45        if (eax_2 == 1)
 00438d47        int32_t level_mode_arg_2 = game->level_mode_arg
 00438d4a        game->subgame_rebuild_selector = 2
@@ -85,7 +85,7 @@
 00438d86        g_game_base->players[0].frontend_state = 2
 00438d94        return
 00438e09        case 2
-00438e09        if (game->selected_level_record_active == 1 && g_game_base->__offset(0x4f2e0).b == 0)
+00438e09        if (game->selected_level_record_active == 1 && g_game_base->intro.hide_for_replay_latch == 0)
 00438e33        float x
 00438e33        struct tColour* color
 00438e33        if (game->level_mode != 3)
@@ -111,7 +111,7 @@
 00438ee9        struct GameRoot* game_base_1 = g_game_base
 00438ef1        if (eax_12.b == 0)
 00438f15        label_438f15:
-00438f15        eax_12.b = game_base_1->__offset(0x4f2e0).b
+00438f15        eax_12.b = game_base_1->intro.hide_for_replay_latch
 00438f1d        if (eax_12.b == 0)
 00438f3d        if ((read_pressed_text_input_key_code().b == 0xb || g_window_deactivated == 1) && g_game_base->fade.state == 0)
 00438f3f        game->subgame_pause_gate = 1
@@ -390,7 +390,7 @@
 0043986d        cond:6_1 = runtime_row_scan_begin s< game->runtime_row_scan_end
 0043986f        game->scan_reset = 0
 00439872        do while (cond:6_1)
-0043987b        update_track_render_cache_rows(&game->__offset(0x5c).d)
+0043987b        update_track_render_cache_rows(&game->segment_cache)
 00439884        if (game->level_mode != 4)
 00439927        game->top_score_widget->text_buffer.raw[0] = 0
 0043993b        border_add_text_number(game->top_score_widget, game->player.total_score)
@@ -426,12 +426,12 @@
 00439994        game_base_1->players[0].saved_frontend_state = game_base_1->players[0].frontend_state
 004399a0        g_game_base->players[0].frontend_state = 0x1a
 004399c7        struct GameRoot* game_base_2 = g_game_base
-004399cd        long double x87_r7_23 = fconvert.t(game_base_2->__offset(0x4f2e4).d)
+004399cd        long double x87_r7_23 = fconvert.t(game_base_2->intro.attract_reset_progress)
 004399d3        long double temp1_1 = fconvert.t(1f)
 004399d3        x87_r7_23 - temp1_1
 004399de        if ((((x87_r7_23 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_23, temp1_1) ? 1 : 0) << 0xa | (x87_r7_23 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 00439906        return
-004399e7        game_base_2->__offset(0x4f2e0).b = 0
+004399e7        game_base_2->intro.hide_for_replay_latch = 0
 004399f2        return
 00438bb6        case 3
 00438bb6        game->subgame_state = 4

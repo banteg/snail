@@ -15,9 +15,6 @@ int report_errorf(char* format, ...);
 
 extern GameRoot* g_game; // data_4df904
 
-extern GalaxyPoint g_galaxy_group_points[10];
-extern GalaxyPoint g_galaxy_route_points[101];
-
 void Galaxy::load_galaxy_layout()
 {
     float* first_point_cursor = &g_galaxy_route_points[0].y;

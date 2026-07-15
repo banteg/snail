@@ -23,3 +23,9 @@ that unreferenced tail.
 2026-07-14 root-client consolidation: all nine releases now traverse the
 canonical `GameRoot::border_manager` owner. Focused matching remains exact at
 49/49 instructions with 18 clean operands.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+Live readback now records `void __thiscall destroy_galaxy(Galaxy*)`; the
+exported body resolves all nine releases through named `Galaxy` widget fields.
+Focused matching remains exact at 49/49 with 18 clean operands.

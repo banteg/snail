@@ -36,6 +36,41 @@ def test_owner_syncs_keep_subgame_runtime_as_the_canonical_backlink() -> None:
     assert "SubgameRuntime* game;" in path_header
 
 
+def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
+    repo_root = Path(__file__).parents[1]
+    runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/galaxy_route_types.h"
+    ).read_text(encoding="utf-8")
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "path_template_types.h",
+        )
+    )
+
+    assert '("0x408880", "initialize_galaxy_route_name_record")' in runtime_sync
+    assert '("0x409bd0", "update_galaxy_route_record")' in runtime_sync
+    assert '("0x4a1c4c", "g_galaxy_group_points")' in runtime_sync
+    assert '("0x4a1d14", "g_galaxy_route_points")' in runtime_sync
+    assert '("0x84", "color", "tColour")' in runtime_sync
+    assert "int32_t __thiscall update_galaxy(Galaxy* galaxy)" in runtime_sync
+    assert "void __thiscall open_galaxy_route(" in runtime_sync
+    assert "void __thiscall galaxy_border_bound(" in runtime_sync
+
+    for header in analysis_headers:
+        assert "typedef struct GalaxyPoint" in header
+        assert "GalaxyRouteSlot route_slots[101]" in header
+        assert "GalaxyRouteNameRecord route_names[10]" in header
+
+    assert "extern GalaxyPoint g_galaxy_group_points[10];" in matcher_header
+    assert "extern GalaxyPoint g_galaxy_route_points[101];" in matcher_header
+
+
 def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     high_score_sync = (BINJA_DIR / "sync_high_score_screen_types.py").read_text(

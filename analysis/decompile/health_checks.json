@@ -3272,6 +3272,111 @@
         "data_5031c4",
         "unimplemented"
       ]
+    },
+    {
+      "name": "bn_galaxy_route_name_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00408880-initialize_galaxy_route_name_record.c",
+      "required_substrings": [
+        "return record"
+      ],
+      "forbidden_substrings": [
+        "sub_408880",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_route_tick_owner",
+      "artifact": "analysis/decompile/binja/functions/00409bd0-update_galaxy_route_record.c",
+      "required_substrings": [
+        "slot->record.route_tint_alpha",
+        "slot->record.highlight_target"
+      ],
+      "forbidden_substrings": [
+        "sub_409bd0",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_layout_point_bank_owner",
+      "artifact": "analysis/decompile/binja/functions/004088e0-load_galaxy_layout.c",
+      "required_substrings": [
+        "&g_galaxy_route_points[0].y",
+        "&g_galaxy_group_points[0].y",
+        "galaxy->level_progress_base",
+        "galaxy->route_names[0].color",
+        "galaxy->route_slots[galaxy->record_count].record.route_name_index"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4a1c50",
+        "data_4a1d18",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_lifecycle_owner",
+      "artifact": "analysis/decompile/binja/functions/00408cf0-initialize_galaxy.c",
+      "required_substrings": [
+        "galaxy->level_progress_base",
+        "galaxy->route_title_widget",
+        "galaxy->bounds_frame_widget",
+        "galaxy->selected_title_widget",
+        "galaxy->play_or_deliver_widget",
+        "open_galaxy_route(galaxy, galaxy->selected_index)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(arg1 +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_update_owner",
+      "artifact": "analysis/decompile/binja/functions/004092f0-update_galaxy.c",
+      "required_substrings": [
+        "hide_gameplay_scores(galaxy->level_progress_base)",
+        "update_galaxy_route_record(slot)",
+        "draw_galaxy_line(galaxy",
+        "destroy_galaxy(galaxy)",
+        "open_galaxy_route(galaxy"
+      ],
+      "forbidden_substrings": [
+        "sub_409bd0",
+        "arg1",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_route_card_owner",
+      "artifact": "analysis/decompile/binja/functions/00409c50-open_galaxy_route.c",
+      "required_substrings": [
+        "galaxy->selected_index = selected_level_index_1",
+        "galaxy->selected_title_widget",
+        "galaxy->route_names",
+        "galaxy_border_bound(galaxy",
+        "galaxy->bounds_frame_widget"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "*(galaxy +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_galaxy_update_dispatch_owner",
+      "artifact": "analysis/decompile/binja/functions/00438b90-update_subgame.c",
+      "required_substrings": [
+        "hide_star_field(&g_game_base->star_manager)",
+        "update_galaxy(&game->galaxy)",
+        "update_track_render_cache_rows(&game->segment_cache)"
+      ],
+      "forbidden_substrings": [
+        "update_galaxy()",
+        "&game->__offset(0x5c)",
+        "unimplemented"
+      ]
     }
   ]
 }

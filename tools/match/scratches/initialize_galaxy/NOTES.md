@@ -74,3 +74,11 @@ thanks screen; exact output remains 338/338 with all 74 operands clean.
 members. The exact `open_galaxy_route` consumer independently overwrites and
 reads the same bounds fields after measuring the route-card stack. Focused Wibo
 remains exact at 338/338 instructions with all 74 operands clean.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+Live readback now records `void __thiscall initialize_galaxy(Galaxy*)`. The
+focused export retains the enclosing `SubgameRuntime*` backlink, all nine
+widget owners, and the final typed `open_galaxy_route(galaxy,
+galaxy->selected_index)` handoff. Matching remains exact at 338/338 with 74
+clean operands.

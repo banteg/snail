@@ -127,3 +127,13 @@ route-point y-cursor terminus and the start of a 25-byte string. A derived
 `g_galaxy_route_points +0x32c` relocation is byte-identical but becomes
 audit-ambiguous against that real string owner, so the overlapping terminal
 literal is intentionally retained rather than inventing a second global.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+The durable replay now installs `GalaxyPoint[10]` at `0x4a1c4c`,
+`GalaxyPoint[101]` at `0x4a1d14`, and the true
+`void __thiscall load_galaxy_layout(Galaxy*)` contract. This supersedes the
+earlier failed manual prototype attempt: live readback and a focused export
+both preserve the Galaxy owner and named point banks. Moving their externs to
+the shared route header is source-shape neutral at 88.27%, 236/233
+candidate/target instructions, prefix 62, and 39 clean operands.

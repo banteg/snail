@@ -170,4 +170,7 @@ public:
 typedef char Galaxy_must_be_0x10fa8[
     (sizeof(Galaxy) == 0x10fa8) ? 1 : -1];
 
+extern GalaxyPoint g_galaxy_group_points[10]; // data_4a1c4c
+extern GalaxyPoint g_galaxy_route_points[101]; // data_4a1d14
+
 #endif

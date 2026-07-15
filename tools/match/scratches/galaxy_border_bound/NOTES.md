@@ -27,3 +27,9 @@ live in `frontend_widget.h` rather than a scratch-local duplicate view.
 
 Android retains the exact 63/63 member as `cRGalaxy::BorderBound(...)`; the
 parent rename is codegen-neutral.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+Live readback now preserves the true `Galaxy*` receiver, four float in/out
+bounds, and the `FrontendWidget*` client. Matching remains exact at 63/63 with
+two clean operands.

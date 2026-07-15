@@ -44,3 +44,11 @@ incidental widget pointer; its caller also discards it. Promoting both members
 to void is codegen-neutral: this function remains exact at 266/266 with 41
 clean operands, and `initialize_galaxy` remains exact at 338/338 with 74 clean
 operands. The complete Galaxy parent extent remains 0x10fa8.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+Live readback now records
+`void __thiscall open_galaxy_route(Galaxy*, int32_t selected_level_index)`.
+The focused export retains route-slot/name ownership, the borrowed subgame
+backlink, every route-card widget, and the typed bounds-helper calls. Matching
+remains exact at 266/266 with 41 clean operands.

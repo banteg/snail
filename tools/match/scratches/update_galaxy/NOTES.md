@@ -186,3 +186,13 @@ now start from a typed `GameRoot*` and traverse `players[0]`, `border_manager`,
 introduced, preserving the short lifetimes required by the current source
 shape. Focused output remains 71.01%, 569/566 instructions, prefix 48/566,
 with all 52 operands clean.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+The live database now records `int32_t __thiscall update_galaxy(Galaxy*)` and
+resolves its two former anonymous helpers as
+`update_galaxy_route_record(GalaxyRouteSlot*)` and the true Galaxy-member
+`draw_galaxy_line`. The focused export also retains typed destroy/open/close
+transitions and the enclosing subgame backlink. Honest matching is unchanged
+at 71.01%, 569/566 candidate/target instructions, prefix 48, and 52 clean
+operands.

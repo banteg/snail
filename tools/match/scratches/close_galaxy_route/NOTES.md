@@ -19,3 +19,9 @@ border array. The parent now uses the shared `Galaxy` header also used by
 `open_galaxy_route` (@ 0x409c50) and `update_galaxy` (@ 0x4092f0).
 
 Android/iOS retain this exact 18/18 member as `cRGalaxy::BoxOff()`.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+Live readback now records `void __thiscall close_galaxy_route(Galaxy*)` and
+the focused export retains all six named widget owners. Matching remains exact
+at 18/18 with six clean operands.

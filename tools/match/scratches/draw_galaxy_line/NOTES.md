@@ -19,3 +19,10 @@ Exact match: 100.00%, 67/67 instructions, with four masked operands audited.
 2026-07-12 owner closure: promoting the helper to
 `Galaxy::draw_galaxy_line` preserves the exact body while recovering the
 receiver setup in `update_galaxy`.
+
+## 2026-07-15 Binary Ninja lifecycle replay
+
+Live readback now preserves the true `Galaxy*` receiver plus the texture,
+endpoint, width, and `tColour*` arguments. This removes the false-stdcall
+ambiguity from the database while focused matching remains exact at 67/67
+with four clean operands.
