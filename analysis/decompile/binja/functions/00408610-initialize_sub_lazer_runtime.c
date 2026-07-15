@@ -3,6 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_sub_lazer_runtime @ 0x408610 */
 
-00408613        initialize_renderable_bod(slot)
-00408618        slot->bod.vtable = &data_49733c
-00408621        return slot
+00408613        initialize_renderable_bod(sub_lazer)
+00408618        sub_lazer->body.bod.bod.vtable = &data_49733c
+00408621        return sub_lazer

@@ -2,11 +2,10 @@
 /* function: initialize_sub_lazer_runtime @ 0x408610 */
 /* selector: initialize_sub_lazer_runtime */
 
-// Constructs one laser-projectile runtime slot by running the shared renderable-body constructor and installing the laser vtable. The 20-slot pool built by `initialize_runtime_pools_and_path_template_bank` totals `0xdc0`, matching the native `cRSubLazerManager` size ledger.
-_DWORD *__thiscall sub_408610(_DWORD *this)
+// Exact constructor wrapper for one authored `SubLazer` (`cRSubLazer` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_sub_lazer_projectile, and returns the receiver. The 20 inline 0xb0-byte records owned by SubLazerManager total the native 0xdc0 size ledger.
+SubLazer *__thiscall initialize_sub_lazer_runtime(SubLazer *sub_lazer)
 {
-  initialize_renderable_bod(this);
-  *this = &off_49733C;
-  return this;
+  initialize_renderable_bod(sub_lazer);
+  sub_lazer->body.bod.bod.vtable = &g_sub_lazer_vtable;
+  return sub_lazer;
 }
-

@@ -389,7 +389,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_salt_hazard",
-        "void __thiscall update_salt_hazard(SaltHazardSlot* slot);",
+        "void __thiscall update_salt_hazard(Salt* salt);",
     ),
     (
         "initialize_score_stats",
@@ -606,6 +606,10 @@ TRUSTED_DECLARATIONS = [
     (
         "update_banner",
         "void __thiscall update_banner(Banner* banner);",
+    ),
+    (
+        "clear_active_landscape_entries",
+        "void __thiscall clear_active_landscape_entries(LandscapeManager* manager);",
     ),
     (
         "initialize_track_speedup_runtime",

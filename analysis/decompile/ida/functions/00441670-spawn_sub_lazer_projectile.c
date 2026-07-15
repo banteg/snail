@@ -2,48 +2,47 @@
 /* function: spawn_sub_lazer_projectile @ 0x441670 */
 /* selector: spawn_sub_lazer_projectile */
 
-// Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores the live body position at `+0x68..+0x70`, stores launch direction/velocity at `+0x8c..+0x94`, resets the nested-sprite bob phase at `+0x98`, seeds its step at `+0x9c` from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the body z-direction basis. Historically labelled `spawn_wall2_ambient_hazard`.
-void __thiscall sub_441670(int this, _DWORD *a2, _DWORD *a3)
+// Exact Windows `cRSubLazer::Shoot` implementation: activates one manager-owned SubLazer, stores body position at +0x68, velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument.
+void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *origin, const Vec3 *direction)
 {
-  int v4; // edi
-  int v5; // edx
-  int v6; // eax
-  int v7; // edx
+  TransformMatrix *p_transform; // edi
+  float z; // edx
+  SubgameRuntime *owner_game; // eax
+  uint32_t list_flags; // edx
   double v8; // st7
-  int v9; // eax
-  int v10; // eax
+  struct BodNode *p_bod; // eax
+  struct BodNode *list_next; // eax
 
-  v4 = this + 56;
-  *(_DWORD *)(this + 128) = 1;
-  set_matrix_identity((_DWORD *)(this + 56));
-  *(_DWORD *)(this + 104) = *a2;
-  *(_DWORD *)(this + 108) = a2[1];
-  *(_DWORD *)(this + 112) = a2[2];
-  *(_DWORD *)(this + 140) = *a3;
-  *(_DWORD *)(this + 144) = a3[1];
-  v5 = a3[2];
-  *(_DWORD *)(this + 152) = 0;
-  *(_DWORD *)(this + 148) = v5;
-  v6 = *(_DWORD *)(this + 136);
-  v7 = *(_DWORD *)(this + 4);
-  v8 = *(float *)(v6 + 56) * 0.0055555557;
-  v9 = v6 + 3496916;
-  *(float *)(this + 156) = v8;
-  if ( (v7 & 0x200) != 0 )
+  p_transform = &sub_lazer->body.transform;
+  sub_lazer->state = 1;
+  set_matrix_identity(&sub_lazer->body.transform);
+  sub_lazer->body.transform.position.x = origin->x;
+  sub_lazer->body.transform.position.y = origin->y;
+  sub_lazer->body.transform.position.z = origin->z;
+  sub_lazer->velocity.x = direction->x;
+  sub_lazer->velocity.y = direction->y;
+  z = direction->z;
+  sub_lazer->sprite_bob_phase = 0.0;
+  sub_lazer->velocity.z = z;
+  owner_game = sub_lazer->owner_game;
+  list_flags = sub_lazer->body.bod.bod.list_flags;
+  v8 = owner_game->subgame_rate * 0.0055555557;
+  p_bod = &owner_game->barrier_sub_lazer_list_head.bod;
+  sub_lazer->sprite_bob_phase_step = v8;
+  if ( (list_flags & 0x200) != 0 )
   {
     report_errorf(aListAddafter);
-    set_matrix_z_direction(v4, v8, (_DWORD *)(this + 140));
+    set_matrix_z_direction(p_transform, &sub_lazer->velocity);
   }
   else
   {
-    *(_DWORD *)(this + 8) = v9;
-    *(_DWORD *)(this + 12) = *(_DWORD *)(v9 + 12);
-    *(_DWORD *)(v9 + 12) = this;
-    v10 = *(_DWORD *)(this + 12);
-    if ( v10 )
-      *(_DWORD *)(v10 + 8) = this;
-    *(_DWORD *)(this + 4) |= 0x200u;
-    set_matrix_z_direction(v4, v8, (_DWORD *)(this + 140));
+    sub_lazer->body.bod.bod.list_prev = p_bod;
+    sub_lazer->body.bod.bod.list_next = p_bod->list_next;
+    p_bod->list_next = &sub_lazer->body.bod.bod;
+    list_next = sub_lazer->body.bod.bod.list_next;
+    if ( list_next )
+      list_next->list_prev = &sub_lazer->body.bod.bod;
+    sub_lazer->body.bod.bod.list_flags |= 0x200u;
+    set_matrix_z_direction(p_transform, &sub_lazer->velocity);
   }
 }
-

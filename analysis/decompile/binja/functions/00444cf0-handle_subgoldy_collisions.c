@@ -28,7 +28,7 @@
 00444dcc        x87_r7_8 - temp17_1
 00444dd7        if ((((x87_r7_8 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp17_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp17_1 ? 1 : 0) << 0xe):1.b & 0x40) != 0)
 00444ddf        player->damage_retrigger_timer = player->damage_retrigger_step
-00444df8        *(&player->game->salt_hazards.slots[0].velocity.z + i) = 0
+00444df8        (&player->game->salt_hazards.slots[0].collision_armed)[i] = 0
 00444e00        x87control = apply_damage_gauge_delta(&player->damage_gauge, 0.150000006f, 0)
 00444e05        i += 0x98
 00444e1e        int32_t i_1 = 0

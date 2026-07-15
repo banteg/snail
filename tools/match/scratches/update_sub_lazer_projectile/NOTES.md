@@ -178,3 +178,11 @@ The two containment probes now use `SUBROW_FLAG_PRIMARY_ATTACHMENT` and
 and `+0xa8`. Focused output remains 97.25%, 218/218 instructions, prefix
 82/218, with all 24 operands clean; the only residuals are the established
 commutative x87 load/add orderings.
+
+## 2026-07-15 analysis-lane owner replay
+
+Both decompiler lanes now receive the authored `SubLazer` receiver. The
+inherited transform and intrusive-list accesses resolve through
+`body.transform` and `body.bod.bod`, while the manager continues to own 20
+inline 0xb0-byte records. No change is claimed for the three established x87
+ordering residuals; the honest matcher result remains 97.25%.

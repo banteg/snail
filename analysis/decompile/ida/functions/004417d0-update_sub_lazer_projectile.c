@@ -2,20 +2,18 @@
 /* function: update_sub_lazer_projectile @ 0x4417d0 */
 /* selector: update_sub_lazer_projectile */
 
-// Integrates one active sub-lazer projectile, tests track attachment intersection, and deactivates it after collision or exit.
-// owner_game +0x09 is subgame_pause_gate; the same owner view supplies the
-// sub-lazer kill-plane at +0x3be0e4.
-void __thiscall sub_4417D0(int this)
+// Windows `cRSubLazer::AI()`: returns recycle-pending projectiles through GameRoot's shared active BOD list, integrates one active SubLazer, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ.
+void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
 {
-  int v2; // eax
-  char *v3; // ecx
-  int v4; // eax
-  int v5; // eax
-  int v6; // eax
+  uint32_t list_flags; // eax
+  FrameBodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v6; // eax
   double v7; // st7
-  float *v8; // edi
-  char *v9; // ebp
-  char *v10; // ebx
+  Vec4 *p_position; // edi
+  TrackRowCell *track_grid_cell_at_world_position; // ebp
+  SubRow *track_runtime_cell_at_world_z; // ebx
   int v11; // [esp+10h] [ebp-18h]
   float v12; // [esp+10h] [ebp-18h]
   int v13; // [esp+14h] [ebp-14h]
@@ -29,103 +27,107 @@ void __thiscall sub_4417D0(int this)
   float v21; // [esp+24h] [ebp-4h]
   int v22; // [esp+24h] [ebp-4h]
 
-  if ( *(_BYTE *)(*(_DWORD *)(this + 136) + 9) )
+  if ( sub_lazer->owner_game->subgame_pause_gate )
     return;
-  if ( *(_DWORD *)(this + 128) == 1 )
+  if ( sub_lazer->state == 1 )
   {
-    v7 = *(float *)(this + 156) + *(float *)(this + 152);
-    *(float *)(this + 152) = v7;
+    v7 = sub_lazer->sprite_bob_phase_step + sub_lazer->sprite_bob_phase;
+    sub_lazer->sprite_bob_phase = v7;
     if ( v7 > 1.0 )
     {
-      *(_DWORD *)(this + 128) = 2;
+      sub_lazer->state = 2;
       return;
     }
-    v8 = (float *)(this + 104);
-    *(float *)(this + 104) = *(float *)(this + 140) + *(float *)(this + 104);
-    *(float *)(this + 108) = *(float *)(this + 144) + *(float *)(this + 108);
-    *(float *)(this + 112) = *(float *)(this + 148) + *(float *)(this + 112);
-    if ( *(float *)(this + 108) >= 0.0
-      && *(float *)(this + 112) >= (double)*(float *)(*(_DWORD *)(this + 136) + 3924196) )
+    p_position = &sub_lazer->body.transform.position;
+    sub_lazer->body.transform.position.x = sub_lazer->velocity.x + sub_lazer->body.transform.position.x;
+    sub_lazer->body.transform.position.y = sub_lazer->velocity.y + sub_lazer->body.transform.position.y;
+    sub_lazer->body.transform.position.z = sub_lazer->velocity.z + sub_lazer->body.transform.position.z;
+    if ( sub_lazer->body.transform.position.y >= 0.0
+      && sub_lazer->body.transform.position.z >= (double)sub_lazer->owner_game->player.interaction_max_z )
     {
-      v9 = get_track_grid_cell_at_world_position((char *)MEMORY[0x4DF904] + 476696, (float *)(this + 104));
-      v10 = get_track_runtime_cell_at_world_z((char *)MEMORY[0x4DF904] + 476696, this + 104);
-      if ( v9[60] != 14 || *(float *)(this + 108) >= 7.0 )
+      track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(
+                                            &g_game_base->subgame,
+                                            (Vec3 *)&sub_lazer->body.transform.position);
+      track_runtime_cell_at_world_z = get_track_runtime_cell_at_world_z(
+                                        &g_game_base->subgame,
+                                        (Vec3 *)&sub_lazer->body.transform.position);
+      if ( track_grid_cell_at_world_position->tile_id != 14 || sub_lazer->body.transform.position.y >= 7.0 )
       {
-        if ( (*v10 & 0x40) == 0
-          || (*(float *)&v11 = *(float *)(this + 140) * 1.05,
-              *(float *)&v13 = *(float *)(this + 144) * 1.05,
-              *(float *)&v15 = *(float *)(this + 148) * 1.05,
-              v17 = *(float *)(this + 140) + *v8,
-              v19 = *(float *)(this + 144) + *(float *)(this + 108),
-              v21 = *(float *)(this + 148) + *(float *)(this + 112),
+        if ( (track_runtime_cell_at_world_z->flags & 0x40) == 0
+          || (*(float *)&v11 = sub_lazer->velocity.x * 1.05,
+              *(float *)&v13 = sub_lazer->velocity.y * 1.05,
+              *(float *)&v15 = sub_lazer->velocity.z * 1.05,
+              v17 = sub_lazer->velocity.x + p_position->x,
+              v19 = sub_lazer->velocity.y + sub_lazer->body.transform.position.y,
+              v21 = sub_lazer->velocity.z + sub_lazer->body.transform.position.z,
               !is_point_inside_track_attachment(
-                 *(_DWORD **)(*((_DWORD *)v10 + 41) + 56),
+                 &track_runtime_cell_at_world_z->primary_attachment_cell->attachment_template_record->bod.bod.vtable,
                  v17,
                  v19,
                  v21,
                  v11,
                  v13,
                  v15,
-                 *((float **)v10 + 41))) )
+                 (float *)track_runtime_cell_at_world_z->primary_attachment_cell)) )
         {
-          if ( *v10 >= 0 )
+          if ( SLOBYTE(track_runtime_cell_at_world_z->flags) >= 0 )
             return;
-          *(float *)&v18 = *(float *)(this + 140) * 1.05;
-          *(float *)&v20 = *(float *)(this + 144) * 1.05;
-          *(float *)&v22 = *(float *)(this + 148) * 1.05;
-          v12 = *(float *)(this + 140) + *v8;
-          v14 = *(float *)(this + 144) + *(float *)(this + 108);
-          v16 = *(float *)(this + 148) + *(float *)(this + 112);
+          *(float *)&v18 = sub_lazer->velocity.x * 1.05;
+          *(float *)&v20 = sub_lazer->velocity.y * 1.05;
+          *(float *)&v22 = sub_lazer->velocity.z * 1.05;
+          v12 = sub_lazer->velocity.x + p_position->x;
+          v14 = sub_lazer->velocity.y + sub_lazer->body.transform.position.y;
+          v16 = sub_lazer->velocity.z + sub_lazer->body.transform.position.z;
           if ( !is_point_inside_track_attachment(
-                  *(_DWORD **)(*((_DWORD *)v10 + 42) + 56),
+                  &track_runtime_cell_at_world_z->secondary_attachment_cell->attachment_template_record->bod.bod.vtable,
                   v12,
                   v14,
                   v16,
                   v18,
                   v20,
                   v22,
-                  *((float **)v10 + 42)) )
+                  (float *)track_runtime_cell_at_world_z->secondary_attachment_cell) )
             return;
         }
-        sub_449C00();
+        debug_report_stub();
       }
     }
-    deactivate_sub_lazer_projectile((_DWORD *)this);
+    deactivate_sub_lazer_projectile(sub_lazer);
     return;
   }
-  if ( *(_DWORD *)(this + 128) == 2 )
+  if ( sub_lazer->state == 2 )
   {
-    v2 = *(_DWORD *)(this + 4);
-    v3 = (char *)MEMORY[0x4DF904] + 1448;
-    if ( (v2 & 0x200) != 0 )
+    list_flags = sub_lazer->body.bod.bod.list_flags;
+    p_active_bod_list = &g_game_base->active_bod_list;
+    if ( (list_flags & 0x200) != 0 )
     {
-      if ( (v2 & 0x40) != 0 )
+      if ( (list_flags & 0x40) != 0 )
       {
         report_errorf(aListRemoveNext);
-        *(_DWORD *)(this + 128) = 0;
+        sub_lazer->state = 0;
       }
       else
       {
-        v4 = *(_DWORD *)(this + 12);
-        if ( v4 )
-          *(_DWORD *)(v4 + 8) = *(_DWORD *)(this + 8);
-        v5 = *(_DWORD *)(this + 8);
-        if ( v5 )
-          *(_DWORD *)(v5 + 12) = *(_DWORD *)(this + 12);
+        list_next = sub_lazer->body.bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = sub_lazer->body.bod.bod.list_prev;
+        list_prev = sub_lazer->body.bod.bod.list_prev;
+        if ( list_prev )
+          list_prev->list_next = sub_lazer->body.bod.bod.list_next;
         else
-          *((_DWORD *)v3 + 1) = *(_DWORD *)(this + 12);
-        *(_DWORD *)(this + 12) = *((_DWORD *)v3 + 2);
-        *((_DWORD *)v3 + 2) = this;
-        v6 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 128) = 0;
+          p_active_bod_list->first = (FrameBodBase *)sub_lazer->body.bod.bod.list_next;
+        sub_lazer->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
+        p_active_bod_list->free_top = (FrameBodBase *)sub_lazer;
+        v6 = sub_lazer->body.bod.bod.list_flags;
+        sub_lazer->state = 0;
         BYTE1(v6) &= ~2u;
-        *(_DWORD *)(this + 4) = v6;
+        sub_lazer->body.bod.bod.list_flags = v6;
       }
     }
     else
     {
       report_errorf(aListRemove);
-      *(_DWORD *)(this + 128) = 0;
+      sub_lazer->state = 0;
     }
   }
 }

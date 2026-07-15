@@ -2,27 +2,26 @@
 /* function: shoot_subgoldy @ 0x441ad0 */
 /* selector: shoot_subgoldy */
 
-// Finds a free slot in the shared 20-shot SubLazer projectile pool, routes the request through `spawn_sub_lazer_projectile`, and plays the positional player-fire cue from the supplied world position.
-void __thiscall sub_441AD0(_DWORD *this, float *a2, _DWORD *a3)
+// Exact `cRSubLazerManager::Shoot(tVector, tVector)`: finds a free SubLazer in the manager's 20 inline slots, dispatches its Shoot method, and plays the positional fire cue. Cross-port iOS v1.5 preserves the manager signature.
+void __thiscall shoot_subgoldy(SubLazerManager *manager, Vec3 *origin, const Vec3 *direction)
 {
   int v4; // eax
-  _DWORD *i; // ecx
+  uint32_t *i; // ecx
   float v6; // [esp+Ch] [ebp-14h]
-  int v7; // [esp+10h] [ebp-10h]
-  _DWORD v8[3]; // [esp+14h] [ebp-Ch] BYREF
+  float z; // [esp+10h] [ebp-10h]
+  Vec3 v8; // [esp+14h] [ebp-Ch] BYREF
 
   v4 = 0;
-  for ( i = this + 32; *i; i += 44 )
+  for ( i = &manager->slots[0].state; *i; i += 44 )
   {
     if ( ++v4 >= 20 )
       return;
   }
-  v7 = *((_DWORD *)a2 + 2);
-  *(float *)v8 = *a2;
-  v6 = (double)v4 * -0.0099999998 + a2[1];
-  *(float *)&v8[1] = v6;
-  v8[2] = v7;
-  spawn_sub_lazer_projectile((int)(this + 44 * v4), v8, a3);
-  play_sound_effect_at_position(15, a2);
+  z = origin->z;
+  v8.x = origin->x;
+  v6 = (double)v4 * -0.0099999998 + origin->y;
+  v8.y = v6;
+  v8.z = z;
+  spawn_sub_lazer_projectile(&manager->slots[v4], &v8, direction);
+  play_sound_effect_at_position(15, &origin->x);
 }
-

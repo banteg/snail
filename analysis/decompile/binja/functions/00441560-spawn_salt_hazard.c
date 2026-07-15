@@ -10,27 +10,27 @@
 0044156f        edx = &edx[0x26]
 00441578        if (eax s>= 0x28)
 0044157b        return eax
-00441585        void* esi = &manager->slots[eax]
-0044158c        *(esi + 0x80) = 1
-00441596        *(esi + 0x8c) = 0
-004415b8        *(esi + 0x90) = fconvert.s(fconvert.t(*(g_game_base + 0x74650)) * fconvert.t(0.0333333351f))
+00441585        struct BodNode* esi = &manager->slots[eax]
+0044158c        esi->__offset(0x80).d = 1
+00441596        esi->__offset(0x8c).d = 0
+004415b8        esi->__offset(0x90).d = fconvert.s(fconvert.t(g_game_base->subgame.subgame_rate) * fconvert.t(0.0333333351f))
 004415c0        *(esi + 0x68) = position->x
 004415c5        *(esi + 0x6c) = position->y
-004415cd        *(esi + 0x70) = position->z
+004415cd        esi[7].vtable = position->z
 004415d0        set_matrix_rotation_identity(esi + 0x38)
 004415de        int32_t var_c = 0x1fff
-004415f4        rotate_matrix_world_y(esi + 0x38, fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f)))
-004415f9        *(esi + 0x94) = 1
-0044160a        void* eax_5 = &g_game_base[0x3ca224]
-00441617        if ((0x200 & *(esi + 4)) != 0)
+004415f4        rotate_matrix_local_y(esi + 0x38, fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f)))
+004415f9        esi->__offset(0x94).b = 1
+0044160a        struct BodBase* eax_5 = &g_game_base->subgame.salt_hazard_list_head
+00441617        if ((0x200 & esi->list_flags) != 0)
 0044161e        report_errorf("List ADDafter")
 00441627        return 0
-0044162a        *(esi + 8) = eax_5
-00441630        *(esi + 0xc) = *(eax_5 + 0xc)
-00441633        *(eax_5 + 0xc) = esi
-00441636        void* eax_6 = *(esi + 0xc)
-0044163b        if (eax_6 != 0)
-0044163d        *(eax_6 + 8) = esi
-00441643        int32_t eax_8 = *(esi + 4) | 0x200
-00441645        *(esi + 4) = eax_8
-00441649        return eax_8
+0044162a        esi->list_prev = eax_5
+00441630        esi->list_next = eax_5->bod.list_next
+00441633        eax_5->bod.list_next = esi
+00441636        struct BodNode* list_next = esi->list_next
+0044163b        if (list_next != 0)
+0044163d        list_next->list_prev = esi
+00441643        uint32_t eax_7 = esi->list_flags | 0x200
+00441645        esi->list_flags = eax_7
+00441649        return eax_7

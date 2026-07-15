@@ -2,47 +2,45 @@
 /* function: deactivate_sub_lazer_projectile @ 0x441740 */
 /* selector: deactivate_sub_lazer_projectile */
 
-// Marks a sub-lazer projectile slot inactive after collision or after it leaves the supported path.
-__int16 __thiscall sub_441740(_DWORD *this)
+// Exact void Windows `cRSubLazer::Kill()`: marks one SubLazer inactive and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register.
+void __thiscall deactivate_sub_lazer_projectile(SubLazer *sub_lazer)
 {
-  char *v2; // ecx
-  int v3; // eax
-  int v4; // eax
-  int v5; // eax
-  int v6; // eax
+  FrameBodList *p_active_bod_list; // ecx
+  uint32_t list_flags; // eax
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v6; // eax
 
-  v2 = (char *)MEMORY[0x4DF904] + 1448;
-  v3 = *(this + 1);
-  if ( (v3 & 0x200) != 0 )
+  p_active_bod_list = &g_game_base->active_bod_list;
+  list_flags = sub_lazer->body.bod.bod.list_flags;
+  if ( (list_flags & 0x200) != 0 )
   {
-    if ( (v3 & 0x40) != 0 )
+    if ( (list_flags & 0x40) != 0 )
     {
-      LOWORD(v4) = report_errorf(aListRemoveNext);
-      *(this + 32) = 0;
+      report_errorf(aListRemoveNext);
+      sub_lazer->state = 0;
     }
     else
     {
-      v5 = *(this + 3);
-      if ( v5 )
-        *(_DWORD *)(v5 + 8) = *(this + 2);
-      v6 = *(this + 2);
-      if ( v6 )
-        *(_DWORD *)(v6 + 12) = *(this + 3);
+      list_next = sub_lazer->body.bod.bod.list_next;
+      if ( list_next )
+        list_next->list_prev = sub_lazer->body.bod.bod.list_prev;
+      list_prev = sub_lazer->body.bod.bod.list_prev;
+      if ( list_prev )
+        list_prev->list_next = sub_lazer->body.bod.bod.list_next;
       else
-        *((_DWORD *)v2 + 1) = *(this + 3);
-      *(this + 3) = *((_DWORD *)v2 + 2);
-      *((_DWORD *)v2 + 2) = this;
-      v4 = *(this + 1);
-      *(this + 32) = 0;
-      BYTE1(v4) &= ~2u;
-      *(this + 1) = v4;
+        p_active_bod_list->first = (FrameBodBase *)sub_lazer->body.bod.bod.list_next;
+      sub_lazer->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
+      p_active_bod_list->free_top = (FrameBodBase *)sub_lazer;
+      v6 = sub_lazer->body.bod.bod.list_flags;
+      sub_lazer->state = 0;
+      BYTE1(v6) &= ~2u;
+      sub_lazer->body.bod.bod.list_flags = v6;
     }
   }
   else
   {
-    LOWORD(v4) = report_errorf(aListRemove);
-    *(this + 32) = 0;
+    report_errorf(aListRemove);
+    sub_lazer->state = 0;
   }
-  return v4;
 }
-

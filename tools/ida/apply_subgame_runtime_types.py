@@ -29,6 +29,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_banner(Banner* banner);",
     ),
     (
+        "clear_active_landscape_entries",
+        "void __thiscall clear_active_landscape_entries(LandscapeManager* manager);",
+    ),
+    (
         "initialize_track_jetpack_pickup_runtime",
         "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack);",
     ),
@@ -79,6 +83,46 @@ TRUSTED_DECLARATIONS = [
     (
         "update_slug_hazard_ai",
         "void __thiscall update_slug_hazard_ai(Slug* slug);",
+    ),
+    (
+        "initialize_sub_lazer_runtime",
+        "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* sub_lazer);",
+    ),
+    (
+        "initialize_sub_lazer_pool",
+        "void __thiscall initialize_sub_lazer_pool(SubLazerManager* manager);",
+    ),
+    (
+        "spawn_sub_lazer_projectile",
+        "void __thiscall spawn_sub_lazer_projectile(SubLazer* sub_lazer, const Vec3* origin, const Vec3* direction);",
+    ),
+    (
+        "deactivate_sub_lazer_projectile",
+        "void __thiscall deactivate_sub_lazer_projectile(SubLazer* sub_lazer);",
+    ),
+    (
+        "update_sub_lazer_projectile",
+        "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer);",
+    ),
+    (
+        "shoot_subgoldy",
+        "void __thiscall shoot_subgoldy(SubLazerManager* manager, Vec3* origin, const Vec3* direction);",
+    ),
+    (
+        "initialize_salt_hazard_runtime",
+        "Salt* __thiscall initialize_salt_hazard_runtime(Salt* salt);",
+    ),
+    (
+        "initialize_salt_hazard_pool",
+        "int32_t* __thiscall initialize_salt_hazard_pool(SaltManager* manager);",
+    ),
+    (
+        "spawn_salt_hazard",
+        "int32_t __thiscall spawn_salt_hazard(SaltManager* manager, const Vec3* position);",
+    ),
+    (
+        "update_salt_hazard",
+        "void __thiscall update_salt_hazard(Salt* salt);",
     ),
     (
         "initialize_track_ring_or_special_effect_runtime",

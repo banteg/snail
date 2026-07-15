@@ -2,21 +2,19 @@
 /* function: initialize_sub_lazer_pool @ 0x441650 */
 /* selector: initialize_sub_lazer_pool */
 
-// Clears the 20-slot SubLazer projectile pool (`cRSubLazerManager`) at `game + 0x356b00` by zeroing each slot state at +0x80 before a level build. Historically labelled `initialize_wall2_ambient_hazard_pool`; the Wall2 tile is the emitter, the slots themselves are projectiles.
-_DWORD *__thiscall sub_441650(_DWORD *this)
+// Exact void Windows `cRSubLazerManager::Init()`: clears the 20 owned inline SubLazer records at `SubgameRuntime +0x356b00` by setting each slot inactive before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental.
+void __thiscall initialize_sub_lazer_pool(SubLazerManager *manager)
 {
-  _DWORD *result; // eax
+  uint32_t *p_state; // eax
   int v2; // ecx
 
-  result = this + 32;
+  p_state = &manager->slots[0].state;
   v2 = 20;
   do
   {
-    *result = 0;
-    result += 44;
+    *p_state = 0;
+    p_state += 44;
     --v2;
   }
   while ( v2 );
-  return result;
 }
-

@@ -61,6 +61,36 @@ CANONICAL_HAZARD_STRUCTS = (
     "SaltManager",
 )
 
+SUB_LAZER_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
+    ("0x80", "state", "int32_t"),
+    ("0x84", "unknown_84", "uint8_t[0x4]"),
+    ("0x88", "owner_game", "SubgameRuntime*"),
+    ("0x8c", "velocity", "Vec3"),
+    ("0x98", "sprite_bob_phase", "float"),
+    ("0x9c", "sprite_bob_phase_step", "float"),
+    ("0xa0", "unknown_a0", "uint8_t[0x10]"),
+)
+
+SUB_LAZER_MANAGER_FIELD_UPDATES = (
+    ("0x00", "slots", "SubLazer[0x14]"),
+)
+
+SALT_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
+    ("0x80", "state", "int32_t"),
+    ("0x84", "unknown_84", "uint8_t[0x4]"),
+    ("0x88", "owner_game", "SubgameRuntime*"),
+    ("0x8c", "fade_alpha", "float"),
+    ("0x90", "spawn_velocity_y", "float"),
+    ("0x94", "collision_armed", "uint8_t"),
+    ("0x95", "unknown_95", "uint8_t[0x3]"),
+)
+
+SALT_MANAGER_FIELD_UPDATES = (
+    ("0x00", "slots", "Salt[0x28]"),
+)
+
 BANNER_FIELD_UPDATES = (
     ("0x48", "owner_game", "SubgameRuntime*"),
 )
@@ -68,11 +98,11 @@ BANNER_FIELD_UPDATES = (
 PROTO_UPDATES = (
     (
         "initialize_sub_lazer_runtime",
-        "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* slot)",
+        "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* sub_lazer)",
     ),
     (
         "initialize_salt_hazard_runtime",
-        "Salt* __thiscall initialize_salt_hazard_runtime(Salt* slot)",
+        "Salt* __thiscall initialize_salt_hazard_runtime(Salt* salt)",
     ),
     (
         "initialize_sub_lazer_pool",
@@ -84,15 +114,15 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_sub_lazer_projectile",
-        "void __thiscall spawn_sub_lazer_projectile(SubLazer* slot, const Vec3* origin, const Vec3* direction)",
+        "void __thiscall spawn_sub_lazer_projectile(SubLazer* sub_lazer, const Vec3* origin, const Vec3* direction)",
     ),
     (
         "deactivate_sub_lazer_projectile",
-        "void __thiscall deactivate_sub_lazer_projectile(SubLazer* slot)",
+        "void __thiscall deactivate_sub_lazer_projectile(SubLazer* sub_lazer)",
     ),
     (
         "update_sub_lazer_projectile",
-        "void __thiscall update_sub_lazer_projectile(SubLazer* slot)",
+        "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer)",
     ),
     (
         "shoot_subgoldy",
@@ -104,7 +134,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_salt_hazard",
-        "void __thiscall update_salt_hazard(Salt* slot)",
+        "void __thiscall update_salt_hazard(Salt* salt)",
     ),
 )
 
@@ -162,6 +192,10 @@ def main() -> int:
                 ("FrameSubgameRuntime", FRAME_SUBGAME_FIELD_UPDATES),
                 ("SubgameRuntime", subgame_updates),
                 ("Banner", BANNER_FIELD_UPDATES),
+                ("SubLazer", SUB_LAZER_FIELD_UPDATES),
+                ("SubLazerManager", SUB_LAZER_MANAGER_FIELD_UPDATES),
+                ("Salt", SALT_FIELD_UPDATES),
+                ("SaltManager", SALT_MANAGER_FIELD_UPDATES),
             ),
             proto_updates=PROTO_UPDATES,
         ),

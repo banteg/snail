@@ -559,14 +559,16 @@ only as historical decompiler spelling in older evidence.
   - eight inline exact `0xec`-byte authored `Slug` (`cRSlug`) slots
   - `SlugPool` owns the complete `0x760`-byte Windows extent
 - `+0x356b00`: `sub_lazers`
-  - fixed `20`-slot `SubLazerPool` (`0xb0` stride); startup clones the root
-    lazer donor into every slot and stores a borrowed subgame backlink at
-    slot `+0x88`
+  - exact `0xdc0`-byte authored `SubLazerManager` with 20 inline `0xb0`-byte
+    `SubLazer` (`cRSubLazer`) records
+  - each record owns its inherited `RenderableBod` and borrows the containing
+    subgame at slot `+0x88`
   - collision borrows slots while the subgame is live
 - `+0x3578c0`: `salt_hazards`
-  - fixed `40`-slot `SaltHazardPool` (`0x98` stride); startup clones the root
-    `salt.x` donor into every slot and stores a borrowed subgame backlink at
-    slot `+0x88`
+  - exact `0x17c0`-byte authored `SaltManager` with 40 inline `0x98`-byte
+    `Salt` (`cRSalt`) records
+  - each record owns its inherited `RenderableBod` and borrows the containing
+    subgame at slot `+0x88`
   - each slot owns a one-byte `collision_armed` latch at `+0x94`
 - `+0x359080`: `banners`
   - two inline `0x60`-byte `Banner` records ending exactly at `+0x359140`
@@ -1332,6 +1334,33 @@ Current practical read:
 - `spawn_slug_hazard` passes `attachment_facing_angle` to the track-attachment projector, and `update_slug_hazard_ai` later adds that projected angle to the player's heading for the sprite; the garbage family has the same producer/consumer contract at its own `attachment_facing_angle`
 - `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
+
+## cRSubLazer and cRSalt Runtime
+
+The adjacent projectile managers now use their authored actor owners in both
+analysis lanes. `SubLazerSlot` and `SaltHazardSlot` remain compatibility aliases
+only; live receivers and manager arrays use `SubLazer` and `Salt`.
+
+- `initialize_sub_lazer_runtime` constructs the inherited `RenderableBod` and
+  installs the table at `0x49733c`; its callback is
+  `update_sub_lazer_projectile`, preserved as `cRSubLazer::AI()` on Android and
+  iOS
+- `SubLazerManager` owns 20 inline `0xb0`-byte actors, exactly matching the
+  native `0xdc0` size ledger; each actor stores its borrowed `owner_game` at
+  `+0x88`, velocity at `+0x8c`, and bob phase pair at `+0x98/+0x9c`
+- `spawn_sub_lazer_projectile` is the slot-level authored `Shoot`, while
+  `deactivate_sub_lazer_projectile` is `cRSubLazer::Kill()`; the manager-level
+  `shoot_subgoldy` scans the same inline array
+- `initialize_salt_hazard_runtime` constructs the same inherited owner and
+  installs the table at `0x497340`; its callback is the exact
+  `cRSalt::AI()` at `update_salt_hazard`
+- `SaltManager` owns 40 inline `0x98`-byte actors, exactly matching the native
+  `0x17c0` size ledger; `+0x8c/+0x90/+0x94` are the proved fade-alpha,
+  spawn-y, and collision-latch overlays used across spawn, collision, and AI
+
+No field beyond those observed lanes is inferred: the cRSubLazer tail
+`+0xa0..+0xaf` and the padding around both actors' state/backlink fields remain
+unnamed.
 
 ## Attachment Template Samples
 

@@ -14,3 +14,8 @@ shared `RenderableBod` owner initialized here. The hand-written duplicate of
 its `BodBase + TransformMatrix` prefix is retired; inherited `BodNode` linkage
 still begins at offset zero. The constructor remains exact at 7/7 with both
 masked operands clean.
+
+2026-07-15 analysis-lane owner replay: Binary Ninja and IDA now use
+`SubLazer` as the primary constructor receiver and manager element. The live
+analysis layout replaces the flattened prefix with the exact inherited
+`RenderableBod body`; `SubLazerSlot` remains a compatibility alias only.

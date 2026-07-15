@@ -16,9 +16,8 @@ void __thiscall update_sub_loc(SubLoc *cell)
   double v10; // st7
   tColour *track_skirt_color; // edi
   Vec3 vector; // [esp+4h] [ebp-34h] BYREF
-  float v13[2]; // [esp+10h] [ebp-28h] BYREF
-  float v14; // [esp+18h] [ebp-20h]
-  Vec3 v15; // [esp+1Ch] [ebp-1Ch]
+  Vec3 v13; // [esp+10h] [ebp-28h] BYREF
+  Vec3 v14; // [esp+1Ch] [ebp-1Ch]
   tColour out; // [esp+28h] [ebp-10h] BYREF
 
   if ( (cell->lane_and_flags & 0x2000) != 0 )
@@ -36,33 +35,33 @@ void __thiscall update_sub_loc(SubLoc *cell)
           {
             v4 = cell->anchor_position.y + 8.0;
             z = cell->anchor_position.z;
-            v13[0] = cell->anchor_position.x;
+            v13.x = cell->anchor_position.x;
             v6 = cell->lane_and_flags >> 8;
-            v15.y = v4;
-            v15.x = v13[0];
+            v14.y = v4;
+            v14.x = v13.x;
             *(_QWORD *)&vector.x = v6 & 0xF;
-            v15.z = z;
-            v13[1] = v15.y;
-            v14 = z;
-            v13[0] = (double)*(__int64 *)&vector.x * 0.5 + v13[0];
+            v14.z = z;
+            v13.y = v14.y;
+            v13.z = z;
+            v13.x = (double)*(__int64 *)&vector.x * 0.5 + v13.x;
             v7 = random_signed_float_below(3.0);
             v2 = g_game_base;
             y = g_game_base->subgame.player.body.transform.position.y;
             v9 = v7 + 8.0 + g_game_base->subgame.player.body.transform.position.z;
             out.r = g_game_base->subgame.player.body.transform.position.x;
             out.g = y;
-            v15.x = out.r - v13[0];
-            v15.y = y - v15.y;
-            v10 = v9 - v14;
-            v15.z = v10;
-            vector = v15;
+            v14.x = out.r - v13.x;
+            v14.y = y - v14.y;
+            v10 = v9 - v13.z;
+            v14.z = v10;
+            vector = v14;
             if ( v10 >= -4.0 )
               goto LABEL_9;
             normalize_vector(&vector);
             vector.x = vector.x * 0.40000001;
             vector.y = vector.y * 0.40000001;
             vector.z = vector.z * 0.40000001;
-            shoot_subgoldy(&g_game_base->subgame.sub_lazers, v13, &vector);
+            shoot_subgoldy(&g_game_base->subgame.sub_lazers, &v13, &vector);
           }
           v2 = g_game_base;
 LABEL_9:

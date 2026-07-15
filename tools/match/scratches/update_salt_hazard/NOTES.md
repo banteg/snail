@@ -86,3 +86,9 @@ Matching remains exact at 83/83.
 whole prefix is the shared inherited `RenderableBod`, while the manager still
 owns the 40 inline derived records. Matching remains exact at 83/83 with twelve
 clean operands.
+
+2026-07-15 analysis-lane owner replay: the exact callback now decompiles on
+the authored `Salt` receiver in both lanes. The inherited transform, colour,
+and list node resolve through `body`, while the proved `+0x8c/+0x90/+0x94`
+fade, spawn-y, and collision-latch overlays retain their semantic names.
+Matching remains exact; no source-shape claim was changed.

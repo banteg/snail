@@ -1798,6 +1798,63 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
         assert constant in scratch
 
 
+def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    hazard_sync = (BINJA_DIR / "sync_subgame_hazard_pool_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_hazard_pool_types.h",
+            "path_template_types.h",
+        )
+    )
+    matcher_sub_lazer = (
+        repo_root / "tools/match/include/sub_lazer_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_salt = (
+        repo_root / "tools/match/include/salt_hazard_types.h"
+    ).read_text(encoding="utf-8")
+
+    for header in analysis_headers:
+        assert "typedef struct SubLazer {" in header
+        assert "typedef SubLazer SubLazerSlot;" in header
+        assert "typedef struct Salt {" in header
+        assert "typedef Salt SaltHazardSlot;" in header
+        assert header.count("RenderableBod body;") >= 2
+        assert "SubLazer slots[SUB_LAZER_SLOT_CAPACITY];" in header
+        assert "Salt slots[40];" in header
+
+    assert '("0x00", "body", "RenderableBod")' in hazard_sync
+    assert '("SubLazer", SUB_LAZER_FIELD_UPDATES)' in hazard_sync
+    assert '("Salt", SALT_FIELD_UPDATES)' in hazard_sync
+    assert "SubLazer* sub_lazer" in hazard_sync
+    assert "Salt* salt" in hazard_sync
+    for ida_sync in (ida_runtime_sync, ida_path_sync):
+        assert "void __thiscall update_salt_hazard(Salt* salt);" in ida_sync
+        assert (
+            "void __thiscall clear_active_landscape_entries("
+            "LandscapeManager* manager);"
+        ) in ida_sync
+        assert "SaltHazardSlot* slot" not in ida_sync
+    for declaration in (
+        "SubLazer* __thiscall initialize_sub_lazer_runtime(SubLazer* sub_lazer);",
+        "void __thiscall update_sub_lazer_projectile(SubLazer* sub_lazer);",
+        "void __thiscall deactivate_sub_lazer_projectile(SubLazer* sub_lazer);",
+    ):
+        assert declaration in ida_runtime_sync
+
+    assert "class SubLazer : public RenderableBod" in matcher_sub_lazer
+    assert "class Salt : public RenderableBod" in matcher_salt
+
+
 def test_warning_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

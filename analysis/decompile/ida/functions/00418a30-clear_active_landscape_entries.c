@@ -2,57 +2,54 @@
 /* function: clear_active_landscape_entries @ 0x418a30 */
 /* selector: clear_active_landscape_entries */
 
-// Clears the active 10-slot landscape-entry runtime pool by unlinking every live entry from the shared body list and zeroing its startup-delay lane. `destroy_subgame` uses it when the current landscape set is torn down.
-__int16 __thiscall sub_418A30(_DWORD *this)
+// Clears the active 10-slot landscape-entry runtime pool by zeroing each live slot state and unlinking it from the shared BOD active/free list. `destroy_subgame` uses it when the current landscape set is torn down.
+void __thiscall clear_active_landscape_entries(LandscapeManager *manager)
 {
-  _DWORD *v1; // esi
+  struct BodNode **p_list_next; // esi
   int v2; // ebp
-  int v3; // eax
-  char *v4; // ecx
+  FrameBodList *p_active_bod_list; // ecx
+  int v4; // eax
   int v5; // eax
-  int v6; // eax
+  struct BodNode *v6; // eax
 
-  v1 = this + 3;
+  p_list_next = &manager->active_entries[0].bod.bod.bod.list_next;
   v2 = 10;
   do
   {
-    v3 = *(v1 - 2);
-    if ( (v3 & 0x200) != 0 )
+    if ( (((unsigned __int16)*(p_list_next - 2) >> 8) & 2) != 0 )
     {
-      v1[29] = 0;
-      v4 = (char *)MEMORY[0x4DF904] + 1448;
-      v5 = *(v1 - 2);
-      if ( (v5 & 0x200) != 0 )
+      p_list_next[29] = nullptr;
+      p_active_bod_list = &g_game_base->active_bod_list;
+      v4 = (int)*(p_list_next - 2);
+      if ( (v4 & 0x200) != 0 )
       {
-        if ( (v5 & 0x40) != 0 )
+        if ( (v4 & 0x40) != 0 )
         {
-          LOWORD(v3) = report_errorf(aListRemoveNext);
+          report_errorf(aListRemoveNext);
         }
         else
         {
-          if ( *v1 )
-            *(_DWORD *)(*v1 + 8) = *(v1 - 1);
-          v6 = *(v1 - 1);
-          if ( v6 )
-            *(_DWORD *)(v6 + 12) = *v1;
+          if ( *p_list_next )
+            (*p_list_next)->list_prev = *(p_list_next - 1);
+          v5 = (int)*(p_list_next - 1);
+          if ( v5 )
+            *(_DWORD *)(v5 + 12) = *p_list_next;
           else
-            *((_DWORD *)v4 + 1) = *v1;
-          *v1 = *((_DWORD *)v4 + 2);
-          *((_DWORD *)v4 + 2) = v1 - 3;
-          v3 = *(v1 - 2);
-          BYTE1(v3) &= ~2u;
-          *(v1 - 2) = v3;
+            p_active_bod_list->first = (FrameBodBase *)*p_list_next;
+          *p_list_next = (struct BodNode *)p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (FrameBodBase *)(p_list_next - 3);
+          v6 = *(p_list_next - 2);
+          BYTE1(v6) &= ~2u;
+          *(p_list_next - 2) = v6;
         }
       }
       else
       {
-        LOWORD(v3) = report_errorf(aListRemove);
+        report_errorf(aListRemove);
       }
     }
-    v1 += 36;
+    p_list_next += 36;
     --v2;
   }
   while ( v2 );
-  return v3;
 }
-

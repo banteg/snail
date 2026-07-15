@@ -14,3 +14,8 @@ with two clean operands.
 field-by-field duplicate of the complete `BodBase + TransformMatrix` prefix;
 the inherited `BodNode` remains at offset zero, so intrusive-list ownership is
 unchanged. The constructor remains exact at 7/7 with two clean operands.
+
+2026-07-15 analysis-lane owner replay: Binary Ninja and IDA now use `Salt` as
+the primary constructor receiver and `SaltManager` element. The first 0x80
+bytes resolve as the inherited `RenderableBod body`; `SaltHazardSlot` remains
+only a compatibility alias.

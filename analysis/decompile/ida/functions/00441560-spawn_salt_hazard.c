@@ -2,44 +2,41 @@
 /* function: spawn_salt_hazard @ 0x441560 */
 /* selector: spawn_salt_hazard */
 
-// Allocates one live salt.x hazard slot from the 40-slot pool and seeds its runtime state.
-int __thiscall sub_441560(_DWORD *this, _DWORD *a2)
+// Exact `cRSaltManager::Add(tVector&)`: allocates one manager-owned Salt from the 40 inline slots, seeds its runtime state and inherited BOD link, and returns the slot index. Android preserves the vector-only signature; iOS v1.9 adds the owning Goldy argument.
+int32_t __thiscall spawn_salt_hazard(SaltManager *manager, const Vec3 *position)
 {
-  int result; // eax
-  _DWORD *i; // edx
-  char *v4; // esi
-  char *v5; // eax
-  int v6; // eax
-  float v7; // [esp+0h] [ebp-Ch]
+  int32_t result; // eax
+  uint32_t *i; // edx
+  Salt *v4; // esi
+  BodBase *p_salt_hazard_list_head; // eax
+  struct BodNode *list_next; // eax
+  float angle; // [esp+0h] [ebp-Ch]
 
   result = 0;
-  for ( i = this + 32; *i; i += 38 )
+  for ( i = &manager->slots[0].state; *i; i += 38 )
   {
     if ( ++result >= 40 )
       return result;
   }
-  v4 = (char *)(this + 38 * result);
-  *((_DWORD *)v4 + 32) = 1;
-  *((_DWORD *)v4 + 35) = 0;
-  *((float *)v4 + 36) = *((float *)MEMORY[0x4DF904] + 119188) * 0.033333335;
-  *((_DWORD *)v4 + 26) = *a2;
-  *((_DWORD *)v4 + 27) = a2[1];
-  *((_DWORD *)v4 + 28) = a2[2];
-  set_matrix_rotation_identity((_DWORD *)v4 + 14);
-  v7 = ((double)next_math_random_value() - 16384.0) * 0.0001917476;
-  rotate_matrix_world_y((float *)v4 + 14, v7);
-  v4[148] = 1;
-  v5 = (char *)MEMORY[0x4DF904] + 3973668;
-  if ( (*((_DWORD *)v4 + 1) & 0x200) != 0 )
+  v4 = &manager->slots[result];
+  v4->state = 1;
+  v4->fade_alpha = 0.0;
+  v4->spawn_velocity_y = g_game_base->subgame.subgame_rate * 0.033333335;
+  *(Vec3 *)&v4->body.transform.position.x = *position;
+  set_matrix_rotation_identity(&v4->body.transform);
+  angle = ((double)next_math_random_value() - 16384.0) * 0.0001917476;
+  rotate_matrix_world_y(&v4->body.transform, angle);
+  v4->collision_armed = 1;
+  p_salt_hazard_list_head = &g_game_base->subgame.salt_hazard_list_head;
+  if ( (v4->body.bod.bod.list_flags & 0x200) != 0 )
     return report_errorf(aListAddafter);
-  *((_DWORD *)v4 + 2) = v5;
-  *((_DWORD *)v4 + 3) = *((_DWORD *)v5 + 3);
-  *((_DWORD *)v5 + 3) = v4;
-  v6 = *((_DWORD *)v4 + 3);
-  if ( v6 )
-    *(_DWORD *)(v6 + 8) = v4;
-  result = *((_DWORD *)v4 + 1) | 0x200;
-  *((_DWORD *)v4 + 1) = result;
+  v4->body.bod.bod.list_prev = &p_salt_hazard_list_head->bod;
+  v4->body.bod.bod.list_next = p_salt_hazard_list_head->bod.list_next;
+  p_salt_hazard_list_head->bod.list_next = &v4->body.bod.bod;
+  list_next = v4->body.bod.bod.list_next;
+  if ( list_next )
+    list_next->list_prev = &v4->body.bod.bod;
+  result = v4->body.bod.bod.list_flags | 0x200;
+  v4->body.bod.bod.list_flags = result;
   return result;
 }
-

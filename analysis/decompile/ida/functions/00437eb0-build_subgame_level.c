@@ -54,7 +54,7 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
 
   unhide_star_field(&g_game_base->star_manager);
   if ( game->level_mode == 7 )
-    hide_gameplay_scores(game);
+    hide_gameplay_scores((FrontendWidget **)game);
   else
     unhide_gameplay_scores(game);
   switch ( (unsigned int)(__int64)((double)next_math_random_value() * 0.00012207031) )

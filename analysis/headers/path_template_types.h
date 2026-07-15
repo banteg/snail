@@ -662,7 +662,7 @@ typedef struct VoiceManager {
  * Native functions: initialize_salt_hazard_pool @ 0x441540, spawn_salt_hazard
  * @ 0x441560, update_salt_hazard @ 0x441c10.
  */
-typedef struct SaltHazardSlot {
+typedef struct Salt {
     RenderableBod body;
     uint32_t state;
     uint8_t _pad_84[0x4];
@@ -671,7 +671,9 @@ typedef struct SaltHazardSlot {
     float spawn_velocity_y;
     uint8_t collision_armed;
     uint8_t _pad_95[0x03];
-} SaltHazardSlot;
+} Salt;
+
+typedef Salt SaltHazardSlot;
 
 /*
  * SubLazer projectile runtime slot. Pool lives at `SubgameRuntime +0x356b00`
@@ -692,7 +694,7 @@ enum {
     SUB_LAZER_SLOT_CAPACITY = 20,
 };
 
-typedef struct SubLazerSlot {
+typedef struct SubLazer {
     RenderableBod body;
     uint32_t state;
     uint8_t _pad_84[0x4];
@@ -701,7 +703,9 @@ typedef struct SubLazerSlot {
     float sprite_bob_phase;
     float sprite_bob_phase_step;
     uint8_t _pad_a0[0x10];
-} SubLazerSlot;
+} SubLazer;
+
+typedef SubLazer SubLazerSlot;
 
 /* Exact 0x74-byte authored cRSubHealth pickup slot. */
 typedef struct SubHealth {
@@ -774,11 +778,11 @@ typedef struct SlugPool {
 } SlugPool;
 
 typedef struct SubLazerManager {
-    SubLazerSlot slots[SUB_LAZER_SLOT_CAPACITY];
+    SubLazer slots[SUB_LAZER_SLOT_CAPACITY];
 } SubLazerManager;
 
 typedef struct SaltManager {
-    SaltHazardSlot slots[40];
+    Salt slots[40];
 } SaltManager;
 
 typedef struct GarbageHazardSlot GarbageHazardSlot;

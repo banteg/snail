@@ -2299,7 +2299,7 @@
         "uninit_warning(&game->player.warning)",
         "clear_active_landscape_entries(&game->landscape_manager)",
         "flush_row_event_display(&game->completion)",
-        "&game->sub_lazers.slots[0].bod.list_next",
+        "&game->sub_lazers.slots[0].body.bod.bod.list_next",
         "&game->life_stock_widgets"
       ],
       "forbidden_substrings": [
@@ -2490,17 +2490,42 @@
         "get_track_grid_cell_at_world_position(&g_game_base->subgame,",
         "get_track_runtime_cell_at_world_z(&g_game_base->subgame,",
         "struct SubRow*",
+        "sub_lazer->body.transform.position",
+        "sub_lazer->body.bod.bod.list_flags",
+        "deactivate_sub_lazer_projectile(sub_lazer)",
         "->primary_attachment_cell",
         "->secondary_attachment_cell",
         "->attachment_template_record",
         "&g_game_base->active_bod_list"
       ],
       "forbidden_substrings": [
+        "SubLazerSlot",
+        "slot->position",
+        "sub_lazer->bod.",
         "g_game_base[0x74618]",
         "g_game_base->subgame.scan_reset",
         "*(eax_8 + 0xa4)",
         "*(eax_8 + 0xa8)",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_sub_lazer_owner_and_inherited_bod",
+      "artifact": "analysis/decompile/ida/functions/004417d0-update_sub_lazer_projectile.c",
+      "required_substrings": [
+        "void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)",
+        "sub_lazer->body.transform.position",
+        "sub_lazer->body.bod.bod.list_flags",
+        "deactivate_sub_lazer_projectile(sub_lazer)",
+        "&g_game_base->active_bod_list"
+      ],
+      "forbidden_substrings": [
+        "SubLazerSlot",
+        "sub_4417D0",
+        "_DWORD *this",
+        "sub_lazer->bod.",
+        "__asm",
+        "_ET1"
       ]
     },
     {
@@ -2818,16 +2843,42 @@
       ]
     },
     {
+      "name": "bn_salt_owner_and_inherited_bod",
+      "artifact": "analysis/decompile/binja/functions/00441c10-update_salt_hazard.c",
+      "required_substrings": [
+        "salt->owner_game",
+        "salt->state",
+        "salt->fade_alpha",
+        "salt->body.transform.position.z",
+        "set_color_alpha(&salt->body.bod.color",
+        "salt->body.bod.bod.list_flags",
+        "&g_game_base->active_bod_list"
+      ],
+      "forbidden_substrings": [
+        "SaltHazardSlot",
+        "slot->",
+        "salt->position",
+        "salt->bod.",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "ida_salt_hazard_typed_void_owner",
       "artifact": "analysis/decompile/ida/functions/00441c10-update_salt_hazard.c",
       "required_substrings": [
-        "void __thiscall update_salt_hazard(SaltHazardSlot *slot)",
-        "slot->owner_game",
-        "slot->state",
-        "set_color_alpha(&slot->body.bod.color, 0.89999998)",
-        "slot->body.bod.bod.list_flags"
+        "void __thiscall update_salt_hazard(Salt *salt)",
+        "salt->owner_game",
+        "salt->state",
+        "salt->fade_alpha",
+        "salt->body.transform.position.z",
+        "set_color_alpha(&salt->body.bod.color, 0.89999998)",
+        "salt->body.bod.bod.list_flags",
+        "&g_game_base->active_bod_list"
       ],
       "forbidden_substrings": [
+        "SaltHazardSlot",
+        "slot->",
         "_DWORD *this",
         "return result",
         "__asm",

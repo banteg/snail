@@ -19,6 +19,20 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+typedef struct Vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+} Vec4;
+
+typedef struct TransformMatrix {
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 position;
+} TransformMatrix;
+
 typedef struct tColour {
     float r;
     float g;
@@ -34,6 +48,22 @@ struct BodNode {
     BodNode* list_next;
 };
 
+typedef struct BodBase {
+    BodNode bod;
+    Vec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    tColour color;
+} BodBase;
+
+typedef struct RenderableBod {
+    BodBase bod;
+    TransformMatrix transform;
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x4];
+} RenderableBod;
+
 enum SubLazerState {
     SUB_LAZER_STATE_INACTIVE = 0,
     SUB_LAZER_STATE_ACTIVE = 1,
@@ -45,22 +75,7 @@ enum {
 };
 
 typedef struct SubLazer {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    tColour color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 position;
-    float position_w;
-    void* render_animation_manager;
-    uint8_t unknown_7c[0x4];
+    RenderableBod body;
     int32_t state;
     uint8_t unknown_84[0x4];
     SubgameRuntime* owner_game;
@@ -77,26 +92,14 @@ typedef struct SubLazerManager {
 } SubLazerManager;
 
 typedef struct Salt {
-    BodNode bod;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    tColour color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 position;
-    float position_w;
-    void* render_animation_manager;
-    uint8_t unknown_7c[0x4];
+    RenderableBod body;
     int32_t state;
     uint8_t unknown_84[0x4];
     SubgameRuntime* owner_game;
-    Vec3 velocity;
+    float fade_alpha;
+    float spawn_velocity_y;
+    uint8_t collision_armed;
+    uint8_t unknown_95[0x3];
 } Salt;
 
 typedef Salt SaltHazardSlot;

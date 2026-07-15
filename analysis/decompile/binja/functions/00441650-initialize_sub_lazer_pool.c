@@ -3,12 +3,12 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_sub_lazer_pool @ 0x441650 */
 
-00441650        int32_t* result = &manager->slots[0].state
+00441650        int32_t* eax = &manager->slots[0].state
 00441656        int32_t i_1 = 0x14
 00441667        int32_t i
-0044165b        (result - 0x80)->slots[0].state = 0
-00441661        result = &result[0x2c]
+0044165b        (eax - 0x80)->slots[0].state = 0
+00441661        eax = &eax[0x2c]
 00441666        i = i_1
 00441666        i_1 -= 1
 00441667        do while (i != 1)
-00441669        return result
+00441669        return
