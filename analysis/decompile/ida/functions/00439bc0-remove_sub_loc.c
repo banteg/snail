@@ -2,47 +2,43 @@
 /* function: remove_sub_loc @ 0x439bc0 */
 /* selector: remove_sub_loc */
 
-// Unlinks the BOD nodes owned by a live TrackRowCell/fringe runtime entry. Tile
-// 29/30 rows also clear the row-colour BOD record before the cell and its four
-// directional fringe objects return to the shared free list.
-// The raw IDA text still infers an incidental pointer return; the canonical
-// cRSubLoc::Remove contract is the void thiscall recorded in the type sync.
-_DWORD *__thiscall remove_sub_loc(TrackRowCell *cell)
+// Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing `SubRow::attachment_body` for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner.
+void __thiscall remove_sub_loc(SubLoc *cell)
 {
-  int v2; // eax
-  char v3; // cl
+  int32_t track_cell_row_index; // eax
+  uint8_t tile_id; // cl
   int v4; // eax
   char v5; // cl
   char *v6; // eax
   int v7; // ecx
-  _DWORD *v8; // eax
-  char *v9; // edx
-  int v10; // ecx
-  int v11; // ecx
-  int v12; // eax
-  char *v13; // ecx
-  int v14; // eax
-  int v15; // eax
-  _DWORD *v16; // esi
+  FrameBodBase *v8; // eax
+  FrameBodList *p_active_bod_list; // edx
+  FrameBodBase *list_next; // ecx
+  FrameBodBase *list_prev; // ecx
+  uint32_t list_flags; // eax
+  FrameBodList *v13; // ecx
+  struct BodNode *v14; // eax
+  struct BodNode *v15; // eax
+  FringeObject **p_fringe_front; // esi
   int v17; // edi
-  _DWORD *result; // eax
-  char *v19; // edx
-  int v20; // ecx
-  int v21; // ecx
-  int v22; // ecx
+  FringeObject *v18; // eax
+  FrameBodList *v19; // edx
+  uint32_t v20; // ecx
+  struct BodNode *v21; // ecx
+  struct BodNode *v22; // ecx
 
-  v2 = get_track_cell_row_index(cell);
-  v3 = cell->tile_id;
-  if ( v3 == 29 || v3 == 30 )
+  track_cell_row_index = get_track_cell_row_index(cell);
+  tile_id = cell->tile_id;
+  if ( tile_id == 29 || tile_id == 30 )
   {
-    v4 = 61 * v2;
-    v5 = unk_6410E0[(_DWORD)MEMORY[0x4DF904] + 4 * v4];
-    v6 = (char *)MEMORY[0x4DF904] + 4 * v4;
-    if ( (v5 & 8) != 0 && (*(int *)((_BYTE *)&unk_641194 + (_DWORD)v6) & 0x200) != 0 )
+    v4 = 61 * track_cell_row_index;
+    v5 = unk_6410E0[(_DWORD)g_game_base + 4 * v4];
+    v6 = (char *)g_game_base + 4 * v4;
+    if ( (v5 & 8) != 0 && (*(_DWORD *)((_BYTE *)&unk_641194 + (_DWORD)v6) & 0x200) != 0 )
     {
-      v7 = *(int *)((char *)&unk_641194 + (_DWORD)v6);
-      v8 = (_DWORD *)((char *)&unk_641190 + (_DWORD)v6);
-      v9 = (char *)MEMORY[0x4DF904] + 1448;
+      v7 = *(_DWORD *)((char *)&unk_641194 + (_DWORD)v6);
+      v8 = (FrameBodBase *)((char *)&unk_641190 + (_DWORD)v6);
+      p_active_bod_list = &g_game_base->active_bod_list;
       if ( (v7 & 0x200) != 0 )
       {
         if ( (v7 & 0x40) != 0 )
@@ -51,17 +47,17 @@ _DWORD *__thiscall remove_sub_loc(TrackRowCell *cell)
         }
         else
         {
-          v10 = v8[3];
-          if ( v10 )
-            *(_DWORD *)(v10 + 8) = v8[2];
-          v11 = v8[2];
-          if ( v11 )
-            *(_DWORD *)(v11 + 12) = v8[3];
+          list_next = v8->bod.list_next;
+          if ( list_next )
+            list_next->bod.list_prev = v8->bod.list_prev;
+          list_prev = v8->bod.list_prev;
+          if ( list_prev )
+            list_prev->bod.list_next = v8->bod.list_next;
           else
-            *((_DWORD *)v9 + 1) = v8[3];
-          v8[3] = *((_DWORD *)v9 + 2);
-          *((_DWORD *)v9 + 2) = v8;
-          v8[1] &= ~0x200u;
+            p_active_bod_list->first = v8->bod.list_next;
+          v8->bod.list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = v8;
+          v8->bod.list_flags &= ~0x200u;
         }
       }
       else
@@ -70,67 +66,66 @@ _DWORD *__thiscall remove_sub_loc(TrackRowCell *cell)
       }
     }
   }
-  v12 = cell->bod.list_flags;
-  if ( (v12 & 0x200) != 0 )
+  list_flags = cell->bod.list_flags;
+  if ( (list_flags & 0x200) != 0 )
   {
-    v13 = (char *)MEMORY[0x4DF904] + 1448;
-    if ( (v12 & 0x40) != 0 )
+    v13 = &g_game_base->active_bod_list;
+    if ( (list_flags & 0x40) != 0 )
     {
       report_errorf(aListRemoveNext);
     }
     else
     {
-      v14 = (int)cell->bod.list_next;
+      v14 = cell->bod.list_next;
       if ( v14 )
-        *(_DWORD *)(v14 + 8) = cell->bod.list_prev;
-      v15 = (int)cell->bod.list_prev;
+        v14->list_prev = cell->bod.list_prev;
+      v15 = cell->bod.list_prev;
       if ( v15 )
-        *(_DWORD *)(v15 + 12) = cell->bod.list_next;
+        v15->list_next = cell->bod.list_next;
       else
-        *((_DWORD *)v13 + 1) = cell->bod.list_next;
-      cell->bod.list_next = (BodNode *)*((_DWORD *)v13 + 2);
-      *((_DWORD *)v13 + 2) = cell;
+        v13->first = (FrameBodBase *)cell->bod.list_next;
+      cell->bod.list_next = (struct BodNode *)v13->free_top;
+      v13->free_top = (FrameBodBase *)cell;
       cell->bod.list_flags &= ~0x200u;
     }
   }
-  v16 = (_DWORD *)&cell->fringe_front;
+  p_fringe_front = &cell->fringe_front;
   v17 = 4;
   do
   {
-    result = (_DWORD *)*v16;
-    if ( *v16 && (result[1] & 0x200) != 0 )
+    v18 = *p_fringe_front;
+    if ( *p_fringe_front && (v18->bod.list_flags & 0x200) != 0 )
     {
-      v19 = (char *)MEMORY[0x4DF904] + 1448;
-      v20 = result[1];
+      v19 = &g_game_base->active_bod_list;
+      v20 = v18->bod.list_flags;
       if ( (v20 & 0x200) != 0 )
       {
         if ( (v20 & 0x40) != 0 )
         {
-          result = (_DWORD *)report_errorf(aListRemoveNext);
+          report_errorf(aListRemoveNext);
         }
         else
         {
-          v21 = result[3];
+          v21 = v18->bod.list_next;
           if ( v21 )
-            *(_DWORD *)(v21 + 8) = result[2];
-          v22 = result[2];
+            v21->list_prev = v18->bod.list_prev;
+          v22 = v18->bod.list_prev;
           if ( v22 )
-            *(_DWORD *)(v22 + 12) = result[3];
+            v22->list_next = v18->bod.list_next;
           else
-            *((_DWORD *)v19 + 1) = result[3];
-          result[3] = *((_DWORD *)v19 + 2);
-          *((_DWORD *)v19 + 2) = result;
-          result[1] &= ~0x200u;
+            v19->first = (FrameBodBase *)v18->bod.list_next;
+          v18->bod.list_next = (struct BodNode *)v19->free_top;
+          v19->free_top = (FrameBodBase *)v18;
+          v18->bod.list_flags &= ~0x200u;
         }
       }
       else
       {
-        result = (_DWORD *)report_errorf(aListRemove);
+        report_errorf(aListRemove);
       }
     }
-    ++v16;
+    ++p_fringe_front;
     --v17;
   }
   while ( v17 );
-  return result;
 }

@@ -14,7 +14,8 @@
         "__asm",
         "_ET1",
         "struct Game*",
-        "player->game->segment_cache.slots[0x8d][2]"
+        "player->game->segment_cache.slots[0x8d][2]",
+        "player->game->tutorial._pad_10[8]"
       ],
       "max_counts": {
         "__offset(": 220,
@@ -35,6 +36,115 @@
         "_ET1",
         "unimplemented",
         "__offset("
+      ]
+    },
+    {
+      "name": "bn_remove_sub_loc_root_list_owner",
+      "artifact": "analysis/decompile/binja/functions/00439bc0-remove_sub_loc.c",
+      "required_substrings": [
+        "struct GameRoot* game_base_1 = g_game_base",
+        "game_base_1->active_bod_list",
+        "&g_game_base->active_bod_list",
+        "cell->fringe_front"
+      ],
+      "forbidden_substrings": [
+        "g_game_base + 0x5a8",
+        "g_game_base->__offset",
+        "unknown_12e6"
+      ]
+    },
+    {
+      "name": "ida_remove_sub_loc_root_list_owner",
+      "artifact": "analysis/decompile/ida/functions/00439bc0-remove_sub_loc.c",
+      "required_substrings": [
+        "void __thiscall remove_sub_loc(SubLoc *cell)",
+        "&g_game_base->active_bod_list",
+        "&cell->fringe_front"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall remove_sub_loc",
+        "g_game_base->unknown_12e6",
+        "(char *)g_game_base + 1448"
+      ]
+    },
+    {
+      "name": "bn_update_sub_loc_root_runtime_owner",
+      "artifact": "analysis/decompile/binja/functions/00439d50-update_sub_loc.c",
+      "required_substrings": [
+        "subgame.subgame_pause_gate",
+        "subgame.player.body.transform.position",
+        "subgame.sub_lazers",
+        "subgame.subgame_rate",
+        "subgame.runtime_rows[get_track_cell_row_index(cell)].attachment_body.color"
+      ],
+      "forbidden_substrings": [
+        "g_game_base->__offset",
+        "unknown_12e6"
+      ]
+    },
+    {
+      "name": "ida_update_sub_loc_root_runtime_owner",
+      "artifact": "analysis/decompile/ida/functions/00439d50-update_sub_loc.c",
+      "required_substrings": [
+        "void __thiscall update_sub_loc(SubLoc *cell)",
+        "g_game_base->subgame.first_block_row_count",
+        "g_game_base->subgame.player.body.transform.position",
+        "&g_game_base->subgame.sub_lazers",
+        "g_game_base->subgame.subgame_rate",
+        "g_game_base->subgame.completion_row_start"
+      ],
+      "forbidden_substrings": [
+        "subgame.unknown_",
+        "(char *)g_game_base",
+        "(_DWORD *)g_game_base",
+        "g_game_base->unknown_12e6"
+      ]
+    },
+    {
+      "name": "bn_update_cutscene_root_completion_owner",
+      "artifact": "analysis/decompile/binja/functions/004466d0-update_cutscene.c",
+      "required_substrings": [
+        "subgame.level_definition.parcel_count",
+        "subgame.completion"
+      ],
+      "forbidden_substrings": [
+        "unknown_12e6df0",
+        "subgame.__offset"
+      ]
+    },
+    {
+      "name": "ida_update_cutscene_root_completion_owner",
+      "artifact": "analysis/decompile/ida/functions/004466d0-update_cutscene.c",
+      "required_substrings": [
+        "g_game_base->subgame.level_definition.parcel_count",
+        "&g_game_base->subgame.completion"
+      ],
+      "forbidden_substrings": [
+        "g_game_base->unknown_12e6df0",
+        "subgame.unknown_"
+      ]
+    },
+    {
+      "name": "bn_update_subgoldy_root_tip_manager_owner",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "enqueue_tip_message(&g_game_base->tip_manager"
+      ],
+      "forbidden_substrings": [
+        "g_game_base->unknown_12e6",
+        "g_game_base->__offset(0x12e6f58)",
+        "data_4df904 + 0x12e6f58"
+      ]
+    },
+    {
+      "name": "ida_update_subgoldy_root_tip_manager_owner",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "enqueue_tip_message(&g_game_base->tip_manager"
+      ],
+      "forbidden_substrings": [
+        "g_game_base->unknown_12e6df0",
+        "(TipManager *)&g_game_base->unknown"
       ]
     },
     {

@@ -165,20 +165,20 @@ int32_t __thiscall update_subgoldy(Player *player)
     segment_count = template_record->segment_count;
     if ( v4 >= segment_count )
       v4 = segment_count - 1;
-    *((float *)player->presentation.body.bod.object + 32) = (*(float *)template_record->primary_samples[v4]._pad_a4
-                                                           * -3.0
-                                                           - *((float *)player->presentation.body.bod.object + 32))
-                                                          * 0.1
-                                                          + *((float *)player->presentation.body.bod.object + 32);
+    player->presentation.body.bod.object->distort.z_wave = (*(float *)template_record->primary_samples[v4]._pad_a4
+                                                          * -3.0
+                                                          - player->presentation.body.bod.object->distort.z_wave)
+                                                         * 0.1
+                                                         + player->presentation.body.bod.object->distort.z_wave;
   }
   else
   {
-    *((float *)player->presentation.body.bod.object + 32) = -*((float *)player->presentation.body.bod.object + 32) * 0.1
-                                                          + *((float *)player->presentation.body.bod.object + 32);
+    player->presentation.body.bod.object->distort.z_wave = -player->presentation.body.bod.object->distort.z_wave * 0.1
+                                                         + player->presentation.body.bod.object->distort.z_wave;
   }
   update_squidge(&player->squidge);
-  *((_DWORD *)player->presentation.body.bod.object + 33) = LODWORD(player->squidge.y_output);
-  *((_DWORD *)player->presentation.body.bod.object + 34) = LODWORD(player->squidge.z_output);
+  player->presentation.body.bod.object->distort.y_squash = player->squidge.y_output;
+  player->presentation.body.bod.object->distort.xyz_scale = player->squidge.z_output;
   if ( !player->game->level_mode )
     show_subgoldy_lives(player);
   result = player->movement_mode_selector;
@@ -255,10 +255,7 @@ LABEL_60:
               v31 = player->game;
               if ( *(&v31->level_definition.segment_count + 4232 * v30) != -1 )
                 play_voice_manager((int)g_voice_manager, 13, 2u, *(&v31->level_definition.segment_count + 4232 * v30));
-              enqueue_tip_message(
-                (TipManager *)&g_game_base->unknown_12e6df0[360],
-                &player->row_event.tip_definition,
-                1);
+              enqueue_tip_message(&g_game_base->tip_manager, &player->row_event.tip_definition, 1);
             }
           }
           if ( !player->attachment_exit_pending )
@@ -399,20 +396,18 @@ LABEL_101:
                 {
                   player->velocity.z = (1.0 - v42->subgame_rate * 0.2) * player->velocity.z;
                 }
-                if ( (byte_5CCAC8[(unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]] & 0x40) != 0 )
+                if ( (byte_5CCAC8[(unsigned int)player->game + 244 * get_track_cell_row_index(v41)] & 0x40) != 0 )
                 {
                   v126 = player->velocity.x * 1.05;
                   v129 = player->velocity.y * 1.05;
                   v132 = player->velocity.z * 1.05;
-                  value = *(int *)((char *)unk_5CCB6C
-                                 + (unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]);
+                  value = *(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * get_track_cell_row_index(v41));
                   x = p_position->x;
                   y = p_position->y;
                   z = p_position->z;
                   track_cell_row_index = get_track_cell_row_index(v41);
                   try_enter_track_attachment_from_swept_motion(
-                    *(_DWORD **)(*(int *)((char *)unk_5CCB6C
-                                        + (unsigned int)&player->game->_pad_00[244 * track_cell_row_index])
+                    *(_DWORD **)(*(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * track_cell_row_index)
                                + 56),
                     x,
                     y,
@@ -423,19 +418,19 @@ LABEL_101:
                     value);
                 }
                 if ( player->attachment_exit_pending
-                  && byte_5CCAC8[(unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]] < 0 )
+                  && byte_5CCAC8[(unsigned int)player->game + 244 * get_track_cell_row_index(v41)] < 0 )
                 {
                   v127 = player->velocity.x * 1.05;
                   v130 = player->velocity.y * 1.05;
                   v133 = player->velocity.z * 1.05;
-                  valuea = *(int *)((char *)unk_5CCB70
-                                  + (unsigned int)&player->game->_pad_00[244 * get_track_cell_row_index(v41)]);
+                  valuea = *(int *)((char *)unk_5CCB70 + (unsigned int)player->game
+                                                       + 244 * get_track_cell_row_index(v41));
                   v109 = p_position->x;
                   v111 = p_position->y;
                   v113 = p_position->z;
                   v44 = get_track_cell_row_index(v41);
                   try_enter_track_attachment_from_swept_motion(
-                    *(_DWORD **)(*(int *)((char *)unk_5CCB70 + (unsigned int)&player->game->_pad_00[244 * v44]) + 56),
+                    *(_DWORD **)(*(int *)((char *)unk_5CCB70 + (unsigned int)player->game + 244 * v44) + 56),
                     v109,
                     v111,
                     v113,
@@ -745,7 +740,7 @@ LABEL_98:
                 }
                 else
                 {
-                  if ( v70->level_mode_arg == *(_DWORD *)&g_game_base->subgame.unknown_000044[19267560] - 1 )
+                  if ( v70->level_mode_arg == g_game_base->subgame.galaxy.record_count - 1 )
                   {
                     complete_subgame(v70, 1u);
                     g_game_base->players[0].saved_frontend_state = 29;
@@ -894,7 +889,7 @@ LABEL_287:
             }
           }
           *(float *)&valued = player->body.transform.position.z / (double)player->game->runtime_row_count;
-          set_backdrop_progress_fraction(&g_game_base->unknown_000b48[319688], valued);
+          set_backdrop_progress_fraction(&g_game_base->unknown_044100[43792], valued);
           v94 = (double)player->game->completion_row_start - 30.0;
           source_cellc = player->body.transform.position.z - 8.0;
           if ( v94 >= source_cellc )
@@ -969,7 +964,7 @@ LABEL_287:
           update_track_parcels(&player->game->parcel_manager);
           initialize_cutscene(&player->presentation);
           update_player_movement_flags((int *)player);
-          if ( *(int *)&g_game_base->subgame.unknown_000044[16721304] < 10 )
+          if ( g_game_base->subgame.replay_update_cursor < 10 )
             player->movement_fire_progress = player->movement_fire_progress_step;
           v104 = player->game;
           if ( (v104->runtime_flags & 0x400000) == 0 )

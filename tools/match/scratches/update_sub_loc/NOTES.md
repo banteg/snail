@@ -118,3 +118,14 @@ arguments, object, color, and active-list links resolve through the same
 `BodBase` receiver. The exact constructor and 25,600-cell initialization loop
 prove the base and 0x54 stride. Focused output remains byte-stable at 83.20%,
 188/187 instructions, prefix 26/187, with all 35 operands clean.
+
+## 2026-07-15 durable root composition replay
+
+After the shared root composer rebinds `g_game_base`, IDA resolves the pause
+gate, rate, first-block boundary, embedded player transform and interaction
+plane, `SubLazerManager`, and completion boundary through
+`GameRoot::subgame`. Binary Ninja additionally renders the skirt destination
+as `runtime_rows[row].attachment_body.color`; IDA's independent
+`unk_6411B8` relocation remains honest rather than being coerced through a
+synthetic alias. Focused output stays at 83.20%, 188/187 instructions, prefix
+26/187, with all 35 operands clean.

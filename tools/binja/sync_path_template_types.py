@@ -13,6 +13,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     current_prototypes,
     emit_summary,
     normalize_prototype,
@@ -366,6 +367,38 @@ PLAYER_FIELD_UPDATES = (
     ("0x4338", "parcels_collected", "int32_t"),
     ("0x4340", "visible_life_stock", "int32_t"),
     ("0x4344", "squidge", "Squidge"),
+)
+
+# The native row-event block computes three pre-biased addresses from the
+# SubgameRuntime base. HLIL otherwise chooses nearby named members before it
+# proves event_id > 0, falsely rendering the message lanes inside SegmentCache
+# and Tutorial. These bounded register views preserve the honest byte arithmetic
+# until Binary Ninja can express level_definition.segment_slots[event_id - 1].
+UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
+    (
+        "update_subgoldy",
+        "RegisterVariableSourceType",
+        1520,
+        66,
+        "row_event_id",
+        "int32_t",
+    ),
+    (
+        "update_subgoldy",
+        "RegisterVariableSourceType",
+        1628,
+        68,
+        "game_bytes_for_message",
+        "uint8_t*",
+    ),
+    (
+        "update_subgoldy",
+        "RegisterVariableSourceType",
+        1688,
+        68,
+        "game_bytes_for_duration",
+        "uint8_t*",
+    ),
 )
 
 SUBGAME_RUNTIME_FIELD_UPDATES = (
@@ -1416,6 +1449,13 @@ def main() -> int:
                 ("SnailSkin", SNAIL_SKIN_FIELD_UPDATES),
             ),
             proto_updates=CORE_SUBGAME_PROTO_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=UPDATE_SUBGOLDY_USER_VAR_UPDATES,
         )
     )
     operations.extend(report_deferred_subgame_owner_prototypes(target=args.target))

@@ -214,6 +214,7 @@ typedef struct FrameSubgameRuntime {
     int32_t level_mode;
     uint8_t unknown_000044[0x1270fd4 - 0x44];
     FrameContactTargetRegistry contact_targets;
+    uint8_t unknown_12727d8[0x1272838 - 0x12727d8];
 } FrameSubgameRuntime;
 
 typedef struct GameRoot {
@@ -239,7 +240,7 @@ typedef struct GameRoot {
     FrameBorderManager border_manager;
     uint8_t unknown_044100[0x74618 - 0x44100];
     FrameSubgameRuntime subgame;
-    uint8_t unknown_12e6df0[0x12e6ff4 - 0x12e6df0];
+    uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];
 } GameRoot;
 
 typedef struct SpriteDepthNode {

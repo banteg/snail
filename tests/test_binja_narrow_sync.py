@@ -85,6 +85,57 @@ def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     assert 'struct_name="GameRoot"' in high_score_sync
 
 
+def test_ida_replays_compose_the_complete_game_root_tail() -> None:
+    owner_sync = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
+    path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    frame_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    frame_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in ("frame_renderer_types.h", "bn_frame_renderer_types.h")
+    )
+
+    assert '"SubgameRuntime": 0x1272838' in owner_sync
+    assert '(0x12E6E50, 0xF4, "high_score", "HighScore")' in owner_sync
+    assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in owner_sync
+    assert "GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904" in owner_sync
+    assert "idc.SetType(GAME_ROOT_GLOBAL_ADDRESS, declaration)" in owner_sync
+    assert '"root_global": root_global' in owner_sync
+    assert "root.del_udm" in owner_sync
+    assert "root.add_udm" in owner_sync
+    assert "typedef struct HighScore" in path_header
+    assert "FrontendWidget* replay_row_widgets[10];" in path_header
+    for source, required in (
+        (path_sync, True),
+        (runtime_sync, True),
+        (frame_sync, False),
+    ):
+        assert "from game_root_owner import sync_game_root_owner_graph" in source
+        assert f"sync_game_root_owner_graph(require={required})" in source
+        assert '"game_root_owner_graph": game_root_owner_graph' in source
+    for header in frame_headers:
+        assert "uint8_t unknown_12727d8[0x1272838 - 0x12727d8];" in header
+        assert "uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];" in header
+        assert "unknown_12e6df0" not in header
+
+    bn_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    assert "UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+    assert '"game_bytes_for_message"' in bn_path_sync
+    assert '"game_bytes_for_duration"' in bn_path_sync
+    assert "updates=UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+
+
 def test_parse_struct_layout_size() -> None:
     assert _narrow_sync.parse_struct_layout_size("struct Runtime // size=0x1272838") == 0x1272838
     assert _narrow_sync.parse_struct_layout_size("struct Tiny // size=1") == 1

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,31 +15,27 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_track_ring_or_special_effect_runtime",
-      "address": "0x408570"
+      "name": "initialize_sub_loc",
+      "address": "0x4088c0"
     },
     {
-      "name": "spawn_track_ring_or_special_effect",
-      "address": "0x43df10"
+      "name": "remove_sub_loc",
+      "address": "0x439bc0"
     },
     {
-      "name": "initialize_ring_or_special_effect_particles",
-      "address": "0x43e470"
+      "name": "update_sub_loc",
+      "address": "0x439d50"
     },
     {
-      "name": "emit_ring_star_shower",
-      "address": "0x43e690"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     },
     {
-      "name": "update_ring_or_special_effect_particle",
-      "address": "0x43e780"
-    },
-    {
-      "name": "update_ring_or_special_effect_parent",
-      "address": "0x43e830"
+      "name": "update_cutscene",
+      "address": "0x4466d0"
     }
   ],
-  "health_check_count": 280,
+  "health_check_count": 288,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

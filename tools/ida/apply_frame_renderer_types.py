@@ -11,6 +11,12 @@ import ida_name
 import ida_pro
 import idc
 
+SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
+if str(SCRIPT_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_ROOT))
+
+from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+
 
 TRUSTED_NAMES = [
     (0x408000, "initialize_game_player"),
@@ -169,6 +175,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
             continue
         applied += 1
 
+    game_root_owner_graph = sync_game_root_owner_graph(require=False)
+    if game_root_owner_graph.get("status") == "failed":
+        failed.append(
+            {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
+        )
+
     print(
         json.dumps(
             {
@@ -179,6 +191,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
+                "game_root_owner_graph": game_root_owner_graph,
                 "missing": missing,
                 "failed": failed,
             },

@@ -1453,6 +1453,28 @@ typedef struct Tip {
 } Tip;
 typedef Tip TipSlot;
 
+/* Authored root cRHighScore owner. The proved 0xf4-byte widget bank is
+ * followed by a separate 0x14-byte root gap before TipManager. */
+typedef struct HighScore {
+    int32_t field_00;
+    int32_t mode;
+    int32_t selected_bank;
+    uint8_t _pad_0c[0x10 - 0x0c];
+    uint8_t entering_name;
+    uint8_t _pad_11[0x14 - 0x11];
+    int32_t selected_rank;
+    FrontendWidget* title_widget;
+    FrontendWidget* back_button;
+    FrontendWidget* bank_toggle_button;
+    FrontendWidget* cancel_name_button;
+    FrontendWidget* submit_name_button;
+    FrontendWidget* row_background_widgets[10];
+    FrontendWidget* rank_row_widgets[10];
+    FrontendWidget* name_row_widgets[10];
+    FrontendWidget* score_row_widgets[10];
+    FrontendWidget* replay_row_widgets[10];
+} HighScore;
+
 typedef struct TipManager {
     BodBase bod;
     Tip tips[3];

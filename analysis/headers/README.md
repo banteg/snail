@@ -255,3 +255,22 @@ separate exact-sized BorderManager projection and `KillBorders` contract.
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database
 without pretending to solve global type sync.
+
+The IDA frame, path-template, and subgame-runtime replays share
+`tools/ida/game_root_owner.py` for the root tail. It preserves every proved
+`GameRoot` member before `+0x74618`, then composes the complete
+`SubgameRuntime` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
+`0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
+the exact `0x12e6ff4` root. The sparse frame compatibility view now reaches the
+same runtime end, so it cannot truncate `Completion` or `TimesUp`; the shared
+helper immediately restores the canonical owner after any frame import. It
+also reapplies the `g_game_base` pointer after composition because IDA retains
+the earlier pointed-to type snapshot even when its rendered declaration is
+still `GameRoot *`.
+
+The Binary Ninja path replay also retains three bounded register views in
+`update_subgoldy`'s row-event block. Native code uses pre-biased byte addresses
+for `SubTracks::segment_slots[event_id - 1]`; without those views HLIL
+misattributes the same bytes to nearby `SegmentCache` and `Tutorial` members.
+The replay deliberately keeps honest byte arithmetic instead of installing a
+synthetic overlapping field solely to improve pseudocode.

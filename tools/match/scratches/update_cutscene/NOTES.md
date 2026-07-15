@@ -182,3 +182,12 @@ image writes `1/-1` but never consumes it. All focused candidates are
 byte-identical after the enum propagation, including exact initializer,
 presentation, and camera consumers; `update_cutscene` retains its honest 93.25%
 result and bounded jump-table mismatch.
+
+## 2026-07-15 durable root composition replay
+
+The former root `unknown_12e6df0` is now the exact `Completion` child at
+`SubgameRuntime +0x12727d8`; the adjacent `TimesUp` closes the runtime at root
+`+0x12e6e50`. Both decompilers therefore express the completion handoff and
+`level_definition.parcel_count` through one nested owner graph. Focused output
+remains 93.25%, 503/505 instructions, prefix 0/505, with 57 clean operands and
+the same bounded jump-table mismatch.

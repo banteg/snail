@@ -557,3 +557,17 @@ forward acceleration, suppresses attachment lateral handling, shapes the
 vertical hover response, and owns the late attachment-exit retirement branch.
 Focused output remains byte-identical at 74.20%, 2,075/2,087 instructions,
 prefix 12/2,087, 290 clean operands, and the same bounded jump-table mismatch.
+
+## 2026-07-15 durable root composition replay
+
+The root tail now places the exact `0xf4`-byte `HighScore` at `+0x12e6e50`,
+keeps the proved `0x14`-byte gap, and owns `TipManager` at `+0x12e6f58`.
+Consequently both tracked decompilers render the row-event enqueue through
+`g_game_base->tip_manager` instead of a raw tail offset. The scratch source is
+unchanged; a fresh focused receipt is 74.30%, 2,072/2,087 instructions, prefix
+12/2,087, with 290 clean operands and the same bounded jump-table mismatch.
+
+The same regeneration exposed an HLIL-only false owner for the pre-biased
+`segment_slots[event_id - 1]` message addresses. Three replayed register views
+now keep those accesses as byte arithmetic instead of pretending they belong
+to `SegmentCache` or `Tutorial`; no overlapping convenience field was added.

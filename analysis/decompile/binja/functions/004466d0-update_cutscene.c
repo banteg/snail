@@ -69,18 +69,18 @@
 00446ba7        struct Snail* presentation_3 = cutscene->presentation
 00446bb0        presentation_3->invincible_shell.cutscene_roll_progress = presentation_3->invincible_shell.cutscene_roll_step
 00446bb6        cutscene->force_camera_update = 1
-00446bb9        char* game_base_1 = g_game_base
-00446bbf        int32_t eax_24 = *(game_base_1 + 0x74658)
-00446bc7        uint8_t perfect_delivery
-00446bc7        if (eax_24 == 0)
+00446bb9        struct GameRoot* game_base_1 = g_game_base
+00446bbf        int32_t level_mode = game_base_1->subgame.level_mode
+00446bc7        bool perfect_delivery
+00446bc7        if (level_mode == 0)
 00446bd2        int32_t parcels_collected_1 = cutscene->player->parcels_collected
-00446be5        perfect_delivery = parcels_collected_1 == *(game_base_1 + 0x2247f8)
+00446be5        perfect_delivery = parcels_collected_1 == game_base_1->subgame.level_definition.parcel_count
 00446be6        parcels_collected = parcels_collected_1
-00446bfe        initialize_completion_screen(&game_base_1[0x12e6df0], parcels_collected, perfect_delivery)
-00446beb        if (eax_24 == 1)
-00446bf0        perfect_delivery = 1
+00446bfe        initialize_completion_screen(&game_base_1->subgame.completion, parcels_collected, perfect_delivery)
+00446beb        if (level_mode == 1)
+00446bf0        perfect_delivery = true
 00446bf7        parcels_collected = cutscene->player->parcels_collected
-00446bfe        initialize_completion_screen(&game_base_1[0x12e6df0], parcels_collected, perfect_delivery)
+00446bfe        initialize_completion_screen(&game_base_1->subgame.completion, parcels_collected, perfect_delivery)
 00446c0a        play_sound_effect(0x2e)
 00446c0a        goto label_446c13
 00446c13        case CUT_SCENE_STATE_COMPLETION_BLEND
@@ -128,7 +128,7 @@
 00446de6        dispatch_cutscene_animation(presentation_14, 9, parcels_collected.b, mode_flags_7)
 00446df1        cutscene->progress = fconvert.s(fconvert.t(cutscene->progress_step) + fconvert.t(cutscene->progress))
 004467b1        case CUT_SCENE_STATE_INTRO_RETURN_BLEND
-004467b1        *&g_game_base[0x42fec4] = 0
+004467b1        g_game_base->subgame.player.click_start.hide_prompt = 0
 004467b8        cutscene->camera_mode = 1
 004467bf        set_matrix_identity(&var_c0)
 004467d0        struct Vec3* eax_5 = &cutscene->presentation->snail_hotspots_world[0x12]

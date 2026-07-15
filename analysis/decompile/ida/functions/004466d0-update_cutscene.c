@@ -35,19 +35,19 @@ void __thiscall update_cutscene(CutScene *cutscene)
   double v29; // st7
   double v30; // st7
   Vec3 *v31; // edx
-  const Vec3 *alpha; // [esp+0h] [ebp-FCh]
+  Vec4 *alpha; // [esp+0h] [ebp-FCh]
   float alphaa; // [esp+0h] [ebp-FCh]
-  const Vec3 *alphab; // [esp+0h] [ebp-FCh]
+  Vec4 *alphab; // [esp+0h] [ebp-FCh]
   float alphac; // [esp+0h] [ebp-FCh]
   float alphad; // [esp+0h] [ebp-FCh]
   float alphae; // [esp+0h] [ebp-FCh]
   float alphaf; // [esp+0h] [ebp-FCh]
   float alphag; // [esp+0h] [ebp-FCh]
   float alphah; // [esp+0h] [ebp-FCh]
-  const Vec3 *alphai; // [esp+0h] [ebp-FCh]
+  Vec4 *alphai; // [esp+0h] [ebp-FCh]
   float alphaj; // [esp+0h] [ebp-FCh]
   float alphak; // [esp+0h] [ebp-FCh]
-  const Vec3 *alphal; // [esp+0h] [ebp-FCh]
+  Vec4 *alphal; // [esp+0h] [ebp-FCh]
   float v45; // [esp+14h] [ebp-E8h]
   float v46; // [esp+14h] [ebp-E8h]
   float v47; // [esp+18h] [ebp-E4h]
@@ -84,11 +84,11 @@ LABEL_3:
       cutscene->camera_mode = 1;
       set_matrix_identity(&cutscene->live_matrix);
       v4 = &cutscene->presentation->snail_hotspots_world[18];
-      alpha = (const Vec3 *)&cutscene->presentation->body.transform[48];
+      alpha = &cutscene->presentation->body.transform.position;
       cutscene->live_matrix.position.x = v4->x;
       cutscene->live_matrix.position.y = v4->y;
       cutscene->live_matrix.position.z = v4->z;
-      look_at_point(&cutscene->live_matrix, alpha);
+      look_at_point(&cutscene->live_matrix, (const Vec3 *)alpha);
       v5 = cutscene->progress + cutscene->progress_step;
       cutscene->progress = v5;
       if ( v5 > 1.0 )
@@ -116,17 +116,14 @@ LABEL_3:
       if ( level_mode )
       {
         if ( level_mode == 1 )
-          initialize_completion_screen(
-            (Completion *)g_game_base->unknown_12e6df0,
-            cutscene->player->parcels_collected,
-            1u);
+          initialize_completion_screen(&g_game_base->subgame.completion, cutscene->player->parcels_collected, 1u);
       }
       else
       {
         initialize_completion_screen(
-          (Completion *)g_game_base->unknown_12e6df0,
+          &g_game_base->subgame.completion,
           cutscene->player->parcels_collected,
-          cutscene->player->parcels_collected == *(_DWORD *)&g_game_base->subgame.unknown_000044[1769884]);
+          cutscene->player->parcels_collected == g_game_base->subgame.level_definition.parcel_count);
       }
       play_sound_effect(46);
       goto LABEL_25;
@@ -157,9 +154,9 @@ LABEL_25:
       to.position.z = v51;
       alphah = v28;
       v29 = sine(alphah);
-      alphai = (const Vec3 *)&cutscene->presentation->body.transform[48];
+      alphai = &cutscene->presentation->body.transform.position;
       to.position.x = to.position.x - v29 * 0.5;
-      look_at_point(&to, alphai);
+      look_at_point(&to, (const Vec3 *)alphai);
       qmemcpy(&transform, &cutscene->presentation->owner_player->cameraman, sizeof(transform));
       alphaj = cutscene->progress * 1.5707964;
       alphak = sine(alphaj);
@@ -178,11 +175,11 @@ LABEL_25:
       cutscene->force_camera_update = 1;
       set_matrix_identity(&cutscene->live_matrix);
       v31 = &cutscene->presentation->snail_hotspots_world[18];
-      alphal = (const Vec3 *)&cutscene->presentation->body.transform[48];
+      alphal = &cutscene->presentation->body.transform.position;
       cutscene->live_matrix.position.x = v31->x;
       cutscene->live_matrix.position.y = v31->y;
       cutscene->live_matrix.position.z = v31->z;
-      look_at_point(&cutscene->live_matrix, alphal);
+      look_at_point(&cutscene->live_matrix, (const Vec3 *)alphal);
       if ( !cutscene->presentation->anim_manager.queue_count )
         dispatch_cutscene_animation(cutscene->presentation, 9, 0, -1);
       goto LABEL_29;
@@ -197,16 +194,16 @@ LABEL_25:
       transform.position.y = v7->y;
       transform.position.z = v7->z;
       v8 = sine(alphaa);
-      alphab = (const Vec3 *)&cutscene->presentation->body.transform[48];
+      alphab = &cutscene->presentation->body.transform.position;
       transform.position.x = v8 + v8 + transform.position.x;
-      look_at_point(&transform, alphab);
+      look_at_point(&transform, (const Vec3 *)alphab);
       qmemcpy(&to, &cutscene->presentation->owner_player->cameraman, sizeof(to));
       alphac = cutscene->progress * 1.5707964;
       alphad = sine(alphac);
       linear_interpolate_matrix(&cutscene->live_matrix, &transform, &to, alphad);
-      v60.x = cutscene->live_matrix.position.x - *(float *)&cutscene->presentation->body.transform[48];
-      v60.y = cutscene->live_matrix.position.y - *(float *)&cutscene->presentation->body.transform[52];
-      v60.z = cutscene->live_matrix.position.z - *(float *)&cutscene->presentation->body.transform[56];
+      v60.x = cutscene->live_matrix.position.x - cutscene->presentation->body.transform.position.x;
+      v60.y = cutscene->live_matrix.position.y - cutscene->presentation->body.transform.position.y;
+      v60.z = cutscene->live_matrix.position.z - cutscene->presentation->body.transform.position.z;
       vector = v60;
       v9 = normalize_vector(&vector);
       if ( v9 < 1.5 )
@@ -258,7 +255,7 @@ LABEL_11:
       to.position.x = v16 + v16 + to.position.x;
       if ( to.position.y < 0.0 )
         to.position.y = 0.0;
-      look_at_point(&to, (const Vec3 *)&cutscene->presentation->body.transform[48]);
+      look_at_point(&to, (const Vec3 *)&cutscene->presentation->body.transform.position);
       v17 = cutscene->progress;
       qmemcpy(&transform, &cutscene->presentation->owner_player->cameraman, sizeof(transform));
       alphaf = v17 * 1.5707964;
@@ -283,7 +280,7 @@ LABEL_11:
       cutscene->live_matrix.position.z = v19->snail_hotspots_world[18].z;
       if ( cutscene->live_matrix.position.y < 0.0 )
         cutscene->live_matrix.position.y = 0.0;
-      look_at_point(&cutscene->live_matrix, (const Vec3 *)&v19->body.transform[48]);
+      look_at_point(&cutscene->live_matrix, (const Vec3 *)&v19->body.transform.position);
       player = cutscene->player;
       if ( LOBYTE(player->resurrect_active)
         || (initialize_subgoldy_death(player), cutscene->player->attachment_exit_gate_b) )

@@ -186,3 +186,12 @@ same authored bit for either `Path=` or model `Velocity=`, while this tile-gated
 consumer uses its path side to decide whether the embedded attachment body can
 be removed. Focused output remains 91.19%, 130/131 instructions, prefix
 87/131, with all 17 operands clean.
+
+## 2026-07-15 durable root composition replay
+
+The decompiler replay now keeps `GameRoot::active_bod_list +0x5a8` and the
+complete `GameRoot::subgame +0x74618` owner live together. Rebinding
+`g_game_base` after root composition prevents IDA from retaining the earlier
+sparse frame-root pointer snapshot, while the authored `void` SubLoc teardown
+contract remains explicit in both views. Focused output is unchanged at
+91.19%, 130/131 instructions, prefix 87/131, with all 17 operands clean.
