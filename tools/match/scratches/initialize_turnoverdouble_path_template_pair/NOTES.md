@@ -1,13 +1,15 @@
 # initialize_turnoverdouble_path_template_pair
 
-Honest starter scratch for `initialize_turnoverdouble_path_template_pair @ 0x427640`.
+Ownership recovery for `initialize_turnoverdouble_path_template_pair @ 0x427640`.
 
 This target uses the same six-argument stack shape as turnover (`ret 0x18`),
 but the interior curve performs a double roll and returns to the same lateral
-side. The scratch models the recovered double-turnover angle folding, secondary
-up-vector offset, deltas, strip mesh, and finalization.
-
-Residuals are expected; the source is semantic starter code.
+side. The retained scratch scores 51.70% (616/680 candidate/target
+instructions), with 43 masked operands clean, 0 unresolved, and 0 mismatch.
+It owns the straight sample seeds, folded double-roll construction, transform
+propagation, and 16-bit face header. The main remaining structural debt is the
+target's 0x50 stack frame and native mesh/delta loop layout; the retained
+candidate uses a 0x2c frame.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 9.81% (176/680
@@ -40,3 +42,24 @@ local sample pointers, while the two terminal writes belong directly to the
 aliases with direct count-relative array stores moves focused Wibo from 27.60%
 (581/680) to 28.53% (589/680). The masked audit remains 34 ok, 0 unresolved,
 1 mismatch; the sole residual is still the curved sine/cosine call pairing.
+
+2026-07-15 sibling ownership cascade: replacing the helper-shaped six-sample
+lead-in and two-sample lead-out with direct primary/secondary array ownership,
+separate logical Z counters, and the target's do-loop bounds recovers the same
+owner split as `turnover`. The floating curve count is retained, the incoming
+`length` slot owns the derived double-roll radius, and the lateral curve center
+loads the already-written first primary sample field.
+
+The curved body now uses separate curve and sample indices, preserves the
+native phase-shifted sine and folded roll angles, follows the target's trig call
+schedule, constructs forward/right bases directly, and copies only the primary
+transform before applying the secondary up-vector offset. Focused Wibo moves
+from 28.53% (589/680) to 51.70% (616/680), and the prior sine/cosine audit
+mismatch clears: all 43 masked operands resolve cleanly. The face loop now
+clears `header_word`, matching the target's 16-bit store.
+
+As with `turnover`, keep `compute_terminal_deltas` and the semantic strip-mesh
+helper boundary until their native loop owners can be recovered together.
+Target-shaped mesh transplants in the sibling recovered frame pressure but
+reduced whole-function agreement, so this target does not repeat those
+lower-signal rewrites.
