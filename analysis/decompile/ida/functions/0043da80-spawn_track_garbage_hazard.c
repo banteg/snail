@@ -11,7 +11,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   struct BodNode *v7; // ebp
   float *p_radius; // ebx
   Player *p_player; // edi
-  char *v10; // eax
+  FrameBodList *p_active_bod_list; // eax
   __int64 v11; // rax
   _DWORD *sprite; // eax
   int v13; // edx
@@ -31,7 +31,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   v6 = (char *)game + 196 * v3;
   *((_DWORD *)v6 + 877681) = game->garbage_hazards.active_head;
   v7 = (struct BodNode *)(v6 + 3510596);
-  game->garbage_hazards.active_head = (GarbageHazardSlot *)(v6 + 3510596);
+  game->garbage_hazards.active_head = (SubGarbage *)(v6 + 3510596);
   p_radius = &game->garbage_hazards.slots[v3].radius;
   *((_DWORD *)v6 + 877697) = player;
   *p_radius = (random_float_below(0.40000001) + 1.0) * 0.60000002;
@@ -44,7 +44,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   *((float *)v6 + 877677) = z;
   project_position_onto_track_attachment(game, (float *)v6 + 877675, (float *)v6 + 877689);
   p_player = &game->player;
-  v10 = (char *)g_game_base + 1448;
+  p_active_bod_list = &g_game_base->active_bod_list;
   if ( (*((_DWORD *)v6 + 877650) & 0x200) != 0 )
   {
     report_errorf(aListAddbefore);
@@ -52,10 +52,10 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   else
   {
     *((_DWORD *)v6 + 877652) = p_player;
-    if ( *((Player **)v10 + 1) == p_player )
+    if ( (Player *)p_active_bod_list->first == p_player )
     {
       p_player->body.bod.bod.list_prev = v7;
-      *((_DWORD *)v10 + 1) = v7;
+      p_active_bod_list->first = (FrameBodBase *)v7;
       *((_DWORD *)v6 + 877651) = 0;
     }
     else

@@ -158,7 +158,7 @@
 00414e64        x87_r7_75 - temp17_1
 00414e6f        if ((((x87_r7_75 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_75, temp17_1) ? 1 : 0) << 0xa | (x87_r7_75 == temp17_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00415263        return kill_golb(arg1)
-00414e7b        struct GarbageHazardSlot* esi_7 = arg1->game->garbage_hazards.active_head
+00414e7b        struct SubGarbage* esi_7 = arg1->game->garbage_hazards.active_head
 00414e83        struct Vec3 vector
 00414e83        if (esi_7 == 0)
 00414f64        label_414f64:
@@ -225,9 +225,9 @@
 00415263        return kill_golb(arg1)
 00414e90        while (true)
 00414e90        if (esi_7->state == 1)
-00414eb0        long double x87_r7_81 = fconvert.t(esi_7->world_position.z) - fconvert.t(arg1->source_matrix.position.z)
-00414eb7        vector.x = fconvert.s(fconvert.t(esi_7->world_position.x) - fconvert.t(arg1->source_matrix.position.x))
-00414ebb        vector.y = fconvert.s(fconvert.t(esi_7->world_position.y) - fconvert.t(arg1->source_matrix.position.y))
+00414eb0        long double x87_r7_81 = fconvert.t(esi_7->body.transform.position.z) - fconvert.t(arg1->source_matrix.position.z)
+00414eb7        vector.x = fconvert.s(fconvert.t(esi_7->body.transform.position.x) - fconvert.t(arg1->source_matrix.position.x))
+00414ebb        vector.y = fconvert.s(fconvert.t(esi_7->body.transform.position.y) - fconvert.t(arg1->source_matrix.position.y))
 00414ebf        long double temp18_1 = fconvert.t(0f)
 00414ebf        x87_r7_81 - temp18_1
 00414ec5        bool c1_2 = unknown  {fst dword [esp+0x34], st0}
@@ -253,12 +253,12 @@
 0041509d        kill_golb(arg1)
 004150a5        game = spawn_golb_impact_sprite(arg1, &arg1->source_matrix.position.x)
 004150b1        if (arg1->kind == 2)
-004150bd        struct GarbageHazardSlot* i_1 = arg1->game->garbage_hazards.active_head
+004150bd        struct SubGarbage* i_1 = arg1->game->garbage_hazards.active_head
 004150c5        if (i_1 != 0)
 004150d1        if (i_1->state == 1)
-004150f8        vector.x = fconvert.s(fconvert.t(i_1->world_position.x) - fconvert.t(arg1->source_matrix.position.x))
-004150fc        vector.y = fconvert.s(fconvert.t(i_1->world_position.y) - fconvert.t(arg1->source_matrix.position.y))
-0041510c        vector.z = fconvert.s(fconvert.t(i_1->world_position.z) - fconvert.t(arg1->source_matrix.position.z))
+004150f8        vector.x = fconvert.s(fconvert.t(i_1->body.transform.position.x) - fconvert.t(arg1->source_matrix.position.x))
+004150fc        vector.y = fconvert.s(fconvert.t(i_1->body.transform.position.y) - fconvert.t(arg1->source_matrix.position.y))
+0041510c        vector.z = fconvert.s(fconvert.t(i_1->body.transform.position.z) - fconvert.t(arg1->source_matrix.position.z))
 00415110        long double st0_8
 00415110        st0_8, game = normalize_vector(&vector)
 00415115        long double temp24_1 = fconvert.t(3f)

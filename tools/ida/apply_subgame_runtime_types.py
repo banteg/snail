@@ -125,6 +125,26 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_salt_hazard(Salt* salt);",
     ),
     (
+        "initialize_garbage_hazard",
+        "SubGarbage* __thiscall initialize_garbage_hazard(SubGarbage* sub_garbage);",
+    ),
+    (
+        "update_garbage_hazard",
+        "void __thiscall update_garbage_hazard(SubGarbage* sub_garbage);",
+    ),
+    (
+        "destroy_garbage_hazard",
+        "SubGarbage* __thiscall destroy_garbage_hazard(SubGarbage* sub_garbage);",
+    ),
+    (
+        "spawn_garbage_smoke_particle",
+        "void __thiscall spawn_garbage_smoke_particle(SubGarbage* sub_garbage, Vec3* position, Vec3* velocity, Player* owner_player);",
+    ),
+    (
+        "spawn_track_garbage_hazard",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+    ),
+    (
         "initialize_track_ring_or_special_effect_runtime",
         "SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);",
     ),

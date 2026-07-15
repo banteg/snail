@@ -785,10 +785,10 @@ typedef struct SaltManager {
     Salt slots[40];
 } SaltManager;
 
-typedef struct GarbageHazardSlot GarbageHazardSlot;
-struct GarbageHazardSlot {
+typedef struct SubGarbage SubGarbage;
+struct SubGarbage {
     RenderableBod body;
-    GarbageHazardSlot* next_active;
+    SubGarbage* next_active;
     int32_t state;
     int32_t collision_side;
     SubgameRuntime* owner_game;
@@ -806,10 +806,14 @@ struct GarbageHazardSlot {
     Player* owner_player;
 };
 
-typedef struct GarbageHazardPool {
-    GarbageHazardSlot* active_head;
-    GarbageHazardSlot slots[50];
-} GarbageHazardPool;
+typedef SubGarbage GarbageHazardSlot;
+
+typedef struct SubGarbagePool {
+    SubGarbage* active_head;
+    SubGarbage slots[50];
+} SubGarbagePool;
+
+typedef SubGarbagePool GarbageHazardPool;
 
 typedef enum SubRingState {
     SUB_RING_STATE_INACTIVE = 0,
@@ -1865,7 +1869,7 @@ typedef struct SubgameRuntime {
     SubLazerManager sub_lazers;
     SaltManager salt_hazards;
     BannerPool banners;
-    GarbageHazardPool garbage_hazards;
+    SubGarbagePool garbage_hazards;
     SubRingPool ring_effects;
     SlugVoiceManager slug_voice_manager;
     FrontendWidget* top_score_widget;

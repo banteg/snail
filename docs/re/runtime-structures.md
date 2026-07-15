@@ -574,10 +574,10 @@ only as historical decompiler spelling in older evidence.
   - two inline `0x60`-byte `Banner` records ending exactly at `+0x359140`
   - banner `+0x48` borrows the subgame while `+0x54` separately borrows the
     row-source player
-- `+0x359140`: `active_garbage_hazards`
-  - head pointer for the active garbage list
-- `+0x359144`: `garbage_hazards`
-  - `50`-slot `GarbageHazardRuntime` array
+- `+0x359140`: `garbage_hazards`
+  - exact `0x264c`-byte `SubGarbagePool` wrapper
+  - borrowed active-chain head at pool `+0x00`, followed by 50 inline
+    `0xc4`-byte authored `SubGarbage` (`cRSubGarbage`) records at pool `+0x04`
 - `+0xff7c00`: `landscape_manager`
   - exact `0x97a4`-byte `cRLandscapeManager` owner ending at `+0x10013a4`
   - ten `0x90`-byte active entries at `+0x00`, script count at `+0x5a0`, and
@@ -1254,30 +1254,41 @@ Current practical read:
 - the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula, seeds the post-hit progress step from `track_center_x` instead of from runner speed, and writes both the negative and positive live-ring `velocity.z` impulses into the runner motion lane
 - the remaining Zig gap is that collisions still use the older lower proxy anchor while the player-height parity gap remains open, and the active `+0x1dc` oscillation gate is still conservative because its writer is still unresolved
 
-## Garbage Hazard Runtime
+## cRSubGarbage Runtime
 
-The Windows garbage hazard pool is now typed as `GarbageHazardRuntime`, and the earlier parcel labels on `0x408550`, `0x43f130`, and `0x43f200` were a bad read of this same family.
+The Windows garbage hazard pool is typed through the exact authored
+`SubGarbage` (`cRSubGarbage`) owner. `GarbageHazardSlot` and
+`GarbageHazardPool` remain compatibility aliases only; the earlier parcel and
+flattened `GarbageHazardRuntime` labels on `0x408550`, `0x43f130`, and
+`0x43f200` were a bad read of this same family.
 
 High-confidence current fields:
 
-- `+0x50`: `scale`
-- `+0x68`: `world_position`
+- `+0x00..+0x7f`: inherited `RenderableBod body`
+- `+0x68`: inherited `body.transform.position`
 - `+0x80`: `next_active`
 - `+0x84`: `state`
 - `+0x88`: `collision_side`
-- `+0x8c`: `game`
+- `+0x8c`: `owner_game`
 - `+0x90`: `velocity`
+- `+0x9c`: `radius`
 - `+0xa0`: `attachment_facing_angle`
+- `+0xa4`: unresolved scalar
+- `+0xa8`: `burst_rate_step`
 - `+0xac`: `smoke_timer`
 - `+0xb0`: `smoke_timer_step`
 - `+0xb4`: `sprite`
 - `+0xb8`: `source_cell`
-- `+0xc0`: `owner`
+- `+0xbc`: `hidden`
+- `+0xc0`: `owner_player`
 
 Current practical read:
 
-- `initialize_runtime_pools_and_path_template_bank` seeds the `50`-slot pool with `initialize_garbage_hazard`
-- `spawn_track_garbage_hazard` allocates from that pool and threads the slot into `active_garbage_hazards`
+- `initialize_runtime_pools_and_path_template_bank` seeds the 50 inline slots
+  with `initialize_garbage_hazard`; the exact `50 * 0xc4 == 0x2648` record
+  extent plus the four-byte active head closes `SubGarbagePool` at `0x264c`
+- `spawn_track_garbage_hazard` allocates from that pool and threads the slot
+  into `garbage_hazards.active_head`
 - `handle_subgoldy_collisions` walks that active list directly
 - `update_golb_ai` borrows the same `SubGarbagePool::active_head` chain twice:
   direct projectile contact uses the slot radius, while kind-2 impact splash
@@ -1285,8 +1296,11 @@ Current practical read:
 - on collision, the slot flips to state `2`, records the left or right impact side in `collision_side`, and contributes the recovered `+0.04` gauge delta
 - `update_garbage_hazard` matches Android and iOS `cRSubGarbage::AI()`: after collision, the slot bursts outward with randomized velocity, emits periodic smoke, and self-destructs when it falls below the track or behind the player
   - the Zig port now emits the smoke through a native-shaped burst event (`SMOKE.TGA`, position from the live garbage slot, `velocity * 0.2`, size `0.3 x 1.3`, and an ~8-tick lifetime) instead of hand-placing two collision puffs
-- `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks the same `next_active` chain rooted at `game + 0x359140`
-- Android `cRSubGame::AddGarbage` confirms the same random scale and active-list pattern, but Windows remains authoritative on the exact storage layout
+- `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks
+  the same `next_active` chain rooted at
+  `owner_game->garbage_hazards.active_head`
+- Android `cRSubGame::AddGarbage` confirms the same random scale and active-list
+  pattern, while Windows fixes the exact storage layout and wrapper boundary
 
 ## cRSlug Runtime
 

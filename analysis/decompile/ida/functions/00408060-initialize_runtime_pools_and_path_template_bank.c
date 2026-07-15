@@ -12,7 +12,7 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
   int v6; // ebx
   BodBase *v7; // edi
   int v8; // ebx
-  _DWORD *v9; // edi
+  SubGarbage *v9; // edi
   int v10; // ebx
   SubRing *v11; // edi
   int v12; // ebx
@@ -106,12 +106,11 @@ _DWORD *__thiscall initialize_runtime_pools_and_path_template_bank(_DWORD *this)
     --v8;
   }
   while ( v8 );
-  v9 = this + 877649;
+  v9 = (SubGarbage *)(this + 877649);
   v10 = 50;
   do
   {
-    initialize_garbage_hazard(v9);
-    v9 += 49;
+    initialize_garbage_hazard(v9++);
     --v10;
   }
   while ( v10 );

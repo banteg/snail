@@ -49,12 +49,12 @@
 00444eac        *(&player->game->sub_lazers.slots[0].state + i_1) = 2
 00444ebd        x87control = apply_damage_gauge_delta(&player->damage_gauge, 0.0199999996f, 0)
 00444ec2        i_1 += 0xb0
-00444eda        struct GarbageHazardSlot* i_2 = player->game->garbage_hazards.active_head
+00444eda        struct SubGarbage* i_2 = player->game->garbage_hazards.active_head
 00444ee2        while (i_2 != 0)
 00444eee        if (i_2->state == 1)
-00444f15        long double x87_r7_21 = fconvert.t(i_2->world_position.z) - fconvert.t(player->cached_camera_target_world.z)
-00444f1f        vector.x = fconvert.s(fconvert.t(i_2->world_position.x) - fconvert.t(player->cached_camera_target_world.x))
-00444f23        vector.y = fconvert.s(fconvert.t(i_2->world_position.y) - fconvert.t(player->cached_camera_target_world.y))
+00444f15        long double x87_r7_21 = fconvert.t(i_2->body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
+00444f1f        vector.x = fconvert.s(fconvert.t(i_2->body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
+00444f23        vector.y = fconvert.s(fconvert.t(i_2->body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00444f2b        long double temp20_1 = fconvert.t(1f)
 00444f2b        x87_r7_21 - temp20_1
 00444f35        vector.z = fconvert.s(x87_r7_21)

@@ -10,14 +10,30 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
-typedef struct TransformMatrix TransformMatrix;
+typedef struct Player Player;
 typedef struct SubgameRuntime SubgameRuntime;
+typedef struct TextureRef TextureRef;
+typedef struct TrackRowCell TrackRowCell;
 
 typedef struct Vec3 {
     float x;
     float y;
     float z;
 } Vec3;
+
+typedef struct Vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+} Vec4;
+
+typedef struct TransformMatrix {
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 position;
+} TransformMatrix;
 
 typedef struct tColour {
     float r;
@@ -33,6 +49,22 @@ struct BodNode {
     BodNode* list_prev;
     BodNode* list_next;
 };
+
+typedef struct BodBase {
+    BodNode bod;
+    Vec3 position;
+    float render_arg_1c;
+    float render_arg_20;
+    void* object;
+    tColour color;
+} BodBase;
+
+typedef struct RenderableBod {
+    BodBase bod;
+    TransformMatrix transform;
+    void* render_animation_manager;
+    uint8_t unknown_7c[0x4];
+} RenderableBod;
 
 typedef struct BodList {
     int32_t unknown_00;
@@ -63,9 +95,9 @@ struct Sprite {
     Sprite* prev;
     int32_t render_bucket_index;
     float render_depth_key;
-    struct TextureRef* texture_ref;
-    struct TextureRef* texture_ref_a;
-    struct TextureRef* texture_ref_b;
+    TextureRef* texture_ref;
+    TextureRef* texture_ref_a;
+    TextureRef* texture_ref_b;
     int32_t draw_mode;
     tColour color;
     Vec3 previous_position;
@@ -102,7 +134,7 @@ typedef struct SpriteManager {
     Sprite* free_head;
 } SpriteManager;
 
-typedef struct GarbageHazardSlot GarbageHazardSlot;
+typedef struct SubGarbage SubGarbage;
 enum SubGarbageState {
     SUB_GARBAGE_STATE_INACTIVE = 0,
     SUB_GARBAGE_STATE_ACTIVE = 1,
@@ -119,27 +151,9 @@ enum {
     SUB_GARBAGE_SLOT_CAPACITY = 50,
 };
 
-struct GarbageHazardSlot {
-    void* vtable;
-    uint32_t list_flags;
-    GarbageHazardSlot* list_prev;
-    GarbageHazardSlot* list_next;
-    Vec3 bod_position;
-    float render_arg_1c;
-    float render_arg_20;
-    void* object;
-    tColour color;
-    Vec3 basis_right;
-    float basis_right_w;
-    Vec3 basis_up;
-    float basis_up_w;
-    Vec3 basis_forward;
-    float basis_forward_w;
-    Vec3 world_position;
-    float world_position_w;
-    void* render_animation_manager;
-    uint8_t unknown_7c[0x4];
-    GarbageHazardSlot* next_active;
+struct SubGarbage {
+    RenderableBod body;
+    SubGarbage* next_active;
     int32_t state;
     int32_t collision_side;
     SubgameRuntime* owner_game;
@@ -151,16 +165,20 @@ struct GarbageHazardSlot {
     float smoke_timer;
     float smoke_timer_step;
     Sprite* sprite;
-    struct TrackRowCell* source_cell;
+    TrackRowCell* source_cell;
     uint8_t hidden;
     uint8_t unknown_bd[0x3];
-    struct Player* owner_player;
+    Player* owner_player;
 };
 
-typedef struct GarbageHazardPool {
-    GarbageHazardSlot* active_head;
-    GarbageHazardSlot slots[SUB_GARBAGE_SLOT_CAPACITY];
-} GarbageHazardPool;
+typedef SubGarbage GarbageHazardSlot;
+
+typedef struct SubGarbagePool {
+    SubGarbage* active_head;
+    SubGarbage slots[SUB_GARBAGE_SLOT_CAPACITY];
+} SubGarbagePool;
+
+typedef SubGarbagePool GarbageHazardPool;
 
 void __thiscall initialize_sprite_manager(SpriteManager* manager);
 Sprite* __thiscall allocate_sprite(
@@ -175,19 +193,19 @@ void __thiscall kill_sprite(Sprite* sprite);
 void __thiscall kill_game_sprites(SpriteManager* manager);
 void __thiscall update_sprite_facing_angle(Sprite* sprite, const TransformMatrix* matrix);
 uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused);
-struct TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id);
+TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id);
 
-GarbageHazardSlot* __thiscall initialize_garbage_hazard(GarbageHazardSlot* slot);
-void __thiscall update_garbage_hazard(GarbageHazardSlot* slot);
-GarbageHazardSlot* __thiscall destroy_garbage_hazard(GarbageHazardSlot* slot);
+SubGarbage* __thiscall initialize_garbage_hazard(SubGarbage* sub_garbage);
+void __thiscall update_garbage_hazard(SubGarbage* sub_garbage);
+SubGarbage* __thiscall destroy_garbage_hazard(SubGarbage* sub_garbage);
 void __thiscall spawn_garbage_smoke_particle(
-    GarbageHazardSlot* slot,
+    SubGarbage* sub_garbage,
     Vec3* position,
     Vec3* velocity,
-    struct Player* owner_player);
+    Player* owner_player);
 void __thiscall spawn_track_garbage_hazard(
     SubgameRuntime* game,
-    struct TrackRowCell* cell,
-    struct Player* player);
+    TrackRowCell* cell,
+    Player* player);
 
 #endif

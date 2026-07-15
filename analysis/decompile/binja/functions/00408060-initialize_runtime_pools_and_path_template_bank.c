@@ -49,11 +49,11 @@
 0040822c        i_2 = i_10
 0040822c        i_10 -= 1
 0040822d        do while (i_2 != 1)
-0040822f        struct GarbageHazardSlot* slot = arg1 + 0x359144
+0040822f        struct SubGarbage* sub_garbage = arg1 + 0x359144
 00408235        int32_t i_11 = 0x32
 00408248        int32_t i_3
-0040823c        initialize_garbage_hazard(slot)
-00408241        slot = &slot[1]
+0040823c        initialize_garbage_hazard(sub_garbage)
+00408241        sub_garbage = &sub_garbage[1]
 00408247        i_3 = i_11
 00408247        i_11 -= 1
 00408248        do while (i_3 != 1)

@@ -128,7 +128,9 @@ intentional.
     The older selected-level sync was retired because it recreated a parallel
     `Game` owner and flattened overlapping player fields.
 - `bn_garbage_hazard_types.h`
-- `uv run python tools/binja/sync_garbage_hazard_types.py`
+- `uv run python tools/binja/sync_garbage_hazard_types.py --target SnailMail_unwrapped.exe.bndb`
+  - Promotes the exact `SubGarbage` / `SubGarbagePool` owner pair, preserving
+    the inherited `RenderableBod` at offset zero and the 50-slot inline pool.
 - `bn_high_score_bank_types.h`
 - `uv run python tools/binja/sync_high_score_bank_types.py`
 - `bn_subgame_runtime_types.h`

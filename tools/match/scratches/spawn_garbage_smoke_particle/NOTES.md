@@ -135,3 +135,11 @@ therefore typed through the primary `SubGarbage` owner; the old
 is byte-stable at 85.14%, 72/76 candidate instructions, and nine clean masked
 operands. The remaining gap is the already documented VC6 velocity-tail
 scheduling residual, not an ownership or field-layout ambiguity.
+
+## 2026-07-15 analysis-lane replay
+
+Binary Ninja and IDA now agree on the void
+`spawn_garbage_smoke_particle(SubGarbage*, Vec3*, Vec3*, Player*)` receiver
+contract. The decompilers independently recover the containing subgame rate
+through `sub_garbage->owner_game`; no flattened garbage runtime or generic slot
+owner is needed. The honest 85.14% source-shaped frontier remains pinned.

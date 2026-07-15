@@ -300,3 +300,13 @@ prefix, and 22 clean masked operands**. An explicit double cast on the x
 integration was briefly tested because it also emitted the target schedule,
 but was rejected as an unsupported precision coercion; the retained exact
 source uses only the recovered float fields and ordinary arithmetic.
+
+## 2026-07-15 analysis-lane replay
+
+Both tracked decompilers now expose the native receiver as `SubGarbage*`, the
+live position as `sub_garbage->body.transform.position`, and the containing
+runtime through `sub_garbage->owner_game`. Binary Ninja independently reads
+the callback as a void thiscall at `0x43f200`, agreeing with the constructor
+table and the retained cross-port `cRSubGarbage::AI()` symbol. The exact
+217/217 matcher proof is unchanged; this pass recovers the same ownership in
+both analysis lanes.

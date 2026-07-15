@@ -11,11 +11,11 @@
 0043da9d        if (eax s>= 0x32)
 0043daa4        report_warningf("Run Out of Garbage Slots")
 0043dab0        return
-0043dac4        void* esi = &game->unknown_000000[eax * 0xc4]
+0043dac4        void* esi = game + eax * 0xc4
 0043dad0        char* var_24 = "Gadd"
 0043dad5        *(esi + 0x3591c4) = game->garbage_hazards.active_head
 0043dae9        game->garbage_hazards.active_head = esi + 0x359144
-0043daf4        float* ebx = &game->unknown_000000[(eax + 0x45f8) * 0xc4]
+0043daf4        float* ebx = game + (eax + 0x45f8) * 0xc4
 0043daf7        *(esi + 0x359204) = player
 0043db1b        *ebx = fconvert.s((random_float_below(0.400000006f) + fconvert.t(1f)) * fconvert.t(0.600000024f))
 0043db1d        *(esi + 0x3591c8) = 1
@@ -28,22 +28,22 @@
 0043db59        *(esi + 0x3591b0) = var_8
 0043db64        *(esi + 0x3591b4) = z
 0043db69        int16_t x87control = project_position_onto_track_attachment(game, esi + 0x3591ac, esi + 0x3591e4)
-0043db81        void* eax_5 = &g_game_base[0x5a8]
+0043db81        struct FrameBodList* eax_5 = &g_game_base->active_bod_list
 0043db88        if ((0x200 & (esi + 0x359144)->list_flags) == 0)
 0043db9b        (esi + 0x359144)->list_next = &game->player
-0043dba3        if (*(eax_5 + 4) != &game->player)
+0043dba3        if (eax_5->first != &game->player)
 0043dbb5        (esi + 0x359144)->list_prev = game->player.body.bod.bod.list_prev
 0043dbb8        game->player.body.bod.bod.list_prev = esi + 0x359144
 0043dbc0        (esi + 0x359144)->list_prev->list_next = esi + 0x359144
 0043dba5        game->player.body.bod.bod.list_prev = esi + 0x359144
-0043dbaa        *(eax_5 + 4) = esi + 0x359144
+0043dbaa        eax_5->first = esi + 0x359144
 0043dbad        (esi + 0x359144)->list_prev = nullptr
 0043dbc3        (esi + 0x359144)->list_flags |= 0x200
 0043db8f        report_errorf("List ADDbefore")
 0043dbdd        int32_t eax_8 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-0.000122070312f))
 0043dbfc        struct Sprite* eax_10 = allocate_sprite(&g_sprite_manager, *(*(esi + 0x359204) + 0x380), 0x72 - eax_8, 0xffffffff, 0xffffffff)
 0043dc01        *(esi + 0x3591f8) = eax_10
-0043dc07        uint32_t flags = eax_10->flags
+0043dc07        enum SpriteFlag flags = eax_10->flags
 0043dc0a        flags:1.b |= 8
 0043dc0d        eax_10->flags = flags
 0043dc16        *(*(esi + 0x3591f8) + 0x78) = 0

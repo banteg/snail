@@ -118,32 +118,32 @@
 00440b47        game->jetpack_pickup.bod.list_flags = list_flags_15
 00440b0c        report_errorf("List remove NEXTBOD")
 00440b4a        game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE
-00440b50        struct GarbageHazardSlot** esi_4 = &game->garbage_hazards.slots[0].list_next
+00440b50        struct BodNode** esi_4 = &game->garbage_hazards.slots[0].body.bod.bod.list_next
 00440b56        int32_t i_8 = 0x32
 00440bd6        int32_t i_2
-00440b61        if ((((esi_4 - 0x359150)->garbage_hazards.slots[0].list_flags).w:1.b & 2) != 0)
+00440b61        if ((((esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_flags).w:1.b & 2) != 0)
 00440b63        (esi_4 - 0x359150)->garbage_hazards.slots[0].state = 0
-00440b6c        uint16_t list_flags_4 = ((esi_4 - 0x359150)->garbage_hazards.slots[0].list_flags).w
+00440b6c        uint16_t list_flags_4 = ((esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_flags).w
 00440b72        struct FrameBodList* ecx_10 = &g_game_base->active_bod_list
 00440b78        if ((list_flags_4:1.b & 2) == 0)
 00440b7f        report_errorf("List remove")
 00440b8b        if ((list_flags_4.b & 0x40) == 0)
-00440b9c        struct GarbageHazardSlot* list_next_2 = (esi_4 - 0x359150)->garbage_hazards.slots[0].list_next
+00440b9c        struct BodNode* list_next_2 = (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_next
 00440ba0        if (list_next_2 != 0)
-00440ba5        list_next_2->list_prev = (esi_4 - 0x359150)->garbage_hazards.slots[0].list_prev
-00440ba8        struct GarbageHazardSlot* list_prev_2 = (esi_4 - 0x359150)->garbage_hazards.slots[0].list_prev
+00440ba5        list_next_2->list_prev = (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_prev
+00440ba8        struct BodNode* list_prev_2 = (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_prev
 00440bad        if (list_prev_2 == 0)
-00440bb8        ecx_10->first = (esi_4 - 0x359150)->garbage_hazards.slots[0].list_next
-00440bb1        list_prev_2->list_next = (esi_4 - 0x359150)->garbage_hazards.slots[0].list_next
-00440bbb        struct GarbageHazardSlot* edx_23
+00440bb8        ecx_10->first = (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_next
+00440bb1        list_prev_2->list_next = (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_next
+00440bbb        struct BodNode* edx_23
 00440bbb        edx_23.b = ecx_10->free_top.b
 00440bbb        edx_23:1.b = ecx_10->free_top:1.b
-00440bc1        (esi_4 - 0x359150)->garbage_hazards.slots[0].list_next = edx_23
+00440bc1        (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_next = edx_23
 00440bc3        ecx_10->free_top.b = (esi_4.w - 0xc).b
 00440bc3        ecx_10->free_top:1.b = (esi_4.w - 0xc):1.b
-00440bc6        uint32_t list_flags_5 = (esi_4 - 0x359150)->garbage_hazards.slots[0].list_flags
+00440bc6        uint32_t list_flags_5 = (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_flags
 00440bc9        list_flags_5:1.b &= 0xfd
-00440bcc        (esi_4 - 0x359150)->garbage_hazards.slots[0].list_flags = list_flags_5
+00440bcc        (esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_flags = list_flags_5
 00440b92        report_errorf("List remove NEXTBOD")
 00440bcf        esi_4 = &esi_4[0x31]
 00440bd5        i_2 = i_8

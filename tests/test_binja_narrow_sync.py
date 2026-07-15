@@ -1855,6 +1855,56 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "class Salt : public RenderableBod" in matcher_salt
 
 
+def test_sub_garbage_owner_replays_stay_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    garbage_sync = (BINJA_DIR / "sync_garbage_hazard_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    garbage_header = (HEADER_DIR / "bn_garbage_hazard_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/garbage_hazard_slot.h"
+    ).read_text(encoding="utf-8")
+
+    for header in (garbage_header, path_header):
+        assert "typedef struct SubGarbage SubGarbage;" in header
+        assert "struct SubGarbage {" in header
+        assert "RenderableBod body;" in header
+        assert "typedef SubGarbage GarbageHazardSlot;" in header
+        assert "typedef struct SubGarbagePool {" in header
+        assert "SubGarbage* active_head;" in header
+        assert "SubGarbage slots[" in header
+        assert "typedef SubGarbagePool GarbageHazardPool;" in header
+
+    assert 'struct_name="SubGarbage"' in garbage_sync
+    assert 'struct_name="SubGarbagePool"' in garbage_sync
+    assert '("0x00", "body", "RenderableBod")' in garbage_sync
+    assert "SubGarbage* sub_garbage" in garbage_sync
+    assert "GarbageHazardRuntime" not in garbage_sync
+    assert 'parser.add_argument("--target", default=DEFAULT_TARGET' in garbage_sync
+    for ida_sync in (ida_runtime_sync, ida_path_sync):
+        for declaration in (
+            "SubGarbage* __thiscall initialize_garbage_hazard(SubGarbage* sub_garbage);",
+            "void __thiscall update_garbage_hazard(SubGarbage* sub_garbage);",
+            "SubGarbage* __thiscall destroy_garbage_hazard(SubGarbage* sub_garbage);",
+            "void __thiscall spawn_garbage_smoke_particle(SubGarbage* sub_garbage, Vec3* position, Vec3* velocity, Player* owner_player);",
+        ):
+            assert declaration in ida_sync
+        assert "GarbageHazardSlot* slot" not in ida_sync
+
+    assert "class SubGarbage : public RenderableBod" in matcher_header
+
+
 def test_warning_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

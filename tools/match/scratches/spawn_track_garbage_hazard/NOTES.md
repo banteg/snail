@@ -254,3 +254,11 @@ The allocator's borrowed BOD membership now begins from a canonical
 `GameRoot*` declaration, while slot storage and active-chain ownership remain
 with `SubgameRuntime::garbage_hazards`. Focused output stays exact at 143/143
 instructions with all 16 operands clean.
+
+## 2026-07-15 analysis-lane replay
+
+The canonical analysis headers now type `SubgameRuntime::garbage_hazards` as
+the exact 0x264c-byte `SubGarbagePool`, with its active head followed by 50
+inline `SubGarbage` records. Both decompiler lanes recover the pool scan and
+active-head splice under that owner; the exact 143/143 matcher proof remains
+unchanged.

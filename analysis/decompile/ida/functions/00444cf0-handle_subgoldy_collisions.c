@@ -11,7 +11,7 @@ int32_t __thiscall handle_subgoldy_collisions(Player *player)
   int j; // edi
   float *v6; // eax
   double v7; // st7
-  GarbageHazardSlot *k; // edi
+  SubGarbage *k; // edi
   double v9; // st7
   __int64 v10; // rax
   int m; // edi

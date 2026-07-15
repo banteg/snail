@@ -3,9 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_garbage_hazard @ 0x408550 */
 
-00408553        initialize_renderable_bod(self)
-00408558        self->_pad_00[0] = 0x28
-00408558        self->_pad_00[1] = 0x73
-00408558        self->_pad_00[2] = 0x49
-00408558        self->_pad_00[3] = 0
-00408561        return self
+00408553        initialize_renderable_bod(sub_garbage)
+00408558        sub_garbage->body.bod.bod.vtable = &data_497328
+00408561        return sub_garbage

@@ -30,3 +30,11 @@ gate. The slot has list links at `+0x08/+0x0c` and a renderable transform at
 This retires its duplicated `BodBase + TransformMatrix` fields without a union
 alias or raw prefix. The constructor remains exact at 7/7 instructions with
 both operands clean, independently proving the zero-offset base call.
+
+## 2026-07-15 analysis-lane replay
+
+The narrow Binary Ninja replay now declares `SubGarbage` as a 0xc4-byte owner
+with `RenderableBod body` at `+0x00`, and `SubGarbagePool` as a 0x264c-byte
+wrapper with 50 inline records. Binary Ninja and IDA both read this constructor
+back as `SubGarbage* __thiscall(SubGarbage*)`; the old flattened
+`GarbageHazardRuntime` analysis shell is retired.

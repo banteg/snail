@@ -2,11 +2,10 @@
 /* function: initialize_garbage_hazard @ 0x408550 */
 /* selector: initialize_garbage_hazard */
 
-// Constructs one garbage-hazard runtime object by running the shared body constructor and installing the cRSubGarbage vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot garbage pool that later feeds `spawn_track_garbage_hazard`.
-_DWORD *__thiscall sub_408550(_DWORD *this)
+// Exact Windows constructor for one authored `SubGarbage` (`cRSubGarbage` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger.
+SubGarbage *__thiscall initialize_garbage_hazard(SubGarbage *sub_garbage)
 {
-  initialize_renderable_bod(this);
-  *this = &off_497328;
-  return this;
+  initialize_renderable_bod(sub_garbage);
+  sub_garbage->body.bod.bod.vtable = &g_sub_garbage_vtable;
+  return sub_garbage;
 }
-

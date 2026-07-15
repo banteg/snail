@@ -74,3 +74,11 @@ The destroyer now carries the process root as `GameRoot*`, matching the
 already-proven `active_bod_list` owner instead of casting a byte pointer at the
 unlink site. It remains exact at 62/62 instructions with all six operands
 clean.
+
+## 2026-07-15 analysis-lane replay
+
+Binary Ninja and IDA now read the exact teardown through the primary
+`SubGarbage*` receiver. Both lanes preserve the inherited
+`body.bod.bod.list_flags` path and the borrowed
+`owner_game->garbage_hazards.active_head` chain, cleanly separating root BOD
+membership from pool ownership. The 62/62 source match remains unchanged.

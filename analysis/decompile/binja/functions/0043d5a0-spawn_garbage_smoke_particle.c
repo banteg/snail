@@ -3,19 +3,19 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_garbage_smoke_particle @ 0x43d5a0 */
 
-0043d5ad        if ((data_4df934 & 0x10) == 0)
+0043d5ad        if ((g_runtime_config.render_flags.b & 0x10) == 0)
 0043d5ad        return
-0043d5ca        struct Sprite* eax_1 = allocate_sprite(&g_sprite_manager, player->player_slot, 0x21, 0xffffffff, 0xffffffff)
-0043d5e0        uint32_t flags = eax_1->flags
+0043d5ca        struct Sprite* eax_1 = allocate_sprite(&g_sprite_manager, owner_player->player_slot, 0x21, 0xffffffff, 0xffffffff)
+0043d5e0        enum SpriteFlag flags = eax_1->flags
 0043d5e3        eax_1->progress = 0f
 0043d5ea        flags:1.b |= 8
 0043d5f2        eax_1->flags = flags
-0043d602        long double x87_r7_2 = fconvert.t(slot->game->subgame_rate) * fconvert.t(0.0333333351f)
+0043d602        long double x87_r7_2 = fconvert.t(sub_garbage->owner_game->subgame_rate) * fconvert.t(0.0333333351f)
 0043d608        eax_1->lifetime = 0f
 0043d60f        eax_1->progress_step = fconvert.s(x87_r7_2)
-0043d621        eax_1->lifetime_step = fconvert.s(fconvert.t(slot->game->subgame_rate) * fconvert.t(0.416666687f))
-0043d624        struct Color4f color
-0043d624        struct Color4f* eax_3 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+0043d621        eax_1->lifetime_step = fconvert.s(fconvert.t(sub_garbage->owner_game->subgame_rate) * fconvert.t(0.416666687f))
+0043d624        struct tColour color
+0043d624        struct tColour* eax_3 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 0043d62e        eax_1->color.r = eax_3->r
 0043d634        eax_1->color.g = eax_3->g
 0043d63a        eax_1->color.b = eax_3->b

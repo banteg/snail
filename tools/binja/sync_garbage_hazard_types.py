@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import sys
 
@@ -18,26 +19,25 @@ from _narrow_sync import (
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HEADER_PATH = REPO_ROOT / "analysis/headers/bn_garbage_hazard_types.h"
-TARGET = DEFAULT_TARGET
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_garbage_hazard_types.h"
 
 REQUIRED_HEADER_STRUCTS = (
     "BodList",
     "BodNode",
     "SpriteFlag",
-    "GarbageHazardPool",
-    "GarbageHazardSlot",
+    "SubGarbagePool",
+    "SubGarbage",
     "Sprite",
     "SpriteManager",
 )
 
 GAME_FIELD_UPDATES = (
     ("0x5a8", "active_bod_list", "BodList"),
-    ("0x359140", "garbage_hazards", "GarbageHazardPool"),
+    ("0x359140", "garbage_hazards", "SubGarbagePool"),
 )
 
 SUBGAME_FIELD_UPDATES = (
-    ("0x359140", "garbage_hazards", "GarbageHazardPool"),
+    ("0x359140", "garbage_hazards", "SubGarbagePool"),
 )
 
 SPRITE_FIELD_UPDATES = (
@@ -86,25 +86,9 @@ SPRITE_MANAGER_FIELD_UPDATES = (
     ("0x83d78", "free_head", "Sprite*"),
 )
 
-GARBAGE_HAZARD_SLOT_FIELD_UPDATES = (
-    ("0x00", "vtable", "void*"),
-    ("0x04", "list_flags", "uint32_t"),
-    ("0x08", "list_prev", "GarbageHazardSlot*"),
-    ("0x0c", "list_next", "GarbageHazardSlot*"),
-    ("0x10", "bod_position", "Vec3"),
-    ("0x1c", "render_arg_1c", "int32_t"),
-    ("0x20", "render_arg_20", "float"),
-    ("0x24", "object", "void*"),
-    ("0x28", "color", "tColour"),
-    ("0x38", "basis_right", "Vec3"),
-    ("0x44", "basis_right_w", "float"),
-    ("0x48", "basis_up", "Vec3"),
-    ("0x54", "basis_up_w", "float"),
-    ("0x58", "basis_forward", "Vec3"),
-    ("0x64", "basis_forward_w", "float"),
-    ("0x68", "world_position", "Vec3"),
-    ("0x74", "world_position_w", "float"),
-    ("0x80", "next_active", "GarbageHazardSlot*"),
+SUB_GARBAGE_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
+    ("0x80", "next_active", "SubGarbage*"),
     ("0x84", "state", "int32_t"),
     ("0x88", "collision_side", "int32_t"),
     ("0x8c", "owner_game", "SubgameRuntime*"),
@@ -121,9 +105,9 @@ GARBAGE_HAZARD_SLOT_FIELD_UPDATES = (
     ("0xc0", "owner_player", "Player*"),
 )
 
-GARBAGE_HAZARD_POOL_FIELD_UPDATES = (
-    ("0x00", "active_head", "GarbageHazardSlot*"),
-    ("0x04", "slots", "GarbageHazardSlot[0x32]"),
+SUB_GARBAGE_POOL_FIELD_UPDATES = (
+    ("0x00", "active_head", "SubGarbage*"),
+    ("0x04", "slots", "SubGarbage[0x32]"),
 )
 
 SPRITE_SYMBOL_UPDATES = (
@@ -165,19 +149,19 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_garbage_hazard",
-        "GarbageHazardSlot* __thiscall initialize_garbage_hazard(GarbageHazardSlot* slot)",
+        "SubGarbage* __thiscall initialize_garbage_hazard(SubGarbage* sub_garbage)",
     ),
     (
         "update_garbage_hazard",
-        "void __thiscall update_garbage_hazard(GarbageHazardSlot* slot)",
+        "void __thiscall update_garbage_hazard(SubGarbage* sub_garbage)",
     ),
     (
         "destroy_garbage_hazard",
-        "GarbageHazardSlot* __thiscall destroy_garbage_hazard(GarbageHazardSlot* slot)",
+        "SubGarbage* __thiscall destroy_garbage_hazard(SubGarbage* sub_garbage)",
     ),
     (
         "spawn_garbage_smoke_particle",
-        "void __thiscall spawn_garbage_smoke_particle(GarbageHazardSlot* slot, Vec3* position, Vec3* velocity, Player* owner_player)",
+        "void __thiscall spawn_garbage_smoke_particle(SubGarbage* sub_garbage, Vec3* position, Vec3* velocity, Player* owner_player)",
     ),
     (
         "spawn_track_garbage_hazard",
@@ -186,77 +170,94 @@ PROTO_UPDATES = (
 )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Apply the narrow cRSubGarbage and sprite ownership slice."
+    )
+    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
+    parser.add_argument(
+        "--header",
+        type=Path,
+        default=DEFAULT_HEADER_PATH,
+        help="Narrow Binary Ninja type header.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
+    args = parse_args()
+    header_path = args.header.resolve()
+    if not header_path.is_file():
+        raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
+
     operations: list[dict[str, object]] = [
         types_declare_if_missing(
             REPO_ROOT,
-            target=TARGET,
-            header_path=HEADER_PATH,
+            target=args.target,
+            header_path=header_path,
             required_structs=REQUIRED_HEADER_STRUCTS,
         ),
-        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="Game", updates=GAME_FIELD_UPDATES),
-        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="Sprite", updates=SPRITE_FIELD_UPDATES),
         *apply_struct_field_updates(
             REPO_ROOT,
-            target=TARGET,
+            target=args.target,
+            struct_name="Game",
+            updates=GAME_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="Sprite",
+            updates=SPRITE_FIELD_UPDATES,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
             struct_name="SpriteManager",
             updates=SPRITE_MANAGER_FIELD_UPDATES,
         ),
         *apply_struct_field_updates(
             REPO_ROOT,
-            target=TARGET,
-            struct_name="GarbageHazardSlot",
-            updates=GARBAGE_HAZARD_SLOT_FIELD_UPDATES,
+            target=args.target,
+            struct_name="SubGarbage",
+            updates=SUB_GARBAGE_FIELD_UPDATES,
         ),
         *apply_struct_field_updates(
             REPO_ROOT,
-            target=TARGET,
-            struct_name="GarbageHazardPool",
-            updates=GARBAGE_HAZARD_POOL_FIELD_UPDATES,
+            target=args.target,
+            struct_name="SubGarbagePool",
+            updates=SUB_GARBAGE_POOL_FIELD_UPDATES,
         ),
-        *apply_symbol_updates(REPO_ROOT, target=TARGET, updates=SPRITE_SYMBOL_UPDATES, kind="data"),
-        *apply_data_var_updates(REPO_ROOT, target=TARGET, updates=SPRITE_DATA_VAR_UPDATES),
-        *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SPRITE_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SPRITE_DATA_VAR_UPDATES,
+        ),
+        *apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES),
     ]
 
     for struct_name in ("SubgameRuntime", "FrameSubgameRuntime"):
-        if struct_exists(REPO_ROOT, target=TARGET, struct_name=struct_name):
+        if struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name):
             operations.extend(
                 apply_struct_field_updates(
                     REPO_ROOT,
-                    target=TARGET,
+                    target=args.target,
                     struct_name=struct_name,
                     updates=SUBGAME_FIELD_UPDATES,
                 )
             )
 
-    if struct_exists(REPO_ROOT, target=TARGET, struct_name="GarbageHazardRuntime"):
-        operations.extend(
-            apply_struct_field_updates(
-                REPO_ROOT,
-                target=TARGET,
-                struct_name="GarbageHazardRuntime",
-                updates=(
-                    ("0x68", "world_position", "Vec3"),
-                    ("0x80", "next_active", "GarbageHazardSlot*"),
-                    ("0x84", "state", "int32_t"),
-                    ("0x88", "collision_side", "int32_t"),
-                    ("0x8c", "game", "SubgameRuntime*"),
-                    ("0x90", "velocity", "Vec3"),
-                    ("0x9c", "radius", "float"),
-                    ("0xa0", "attachment_facing_angle", "float"),
-                    ("0xa8", "burst_rate_step", "float"),
-                    ("0xac", "smoke_timer", "float"),
-                    ("0xb0", "smoke_timer_step", "float"),
-                    ("0xb4", "sprite", "Sprite*"),
-                    ("0xb8", "source_cell", "TrackRowCell*"),
-                    ("0xbc", "hidden", "uint8_t"),
-                    ("0xc0", "player", "Player*"),
-                ),
-            )
-        )
-
-    return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)
+    return emit_summary(
+        repo_root=REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+        operations=operations,
+    )
 
 
 if __name__ == "__main__":

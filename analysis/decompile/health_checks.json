@@ -280,33 +280,81 @@
       "artifact": "analysis/decompile/binja/functions/00444cf0-handle_subgoldy_collisions.c",
       "required_substrings": [
         "struct SubgameRuntime* game",
-        "player->game->garbage_hazards.active_head"
+        "struct SubGarbage* i_2 = player->game->garbage_hazards.active_head",
+        "i_2->body.transform.position.z"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "i_2->world_position"
       ]
     },
     {
       "name": "bn_nested_subgame_destroy_garbage_owner",
       "artifact": "analysis/decompile/binja/functions/0043f130-destroy_garbage_hazard.c",
       "required_substrings": [
+        "sub_garbage->body.bod.bod.list_flags",
         "struct SubgameRuntime* owner_game",
+        "struct SubGarbage* active_head",
         "owner_game->garbage_hazards.active_head"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "slot->",
+        "sub_garbage->list_flags"
       ]
     },
     {
       "name": "bn_nested_subgame_update_garbage_owner",
       "artifact": "analysis/decompile/binja/functions/0043f200-update_garbage_hazard.c",
       "required_substrings": [
-        "slot->owner_game->subgame_pause_gate",
+        "sub_garbage->owner_game->subgame_pause_gate",
+        "sub_garbage->body.transform.position.x",
         "struct SubgameRuntime* owner_game",
         "owner_game->subgame_rate"
       ],
       "forbidden_substrings": [
-        "struct Game*"
+        "struct Game*",
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "slot->",
+        "sub_garbage->world_position"
+      ]
+    },
+    {
+      "name": "ida_nested_subgame_destroy_garbage_owner",
+      "artifact": "analysis/decompile/ida/functions/0043f130-destroy_garbage_hazard.c",
+      "required_substrings": [
+        "SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)",
+        "sub_garbage->body.bod.bod.list_flags",
+        "SubGarbage *result",
+        "owner_game->garbage_hazards.active_head"
+      ],
+      "forbidden_substrings": [
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "slot->",
+        "sub_garbage->list_flags"
+      ]
+    },
+    {
+      "name": "ida_nested_subgame_update_garbage_owner",
+      "artifact": "analysis/decompile/ida/functions/0043f200-update_garbage_hazard.c",
+      "required_substrings": [
+        "void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)",
+        "sub_garbage->owner_game->subgame_pause_gate",
+        "sub_garbage->body.transform.position.x",
+        "SubgameRuntime *owner_game",
+        "owner_game->subgame_rate"
+      ],
+      "forbidden_substrings": [
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
+        "slot->",
+        "sub_garbage->world_position"
       ]
     },
     {
@@ -2822,6 +2870,8 @@
       "forbidden_substrings": [
         "return result",
         "__offset(SubgameRuntime, 0x3591c8)",
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
         "__asm",
         "_ET1"
       ]
@@ -2838,6 +2888,8 @@
       "forbidden_substrings": [
         "Vec3 *__thiscall spawn_track_garbage_hazard",
         "return result",
+        "GarbageHazardSlot",
+        "GarbageHazardRuntime",
         "__asm",
         "_ET1"
       ]
