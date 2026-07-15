@@ -36,6 +36,18 @@ def test_owner_syncs_keep_subgame_runtime_as_the_canonical_backlink() -> None:
     assert "SubgameRuntime* game;" in path_header
 
 
+def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
+    high_score_sync = (BINJA_DIR / "sync_high_score_screen_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert '("0x12e6f58", "tip_manager", "TipManager")' in path_sync
+    assert '("GameRoot", GAME_ROOT_FIELD_UPDATES)' in path_sync
+    assert '("0x12e6e50", "high_score", "HighScore")' in high_score_sync
+    assert 'struct_name="GameRoot"' in high_score_sync
+
+
 def test_parse_struct_layout_size() -> None:
     assert _narrow_sync.parse_struct_layout_size("struct Runtime // size=0x1272838") == 0x1272838
     assert _narrow_sync.parse_struct_layout_size("struct Tiny // size=1") == 1

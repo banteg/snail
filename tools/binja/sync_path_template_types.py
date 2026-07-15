@@ -451,6 +451,13 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
 )
 
+# The frame-renderer bootstrap intentionally leaves the post-subgame root tail
+# opaque until its exact child types exist.  This replay lane owns TipManager,
+# so promote the proved root member after importing the authoritative type.
+GAME_ROOT_FIELD_UPDATES = (
+    ("0x12e6f58", "tip_manager", "TipManager"),
+)
+
 VAPOUR_FIELD_UPDATES = (
     ("0x24", "owner", "Object*"),
     ("0x80", "point_count", "int32_t"),
@@ -1348,6 +1355,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             struct_updates=(
+                ("GameRoot", GAME_ROOT_FIELD_UPDATES),
                 ("SubPause", SUB_PAUSE_FIELD_UPDATES),
                 ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),

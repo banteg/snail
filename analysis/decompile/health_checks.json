@@ -13,7 +13,8 @@
       "forbidden_substrings": [
         "__asm",
         "_ET1",
-        "struct Game*"
+        "struct Game*",
+        "player->game->segment_cache.slots[0x8d][2]"
       ],
       "max_counts": {
         "__offset(": 220,
@@ -127,6 +128,17 @@
       ],
       "forbidden_substrings": [
         "struct Game*"
+      ]
+    },
+    {
+      "name": "bn_uninit_tutorial_root_tip_manager_owner",
+      "artifact": "analysis/decompile/binja/functions/00448dd0-uninit_tutorial.c",
+      "required_substrings": [
+        "uninit_tips(&g_game_base->tip_manager)"
+      ],
+      "forbidden_substrings": [
+        "data_4df904 + 0x12e6f58",
+        "g_game_base->__offset(0x12e6f58)"
       ]
     },
     {
