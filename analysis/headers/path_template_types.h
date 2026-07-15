@@ -2128,6 +2128,7 @@ void __thiscall add_subgoldy_score(
 void __thiscall clear_subgoldy_score_buckets(Player* player);
 void __thiscall display_score_stats(Player* player);
 void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss);
+void __thiscall update_subgoldy_resurrect(Player* player);
 void __thiscall handle_subgoldy_collisions(Player* player);
 void __thiscall kill_subgoldy(Player* player);
 void __thiscall initialize_subgoldy_death(Player* player);

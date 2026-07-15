@@ -203,12 +203,18 @@
         "g_game_base->fade.state",
         "players[0].frontend_state",
         "players[0].saved_frontend_state",
-        "players[0].high_score_entry_pending"
+        "players[0].high_score_entry_pending",
+        "player->resurrect_progress",
+        "player->resurrect_progress_step",
+        "player->resurrect_final_loss",
+        "player->visible_life_stock"
       ],
       "forbidden_substrings": [
         "g_game_base + 440",
         "g_game_base + 444",
-        "g_game_base + 781"
+        "g_game_base + 781",
+        "void __thiscall update_subgoldy_resurrect(int this)",
+        "*(_DWORD *)(this +"
       ]
     },
     {

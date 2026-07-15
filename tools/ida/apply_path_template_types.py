@@ -648,6 +648,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss);",
     ),
     (
+        "update_subgoldy_resurrect",
+        "void __thiscall update_subgoldy_resurrect(Player* player);",
+    ),
+    (
         "kill_subgoldy",
         "void __thiscall kill_subgoldy(Player* player);",
     ),

@@ -1232,10 +1232,15 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ("update_invincible_shell", "void __thiscall update_invincible_shell(Invincible* invincible)"),
 )
 
-# The full SubgameRuntime field map above is the canonical owner view consumed
-# by these lifecycle and level-builder functions. These prototypes have stable receiver
-# overrides in the live database and are safe to replay with the fields.
+# The full SubgameRuntime and Player field maps above are the canonical owner
+# views consumed by these lifecycle and level-builder functions. These
+# prototypes are replayed through the direct verified batch because older BN
+# analysis can otherwise restore an inferred but ABI-equivalent fastcall label.
 CORE_SUBGAME_PROTO_UPDATES = (
+    (
+        "update_subgoldy_resurrect",
+        "void __thiscall update_subgoldy_resurrect(Player* player)",
+    ),
     ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
     (
         "complete_subgame",

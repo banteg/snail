@@ -13,6 +13,10 @@ Exact match.
   `0x1a`, arcade continue state `0x1a/2`, or fallback state `0x1b`.
 - The exact source shape keeps the respawn/final-loss branches explicit so VC6
   can hoist shared `game`/`g_game` loads between condition tests and branches.
+- 2026-07-16 ABI replay: the sole `update_subgoldy` caller loads the `Player*`
+  receiver into ECX and continues without consuming EAX. The durable BN/IDA
+  catalogs now preserve the cross-port `void cRSubGoldy::RessurectAI()`
+  thiscall contract instead of BN's ABI-equivalent inferred fastcall label.
 - 2026-06-20 shared view, superseded 2026-07-14: the temporary `AppShell`
   slice introduced `app_shell.h` plus `frontend_fade.h` and first named
   `high_score_entry_pending` at root offset `+0x30d`.

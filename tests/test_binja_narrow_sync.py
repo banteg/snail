@@ -988,6 +988,7 @@ def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
         "void __thiscall clear_subgoldy_score_buckets(Player* player)",
         "void __thiscall display_score_stats(Player* player)",
         "void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
+        "void __thiscall update_subgoldy_resurrect(Player* player)",
         "void __thiscall handle_subgoldy_collisions(Player* player)",
         "void __thiscall kill_subgoldy(Player* player)",
         "void __thiscall initialize_subgoldy_death(Player* player)",
@@ -1001,6 +1002,7 @@ def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
         "int32_t __thiscall update_subgoldy(Player* player)",
         "Sprite* __thiscall set_subgoldy_ghost_z(Player* player, float ghost_z)",
         "int32_t __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
+        "void __fastcall update_subgoldy_resurrect(Player* player)",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
     ):
         assert stale_declaration not in binja_source

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 23,
+  "function_count": 24,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 23,
-  "ida_exported": 23,
+  "bn_exported": 24,
+  "ida_exported": 24,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -14,7 +14,7 @@
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
-  "strict": false,
+  "strict": true,
   "selected_functions": [
     {
       "name": "flush_row_event_display",
@@ -87,6 +87,10 @@
     {
       "name": "initialize_subgoldy_resurrect",
       "address": "0x441fa0"
+    },
+    {
+      "name": "update_subgoldy_resurrect",
+      "address": "0x441fd0"
     },
     {
       "name": "handle_subgoldy_collisions",

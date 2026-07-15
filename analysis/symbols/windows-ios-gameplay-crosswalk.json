@@ -1311,7 +1311,7 @@
       "ios_symbol": "cRSubGoldy::RessurectAI()",
       "source_object": null,
       "confidence": "high",
-      "notes": "v1.9-only spelling preserves the shipped typo."
+      "notes": "v1.9-only spelling preserves the shipped typo. The sole Windows caller loads Player* in ECX and consumes no result, proving the void thiscall member contract."
     },
     {
       "address": "0x4447c0",

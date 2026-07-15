@@ -220,7 +220,7 @@ LABEL_60:
           player->velocity.x = 0.0;
         }
         if ( LOBYTE(player->resurrect_active) )
-          update_subgoldy_resurrect((int)player);
+          update_subgoldy_resurrect(player);
         track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(player->game, p_position);
         v26 = player->game;
         source_cell = track_grid_cell_at_world_position;

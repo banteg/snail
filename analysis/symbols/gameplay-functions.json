@@ -2661,7 +2661,7 @@
     {
       "address": "0x441fd0",
       "name": "update_subgoldy_resurrect",
-      "description": "Advances Goldy's resurrect or death-resolution state machine after `initialize_subgoldy_death`: starts the fade, decrements the visible life stock on the respawn branch, and only falls through to `complete_subgame` when the final-loss path wins. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectAI()`."
+      "description": "Void `Player` member that advances Goldy's resurrect or death-resolution state machine after `initialize_subgoldy_death`: starts the fade, decrements the visible life stock on the respawn branch, and only falls through to `complete_subgame` when the final-loss path wins. Its sole `update_subgoldy` caller loads the receiver into ECX and consumes no result. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectAI()`."
     },
     {
       "address": "0x442120",
