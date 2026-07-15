@@ -35,58 +35,6 @@ static __forceinline void initialize_pair_sample(
     secondary->transform.position.z = z;
 }
 
-static __forceinline void orient_previous_with_up(
-    PathTemplateSample* samples, int current_index, int first_index, float roll_angle)
-{
-    PathTemplateSample* previous = &samples[current_index - 1];
-    PathTemplateSample* current = &samples[current_index];
-
-    if (current_index <= first_index) {
-        previous->transform.set_matrix_rotation_identity();
-        return;
-    }
-
-    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-    previous->transform.basis_forward = Vector3(
-        current->transform.position.x - previous->transform.position.x,
-        current->transform.position.y - previous->transform.position.y,
-        current->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
-    previous->transform.basis_right.cross_vectors(
-        &previous->transform.basis_up,
-        &previous->transform.basis_forward);
-    previous->transform.rotate_matrix_local_z(roll_angle);
-}
-
-static __forceinline void compute_terminal_deltas(Path* path)
-{
-    int i;
-    for (i = 0; i < path->segment_count - 1; ++i) {
-        PathTemplateSample* primary = &path->primary_samples[i];
-        PathTemplateSample* primary_next = &path->primary_samples[i + 1];
-        primary->delta_dir_to_next = Vector3(
-            primary_next->transform.position.x - primary->transform.position.x,
-            primary_next->transform.position.y - primary->transform.position.y,
-            primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.normalize_vector();
-
-        PathTemplateSample* secondary = &path->secondary_samples[i];
-        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
-    }
-
-    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
-        Vector3(0.0f, 0.0f, 1.0f);
-    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
-    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
-        Vector3(0.0f, 0.0f, 1.0f);
-    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
-}
-
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->request_object_vertices(
@@ -103,17 +51,24 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     for (row = 0; row <= path->segment_count; ++row) {
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
-            PathTemplateSample* sample = &path->primary_samples[row];
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row == path->segment_count)
-                sample = &path->primary_samples[row - 1];
-            vertex->x = sample->transform.position.x
-                + lateral * sample->transform.basis_right.x;
-            vertex->y = sample->transform.position.y
-                + lateral * sample->transform.basis_right.y;
-            vertex->z = sample->transform.position.z
-                + lateral * sample->transform.basis_right.z
-                + (row == path->segment_count ? 1.0f : 0.0f);
+            if (row == path->segment_count) {
+                PathTemplateSample* previous = &path->primary_samples[row - 1];
+                vertex->x = previous->transform.position.x
+                    + lateral * previous->transform.basis_right.x;
+                vertex->y = previous->transform.position.y
+                    + lateral * previous->transform.basis_right.y;
+                vertex->z = previous->transform.position.z + 1.0f
+                    + lateral * previous->transform.basis_right.z;
+            } else {
+                PathTemplateSample* sample = &path->primary_samples[row];
+                vertex->x = sample->transform.position.x
+                    + lateral * sample->transform.basis_right.x;
+                vertex->y = sample->transform.position.y
+                    + lateral * sample->transform.basis_right.y;
+                vertex->z = sample->transform.position.z
+                    + lateral * sample->transform.basis_right.z;
+            }
         }
     }
 
@@ -127,7 +82,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             for (face_index = 0; face_index < 2; ++face_index) {
                 ObjectFaceQuad* face =
                     &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                face->flags = 0;
+                face->header_word = 0;
 
                 if (face_index == 0) {
                     face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
@@ -187,8 +142,9 @@ void Path::initialize_slalomdouble_path_template_pair(
     for (i = 66; i < 70; ++i)
         initialize_pair_sample(this, i, 0.0f, 0.0f, i);
 
+    int curve_index = 0;
     for (i = 4; i < 66; ++i) {
-        float t = (float)(i - 4) * 0.016129032f;
+        float t = (float)curve_index * 0.016129032f;
         float angle = t * 12.566371f;
         float folded = t - 0.5f;
         float folded_copy;
@@ -200,13 +156,102 @@ void Path::initialize_slalomdouble_path_template_pair(
             folded = -folded;
 
         float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
-        float y = 1.0f - cosine(angle * 0.5f);
-        initialize_pair_sample(this, i, center, y, i);
-        orient_previous_with_up(primary_samples, i, 4, primary_samples[i - 1].center_x * 0.2617994f);
-        orient_previous_with_up(secondary_samples, i, 4, primary_samples[i - 1].center_x * 0.2617994f);
+        PathTemplateSample* primary = &primary_samples[i];
+        PathTemplateSample* secondary = &secondary_samples[i];
+        primary->center_x = center;
+        primary->rotation_scalar_98 = 0.0f;
+        primary->rotation_scalar_94 = 0.0f;
+        primary->special_scalar = 0.0f;
+        primary->lateral_scale = 1.0f;
+        set_matrix_identity(&primary->transform);
+        primary->transform.position.x = primary->center_x;
+        primary->transform.position.y = 1.0f - cosine(angle * 0.5f);
+        float z = (float)(curve_index + 4);
+        primary->transform.position.z = z;
+
+        set_matrix_identity(&secondary->transform);
+        secondary->transform.position.x = primary->center_x;
+        secondary->transform.position.y =
+            primary->transform.position.y + 0.49000001f;
+        secondary->transform.position.z = z;
+        PathTemplateSample* primary_previous = &primary_samples[i - 1];
+        PathTemplateSample* primary_current = &primary_samples[i];
+        if (i <= 4) {
+            primary_previous->transform.set_matrix_rotation_identity();
+        } else {
+            primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+            primary_previous->transform.basis_forward = Vector3(
+                primary_current->transform.position.x
+                    - primary_previous->transform.position.x,
+                primary_current->transform.position.y
+                    - primary_previous->transform.position.y,
+                primary_current->transform.position.z
+                    - primary_previous->transform.position.z);
+            primary_previous->transform.basis_forward.normalize_vector();
+            primary_previous->transform.basis_right.cross_vectors(
+                &primary_previous->transform.basis_up,
+                &primary_previous->transform.basis_forward);
+            float primary_roll = primary_previous->center_x * 0.2617994f;
+            primary_previous->transform.rotate_matrix_local_z(primary_roll);
+        }
+
+        PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
+        PathTemplateSample* secondary_current = &secondary_samples[i];
+        if (i <= 4) {
+            secondary_previous->transform.set_matrix_rotation_identity();
+        } else {
+            secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+            secondary_previous->transform.basis_forward = Vector3(
+                secondary_current->transform.position.x
+                    - secondary_previous->transform.position.x,
+                secondary_current->transform.position.y
+                    - secondary_previous->transform.position.y,
+                secondary_current->transform.position.z
+                    - secondary_previous->transform.position.z);
+            secondary_previous->transform.basis_forward.normalize_vector();
+            secondary_previous->transform.basis_right.cross_vectors(
+                &secondary_previous->transform.basis_up,
+                &secondary_previous->transform.basis_forward);
+            float secondary_roll = primary_previous->center_x * 0.2617994f;
+            secondary_previous->transform.rotate_matrix_local_z(secondary_roll);
+        }
+        ++curve_index;
     }
 
-    compute_terminal_deltas(this);
+    int delta_index = 0;
+    if (segment_count - 1 > 0) {
+        do {
+            primary_samples[delta_index].delta_dir_to_next = Vector3(
+                primary_samples[delta_index + 1].transform.position.x -
+                    primary_samples[delta_index].transform.position.x,
+                primary_samples[delta_index + 1].transform.position.y -
+                    primary_samples[delta_index].transform.position.y,
+                primary_samples[delta_index + 1].transform.position.z -
+                    primary_samples[delta_index].transform.position.z);
+            primary_samples[delta_index].delta_length =
+                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+
+            secondary_samples[delta_index].delta_dir_to_next = Vector3(
+                secondary_samples[delta_index + 1].transform.position.x -
+                    secondary_samples[delta_index].transform.position.x,
+                secondary_samples[delta_index + 1].transform.position.y -
+                    secondary_samples[delta_index].transform.position.y,
+                secondary_samples[delta_index + 1].transform.position.z -
+                    secondary_samples[delta_index].transform.position.z);
+            secondary_samples[delta_index].delta_length =
+                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+
+            ++delta_index;
+        } while (delta_index < segment_count - 1);
+    }
+
+    primary_samples[segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    primary_samples[segment_count - 1].delta_length = 1.0f;
+    secondary_samples[segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    secondary_samples[segment_count - 1].delta_length = 1.0f;
+
     build_strip_mesh(this, texture_a, texture_b);
     finalize_path_template();
     (void)curve_segments;

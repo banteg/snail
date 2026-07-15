@@ -74,3 +74,28 @@ delta loop moves focused Wibo from 26.92% (580/683) to 29.90% (588/683).
 The masked audit remains 32 ok, 0 unresolved, 3 mismatch; all three residuals
 are the pre-existing interior orientation pairings. The terminal stores belong
 directly to the two count-relative `Path` sample arrays.
+
+2026-07-15 curved-body ownership: the native double-slalom keeps a zero-based
+logical curve counter separate from its sample cursor. Its sample constructor
+also owns the primary field stores and identity before calling `cosine` for Y,
+then initializes the secondary transform from the written primary position.
+Recovering those lifetimes and computing both delta streams directly in the
+`Path` owner moves the retained focused result through 29.96% and 32.89%.
+Splitting terminal and ordinary vertex rows then reaches 33.05%; expanding the
+curved initializer in its target call order reaches 33.31%.
+
+2026-07-15 orientation ownership: unlike the single outer guard used by the
+related Slalom source, this target has an independent guard for each lane. Each
+non-initial lane builds and normalizes its own frame, performs its cross, and
+only then derives the roll from the primary previous sample. The secondary
+lane recomputes that primary-owned roll after completing its own cross. This
+source order supersedes the older grouped-frame rejection above, reaches
+33.98% (606/683), and clears all three call residuals for 33 ok, 0 unresolved,
+0 mismatch. The face header is now cleared through the shared 16-bit
+`header_word` owner; that field clarification is codegen-neutral.
+
+Rejected in the current context: forcing the four trailing fixed samples into
+an explicit subtract-bound `do/while` regressed 30.03% (589/683) to 29.80%
+(599/683), and rewriting the already post-tested face-column loop explicitly
+regressed 33.05% (606/683) to 32.27%. Neither changed the operand audit, so the
+smaller equivalent loop spellings remain instead of tuning control flow.
