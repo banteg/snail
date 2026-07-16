@@ -84,3 +84,8 @@ slots before applying this `void __thiscall(Direct3DRenderer*, uint8_t)` ABI.
 The refreshed pseudocode exposes the authored presentation fields and both
 `CreateDevice` attempts through `&renderer->device` without changing the exact
 scratch source.
+
+2026-07-16 device-alias closure: the scratch no longer redeclares
+`g_d3d_device`; the shared device header alone records that relocation as an
+alias of `g_direct3d_renderer.device` at `+0xbb94`. Initialization remains exact
+at 106/106 instructions with all 12 operands clean.

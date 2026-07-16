@@ -19,3 +19,8 @@ no direct call to the aligned helper. Splitting the manifest at `0x406da0`
 recovers the private two-function ownership chain without treating padding as
 source or spelling a byte-shaped `goto`. With the explicit tail call, VC6 emits
 the native 8/8 instructions exactly, with all 7 masked operands resolved.
+
+2026-07-16 process-state closure: the display object is now declared by its
+own shared header, and the identity write targets the canonical render-pipeline
+UV transform. The startup helper remains exact at 8/8 instructions with all
+seven operands clean.

@@ -28,6 +28,8 @@ struct DisplayModeState {
     char update_display_mode_view_state(); // @ 0x412940
 };
 
+extern DisplayModeState g_display_mode_state; // data_4df9e0
+
 // Process-owned display dimensions sampled before the authored 640x480 view
 // is installed during startup.
 extern int g_current_display_width;  // data_4df858

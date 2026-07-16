@@ -16,8 +16,6 @@ extern int handle_game_window_activate();        // @ 0x4072f0
 extern char handle_game_window_deactivate();     // @ 0x407440
 extern int restore_desktop_display_mode();       // @ 0x407860
 
-extern DisplayModeState g_display_mode_state;       // data_4df9e0
-
 LRESULT __stdcall game_window_proc(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {

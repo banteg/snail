@@ -8,7 +8,6 @@
 extern Direct3D8* __stdcall Direct3DCreate8(unsigned int sdk_version);
 extern int abort_startup_with_3d_error(); // @ 0x4088a0
 extern int debug_report_stub(const char* format, ...); // @ 0x449c00
-extern Direct3DDevice8* g_d3d_device; // data_502fec
 
 void Direct3DRenderer::initialize_d3d8_device(char use_present_interval_one)
 {

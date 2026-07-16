@@ -27,3 +27,8 @@ alias for the complete shared IDirect3DDevice8 view. The overlay and
 sprite-depth helpers agree on `GetTransform +0x98`, `SetTransform +0x94`,
 `SetRenderState +0xc8`, and `SetTextureStageState +0xfc`; this helper remains
 97/97 with 14 clean operands.
+
+2026-07-16 render-pipeline state ownership: overlay and sprite-depth begin/end
+helpers now share the canonical saved view/projection matrices instead of four
+function-local declarations. This producer/restore family remains exact;
+overlay begin is 97/97 with all 14 operands clean.

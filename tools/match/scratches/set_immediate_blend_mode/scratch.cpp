@@ -2,8 +2,6 @@
 
 #include "direct3d_device8_view.h"
 
-extern Direct3DDevice8* g_d3d_device; // data_502fec
-
 void set_immediate_blend_mode(int blend_mode)
 {
     switch (blend_mode) {

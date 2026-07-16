@@ -58,3 +58,11 @@ The camera-local device type is retired. Its `Set/Get/MultiplyTransform`,
 `Set/GetViewport`, and `SetRenderState` slots align exactly with the shared
 IDirect3DDevice8 table at `+0x94..+0xc8`. `D3DViewport8` also moves into that
 ABI header. The source remains exact at 180/180 with all 37 operands clean.
+
+## 2026-07-16 render-pipeline state ownership
+
+Camera setup is now the canonical producer for the shared source/view matrix
+pointers, projection parameters, and object-pass filter consumed by toon and
+ordinary object rendering. The current texture reference comes from the
+texture registry owner. Focused output remains exact at 180/180 instructions
+with all 37 operands clean.

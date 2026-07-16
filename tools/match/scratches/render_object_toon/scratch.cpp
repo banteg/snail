@@ -1,17 +1,10 @@
 // render_object_toon @ 0x4123e0 (cdecl)
 
 #include "object_render_types.h"
+#include "render_pipeline_state.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 #include "vector3.h"
-
-extern int g_render_triangle_count; // data_4f7450
-extern int g_draw_primitive_call_count; // data_503170
-extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
-extern float g_render_projection_param_a; // data_5031d4
-extern float g_render_projection_param_b; // data_50316c
-extern float g_render_projection_near_z; // data_5031cc
-extern float g_render_projection_far_z; // data_5031d0
 
 TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix, float arg2, float arg3, float near_z, float far_z); // @ 0x450314

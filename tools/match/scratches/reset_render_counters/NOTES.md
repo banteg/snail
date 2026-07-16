@@ -11,3 +11,7 @@ Recovered relationships:
 - Clears `g_texture_bind_call_count` (`data_5031c0`), which is incremented by
   `bind_texture_ref`; this corrects the earlier generic "third render counter"
   assumption.
+
+2026-07-16 pipeline-owner closure: these three counters now live with their
+sprite/object/texture producers in the canonical render-pipeline state header.
+The reset remains exact at 5/5 instructions with all three operands clean.

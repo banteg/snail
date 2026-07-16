@@ -2,19 +2,13 @@
 
 #include "direct3d_device8_view.h"
 #include "game_root.h"
+#include "render_pipeline_state.h"
 #include "sprite.h"
+#include "texture_registry.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 
 extern GameRoot* g_game; // data_4df904
-extern TextureRef* g_current_texture_ref; // data_503174
-extern TransformMatrix* g_render_camera_source_matrix; // data_5031b8
-extern TransformMatrix* g_render_camera_view_matrix; // data_503218
-extern float g_render_projection_param_b; // data_50316c
-extern float g_render_projection_near_z; // data_5031cc
-extern float g_render_projection_far_z; // data_5031d0
-extern float g_render_projection_param_a; // data_5031d4
-extern unsigned char g_object_render_pass_filter; // data_503260
 
 TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix,

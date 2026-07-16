@@ -123,3 +123,11 @@ The same shared enum now reaches X-mesh wrap/skip-load setup, startup texture
 registration, and the texture-group source-byte retention path. All affected
 listings remain byte-identical; composite startup masks with unresolved low
 bits deliberately remain numeric.
+
+## 2026-07-16 render-pipeline state ownership
+
+The pass filter, animated-UV transform, triangle count, and draw-call count now
+come from the canonical process renderer bank produced by camera and frame
+setup. The global device reference remains the documented relocation alias of
+`g_direct3d_renderer.device`. The object renderer stays exact at 196/196 with
+all 25 operands clean.

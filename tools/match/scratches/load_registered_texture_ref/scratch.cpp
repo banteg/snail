@@ -3,8 +3,6 @@
 #include "texture_registry.h"
 #include "tga_image_view.h"
 
-extern Direct3DDevice8* g_d3d_device; // data_502fec
-
 char archive_or_file_exists(char* path, char force_filesystem); // @ 0x430fd0
 char* load_file_bytes(char* file_name, int* out_size); // @ 0x431520
 char is_archive_index_loaded(); // @ 0x431a80

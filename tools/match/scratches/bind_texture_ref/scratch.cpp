@@ -1,10 +1,9 @@
 // bind_texture_ref @ 0x414500 (cdecl)
 
 #include "direct3d_device8_view.h"
+#include "render_pipeline_state.h"
 #include "sprite.h"
 #include "texture_registry.h"
-
-extern int g_texture_bind_call_count;         // data_5031c0
 
 int report_errorf(char* format, ...);
 

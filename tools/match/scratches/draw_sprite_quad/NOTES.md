@@ -53,3 +53,8 @@ lookalike and used the common `ObjectRenderVertex` payload directly. The exact
 2026-07-14 render-state ABI consolidation: the helper declaration now comes
 from `sprite.h` with the proved `Sprite*` parameter. Removing the caller-local
 prototype preserves the exact 259/259 stream and all 29 operands.
+
+2026-07-16 render-pipeline state ownership: sprite submission now shares the
+canonical triangle and DrawPrimitive counters, while its device pointer comes
+only from the documented renderer-member alias. The exact 259/259 stream and
+all 29 operands are unchanged.

@@ -60,3 +60,8 @@ remains proof-grade at 219/219 with all 31 operands clean.
 `sizeof(ObjectRenderVertex)`, and the temporary toon index lock size comes
 from `sizeof(unsigned short)`. Both substitutions are byte-identical at
 219/219 instructions with all 31 operands clean.
+
+2026-07-16 render-pipeline state ownership: toon rendering now consumes the
+same camera source, projection parameters, and render counters as the exact
+camera/object paths. Focused output remains exact at 219/219 instructions with
+all 31 operands clean.

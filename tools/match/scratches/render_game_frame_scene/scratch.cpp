@@ -3,10 +3,8 @@
 #include "direct3d_device8_view.h"
 #include "display_mode_state.h"
 #include "game_root.h"
+#include "render_pipeline_state.h"
 
-extern Direct3DDevice8* g_d3d_device; // data_502fec
-extern DisplayModeState g_display_mode_state; // data_4df9e0
-extern int g_render_successful_primitive_count; // data_4f7454
 extern GameRoot* g_game; // data_4df904
 
 void render_game_frame_scene()

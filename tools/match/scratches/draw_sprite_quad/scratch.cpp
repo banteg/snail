@@ -4,15 +4,12 @@
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
 #include "object_render_types.h"
+#include "render_pipeline_state.h"
 #include "transform_matrix.h"
 #include "vector3.h"
 #include "vertex_buffer_view.h"
 
 typedef Vector3 Vec3;
-
-extern Direct3DDevice8* g_d3d_device;      // data_502fec
-extern int g_render_triangle_count;        // data_4f7450
-extern int g_draw_primitive_call_count;    // data_503170
 
 extern "C" TransformMatrix* __stdcall D3DXMatrixTranslation(
     TransformMatrix* matrix, float x, float y, float z);

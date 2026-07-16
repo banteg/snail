@@ -3,8 +3,6 @@
 #include "direct3d_device8_view.h"
 #include "sprite.h"
 
-extern Direct3DDevice8* g_d3d_device; // data_502fec
-
 int configure_sprite_render_state(Sprite* sprite)
 {
     switch (sprite->draw_mode) {
