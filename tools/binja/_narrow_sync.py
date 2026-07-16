@@ -914,7 +914,12 @@ def normalize_prototype(prototype: str, *, identifier: str) -> str:
     # Address-selected mutations cannot use the selector itself to remove the
     # declaration name. Binary Ninja readback prints only the function type,
     # so strip one remaining C/C++ declarator name immediately before `(`.
-    normalized = re.sub(r"\s+[A-Za-z_][A-Za-z0-9_:]*(?=\()", "", normalized, count=1)
+    normalized = re.sub(
+        r"\s+(?!__)[A-Za-z_][A-Za-z0-9_:]*(?=\()",
+        "",
+        normalized,
+        count=1,
+    )
     return normalize_type_name(normalized)
 
 

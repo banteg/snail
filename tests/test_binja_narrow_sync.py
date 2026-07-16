@@ -279,6 +279,24 @@ def test_normalize_prototype_treats_default_cdecl_as_equivalent() -> None:
     )
 
 
+def test_normalize_prototype_preserves_nondefault_calling_conventions() -> None:
+    requested = "void* __thiscall noop_runtime_slot_constructor(void* slot)"
+    assert _narrow_sync.normalize_prototype(
+        "void* __thiscall(void* slot) __pure",
+        identifier="noop_runtime_slot_constructor",
+    ) == _narrow_sync.normalize_prototype(
+        requested,
+        identifier="noop_runtime_slot_constructor",
+    )
+    assert _narrow_sync.normalize_prototype(
+        "void* __fastcall(void* slot) __pure",
+        identifier="noop_runtime_slot_constructor",
+    ) != _narrow_sync.normalize_prototype(
+        requested,
+        identifier="noop_runtime_slot_constructor",
+    )
+
+
 def test_current_struct_size_reads_layout(monkeypatch) -> None:
     monkeypatch.setattr(
         _narrow_sync,
