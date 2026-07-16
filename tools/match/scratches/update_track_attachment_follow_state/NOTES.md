@@ -320,3 +320,25 @@ Attachment-side lateral handling now tests the typed active hover state. Live
 field xrefs prove this is a direct consumer of `SubHover +0x0c`, not an
 attachment-owned flag. Focused output remains byte-identical at 72.89%,
 698/726 instructions, prefix 122/726, with all 63 operands clean.
+
+## 2026-07-16 follow replay closure
+
+The canonical `FollowState` method prototype is now replayed durably into both
+analysis databases. Binary Ninja also reapplies the exact nine SSA identities
+that arise from repeated runtime-row loads as `TrackRowCell*` and `Path*`;
+these identities retain the primary attachment cell, template record, object,
+list-flag, and alpha owners through the entry-mesh milestones.
+
+IDA now normalizes the two relocatable Player basis-up operands and seven
+runtime-row operands whose numeric values collide with named code or offset
+symbols. This changes only those instruction operands, preserves the global
+symbols, and makes decompilation follow the full canonical graph:
+`GameRoot -> SubgameRuntime -> Player/rows -> TrackRowCell -> Path`.
+Fresh BN and IDA exports consequently agree on the player body transform,
+runtime row and primary cell, entry mesh pointers, color alpha, list flags,
+and subgame rate owners. Health checks preserve both views.
+
+No matcher source changed. Focused matching remains 72.89%, 698/726
+instructions, with the exact 122/726 prefix and 63/0/0 clean operand masks;
+the remaining 28 instructions are matrix-stack, x87 scheduling, and duplicated
+epilogue shape rather than missing ownership evidence.

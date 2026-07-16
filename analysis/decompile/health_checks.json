@@ -2110,6 +2110,50 @@
       ]
     },
     {
+      "name": "bn_attachment_follow_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00420cb0-update_track_attachment_follow_state.c",
+      "required_substrings": [
+        "follow_state->template_record",
+        "follow_state->source_cell",
+        "primary_attachment_cell_transition_flags->bod.list_flags",
+        "entry_transition_template->entry_transition_strip_mesh",
+        "entry_base_template->entry_base_strip_mesh",
+        ")->color.a = 0.600000024f",
+        "g_game_base->subgame.player.body.transform",
+        "g_game_base->subgame.subgame_rate"
+      ],
+      "forbidden_substrings": [
+        "g_game_base[0x42fd",
+        "data_42fd",
+        "void* entry_",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_attachment_follow_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00420cb0-update_track_attachment_follow_state.c",
+      "required_substrings": [
+        "int32_t __thiscall update_track_attachment_follow_state(",
+        "FollowState *follow_state,",
+        "runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell",
+        "entry_base_strip_mesh",
+        "entry_transition_strip_mesh",
+        "primary_attachment_cell->color.a = 1.0",
+        "primary_attachment_cell->bod.list_flags |= 0x80u",
+        "g_game_base->subgame.player.body.transform.basis_up",
+        "g_game_base->subgame.subgame_rate"
+      ],
+      "forbidden_substrings": [
+        "g_track_runtime_rows",
+        "loc_42FDC4",
+        "(char *)g_game_base",
+        "(_DWORD *)g_game_base",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_track_warning_grid_owner",
       "artifact": "analysis/decompile/binja/functions/004354f0-mark_track_warning_zones.c",
       "required_substrings": [

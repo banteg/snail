@@ -458,6 +458,86 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
     ),
 )
 
+# The entry-mesh milestone branches repeatedly reload
+# SubRow::primary_attachment_cell. BN's SSA split loses the TrackRowCell*/Path*
+# field types after the indexed 0xf4-byte row calculation even though the
+# canonical owner graph proves every load. Reapply the exact nine variable
+# identities so the milestone writes retain their real cell and Path owners.
+ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        186,
+        68,
+        "primary_attachment_cell_restore",
+        "TrackRowCell*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        196,
+        72,
+        "entry_base_template",
+        "Path*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        218,
+        67,
+        "primary_attachment_cell_restore_object",
+        "TrackRowCell*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        256,
+        67,
+        "primary_attachment_cell_restore_alpha",
+        "TrackRowCell*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        327,
+        66,
+        "primary_attachment_cell_transition_flags",
+        "TrackRowCell*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        364,
+        67,
+        "primary_attachment_cell_transition_template",
+        "TrackRowCell*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        371,
+        72,
+        "entry_transition_template",
+        "Path*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        397,
+        68,
+        "primary_attachment_cell_transition_object",
+        "TrackRowCell*",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "RegisterVariableSourceType",
+        435,
+        67,
+        "primary_attachment_cell_transition_alpha",
+        "TrackRowCell*",
+    ),
+)
+
 REPLAY_RUN_RECORD_FIELD_UPDATES = (
     ("0x00", "lateral_x", "int16_t"),
     ("0x02", "delta_z", "int16_t"),
@@ -1371,6 +1451,10 @@ CORE_SUBGAME_PROTO_UPDATES = (
         "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell)",
     ),
     (
+        "update_track_attachment_follow_state",
+        "int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion)",
+    ),
+    (
         "populate_runtime_track_cells_from_segments",
         "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game)",
     ),
@@ -1660,6 +1744,7 @@ def main() -> int:
             updates=(
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
+                *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),
         )
     )

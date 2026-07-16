@@ -73,6 +73,7 @@ TRUSTED_DATA_DECLARATIONS = [
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x420CB0,  # update_track_attachment_follow_state
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x435EB0,  # populate_runtime_track_cells_from_segments
@@ -94,6 +95,20 @@ ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
     (0x42CA3D, 1, 0x64118C),  # runtime_rows[row].installed_heading_delta
     (0x42CA5B, 0, 0x430118),  # FollowState::orientation_a
     (0x42CA7B, 1, 0x430100),  # Player::follow_state
+)
+
+# The follow updater has the same address-expression collision in two Player
+# basis-row publications and seven repeated runtime-row cell loads.
+ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS = (
+    (0x4212A3, 1, 0x42FDC4),  # Player::body.transform.basis_up
+    (0x4214DB, 1, 0x42FDC4),  # Player::body.transform.basis_up
+    (0x420D6A, 1, 0x641184),  # SubRow::primary_attachment_cell
+    (0x420D8A, 1, 0x641184),  # SubRow::primary_attachment_cell
+    (0x420DB0, 1, 0x641184),  # SubRow::primary_attachment_cell
+    (0x420DF7, 1, 0x641184),  # SubRow::primary_attachment_cell
+    (0x420E1C, 1, 0x641184),  # SubRow::primary_attachment_cell
+    (0x420E3D, 1, 0x641184),  # SubRow::primary_attachment_cell
+    (0x420E63, 1, 0x641184),  # SubRow::primary_attachment_cell
 )
 
 
@@ -1326,9 +1341,11 @@ def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
-def _normalize_attachment_entry_root_offset_operands() -> list[dict[str, object]]:
+def _normalize_root_offset_operands(
+    operand_specs: tuple[tuple[int, int, int], ...],
+) -> list[dict[str, object]]:
     results = []
-    for address, operand_index, expected_offset in ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS:
+    for address, operand_index, expected_offset in operand_specs:
         before = idc.print_operand(address, operand_index)
         idc.op_num(address, operand_index)
         after = idc.print_operand(address, operand_index)
@@ -1458,13 +1475,24 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
 
     attachment_entry_root_offset_operands = (
-        _normalize_attachment_entry_root_offset_operands()
+        _normalize_root_offset_operands(ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS)
     )
     for result in attachment_entry_root_offset_operands:
         if result["status"] == "failed":
             failed.append(
                 {
                     "selector": "try_enter_track_attachment_from_swept_motion",
+                    "root_offset_operand": result,
+                }
+            )
+    attachment_follow_root_offset_operands = _normalize_root_offset_operands(
+        ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS
+    )
+    for result in attachment_follow_root_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "update_track_attachment_follow_state",
                     "root_offset_operand": result,
                 }
             )
@@ -1541,6 +1569,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_unchanged": data_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
+                "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,

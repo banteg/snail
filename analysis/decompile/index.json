@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "try_enter_track_attachment_from_swept_motion",
-      "address": "0x42c770"
+      "name": "update_track_attachment_follow_state",
+      "address": "0x420cb0"
     }
   ],
-  "health_check_count": 460,
+  "health_check_count": 462,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

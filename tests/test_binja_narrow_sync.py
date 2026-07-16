@@ -5164,7 +5164,22 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert "void __thiscall try_enter_track_attachment_from_swept_motion(" in analysis_header
     assert "TrackRowCell* source_cell" in analysis_header
 
-    for address in ("0x42C600", "0x42C770", "0x435EB0", "0x43B120"):
+    follow_update_prototype = (
+        "int32_t __thiscall update_track_attachment_follow_state("
+        "FollowState* follow_state, float path_factor, Vec3* out_position, "
+        "Vec3* motion)"
+    )
+    assert follow_update_prototype in binja_sync
+    assert follow_update_prototype + ";" in ida_sync
+    assert follow_update_prototype + ";" in analysis_header
+
+    for address in (
+        "0x420CB0",
+        "0x42C600",
+        "0x42C770",
+        "0x435EB0",
+        "0x43B120",
+    ):
         assert address in ida_sync
     for address in (
         "0x42C98A",
@@ -5176,6 +5191,26 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         "0x42CA7B",
     ):
         assert address in ida_sync
+    for address in (
+        "0x4212A3",
+        "0x4214DB",
+        "0x420D6A",
+        "0x420D8A",
+        "0x420DB0",
+        "0x420DF7",
+        "0x420E1C",
+        "0x420E3D",
+        "0x420E63",
+    ):
+        assert address in ida_sync
+    for variable_name in (
+        "primary_attachment_cell_restore",
+        "entry_base_template",
+        "primary_attachment_cell_transition_flags",
+        "entry_transition_template",
+        "primary_attachment_cell_transition_alpha",
+    ):
+        assert variable_name in binja_sync
     assert "idc.op_num(address, operand_index)" in ida_sync
     assert "for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:" in ida_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync

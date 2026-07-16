@@ -2,7 +2,7 @@
 /* function: update_track_attachment_follow_state @ 0x420cb0 */
 /* selector: update_track_attachment_follow_state */
 
-// Advances one live attachment-follow session along the current Path, updates segment progress and local height, publishes the interpolated transform basis into the live Player matrix, stores the transform's up basis as the owned `FollowState::orientation_up` vector, writes the output position, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. The static `voice 4` lane is dead: initialization seeds `sample_index = 0`, traversal increments it by one, and the same helper terminates at `sample_index == segment_count` before `sample_index == segment_count * 2` can hold. The iOS build preserves both that unreachable guard and the aggregate orientation-vector copy in `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)`.
+// Advances one live attachment-follow session along the current Path, updates segment progress and local height, publishes the interpolated transform basis into the live Player matrix, stores the transform's up basis as the owned `FollowState::orientation_up` vector, writes the output position, and returns a small mode code consumed by `update_subgoldy`. The canonical `FollowState` borrows its `Path` and `SubLoc` source cell and traverses the Path-owned `AttachmentSample` banks; the former private matrix and anchor views were duplicate type shells and are retired. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. The static `voice 4` lane is dead: initialization seeds `sample_index = 0`, traversal increments it by one, and the same helper terminates at `sample_index == segment_count` before `sample_index == segment_count * 2` can hold. The iOS build preserves both that unr
 int32_t __thiscall update_track_attachment_follow_state(
         FollowState *follow_state,
         float path_factor,
@@ -19,9 +19,9 @@ int32_t __thiscall update_track_attachment_follow_state(
   Path *v12; // eax
   uint32_t segment_count; // eax
   uint32_t v14; // esi
-  int v15; // esi
+  struct Path *attachment_template_record; // esi
   int32_t track_cell_row_index; // eax
-  int v17; // esi
+  struct Path *v17; // esi
   uint32_t v18; // ebx
   Path *v19; // edx
   int v20; // edi
@@ -50,9 +50,9 @@ int32_t __thiscall update_track_attachment_follow_state(
   double v44; // st7
   double v45; // st6
   float x; // eax
-  char *v47; // edx
-  float *v48; // ecx
-  char *v49; // eax
+  TransformMatrix *p_transform; // edx
+  Vec4 *p_basis_up; // ecx
+  Vec4 *p_basis_forward; // eax
   PathTemplateSample *v50; // ecx
   double v51; // st7
   float *v52; // esi
@@ -62,9 +62,9 @@ int32_t __thiscall update_track_attachment_follow_state(
   double v56; // st6
   double v57; // st6
   double v58; // st5
-  char *v59; // eax
-  float *v60; // edx
-  char *v61; // ecx
+  TransformMatrix *v59; // eax
+  Vec4 *v60; // edx
+  Vec4 *v61; // ecx
   float v62; // edx
   float z; // ecx
   Path *v64; // edx
@@ -166,18 +166,18 @@ LABEL_11:
       follow_state->output_position.y = y;
       follow_state->vertical_offset = v45;
       follow_state->output_position.z = v44;
-      v47 = (char *)g_game_base + 4390324;
-      *((float *)g_game_base + 1097581) = x;
-      *((_DWORD *)v47 + 1) = LODWORD(transform.basis_right.y);
-      *((_DWORD *)v47 + 2) = LODWORD(transform.basis_right.z);
-      v48 = (float *)((char *)&loc_42FDC4 + (_DWORD)g_game_base);
-      *v48 = transform.basis_up.x;
-      v48[1] = transform.basis_up.y;
-      v48[2] = transform.basis_up.z;
-      v49 = (char *)g_game_base + 4390356;
-      *((_DWORD *)g_game_base + 1097589) = LODWORD(transform.basis_forward.x);
-      *((_DWORD *)v49 + 1) = LODWORD(transform.basis_forward.y);
-      *((_DWORD *)v49 + 2) = LODWORD(transform.basis_forward.z);
+      p_transform = &g_game_base->subgame.player.body.transform;
+      g_game_base->subgame.player.body.transform.basis_right.x = x;
+      p_transform->basis_right.y = transform.basis_right.y;
+      p_transform->basis_right.z = transform.basis_right.z;
+      p_basis_up = &g_game_base->subgame.player.body.transform.basis_up;
+      g_game_base->subgame.player.body.transform.basis_up.x = transform.basis_up.x;
+      p_basis_up->y = transform.basis_up.y;
+      p_basis_up->z = transform.basis_up.z;
+      p_basis_forward = &g_game_base->subgame.player.body.transform.basis_forward;
+      g_game_base->subgame.player.body.transform.basis_forward.x = transform.basis_forward.x;
+      p_basis_forward->y = transform.basis_forward.y;
+      p_basis_forward->z = transform.basis_forward.z;
     }
     else
     {
@@ -225,18 +225,18 @@ LABEL_11:
       follow_state->output_position.y = v83;
       v84 = v57 + v55;
       follow_state->output_position.z = v84;
-      v59 = (char *)g_game_base + 4390324;
-      *((_DWORD *)g_game_base + 1097581) = LODWORD(transform.basis_right.x);
-      *((_DWORD *)v59 + 1) = LODWORD(transform.basis_right.y);
-      *((_DWORD *)v59 + 2) = LODWORD(transform.basis_right.z);
-      v60 = (float *)((char *)&loc_42FDC4 + (_DWORD)g_game_base);
-      *v60 = transform.basis_up.x;
-      v60[1] = transform.basis_up.y;
-      v60[2] = transform.basis_up.z;
-      v61 = (char *)g_game_base + 4390356;
-      *((_DWORD *)g_game_base + 1097589) = LODWORD(transform.basis_forward.x);
-      *((_DWORD *)v61 + 1) = LODWORD(transform.basis_forward.y);
-      *((_DWORD *)v61 + 2) = LODWORD(transform.basis_forward.z);
+      v59 = &g_game_base->subgame.player.body.transform;
+      g_game_base->subgame.player.body.transform.basis_right.x = transform.basis_right.x;
+      v59->basis_right.y = transform.basis_right.y;
+      v59->basis_right.z = transform.basis_right.z;
+      v60 = &g_game_base->subgame.player.body.transform.basis_up;
+      g_game_base->subgame.player.body.transform.basis_up.x = transform.basis_up.x;
+      v60->y = transform.basis_up.y;
+      v60->z = transform.basis_up.z;
+      v61 = &g_game_base->subgame.player.body.transform.basis_forward;
+      g_game_base->subgame.player.body.transform.basis_forward.x = transform.basis_forward.x;
+      v61->y = transform.basis_forward.y;
+      v61->z = transform.basis_forward.z;
     }
     v62 = transform.basis_up.y;
     follow_state->orientation_up.x = transform.basis_up.x;
@@ -295,7 +295,7 @@ LABEL_11:
     follow_state->orientation_b = (v73 + (double)SLODWORD(arg1))
                                 * v64->installed_heading_delta
                                 / (double)(int)v64->segment_count;
-    if ( player->sub_hover.state == 1 )
+    if ( player->sub_hover.state == SUB_HOVER_STATE_ACTIVE )
       goto LABEL_62;
     v75 = v38->x - v85;
     if ( v75 < 0.0 )
@@ -350,35 +350,17 @@ LABEL_62:
         v14 = follow_state->sample_index;
         if ( v14 == segment_count - 1 )
         {
-          v15 = *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
-                                      + (_DWORD)g_game_base
-                                      + 244 * get_track_cell_row_index(follow_state->source_cell))
-                          + 56);
-          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
-                                + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(follow_state->source_cell))
-                    + 36) = *(_DWORD *)(v15 + 164);
-          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
-                                + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(follow_state->source_cell))
-                    + 52) = 1065353216;
+          attachment_template_record = g_game_base->subgame.runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell->attachment_template_record;
+          g_game_base->subgame.runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell->object = attachment_template_record->entry_base_strip_mesh;
+          g_game_base->subgame.runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell->color.a = 1.0;
         }
         else if ( v14 == (int)(3 * segment_count) / 7 )
         {
           track_cell_row_index = get_track_cell_row_index(follow_state->source_cell);
-          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows + (_DWORD)g_game_base + 244 * track_cell_row_index) + 4) |= 0x80u;
-          v17 = *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
-                                      + (_DWORD)g_game_base
-                                      + 244 * get_track_cell_row_index(follow_state->source_cell))
-                          + 56);
-          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
-                                + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(follow_state->source_cell))
-                    + 36) = *(_DWORD *)(v17 + 160);
-          *(_DWORD *)(*(_DWORD *)((char *)&g_track_runtime_rows
-                                + (_DWORD)g_game_base
-                                + 244 * get_track_cell_row_index(follow_state->source_cell))
-                    + 52) = 1058642330;
+          g_game_base->subgame.runtime_rows[track_cell_row_index].primary_attachment_cell->bod.list_flags |= 0x80u;
+          v17 = g_game_base->subgame.runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell->attachment_template_record;
+          g_game_base->subgame.runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell->object = v17->entry_transition_strip_mesh;
+          g_game_base->subgame.runtime_rows[get_track_cell_row_index(follow_state->source_cell)].primary_attachment_cell->color.a = 0.60000002;
         }
       }
       template_record = follow_state->template_record;
@@ -424,7 +406,7 @@ LABEL_62:
       v84 = v36;
       out_position->z = v84;
       out_position->x = v26;
-      follow_state->player->cutscene_pitch_cycle_step = *((float *)g_game_base + 119188) * 0.013888888;
+      follow_state->player->cutscene_pitch_cycle_step = g_game_base->subgame.subgame_rate * 0.013888888;
       follow_state->player->cutscene_pitch_cycle = follow_state->player->cutscene_pitch_cycle_step;
       play_voice_manager((int)g_voice_manager, 15, 0, -1);
     }
@@ -440,4 +422,3 @@ LABEL_62:
     return 3;
   }
 }
-
