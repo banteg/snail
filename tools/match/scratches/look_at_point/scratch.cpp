@@ -8,15 +8,6 @@
 
 #include "transform_matrix.h"
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
-    return result;
-}
-
 void TransformMatrix::look_at_point(const Vector3& target)
 {
     Vector3 delta = target - position;

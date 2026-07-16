@@ -3,15 +3,6 @@
 #include "object_render_types.h"
 #include "vapour.h"
 
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x + rhs.x;
-    result.y = lhs.y + rhs.y;
-    result.z = lhs.z + rhs.z;
-    return result;
-}
-
 void Vapour::update_vapour()
 {
     int count = point_count;

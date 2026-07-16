@@ -17,11 +17,6 @@ float cosine(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,
     PathAttachmentSample* secondary,

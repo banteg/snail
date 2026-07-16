@@ -41,9 +41,29 @@ sequence exactly.
 
 The `operator-` is therefore recovered, not invented: the two-object frame is
 independent evidence that the original `Vector3` had a by-value subtraction
-operator. It is kept scratch-local for now (not promoted to `vector3.h`) until
-a second scratch agrees on the operator signature, per the shared-header
-promotion policy.
+operator. It was initially kept scratch-local pending a second agreeing
+consumer; the promotion evidence is recorded below.
+
+## 2026-07-16 shared Vector3 arithmetic ownership
+
+Ten subtraction consumers and sixteen addition consumers had independently
+recovered the same `const Vector3&` binary signatures. Exact
+`look_at_point`, `request_object_animation`, `update_track_parcel`,
+`update_vapour`, `get_path_position_at_node`, and attachment projection
+callers agree on the explicit result-object implementation, so `operator+`
+and `operator-` now belong to shared `vector3.h` rather than being copied into
+individual scratches.
+
+The promotion preserves every pre-existing exact consumer and makes
+`update_star_positions` exact (99.06% to 100.00%, 106/106 instructions).
+It also improves `build_track_fringe_mesh` from 89.31% to 90.25%, its
+supertramp sibling from 92.87% to 94.54%, and the worm template from 72.28% to
+72.32%. The old constructor-return copies happened to score slightly higher
+in two non-exact callers (`initialize_star_field`, 98.38% to 97.57%, and the
+loop-the-loop template, 64.75% to 64.47%), but retaining per-caller arithmetic
+implementations would contradict the now-closed shared owner. Overall proof
+grade gains one 378-byte function and fuzzy coverage rises; no per-scratch
+operator fakematches remain.
 
 ## Call target
 

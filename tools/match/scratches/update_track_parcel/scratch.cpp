@@ -6,24 +6,6 @@
 float sine(float radians);
 int next_math_random_value();
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
-    return result;
-}
-
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x + rhs.x;
-    result.y = lhs.y + rhs.y;
-    result.z = lhs.z + rhs.z;
-    return result;
-}
-
 void Parcel::update_track_parcel()
 {
     SubgameRuntime* subgame = owner_subgame;

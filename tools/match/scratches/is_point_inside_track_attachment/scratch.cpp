@@ -2,11 +2,6 @@
 
 #include "track_attachment.h"
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
-}
-
 bool Path::is_point_inside_track_attachment(
     Vector3 probe, Vector3 swept_motion, TrackRowCell* cell)
 {

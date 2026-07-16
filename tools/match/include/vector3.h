@@ -56,4 +56,23 @@ struct Vector3 {
     Vector3& rotate_vector_by_matrix(const TransformMatrix& matrix); // @ 0x44cc20
 };
 
+// Shared by-value tVector arithmetic, independently closed by exact callers.
+inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x + rhs.x;
+    result.y = lhs.y + rhs.y;
+    result.z = lhs.z + rhs.z;
+    return result;
+}
+
+inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
+{
+    Vector3 result;
+    result.x = lhs.x - rhs.x;
+    result.y = lhs.y - rhs.y;
+    result.z = lhs.z - rhs.z;
+    return result;
+}
+
 #endif

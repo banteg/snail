@@ -38,11 +38,6 @@ float convert_math_type16_to_32(unsigned short value, float scale);
 short convert_math_type32_to_16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
 extern GameRoot* g_game;                  // data_4df904

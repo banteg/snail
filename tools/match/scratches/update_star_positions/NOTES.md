@@ -68,3 +68,13 @@ the alpha-tail mismatch entirely. The sole residual is the independent
 sprite-position pointer advance moving across the final temporary Z store;
 named position and sprite locals compile identically, so no ordering barrier
 is retained.
+
+## 2026-07-16 shared addition operator closes the match
+
+Promoting the independently recovered explicit-result `Vector3 operator+` to
+the shared type fixes the last scheduling swap: VC6 advances the sprite
+position pointer after completing the result object's Z store, exactly as the
+native function does. Focused matching rises from 99.06% to 100.00%, with all
+106 instructions and 11 masked operands exact. The former scratch-local
+constructor-return operator is removed; arithmetic ownership now agrees with
+the other exact vector-expression callers.

@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**625/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **99679/317040** bytes (**31.44%**) are proof-grade, and overall fuzzy is **76.11%**.
+**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100057/317040** bytes (**31.56%**) are proof-grade, and overall fuzzy is **76.12%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
-## Proof Grade (625)
+## Proof Grade (626)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -322,6 +322,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | hide_star_field | 0x434670 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | unhide_star_field | 0x4346b0 | 50 | 23/23 | 100.00% | 23/23 | - |  |
 | ✅ | update_star_field | 0x4346f0 | 264 | 66/66 | 100.00% | 66/66 | 13 ok |  |
+| ✅ | update_star_positions | 0x434800 | 378 | 106/106 | 100.00% | 106/106 | 11 ok |  |
 | ✅ | initialize_track_colour_bank_a_thunk | 0x434980 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
 | ✅ | initialize_track_colour_bank_a | 0x434990 | 28 | 12/12 | 100.00% | 12/12 | 2 ok |  |
 | ✅ | initialize_track_colour_banks_b_c_thunk | 0x4349b0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  |
@@ -636,7 +637,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  |
 
-## Near Match (95-99.99%) (29)
+## Near Match (95-99.99%) (28)
 
 | | function | address | bytes | insns | match | prefix | masked | build |
 |---|---|---|---|---|---|---|---|---|
@@ -658,8 +659,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_render_caches | 0x433220 | 1552 | 475/475 | 99.79% | 90/475 | 20 ok |  |
 | 🚧 | add_track_cache_vertex | 0x433830 | 299 | 103/103 | 99.03% | 76/103 | 7 ok |  |
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 95.81% | 16/167 | 6 ok |  |
-| 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 98.38% | 29/247 | 25 ok |  |
-| 🚧 | update_star_positions | 0x434800 | 378 | 106/106 | 99.06% | 44/106 | 11 ok |  |
+| 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 25 ok |  |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 37 ok |  |
@@ -694,8 +694,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 47 ok |  |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.31% | 88/521 | 66 ok |  |
-| 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 89.31% | 18/318 | 23 ok |  |
-| 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 92.87% | 69/421 | 25 ok |  |
+| 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 90.25% | 18/318 | 23 ok |  |
+| 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  |
 | 🚧 | finalize_path_template | 0x42c600 | 363 | 112/113 | 81.78% | 24/113 | 9 ok |  |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 436/437 | 90.03% | 27/437 | 22 ok |  |
 | 🚧 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 19 ok |  |
@@ -753,10 +753,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 10 ok |  |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 12 ok |  |
-| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 706/721 | 64.75% | 9/721 | 46 ok |  |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 706/721 | 64.47% | 9/721 | 46 ok |  |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 728/745 | 63.27% | 10/745 | 51 ok |  |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 702/718 | 55.77% | 0/718 | 45 ok |  |
-| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 725/736 | 72.28% | 0/736 | 37 ok |  |
+| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 727/736 | 72.32% | 0/736 | 37 ok |  |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 698/726 | 72.89% | 122/726 | 63 ok |  |
 | 🚧 | calc_path_length_z | 0x4217b0 | 1551 | 416/425 | 71.82% | 32/425 | 7 ok |  |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 529/552 | 51.62% | 15/552 | 32 ok |  |

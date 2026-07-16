@@ -3,11 +3,6 @@
 #include "track_attachment.h"
 #include "transform_matrix.h"
 
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, float* out_angle)
 {
     SubRow* row = &runtime_rows[(int)position->z];

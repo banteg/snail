@@ -9,24 +9,6 @@ void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 int report_errorf(char* format, ...); // @ 0x431cc0
 extern "C" double __cdecl floor(double value);
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
-    return result;
-}
-
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x + rhs.x;
-    result.y = lhs.y + rhs.y;
-    result.z = lhs.z + rhs.z;
-    return result;
-}
-
 void Object::request_object_animation(
     int keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int flags)

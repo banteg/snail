@@ -6,11 +6,6 @@ extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value(); // @ 0x44c900
 
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 inline Vector3 operator/(const Vector3& vector, float scale)
 {
     return Vector3(vector.x / scale, vector.y / scale, vector.z / scale);

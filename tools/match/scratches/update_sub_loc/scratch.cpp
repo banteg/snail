@@ -12,15 +12,6 @@ float random_signed_float_below(float maximum, const char* tag);
 
 extern GameRoot* g_game; // data_4df904 (this TU caches the base, reloading after calls)
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
-    return result;
-}
-
 void SubLoc::update_sub_loc()
 {
     if ((lane_and_flags & SUBLOC_FLAG_AI_ENABLED) == 0)

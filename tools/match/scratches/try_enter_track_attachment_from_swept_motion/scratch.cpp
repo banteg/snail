@@ -4,16 +4,6 @@
 #include "track_attachment.h"
 #include "game_root.h"
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
-}
-
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 // The follow state is embedded in the fixed player owned by SubgameRuntime.
 extern GameRoot* g_game;
 #define PLAYER (&g_game->subgame.player)

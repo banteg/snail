@@ -7,11 +7,6 @@ inline Vector3 operator*(float scale, const Vector3& vector)
     return Vector3(scale * vector.x, scale * vector.y, scale * vector.z);
 }
 
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 void Path::get_path_position_at_node(
     Vector3& out, int node, int row_index, Vector3& local)
 {

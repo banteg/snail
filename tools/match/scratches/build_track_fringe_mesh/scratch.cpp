@@ -7,20 +7,6 @@
 
 extern GameRoot* g_game; // data_4df904
 
-inline Vector3 operator-(const Vector3& lhs, const Vector3& rhs)
-{
-    Vector3 result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
-    return result;
-}
-
-inline Vector3 operator+(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
-}
-
 void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
 {
     fringe_mesh_bod.set_bod_object(g_object_list.add_object_to_list());
