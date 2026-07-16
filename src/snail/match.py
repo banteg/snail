@@ -1690,15 +1690,45 @@ def audit_masked_operands(
     target_disassembly: tuple[DisassemblyLine, ...],
     candidate_disassembly: tuple[DisassemblyLine, ...],
 ) -> MaskedOperandAudit:
+    parent: dict[str, str] = {}
+
+    def find(key: str) -> str:
+        root = parent.setdefault(key, key)
+        if root != key:
+            parent[key] = find(root)
+        return parent[key]
+
+    def union(left: str, right: str) -> None:
+        left_root = find(left)
+        right_root = find(right)
+        if left_root == right_root:
+            return
+        root, child = sorted((left_root, right_root))
+        parent[child] = root
+
+    # Image references carry the manifest's canonical name plus aliases, while
+    # COFF relocations normally carry only the spelling used by the scratch.
+    # Collapse intersecting option sets before sequence alignment so an alias
+    # does not lose its true callsite and get paired with a nearby CALL ADDR.
+    for line in (*target_disassembly, *candidate_disassembly):
+        for reference in line.masked_references:
+            keys = sorted(_reference_key_options(reference))
+            if not keys:
+                continue
+            for key in keys[1:]:
+                union(keys[0], key)
+
+    def alignment_keys(reference: MaskedReference) -> tuple[str, ...]:
+        return tuple(
+            sorted({find(key) for key in _reference_key_options(reference)})
+        )
+
     def alignment_token(
         line: DisassemblyLine,
     ) -> tuple[str, tuple[tuple[str, ...], ...]]:
         return (
             line.text,
-            tuple(
-                tuple(sorted(_reference_key_options(reference)))
-                for reference in line.masked_references
-            ),
+            tuple(alignment_keys(reference) for reference in line.masked_references),
         )
 
     def equal_pairs(matcher: difflib.SequenceMatcher) -> list[tuple[int, int]]:

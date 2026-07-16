@@ -156,3 +156,16 @@ The follow-state composition now calls the recovered void const-reference
 matrix multiply member directly. Focused output remains 92.55%, 322/322
 instructions, prefix 36/322, with the same 72 clean operands and unrelated
 pre-existing call mismatch.
+
+## 2026-07-16 alias-aware operand alignment
+
+The remaining audited call mismatch was a matcher alignment defect, not a
+camera or matrix ownership conflict. Native and candidate both execute
+`set_matrix_identity`, `rotate_matrix_local_z`, `multiply_matrix`, then
+`rotate_matrix_local_z` in the same order. Native references expose each
+manifest canonical name plus its source alias, while COFF relocations expose
+only the source spelling; the plain instruction alignment consequently paired
+the first rotation with the adjacent multiply. Canonicalizing intersecting
+alias sets before pairing clears the false mismatch and audits 73 operands
+cleanly. The honest instruction score remains 92.55% with its documented
+register and x87 scheduling residuals.

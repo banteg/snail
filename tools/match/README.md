@@ -87,6 +87,9 @@ Useful analysis helpers:
 - `uv run snail match audit --exact-only` groups unresolved/mismatched masked
   operands across all 100% scratches. Use it before editing the reference
   manifest so repeated target addresses and wrong aliases are visible together.
+  Alignment canonicalizes intersecting manifest alias sets before pairing
+  repeated `CALL ADDR` instructions, so a source-spelled relocation stays with
+  its native canonical callee rather than a nearby call of the same shape.
   Scratches that fail to compile are listed as audit failures and make the
   command exit non-zero; so does `snail match status --check`. Status and audit
   share cached detailed matches, while audit cache misses use the same `-j`

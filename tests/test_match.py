@@ -534,6 +534,87 @@ def test_masked_operand_audit_prefers_matching_repeated_reference() -> None:
     assert audit.entries[0].candidate_index == 0
 
 
+def test_masked_operand_audit_aligns_alias_equivalent_call_sequence() -> None:
+    def plain(index: int, text: str) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=index,
+            address=0x401000 + index,
+            text=text,
+        )
+
+    def call(
+        index: int,
+        key: str,
+        source: str,
+        *alternate_keys: str,
+    ) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=index,
+            address=0x401000 + index,
+            text="call ADDR",
+            masked_references=(
+                MaskedReference(
+                    operand_index=0,
+                    kind="imm",
+                    source=source,
+                    value=None,
+                    text=f"{source}:{key}",
+                    key=f"name:{key}",
+                    alternate_keys=tuple(
+                        f"name:{alternate_key}"
+                        for alternate_key in alternate_keys
+                    ),
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (
+        call(0, "set_matrix_identity", "image"),
+        plain(1, "mov ecx, dword [ebp+0xc0]"),
+        plain(2, "mov edx, dword [ecx+0x39c]"),
+        plain(3, "lea ecx, dword [esp+0x14]"),
+        plain(4, "push edx"),
+        call(5, "rotate_matrix_world_z", "image", "rotate_matrix_local_z"),
+        plain(6, "lea eax, dword [esp+0x14]"),
+        plain(7, "mov ecx, ebx"),
+        plain(8, "push eax"),
+        call(9, "multiply_matrix_in_place", "image", "multiply_matrix"),
+        plain(10, "mov ecx, dword [ebp+0xc0]"),
+        plain(11, "mov edx, dword [ecx+0x3a0]"),
+        plain(12, "mov ecx, ebx"),
+        plain(13, "push edx"),
+        call(14, "rotate_matrix_world_z", "image", "rotate_matrix_local_z"),
+    )
+    candidate = (
+        call(0, "set_matrix_identity", "reloc"),
+        plain(1, "mov eax, dword [ebp+0xc0]"),
+        plain(2, "mov ecx, dword [eax+0x39c]"),
+        plain(3, "push ecx"),
+        plain(4, "lea ecx, dword [esp+0x18]"),
+        call(5, "rotate_matrix_local_z", "reloc"),
+        plain(6, "lea edx, dword [esp+0x14]"),
+        plain(7, "mov ecx, ebx"),
+        plain(8, "push edx"),
+        call(9, "multiply_matrix", "reloc"),
+        plain(10, "mov eax, dword [ebp+0xc0]"),
+        plain(11, "mov ecx, dword [eax+0x3a0]"),
+        plain(12, "push ecx"),
+        plain(13, "mov ecx, ebx"),
+        call(14, "rotate_matrix_local_z", "reloc"),
+    )
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.problem_count == 0
+    pairs = [
+        (entry.target_index, entry.candidate_index)
+        for entry in audit.entries
+    ]
+    assert (5, 5) in pairs
+    assert (5, 9) not in pairs
+
+
 def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
     # target: push 0x402000; ret. The image address has no function/string name,
     # so a matching ADDR shape against a candidate symbol is not proof-grade.
