@@ -3992,84 +3992,97 @@
     },
     {
       "address": "0x50333c",
-      "name": "g_input_slot0_axis_x",
+      "name": "g_input_controller_slot0",
       "kind": "global",
       "aliases": [
         "data_50333c",
-        "g_input_controller_slots"
+        "g_input_controller_slots",
+        "g_input_slot0_axis_x",
+        "RShellInput"
       ],
-      "size": "0x70",
-      "description": "Base of the two contiguous 0x38-byte InputControllerSlot records. The X-axis lane begins at +0x00 in each slot; controller updaters write the records and copy_active_input_controller_state reads slot 0."
+      "size": "0x20",
+      "description": "First proved RShell input-controller payload. Eight consumed fields occupy +0x00..+0x1f; the second payload begins at 0x503374, establishing a 0x38-byte stride without assigning the intervening or trailing bytes to either slot."
     },
     {
       "address": "0x503340",
       "name": "g_input_slot0_axis_y",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_503340"
       ],
-      "size": "0x3c",
-      "description": "Input-controller Y-axis lane array with slot 0 at this address and slot 1 at +0x38; written by controller updaters and read by copy_active_input_controller_state."
+      "size": "0x4",
+      "description": "InputControllerSlot::axis_y in slot 0; the corresponding slot-1 field is at +0x38."
     },
     {
       "address": "0x503344",
       "name": "g_input_slot0_buttons",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_503344"
       ],
-      "size": "0x3c",
-      "description": "Input-controller button-mask lane array with slot 0 at this address and slot 1 at +0x38; written by controller updaters and read by copy_active_input_controller_state."
+      "size": "0x4",
+      "description": "InputControllerSlot::buttons in slot 0; the corresponding slot-1 field is at +0x38 and carries the shared InputButtonFlag word."
     },
     {
       "address": "0x503348",
       "name": "g_input_slot0_pointer_x",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_503348"
       ],
-      "size": "0x3c",
-      "description": "Input-controller pointer X lane array with slot 0 at this address and slot 1 at +0x38; copied into the runtime input buffer by copy_active_input_controller_state."
+      "size": "0x4",
+      "description": "InputControllerSlot::pointer_x in slot 0; the corresponding slot-1 field is at +0x38."
     },
     {
       "address": "0x50334c",
       "name": "g_input_slot0_pointer_y",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_50334c"
       ],
-      "size": "0x3c",
-      "description": "Input-controller pointer Y lane array with slot 0 at this address and slot 1 at +0x38; copied into the runtime input buffer by copy_active_input_controller_state."
+      "size": "0x4",
+      "description": "InputControllerSlot::pointer_y in slot 0; the corresponding slot-1 field is at +0x38."
     },
     {
       "address": "0x503350",
       "name": "g_input_slot0_authored_x",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_503350"
       ],
-      "size": "0x3c",
-      "description": "Input-controller authored X lane array with slot 0 at this address and slot 1 at +0x38; updated by pointer-region helpers and copied by copy_active_input_controller_state."
+      "size": "0x4",
+      "description": "InputControllerSlot::authored_x in slot 0; the corresponding slot-1 field is at +0x38."
     },
     {
       "address": "0x503354",
       "name": "g_input_slot0_authored_y",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_503354"
       ],
-      "size": "0x3c",
-      "description": "Input-controller authored Y lane array with slot 0 at this address and slot 1 at +0x38; updated by pointer-region helpers and copied by copy_active_input_controller_state."
+      "size": "0x4",
+      "description": "InputControllerSlot::authored_y in slot 0; the corresponding slot-1 field is at +0x38."
     },
     {
       "address": "0x503358",
       "name": "g_input_slot0_pointer_value",
-      "kind": "global",
+      "kind": "offset",
       "aliases": [
         "data_503358"
       ],
-      "size": "0x3c",
-      "description": "Input-controller pointer-value lane array with slot 0 at this address and slot 1 at +0x38; copied into InputState.pointer_value by copy_active_input_controller_state after update_input_controller_pointer_region writes it."
+      "size": "0x4",
+      "description": "InputControllerSlot::pointer_value in slot 0; the corresponding slot-1 field is at +0x38."
+    },
+    {
+      "address": "0x503374",
+      "name": "g_input_controller_slot1",
+      "kind": "global",
+      "aliases": [
+        "data_503374",
+        "unk_503374"
+      ],
+      "size": "0x20",
+      "description": "Second proved RShell input-controller payload, 0x38 bytes after slot 0. Its consumed fields end at 0x503394, before the independent g_text_input_repeat_step global at 0x50339c."
     },
     {
       "address": "0x50339c",
@@ -4090,7 +4103,7 @@
         "data_5033b0",
         "g_input_controller_slots_end"
       ],
-      "description": "One-past axis-y cursor sentinel for the two 0x38-byte InputControllerSlot records reset by initialize_game_data_archive; it is four bytes beyond the complete array's one-past address."
+      "description": "One-past axis-y cursor sentinel for the two startup-loop iterations. It records the 0x38-byte stride only; it is not an InputControllerSlot array bound and crosses independently owned RShell repeat globals."
     },
     {
       "address": "0x508890",

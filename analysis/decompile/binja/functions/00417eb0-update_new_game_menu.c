@@ -22,7 +22,7 @@
 00417f38        if ((widget_flags.b & 0x20) != 0)
 00417f3a        widget_flags.b &= 0xdf
 00417f3c        postal_button->widget_flags = widget_flags
-00417f44        destroy_main_menu()
+00417f44        destroy_main_menu(intro)
 00417f50        g_game_base->players[0].frontend_state = 0xa
 00417f60        g_game_base->players[0].redispatch_requested = 1
 00417f6c        g_game_base->subgame.level_mode = 0
@@ -33,7 +33,7 @@
 00417f90        if ((widget_flags_1.b & 0x20) != 0)
 00417f92        widget_flags_1.b &= 0xdf
 00417f94        time_trial_button->widget_flags = widget_flags_1
-00417f9c        destroy_main_menu()
+00417f9c        destroy_main_menu(intro)
 00417faa        g_game_base->players[0].frontend_state = 0xa
 00417fba        g_game_base->players[0].redispatch_requested = 1
 00417fc6        g_game_base->subgame.level_mode = 4
@@ -43,7 +43,7 @@
 00417fdd        if ((widget_flags_2.b & 0x20) != 0)
 00417fdf        widget_flags_2.b &= 0xdf
 00417fe1        tutorial_button->widget_flags = widget_flags_2
-00417fe9        destroy_main_menu()
+00417fe9        destroy_main_menu(intro)
 00417ff4        g_game_base->players[0].frontend_state = 0xa
 00418004        g_game_base->players[0].redispatch_requested = 1
 0041800f        g_game_base->subgame.level_mode = 7
@@ -55,7 +55,7 @@
 00418041        if ((widget_flags_3.b & 0x20) != 0)
 00418043        widget_flags_3.b &= 0xdf
 00418045        challenge_button->widget_flags = widget_flags_3
-0041804d        destroy_main_menu()
+0041804d        destroy_main_menu(intro)
 0041805b        g_game_base->players[0].frontend_state = 0xa
 0041806a        g_game_base->players[0].redispatch_requested = 1
 00418076        g_game_base->subgame.level_mode = 1
@@ -68,12 +68,12 @@
 004180c3        if ((widget_flags_5.b & 0x20) != 0)
 004180c5        widget_flags_5.b &= 0xdf
 004180c7        help_button->widget_flags = widget_flags_5
-004180cf        destroy_main_menu()
+004180cf        destroy_main_menu(intro)
 004180da        g_game_base->players[0].frontend_state = 0x1f
 004180ea        g_game_base->players[0].redispatch_requested = 1
 0041808c        widget_flags_4.b &= 0xdf
 0041808e        back_button->widget_flags = widget_flags_4
-00418096        destroy_main_menu()
+00418096        destroy_main_menu(intro)
 004180a1        g_game_base->players[0].frontend_state = 4
 004180b0        g_game_base->players[0].redispatch_requested = 1
 004180f3        long double x87_r7_1 = fconvert.t(intro->replay_probe_step) + fconvert.t(intro->replay_probe_progress)
@@ -123,7 +123,7 @@
 004182bd        g_game_base->subgame.selected_level_record_persistent = 1
 004182c3        intro->attract_reset_progress = 0f
 004182c6        intro->attract_reset_step = 0.000277777785f
-004182cd        destroy_main_menu()
+004182cd        destroy_main_menu(intro)
 004182d7        return
 0041825e        do while (i s< 0x3e8)
 00418264        intro->attract_reset_progress = 0f

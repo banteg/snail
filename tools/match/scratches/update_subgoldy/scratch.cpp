@@ -245,19 +245,20 @@ steering_stored:
         }
         SubgameRuntime* fire_game = game;
         if (fire_game->track_state_latch) {
-            if (control_source->control_flags_a & 0x4000)
+            if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY)
                 fire_game
                     ->current_high_score_record
                     .run_records[fire_game->replay_update_cursor]
                     .flags |= 1;
-            if (control_source->control_flags_b & 0x4000)
+            if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY)
                 game
                     ->current_high_score_record
                     .run_records[game->replay_update_cursor]
                     .flags |= 2;
         }
         PlayerControlSource* source = control_source;
-        if ((source->control_flags_b & 0x4000) == 0 && (source->control_flags_a & 0x4000) == 0)
+        if ((source->control_flags_b & INPUT_BUTTON_PRIMARY) == 0
+            && (source->control_flags_a & INPUT_BUTTON_PRIMARY) == 0)
             game->track_state_latch = 1;
         SubgameRuntime* mark_game = game;
         if (mark_game->track_state_latch)
@@ -746,7 +747,9 @@ steering_stored:
             SubgameRuntime* skip_game = game;
             if (skip_game->level_mode == 0 || skip_game->level_mode == 1) {
                 if (skip_game->completion.gate_18 == 1
-                    && (control_source->control_flags_a & 0x4000) != 0)
+                    && (control_source->control_flags_a
+                            & INPUT_BUTTON_PRIMARY)
+                        != 0)
                     completion_handoff_timer = 5.0999999f;
                 if (skip_game->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED)
                     completion_handoff_timer = 5.0999999f;
@@ -1009,11 +1012,11 @@ steering_stored:
                     play_movement_state_sound();
                     update_movement_flag_emitters(this);
                 }
-            } else if (control_source->control_flags_a & 0x4000) {
+            } else if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY) {
                 play_movement_state_sound();
                 update_movement_flag_emitters(this);
                 movement_fire_progress = movement_fire_progress_step + 0.30000001f;
-            } else if (control_source->control_flags_b & 0x4000) {
+            } else if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY) {
                 movement_fire_progress = movement_fire_progress_step;
                 play_movement_state_sound();
                 update_movement_flag_emitters(this);

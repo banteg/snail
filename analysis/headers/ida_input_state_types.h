@@ -140,12 +140,28 @@ struct IDirectInput8A {
     IDirectInput8AVtbl* lpVtbl;
 };
 
+typedef enum InputButtonFlag {
+    INPUT_BUTTON_PRIMARY = 0x4000,
+    INPUT_BUTTON_SECONDARY = 0x8000,
+} InputButtonFlag;
+
+typedef struct InputControllerSlot {
+    float axis_x;
+    float axis_y;
+    InputButtonFlag buttons;
+    float pointer_x;
+    float pointer_y;
+    float authored_x;
+    float authored_y;
+    float pointer_value;
+} InputControllerSlot;
+
 typedef struct InputState {
     int32_t controller_slot;
-    int32_t pressed_buttons;
-    int32_t released_buttons;
-    int32_t previous_buttons;
-    int32_t inverse_current_buttons;
+    InputButtonFlag pressed_buttons;
+    InputButtonFlag released_buttons;
+    InputButtonFlag previous_buttons;
+    InputButtonFlag inverse_current_buttons;
     float axis_x;
     float axis_y;
     int32_t unknown_1c;
@@ -154,7 +170,7 @@ typedef struct InputState {
     float authored_x;
     float authored_y;
     float pointer_value;
-    int32_t current_buttons;
+    InputButtonFlag current_buttons;
 } InputState;
 
 typedef struct GameInputBodBase {

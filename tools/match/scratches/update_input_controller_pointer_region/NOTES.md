@@ -6,9 +6,10 @@ The routine installs a screen rectangle for an input slot, updates the OS cursor
 
 ## Source-shape findings
 
-- The slot state is the shared two-entry `InputControllerSlot` owner: slot 1 is
+- The slot state uses the shared `InputControllerSlot` payload: slot 1 is
   `0x38` bytes after slot 0, and the native `(slot * 7) << 3` expression is the
-  array's byte stride rather than a collection of unrelated lane globals.
+  payload stride rather than a collection of unrelated lane globals. Each
+  proved payload is only `0x20` bytes; the stride gaps are not slot-owned.
 - Keeping the clamp as "choose a float, then store it" recovers the native x87
   tail. The simpler source that only stores on out-of-range paths left a
   masked operand mismatch and scored lower.
@@ -47,10 +48,11 @@ and `slot`.
   button, and X-clamp sequence. Focused Wibo moves from 57.14% (`139/134`,
   prefix 4) to 98.51% (`134/134`, prefix 131), with all 30 masked operands
   clean.
-- Direct `g_input_controller_slots[slot]` field access is codegen-equivalent
-  to the former scratch-local lane pointers and makes the recovered 0x38-byte
-  owner explicit. A retained pointer to the whole record changed x87 lifetime
-  and regressed to 68.16%, so the direct array-member form is retained.
+- Direct `input_controller_slot(slot)` field access is codegen-equivalent to
+  the former scratch-local lane pointers and makes the recovered 0x20-byte
+  payload at a 0x38-byte stride explicit. A retained pointer to the whole
+  payload changed x87 lifetime and regressed to 68.16%, so repeated accessor
+  calls are retained.
 - The only residual is the final in-range Y self-store: native emits
   `fld`/`fstp`, while VC6 emits a bit-preserving integer load/store for the
   equivalent recovered source. A `double` temporary regressed to 94.81%, and
@@ -62,6 +64,23 @@ The top, bottom, left, and right region arrays now use
 `INPUT_CONTROLLER_SLOT_COUNT` rather than four independent literal extents.
 Binary Ninja finds exactly two consumers for every array: this routine writes
 the selected rectangle, and exact `set_input_controller_pointer_authored_xy`
-reads the same slot to reverse-map authored coordinates. Both index the paired
-`g_input_controller_slots` owner with that slot, independently proving that
-all four arrays are two-entry sidecars rather than unrelated globals.
+reads the same slot to reverse-map authored coordinates. Both select the same
+0x38-stride controller payload, independently proving that all four arrays are
+two-entry sidecars rather than unrelated globals.
+
+## 2026-07-16 payload boundary and shared button vocabulary
+
+Binary Ninja xrefs close all eight consumed fields at `0x50333c..0x50335b`
+and `0x503374..0x503393`, but no code reads either following 0x18-byte gap.
+More importantly, `g_text_input_repeat_step @ 0x50339c` is an independently
+authored `RShell.o` global with text-input consumers, so treating the two
+0x38-byte strides as complete array elements would falsely absorb it. The
+shared declaration now models two separate 0x20-byte payloads plus an explicit
+0x38 stride, leaving both gaps unowned.
+
+The pointer adapter is also a direct producer for the shared primary and
+secondary input bits: `button_a` sets `INPUT_BUTTON_PRIMARY` (`0x4000`) and
+`button_b` sets `INPUT_BUTTON_SECONDARY` (`0x8000`). Those exact bits are copied
+through `copy_active_input_controller_state` into `InputState` and consumed by
+front-end/gameplay update paths. The focused match remains 98.51%, 134/134,
+prefix 131/134, with all 30 masked operands clean.

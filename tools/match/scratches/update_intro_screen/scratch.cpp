@@ -11,7 +11,8 @@ void Logo::update_intro_screen()
     GameRoot* game = g_game;
     if (game->fade.state == 0) {
         int flags = game->players[0].game_input->input.pressed_buttons;
-        if ((flags & 0x4000) != 0 || read_pressed_text_input_key_code() == 0xb) {
+        if ((flags & INPUT_BUTTON_PRIMARY) != 0
+            || read_pressed_text_input_key_code() == 0xb) {
             g_game->fade.begin_frontend_fade_out(0);
         }
     }

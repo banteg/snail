@@ -61,7 +61,7 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   float ba; // [esp+8h] [ebp-1Ch]
   float a; // [esp+Ch] [ebp-18h]
   float aa; // [esp+Ch] [ebp-18h]
-  uint8_t v58; // [esp+1Ch] [ebp-8h]
+  uint8_t pulse_alpha; // [esp+1Ch] [ebp-8h]
 
   widget->previous_widget_flags = widget->widget_flags;
   v2 = widget->widget_flags & 0xFFFDFFFF;
@@ -224,11 +224,11 @@ LABEL_82:
     {
       v25 = g_game_base;
       if ( g_game_base->border_manager.delayed_widget_active
-        || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) == 0 )
+        || (BYTE1(g_game_base->players[0].game_input->input.pressed_buttons) & 0x40) == 0 )
       {
 LABEL_72:
         v26 = widget->widget_flags;
-        if ( (v26 & 0x40) != 0 && (v25->players[0].game_input->input.pressed_buttons & 0x8000) != 0 )
+        if ( (v26 & 0x40) != 0 && SBYTE1(v25->players[0].game_input->input.pressed_buttons) < 0 )
         {
           if ( (v26 & 0x1000000) != 0 )
           {
@@ -323,7 +323,7 @@ LABEL_83:
   }
   update_twinkle_manager(&widget->twinkle_manager);
   update_tooltip(&widget->tooltip);
-  v58 = ((unsigned __int16)widget->widget_flags >> 8) & 1;
+  pulse_alpha = ((unsigned __int16)widget->widget_flags >> 8) & 1;
   layout_frontend_widget(widget);
   if ( (widget->widget_flags & 0x1000) == 0 )
   {
@@ -382,7 +382,7 @@ LABEL_83:
           0x1000000u,
           &widget->current_text_color,
           0,
-          v58);
+          pulse_alpha);
       }
     }
     draw_frontend_widget(widget);

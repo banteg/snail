@@ -174,8 +174,8 @@
 00439099        list_flags:1.b |= 2
 0043909c        (edi_1 + 0x5ccacc)->bod.list_flags = list_flags
 00439053        report_errorf("List ADD")
-004390af        if ((*(edi_1 + 0x5ccac8) & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
-004390c1        spawn_track_parcel(game, edi_1 + 0x5ccb58, &game->player)
+004390af        if ((*(edi_1 + &data_5ccac8) & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
+004390c1        spawn_track_parcel(game, edi_1 + &data_5ccb58, &game->player)
 004390c6        float var_3c_1 = 0f
 00439863        bool cond:5_1
 004390d5        if (runtime_row_scan_begin s>= 0 && runtime_row_scan_begin s< game->runtime_row_count)
@@ -307,7 +307,7 @@
 00439532        spawn_salt_hazard(&game->salt_hazards, edi_3 + 0x3bfad8)
 0043954e        if ((game->runtime_flags.b & 0x80) != 0 && *(edi_3 + 0x3bfb04) == 0x12 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
 00439560        spawn_slug_hazard(game, edi_3 + 0x3bfac8, &game->player)
-00439569        int16_t edx_22 = (*(edi_1 + 0x5ccac8)).w
+00439569        int16_t edx_22 = (*(edi_1 + &data_5ccac8)).w
 00439572        if ((edx_22:1.b & 2) == 0)
 00439578        char ecx_56 = *(edi_3 + 0x3bfb04)
 00439581        int32_t requested_kind
@@ -336,7 +336,7 @@
 0043980c        long double st0_7 = random_float_below(1f)
 00439811        long double temp7_1 = fconvert.t(0.699999988f)
 00439811        st0_7 - temp7_1
-00439830        if ((((st0_7 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp7_1) ? 1 : 0) << 0xa | (st0_7 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7 || ((*(edi_1 + 0x5ccac8)).w:1.b & 8) != 0)
+00439830        if ((((st0_7 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp7_1) ? 1 : 0) << 0xa | (st0_7 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7 || ((*(edi_1 + &data_5ccac8)).w:1.b & 8) != 0)
 00439832        ring_speed = 0f
 00439832        goto label_43983a
 00439676        if ((edx_22:1.b & 0x20) != 0)

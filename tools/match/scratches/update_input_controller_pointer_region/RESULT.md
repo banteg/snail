@@ -22,7 +22,8 @@ candidate[132] mov dword [ecx+ADDR], edx
 The retained scratch matches the region stores, cursor hide/show calls,
 clamp/click path, authored coordinate conversion, button ORs, and both authored
 coordinate clamps. Directly mutable `x`/`y` parameters recover the native saved
-register ownership; typed `InputControllerSlot` array access records the real
-0x38-byte slot owner. The remaining two-instruction difference is an equivalent
-floating-point versus integer self-copy, so no artificial cast or volatility is
-used to force it.
+register ownership; typed `InputControllerSlot` access records the real
+0x20-byte payload at its 0x38-byte selection stride without claiming the
+stride gap. The remaining two-instruction difference is an equivalent
+floating-point versus integer self-copy, so no artificial cast or volatility
+is used to force it.

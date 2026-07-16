@@ -7,6 +7,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
+    apply_symbol_removals,
     apply_struct_field_updates,
     apply_symbol_updates,
     apply_user_var_updates,
@@ -25,6 +26,26 @@ GAME_INPUT_DATA_SYMBOL_UPDATES = (
 
 GAME_INPUT_DATA_VAR_UPDATES = (
     ("0x4972f0", "void*"),
+)
+
+INPUT_CONTROLLER_DATA_SYMBOL_UPDATES = (
+    ("0x50333c", "g_input_controller_slot0"),
+    ("0x503374", "g_input_controller_slot1"),
+)
+
+INPUT_CONTROLLER_INTERIOR_SYMBOL_REMOVALS = (
+    ("0x503340", "g_input_slot0_axis_y"),
+    ("0x503344", "g_input_slot0_buttons"),
+    ("0x503348", "g_input_slot0_pointer_x"),
+    ("0x50334c", "g_input_slot0_pointer_y"),
+    ("0x503350", "g_input_slot0_authored_x"),
+    ("0x503354", "g_input_slot0_authored_y"),
+    ("0x503358", "g_input_slot0_pointer_value"),
+)
+
+INPUT_CONTROLLER_DATA_VAR_UPDATES = (
+    ("0x50333c", "InputControllerSlot"),
+    ("0x503374", "InputControllerSlot"),
 )
 
 TEXT_INPUT_DATA_SYMBOL_UPDATES = (
@@ -104,10 +125,10 @@ CONTROLLER_FUNCTION_SYMBOL_UPDATES = (
 
 INPUT_STATE_FIELDS = (
     ("0x00", "controller_slot", "int32_t"),
-    ("0x04", "pressed_buttons", "int32_t"),
-    ("0x08", "released_buttons", "int32_t"),
-    ("0x0c", "previous_buttons", "int32_t"),
-    ("0x10", "inverse_current_buttons", "int32_t"),
+    ("0x04", "pressed_buttons", "InputButtonFlag"),
+    ("0x08", "released_buttons", "InputButtonFlag"),
+    ("0x0c", "previous_buttons", "InputButtonFlag"),
+    ("0x10", "inverse_current_buttons", "InputButtonFlag"),
     ("0x14", "axis_x", "float"),
     ("0x18", "axis_y", "float"),
     ("0x1c", "unknown_1c", "int32_t"),
@@ -116,7 +137,18 @@ INPUT_STATE_FIELDS = (
     ("0x28", "authored_x", "float"),
     ("0x2c", "authored_y", "float"),
     ("0x30", "pointer_value", "float"),
-    ("0x34", "current_buttons", "int32_t"),
+    ("0x34", "current_buttons", "InputButtonFlag"),
+)
+
+INPUT_CONTROLLER_SLOT_FIELDS = (
+    ("0x00", "axis_x", "float"),
+    ("0x04", "axis_y", "float"),
+    ("0x08", "buttons", "InputButtonFlag"),
+    ("0x0c", "pointer_x", "float"),
+    ("0x10", "pointer_y", "float"),
+    ("0x14", "authored_x", "float"),
+    ("0x18", "authored_y", "float"),
+    ("0x1c", "pointer_value", "float"),
 )
 
 GAME_INPUT_FIELDS = (
@@ -138,7 +170,7 @@ PROTO_UPDATES = (
     ("update_game_input", "void __thiscall update_game_input(GameInput* game_input)"),
     (
         "copy_active_input_controller_state",
-        "float* __cdecl copy_active_input_controller_state(int32_t controller_slot, int32_t* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)",
+        "float* __cdecl copy_active_input_controller_state(int32_t controller_slot, InputButtonFlag* out_buttons, float* out_axis_x, float* out_axis_y, float* out_authored_x, float* out_authored_y, float* out_pointer_value, float* out_pointer_x, float* out_pointer_y)",
     ),
     ("0x44bbb0", "int32_t __cdecl initialize_mouse_authored_scale_from_clip_rect()"),
     ("0x44bbd0", "int32_t __cdecl update_mouse_authored_scale(float authored_width, float authored_height)"),
@@ -197,6 +229,12 @@ def main() -> int:
         *apply_struct_field_updates(
             REPO_ROOT,
             target=TARGET,
+            struct_name="InputControllerSlot",
+            updates=INPUT_CONTROLLER_SLOT_FIELDS,
+        ),
+        *apply_struct_field_updates(
+            REPO_ROOT,
+            target=TARGET,
             struct_name="GameInput",
             updates=GAME_INPUT_FIELDS,
         ),
@@ -210,6 +248,22 @@ def main() -> int:
             REPO_ROOT,
             target=TARGET,
             updates=GAME_INPUT_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=INPUT_CONTROLLER_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_symbol_removals(
+            REPO_ROOT,
+            target=TARGET,
+            removals=INPUT_CONTROLLER_INTERIOR_SYMBOL_REMOVALS,
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=INPUT_CONTROLLER_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,

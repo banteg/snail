@@ -138,8 +138,14 @@
 0040972c        if (g_runtime_config.highest_galaxy_route_index s>= 1)
 0040972e        float* ecx_22 = &galaxy->route_slots[1].record.highlight_target
 0040973a        if (i_4 != galaxy->selected_index)
-00409744        (ecx_22 - 0x2cc)->route_slots[1].record.highlight_target = 0f
-0040973c        (ecx_22 - 0x2cc)->route_slots[1].record.highlight_target = 1f
+00409744        (ecx_22 - 0x2cc)->:0x2cc.b = 0
+00409744        (ecx_22 - 0x2cc)->:0x2cd.b = 0
+00409744        (ecx_22 - 0x2cc)->:0x2ce.b = 0
+00409744        (ecx_22 - 0x2cc)->:0x2cf.b = 0
+0040973c        (ecx_22 - 0x2cc)->:0x2cc.b = 0
+0040973c        (ecx_22 - 0x2cc)->:0x2cd.b = 0
+0040973c        (ecx_22 - 0x2cc)->:0x2ce.b = 0x80
+0040973c        (ecx_22 - 0x2cc)->:0x2cf.b = 0x3f
 00409750        i_4 += 1
 00409751        ecx_22 = &ecx_22[0xa8]
 00409759        do while (i_4 s<= g_runtime_config.highest_galaxy_route_index)
@@ -185,30 +191,47 @@
 004098c4        i_5 += 1
 004098c5        edi_2 = &edi_2[0xa8]
 004098cd        do while (i_5 s<= g_runtime_config.highest_galaxy_route_index)
-004098d8        struct GameRoot* game_base_2 = g_game_base
-004098e6        if (game_base_2->border_manager.delayed_widget_active == 0)
+004098d8        struct GameRoot* game_base_3 = g_game_base
+004098e6        if (game_base_3->border_manager.delayed_widget_active == 0)
 004098ec        struct FrontendWidget* exit_or_back_widget = galaxy->exit_or_back_widget
-004098f2        enum FrontendWidgetFlag widget_flags = exit_or_back_widget->widget_flags
-004098fa        if ((widget_flags.b & 0x20) != 0)
-004098fc        widget_flags.b &= 0xdf
-004098fe        exit_or_back_widget->widget_flags = widget_flags
+004098f2        int32_t eax_45
+004098f2        eax_45.b = exit_or_back_widget->widget_flags.b
+004098f2        eax_45:1.b = exit_or_back_widget->widget_flags:1.b
+004098f2        eax_45:2.b = exit_or_back_widget->widget_flags:2.b
+004098f2        eax_45:3.b = exit_or_back_widget->widget_flags:3.b
+004098fa        if ((eax_45.b & 0x20) != 0)
+004098fc        eax_45.b &= 0xdf
+004098fe        exit_or_back_widget->widget_flags.b = eax_45.b
+004098fe        exit_or_back_widget->widget_flags:1.b = eax_45:1.b
+004098fe        exit_or_back_widget->widget_flags:2.b = eax_45:2.b
+004098fe        exit_or_back_widget->widget_flags:3.b = eax_45:3.b
 00409909        if (galaxy->route_mode != 1)
 00409947        destroy_galaxy(galaxy)
 00409958        return 3
 0040990b        struct GameRoot* game_base_1 = g_game_base
 0040991a        game_base_1->exit_controller.previous_frontend_state = game_base_1->players[0].frontend_state
 00409925        g_game_base->exit_controller.state = 0xb
-00409937        g_game_base->players[0].frontend_state = 8
+0040992f        struct GameRoot* game_base_2 = g_game_base
+00409937        game_base_2->players[0].frontend_state.b = 8
+00409937        game_base_2->players[0].frontend_state:1.b = 0
+00409937        game_base_2->players[0].frontend_state:2.b = 0
+00409937        game_base_2->players[0].frontend_state:3.b = 0
 00409944        return 0
 00409959        int32_t route_state = galaxy->route_state
-0040995e        enum FrontendWidgetFlag widget_flags_1
+0040995e        int32_t eax_50
 0040995e        struct FrontendWidget* play_or_deliver_widget
 0040995e        if (route_state == 1)
 00409960        play_or_deliver_widget = galaxy->play_or_deliver_widget
-00409966        widget_flags_1 = play_or_deliver_widget->widget_flags
-0040996e        if (route_state == 1 && (widget_flags_1.b & 0x20) != 0)
-00409970        widget_flags_1.b &= 0xdf
-00409972        play_or_deliver_widget->widget_flags = widget_flags_1
+00409966        eax_50.b = play_or_deliver_widget->widget_flags.b
+00409966        eax_50:1.b = play_or_deliver_widget->widget_flags:1.b
+00409966        eax_50:2.b = play_or_deliver_widget->widget_flags:2.b
+00409966        eax_50:3.b = play_or_deliver_widget->widget_flags:3.b
+0040996e        if (route_state == 1 && (eax_50.b & 0x20) != 0)
+00409970        eax_50.b &= 0xdf
+00409972        play_or_deliver_widget->widget_flags.b = eax_50.b
+00409972        play_or_deliver_widget->widget_flags:1.b = eax_50:1.b
+00409972        play_or_deliver_widget->widget_flags:2.b = eax_50:2.b
+00409972        play_or_deliver_widget->widget_flags:3.b = eax_50:3.b
 0040997a        destroy_galaxy(galaxy)
 0040998b        galaxy->level_progress_base->level_mode_arg = galaxy->selected_index
 0040998e        struct SubgameRuntime* level_progress_base = galaxy->level_progress_base
@@ -218,10 +241,17 @@
 004099d0        return 2
 00409a5a        return 1
 004099d1        struct FrontendWidget* replay_widget = galaxy->replay_widget
-004099d7        enum FrontendWidgetFlag widget_flags_2 = replay_widget->widget_flags
-004099df        if ((widget_flags_2.b & 0x20) != 0)
-004099e1        widget_flags_2.b &= 0xdf
-004099e3        replay_widget->widget_flags = widget_flags_2
+004099d7        int32_t eax_54
+004099d7        eax_54.b = replay_widget->widget_flags.b
+004099d7        eax_54:1.b = replay_widget->widget_flags:1.b
+004099d7        eax_54:2.b = replay_widget->widget_flags:2.b
+004099d7        eax_54:3.b = replay_widget->widget_flags:3.b
+004099df        if ((eax_54.b & 0x20) != 0)
+004099e1        eax_54.b &= 0xdf
+004099e3        replay_widget->widget_flags.b = eax_54.b
+004099e3        replay_widget->widget_flags:1.b = eax_54:1.b
+004099e3        replay_widget->widget_flags:2.b = eax_54:2.b
+004099e3        replay_widget->widget_flags:3.b = eax_54:3.b
 004099eb        destroy_galaxy(galaxy)
 004099fc        galaxy->level_progress_base->level_mode_arg = galaxy->selected_index
 004099ff        struct SubgameRuntime* level_progress_base_1 = galaxy->level_progress_base
@@ -230,11 +260,11 @@
 00409a25        struct SubgameRuntime* level_progress_base_2 = galaxy->level_progress_base
 00409a4b        level_progress_base_2->selected_level_record = &level_progress_base_2->sub_high_score.time_trial_route_records[galaxy->selected_index]
 00409a5a        return 1
-00409a69        if (game_base_2->fade.state == 0 && galaxy->route_mode != 1)
+00409a69        if (game_base_3->fade.state == 0 && galaxy->route_mode != 1)
 00409a6b        int32_t hover_state = galaxy->hover_state
 00409a73        if (hover_state != 1)
-00409a88        if (hover_state != 2 || (game_base_2->players[0].game_input->input.pressed_buttons & 0x4000) == 0)
-00409ad4        if (hover_state == 0 && (game_base_2->players[0].game_input->input.pressed_buttons & 0x4000) != 0 && route_state == 1 && g_runtime_config.highest_galaxy_route_index s> 1)
+00409a88        if (hover_state != 2 || (game_base_3->players[0].game_input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) == 0)
+00409ad4        if (hover_state == 0 && (game_base_3->players[0].game_input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) != 0 && route_state == 1 && g_runtime_config.highest_galaxy_route_index s> 1)
 00409ad8        close_galaxy_route(galaxy)
 00409ae4        play_sound_effect(8)
 00409a90        if (selected_index != galaxy->selected_index)

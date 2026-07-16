@@ -7544,6 +7544,90 @@
         "ObjectVertexBufferVtbl",
         "return result"
       ]
+    },
+    {
+      "name": "bn_input_controller_payload_owners",
+      "artifact": "analysis/decompile/binja/functions/004320f0-copy_active_input_controller_state.c",
+      "required_substrings": [
+        "g_input_controller_slot0.buttons",
+        "g_input_controller_slot0.pointer_y",
+        "g_input_controller_slot1.buttons",
+        "g_input_controller_slot1.pointer_y"
+      ],
+      "forbidden_substrings": [
+        "g_input_controller_slots",
+        "data_503",
+        "unk_503"
+      ]
+    },
+    {
+      "name": "ida_input_controller_payload_owners",
+      "artifact": "analysis/decompile/ida/functions/004320f0-copy_active_input_controller_state.c",
+      "required_substrings": [
+        "InputButtonFlag *out_buttons",
+        "g_input_controller_slot0.buttons",
+        "g_input_controller_slot0.pointer_y",
+        "g_input_controller_slot1.buttons",
+        "g_input_controller_slot1.pointer_y"
+      ],
+      "forbidden_substrings": [
+        "g_input_controller_slots",
+        "MEMORY[",
+        "unk_503"
+      ]
+    },
+    {
+      "name": "bn_input_controller_slot_producers",
+      "artifact": "analysis/decompile/binja/functions/00431ff0-update_input_controller_slot_button_axes.c",
+      "required_substrings": [
+        "g_input_controller_slot0.buttons",
+        "g_input_controller_slot0.axis_x",
+        "g_input_controller_slot1.buttons",
+        "g_input_controller_slot1.authored_x"
+      ],
+      "forbidden_substrings": [
+        "g_input_controller_slots",
+        "data_503",
+        "unk_503"
+      ]
+    },
+    {
+      "name": "ida_input_controller_slot_producers",
+      "artifact": "analysis/decompile/ida/functions/00431ff0-update_input_controller_slot_button_axes.c",
+      "required_substrings": [
+        "InputButtonFlag a2",
+        "g_input_controller_slot0.buttons",
+        "g_input_controller_slot0.axis_x",
+        "g_input_controller_slot1.buttons",
+        "g_input_controller_slot1.authored_x"
+      ],
+      "forbidden_substrings": [
+        "g_input_controller_slots",
+        "MEMORY[",
+        "unk_503"
+      ]
+    },
+    {
+      "name": "bn_input_button_primary_consumer",
+      "artifact": "analysis/decompile/binja/functions/004092f0-update_galaxy.c",
+      "required_substrings": [
+        "input.pressed_buttons & INPUT_BUTTON_PRIMARY"
+      ],
+      "forbidden_substrings": [
+        "input.pressed_buttons & 0x4000"
+      ]
+    },
+    {
+      "name": "bn_input_button_typed_copy_abi",
+      "artifact": "analysis/decompile/binja/functions/0040aab0-update_game_input.c",
+      "required_substrings": [
+        "copy_active_input_controller_state",
+        "&game_input->input.current_buttons"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_4972f0"
+      ]
     }
   ]
 }

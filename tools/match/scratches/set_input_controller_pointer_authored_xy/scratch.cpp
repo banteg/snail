@@ -10,9 +10,9 @@ void* set_input_controller_pointer_authored_xy(
     int authored_y_bits)
 {
     int left = g_input_region_left[slot];
-    *(int*)&g_input_controller_slots[slot].authored_x = authored_x_bits;
+    *(int*)&input_controller_slot(slot).authored_x = authored_x_bits;
     int bottom = g_input_region_bottom[slot];
-    *(int*)&g_input_controller_slots[slot].authored_y = authored_y_bits;
+    *(int*)&input_controller_slot(slot).authored_y = authored_y_bits;
     int top = g_input_region_top[slot];
     int screen_y =
         (int)((float)(bottom - top) * (*(float*)&authored_y_bits) * 0.00208333344f

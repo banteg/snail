@@ -133,7 +133,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     if ((widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED) != 0) {
         GameInput* input = g_game->players[0].game_input;
         if (g_game->border_manager.delayed_widget_active == 0
-            && (input->input.pressed_buttons & 0x4000) != 0) {
+            && (input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) != 0) {
             if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0) {
                 widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             } else {
@@ -151,7 +151,9 @@ void FrontendWidget::update_frontend_widget_interaction()
     {
         GameInput* input = g_game->players[0].game_input;
         if ((widget_flags & FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED) != 0
-            && (((unsigned char*)&input->input.pressed_buttons)[1] & 0x80) != 0) {
+            && (((unsigned char*)&input->input.pressed_buttons)[1]
+                    & (INPUT_BUTTON_SECONDARY >> 8))
+                != 0) {
             if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
                 widget_flags |= FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED;
             else

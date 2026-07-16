@@ -200,7 +200,9 @@ void SubgameRuntime::update_subgame()
         GameRoot* app = g_game;
         if (!((selected_level_record_active != zero
                 && pause_fade == 0.0f
-                && (player.control_source->control_flags_a & 0x4000) != 0)
+                && (player.control_source->control_flags_a
+                        & INPUT_BUTTON_PRIMARY)
+                    != 0)
             || app->intro.hide_for_replay_latch != zero)) {
 
         if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == one)

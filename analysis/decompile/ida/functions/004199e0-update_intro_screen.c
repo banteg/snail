@@ -2,39 +2,40 @@
 /* function: update_intro_screen @ 0x4199e0 */
 /* selector: update_intro_screen */
 
-// Exact Windows cRLogo::AI(): advances the normalized intro or credits crawl, tears down its LogoLetters once scrolling completes, and exits early on skip input.
-void __thiscall sub_4199E0(int this)
+// Exact Windows `cRLogo::AI()`: advances the normalized intro or credits crawl, tears down its LogoLetters once scrolling completes, and exits early on skip input.
+void __thiscall update_intro_screen(Logo *logo)
 {
-  int v2; // eax
+  int32_t state; // eax
   double v3; // st7
   double v4; // st7
 
-  if ( !*((_DWORD *)MEMORY[0x4DF904] + 9)
-    && ((*(_DWORD *)(*((_DWORD *)MEMORY[0x4DF904] + 163) + 60) & 0x4000) != 0 || read_pressed_text_input_key_code() == 11) )
+  if ( !g_game_base->fade.state
+    && ((g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) != 0
+     || read_pressed_text_input_key_code() == 11) )
   {
-    begin_frontend_fade_out((_DWORD *)MEMORY[0x4DF904] + 9, 0);
+    begin_frontend_fade_out(&g_game_base->fade.state, 0);
   }
-  if ( *((_DWORD *)MEMORY[0x4DF904] + 9) == 4 )
-    destroy_intro_screen((int *)this);
-  v2 = *(_DWORD *)(this + 8);
-  if ( v2 )
+  if ( g_game_base->fade.state == 4 )
+    destroy_intro_screen(logo);
+  state = logo->state;
+  if ( state )
   {
-    if ( v2 == 1 )
+    if ( state == 1 )
     {
-      v3 = *(float *)(this + 4) + *(float *)this;
-      *(float *)this = v3;
+      v3 = logo->progress_step + logo->progress;
+      logo->progress = v3;
       if ( v3 > 1.0 )
       {
-        begin_frontend_fade_out((_DWORD *)MEMORY[0x4DF904] + 9, 0);
-        ++*(_DWORD *)(this + 8);
+        begin_frontend_fade_out(&g_game_base->fade.state, 0);
+        ++logo->state;
       }
     }
   }
   else
   {
-    v4 = *(float *)(this + 16) * 60.0;
-    *(_DWORD *)this = 0;
-    *(_DWORD *)(this + 8) = 1;
-    *(float *)(this + 4) = 1.0 / v4;
+    v4 = logo->duration_seconds * 60.0;
+    logo->progress = 0.0;
+    logo->state = 1;
+    logo->progress_step = 1.0 / v4;
   }
 }

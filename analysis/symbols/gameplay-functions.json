@@ -1881,7 +1881,7 @@
     {
       "address": "0x4321c0",
       "name": "update_input_controller_pointer_region",
-      "description": "Refreshes one owned 0x38-byte InputControllerSlot from a screen-space pointer region: stores the active bounds, mutates the incoming X/Y coordinates while optionally warping the cursor into that region, updates authored 640x480 coordinates, and latches the per-slot button bits. The sole caller ignores the incidental comparison residue, proving the native contract is void."
+      "description": "Refreshes one 0x20-byte InputControllerSlot payload at the proved 0x38-byte RShell stride from a screen-space pointer region: stores the active bounds, mutates the incoming X/Y coordinates while optionally warping the cursor into that region, updates authored 640x480 coordinates, and latches the per-slot button bits. The sole caller ignores the incidental comparison residue, proving the native contract is void."
     },
     {
       "address": "0x4323a0",

@@ -103,7 +103,6 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in ("frame_renderer_types.h", "bn_frame_renderer_types.h")
     )
-
     assert '"SubgameRuntime": 0x1272838' in owner_sync
     for owner in (
         '(0x44100, 0x4D00, "root_bod_catalog", "RootBodCatalog")',
@@ -1895,6 +1894,33 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_input_state_types.h", "ida_input_state_types.h")
     )
+    frame_headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
+    )
+    matcher_controller_header = (
+        repo_root / "tools/match/include/input_controller_state.h"
+    ).read_text(encoding="utf-8")
+
+    assert "InputControllerSlot_must_be_0x20" in matcher_controller_header
+    assert "INPUT_CONTROLLER_SLOT_STRIDE = 0x38" in matcher_controller_header
+    assert "g_input_controller_slot0" in matcher_controller_header
+    assert "g_input_controller_slot1" in matcher_controller_header
+    assert "g_input_controller_slots[" not in matcher_controller_header
+    assert "unknown_20" not in matcher_controller_header
+
+    for header in (*headers, *frame_headers):
+        assert "typedef enum InputButtonFlag {" in header
+        assert "INPUT_BUTTON_PRIMARY = 0x4000" in header
+        assert "INPUT_BUTTON_SECONDARY = 0x8000" in header
+        assert "InputButtonFlag pressed_buttons;" in header
+        assert "InputButtonFlag current_buttons;" in header
+
+    for header in headers:
+        assert "typedef struct InputControllerSlot {" in header
+        assert "InputButtonFlag buttons;" in header
+        assert "float pointer_value;" in header
+        assert "unknown_20" not in header
 
     for declaration in (
         "char __cdecl read_pressed_text_input_key_code(void);",
@@ -1907,6 +1933,13 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
 
     for marker in (
         '("0x50339c", "g_text_input_repeat_step")',
+        '("0x50333c", "g_input_controller_slot0")',
+        '("0x503374", "g_input_controller_slot1")',
+        '("0x50333c", "InputControllerSlot")',
+        '("0x503374", "InputControllerSlot")',
+        '("0x08", "buttons", "InputButtonFlag")',
+        "InputButtonFlag* out_buttons",
+        "apply_symbol_removals",
         '("0x5108b8", "g_text_input_repeat_accumulator")',
         '("0x53c7f5", "g_text_input_last_repeat_code")',
         '"void __thiscall initialize_input(InputState* state)"',
@@ -1920,6 +1953,13 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
 
     for marker in (
         '(0x50339C, 20, "g_text_input_repeat_step", "float[5]")',
+        '(0x50333C, "g_input_controller_slot0")',
+        '(0x503374, "g_input_controller_slot1")',
+        '"InputControllerSlot g_input_controller_slot0;"',
+        '"InputControllerSlot g_input_controller_slot1;"',
+        "InputButtonFlag *out_buttons",
+        "INPUT_CONTROLLER_INTERIOR_NAMES",
+        "unexpected_input_controller_interior_name",
         '(0x53C7F5, 3, "g_text_input_last_repeat_code", "char[3]")',
         "STALE_DATA_ITEM_SPECS",
         "_clear_stale_data_item",
@@ -1945,6 +1985,16 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         entry["address"]: set(entry.get("aliases", []))
         for entry in references["symbols"]
     }
+    references_by_address = {
+        entry["address"]: entry for entry in references["symbols"]
+    }
+    assert references_by_address["0x50333c"]["name"] == "g_input_controller_slot0"
+    assert references_by_address["0x50333c"]["size"] == "0x20"
+    assert references_by_address["0x503374"]["name"] == "g_input_controller_slot1"
+    assert references_by_address["0x503374"]["size"] == "0x20"
+    assert references_by_address["0x503340"]["kind"] == "offset"
+    assert references_by_address["0x50339c"]["kind"] == "global"
+    assert "RShellInput" in aliases_by_address["0x50333c"]
     assert "gRShellKeyRepeatLifeRate" in aliases_by_address["0x50339c"]
     assert "gRShellKeyRepeatLife" in aliases_by_address["0x5108b8"]
     assert "gRShellOldKey" in aliases_by_address["0x53c7f5"]

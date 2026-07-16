@@ -48,39 +48,39 @@ void update_input_controller_pointer_region(
         }
     }
 
-    g_input_controller_slots[slot].authored_x =
+    input_controller_slot(slot).authored_x =
         (float)((x - left) * 640) / (float)(right - left);
-    g_input_controller_slots[slot].authored_y =
+    input_controller_slot(slot).authored_y =
         (float)((y - top) * 480) / (float)(bottom - top);
-    g_input_controller_slots[slot].pointer_value = (float)pointer_value;
+    input_controller_slot(slot).pointer_value = (float)pointer_value;
 
     if (button_a != 0) {
-        g_input_controller_slots[slot].buttons |= 0x4000;
+        input_controller_slot(slot).buttons |= INPUT_BUTTON_PRIMARY;
     }
     if (button_b != 0) {
-        g_input_controller_slots[slot].buttons |= 0x8000;
+        input_controller_slot(slot).buttons |= INPUT_BUTTON_SECONDARY;
     }
     if (button_c != 0) {
-        g_input_controller_slots[slot].buttons |= 0x100000;
+        input_controller_slot(slot).buttons |= 0x100000;
     }
 
     float clamped_x;
-    if (g_input_controller_slots[slot].authored_x < 1.0f) {
+    if (input_controller_slot(slot).authored_x < 1.0f) {
         clamped_x = 1.0f;
-    } else if (g_input_controller_slots[slot].authored_x > 632.0f) {
+    } else if (input_controller_slot(slot).authored_x > 632.0f) {
         clamped_x = 632.0f;
     } else {
-        clamped_x = g_input_controller_slots[slot].authored_x;
+        clamped_x = input_controller_slot(slot).authored_x;
     }
-    g_input_controller_slots[slot].authored_x = clamped_x;
+    input_controller_slot(slot).authored_x = clamped_x;
 
     float clamped_y;
-    if (g_input_controller_slots[slot].authored_y < 1.0f) {
+    if (input_controller_slot(slot).authored_y < 1.0f) {
         clamped_y = 1.0f;
-    } else if (g_input_controller_slots[slot].authored_y > 472.0f) {
+    } else if (input_controller_slot(slot).authored_y > 472.0f) {
         clamped_y = 472.0f;
     } else {
-        clamped_y = g_input_controller_slots[slot].authored_y;
+        clamped_y = input_controller_slot(slot).authored_y;
     }
-    g_input_controller_slots[slot].authored_y = clamped_y;
+    input_controller_slot(slot).authored_y = clamped_y;
 }

@@ -6,7 +6,7 @@
 0040282e        widget->previous_widget_flags = widget->widget_flags
 0040283a        enum FrontendWidgetFlag edx_1 = widget->widget_flags & ~FRONTEND_WIDGET_FLAG_POINTER_INSIDE
 00402842        widget->widget_flags = edx_1
-0040284d        if ((edx_1 & 0x100000) != 0)
+0040284d        if ((edx_1 & FRONTEND_WIDGET_FLAG_SLIDER) != 0)
 00402871        widget->slider_hit_left = fconvert.s(fconvert.t(widget->layout_width) * fconvert.t(0.100000001f) + fconvert.t(widget->layout_left) + fconvert.t(4f) - fconvert.t(12f))
 0040288f        widget->slider_hit_right = fconvert.s(fconvert.t(widget->layout_width) * fconvert.t(0.800000012f) + fconvert.t(widget->layout_left) - fconvert.t(4f))
 004028ad        widget->slider_hit_top = fconvert.s(fconvert.t(widget->layout_height) * fconvert.t(0.5f) + fconvert.t(widget->layout_top) - fconvert.t(6f))
@@ -64,7 +64,7 @@
 00402b4d        if ((widget->widget_flags & FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED) != 0 && is_mouse_captured(&g_game_base->players[0].mouse_cursor) != 0 && sx.d(read_pressed_text_input_key_code()) == widget->shortcut_key_code)
 00402b79        reset_tooltip(&widget->tooltip)
 00402b7e        enum FrontendWidgetFlag widget_flags_2 = widget->widget_flags
-00402b89        if ((widget_flags_2 & 0x1000000) == 0)
+00402b89        if ((widget_flags_2 & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) == 0)
 00402ba4        queue_frontend_widget_flag_after_delay(&g_game_base->border_manager, widget, 0x20)
 00402b8b        widget_flags_2.b |= 0x20
 00402b8d        widget->widget_flags = widget_flags_2
@@ -73,7 +73,7 @@
 00402bbb        if (eax_13 != 0)
 00402bc3        eax_14 = border_mouse_test(widget)
 00402bca        if (eax_13 == 0 || eax_14 == 0)
-00402d0a        enum FrontendWidgetFlag edx_19 = widget->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_KILL_PENDING | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE | FRONTEND_WIDGET_FLAG_HIDDEN | FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE | FRONTEND_WIDGET_FLAG_DISABLED | FRONTEND_WIDGET_FLAG_POINTER_INSIDE | FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION | 0xbfd549df
+00402d0a        enum FrontendWidgetFlag edx_19 = widget->widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED | FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED | FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED | FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_KILL_PENDING | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE | FRONTEND_WIDGET_FLAG_SPRITE_MODE | FRONTEND_WIDGET_FLAG_HIDDEN | FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE | FRONTEND_WIDGET_FLAG_DISABLED | FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT | FRONTEND_WIDGET_FLAG_POINTER_INSIDE | FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE | FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED | FRONTEND_WIDGET_FLAG_SLIDER | FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND | FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION | FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION | FRONTEND_WIDGET_FLAG_DISABLED_BEFORE_DEACTIVATION | 0x16000101
 00402d12        widget->widget_flags = edx_19
 00402d1e        if ((0x2000 & edx_19) == 0 && (edx_19.b & 4) != 0)
 00402d22        unhighlight_border(widget)
@@ -91,7 +91,7 @@
 00402c03        widget->text_effect_target = 1f
 00402c09        enum FrontendWidgetFlag widget_flags_3 = widget->widget_flags
 00402c15        if ((widget_flags_3.b & 2) == 0 && (widget_flags_3.b & 4) != 0)
-00402c1c        if ((widget_flags_3 & 0x40000) == 0)
+00402c1c        if ((widget_flags_3 & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
 00402c25        play_sound_effect(9)
 00402c2a        enum FrontendWidgetFlag widget_flags_4 = widget->widget_flags
 00402c30        widget_flags_4.b |= 2
@@ -108,7 +108,7 @@
 00402c52        edx_14:2.b = game_base_1->players[0].game_input:2.b
 00402c52        edx_14:3.b = game_base_1->players[0].game_input:3.b
 00402c5c        if ((*(edx_14 + 0x3d) & 0x40) != 0)
-00402c63        if ((widget_flags_5 & 0x1000000) == 0)
+00402c63        if ((widget_flags_5 & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) == 0)
 00402c78        queue_frontend_widget_flag_after_delay(&game_base_1->border_manager, widget, 0x20)
 00402c65        widget_flags_5.b |= 0x20
 00402c67        widget->widget_flags = widget_flags_5
@@ -125,7 +125,7 @@
 00402cbd        edx_17:2.b = game_base_1->players[0].game_input:2.b
 00402cbd        edx_17:3.b = game_base_1->players[0].game_input:3.b
 00402cc7        if ((*(edx_17 + 0x3d) & 0x80) != 0)
-00402cce        if ((widget_flags_6 & 0x1000000) == 0)
+00402cce        if ((widget_flags_6 & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) == 0)
 00402ce6        queue_frontend_widget_flag_after_delay(&game_base_1->border_manager, widget, 0x80)
 00402cd0        widget_flags_6.b |= 0x80
 00402cd2        widget->widget_flags = widget_flags_6
@@ -144,10 +144,10 @@
 00402d43        label_402d43:
 00402d43        enum FrontendWidgetFlag widget_flags_7 = widget->widget_flags
 00402d4c        if ((widget_flags_7:1.b & 0x80) != 0)
-00402d55        widget->widget_flags = widget_flags_7 & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_KILL_PENDING | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE | FRONTEND_WIDGET_FLAG_HIDDEN | FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE | FRONTEND_WIDGET_FLAG_DISABLED | FRONTEND_WIDGET_FLAG_POINTER_INSIDE | FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION | 0xbfd549df
+00402d55        widget->widget_flags = widget_flags_7 & FRONTEND_WIDGET_FLAG_HIGHLIGHTED | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED | FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED | FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED | FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_KILL_PENDING | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE | FRONTEND_WIDGET_FLAG_SPRITE_MODE | FRONTEND_WIDGET_FLAG_HIDDEN | FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE | FRONTEND_WIDGET_FLAG_DISABLED | FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT | FRONTEND_WIDGET_FLAG_POINTER_INSIDE | FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE | FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED | FRONTEND_WIDGET_FLAG_SLIDER | FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND | FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION | FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION | FRONTEND_WIDGET_FLAG_DISABLED_BEFORE_DEACTIVATION | 0x16000101
 00402d5b        unhighlight_border(widget)
 00402d60        enum FrontendWidgetFlag widget_flags_8 = widget->widget_flags
-00402d6b        if ((widget_flags_8 & 0x40000) == 0)
+00402d6b        if ((widget_flags_8 & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
 00402db9        widget->hover_blend_current = fconvert.s((fconvert.t(widget->hover_blend_target) - fconvert.t(widget->hover_blend_current)) * fconvert.t(0.100000001f) + fconvert.t(widget->hover_blend_current))
 00402dd7        widget->current_padding = fconvert.s((fconvert.t(widget->target_padding) - fconvert.t(widget->current_padding)) * fconvert.t(0.100000001f) + fconvert.t(widget->current_padding))
 00402def        long double x87_r7_38 = (fconvert.t(widget->text_effect_target) - fconvert.t(widget->text_effect_current)) * fconvert.t(0.100000001f) + fconvert.t(widget->text_effect_current)
@@ -161,7 +161,7 @@
 00402e10        x87_r7_39 - temp3_1
 00402e1b        if ((((x87_r7_39 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_39, temp3_1) ? 1 : 0) << 0xa | (x87_r7_39 == temp3_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00402e23        widget->text_effect_current = widget->text_effect_target
-00402d72        widget->widget_flags = widget_flags_8 & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED | FRONTEND_WIDGET_FLAG_KILL_PENDING | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE | FRONTEND_WIDGET_FLAG_HIDDEN | FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE | FRONTEND_WIDGET_FLAG_DISABLED | FRONTEND_WIDGET_FLAG_POINTER_INSIDE | FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION | 0xbff149df
+00402d72        widget->widget_flags = widget_flags_8 & ~FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE
 00402d7e        widget->hover_blend_current = widget->hover_blend_target
 00402d8a        widget->current_padding = widget->target_padding
 00402d96        widget->text_effect_current = widget->text_effect_target
@@ -214,7 +214,7 @@
 004030ff        widget->mouse_history_warmup_frames = mouse_history_warmup_frames - 1
 00403111        widget->previous_mouse_x = g_game_base->players[0].mouse_cursor.saved_x
 00403123        widget->previous_mouse_y = g_game_base->players[0].mouse_cursor.saved_y
-00403134        if ((widget->widget_flags & 0x100000) != 0)
+00403134        if ((widget->widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0)
 0040313a        struct FrontendWidget* slider_more_widget_1 = widget->slider_more_widget
 00403140        enum FrontendWidgetFlag widget_flags_10 = slider_more_widget_1->widget_flags
 00403148        if ((widget_flags_10.b & 0x20) != 0)

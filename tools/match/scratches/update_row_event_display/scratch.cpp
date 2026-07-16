@@ -117,7 +117,9 @@ void Completion::update_row_event_display()
             game = g_game;
         }
 
-        if ((game->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
+        if ((game->players[0].game_input->input.pressed_buttons
+                & INPUT_BUTTON_PRIMARY)
+            != 0) {
             controller->state = COMPLETION_STATE_CONTINUE_ACCEPTED;
             g_sound_effect_manager.play_sound_effect(8);
         }

@@ -51,7 +51,9 @@ waiting_for_start: {
             return;
         if (hide_prompt != 0)
             return;
-        if ((g_game->players[0].game_input->input.pressed_buttons & 0x4000) == 0)
+        if ((g_game->players[0].game_input->input.pressed_buttons
+                & INPUT_BUTTON_PRIMARY)
+            == 0)
             return;
 
 start_subgame:

@@ -253,3 +253,15 @@ so it deliberately remains numeric. Binary Ninja represents the four-byte
 high-bit member as signed `-2147483648`; replay readback now normalizes enum
 values modulo their stored width, making the exact-member audit idempotent
 without changing the saved declaration.
+
+## 2026-07-16 shared input-button vocabulary
+
+The controller-axis adapter and pointer-region adapter independently produce
+the same `0x4000` primary-action bit, while the pointer adapter also produces
+the `0x8000` secondary-action bit. `copy_active_input_controller_state` carries
+that word into the typed `InputState` button lanes, and this routine consumes
+the high-byte forms as `INPUT_BUTTON_PRIMARY >> 8` and
+`INPUT_BUTTON_SECONDARY >> 8`. The shared names replace isolated literals
+without inventing meanings for the other controller bits. Focused output
+remains the honest 68.32%, 644/647-instruction partial with all 93 masked
+operands clean.

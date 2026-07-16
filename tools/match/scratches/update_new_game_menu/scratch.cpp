@@ -9,7 +9,9 @@ void Intro::update_new_game_menu()
     unsigned int flags;
 
     if (read_pressed_text_input_key_code() != 0
-        || (g_game->players[0].game_input->input.pressed_buttons & 0x4000) != 0) {
+        || (g_game->players[0].game_input->input.pressed_buttons
+                & INPUT_BUTTON_PRIMARY)
+            != 0) {
         replay_probe_progress = 0.0f;
         if (hide_for_replay_latch == 1) {
             postal_button->unhide_border_init();

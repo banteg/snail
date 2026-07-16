@@ -2,9 +2,9 @@
 /* function: update_input_controller_pointer_region @ 0x4321c0 */
 /* selector: update_input_controller_pointer_region */
 
-// Refreshes one global input-controller slot from a screen-space pointer region: stores the active bounds, optionally warps the pixel cursor into that region, updates normalized authored 640x480 coordinates, and latches the per-slot button bits.
-void __cdecl sub_4321C0(
-        int a1,
+// Refreshes one 0x20-byte InputControllerSlot payload at the proved 0x38-byte RShell stride from a screen-space pointer region: stores the active bounds, mutates the incoming X/Y coordinates while optionally warping the cursor into that region, updates authored 640x480 coordinates, and latches the per-slot button bits. The sole caller ignores the incidental comparison residue, proving the native contract is void.
+void __cdecl update_input_controller_pointer_region(
+        int slot,
         int a2,
         int a3,
         int a4,
@@ -27,10 +27,10 @@ void __cdecl sub_4321C0(
 
   v13 = Y;
   v14 = X;
-  MEMORY[0x5088A0][a1] = a2;
-  MEMORY[0x508890][a1] = a3;
-  MEMORY[0x5088A8][a1] = a4;
-  MEMORY[0x508898][a1] = a5;
+  g_input_region_left[slot] = a2;
+  g_input_region_top[slot] = a3;
+  g_input_region_right[slot] = a4;
+  g_input_region_bottom[slot] = a5;
   if ( X < a2 || X >= a4 || Y < a3 || Y >= a5 )
   {
     if ( !a12 || a13 )
@@ -43,7 +43,7 @@ void __cdecl sub_4321C0(
         v13 = a3;
       if ( v13 >= a5 )
         v13 = a5 - 1;
-      click_mouse_screen(a1, v14, v13);
+      click_mouse_screen(slot, v14, v13);
       set_hide_system_cursor_flag(1);
     }
     else
@@ -55,28 +55,28 @@ void __cdecl sub_4321C0(
   {
     set_hide_system_cursor_flag(1);
   }
-  v15 = 56 * a1;
+  v15 = 56 * slot;
   *(float *)(v15 + 5256016) = (double)(640 * (v14 - a2)) / (double)(a4 - a2);
   *(float *)(v15 + 5256020) = (double)(480 * (v13 - a3)) / (double)(a5 - a3);
   *(float *)(v15 + 5256024) = (float)a8;
   if ( a9 )
   {
-    v16 = MEMORY[0x503344][14 * a1];
+    v16 = *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot);
     BYTE1(v16) |= 0x40u;
-    MEMORY[0x503344][14 * a1] = v16;
+    *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot) = v16;
   }
   if ( a10 )
   {
-    v17 = MEMORY[0x503344][14 * a1];
+    v17 = *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot);
     BYTE1(v17) |= 0x80u;
-    MEMORY[0x503344][14 * a1] = v17;
+    *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot) = v17;
   }
   if ( a11 )
-    MEMORY[0x503344][14 * a1] |= 0x100000u;
-  if ( *(float *)&MEMORY[0x503350][14 * a1] >= 1.0 )
+    *((_DWORD *)&g_input_controller_slot0.buttons + 14 * slot) |= 0x100000u;
+  if ( *(&g_input_controller_slot0.authored_x + 14 * slot) >= 1.0 )
   {
-    if ( *(float *)&MEMORY[0x503350][14 * a1] <= 632.0 )
-      v18 = *(float *)&MEMORY[0x503350][14 * a1];
+    if ( *(&g_input_controller_slot0.authored_x + 14 * slot) <= 632.0 )
+      v18 = *(&g_input_controller_slot0.authored_x + 14 * slot);
     else
       v18 = 632.0;
   }
@@ -84,17 +84,16 @@ void __cdecl sub_4321C0(
   {
     v18 = 1.0;
   }
-  *(float *)&MEMORY[0x503350][14 * a1] = v18;
-  if ( *(float *)&MEMORY[0x503354][14 * a1] >= 1.0 )
+  *(&g_input_controller_slot0.authored_x + 14 * slot) = v18;
+  if ( *(&g_input_controller_slot0.authored_y + 14 * slot) >= 1.0 )
   {
-    if ( *(float *)&MEMORY[0x503354][14 * a1] <= 472.0 )
-      MEMORY[0x503354][14 * a1] = MEMORY[0x503354][14 * a1];
+    if ( *(&g_input_controller_slot0.authored_y + 14 * slot) <= 472.0 )
+      *(&g_input_controller_slot0.authored_y + 14 * slot) = *(&g_input_controller_slot0.authored_y + 14 * slot);
     else
-      MEMORY[0x503354][14 * a1] = 1139539968;
+      *((_DWORD *)&g_input_controller_slot0.authored_y + 14 * slot) = 1139539968;
   }
   else
   {
-    MEMORY[0x503354][14 * a1] = 1065353216;
+    *((_DWORD *)&g_input_controller_slot0.authored_y + 14 * slot) = 1065353216;
   }
 }
-

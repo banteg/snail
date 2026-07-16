@@ -12,13 +12,14 @@
   `g_input_slot0_buttons - 4`, which lands on the native `axis_y` base without
   forcing an unrelated scalar global declaration.
 - `g_input_slot_axis_y_end` names the `0x5033b0` one-past sentinel for the
-  loop's axis-y cursor over two 0x38-byte controller slots. The complete typed
-  array itself ends four bytes earlier at `0x5033ac`.
+  loop's axis-y cursor over two 0x38-byte controller strides. It is not an
+  object-array bound: the proved payloads end at `0x50335c` and `0x503394`,
+  and the loop crosses independently owned RShell repeat globals.
 - Remaining residual is source-shape scheduling: MSVC hoists the candidate
   cursor setup before the allocator-call stack cleanup as `mov eax,
   g_input_slot0_buttons; sub eax, 4`, while the native listing materializes the
   already-shifted `g_input_slot0_axis_y` after `add esp, 0x10`.
-- Rejected follow-ups: using `g_input_controller_slots_end` as a C extern
+- Rejected follow-ups: using the legacy `g_input_controller_slots_end` alias as a C extern
   regressed the loop to 79.17%; using a direct `g_input_slot0_axis_y` byte
   cursor regressed to the old 82.47% `esi`/`axis_y + 4` shape. The raw
   sentinel immediate is kept in C, but the reference table now names it so the
@@ -50,13 +51,15 @@
   and music buffer. The Windows `0x53c7ec` allocation is therefore typed as
   the `RShellScratch` workspace rather than an archive payload address. This is
   codegen-neutral at the retained 94.74% baseline.
-- 2026-07-13 controller-owner closure: the reset loop proves two contiguous
-  `InputControllerSlot` records beginning at `0x50333c`, with a 0x38-byte
-  stride and a one-past end at `0x5033ac`. The shared header now exposes that
-  fixed array while retaining the field-address views used by lane-oriented
-  helpers. A direct typed-loop spelling makes VC6 choose the `buttons` lane as
-  its cursor and regresses to 82.47%; the retained axis-y cursor remains the
-  most faithful source shape without inventing dependencies.
+- 2026-07-16 controller-owner correction: the reset loop proves two passes at
+  a 0x38-byte stride, while direct consumers close only the 0x20-byte payloads
+  at `0x50333c..0x50335b` and `0x503374..0x503393`. The second stride crosses
+  `g_text_input_repeat_step @ 0x50339c`, whose authored RShell identity and
+  independent text-input consumers rule out a contiguous 0x38-byte record
+  array. The shared header therefore exposes separate payload globals plus a
+  stride accessor. A direct typed-loop spelling still makes VC6 choose the
+  `buttons` lane as its cursor and regresses to 82.47%; the retained axis-y
+  cursor remains the most faithful source shape without inventing ownership.
 - 2026-07-14 allocation-owner closure: `0x5108c0` is now the canonical
   `g_tracked_allocation_stack` object, so the folded initializer is called
   directly on that owner rather than through a cast from its first depth word.

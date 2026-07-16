@@ -1,31 +1,83 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 15,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 15,
+  "ida_exported": 15,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "place_parcels_on_track",
-      "address": "0x4438e0"
+      "name": "update_frontend_widget_interaction",
+      "address": "0x402820"
     },
     {
-      "name": "place_challenge_parcels_on_track",
-      "address": "0x444240"
+      "name": "update_row_event_display",
+      "address": "0x404cf0"
+    },
+    {
+      "name": "update_galaxy",
+      "address": "0x4092f0"
+    },
+    {
+      "name": "update_game_input",
+      "address": "0x40aab0"
+    },
+    {
+      "name": "update_new_game_menu",
+      "address": "0x417eb0"
+    },
+    {
+      "name": "update_intro_screen",
+      "address": "0x4199e0"
+    },
+    {
+      "name": "set_input_controller_slot0_button_axes",
+      "address": "0x431fd0"
+    },
+    {
+      "name": "update_input_controller_slot_button_axes",
+      "address": "0x431ff0"
+    },
+    {
+      "name": "copy_active_input_controller_state",
+      "address": "0x4320f0"
+    },
+    {
+      "name": "update_input_controller_pointer_region",
+      "address": "0x4321c0"
+    },
+    {
+      "name": "set_input_controller_pointer_authored_xy",
+      "address": "0x4323a0"
+    },
+    {
+      "name": "update_thanks_for_playing_screen",
+      "address": "0x4340f0"
+    },
+    {
+      "name": "update_subgame",
+      "address": "0x438b90"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "update_click_start",
+      "address": "0x442290"
     }
   ],
-  "health_check_count": 441,
+  "health_check_count": 453,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -14,6 +14,8 @@ import idc
 
 TRUSTED_NAMES = [
     (0x4972F0, "g_game_input_callback_table"),
+    (0x50333C, "g_input_controller_slot0"),
+    (0x503374, "g_input_controller_slot1"),
     (0x432440, "read_pressed_text_input_key_code"),
     (0x4327E0, "read_repeating_text_input_key_code"),
     (0x50339C, "g_text_input_repeat_step"),
@@ -72,7 +74,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "copy_active_input_controller_state",
-        "float *__cdecl copy_active_input_controller_state(int controller_slot, int *out_buttons, float *out_axis_x, float *out_axis_y, float *out_authored_x, float *out_authored_y, float *out_pointer_value, float *out_pointer_x, float *out_pointer_y);",
+        "float *__cdecl copy_active_input_controller_state(int controller_slot, InputButtonFlag *out_buttons, float *out_axis_x, float *out_axis_y, float *out_authored_x, float *out_authored_y, float *out_pointer_value, float *out_pointer_x, float *out_pointer_y);",
     ),
     (
         "initialize_mouse_authored_scale_from_clip_rect",
@@ -134,6 +136,16 @@ TRUSTED_DECLARATIONS = [
 
 TRUSTED_DATA_DECLARATIONS = [
     (0x4972F0, "g_game_input_callback_table", "void *g_game_input_callback_table;"),
+    (
+        0x50333C,
+        "g_input_controller_slot0",
+        "InputControllerSlot g_input_controller_slot0;",
+    ),
+    (
+        0x503374,
+        "g_input_controller_slot1",
+        "InputControllerSlot g_input_controller_slot1;",
+    ),
     (0x50339C, "g_text_input_repeat_step", "float g_text_input_repeat_step;"),
     (
         0x5108B8,
@@ -188,6 +200,32 @@ STALE_DATA_ITEM_SPECS = [
     (0x50339C, 20, "g_text_input_repeat_step", "float[5]"),
     (0x53C7F5, 3, "g_text_input_last_repeat_code", "char[3]"),
 ]
+
+INPUT_CONTROLLER_INTERIOR_NAMES = (
+    (0x503340, "g_input_slot0_axis_y"),
+    (0x503344, "g_input_slot0_buttons"),
+    (0x503348, "g_input_slot0_pointer_x"),
+    (0x50334C, "g_input_slot0_pointer_y"),
+    (0x503350, "g_input_slot0_authored_x"),
+    (0x503354, "g_input_slot0_authored_y"),
+    (0x503358, "g_input_slot0_pointer_value"),
+    (0x503378, "unk_503378"),
+    (0x50337C, "unk_50337c"),
+    (0x503380, "unk_503380"),
+    (0x503384, "unk_503384"),
+    (0x503388, "unk_503388"),
+    (0x50338C, "unk_50338c"),
+    (0x503390, "unk_503390"),
+)
+
+INPUT_CONTROLLER_DIRTY_FUNCTIONS = (
+    0x430E40,
+    0x431FD0,
+    0x431FF0,
+    0x4320F0,
+    0x4321C0,
+    0x4323A0,
+)
 
 TRUSTED_STRUCT_LVARS = (
     (
@@ -327,6 +365,46 @@ def _ensure_data_item(address: int, size: int) -> dict[str, object]:
         "status": "applied",
         "address": hex(address),
         "item_size": verified_size,
+    }
+
+
+def _clear_input_controller_interior_name(
+    address: int, expected_name: str
+) -> dict[str, object]:
+    observed_name = idc.get_name(address)
+    if not observed_name:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+        }
+
+    if observed_name.lower() != expected_name.lower():
+        return {
+            "status": "failed",
+            "reason": "unexpected_input_controller_interior_name",
+            "address": hex(address),
+            "expected_name": expected_name,
+            "observed_name": observed_name,
+        }
+
+    if not idc.set_name(address, "", ida_name.SN_NOWARN | ida_name.SN_FORCE):
+        return {
+            "status": "failed",
+            "reason": "input_controller_interior_name_delete_failed",
+            "address": hex(address),
+            "observed_name": observed_name,
+        }
+    if idc.get_name(address):
+        return {
+            "status": "failed",
+            "reason": "input_controller_interior_name_readback_failed",
+            "address": hex(address),
+            "observed_name": idc.get_name(address),
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "removed_name": observed_name,
     }
 
 
@@ -594,6 +672,20 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in failed_struct_lvars
     )
 
+    input_controller_interior_names = [
+        _clear_input_controller_interior_name(address, expected_name)
+        for address, expected_name in INPUT_CONTROLLER_INTERIOR_NAMES
+    ]
+    failed.extend(
+        {"input_controller_interior_name": result}
+        for result in input_controller_interior_names
+        if result.get("status") == "failed"
+    )
+
+    for address in INPUT_CONTROLLER_DIRTY_FUNCTIONS:
+        if ida_funcs.get_func(address) is not None:
+            ida_hexrays.mark_cfunc_dirty(address, True)
+
     print(
         json.dumps(
             {
@@ -609,6 +701,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "cleared_data_items": cleared_data_items,
                 "data_items": data_items,
                 "struct_lvars": struct_lvars,
+                "input_controller_interior_names": input_controller_interior_names,
                 "missing": missing,
                 "failed": failed,
             },

@@ -270,7 +270,8 @@ int Galaxy::update_galaxy()
         int current_hover_state = hover_state;
         if (current_hover_state != 1) {
             unsigned int mouse_flags = mouse_state->input.pressed_buttons;
-            if (current_hover_state == 2 && (mouse_flags & 0x4000) != 0) {
+            if (current_hover_state == 2
+                && (mouse_flags & INPUT_BUTTON_PRIMARY) != 0) {
                 if (hovered_route_index != selected_index) {
                     if (state == 1) {
                         close_galaxy_route();
@@ -285,7 +286,7 @@ int Galaxy::update_galaxy()
             }
 
             if (current_hover_state == 0
-                && (mouse_flags & 0x4000) != 0
+                && (mouse_flags & INPUT_BUTTON_PRIMARY) != 0
                 && state == 1
                 && g_runtime_config.highest_galaxy_route_index > 1) {
                 close_galaxy_route();

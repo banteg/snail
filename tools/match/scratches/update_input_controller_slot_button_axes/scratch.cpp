@@ -9,12 +9,12 @@ void update_input_controller_slot_button_axes(
     int axis_y_bits)
 {
     if (slot == 0) {
-        g_input_controller_slots[0].buttons |= buttons;
-        if (g_input_controller_slots[0].axis_x == 0.0f) {
-            *(int*)&g_input_controller_slots[0].axis_x = axis_x_bits;
+        g_input_controller_slot0.buttons |= buttons;
+        if (g_input_controller_slot0.axis_x == 0.0f) {
+            *(int*)&g_input_controller_slot0.axis_x = axis_x_bits;
         }
-        if (g_input_controller_slots[0].axis_y == 0.0f) {
-            *(int*)&g_input_controller_slots[0].axis_y = axis_y_bits;
+        if (g_input_controller_slot0.axis_y == 0.0f) {
+            *(int*)&g_input_controller_slot0.axis_y = axis_y_bits;
         }
     } else {
         int slot_offset = (slot * 7) << 3;
@@ -25,7 +25,7 @@ void update_input_controller_slot_button_axes(
         *slot_axis_x = axis_x_bits;
         *slot_axis_y = axis_y_bits;
 
-        float slot0_axis_x = g_input_controller_slots[0].axis_x;
+        float slot0_axis_x = g_input_controller_slot0.axis_x;
         float centered;
         if (slot0_axis_x > 0.150000006f) {
             centered = (slot0_axis_x - 0.150000006f) * 1.17647064f;
@@ -37,13 +37,13 @@ void update_input_controller_slot_button_axes(
             }
         }
 
-        int slot1_buttons = g_input_controller_slots[1].buttons;
-        g_input_controller_slots[1].authored_x = (centered + 1.0f) * 320.0f;
+        int slot1_buttons = g_input_controller_slot1.buttons;
+        g_input_controller_slot1.authored_x = (centered + 1.0f) * 320.0f;
         if ((buttons & 0xf0) != 0) {
-            slot1_buttons |= 0x4000;
+            slot1_buttons |= INPUT_BUTTON_PRIMARY;
         } else {
-            slot1_buttons &= 0xffffbfff;
+            slot1_buttons &= ~INPUT_BUTTON_PRIMARY;
         }
-        g_input_controller_slots[1].buttons = slot1_buttons;
+        g_input_controller_slot1.buttons = slot1_buttons;
     }
 }

@@ -12,7 +12,8 @@ void __cdecl rstrcpy_checked_ascii(char* destination, char* source); // @ 0x44e5
 void ThanksScreen::update_thanks_for_playing_screen()
 {
     int flags = g_game->players[0].game_input->input.pressed_buttons;
-    if (((flags & 0x4000) != 0 || read_pressed_text_input_key_code() == 0xb)
+    if (((flags & INPUT_BUTTON_PRIMARY) != 0
+            || read_pressed_text_input_key_code() == 0xb)
         && message_state >= 2
         && g_game->fade.state == 0) {
         g_sound_effect_manager.play_sound_effect(8);

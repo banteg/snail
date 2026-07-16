@@ -2,6 +2,7 @@
 #define INPUT_STATE_H
 
 #include "bod_types.h"
+#include "input_buttons.h"
 
 class InputState {
 public:
@@ -10,10 +11,10 @@ public:
 
     int controller_slot;          // +0x00
     union {
-        int pressed_buttons;          // +0x04, current-frame down edges
+        int pressed_buttons;          // +0x04, current-frame InputButtonFlag down edges
         unsigned int control_flags_a; // Goldy borrowed-control spelling
     };
-    int released_buttons;         // +0x08, current-frame up edges
+    int released_buttons;         // +0x08, current-frame InputButtonFlag up edges
     union {
         int previous_buttons;         // +0x0c
         unsigned int control_flags_b; // Goldy borrowed-control spelling
