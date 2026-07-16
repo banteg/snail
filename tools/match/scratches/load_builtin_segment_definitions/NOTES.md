@@ -106,3 +106,12 @@ scratch's integer `grid_offset`: native clears it, advances it by `0x100` per
 glyph lane, and uses it only in destination address formation. The segment
 catalog replay now replaces that synthetic owner with `int32_t grid_offset`
 and verifies the local name/type after re-decompilation.
+
+## 2026-07-16 Binary Ninja split-stack owner
+
+VC6 copies `raw_segments` into `ebx`, then reuses the dead stack argument slot
+for `grid_offset`. Binary Ninja originally merged that later integer lifetime
+back into the pointer parameter. The replay now splits the zero definition,
+loop phi, and `+0x100` definition, then merges those three proven identities as
+one `int32_t grid_offset`. The resulting BN decompile agrees with IDA without
+altering the honest 98.91% scratch or its sole commutative ModRM residual.

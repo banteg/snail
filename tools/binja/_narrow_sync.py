@@ -20,6 +20,8 @@ SymbolUpdate = tuple[str, str]
 SymbolRemoval = tuple[str, str]
 DataVarUpdate = tuple[str, str]
 DataVarRemoval = tuple[str, str]
+SplitVarSpec = tuple[str, int, int]
+SplitVarDefinition = tuple[str, str, str, int, int]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 UserVarUpdate = tuple[str, str, int, int, str, str]
 
@@ -1592,6 +1594,352 @@ def apply_user_var_updates(
                 ),
             },
             "result": applied,
+        }
+    ]
+
+
+def apply_split_user_var_update(
+    repo_root: Path,
+    *,
+    target: str,
+    identifier: str,
+    definitions: Iterable[SplitVarDefinition],
+    target_var: SplitVarSpec,
+    variable_name: str,
+    variable_type: str,
+) -> list[dict[str, object]]:
+    definition_list = [
+        {
+            "address": address,
+            "view": view,
+            "source_type": source_type,
+            "index": index,
+            "storage": storage,
+        }
+        for address, view, source_type, index, storage in definitions
+    ]
+    if not definition_list:
+        return []
+    if any(definition["view"] not in {"mlil", "mlil_ssa"} for definition in definition_list):
+        raise ValueError("split-variable definitions require mlil or mlil_ssa views")
+
+    target_source_type, target_index, target_storage = target_var
+    target_spec = {
+        "source_type": target_source_type,
+        "index": target_index,
+        "storage": target_storage,
+    }
+    definition_keys = {
+        (
+            str(definition["source_type"]),
+            int(definition["index"]),
+            int(definition["storage"]),
+        )
+        for definition in definition_list
+    }
+    if len(definition_keys) != len(definition_list):
+        raise ValueError("split-variable definitions require unique variable identities")
+    if (target_source_type, target_index, target_storage) not in definition_keys:
+        raise ValueError("split-variable target must be one of the definition identities")
+
+    def run_batch(*, preview: bool) -> dict[str, object]:
+        code = f"""
+identifier = {identifier!r}
+definitions = {json.dumps(definition_list)}
+target_spec = {json.dumps(target_spec)}
+variable_name = {variable_name!r}
+variable_type = {variable_type!r}
+preview = {preview!r}
+
+
+def find_function(identifier):
+    try:
+        address = int(identifier, 0)
+    except ValueError:
+        functions = list(bv.get_functions_by_name(identifier))
+        if len(functions) != 1:
+            raise RuntimeError(
+                f"expected one function named {{identifier}}, found {{len(functions)}}"
+            )
+        return functions[0]
+    function = bv.get_function_at(address)
+    if function is None:
+        raise RuntimeError(f"function not found at {{address:#x}}")
+    return function
+
+
+def source_type_name(variable):
+    return str(variable.source_type).split(".")[-1]
+
+
+def variable_key(variable):
+    return (
+        source_type_name(variable),
+        int(variable.index),
+        int(variable.storage),
+    )
+
+
+def spec_key(spec):
+    return (
+        str(spec["source_type"]).split(".")[-1],
+        int(spec["index"]),
+        int(spec["storage"]),
+    )
+
+
+def find_current_variable(function, spec):
+    key = spec_key(spec)
+    candidates = [variable for variable in function.vars if variable_key(variable) == key]
+    if len(candidates) > 1:
+        raise RuntimeError(f"multiple live variables match {{key!r}}")
+    return candidates[0] if candidates else None
+
+
+def find_definition_variable(function, spec):
+    address = int(str(spec["address"]), 0)
+    il = function.mlil.ssa_form if spec["view"] == "mlil_ssa" else function.mlil
+    candidates = {{}}
+    for instruction in il.instructions:
+        if int(instruction.address) != address:
+            continue
+        for written in instruction.vars_written:
+            base_variable = written.var if hasattr(written, "var") else written
+            try:
+                candidate = instruction.get_split_var_for_definition(base_variable)
+            except Exception:
+                continue
+            if variable_key(candidate) == spec_key(spec):
+                candidates[variable_key(candidate)] = candidate
+    if len(candidates) != 1:
+        raise RuntimeError(
+            f"expected one split variable for {{spec!r}}, found {{len(candidates)}}"
+        )
+    return next(iter(candidates.values()))
+
+
+def merge_snapshot(function):
+    return sorted(
+        (
+            variable_key(merge_target),
+            tuple(sorted(variable_key(source) for source in sources)),
+        )
+        for merge_target, sources in function.merged_vars.items()
+    )
+
+
+def state_snapshot(function):
+    relevant_keys = {{spec_key(spec) for spec in definitions}}
+    relevant_variables = sorted(
+        (
+            variable_key(variable),
+            str(variable.name),
+            str(variable.type),
+            bool(function.is_var_user_defined(variable)),
+        )
+        for variable in function.vars
+        if variable_key(variable) in relevant_keys
+    )
+    return {{
+        "split_vars": sorted(variable_key(variable) for variable in function.split_vars),
+        "merged_vars": merge_snapshot(function),
+        "relevant_variables": relevant_variables,
+        "hlil": str(function.hlil),
+    }}
+
+
+def inspect_expected_state(function, expected_type):
+    expected_keys = [spec_key(spec) for spec in definitions]
+    expected_key_set = set(expected_keys)
+    expected_target_key = spec_key(target_spec)
+    expected_source_keys = expected_key_set - {{expected_target_key}}
+    split_keys = {{variable_key(variable) for variable in function.split_vars}}
+    variables = {{
+        variable_key(variable): variable
+        for variable in function.vars
+        if variable_key(variable) in expected_key_set
+    }}
+    merge_entries = {{
+        variable_key(merge_target): {{variable_key(source) for source in sources}}
+        for merge_target, sources in function.merged_vars.items()
+    }}
+    for merge_target_key, source_keys in merge_entries.items():
+        touched = ({{merge_target_key}} | source_keys) & expected_key_set
+        if touched and not (
+            merge_target_key == expected_target_key
+            and source_keys == expected_source_keys
+        ):
+            raise RuntimeError(
+                "refusing to replace conflicting variable merge: "
+                f"target={{merge_target_key!r}}, sources={{sorted(source_keys)!r}}"
+            )
+    target_variable = variables.get(expected_target_key)
+    target_current = (
+        target_variable is not None
+        and str(target_variable.name) == variable_name
+        and str(target_variable.type) == str(expected_type)
+        and bool(function.is_var_user_defined(target_variable))
+    )
+    return {{
+        "all_split": expected_key_set.issubset(split_keys),
+        "merge_current": (
+            merge_entries.get(expected_target_key) == expected_source_keys
+            if expected_source_keys
+            else expected_target_key not in merge_entries
+        ),
+        "target_current": target_current,
+        "target_variable": target_variable,
+        "variables": variables,
+        "expected_target_key": expected_target_key,
+        "expected_source_keys": expected_source_keys,
+    }}
+
+
+function = find_function(identifier)
+expected_type, _ = bv.parse_type_string(variable_type)
+before = state_snapshot(function)
+state = bv.begin_undo_actions()
+undo_closed = False
+snapshot_saved = False
+try:
+    expected = inspect_expected_state(function, expected_type)
+    changed = not (
+        expected["all_split"]
+        and expected["merge_current"]
+        and expected["target_current"]
+    )
+    if changed:
+        current_split_keys = {{variable_key(variable) for variable in function.split_vars}}
+        pending_splits = []
+        for definition in definitions:
+            if spec_key(definition) not in current_split_keys:
+                pending_splits.append(find_definition_variable(function, definition))
+        for split_variable in pending_splits:
+            function.split_var(split_variable)
+        if pending_splits:
+            bv.update_analysis_and_wait()
+
+        resolved_variables = {{}}
+        for definition in definitions:
+            variable = find_current_variable(function, definition)
+            if variable is None:
+                raise RuntimeError(f"split variable missing after apply: {{definition!r}}")
+            resolved_variables[spec_key(definition)] = variable
+
+        expected_target_key = expected["expected_target_key"]
+        expected_source_keys = expected["expected_source_keys"]
+        current_merge_entries = {{
+            variable_key(merge_target): {{variable_key(source) for source in sources}}
+            for merge_target, sources in function.merged_vars.items()
+        }}
+        if (
+            expected_source_keys
+            and current_merge_entries.get(expected_target_key) != expected_source_keys
+        ):
+            function.merge_vars(
+                resolved_variables[expected_target_key],
+                [resolved_variables[key] for key in sorted(expected_source_keys)],
+            )
+        function.create_user_var(
+            resolved_variables[expected_target_key],
+            expected_type,
+            variable_name,
+        )
+        bv.update_analysis_and_wait()
+
+    observed = inspect_expected_state(function, expected_type)
+    verified = (
+        observed["all_split"]
+        and observed["merge_current"]
+        and observed["target_current"]
+    )
+    if not verified:
+        raise RuntimeError("split user-variable verification failed")
+    after = state_snapshot(function)
+
+    if preview:
+        bv.revert_undo_actions(state)
+        undo_closed = True
+        bv.update_analysis_and_wait()
+        restored = state_snapshot(function)
+        if restored != before:
+            raise RuntimeError("split user-variable rollback failed")
+    else:
+        bv.commit_undo_actions(state)
+        undo_closed = True
+        snapshot_saved = bv.file.save_auto_snapshot()
+except Exception:
+    if not undo_closed:
+        bv.revert_undo_actions(state)
+        bv.update_analysis_and_wait()
+    raise
+
+result = {{
+    "success": True,
+    "preview": preview,
+    "committed": not preview,
+    "changed": changed,
+    "snapshot_saved": snapshot_saved,
+    "operation": {{
+        "identifier": identifier,
+        "definitions": definitions,
+        "target_var": target_spec,
+        "variable_name": variable_name,
+        "variable_type": variable_type,
+        "before_hlil": before["hlil"],
+        "after_hlil": after["hlil"],
+    }},
+}}
+"""
+        response = run_bn(
+            repo_root,
+            "py",
+            "exec",
+            "--target",
+            target,
+            "--format",
+            "json",
+            "--code",
+            code,
+        )
+        payload = response.get("result") if isinstance(response, dict) else None
+        if (
+            not isinstance(payload, dict)
+            or payload.get("success") is not True
+            or payload.get("preview") is not preview
+            or payload.get("committed") is not (not preview)
+            or not isinstance(payload.get("changed"), bool)
+        ):
+            phase = "preview" if preview else "apply"
+            raise RuntimeError(
+                f"Binary Ninja split user-variable {phase} failed: {response!r}"
+            )
+        return payload
+
+    preview_result = run_batch(preview=True)
+    if preview_result["changed"]:
+        applied_result = run_batch(preview=False)
+        if applied_result.get("snapshot_saved") is not True:
+            raise RuntimeError(
+                "split user-variable update changed live analysis without a saved snapshot"
+            )
+        payload = applied_result
+    else:
+        payload = preview_result
+
+    operation = payload.get("operation")
+    if not isinstance(operation, dict):
+        raise RuntimeError(f"split user-variable result is malformed: {payload!r}")
+    return [
+        {
+            "op": "split_user_var_set",
+            "identifier": identifier,
+            "definitions": definition_list,
+            "target_var": target_spec,
+            "variable_name": variable_name,
+            "variable_type": variable_type,
+            "status": "verified" if payload["changed"] else "skipped",
+            "reason": None if payload["changed"] else "already current",
         }
     ]
 

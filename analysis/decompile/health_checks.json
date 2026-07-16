@@ -6831,6 +6831,23 @@
       ]
     },
     {
+      "name": "bn_load_builtin_segment_raw_owner",
+      "artifact": "analysis/decompile/binja/functions/00448060-load_builtin_segment_definitions.c",
+      "required_substrings": [
+        "int32_t grid_offset = 0",
+        "segment_count * 0x4220 + grid_offset + esi_8",
+        "grid_offset += 0x100",
+        "tracks->segment_slots",
+        "raw_segments[segment_count_2]->glyph_rows[0]"
+      ],
+      "forbidden_substrings": [
+        "raw_segments = nullptr",
+        "raw_segments = &raw_segments",
+        "&raw_segments[segment_count * 0x1088]",
+        "BuiltinSegmentDefinition"
+      ]
+    },
+    {
       "name": "ida_load_builtin_segment_raw_owner",
       "artifact": "analysis/decompile/ida/functions/00448060-load_builtin_segment_definitions.c",
       "required_substrings": [

@@ -9,6 +9,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
+    apply_split_user_var_update,
     apply_symbol_updates,
     apply_user_var_updates,
     emit_summary,
@@ -65,6 +66,21 @@ SEGMENT_USER_VAR_UPDATES = (
     ),
 )
 
+# VC6 copies raw_segments to EBX, then reuses the dead stack argument slot as
+# the 0x100-byte glyph-lane offset. Binary Ninja needs all three definition
+# sites split and merged before the slot can own its real integer lifetime.
+BUILTIN_GRID_OFFSET_SPLIT_DEFINITIONS = (
+    ("0x44809d", "mlil", "StackVariableSourceType", 61, 4),
+    ("0x4480c2", "mlil_ssa", "StackVariableSourceType", 98, 4),
+    ("0x448109", "mlil", "StackVariableSourceType", 169, 4),
+)
+
+BUILTIN_GRID_OFFSET_TARGET_VAR = (
+    "StackVariableSourceType",
+    61,
+    4,
+)
+
 PROTO_UPDATES = (
     (
         "load_frontend_level_by_mode_and_index",
@@ -111,6 +127,15 @@ def main() -> int:
             updates=DATA_VAR_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_split_user_var_update(
+            REPO_ROOT,
+            target=TARGET,
+            identifier="load_builtin_segment_definitions",
+            definitions=BUILTIN_GRID_OFFSET_SPLIT_DEFINITIONS,
+            target_var=BUILTIN_GRID_OFFSET_TARGET_VAR,
+            variable_name="grid_offset",
+            variable_type="int32_t",
+        ),
         *apply_user_var_updates(
             REPO_ROOT,
             target=TARGET,

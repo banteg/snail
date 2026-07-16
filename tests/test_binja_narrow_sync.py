@@ -2711,6 +2711,13 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"RegisterVariableSourceType",\n        469,\n        72,' in binja_segment_sync
     assert '"row_stride_anchor"' in binja_segment_sync
     assert '"SegmentCatalogRowStrideAnchor*"' in binja_segment_sync
+    assert "BUILTIN_GRID_OFFSET_SPLIT_DEFINITIONS" in binja_segment_sync
+    assert '("0x44809d", "mlil", "StackVariableSourceType", 61, 4)' in binja_segment_sync
+    assert '("0x4480c2", "mlil_ssa", "StackVariableSourceType", 98, 4)' in binja_segment_sync
+    assert '("0x448109", "mlil", "StackVariableSourceType", 169, 4)' in binja_segment_sync
+    assert "apply_split_user_var_update" in binja_segment_sync
+    assert 'variable_name="grid_offset"' in binja_segment_sync
+    assert 'variable_type="int32_t"' in binja_segment_sync
     for header in (analysis_path_header, analysis_segment_header):
         assert "typedef struct SegmentCatalogEntryAnchor" in header
         assert "int32_t stride_prefix_word;" in header
@@ -4864,6 +4871,99 @@ def test_user_variable_replay_previews_before_apply(monkeypatch) -> None:
     assert [preview for _target, _operations, preview in calls] == [True, False]
     assert result[0]["op"] == "user_var_batch"
     assert result[0]["operation_count"] == 1
+
+
+def test_split_user_variable_replay_previews_before_saved_apply(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
+                "success": True,
+                "preview": preview,
+                "committed": not preview,
+                "changed": True,
+                "snapshot_saved": not preview,
+                "operation": {
+                    "identifier": "load_builtin_segment_definitions",
+                    "before_hlil": "raw_segments = nullptr",
+                    "after_hlil": "int32_t grid_offset = 0",
+                },
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    result = _narrow_sync.apply_split_user_var_update(
+        Path("."),
+        target="snail-mail.exe",
+        identifier="load_builtin_segment_definitions",
+        definitions=(
+            ("0x44809d", "mlil", "StackVariableSourceType", 61, 4),
+            ("0x4480c2", "mlil_ssa", "StackVariableSourceType", 98, 4),
+            ("0x448109", "mlil", "StackVariableSourceType", 169, 4),
+        ),
+        target_var=("StackVariableSourceType", 61, 4),
+        variable_name="grid_offset",
+        variable_type="int32_t",
+    )
+
+    assert ["preview = True" in call[-1] for call in calls] == [True, False]
+    assert result[0]["op"] == "split_user_var_set"
+    assert result[0]["status"] == "verified"
+    assert "instruction.get_split_var_for_definition" in calls[0][-1]
+    assert "function.split_var(split_variable)" in calls[0][-1]
+    assert "function.merge_vars(" in calls[0][-1]
+    assert "bv.file.save_auto_snapshot()" in calls[0][-1]
+
+
+def test_split_user_variable_replay_skips_current_cluster(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "changed": False,
+                "snapshot_saved": False,
+                "operation": {
+                    "identifier": "load_builtin_segment_definitions",
+                },
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+    result = _narrow_sync.apply_split_user_var_update(
+        Path("."),
+        target="snail-mail.exe",
+        identifier="load_builtin_segment_definitions",
+        definitions=(("0x44809d", "mlil", "StackVariableSourceType", 61, 4),),
+        target_var=("StackVariableSourceType", 61, 4),
+        variable_name="grid_offset",
+        variable_type="int32_t",
+    )
+
+    assert len(calls) == 1
+    assert result[0]["status"] == "skipped"
+    assert result[0]["reason"] == "already current"
+
+
+def test_split_user_variable_replay_validates_definition_specs() -> None:
+    with pytest.raises(ValueError, match="mlil or mlil_ssa"):
+        _narrow_sync.apply_split_user_var_update(
+            Path("."),
+            target="snail-mail.exe",
+            identifier="load_builtin_segment_definitions",
+            definitions=(("0x44809d", "hlil", "StackVariableSourceType", 61, 4),),
+            target_var=("StackVariableSourceType", 61, 4),
+            variable_name="grid_offset",
+            variable_type="int32_t",
+        )
 
 
 def test_apply_proto_updates_batches_only_stale_prototypes(monkeypatch) -> None:
