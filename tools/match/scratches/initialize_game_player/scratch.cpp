@@ -2,7 +2,6 @@
 
 #include "game_root.h"
 
-extern void* g_noop_runtime_callback_table; // data_4972b0
 extern void* g_game_player_callback_table;  // data_4972f4
 
 GamePlayer* GamePlayer::initialize_game_player()

@@ -11,6 +11,13 @@
 struct Object;
 class AnimManager;
 
+// Shared lifecycle state for the cRBod/cRBodPos family. The callback table is
+// installed on renderable bodies whose AI entry is the native no-op stub.
+extern void* g_noop_runtime_callback_table; // data_4972b0
+extern void* g_bod_base_vtable;              // data_4974fc
+extern void* g_renderable_bod_vtable;        // data_497500
+extern int g_bod_base_init_count;            // data_50331c
+
 class BodBase : public BodNode {
 public:
     BodBase* initialize_bod_base();       // @ 0x42f5f0

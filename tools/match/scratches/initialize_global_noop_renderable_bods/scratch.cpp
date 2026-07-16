@@ -9,7 +9,6 @@ typedef char StartupNoopRenderableBod_must_be_0xc4[
     (sizeof(StartupNoopRenderableBod) == 0xc4) ? 1 : -1];
 
 extern StartupNoopRenderableBod g_startup_noop_renderable_bods[3]; // data_4b6fb4
-extern void* g_noop_runtime_callback_table; // data_4972b0
 
 void initialize_global_noop_renderable_bods()
 {

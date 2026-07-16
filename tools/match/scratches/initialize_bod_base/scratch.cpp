@@ -2,9 +2,6 @@
 
 #include "bod_types.h"
 
-extern void* g_bod_base_vtable; // off_4974fc / data_4974fc
-extern int g_bod_base_init_count; // data_50331c
-
 BodBase* BodBase::initialize_bod_base()
 {
     color.noop_this_constructor();

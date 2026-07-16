@@ -2,8 +2,6 @@
 
 #include "bod_types.h"
 
-extern void* g_renderable_bod_vtable; // off_497500 / data_497500
-
 RenderableBod* RenderableBod::initialize_renderable_bod()
 {
     initialize_bod_base();

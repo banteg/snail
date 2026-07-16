@@ -33,3 +33,12 @@ no object, field, or vtable boundary; it existed only to give the folded helper
 a local constructor-shaped symbol. The shared color call preserves the exact
 27/27 instruction stream and all five audited operands, so the synthetic
 callback alias has been removed from the reference manifest.
+
+## 2026-07-16 lifecycle-state ownership
+
+The base and renderable vtable slots, the shared no-op AI table, and the
+constructor counter now live with the common `BodBase`/`RenderableBod` owner in
+`bod_types.h`. This removes six scratch-local views of the same lifecycle state
+without inventing a wider class: the callback table remains shared by startup,
+player-camera, overlay-camera, and passive root bodies. Both BOD constructors
+remain exact.

@@ -12,7 +12,6 @@ void* operator new(unsigned int size);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 extern GameRoot* g_game; // data_4df904
-extern int g_bod_base_init_count; // data_50331c
 extern int g_sub_loc_count;       // data_4dfadc
 extern int g_loc_mirror_count;    // data_4dfae0
 
@@ -23,7 +22,6 @@ extern void* g_backdrop_callback_table;         // data_4972e4
 extern void* g_border_manager_callback_table;   // data_4972e8
 extern void* g_overlay_callback_table;          // data_4972ec
 extern void* g_game_input_callback_table;       // data_4972f0
-extern void* g_noop_runtime_callback_table;     // data_4972b0
 
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
     debug_report_stub("Size of cRGame %i\n", sizeof(GameRoot)); \
