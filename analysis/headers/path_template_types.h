@@ -1019,6 +1019,13 @@ typedef struct SegmentCatalogEntryAnchor {
     SegmentCatalogEntry entry;
 } SegmentCatalogEntryAnchor;
 
+/* Overlapping analysis view for the importer's flattened 0x38-byte row
+ * induction. Only row at +0x88c is consumed through this cursor. */
+typedef struct SegmentCatalogRowStrideAnchor {
+    uint8_t catalog_prefix[0x88c];
+    AuthoredSegmentRow row;
+} SegmentCatalogRowStrideAnchor;
+
 typedef struct SMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];

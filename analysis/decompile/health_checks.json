@@ -6790,12 +6790,42 @@
       ]
     },
     {
+      "name": "bn_load_segment_definitions_catalog_owners",
+      "artifact": "analysis/decompile/binja/functions/00448160-load_segment_definitions.c",
+      "required_substrings": [
+        "struct SMTracks* tracks_after_stack_probe",
+        "tracks_after_stack_probe->count",
+        "&tracks_after_stack_probe->entries[0].row_count",
+        "tracks_after_stack_probe->entries[0].glyph_columns",
+        "struct SegmentCatalogRowStrideAnchor* row_stride_anchor",
+        "row_stride_anchor->row.flags",
+        "row_stride_anchor->row.parcel_set_id",
+        "row_stride_anchor->row.local_position.x",
+        "row_stride_anchor->row.object_id",
+        "row_stride_anchor->row.object_position.x",
+        "row_stride_anchor->row.object_velocity.x",
+        "row_stride_anchor->row.path_template_index"
+      ],
+      "forbidden_substrings": [
+        "int32_t* out_count = chkstk",
+        "void* esi_4",
+        "*(esi_4 + 0x88c)",
+        "*(esi_4 + 0x8a0)",
+        "*(esi_4 + 0x8bc)"
+      ]
+    },
+    {
       "name": "ida_load_segment_definitions_directx_owner",
       "artifact": "analysis/decompile/ida/functions/00448160-load_segment_definitions.c",
       "required_substrings": [
+        "char buffer[4096]",
+        "char names[65536]",
+        "enumerate_matching_archive_or_fs_entries(aSegments, (char *)aTxt, &tracks->count, (EnumeratedEntryName *)names)",
         "load_or_reuse_cached_x_mesh(&v36->directx_loader"
       ],
       "forbidden_substrings": [
+        "char v73[4096]",
+        "char v74[65536]",
         "v36 + 298496",
         "unknown_044100"
       ]

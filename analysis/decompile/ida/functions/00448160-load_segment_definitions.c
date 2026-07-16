@@ -76,12 +76,12 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   char v70[512]; // [esp+70h] [ebp-11480h] BYREF
   char mesh_name[128]; // [esp+270h] [ebp-11280h] BYREF
   char Buffer[512]; // [esp+2F0h] [ebp-11200h] BYREF
-  char v73[4096]; // [esp+4F0h] [ebp-11000h] BYREF
-  char v74[65536]; // [esp+14F0h] [ebp-10000h] BYREF
+  char buffer[4096]; // [esp+4F0h] [ebp-11000h] BYREF
+  char names[65536]; // [esp+14F0h] [ebp-10000h] BYREF
 
   v64 = tracks;
   tracks->count = 0;
-  enumerate_matching_archive_or_fs_entries(aSegments, (int)aTxt, (float *)&tracks->count, (int)v74);
+  enumerate_matching_archive_or_fs_entries(aSegments, (char *)aTxt, &tracks->count, (EnumeratedEntryName *)names);
   count = tracks->count;
   if ( tracks->count < 150 )
   {
@@ -89,16 +89,16 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
     v65 = 0;
     if ( count > 0 )
     {
-      v4 = v74;
+      v4 = names;
       v67 = 0;
       v66 = 0;
-      v63 = v74;
+      v63 = names;
       p_row_count = &tracks->entries[0].row_count;
       while ( 2 )
       {
         sprintf(Buffer, "Segments/%s", v4);
-        load_file_bytes_from_archive_or_fs(Buffer, v73, nullptr);
-        case_insensitive_substring = find_case_insensitive_substring(aId, v73);
+        load_file_bytes_from_archive_or_fs(Buffer, buffer, nullptr);
+        case_insensitive_substring = find_case_insensitive_substring(aId, buffer);
         if ( case_insensitive_substring )
         {
           v6 = case_insensitive_substring[3];
@@ -119,7 +119,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
           v9 = p_row_count - 17;
           v9[16] = v8;
           sprintf((char *const)v9, "%s", v4);
-          v10 = find_case_insensitive_substring(aName, v73);
+          v10 = find_case_insensitive_substring(aName, buffer);
           if ( v10 )
           {
             v11 = find_case_insensitive_substring(asc_4AC244, v10);
@@ -135,7 +135,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
               }
               while ( v12 != 39 );
             }
-            v15 = find_case_insensitive_substring(aData, v73);
+            v15 = find_case_insensitive_substring(aData, buffer);
             if ( v15 )
             {
               crlf_line = (_BYTE *)advance_to_next_crlf_line(v15);
@@ -167,7 +167,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                       while ( v23 < 8 );
                       if ( *v21 != 64 )
                       {
-                        report_errorf("Data line must end with '@' in Segment %s\n", &v74[128 * v65]);
+                        report_errorf("Data line must end with '@' in Segment %s\n", &names[128 * v65]);
                         return;
                       }
                       v26 = v21 + 1;
@@ -330,7 +330,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                       v18 = (_BYTE *)advance_to_next_crlf_line(v26);
                       if ( !v18 )
                       {
-                        v60 = &v74[128 * v65];
+                        v60 = &names[128 * v65];
                         goto LABEL_71;
                       }
                       v3 = v65;
@@ -351,34 +351,34 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
                   }
                   else
                   {
-                    report_errorf("Data line must start with '@' in Segment %s\n", &v74[128 * v3]);
+                    report_errorf("Data line must start with '@' in Segment %s\n", &names[128 * v3]);
                   }
                 }
                 else
                 {
-                  v60 = &v74[128 * v3];
+                  v60 = &names[128 * v3];
 LABEL_71:
                   report_errorf("Unexpected end of file in Segment %s\n", v60);
                 }
               }
               else
               {
-                report_errorf("Unexpected end of file in Segment %s\n", &v74[128 * v3]);
+                report_errorf("Unexpected end of file in Segment %s\n", &names[128 * v3]);
               }
             }
             else
             {
-              report_errorf("Cannot find Data: in Segment %s\n", &v74[128 * v3]);
+              report_errorf("Cannot find Data: in Segment %s\n", &names[128 * v3]);
             }
           }
           else
           {
-            report_errorf("Cannot find Name: in Segment %s\n", &v74[128 * v3]);
+            report_errorf("Cannot find Name: in Segment %s\n", &names[128 * v3]);
           }
         }
         else
         {
-          report_errorf("Cannot find ID: in Segment %s\n", &v74[128 * v3]);
+          report_errorf("Cannot find ID: in Segment %s\n", &names[128 * v3]);
         }
         break;
       }

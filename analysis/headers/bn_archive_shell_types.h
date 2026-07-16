@@ -75,8 +75,8 @@ typedef char CachedMusicPath[256];
 
 /*
  * Recovered AudioBackend prefix used by exact member-function scratches.
- * The global object is deliberately not assigned this type until its tail
- * boundary is independently proven.
+ * Binary Ninja's data replay retains the three proven interior scalar aliases
+ * until its aggregate data-variable migration is independently validated.
  */
 typedef struct AudioBackend {
     uint8_t music_stream_active;

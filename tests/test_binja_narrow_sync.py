@@ -1536,6 +1536,10 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
 
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_archive_shell_types.py"' in ida_sync_source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"' in ida_sync_source
+    assert 'SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"' in ida_apply_source
+    assert 'SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"' in ida_sync_source
+    assert "if SYNC_FAILURE_SENTINEL in log_text:" in ida_sync_source
+    assert "return exit_code or 1" in ida_sync_source
 
 
 def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
@@ -1545,10 +1549,11 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     ida_source = (IDA_DIR / "apply_archive_shell_types.py").read_text(
         encoding="utf-8"
     )
-    headers = tuple(
-        (HEADER_DIR / header_name).read_text(encoding="utf-8")
-        for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
+    binja_header = (HEADER_DIR / "bn_archive_shell_types.h").read_text(
+        encoding="utf-8"
     )
+    ida_header = (HEADER_DIR / "archive_shell_types.h").read_text(encoding="utf-8")
+    headers = (binja_header, ida_header)
     binja_path_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -1583,11 +1588,16 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
         "extern BassSamplePlayExFn g_bass_sample_play_ex;",
         "extern BassSampleLoadFn g_bass_sample_load;",
         "extern BassFreeFn g_bass_free;",
+    ):
+        assert all(declaration in header for header in headers)
+
+    for scalar_alias in (
         "extern float g_stream_volume_scale;",
         "extern float g_audio_backend_sfx_normalization_scale;",
         "extern float g_audio_backend_voice_normalization_scale;",
     ):
-        assert all(declaration in header for header in headers)
+        assert scalar_alias in binja_header
+        assert scalar_alias not in ida_header
 
     assert '("0x5088b0", "RegisteredSoundSampleName[256]")' in binja_source
     assert '("0x7516a0", "CachedMusicPath")' in binja_source
@@ -1604,14 +1614,14 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     assert '"int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class)"' in binja_source
     assert '"int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name)"' in binja_source
 
-    assert "TRUSTED_ARRAY_DATA_ITEMS" in ida_source
+    assert "TRUSTED_EXTENT_DATA_ITEMS" in ida_source
     assert "0x5088B0" in ida_source
     assert "0x8000" in ida_source
     assert '"char[32768]"' in ida_source
-    assert "_ensure_array_data_item" in ida_source
+    assert "_ensure_extent_data_item" in ida_source
     assert "ida_bytes.create_byte(address, size, True)" in ida_source
-    assert '"reason": "unexpected_array_data_item"' in ida_source
-    assert '"reason": "unexpected_stale_array_data_item"' in ida_source
+    assert '"reason": "unexpected_extent_data_item"' in ida_source
+    assert '"reason": "unexpected_stale_extent_data_item"' in ida_source
     assert 're.sub(r"\\s*\\[\\s*", "[", normalized)' in ida_source
     assert '"RegisteredSoundSampleName g_registered_sound_sample_names[256];"' in ida_source
     assert '"char g_cached_music_path[256];"' in ida_source
@@ -1640,6 +1650,11 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     assert "_sync_split_lvar" in ida_source
     assert "info.set_split_lvar()" in ida_source
     assert "ida_hexrays.MLI_SET_FLAGS" in ida_source
+
+    assert '(0x753C58, "g_audio_backend", "AudioBackend g_audio_backend;")' in ida_source
+    assert "0x1C" in ida_source
+    for stale_interior in ("0x753C64", "0x753C68", "0x753C6C"):
+        assert stale_interior not in ida_source
 
     assert "cache_music_file" not in binja_path_source
     assert "cache_music_file" not in ida_path_source
@@ -2634,13 +2649,23 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "LevelFileTextBuffer" in binja_segment_sync
     assert "types_declare_if_changed" in binja_segment_sync
     assert "types_declare(" not in binja_segment_sync
-    assert "SEGMENT_COPY_USER_VAR_UPDATES" in binja_segment_sync
+    assert "SEGMENT_USER_VAR_UPDATES" in binja_segment_sync
     assert '"selected_entry_anchor"' in binja_segment_sync
     assert '"SegmentCatalogEntryAnchor*"' in binja_segment_sync
+    assert '"load_segment_definitions"' in binja_segment_sync
+    assert '"RegisterVariableSourceType",\n        5,\n        67,' in binja_segment_sync
+    assert '"tracks_after_stack_probe"' in binja_segment_sync
+    assert '"SMTracks*"' in binja_segment_sync
+    assert '"RegisterVariableSourceType",\n        469,\n        72,' in binja_segment_sync
+    assert '"row_stride_anchor"' in binja_segment_sync
+    assert '"SegmentCatalogRowStrideAnchor*"' in binja_segment_sync
     for header in (analysis_path_header, analysis_segment_header):
         assert "typedef struct SegmentCatalogEntryAnchor" in header
         assert "int32_t stride_prefix_word;" in header
         assert "SegmentCatalogEntry entry;" in header
+        assert "typedef struct SegmentCatalogRowStrideAnchor" in header
+        assert "uint8_t catalog_prefix[0x88c];" in header
+        assert "AuthoredSegmentRow row;" in header
     assert '"char g_level_file_text_buffer[10240];"' in ida_segment_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync

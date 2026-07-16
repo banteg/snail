@@ -34,7 +34,7 @@ DATA_VAR_UPDATES = (
 # 0x4088-stride calculation from the SMTracks base. That leaves the register
 # four bytes before the entry, so the exact anchor view preserves the count /
 # previous-tail prefix without shifting any entry field.
-SEGMENT_COPY_USER_VAR_UPDATES = (
+SEGMENT_USER_VAR_UPDATES = (
     (
         "copy_segment_definition_to_level_slot",
         "RegisterVariableSourceType",
@@ -42,6 +42,26 @@ SEGMENT_COPY_USER_VAR_UPDATES = (
         68,
         "selected_entry_anchor",
         "SegmentCatalogEntryAnchor*",
+    ),
+    # chkstk preserves ECX, but Binary Ninja conservatively starts a new SSA
+    # variable for the register after the call. Recover that exact split as
+    # the same SMTracks owner without changing chkstk's global call model,
+    # whose stack-adjust semantics are needed by other large-frame callers.
+    (
+        "load_segment_definitions",
+        "RegisterVariableSourceType",
+        5,
+        67,
+        "tracks_after_stack_probe",
+        "SMTracks*",
+    ),
+    (
+        "load_segment_definitions",
+        "RegisterVariableSourceType",
+        469,
+        72,
+        "row_stride_anchor",
+        "SegmentCatalogRowStrideAnchor*",
     ),
 )
 
@@ -94,7 +114,7 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=TARGET,
-            updates=SEGMENT_COPY_USER_VAR_UPDATES,
+            updates=SEGMENT_USER_VAR_UPDATES,
         ),
     ]
 

@@ -10,18 +10,18 @@
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "copy_segment_definition_to_level_slot",
-      "address": "0x447300"
+      "name": "load_segment_definitions",
+      "address": "0x448160"
     }
   ],
-  "health_check_count": 466,
+  "health_check_count": 467,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -157,3 +157,26 @@ replays. Its exact `0x5e10` bytes meet `Backdrop +0x4ec10` with no invented
 padding. This analysis-only change leaves the focused result at 62.24%,
 573/571 instructions, prefix 5/571, 80 clean operands, and the same five
 honest mismatches.
+
+## 2026-07-16 flattened catalog-row ownership
+
+- Native `chkstk` preserves `ECX`, but Binary Ninja conservatively splits the
+  post-call register into a fresh `out_count` SSA variable. A global `chkstk`
+  prototype/clobber experiment recovered the receiver but destabilized large
+  stack-frame lifting, so it was rejected and not persisted. The durable sync
+  instead retypes only the exact `RegisterVariableSourceType` identity
+  `(index=5, storage=67)` as `SMTracks* tracks_after_stack_probe`, preserving
+  the stable decompile while recovering `count`, `entries[0].row_count`, and
+  `entries[0].glyph_columns`.
+- The native row cursor is not an `AuthoredSegmentRow*`: it starts at the
+  `SMTracks` base, advances by the exact `0x38` row stride, and consumes the row
+  at `+0x88c`. `SegmentCatalogRowStrideAnchor` records that overlapping view,
+  and the exact ESI SSA identity `(index=469, storage=72)` now resolves every
+  consumed row member from `flags` through `path_template_index`. Only the
+  `row` member is claimed; the `0x88c` prefix deliberately overlaps catalog
+  storage rather than inventing a standalone allocation.
+- The paired strict export also accepted IDA's now-propagated 4 KiB file buffer
+  and 64 KiB enumerated-name bank owners from the canonical archive-shell
+  prototype. Focused matching remains honestly unchanged at 62.24%, 571 target
+  versus 573 candidate instructions, prefix 5, with 88 clean masked operands
+  and one shifted call mismatch. No source-shape or operand fakematch was made.

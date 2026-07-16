@@ -12,6 +12,9 @@ import ida_typeinf
 import idc
 
 
+SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"
+
+
 TRUSTED_DECLARATIONS = [
     (
         "shutdown_bass_audio_window",
@@ -325,9 +328,6 @@ TRUSTED_NAMES = [
     (0x753C1C, "g_bass_set_config"),
     (0x753C20, "g_active_music_stream"),
     (0x753C58, "g_audio_backend"),
-    (0x753C64, "g_stream_volume_scale"),
-    (0x753C68, "g_audio_backend_sfx_normalization_scale"),
-    (0x753C6C, "g_audio_backend_voice_normalization_scale"),
     (0x753C90, "g_bass_module"),
     (0x753C94, "g_bass_sample_stop"),
     (0x753C98, "g_bass_channel_get_position"),
@@ -420,17 +420,7 @@ TRUSTED_DATA_DECLARATIONS = [
     ),
     (0x753C1C, "g_bass_set_config", "BassSetConfigFn g_bass_set_config;"),
     (0x753C20, "g_active_music_stream", "BassHandle g_active_music_stream;"),
-    (0x753C64, "g_stream_volume_scale", "float g_stream_volume_scale;"),
-    (
-        0x753C68,
-        "g_audio_backend_sfx_normalization_scale",
-        "float g_audio_backend_sfx_normalization_scale;",
-    ),
-    (
-        0x753C6C,
-        "g_audio_backend_voice_normalization_scale",
-        "float g_audio_backend_voice_normalization_scale;",
-    ),
+    (0x753C58, "g_audio_backend", "AudioBackend g_audio_backend;"),
     (0x753C90, "g_bass_module", "void* g_bass_module;"),
     (0x753C94, "g_bass_sample_stop", "BassSampleStopFn g_bass_sample_stop;"),
     (
@@ -482,9 +472,6 @@ TRUSTED_SCALAR_DATA_ITEMS = [
     (0x753C18, 4),
     (0x753C1C, 4),
     (0x753C20, 4),
-    (0x753C64, 4),
-    (0x753C68, 4),
-    (0x753C6C, 4),
     (0x753C90, 4),
     (0x753C94, 4),
     (0x753C98, 4),
@@ -495,7 +482,13 @@ TRUSTED_SCALAR_DATA_ITEMS = [
     (0x753CC4, 4),
 ]
 
-TRUSTED_ARRAY_DATA_ITEMS = [
+TRUSTED_EXTENT_DATA_ITEMS = [
+    (
+        0x753C58,
+        0x1C,
+        "g_audio_backend",
+        None,
+    ),
     (
         0x7516A0,
         0x100,
@@ -694,7 +687,7 @@ def _ensure_scalar_data_item(address: int, size: int) -> dict[str, object]:
     }
 
 
-def _ensure_array_data_item(
+def _ensure_extent_data_item(
     address: int,
     size: int,
     expected_stale_name: str,
@@ -715,7 +708,7 @@ def _ensure_array_data_item(
     if item_head != address or item_size != 1:
         return {
             "status": "failed",
-            "reason": "unexpected_array_data_item",
+            "reason": "unexpected_extent_data_item",
             "address": hex(address),
             "expected_size": size,
             "observed_head": hex(item_head),
@@ -731,7 +724,7 @@ def _ensure_array_data_item(
     ):
         return {
             "status": "failed",
-            "reason": "unexpected_stale_array_data_item",
+            "reason": "unexpected_stale_extent_data_item",
             "address": hex(address),
             "expected_name": expected_stale_name,
             "expected_type": normalized_expected_type,
@@ -742,7 +735,7 @@ def _ensure_array_data_item(
     if not ida_bytes.create_byte(address, size, True):
         return {
             "status": "failed",
-            "reason": "create_array_data_item_failed",
+            "reason": "create_extent_data_item_failed",
             "address": hex(address),
             "expected_size": size,
         }
@@ -752,7 +745,7 @@ def _ensure_array_data_item(
     if verified_head != address or verified_size != size:
         return {
             "status": "failed",
-            "reason": "array_data_item_readback_failed",
+            "reason": "extent_data_item_readback_failed",
             "address": hex(address),
             "expected_size": size,
             "observed_head": hex(verified_head),
@@ -1104,8 +1097,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
     data_unchanged = 0
     scalar_data_items_applied = 0
     scalar_data_items_unchanged = 0
-    array_data_items_applied = 0
-    array_data_items_unchanged = 0
+    extent_data_items_applied = 0
+    extent_data_items_unchanged = 0
     applied_functions = []
     function_type_changes = []
     missing = []
@@ -1137,22 +1130,23 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result.get("status") == "failed"
     )
 
-    array_data_items = [
-        _ensure_array_data_item(address, size, stale_name, stale_type)
-        for address, size, stale_name, stale_type in TRUSTED_ARRAY_DATA_ITEMS
+    extent_data_items = [
+        _ensure_extent_data_item(address, size, stale_name, stale_type)
+        for address, size, stale_name, stale_type in TRUSTED_EXTENT_DATA_ITEMS
     ]
-    array_data_items_applied = sum(
-        result.get("status") == "applied" for result in array_data_items
+    extent_data_items_applied = sum(
+        result.get("status") == "applied" for result in extent_data_items
     )
-    array_data_items_unchanged = sum(
-        result.get("status") == "unchanged" for result in array_data_items
+    extent_data_items_unchanged = sum(
+        result.get("status") == "unchanged" for result in extent_data_items
     )
     failed.extend(
-        {"array_data_item": result}
-        for result in array_data_items
+        {"extent_data_item": result}
+        for result in extent_data_items
         if result.get("status") == "failed"
     )
     if failed:
+        print(SYNC_FAILURE_SENTINEL)
         print(
             json.dumps(
                 {
@@ -1162,7 +1156,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "phase": "data_item_guard",
                     "cleared_data_items": cleared_data_items,
                     "scalar_data_items": scalar_data_items,
-                    "array_data_items": array_data_items,
+                    "extent_data_items": extent_data_items,
                     "failed": failed,
                 },
                 indent=2,
@@ -1324,6 +1318,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result.get("status") == "failed"
     )
 
+    sync_failed = bool(parse_errors or failed or missing)
+    if sync_failed:
+        print(SYNC_FAILURE_SENTINEL)
     print(
         json.dumps(
             {
@@ -1340,11 +1337,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_unchanged": data_unchanged,
                 "scalar_data_items_applied": scalar_data_items_applied,
                 "scalar_data_items_unchanged": scalar_data_items_unchanged,
-                "array_data_items_applied": array_data_items_applied,
-                "array_data_items_unchanged": array_data_items_unchanged,
+                "extent_data_items_applied": extent_data_items_applied,
+                "extent_data_items_unchanged": extent_data_items_unchanged,
                 "cleared_data_items": cleared_data_items,
                 "scalar_data_items": scalar_data_items,
-                "array_data_items": array_data_items,
+                "extent_data_items": extent_data_items,
                 "cleared_lvar_overrides": cleared_lvar_overrides,
                 "split_lvars": split_lvar_results,
                 "lvars": lvar_results,
@@ -1355,7 +1352,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
     )
 
-    if parse_errors or failed or missing:
+    if sync_failed:
         return 1
     return 0
 

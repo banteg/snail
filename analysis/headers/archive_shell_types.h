@@ -74,9 +74,8 @@ typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];
 typedef char CachedMusicPath[256];
 
 /*
- * Recovered AudioBackend prefix used by exact member-function scratches.
- * The global object is deliberately not assigned this type until its tail
- * boundary is independently proven.
+ * Exact 0x1c-byte AudioBackend prefix owned by g_audio_backend. Bytes after
+ * the aggregate's trailing alignment padding remain deliberately unclaimed.
  */
 typedef struct AudioBackend {
     uint8_t music_stream_active;
@@ -310,9 +309,6 @@ extern Win32FreeLibraryFn FreeLibrary;
 extern RegisteredSoundSampleName g_registered_sound_sample_names[RSHELL_SOUND_MAX];
 extern int32_t g_registered_sound_sample_count;
 extern int32_t g_registered_sound_sample_handles[RSHELL_SOUND_MAX];
-extern float g_stream_volume_scale;
-extern float g_audio_backend_sfx_normalization_scale;
-extern float g_audio_backend_voice_normalization_scale;
 extern AudioBackend g_audio_backend;
 extern int32_t g_tracked_allocation_total_bytes;
 extern float g_text_input_repeat_accumulator;

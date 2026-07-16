@@ -69,6 +69,14 @@ typedef struct SegmentCatalogEntryAnchor {
     SegmentCatalogEntry entry;
 } SegmentCatalogEntryAnchor;
 
+/* The importer flattens (segment, row) into a 0x38-byte induction from the
+ * SMTracks base, then consumes the authored row at +0x88c. For later rows the
+ * prefix overlaps earlier catalog storage; only row is consumed. */
+typedef struct SegmentCatalogRowStrideAnchor {
+    uint8_t catalog_prefix[0x88c];
+    AuthoredSegmentRow row;
+} SegmentCatalogRowStrideAnchor;
+
 typedef struct SMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];

@@ -11,6 +11,7 @@ from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_scri
 
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"
 IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_archive_shell_types.py"
+SYNC_FAILURE_SENTINEL = "ARCHIVE_SHELL_SYNC_FAILED"
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,6 +58,8 @@ def main() -> int:
         log_stem="sync-archive-shell-types",
     )
     sys.stdout.write(log_text)
+    if SYNC_FAILURE_SENTINEL in log_text:
+        return exit_code or 1
     return exit_code
 
 
