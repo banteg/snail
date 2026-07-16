@@ -154,3 +154,20 @@ the available consumers establish its role.
 The rewrite is codegen-neutral: focused matching remains 99.30%, 429/429
 instructions, prefix 55, with 49 clean operands and the one documented
 jump-table layout mismatch.
+
+## 2026-07-16 constructor caller flag vocabulary
+
+Nineteen core frontend construction paths now spell their independently proven
+`FrontendWidgetFlag` constituents instead of repeating opaque composite
+literals. This propagates the shared cRBorder ownership recovered from the
+constructor, interaction updater, layout pass, and Android callsites without
+assigning semantics to the still-unproven `0x00000001` or `0x10000000` bits.
+
+VC6 constant-folds the named expressions back to the original arguments. The
+focused recompilation leaves fourteen callers exact and preserves the five
+honest residuals: `initialize_challenge_setup_screen` at 96.41% (167/167),
+`initialize_completion_screen` at 89.89% (276/278),
+`initialize_frontend_widget` at 99.30% (429/429),
+`initialize_high_score_screen` at 98.00% (600/600), and `initialize_tip` at
+83.12% (154/154). All masked operands remain resolved; only the constructor's
+documented jump-table relocation differs.

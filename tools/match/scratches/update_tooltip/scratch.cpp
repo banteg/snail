@@ -52,13 +52,15 @@ void FrontendWidgetTooltip::update_tooltip()
 
             flags = mode_flags;
             if ((flags & 1) != 0) {
-                tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
+                tooltip_widget->initialize_frontend_widget(
+                    FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     g_game->players[0].mouse_cursor.saved_x,
                     g_game->players[0].mouse_cursor.saved_y + 64.0f,
                     color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
             } else if ((flags & 4) != 0) {
                 FrontendWidget* local_owner = owner_widget;
-                tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
+                tooltip_widget->initialize_frontend_widget(
+                    FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y - local_owner->active_padding,
                     color_above.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
@@ -67,7 +69,8 @@ void FrontendWidgetTooltip::update_tooltip()
                     border->layout_anchor_y - (border->layout_height + border->active_padding);
             } else if ((flags & 2) != 0) {
                 FrontendWidget* local_owner = owner_widget;
-                tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
+                tooltip_widget->initialize_frontend_widget(
+                    FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y + local_owner->layout_height +
                         local_owner->active_padding,
@@ -76,7 +79,8 @@ void FrontendWidgetTooltip::update_tooltip()
                 border->layout_anchor_y = border->layout_anchor_y + border->active_padding;
             } else if ((flags & 0x10) != 0) {
                 FrontendWidget* local_owner = owner_widget;
-                tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
+                tooltip_widget->initialize_frontend_widget(
+                    FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y - local_owner->active_padding,
                     color_above_left.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
@@ -85,7 +89,8 @@ void FrontendWidgetTooltip::update_tooltip()
                     border->layout_anchor_y - (border->layout_height + border->active_padding);
             } else if ((flags & 8) != 0) {
                 FrontendWidget* local_owner = owner_widget;
-                tooltip_widget->initialize_frontend_widget(2, (char*)this, 7,
+                tooltip_widget->initialize_frontend_widget(
+                    FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y + local_owner->layout_height +
                         local_owner->active_padding,

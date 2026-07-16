@@ -32,7 +32,8 @@ void MainMenu::initialize_main_menu()
 
     new_game_widget = g_game->border_manager.allocate_border();
     new_game_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_new_game_text,
         0x14,
         20.0f,
@@ -43,7 +44,8 @@ void MainMenu::initialize_main_menu()
 
     high_scores_widget = g_game->border_manager.allocate_border();
     high_scores_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_high_scores_text,
         0x14,
         20.0f,
@@ -55,7 +57,8 @@ void MainMenu::initialize_main_menu()
 
     options_widget = g_game->border_manager.allocate_border();
     options_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_options_text,
         0x14,
         20.0f,
@@ -67,7 +70,8 @@ void MainMenu::initialize_main_menu()
 
     options_widget = g_game->border_manager.allocate_border();
     options_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_options_text,
         0x14,
         20.0f,
@@ -79,7 +83,9 @@ void MainMenu::initialize_main_menu()
 
     credits_widget = g_game->border_manager.allocate_border();
     credits_widget->initialize_frontend_widget(
-        0x40000014,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_credits_text,
         0x14,
         20.0f,
@@ -91,7 +97,8 @@ void MainMenu::initialize_main_menu()
 
     exit_widget = g_game->border_manager.allocate_border();
     exit_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_exit_text,
         0x14,
         20.0f,

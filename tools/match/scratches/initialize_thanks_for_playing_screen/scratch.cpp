@@ -28,7 +28,8 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
 
     message_widget = g_game->border_manager.allocate_border();
     message_widget->initialize_frontend_widget(
-        0x20400002,
+        FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+            | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "Thanks For Playing!",
         0x14,
         0.0f,

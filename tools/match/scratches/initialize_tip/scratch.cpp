@@ -22,7 +22,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
     alignment &= 4;
     tColour color;
     widget_main->initialize_frontend_widget(
-        2,
+        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         definition->text,
         0x14,
         definition->layout_y,
@@ -42,7 +42,8 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
         widget_ok = g_game->border_manager.allocate_border();
         if (hide_disable_button == 0) {
             widget_ok->initialize_frontend_widget(
-                0x14,
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                 "OK",
                 0x14,
                 0.0f,
@@ -53,7 +54,8 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
 
             widget_disable = g_game->border_manager.allocate_border();
             widget_disable->initialize_frontend_widget(
-                0x14,
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                 "Disable",
                 0x14,
                 0.0f,
@@ -65,7 +67,8 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
             widget_ok->stack_widget_below(widget_main);
         } else {
             widget_ok->initialize_frontend_widget(
-                0x14,
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                 "OK",
                 0x14,
                 0.0f,

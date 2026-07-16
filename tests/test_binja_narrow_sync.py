@@ -3301,6 +3301,51 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
+    constructor_callers = (
+        "initialize_challenge_setup_screen",
+        "initialize_click_start",
+        "initialize_completion_screen",
+        "initialize_exit_prompt",
+        "initialize_frontend_widget",
+        "initialize_galaxy",
+        "initialize_help_screen",
+        "initialize_high_score_screen",
+        "initialize_input_ok",
+        "initialize_main_menu",
+        "initialize_new_game_menu",
+        "initialize_options_menu",
+        "initialize_pause_menu",
+        "initialize_subgame",
+        "initialize_thanks_for_playing_screen",
+        "initialize_tip",
+        "initialize_warning",
+        "show_times_up_message",
+        "update_tooltip",
+    )
+    retired_composite_literals = (
+        "0x100004",
+        "0x400002",
+        "0x400800",
+        "0x400802",
+        "0x900004",
+        "0x20000014",
+        "0x20400000",
+        "0x20400002",
+        "0x20400802",
+        "0x20400814",
+        "0x40000014",
+        "0x40000016",
+        "0x60000014",
+    )
+    for function_name in constructor_callers:
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert "FRONTEND_WIDGET_FLAG_" in scratch
+        assert not any(
+            literal in scratch for literal in retired_composite_literals
+        )
+
 
 def test_frontend_widget_draw_owner_replay_stays_aligned() -> None:
     frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(

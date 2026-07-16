@@ -97,7 +97,7 @@ void SubgameRuntime::initialize_subgame()
 
     top_score_widget = g_game->border_manager.allocate_border();
     top_score_widget->initialize_frontend_widget(
-        0x400002,
+        FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "0",
         0x14,
         400.0f,
@@ -112,7 +112,7 @@ void SubgameRuntime::initialize_subgame()
     if (this->level_mode == 0) {
         lives_icon_widget = g_game->border_manager.allocate_border();
         lives_icon_widget->initialize_frontend_sprite_button(
-            0x400800,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE,
             122,
             0.0f,
             58.0f,
@@ -124,7 +124,7 @@ void SubgameRuntime::initialize_subgame()
 
         lives_text_widget = g_game->border_manager.allocate_border();
         lives_text_widget->initialize_frontend_widget(
-            0x400002,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "0",
             0x14,
             47.0f,
@@ -140,7 +140,8 @@ void SubgameRuntime::initialize_subgame()
         do {
             *icon_slot = g_game->border_manager.allocate_border();
             (*icon_slot)->initialize_frontend_sprite_button(
-                0x400800,
+                FRONTEND_WIDGET_FLAG_FRAMELESS
+                    | FRONTEND_WIDGET_FLAG_SPRITE_MODE,
                 123,
                 (float)icon_index * 24.0f + 13.0f,
                 430.0f,
@@ -180,7 +181,7 @@ void SubgameRuntime::initialize_subgame()
 
     bottom_score_widget = g_game->border_manager.allocate_border();
     bottom_score_widget->initialize_frontend_widget(
-        0x400002,
+        FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "0",
         0x14,
         40.0f,

@@ -13,7 +13,8 @@ void InputOkState::initialize_input_ok()
     FrontendWidget* source = source_widget;
     ok_widget = widget;
     widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         "OK",
         source->widget_type,
         0.0f,

@@ -32,7 +32,8 @@ void GUI::initialize_challenge_setup_screen()
 
     difficulty_slider = g_game->border_manager.allocate_border();
     difficulty_slider->initialize_frontend_widget(
-        0x100004,
+        FRONTEND_WIDGET_FLAG_SLIDER
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         "     Select Difficulty     >",
         0x14,
         20.0f,
@@ -47,7 +48,8 @@ void GUI::initialize_challenge_setup_screen()
 
     speed_slider = g_game->border_manager.allocate_border();
     speed_slider->initialize_frontend_widget(
-        0x100004,
+        FRONTEND_WIDGET_FLAG_SLIDER
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         "       Select Speed       >",
         0x14,
         20.0f,
@@ -67,7 +69,10 @@ void GUI::initialize_challenge_setup_screen()
 
     play_button = g_game->border_manager.allocate_border();
     play_button->initialize_frontend_widget(
-        0x40000016,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HIGHLIGHTED
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         "Play",
         0x14,
         20.0f,
@@ -79,7 +84,10 @@ void GUI::initialize_challenge_setup_screen()
 
     replay_button = g_game->border_manager.allocate_border();
     replay_button->initialize_frontend_widget(
-        0x40000016,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HIGHLIGHTED
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         "Watch Replay",
         0x14,
         20.0f,
@@ -93,7 +101,9 @@ void GUI::initialize_challenge_setup_screen()
 
     back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
-        0x16,
+        FRONTEND_WIDGET_FLAG_HIGHLIGHTED
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text,
         0x14,
         20.0f,

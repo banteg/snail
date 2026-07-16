@@ -148,7 +148,12 @@ void FrontendWidget::initialize_frontend_widget(
         slider_more_widget = g_game->border_manager.allocate_border();
         float slider_y = y + 40.0f;
         slider_more_widget->initialize_frontend_sprite_button(
-            (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) | 0x20400814,
+            (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND)
+                | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_SPRITE_MODE
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             42,
             g_game->border_manager.justify_centre + 458.0f,
             slider_y,
@@ -159,7 +164,12 @@ void FrontendWidget::initialize_frontend_widget(
 
         slider_less_widget = g_game->border_manager.allocate_border();
         slider_less_widget->initialize_frontend_sprite_button(
-            (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) | 0x20400814,
+            (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND)
+                | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_SPRITE_MODE
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             38,
             g_game->border_manager.justify_centre + 118.0f,
             slider_y,

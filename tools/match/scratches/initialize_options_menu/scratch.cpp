@@ -20,7 +20,8 @@ void Options::initialize_options_menu()
     fullscreen_widget =
         g_game->border_manager.allocate_border();
     fullscreen_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_blank_text,
         0x14,
         90.0f,
@@ -33,7 +34,9 @@ void Options::initialize_options_menu()
     sound_volume_widget =
         g_game->border_manager.allocate_border();
     sound_volume_widget->initialize_frontend_widget(
-        0x900004,
+        FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND
+            | FRONTEND_WIDGET_FLAG_SLIDER
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         g_sounds_volume_text,
         0x14,
         90.0f,
@@ -49,7 +52,8 @@ void Options::initialize_options_menu()
     music_volume_widget =
         g_game->border_manager.allocate_border();
     music_volume_widget->initialize_frontend_widget(
-        0x100004,
+        FRONTEND_WIDGET_FLAG_SLIDER
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         g_music_volume_text,
         0x14,
         90.0f,
@@ -65,7 +69,8 @@ void Options::initialize_options_menu()
     back_widget =
         g_game->border_manager.allocate_border();
     back_widget->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text,
         0x14,
         90.0f,

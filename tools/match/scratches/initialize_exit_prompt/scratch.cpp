@@ -34,7 +34,8 @@ void Exit::initialize_exit_prompt()
     case 7:
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             0.0f,
@@ -45,7 +46,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             0.0f,
@@ -58,7 +60,7 @@ void Exit::initialize_exit_prompt()
     case 8:
         prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
-            0x400002,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
             0x14,
             0.0f,
@@ -69,7 +71,9 @@ void Exit::initialize_exit_prompt()
 
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x40000014,
+            FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             0.0f,
@@ -81,7 +85,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             0.0f,
@@ -95,7 +100,7 @@ void Exit::initialize_exit_prompt()
     case 9:
         prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
-            0x400002,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
             0x14,
             0.0f,
@@ -106,7 +111,9 @@ void Exit::initialize_exit_prompt()
 
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x40000014,
+            FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             0.0f,
@@ -118,7 +125,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             0.0f,
@@ -133,7 +141,7 @@ void Exit::initialize_exit_prompt()
     case 5:
         prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
-            0x400002,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
             0x14,
             0.0f,
@@ -144,7 +152,9 @@ void Exit::initialize_exit_prompt()
 
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x40000014,
+            FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             0.0f,
@@ -156,7 +166,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             0.0f,
@@ -170,7 +181,7 @@ void Exit::initialize_exit_prompt()
     case 1:
         prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
-            0x400002,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
             0x14,
             0.0f,
@@ -181,7 +192,9 @@ void Exit::initialize_exit_prompt()
 
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x40000014,
+            FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             0.0f,
@@ -193,7 +206,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             0.0f,
@@ -207,7 +221,7 @@ void Exit::initialize_exit_prompt()
     case 2:
         prompt_title = g_game->border_manager.allocate_border();
         prompt_title->initialize_frontend_widget(
-            0x400002,
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
             0x14,
             0.0f,
@@ -218,7 +232,9 @@ void Exit::initialize_exit_prompt()
 
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x40000014,
+            FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
+                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             468.0f,
@@ -230,7 +246,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             568.0f,
@@ -244,7 +261,8 @@ void Exit::initialize_exit_prompt()
     case 3:
         yes_button = g_game->border_manager.allocate_border();
         yes_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Yes",
             0x14,
             473.0f,
@@ -255,7 +273,8 @@ void Exit::initialize_exit_prompt()
 
         no_button = g_game->border_manager.allocate_border();
         no_button->initialize_frontend_widget(
-            0x14,
+            FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
+                FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "No",
             0x14,
             566.0f,

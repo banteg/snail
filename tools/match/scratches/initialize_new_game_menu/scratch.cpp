@@ -33,7 +33,9 @@ void Intro::initialize_new_game_menu()
 
     tutorial_button = g_game->border_manager.allocate_border();
     tutorial_button->initialize_frontend_widget(
-        0x40000014,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_tutorial_text,
         0x14,
         20.0f,
@@ -44,7 +46,9 @@ void Intro::initialize_new_game_menu()
 
     postal_button = g_game->border_manager.allocate_border();
     postal_button->initialize_frontend_widget(
-        0x40000014,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_postal_mode_text,
         0x14,
         20.0f,
@@ -56,7 +60,9 @@ void Intro::initialize_new_game_menu()
 
     time_trial_button = g_game->border_manager.allocate_border();
     time_trial_button->initialize_frontend_widget(
-        0x40000014,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_time_trial_text,
         0x14,
         20.0f,
@@ -68,7 +74,8 @@ void Intro::initialize_new_game_menu()
 
     challenge_button = g_game->border_manager.allocate_border();
     challenge_button->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_challenge_mode_text,
         0x14,
         20.0f,
@@ -80,7 +87,9 @@ void Intro::initialize_new_game_menu()
 
     help_button = g_game->border_manager.allocate_border();
     help_button->initialize_frontend_widget(
-        0x40000014,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_help_text,
         0x14,
         0.0f,
@@ -91,7 +100,8 @@ void Intro::initialize_new_game_menu()
 
     back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
-        0x14,
+        FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text,
         0x14,
         20.0f,

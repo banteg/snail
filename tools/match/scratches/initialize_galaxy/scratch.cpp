@@ -57,7 +57,7 @@ void Galaxy::initialize_galaxy()
         tColour color;
         route_title_widget = g_game->border_manager.allocate_border();
         route_title_widget->initialize_frontend_widget(
-            0x400000,
+            FRONTEND_WIDGET_FLAG_FRAMELESS,
             "Intergalactic Delivery Route",
             20,
             15.0f,
@@ -69,7 +69,10 @@ void Galaxy::initialize_galaxy()
 
         route_icon_widget = g_game->border_manager.allocate_border();
         route_icon_widget->initialize_frontend_sprite_button(
-            0x20400802,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_SPRITE_MODE
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             138,
             370.0f,
             10.0f,
@@ -82,7 +85,9 @@ void Galaxy::initialize_galaxy()
     if (route_mode == 1) {
         tColour color;
         exit_or_back_widget->initialize_frontend_widget(
-            0x20000014,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             g_exit_text,
             20,
             20.0f,
@@ -93,7 +98,10 @@ void Galaxy::initialize_galaxy()
     } else {
         tColour color;
         exit_or_back_widget->initialize_frontend_widget(
-            0x60000014,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             g_back_text,
             20,
             20.0f,
@@ -142,7 +150,9 @@ void Galaxy::initialize_galaxy()
 
         selected_title_widget = g_game->border_manager.allocate_border();
         selected_title_widget->initialize_frontend_widget(
-            0x20400002,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_blank_text,
             20,
             100.0f,
@@ -156,7 +166,9 @@ void Galaxy::initialize_galaxy()
 
         selected_detail_widget = g_game->border_manager.allocate_border();
         selected_detail_widget->initialize_frontend_widget(
-            0x20400002,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_blank_text,
             20,
             300.0f,
@@ -170,7 +182,9 @@ void Galaxy::initialize_galaxy()
 
         selected_description_widget = g_game->border_manager.allocate_border();
         selected_description_widget->initialize_frontend_widget(
-            0x20400002,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_blank_text,
             20,
             300.0f,
@@ -187,7 +201,10 @@ void Galaxy::initialize_galaxy()
     if (level_progress_base->level_mode == 0) {
         tColour color;
         play_or_deliver_widget->initialize_frontend_widget(
-            0x60000014,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Deliver!",
             20,
             300.0f,
@@ -198,7 +215,10 @@ void Galaxy::initialize_galaxy()
     } else {
         tColour color;
         play_or_deliver_widget->initialize_frontend_widget(
-            0x60000014,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Play",
             20,
             300.0f,
@@ -214,7 +234,10 @@ void Galaxy::initialize_galaxy()
         tColour color;
         replay_widget = g_game->border_manager.allocate_border();
         replay_widget->initialize_frontend_widget(
-            0x60000014,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             "Watch Best Trial",
             20,
             300.0f,

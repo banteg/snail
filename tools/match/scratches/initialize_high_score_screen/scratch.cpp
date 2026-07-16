@@ -87,7 +87,9 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
     record_offset = 0;
     do {
         replay_row_widgets[row_index] = 0;
-        int highlight = row_index == selected_rank ? 2 : 0;
+        int highlight = row_index == selected_rank
+            ? FRONTEND_WIDGET_FLAG_HIGHLIGHTED
+            : 0;
         if (((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                 + record_offset))->active == 1) {
             switch (selected_bank) {
@@ -105,7 +107,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 
                 rank_row_widgets[row_index] =
                     g_game->border_manager.allocate_border();
-                int row_flags = highlight | 0x20400000;
+                int row_flags = highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                    | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
                     color_53.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -144,7 +147,10 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 replay_row_widgets[row_index] =
                     g_game->border_manager.allocate_border();
                 replay_row_widgets[row_index]->initialize_frontend_widget(
-                    highlight | 0x20000014, (char*)"Replay", 22, 0.0f, y,
+                    highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                        | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                        | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+                    (char*)"Replay", 22, 0.0f, y,
                     color_50.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                     2, 125.0f);
                 replay_row_widgets[row_index]->hide_border_init();
@@ -165,7 +171,8 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 
                 rank_row_widgets[row_index] =
                     g_game->border_manager.allocate_border();
-                int row_flags = highlight | 0x20400000;
+                int row_flags = highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                    | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
                     color_45.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -204,7 +211,10 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 replay_row_widgets[row_index] =
                     g_game->border_manager.allocate_border();
                 replay_row_widgets[row_index]->initialize_frontend_widget(
-                    highlight | 0x20000014, (char*)"Replay", 22, 0.0f, y,
+                    highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                        | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                        | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+                    (char*)"Replay", 22, 0.0f, y,
                     color_54.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
                     2, 170.0f);
                 if (entering_name != 0)
@@ -231,13 +241,19 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
     if (entering_name != 0) {
         cancel_name_button = g_game->border_manager.allocate_border();
         cancel_name_button->initialize_frontend_widget(
-            0x20000014, (char*)"Cancel", 23, 0.0f, y,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+            (char*)"Cancel", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
         cancel_name_button->set_frontend_widget_shortcut_key(11);
 
         submit_name_button = g_game->border_manager.allocate_border();
         submit_name_button->initialize_frontend_widget(
-            0x20000014, (char*)"Submit", 23, 0.0f, y,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+            (char*)"Submit", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
         submit_name_button->set_frontend_widget_shortcut_key(5);
         return;
@@ -245,19 +261,28 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 
     back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
-        0x20000014, g_back_text, 23, 0.0f, y,
+        FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+        g_back_text, 23, 0.0f, y,
         color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
 
     bank_toggle_button = g_game->border_manager.allocate_border();
     switch (selected_bank) {
     case 0:
         bank_toggle_button->initialize_frontend_widget(
-            0x20000014, (char*)"Challenge Scores", 23, 0.0f, y,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+            (char*)"Challenge Scores", 23, 0.0f, y,
             color_46.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     case 1:
         bank_toggle_button->initialize_frontend_widget(
-            0x20000014, (char*)"Postal Scores", 23, 0.0f, y,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+                | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+            (char*)"Postal Scores", 23, 0.0f, y,
             color_43.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     }

@@ -27,7 +27,9 @@ void Help::initialize_help_screen()
 
     back_button = g_game->border_manager.allocate_border();
     back_button->initialize_frontend_widget(
-        0x40000014,
+        FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
+            | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+            | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text,
         0x14,
         0.0f,

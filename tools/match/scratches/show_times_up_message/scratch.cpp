@@ -11,7 +11,9 @@ void TimesUp::show_times_up_message()
         tColour color;
 
         border = g_game->border_manager.allocate_border();
-        border->initialize_frontend_widget(0x400002, "Time's Up", 0x14, 0.0f, 200.0f,
+        border->initialize_frontend_widget(
+            FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
+            "Time's Up", 0x14, 0.0f, 200.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
         progress = 0.0f;
         progress_step = 0.00555555569f;

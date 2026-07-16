@@ -54,23 +54,31 @@ void Completion::initialize_completion_screen(
 
     title_widget = g_game->border_manager.allocate_border();
     tColour color;
-    title_widget->initialize_frontend_widget(0x20400002, "Delivery Complete!",
+    title_widget->initialize_frontend_widget(
+        FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+            | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
+        "Delivery Complete!",
         20, 0.0f, 80.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
 
     delivered_count_widget = g_game->border_manager.allocate_border();
     if (delivered_count == 1) {
-        delivered_count_widget->initialize_frontend_widget(0x20400002,
+        delivered_count_widget->initialize_frontend_widget(
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             " 0 Package Delivered", 20, 0.0f, 160.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else {
-        delivered_count_widget->initialize_frontend_widget(0x20400002,
+        delivered_count_widget->initialize_frontend_widget(
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "00 Packages Delivered", 20, 0.0f, 160.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
 
     bonus_icon_widget = g_game->border_manager.allocate_border();
-    bonus_icon_widget->initialize_frontend_sprite_button(0x400800, 122,
+    bonus_icon_widget->initialize_frontend_sprite_button(
+        FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE, 122,
         100.0f, 146.0f,
         color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);
     bonus_icon_widget->sprite_shadow_offset = 0.0f;
@@ -78,11 +86,15 @@ void Completion::initialize_completion_screen(
     bonus_summary_widget = g_game->border_manager.allocate_border();
     mode = g_game->subgame.level_mode;
     if (mode == 0) {
-        bonus_summary_widget->initialize_frontend_widget(0x20400002,
+        bonus_summary_widget->initialize_frontend_widget(
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "PERFECT SCORE!>50,000 Bonus Points", 20, 0.0f, 302.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else if (mode == 1) {
-        bonus_summary_widget->initialize_frontend_widget(0x20400002,
+        bonus_summary_widget->initialize_frontend_widget(
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "LEVEL COMPLETE!>", 20, 0.0f, 302.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         bonus_summary_widget->border_add_text_number(bonus_score);
@@ -95,11 +107,15 @@ void Completion::initialize_completion_screen(
     continue_widget = g_game->border_manager.allocate_border();
     if (perfect_delivery != 0) {
         continue_widget->initialize_frontend_widget(
-            0x20400002, g_click_to_continue_text, 20, 0.0f, 400.0f,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
+            g_click_to_continue_text, 20, 0.0f, 400.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else {
         continue_widget->initialize_frontend_widget(
-            0x20400002, g_click_to_continue_text, 20, 0.0f, 320.0f,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
+            g_click_to_continue_text, 20, 0.0f, 320.0f,
             color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
     continue_widget->hide_border_init();
