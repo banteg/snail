@@ -1595,6 +1595,11 @@ typedef union SubSolutionScoreOrTime {
     Time timer;
 } SubSolutionScoreOrTime;
 
+typedef union SubSolutionScalar {
+    int32_t bits;
+    float value;
+} SubSolutionScalar;
+
 /* Exact 0x1fac0-byte authored cRSubSolution replay/high-score record. */
 typedef struct SubSolution {
     int32_t active;
@@ -1605,23 +1610,54 @@ typedef struct SubSolution {
     int32_t replay_level_index;
     int32_t replay_mode_id;
     int32_t unknown_30;
-    float challenge_difficulty_scalar;
+    SubSolutionScalar challenge_difficulty_scalar;
     uint32_t runtime_build_flags;
     int32_t high_score_mode_tag;
     int32_t route_or_rank_index;
     int32_t replay_cursor;
-    float replay_speed_scalar;
+    SubSolutionScalar replay_speed_scalar;
     int32_t challenge_speed_value;
     int32_t challenge_difficulty_value;
     char player_name[0x14];
     int32_t runtime_build_seed;
     int32_t replay_sample_count;
     ReplayRunRecord run_records[21600];
-    float garbage_frequency;
-    float salt_frequency;
+    SubSolutionScalar garbage_frequency;
+    SubSolutionScalar salt_frequency;
     int32_t unknown_1fab8;
     int32_t unknown_1fabc;
 } SubSolution;
+
+/* Stable prefix of the variable cRSubSolutionHeader record: byte_count is
+ * 0x88 + replay_sample_count * 5 for two int16 lanes and one byte lane. */
+typedef struct CompactHighScoreRecord {
+    int32_t byte_count;
+    int32_t score;
+    SubSolutionScoreOrTime score_or_time;
+    int32_t score_tail;
+    int32_t source_tail;
+    int32_t checksum;
+    int32_t replay_level_index;
+    int32_t replay_mode_id;
+    uint8_t reserved_34[0x4];
+    uint32_t runtime_build_flags;
+    int32_t bank_selector;
+    int32_t entry_index;
+    int32_t replay_cursor;
+    SubSolutionScalar replay_speed_scalar;
+    int32_t challenge_speed_value;
+    int32_t challenge_difficulty_value;
+    SubSolutionScalar challenge_difficulty_scalar;
+    uint8_t reserved_58[0x4];
+    char player_name[0x14];
+    int32_t runtime_build_seed;
+    int32_t replay_sample_count;
+    SubSolutionScalar garbage_frequency;
+    SubSolutionScalar salt_frequency;
+    int32_t unknown_80;
+    int32_t unknown_84;
+    uint8_t replay_payload[1];
+} CompactHighScoreRecord;
 
 /* Exact 0x947648-byte authored cRSubHighScore bank embedded in cRSubGame. */
 typedef struct SubHighScore {
@@ -2139,6 +2175,12 @@ void __cdecl sample_smtrack_heightmap(
     float scale,
     TextureRef* replacement,
     char cubic);
+uint8_t __thiscall deserialize_compact_high_score_record(
+    SubSolution* record,
+    CompactHighScoreRecord* compact);
+int32_t __thiscall serialize_compact_high_score_record(
+    SubSolution* record,
+    CompactHighScoreRecord* compact);
 void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);

@@ -55,7 +55,7 @@ zensical serve
 1. Refresh the board:
 
    ```sh
-   uv run snail match status --write tools/match/STATUS.md
+   uv run snail match status --write tools/match/STATUS.md --check -j 8
    ```
 
 2. Pick a target from [tools/match/STATUS.md](tools/match/STATUS.md), then read
@@ -84,7 +84,7 @@ zensical serve
 5. When a slice is coherent, regenerate status and run focused tests:
 
    ```sh
-   uv run snail match status --write tools/match/STATUS.md
+   uv run snail match status --write tools/match/STATUS.md --check -j 8
    uv run pytest tests/test_match.py
    ```
 
@@ -101,9 +101,14 @@ Useful maintenance commands:
 
 ```sh
 uv run snail symbols --manifest analysis/symbols/gameplay-functions.json
-uv run snail match audit --exact-only
+uv run snail match audit --exact-only -j 8
 uv run snail match types --paths
+uv run python tools/ida/query_function_lvars.py <function> [<function> ...]
 ```
+
+The lvar query runs Hex-Rays headlessly and reports stable definition
+addresses, stack offsets, widths, and current user types. Use it before adding
+a narrow replay rule for a local whose inferred ownership regressed.
 
 When synchronizing tool databases, prefer the documented paths in
 [docs/re/symbols.md](docs/re/symbols.md). Keep new rename work in the canonical

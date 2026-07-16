@@ -502,6 +502,14 @@ TRUSTED_DECLARATIONS = [
         "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, char cubic);",
     ),
     (
+        "deserialize_compact_high_score_record",
+        "unsigned char __thiscall deserialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact);",
+    ),
+    (
+        "serialize_compact_high_score_record",
+        "int __thiscall serialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact);",
+    ),
+    (
         "set_weapon_animation",
         "void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);",
     ),

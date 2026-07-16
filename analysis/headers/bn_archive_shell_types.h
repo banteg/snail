@@ -1,7 +1,19 @@
 typedef unsigned char uint8_t;
 typedef int int32_t;
+typedef unsigned int uint32_t;
 
 typedef struct File File;
+
+File* __cdecl fopen(char* path, char* mode);
+uint32_t __cdecl fwrite(
+    void* bytes,
+    uint32_t element_size,
+    uint32_t element_count,
+    File* stream);
+int32_t __cdecl fclose(File* stream);
+char* __cdecl getcwd(char* buffer, int32_t max_length);
+int32_t __cdecl chdir(char* path);
+int32_t __cdecl set_current_directory_with_drive_fallback(char* path);
 
 typedef struct ArchiveEntry {
     char* path;
@@ -38,6 +50,9 @@ void* __cdecl get_archive_data_base(void);
 void* __cdecl get_archive_data_end(void);
 void* __cdecl allocate_tracked_memory(int32_t size, char* name);
 void __cdecl free_tracked_memory(void* pointer);
+char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count);
+int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count);
+char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count);
 
 extern char* g_music_memory_buffer;
 extern void* g_archive_data_base;

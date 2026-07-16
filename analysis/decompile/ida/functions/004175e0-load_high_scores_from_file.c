@@ -6,40 +6,36 @@
 void __thiscall load_high_scores_from_file(SubHighScore *bank, char *file_name)
 {
   char *v2; // esi
-  unsigned int file_bytes; // esi
-  char *v5; // ebx
-  int v6; // eax
+  struct CompactHighScoreRecord *compact; // esi
+  struct CompactHighScoreRecord *v5; // ebx
+  int32_t bank_selector; // eax
   int v7; // eax
 
   v2 = file_name;
-  if ( archive_or_file_exists(file_name, 1) )
+  if ( archive_or_file_exists(file_name, 1u) )
   {
-    file_bytes = (unsigned int)load_file_bytes(v2, (CompletionResultScreen *)&file_name);
-    v5 = &file_name[file_bytes];
-    xor_decode_buffer_with_index((_BYTE *)file_bytes, (int)file_name);
-    for ( ; file_bytes < (unsigned int)v5; file_bytes += *(_DWORD *)file_bytes )
+    compact = (struct CompactHighScoreRecord *)load_file_bytes(v2, (int *)&file_name);
+    v5 = (struct CompactHighScoreRecord *)((char *)compact + (_DWORD)file_name);
+    xor_decode_buffer_with_index((char *)compact, (int)file_name);
+    for ( ; compact < v5; compact = (struct CompactHighScoreRecord *)((char *)compact + compact->byte_count) )
     {
-      v6 = *(_DWORD *)(file_bytes + 60);
-      if ( v6 )
+      bank_selector = compact->bank_selector;
+      if ( bank_selector )
       {
-        v7 = v6 - 1;
+        v7 = bank_selector - 1;
         if ( v7 )
         {
           if ( v7 == 1 )
-            deserialize_compact_high_score_record(
-              (char *)&bank->time_trial_route_records[*(_DWORD *)(file_bytes + 64)],
-              file_bytes);
+            deserialize_compact_high_score_record(&bank->time_trial_route_records[compact->entry_index], compact);
         }
         else
         {
-          deserialize_compact_high_score_record(
-            (char *)&bank->survival_records[*(_DWORD *)(file_bytes + 64)],
-            file_bytes);
+          deserialize_compact_high_score_record(&bank->survival_records[compact->entry_index], compact);
         }
       }
       else
       {
-        deserialize_compact_high_score_record((char *)&bank->postal_records[*(_DWORD *)(file_bytes + 64)], file_bytes);
+        deserialize_compact_high_score_record(&bank->postal_records[compact->entry_index], compact);
       }
     }
   }

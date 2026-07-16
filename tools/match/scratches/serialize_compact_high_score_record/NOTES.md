@@ -41,3 +41,16 @@ matching native register ownership while keeping the `int16[]`, `int16[]`,
   to both lateral and delta-z output loops fixes the remaining count/cursor
   scheduling residuals. Focused Wibo is now 100.00%, 109/109 instructions,
   109/109 prefix, and one clean masked operand.
+
+2026-07-16 persistence ownership replay:
+
+- Promoted the on-disk destination to `CompactHighScoreRecord*` and the source
+  to the full 0x1fac0-byte `SubSolution*`. Named `SubSolutionScalar` unions now
+  preserve the raw-bit and float interpretations used across initialization,
+  serialization, and deserialization.
+- Binary Ninja's output cursors now retain their word-lane and flag-lane types;
+  IDA independently renders the same compact payload, checksum, and final
+  `5 * replay_sample_count + 136` byte count.
+- Strict paired export and ownership health checks pass. Focused matching stays
+  exact at 109/109 instructions with the masked operand clean; no fakematching
+  was introduced.

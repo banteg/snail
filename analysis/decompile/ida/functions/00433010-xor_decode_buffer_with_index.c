@@ -2,14 +2,13 @@
 /* function: xor_decode_buffer_with_index @ 0x433010 */
 /* selector: xor_decode_buffer_with_index */
 
-_BYTE *__cdecl sub_433010(_BYTE *a1, int a2)
+char *__cdecl xor_decode_buffer_with_index(char *bytes, int byte_count)
 {
-  _BYTE *result; // eax
+  char *result; // eax
   int i; // ecx
 
-  result = a1;
-  for ( i = 0; i < a2; ++i )
+  result = bytes;
+  for ( i = 0; i < byte_count; ++i )
     *result++ ^= i;
   return result;
 }
-

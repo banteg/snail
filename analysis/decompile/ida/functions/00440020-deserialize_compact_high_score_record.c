@@ -2,94 +2,93 @@
 /* function: deserialize_compact_high_score_record @ 0x440020 */
 /* selector: deserialize_compact_high_score_record */
 
-// Validates one compact ScoreA/B/C record checksum, copies its scalar fields, name, and replay samples into the expanded cRSubHighScore entry, and marks the entry active.
-char __thiscall sub_440020(char *this, int a2)
+// Validates one compact ScoreA/B/C cRSubSolutionHeader checksum, copies its scalar fields, name, and replay samples into the expanded cRSubSolution entry, and marks the entry active. Android preserves this owner method as `cRSubSolution::Load(cRSubSolutionHeader*)`.
+unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)
 {
-  int v4; // edx
-  int v5; // eax
-  _WORD *v6; // ecx
-  _WORD *v7; // edx
-  int v8; // ecx
-  int v9; // eax
-  _WORD *v10; // edx
-  _WORD *v11; // ecx
-  int v12; // ecx
-  int v13; // eax
-  int v14; // ebp
-  _WORD *v15; // ecx
+  int32_t replay_sample_count; // edx
+  int32_t v5; // eax
+  uint8_t *replay_payload; // ecx
+  ReplayRunRecord *run_records; // edx
+  int32_t v8; // ecx
+  int32_t v9; // eax
+  uint8_t *v10; // edx
+  int16_t *p_delta_z; // ecx
+  int32_t v12; // ecx
+  int32_t v13; // eax
+  uint8_t *v14; // ebp
+  uint8_t *p_flags; // ecx
 
-  if ( *(_DWORD *)(a2 + 40) == ((*(_DWORD *)(a2 + 4) * *(_DWORD *)(a2 + 4)) ^ 0xDEADBABE) )
+  if ( compact->checksum == ((compact->score * compact->score) ^ 0xDEADBABE) )
   {
-    *((_DWORD *)this + 27) = *(_DWORD *)(a2 + 116);
-    *((_DWORD *)this + 10) = *(_DWORD *)(a2 + 44);
-    *((_DWORD *)this + 11) = *(_DWORD *)(a2 + 48);
-    *((_DWORD *)this + 18) = *(_DWORD *)(a2 + 72);
-    *((_DWORD *)this + 13) = *(_DWORD *)(a2 + 84);
-    rstrcpy_checked_ascii(this + 84, (char *)(a2 + 92));
-    *((_DWORD *)this + 1) = *(_DWORD *)(a2 + 4);
-    qmemcpy(this + 8, (const void *)(a2 + 8), 0x1Cu);
-    *((_DWORD *)this + 19) = *(_DWORD *)(a2 + 76);
-    *((_DWORD *)this + 20) = *(_DWORD *)(a2 + 80);
-    *((_DWORD *)this + 32428) = *(_DWORD *)(a2 + 120);
-    *((_DWORD *)this + 32429) = *(_DWORD *)(a2 + 124);
-    *((_DWORD *)this + 9) = *(_DWORD *)(a2 + 36);
-    *((_DWORD *)this + 26) = *(_DWORD *)(a2 + 112);
-    *((_DWORD *)this + 32430) = *(_DWORD *)(a2 + 128);
-    *((_DWORD *)this + 32431) = *(_DWORD *)(a2 + 132);
-    *((_DWORD *)this + 14) = *(_DWORD *)(a2 + 56);
-    *((_DWORD *)this + 15) = *(_DWORD *)(a2 + 60);
-    v4 = *((_DWORD *)this + 27);
-    *((_DWORD *)this + 16) = *(_DWORD *)(a2 + 64);
+    record->replay_sample_count = compact->replay_sample_count;
+    record->replay_level_index = compact->replay_level_index;
+    record->replay_mode_id = compact->replay_mode_id;
+    record->replay_speed_scalar.bits = compact->replay_speed_scalar.bits;
+    record->challenge_difficulty_scalar.bits = compact->challenge_difficulty_scalar.bits;
+    rstrcpy_checked_ascii(record->player_name, compact->player_name);
+    record->score = compact->score;
+    qmemcpy(&record->score_or_time, &compact->score_or_time, 0x1Cu);
+    record->challenge_speed_value = compact->challenge_speed_value;
+    record->challenge_difficulty_value = compact->challenge_difficulty_value;
+    record->garbage_frequency.bits = compact->garbage_frequency.bits;
+    record->salt_frequency.bits = compact->salt_frequency.bits;
+    record->source_tail = compact->source_tail;
+    record->runtime_build_seed = compact->runtime_build_seed;
+    record->unknown_1fab8 = compact->unknown_80;
+    record->unknown_1fabc = compact->unknown_84;
+    record->runtime_build_flags = compact->runtime_build_flags;
+    record->high_score_mode_tag = compact->bank_selector;
+    replay_sample_count = record->replay_sample_count;
+    record->route_or_rank_index = compact->entry_index;
     v5 = 0;
-    *((_DWORD *)this + 17) = *(_DWORD *)(a2 + 68);
-    v6 = (_WORD *)(a2 + 136);
-    if ( v4 > 0 )
+    record->replay_cursor = compact->replay_cursor;
+    replay_payload = compact->replay_payload;
+    if ( replay_sample_count > 0 )
     {
-      v7 = this + 112;
+      run_records = record->run_records;
       do
       {
         ++v5;
-        *v7 = *v6++;
-        v7 += 3;
+        run_records->lateral_x = *(_WORD *)replay_payload;
+        replay_payload += 2;
+        ++run_records;
       }
-      while ( v5 < *((_DWORD *)this + 27) );
+      while ( v5 < record->replay_sample_count );
     }
-    v8 = *((_DWORD *)this + 27);
+    v8 = record->replay_sample_count;
     v9 = 0;
-    v10 = (_WORD *)(a2 + 2 * v8 + 136);
+    v10 = &compact->replay_payload[2 * v8];
     if ( v8 > 0 )
     {
-      v11 = this + 114;
+      p_delta_z = &record->run_records[0].delta_z;
       do
       {
         ++v9;
-        *v11 = *v10;
-        v11 += 3;
-        ++v10;
+        *p_delta_z = *(_WORD *)v10;
+        p_delta_z += 3;
+        v10 += 2;
       }
-      while ( v9 < *((_DWORD *)this + 27) );
+      while ( v9 < record->replay_sample_count );
     }
-    v12 = *((_DWORD *)this + 27);
+    v12 = record->replay_sample_count;
     v13 = 0;
-    v14 = a2 + 4 * v12 + 136;
+    v14 = &compact->replay_payload[4 * v12];
     if ( v12 > 0 )
     {
-      v15 = this + 116;
+      p_flags = &record->run_records[0].flags;
       do
       {
-        *v15 = *(unsigned __int8 *)(v13 + v14);
-        ++v13;
-        v15 += 3;
+        *(_WORD *)p_flags = v14[v13++];
+        p_flags += 6;
       }
-      while ( v13 < *((_DWORD *)this + 27) );
+      while ( v13 < record->replay_sample_count );
     }
-    *(_DWORD *)this = 1;
+    record->active = 1;
     return 1;
   }
   else
   {
-    *(_DWORD *)this = 0;
+    record->active = 0;
     return 0;
   }
 }
-

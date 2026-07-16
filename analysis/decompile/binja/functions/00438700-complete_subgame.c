@@ -15,13 +15,13 @@
 00438778        __builtin_memcpy(&game->current_high_score_record.score_or_time, &game->player.stopwatch, 0x18)
 00438780        game->current_high_score_record.score_tail = score_tail
 00438789        game->current_high_score_record.challenge_difficulty_value = game->completion_bonus_y_source
-00438792        game->current_high_score_record.challenge_difficulty_scalar_bits = game->challenge_difficulty_scalar
-0043879e        game->current_high_score_record.replay_speed_scalar_bits = game->rate_or_level_arg.base_rate
+00438792        game->current_high_score_record.challenge_difficulty_scalar.bits = game->challenge_difficulty_scalar
+0043879e        game->current_high_score_record.replay_speed_scalar.bits = game->rate_or_level_arg.base_rate
 004387a4        int32_t level_mode = game->level_mode
-004387a7        game->current_high_score_record.garbage_frequency = game->garbage_frequency
+004387a7        game->current_high_score_record.garbage_frequency.bits = game->garbage_frequency
 004387b9        game->current_high_score_record.challenge_speed_value = game->completion_bonus_x_source
 004387bf        int32_t startup_track_index = game->player.startup_track_index
-004387c5        game->current_high_score_record.salt_frequency = game->salt_frequency
+004387c5        game->current_high_score_record.salt_frequency.bits = game->salt_frequency
 004387ce        game->current_high_score_record.active = 1
 004387d1        game->current_high_score_record.source_tail = startup_track_index
 004387d7        game->current_high_score_record.replay_mode_id = level_mode

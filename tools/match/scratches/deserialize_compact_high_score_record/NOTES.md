@@ -42,3 +42,17 @@ Evidence from the paired serializer:
   the native count/source/destination register ownership without changing the
   packed payload layout. Focused Wibo is now 100.00%, 114/114 instructions,
   114/114 prefix, and one clean masked operand.
+
+2026-07-16 persistence ownership replay:
+
+- Recovered `CompactHighScoreRecord` as the stable 0x88-byte on-disk prefix and
+  kept its variable replay tail honest as a one-byte declaration sentinel. The
+  record's actual byte count remains `0x88 + replay_sample_count * 5`.
+- Replaced ambiguous raw scalar lanes with the named `SubSolutionScalar`
+  union, preserving both integer bits and float meaning without anonymous-union
+  syntax that either decompiler renders unreliably.
+- Binary Ninja now preserves named lateral, delta-z, and flag cursors; IDA
+  renders the same `SubSolution`/`CompactHighScoreRecord` fields and replay
+  arrays. Strict paired export and ownership health checks pass.
+- No source-shape changes or matching tricks were needed: focused matching
+  remains exact at 114/114 instructions with the masked operand clean.

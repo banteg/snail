@@ -212,6 +212,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
+    "CompactHighScoreRecord",
     "SubTracks",
     "SlugVoiceManager",
     "TimeTrial",
@@ -983,6 +984,14 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "sample_smtrack_heightmap",
         "void __cdecl sample_smtrack_heightmap(Object* source, float base, float scale, TextureRef* replacement, char cubic)",
+    ),
+    (
+        "deserialize_compact_high_score_record",
+        "uint8_t __thiscall deserialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact)",
+    ),
+    (
+        "serialize_compact_high_score_record",
+        "int32_t __thiscall serialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact)",
     ),
     (
         "set_snail_weapon",

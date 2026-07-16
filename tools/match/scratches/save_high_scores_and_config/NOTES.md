@@ -11,3 +11,14 @@
   `save_config_file` call. Removing the synthetic `char*` return produces the
   same 101-instruction object with all 19 masked operands clean, so the
   authored contract is `void` rather than a borrowed config pointer.
+
+2026-07-16 compact persistence ownership:
+
+- The tracked allocation is a byte buffer whose moving write cursors are
+  `CompactHighScoreRecord*`; the three source ranges remain value-owned
+  `SubSolution` arrays within `SubHighScore`.
+- Recovered archive-shell prototypes keep byte counts as integers and buffers
+  as `void*`/`char*`, removing stale frontend and completion-screen casts from
+  IDA without narrowing shared helper ownership.
+- Strict paired export and ownership health checks pass. Focused matching
+  remains exact at 101/101 instructions with all 19 masked operands clean.

@@ -96,6 +96,18 @@ PROTO_UPDATES = (
         "free_tracked_memory",
         "void __cdecl free_tracked_memory(void* pointer)",
     ),
+    (
+        "xor_decode_buffer_with_index",
+        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
+    ),
+    (
+        "write_file_bytes",
+        "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
+    ),
+    (
+        "save_config_file",
+        "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
+    ),
 )
 
 

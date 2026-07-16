@@ -7,9 +7,9 @@
 004175f6        if (archive_or_file_exists(path, 1) == 0)
 004175f6        return
 00417607        struct CompactHighScoreRecord* compact = load_file_bytes(path, &file_name)
-00417609        char* file_name_1 = file_name
-0041760f        int32_t ebx_1 = file_name_1 + compact
-00417612        xor_decode_buffer_with_index(compact, file_name_1)
+00417609        char* byte_count = file_name
+0041760f        int32_t ebx_1 = byte_count + compact
+00417612        xor_decode_buffer_with_index(compact, byte_count)
 0041761c        while (compact u< ebx_1)
 0041761e        int32_t bank_selector = compact->bank_selector
 00417624        if (bank_selector == 0)

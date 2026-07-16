@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 51,
+  "function_count": 56,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 51,
-  "ida_exported": 51,
+  "bn_exported": 56,
+  "ida_exported": 56,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -105,12 +105,24 @@
       "address": "0x41a360"
     },
     {
+      "name": "save_config_file",
+      "address": "0x42f540"
+    },
+    {
       "name": "advance_frame_sequence",
       "address": "0x430470"
     },
     {
       "name": "request_object_animation",
       "address": "0x430a70"
+    },
+    {
+      "name": "write_file_bytes",
+      "address": "0x431650"
+    },
+    {
+      "name": "xor_decode_buffer_with_index",
+      "address": "0x433010"
     },
     {
       "name": "populate_runtime_track_cells_from_segments",
@@ -155,6 +167,14 @@
     {
       "name": "kill_slug_hazard",
       "address": "0x43f8b0"
+    },
+    {
+      "name": "deserialize_compact_high_score_record",
+      "address": "0x440020"
+    },
+    {
+      "name": "serialize_compact_high_score_record",
+      "address": "0x440170"
     },
     {
       "name": "add_subgoldy_score",
@@ -221,7 +241,7 @@
       "address": "0x448de0"
     }
   ],
-  "health_check_count": 360,
+  "health_check_count": 372,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

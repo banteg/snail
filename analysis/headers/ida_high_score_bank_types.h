@@ -9,6 +9,7 @@ typedef unsigned char uint8_t;
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14
 #define SUB_SOLUTION_RUN_RECORD_COUNT 21600
+#define SUB_SOLUTION_HEADER_BYTES 0x88
 #define SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT 11
 #define SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT 51
 
@@ -31,6 +32,11 @@ typedef union ScoreOrTime {
     Time timer;
 } ScoreOrTime;
 
+typedef union SubSolutionScalar {
+    int32_t bits;
+    float value;
+} SubSolutionScalar;
+
 typedef struct ReplayRunRecord {
     int16_t lateral_x;
     int16_t delta_z;
@@ -47,23 +53,57 @@ typedef struct SubSolution {
     int32_t replay_level_index;
     int32_t replay_mode_id;
     int32_t unknown_30;
-    int32_t challenge_difficulty_scalar_bits;
+    SubSolutionScalar challenge_difficulty_scalar;
     uint32_t runtime_build_flags;
     int32_t high_score_mode_tag;
     int32_t route_or_rank_index;
     int32_t replay_cursor;
-    int32_t replay_speed_scalar_bits;
+    SubSolutionScalar replay_speed_scalar;
     int32_t challenge_speed_value;
     int32_t challenge_difficulty_value;
     char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE];
     int32_t runtime_build_seed;
     int32_t replay_sample_count;
     ReplayRunRecord run_records[SUB_SOLUTION_RUN_RECORD_COUNT];
-    float garbage_frequency;
-    float salt_frequency;
+    SubSolutionScalar garbage_frequency;
+    SubSolutionScalar salt_frequency;
     int32_t unknown_1fab8;
     int32_t unknown_1fabc;
 } SubSolution;
+
+/*
+ * Stable 0x88-byte prefix of the variable-length cRSubSolutionHeader record.
+ * The payload packs lateral int16s, delta-z int16s, then one flags byte per
+ * replay sample; byte_count is therefore 0x88 + replay_sample_count * 5.
+ */
+typedef struct CompactHighScoreRecord {
+    int32_t byte_count;
+    int32_t score;
+    ScoreOrTime score_or_time;
+    int32_t score_tail;
+    int32_t source_tail;
+    int32_t checksum;
+    int32_t replay_level_index;
+    int32_t replay_mode_id;
+    char reserved_34[0x4];
+    uint32_t runtime_build_flags;
+    int32_t bank_selector;
+    int32_t entry_index;
+    int32_t replay_cursor;
+    SubSolutionScalar replay_speed_scalar;
+    int32_t challenge_speed_value;
+    int32_t challenge_difficulty_value;
+    SubSolutionScalar challenge_difficulty_scalar;
+    char reserved_58[0x4];
+    char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE];
+    int32_t runtime_build_seed;
+    int32_t replay_sample_count;
+    SubSolutionScalar garbage_frequency;
+    SubSolutionScalar salt_frequency;
+    int32_t unknown_80;
+    int32_t unknown_84;
+    uint8_t replay_payload[1];
+} CompactHighScoreRecord;
 
 typedef struct SubHighScore {
     SubSolution* active_record_bank;
@@ -74,5 +114,14 @@ typedef struct SubHighScore {
     SubSolution current_result_record;
     SubSolution survival_pending_record;
 } SubHighScore;
+
+uint8_t __thiscall deserialize_compact_high_score_record(
+    SubSolution* record,
+    CompactHighScoreRecord* compact
+);
+int32_t __thiscall serialize_compact_high_score_record(
+    SubSolution* record,
+    CompactHighScoreRecord* compact
+);
 
 #endif

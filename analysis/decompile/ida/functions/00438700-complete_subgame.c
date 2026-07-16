@@ -7,12 +7,12 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
 {
   int32_t v3; // ecx
   int32_t score_tail; // eax
-  float challenge_difficulty_scalar; // esi
+  SubSolutionScalar v5; // esi
   int32_t completion_bonus_x_source; // ecx
   RuntimeRateOrLevelArg v7; // eax
-  float garbage_frequency; // esi
+  SubSolutionScalar v8; // esi
   int32_t level_mode; // eax
-  float salt_frequency; // esi
+  SubSolutionScalar v10; // esi
   int32_t startup_track_index; // ecx
   int v12; // eax
 
@@ -29,20 +29,20 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
       &runtime->current_high_score_record.score_or_time,
       &runtime->player.stopwatch,
       sizeof(runtime->current_high_score_record.score_or_time));
-    challenge_difficulty_scalar = runtime->challenge_difficulty_scalar;
+    v5.bits = (int32_t)LODWORD(runtime->challenge_difficulty_scalar);
     completion_bonus_x_source = runtime->completion_bonus_x_source;
     runtime->current_high_score_record.score_tail = score_tail;
     runtime->current_high_score_record.challenge_difficulty_value = runtime->completion_bonus_y_source;
     LODWORD(v7.base_rate) = runtime->rate_or_level_arg;
-    runtime->current_high_score_record.challenge_difficulty_scalar = challenge_difficulty_scalar;
-    garbage_frequency = runtime->garbage_frequency;
-    runtime->current_high_score_record.replay_speed_scalar = v7.base_rate;
+    runtime->current_high_score_record.challenge_difficulty_scalar = v5;
+    v8.bits = (int32_t)LODWORD(runtime->garbage_frequency);
+    runtime->current_high_score_record.replay_speed_scalar.value = v7.base_rate;
     level_mode = runtime->level_mode;
-    runtime->current_high_score_record.garbage_frequency = garbage_frequency;
-    salt_frequency = runtime->salt_frequency;
+    runtime->current_high_score_record.garbage_frequency = v8;
+    v10.bits = (int32_t)LODWORD(runtime->salt_frequency);
     runtime->current_high_score_record.challenge_speed_value = completion_bonus_x_source;
     startup_track_index = runtime->player.startup_track_index;
-    runtime->current_high_score_record.salt_frequency = salt_frequency;
+    runtime->current_high_score_record.salt_frequency = v10;
     runtime->current_high_score_record.active = 1;
     runtime->current_high_score_record.source_tail = startup_track_index;
     runtime->current_high_score_record.replay_mode_id = level_mode;

@@ -218,6 +218,44 @@
       ]
     },
     {
+      "name": "bn_load_compact_high_score_owner",
+      "artifact": "analysis/decompile/binja/functions/004175e0-load_high_scores_from_file.c",
+      "required_substrings": [
+        "struct CompactHighScoreRecord* compact",
+        "compact->bank_selector",
+        "compact->entry_index",
+        "compact += compact->byte_count",
+        "&bank->postal_records",
+        "&bank->survival_records",
+        "&bank->time_trial_route_records"
+      ],
+      "forbidden_substrings": [
+        "*(i + 0x3c)",
+        "*(i + 0x40)",
+        "struct HighScoreRecord*",
+        "void* arg1"
+      ]
+    },
+    {
+      "name": "ida_load_compact_high_score_owner",
+      "artifact": "analysis/decompile/ida/functions/004175e0-load_high_scores_from_file.c",
+      "required_substrings": [
+        "struct CompactHighScoreRecord *compact",
+        "compact->bank_selector",
+        "compact->entry_index",
+        "compact->byte_count",
+        "&bank->postal_records",
+        "&bank->survival_records",
+        "&bank->time_trial_route_records"
+      ],
+      "forbidden_substrings": [
+        "(_DWORD *)file_bytes",
+        "char *file_bytes",
+        "CompletionResultScreen",
+        "HighScoreRecord *file_bytes"
+      ]
+    },
+    {
       "name": "bn_add_arcade_high_score_void_owner",
       "artifact": "analysis/decompile/binja/functions/004176a0-add_arcade_high_score.c",
       "required_substrings": [
@@ -280,14 +318,18 @@
       "artifact": "analysis/decompile/binja/functions/00417940-save_high_scores_and_config.c",
       "required_substrings": [
         "struct SubHighScore* bank_1 = bank",
+        "struct CompactHighScoreRecord* compact_3",
         "&bank->postal_records",
         "&bank->survival_records",
         "&bank->time_trial_route_records",
+        "write_file_bytes(\"ScoreA.dat\", compact_3, byte_count)",
         "save_config_file(\"SnailMail.cfg\", &g_runtime_config, 0xc4)"
       ],
       "forbidden_substrings": [
         "return save_config_file",
         "struct HighScoreBank",
+        "CompletionResultScreen",
+        "FrontendWidget",
         "void* arg1"
       ]
     },
@@ -296,14 +338,184 @@
       "artifact": "analysis/decompile/ida/functions/00417940-save_high_scores_and_config.c",
       "required_substrings": [
         "void __thiscall save_high_scores_and_config(SubHighScore *bank, unsigned __int8 save_mask)",
+        "char *tracked_memory",
+        "CompactHighScoreRecord *v4",
         "bank->postal_records",
         "bank->survival_records",
-        "bank->time_trial_route_records"
+        "bank->time_trial_route_records",
+        "write_file_bytes(aScoreaDat, tracked_memory, v5)",
+        "save_config_file(aSnailmailCfg, &g_runtime_config, 196)"
       ],
       "forbidden_substrings": [
         "char *__thiscall save_high_scores_and_config",
         "return save_config_file",
-        "HighScoreBank"
+        "HighScoreBank",
+        "CompletionResultScreen",
+        "FrontendWidget"
+      ]
+    },
+    {
+      "name": "bn_deserialize_compact_solution_owner",
+      "artifact": "analysis/decompile/binja/functions/00440020-deserialize_compact_high_score_record.c",
+      "required_substrings": [
+        "compact->checksum",
+        "record->replay_speed_scalar.bits",
+        "source_lateral = &compact->replay_payload",
+        "lateral_run->lateral_x",
+        "source_delta_z",
+        "flag_destination"
+      ],
+      "forbidden_substrings": [
+        "struct HighScoreRecord* record",
+        "arg1[",
+        "arg2 +",
+        "record->."
+      ]
+    },
+    {
+      "name": "ida_deserialize_compact_solution_owner",
+      "artifact": "analysis/decompile/ida/functions/00440020-deserialize_compact_high_score_record.c",
+      "required_substrings": [
+        "unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
+        "compact->checksum",
+        "record->replay_speed_scalar.bits",
+        "record->run_records",
+        "compact->replay_payload"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *record",
+        "HighScoreRecord *record",
+        "arg1"
+      ]
+    },
+    {
+      "name": "bn_serialize_compact_solution_owner",
+      "artifact": "analysis/decompile/binja/functions/00440170-serialize_compact_high_score_record.c",
+      "required_substrings": [
+        "compact->replay_speed_scalar.bits",
+        "out_lateral = &compact->replay_payload",
+        "lateral_run->lateral_x",
+        "out_delta_z",
+        "flag_source",
+        "compact->byte_count = replay_sample_count_3 * 5 + 0x88"
+      ],
+      "forbidden_substrings": [
+        "struct HighScoreRecord* record",
+        "arg1[",
+        "arg2 +",
+        "compact->."
+      ]
+    },
+    {
+      "name": "ida_serialize_compact_solution_owner",
+      "artifact": "analysis/decompile/ida/functions/00440170-serialize_compact_high_score_record.c",
+      "required_substrings": [
+        "int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
+        "compact->replay_speed_scalar.bits",
+        "record->run_records",
+        "compact->replay_payload",
+        "5 * record->replay_sample_count + 136",
+        "compact->byte_count = result"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *record",
+        "HighScoreRecord *record",
+        "arg1"
+      ]
+    },
+    {
+      "name": "bn_save_config_byte_buffer_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f540-save_config_file.c",
+      "required_substrings": [
+        "fopen(path, \"wb\")",
+        "sub_48b7a1(bytes, 1, byte_count",
+        "fclose(eax)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "FrontendWidget",
+        "CompletionResultScreen"
+      ]
+    },
+    {
+      "name": "ida_save_config_byte_buffer_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f540-save_config_file.c",
+      "required_substrings": [
+        "char *__cdecl save_config_file(char *path, void *bytes, int byte_count)",
+        "File *stream",
+        "char cwd_buffer[512]",
+        "fwrite(bytes, 1u, byte_count, stream)"
+      ],
+      "forbidden_substrings": [
+        "FrontendWidget",
+        "CompletionResultScreen",
+        "&cwd_buffer[12]",
+        "FILE **"
+      ]
+    },
+    {
+      "name": "bn_write_file_byte_buffer_owner",
+      "artifact": "analysis/decompile/binja/functions/00431650-write_file_bytes.c",
+      "required_substrings": [
+        "char* path_1 = path",
+        "fopen(&var_500, \"wb\")",
+        "sub_48b7a1(bytes, 1, byte_count",
+        "set_current_directory_with_drive_fallback(&var_500)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "FrontendWidget",
+        "CompletionResultScreen"
+      ]
+    },
+    {
+      "name": "ida_write_file_byte_buffer_owner",
+      "artifact": "analysis/decompile/ida/functions/00431650-write_file_bytes.c",
+      "required_substrings": [
+        "int __cdecl write_file_bytes(char *path, void *bytes, int byte_count)",
+        "File *stream",
+        "char file_name[256]",
+        "char cwd_buffer[512]",
+        "char original_directory[512]",
+        "fwrite(bytes, 1u, byte_count, stream)"
+      ],
+      "forbidden_substrings": [
+        "FrontendWidget",
+        "CompletionResultScreen",
+        "file_name[i + 16]",
+        "ObjectFaceQuad"
+      ]
+    },
+    {
+      "name": "bn_xor_byte_buffer_owner",
+      "artifact": "analysis/decompile/binja/functions/00433010-xor_decode_buffer_with_index.c",
+      "required_substrings": [
+        "char* result = bytes",
+        "if (byte_count s> 0)",
+        "do while (ecx s< byte_count)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "FrontendWidget"
+      ]
+    },
+    {
+      "name": "ida_xor_byte_buffer_owner",
+      "artifact": "analysis/decompile/ida/functions/00433010-xor_decode_buffer_with_index.c",
+      "required_substrings": [
+        "char *__cdecl xor_decode_buffer_with_index(char *bytes, int byte_count)",
+        "result = bytes",
+        "i < byte_count"
+      ],
+      "forbidden_substrings": [
+        "sub_433010",
+        "_BYTE *a1",
+        "FrontendWidget"
       ]
     },
     {

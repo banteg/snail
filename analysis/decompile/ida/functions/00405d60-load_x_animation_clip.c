@@ -38,8 +38,8 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   if ( is_archive_index_loaded() )
     *cursor++ = 50;
   *cursor++ = 0;
-  enumerate_matching_archive_or_fs_entries(asc_4A169C, (int)Buffer, (float *)&unused, (int)g_animation_directory);
-  tracked_memory = (XAnimationKeyframe *)allocate_tracked_memory(unused << 7, (int)aAnimKeyFrameBo);
+  enumerate_matching_archive_or_fs_entries(asc_4A169C, Buffer, &unused, g_animation_directory);
+  tracked_memory = (XAnimationKeyframe *)allocate_tracked_memory(unused << 7, aAnimKeyFrameBo);
   v7 = unused;
   v8 = 0;
   keyframes = tracked_memory;
@@ -47,7 +47,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
   loader->duplicate_vertices.active_count = 0;
   if ( !v9 )
   {
-    v10 = g_animation_directory;
+    v10 = g_animation_directory[0];
     p_frame_number = &tracked_memory->frame_number;
     do
     {
@@ -67,7 +67,7 @@ void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Ob
     v3 = mesh_name;
   }
   clean_duplicate_vertices(&loader->duplicate_vertices, v7);
-  load_x_mesh(loader, g_animation_directory, object, 0);
+  load_x_mesh(loader, g_animation_directory[0], object, 0);
   request_object_vertices_copy(object);
   object->flags |= (unsigned int)&unk_800000;
   sprintf(v24, "Anim:%s", v3);

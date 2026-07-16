@@ -33,3 +33,12 @@ Recovered layout corrections:
   duplicated an ownership boundary already proven by the root player array.
   Focused matching remains exact at 40/40 instructions with all three masked
   operands clean.
+
+2026-07-16 persistence replay closure:
+
+- Replayed the same named `SubSolutionScalar` lanes used by the compact
+  serializer/deserializer while preserving the raw 32-bit ABI for the speed
+  argument. This links initialization to persistence without changing source
+  shape.
+- Focused matching remains exact at 40/40 instructions with all three masked
+  operands clean; strict paired export also passes.

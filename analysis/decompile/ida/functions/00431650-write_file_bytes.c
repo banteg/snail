@@ -2,49 +2,49 @@
 /* function: write_file_bytes @ 0x431650 */
 /* selector: write_file_bytes */
 
-int __cdecl write_file_bytes(char *a1, void *Buffer, int ElementCount)
+// Windows RShellSaveFile(char*, void*, int): walks intermediate directory components, writes the caller-owned byte range, and restores the original working directory.
+int __cdecl write_file_bytes(char *path, void *bytes, int byte_count)
 {
   char v4; // al
   int i; // edi
-  #91 *v6; // esi
-  char FileName[256]; // [esp+8h] [ebp-500h] BYREF
-  char DstBuf[512]; // [esp+108h] [ebp-400h] BYREF
-  char Path[512]; // [esp+308h] [ebp-200h] BYREF
+  File *stream; // esi
+  char file_name[256]; // [esp+8h] [ebp-500h] BYREF
+  char cwd_buffer[512]; // [esp+108h] [ebp-400h] BYREF
+  char original_directory[512]; // [esp+308h] [ebp-200h] BYREF
 
-  _getcwd(Path, 512);
+  getcwd(original_directory, 512);
   do
   {
-    v4 = *a1;
-    for ( i = 0; v4; ++a1 )
+    v4 = *path;
+    for ( i = 0; v4; ++path )
     {
       if ( v4 == 47 )
         break;
       if ( v4 == 92 )
         break;
-      FileName[i] = v4;
-      v4 = a1[1];
+      file_name[i] = v4;
+      v4 = path[1];
       ++i;
     }
-    if ( *a1 == 47 || *a1 == 92 )
+    if ( *path == 47 || *path == 92 )
     {
-      FileName[i] = 0;
-      set_current_directory_with_drive_fallback(FileName);
-      ++a1;
+      file_name[i] = 0;
+      set_current_directory_with_drive_fallback(file_name);
+      ++path;
     }
   }
-  while ( *a1 );
-  FileName[i] = 0;
-  v6 = fopen(FileName, aWb);
-  if ( v6 )
+  while ( *path );
+  file_name[i] = 0;
+  stream = fopen(file_name, aWb);
+  if ( stream )
   {
-    fwrite(Buffer, 1, ElementCount, v6);
-    fclose(v6);
+    fwrite(bytes, 1u, byte_count, stream);
+    fclose(stream);
   }
   else
   {
-    _getcwd(DstBuf, 512);
-    report_messagef("ERROR:Cannot save file : %s (from %s)\n", FileName, DstBuf);
+    getcwd(cwd_buffer, 512);
+    report_messagef("ERROR:Cannot save file : %s (from %s)\n", file_name, cwd_buffer);
   }
-  return _chdir(Path);
+  return chdir(original_directory);
 }
-

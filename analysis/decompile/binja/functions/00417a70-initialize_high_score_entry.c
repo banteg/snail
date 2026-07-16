@@ -8,7 +8,7 @@
 00417a83        record->score = 0
 00417a86        zero_timer_counters(&record->score_or_time)
 00417a93        record->replay_level_index = replay_level_index
-00417a96        record->replay_speed_scalar_bits = replay_speed_scalar_bits
+00417a96        record->replay_speed_scalar.bits = replay_speed_scalar_bits
 00417aa8        rstrcpy_checked_ascii(&record->player_name, &g_game_base->players[0].player_name)
 00417ab9        record->high_score_mode_tag = high_score_mode_tag
 00417abc        record->route_or_rank_index = route_or_rank_index

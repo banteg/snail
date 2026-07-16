@@ -4,8 +4,10 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 
@@ -41,6 +43,14 @@ TRUSTED_DECLARATIONS = [
     (
         "save_high_scores_and_config",
         "void __thiscall save_high_scores_and_config(SubHighScore* bank, unsigned char save_mask);",
+    ),
+    (
+        "deserialize_compact_high_score_record",
+        "unsigned char __thiscall deserialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact);",
+    ),
+    (
+        "serialize_compact_high_score_record",
+        "int __thiscall serialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact);",
     ),
 ]
 
@@ -80,6 +90,115 @@ def _normalize_type_text(value: str | None) -> str | None:
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _sync_load_compact_cursor_lvar() -> dict[str, object]:
+    selector = "load_high_scores_from_file"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.name in {"file_bytes", "compact"}
+        and (
+            (_normalize_type_text(str(lvar.type())) or "")
+            in {"char *", "CompactHighScoreRecord *"}
+        )
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_compact_cursor_candidates",
+            "candidate_count": len(candidates),
+            "selector": selector,
+        }
+
+    lvar = candidates[0]
+    observed_type = (_normalize_type_text(str(lvar.type())) or "").removeprefix(
+        "struct "
+    )
+    if lvar.name == "compact" and observed_type == "CompactHighScoreRecord *":
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "selector": selector,
+        }
+
+    compact_type = ida_typeinf.tinfo_t()
+    if not compact_type.get_named_type(
+        None,
+        "CompactHighScoreRecord",
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_CompactHighScoreRecord_type",
+            "selector": selector,
+        }
+
+    pointer_type = ida_typeinf.tinfo_t()
+    if not pointer_type.create_ptr(compact_type):
+        return {
+            "status": "failed",
+            "reason": "create_CompactHighScoreRecord_pointer_failed",
+            "selector": selector,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = "compact"
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_user_lvar_info_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_candidates = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var and candidate.name == "compact"
+    ]
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "compact_cursor_readback_failed",
+            "candidate_count": len(verified_candidates),
+            "selector": selector,
+        }
+
+    verified = verified_candidates[0]
+    verified_type = (_normalize_type_text(str(verified.type())) or "").removeprefix(
+        "struct "
+    )
+    if verified_type != "CompactHighScoreRecord *":
+        return {
+            "status": "failed",
+            "reason": "compact_cursor_type_readback_failed",
+            "observed_type": str(verified.type()),
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied",
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified.name,
+        "type": str(verified.type()),
+        "selector": selector,
+    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -159,6 +278,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    compact_cursor_lvar = _sync_load_compact_cursor_lvar()
+    if compact_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "load_high_scores_from_file",
+                "compact_cursor_lvar": compact_cursor_lvar,
+            }
+        )
+
     print(
         json.dumps(
             {
@@ -169,6 +297,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
+                "compact_cursor_lvar": compact_cursor_lvar,
                 "missing": missing,
                 "failed": failed,
             },

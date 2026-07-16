@@ -1046,6 +1046,153 @@ def test_high_score_replays_preserve_void_insertion_abis() -> None:
     assert '"char* __thiscall save_high_scores_and_config' not in ida_source
 
 
+def test_compact_high_score_replays_preserve_persistence_owners() -> None:
+    binja_bank_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_bank_source = (IDA_DIR / "apply_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    binja_path_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_high_score_bank_types.h",
+            "ida_high_score_bank_types.h",
+            "path_template_types.h",
+        )
+    )
+
+    binja_declarations = (
+        "uint8_t __thiscall deserialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact)",
+        "int32_t __thiscall serialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact)",
+    )
+    ida_declarations = (
+        "unsigned char __thiscall deserialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact);",
+        "int __thiscall serialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact);",
+    )
+    for declaration in binja_declarations:
+        assert declaration in binja_bank_source
+        assert declaration in binja_path_source
+    for declaration in ida_declarations:
+        assert f'"{declaration}"' in ida_bank_source
+        assert f'"{declaration}"' in ida_path_source
+
+    for local_name in (
+        "source_lateral",
+        "lateral_run",
+        "source_delta_z",
+        "delta_z_destination",
+        "flag_index",
+        "flag_destination",
+        "out_lateral",
+        "out_delta_z",
+        "delta_z_source",
+        "out_flags",
+        "flag_source",
+    ):
+        assert f'"{local_name}"' in binja_bank_source
+
+    assert (
+        '"load_high_scores_from_file",\n'
+        '        "RegisterVariableSourceType",\n'
+        "        39,\n"
+        "        72,\n"
+        '        "compact",\n'
+        '        "CompactHighScoreRecord*",'
+    ) in binja_bank_source
+
+    assert "_sync_load_compact_cursor_lvar" in ida_bank_source
+    assert 'lvar.name in {"file_bytes", "compact"}' in ida_bank_source
+    assert 'info.name = "compact"' in ida_bank_source
+    assert '"CompactHighScoreRecord"' in ida_bank_source
+
+    for header in headers:
+        compact_header = "".join(header.split())
+        assert "typedefstructCompactHighScoreRecord" in compact_header
+        assert "int32_tbyte_count;" in compact_header
+        assert "int32_tchecksum;" in compact_header
+        assert "int32_treplay_sample_count;" in compact_header
+        assert "uint8_treplay_payload[1];" in compact_header
+        assert "typedefunionSubSolutionScalar" in compact_header
+        assert "int32_tbits;" in compact_header
+        assert "floatvalue;" in compact_header
+        assert "SubSolutionScalargarbage_frequency;" in compact_header
+        assert "SubSolutionScalarsalt_frequency;" in compact_header
+        assert "0x88+replay_sample_count*5" in compact_header
+        assert "HighScoreRecord*record" not in compact_header
+
+
+def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
+    binja_source = (BINJA_DIR / "sync_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_apply_source = (IDA_DIR / "apply_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync_source = (IDA_DIR / "sync_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
+    )
+
+    binja_declarations = (
+        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
+        "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
+        "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
+    )
+    ida_declarations = (
+        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
+        "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
+        "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
+    )
+    for declaration in binja_declarations:
+        assert declaration in binja_source
+        assert any(f"{declaration};" in header for header in headers)
+    for declaration in ida_declarations:
+        assert f'"{declaration}"' in ida_apply_source
+
+    for lvar_declaration in (
+        '"char cwd_buffer[512];"',
+        '"File* stream;"',
+        '"char file_name[256];"',
+        '"char original_directory[512];"',
+    ):
+        assert lvar_declaration in ida_apply_source
+    assert "ARCHIVE_SHELL_LVAR_SPECS" in ida_apply_source
+    assert "STALE_STACK_LVAR_OVERRIDE_SPECS" in ida_apply_source
+    assert "_sync_lvar" in ida_apply_source
+    assert "_clear_stale_stack_lvar_override" in ida_apply_source
+    assert "restore_user_lvar_settings" in ida_apply_source
+    assert "save_user_lvar_settings" in ida_apply_source
+
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_archive_shell_types.py"' in ida_sync_source
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"' in ida_sync_source
+
+
+def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
+    inspector = (IDA_DIR / "inspect_function_lvars.py").read_text(encoding="utf-8")
+    wrapper = (IDA_DIR / "query_function_lvars.py").read_text(encoding="utf-8")
+
+    for marker in (
+        "cfunc.get_lvars()",
+        '"definition_address"',
+        '"location"',
+        '"stack_offset"',
+        "lvar.get_stkoff()",
+    ):
+        assert marker in inspector
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_lvars.py"' in wrapper
+    assert "script_args=list(args.selectors)" in wrapper
+
+
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

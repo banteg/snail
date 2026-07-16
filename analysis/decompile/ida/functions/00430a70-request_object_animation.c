@@ -55,14 +55,14 @@ LABEL_5:
     object->flags |= 0x200000u;
     v10 = (__int64)(1.0 / progress_step);
     v30 = v10;
-    tracked_memory = (ObjectAnimation *)allocate_tracked_memory(20, (int)aObjectAnimatio);
+    tracked_memory = (ObjectAnimation *)allocate_tracked_memory(20, aObjectAnimatio);
     object->animation = tracked_memory;
     tracked_memory->generated_frame_count = v10;
     object->animation->flags = flags;
     object->animation->progress = 0.0;
     object->animation->progress_step = progress_step;
     keyframesa = nullptr;
-    object->animation->frames = (ObjectAnimationFrame **)allocate_tracked_memory(4 * v10, (int)aObjectAnimatio_0);
+    object->animation->frames = (ObjectAnimationFrame **)allocate_tracked_memory(4 * v10, aObjectAnimatio_0);
     flagsa = keyframes->frame_number;
     if ( keyframe_count == 1 )
       progress_stepa = keyframes->frame_number;
@@ -77,13 +77,13 @@ LABEL_5:
       v32 = p_frame_number;
       do
       {
-        object->animation->frames[v12] = (ObjectAnimationFrame *)allocate_tracked_memory(8, (int)aObjectAnimatio_1);
+        object->animation->frames[v12] = (ObjectAnimationFrame *)allocate_tracked_memory(8, aObjectAnimatio_1);
         object->animation->frames[v12]->vertices = (Vec3 *)allocate_tracked_memory(
                                                              12 * object->vertex_count,
-                                                             (int)aObjectAnimatio_2);
+                                                             aObjectAnimatio_2);
         object->animation->frames[v12]->facequad_normals = (Vec3 *)allocate_tracked_memory(
                                                                      24 * object->facequad_count,
-                                                                     (int)aObjectAnimatio_3);
+                                                                     aObjectAnimatio_3);
         X = (double)(v12 * *v32) / v33;
         v28 = X;
         if ( (int)(__int64)floor(X) >= progress_stepa && (int)keyframesa < keyframe_count - 1 )

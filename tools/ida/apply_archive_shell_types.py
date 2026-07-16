@@ -4,12 +4,38 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "fopen",
+        "File* __cdecl fopen(char* path, char* mode);",
+    ),
+    (
+        "fwrite",
+        "unsigned int __cdecl fwrite(void* bytes, unsigned int element_size, unsigned int element_count, File* stream);",
+    ),
+    (
+        "fclose",
+        "int __cdecl fclose(File* stream);",
+    ),
+    (
+        "getcwd",
+        "char* __cdecl getcwd(char* buffer, int max_length);",
+    ),
+    (
+        "chdir",
+        "int __cdecl chdir(char* path);",
+    ),
+    (
+        "set_current_directory_with_drive_fallback",
+        "int __cdecl set_current_directory_with_drive_fallback(char* path);",
+    ),
     (
         "get_stream_length_preserve_position",
         "int __cdecl get_stream_length_preserve_position(File* file);",
@@ -70,6 +96,18 @@ TRUSTED_DECLARATIONS = [
         "free_tracked_memory",
         "void __cdecl free_tracked_memory(void* pointer);",
     ),
+    (
+        "xor_decode_buffer_with_index",
+        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
+    ),
+    (
+        "write_file_bytes",
+        "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
+    ),
+    (
+        "save_config_file",
+        "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
+    ),
 ]
 
 TRUSTED_NAMES = [
@@ -88,6 +126,26 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x53C7F8, "g_archive_index_records", "ArchiveIndex* g_archive_index_records;"),
 ]
 
+ARCHIVE_SHELL_LVAR_SPECS = [
+    ("save_config_file", "cwd_buffer", "char cwd_buffer[512];", 24, None),
+    ("save_config_file", "stream", "File* stream;", None, 0x42F557),
+    ("write_file_bytes", "file_name", "char file_name[256];", 28, None),
+    ("write_file_bytes", "cwd_buffer", "char cwd_buffer[512];", 284, None),
+    (
+        "write_file_bytes",
+        "original_directory",
+        "char original_directory[512];",
+        796,
+        None,
+    ),
+    ("write_file_bytes", "stream", "File* stream;", None, 0x4316C8),
+]
+
+STALE_STACK_LVAR_OVERRIDE_SPECS = [
+    ("save_config_file", 12, {"cwd_buffer", "v5"}),
+    ("write_file_bytes", 12, {"file_name", "v8"}),
+]
+
 
 def _resolve_function(selector: str) -> int | None:
     address = idc.get_name_ea_simple(selector)
@@ -100,6 +158,7 @@ def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip().removesuffix(";")
+    normalized = normalized.replace("unsigned __int8", "unsigned char")
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
@@ -107,6 +166,7 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\s*\*\s*", " *", normalized)
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
+    normalized = normalized.replace("(void)", "()")
     return normalized.strip()
 
 
@@ -118,6 +178,209 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
 def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=;)", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _sync_lvar(
+    selector: str,
+    expected_name: str,
+    declaration: str,
+    stack_offset: int | None,
+    definition_address: int | None,
+) -> dict[str, object]:
+    address = _resolve_function(selector)
+    if address is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and (
+            (
+                stack_offset is not None
+                and lvar.is_stk_var()
+                and lvar.get_stkoff() == stack_offset
+            )
+            or (
+                definition_address is not None
+                and not lvar.is_stk_var()
+                and lvar.defea == definition_address
+            )
+        )
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_local_candidates",
+            "selector": selector,
+            "expected_name": expected_name,
+            "stack_offset": stack_offset,
+            "definition_address": (
+                None if definition_address is None else hex(definition_address)
+            ),
+            "candidate_count": len(candidates),
+        }
+
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_local_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    lvar = candidates[0]
+    expected_type = _normalize_type_text(str(local_type))
+    observed_type = _normalize_type_text(str(lvar.type()))
+    if lvar.name == expected_name and observed_type == expected_type:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": lvar.name,
+            "type": str(lvar.type()),
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = expected_name
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_user_lvar_info_failed",
+            "selector": selector,
+            "expected_name": expected_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.name == expected_name
+        and _normalize_type_text(str(candidate.type())) == expected_type
+        and (
+            stack_offset is None
+            or (
+                candidate.is_stk_var()
+                and candidate.get_stkoff() == stack_offset
+            )
+        )
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "local_readback_failed",
+            "selector": selector,
+            "expected_name": expected_name,
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+    }
+
+
+def _clear_stale_stack_lvar_override(
+    selector: str,
+    stack_offset: int,
+    stale_names: set[str],
+) -> dict[str, object]:
+    address = _resolve_function(selector)
+    if address is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.is_stk_var()
+        and lvar.get_stkoff() == stack_offset
+        and lvar.name in stale_names
+    ]
+    if not candidates:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "stack_offset": stack_offset,
+        }
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_stale_override_candidates",
+            "selector": selector,
+            "stack_offset": stack_offset,
+            "candidate_count": len(candidates),
+        }
+
+    lvar = candidates[0]
+    locator = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    settings = ida_hexrays.lvar_uservec_t()
+    if not ida_hexrays.restore_user_lvar_settings(settings, address):
+        return {
+            "status": "failed",
+            "reason": "restore_user_lvar_settings_failed",
+            "selector": selector,
+        }
+
+    saved_info = settings.find_info(locator)
+    if saved_info is None:
+        return {
+            "status": "failed",
+            "reason": "missing_saved_lvar_override",
+            "selector": selector,
+            "name": lvar.name,
+        }
+    if not settings.lvvec._del(saved_info):
+        return {
+            "status": "failed",
+            "reason": "delete_saved_lvar_override_failed",
+            "selector": selector,
+            "name": lvar.name,
+        }
+
+    ida_hexrays.save_user_lvar_settings(address, settings)
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_settings = ida_hexrays.lvar_uservec_t()
+    if not ida_hexrays.restore_user_lvar_settings(verified_settings, address):
+        return {
+            "status": "failed",
+            "reason": "restore_verified_lvar_settings_failed",
+            "selector": selector,
+        }
+    if verified_settings.find_info(locator) is not None:
+        return {
+            "status": "failed",
+            "reason": "stale_lvar_override_readback_failed",
+            "selector": selector,
+            "name": lvar.name,
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "stack_offset": stack_offset,
+        "removed_name": lvar.name,
+        "removed_type": str(lvar.type()),
+    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -210,6 +473,44 @@ def _sync_types(header_path: pathlib.Path) -> int:
             continue
         applied += 1
 
+    cleared_lvar_overrides = [
+        _clear_stale_stack_lvar_override(selector, stack_offset, stale_names)
+        for selector, stack_offset, stale_names in STALE_STACK_LVAR_OVERRIDE_SPECS
+    ]
+    failed.extend(
+        {
+            "selector": result.get("selector"),
+            "stale_lvar_override": result,
+        }
+        for result in cleared_lvar_overrides
+        if result.get("status") == "failed"
+    )
+
+    lvar_results = [
+        _sync_lvar(
+            selector,
+            expected_name,
+            declaration,
+            stack_offset,
+            definition_address,
+        )
+        for (
+            selector,
+            expected_name,
+            declaration,
+            stack_offset,
+            definition_address,
+        ) in ARCHIVE_SHELL_LVAR_SPECS
+    ]
+    failed.extend(
+        {
+            "selector": result.get("selector"),
+            "lvar": result,
+        }
+        for result in lvar_results
+        if result.get("status") == "failed"
+    )
+
     print(
         json.dumps(
             {
@@ -222,6 +523,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
+                "cleared_lvar_overrides": cleared_lvar_overrides,
+                "lvars": lvar_results,
                 "missing": missing,
                 "failed": failed,
             },
