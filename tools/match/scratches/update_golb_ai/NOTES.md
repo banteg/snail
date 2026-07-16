@@ -524,3 +524,29 @@ this function as `void __thiscall update_golb_ai(GolbShot*)`. The Binary Ninja
 and IDA replay catalogs now replace the analyzer's incidental integer/pointer
 return guesses with the real owned receiver contract. This is an analysis-only
 ownership correction; the focused 73.34% matcher body remains byte-stable.
+
+## 2026-07-16 by-value vector expression recovery
+
+The native trail block carries the same two-object stack signature already
+closed by exact `look_at_point`: an inline by-value `Vector3` result is copied
+into an address-taken destination before the effect helper call. Replacing the
+manually expanded component arithmetic with the authored expressions recovers:
+
+- `source_matrix.position - direction * 0.5f` for the second rocket smoke;
+- `source_matrix.position - direction * 0.3f` and `* 0.6f` for the two golb
+  trail followers; and
+- `source_matrix.position - previous_flight_transform.position` for the new
+  facing direction.
+
+Focused matching rises from 73.34% (645/694 instructions) to 81.88%
+(669/694), with 66 clean masked operands and no unresolved or mismatched
+operands. The three effect expressions account for the large contiguous gain;
+the direction expression independently adds six target-shaped instructions.
+
+The same spelling was tested for the garbage collision probe but rejected: it
+reassigned the shared temporary from `[esp+0x2c]` to `[esp+0x20]`, disturbed
+otherwise exact earlier expression regions, and fell to 75.62%. Reusing the
+homing staging vector extended its lifetime, grew the frame from `0x70` to
+`0x7c`, and fell to 69.20%. The collision lanes therefore remain componentwise
+until their distinct original staging local/source scope is recovered; neither
+rejected form is retained for score.
