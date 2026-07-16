@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: write_file_bytes @ 0x431650 */
 
-00431665        char var_200[0x200]
+00431665        void var_200
 00431665        sub_496946(&var_200, 0x200)
 0043166a        char* path_1 = path
 004316b1        char var_500[0x100]
@@ -31,7 +31,7 @@
 004316ce        if (eax_1 != 0)
 0043170e        sub_48b7a1(bytes, 1, byte_count, eax_1)
 00431714        fclose(eax_1)
-004316dd        char var_400[0x200]
+004316dd        void var_400
 004316dd        sub_496946(&var_400, 0x200)
 004316f4        report_messagef("ERROR:Cannot save file : %s (from %s)\n", &var_500, &var_400)
 00431734        return sub_48c18b(&var_200)

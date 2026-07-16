@@ -3,8 +3,7 @@
 /* selector: is_archive_index_loaded */
 
 // Returns whether the global archive-index table has been initialized, so content loaders can decide between archive-backed reads and direct filesystem fallback.
-bool sub_431A80()
+unsigned __int8 __cdecl is_archive_index_loaded()
 {
-  return MEMORY[0x53C7F8] != 0;
+  return g_archive_index_records != nullptr;
 }
-

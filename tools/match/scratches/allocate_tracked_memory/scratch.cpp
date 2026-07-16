@@ -17,7 +17,7 @@ void* allocate_tracked_memory(int size, char* name)
         report_errorf("Not enough memory\n\n");
     }
 
-    g_tracked_allocation_stack.push_tracked_allocation((int)name, block, size);
+    g_tracked_allocation_stack.push_tracked_allocation(name, block, size);
     memset(block, 0, size);
 
     block[0] = -34;

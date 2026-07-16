@@ -3,6 +3,7 @@ import pathlib
 import re
 import sys
 
+import ida_bytes
 import ida_funcs
 import ida_hexrays
 import ida_name
@@ -12,6 +13,18 @@ import idc
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "malloc",
+        "void* __cdecl malloc(unsigned int size);",
+    ),
+    (
+        "findfirst",
+        "int __cdecl findfirst(char* pattern, FileSearchData* find_data);",
+    ),
+    (
+        "findnext",
+        "int __cdecl findnext(int handle, FileSearchData* find_data);",
+    ),
     (
         "fopen",
         "File* __cdecl fopen(char* path, char* mode);",
@@ -39,6 +52,18 @@ TRUSTED_DECLARATIONS = [
     (
         "get_stream_length_preserve_position",
         "int __cdecl get_stream_length_preserve_position(File* file);",
+    ),
+    (
+        "get_tracked_allocation_size",
+        "int __thiscall get_tracked_allocation_size(TrackedAllocationStack* stack, void* pointer);",
+    ),
+    (
+        "push_tracked_allocation",
+        "void __thiscall push_tracked_allocation(TrackedAllocationStack* stack, char* label, void* pointer, int guarded_size);",
+    ),
+    (
+        "pop_tracked_allocation",
+        "int __thiscall pop_tracked_allocation(TrackedAllocationStack* stack, void* pointer);",
     ),
     (
         "initialize_game_data_archive",
@@ -111,6 +136,10 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
+    (0x5108B0, "g_registered_sound_sample_count"),
+    (0x5108B4, "g_tracked_allocation_total_bytes"),
+    (0x5108B8, "g_text_input_repeat_accumulator"),
+    (0x5108C0, "g_tracked_allocation_stack"),
     (0x53C7E8, "g_music_memory_buffer"),
     (0x53C7EC, "g_archive_data_base"),
     (0x53C7F0, "g_archive_file"),
@@ -119,11 +148,41 @@ TRUSTED_NAMES = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (
+        0x5108B0,
+        "g_registered_sound_sample_count",
+        "int g_registered_sound_sample_count;",
+    ),
+    (
+        0x5108B4,
+        "g_tracked_allocation_total_bytes",
+        "int g_tracked_allocation_total_bytes;",
+    ),
+    (
+        0x5108B8,
+        "g_text_input_repeat_accumulator",
+        "float g_text_input_repeat_accumulator;",
+    ),
+    (
+        0x5108C0,
+        "g_tracked_allocation_stack",
+        "TrackedAllocationStack g_tracked_allocation_stack;",
+    ),
     (0x53C7E8, "g_music_memory_buffer", "char* g_music_memory_buffer;"),
     (0x53C7EC, "g_archive_data_base", "void* g_archive_data_base;"),
     (0x53C7F0, "g_archive_file", "File* g_archive_file;"),
     (0x53C7F4, "g_archive_startup_flag", "unsigned char g_archive_startup_flag;"),
     (0x53C7F8, "g_archive_index_records", "ArchiveIndex* g_archive_index_records;"),
+]
+
+TRUSTED_SCALAR_DATA_ITEMS = [
+    (0x5108B0, 4),
+    (0x5108B4, 4),
+    (0x5108B8, 4),
+]
+
+STALE_DATA_ITEM_SPECS = [
+    (0x5108B0, 0x10, "g_registered_sound_sample_count", "int[4]"),
 ]
 
 ARCHIVE_SHELL_LVAR_SPECS = [
@@ -158,6 +217,9 @@ def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip().removesuffix(";")
+    normalized = re.sub(r"\buint8_t\b", "unsigned char", normalized)
+    normalized = re.sub(r"\bint32_t\b", "int", normalized)
+    normalized = re.sub(r"\buint32_t\b", "unsigned int", normalized)
     normalized = normalized.replace("unsigned __int8", "unsigned char")
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
@@ -178,6 +240,106 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
 def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=;)", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _clear_stale_data_item(
+    address: int,
+    expected_size: int,
+    expected_name: str,
+    expected_type: str,
+) -> dict[str, object]:
+    item_head = ida_bytes.get_item_head(address)
+    item_size = ida_bytes.get_item_size(item_head)
+    observed_name = idc.get_name(item_head)
+    observed_type = _normalize_type_text(idc.get_type(item_head))
+    if item_head != address or item_size != expected_size:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+            "item_head": hex(item_head),
+            "item_size": item_size,
+        }
+
+    normalized_expected_type = _normalize_type_text(expected_type)
+    if observed_name != expected_name or observed_type != normalized_expected_type:
+        return {
+            "status": "failed",
+            "reason": "unexpected_stale_data_item",
+            "address": hex(address),
+            "expected_name": expected_name,
+            "expected_type": normalized_expected_type,
+            "observed_name": observed_name,
+            "observed_type": observed_type,
+            "item_size": item_size,
+        }
+
+    if not ida_bytes.del_items(address, ida_bytes.DELIT_SIMPLE, expected_size):
+        return {
+            "status": "failed",
+            "reason": "delete_stale_data_item_failed",
+            "address": hex(address),
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "removed_name": observed_name,
+        "removed_type": observed_type,
+        "removed_size": item_size,
+    }
+
+
+def _ensure_scalar_data_item(address: int, size: int) -> dict[str, object]:
+    item_head = ida_bytes.get_item_head(address)
+    item_size = ida_bytes.get_item_size(item_head)
+    if item_head == address and item_size == size:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+            "item_size": item_size,
+        }
+
+    # A freshly undefined byte is the only shape this replay may replace.
+    # Wider or overlapping items need a separately reviewed stale-item guard.
+    if item_head != address or item_size != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_scalar_data_item",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(item_head),
+            "observed_size": item_size,
+        }
+
+    if size == 1:
+        created = ida_bytes.create_byte(address, size, True)
+    else:
+        created = ida_bytes.create_dword(address, size, True)
+    if not created:
+        return {
+            "status": "failed",
+            "reason": "create_scalar_data_item_failed",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(item_head),
+            "observed_size": item_size,
+        }
+
+    verified_head = ida_bytes.get_item_head(address)
+    verified_size = ida_bytes.get_item_size(verified_head)
+    if verified_head != address or verified_size != size:
+        return {
+            "status": "failed",
+            "reason": "scalar_data_item_readback_failed",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(verified_head),
+            "observed_size": verified_size,
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "item_size": verified_size,
+    }
 
 
 def _sync_lvar(
@@ -392,8 +554,54 @@ def _sync_types(header_path: pathlib.Path) -> int:
     names_unchanged = 0
     data_applied = 0
     data_unchanged = 0
+    scalar_data_items_applied = 0
+    scalar_data_items_unchanged = 0
+    applied_functions = []
+    function_type_changes = []
     missing = []
     failed = []
+
+    cleared_data_items = [
+        _clear_stale_data_item(address, size, name, data_type)
+        for address, size, name, data_type in STALE_DATA_ITEM_SPECS
+    ]
+    failed.extend(
+        {"stale_data_item": result}
+        for result in cleared_data_items
+        if result.get("status") == "failed"
+    )
+
+    scalar_data_items = [
+        _ensure_scalar_data_item(address, size)
+        for address, size in TRUSTED_SCALAR_DATA_ITEMS
+    ]
+    scalar_data_items_applied = sum(
+        result.get("status") == "applied" for result in scalar_data_items
+    )
+    scalar_data_items_unchanged = sum(
+        result.get("status") == "unchanged" for result in scalar_data_items
+    )
+    failed.extend(
+        {"scalar_data_item": result}
+        for result in scalar_data_items
+        if result.get("status") == "failed"
+    )
+    if failed:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "phase": "data_item_guard",
+                    "cleared_data_items": cleared_data_items,
+                    "scalar_data_items": scalar_data_items,
+                    "failed": failed,
+                },
+                indent=2,
+            )
+        )
+        return 1
 
     for address, name in TRUSTED_NAMES:
         current_name = idc.get_name(address)
@@ -471,6 +679,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 }
             )
             continue
+        applied_functions.append(selector)
+        function_type_changes.append(
+            {
+                "selector": selector,
+                "before": normalized_current,
+                "expected": expected_observed,
+                "observed": _normalize_type_text(observed),
+            }
+        )
         applied += 1
 
     cleared_lvar_overrides = [
@@ -518,11 +735,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "parse_errors": parse_errors,
                 "applied": applied,
+                "applied_functions": applied_functions,
+                "function_type_changes": function_type_changes,
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
+                "scalar_data_items_applied": scalar_data_items_applied,
+                "scalar_data_items_unchanged": scalar_data_items_unchanged,
+                "cleared_data_items": cleared_data_items,
+                "scalar_data_items": scalar_data_items,
                 "cleared_lvar_overrides": cleared_lvar_overrides,
                 "lvars": lvar_results,
                 "missing": missing,

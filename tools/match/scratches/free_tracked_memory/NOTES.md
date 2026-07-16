@@ -23,3 +23,9 @@ ends with `RShellMemoryFree` followed directly by its epilogue.
 Both size lookup and removal now dispatch through the canonical
 `g_tracked_allocation_stack` owner at `0x5108c0`. Removing the old cast from the
 depth scalar preserves the exact 43/43 body and all nine operand proofs.
+
+The 2026-07-16 paired replay also promotes the lookup/pop receivers and record
+storage to `TrackedAllocationStack`/`TrackedAllocationRecord`, and separates
+`g_tracked_allocation_total_bytes` from the neighboring sound and input
+globals. Both decompile lanes now agree on the owned stack and byte tally;
+focused matching remains exactly 43/43.

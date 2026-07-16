@@ -2,9 +2,8 @@
 /* function: get_archive_data_base @ 0x431a90 */
 /* selector: get_archive_data_base */
 
-// Returns the base pointer of the loaded SnailMail.dat payload buffer used by archive-backed mesh, voice, and object-definition readers.
-int sub_431A90()
+// Windows RShellMemoryScratch(): returns the base of the global 4 MiB RShell scratch workspace used by transient mesh, voice, object-definition, and render-buffer builders. It does not own the DAT payload.
+void *__cdecl get_archive_data_base()
 {
-  return MEMORY[0x53C7EC];
+  return g_archive_data_base;
 }
-

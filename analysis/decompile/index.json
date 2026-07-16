@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 56,
+  "function_count": 21,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 56,
-  "ida_exported": 56,
+  "bn_exported": 21,
+  "ida_exported": 21,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,231 +17,91 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_frontend_widget_interaction",
-      "address": "0x402820"
-    },
-    {
-      "name": "border_input_text_init",
-      "address": "0x403410"
-    },
-    {
-      "name": "update_input_ok",
-      "address": "0x4034d0"
-    },
-    {
-      "name": "initialize_input_ok",
-      "address": "0x403560"
-    },
-    {
-      "name": "border_input_text",
-      "address": "0x4035b0"
-    },
-    {
-      "name": "update_twinkle_manager",
-      "address": "0x404030"
-    },
-    {
-      "name": "draw_twinkle",
-      "address": "0x404070"
-    },
-    {
-      "name": "update_twinkle",
-      "address": "0x404080"
-    },
-    {
-      "name": "flush_row_event_display",
-      "address": "0x404830"
-    },
-    {
-      "name": "update_row_event_display",
-      "address": "0x404cf0"
-    },
-    {
-      "name": "register_parcel_delivery",
-      "address": "0x405040"
-    },
-    {
-      "name": "load_x_animation_clip",
-      "address": "0x405d60"
-    },
-    {
-      "name": "update_golb_ai",
-      "address": "0x414820"
-    },
-    {
-      "name": "initialize_high_score_tables",
-      "address": "0x417540"
-    },
-    {
-      "name": "load_high_scores_from_file",
-      "address": "0x4175e0"
-    },
-    {
-      "name": "add_arcade_high_score",
-      "address": "0x4176a0"
-    },
-    {
-      "name": "add_survival_high_score",
-      "address": "0x417780"
-    },
-    {
-      "name": "add_time_trial_high_score",
-      "address": "0x4178b0"
-    },
-    {
-      "name": "save_high_scores_and_config",
-      "address": "0x417940"
-    },
-    {
-      "name": "initialize_high_score_entry",
-      "address": "0x417a70"
-    },
-    {
-      "name": "mini_delete_high_score_entry",
-      "address": "0x417af0"
-    },
-    {
-      "name": "sample_smtrack_heightmap",
-      "address": "0x41a360"
+      "name": "get_stream_length_preserve_position",
+      "address": "0x405170"
     },
     {
       "name": "save_config_file",
       "address": "0x42f540"
     },
     {
-      "name": "advance_frame_sequence",
-      "address": "0x430470"
+      "name": "initialize_game_data_archive",
+      "address": "0x430e40"
     },
     {
-      "name": "request_object_animation",
-      "address": "0x430a70"
+      "name": "uninitialize_game_data_archive",
+      "address": "0x430ef0"
+    },
+    {
+      "name": "archive_or_file_exists",
+      "address": "0x430fd0"
+    },
+    {
+      "name": "load_file_bytes_fixed_size_from_archive_or_fs",
+      "address": "0x431030"
+    },
+    {
+      "name": "find_archive_entry",
+      "address": "0x431250"
+    },
+    {
+      "name": "load_file_bytes_from_archive_or_fs",
+      "address": "0x4312d0"
+    },
+    {
+      "name": "load_file_bytes",
+      "address": "0x431520"
     },
     {
       "name": "write_file_bytes",
       "address": "0x431650"
     },
     {
+      "name": "enumerate_matching_archive_or_fs_entries",
+      "address": "0x431740"
+    },
+    {
+      "name": "load_archive_index",
+      "address": "0x4319c0"
+    },
+    {
+      "name": "is_archive_index_loaded",
+      "address": "0x431a80"
+    },
+    {
+      "name": "get_archive_data_base",
+      "address": "0x431a90"
+    },
+    {
+      "name": "get_archive_data_end",
+      "address": "0x431aa0"
+    },
+    {
+      "name": "get_tracked_allocation_size",
+      "address": "0x431ab0"
+    },
+    {
+      "name": "push_tracked_allocation",
+      "address": "0x431af0"
+    },
+    {
+      "name": "pop_tracked_allocation",
+      "address": "0x431b30"
+    },
+    {
+      "name": "allocate_tracked_memory",
+      "address": "0x431b60"
+    },
+    {
+      "name": "free_tracked_memory",
+      "address": "0x431bf0"
+    },
+    {
       "name": "xor_decode_buffer_with_index",
       "address": "0x433010"
-    },
-    {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
-    },
-    {
-      "name": "reset_subgame",
-      "address": "0x437b10"
-    },
-    {
-      "name": "complete_subgame",
-      "address": "0x438700"
-    },
-    {
-      "name": "update_subgame",
-      "address": "0x438b90"
-    },
-    {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
-    },
-    {
-      "name": "show_subgoldy_lives",
-      "address": "0x43af10"
-    },
-    {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
-    },
-    {
-      "name": "initialize_subgoldy_ghost",
-      "address": "0x43d230"
-    },
-    {
-      "name": "set_subgoldy_ghost_z",
-      "address": "0x43d3d0"
-    },
-    {
-      "name": "update_garbage_hazard",
-      "address": "0x43f200"
-    },
-    {
-      "name": "kill_slug_hazard",
-      "address": "0x43f8b0"
-    },
-    {
-      "name": "deserialize_compact_high_score_record",
-      "address": "0x440020"
-    },
-    {
-      "name": "serialize_compact_high_score_record",
-      "address": "0x440170"
-    },
-    {
-      "name": "add_subgoldy_score",
-      "address": "0x4402c0"
-    },
-    {
-      "name": "clear_subgoldy_score_buckets",
-      "address": "0x4403a0"
-    },
-    {
-      "name": "display_score_stats",
-      "address": "0x4403c0"
-    },
-    {
-      "name": "update_barrier_ai",
-      "address": "0x440f80"
-    },
-    {
-      "name": "update_smtracks",
-      "address": "0x441f60"
-    },
-    {
-      "name": "initialize_subgoldy_resurrect",
-      "address": "0x441fa0"
-    },
-    {
-      "name": "update_subgoldy_resurrect",
-      "address": "0x441fd0"
-    },
-    {
-      "name": "set_weapon_animation",
-      "address": "0x4446e0"
-    },
-    {
-      "name": "initialize_anim_manager",
-      "address": "0x4447c0"
-    },
-    {
-      "name": "update_anim_manager",
-      "address": "0x4447d0"
-    },
-    {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
-    },
-    {
-      "name": "kill_subgoldy",
-      "address": "0x445840"
-    },
-    {
-      "name": "update_times_up",
-      "address": "0x445e20"
-    },
-    {
-      "name": "update_cutscene",
-      "address": "0x4466d0"
-    },
-    {
-      "name": "initialize_subgoldy_death",
-      "address": "0x446e30"
-    },
-    {
-      "name": "update_tutorial",
-      "address": "0x448de0"
     }
   ],
-  "health_check_count": 372,
+  "health_check_count": 378,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

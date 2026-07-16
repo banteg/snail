@@ -15,7 +15,7 @@ public:
     // The one-store body is linker-folded with cREnemyManager::Init at 0x415e20.
     void initialize_tracked_allocation_stack();
     int get_tracked_allocation_size(void* pointer);
-    void push_tracked_allocation(int unused, void* pointer, int size);
+    void push_tracked_allocation(char* label, void* pointer, int size);
     int pop_tracked_allocation(void* pointer);
 
     int depth;          // +0x00

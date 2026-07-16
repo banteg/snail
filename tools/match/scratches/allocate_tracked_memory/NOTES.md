@@ -22,3 +22,10 @@ The call now goes through the canonical `g_tracked_allocation_stack` owner at
 `0x5108c0`, rather than recasting its first `depth` word into an object. This is
 codegen-neutral: the focused result remains exact with all seven operands
 resolved.
+
+2026-07-16 ownership replay separates the neighboring globals at `0x5108b0`,
+`0x5108b4`, and `0x5108b8` into the sound-sample count, tracked byte total, and
+text-input repeat accumulator. The old IDA `int[4]` blob is removed only after
+an exact name/type/size guard, and the replay verifies four-byte item extents.
+The allocator now decompiles through `malloc`, `g_tracked_allocation_stack`, and
+`g_tracked_allocation_total_bytes` in both lanes while remaining exactly 48/48.

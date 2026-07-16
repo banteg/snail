@@ -64,6 +64,18 @@ Cross-port ownership:
   instructions, 7/182 prefix, and 26 clean operands. The local-type inventory
   no longer reports the retired synthetic `FindData` owner.
 
+2026-07-16 paired analysis replay:
+
+- The tracked Binary Ninja and IDA headers now preserve the CRT-owned
+  `FileSearchData` record as an exact `0x118`-byte type, including the five
+  leading dwords and `name[260]` at `+0x14`.
+- The replay also pins the real `findfirst(char*, FileSearchData*)` and
+  `findnext(int, FileSearchData*)` ABIs. This removes stale unrelated
+  `PresentationWeaponChannel` and `Game` parameter types from the IDA database.
+- Both decompile lanes now show the `ArchiveIndex` owner and typed filesystem
+  record. Focused matching remains 81.52%; no source-shape change was made to
+  conceal the remaining compiler allocation residuals.
+
 Rejected probes:
 
 - branching to the filesystem path before clearing `g_enumerated_entry_count` regressed to 34.41%;

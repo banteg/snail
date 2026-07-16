@@ -2,27 +2,27 @@
 /* function: find_archive_entry @ 0x431250 */
 /* selector: find_archive_entry */
 
-int __cdecl sub_431250(char *a1)
+ArchiveEntry *__cdecl find_archive_entry(char *path)
 {
-  int v1; // eax
+  int32_t count; // eax
   int v2; // ebx
-  char **i; // edi
+  ArchiveEntry *i; // edi
   char *v4; // edx
   char *v5; // esi
   char v6; // cl
   char v7; // al
 
-  if ( !MEMORY[0x53C7F8] )
-    return 0;
-  v1 = *(_DWORD *)MEMORY[0x53C7F8];
+  if ( !g_archive_index_records )
+    return nullptr;
+  count = g_archive_index_records->count;
   v2 = 0;
-  if ( *(int *)MEMORY[0x53C7F8] <= 0 )
-    return 0;
-  for ( i = (char **)(MEMORY[0x53C7F8] + 4); ; i += 3 )
+  if ( g_archive_index_records->count <= 0 )
+    return nullptr;
+  for ( i = g_archive_index_records->entries; ; ++i )
   {
-    v4 = *i;
-    v5 = a1;
-    v6 = **i;
+    v4 = i->path;
+    v5 = path;
+    v6 = *i->path;
     if ( v6 )
     {
       do
@@ -39,13 +39,12 @@ int __cdecl sub_431250(char *a1)
         ++v4;
       }
       while ( v6 );
-      v1 = *(_DWORD *)MEMORY[0x53C7F8];
+      count = g_archive_index_records->count;
     }
     if ( !*v4 && !*v5 )
       break;
-    if ( ++v2 >= v1 )
-      return 0;
+    if ( ++v2 >= count )
+      return nullptr;
   }
-  return MEMORY[0x53C7F8] + 12 * v2 + 4;
+  return &g_archive_index_records->entries[v2];
 }
-

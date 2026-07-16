@@ -3,4 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: get_archive_data_base @ 0x431a90 */
 
-00431a95        return data_53c7ec
+00431a95        return g_archive_data_base

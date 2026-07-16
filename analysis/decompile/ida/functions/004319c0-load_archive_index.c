@@ -2,50 +2,48 @@
 /* function: load_archive_index @ 0x4319c0 */
 /* selector: load_archive_index */
 
-// Decodes and parses the SnailMail.dat archive index into lookup records for archive-backed file loading.
-char __cdecl load_archive_index(char *FileName)
+// Windows RShellDatInit(char*): decodes and parses the SnailMail.dat archive index, rebases the 12-byte entry paths against the installed ArchiveIndex owner, and opens the backing DAT stream.
+unsigned __int8 __cdecl load_archive_index(char *path)
 {
-  int v2; // edi
-  int *v3; // esi
-  float v4; // eax
-  int v5; // edx
+  FrontendWidget *title_widget; // edi
+  ArchiveIndex *tracked_memory; // esi
+  ArchiveIndex *v4; // eax
+  int32_t v5; // edx
   int v6; // ecx
-  int v7; // esi
+  char *v7; // esi
   _BYTE Buffer[8]; // [esp+4h] [ebp-7Ch] BYREF
-  int ElementCount[29]; // [esp+Ch] [ebp-74h]
+  CompletionResultScreen ElementCount; // [esp+Ch] [ebp-74h]
 
-  flt_4DFAFC[95039] = 0.0;
-  if ( archive_or_file_exists(FileName, 0) )
+  g_archive_index_records = nullptr;
+  if ( archive_or_file_exists(path, 0) )
   {
-    load_file_bytes_fixed_size_from_archive_or_fs(FileName, Buffer, 124);
+    load_file_bytes_fixed_size_from_archive_or_fs(path, Buffer, 124);
     xor_archive_bytes_in_place(0, (int)Buffer, 124);
-    v2 = ElementCount[0];
-    v3 = (int *)allocate_tracked_memory(ElementCount[0], (int)aDatFileHeader);
-    load_file_bytes_fixed_size_from_archive_or_fs(FileName, v3, v2);
-    xor_archive_bytes_in_place(0, (int)v3, v2);
-    v4 = *(float *)&v3;
-    LODWORD(flt_4DFAFC[95039]) = v3;
+    title_widget = ElementCount.title_widget;
+    tracked_memory = (ArchiveIndex *)allocate_tracked_memory((int)ElementCount.title_widget, aDatFileHeader);
+    load_file_bytes_fixed_size_from_archive_or_fs(path, tracked_memory, (int)title_widget);
+    xor_archive_bytes_in_place(0, (int)tracked_memory, (int)title_widget);
+    v4 = tracked_memory;
+    g_archive_index_records = tracked_memory;
     v5 = 0;
-    if ( *v3 > 0 )
+    if ( tracked_memory->count > 0 )
     {
       v6 = 0;
       do
       {
-        v7 = *(_DWORD *)(v6 + LODWORD(v4) + 4);
-        v6 += 12;
+        v7 = v4->entries[v6++].path;
         ++v5;
-        *(_DWORD *)(v6 + LODWORD(v4) - 8) = LODWORD(v4) + v7;
-        v4 = flt_4DFAFC[95039];
+        *(_DWORD *)((char *)v4 + v6 * 12 - 8) = &v7[(_DWORD)v4];
+        v4 = g_archive_index_records;
       }
-      while ( v5 < *(_DWORD *)LODWORD(flt_4DFAFC[95039]) );
+      while ( v5 < g_archive_index_records->count );
     }
-    LODWORD(flt_4DFAFC[95037]) = fopen(FileName, Mode);
+    g_archive_file = fopen(path, Mode);
     return 1;
   }
   else
   {
-    flt_4DFAFC[95039] = 0.0;
+    g_archive_index_records = nullptr;
     return 1;
   }
 }
-

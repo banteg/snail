@@ -2,9 +2,8 @@
 /* function: get_archive_data_end @ 0x431aa0 */
 /* selector: get_archive_data_end */
 
-// Returns the end pointer of the fixed-size loaded archive payload window; current Windows callers use it as the upper bound when walking archive-backed texture-group buffers.
-int sub_431AA0()
+// Windows RShellMemoryScratch2(): returns the second 2 MiB region of the global RShell scratch workspace at base +0x200000. Despite the stable harness name, this is a second workspace base rather than an end sentinel.
+void *__cdecl get_archive_data_end()
 {
-  return MEMORY[0x53C7EC] + 0x200000;
+  return (char *)g_archive_data_base + 0x200000;
 }
-

@@ -3,16 +3,18 @@
 /* selector: push_tracked_allocation */
 
 // Appends one `(size, pointer)` record to the global tracked-allocation stack used by the guarded resource allocator.
-int __thiscall sub_431AF0(int *this, int a2, int a3, int a4)
+void __thiscall push_tracked_allocation(
+        TrackedAllocationStack *stack,
+        char *label,
+        void *pointer,
+        int32_t guarded_size)
 {
-  int result; // eax
+  int32_t v4; // eax
 
-  *(this + 3 * *this + 4) = a4;
-  *(this + 3 * *this + 3) = a3;
-  result = *this + 1;
-  *this = result;
-  if ( result > 15000 )
-    return report_errorf(aMemoryStackFul);
-  return result;
+  stack->records[stack->depth].guarded_size = guarded_size;
+  stack->records[stack->depth].pointer = pointer;
+  v4 = stack->depth + 1;
+  stack->depth = v4;
+  if ( v4 > 15000 )
+    report_errorf(aMemoryStackFul);
 }
-

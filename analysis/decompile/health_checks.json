@@ -491,6 +491,99 @@
       ]
     },
     {
+      "name": "bn_archive_enumerator_search_record_owner",
+      "artifact": "analysis/decompile/binja/functions/00431740-enumerate_matching_archive_or_fs_entries.c",
+      "required_substrings": [
+        "struct ArchiveIndex* archive_index_records_1 = g_archive_index_records",
+        "struct FileSearchData find_data",
+        "findfirst(pattern, &find_data)",
+        "findnext(handle, &find_data)",
+        "archive_index_records_1->count"
+      ],
+      "forbidden_substrings": [
+        "PresentationWeaponChannel",
+        "Game hFindFile",
+        "float* out_count",
+        "data_53c7f8"
+      ]
+    },
+    {
+      "name": "ida_archive_enumerator_search_record_owner",
+      "artifact": "analysis/decompile/ida/functions/00431740-enumerate_matching_archive_or_fs_entries.c",
+      "required_substrings": [
+        "void __cdecl enumerate_matching_archive_or_fs_entries(",
+        "ArchiveIndex *v4",
+        "FileSearchData v18",
+        "findfirst(pattern, &v18)",
+        "findnext(v14, &v18)",
+        "v18.name"
+      ],
+      "forbidden_substrings": [
+        "PresentationWeaponChannel",
+        "Game hFindFile",
+        "MEMORY[0x53C7F8]",
+        "float *out_count"
+      ]
+    },
+    {
+      "name": "bn_tracked_allocator_global_owners",
+      "artifact": "analysis/decompile/binja/functions/00431b60-allocate_tracked_memory.c",
+      "required_substrings": [
+        "void* pointer = malloc(size + 8)",
+        "push_tracked_allocation(&g_tracked_allocation_stack, name, pointer, size + 8)",
+        "g_tracked_allocation_total_bytes += size + 8"
+      ],
+      "forbidden_substrings": [
+        "g_registered_sound_sample_count[1]",
+        "CompletionResultScreen",
+        "sub_48b72d"
+      ]
+    },
+    {
+      "name": "ida_tracked_allocator_global_owners",
+      "artifact": "analysis/decompile/ida/functions/00431b60-allocate_tracked_memory.c",
+      "required_substrings": [
+        "void *__cdecl allocate_tracked_memory(int size, char *name)",
+        "malloc(size + 8)",
+        "push_tracked_allocation(&g_tracked_allocation_stack, name, v3, v2)",
+        "g_tracked_allocation_total_bytes += v2"
+      ],
+      "forbidden_substrings": [
+        "g_registered_sound_sample_count[1]",
+        "CompletionResultScreen Size",
+        "sub_48B72D"
+      ]
+    },
+    {
+      "name": "bn_tracked_allocation_record_owner",
+      "artifact": "analysis/decompile/binja/functions/00431ab0-get_tracked_allocation_size.c",
+      "required_substrings": [
+        "int32_t depth = stack->depth",
+        "&stack->records",
+        "stack->records[eax].guarded_size"
+      ],
+      "forbidden_substrings": [
+        "int32_t* stack",
+        "arg1",
+        "g_registered_sound_sample_count"
+      ]
+    },
+    {
+      "name": "ida_tracked_allocation_record_owner",
+      "artifact": "analysis/decompile/ida/functions/00431ab0-get_tracked_allocation_size.c",
+      "required_substrings": [
+        "int32_t __thiscall get_tracked_allocation_size(TrackedAllocationStack *stack, void *pointer)",
+        "TrackedAllocationRecord *records",
+        "records->pointer != pointer",
+        "stack->records[v2].guarded_size"
+      ],
+      "forbidden_substrings": [
+        "int *this",
+        "_DWORD *stack",
+        "g_registered_sound_sample_count"
+      ]
+    },
+    {
       "name": "bn_xor_byte_buffer_owner",
       "artifact": "analysis/decompile/binja/functions/00433010-xor_decode_buffer_with_index.c",
       "required_substrings": [

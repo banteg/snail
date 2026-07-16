@@ -20,6 +20,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_archive_shell_types.h"
 
 DATA_SYMBOL_UPDATES = (
+    ("0x5108b0", "g_registered_sound_sample_count"),
+    ("0x5108b4", "g_tracked_allocation_total_bytes"),
+    ("0x5108b8", "g_text_input_repeat_accumulator"),
+    ("0x5108c0", "g_tracked_allocation_stack"),
     ("0x53c7e8", "g_music_memory_buffer"),
     ("0x53c7ec", "g_archive_data_base"),
     ("0x53c7f0", "g_archive_file"),
@@ -27,7 +31,17 @@ DATA_SYMBOL_UPDATES = (
     ("0x53c7f8", "g_archive_index_records"),
 )
 
+FUNCTION_SYMBOL_UPDATES = (
+    ("0x48b72d", "malloc"),
+    ("0x48c211", "findfirst"),
+    ("0x48c2db", "findnext"),
+)
+
 DATA_VAR_UPDATES = (
+    ("0x5108b0", "int32_t"),
+    ("0x5108b4", "int32_t"),
+    ("0x5108b8", "float"),
+    ("0x5108c0", "TrackedAllocationStack"),
     ("0x53c7e8", "char*"),
     ("0x53c7ec", "void*"),
     ("0x53c7f0", "File*"),
@@ -37,8 +51,32 @@ DATA_VAR_UPDATES = (
 
 PROTO_UPDATES = (
     (
+        "malloc",
+        "void* __cdecl malloc(uint32_t size)",
+    ),
+    (
+        "findfirst",
+        "int32_t __cdecl findfirst(char* pattern, FileSearchData* find_data)",
+    ),
+    (
+        "findnext",
+        "int32_t __cdecl findnext(int32_t handle, FileSearchData* find_data)",
+    ),
+    (
         "get_stream_length_preserve_position",
         "int32_t __cdecl get_stream_length_preserve_position(File* file)",
+    ),
+    (
+        "get_tracked_allocation_size",
+        "int32_t __thiscall get_tracked_allocation_size(TrackedAllocationStack* stack, void* pointer)",
+    ),
+    (
+        "push_tracked_allocation",
+        "void __thiscall push_tracked_allocation(TrackedAllocationStack* stack, char* label, void* pointer, int32_t guarded_size)",
+    ),
+    (
+        "pop_tracked_allocation",
+        "int32_t __thiscall pop_tracked_allocation(TrackedAllocationStack* stack, void* pointer)",
     ),
     (
         "initialize_game_data_archive",
@@ -141,6 +179,14 @@ def main() -> int:
             target=args.target,
             updates=DATA_SYMBOL_UPDATES,
             kind="data",
+        )
+    )
+    operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FUNCTION_SYMBOL_UPDATES,
+            kind="function",
         )
     )
     operations.extend(

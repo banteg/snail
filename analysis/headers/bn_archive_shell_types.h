@@ -4,6 +4,29 @@ typedef unsigned int uint32_t;
 
 typedef struct File File;
 
+typedef struct FileSearchData {
+    uint32_t attributes;
+    int32_t time_created;
+    int32_t time_accessed;
+    int32_t time_written;
+    uint32_t size;
+    char name[260];
+} FileSearchData;
+
+typedef struct TrackedAllocationRecord {
+    void* pointer;
+    int32_t guarded_size;
+    int32_t unknown;
+} TrackedAllocationRecord;
+
+typedef struct TrackedAllocationStack {
+    int32_t depth;
+    int32_t bookmark_depth;
+    int32_t unknown;
+    TrackedAllocationRecord records[1];
+} TrackedAllocationStack;
+
+void* __cdecl malloc(uint32_t size);
 File* __cdecl fopen(char* path, char* mode);
 uint32_t __cdecl fwrite(
     void* bytes,
@@ -13,7 +36,19 @@ uint32_t __cdecl fwrite(
 int32_t __cdecl fclose(File* stream);
 char* __cdecl getcwd(char* buffer, int32_t max_length);
 int32_t __cdecl chdir(char* path);
+int32_t __cdecl findfirst(char* pattern, FileSearchData* find_data);
+int32_t __cdecl findnext(int32_t handle, FileSearchData* find_data);
 int32_t __cdecl set_current_directory_with_drive_fallback(char* path);
+
+int32_t __thiscall get_tracked_allocation_size(
+    TrackedAllocationStack* stack, void* pointer);
+void __thiscall push_tracked_allocation(
+    TrackedAllocationStack* stack,
+    char* label,
+    void* pointer,
+    int32_t guarded_size);
+int32_t __thiscall pop_tracked_allocation(
+    TrackedAllocationStack* stack, void* pointer);
 
 typedef struct ArchiveEntry {
     char* path;
@@ -59,3 +94,7 @@ extern void* g_archive_data_base;
 extern File* g_archive_file;
 extern uint8_t g_archive_startup_flag;
 extern ArchiveIndex* g_archive_index_records;
+extern int32_t g_registered_sound_sample_count;
+extern int32_t g_tracked_allocation_total_bytes;
+extern float g_text_input_repeat_accumulator;
+extern TrackedAllocationStack g_tracked_allocation_stack;

@@ -3,6 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: is_archive_index_loaded @ 0x431a80 */
 
-00431a87        int32_t result
-00431a87        result.b = data_53c7f8 != 0
-00431a8a        return result
+00431a8a        return g_archive_index_records != 0

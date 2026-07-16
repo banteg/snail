@@ -2,10 +2,14 @@
 /* function: enumerate_matching_archive_or_fs_entries @ 0x431740 */
 /* selector: enumerate_matching_archive_or_fs_entries */
 
-// Enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into the fixed output table, and returns the match count through the out parameter.
-int __cdecl enumerate_matching_archive_or_fs_entries(char *a1, int lpFileName, float *a3, int a4)
+// Windows RShellReadDirectory(char*, char*, int*, char (*)[128]): enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail.
+void __cdecl enumerate_matching_archive_or_fs_entries(
+        char *directory,
+        char *pattern,
+        int *out_count,
+        EnumeratedEntryName *names)
 {
-  int result; // eax
+  ArchiveIndex *v4; // eax
   char *v5; // esi
   char *v6; // ecx
   char i; // dl
@@ -19,22 +23,21 @@ int __cdecl enumerate_matching_archive_or_fs_entries(char *a1, int lpFileName, f
   char v15; // [esp+Bh] [ebp-321h]
   int v16; // [esp+Ch] [ebp-320h]
   int v17; // [esp+10h] [ebp-31Ch]
-  int v18[5]; // [esp+14h] [ebp-318h] BYREF
-  char ArgList[260]; // [esp+28h] [ebp-304h] BYREF
+  FileSearchData v18; // [esp+14h] [ebp-318h] BYREF
   char Path[512]; // [esp+12Ch] [ebp-200h] BYREF
 
-  result = LODWORD(flt_4DFAFC[95039]);
-  flt_4DFAFC[36361] = 0.0;
-  if ( LODWORD(flt_4DFAFC[95039]) )
+  v4 = g_archive_index_records;
+  g_enumerated_entry_count = 0;
+  if ( g_archive_index_records )
   {
     v17 = 0;
-    if ( (int)*(_DWORD *)LODWORD(flt_4DFAFC[95039]) > 0 )
+    if ( g_archive_index_records->count > 0 )
     {
       v16 = 0;
       do
       {
-        v5 = a1;
-        v6 = *(char **)(v16 + result + 4);
+        v5 = directory;
+        v6 = v4->entries[v16].path;
         for ( i = *v6; i; ++v6 )
         {
           v8 = *v5;
@@ -56,56 +59,53 @@ int __cdecl enumerate_matching_archive_or_fs_entries(char *a1, int lpFileName, f
           {
             do
             {
-              v12 = *(_BYTE *)(v11 + lpFileName);
+              v12 = pattern[v11];
               if ( !v12 )
                 break;
               v15 = ascii_upper_if_lowercase(v9[v10]);
-              if ( v15 != ascii_upper_if_lowercase(v12) && *(_BYTE *)(v11 + lpFileName) != 42 )
+              if ( v15 != ascii_upper_if_lowercase(v12) && pattern[v11] != 42 )
                 break;
-              if ( *(_BYTE *)(v11 + lpFileName) == 42 && v9[v10] == *(_BYTE *)(v11 + lpFileName + 1) )
+              if ( pattern[v11] == 42 && v9[v10] == pattern[v11 + 1] )
                 ++v11;
               ++v10;
-              if ( *(_BYTE *)(v11 + lpFileName) != 42 )
+              if ( pattern[v11] != 42 )
                 ++v11;
             }
             while ( v9[v10] );
           }
           if ( !v9[v10] )
           {
-            rstrcpy_checked_ascii((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), v9);
-            ++LODWORD(flt_4DFAFC[36361]);
+            rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], v9);
+            ++g_enumerated_entry_count;
           }
         }
-        result = LODWORD(flt_4DFAFC[95039]);
-        v13 = ++v17 < *(_DWORD *)LODWORD(flt_4DFAFC[95039]);
-        v16 += 12;
+        v4 = g_archive_index_records;
+        v13 = ++v17 < g_archive_index_records->count;
+        ++v16;
       }
       while ( v13 );
     }
-    *a3 = flt_4DFAFC[36361];
+    *out_count = g_enumerated_entry_count;
   }
   else
   {
-    _getcwd(Path, 512);
-    if ( set_current_directory_with_drive_fallback(a1) == 1 )
+    getcwd(Path, 512);
+    if ( set_current_directory_with_drive_fallback(directory) == 1 )
     {
-      result = LODWORD(flt_4DFAFC[36361]);
-      *a3 = flt_4DFAFC[36361];
+      *out_count = g_enumerated_entry_count;
     }
     else
     {
-      v14 = _findfirst(lpFileName, v18);
+      v14 = findfirst(pattern, &v18);
       if ( v14 != -1 )
       {
-        rstrcpy_checked_ascii((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), ArgList);
-        ++LODWORD(flt_4DFAFC[36361]);
-        for ( ; _findnext(v14, v18) != -1; ++LODWORD(flt_4DFAFC[36361]) )
-          rstrcpy_checked_ascii((char *)(a4 + (LODWORD(flt_4DFAFC[36361]) << 7)), ArgList);
+        rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], v18.name);
+        ++g_enumerated_entry_count;
+        for ( ; findnext(v14, &v18) != -1; ++g_enumerated_entry_count )
+          rstrcpy_checked_ascii(&(*names)[128 * g_enumerated_entry_count], v18.name);
       }
-      *a3 = flt_4DFAFC[36361];
-      return _chdir(Path);
+      *out_count = g_enumerated_entry_count;
+      chdir(Path);
     }
   }
-  return result;
 }
-

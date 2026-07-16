@@ -1749,7 +1749,7 @@
     {
       "address": "0x431740",
       "name": "enumerate_matching_archive_or_fs_entries",
-      "description": "Windows RShellReadDirectory(char*, char*, int*, char (*)[128]): enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail."
+      "description": "Windows RShellReadDirectory(char*, char*, int*, char (*)[128]): enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into caller-owned 128-byte name records, and returns the match count through the out parameter. The archive path walks 12-byte ArchiveEntry records and reloads the shared ArchiveIndex owner at each loop tail; the filesystem path owns a 0x118-byte CRT FileSearchData record with name[260] at +0x14."
     },
     {
       "address": "0x431980",
@@ -1784,7 +1784,7 @@
     {
       "address": "0x431af0",
       "name": "push_tracked_allocation",
-      "description": "Appends one `(size, pointer)` record to the global tracked-allocation stack used by the guarded resource allocator."
+      "description": "Appends one `(pointer, guarded_size)` record to the global tracked-allocation stack used by the guarded resource allocator. Its caller-owned debug label argument is present in the ABI but unused by this Windows body."
     },
     {
       "address": "0x431b30",

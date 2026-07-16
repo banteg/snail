@@ -2,27 +2,26 @@
 /* function: free_tracked_memory @ 0x431bf0 */
 /* selector: free_tracked_memory */
 
-// Validates a guarded tracked allocation, removes its size from the global memory tally, frees the backing block, and drops the pointer from the tracked-allocation stack.
-int __cdecl sub_431BF0(int a1)
+// Windows RShellMemoryFree(void*): validates a guarded tracked allocation, removes its size from the global memory tally, frees the backing block, and drops the pointer from the tracked-allocation stack.
+void __cdecl free_tracked_memory(void *pointer)
 {
-  _BYTE *v1; // esi
-  int v2; // eax
+  char *v1; // esi
+  int32_t tracked_allocation_size; // eax
 
-  v1 = (_BYTE *)(a1 - 4);
-  v2 = get_tracked_allocation_size((int *)&MEMORY[0x5108C0], a1 - 4);
-  MEMORY[0x5108B4] -= v2;
-  if ( *(_BYTE *)(a1 - 4) != 0xDE
-    || v1[1] != 0xAD
-    || v1[2] != 0xBA
-    || v1[3] != 0xBE
-    || v1[v2 - 4] != 0xDE
-    || v1[v2 - 3] != 0xAD
-    || v1[v2 - 2] != 0xBA
-    || v1[v2 - 1] != 0xBE )
+  v1 = (char *)pointer - 4;
+  tracked_allocation_size = get_tracked_allocation_size(&g_tracked_allocation_stack, (char *)pointer - 4);
+  g_tracked_allocation_total_bytes -= tracked_allocation_size;
+  if ( *((char *)pointer - 4) != -34
+    || v1[1] != -83
+    || v1[2] != -70
+    || v1[3] != -66
+    || v1[tracked_allocation_size - 4] != -34
+    || v1[tracked_allocation_size - 3] != -83
+    || v1[tracked_allocation_size - 2] != -70
+    || v1[tracked_allocation_size - 1] != -66 )
   {
     report_errorf(aMemoryCorrupti);
   }
   free(v1);
-  return pop_tracked_allocation((int *)&MEMORY[0x5108C0], (int)v1);
+  pop_tracked_allocation(&g_tracked_allocation_stack, v1);
 }
-

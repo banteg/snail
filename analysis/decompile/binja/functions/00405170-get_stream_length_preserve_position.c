@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: get_stream_length_preserve_position @ 0x405170 */
 
-00405178        void* eax = sub_48b4bc(arg1)
-00405184        sub_48b430(arg1, nullptr, FILE_END)
-0040518a        void* result = sub_48b4bc(arg1)
-00405195        sub_48b430(arg1, eax, FILE_BEGIN)
+00405178        void* eax = ftell(file)
+00405184        fseek(file, nullptr, FILE_END)
+0040518a        void* result = ftell(file)
+00405195        fseek(file, eax, FILE_BEGIN)
 004051a2        return result

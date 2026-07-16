@@ -1173,6 +1173,36 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert "restore_user_lvar_settings" in ida_apply_source
     assert "save_user_lvar_settings" in ida_apply_source
 
+    assert "TRUSTED_SCALAR_DATA_ITEMS" in ida_apply_source
+    assert "_ensure_scalar_data_item" in ida_apply_source
+    assert "ida_bytes.create_dword(address, size, True)" in ida_apply_source
+    assert '"reason": "unexpected_scalar_data_item"' in ida_apply_source
+    assert '"phase": "data_item_guard"' in ida_apply_source
+    for scalar_item in (
+        "(0x5108B0, 4)",
+        "(0x5108B4, 4)",
+        "(0x5108B8, 4)",
+    ):
+        assert scalar_item in ida_apply_source
+
+    for declaration in (
+        "typedef struct FileSearchData",
+        "char name[260];",
+        "typedef struct TrackedAllocationRecord",
+        "TrackedAllocationRecord records[1];",
+        "extern int32_t g_tracked_allocation_total_bytes;",
+        "extern TrackedAllocationStack g_tracked_allocation_stack;",
+    ):
+        assert all(declaration in header for header in headers)
+    for declaration in (
+        "int32_t __cdecl findfirst(char* pattern, FileSearchData* find_data)",
+        "int32_t __thiscall get_tracked_allocation_size(TrackedAllocationStack* stack, void* pointer)",
+        "void __thiscall push_tracked_allocation(TrackedAllocationStack* stack, char* label, void* pointer, int32_t guarded_size)",
+    ):
+        assert declaration in binja_source
+    assert "STALE_DATA_ITEM_SPECS" in ida_apply_source
+    assert '"int[4]"' in ida_apply_source
+
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_archive_shell_types.py"' in ida_sync_source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"' in ida_sync_source
 
@@ -1191,6 +1221,37 @@ def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
         assert marker in inspector
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_lvars.py"' in wrapper
     assert "script_args=list(args.selectors)" in wrapper
+
+
+def test_ida_type_inspectors_report_function_and_data_ownership() -> None:
+    function_inspector = (IDA_DIR / "inspect_function_types.py").read_text(
+        encoding="utf-8"
+    )
+    function_wrapper = (IDA_DIR / "query_function_types.py").read_text(
+        encoding="utf-8"
+    )
+    data_inspector = (IDA_DIR / "inspect_data_types.py").read_text(
+        encoding="utf-8"
+    )
+    data_wrapper = (IDA_DIR / "query_data_types.py").read_text(encoding="utf-8")
+
+    for marker in (
+        "ida_funcs.get_func(address)",
+        '"type": idc.get_type(address)',
+        '"name": idc.get_func_name(address)',
+    ):
+        assert marker in function_inspector
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_function_types.py"' in function_wrapper
+    assert "script_args=list(args.selectors)" in function_wrapper
+
+    for marker in (
+        "ida_bytes.get_item_head(address)",
+        '"item_head_type": idc.get_type(item_head)',
+        '"item_size": ida_bytes.get_item_size(item_head)',
+    ):
+        assert marker in data_inspector
+    assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/inspect_data_types.py"' in data_wrapper
+    assert "script_args=list(args.selectors)" in data_wrapper
 
 
 def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:

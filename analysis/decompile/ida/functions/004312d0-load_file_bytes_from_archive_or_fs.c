@@ -2,39 +2,39 @@
 /* function: load_file_bytes_from_archive_or_fs @ 0x4312d0 */
 /* selector: load_file_bytes_from_archive_or_fs */
 
-_BYTE *__cdecl load_file_bytes_from_archive_or_fs(char *FileName, _BYTE *Buffer, #83 *a3)
+// Windows RShellLoadFile(char*, void*, int*): loads variable-size bytes through the shared ArchiveIndex or filesystem fallback, using ArchiveEntry data_offset and byte_count to seek/read/XOR into a caller buffer or tracked allocation and reporting the selected size when requested.
+void *__cdecl load_file_bytes_from_archive_or_fs(char *path, void *buffer, int *out_size)
 {
-  int v3; // eax
-  int v4; // edi
-  char **v5; // ebx
+  int32_t count; // eax
+  int32_t v4; // edi
+  ArchiveEntry *entries; // ebx
   char *v6; // edx
   char *v7; // esi
   char v8; // cl
   char v9; // al
-  #91 *v10; // eax
+  File *v10; // eax
   FILE *v11; // esi
-  _BYTE *v13; // ebx
+  void *tracked_memory; // ebx
   int v14; // esi
   int v15; // eax
-  int v16; // edi
+  int32_t v16; // edi
   int v17; // eax
-  int v18; // esi
+  int32_t v18; // esi
   int v19; // edi
-  int v20; // eax
-  _BYTE *v21; // ebx
+  int stream_length_preserve_position; // eax
+  void *v21; // ebx
   int v22; // edi
   char DstBuf[512]; // [esp+14h] [ebp-200h] BYREF
 
-  update_loading_screen((int *)&flt_4DFAFC[36325]);
-  if ( LODWORD(flt_4DFAFC[95039])
-    && (v3 = *(_DWORD *)LODWORD(flt_4DFAFC[95039]), v4 = 0, (int)*(_DWORD *)LODWORD(flt_4DFAFC[95039]) > 0) )
+  update_loading_screen(&g_loading_bar);
+  if ( g_archive_index_records && (count = g_archive_index_records->count, v4 = 0, g_archive_index_records->count > 0) )
   {
-    v5 = (char **)(LODWORD(flt_4DFAFC[95039]) + 4);
+    entries = g_archive_index_records->entries;
     while ( 1 )
     {
-      v6 = *v5;
-      v7 = FileName;
-      v8 = **v5;
+      v6 = entries->path;
+      v7 = path;
+      v8 = *entries->path;
       if ( v8 )
       {
         do
@@ -51,76 +51,75 @@ _BYTE *__cdecl load_file_bytes_from_archive_or_fs(char *FileName, _BYTE *Buffer,
           ++v6;
         }
         while ( v8 );
-        v3 = *(_DWORD *)LODWORD(flt_4DFAFC[95039]);
+        count = g_archive_index_records->count;
       }
       if ( !*v6 && !*v7 )
         break;
       ++v4;
-      v5 += 3;
-      if ( v4 >= v3 )
+      ++entries;
+      if ( v4 >= count )
         goto LABEL_15;
     }
-    if ( a3 )
-      *(_DWORD *)a3 = *(_DWORD *)(LODWORD(flt_4DFAFC[95039]) + 4 * (3 * v4 + 3));
-    v13 = Buffer;
-    if ( Buffer == (_BYTE *)-1 )
+    if ( out_size )
+      *out_size = g_archive_index_records->entries[v4].byte_count;
+    tracked_memory = buffer;
+    if ( buffer == (void *)-1 )
     {
-      return *(_BYTE **)(LODWORD(flt_4DFAFC[95039]) + 12 * v4 + 8);
+      return (void *)g_archive_index_records->entries[v4].data_offset;
     }
     else
     {
-      if ( Buffer )
+      if ( buffer )
       {
-        v17 = ftell((FILE *)LODWORD(flt_4DFAFC[95037]));
-        v18 = 12 * v4;
-        fseek((FILE *)LODWORD(flt_4DFAFC[95037]), *(_DWORD *)(12 * v4 + LODWORD(flt_4DFAFC[95039]) + 8) - v17, 1);
+        v17 = ftell(g_archive_file);
+        v18 = v4;
+        fseek(g_archive_file, g_archive_index_records->entries[v4].data_offset - v17, 1);
         v19 = 4 * (3 * v4 + 3);
-        fread(Buffer, 1, *(_DWORD *)(v19 + LODWORD(flt_4DFAFC[95039])), (FILE *)LODWORD(flt_4DFAFC[95037]));
+        fread(buffer, 1, *(int32_t *)((char *)&g_archive_index_records->count + v19), g_archive_file);
         xor_archive_bytes_in_place(
-          *(_DWORD *)(v18 + LODWORD(flt_4DFAFC[95039]) + 8),
-          (int)Buffer,
-          *(_DWORD *)(v19 + LODWORD(flt_4DFAFC[95039])));
+          g_archive_index_records->entries[v18].data_offset,
+          (int)buffer,
+          *(int32_t *)((char *)&g_archive_index_records->count + v19));
       }
       else
       {
         v14 = 4 * (3 * v4 + 3);
-        v13 = allocate_tracked_memory(*(_DWORD *)(v14 + LODWORD(flt_4DFAFC[95039])), (int)FileName);
-        v15 = ftell((FILE *)LODWORD(flt_4DFAFC[95037]));
-        v16 = 12 * v4;
-        fseek((FILE *)LODWORD(flt_4DFAFC[95037]), *(_DWORD *)(v16 + LODWORD(flt_4DFAFC[95039]) + 8) - v15, 1);
-        fread(v13, 1, *(_DWORD *)(v14 + LODWORD(flt_4DFAFC[95039])), (FILE *)LODWORD(flt_4DFAFC[95037]));
+        tracked_memory = allocate_tracked_memory(*(int32_t *)((char *)&g_archive_index_records->count + v14), path);
+        v15 = ftell(g_archive_file);
+        v16 = v4;
+        fseek(g_archive_file, g_archive_index_records->entries[v16].data_offset - v15, 1);
+        fread(tracked_memory, 1, *(int32_t *)((char *)&g_archive_index_records->count + v14), g_archive_file);
         xor_archive_bytes_in_place(
-          *(_DWORD *)(v16 + LODWORD(flt_4DFAFC[95039]) + 8),
-          (int)v13,
-          *(_DWORD *)(v14 + LODWORD(flt_4DFAFC[95039])));
+          g_archive_index_records->entries[v16].data_offset,
+          (int)tracked_memory,
+          *(int32_t *)((char *)&g_archive_index_records->count + v14));
       }
-      return v13;
+      return tracked_memory;
     }
   }
   else
   {
 LABEL_15:
-    v10 = fopen(FileName, Mode);
+    v10 = fopen(path, Mode);
     v11 = v10;
     if ( v10 )
     {
-      v20 = get_stream_length_preserve_position(v10);
-      v21 = Buffer;
-      v22 = v20;
-      if ( !Buffer || Buffer == (_BYTE *)-1 )
-        v21 = allocate_tracked_memory(v20, (int)FileName);
+      stream_length_preserve_position = get_stream_length_preserve_position(v10);
+      v21 = buffer;
+      v22 = stream_length_preserve_position;
+      if ( !buffer || buffer == (void *)-1 )
+        v21 = allocate_tracked_memory(stream_length_preserve_position, path);
       fread(v21, 1, v22, v11);
       fclose(v11);
-      if ( a3 )
-        *(_DWORD *)a3 = v22;
+      if ( out_size )
+        *out_size = v22;
       return v21;
     }
     else
     {
-      _getcwd(DstBuf, 512);
-      report_messagef("WARNING:Cannot find file : %s (from %s)\n", FileName, DstBuf);
+      getcwd(DstBuf, 512);
+      report_messagef("WARNING:Cannot find file : %s (from %s)\n", path, DstBuf);
       return nullptr;
     }
   }
 }
-

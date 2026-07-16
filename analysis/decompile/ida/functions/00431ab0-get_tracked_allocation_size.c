@@ -3,13 +3,13 @@
 /* selector: get_tracked_allocation_size */
 
 // Looks up one tracked allocation inside the global allocation stack and returns the guarded byte size recorded for that pointer.
-int __thiscall sub_431AB0(int *this, int a2)
+int32_t __thiscall get_tracked_allocation_size(TrackedAllocationStack *stack, void *pointer)
 {
-  int v2; // eax
-  _DWORD *v3; // edx
+  int32_t v2; // eax
+  TrackedAllocationRecord *records; // edx
 
   v2 = 0;
-  if ( *this <= 0 )
+  if ( stack->depth <= 0 )
   {
 LABEL_5:
     report_errorf(aCannotFindMemo);
@@ -17,15 +17,14 @@ LABEL_5:
   }
   else
   {
-    v3 = this + 3;
-    while ( *v3 != a2 )
+    records = stack->records;
+    while ( records->pointer != pointer )
     {
       ++v2;
-      v3 += 3;
-      if ( v2 >= *this )
+      ++records;
+      if ( v2 >= stack->depth )
         goto LABEL_5;
     }
-    return *(this + 3 * v2 + 4);
+    return stack->records[v2].guarded_size;
   }
 }
-

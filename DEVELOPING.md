@@ -103,8 +103,16 @@ Useful maintenance commands:
 uv run snail symbols --manifest analysis/symbols/gameplay-functions.json
 uv run snail match audit --exact-only -j 8
 uv run snail match types --paths
+uv run python tools/ida/query_data_types.py <data-name-or-address> [<data-name-or-address> ...]
+uv run python tools/ida/query_function_types.py <function-or-address> [<function-or-address> ...]
 uv run python tools/ida/query_function_lvars.py <function> [<function> ...]
 ```
+
+The data-type query reports the containing item head and extent, which makes
+stale overlapping arrays visible before a narrow replay splits them. The
+function-type query reads IDA names and prototypes without invoking Hex-Rays,
+so it also works when a bad callee declaration prevents a caller from
+decompiling.
 
 The lvar query runs Hex-Rays headlessly and reports stable definition
 addresses, stack offsets, widths, and current user types. Use it before adding

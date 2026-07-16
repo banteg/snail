@@ -3,64 +3,60 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: load_file_bytes_fixed_size_from_archive_or_fs @ 0x431030 */
 
-0043103f        update_loading_screen(0x503290)
-00431044        int32_t* eax = data_53c7f8
-0043104b        int32_t* var_204_1
-0043104b        int32_t* ecx_1
+0043103f        update_loading_screen(&g_loading_bar)
+00431044        struct ArchiveIndex* archive_index_records_1 = g_archive_index_records
+0043104b        int32_t count
 0043104b        int32_t ebp_1
-0043104b        if (eax != 0)
-00431051        ecx_1 = *eax
+0043104b        if (archive_index_records_1 != 0)
+00431051        count = archive_index_records_1->count
 00431053        ebp_1 = 0
-00431057        var_204_1 = ecx_1
-0043105b        char* ebx_1
-0043105b        if (eax == 0 || ecx_1 s<= 0)
-004311ab        ebx_1 = arg1
-00431061        int32_t* edi_1 = &eax[1]
-00431064        char* edx_1 = *edi_1
-00431066        ebx_1 = arg1
-0043106d        char* esi_1 = ebx_1
-0043106f        ecx_1.b = *edx_1
-00431073        while (ecx_1.b != 0)
-00431075        eax.b = *esi_1
-00431079        if (eax.b == 0)
+0043105b        char* name
+0043105b        if (archive_index_records_1 == 0 || count s<= 0)
+004311ab        name = path
+00431061        struct ArchiveEntry (* edi_1)[0x1] = &archive_index_records_1->entries
+00431064        char* path_1 = (edi_1 - 4)->entries[0].path
+00431066        name = path
+0043106d        char* name_1 = name
+0043106f        char i = *path_1
+00431073        while (i != 0)
+00431075        char eax = *name_1
+00431079        if (eax == 0)
 00431079        break
-00431081        if (eax.b s>= 0x61 && eax.b s<= 0x7a)
-00431083        eax.b -= 0x20
-00431087        if (ecx_1.b != eax.b)
+00431081        if (eax s>= 0x61 && eax s<= 0x7a)
+00431083        eax -= 0x20
+00431087        if (i != eax)
 00431087        break
-00431089        ecx_1.b = edx_1[1]
-0043108c        esi_1 = &esi_1[1]
-0043108d        edx_1 = &edx_1[1]
-0043109a        if (*edx_1 == 0 && *esi_1 == 0)
-004310b7        if (arg2 == 0xffffffff)
-004310d1        return *(data_53c7f8 + ebp_1 * 0xc + 8)
-004310d4        if (arg2 != 0)
-0043114c        void* eax_8 = sub_48b4bc(data_53c7f0)
-0043115b        int32_t esi_5 = ebp_1 * 0xc
-0043116e        sub_48b430(data_53c7f0, *(esi_5 + data_53c7f8 + 8) - eax_8, FILE_CURRENT)
-00431184        sub_48b645(arg2, 1, arg3, data_53c7f0)
-00431196        xor_archive_bytes_in_place(*(esi_5 + data_53c7f8 + 8), arg2, arg3)
-004311aa        return arg2
-004310df        char* eax_3 = allocate_tracked_memory(arg3, ebx_1)
-004310ed        void* eax_4 = sub_48b4bc(data_53c7f0)
-004310fc        int32_t esi_3 = ebp_1 * 0xc
-0043110e        sub_48b430(data_53c7f0, *(esi_3 + data_53c7f8 + 8) - eax_4, FILE_CURRENT)
-0043111e        sub_48b645(eax_3, 1, arg3, data_53c7f0)
-00431130        xor_archive_bytes_in_place(*(esi_3 + data_53c7f8 + 8), eax_3, arg3)
+00431089        i = path_1[1]
+0043108c        name_1 = &name_1[1]
+0043108d        path_1 = &path_1[1]
+0043109a        if (*path_1 == 0 && *name_1 == 0)
+004310b7        if (buffer == 0xffffffff)
+004310d1        return g_archive_index_records->entries[ebp_1].data_offset
+004310d4        if (buffer != 0)
+0043114c        void* eax_8 = ftell(g_archive_file)
+0043116e        fseek(g_archive_file, g_archive_index_records->entries[ebp_1].data_offset - eax_8, FILE_CURRENT)
+00431184        sub_48b645(buffer, 1, byte_count, g_archive_file)
+00431196        xor_archive_bytes_in_place(g_archive_index_records->entries[ebp_1].data_offset, buffer, byte_count)
+004311aa        return buffer
+004310df        void* eax_3 = allocate_tracked_memory(byte_count, name)
+004310ed        void* eax_4 = ftell(g_archive_file)
+0043110e        fseek(g_archive_file, g_archive_index_records->entries[ebp_1].data_offset - eax_4, FILE_CURRENT)
+0043111e        sub_48b645(eax_3, 1, byte_count, g_archive_file)
+00431130        xor_archive_bytes_in_place(g_archive_index_records->entries[ebp_1].data_offset, eax_3, byte_count)
 00431144        return eax_3
 004310a0        ebp_1 += 1
-004310a1        edi_1 = &edi_1[3]
-004310a6        do while (ebp_1 s< var_204_1)
-004311b8        int32_t* eax_11 = sub_48b41d(ebx_1, "rb")
-004311c4        if (eax_11 == 0)
-004311d0        char var_200[0x200]
+004310a1        edi_1 = &edi_1[1]
+004310a6        do while (ebp_1 s< count)
+004311b8        int32_t* file = fopen(name, "rb")
+004311c4        if (file == 0)
+004311d0        void var_200
 004311d0        sub_496946(&var_200, 0x200)
-004311e0        report_messagef("WARNING:Cannot find file : %s (from %s)\n", ebx_1, &var_200)
+004311e0        report_messagef("WARNING:Cannot find file : %s (from %s)\n", name, &var_200)
 004311f4        return 0
-004311f6        get_stream_length_preserve_position(eax_11)
-004311fb        char* edi_4 = arg2
-00431213        if (edi_4 == 0 || edi_4 == 0xffffffff)
-00431226        edi_4 = allocate_tracked_memory(arg3, arg1)
-0043122d        sub_48b645(edi_4, 1, arg3, eax_11)
-00431233        sub_48b3a7(eax_11)
-00431247        return edi_4
+004311f6        get_stream_length_preserve_position(file)
+004311fb        void* buffer_1 = buffer
+00431213        if (buffer_1 == 0 || buffer_1 == 0xffffffff)
+00431226        buffer_1 = allocate_tracked_memory(byte_count, path)
+0043122d        sub_48b645(buffer_1, 1, byte_count, file)
+00431233        fclose(file)
+00431247        return buffer_1
