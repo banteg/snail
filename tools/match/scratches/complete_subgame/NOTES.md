@@ -1,4 +1,4 @@
-# Dossier — bridge result-bank snapshot (match deferred; cluster 10)
+# Dossier — bridge result-bank snapshot (exact; cluster 10)
 
 complete_subgame @ 0x438700 = cRSubGame::Complete(bool). Semantics:
 
@@ -15,13 +15,15 @@ complete_subgame @ 0x438700 = cRSubGame::Complete(bool). Semantics:
   adds per mode — the saved-owner producers the bridge checklist hunts
   live downstream of these calls
 
-Match deferred: app/bridge cluster (board order last); the field map
-above is what the Zig bridge lanes need for verification.
+Matched exactly after the replay flag-word recovery and a cross-port recovery
+of the authored snapshot order. The field map above is also what the Zig
+bridge lanes need for verification.
 
 ## Scratch status
 
-Promoted to a matcher scratch on 2026-06-13. Current result: 87.50%,
-88/88 instructions, 20/88 prefix. The current scratch covers:
+Promoted to a matcher scratch on 2026-06-13. Current result: proof-grade
+100.00%, 88/88 instructions and full prefix, with all eight masked operands
+verified. The current scratch covers:
 
 - `Player::display_score_stats` on the embedded Player at `game+0x3bb764`
 - 6-byte run-record completion bit at `game+0xfd2b84 + cursor*6`, now
@@ -125,12 +127,10 @@ Rejected experiments:
   `runtime->sub_high_score` and `runtime->current_high_score_record` instead
   of raw `runtime + 0x68b4c8` / `runtime + 0xfd2b10` offsets.
 
-Residuals: VC6 still emits a load/or/store for the run-record byte where native
-uses a direct memory `or`, and the result snapshot still differs in register
-allocation around the difficulty/timer fields. High-score record pointer ownership
-now matches native `ebp`; do not force the remaining byte-OR or store-schedule
-residuals with volatile, raw offset macros, or fake aliasing. Treat this
-scratch as pinned unless new source evidence explains the contextual byte-OR.
+Historical residuals: before the flag-word and cross-port closures below, VC6
+emitted a load/or/store for the run-record byte and a different snapshot
+register schedule. Both are now resolved by recovered types and source order;
+no volatile, raw offset macro, fake alias, or forced register local was needed.
 
 ## 2026-07-10 ownership audit
 
@@ -212,3 +212,22 @@ now produces the native direct byte operation and raises this scratch from
 75.28% (90/88, prefix 7) to 87.50% (88/88, prefix 20), with all eight masked
 operands clean. The remaining snapshot-order differences are unrelated to the
 replay lane and remain honest.
+
+## 2026-07-16 cross-port snapshot-order closure
+
+The symbol-rich iPhone binary retains `cRSubGame::Complete(bool)` in
+`SubGame.o` at `0x1a200` with an exact `0x214`-byte extent. Its emitted stores
+independently identify the working-record owner and the snapshot lanes after
+the `cRTime` copy: score tail, challenge speed, challenge difficulty, player
+source tail, replay speed, mode, challenge-difficulty scalar, then the two
+hazard frequencies. Android's `cRSubGame::Complete(bool)` corroborates the
+same record fields and scalar mapping despite its different class offsets.
+
+Restoring that source grouping, setting the record active before filling it,
+and using the real float owners instead of integer bit-view aliases raises the
+Windows scratch from 87.50% (prefix 28 after placing score tail next to the
+timer) to proof-grade 100.00%: 88/88 instructions, full prefix, and eight clean
+masked operands. VC6 naturally sinks and schedules the independent stores into
+the native x86 order. The exact result uses only named owners and ordinary C++
+assignments; it is not a permutation derived from the x86 diff and contains no
+fakematching construct.

@@ -564,8 +564,10 @@
       "address": "0x438700",
       "windows_name": "complete_subgame",
       "ios_symbol": "cRSubGame::Complete(bool)",
+      "android_symbol": "cRSubGame::Complete(bool)",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "The symbol-rich iPhone function at 0x1a200 and Android implementation independently preserve the working-record snapshot and identify the challenge-speed, challenge-difficulty, replay-speed, source-tail, mode, difficulty-scalar, garbage, and salt owners. Reusing that source grouping makes the Windows implementation exact without register-forcing constructs."
     },
     {
       "address": "0x438850",

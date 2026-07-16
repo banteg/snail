@@ -2239,7 +2239,7 @@
     {
       "address": "0x438700",
       "name": "complete_subgame",
-      "description": "Snapshots the just-finished run into the working high-score/replay record, including the normalized garbage and salt frequencies, increments the per-run completion counter, and dispatches the mode-specific high-score handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Complete(bool)`."
+      "description": "Snapshots the just-finished run into the working high-score/replay record, including the normalized garbage and salt frequencies, increments the per-run completion counter, and dispatches the mode-specific high-score handoff. The symbol-rich iPhone `SubGame.o` implementation and Android function identify the same owner graph and scalar field grouping as authored `cRSubGame::Complete(bool)`."
     },
     {
       "address": "0x438850",
