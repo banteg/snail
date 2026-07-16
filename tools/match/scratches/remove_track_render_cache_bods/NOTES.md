@@ -117,3 +117,11 @@ for its loop shape. Its backward reach to `list_flags` and to the containing
 node now derives from the shared `BodNode` member offsets instead of repeating
 `-8` and `-0xc`. Focused output is byte-identical at the honest 70.59%, 61/58
 baseline with all five operands clean.
+
+## 2026-07-16 shared next-link cursor ownership
+
+Those recovered reaches now come from the canonical `BodNode` cursor helpers
+rather than function-local macros. The cache still owns the 143 by 5 record
+grid and only lends each node's linkage to `GameRoot::active_bod_list`.
+Focused output remains byte-identical at 70.59%, 61/58 instructions, with all
+five operands clean.

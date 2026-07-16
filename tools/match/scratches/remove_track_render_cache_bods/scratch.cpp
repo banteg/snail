@@ -1,7 +1,5 @@
 // remove_track_render_cache_bods @ 0x433f20 (thiscall)
 
-#include <stddef.h>
-
 #include "segment_cache.h"
 #include "game_root.h"
 
@@ -17,13 +15,10 @@ void SegmentCache::remove_track_render_cache_bods()
     do {
         int count = sizeof(slots[0]) / sizeof(slots[0][0]);
         do {
-            unsigned int* flags_ref = (unsigned int*)((char*)next_ref
-                + (int)offsetof(BodNode, list_flags)
-                - (int)offsetof(BodNode, list_next));
+            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);
             if ((*flags_ref & BOD_FLAG_LINKED) != 0) {
                 BodList* list = &g_game->active_bod_list;
-                list->remove_bod((BodNode*)((char*)next_ref
-                    - (int)offsetof(BodNode, list_next)));
+                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));
             }
             next_ref =
                 (BodNode**)((char*)next_ref + sizeof(TrackRenderCacheSlot));

@@ -48,3 +48,9 @@ immediately reloads the logo state instead of reading EAX. The count left by
 the native teardown loop is incidental, so the authored `cRLogo::UnInit()`
 contract is void. Removing the synthetic return preserves the exact 61/61
 instructions and all seven operands.
+
+2026-07-16 shared next-link cursor ownership: the local `offsetof` reaches are
+now the canonical `BodNode` cursor helpers shared by every recovered teardown
+loop. The logo destructor remains exact at 61/61 instructions with all seven
+operands clean, proving that its embedded letters borrow the same root-list
+linkage contract as the subgame and track-cache pools.

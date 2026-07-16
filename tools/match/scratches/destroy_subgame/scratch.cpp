@@ -14,10 +14,6 @@ extern GameRoot* g_game; // data_4df904
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 int report_errorf(char* format, ...);
 
-#define BOD_NEXT_LINK_FLAGS(next_link) (*(DWORD*)((char*)(next_link) - 8))
-#define BOD_NEXT_LINK_PREV(next_link) (*(BodNode**)((char*)(next_link) - 4))
-#define BOD_NODE_FROM_NEXT_LINK(next_link) ((BodNode*)((char*)(next_link) - 0x0c))
-
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr, linked_flag_expr) \
     do {                                                          \
         BodNode** next_link = (next_link_expr);                   \

@@ -118,3 +118,13 @@ pools, barrier, HUD widgets, and replay teardown lane directly.
 The saved IDA receiver lvar now agrees with its already-correct prototype, so
 the tracked Hex-Rays artifact also contains no `int this` arithmetic. No matcher
 source changed: teardown remains exact at 246/246 with all 41 operands clean.
+
+## 2026-07-16 shared next-link cursor ownership
+
+The teardown family now shares its container, flags, and previous-link reaches
+from the canonical `BodNode` layout while retaining the native cursor rooted at
+`list_next`. The subtraction-shaped offset expressions are material: the
+algebraically equivalent additive spelling changes VC6's mask allocation and
+regresses this exact function to 76.70%. Keeping the native subtraction shape
+in the shared helper restores 246/246 instructions with all 41 operands clean,
+so the former literal `-8/-4/-0xc` spellings no longer need to be duplicated.

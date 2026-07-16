@@ -2,6 +2,8 @@
 #ifndef BOD_LIST_H
 #define BOD_LIST_H
 
+#include <stddef.h>
+
 #include "contact_target.h"
 
 int report_errorf(char* format, ...);
@@ -27,6 +29,20 @@ struct BodNode : public ContactTargetObject {
     BodNode* list_next;      // +0x0c
 };
 typedef char BodNode_must_be_0x10[(sizeof(BodNode) == 0x10) ? 1 : -1];
+
+// Several pool teardown loops advance a cursor rooted at list_next rather than
+// at the containing BodNode. Keep that source shape while deriving every
+// backwards reach from the shared intrusive-node layout.
+#define BOD_NODE_FROM_NEXT_LINK(next_link) \
+    ((BodNode*)((char*)(next_link) - (int)offsetof(BodNode, list_next)))
+#define BOD_NEXT_LINK_FLAGS(next_link) \
+    (*(unsigned int*)((char*)(next_link) \
+        - ((int)offsetof(BodNode, list_next) \
+            - (int)offsetof(BodNode, list_flags))))
+#define BOD_NEXT_LINK_PREV(next_link) \
+    (*(BodNode**)((char*)(next_link) \
+        - ((int)offsetof(BodNode, list_next) \
+            - (int)offsetof(BodNode, list_prev))))
 
 class BodList {
 public:

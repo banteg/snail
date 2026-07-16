@@ -224,3 +224,12 @@ IDA's saved receiver lvar now agrees with its prototype and contains no raw
 `int this` arithmetic. No matcher source changed; the honest focused result
 remains 67.67%, 495/501 instructions, 63 clean operands, and the same two
 documented string-order mismatches.
+
+## 2026-07-16 shared next-link cursor ownership
+
+The bulk remover now consumes the canonical `BodNode` container and flag
+helpers instead of maintaining a second copy of the same member arithmetic.
+The compiler-sensitive cursor remains rooted at `list_next`; ownership alone
+moves to the shared intrusive-node layout. Focused output remains 67.67%,
+495/501 instructions, with 64 clean operands and the single remaining
+alignment-sensitive string mismatch.
