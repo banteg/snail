@@ -1587,6 +1587,7 @@ try:
         parsed_type, _ = bv.parse_type_string(type_text)
         before = bv.get_data_var_at(address)
         before_type = str(before.type) if before is not None else None
+        before_width = int(before.type.width) if before is not None else None
         requested_type = str(parsed_type)
         changed = before_type != requested_type
         if changed:
@@ -1595,6 +1596,7 @@ try:
             "address": hex(address),
             "requested_type": type_text,
             "before_type": before_type,
+            "before_width": before_width,
             "requested_rendered_type": requested_type,
             "changed": changed,
         }})
@@ -1616,7 +1618,16 @@ try:
             address = int(entry["address"], 0)
             restored = bv.get_data_var_at(address)
             entry["restored_type"] = str(restored.type) if restored is not None else None
-            entry["reverted"] = entry["restored_type"] == entry["before_type"]
+            entry["restored_width"] = (
+                int(restored.type.width) if restored is not None else None
+            )
+            entry["reverted"] = (
+                entry["restored_type"] == entry["before_type"]
+                or (
+                    entry["before_width"] in (None, 0)
+                    and entry["restored_width"] in (None, 0)
+                )
+            )
         if not all(entry["reverted"] for entry in out):
             raise RuntimeError(f"data-variable preview rollback failed: {{out!r}}")
     else:

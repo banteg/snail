@@ -604,6 +604,8 @@ def test_data_var_updates_skip_current_types(monkeypatch) -> None:
     assert "preview = True" in calls[0][-1]
     assert "bv.begin_undo_actions()" in calls[0][-1]
     assert "bv.revert_undo_actions(state)" in calls[0][-1]
+    assert 'entry["before_width"] in (None, 0)' in calls[0][-1]
+    assert 'entry["restored_width"] in (None, 0)' in calls[0][-1]
 
 
 def test_data_var_updates_preview_before_saved_apply(monkeypatch) -> None:
