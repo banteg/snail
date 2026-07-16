@@ -98,7 +98,38 @@ Residuals:
   the owning `segment_count` before advancing its borrowed line cursor, in the
   order explicit in the target.
 - Together these ownership and source-order corrections raise the focused
-  match from 75.17% to 82.27%: 941/926 candidate/target instructions, prefix
+ match from 75.17% to 82.27%: 941/926 candidate/target instructions, prefix
   20/926, with 178 clean masked operands and no unresolved or mismatched
   references. The redundant `cursor = 0` after a failed `Name:` lookup was
   also removed; the lookup result already owns that state.
+
+## 2026-07-16 parser replay and buffer ownership
+
+- Both decompiler lanes now replay the canonical void
+  `load_level_definition_file(SubTracks*, char*)` receiver and preserve the
+  complete `SubTracks` owner graph: display metadata, Galaxy route text,
+  landscape manager, regular segment array, and the `First` and `Last`
+  `SubSegment` records. The parser context global used by
+  `copy_segment_definition_to_level_slot` is also named consistently as
+  `g_current_level_definition_name`.
+- `g_level_file_text_buffer` is now an exact `LevelFileTextBuffer[0x2800]`
+  owner. The next independently referenced global begins at `0x751478`,
+  exactly `0x2800` bytes after the buffer base at `0x74ec78`; a complete code
+  reference sweep of that interval found references only to the base, while
+  `0x751478` has its own unrelated consumers. There are no interior Binary
+  Ninja data variables that would split the extent.
+- The speed lane is a named `AuthoredFloatBits selected_speed` union in both
+  analysis headers. This removes Binary Ninja's anonymous-member
+  `tracks->.selected_speed` rendering and lets both the parser and
+  `build_subgame_level` expose the sentinel-bit and float-value views without
+  changing matcher source.
+- The Binary Ninja segment replay now performs an exact parsed-type equality
+  audit before the expensive declaration preview. An idempotent run verified
+  all 11 header types, both globals, both data-variable types, and all six
+  prototypes as already current in 3.45 seconds, skipping the previous
+  whole-header reanalysis path while still detecting same-size semantic type
+  changes.
+- Focused matching remains honestly unchanged at 82.27%: 941/926
+  candidate/target instructions, prefix 20/926, and 178 clean masked operands
+  with no unresolved references or mismatches. The residuals remain compiler
+  scheduling and control-flow shape; no fakematch was introduced.

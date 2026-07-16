@@ -163,6 +163,10 @@ typedef union AuthoredFloatBits {
     float value;
 } AuthoredFloatBits;
 
+/* Writable level-definition text storage at 0x74ec78. The next independently
+ * referenced global begins at 0x751478, and no interior address is referenced. */
+typedef char LevelFileTextBuffer[0x2800];
+
 typedef enum AuthoredSegmentRowFlag {
     AUTHORED_SEGMENT_ROW_FLAG_PARCEL = 0x0001,
     AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL = 0x0002,
@@ -246,10 +250,7 @@ typedef struct SubTracks {
     uint8_t unknown_1a58c9[0x1a58cc - 0x1a58c9];
     tColour fringe_color;
     char level_display_name[0x80];
-    union {
-        float selected_speed;
-        int32_t selected_speed_bits;
-    };
+    AuthoredFloatBits selected_speed;
     float garbage_frequency;
     float salt_frequency;
     int32_t landscape_script_index;

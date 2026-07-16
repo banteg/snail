@@ -1005,6 +1005,83 @@ def test_broad_type_declaration_rejects_complete_to_forward_regression(monkeypat
     assert len(calls) == 1
 
 
+def test_current_header_type_equivalence_uses_exact_parsed_type_comparison(
+    monkeypatch,
+) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        assert args[:2] == ("py", "exec")
+        assert "current == parsed_type.type" in args[-1]
+        return {
+            "result": {
+                "errors": [],
+                "types": [
+                    {"name": "SubTracks", "equivalent": True},
+                    {"name": "LevelFileTextBuffer", "equivalent": False},
+                ],
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    result = _narrow_sync.current_header_type_equivalence(
+        Path("."),
+        target="snail-mail.exe",
+        header_path=Path("segment_catalog_types.h"),
+    )
+
+    assert result == {"SubTracks": True, "LevelFileTextBuffer": False}
+    assert len(calls) == 1
+
+
+def test_types_declare_if_changed_skips_exact_header(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_header_type_equivalence",
+        lambda *_args, **_kwargs: {"SubTracks": True, "LevelFileTextBuffer": True},
+    )
+    monkeypatch.setattr(
+        _narrow_sync,
+        "types_declare",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("equivalent header should not be replayed")
+        ),
+    )
+
+    result = _narrow_sync.types_declare_if_changed(
+        Path("."),
+        target="snail-mail.exe",
+        header_path=Path("segment_catalog_types.h"),
+    )
+
+    assert result["status"] == "skipped"
+    assert result["type_count"] == 2
+
+
+def test_types_declare_if_changed_replays_semantic_drift(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_header_type_equivalence",
+        lambda *_args, **_kwargs: {"SubTracks": True, "LevelFileTextBuffer": False},
+    )
+    monkeypatch.setattr(
+        _narrow_sync,
+        "types_declare",
+        lambda *_args, **_kwargs: {"op": "types_declare", "result": "applied"},
+    )
+
+    result = _narrow_sync.types_declare_if_changed(
+        Path("."),
+        target="snail-mail.exe",
+        header_path=Path("segment_catalog_types.h"),
+    )
+
+    assert result["result"] == "applied"
+    assert result["stale_types"] == ("LevelFileTextBuffer",)
+
+
 def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     source = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     repair_source = (BINJA_DIR / "repair_initialize_subgame_owner.py").read_text(
@@ -2519,6 +2596,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ida_segment_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
         encoding="utf-8"
     )
+    binja_segment_sync = (
+        BINJA_DIR / "sync_segment_catalog_types.py"
+    ).read_text(encoding="utf-8")
 
     assert '"AuthoredSegmentRowFlag",' in binja_source
     assert '"SubRowFlag",' in binja_source
@@ -2543,9 +2623,24 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "unknown_04" not in header
         assert "unknown_24" not in header
 
+    for header in (analysis_path_header, analysis_segment_header):
+        assert "typedef char LevelFileTextBuffer[0x2800];" in header
+        assert "AuthoredFloatBits selected_speed;" in header
+        assert "float selected_speed;" not in header
+
+    for sync_source in (binja_segment_sync, ida_segment_sync):
+        assert "g_current_level_definition_name" in sync_source
+        assert "g_level_file_text_buffer" in sync_source
+    assert "LevelFileTextBuffer" in binja_segment_sync
+    assert "types_declare_if_changed" in binja_segment_sync
+    assert "types_declare(" not in binja_segment_sync
+    assert '"char g_level_file_text_buffer[10240];"' in ida_segment_sync
+
     assert "_sync_builtin_grid_offset_lvar" in ida_segment_sync
     assert '"int32_t grid_offset;"' in ida_segment_sync
     assert 'info.name = "grid_offset"' in ida_segment_sync
+    assert "DIRTY_FUNCTIONS" in ida_segment_sync
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_segment_sync
 
     for header in (analysis_path_header, matcher_row_header):
         assert "SUBROW_FLAG_PARCEL_CANDIDATE = 0x0001" in header

@@ -4820,6 +4820,7 @@
         "cache_music_file(path, 0, &g_blank_text)",
         "game->level_definition",
         "game->banners.slots",
+        "game->level_definition.selected_speed.bits",
         "game->player.damage_gauge",
         "runtime->player.presentation.weapon_channels",
         "runtime->slug_voice_manager",
@@ -4834,8 +4835,24 @@
         "_ET1"
       ],
       "max_counts": {
-        "__offset(": 2
+        "__offset(": 5,
+        "runtime->player.__offset(": 2,
+        "selected_level_record->garbage_frequency.bits.__offset(": 3
       }
+    },
+    {
+      "name": "ida_build_subgame_selected_speed_owner",
+      "artifact": "analysis/decompile/ida/functions/00437eb0-build_subgame_level.c",
+      "required_substrings": [
+        "void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)",
+        "game->level_definition.selected_speed.bits",
+        "game->level_definition.selected_speed.value"
+      ],
+      "forbidden_substrings": [
+        "level_definition..selected_speed",
+        "*((_DWORD *)game +",
+        "sub_437EB0"
+      ]
     },
     {
       "name": "bn_complete_subgame_owner_graph",
@@ -6703,6 +6720,67 @@
       ]
     },
     {
+      "name": "bn_load_level_definition_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00447480-load_level_definition_file.c",
+      "required_substrings": [
+        "g_current_level_definition_name = filename",
+        "&g_level_file_text_buffer",
+        "&tracks->level_display_name",
+        "g_game_base->subgame.galaxy.route_slots",
+        "subgame.landscape_manager",
+        "tracks->selected_speed.bits",
+        "tracks->segment_slots[segment_count]",
+        "&tracks->first_segment",
+        "&tracks->last_segment"
+      ],
+      "forbidden_substrings": [
+        "data_74ec74",
+        "0x74ec78",
+        "tracks->.",
+        "sub_447480",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_load_level_definition_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00447480-load_level_definition_file.c",
+      "required_substrings": [
+        "void __thiscall load_level_definition_file(SubTracks *tracks, char *filename)",
+        "g_current_level_definition_name = filename",
+        "g_level_file_text_buffer",
+        "tracks->level_display_name",
+        "g_game_base->subgame.galaxy.route_slots",
+        "subgame.landscape_manager",
+        "tracks->selected_speed.bits",
+        "tracks->selected_speed.value",
+        "tracks->segment_slots[segment_count]",
+        "&tracks->first_segment",
+        "&tracks->last_segment"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[",
+        "sub_447480",
+        "_DWORD *__thiscall load_level_definition_file",
+        "*((_DWORD *)tracks +"
+      ]
+    },
+    {
+      "name": "bn_copy_segment_definition_parser_context",
+      "artifact": "analysis/decompile/binja/functions/00447300-copy_segment_definition_to_level_slot.c",
+      "required_substrings": [
+        "&g_game_base->subgame.sm_tracks",
+        "g_current_level_definition_name",
+        "segment_1->row_count",
+        "segment_1->message_sample_id"
+      ],
+      "forbidden_substrings": [
+        "data_74ec74",
+        "MEMORY[",
+        "sub_447300"
+      ]
+    },
+    {
       "name": "ida_load_segment_definitions_directx_owner",
       "artifact": "analysis/decompile/ida/functions/00448160-load_segment_definitions.c",
       "required_substrings": [
@@ -6737,6 +6815,7 @@
         "void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks",
         "SMTracks *p_sm_tracks",
         "&g_game_base->subgame.sm_tracks",
+        "g_current_level_definition_name",
         "segment->glyph_rows[0]",
         "segment->row_count",
         "message_sample_id = -1"

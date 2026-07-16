@@ -8,9 +8,44 @@ import sys
 import ida_funcs
 import ida_hexrays
 import ida_kernwin
+import ida_name
 import ida_pro
 import ida_typeinf
 import idc
+
+
+TRUSTED_NAMES = (
+    (0x443650, "load_frontend_level_by_mode_and_index"),
+    (0x447300, "copy_segment_definition_to_level_slot"),
+    (0x447480, "load_level_definition_file"),
+    (0x448060, "load_builtin_segment_definitions"),
+    (0x448160, "load_segment_definitions"),
+    (0x448900, "load_level_definitions"),
+    (0x74EC74, "g_current_level_definition_name"),
+    (0x74EC78, "g_level_file_text_buffer"),
+)
+
+TRUSTED_DATA_DECLARATIONS = (
+    (
+        0x74EC74,
+        "g_current_level_definition_name",
+        "char *g_current_level_definition_name;",
+    ),
+    (
+        0x74EC78,
+        "g_level_file_text_buffer",
+        "char g_level_file_text_buffer[10240];",
+    ),
+)
+
+DIRTY_FUNCTIONS = (
+    0x443650,
+    0x447300,
+    0x447480,
+    0x448060,
+    0x448160,
+    0x448900,
+)
 
 
 TRUSTED_DECLARATIONS = [
@@ -59,11 +94,18 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\s*\*\s*", " *", normalized)
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
+    normalized = re.sub(r"\s*\[\s*", "[", normalized)
+    normalized = re.sub(r"\s*\]", "]", normalized)
     return normalized.strip()
 
 
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
+    return _normalize_type_text(unnamed) or ""
+
+
+def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
+    unnamed = re.sub(rf"\b{re.escape(selector)}\b", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
 
 
@@ -167,10 +209,55 @@ def _sync_builtin_grid_offset_lvar() -> dict[str, object]:
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
+    renamed = 0
+    names_unchanged = 0
     applied = 0
     unchanged = 0
+    data_applied = 0
+    data_unchanged = 0
     missing = []
     failed = []
+
+    for address, name in TRUSTED_NAMES:
+        if idc.get_name(address) == name:
+            names_unchanged += 1
+            continue
+        if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
+            failed.append(
+                {"address": hex(address), "selector": name, "reason": "rename_failed"}
+            )
+            continue
+        renamed += 1
+
+    for address, selector, declaration in TRUSTED_DATA_DECLARATIONS:
+        expected = _data_declaration_to_observed_type(selector, declaration)
+        if _normalize_type_text(idc.get_type(address)) == expected:
+            data_unchanged += 1
+            continue
+        if not idc.SetType(address, declaration):
+            failed.append(
+                {
+                    "address": hex(address),
+                    "selector": selector,
+                    "declaration": declaration,
+                    "reason": "set_data_type_failed",
+                }
+            )
+            continue
+        observed = idc.get_type(address)
+        if _normalize_type_text(observed) != expected:
+            failed.append(
+                {
+                    "address": hex(address),
+                    "selector": selector,
+                    "declaration": declaration,
+                    "observed": observed,
+                    "expected": expected,
+                    "reason": "data_verification_failed",
+                }
+            )
+            continue
+        data_applied += 1
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address, _name = _resolve_function(selector)
@@ -217,6 +304,32 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    name_failures = [
+        {
+            "address": hex(address),
+            "selector": name,
+            "observed": idc.get_name(address),
+            "reason": "name_verification_failed",
+        }
+        for address, name in TRUSTED_NAMES
+        if idc.get_name(address) != name
+    ]
+    failed.extend(name_failures)
+
+    dirty_functions = []
+    for address in DIRTY_FUNCTIONS:
+        function = ida_funcs.get_func(address)
+        if function is None or function.start_ea != address:
+            failed.append(
+                {
+                    "address": hex(address),
+                    "reason": "missing_dirty_function",
+                }
+            )
+            continue
+        ida_hexrays.mark_cfunc_dirty(address, True)
+        dirty_functions.append(hex(address))
+
     grid_offset_lvar = _sync_builtin_grid_offset_lvar()
     if grid_offset_lvar.get("status") == "failed":
         failed.append(
@@ -232,8 +345,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "renamed": renamed,
+                "names_unchanged": names_unchanged,
                 "applied": applied,
                 "unchanged": unchanged,
+                "data_applied": data_applied,
+                "data_unchanged": data_unchanged,
+                "dirty_functions": dirty_functions,
                 "grid_offset_lvar": grid_offset_lvar,
                 "missing": missing,
                 "failed": failed,

@@ -4,21 +4,21 @@
 /* function: load_level_definition_file @ 0x447480 */
 
 00447495        char* filename_1 = filename
-0044749e        data_74ec74 = filename
+0044749e        g_current_level_definition_name = filename
 004474a4        void path
 004474a4        sprintf(&path, "Levels/%s")
-004474bf        if (load_file_bytes_from_archive_or_fs(&path, 0x74ec78, nullptr) == 0)
+004474bf        if (load_file_bytes_from_archive_or_fs(&path, &g_level_file_text_buffer, nullptr) == 0)
 004474cb        report_errorf("Cannot find %s reverting to default.txt", &path)
 004474da        sprintf(&path, "Levels/Default.txt")
-004474eb        load_file_bytes_from_archive_or_fs(&path, 0x74ec78, nullptr)
-004474fd        char* cursor_2 = find_case_insensitive_substring("Name:'", 0x74ec78)
+004474eb        load_file_bytes_from_archive_or_fs(&path, &g_level_file_text_buffer, nullptr)
+004474fd        char* cursor_2 = find_case_insensitive_substring("Name:'", &g_level_file_text_buffer)
 00447505        char* cursor = cursor_2
 0044750b        if (cursor_2 == 0)
 00447517        report_errorf("Cannot find Name:' in %s", &path)
 0044751c        cursor_2 = cursor
 00447531        char* cursor_3 = &find_case_insensitive_substring("'", cursor_2)[1]
 00447532        cursor = cursor_3
-0044753c        char i = *cursor_3
+0044753c        uint8_t i = *cursor_3
 0044753e        char (* edx)[0x80] = &tracks->level_display_name
 00447543        if (i != 0x27)
 00447548        while (i s>= 0x20)
@@ -30,7 +30,7 @@
 00447557        if (i == 0x27)
 00447557        break
 00447559        (edx - 0x1a58dc)->:0x1a58dc.b = 0
-00447569        if (g_game_base[0x12d4638] == 0)
+00447569        if (g_game_base->subgame.galaxy.active == 0)
 00447575        char* cursor_4 = find_case_insensitive_substring("Arcade", filename)
 0044757d        cursor = cursor_4
 00447583        if (cursor_4 != 0)
@@ -38,8 +38,8 @@
 004475b0        int32_t ecx_2 = parse_next_signed_int(&cursor) * 7
 004475b2        char (* var_730_2)[0x80] = &tracks->level_display_name
 004475bb        int32_t edi_2 = ecx_2 * 0x60
-004475c6        sprintf(&g_game_base[edi_2 + 0x12d4668], "%s")
-004475d5        char* cursor_5 = find_case_insensitive_substring("GalaxyText:", 0x74ec78)
+004475c6        sprintf(&g_game_base->subgame.galaxy.route_slots[0].record.detail_text[edi_2], "%s")
+004475d5        char* cursor_5 = find_case_insensitive_substring("GalaxyText:", &g_level_file_text_buffer)
 004475dd        cursor = cursor_5
 004475e3        if (cursor_5 != 0)
 00447616        char* cursor_6 = find_case_insensitive_substring("{", cursor_5)
@@ -49,7 +49,7 @@
 0044765c        cursor = cursor_7
 00447660        char* eax_8 = find_case_insensitive_substring("}", cursor_7)
 0044766a        if (eax_8 != 0)
-0044769d        char* edx_4 = &g_game_base[edi_2 + 0x12d46e8]
+0044769d        char* edx_4 = &g_game_base->subgame.galaxy.route_slots[0].record.description_text[edi_2]
 004476a4        char* i_1 = cursor
 004476aa        while (i_1 u< eax_8 - 2)
 004476af        if (*i_1 s< 0x20)
@@ -65,18 +65,18 @@
 004476d4        cursor = i_1
 004476da        *edx_4 = 0
 00447672        report_warningf("Cannot find } for GalaxyText: in %s", filename)
-0044768a        rstrcpy_checked_ascii(&g_game_base[edi_2 + 0x12d46e8], "TEXT ERROR } MISSING")
+0044768a        rstrcpy_checked_ascii(&g_game_base->subgame.galaxy.route_slots[0].record.description_text[edi_2], "TEXT ERROR } MISSING")
 0044762c        report_warningf("Cannot find { for GalaxyText: in %s", filename)
-00447643        rstrcpy_checked_ascii(&g_game_base[edi_2 + 0x12d46e8], "TEXT ERROR { MISSING")
+00447643        rstrcpy_checked_ascii(&g_game_base->subgame.galaxy.route_slots[0].record.description_text[edi_2], "TEXT ERROR { MISSING")
 004475eb        report_warningf("Cannot find GalaxyText: in %s", filename)
-00447603        rstrcpy_checked_ascii(&g_game_base[edi_2 + 0x12d46e8], "TEXT MISSING")
-004476e7        char* cursor_8 = find_case_insensitive_substring("Random:yes", 0x74ec78)
+00447603        rstrcpy_checked_ascii(&g_game_base->subgame.galaxy.route_slots[0].record.description_text[edi_2], "TEXT MISSING")
+004476e7        char* cursor_8 = find_case_insensitive_substring("Random:yes", &g_level_file_text_buffer)
 004476f3        cursor = cursor_8
 004476fc        if (cursor_8 == 0)
 00447794        tracks->random_enabled = 0
 0044779b        tracks->random_length = 0
 0044770c        tracks->random_enabled = 1
-00447712        char* cursor_9 = find_case_insensitive_substring("Length:", 0x74ec78)
+00447712        char* cursor_9 = find_case_insensitive_substring("Length:", &g_level_file_text_buffer)
 0044771c        cursor = cursor_9
 00447720        if (cursor_9 == 0)
 0044772c        report_errorf("Cannot Length: in %s", &path)
@@ -94,7 +94,7 @@
 0044778b        i_2 = *cursor_10
 00447790        if (i_2 s< 0x30)
 00447790        break
-004477ab        char* cursor_11 = find_case_insensitive_substring("Background:", 0x74ec78)
+004477ab        char* cursor_11 = find_case_insensitive_substring("Background:", &g_level_file_text_buffer)
 004477b5        cursor = cursor_11
 004477b9        if (cursor_11 == 0)
 004477c5        report_errorf("No Background: in %s", &path)
@@ -111,13 +111,13 @@
 004477ff        cursor = cursor_12
 00447803        i_3 = *cursor_12
 0044780a        *ecx_10 = 0x2e
-0044780e        char* game_base_1 = g_game_base
+0044780e        struct GameRoot* game_base_1 = g_game_base
 00447814        ecx_10[1] = 0x74
 00447818        ecx_10[2] = 0x78
 0044781c        ecx_10[3] = 0x74
 0044781f        ecx_10[4] = 0
-00447840        tracks->landscape_script_index = load_landscape_script_by_name(&game_base_1[0x106c218], &var_200)
-00447846        char* cursor_13 = find_case_insensitive_substring("Fringe:", 0x74ec78)
+00447840        tracks->landscape_script_index = load_landscape_script_by_name(&game_base_1->subgame.landscape_manager, &var_200)
+00447846        char* cursor_13 = find_case_insensitive_substring("Fringe:", &g_level_file_text_buffer)
 00447850        cursor = cursor_13
 00447854        if (cursor_13 != 0)
 0044789a        cursor = &find_case_insensitive_substring(":", cursor_13)[1]
@@ -126,7 +126,7 @@
 004478f0        tracks->fringe_color.b = fconvert.s(float.t(parse_next_signed_int(&cursor)) * fconvert.t(0.00392156886f))
 00447860        report_errorf("No Fringe: in %s using white", &path)
 00447882        store_color4f(&tracks->fringe_color, 1f, 1f, 1f, 1f)
-00447900        char* cursor_14 = find_case_insensitive_substring("Track:", 0x74ec78)
+00447900        char* cursor_14 = find_case_insensitive_substring("Track:", &g_level_file_text_buffer)
 0044790a        cursor = cursor_14
 0044790e        if (cursor_14 != 0)
 00447938        char* cursor_15 = &find_case_insensitive_substring(":", cursor_14)[1]
@@ -144,7 +144,7 @@
 0044797b        tracks->track_texture_set = 5
 0044791a        report_errorf("No Track: in %s using Track0.tga", &path)
 00447922        tracks->track_texture_set = 0
-0044798f        char* cursor_16 = find_case_insensitive_substring("Parcels:", 0x74ec78)
+0044798f        char* cursor_16 = find_case_insensitive_substring("Parcels:", &g_level_file_text_buffer)
 00447999        cursor = cursor_16
 0044799d        if (cursor_16 == 0)
 004479a3        tracks->parcel_count = 0
@@ -152,7 +152,7 @@
 004479c1        return
 004479cf        cursor = find_case_insensitive_substring(":", cursor_16)
 004479e7        tracks->parcel_count = parse_next_signed_int(&cursor)
-004479ed        char* cursor_17 = find_case_insensitive_substring("Quota:", 0x74ec78)
+004479ed        char* cursor_17 = find_case_insensitive_substring("Quota:", &g_level_file_text_buffer)
 004479f7        cursor = cursor_17
 004479fb        if (cursor_17 == 0)
 00447a01        tracks->parcel_quota = 0
@@ -160,43 +160,34 @@
 00447a1f        return
 00447a31        cursor = find_case_insensitive_substring(":", cursor_17)
 00447a45        tracks->parcel_quota = parse_next_signed_int(&cursor)
-00447a4b        char* cursor_18 = find_case_insensitive_substring("Speed:select", 0x74ec78)
+00447a4b        char* cursor_18 = find_case_insensitive_substring("Speed:select", &g_level_file_text_buffer)
 00447a55        cursor = cursor_18
 00447a5e        if (cursor_18 == 0)
-00447a72        char* cursor_19 = find_case_insensitive_substring("Speed:", 0x74ec78)
+00447a72        char* cursor_19 = find_case_insensitive_substring("Speed:", &g_level_file_text_buffer)
 00447a7c        cursor = cursor_19
 00447a80        if (cursor_19 != 0)
 00447ab1        cursor = &find_case_insensitive_substring(":", cursor_19)[1]
-00447ab5        parse_next_float32(&cursor)
-00447ab5        unimplemented  {call 0x431f20}
-00447aba        tracks->selected_speed = fconvert.s(unimplemented  {fstp dword [esi+0x1a595c], st0})
-00447aba        unimplemented  {fstp dword [esi+0x1a595c], st0}
+00447aba        tracks->selected_speed.bits = fconvert.s(parse_next_float32(&cursor))
 00447a8c        report_errorf("Cannot find Speed: in Segment %s\n", &path)
-00447a94        tracks->selected_speed = 100f
-00447a60        tracks->selected_speed = -1f
-00447acd        char* cursor_20 = find_case_insensitive_substring("Garbage:", 0x74ec78)
+00447a94        tracks->selected_speed.bits = 0x42c80000
+00447a60        tracks->selected_speed.bits = 0xbf800000
+00447acd        char* cursor_20 = find_case_insensitive_substring("Garbage:", &g_level_file_text_buffer)
 00447ad7        cursor = cursor_20
 00447adb        if (cursor_20 != 0)
-00447aea        parse_next_float32(&cursor)
-00447aea        unimplemented  {call 0x431f20}
-00447aef        tracks->garbage_frequency = fconvert.s(unimplemented  {fstp dword [esi+0x1a5960], st0})
-00447aef        unimplemented  {fstp dword [esi+0x1a5960], st0}
+00447aef        tracks->garbage_frequency = fconvert.s(parse_next_float32(&cursor))
 00447add        tracks->garbage_frequency = -1f
-00447b02        char* cursor_21 = find_case_insensitive_substring("Salt:", 0x74ec78)
+00447b02        char* cursor_21 = find_case_insensitive_substring("Salt:", &g_level_file_text_buffer)
 00447b0c        cursor = cursor_21
 00447b10        if (cursor_21 != 0)
-00447b1f        parse_next_float32(&cursor)
-00447b1f        unimplemented  {call 0x431f20}
-00447b24        tracks->salt_frequency = fconvert.s(unimplemented  {fstp dword [esi+0x1a5964], st0})
-00447b24        unimplemented  {fstp dword [esi+0x1a5964], st0}
+00447b24        tracks->salt_frequency = fconvert.s(parse_next_float32(&cursor))
 00447b12        tracks->salt_frequency = -1f
 00447b37        tracks->segment_count = 0
-00447b39        char* cursor_22 = find_case_insensitive_substring("Segments Begin:", 0x74ec78)
+00447b39        char* cursor_22 = find_case_insensitive_substring("Segments Begin:", &g_level_file_text_buffer)
 00447b43        cursor = cursor_22
 00447b47        if (cursor_22 == 0)
 00447b53        report_errorf("Cannot find Segments Begin: in %s", &path)
 00447b65        return
-00447b72        char* eax_27 = find_case_insensitive_substring("Segments End:", 0x74ec78)
+00447b72        char* eax_27 = find_case_insensitive_substring("Segments End:", &g_level_file_text_buffer)
 00447b82        if (eax_27 == 0)
 00447b8e        report_errorf("Cannot find Segments End: in %s", &path)
 00447ba0        return
@@ -219,7 +210,7 @@
 00447bfa        (*ecx_16)[2] = 0x78
 00447c03        (*ecx_16)[3] = 0x74
 00447c06        (*ecx_16)[4] = 0
-00447c19        copy_segment_definition_to_level_slot(&segment_name, &tracks->segment_slots[segment_count])
+00447c19        copy_segment_definition_to_level_slot(tracks, &segment_name, &tracks->segment_slots[segment_count])
 00447c22        char* cursor_35 = &cursor[3]
 00447c25        void var_500
 00447c25        char* edx_16 = &var_500
@@ -237,11 +228,7 @@
 00447c62        if (cursor_24 == 0)
 00447cb9        tracks->segment_slots[tracks->segment_count].angle_radians.bits = 0
 00447c73        cursor_1 = find_case_insensitive_substring("=", cursor_24)
-00447c7d        int32_t var_708_4 = parse_next_signed_int(&cursor_1)
-00447c83        unimplemented  {fild st0, dword [esp+0x24]}
-00447c8f        unimplemented  {fmul st0, dword [0x4973b8]}
-00447c9f        tracks->segment_slots[tracks->segment_count].angle_radians.bits = fconvert.s(unimplemented  {fstp dword [edx+esi+0x4018], st0})
-00447c9f        unimplemented  {fstp dword [edx+esi+0x4018], st0}
+00447c9f        tracks->segment_slots[tracks->segment_count].angle_radians.bits = fconvert.s(float.t(parse_next_signed_int(&cursor_1)) * fconvert.t(0.0174532924f))
 00447cde        tracks->segment_slots[tracks->segment_count].message_text[0] = 0
 00447ce6        char* cursor_25 = find_case_insensitive_substring("Message=", &var_500)
 00447cf0        cursor_1 = cursor_25
@@ -271,29 +258,26 @@
 00447d8d        char* cursor_28 = cursor_1
 00447d93        if (cursor_28 != 0)
 00447da1        cursor_1 = &find_case_insensitive_substring("=", cursor_28)[1]
-00447daa        parse_next_float32(&cursor_1)
-00447daa        unimplemented  {call 0x431f20}
-00447dc3        tracks->segment_slots[tracks->segment_count].message_duration.bits = fconvert.s(unimplemented  {fstp dword [ecx+esi+0x421c], st0})
-00447dc3        unimplemented  {fstp dword [ecx+esi+0x421c], st0}
+00447dc3        tracks->segment_slots[tracks->segment_count].message_duration.bits = fconvert.s(parse_next_float32(&cursor_1))
 00447ddc        cursor_1 = find_case_insensitive_substring("Sample=", &var_500)
 00447df5        *((tracks->segment_count + 1) * 0x4220 + tracks) = 0xffffffff
 00447dfc        char* cursor_29 = cursor_1
 00447e02        if (cursor_29 != 0)
 00447e13        char* cursor_30 = &find_case_insensitive_substring("=", cursor_29)[2]
 00447e19        cursor_1 = cursor_30
-00447e1d        void var_480
-00447e1d        char* edx_35 = &var_480
+00447e1d        char sample_name[0x80]
+00447e1d        char (* edx_35)[0x80] = &sample_name
 00447e24        char i_7 = *cursor_30
 00447e29        while (i_7 != 0x22)
 00447e2b        *edx_35 = i_7
-00447e2d        edx_35 = &edx_35[1]
+00447e2d        edx_35 = &(*edx_35)[1]
 00447e2e        cursor_30 = &cursor_30[1]
 00447e2f        cursor_1 = cursor_30
 00447e33        i_7 = *cursor_30
 00447e3a        *edx_35 = 0
-00447e5f        *((tracks->segment_count + 1) * 0x4220 + tracks) = find_registered_sound_sample_id_by_name(&var_480)
+00447e5f        *((tracks->segment_count + 1) * 0x4220 + tracks) = find_registered_sound_sample_id_by_name(&sample_name)
 00447e78        if (*((tracks->segment_count + 1) * 0x4220 + tracks) == 0xffffffff)
-00447e8c        report_errorf("Cannot find sample %s in %s", &var_480, &path)
+00447e8c        report_errorf("Cannot find sample %s in %s", &sample_name, &path)
 00447e96        char* cursor_36 = cursor
 00447e9c        tracks->segment_count += 1
 00447e9e        cursor_23 = advance_to_next_crlf_line(cursor_36)
@@ -301,7 +285,7 @@
 00447eac        if (cursor_23 == 0)
 00447f18        report_errorf("Unexpected end of file in %s", filename)
 00447f2a        return
-00447ec2        char* cursor_31 = find_case_insensitive_substring("First:", 0x74ec78)
+00447ec2        char* cursor_31 = find_case_insensitive_substring("First:", &g_level_file_text_buffer)
 00447ecc        cursor = cursor_31
 00447ed0        if (cursor_31 == 0)
 00447edc        report_errorf("Cannot find 'First:' in %s", &path)
@@ -322,8 +306,8 @@
 00447f91        (*ecx_50)[2] = 0x78
 00447f95        (*ecx_50)[3] = 0x74
 00447f98        (*ecx_50)[4] = 0
-00447f9e        copy_segment_definition_to_level_slot(&segment_name, &tracks->first_segment)
-00447fad        char* cursor_33 = find_case_insensitive_substring("Last:", 0x74ec78)
+00447f9e        copy_segment_definition_to_level_slot(tracks, &segment_name, &tracks->first_segment)
+00447fad        char* cursor_33 = find_case_insensitive_substring("Last:", &g_level_file_text_buffer)
 00447fb7        cursor = cursor_33
 00447fbb        if (cursor_33 == 0)
 00447fc7        report_errorf("Cannot find 'Last:' in %s", &path)
@@ -346,7 +330,7 @@
 00448038        (*ecx_55)[2] = 0x78
 0044803c        (*ecx_55)[3] = 0x74
 0044803f        (*ecx_55)[4] = 0
-0044804d        copy_segment_definition_to_level_slot(&segment_name, &tracks->last_segment)
+0044804d        copy_segment_definition_to_level_slot(tracks, &segment_name, &tracks->last_segment)
 0044805c        return
 00447f48        report_errorf("Unexpected end of file in %s", &path)
 00447f5a        return

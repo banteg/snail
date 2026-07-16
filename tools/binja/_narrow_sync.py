@@ -618,6 +618,108 @@ def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[st
     }
 
 
+def current_header_type_equivalence(
+    repo_root: Path, *, target: str, header_path: Path
+) -> dict[str, bool]:
+    """Compare every parsed header type with the live type without mutating analysis."""
+    code = f"""
+import binaryninja
+
+header_path = {json.dumps(str(header_path.resolve()))}
+with open(header_path, "r", encoding="utf-8") as header_file:
+    header = header_file.read()
+parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
+    header,
+    header_path,
+    bv.platform,
+    None,
+)
+parse_errors = [str(error) for error in (errors or ())]
+if parsed is None and not parse_errors:
+    parse_errors.append("type parser returned no result")
+if parsed is None or errors:
+    result = {{
+        "errors": parse_errors,
+        "types": [],
+    }}
+else:
+    result = {{
+        "errors": [],
+        "types": [
+            {{
+                "name": str(parsed_type.name),
+                "equivalent": (
+                    (current := bv.get_type_by_name(parsed_type.name)) is not None
+                    and current == parsed_type.type
+                ),
+            }}
+            for parsed_type in parsed.types
+        ],
+    }}
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"Binary Ninja returned no type audit for {header_path}")
+    errors = payload.get("errors")
+    if not isinstance(errors, list) or any(not isinstance(error, str) for error in errors):
+        raise RuntimeError(f"Binary Ninja returned an invalid type audit for {header_path}")
+    if errors:
+        raise RuntimeError(f"type parsing failed for {header_path}: {'; '.join(errors)}")
+    entries = payload.get("types")
+    if not isinstance(entries, list) or not entries:
+        raise RuntimeError(f"header declares no types: {header_path}")
+
+    equivalence: dict[str, bool] = {}
+    for entry in entries:
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("name"), str)
+            or not isinstance(entry.get("equivalent"), bool)
+        ):
+            raise RuntimeError(f"Binary Ninja returned an invalid type entry for {header_path}")
+        equivalence[entry["name"]] = entry["equivalent"]
+    return equivalence
+
+
+def types_declare_if_changed(
+    repo_root: Path, *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Skip the expensive declaration preview when the live header is exact."""
+    equivalence = current_header_type_equivalence(
+        repo_root,
+        target=target,
+        header_path=header_path,
+    )
+    stale_types = tuple(name for name, equivalent in equivalence.items() if not equivalent)
+    if not stale_types:
+        return {
+            "op": "types_declare",
+            "status": "skipped",
+            "reason": "all parsed header types already equivalent",
+            "header": str(header_path),
+            "type_count": len(equivalence),
+        }
+
+    result = types_declare(
+        repo_root,
+        target=target,
+        header_path=header_path,
+    )
+    result["stale_types"] = stale_types
+    return result
+
+
 def types_declare_missing_only(
     repo_root: Path,
     *,

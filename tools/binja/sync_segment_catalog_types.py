@@ -6,12 +6,28 @@ from pathlib import Path
 import sys
 
 from _target import DEFAULT_TARGET
-from _narrow_sync import apply_proto_updates, emit_summary, types_declare
+from _narrow_sync import (
+    apply_data_var_updates,
+    apply_proto_updates,
+    apply_symbol_updates,
+    emit_summary,
+    types_declare_if_changed,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/segment_catalog_types.h"
 TARGET = DEFAULT_TARGET
+
+DATA_SYMBOL_UPDATES = (
+    ("0x74ec74", "g_current_level_definition_name"),
+    ("0x74ec78", "g_level_file_text_buffer"),
+)
+
+DATA_VAR_UPDATES = (
+    ("0x74ec74", "char*"),
+    ("0x74ec78", "LevelFileTextBuffer"),
+)
 
 PROTO_UPDATES = (
     (
@@ -43,10 +59,20 @@ PROTO_UPDATES = (
 
 def main() -> int:
     operations: list[dict[str, object]] = [
-        types_declare(
+        types_declare_if_changed(
             REPO_ROOT,
             target=TARGET,
             header_path=HEADER_PATH,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=DATA_SYMBOL_UPDATES,
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=DATA_VAR_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
     ]

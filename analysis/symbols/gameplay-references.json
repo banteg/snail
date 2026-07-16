@@ -4505,7 +4505,8 @@
       "aliases": [
         "data_74ec78"
       ],
-      "description": "Shared level-definition text buffer immediately following g_current_level_definition_name; load_level_definition_file loads the parsed Levels/*.txt file into this buffer and walks it as the parse cursor."
+      "size": "0x2800",
+      "description": "Shared level-definition text buffer immediately following g_current_level_definition_name; load_level_definition_file loads the parsed Levels/*.txt file into this buffer and walks it as the parse cursor. Its exact extent ends at the independently referenced g_time_trial_string global, and a full code-reference sweep found no interior owner."
     },
     {
       "address": "0x751478",

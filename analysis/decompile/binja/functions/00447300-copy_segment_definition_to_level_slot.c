@@ -3,21 +3,21 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: copy_segment_definition_to_level_slot @ 0x447300 */
 
-0044730d        int32_t* edi = &g_game_base[0x1075ae4]
+0044730d        struct SMTracks* edi = &g_game_base->subgame.sm_tracks
 00447313        int32_t i = 0
-00447318        if (*edi s> 0)
-0044731a        char* ebp_1 = &edi[0x11]
+00447318        if (edi->count s> 0)
+0044731a        char (* ebp_1)[0x40] = &edi->entries[0].filename
 0044732a        if (strings_equal_case_insensitive_path(segment_name, ebp_1) == 1)
 0044732a        break
 0044732e        i += 1
-0044732f        ebp_1 = &ebp_1[0x4088]
-00447337        do while (i s< *edi)
-0044733b        if (i == *edi)
-0044734a        report_errorf("Cannot find segment %s for %s", segment_name, data_74ec74)
+0044732f        ebp_1 = &(*ebp_1)[0x4088]
+00447337        do while (i s< edi->count)
+0044733b        if (i == edi->count)
+0044734a        report_errorf("Cannot find segment %s for %s", segment_name, g_current_level_definition_name)
 00447356        return
 0044735b        struct SubSegment* segment_1 = segment
 00447364        segment_name = 8
-00447371        void* edx_5 = &edi[i * 0x1022]
+00447371        void* edx_5 = edi + i * 0x4088
 00447374        char (* edi_1)[0x8][0x100] = &segment_1->glyph_rows
 00447377        char* ecx_1 = edx_5 + 0x8c
 004473ae        bool cond:0_1

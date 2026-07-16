@@ -86,7 +86,7 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index);
   if ( game->selected_level_record_active || game->selected_level_record_persistent )
   {
-    game->rate_or_level_arg.level_arg_tail = LODWORD(game->selected_level_record->replay_speed_scalar);
+    game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
     game->level_mode = game->selected_level_record->replay_mode_id;
     game->completion_bonus_y_source = game->selected_level_record->challenge_difficulty_value;
     game->completion_bonus_x_source = game->selected_level_record->challenge_speed_value;
@@ -102,10 +102,11 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
     case 0:
     case 4:
     case 7:
-      if ( game->level_definition.selected_speed_bits == -1082130432 )
+      if ( game->level_definition.selected_speed.bits == -1082130432 )
         game->rate_or_level_arg.base_rate = calc_slider_to_rate(0.0);
       else
-        game->rate_or_level_arg.base_rate = game->level_definition.selected_speed * 0.0099999998 * 0.90000004 + 0.2;
+        game->rate_or_level_arg.base_rate = game->level_definition.selected_speed.value * 0.0099999998 * 0.90000004
+                                          + 0.2;
       break;
     case 1:
       v48 = (double)g_runtime_config.completion_bonus_x_source * 0.0099999998;
@@ -120,8 +121,8 @@ LABEL_24:
   }
   if ( game->selected_level_record_active || game->selected_level_record_persistent )
   {
-    game->garbage_frequency = game->selected_level_record->garbage_frequency;
-    game->salt_frequency = game->selected_level_record->salt_frequency;
+    LODWORD(game->garbage_frequency) = game->selected_level_record->garbage_frequency.bits;
+    LODWORD(game->salt_frequency) = game->selected_level_record->salt_frequency.bits;
   }
   else
   {

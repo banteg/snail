@@ -41,7 +41,7 @@
 00437fa0        int32_t edx
 00437fa0        __saved_ebp_16, edx = load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, level_index)
 00437fb7        if (game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0)
-00438065        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar_bits
+00438065        game->rate_or_level_arg.base_rate = game->selected_level_record->replay_speed_scalar.bits
 00438071        game->level_mode = game->selected_level_record->replay_mode_id
 0043807d        game->completion_bonus_y_source = game->selected_level_record->challenge_difficulty_value
 00438089        game->completion_bonus_x_source = game->selected_level_record->challenge_speed_value
@@ -50,8 +50,8 @@
 00437fc3        if (level_mode == 3)
 00437fcb        game->rate_or_level_arg.base_rate = g_runtime_config.default_challenge_speed_slider
 00437fdf        if (level_mode == 0 || level_mode == 4 || level_mode == 7)
-00438030        if (game->level_definition..selected_speed != 0xbf800000)
-00438057        game->rate_or_level_arg.base_rate = fconvert.s(fconvert.t(game->level_definition..selected_speed) * fconvert.t(0.00999999978f) * fconvert.t(0.900000036f) + fconvert.t(0.200000003f))
+00438030        if (game->level_definition.selected_speed.bits != 0xbf800000)
+00438057        game->rate_or_level_arg.base_rate = fconvert.s(fconvert.t(game->level_definition.selected_speed.bits) * fconvert.t(0.00999999978f) * fconvert.t(0.900000036f) + fconvert.t(0.200000003f))
 0043803a        game->rate_or_level_arg.base_rate = fconvert.s(calc_slider_to_rate(0f))
 00437fe4        if (level_mode == 1)
 00437fec        int32_t __saved_ebp_6 = __saved_ebp_16
@@ -62,12 +62,12 @@
 004380b0        if (game->selected_level_record_active != 0 || game->selected_level_record_persistent != 0)
 0043812a        struct SubSolution* selected_level_record = game->selected_level_record
 00438130        float edx_5
-00438130        edx_5.b = selected_level_record->garbage_frequency.b
-00438130        edx_5:1.b = selected_level_record->garbage_frequency:1.b
-00438130        edx_5:2.b = selected_level_record->garbage_frequency:2.b
-00438130        edx_5:3.b = selected_level_record->garbage_frequency:3.b
+00438130        edx_5.b = selected_level_record->garbage_frequency.bits.b
+00438130        edx_5:1.b = selected_level_record->garbage_frequency.bits.__offset(0x1).b
+00438130        edx_5:2.b = selected_level_record->garbage_frequency.bits.__offset(0x2).b
+00438130        edx_5:3.b = selected_level_record->garbage_frequency.bits.__offset(0x3).b
 00438136        game->garbage_frequency = edx_5
-00438148        game->salt_frequency = game->selected_level_record->salt_frequency
+00438148        game->salt_frequency = game->selected_level_record->salt_frequency.bits
 004380b2        int32_t level_mode_1 = game->level_mode
 004380cb        if (level_mode_1 == 2 || level_mode_1 == 3 || level_mode_1 == 0 || level_mode_1 == 4 || level_mode_1 == 7)
 00438110        game->garbage_frequency = fconvert.s(fconvert.t(game->level_definition.garbage_frequency) * fconvert.t(0.00999999978f))
