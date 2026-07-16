@@ -17,7 +17,6 @@ extern GameRoot* g_game; // data_4df904
 extern float g_mouse_live_x[]; // data_777d58
 extern float g_mouse_live_y[]; // data_777d60
 extern char g_hide_system_cursor_flag; // data_777d70
-extern DirectInputDevice* g_mouse_device; // data_777d9c
 
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
 unsigned char read_left_mouse_button_state(int slot); // @ 0x407810
@@ -47,7 +46,7 @@ int update_mouse(HWND hwnd)
     if (g_mouse_device != 0) {
         memset(&state, 0, sizeof(state));
 
-        if (g_mouse_device->GetDeviceState(20, &state) < 0) {
+        if (g_mouse_device->GetDeviceState(sizeof(state), &state) < 0) {
             while (g_mouse_device->Acquire() == 0x8007001e) {
             }
         }

@@ -11,3 +11,8 @@ jumps forward on successful polling.
 this cdecl call and releases it in the shared three-poller stack cleanup. The
 body does not consume the argument, so the exact implementation could not prove
 the signature alone; adopting the proven `HWND` parameter leaves it 100.00%.
+
+2026-07-16 state-owner closure: the poller now borrows the canonical keyboard
+device and the fixed previous/current 256-key pair. Copy, clear, and
+`GetDeviceState` sizes all derive from that owner. Focused output remains exact
+at 199/199 instructions with all 34 operands clean.

@@ -9,25 +9,35 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 unsigned char is_key_down(int key_code);
 int set_input_controller_slot0_button_axes(int buttons, float axis_x, float axis_y);
 
-extern DirectInputDevice* g_keyboard_device; // data_777d50
-extern unsigned char g_keyboard_previous_state[0x100]; // data_777b4c
-extern unsigned char g_keyboard_current_state[0x100]; // data_777c4c
-
 int update_keyboard_input(HWND)
 {
     DirectInputDevice* device = g_keyboard_device;
     if (device != 0) {
-        memcpy(g_keyboard_previous_state, g_keyboard_current_state, 0x100);
-        memset(g_keyboard_current_state, 0, 0x100);
+        memcpy(
+            g_keyboard_previous_state,
+            g_keyboard_current_state,
+            sizeof(g_keyboard_current_state));
+        memset(
+            g_keyboard_current_state,
+            0,
+            sizeof(g_keyboard_current_state));
 
-        if (device->GetDeviceState(0x100, g_keyboard_current_state) < 0) {
+        if (device->GetDeviceState(
+                sizeof(g_keyboard_current_state),
+                g_keyboard_current_state) < 0) {
             int result = g_keyboard_device->Acquire();
             while (result == 0x8007001e)
                 result = g_keyboard_device->Acquire();
 
             if (result == 0x80070005 || result == 0x8007000c) {
-                memset(g_keyboard_current_state, 0, 0x100);
-                memset(g_keyboard_previous_state, 0, 0x100);
+                memset(
+                    g_keyboard_current_state,
+                    0,
+                    sizeof(g_keyboard_current_state));
+                memset(
+                    g_keyboard_previous_state,
+                    0,
+                    sizeof(g_keyboard_previous_state));
                 return 0;
             }
         } else {

@@ -3,6 +3,7 @@
 
 enum {
     DIRECT_INPUT_JOYSTICK_CAPACITY = 4,
+    DIRECT_INPUT_KEY_COUNT = 0x100,
     DIRECT_INPUT_BUTTON_COUNT = 128,
 };
 
@@ -197,5 +198,30 @@ extern int g_joystick_count; // data_777b2c
 extern DirectInput* g_joystick_input; // data_777b30
 extern DirectInputDevice*
     g_joystick_devices[DIRECT_INPUT_JOYSTICK_CAPACITY]; // data_777b34
+
+// Process-owned keyboard state. Initialization creates the two COM objects;
+// polling advances the fixed previous/current SDK key-state pair; teardown
+// releases the interfaces.
+extern DirectInput* g_keyboard_input; // data_777d4c
+extern DirectInputDevice* g_keyboard_device; // data_777d50
+extern unsigned char
+    g_keyboard_previous_state[DIRECT_INPUT_KEY_COUNT]; // data_777b4c
+extern unsigned char
+    g_keyboard_current_state[DIRECT_INPUT_KEY_COUNT]; // data_777c4c
+
+// Process-owned mouse interfaces. The authored pointer coordinates and Win32
+// clipping state have separate owners; only the DirectInput lifetime lives
+// here.
+extern DirectInput* g_mouse_input; // data_777d98
+extern DirectInputDevice* g_mouse_device; // data_777d9c
+
+// Borrowed static DirectInput SDK identifiers and data-format descriptors.
+// The keyboard, mouse, and joystick setup paths all consume this one bank.
+extern DirectInputGuid g_directinput_keyboard_guid; // data_49b010
+extern DirectInputGuid g_directinput_mouse_guid; // data_49b020
+extern DirectInputGuid g_directinput8_iid; // data_49b0c0
+extern DIDATAFORMAT g_directinput_joystick_data_format; // data_49b2fc
+extern DIDATAFORMAT g_directinput_keyboard_data_format; // data_49b504
+extern DIDATAFORMAT g_directinput_mouse_data_format; // data_49b70c
 
 #endif

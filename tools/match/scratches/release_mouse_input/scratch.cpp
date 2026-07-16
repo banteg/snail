@@ -2,9 +2,6 @@
 
 #include "direct_input_view.h"
 
-extern DirectInput* g_mouse_input; // data_777d98
-extern DirectInputDevice* g_mouse_device; // data_777d9c
-
 int release_mouse_input()
 {
     DirectInputDevice* device = g_mouse_device;

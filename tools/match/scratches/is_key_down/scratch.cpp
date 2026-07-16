@@ -1,6 +1,6 @@
 // is_key_down @ 0x44bb40 (cdecl)
 
-extern unsigned char g_keyboard_current_state[0x100]; // data_777c4c
+#include "direct_input_view.h"
 
 unsigned char is_key_down(int key_code)
 {

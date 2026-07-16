@@ -72,3 +72,10 @@ with 70 clean operands and the same one alignment mismatch.
 - Final focused Wibo is 100.00% (`295/295`, full prefix), with all 81 masked
   operands resolved and equal. No register hints, volatile state, or dummy
   control flow are used.
+
+## 2026-07-16 shared DirectInput state ownership
+
+The poller now borrows the canonical process-owned mouse device, and its
+`GetDeviceState` byte count derives from the complete 20-byte SDK state record.
+Initialization and teardown use the same shared parent/device lifetime. The
+function remains exact at 295/295 instructions with all 81 operands clean.

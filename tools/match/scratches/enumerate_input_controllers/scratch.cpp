@@ -18,9 +18,6 @@ int __stdcall configure_input_controller_axis_range_callback(
     DIDEVICEOBJECTINSTANCEA* instance,
     void* context);
 
-extern DirectInputGuid g_directinput8_iid; // data_49b0c0
-extern DIDATAFORMAT g_directinput_joystick_data_format; // data_49b2fc
-
 int enumerate_input_controllers(HWND hwnd, int* out_count)
 {
     g_joystick_count = 0;

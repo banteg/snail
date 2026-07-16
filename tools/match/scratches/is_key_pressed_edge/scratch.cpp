@@ -1,7 +1,6 @@
 // is_key_pressed_edge @ 0x44bb10 (cdecl)
 
-extern unsigned char g_keyboard_previous_state[0x100]; // data_777b4c
-extern unsigned char g_keyboard_current_state[0x100];  // data_777c4c
+#include "direct_input_view.h"
 
 unsigned char is_key_pressed_edge(int key_code)
 {

@@ -15,14 +15,6 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 
 void release_input_controllers();
 
-extern DirectInput* g_keyboard_input; // data_777d4c
-extern DirectInputDevice* g_keyboard_device; // data_777d50
-extern unsigned char g_keyboard_previous_state[0x100]; // data_777b4c
-extern unsigned char g_keyboard_current_state[0x100]; // data_777c4c
-extern DirectInputGuid g_directinput8_iid; // data_49b0c0
-extern DirectInputGuid g_directinput_keyboard_guid; // data_49b010
-extern DIDATAFORMAT g_directinput_keyboard_data_format; // data_49b504
-
 int initialize_keyboard_input(HWND hwnd)
 {
     GetWindowLongA(hwnd, -6);
@@ -45,8 +37,14 @@ int initialize_keyboard_input(HWND hwnd)
                 result = g_keyboard_device->SetCooperativeLevel(hwnd, 5);
                 if (result >= 0) {
                     g_keyboard_device->Acquire();
-                    memset(g_keyboard_previous_state, 0, 0x100);
-                    memset(g_keyboard_current_state, 0, 0x100);
+                    memset(
+                        g_keyboard_previous_state,
+                        0,
+                        sizeof(g_keyboard_previous_state));
+                    memset(
+                        g_keyboard_current_state,
+                        0,
+                        sizeof(g_keyboard_current_state));
                     return 0;
                 }
             }

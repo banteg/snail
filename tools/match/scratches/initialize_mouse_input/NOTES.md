@@ -15,3 +15,8 @@
   locals before storing them; this lets VC6 keep the native schedule where the
   X store precedes the nested `GetModuleHandleA(0)` argument push and the hide
   flag store.
+
+2026-07-16 shared-state closure: the mouse parent/device interfaces and its
+borrowed IID, system GUID, and data format now come from the canonical
+DirectInput state bank used across initialization, polling, and teardown. The
+function remains exact at 46/46 instructions with all 18 operands clean.
