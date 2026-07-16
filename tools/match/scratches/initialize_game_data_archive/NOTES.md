@@ -83,3 +83,12 @@ The initializer and all five consumers remain byte-identical:
 - second-region accessor: `5d7dfafc53d46ca3b9ac447302e7cd6d334924e118d117e6a415fd374aff0317`
 - music cache: `d07b24a7d7e26ffb2e76c383884f7140ca6d1659abf326acd426d91e2f849ffa`
 - sample registration: `4c26a7c9c45bbaa1fc167475662dda1dba4e7ff8527e74f64df1dc1a5adcd335`
+
+## 2026-07-16 RShell repeat and clip ownership
+
+The three split repeat globals now share their cross-port-authored RShell
+owner with `RShellInkeyInput()`. The final discarded clip sample is also the
+complete Win32 `Rect` required by `GetClipCursor`, replacing a byte-array stack
+surrogate without changing its 16-byte extent. Focused output remains 94.74%,
+48/47 instructions, with all 19 operands clean and only the documented
+controller-cursor scheduling residual.

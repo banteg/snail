@@ -2,20 +2,19 @@
 
 #include "archive_index.h"
 #include "input_controller_state.h"
+#include "rect.h"
+#include "text_input_repeat_state.h"
 #include "tracked_allocation_stack.h"
 
 extern int g_tracked_allocation_total_bytes; // data_5108b4
-extern float g_text_input_repeat_accumulator; // data_5108b8
-extern float g_text_input_repeat_step;        // data_50339c
-extern unsigned char g_text_input_last_repeat_code; // data_53c7f5
 char load_archive_index(char* path);
 void reset_registered_sound_sample_count();
 void* allocate_tracked_memory(int size, char* name);
-extern "C" __declspec(dllimport) int __stdcall GetClipCursor(void* rect);
+extern "C" __declspec(dllimport) int __stdcall GetClipCursor(Rect* rect);
 
 char initialize_game_data_archive()
 {
-    char clip_rect[16];
+    Rect clip_rect;
     int zero = 0;
 
     g_archive_startup_flag = (unsigned char)zero;
@@ -48,6 +47,6 @@ char initialize_game_data_archive()
         slot_axis_y += 0x38;
     } while ((int)slot_axis_y < 0x5033b0);
 
-    GetClipCursor(clip_rect);
+    GetClipCursor(&clip_rect);
     return 1;
 }

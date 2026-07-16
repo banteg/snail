@@ -113,3 +113,9 @@ Remaining residuals:
   prefix, and 73 clean masked operands. The remaining repeat-tail call order is
   still a scheduling residual, not evidence for a different owner or source
   model.
+
+- 2026-07-16 shared-state closure: those three authored RShell globals now
+  live in one canonical matcher header consumed by both `RShellInit()` and
+  `RShellInkeyInput()`. The function remains at the honest 99.32% baseline,
+  440/440 instructions, 408/440 prefix, and 73 clean operands; no rejected
+  fold-order coercion was reintroduced.

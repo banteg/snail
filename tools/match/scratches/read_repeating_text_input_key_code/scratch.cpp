@@ -1,8 +1,6 @@
 // read_repeating_text_input_key_code @ 0x4327e0 (cdecl)
 
-extern float g_text_input_repeat_step;              // data_50339c
-extern float g_text_input_repeat_accumulator;       // data_5108b8
-extern unsigned char g_text_input_last_repeat_code; // data_53c7f5
+#include "text_input_repeat_state.h"
 
 unsigned char is_key_down(int key_code); // @ 0x44bb40
 char ascii_upper_if_lowercase(char value); // @ 0x44e5a0
