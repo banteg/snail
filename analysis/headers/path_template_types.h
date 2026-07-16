@@ -1132,13 +1132,15 @@ typedef struct RuntimeRowStrideAnchor {
 } RuntimeRowStrideAnchor;
 
 /* Native likewise carries a SubgameRuntime-relative 0x54-byte cell cursor.
- * The guarded previous-row tile access is one row stride (0x2a0) behind the
- * current cell's tile_id; the current TrackRowCell begins at +0x3bfac8. */
+ * The same-lane neighbors are one eight-cell row stride (0x2a0) before and
+ * after the current TrackRowCell at +0x3bfac8. */
 typedef struct RuntimeCellStrideAnchor {
-    uint8_t runtime_prefix_before_previous_row_tile_id[0x3bf864];
-    uint8_t previous_row_same_lane_tile_id;
-    uint8_t runtime_prefix_after_previous_row_tile_id[0x263];
+    uint8_t runtime_prefix_before_previous_row_same_lane[0x3bf828];
+    TrackRowCell previous_row_same_lane;
+    uint8_t runtime_gap_previous_to_current[0x24c];
     TrackRowCell cell;
+    uint8_t runtime_gap_current_to_next[0x24c];
+    TrackRowCell next_row_same_lane;
 } RuntimeCellStrideAnchor;
 
 typedef enum PathTemplateKind {

@@ -661,7 +661,7 @@ LABEL_173:
                 runtime_cell_anchor->cell.bod.list_flags = v68;
                 break;
               case '>':
-                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane_tile_id == 3 )
+                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == 3 )
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
@@ -672,7 +672,7 @@ LABEL_173:
                   v73 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v73) = v73 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v73;
-                  runtime_cell_anchor->previous_row_same_lane_tile_id = 12;
+                  runtime_cell_anchor->previous_row_same_lane.tile_id = 12;
                 }
                 else
                 {
@@ -831,7 +831,7 @@ LABEL_174:
                 runtime_cell_anchor->cell.bod.list_flags = v62;
                 break;
               case '{':
-                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane_tile_id == 3 )
+                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == 3 )
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
@@ -842,7 +842,7 @@ LABEL_174:
                   v77 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v77) = v77 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v77;
-                  runtime_cell_anchor->previous_row_same_lane_tile_id = 11;
+                  runtime_cell_anchor->previous_row_same_lane.tile_id = 11;
                 }
                 else
                 {
@@ -858,7 +858,7 @@ LABEL_174:
                 }
                 break;
               case '}':
-                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane_tile_id == 3 )
+                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane.tile_id == 3 )
                 {
                   set_bod_object(
                     (BodBase *)&runtime_cell_anchor->cell,
@@ -869,7 +869,7 @@ LABEL_174:
                   v75 = runtime_cell_anchor->cell.bod.list_flags;
                   LOBYTE(v75) = v75 | 0x20;
                   runtime_cell_anchor->cell.bod.list_flags = v75;
-                  runtime_cell_anchor->previous_row_same_lane_tile_id = 13;
+                  runtime_cell_anchor->previous_row_same_lane.tile_id = 13;
                 }
                 else
                 {

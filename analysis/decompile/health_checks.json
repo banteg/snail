@@ -7953,7 +7953,7 @@
         "struct RuntimeRowStrideAnchor* runtime_row_anchor",
         "struct RuntimeCellStrideAnchor* runtime_cell_anchor",
         "runtime_row_anchor->row.source_segment",
-        "runtime_cell_anchor->previous_row_same_lane_tile_id",
+        "runtime_cell_anchor->previous_row_same_lane.tile_id",
         "runtime_cell_anchor->cell.attachment_template_record",
         "runtime_row_anchor->row.attachment_body"
       ],
@@ -7977,7 +7977,7 @@
         "int32_t segment_row_index;",
         "segment_row_anchor->row.object_position",
         "v31->rows[segment_row_index].parcel_set_id",
-        "runtime_cell_anchor->previous_row_same_lane_tile_id",
+        "runtime_cell_anchor->previous_row_same_lane.tile_id",
         "runtime_cell_anchor->cell.attachment_template_record"
       ],
       "forbidden_substrings": [
@@ -7985,6 +7985,46 @@
         "uint8_t *runtime_row_anchor;",
         "char *runtime_cell_anchor;",
         "SubgameRuntime *segment_row_index;"
+      ]
+    },
+    {
+      "name": "bn_harmonize_runtime_cell_neighborhood_owner",
+      "artifact": "analysis/decompile/binja/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
+      "required_substrings": [
+        "struct RuntimeCellStrideAnchor* forward_cell_anchor",
+        "struct RuntimeCellStrideAnchor* backward_cell_anchor",
+        "forward_cell_anchor->next_row_same_lane.lane_and_flags",
+        "forward_cell_anchor->next_row_same_lane.tile_id",
+        "backward_cell_anchor->previous_row_same_lane.lane_and_flags",
+        "backward_cell_anchor->previous_row_same_lane.tile_id",
+        "game_base_1->root_bod_catalog.floor_slices"
+      ],
+      "forbidden_substrings": [
+        "void* esi",
+        "void* esi_1",
+        "__offset(0x3bf",
+        "*(esi + 0x3bf"
+      ]
+    },
+    {
+      "name": "ida_harmonize_runtime_cell_neighborhood_owner",
+      "artifact": "analysis/decompile/ida/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
+      "required_substrings": [
+        "RuntimeCellStrideAnchor *forward_cell_anchor;",
+        "RuntimeCellStrideAnchor *backward_cell_anchor;",
+        "forward_cell_anchor->next_row_same_lane.lane_and_flags",
+        "forward_cell_anchor->next_row_same_lane.tile_id",
+        "backward_cell_anchor->previous_row_same_lane.lane_and_flags",
+        "backward_cell_anchor->previous_row_same_lane.tile_id",
+        "g_game_base->root_bod_catalog.floor_slices",
+        "v8->root_bod_catalog.floor_corners"
+      ],
+      "forbidden_substrings": [
+        "char *v7;",
+        "char *v12;",
+        "3930888",
+        "3931496",
+        "unknown_000b48["
       ]
     }
   ]

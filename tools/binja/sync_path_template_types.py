@@ -14,8 +14,8 @@ from _narrow_sync import (
     apply_struct_field_updates,
     apply_symbol_updates,
     apply_user_var_updates,
+    current_header_type_equivalence,
     current_prototypes,
-    current_type_widths,
     emit_summary,
     normalize_prototype,
     run_bn,
@@ -294,27 +294,34 @@ REQUIRED_HEADER_STRUCTS = (
 )
 
 
-def ensure_presentation_wobble_controller(
+def ensure_path_analysis_views(
     *, target: str, header_path: Path
 ) -> dict[str, object]:
-    """Replace the historical padded view with the exact four-float lane."""
-    type_name = "PresentationWobbleController"
-    widths = current_type_widths(REPO_ROOT, target=target, type_names=(type_name,))
-    if widths.get(type_name) == 0x10:
+    """Replace mutable analysis views whenever their parsed shape changes."""
+    type_names = ("PresentationWobbleController", "RuntimeCellStrideAnchor")
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    stale_types = tuple(
+        type_name for type_name in type_names if not equivalence.get(type_name, False)
+    )
+    if not stale_types:
         return {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "presentation wobble controller already has exact width",
+            "reason": "mutable path analysis views already match the header",
             "header": str(header_path),
             "replace_types": (),
-            "include_types": (type_name,),
+            "include_types": type_names,
         }
     return types_declare_missing_only(
         REPO_ROOT,
         target=target,
         header_path=header_path,
-        replace_types=(type_name,),
-        include_types=(type_name,),
+        replace_types=stale_types,
+        include_types=type_names,
     )
 
 SUB_PAUSE_FIELD_UPDATES = (
@@ -497,6 +504,28 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         2002,
         72,
         "runtime_cell_anchor",
+        "RuntimeCellStrideAnchor*",
+    ),
+)
+
+# SlideSmoothTrack carries the same SubgameRuntime-relative cell cursor in two
+# disjoint ESI lifetimes. The first compares the current cell with the next
+# same-lane row; the second compares it with the previous same-lane row.
+HARMONIZE_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "harmonize_center_lane_floor_slide_variants",
+        "RegisterVariableSourceType",
+        98,
+        72,
+        "forward_cell_anchor",
+        "RuntimeCellStrideAnchor*",
+    ),
+    (
+        "harmonize_center_lane_floor_slide_variants",
+        "RegisterVariableSourceType",
+        492,
+        72,
+        "backward_cell_anchor",
         "RuntimeCellStrideAnchor*",
     ),
 )
@@ -1689,7 +1718,7 @@ def main() -> int:
             )
         )
         operations.append(
-            ensure_presentation_wobble_controller(
+            ensure_path_analysis_views(
                 target=args.target,
                 header_path=header_path,
             )
@@ -1788,6 +1817,7 @@ def main() -> int:
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
+                *HARMONIZE_RUNTIME_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),
         )

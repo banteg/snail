@@ -2749,15 +2749,31 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
     assert "uint8_t runtime_prefix[0x5ccac8];" in analysis_path_header
     assert "typedef struct RuntimeCellStrideAnchor" in analysis_path_header
-    assert "uint8_t previous_row_same_lane_tile_id;" in analysis_path_header
-    assert "uint8_t runtime_prefix_after_previous_row_tile_id[0x263];" in analysis_path_header
+    assert "TrackRowCell previous_row_same_lane;" in analysis_path_header
+    assert "uint8_t runtime_gap_previous_to_current[0x24c];" in analysis_path_header
+    assert "TrackRowCell next_row_same_lane;" in analysis_path_header
+
+    assert "HARMONIZE_RUNTIME_USER_VAR_UPDATES" in binja_source
+    assert '"RegisterVariableSourceType",\n        98,\n        72,' in binja_source
+    assert '"RegisterVariableSourceType",\n        492,\n        72,' in binja_source
+    assert '"forward_cell_anchor"' in binja_source
+    assert '"backward_cell_anchor"' in binja_source
+    assert "*HARMONIZE_RUNTIME_USER_VAR_UPDATES" in binja_source
 
     assert "POPULATE_RUNTIME_LVAR_SPECS" in ida_path_sync
     assert "0x4362E6" in ida_path_sync
     assert "0x436404" in ida_path_sync
     assert "0x436459" in ida_path_sync
     assert "0x436683" in ida_path_sync
+    assert "HARMONIZE_RUNTIME_LVAR_SPECS" in ida_path_sync
+    assert "0x435753" in ida_path_sync
+    assert "0x4358DD" in ida_path_sync
+    assert "HARMONIZE_ROOT_OFFSET_OPERANDS" in ida_path_sync
+    assert "(0x4357A0, 1, 0x447B4)" in ida_path_sync
+    assert "(0x435A1F, 1, 0x4423C)" in ida_path_sync
+    assert "_sync_exact_lvars" in ida_path_sync
     assert "_sync_populate_runtime_lvars" in ida_path_sync
+    assert "_sync_harmonize_runtime_lvars" in ida_path_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync
     assert "SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372" in ida_segment_sync
@@ -4398,8 +4414,10 @@ def test_presentation_wobble_view_stays_exact_and_replayable() -> None:
     assert "PresentationWobbleController_must_be_0x10" in matcher_header
     assert '"PresentationWobbleController",' in binja_sync
     assert '("0x15bc", "wobble", "PresentationWobbleController")' in binja_sync
-    assert "ensure_presentation_wobble_controller(" in binja_sync
-    assert "replace_types=(type_name,)" in binja_sync
+    assert "ensure_path_analysis_views(" in binja_sync
+    assert "current_header_type_equivalence(" in binja_sync
+    assert '"RuntimeCellStrideAnchor"' in binja_sync
+    assert "replace_types=stale_types" in binja_sync
     assert "PRESENTATION_WOBBLE_CONTROLLER_FIELD_UPDATES" in binja_sync
 
     consumers = {
@@ -4615,16 +4633,22 @@ def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch)
 
     def fake_run_bn(_repo_root, *args):
         calls.append(args)
-        if args[:3] == ("types", "declare", "--preview"):
-            return {
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
                 "success": True,
-                "preview": True,
-                "committed": False,
-                "message": "Preview verified and reverted.",
-                "affected_types": ["SubgameRuntime"],
-                "affected_functions": [],
+                "preview": preview,
+                "committed": not preview,
+                "applied": [{"name": "SubgameRuntime", "verified": True}],
+                "restoration": (
+                    [{"name": "SubgameRuntime", "verified": True}]
+                    if preview
+                    else []
+                ),
+                "snapshot_saved": not preview,
             }
-        return {"result": {"applied": [{"name": "SubgameRuntime", "verified": True}]}}
+        }
 
     monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
 
@@ -4638,9 +4662,18 @@ def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch)
     assert result["op"] == "types_declare_missing_only"
     assert result["missing_structs"] == ("SubgameRuntime",)
     assert result["include_types"] == ("SubgameRuntime",)
-    assert calls[0][:3] == ("types", "declare", "--preview")
+    assert len(calls) == 2
+    assert calls[0][:2] == ("py", "exec")
     assert calls[1][:2] == ("py", "exec")
+    assert "included_names = set([\"SubgameRuntime\"])" in calls[0][-1]
+    assert "preview = True" in calls[0][-1]
+    assert "begin_undo_actions" in calls[0][-1]
+    assert "revert_undo_actions" in calls[0][-1]
+    assert "preview = False" in calls[1][-1]
+    assert "commit_undo_actions" in calls[1][-1]
+    assert "save_auto_snapshot" in calls[1][-1]
     assert "define_user_type" in calls[1][-1]
+    assert all(call[:2] != ("types", "declare") for call in calls)
 
 
 def test_types_declare_if_missing_skips_complete_structs(monkeypatch) -> None:
@@ -4673,15 +4706,18 @@ def test_types_declare_if_missing_rejects_header_without_requested_type(monkeypa
     )
 
     def fake_run_bn(_repo_root, *args):
-        if args[:3] == ("types", "declare", "--preview"):
-            return {
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
                 "success": True,
-                "preview": True,
-                "committed": False,
-                "affected_types": [],
-                "affected_functions": [],
+                "preview": preview,
+                "committed": not preview,
+                "applied": [],
+                "restoration": [],
+                "snapshot_saved": False,
             }
-        return {"result": {"applied": []}}
+        }
 
     monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
 

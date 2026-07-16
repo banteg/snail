@@ -11,12 +11,12 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
   int v4; // edx
   int v5; // ecx
   char lane_and_flags; // al
-  char *v7; // esi
+  RuntimeCellStrideAnchor *forward_cell_anchor; // esi
   GameRoot *v8; // eax
   int j; // edi
   GameRoot *v10; // eax
   int k; // edi
-  char *v12; // esi
+  RuntimeCellStrideAnchor *backward_cell_anchor; // esi
   GameRoot *v13; // eax
   int m; // edi
   GameRoot *v15; // eax
@@ -39,48 +39,57 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
       {
         v5 = v3 + 8 * result;
         lane_and_flags = v1->runtime_cells[0][v5].lane_and_flags;
-        v7 = (char *)v1 + 84 * v5;
+        forward_cell_anchor = (RuntimeCellStrideAnchor *)((char *)v1 + 84 * v5);
         if ( (lane_and_flags & 0x20) == 0 )
         {
-          if ( (v7[3931560] & 0x20) == 0
-            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v7 + 3930824)) == 1
-            && ((unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v7 + 3931496)) == 1 || v7[3931556] == 30) )
+          if ( (forward_cell_anchor->next_row_same_lane.lane_and_flags & 0x20) == 0
+            && (unsigned __int8)is_sub_loc_floor(&forward_cell_anchor->cell) == 1
+            && ((unsigned __int8)is_sub_loc_slide(&forward_cell_anchor->next_row_same_lane) == 1
+             || forward_cell_anchor->next_row_same_lane.tile_id == 30) )
           {
             v8 = g_game_base;
-            if ( *((_DWORD *)v7 + 982715) == *(_DWORD *)&g_game_base->unknown_000b48[277612] )
+            if ( forward_cell_anchor->cell.object == g_game_base->root_bod_catalog.floor_slices.storage[0].object )
             {
-              set_bod_object((_DWORD *)v7 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
-              *((_DWORD *)v7 + 982722) |= 0x40u;
+              set_bod_object(
+                (BodBase *)&forward_cell_anchor->cell,
+                (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+              forward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v8 = g_game_base;
             }
-            for ( j = 0; j < 224; j += 56 )
+            for ( j = 0; j < 4; ++j )
             {
-              if ( *((_DWORD *)v7 + 982715) == *(_DWORD *)&v8->unknown_000b48[j + 276212] )
+              if ( forward_cell_anchor->cell.object == v8->root_bod_catalog.floor_corners.storage[j].object )
               {
-                set_bod_object((_DWORD *)v7 + 982706, *(_DWORD *)&v8->unknown_000b48[j + 276660]);
-                *((_DWORD *)v7 + 982722) |= 0x40u;
+                set_bod_object(
+                  (BodBase *)&forward_cell_anchor->cell,
+                  (Object *)v8->root_bod_catalog.slide_corners.storage[j].object);
+                forward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v8 = g_game_base;
               }
             }
           }
-          if ( (v7[3930888] & 0x20) == 0
-            && (v7[3931560] & 0x20) == 0
-            && (unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v7 + 3930824)) == 1
-            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v7 + 3931496)) == 1 )
+          if ( (forward_cell_anchor->cell.lane_and_flags & 0x20) == 0
+            && (forward_cell_anchor->next_row_same_lane.lane_and_flags & 0x20) == 0
+            && (unsigned __int8)is_sub_loc_slide(&forward_cell_anchor->cell) == 1
+            && (unsigned __int8)is_sub_loc_floor(&forward_cell_anchor->next_row_same_lane) == 1 )
           {
             v10 = g_game_base;
-            if ( *((_DWORD *)v7 + 982715) == *(_DWORD *)&g_game_base->unknown_000b48[278508] )
+            if ( forward_cell_anchor->cell.object == g_game_base->root_bod_catalog.slide_slices.storage[0].object )
             {
-              set_bod_object((_DWORD *)v7 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
-              *((_DWORD *)v7 + 982722) |= 0x40u;
+              set_bod_object(
+                (BodBase *)&forward_cell_anchor->cell,
+                (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+              forward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v10 = g_game_base;
             }
-            for ( k = 0; k < 224; k += 56 )
+            for ( k = 0; k < 4; ++k )
             {
-              if ( *((_DWORD *)v7 + 982715) == *(_DWORD *)&v10->unknown_000b48[k + 276660] )
+              if ( forward_cell_anchor->cell.object == v10->root_bod_catalog.slide_corners.storage[k].object )
               {
-                set_bod_object((_DWORD *)v7 + 982706, *(_DWORD *)&v10->unknown_000b48[k + 276212]);
-                *((_DWORD *)v7 + 982722) |= 0x40u;
+                set_bod_object(
+                  (BodBase *)&forward_cell_anchor->cell,
+                  (Object *)v10->root_bod_catalog.floor_corners.storage[k].object);
+                forward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v10 = g_game_base;
               }
             }
@@ -89,48 +98,57 @@ int32_t __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *ga
       }
       else if ( v4 == 5 )
       {
-        v12 = (char *)v1 + 672 * result + 84 * v3;
-        if ( (v12[3930888] & 0x20) == 0 )
+        backward_cell_anchor = (RuntimeCellStrideAnchor *)((char *)v1 + 672 * result + 84 * v3);
+        if ( (backward_cell_anchor->cell.lane_and_flags & 0x20) == 0 )
         {
-          if ( (v12[3930216] & 0x20) == 0
-            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v12 + 3930824)) == 1
-            && ((unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v12 + 3930152)) == 1 || v12[3930212] == 32) )
+          if ( (backward_cell_anchor->previous_row_same_lane.lane_and_flags & 0x20) == 0
+            && (unsigned __int8)is_sub_loc_floor(&backward_cell_anchor->cell) == 1
+            && ((unsigned __int8)is_sub_loc_slide(&backward_cell_anchor->previous_row_same_lane) == 1
+             || backward_cell_anchor->previous_row_same_lane.tile_id == 32) )
           {
             v13 = g_game_base;
-            if ( *((_DWORD *)v12 + 982715) == *(_DWORD *)&g_game_base->unknown_000b48[277612] )
+            if ( backward_cell_anchor->cell.object == g_game_base->root_bod_catalog.floor_slices.storage[0].object )
             {
-              set_bod_object((_DWORD *)v12 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[278508]);
-              *((_DWORD *)v12 + 982722) |= 0x40u;
+              set_bod_object(
+                (BodBase *)&backward_cell_anchor->cell,
+                (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
+              backward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v13 = g_game_base;
             }
-            for ( m = 0; m < 224; m += 56 )
+            for ( m = 0; m < 4; ++m )
             {
-              if ( *((_DWORD *)v12 + 982715) == *(_DWORD *)&v13->unknown_000b48[m + 276212] )
+              if ( backward_cell_anchor->cell.object == v13->root_bod_catalog.floor_corners.storage[m].object )
               {
-                set_bod_object((_DWORD *)v12 + 982706, *(_DWORD *)&v13->unknown_000b48[m + 276660]);
-                *((_DWORD *)v12 + 982722) |= 0x40u;
+                set_bod_object(
+                  (BodBase *)&backward_cell_anchor->cell,
+                  (Object *)v13->root_bod_catalog.slide_corners.storage[m].object);
+                backward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v13 = g_game_base;
               }
             }
           }
-          if ( (v12[3930888] & 0x20) == 0
-            && (v12[3930216] & 0x20) == 0
-            && (unsigned __int8)is_sub_loc_slide((TrackRowCell *)(v12 + 3930824)) == 1
-            && (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v12 + 3930152)) == 1 )
+          if ( (backward_cell_anchor->cell.lane_and_flags & 0x20) == 0
+            && (backward_cell_anchor->previous_row_same_lane.lane_and_flags & 0x20) == 0
+            && (unsigned __int8)is_sub_loc_slide(&backward_cell_anchor->cell) == 1
+            && (unsigned __int8)is_sub_loc_floor(&backward_cell_anchor->previous_row_same_lane) == 1 )
           {
             v15 = g_game_base;
-            if ( *((_DWORD *)v12 + 982715) == *(_DWORD *)&g_game_base->unknown_000b48[278508] )
+            if ( backward_cell_anchor->cell.object == g_game_base->root_bod_catalog.slide_slices.storage[0].object )
             {
-              set_bod_object((_DWORD *)v12 + 982706, *(_DWORD *)&g_game_base->unknown_000b48[277612]);
-              *((_DWORD *)v12 + 982722) |= 0x40u;
+              set_bod_object(
+                (BodBase *)&backward_cell_anchor->cell,
+                (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
+              backward_cell_anchor->cell.lane_and_flags |= 0x40u;
               v15 = g_game_base;
             }
-            for ( n = 0; n < 224; n += 56 )
+            for ( n = 0; n < 4; ++n )
             {
-              if ( *((_DWORD *)v12 + 982715) == *(_DWORD *)&v15->unknown_000b48[n + 276660] )
+              if ( backward_cell_anchor->cell.object == v15->root_bod_catalog.slide_corners.storage[n].object )
               {
-                set_bod_object((_DWORD *)v12 + 982706, *(_DWORD *)&v15->unknown_000b48[n + 276212]);
-                *((_DWORD *)v12 + 982722) |= 0x40u;
+                set_bod_object(
+                  (BodBase *)&backward_cell_anchor->cell,
+                  (Object *)v15->root_bod_catalog.floor_corners.storage[n].object);
+                backward_cell_anchor->cell.lane_and_flags |= 0x40u;
                 v15 = g_game_base;
               }
             }

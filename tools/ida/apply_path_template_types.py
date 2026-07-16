@@ -76,6 +76,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x420CB0,  # update_track_attachment_follow_state
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
+    0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x43B120,  # update_subgoldy
 )
@@ -98,6 +99,21 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         "runtime_cell_anchor",
         "RuntimeCellStrideAnchor *runtime_cell_anchor;",
         0x436683,
+        None,
+    ),
+)
+
+HARMONIZE_RUNTIME_LVAR_SPECS = (
+    (
+        "forward_cell_anchor",
+        "RuntimeCellStrideAnchor *forward_cell_anchor;",
+        0x435753,
+        None,
+    ),
+    (
+        "backward_cell_anchor",
+        "RuntimeCellStrideAnchor *backward_cell_anchor;",
+        0x4358DD,
         None,
     ),
 )
@@ -131,6 +147,28 @@ ATTACHMENT_FOLLOW_ROOT_OFFSET_OPERANDS = (
     (0x420E1C, 1, 0x641184),  # SubRow::primary_attachment_cell
     (0x420E3D, 1, 0x641184),  # SubRow::primary_attachment_cell
     (0x420E63, 1, 0x641184),  # SubRow::primary_attachment_cell
+)
+
+# Four catalog banks are loaded repeatedly by SlideSmoothTrack. Their numeric
+# GameRoot displacements collide with named addresses, so normalize only these
+# exact operands and let the typed root owner fold them into the catalog.
+HARMONIZE_ROOT_OFFSET_OPERANDS = (
+    (0x4357A0, 1, 0x447B4),  # floor_slices[0].object compare
+    (0x4357A8, 1, 0x44B34),  # slide_slices[0].object replacement
+    (0x4357D1, 1, 0x4423C),  # floor_corners[0].object compare
+    (0x4357DC, 1, 0x443FC),  # slide_corners[0].object replacement
+    (0x435856, 1, 0x44B34),  # slide_slices[0].object compare
+    (0x43585E, 1, 0x447B4),  # floor_slices[0].object replacement
+    (0x435887, 1, 0x443FC),  # slide_corners[0].object compare
+    (0x435892, 1, 0x4423C),  # floor_corners[0].object replacement
+    (0x435931, 1, 0x447B4),  # floor_slices[0].object compare
+    (0x435939, 1, 0x44B34),  # slide_slices[0].object replacement
+    (0x435962, 1, 0x4423C),  # floor_corners[0].object compare
+    (0x43596D, 1, 0x443FC),  # slide_corners[0].object replacement
+    (0x4359E3, 1, 0x44B34),  # slide_slices[0].object compare
+    (0x4359EB, 1, 0x447B4),  # floor_slices[0].object replacement
+    (0x435A14, 1, 0x443FC),  # slide_corners[0].object compare
+    (0x435A1F, 1, 0x4423C),  # floor_corners[0].object replacement
 )
 
 
@@ -1219,8 +1257,10 @@ def _sync_color_lvars(selector: str) -> dict[str, object]:
     }
 
 
-def _sync_populate_runtime_lvars() -> dict[str, object]:
-    selector = "populate_runtime_track_cells_from_segments"
+def _sync_exact_lvars(
+    selector: str,
+    specs: tuple[tuple[str, str, int, int | None], ...],
+) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
@@ -1228,9 +1268,7 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
     cfunc = ida_hexrays.decompile(address)
     pending = []
     results = []
-    for expected_name, declaration, definition_address, stack_offset in (
-        POPULATE_RUNTIME_LVAR_SPECS
-    ):
+    for expected_name, declaration, definition_address, stack_offset in specs:
         candidates = [
             lvar
             for lvar in cfunc.get_lvars()
@@ -1361,6 +1399,20 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
         "selector": selector,
         "locals": results,
     }
+
+
+def _sync_populate_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "populate_runtime_track_cells_from_segments",
+        POPULATE_RUNTIME_LVAR_SPECS,
+    )
+
+
+def _sync_harmonize_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "harmonize_center_lane_floor_slide_variants",
+        HARMONIZE_RUNTIME_LVAR_SPECS,
+    )
 
 
 def _sync_subgame_receiver_lvar(
@@ -1662,6 +1714,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    harmonize_root_offset_operands = _normalize_root_offset_operands(
+        HARMONIZE_ROOT_OFFSET_OPERANDS
+    )
+    for result in harmonize_root_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "harmonize_center_lane_floor_slide_variants",
+                    "root_offset_operand": result,
+                }
+            )
 
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
@@ -1696,6 +1759,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "populate_runtime_track_cells_from_segments",
                 "runtime_lvars": populate_runtime_lvars,
+            }
+        )
+    harmonize_runtime_lvars = _sync_harmonize_runtime_lvars()
+    if harmonize_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "harmonize_center_lane_floor_slide_variants",
+                "runtime_lvars": harmonize_runtime_lvars,
             }
         )
     subgame_receiver_lvar_specs = {
@@ -1744,11 +1815,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "game_root_owner_graph": game_root_owner_graph,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
+                "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "populate_runtime_lvars": populate_runtime_lvars,
+                "harmonize_runtime_lvars": harmonize_runtime_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,
                 "dirty_functions": dirty_functions,
                 "missing": missing,

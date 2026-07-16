@@ -457,7 +457,7 @@
 004369fc        list_flags_17.b |= 0x20
 004369fe        runtime_cell_anchor->cell.bod.list_flags = list_flags_17
 00436ad0        case 0xd
-00436ad0        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane_tile_id != 3)
+00436ad0        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
 00436b21        set_bod_object(&runtime_cell_anchor->cell.bod.vtable, g_game_base->root_bod_catalog.ramp_edges[1].object)
 00436b26        runtime_cell_anchor->cell.render_arg_1c = 0
 00436b2c        runtime_cell_anchor->cell.render_arg_20 = 0f
@@ -478,7 +478,7 @@
 00436af9        uint32_t list_flags_18 = runtime_cell_anchor->cell.bod.list_flags
 00436aff        list_flags_18.b |= 0x20
 00436b01        runtime_cell_anchor->cell.bod.list_flags = list_flags_18
-00436b07        runtime_cell_anchor->previous_row_same_lane_tile_id = 0xc
+00436b07        runtime_cell_anchor->previous_row_same_lane.tile_id = 0xc
 0043676b        case 0xe
 0043676b        runtime_cell_anchor->cell.tile_id = 0
 00436772        uint32_t list_flags_3 = runtime_cell_anchor->cell.bod.list_flags
@@ -597,7 +597,7 @@
 004368ea        list_flags_11.b |= 0x20
 004368ec        runtime_cell_anchor->cell.bod.list_flags = list_flags_11
 00436beb        case 0x19
-00436beb        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane_tile_id != 3)
+00436beb        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
 00436c3c        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[0].object)
 00436c41        runtime_cell_anchor->cell.render_arg_1c = 0
 00436c47        runtime_cell_anchor->cell.render_arg_20 = 0f
@@ -612,9 +612,9 @@
 00436c13        uint32_t list_flags_22 = runtime_cell_anchor->cell.bod.list_flags
 00436c19        list_flags_22.b |= 0x20
 00436c1b        runtime_cell_anchor->cell.bod.list_flags = list_flags_22
-00436c21        runtime_cell_anchor->previous_row_same_lane_tile_id = 0xb
+00436c21        runtime_cell_anchor->previous_row_same_lane.tile_id = 0xb
 00436b5d        case 0x1a
-00436b5d        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane_tile_id != 3)
+00436b5d        if (j_1 s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != 3)
 00436ba0        struct GameRoot* game_base_7 = g_game_base
 00436ba6        struct Object* object_6
 00436ba6        object_6.b = game_base_7->root_bod_catalog.ramp_edges[2].object.b
@@ -635,7 +635,7 @@
 00436b86        uint32_t list_flags_20 = runtime_cell_anchor->cell.bod.list_flags
 00436b8c        list_flags_20.b |= 0x20
 00436b8e        runtime_cell_anchor->cell.bod.list_flags = list_flags_20
-00436b94        runtime_cell_anchor->previous_row_same_lane_tile_id = 0xd
+00436b94        runtime_cell_anchor->previous_row_same_lane.tile_id = 0xd
 00436712        case 0x1b
 00436712        goto label_436eb5
 00436eea        runtime_cell_anchor->cell.anchor_position.z = 0f

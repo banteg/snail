@@ -732,32 +732,14 @@ def types_declare_missing_only(
 ) -> dict[str, object]:
     replacement_names = tuple(replace_types)
     included_names = tuple(include_types)
-    preview = run_bn(
-        repo_root,
-        "types",
-        "declare",
-        "--preview",
-        "--target",
-        target,
-        "--file",
-        str(header_path),
-        "--format",
-        "json",
-    )
-    if (
-        not isinstance(preview, dict)
-        or preview.get("success") is not True
-        or preview.get("preview") is not True
-        or preview.get("committed") is not False
-    ):
-        raise RuntimeError(f"type declaration preview failed for {header_path}: {preview!r}")
-
-    code = f"""
+    def run_phase(*, preview: bool) -> tuple[dict[str, object], dict[str, object]]:
+        code = f"""
 import binaryninja
 
 header_path = {json.dumps(str(header_path))}
 replacement_names = set({json.dumps(replacement_names)})
 included_names = set({json.dumps(included_names)})
+preview = {preview!r}
 with open(header_path, "r", encoding="utf-8") as header_file:
     header = header_file.read()
 parsed, errors = binaryninja.TypeParser.default.parse_types_from_source(
@@ -770,6 +752,7 @@ if parsed is None or errors:
     raise RuntimeError("; ".join(str(error) for error in errors))
 
 candidates = []
+before_types = {{}}
 for parsed_type in parsed.types:
     parsed_name = str(parsed_type.name)
     if included_names and parsed_name not in included_names:
@@ -780,58 +763,117 @@ for parsed_type in parsed.types:
     should_replace = parsed_name in replacement_names
     if parsed_width > 0 and (before_width is None or before_width == 0 or should_replace):
         candidates.append((parsed_type, before_width))
+        before_types[parsed_name] = existing
 
-applied = []
-for parsed_type, before_width in sorted(candidates, key=lambda item: item[0].type.width):
-    bv.define_user_type(parsed_type.name, parsed_type.type)
-    applied.append({{
-        "name": str(parsed_type.name),
-        "before_width": before_width,
-        "after_width": parsed_type.type.width,
-    }})
+state = bv.begin_undo_actions()
+undo_closed = False
+snapshot_saved = False
+try:
+    for parsed_type, _before_width in sorted(
+        candidates,
+        key=lambda item: item[0].type.width,
+    ):
+        bv.define_user_type(parsed_type.name, parsed_type.type)
 
-bv.update_analysis_and_wait()
-verification = []
-for entry in applied:
-    observed = bv.get_type_by_name(entry["name"])
-    observed_width = observed.width if observed is not None else None
-    verification.append({{
-        **entry,
-        "observed_width": observed_width,
-        "verified": observed_width == entry["after_width"],
-    }})
-if not all(entry["verified"] for entry in verification):
-    raise RuntimeError(f"selective type declaration verification failed: {{verification!r}}")
+    if candidates:
+        bv.update_analysis_and_wait()
+    verification = []
+    for parsed_type, before_width in candidates:
+        parsed_name = str(parsed_type.name)
+        observed = bv.get_type_by_name(parsed_type.name)
+        observed_width = observed.width if observed is not None else None
+        verification.append({{
+            "name": parsed_name,
+            "before_width": before_width,
+            "after_width": parsed_type.type.width,
+            "observed_width": observed_width,
+            "verified": observed == parsed_type.type,
+        }})
+    if not all(entry["verified"] for entry in verification):
+        raise RuntimeError(
+            f"selective type declaration verification failed: {{verification!r}}"
+        )
 
-snapshot_saved = bv.file.save_auto_snapshot()
+    restoration = []
+    if preview:
+        bv.revert_undo_actions(state)
+        undo_closed = True
+        if candidates:
+            bv.update_analysis_and_wait()
+        for parsed_name, before_type in before_types.items():
+            restored = bv.get_type_by_name(parsed_name)
+            restoration.append({{
+                "name": parsed_name,
+                "verified": restored == before_type,
+            }})
+        if not all(entry["verified"] for entry in restoration):
+            raise RuntimeError(
+                f"selective type declaration rollback failed: {{restoration!r}}"
+            )
+    else:
+        bv.commit_undo_actions(state)
+        undo_closed = True
+        if candidates:
+            snapshot_saved = bv.file.save_auto_snapshot()
+except Exception:
+    if not undo_closed:
+        bv.revert_undo_actions(state)
+        bv.update_analysis_and_wait()
+    raise
+
 result = {{
+    "success": True,
+    "preview": preview,
+    "committed": not preview,
     "applied": verification,
+    "restoration": restoration,
     "snapshot_saved": snapshot_saved,
 }}
 """
-    applied = run_bn(
-        repo_root,
-        "py",
-        "exec",
-        "--target",
-        target,
-        "--format",
-        "json",
-        "--code",
-        code,
-    )
+        response = run_bn(
+            repo_root,
+            "py",
+            "exec",
+            "--target",
+            target,
+            "--format",
+            "json",
+            "--code",
+            code,
+        )
+        payload = response.get("result") if isinstance(response, dict) else None
+        if (
+            not isinstance(payload, dict)
+            or payload.get("success") is not True
+            or payload.get("preview") is not preview
+            or payload.get("committed") is not (not preview)
+            or not isinstance(payload.get("applied"), list)
+        ):
+            phase = "preview" if preview else "apply"
+            raise RuntimeError(
+                f"selective type declaration {phase} failed for {header_path}: "
+                f"{response!r}"
+            )
+        return payload, response
+
+    preview, _preview_response = run_phase(preview=True)
+    applied, applied_response = run_phase(preview=False)
+    if applied.get("applied") and applied.get("snapshot_saved") is not True:
+        raise RuntimeError(
+            f"selective type declaration changed {header_path} without a saved snapshot"
+        )
     return {
         "op": "types_declare_missing_only",
         "header": str(header_path),
         "replace_types": replacement_names,
         "include_types": included_names,
         "preview": {
-            "success": preview.get("success"),
-            "message": preview.get("message"),
-            "affected_type_count": len(preview.get("affected_types", ())),
-            "affected_function_count": len(preview.get("affected_functions", ())),
+            "success": True,
+            "message": "Selective preview verified and reverted.",
+            "affected_type_count": len(preview.get("applied", ())),
+            "affected_function_count": 0,
         },
-        "result": applied,
+        "result": applied_response,
     }
 
 

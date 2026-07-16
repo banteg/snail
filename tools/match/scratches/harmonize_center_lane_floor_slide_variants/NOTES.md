@@ -77,3 +77,32 @@ BN/IDA exports now agree on the runtime-grid owner and packed cell flags. This
 does not alter the deliberately evidence-backed floor/slide predicate order or
 the honest 58.98% matcher result; reversing those calls remains rejected as
 fakematching.
+
+## 2026-07-17 same-lane cell-neighborhood ownership
+
+The native ESI value in each row-phase arm is not a `TrackRowCell*`. It retains
+`SubgameRuntime + (row * 8 + lane) * 0x54`, so the current cell remains at
+`+0x3bfac8` and the previous/next same-lane cells sit exactly one eight-cell
+row stride (`0x2a0`) behind/ahead. The shared `RuntimeCellStrideAnchor` now
+models all three real `TrackRowCell` owners instead of only the predecessor's
+tile byte.
+
+Binary Ninja's exact register lifetimes are `(index=98, storage=72)` for the
+forward arm and `(index=492, storage=72)` for the backward arm. IDA independently
+places them at definitions `0x435753` and `0x4358dd`. Both decompilers now show
+the current and neighboring `lane_and_flags`, `tile_id`, object, and helper
+arguments through those owners; the former raw `0x3bf828..0x3bfda8` accesses
+are gone. IDA also folds the four proven floor/slide slice and corner banks
+through `GameRoot::root_bod_catalog` after normalizing only their 16 exact
+displacement operands.
+
+The matcher source is unchanged at the honest **58.98%** (`225/226`, prefix
+`9/226`) with all 12 masked operands clean. The remaining candidate/native
+split is now clearer: the candidate materializes current/neighbor cell pointers,
+while native retains the containing runtime-stride cursor. No padded matcher
+view or register-shaped construct is introduced merely to force that schedule.
+
+The replay also exposed and fixed a tooling gap: required-type existence was
+not enough to refresh an evolved analysis view. Mutable path analysis views now
+compare exact parsed type equivalence, so a stale same-name layout is replaced
+through the normal preview/apply/readback path instead of silently surviving.
