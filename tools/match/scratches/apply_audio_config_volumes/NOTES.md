@@ -10,3 +10,11 @@ Android and iOS expose the broader `cROptions::Apply(bool)` lifecycle member.
 Windows' no-argument helper is the audio-volume subset rather than a
 signature-identical port mapping, so the authored provenance is recorded with
 that ABI distinction instead of forcing the mobile parameter.
+
+## 2026-07-16 aggregate analysis owner
+
+Binary Ninja and IDA now both own `g_audio_backend` as the exact recovered
+0x1c-byte `AudioBackend` prefix. That makes the music, SFX, and voice scales
+members of one aggregate in analysis. The matching header deliberately retains
+the three scalar aliases because those spellings preserve the native codegen;
+they are compatibility views, not separate runtime objects.

@@ -8,8 +8,10 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_data_var_removals,
     apply_data_var_updates,
     apply_proto_updates,
+    apply_symbol_removals,
     apply_symbol_updates,
     emit_summary,
     types_declare,
@@ -51,9 +53,6 @@ DATA_SYMBOL_UPDATES = (
     ("0x753c1c", "g_bass_set_config"),
     ("0x753c20", "g_active_music_stream"),
     ("0x753c58", "g_audio_backend"),
-    ("0x753c64", "g_stream_volume_scale"),
-    ("0x753c68", "g_audio_backend_sfx_normalization_scale"),
-    ("0x753c6c", "g_audio_backend_voice_normalization_scale"),
     ("0x753c90", "g_bass_module"),
     ("0x753c94", "g_bass_sample_stop"),
     ("0x753c98", "g_bass_channel_get_position"),
@@ -134,9 +133,7 @@ DATA_VAR_UPDATES = (
     ("0x753c18", "BassChannelGetDataFn"),
     ("0x753c1c", "BassSetConfigFn"),
     ("0x753c20", "BassHandle"),
-    ("0x753c64", "float"),
-    ("0x753c68", "float"),
-    ("0x753c6c", "float"),
+    ("0x753c58", "AudioBackend"),
     ("0x753c90", "void*"),
     ("0x753c94", "BassSampleStopFn"),
     ("0x753c98", "BassChannelGetPositionFn"),
@@ -145,6 +142,24 @@ DATA_VAR_UPDATES = (
     ("0x753cbc", "BassChannelGetLevelFn"),
     ("0x753cc0", "BassPauseFn"),
     ("0x753cc4", "BassChannelSetSyncFn"),
+)
+
+LEGACY_AUDIO_BACKEND_DATA_VAR_REMOVALS = (
+    ("0x753c64", "float"),
+    ("0x753c68", "float"),
+    ("0x753c6c", "float"),
+)
+
+LEGACY_AUDIO_BACKEND_DATA_VAR_REPLACEMENTS = (
+    ("0x753c64", "AudioBackend"),
+    ("0x753c68", "AudioBackend"),
+    ("0x753c6c", "AudioBackend"),
+)
+
+LEGACY_AUDIO_BACKEND_SYMBOL_REMOVALS = (
+    ("0x753c64", "g_stream_volume_scale"),
+    ("0x753c68", "g_audio_backend_sfx_normalization_scale"),
+    ("0x753c6c", "g_audio_backend_voice_normalization_scale"),
 )
 
 PROTO_UPDATES = (
@@ -413,6 +428,21 @@ def main() -> int:
             target=args.target,
             updates=FUNCTION_SYMBOL_UPDATES,
             kind="function",
+        )
+    )
+    operations.extend(
+        apply_data_var_removals(
+            REPO_ROOT,
+            target=args.target,
+            removals=LEGACY_AUDIO_BACKEND_DATA_VAR_REMOVALS,
+            replacements=LEGACY_AUDIO_BACKEND_DATA_VAR_REPLACEMENTS,
+        )
+    )
+    operations.extend(
+        apply_symbol_removals(
+            REPO_ROOT,
+            target=args.target,
+            removals=LEGACY_AUDIO_BACKEND_SYMBOL_REMOVALS,
         )
     )
     operations.extend(

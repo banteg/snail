@@ -14,11 +14,11 @@
 00432e9e        x87_r7_2 - temp1
 00432ea9        if ((((x87_r7_2 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
 00432ed4        int32_t sample_id_2 = sample_id
-00432ede        play_registered_sound_sample_backend(&g_audio_backend, sample_id, fconvert.s(fconvert.t(g_audio_backend_voice_normalization_scale) * fconvert.t(gain)), pitch)
+00432ede        play_registered_sound_sample_backend(&g_audio_backend, sample_id, fconvert.s(fconvert.t(g_audio_backend.voice_normalization_scale) * fconvert.t(gain)), pitch)
 00432ee3        return
 00432eb5        int32_t sample_id_3 = sample_id
-00432ebf        play_registered_sound_sample_scaled(&g_audio_backend, sample_id, fconvert.s(fconvert.t(g_audio_backend_voice_normalization_scale) * fconvert.t(gain)))
+00432ebf        play_registered_sound_sample_scaled(&g_audio_backend, sample_id, fconvert.s(fconvert.t(g_audio_backend.voice_normalization_scale) * fconvert.t(gain)))
 00432ec4        return
 00432ef8        int32_t sample_id_1 = sample_id
-00432f02        play_registered_sound_sample_scaled_panned(&g_audio_backend, sample_id, fconvert.s(fconvert.t(g_audio_backend_voice_normalization_scale) * fconvert.t(gain)), -1f, pan)
+00432f02        play_registered_sound_sample_scaled_panned(&g_audio_backend, sample_id, fconvert.s(fconvert.t(g_audio_backend.voice_normalization_scale) * fconvert.t(gain)), -1f, pan)
 00432f07        return

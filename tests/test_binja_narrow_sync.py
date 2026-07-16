@@ -801,6 +801,52 @@ def test_data_var_removals_accept_the_intended_replacement(monkeypatch) -> None:
         replacements=(("0x53d190", "ParcelBucket"),),
     )[0]["reason"] == "already replaced"
     assert len(calls) == 1
+    assert "before_address = int(before.address)" in calls[0][-1]
+    assert "bool(before.auto_discovered)" in calls[0][-1]
+    assert 'entry["after_auto_discovered"] is True' in calls[0][-1]
+    assert 'reason = "already covered by replacement"' in calls[0][-1]
+    assert 'entry["after_address"] == entry["before_address"]' in calls[0][-1]
+
+
+def test_data_var_removals_accept_a_covering_replacement(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "results": [
+                    {
+                        "address": "0x753c64",
+                        "expected_type": "float",
+                        "replacement_type": "AudioBackend",
+                        "before_address": "0x753c58",
+                        "before_type": "struct AudioBackend",
+                        "after_address": "0x753c58",
+                        "after_type": "struct AudioBackend",
+                        "changed": False,
+                        "reason": "already covered by replacement",
+                    }
+                ],
+                "snapshot_saved": False,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    result = _narrow_sync.apply_data_var_removals(
+        Path("."),
+        target="snail-mail.exe",
+        removals=(("0x753c64", "float"),),
+        replacements=(("0x753c64", "AudioBackend"),),
+    )
+
+    assert result[0]["status"] == "skipped"
+    assert result[0]["reason"] == "already covered by replacement"
+    assert len(calls) == 1
 
 
 def test_data_var_removals_reject_unpaired_replacements() -> None:
@@ -1596,8 +1642,7 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
         "extern float g_audio_backend_sfx_normalization_scale;",
         "extern float g_audio_backend_voice_normalization_scale;",
     ):
-        assert scalar_alias in binja_header
-        assert scalar_alias not in ida_header
+        assert all(scalar_alias not in header for header in headers)
 
     assert '("0x5088b0", "RegisteredSoundSampleName[256]")' in binja_source
     assert '("0x7516a0", "CachedMusicPath")' in binja_source
@@ -1655,6 +1700,13 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     assert "0x1C" in ida_source
     for stale_interior in ("0x753C64", "0x753C68", "0x753C6C"):
         assert stale_interior not in ida_source
+
+    assert '("0x753c58", "AudioBackend")' in binja_source
+    assert "LEGACY_AUDIO_BACKEND_DATA_VAR_REMOVALS" in binja_source
+    assert "LEGACY_AUDIO_BACKEND_DATA_VAR_REPLACEMENTS" in binja_source
+    assert "LEGACY_AUDIO_BACKEND_SYMBOL_REMOVALS" in binja_source
+    assert "apply_data_var_removals" in binja_source
+    assert "apply_symbol_removals" in binja_source
 
     assert "cache_music_file" not in binja_path_source
     assert "cache_music_file" not in ida_path_source

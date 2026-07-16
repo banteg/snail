@@ -7377,12 +7377,13 @@
         "gain",
         "pitch",
         "pan",
-        "g_audio_backend_sfx_normalization_scale"
+        "g_audio_backend.sfx_normalization_scale"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
-        "data_753c68"
+        "data_753c68",
+        "g_audio_backend_sfx_normalization_scale"
       ]
     },
     {
@@ -7390,11 +7391,12 @@
       "artifact": "analysis/decompile/ida/functions/00432df0-play_sound_effect_backend.c",
       "required_substrings": [
         "void __cdecl play_sound_effect_backend(int sample_id, float gain, float pitch, float pan)",
-        "g_audio_backend_sfx_normalization_scale"
+        "g_audio_backend.sfx_normalization_scale"
       ],
       "forbidden_substrings": [
         "int a1",
-        "float a2"
+        "float a2",
+        "g_audio_backend_sfx_normalization_scale"
       ]
     },
     {
@@ -7405,12 +7407,13 @@
         "gain",
         "pitch",
         "pan",
-        "g_audio_backend_voice_normalization_scale"
+        "g_audio_backend.voice_normalization_scale"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
-        "data_753c6c"
+        "data_753c6c",
+        "g_audio_backend_voice_normalization_scale"
       ]
     },
     {
@@ -7418,11 +7421,12 @@
       "artifact": "analysis/decompile/ida/functions/00432e80-play_voice_backend.c",
       "required_substrings": [
         "void __cdecl play_voice_backend(int sample_id, float gain, float pitch, float pan)",
-        "g_audio_backend_voice_normalization_scale"
+        "g_audio_backend.voice_normalization_scale"
       ],
       "forbidden_substrings": [
         "int a1",
-        "float a2"
+        "float a2",
+        "g_audio_backend_voice_normalization_scale"
       ]
     },
     {
@@ -7557,6 +7561,33 @@
       "forbidden_substrings": [
         "_BYTE *this",
         "__fastcall pause_audio_backend_if_running"
+      ]
+    },
+    {
+      "name": "bn_audio_backend_global_aggregate_owner",
+      "artifact": "analysis/decompile/binja/functions/0041b070-apply_audio_config_volumes.c",
+      "required_substrings": [
+        "set_global_sample_volume_config(&g_audio_backend",
+        "g_audio_backend.music_normalization_scale",
+        "set_global_stream_volume_config(&g_audio_backend"
+      ],
+      "forbidden_substrings": [
+        "g_stream_volume_scale",
+        "data_753c64"
+      ]
+    },
+    {
+      "name": "ida_audio_backend_global_aggregate_owner",
+      "artifact": "analysis/decompile/ida/functions/0041b070-apply_audio_config_volumes.c",
+      "required_substrings": [
+        "void __thiscall apply_audio_config_volumes(Options *options)",
+        "set_global_sample_volume_config(&g_audio_backend",
+        "g_audio_backend.music_normalization_scale",
+        "set_global_stream_volume_config(&g_audio_backend"
+      ],
+      "forbidden_substrings": [
+        "g_stream_volume_scale",
+        "(AudioBackend *)g_audio_backend"
       ]
     },
     {
