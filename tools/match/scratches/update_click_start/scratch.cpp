@@ -5,7 +5,6 @@
 #include "game_root.h"
 #include "input_state.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void set_math_random_seed(int seed);
 void* set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);

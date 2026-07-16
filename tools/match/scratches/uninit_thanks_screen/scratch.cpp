@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "thanks_screen.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void ThanksScreen::uninit_thanks_screen()
 {

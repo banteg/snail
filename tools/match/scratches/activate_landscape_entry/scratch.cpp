@@ -7,7 +7,6 @@
 #include "game_root.h"
 #include "runtime_config.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);

@@ -8,7 +8,6 @@
 #include "track_attachment_types.h"
 #include "vector3.h"
 
-extern GameRoot* g_game; // data_4df904
 
 float cosine(float angle);
 float sine(float angle);

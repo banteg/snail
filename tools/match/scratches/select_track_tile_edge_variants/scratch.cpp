@@ -8,7 +8,6 @@
 #include "track_attachment_types.h"
 #include "track_row_cell_tile_views.h"
 
-extern GameRoot* g_game; // data_4df904
 
 #define IS_STRAIGHT_TRACK_FAMILY(tile) \
     ((tile) == 1 || (tile) == 0x14 || (tile) == 0x15 || (tile) == 0x1b \

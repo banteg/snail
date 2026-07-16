@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "segment_catalog_types.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int sprintf(char* buffer, char* format, ...);
 int report_errorf(char* format, ...);

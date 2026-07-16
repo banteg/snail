@@ -8,7 +8,6 @@
 #include "transform_matrix.h"
 #include "vector3.h"
 
-extern GameRoot* g_game; // data_4df904
 
 TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix,

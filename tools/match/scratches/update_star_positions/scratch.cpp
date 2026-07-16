@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "star_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void StarManager::update_star_positions(float fade_alpha)
 {

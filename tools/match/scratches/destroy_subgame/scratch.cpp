@@ -9,7 +9,6 @@
 
 typedef unsigned int DWORD;
 
-extern GameRoot* g_game; // data_4df904
 
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 int report_errorf(char* format, ...);

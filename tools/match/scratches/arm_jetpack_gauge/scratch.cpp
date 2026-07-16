@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "sub_hover.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void SubHover::arm_jetpack_gauge()
 {

@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "input_state.h"
 
-extern GameRoot* g_game; // data_4df904
 
 float* copy_active_input_controller_state(
     int controller_slot,

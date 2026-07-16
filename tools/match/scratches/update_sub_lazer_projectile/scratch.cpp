@@ -8,7 +8,6 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_lazer_path2_kill_format[]; // data_4a4f40
 extern char g_lazer_path_kill_format[]; // data_4a4f54
 int debug_report_stub(void* arg); // @ 0x449c00, stripped to xor eax/ret in release

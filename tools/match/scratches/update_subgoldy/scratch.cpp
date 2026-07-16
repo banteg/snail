@@ -40,7 +40,6 @@ float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern float g_subgoldy_ghost_z;          // flt_643190
 extern float g_replay_accum_z;            // unk_643194
-extern GameRoot* g_game;                  // data_4df904
 
 enum {
     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =

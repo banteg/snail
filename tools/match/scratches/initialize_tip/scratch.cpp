@@ -5,7 +5,6 @@
 #include "game_root.h"
 #include "tip_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 extern TipData g_default_tip_message; // data_4ac5c8 / iOS gTips
 
 void Tip::initialize_tip(TipData* definition_, int hide_disable_button)

@@ -6,7 +6,6 @@
 #include "game_root.h"
 #include "weapon.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void AnimManager::update_anim_manager()
 {

@@ -2,7 +2,6 @@
 // Exact cRPathFollowGoldy::Init: void initializer on Player::FollowState.
 #include "game_root.h"
 
-extern GameRoot* g_game;
 
 void FollowState::begin_track_attachment_follow_state(
     TrackRowCell* cell, const Vector3* world_position, Player* owning_player)

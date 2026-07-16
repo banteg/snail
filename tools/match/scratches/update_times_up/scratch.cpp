@@ -4,7 +4,6 @@
 #include "player.h"
 #include "times_up.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void TimesUp::update_times_up()
 {

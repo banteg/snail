@@ -15,7 +15,6 @@ typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
 
-extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 int next_math_random_value();

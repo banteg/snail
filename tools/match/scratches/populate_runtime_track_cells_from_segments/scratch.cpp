@@ -12,7 +12,6 @@
 #include "track_attachment_types.h"
 #include "track.h"
 
-extern GameRoot* g_game; // data_4df904
 
 #define ROOT_BOD_OBJECT(slot) (g_game->root_bod_catalog.slot.object)
 

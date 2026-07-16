@@ -14,7 +14,6 @@ extern "C" __declspec(dllimport) int __stdcall GetClientRect(HWND hwnd, Rect* re
 extern "C" __declspec(dllimport) int __stdcall ClipCursor(Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall SetCursor(int cursor);
 
-extern GameRoot* g_game; // data_4df904
 
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
 unsigned char read_left_mouse_button_state(int slot); // @ 0x407810

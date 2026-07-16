@@ -3,7 +3,6 @@
 #include "frontend_widget.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void FrontendWidgetTooltip::update_tooltip()

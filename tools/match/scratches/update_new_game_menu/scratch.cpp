@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "new_game_menu.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Intro::update_new_game_menu()
 {

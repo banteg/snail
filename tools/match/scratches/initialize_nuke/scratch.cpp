@@ -5,7 +5,6 @@
 #include "player.h"
 #include "subgame_runtime.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Nuke::initialize_nuke()
 {

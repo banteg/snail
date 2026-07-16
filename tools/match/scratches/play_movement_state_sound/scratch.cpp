@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include "player.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int next_math_random_value();
 double __fastcall normalize_vector(Vector3* vector);

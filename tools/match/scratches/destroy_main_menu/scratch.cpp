@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "sprite.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void MainMenu::destroy_main_menu()
 {

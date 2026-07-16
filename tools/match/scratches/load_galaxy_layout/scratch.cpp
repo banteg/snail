@@ -13,7 +13,6 @@ int parse_next_signed_int(char** cursor);
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
 
-extern GameRoot* g_game; // data_4df904
 
 void Galaxy::load_galaxy_layout()
 {

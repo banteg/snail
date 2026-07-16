@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int sprintf(char* buffer, char* format, ...);
 char* load_file_bytes(char* path, char* out_buffer);

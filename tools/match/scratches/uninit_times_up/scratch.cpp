@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "times_up.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void TimesUp::uninit_times_up()
 {

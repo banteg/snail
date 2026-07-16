@@ -4,7 +4,6 @@
 #include "object_render_types.h"
 #include "track_attachment_types.h"
 
-extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void RowModel::update_row_model()

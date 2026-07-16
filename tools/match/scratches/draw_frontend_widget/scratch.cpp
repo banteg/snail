@@ -6,7 +6,6 @@
 #include "game_root.h"
 #include "runtime_config.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,

@@ -15,7 +15,6 @@
 #include "snail_skin.h"
 #include "transform_matrix.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Player::initialize_subgoldy(int player_slot)
 {

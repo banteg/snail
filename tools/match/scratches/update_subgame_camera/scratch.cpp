@@ -5,7 +5,6 @@
 #include "game_root.h"
 #include "subgame_runtime.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void SubgameRuntime::update_subgame_camera()
 {

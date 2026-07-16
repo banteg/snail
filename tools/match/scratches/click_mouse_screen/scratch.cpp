@@ -8,7 +8,6 @@
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) int __stdcall SetCursorPos(int x, int y);
 
-extern GameRoot* g_game; // data_4df904
 
 void* click_mouse_screen(int slot, int x, int y)
 {

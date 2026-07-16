@@ -5,7 +5,6 @@
 #include "options.h"
 #include "runtime_config.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_fullscreen_on_text[]; // 0x4a3d5c
 extern char g_fullscreen_off_text[]; // 0x4a3d4c
 

@@ -2,7 +2,6 @@
 
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 
 float resolve_uncaptured_cursor_sensitivity_scale(float scale)
 {

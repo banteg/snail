@@ -6,7 +6,6 @@
 
 int report_errorf(char* format, ...);
 
-extern GameRoot* g_game; // data_4df904
 
 void ActiveBod::update_active_bod()
 {

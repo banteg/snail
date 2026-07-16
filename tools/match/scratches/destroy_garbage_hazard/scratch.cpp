@@ -6,7 +6,6 @@
 #include "garbage_hazard_slot.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 

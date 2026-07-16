@@ -19,7 +19,6 @@
 #include "times_up.h"
 #include "voice_manager.h"
 
-extern GameRoot* g_game;
 extern char g_blank_text[];
 
 int next_math_random_value();

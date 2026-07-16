@@ -3,7 +3,6 @@
 #include "salt_hazard_types.h"
 #include "transform_matrix.h"
 
-extern GameRoot* g_game; // data_4df904
 int next_math_random_value();
 int report_errorf(char* format, ...);
 

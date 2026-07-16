@@ -10,7 +10,6 @@
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);

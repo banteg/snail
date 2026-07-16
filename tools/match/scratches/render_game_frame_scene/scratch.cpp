@@ -5,7 +5,6 @@
 #include "game_root.h"
 #include "render_pipeline_state.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void render_game_frame_scene()
 {

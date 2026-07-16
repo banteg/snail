@@ -7,7 +7,6 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-extern GameRoot* g_game; // data_4df904
 
 unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
 unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);

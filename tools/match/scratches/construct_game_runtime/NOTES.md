@@ -501,3 +501,15 @@ The Binary Ninja menu sync now refuses the replay unless the existing
 constructor export preview still keeps the allocation result as an untyped
 dword array, so the tracked artifact is not refreshed merely to expose the
 same raw indexing under a new database field.
+
+## 2026-07-16 canonical runtime pointer ownership
+
+The `GameRoot*` stored at `data_4df904` is now declared by `game_root.h`, next
+to the complete 0x12e6ff4-byte owner it addresses. This retires 153 identical
+scratch-local declarations from consumers that already depend on that owner.
+`get_track_cell_row_index` intentionally retains a forward-declared pointer:
+it performs address arithmetic only and does not require the root layout, so
+pulling the full aggregate into that translation unit would create a false
+transitive dependency. The separate `char* g_game_base` analysis overlay
+continues to name the same address only where a decompiler has not recovered
+the typed root.

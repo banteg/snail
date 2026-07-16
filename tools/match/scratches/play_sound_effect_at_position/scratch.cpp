@@ -3,7 +3,6 @@
 #include "sound_effect_manager.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);
 

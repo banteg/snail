@@ -9,7 +9,6 @@
 #include "track_parcel_runtime.h"
 #include "vector3.h"
 
-extern GameRoot* g_game; // data_4df904
 
 typedef Vector3 Vec3;
 

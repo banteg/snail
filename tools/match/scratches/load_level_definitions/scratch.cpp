@@ -4,7 +4,6 @@
 #include "segment_catalog_types.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void enumerate_matching_archive_or_fs_entries(
     char* directory,

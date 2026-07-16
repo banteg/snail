@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include "tga_image_view.h"
 
-extern GameRoot* g_game; // data_4df904
 extern SpriteManager g_sprite_manager; // data_790f30
 
 unsigned char FrontendWidget::border_mouse_test()

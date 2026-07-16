@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "slug_hazard_types.h"
 
-extern GameRoot* g_game; // data_4df904
 void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
 void Slug::play_slug_voice(int sample_index)

@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "high_score.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void HighScore::exit_high_score_screen()
 {

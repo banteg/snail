@@ -4,7 +4,6 @@
 #include "intro_screen_runtime.h"
 #include "runtime_config.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 

@@ -15,7 +15,6 @@
 #include "star_manager.h"
 #include "transform_matrix.h"
 
-extern GameRoot* g_game; // data_4df904
 extern TextureRefList g_texture_refs; // data_4b7790
 extern char g_blank_text[]; // data_4dfb08
 

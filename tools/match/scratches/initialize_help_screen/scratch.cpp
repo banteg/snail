@@ -6,7 +6,6 @@
 #include "help.h"
 #include "landscape_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_help_script_path[]; // 0x4a3488
 extern char g_blank_text[]; // 0x4dfb08

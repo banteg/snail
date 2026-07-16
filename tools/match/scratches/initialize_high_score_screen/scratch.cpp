@@ -9,7 +9,6 @@
 #include "star_manager.h"
 #include "subgame_runtime.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // data_4dfb08

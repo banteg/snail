@@ -9,7 +9,6 @@
 #include "star_manager.h"
 #include "thanks_screen.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_blank_text[]; // 0x4dfb08
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50

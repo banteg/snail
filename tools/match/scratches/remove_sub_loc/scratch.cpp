@@ -8,7 +8,6 @@
 
 typedef unsigned int DWORD;
 
-extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 

@@ -20,7 +20,6 @@
 #include "transform_matrix.h"
 #include "voice_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
 extern char g_help_script_path[]; // 0x4a3488
 extern char g_menu_background_script_path[]; // 0x4a347c

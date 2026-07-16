@@ -3,7 +3,6 @@
 #include "invincible.h"
 #include "snail_skin.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Invincible::initialize_invincible_shell()
 {

@@ -10,7 +10,6 @@
 float random_float_below(float maximum, const char* tag);
 float random_signed_float_below(float maximum, const char* tag);
 
-extern GameRoot* g_game; // data_4df904 (this TU caches the base, reloading after calls)
 
 void SubLoc::update_sub_loc()
 {

@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "intro_screen_runtime.h"
 
-extern GameRoot* g_game; // data_4df904
 
 char read_pressed_text_input_key_code();
 

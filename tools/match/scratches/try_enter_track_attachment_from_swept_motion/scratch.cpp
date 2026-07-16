@@ -5,7 +5,6 @@
 #include "game_root.h"
 
 // The follow state is embedded in the fixed player owned by SubgameRuntime.
-extern GameRoot* g_game;
 #define PLAYER (&g_game->subgame.player)
 
 void Path::try_enter_track_attachment_from_swept_motion(

@@ -5,7 +5,6 @@
 #include "options.h"
 #include "runtime_config.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_blank_text[]; // 0x4dfb08
 extern char g_sounds_volume_text[]; // 0x4a3d30
 extern char g_music_volume_text[]; // 0x4a3d14

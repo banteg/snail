@@ -4,7 +4,6 @@
 #include "options.h"
 #include "runtime_config.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
 void Options::destroy_options_menu()

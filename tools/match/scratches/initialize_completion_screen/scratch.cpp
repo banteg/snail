@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include <string.h>
 
-extern GameRoot* g_game; // data_4df904
 
 void Completion::initialize_completion_screen(
     int new_delivered_count,

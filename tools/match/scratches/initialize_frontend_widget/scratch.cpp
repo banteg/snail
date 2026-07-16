@@ -4,7 +4,6 @@
 #include "frontend_widget.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);

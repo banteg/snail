@@ -5,7 +5,6 @@
 #include "sub_lazer_types.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 void SubLazer::deactivate_sub_lazer_projectile()

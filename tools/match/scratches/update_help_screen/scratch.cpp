@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "help.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Help::update_help_screen()
 {

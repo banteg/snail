@@ -139,6 +139,11 @@ public:
 typedef char GameRoot_must_be_0x12e6ff4[
     (sizeof(GameRoot) == 0x12e6ff4) ? 1 : -1];
 
+// Canonical pointer to the single runtime allocation. The byte-oriented
+// analysis view in game_base.h aliases this same address without weakening
+// matching sources that have recovered the complete owner.
+extern GameRoot* g_game; // data_4df904
+
 inline TrackFringeBodCatalog* GameRoot::track_fringe_bod_catalog()
 {
     // The asset constructor proves entries 58..345 of the root BOD bank are

@@ -23,7 +23,6 @@ extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
-extern GameRoot* g_game;                     // data_4df904
 
 int query_directx_runtime_version(); // @ 0x44afc0
 char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0

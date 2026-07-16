@@ -2,7 +2,6 @@
 #include "game_root.h"
 #include "player.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void SnailSkin::initialize_snail_skin()
 {

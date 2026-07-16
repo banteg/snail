@@ -4,7 +4,6 @@
 #include "player.h"
 #include "sound_effect_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void report_errorf(const char* message, ...);
 

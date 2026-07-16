@@ -5,7 +5,6 @@
 #include "game_root.h"
 #include "player.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Completion::register_parcel_delivery()
 {

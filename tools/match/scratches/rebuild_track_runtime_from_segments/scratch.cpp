@@ -4,7 +4,6 @@
 #include "subgame_runtime.h"
 #include "segment_cache.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
 {

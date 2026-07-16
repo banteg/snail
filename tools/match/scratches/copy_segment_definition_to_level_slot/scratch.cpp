@@ -2,7 +2,6 @@
 
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char* g_current_level_definition_name; // data_74ec74
 
 int strings_equal_case_insensitive_path(char* lhs, char* rhs); // @ 0x44e6c0

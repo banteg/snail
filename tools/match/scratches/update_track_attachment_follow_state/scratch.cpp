@@ -8,7 +8,6 @@
 
 typedef Vector3 Vec3;
 
-extern GameRoot* g_game; // data_4df904
 
 int FollowState::update_track_attachment_follow_state(
     float path_factor,

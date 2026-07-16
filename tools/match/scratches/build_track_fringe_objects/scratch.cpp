@@ -8,7 +8,6 @@
 #include "subgame_runtime.h"
 #include "track_fringe_bod_catalog.h"
 
-extern GameRoot* g_game; // data_4df904
 
 #define FRINGE_BOD(direction, family, edge_a, edge_b) \
     (g_game->root_bod_catalog.fringe_catalog \

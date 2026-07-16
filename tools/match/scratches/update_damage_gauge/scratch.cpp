@@ -8,7 +8,6 @@
 #include "voice_manager.h"
 #include "warning.h"
 
-extern GameRoot* g_game; // data_4df904
 
 float sine(float angle);
 int queue_axis_aligned_textured_quad_uv(

@@ -4,7 +4,6 @@
 #include "subgame_runtime.h"
 #include "tutorial.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Tutorial::initialize_tutorial()
 {

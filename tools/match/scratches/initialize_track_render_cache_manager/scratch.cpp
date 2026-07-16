@@ -9,7 +9,6 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-extern GameRoot* g_game; // data_4df904
 
 struct TrackRenderCacheSlotCursor {
     char manager_prefix[offsetof(SegmentCache, slots)];

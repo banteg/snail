@@ -7,7 +7,6 @@
 #include "game_root.h"
 #include "warning.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Warning::update_warning()
 {

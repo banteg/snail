@@ -4,7 +4,6 @@
 #include "subgame_runtime.h"
 #include "segment_cache.h"
 
-extern GameRoot* g_game; // data_4df904
 int report_errorf(char* format, ...);
 
 #define ACTIVATE_CACHE_SLOT(slot, active_list)                                      \

@@ -20,7 +20,6 @@ enum {
     GARBAGE_SLOT_NEXT_ACTIVE_WORD = 877681,
 };
 
-extern GameRoot* g_game; // data_4df904
 
 float random_float_below(float upper_bound, const char* tag);
 int next_math_random_value();

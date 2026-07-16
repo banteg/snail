@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include "thanks_screen.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char g_click_to_continue_text[]; // 0x4a11c4
 
 char read_pressed_text_input_key_code(); // @ 0x432440

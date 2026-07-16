@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include "high_score.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void HighScore::destroy_high_score_screen()
 {

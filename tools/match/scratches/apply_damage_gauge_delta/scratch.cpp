@@ -7,7 +7,6 @@
 #include "game_root.h"
 #include "voice_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void DamageGuage::apply_damage_gauge_delta(float delta, bool force)
 {

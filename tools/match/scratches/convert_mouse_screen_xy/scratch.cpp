@@ -12,7 +12,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall SetCursorPos(int x, int y);
 
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
-extern GameRoot* g_game; // data_4df904
 
 void convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
 {

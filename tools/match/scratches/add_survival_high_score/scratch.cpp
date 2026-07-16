@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "sub_high_score.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void SubHighScore::add_survival_high_score(SubSolution* record)
 {

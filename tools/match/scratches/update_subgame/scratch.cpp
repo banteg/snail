@@ -28,7 +28,6 @@ struct RuntimeCellSlotBase {
     TrackRowCell cell;
 };
 
-extern GameRoot* g_game; // data_4df904
 
 float random_float_below(float upper_bound, const char* tag);
 int queue_axis_aligned_textured_quad_uv(

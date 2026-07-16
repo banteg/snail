@@ -10,7 +10,6 @@
 #include "subgame_runtime.h"
 #include "vector3.h"
 
-extern GameRoot* g_game; // data_4df904
 
 inline Vector3 subtract_screen_xy(const Vector3& lhs, float screen_x, float screen_y)
 {

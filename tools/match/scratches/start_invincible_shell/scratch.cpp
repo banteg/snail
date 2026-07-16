@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include "invincible.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Invincible::start_invincible_shell()
 {

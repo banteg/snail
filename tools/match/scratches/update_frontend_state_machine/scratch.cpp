@@ -4,7 +4,6 @@
 #include "runtime_config.h"
 #include "transform_matrix.h"
 
-extern GameRoot* g_game; // data_4df904
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
 

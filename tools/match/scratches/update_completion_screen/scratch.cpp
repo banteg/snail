@@ -3,7 +3,6 @@
 #include "exit.h"
 #include "game_root.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Exit::update_completion_screen()
 {

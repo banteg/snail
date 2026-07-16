@@ -4,7 +4,6 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 

@@ -9,7 +9,6 @@
 #include "transform_matrix.h"
 #include <stddef.h>
 
-extern GameRoot* g_game; // data_4df904
 
 float random_float_below(float upper_bound, const char* tag);
 int report_errorf(const char* format, ...);

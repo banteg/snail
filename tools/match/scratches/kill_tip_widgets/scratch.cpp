@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "tip_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Tip::kill_tip_widgets()
 {

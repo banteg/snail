@@ -3,7 +3,6 @@
 #include "game_root.h"
 #include "pause_menu.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void SubPause::uninit_pause_menu()
 {

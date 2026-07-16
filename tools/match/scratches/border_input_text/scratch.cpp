@@ -5,7 +5,6 @@
 #include "game_root.h"
 #include "input_ok_state.h"
 
-extern GameRoot* g_game; // data_4df904
 
 char read_repeating_text_input_key_code();
 

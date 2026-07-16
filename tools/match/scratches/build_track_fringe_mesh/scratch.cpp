@@ -5,7 +5,6 @@
 #include "sprite.h"
 #include "track_attachment_types.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
 {

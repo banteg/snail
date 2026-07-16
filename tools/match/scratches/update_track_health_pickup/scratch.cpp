@@ -6,7 +6,6 @@
 #include "subgame_runtime.h"
 #include "track_health_pickup.h"
 
-extern GameRoot* g_game; // data_4df904
 
 int report_errorf(char* format, ...);
 float sine(float radians);

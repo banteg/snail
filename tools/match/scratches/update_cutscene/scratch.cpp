@@ -9,7 +9,6 @@
 #include "player.h"
 #include "voice_manager.h"
 
-extern GameRoot* g_game; // data_4df904
 
 enum {
     LEVEL_PARCEL_COUNT_FROM_GAME_ROOT =

@@ -11,7 +11,6 @@ void* operator new(unsigned int size);
 
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
-extern GameRoot* g_game; // data_4df904
 extern int g_sub_loc_count;       // data_4dfadc
 extern int g_loc_mirror_count;    // data_4dfae0
 

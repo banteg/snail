@@ -4,7 +4,6 @@
 #include "tip_manager.h"
 #include "tutorial.h"
 
-extern GameRoot* g_game; // data_4df904
 
 void Tutorial::uninit_tutorial()
 {
