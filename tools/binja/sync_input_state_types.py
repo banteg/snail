@@ -133,7 +133,7 @@ PROTO_UPDATES = (
         "0x4327e0",
         "char __cdecl read_repeating_text_input_key_code()",
     ),
-    ("initialize_input", "int32_t __thiscall initialize_input(InputState* state)"),
+    ("initialize_input", "void __thiscall initialize_input(InputState* state)"),
     ("update_input", "void __thiscall update_input(InputState* state)"),
     ("update_game_input", "void __thiscall update_game_input(GameInput* game_input)"),
     (

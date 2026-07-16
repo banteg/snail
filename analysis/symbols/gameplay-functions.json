@@ -653,11 +653,13 @@
     },
     {
       "address": "0x40aa50",
-      "name": "initialize_input"
+      "name": "initialize_input",
+      "description": "Exact void Windows cRInput::Init(): initializes the 0x38-byte InputState masks, axes, authored pointer coordinates, and pointer value. Android preserves the same owner and semantics at port-specific offsets; its incidental receiver result differs from Windows' zero-store temporary, while the sole Windows caller consumes neither."
     },
     {
       "address": "0x40aa80",
-      "name": "update_input"
+      "name": "update_input",
+      "description": "Void Windows cRInput::Update(): derives pressed and released button edges from current versus previous state, stores the inverse mask, advances previous state, and clears the current word. Android preserves the same edge algebra and cRInput owner; the honest Windows scratch remains 52.94% because of an extra native EDI lifetime."
     },
     {
       "address": "0x40aab0",

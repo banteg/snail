@@ -373,6 +373,22 @@
       "notes": "The Windows caller ignores the result and both skip and common-tail exits preserve no meaningful return value, confirming the cross-port void method ABI. Android independently preserves the flagged cRBod -> borrowed cRAnimManager progress -> cRObjectAnim progress synchronization with port-specific offsets."
     },
     {
+      "address": "0x40aa50",
+      "windows_name": "initialize_input",
+      "android_symbol": "cRInput::Init()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "Android preserves the same mask, axis, authored-coordinate, and pointer-value initialization at port-specific offsets. Android leaves the receiver in its result register while Windows leaves a zero-store temporary, and the sole Windows caller ignores EAX, proving the authored member is void."
+    },
+    {
+      "address": "0x40aa80",
+      "windows_name": "update_input",
+      "android_symbol": "cRInput::Update()",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "Android preserves the same pressed and released edge algebra, previous-button advance, inverse mask, and current-button clear. Its incidental receiver result differs from Windows' mask residue and the cRGameInput bridge ignores both, confirming the void cRInput member ABI."
+    },
+    {
       "address": "0x40aab0",
       "windows_name": "update_game_input",
       "ios_symbol": "cRGameInput::AI()",

@@ -5,7 +5,7 @@
 
 class InputState {
 public:
-    int initialize_input();
+    void initialize_input();
     void update_input();
 
     int controller_slot;          // +0x00

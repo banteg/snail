@@ -2,7 +2,7 @@
 /* function: initialize_input @ 0x40aa50 */
 /* selector: initialize_input */
 
-int __thiscall initialize_input(InputState *state)
+void __thiscall initialize_input(InputState *state)
 {
   state->inverse_current_buttons = -1;
   state->current_buttons = 0;
@@ -14,6 +14,4 @@ int __thiscall initialize_input(InputState *state)
   state->authored_x = 320.0;
   state->authored_y = 240.0;
   state->pointer_value = 0.0;
-  return 0;
 }
-

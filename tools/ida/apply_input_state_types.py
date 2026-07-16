@@ -60,7 +60,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_input",
-        "int __thiscall initialize_input(InputState *state);",
+        "void __thiscall initialize_input(InputState *state);",
     ),
     (
         "update_input",

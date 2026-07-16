@@ -13,4 +13,4 @@
 0040aa6b        state->authored_x = 320f
 0040aa72        state->authored_y = 240f
 0040aa79        state->pointer_value = 0f
-0040aa7c        return 0
+0040aa7c        return

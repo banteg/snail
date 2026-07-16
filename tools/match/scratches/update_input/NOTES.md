@@ -47,3 +47,17 @@ leaf at the known 52.94% shape. The remaining leaf residual is still the native
 hint, are codegen-neutral at 52.94% and still do not force native's saved `edi`
 tail. A `volatile released` local grows the body to 19 instructions but loses
 the native prefix and drops to 47.37%. Keep the compact void body.
+
+## 2026-07-16 cross-port cRInput ownership
+
+Android independently names this member `cRInput::Update()` and computes the
+same down-edge `current & ~previous`, up-edge `~current & (current ^ previous)`,
+previous-button, inverse-button, and current-clear state. Its decompiler leaves
+the receiver in the return register, whereas Windows leaves an unrelated mask;
+the Windows `cRGameInput::AI()` bridge consumes neither. This confirms the
+shared `InputState` as the portable cRInput owner and its `void` update ABI.
+
+Natural five-local and statement-scoped variants derived from the Android
+algebra were tested at 37.84% and 52.94%; neither recreated Windows' extra EDI
+lifetime. They were rejected and the existing clear 52.94% source retained.
+No volatile barrier or duplicated tail was introduced.

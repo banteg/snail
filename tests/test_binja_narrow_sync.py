@@ -1883,7 +1883,7 @@ def test_frame_replays_preserve_window_bootstrap_abi() -> None:
     assert symbol_update < prototype_update
 
 
-def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:
+def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownership() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(
         encoding="utf-8"
@@ -1909,10 +1909,14 @@ def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:
         '("0x50339c", "g_text_input_repeat_step")',
         '("0x5108b8", "g_text_input_repeat_accumulator")',
         '("0x53c7f5", "g_text_input_last_repeat_code")',
+        '"void __thiscall initialize_input(InputState* state)"',
+        '"void __thiscall update_input(InputState* state)"',
         '"char __cdecl read_pressed_text_input_key_code()"',
         '"char __cdecl read_repeating_text_input_key_code()"',
     ):
         assert marker in binja_source
+
+    assert '"int32_t __thiscall initialize_input(InputState* state)"' not in binja_source
 
     for marker in (
         '(0x50339C, 20, "g_text_input_repeat_step", "float[5]")',
@@ -1923,10 +1927,14 @@ def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:
         '"phase": "data_item_guard"',
         'r"\\buint8_t\\b|\\bunsigned __int8\\b"',
         '"char __cdecl read_repeating_text_input_key_code();"',
+        '"void __thiscall initialize_input(InputState *state);"',
+        '"void __thiscall update_input(InputState *state);"',
         '"float g_text_input_repeat_step;"',
         '"unsigned char g_text_input_last_repeat_code;"',
     ):
         assert marker in ida_source
+
+    assert '"int __thiscall initialize_input(InputState *state);"' not in ida_source
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

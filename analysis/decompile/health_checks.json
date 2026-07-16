@@ -2661,6 +2661,42 @@
       ]
     },
     {
+      "name": "bn_input_state_portable_lifecycle_abi",
+      "artifact": "analysis/decompile/binja/functions/0040aa50-initialize_input.c",
+      "required_substrings": [
+        "state->inverse_current_buttons = 0xffffffff",
+        "state->current_buttons = 0",
+        "state->authored_x = 320f",
+        "state->authored_y = 240f",
+        "state->pointer_value = 0f",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return 0",
+        "int32_t __thiscall initialize_input",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_input_state_portable_lifecycle_abi",
+      "artifact": "analysis/decompile/ida/functions/0040aa50-initialize_input.c",
+      "required_substrings": [
+        "void __thiscall initialize_input(InputState *state)",
+        "state->inverse_current_buttons = -1",
+        "state->current_buttons = 0",
+        "state->authored_x = 320.0",
+        "state->authored_y = 240.0",
+        "state->pointer_value = 0.0"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_input",
+        "return 0",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_game_input_owner_and_void_abi",
       "artifact": "analysis/decompile/binja/functions/0040aab0-update_game_input.c",
       "required_substrings": [

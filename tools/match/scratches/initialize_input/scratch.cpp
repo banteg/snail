@@ -2,7 +2,7 @@
 
 #include "input_state.h"
 
-int InputState::initialize_input()
+void InputState::initialize_input()
 {
     inverse_current_buttons = -1;
     current_buttons = 0;
@@ -14,5 +14,4 @@ int InputState::initialize_input()
     authored_x = 320.0f;
     authored_y = 240.0f;
     pointer_value = 0.0f;
-    return 0;
 }
