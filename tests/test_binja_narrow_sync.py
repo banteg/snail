@@ -3226,7 +3226,7 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
     ) in frontend_sync
 
 
-def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
+def test_sprite_and_texture_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     sync_sources = {
         script_name: (BINJA_DIR / script_name).read_text(encoding="utf-8")
@@ -3272,6 +3272,23 @@ def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
     assert '("0x00", "flags", "TextureRefFlags")' in sync_sources[
         "sync_star_manager_types.py"
     ]
+    texture_fields = (
+        '("0x04", "loaded_width", "int32_t")',
+        '("0x08", "loaded_height", "int32_t")',
+        '("0x0c", "name", "char[0x80]")',
+        '("0x8c", "slot_index", "int32_t")',
+        '("0x90", "frame_count", "int32_t")',
+        '("0x94", "frame_progress_step", "float")',
+        '("0x98", "texture_ref", "void*")',
+        '("0xa0", "mip_levels", "int32_t")',
+    )
+    for script_name in (
+        "sync_object_render_types.py",
+        "sync_path_template_types.py",
+        "sync_star_manager_types.py",
+    ):
+        for field in texture_fields:
+            assert field in sync_sources[script_name]
 
     sprite_constants = (
         "SPRITE_FLAG_ACTIVE = 0x0001",
@@ -3302,6 +3319,10 @@ def test_sprite_and_texture_flag_ownership_stays_aligned() -> None:
     for header in (*texture_analysis_headers, matcher_header):
         for constant in texture_constants:
             assert constant in header
+        assert "loaded_width;" in header
+        assert "loaded_height;" in header
+        assert "mip_levels;" in header
+        assert "unknown_a0" not in header
 
     consumers = {
         "initialize_sprite": "SPRITE_FLAG_RENDER_ENABLED",

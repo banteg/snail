@@ -588,14 +588,15 @@ typedef struct SubPause {
 
 typedef struct TextureRef {
     TextureRefFlags flags;
-    uint8_t _pad_04[0x8];
+    int32_t loaded_width;
+    int32_t loaded_height;
     char name[0x8c - 0x0c];
     int32_t slot_index;
     int32_t frame_count;
     float frame_progress_step;
     void* texture_ref;
     uint8_t _pad_9c[0x4];
-    int32_t unknown_a0;
+    int32_t mip_levels;
 } TextureRef;
 
 /* Authored empty cRProgressBar at Player +0x3f0. */

@@ -2180,7 +2180,8 @@
         "&game->border_manager.borders[0].flags",
         "game->track.track_textures[0]",
         "game->track.slide_textures[3]",
-        "game->track.current_texture_set = 0"
+        "game->track.current_texture_set = 0",
+        "->mip_levels = 2"
       ],
       "forbidden_substrings": [
         "game->unknown_000000",
@@ -2197,8 +2198,25 @@
         "game->__offset(0x4f388)",
         "game->__offset(0x4f400)",
         "game->texture_set_selector",
+        "->unknown_a0 = 2",
         "analysis skipped",
         "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_texture_ref_registry_owner",
+      "artifact": "analysis/decompile/binja/functions/0044e810-get_or_create_texture_ref.c",
+      "required_substrings": [
+        ".name",
+        ".slot_index",
+        ".texture_ref = arg3",
+        ".mip_levels = 1"
+      ],
+      "forbidden_substrings": [
+        ".texture_path",
+        ".arg3_98",
+        ".one_a0",
+        ".unknown_a0"
       ]
     },
     {
@@ -6152,7 +6170,8 @@
         "&game->border_manager.borders[0].flags",
         "game->track.track_textures[0]",
         "game->track.slide_textures[3]",
-        "game->track.current_texture_set = 0"
+        "game->track.current_texture_set = 0",
+        "->mip_levels = 2"
       ],
       "forbidden_substrings": [
         "game->unknown_000000",
@@ -6161,9 +6180,26 @@
         "FrameBorderManager",
         "char __thiscall initialize_game_assets_and_world(int this)",
         "game->texture_set_selector",
+        "->unknown_a0 = 2",
         "this + 19820376",
         "this + 324412",
         "byte_6FFAE0[this]"
+      ]
+    },
+    {
+      "name": "ida_texture_ref_registry_owner",
+      "artifact": "analysis/decompile/ida/functions/0044e810-get_or_create_texture_ref.c",
+      "required_substrings": [
+        ".name",
+        ".slot_index",
+        ".texture_ref = (void *)arg3",
+        ".mip_levels = 1"
+      ],
+      "forbidden_substrings": [
+        ".texture_path",
+        ".arg3_98",
+        ".one_a0",
+        ".unknown_a0"
       ]
     },
     {

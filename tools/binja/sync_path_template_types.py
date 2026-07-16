@@ -534,6 +534,14 @@ CLICK_START_FIELD_UPDATES = (
 
 TEXTURE_REF_FIELD_UPDATES = (
     ("0x00", "flags", "TextureRefFlags"),
+    ("0x04", "loaded_width", "int32_t"),
+    ("0x08", "loaded_height", "int32_t"),
+    ("0x0c", "name", "char[0x80]"),
+    ("0x8c", "slot_index", "int32_t"),
+    ("0x90", "frame_count", "int32_t"),
+    ("0x94", "frame_progress_step", "float"),
+    ("0x98", "texture_ref", "void*"),
+    ("0xa0", "mip_levels", "int32_t"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (

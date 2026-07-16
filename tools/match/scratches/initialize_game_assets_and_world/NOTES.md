@@ -843,3 +843,14 @@ slots with the `FrontendWidget*` view returned to callers.
 
 This remains analysis-only. A fresh focused compile is unchanged at 80.50%
 (5,392/5,411 instructions, 1,550 clean and 101 mismatched operands).
+
+## 2026-07-16 texture descriptor ownership closure
+
+The shared `TextureRef` replay now names `loaded_width +0x04`,
+`loaded_height +0x08`, and `mip_levels +0xa0` consistently in both
+decompilers. Exact `load_registered_texture_ref` writes the two dimensions and
+passes `mip_levels` to both D3DX creation paths; exact
+`get_or_create_texture_ref` initializes the latter to one. This initializer's
+eleven direct stores then raise selected world and track textures to two mip
+levels. No unknown padding was promoted without a concrete consumer, and the
+matcher source remains byte-stable.
