@@ -17,3 +17,11 @@ The shared source and analysis types intentionally preserve the shipped
 Initialization now seeds `DAMAGE_GUAGE_STATE_MONITORING`. Windows field xrefs
 and Android `cRDamageGuage::{Init,AI,Take}` agree on the complete three-state
 graph. Matching remains exact at 12/12 instructions.
+
+## 2026-07-16 unresolved write-only byte audit
+
+Windows field xrefs prove only the `Init` clear at `+0x0c`. Android's
+symbolized `cRDamageGuage::Init()` clears the same byte while its `AI()` and
+`Take(float, bool)` bodies never consume it. The field therefore remains
+`unresolved_byte_0c`; calling it a gate would overstate the evidence. Focused
+matching remains exact at 12/12 instructions.

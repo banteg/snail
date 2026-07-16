@@ -1,6 +1,88 @@
 {
   "checks": [
     {
+      "name": "bn_damage_guage_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/00440fa0-initialize_damage_gauge.c",
+      "required_substrings": [
+        "damage_guage->state",
+        "damage_guage->unresolved_byte_0c = 0",
+        "damage_guage->hit_flash_step"
+      ],
+      "forbidden_substrings": [
+        "controller->",
+        "damage_guage->__offset"
+      ]
+    },
+    {
+      "name": "ida_damage_guage_initializer_owner",
+      "artifact": "analysis/decompile/ida/functions/00440fa0-initialize_damage_gauge.c",
+      "required_substrings": [
+        "void __thiscall initialize_damage_gauge(DamageGuage *damage_guage)",
+        "damage_guage->state = DAMAGE_GUAGE_STATE_MONITORING",
+        "damage_guage->unresolved_byte_0c = 0"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_440FA0",
+        "this + 12"
+      ]
+    },
+    {
+      "name": "bn_damage_guage_ai_owner",
+      "artifact": "analysis/decompile/binja/functions/00440fd0-update_damage_gauge.c",
+      "required_substrings": [
+        "damage_guage->display_fill",
+        "game_base_1->subgame.player.attachment_exit_pending",
+        "apply_damage_gauge_delta(damage_guage, -0.00166666671f, true)",
+        "&g_game_base->subgame.player.warning"
+      ],
+      "forbidden_substrings": [
+        "controller->",
+        "data_4df904 + 0x430170"
+      ]
+    },
+    {
+      "name": "ida_damage_guage_ai_owner",
+      "artifact": "analysis/decompile/ida/functions/00440fd0-update_damage_gauge.c",
+      "required_substrings": [
+        "void __thiscall update_damage_gauge(DamageGuage *damage_guage)",
+        "damage_guage->state = DAMAGE_GUAGE_STATE_DRAINING",
+        "&g_game_base->subgame.player.presentation.snail_skin",
+        "damage_guage->skin_hold_ticks = 5"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_440FD0",
+        "*(float *)(this +"
+      ]
+    },
+    {
+      "name": "bn_damage_guage_take_bool_owner",
+      "artifact": "analysis/decompile/binja/functions/004413f0-apply_damage_gauge_delta.c",
+      "required_substrings": [
+        "eax.b = force",
+        "damage_guage->state",
+        "game_base_2->subgame.player.trampoline_bounce_active",
+        "damage_guage->fill"
+      ],
+      "forbidden_substrings": [
+        "controller->",
+        "edx_1 + 0x42ff60"
+      ]
+    },
+    {
+      "name": "ida_damage_guage_take_bool_owner",
+      "artifact": "analysis/decompile/ida/functions/004413f0-apply_damage_gauge_delta.c",
+      "required_substrings": [
+        "void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta, bool force)",
+        "damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING",
+        "g_game_base->subgame.player.trampoline_bounce_active",
+        "damage_guage->hit_flash_progress"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall sub_4413F0",
+        "float *this"
+      ]
+    },
+    {
       "name": "bn_update_subgoldy_selected_replay_lane",
       "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
       "required_substrings": [

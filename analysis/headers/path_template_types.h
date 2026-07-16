@@ -1233,6 +1233,7 @@ typedef struct DamageGuage {
     DamageGuageState state;
     float pulse_progress;
     float pulse_step;
+    /* Cleared by Init on Windows and Android; no live consumer is proved. */
     uint8_t unresolved_byte_0c;
     uint8_t _pad_0d[0x3];
     float warning_transition_progress;

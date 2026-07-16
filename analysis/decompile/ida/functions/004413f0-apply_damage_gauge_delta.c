@@ -2,45 +2,45 @@
 /* function: apply_damage_gauge_delta @ 0x4413f0 */
 /* selector: apply_damage_gauge_delta */
 
-// Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by the sign bit of `Game+0x4300b4`; state-2 ignores unforced positive deltas and also ignores unforced negative deltas while `Game+0x42ff60 == 1`. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path.
-void __thiscall sub_4413F0(float *this, float a2, char a3)
+// Applies one signed delta to `Player::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `Player::movement_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `Player::trampoline_bounce_active == 1`. Its fallback path changes `Player::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `Player::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`.
+void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta, bool force)
 {
   double v4; // st7
   char v6; // c0
 
-  if ( (*((char *)&loc_4300B4 + (_DWORD)MEMORY[0x4DF904]) >= 0 || a3)
-    && (*(_DWORD *)this != 2 || a2 <= 0.0 && (a2 >= 0.0 || *((_BYTE *)MEMORY[0x4DF904] + 4390752) != 1)) )
+  if ( (*((char *)&g_invincible_damage_gate_flags_offset + (_DWORD)g_game_base) >= 0 || force)
+    && (damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING
+     || delta <= 0.0 && (delta >= 0.0 || g_game_base->subgame.player.trampoline_bounce_active != 1)) )
   {
-    if ( *(this + 9) == 0.0 && a2 > 0.0 )
+    if ( damage_guage->hit_flash_progress == 0.0 && delta > 0.0 )
     {
-      change_snail_skin((float *)MEMORY[0x4DF904] + 1101838, 1, 0.2);
-      if ( play_voice_manager((int)unk_751498, 0, 1u, -1) )
+      change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 1, 0.2);
+      if ( play_voice_manager((int)g_voice_manager, 0, 1u, -1) )
       {
-        *(this + 9) = *(this + 10);
+        damage_guage->hit_flash_progress = damage_guage->hit_flash_step;
       }
       else
       {
-        if ( play_voice_manager((int)unk_751498, 9, 0, -1) )
-          *(this + 9) = *(this + 10);
-        if ( !*((_BYTE *)MEMORY[0x4DF904] + 4390996) )
+        if ( play_voice_manager((int)g_voice_manager, 9, 0, -1) )
+          damage_guage->hit_flash_progress = damage_guage->hit_flash_step;
+        if ( !g_game_base->subgame.player.control_override_active )
         {
-          dispatch_cutscene_animation((int)MEMORY[0x4DF904] + 4400896, 6, 1, -1);
-          dispatch_cutscene_animation((int)MEMORY[0x4DF904] + 4400896, 1, 0, -1);
+          dispatch_cutscene_animation(&g_game_base->subgame.player.presentation, 6, 1u, -1);
+          dispatch_cutscene_animation(&g_game_base->subgame.player.presentation, 1, 0, -1);
         }
       }
     }
-    v4 = a2 + *(this + 7);
-    *(this + 7) = v4;
+    v4 = delta + damage_guage->fill;
+    damage_guage->fill = v4;
     if ( v6 )
     {
-      *(this + 7) = 0.0;
+      damage_guage->fill = 0.0;
     }
     else
     {
       if ( v4 > 1.0 )
         v4 = 1.0;
-      *(this + 7) = v4;
+      damage_guage->fill = v4;
     }
   }
 }
-

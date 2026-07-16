@@ -368,7 +368,8 @@ High-confidence current fields:
   `MONITORING (0) -> WARNING_TRANSITION (1) -> DRAINING (2) -> MONITORING`
 - `+0x04`: `pulse_progress`
 - `+0x08`: `pulse_step`
-- `+0x0c`: unknown byte gate
+- `+0x0c`: unresolved write-only byte; Windows and Android `Init` clear it,
+  but no live consumer currently proves a semantic name
 - `+0x10`: `warning_transition_progress`
 - `+0x14`: `warning_transition_step`
 - `+0x18`: `skin_hold_ticks`

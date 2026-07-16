@@ -120,3 +120,13 @@ gauge, the transition arm owns warning startup and its six-tick ramp, and the
 draining arm owns skin refresh, forced decay, and warning teardown. Focused
 output remains byte-stable at 94.03%, 268/268 instructions, prefix 122/268,
 with all 65 operands clean.
+
+## 2026-07-16 typed lifecycle replay
+
+The proved `cRDamageGuage::Take(float, bool)` ABI now reaches both decompilers,
+so the draining calls render as explicit `true` and `false` while retaining the
+full `GameRoot -> SubgameRuntime -> Player` ownership graph. The neighboring
+`+0x0c` byte remains honestly unresolved because Windows and Android only clear
+it in `Init`; neither `AI` nor `Take` reads it. Focused output remains at
+94.03%, 268/268 instructions, prefix 122/268, with all 65 operands clean; the
+remaining delta is still the documented `height`/alpha stack-slot allocation.

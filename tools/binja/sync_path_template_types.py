@@ -1157,7 +1157,7 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     ),
     (
         "apply_damage_gauge_delta",
-        "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, uint8_t force)",
+        "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, bool force)",
     ),
     (
         "update_progress_bar",

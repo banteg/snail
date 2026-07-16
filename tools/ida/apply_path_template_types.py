@@ -27,6 +27,9 @@ TRUSTED_NAMES = [
     (0x404580, "border_mouse_test"),
     (0x4086D0, "initialize_player_presentation_controller"),
     (0x440F80, "update_barrier_ai"),
+    (0x440FA0, "initialize_damage_gauge"),
+    (0x440FD0, "update_damage_gauge"),
+    (0x4413F0, "apply_damage_gauge_delta"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
     (0x44CAC0, "multiply_vector_by_matrix_copy"),
@@ -156,6 +159,18 @@ TRUSTED_DECLARATIONS = [
     (
         "update_sub_loc",
         "void __thiscall update_sub_loc(SubLoc* cell);",
+    ),
+    (
+        "initialize_damage_gauge",
+        "void __thiscall initialize_damage_gauge(DamageGuage* damage_guage);",
+    ),
+    (
+        "update_damage_gauge",
+        "void __thiscall update_damage_gauge(DamageGuage* damage_guage);",
+    ),
+    (
+        "apply_damage_gauge_delta",
+        "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, bool force);",
     ),
     (
         "get_track_cell_row_index",

@@ -9,13 +9,13 @@
 
 extern GameRoot* g_game; // data_4df904
 
-void DamageGuage::apply_damage_gauge_delta(float delta, char force)
+void DamageGuage::apply_damage_gauge_delta(float delta, bool force)
 {
     if (((g_game->subgame.embedded_player()->movement_flags & 0x80) == 0 || force)
+        && (state != DAMAGE_GUAGE_STATE_DRAINING || delta <= 0.0f)
         && (state != DAMAGE_GUAGE_STATE_DRAINING
-            || (delta <= 0.0f
-                && (delta >= 0.0f
-                    || g_game->subgame.embedded_player()->trampoline_bounce_active != 1)))) {
+            || delta >= 0.0f
+            || g_game->subgame.embedded_player()->trampoline_bounce_active != 1)) {
         if (hit_flash_progress == 0.0f && delta > 0.0f) {
             g_game->subgame.embedded_player()->presentation.snail_skin
                 .change_snail_skin(SNAIL_SKIN_SLOT_DAMAGE, 0.2f);

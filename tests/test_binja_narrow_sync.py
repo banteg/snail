@@ -3783,6 +3783,9 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
+    ida_sync = (
+        repo_root / "tools/ida/apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
@@ -3792,6 +3795,18 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
 
     assert '"DamageGuageState",' in path_sync
     assert '("0x00", "state", "DamageGuageState")' in path_sync
+    bool_take = (
+        "apply_damage_gauge_delta(DamageGuage* damage_guage, "
+        "float delta, bool force)"
+    )
+    assert bool_take in path_sync
+    assert f"{bool_take};" in ida_sync
+    for function_name in (
+        "initialize_damage_gauge",
+        "update_damage_gauge",
+        "apply_damage_gauge_delta",
+    ):
+        assert f'"{function_name}"' in ida_sync
     for header in (analysis_header, matcher_header):
         assert "DAMAGE_GUAGE_STATE_MONITORING = 0" in header
         assert "DAMAGE_GUAGE_STATE_WARNING_TRANSITION = 1" in header
@@ -3809,6 +3824,12 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
             repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
         ).read_text(encoding="utf-8")
         assert constant in scratch
+
+    take_scratch = (
+        repo_root / "tools/match/scratches/apply_damage_gauge_delta/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "float delta, bool force" in take_scratch
+    assert take_scratch.count("state != DAMAGE_GUAGE_STATE_DRAINING") == 2
 
 
 def test_click_start_state_ownership_stays_aligned() -> None:

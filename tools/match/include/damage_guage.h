@@ -13,11 +13,12 @@ class DamageGuage {
 public:
     void initialize_damage_gauge(); // @ 0x440fa0, cRDamageGuage::Init
     void update_damage_gauge(); // @ 0x440fd0, cRDamageGuage::AI
-    void apply_damage_gauge_delta(float delta, char force); // @ 0x4413f0, cRDamageGuage::Take
+    void apply_damage_gauge_delta(float delta, bool force); // @ 0x4413f0, cRDamageGuage::Take
 
     DamageGuageState state; // +0x00
     float pulse_progress; // +0x04
     float pulse_step; // +0x08
+    // Cleared by Init on Windows and Android; no live consumer is proved.
     unsigned char unresolved_byte_0c; // +0x0c
     char unknown_0d[0x10 - 0x0d];
     float warning_transition_progress; // +0x10

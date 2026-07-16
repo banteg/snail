@@ -96,3 +96,18 @@ The special input gate now explicitly belongs to
 negative deltas remain conditional on the trampoline latch. Focused output is
 byte-stable at 78.92%, 91/94 instructions, prefix 0, with all 20 operands
 clean.
+
+## 2026-07-16 exact independent drain guards
+
+The Windows control flow preserves two independent draining predicates:
+positive deltas require `state != DRAINING`, while negative deltas require
+either `state != DRAINING` or a clear trampoline latch. Keeping both source
+conditions, instead of algebraically folding their repeated state term,
+reproduces VC6's otherwise puzzling redundant `cmp ecx, ecx`. This is also the
+shape suggested by the symbolized Android `cRDamageGuage::Take(float, bool)`
+body. The shared method ABI now records the proved `bool force` parameter.
+
+Focused matching is exact at 100.00%, 94/94 instructions, full prefix, with
+all 24 relocatable operands clean and no mismatches. The adjacent `+0x0c` byte
+remains unresolved: Windows and Android only clear it in `Init`, and neither
+live `AI` nor `Take` consumes it.

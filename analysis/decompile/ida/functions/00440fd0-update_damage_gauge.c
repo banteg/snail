@@ -2,175 +2,151 @@
 /* function: update_damage_gauge @ 0x440fd0 */
 /* selector: update_damage_gauge */
 
-// Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved.
-void __thiscall sub_440FD0(int this)
+// Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`.
+void __thiscall update_damage_gauge(DamageGuage *damage_guage)
 {
-  float *v2; // ecx
+  GameRoot *v2; // ecx
   double v3; // st7
   double v4; // st7
-  int *v5; // eax
-  int *v6; // eax
-  int *v7; // eax
-  int v8; // [esp+0h] [ebp-48h]
-  int v9; // [esp+8h] [ebp-40h]
+  tColour *v5; // eax
+  tColour *v6; // eax
+  tColour *v7; // eax
+  float y; // [esp+0h] [ebp-48h]
+  float v9; // [esp+8h] [ebp-40h]
   float v10; // [esp+28h] [ebp-20h]
-  float v11; // [esp+30h] [ebp-18h]
-  int v12; // [esp+30h] [ebp-18h]
-  int v13; // [esp+30h] [ebp-18h]
-  float v14; // [esp+34h] [ebp-14h]
-  _DWORD v15[4]; // [esp+38h] [ebp-10h] BYREF
+  float a; // [esp+30h] [ebp-18h]
+  float aa; // [esp+30h] [ebp-18h]
+  float ab; // [esp+30h] [ebp-18h]
+  float height; // [esp+34h] [ebp-14h]
+  Color4f color; // [esp+38h] [ebp-10h] BYREF
 
-  v2 = (float *)MEMORY[0x4DF904];
-  if ( *((_BYTE *)MEMORY[0x4DF904] + 476705) )
+  v2 = g_game_base;
+  if ( g_game_base->subgame.subgame_pause_gate )
     goto LABEL_26;
-  *(float *)(this + 32) = (*(float *)(this + 28) - *(float *)(this + 32)) * 0.2 + *(float *)(this + 32);
-  if ( *(float *)(this + 36) > 0.0 )
+  damage_guage->display_fill = (damage_guage->fill - damage_guage->display_fill) * 0.2 + damage_guage->display_fill;
+  if ( damage_guage->hit_flash_progress > 0.0 )
   {
-    v3 = *(float *)(this + 40) + *(float *)(this + 36);
-    *(float *)(this + 36) = v3;
+    v3 = damage_guage->hit_flash_step + damage_guage->hit_flash_progress;
+    damage_guage->hit_flash_progress = v3;
     if ( v3 > 1.0 )
-      *(_DWORD *)(this + 36) = 0;
+      damage_guage->hit_flash_progress = 0.0;
   }
-  if ( !*(_DWORD *)this )
+  if ( damage_guage->state == DAMAGE_GUAGE_STATE_MONITORING )
   {
-    if ( *(_DWORD *)(this + 28) == 1065353216 )
+    if ( LODWORD(damage_guage->fill) == 1065353216 )
     {
-      v2 = (float *)MEMORY[0x4DF904];
-      if ( *((_BYTE *)&loc_430199 + (_DWORD)MEMORY[0x4DF904]) || *((_BYTE *)&loc_4301BC + (_DWORD)MEMORY[0x4DF904]) )
+      v2 = g_game_base;
+      if ( *((_BYTE *)&g_player_attachment_exit_pending_offset + (_DWORD)g_game_base)
+        || *((_BYTE *)&g_follow_force_drain_offset + (_DWORD)g_game_base) )
+      {
         goto LABEL_26;
-      *(_DWORD *)this = 1;
-      *(_DWORD *)(this + 16) = 0;
-      *(_DWORD *)(this + 20) = 1042983595;
-      start_warning((_DWORD *)MEMORY[0x4DF904] + 1097820);
+      }
+      damage_guage->state = DAMAGE_GUAGE_STATE_WARNING_TRANSITION;
+      damage_guage->warning_transition_progress = 0.0;
+      damage_guage->warning_transition_step = 0.16666667;
+      start_warning(&g_game_base->subgame.player.warning);
     }
     goto LABEL_25;
   }
-  if ( *(_DWORD *)this == 1 )
+  if ( damage_guage->state == DAMAGE_GUAGE_STATE_WARNING_TRANSITION )
   {
-    if ( *((_BYTE *)&loc_4301BC + (_DWORD)MEMORY[0x4DF904]) )
-      *(_DWORD *)(this + 16) = 1065353216;
-    v4 = *(float *)(this + 20) + *(float *)(this + 16);
-    *(float *)(this + 16) = v4;
+    if ( *((_BYTE *)&g_follow_force_drain_offset + (_DWORD)g_game_base) )
+      damage_guage->warning_transition_progress = 1.0;
+    v4 = damage_guage->warning_transition_step + damage_guage->warning_transition_progress;
+    damage_guage->warning_transition_progress = v4;
     if ( v4 >= 1.0 )
     {
-      v2 = (float *)MEMORY[0x4DF904];
-      if ( *((_DWORD *)MEMORY[0x4DF904] + 1097594) != 1056629064 )
+      v2 = g_game_base;
+      if ( LODWORD(g_game_base->subgame.player.body.transform.position.y) != 1056629064 )
         goto LABEL_26;
-      *(_DWORD *)this = 2;
-      play_voice_manager((int)unk_751498, 14, 0, -1);
+      damage_guage->state = DAMAGE_GUAGE_STATE_DRAINING;
+      play_voice_manager((int)g_voice_manager, 14, 0, -1);
     }
     goto LABEL_25;
   }
-  if ( *(_DWORD *)this != 2 )
+  if ( damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING )
   {
 LABEL_25:
-    v2 = (float *)MEMORY[0x4DF904];
+    v2 = g_game_base;
     goto LABEL_26;
   }
-  change_snail_skin((float *)MEMORY[0x4DF904] + 1101838, 1, 0.2);
-  apply_damage_gauge_delta((float *)this, -0.0016666667, 1);
-  *(_DWORD *)(this + 24) = 5;
-  v2 = (float *)MEMORY[0x4DF904];
-  if ( *((_BYTE *)&loc_4301BC + (_DWORD)MEMORY[0x4DF904]) )
+  change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 1, 0.2);
+  apply_damage_gauge_delta(damage_guage, -0.0016666667, 1);
+  damage_guage->skin_hold_ticks = 5;
+  v2 = g_game_base;
+  if ( *((_BYTE *)&g_follow_force_drain_offset + (_DWORD)g_game_base) )
   {
-    apply_damage_gauge_delta((float *)this, -0.0066666668, 0);
-    v2 = (float *)MEMORY[0x4DF904];
+    apply_damage_gauge_delta(damage_guage, -0.0066666668, 0);
+    v2 = g_game_base;
   }
-  if ( *(float *)(this + 28) == 0.0 && *((_DWORD *)v2 + 1097594) == 1056629064
-    || v2[1097840] > 0.0
-    || v2[1097602] > 0.0
-    || *((_DWORD *)v2 + 1101849) )
+  if ( damage_guage->fill == 0.0 && LODWORD(v2->subgame.player.body.transform.position.y) == 1056629064
+    || v2->subgame.player.completion_handoff_timer > 0.0
+    || v2->subgame.player.resurrect_progress > 0.0
+    || v2->subgame.player.presentation.cutscene.state )
   {
-    *(_DWORD *)this = 0;
-    stop_warning((_DWORD **)MEMORY[0x4DF904] + 1097820);
+    damage_guage->state = DAMAGE_GUAGE_STATE_MONITORING;
+    stop_warning(&g_game_base->subgame.player.warning);
     stop_warning_sample();
     goto LABEL_25;
   }
 LABEL_26:
-  if ( *(float *)(this + 32) <= 0.99900001 )
+  if ( damage_guage->display_fill <= 0.99900001 )
   {
-    if ( *(float *)(this + 32) >= 0.0099999998 )
-      v14 = 351.0 - *(float *)(this + 32) * 308.0;
+    if ( damage_guage->display_fill >= 0.0099999998 )
+      height = 351.0 - damage_guage->display_fill * 308.0;
     else
-      v14 = 396.0;
+      height = 396.0;
   }
   else
   {
-    v14 = 0.0;
+    height = 0.0;
   }
-  if ( !*((_BYTE *)v2 + 476705) )
-    *(float *)(this + 4) = *(float *)(this + 8) + *(float *)(this + 4);
-  if ( *(float *)(this + 4) > 1.0 )
-    *(float *)(this + 4) = *(float *)(this + 4) - 1.0;
-  if ( *(float *)(this + 32) > 0.89999998 || *(_DWORD *)this )
+  if ( !v2->subgame.subgame_pause_gate )
+    damage_guage->pulse_progress = damage_guage->pulse_step + damage_guage->pulse_progress;
+  if ( damage_guage->pulse_progress > 1.0 )
+    damage_guage->pulse_progress = damage_guage->pulse_progress - 1.0;
+  if ( damage_guage->display_fill > 0.89999998 || damage_guage->state )
   {
-    if ( *(float *)(this + 32) <= 0.89999998 )
+    if ( damage_guage->display_fill <= 0.89999998 )
     {
-      if ( *(float *)(this + 32) < 0.1 )
+      if ( damage_guage->display_fill < 0.1 )
       {
-        v11 = *(float *)(this + 32) * 10.0;
+        a = damage_guage->display_fill * 10.0;
         goto LABEL_43;
       }
     }
-    else if ( !*(_DWORD *)this )
+    else if ( damage_guage->state == DAMAGE_GUAGE_STATE_MONITORING )
     {
-      v11 = (*(float *)(this + 32) - 0.89999998) * 10.0;
+      a = (damage_guage->display_fill - 0.89999998) * 10.0;
 LABEL_43:
-      v10 = *(float *)(this + 4) * 6.2831855;
-      *(float *)&v12 = v11 - (sine(v10) + 1.0) * 0.5 * v11 * 0.5;
-      v5 = set_color_rgba(v15, 1065353216, 1065353216, 1065353216, v12);
+      v10 = damage_guage->pulse_progress * 6.2831855;
+      aa = a - (sine(v10) + 1.0) * 0.5 * a * 0.5;
+      v5 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, aa);
       queue_axis_aligned_textured_quad_uv(
         91,
-        1141637120,
-        1116471296,
-        1115684864,
-        1137049600,
-        0x1000000,
+        560.0,
+        70.0,
+        64.0,
+        396.0,
+        0x1000000u,
         v5,
-        0,
-        0,
-        1065353216,
-        1061552128,
+        0.0,
+        0.0,
+        1.0,
+        0.7734375,
         3,
-        0);
+        0.0);
       goto LABEL_44;
     }
-    v11 = 1.0;
+    a = 1.0;
     goto LABEL_43;
   }
 LABEL_44:
-  *(float *)&v13 = v14 * 0.001953125;
-  v6 = set_color_rgba(v15, 1065353216, 1065353216, 1065353216, 1065353216);
-  queue_axis_aligned_textured_quad_uv(
-    89,
-    1141637120,
-    1116471296,
-    1115684864,
-    SLODWORD(v14),
-    0x1000000,
-    v6,
-    0,
-    0,
-    1065353216,
-    v13,
-    3,
-    0);
-  v7 = set_color_rgba(v15, 1065353216, 1065353216, 1065353216, 1065353216);
-  *(float *)&v9 = 396.0 - v14;
-  *(float *)&v8 = v14 + 70.0;
-  queue_axis_aligned_textured_quad_uv(
-    90,
-    1141637120,
-    v8,
-    1115684864,
-    v9,
-    0x1000000,
-    v7,
-    0,
-    v13,
-    1065353216,
-    1061552128,
-    3,
-    0);
+  ab = height * 0.001953125;
+  v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  queue_axis_aligned_textured_quad_uv(89, 560.0, 70.0, 64.0, height, 0x1000000u, v6, 0.0, 0.0, 1.0, ab, 3, 0.0);
+  v7 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  v9 = 396.0 - height;
+  y = height + 70.0;
+  queue_axis_aligned_textured_quad_uv(90, 560.0, y, 64.0, v9, 0x1000000u, v7, 0.0, ab, 1.0, 0.7734375, 3, 0.0);
 }
-
