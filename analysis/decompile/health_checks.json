@@ -796,13 +796,63 @@
       "required_substrings": [
         "struct SubgameRuntime* game",
         "struct SubGarbage* i_2 = player->game->garbage_hazards.active_head",
-        "i_2->body.transform.position.z"
+        "i_2->body.transform.position.z",
+        "player->presentation.wobble.lift_phase_step"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
-        "i_2->world_position"
+        "i_2->world_position",
+        "presentation.__offset(0x15c8)"
+      ]
+    },
+    {
+      "name": "bn_snail_wobble_initializer_owner",
+      "artifact": "analysis/decompile/binja/functions/0043a9c0-initialize_subgoldy.c",
+      "required_substrings": [
+        "player->presentation.wobble.roll_phase = 0",
+        "player->presentation.wobble.roll_phase_step = 0.00574712642f",
+        "player->presentation.wobble.lift_phase = 0f",
+        "player->presentation.wobble.lift_phase_step = 0.00677506765f"
+      ],
+      "forbidden_substrings": [
+        "presentation.__offset(0x15bc)",
+        "presentation.__offset(0x15c0)",
+        "presentation.__offset(0x15c4)",
+        "presentation.__offset(0x15c8)"
+      ]
+    },
+    {
+      "name": "bn_snail_wobble_presentation_owner",
+      "artifact": "analysis/decompile/binja/functions/004428d0-initialize_cutscene.c",
+      "required_substrings": [
+        "snail->wobble.roll_phase_step",
+        "snail->wobble.lift_phase_step",
+        "snail->body.transform",
+        "snail->invincible_shell.cutscene_roll_progress",
+        "snail->snail_hotspot_source_body.transform"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "__offset(0x15",
+        "invincible_shell._pad_"
+      ]
+    },
+    {
+      "name": "ida_snail_wobble_presentation_owner",
+      "artifact": "analysis/decompile/ida/functions/004428d0-initialize_cutscene.c",
+      "required_substrings": [
+        "void __thiscall initialize_cutscene(Snail *snail)",
+        "snail->wobble.roll_phase_step",
+        "snail->wobble.lift_phase_step",
+        "snail->body.transform",
+        "snail->invincible_shell.cutscene_roll_progress",
+        "snail->snail_hotspot_source_body.transform"
+      ],
+      "forbidden_substrings": [
+        "PlayerPresentationController",
+        "invincible_shell._pad_"
       ]
     },
     {

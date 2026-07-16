@@ -3739,6 +3739,45 @@ def test_cut_scene_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_presentation_wobble_view_stays_exact_and_replayable() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (repo_root / "tools/match/include/player.h").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for header in (matcher_header, analysis_header):
+        assert "struct PresentationWobbleController" in header
+        assert "float roll_phase;" in header
+        assert "float roll_phase_step;" in header
+        assert "float lift_phase;" in header
+        assert "float lift_phase_step;" in header
+        assert "PresentationWobbleController wobble" in header
+
+    assert "PresentationWobbleController_must_be_0x10" in matcher_header
+    assert '"PresentationWobbleController",' in binja_sync
+    assert '("0x15bc", "wobble", "PresentationWobbleController")' in binja_sync
+    assert "ensure_presentation_wobble_controller(" in binja_sync
+    assert "replace_types=(type_name,)" in binja_sync
+    assert "PRESENTATION_WOBBLE_CONTROLLER_FIELD_UPDATES" in binja_sync
+
+    consumers = {
+        "initialize_subgoldy": "presentation.wobble.roll_phase_step",
+        "initialize_cutscene": "wobble.lift_phase_step",
+        "handle_subgoldy_collisions": "presentation.wobble.lift_phase_step",
+    }
+    for function_name, field in consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert field in scratch
+
+
 def test_damage_guage_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

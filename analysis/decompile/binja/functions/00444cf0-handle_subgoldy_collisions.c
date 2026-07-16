@@ -114,7 +114,7 @@
 00445152        int32_t eax_27 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f))
 0044516c        x87control = play_slug_voice(&player->game->slug_hazards + i_3, 0x22 - eax_27)
 00445175        long double x87_r7_46 = fconvert.t(fconvert.s(st0_4)) * fconvert.t(0.5f)
-0044517b        player->presentation.__offset(0x15c8).d = 0
+0044517b        player->presentation.wobble.lift_phase_step = 0f
 004451ab        vector_2.x = fconvert.s(fconvert.t(fconvert.s(x87_r7_46 * fconvert.t(vector.x))) + fconvert.t(player->cached_camera_target_world.x))
 004451bd        struct Vec3 position
 004451bd        position.x = vector_2.x

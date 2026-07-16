@@ -66,18 +66,18 @@ void Snail::initialize_cutscene()
         transform.rotate_matrix_local_y(yaw);
     }
 
-    wobble_roll_phase = wobble_roll_phase_step + wobble_roll_phase;
-    if (wobble_roll_phase > 1.0f)
-        wobble_roll_phase = wobble_roll_phase - 1.0f;
+    wobble.roll_phase = wobble.roll_phase_step + wobble.roll_phase;
+    if (wobble.roll_phase > 1.0f)
+        wobble.roll_phase = wobble.roll_phase - 1.0f;
 
-    wobble_lift_phase = wobble_lift_phase_step + wobble_lift_phase;
-    if (wobble_lift_phase > 1.0f)
-        wobble_lift_phase = wobble_lift_phase - 1.0f;
+    wobble.lift_phase = wobble.lift_phase_step + wobble.lift_phase;
+    if (wobble.lift_phase > 1.0f)
+        wobble.lift_phase = wobble.lift_phase - 1.0f;
 
     base_matrix = transform;
     roll_matrix.set_matrix_identity();
     roll_matrix.rotate_matrix_local_z(
-        sine(wobble_roll_phase * 6.28318548f) * 0.0174499992f);
+        sine(wobble.roll_phase * 6.28318548f) * 0.0174499992f);
 
     inverse_live.invert_matrix_from_source(transform);
     transform.multiply_matrix(inverse_live);
@@ -86,7 +86,7 @@ void Snail::initialize_cutscene()
     transform.position.y = transform.position.y - 1.29999995f;
     transform.multiply_matrix(base_matrix);
 
-    float lift_sine = sine(wobble_lift_phase * 6.28318548f);
+    float lift_sine = sine(wobble.lift_phase * 6.28318548f);
     transform.position +=
         (transform.basis_up * lift_sine) * 0.0299999993f;
 

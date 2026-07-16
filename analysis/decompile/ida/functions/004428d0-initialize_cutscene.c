@@ -2,191 +2,186 @@
 /* function: initialize_cutscene @ 0x4428d0 */
 /* selector: initialize_cutscene */
 
-// Seeds and polls the player-side cutscene controller from the live player transform, the cached snail-hotspot transforms, and the completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`.
-int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentation)
+// Stable historical Windows name for authored `cRSnail::AIGoldy()`. This per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner; Android exposes the same call sequence directly.
+void __thiscall initialize_cutscene(Snail *snail)
 {
-  int32_t result; // eax
   Player *owner_player; // ecx
-  Player *v4; // ecx
-  TransformMatrix *p_live_matrix; // eax
-  double v6; // st7
-  float *pad_00; // eax
-  TransformMatrix *v8; // ebp
-  const void *v9; // esi
+  Player *v3; // ecx
+  TransformMatrix *p_transform; // eax
+  double v5; // st7
+  float *v6; // eax
+  TransformMatrix *v7; // ebp
+  const void *v8; // esi
   double y; // st7
-  double v11; // st7
-  unsigned __int8 v13; // c0
-  unsigned __int8 v14; // c3
-  double v15; // st7
-  unsigned __int8 v17; // c0
-  unsigned __int8 v18; // c3
-  TransformMatrix *v19; // edx
-  double v20; // st7
+  double v10; // st7
+  unsigned __int8 v12; // c0
+  unsigned __int8 v13; // c3
+  double v14; // st7
+  unsigned __int8 v16; // c0
+  unsigned __int8 v17; // c3
+  double v18; // st7
+  double v19; // st7
+  double cutscene_roll_progress; // st7
   double v21; // st7
-  double v22; // st7
-  double v23; // st7
-  float *v24; // eax
-  const void *v25; // esi
+  float *v22; // eax
+  const void *v23; // esi
+  float v24; // [esp+0h] [ebp-170h]
+  float v25; // [esp+0h] [ebp-170h]
   float v26; // [esp+0h] [ebp-170h]
   float v27; // [esp+0h] [ebp-170h]
   float v28; // [esp+0h] [ebp-170h]
-  float v29; // [esp+0h] [ebp-170h]
-  float v30; // [esp+0h] [ebp-170h]
   float angle; // [esp+14h] [ebp-15Ch]
-  float v32; // [esp+18h] [ebp-158h]
-  float v33; // [esp+1Ch] [ebp-154h]
-  float v34; // [esp+24h] [ebp-14Ch]
-  float v35; // [esp+28h] [ebp-148h]
+  float v30; // [esp+18h] [ebp-158h]
+  float v31; // [esp+1Ch] [ebp-154h]
+  float v32; // [esp+24h] [ebp-14Ch]
+  float v33; // [esp+28h] [ebp-148h]
   TransformMatrix transform; // [esp+30h] [ebp-140h] BYREF
   TransformMatrix to; // [esp+70h] [ebp-100h] BYREF
   TransformMatrix rhs; // [esp+B0h] [ebp-C0h] BYREF
   TransformMatrix out; // [esp+F0h] [ebp-80h] BYREF
-  TransformMatrix v40; // [esp+130h] [ebp-40h] BYREF
+  TransformMatrix v38; // [esp+130h] [ebp-40h] BYREF
 
-  result = (int32_t)MEMORY[0x4DF904];
-  if ( !*((_BYTE *)MEMORY[0x4DF904] + 476705) )
+  if ( !g_game_base->subgame.subgame_pause_gate )
   {
-    update_snail_skin_transition(&presentation->snail_skin_transition);
-    owner_player = presentation->owner_player;
+    update_snail_skin_transition(&snail->snail_skin);
+    owner_player = snail->owner_player;
     if ( owner_player->cutscene_pitch_cycle <= 0.0 )
     {
       if ( owner_player->attachment_exit_pending )
       {
-        qmemcpy(&transform, &owner_player->live_matrix, sizeof(transform));
-        qmemcpy(&to, &owner_player->live_matrix, sizeof(to));
+        qmemcpy(&transform, &owner_player->body.transform, sizeof(transform));
+        qmemcpy(&to, &owner_player->body.transform, sizeof(to));
         set_matrix_rotation_identity(&transform);
-        linear_interpolate_matrix(&presentation->owner_player->live_matrix, &transform, &to, 0.97000003);
+        linear_interpolate_matrix(&snail->owner_player->body.transform, &transform, &to, 0.97000003);
       }
     }
     else
     {
       owner_player->cutscene_pitch_cycle = owner_player->cutscene_pitch_cycle_step + owner_player->cutscene_pitch_cycle;
-      v4 = presentation->owner_player;
-      if ( v4->cutscene_pitch_cycle > 1.0 )
-        v4->cutscene_pitch_cycle = 0.0;
-      p_live_matrix = &presentation->owner_player->live_matrix;
-      qmemcpy(&transform, p_live_matrix, sizeof(transform));
-      qmemcpy(&to, p_live_matrix, sizeof(to));
+      v3 = snail->owner_player;
+      if ( v3->cutscene_pitch_cycle > 1.0 )
+        v3->cutscene_pitch_cycle = 0.0;
+      p_transform = &snail->owner_player->body.transform;
+      qmemcpy(&transform, p_transform, sizeof(transform));
+      qmemcpy(&to, p_transform, sizeof(to));
       set_matrix_rotation_identity(&transform);
-      v6 = (-0.78539819 - presentation->owner_player->cutscene_pitch_cycle * 6.2831855) * 1.4;
-      angle = v6;
-      if ( v6 < -6.2831855 )
+      v5 = (-0.78539819 - snail->owner_player->cutscene_pitch_cycle * 6.2831855) * 1.4;
+      angle = v5;
+      if ( v5 < -6.2831855 )
         angle = -6.2831855;
-      rotate_matrix_world_x(&transform, angle);
-      linear_interpolate_matrix(&presentation->owner_player->live_matrix, &transform, &to, 0.94);
+      rotate_matrix_local_x(&transform, angle);
+      linear_interpolate_matrix(&snail->owner_player->body.transform, &transform, &to, 0.94);
     }
-    pad_00 = (float *)presentation->owner_player->_pad_00;
-    v8 = &presentation->live_matrix;
-    v9 = pad_00 + 14;
-    pad_00 += 2649;
-    qmemcpy(&presentation->live_matrix, v9, sizeof(presentation->live_matrix));
-    presentation->live_matrix.position.x = *pad_00;
-    presentation->live_matrix.position.y = pad_00[1];
-    presentation->live_matrix.position.z = pad_00[2];
-    qmemcpy(&transform, &presentation->live_matrix, sizeof(transform));
-    linear_interpolate_matrix(&presentation->live_matrix, &transform, &presentation->cached_cutscene_matrix, 0.69999999);
-    y = presentation->live_matrix.basis_up.y;
-    presentation->live_matrix.position.x = transform.position.x;
-    presentation->live_matrix.position.y = transform.position.y;
-    presentation->live_matrix.position.z = transform.position.z;
+    v6 = (float *)snail->owner_player;
+    v7 = &snail->body.transform;
+    v8 = v6 + 14;
+    v6 += 2649;
+    qmemcpy(&snail->body.transform, v8, sizeof(snail->body.transform));
+    snail->body.transform.position.x = *v6;
+    snail->body.transform.position.y = v6[1];
+    snail->body.transform.position.z = v6[2];
+    qmemcpy(&transform, &snail->body.transform, sizeof(transform));
+    linear_interpolate_matrix(&snail->body.transform, &transform, &snail->cached_cutscene_matrix, 0.69999999);
+    y = snail->body.transform.basis_up.y;
+    snail->body.transform.position.x = transform.position.x;
+    snail->body.transform.position.y = transform.position.y;
+    snail->body.transform.position.z = transform.position.z;
     if ( y > 0.0 )
     {
-      v26 = (presentation->live_matrix.position.x - presentation->cached_cutscene_matrix.position.x) * 0.80000001;
-      rotate_matrix_world_y(&presentation->live_matrix, v26);
+      v24 = (snail->body.transform.position.x - snail->cached_cutscene_matrix.position.x) * 0.80000001;
+      rotate_matrix_local_y(&snail->body.transform, v24);
     }
-    v11 = presentation->wobble.roll_phase_step + presentation->wobble.roll_phase;
-    presentation->wobble.roll_phase = v11;
-    if ( !(v13 | v14) )
-      presentation->wobble.roll_phase = v11 - 1.0;
-    v15 = presentation->wobble.lift_phase_step + presentation->wobble.lift_phase;
-    presentation->wobble.lift_phase = v15;
-    if ( !(v17 | v18) )
-      presentation->wobble.lift_phase = v15 - 1.0;
-    qmemcpy(&v40, v8, sizeof(v40));
+    v10 = snail->wobble.roll_phase_step + snail->wobble.roll_phase;
+    snail->wobble.roll_phase = v10;
+    if ( !(v12 | v13) )
+      snail->wobble.roll_phase = v10 - 1.0;
+    v14 = snail->wobble.lift_phase_step + snail->wobble.lift_phase;
+    snail->wobble.lift_phase = v14;
+    if ( !(v16 | v17) )
+      snail->wobble.lift_phase = v14 - 1.0;
+    qmemcpy(&v38, v7, sizeof(v38));
     set_matrix_identity(&rhs);
-    v27 = presentation->wobble.roll_phase * 6.2831855;
-    v28 = sine(v27) * 0.017449999;
-    rotate_matrix_world_z(&rhs, v28);
-    invert_matrix_from_source(&out, v19);
-    multiply_matrix_in_place(&presentation->live_matrix, &out);
-    presentation->live_matrix.position.y = presentation->live_matrix.position.y + 1.3;
-    multiply_matrix_in_place(&presentation->live_matrix, &rhs);
-    presentation->live_matrix.position.y = presentation->live_matrix.position.y - 1.3;
-    multiply_matrix_in_place(&presentation->live_matrix, &v40);
-    v29 = presentation->wobble.lift_phase * 6.2831855;
-    v20 = sine(v29);
-    v32 = v20 * presentation->live_matrix.basis_up.x;
-    v33 = v20 * presentation->live_matrix.basis_up.y;
-    v21 = v20 * presentation->live_matrix.basis_up.z;
-    v34 = v32 * 0.029999999;
-    v35 = v33 * 0.029999999;
-    presentation->live_matrix.position.x = v34 + presentation->live_matrix.position.x;
-    presentation->live_matrix.position.y = v35 + presentation->live_matrix.position.y;
-    presentation->live_matrix.position.z = v21 * 0.029999999 + presentation->live_matrix.position.z;
-    v22 = *(float *)&presentation->invincible_shell._pad_90[4];
-    qmemcpy(&presentation->cached_cutscene_matrix, v8, sizeof(presentation->cached_cutscene_matrix));
-    if ( v22 > 0.0 )
+    v25 = snail->wobble.roll_phase * 6.2831855;
+    v26 = sine(v25) * 0.017449999;
+    rotate_matrix_local_z(&rhs, v26);
+    invert_matrix_from_source(&out, &snail->body.transform);
+    multiply_matrix(&snail->body.transform, &out);
+    snail->body.transform.position.y = snail->body.transform.position.y + 1.3;
+    multiply_matrix(&snail->body.transform, &rhs);
+    snail->body.transform.position.y = snail->body.transform.position.y - 1.3;
+    multiply_matrix(&snail->body.transform, &v38);
+    v27 = snail->wobble.lift_phase * 6.2831855;
+    v18 = sine(v27);
+    v30 = v18 * snail->body.transform.basis_up.x;
+    v31 = v18 * snail->body.transform.basis_up.y;
+    v19 = v18 * snail->body.transform.basis_up.z;
+    v32 = v30 * 0.029999999;
+    v33 = v31 * 0.029999999;
+    snail->body.transform.position.x = v32 + snail->body.transform.position.x;
+    snail->body.transform.position.y = v33 + snail->body.transform.position.y;
+    snail->body.transform.position.z = v19 * 0.029999999 + snail->body.transform.position.z;
+    cutscene_roll_progress = snail->invincible_shell.cutscene_roll_progress;
+    qmemcpy(&snail->cached_cutscene_matrix, v7, sizeof(snail->cached_cutscene_matrix));
+    if ( cutscene_roll_progress > 0.0 )
     {
-      v30 = *(float *)&presentation->invincible_shell._pad_90[4] * -2.0943952;
-      rotate_matrix_world_y(&presentation->live_matrix, v30);
-      v23 = *(float *)&presentation->invincible_shell._pad_90[8] + *(float *)&presentation->invincible_shell._pad_90[4];
-      *(float *)&presentation->invincible_shell._pad_90[4] = v23;
-      if ( v23 > 1.0 )
-        *(_DWORD *)&presentation->invincible_shell._pad_90[4] = 1065353216;
+      v28 = snail->invincible_shell.cutscene_roll_progress * -2.0943952;
+      rotate_matrix_local_y(&snail->body.transform, v28);
+      v21 = snail->invincible_shell.cutscene_roll_step + snail->invincible_shell.cutscene_roll_progress;
+      snail->invincible_shell.cutscene_roll_progress = v21;
+      if ( v21 > 1.0 )
+        snail->invincible_shell.cutscene_roll_progress = 1.0;
     }
-    if ( presentation->invincible_shell._pad_90[12] )
+    if ( snail->invincible_shell.channel_release_steps_active )
     {
-      presentation->jetpack_channel.live_matrix.position.x = presentation->jetpack_channel.release_step.x
-                                                           + presentation->jetpack_channel.live_matrix.position.x;
-      presentation->jetpack_channel.live_matrix.position.y = presentation->jetpack_channel.release_step.y
-                                                           + presentation->jetpack_channel.live_matrix.position.y;
-      presentation->jetpack_channel.live_matrix.position.z = presentation->jetpack_channel.release_step.z
-                                                           + presentation->jetpack_channel.live_matrix.position.z;
-      presentation->weapon_channels[0].live_matrix.position.x = presentation->weapon_channels[0].release_step.x
-                                                              + presentation->weapon_channels[0].live_matrix.position.x;
-      presentation->weapon_channels[0].live_matrix.position.y = presentation->weapon_channels[0].release_step.y
-                                                              + presentation->weapon_channels[0].live_matrix.position.y;
-      presentation->weapon_channels[0].live_matrix.position.z = presentation->weapon_channels[0].release_step.z
-                                                              + presentation->weapon_channels[0].live_matrix.position.z;
-      presentation->weapon_channels[2].live_matrix.position.x = presentation->weapon_channels[2].release_step.x
-                                                              + presentation->weapon_channels[2].live_matrix.position.x;
-      presentation->weapon_channels[2].live_matrix.position.y = presentation->weapon_channels[2].release_step.y
-                                                              + presentation->weapon_channels[2].live_matrix.position.y;
-      presentation->weapon_channels[2].live_matrix.position.z = presentation->weapon_channels[2].release_step.z
-                                                              + presentation->weapon_channels[2].live_matrix.position.z;
-      presentation->weapon_channels[1].live_matrix.position.x = presentation->weapon_channels[1].release_step.x
-                                                              + presentation->weapon_channels[1].live_matrix.position.x;
-      presentation->weapon_channels[1].live_matrix.position.y = presentation->weapon_channels[1].release_step.y
-                                                              + presentation->weapon_channels[1].live_matrix.position.y;
-      presentation->weapon_channels[1].live_matrix.position.z = presentation->weapon_channels[1].release_step.z
-                                                              + presentation->weapon_channels[1].live_matrix.position.z;
+      snail->jetpack_channel.body.transform.position.x = snail->jetpack_channel.release_step.x
+                                                       + snail->jetpack_channel.body.transform.position.x;
+      snail->jetpack_channel.body.transform.position.y = snail->jetpack_channel.release_step.y
+                                                       + snail->jetpack_channel.body.transform.position.y;
+      snail->jetpack_channel.body.transform.position.z = snail->jetpack_channel.release_step.z
+                                                       + snail->jetpack_channel.body.transform.position.z;
+      snail->weapon_channels[0].body.transform.position.x = snail->weapon_channels[0].release_step.x
+                                                          + snail->weapon_channels[0].body.transform.position.x;
+      snail->weapon_channels[0].body.transform.position.y = snail->weapon_channels[0].release_step.y
+                                                          + snail->weapon_channels[0].body.transform.position.y;
+      snail->weapon_channels[0].body.transform.position.z = snail->weapon_channels[0].release_step.z
+                                                          + snail->weapon_channels[0].body.transform.position.z;
+      snail->weapon_channels[2].body.transform.position.x = snail->weapon_channels[2].release_step.x
+                                                          + snail->weapon_channels[2].body.transform.position.x;
+      snail->weapon_channels[2].body.transform.position.y = snail->weapon_channels[2].release_step.y
+                                                          + snail->weapon_channels[2].body.transform.position.y;
+      snail->weapon_channels[2].body.transform.position.z = snail->weapon_channels[2].release_step.z
+                                                          + snail->weapon_channels[2].body.transform.position.z;
+      snail->weapon_channels[1].body.transform.position.x = snail->weapon_channels[1].release_step.x
+                                                          + snail->weapon_channels[1].body.transform.position.x;
+      snail->weapon_channels[1].body.transform.position.y = snail->weapon_channels[1].release_step.y
+                                                          + snail->weapon_channels[1].body.transform.position.y;
+      snail->weapon_channels[1].body.transform.position.z = snail->weapon_channels[1].release_step.z
+                                                          + snail->weapon_channels[1].body.transform.position.z;
     }
     else
     {
-      qmemcpy(&presentation->jetpack_channel.live_matrix, v8, sizeof(presentation->jetpack_channel.live_matrix));
-      qmemcpy(&presentation->weapon_channels[0].live_matrix, v8, sizeof(presentation->weapon_channels[0].live_matrix));
-      qmemcpy(&presentation->weapon_channels[2].live_matrix, v8, sizeof(presentation->weapon_channels[2].live_matrix));
-      qmemcpy(&presentation->weapon_channels[1].live_matrix, v8, sizeof(presentation->weapon_channels[1].live_matrix));
+      qmemcpy(&snail->jetpack_channel.body.transform, v7, sizeof(snail->jetpack_channel.body.transform));
+      qmemcpy(&snail->weapon_channels[0].body.transform, v7, sizeof(snail->weapon_channels[0].body.transform));
+      qmemcpy(&snail->weapon_channels[2].body.transform, v7, sizeof(snail->weapon_channels[2].body.transform));
+      qmemcpy(&snail->weapon_channels[1].body.transform, v7, sizeof(snail->weapon_channels[1].body.transform));
     }
-    v24 = (float *)presentation->owner_player->_pad_00;
-    qmemcpy(&presentation->snail_hotspot_source_matrix_a, v8, sizeof(presentation->snail_hotspot_source_matrix_a));
-    v25 = v24 + 14;
-    v24 += 2649;
-    qmemcpy(&presentation->snail_hotspot_source_matrix_b, v25, sizeof(presentation->snail_hotspot_source_matrix_b));
-    presentation->snail_hotspot_source_matrix_b.position.x = *v24;
-    presentation->snail_hotspot_source_matrix_b.position.y = v24[1];
-    presentation->snail_hotspot_source_matrix_b.position.z = v24[2];
-    update_snail_skin(presentation);
-    if ( presentation->cutscene_ai.state )
+    v22 = (float *)snail->owner_player;
+    qmemcpy(&snail->snail_hotspot_source_body.transform, v7, sizeof(snail->snail_hotspot_source_body.transform));
+    v23 = v22 + 14;
+    v22 += 2649;
+    qmemcpy(&snail->snail_hotspot_body.transform, v23, sizeof(snail->snail_hotspot_body.transform));
+    snail->snail_hotspot_body.transform.position.x = *v22;
+    snail->snail_hotspot_body.transform.position.y = v22[1];
+    snail->snail_hotspot_body.transform.position.z = v22[2];
+    update_snail_skin(snail);
+    if ( snail->cutscene.state )
     {
-      update_cutscene(&presentation->cutscene_ai);
+      update_cutscene(&snail->cutscene);
     }
-    else if ( !presentation->anim_manager.queued_animation_count && !presentation->owner_player->control_override_active )
+    else if ( !snail->anim_manager.queue_count && !snail->owner_player->control_override_active )
     {
-      dispatch_cutscene_animation(presentation, 1, 0, -1);
+      dispatch_cutscene_animation(snail, 1, 0, -1);
     }
-    update_jet_particles((int)&presentation->owner_player->jetpack_gauge);
+    update_jet_particles(&snail->owner_player->sub_hover);
   }
-  return result;
 }
-

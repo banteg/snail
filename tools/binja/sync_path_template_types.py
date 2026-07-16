@@ -15,11 +15,13 @@ from _narrow_sync import (
     apply_symbol_updates,
     apply_user_var_updates,
     current_prototypes,
+    current_type_widths,
     emit_summary,
     normalize_prototype,
     run_bn,
     struct_exists,
     types_declare_if_missing,
+    types_declare_missing_only,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -68,11 +70,19 @@ SNAIL_FIELD_UPDATES = (
     ("0x14c", "cutscene_animation_slots", "PresentationAnimationSlot[0xa]"),
     ("0x64c", "weapon_channels", "Weapon[0x3]"),
     ("0x11e0", "jetpack_channel", "Weapon"),
+    ("0x15bc", "wobble", "PresentationWobbleController"),
     ("0x15cc", "snail_hotspot_source_body", "RenderableBod"),
     ("0x164c", "snail_hotspot_body", "RenderableBod"),
     ("0x1894", "invincible_shell", "Invincible"),
     ("0x1938", "snail_skin", "SnailSkin"),
     ("0x1958", "cutscene", "CutScene"),
+)
+
+PRESENTATION_WOBBLE_CONTROLLER_FIELD_UPDATES = (
+    ("0x00", "roll_phase", "float"),
+    ("0x04", "roll_phase_step", "float"),
+    ("0x08", "lift_phase", "float"),
+    ("0x0c", "lift_phase_step", "float"),
 )
 
 WEAPON_FIELD_UPDATES = (
@@ -264,6 +274,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Snail",
     "CutSceneState",
     "CutScene",
+    "PresentationWobbleController",
     "ObjectAnimation",
     "PresentationAnimationSlot",
     "AnimManager",
@@ -278,6 +289,30 @@ REQUIRED_HEADER_STRUCTS = (
     "TipManager",
     "Tutorial",
 )
+
+
+def ensure_presentation_wobble_controller(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Replace the historical padded view with the exact four-float lane."""
+    type_name = "PresentationWobbleController"
+    widths = current_type_widths(REPO_ROOT, target=target, type_names=(type_name,))
+    if widths.get(type_name) == 0x10:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "presentation wobble controller already has exact width",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": (type_name,),
+        }
+    return types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=(type_name,),
+        include_types=(type_name,),
+    )
 
 SUB_PAUSE_FIELD_UPDATES = (
     ("0x00", "options_widget", "FrontendWidget*"),
@@ -1506,6 +1541,12 @@ def main() -> int:
                 required_structs=REQUIRED_HEADER_STRUCTS,
             )
         )
+        operations.append(
+            ensure_presentation_wobble_controller(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
         operations.extend(
             apply_symbol_updates(
                 REPO_ROOT,
@@ -1574,6 +1615,10 @@ def main() -> int:
                 ("TipManager", TIP_MANAGER_FIELD_UPDATES),
                 ("Tutorial", TUTORIAL_FIELD_UPDATES),
                 ("Player", PLAYER_FIELD_UPDATES),
+                (
+                    "PresentationWobbleController",
+                    PRESENTATION_WOBBLE_CONTROLLER_FIELD_UPDATES,
+                ),
                 ("Snail", SNAIL_FIELD_UPDATES),
                 ("Weapon", WEAPON_FIELD_UPDATES),
                 ("AnimManager", ANIM_MANAGER_FIELD_UPDATES),

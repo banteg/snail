@@ -105,7 +105,7 @@ uses the promoted pool view.
 shared `Player` definition instead of carrying a private broad player window.
 This promoted `Player::handle_subgoldy_collisions`, direct
 `Player::parcels_collected` at `+0x4338`, and
-`Snail::wobble_lift_phase_step` at presentation
+`Snail::wobble.lift_phase_step` at presentation
 `+0x15c8` (`Player +0x3f4c`). The slug first-hit cutscene write now goes
 through `presentation.cutscene.state`, the ring nuke pickup uses the shared
 `Nuke::initialize_nuke()` method at `Player +0x150`, and the local
@@ -560,3 +560,11 @@ The health, speedup, and jetpack collision branches now consume only
 respective exact AI through `TRACK_PICKUP_STATE_TEARDOWN_PENDING`. Focused
 output remains byte-stable at 53.93%, 651/673 instructions, prefix 8/673, with
 all 86 operands clean.
+
+## 2026-07-16 Snail wobble consumer view
+
+The slug first-hit transition now reaches the proved cRSnail wobble lane as
+`presentation.wobble.lift_phase_step`, matching the initializer and
+presentation tick without inventing a new native class. This ownership-only
+change leaves focused output at 54.23%, 651/673 candidate/native instructions,
+prefix 8/673, with all 88 operands clean and no mismatches.

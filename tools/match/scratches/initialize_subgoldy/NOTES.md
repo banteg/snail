@@ -287,3 +287,13 @@ seeds the embedded child to `NUKE_STATE_INACTIVE`. The adjacent backlink write
 proves the complete `Player +0x150` owner rather than a generic controller
 overlay. Focused matching remains exact at 279/279 instructions with all 27
 operands clean.
+
+## 2026-07-16 exact wobble value view
+
+The four adjacent cRSnail wobble lanes at presentation `+0x15bc..+0x15cb`
+now use the exact 0x10-byte `PresentationWobbleController` analytical view.
+This does not claim a separate authored C++ child; it records the proved field
+group while keeping the surrounding authored `Snail` owner explicit. Binary
+Ninja's stale 0x38-byte tail is gone, so the initializer readback names all
+four stores. Focused matching remains exact at 279/279 instructions with all
+27 operands clean.

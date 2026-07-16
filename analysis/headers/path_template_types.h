@@ -1377,6 +1377,10 @@ typedef struct SnailSkin {
     float progress_step;
 } SnailSkin;
 
+/*
+ * Exact 0x10-byte view over four adjacent cRSnail wobble lanes. The grouping
+ * is analytical; no cross-port symbol proves a separate authored C++ child.
+ */
 typedef struct PresentationWobbleController {
     float roll_phase;
     float roll_phase_step;

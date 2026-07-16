@@ -202,7 +202,7 @@ LABEL_24:
   {
     p_flight_transform[2].basis_right.x = 0.0;
     set_matrix_identity(p_flight_transform);
-    LODWORD(p_flight_transform[2].basis_forward_w) = player->game;
+    LODWORD(p_flight_transform[2].basis_forward.w) = player->game;
     p_flight_transform = (TransformMatrix *)((char *)p_flight_transform + 744);
     --v11;
   }

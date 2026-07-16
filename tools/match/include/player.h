@@ -78,6 +78,17 @@ enum SnailHotspotIndex {
     SNAIL_HOTSPOT_COUNT = 19,
 };
 
+// Exact 0x10-byte view over four adjacent authored cRSnail fields. This is an
+// analytical grouping, not a claim that the native source used a child class.
+struct PresentationWobbleController {
+    float roll_phase;
+    float roll_phase_step;
+    float lift_phase;
+    float lift_phase_step;
+};
+typedef char PresentationWobbleController_must_be_0x10[
+    (sizeof(PresentationWobbleController) == 0x10) ? 1 : -1];
+
 class Snail : public RenderableBod {
 public:
     Snail* initialize_player_presentation_controller(); // @ 0x4086d0
@@ -103,10 +114,7 @@ public:
     Weapon weapon_channels[3]; // +0x64c, authored cRWeapon owners
     // Owns the jetpack base/draw slots in animation_slots[0..1].
     Weapon jetpack_channel;     // +0x11e0, authored cRWeapon owner
-    float wobble_roll_phase;            // +0x15bc
-    float wobble_roll_phase_step;       // +0x15c0
-    float wobble_lift_phase;            // +0x15c4
-    float wobble_lift_phase_step;       // +0x15c8 (Player +0x3f4c)
+    PresentationWobbleController wobble; // +0x15bc through +0x15cb
     // Camera/body hotspot source. Only its inherited transform is consumed,
     // but the exact constructor initializes the complete renderable owner.
     RenderableBod snail_hotspot_source_body; // +0x15cc, transform at +0x1604

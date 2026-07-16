@@ -172,7 +172,7 @@ void Player::handle_subgoldy_collisions()
                                     34 - (int)((float)next_math_random_value()
                                         * -0.000061035156f));
                                 float half = distance * 0.5f;
-                                presentation.wobble_lift_phase_step = 0.0f;
+                                presentation.wobble.lift_phase_step = 0.0f;
                                 burst_offset = probe_b * half;
                                 probe_salt.x = burst_offset.x + cached_camera_target_world.x;
                                 burst_position.x = probe_salt.x;

@@ -179,10 +179,10 @@ void Player::initialize_subgoldy(int player_slot)
     this->barrier_hold_step = 0.0166666675f;
     this->damage_retrigger_timer = 0.0f;
     this->surface_reaction_timer = 0.0f;
-    this->presentation.wobble_roll_phase = 0.0f;
-    this->presentation.wobble_roll_phase_step = 0.00574712642f;
-    this->presentation.wobble_lift_phase = 0.0f;
-    this->presentation.wobble_lift_phase_step = 0.00677506765f;
+    this->presentation.wobble.roll_phase = 0.0f;
+    this->presentation.wobble.roll_phase_step = 0.00574712642f;
+    this->presentation.wobble.lift_phase = 0.0f;
+    this->presentation.wobble.lift_phase_step = 0.00677506765f;
     this->resurrect_active = (unsigned char)zero;
     cached_camera_target_world = transform.position;
     int* velocity_lanes = (int*)&this->velocity;

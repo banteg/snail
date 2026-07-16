@@ -104,3 +104,13 @@ initializer remains 339/339 exact with all 44 operands clean.
 2026-07-14 canonical process-root gate: the pause early-out now reads
 `g_game->subgame.subgame_pause_gate` directly. The complete initializer remains
 exact at 339/339 instructions with all 44 operands clean.
+
+## 2026-07-16 exact Snail wobble view
+
+The presentation tick now traverses the exact analytical
+`Snail::wobble.{roll,lift}_{phase,phase_step}` value at `+0x15bc`. The view is
+only a named grouping of four proved cRSnail fields, not a claim of a separate
+authored class. Shrinking Binary Ninja's historical padded view from 0x48 to
+0x10 also exposes the adjacent `snail_hotspot_source_body` owner and refreshes
+the full Snail/Player matrix graph in both decompilers. Focused matching stays
+exact at 339/339 instructions with all 44 operands clean.
