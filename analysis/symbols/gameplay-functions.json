@@ -1804,12 +1804,12 @@
     {
       "address": "0x431c70",
       "name": "free_tracked_allocations_to_mark",
-      "description": "Frees tracked allocations back down to the current saved stack mark, as used by the main loop to unwind one temporary allocation scope."
+      "description": "Void Windows RShellMemoryUnBookmark() lifecycle helper: frees tracked allocations back down to the current saved stack mark, as used by the main loop to unwind one temporary allocation scope."
     },
     {
       "address": "0x431cb0",
       "name": "set_tracked_allocation_mark",
-      "description": "Windows RShellMemoryBookmark(): saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call."
+      "description": "Void Windows RShellMemoryBookmark() lifecycle helper: saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call."
     },
     {
       "address": "0x431cc0",

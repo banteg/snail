@@ -2,10 +2,8 @@
 /* function: set_tracked_allocation_mark @ 0x431cb0 */
 /* selector: set_tracked_allocation_mark */
 
-// Saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call.
-int sub_431CB0()
+// Windows RShellMemoryBookmark(): saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call.
+void __cdecl set_tracked_allocation_mark()
 {
-  MEMORY[0x5108C4] = MEMORY[0x5108C0];
-  return MEMORY[0x5108C0];
+  g_tracked_allocation_stack.bookmark_depth = g_tracked_allocation_stack.depth;
 }
-

@@ -584,6 +584,66 @@
       ]
     },
     {
+      "name": "bn_tracked_allocation_bookmark_owner",
+      "artifact": "analysis/decompile/binja/functions/00431cb0-set_tracked_allocation_mark.c",
+      "required_substrings": [
+        "g_tracked_allocation_stack.bookmark_depth = g_tracked_allocation_stack.depth",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "data_5108c0",
+        "data_5108c4",
+        "g_tracked_allocation_mark",
+        "return depth"
+      ]
+    },
+    {
+      "name": "ida_tracked_allocation_bookmark_owner",
+      "artifact": "analysis/decompile/ida/functions/00431cb0-set_tracked_allocation_mark.c",
+      "required_substrings": [
+        "void __cdecl set_tracked_allocation_mark()",
+        "g_tracked_allocation_stack.bookmark_depth = g_tracked_allocation_stack.depth"
+      ],
+      "forbidden_substrings": [
+        "sub_431CB0",
+        "MEMORY[0x5108C0]",
+        "MEMORY[0x5108C4]",
+        "g_tracked_allocation_mark",
+        "return g_tracked_allocation_stack.depth"
+      ]
+    },
+    {
+      "name": "bn_tracked_allocation_unwind_owner",
+      "artifact": "analysis/decompile/binja/functions/00431c70-free_tracked_allocations_to_mark.c",
+      "required_substrings": [
+        "depth = g_tracked_allocation_stack.depth",
+        "depth s> g_tracked_allocation_stack.bookmark_depth",
+        "free_tracked_memory("
+      ],
+      "forbidden_substrings": [
+        "data_5108c0",
+        "data_5108c4",
+        "g_tracked_allocation_mark",
+        "return depth"
+      ]
+    },
+    {
+      "name": "ida_tracked_allocation_unwind_owner",
+      "artifact": "analysis/decompile/ida/functions/00431c70-free_tracked_allocations_to_mark.c",
+      "required_substrings": [
+        "void __cdecl free_tracked_allocations_to_mark()",
+        "g_tracked_allocation_stack.depth > g_tracked_allocation_stack.bookmark_depth",
+        "free_tracked_memory("
+      ],
+      "forbidden_substrings": [
+        "sub_431C70",
+        "MEMORY[0x5108C0]",
+        "MEMORY[0x5108C4]",
+        "g_tracked_allocation_mark",
+        "return i"
+      ]
+    },
+    {
       "name": "bn_xor_byte_buffer_owner",
       "artifact": "analysis/decompile/binja/functions/00433010-xor_decode_buffer_with_index.c",
       "required_substrings": [

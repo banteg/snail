@@ -66,6 +66,14 @@ TRUSTED_DECLARATIONS = [
         "int __thiscall pop_tracked_allocation(TrackedAllocationStack* stack, void* pointer);",
     ),
     (
+        "free_tracked_allocations_to_mark",
+        "void __cdecl free_tracked_allocations_to_mark(void);",
+    ),
+    (
+        "set_tracked_allocation_mark",
+        "void __cdecl set_tracked_allocation_mark(void);",
+    ),
+    (
         "initialize_game_data_archive",
         "unsigned char __cdecl initialize_game_data_archive(void);",
     ),

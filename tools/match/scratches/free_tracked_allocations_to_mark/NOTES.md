@@ -12,6 +12,13 @@ instructions with all six masked operands resolved.
 
 Android names the corresponding lifecycle edge `RShellMemoryUnBookmark()` and
 uses the same top-record pointer unwind against its platform-specific
-`cRShellMemory` layout. Together with `RShellMemoryBookmark()`, that independently
-supports the bookmark/depth semantics without assuming the ports share every
-field offset.
+`cRShellMemory` layout. Its early exit leaves `r0` untouched and its loop path
+leaves path-dependent call residue, proving the authored API is `void`.
+Together with `RShellMemoryBookmark()`, that independently supports the
+bookmark/depth semantics without assuming the ports share every field offset.
+
+The 2026-07-16 paired replay propagates the aggregate owner into both analysis
+databases. Binary Ninja and IDA now render `.depth` and `.bookmark_depth`
+directly, and neither artifact falls back to the old `data_5108c0`,
+`data_5108c4`, or `MEMORY[...]` spellings. Focused matching remains exactly
+15/15 with all six operands resolved.

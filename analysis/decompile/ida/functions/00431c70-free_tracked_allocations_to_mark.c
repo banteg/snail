@@ -3,12 +3,14 @@
 /* selector: free_tracked_allocations_to_mark */
 
 // Frees tracked allocations back down to the current saved stack mark, as used by the main loop to unwind one temporary allocation scope.
-int sub_431C70()
+void __cdecl free_tracked_allocations_to_mark()
 {
-  int result; // eax
+  int32_t i; // eax
 
-  for ( result = MEMORY[0x5108C0][0]; MEMORY[0x5108C0][0] > MEMORY[0x5108C4]; result = MEMORY[0x5108C0][0] )
-    free_tracked_memory(MEMORY[0x5108C0][3 * result] + 4);
-  return result;
+  for ( i = g_tracked_allocation_stack.depth;
+        g_tracked_allocation_stack.depth > g_tracked_allocation_stack.bookmark_depth;
+        i = g_tracked_allocation_stack.depth )
+  {
+    free_tracked_memory((void *)(*(&g_tracked_allocation_stack.depth + 3 * i) + 4));
+  }
 }
-

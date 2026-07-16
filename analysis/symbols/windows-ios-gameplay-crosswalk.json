@@ -2460,12 +2460,20 @@
       "notes": "Windows validates and removes a guarded tracked allocation; iOS retains the public pointer contract while delegating to free."
     },
     {
+      "address": "0x431c70",
+      "windows_name": "free_tracked_allocations_to_mark",
+      "ios_symbol": "RShellMemoryUnBookmark()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Both void lifecycle procedures unwind top allocation records until the active depth reaches the saved bookmark. The Android body does not produce a return value, confirming that Windows EAX is incidental."
+    },
+    {
       "address": "0x431cb0",
       "windows_name": "set_tracked_allocation_mark",
       "ios_symbol": "RShellMemoryBookmark()",
       "source_object": "RShell.o",
       "confidence": "high",
-      "notes": "Both snapshot the current RShell allocation depth for a later unwind; the saved-field offset differs between the platform-specific allocation-stack layouts."
+      "notes": "Both void lifecycle procedures snapshot the current RShell allocation depth for a later unwind; the saved-field offset differs between the platform-specific allocation-stack layouts. The Android body never produces r0, confirming that Windows EAX is incidental."
     },
     {
       "address": "0x431cc0",

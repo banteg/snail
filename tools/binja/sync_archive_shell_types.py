@@ -79,6 +79,14 @@ PROTO_UPDATES = (
         "int32_t __thiscall pop_tracked_allocation(TrackedAllocationStack* stack, void* pointer)",
     ),
     (
+        "free_tracked_allocations_to_mark",
+        "void __cdecl free_tracked_allocations_to_mark()",
+    ),
+    (
+        "set_tracked_allocation_mark",
+        "void __cdecl set_tracked_allocation_mark()",
+    ),
+    (
         "initialize_game_data_archive",
         "uint8_t __cdecl initialize_game_data_archive()",
     ),

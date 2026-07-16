@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 21,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 21,
-  "ida_exported": 21,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,91 +17,15 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "get_stream_length_preserve_position",
-      "address": "0x405170"
+      "name": "free_tracked_allocations_to_mark",
+      "address": "0x431c70"
     },
     {
-      "name": "save_config_file",
-      "address": "0x42f540"
-    },
-    {
-      "name": "initialize_game_data_archive",
-      "address": "0x430e40"
-    },
-    {
-      "name": "uninitialize_game_data_archive",
-      "address": "0x430ef0"
-    },
-    {
-      "name": "archive_or_file_exists",
-      "address": "0x430fd0"
-    },
-    {
-      "name": "load_file_bytes_fixed_size_from_archive_or_fs",
-      "address": "0x431030"
-    },
-    {
-      "name": "find_archive_entry",
-      "address": "0x431250"
-    },
-    {
-      "name": "load_file_bytes_from_archive_or_fs",
-      "address": "0x4312d0"
-    },
-    {
-      "name": "load_file_bytes",
-      "address": "0x431520"
-    },
-    {
-      "name": "write_file_bytes",
-      "address": "0x431650"
-    },
-    {
-      "name": "enumerate_matching_archive_or_fs_entries",
-      "address": "0x431740"
-    },
-    {
-      "name": "load_archive_index",
-      "address": "0x4319c0"
-    },
-    {
-      "name": "is_archive_index_loaded",
-      "address": "0x431a80"
-    },
-    {
-      "name": "get_archive_data_base",
-      "address": "0x431a90"
-    },
-    {
-      "name": "get_archive_data_end",
-      "address": "0x431aa0"
-    },
-    {
-      "name": "get_tracked_allocation_size",
-      "address": "0x431ab0"
-    },
-    {
-      "name": "push_tracked_allocation",
-      "address": "0x431af0"
-    },
-    {
-      "name": "pop_tracked_allocation",
-      "address": "0x431b30"
-    },
-    {
-      "name": "allocate_tracked_memory",
-      "address": "0x431b60"
-    },
-    {
-      "name": "free_tracked_memory",
-      "address": "0x431bf0"
-    },
-    {
-      "name": "xor_decode_buffer_with_index",
-      "address": "0x433010"
+      "name": "set_tracked_allocation_mark",
+      "address": "0x431cb0"
     }
   ],
-  "health_check_count": 378,
+  "health_check_count": 382,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

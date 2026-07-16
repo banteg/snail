@@ -1198,6 +1198,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "int32_t __cdecl findfirst(char* pattern, FileSearchData* find_data)",
         "int32_t __thiscall get_tracked_allocation_size(TrackedAllocationStack* stack, void* pointer)",
         "void __thiscall push_tracked_allocation(TrackedAllocationStack* stack, char* label, void* pointer, int32_t guarded_size)",
+        "void __cdecl free_tracked_allocations_to_mark()",
+        "void __cdecl set_tracked_allocation_mark()",
     ):
         assert declaration in binja_source
     assert "STALE_DATA_ITEM_SPECS" in ida_apply_source

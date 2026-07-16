@@ -4,7 +4,7 @@
 
 void free_tracked_memory(void* pointer);
 
-int free_tracked_allocations_to_mark()
+void free_tracked_allocations_to_mark()
 {
     int depth = g_tracked_allocation_stack.depth;
     while (depth > g_tracked_allocation_stack.bookmark_depth) {
@@ -12,5 +12,4 @@ int free_tracked_allocations_to_mark()
             (char*)g_tracked_allocation_stack.records[depth - 1].pointer + 4);
         depth = g_tracked_allocation_stack.depth;
     }
-    return depth;
 }

@@ -3,9 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: free_tracked_allocations_to_mark @ 0x431c70 */
 
-00431c7d        int32_t i
-00431c70        i = data_5108c0
-00431c7d        while (i s> data_5108c4)
-00431c8d        free_tracked_memory((&data_5108c0)[i * 3] + 4)
-00431c92        i = data_5108c0
-00431ca4        return i
+00431c70        int32_t depth = g_tracked_allocation_stack.depth
+00431c7d        while (depth s> g_tracked_allocation_stack.bookmark_depth)
+00431c8d        free_tracked_memory(*(depth * 0xc + &g_tracked_allocation_stack) + 4)
+00431c92        depth = g_tracked_allocation_stack.depth
+00431ca4        return

@@ -49,6 +49,8 @@ void __thiscall push_tracked_allocation(
     int32_t guarded_size);
 int32_t __thiscall pop_tracked_allocation(
     TrackedAllocationStack* stack, void* pointer);
+void __cdecl free_tracked_allocations_to_mark(void);
+void __cdecl set_tracked_allocation_mark(void);
 
 typedef struct ArchiveEntry {
     char* path;
