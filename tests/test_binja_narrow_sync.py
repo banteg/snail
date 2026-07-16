@@ -5153,7 +5153,29 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert "_pad_3c" not in follow_struct
     assert '("0x3c", "flag_3c", "uint8_t")' in binja_sync
     assert '("FollowState", FOLLOW_STATE_FIELD_UPDATES)' in binja_sync
-    for address in ("0x42C600", "0x435EB0", "0x43B120"):
+    attachment_entry_prototype = (
+        "void __thiscall try_enter_track_attachment_from_swept_motion("
+        "Path* self, float world_x, float world_y, float world_z, "
+        "float sweep_dx, float sweep_dy, float sweep_dz, "
+        "TrackRowCell* source_cell)"
+    )
+    assert attachment_entry_prototype in binja_sync
+    assert attachment_entry_prototype + ";" in ida_sync
+    assert "void __thiscall try_enter_track_attachment_from_swept_motion(" in analysis_header
+    assert "TrackRowCell* source_cell" in analysis_header
+
+    for address in ("0x42C600", "0x42C770", "0x435EB0", "0x43B120"):
         assert address in ida_sync
+    for address in (
+        "0x42C98A",
+        "0x42C99C",
+        "0x42C9B4",
+        "0x42CA18",
+        "0x42CA3D",
+        "0x42CA5B",
+        "0x42CA7B",
+    ):
+        assert address in ida_sync
+    assert "idc.op_num(address, operand_index)" in ida_sync
     assert "for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:" in ida_sync
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync

@@ -76,3 +76,26 @@ The implementation now carries the recovered process root as `GameRoot*`
 instead of retaining a byte pointer around otherwise canonical player and
 runtime-row traversals. Focused output is unchanged at 95.78%, 199/204
 instructions, with the 16-instruction prefix and all 47 operands clean.
+
+## 2026-07-16 analysis replay closure
+
+The recovered Windows method ABI is now part of the shared analysis header and
+both replay paths: `Path*`, six scalar position/sweep components, and the
+borrowed `TrackRowCell*`. A fresh BN/IDA replay therefore recovers
+`Path::secondary_samples` and `TrackRowCell::anchor_position` without relying
+on database-local argument edits.
+
+IDA had seven accepted-tail displacements rendered through unrelated symbols
+whose numeric addresses collide with the relocatable `GameRoot` offsets. The
+replay now normalizes only those instruction operands to numeric displacements;
+it preserves the symbols themselves and lets the existing `GameRoot*` type
+fold the accesses into `Player::attachment_exit_pending`, `Squidge`, the
+embedded `FollowState`, its Player backlink and orientation fields, and
+`SubgameRuntime::runtime_rows[row].installed_heading_delta`. BN independently
+shows the same owner chain. Tracked health checks guard both exports against
+the old raw-global and integer-receiver forms.
+
+No matching source changed. A fresh focused compile remains at 95.78%, 199/204
+instructions, a 16-instruction prefix, and 47 clean operands. The remaining
+delta is still the one commutative swept-X addition order plus the native
+duplicated exhausted-loop epilogue; neither warrants source-shape fakematching.

@@ -74,8 +74,26 @@ TRUSTED_DATA_DECLARATIONS = [
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42C600,  # finalize_path_template
+    0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x43B120,  # update_subgoldy
+)
+
+# These displacement values are relocatable offsets into GameRoot, but several
+# of their numeric values also land on named code or historical offset-symbol
+# addresses. IDA then renders the individual instruction operand as an address
+# expression and prevents Hex-Rays from folding the already typed GameRoot*
+# access back into its canonical Player/SubgameRuntime field. Keep the symbol
+# names themselves intact and normalize only the seven proven displacement
+# operands in the attachment-entry seed tail.
+ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
+    (0x42C98A, 0, 0x430199),  # Player::attachment_exit_pending
+    (0x42C99C, 1, 0x4340C0),  # Player::squidge
+    (0x42C9B4, 0, 0x430100),  # Player::follow_state.active
+    (0x42CA18, 1, 0x42FD7C),  # FollowState::player -> Player
+    (0x42CA3D, 1, 0x64118C),  # runtime_rows[row].installed_heading_delta
+    (0x42CA5B, 0, 0x430118),  # FollowState::orientation_a
+    (0x42CA7B, 1, 0x430100),  # Player::follow_state
 )
 
 
@@ -877,6 +895,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
     ),
     (
+        "try_enter_track_attachment_from_swept_motion",
+        "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell);",
+    ),
+    (
         "begin_track_attachment_follow_state",
         "void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);",
     ),
@@ -1304,6 +1326,37 @@ def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _normalize_attachment_entry_root_offset_operands() -> list[dict[str, object]]:
+    results = []
+    for address, operand_index, expected_offset in ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS:
+        before = idc.print_operand(address, operand_index)
+        idc.op_num(address, operand_index)
+        after = idc.print_operand(address, operand_index)
+        observed_offset = idc.get_operand_value(address, operand_index)
+        normalized = (
+            observed_offset == expected_offset
+            and f"{expected_offset:X}H" in after.upper()
+        )
+        results.append(
+            {
+                "status": (
+                    "applied"
+                    if normalized and before != after
+                    else "unchanged"
+                    if normalized
+                    else "failed"
+                ),
+                "address": hex(address),
+                "operand_index": operand_index,
+                "expected_offset": hex(expected_offset),
+                "observed_offset": hex(observed_offset),
+                "before": before,
+                "after": after,
+            }
+        )
+    return results
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
@@ -1404,6 +1457,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {"selector": "GameRoot", "owner_graph": game_root_owner_graph}
         )
 
+    attachment_entry_root_offset_operands = (
+        _normalize_attachment_entry_root_offset_operands()
+    )
+    for result in attachment_entry_root_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "try_enter_track_attachment_from_swept_motion",
+                    "root_offset_operand": result,
+                }
+            )
+
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
         failed.append({"selector": "build_track_render_caches", "lvar_view": lvar_view})
@@ -1475,6 +1540,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
                 "game_root_owner_graph": game_root_owner_graph,
+                "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,

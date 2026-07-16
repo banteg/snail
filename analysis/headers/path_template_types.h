@@ -2277,6 +2277,16 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* ce
 void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);
 int32_t __thiscall merge_track_tile_runs(SubgameRuntime* game);
 void __thiscall mark_track_warning_zones(SubgameRuntime* game);
+void __thiscall try_enter_track_attachment_from_swept_motion(
+    Path* self,
+    float world_x,
+    float world_y,
+    float world_z,
+    float sweep_dx,
+    float sweep_dy,
+    float sweep_dz,
+    TrackRowCell* source_cell
+);
 void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 

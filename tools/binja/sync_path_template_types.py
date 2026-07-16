@@ -1367,6 +1367,10 @@ CORE_SUBGAME_PROTO_UPDATES = (
         "void __thiscall mark_track_warning_zones(SubgameRuntime* game)",
     ),
     (
+        "try_enter_track_attachment_from_swept_motion",
+        "void __thiscall try_enter_track_attachment_from_swept_motion(Path* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell)",
+    ),
+    (
         "populate_runtime_track_cells_from_segments",
         "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game)",
     ),

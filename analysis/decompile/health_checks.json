@@ -2061,14 +2061,50 @@
       ]
     },
     {
-      "name": "bn_path_template_fields_intact",
+      "name": "bn_attachment_entry_owner_graph",
       "artifact": "analysis/decompile/binja/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
       "required_substrings": [
         "->segment_count",
         "->secondary_samples",
-        "source_cell->anchor_position"
+        "source_cell->anchor_position",
+        "g_game_base->subgame.player.attachment_exit_pending",
+        "g_game_base->subgame.player.follow_state.template_record = self",
+        "g_game_base->subgame.player.follow_state.source_cell = source_cell",
+        "subgame.runtime_rows[0].installed_heading_delta",
+        "update_track_attachment_follow_state(&game_base_4->subgame.player.follow_state"
       ],
       "forbidden_substrings": [
+        "g_game_base[0x",
+        "data_430",
+        "uninit_thanks_screen",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_attachment_entry_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
+      "required_substrings": [
+        "void __thiscall try_enter_track_attachment_from_swept_motion(",
+        "Path *self,",
+        "TrackRowCell *source_cell)",
+        "self->secondary_samples[i].transform",
+        "source_cell->anchor_position",
+        "g_game_base->subgame.player.attachment_exit_pending",
+        "&g_game_base->subgame.player.squidge",
+        "follow_state.template_record = self",
+        "runtime_rows[get_track_cell_row_index(source_cell)].installed_heading_delta",
+        "update_track_attachment_follow_state("
+      ],
+      "forbidden_substrings": [
+        "_DWORD *this",
+        "int a8",
+        "*(this +",
+        "g_player_follow_state_block",
+        "g_row_heading_table",
+        "uninit_thanks_screen",
+        "loc_430118",
+        "g_player_attachment_exit_pending_offset",
         "__asm",
         "_ET1"
       ]
