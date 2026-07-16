@@ -38,7 +38,7 @@ void FrontendWidget::update_frontend_widget_interaction()
     previous_widget_flags = widget_flags;
     widget_flags &= ~FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
 
-    if ((widget_flags & 0x100000) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
         slider_hit_left = layout_width * 0.1f + layout_x + 4.0f - 12.0f;
         slider_hit_right = layout_width * 0.80000001f + layout_x - 4.0f;
         slider_hit_top = layout_height * 0.5f + layout_y - 6.0f;
@@ -78,11 +78,11 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     if ((flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
         text_effect_target = 0.0f;
-        widget_flags &= ~2u;
+        widget_flags &= ~FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
         goto update_after_input;
     }
 
-    if ((flags & 2) != 0)
+    if ((flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)
         hover_blend_target = 1.0f;
 
     if ((widget_flags & 0x2000000) != 0
@@ -96,7 +96,7 @@ void FrontendWidget::update_frontend_widget_interaction()
         && g_game->players[0].mouse_cursor.is_mouse_captured()
         && read_pressed_text_input_key_code() == shortcut_key_code) {
         tooltip.reset_tooltip();
-        if ((widget_flags & 0x1000000) != 0)
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
             widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         else
             g_game->border_manager
@@ -108,41 +108,41 @@ void FrontendWidget::update_frontend_widget_interaction()
         || border_mouse_test() == 0) {
         widget_flags &= 0xffdfffff;
         if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
-            && ((widget_flags & 4) != 0)) {
+            && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
             unhighlight_border();
         }
         text_effect_target = 0.0f;
-        if ((widget_flags & 4) != 0)
-            widget_flags &= ~2u;
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)
+            widget_flags &= ~FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
         goto update_after_input;
     }
 
     widget_flags |= FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
-    if ((widget_flags & 4) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {
         hover_blend_target = 1.0f;
         target_padding = hot_padding;
     }
-    if ((widget_flags & 8) != 0)
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)
         text_effect_target = 1.0f;
-    if (((widget_flags & 2) == 0)
-        && ((widget_flags & 4) != 0)) {
-        if ((widget_flags & 0x40000) == 0)
+    if (((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) == 0)
+        && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
             g_sound_effect_manager.play_sound_effect(9);
-        widget_flags |= 2;
+        widget_flags |= FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
     }
 
-    if ((widget_flags & 0x10) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED) != 0) {
         GameInput* input = g_game->players[0].game_input;
         if (g_game->border_manager.delayed_widget_active == 0
             && (input->input.pressed_buttons & 0x4000) != 0) {
-            if ((widget_flags & 0x1000000) != 0) {
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0) {
                 widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             } else {
                 g_game->border_manager
                     .queue_frontend_widget_flag_after_delay(
                         this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
             }
-            if ((widget_flags & 0x800000) == 0)
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
                 g_sound_effect_manager.play_sound_effect(8);
             if ((tooltip.mode_flags & 0x20) == 0)
                 tooltip.reset_tooltip();
@@ -151,13 +151,14 @@ void FrontendWidget::update_frontend_widget_interaction()
 
     {
         GameInput* input = g_game->players[0].game_input;
-        if ((widget_flags & 0x40) != 0
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED) != 0
             && (((unsigned char*)&input->input.pressed_buttons)[1] & 0x80) != 0) {
-            if ((widget_flags & 0x1000000) != 0)
-                widget_flags |= 0x80;
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
+                widget_flags |= FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED;
             else
                 g_game->border_manager
-                    .queue_frontend_widget_flag_after_delay(this, 0x80);
+                    .queue_frontend_widget_flag_after_delay(
+                        this, FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED);
             g_sound_effect_manager.play_sound_effect(8);
             tooltip.reset_tooltip();
         }
@@ -168,8 +169,8 @@ update_after_input:
         widget_flags &= 0xffdfffff;
         unhighlight_border();
     }
-    if ((widget_flags & 0x40000) != 0) {
-        widget_flags &= 0xfffbffff;
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) != 0) {
+        widget_flags &= ~FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE;
         hover_blend_current = hover_blend_target;
         current_padding = target_padding;
         text_effect_current = text_effect_target;
@@ -221,7 +222,7 @@ update_after_input:
             current_fill_color.a *= 0.5f;
         }
 
-        if ((widget_flags & 0x800) == 0) {
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) == 0) {
             if ((widget_flags & 0x10000) != 0) {
                 layout_x = frame_x;
                 layout_y = frame_y;
@@ -256,7 +257,7 @@ update_after_input:
     previous_mouse_x = g_game->players[0].mouse_cursor.saved_x;
     previous_mouse_y = g_game->players[0].mouse_cursor.saved_y;
 
-    if ((widget_flags & 0x100000) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
         FrontendWidget* more = slider_more_widget;
         if ((more->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             more->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;

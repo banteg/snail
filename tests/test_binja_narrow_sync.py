@@ -423,6 +423,39 @@ def test_current_type_widths_batches_readback(monkeypatch) -> None:
     assert calls[0][:2] == ("py", "exec")
 
 
+def test_current_enum_members_batches_exact_readback(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "FrontendWidgetFlag": [
+                    ["FRONTEND_WIDGET_FLAG_HIGHLIGHTED", 2],
+                    ["FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED", 0x20],
+                ],
+                "MissingFlag": None,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.current_enum_members(
+        Path("."),
+        target="snail-mail.exe",
+        enum_names=("FrontendWidgetFlag", "MissingFlag"),
+    ) == {
+        "FrontendWidgetFlag": (
+            ("FRONTEND_WIDGET_FLAG_HIGHLIGHTED", 2),
+            ("FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED", 0x20),
+        ),
+        "MissingFlag": None,
+    }
+    assert len(calls) == 1
+    assert calls[0][:2] == ("py", "exec")
+    assert "member.value" in calls[0][-1]
+
+
 def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
     calls = []
 
@@ -3197,24 +3230,50 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         in frontend_sync
     )
     assert '"FrontendWidgetFlag",' in path_sync
+    expected_flags = {
+        "FRONTEND_WIDGET_FLAG_HIGHLIGHTED": 0x00000002,
+        "FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED": 0x00000004,
+        "FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED": 0x00000008,
+        "FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED": 0x00000010,
+        "FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED": 0x00000020,
+        "FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED": 0x00000040,
+        "FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED": 0x00000080,
+        "FRONTEND_WIDGET_FLAG_KILL_PENDING": 0x00000200,
+        "FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE": 0x00000400,
+        "FRONTEND_WIDGET_FLAG_SPRITE_MODE": 0x00000800,
+        "FRONTEND_WIDGET_FLAG_HIDDEN": 0x00001000,
+        "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE": 0x00002000,
+        "FRONTEND_WIDGET_FLAG_DISABLED": 0x00008000,
+        "FRONTEND_WIDGET_FLAG_POINTER_INSIDE": 0x00020000,
+        "FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE": 0x00040000,
+        "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED": 0x00080000,
+        "FRONTEND_WIDGET_FLAG_SLIDER": 0x00100000,
+        "FRONTEND_WIDGET_FLAG_FRAMELESS": 0x00400000,
+        "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND": 0x00800000,
+        "FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION": 0x01000000,
+        "FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED": 0x08000000,
+        "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION": 0x40000000,
+    }
+    for name, value in expected_flags.items():
+        assert f'("{name}", 0x{value:08X})' in frontend_sync
     for header in (*analysis_headers, matcher_header):
-        assert "FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED = 0x00000020" in header
-        assert "FRONTEND_WIDGET_FLAG_KILL_PENDING = 0x00000200" in header
-        assert "FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE = 0x00000400" in header
-        assert "FRONTEND_WIDGET_FLAG_HIDDEN = 0x00001000" in header
-        assert "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE = 0x00002000" in header
-        assert "FRONTEND_WIDGET_FLAG_DISABLED = 0x00008000" in header
-        assert "FRONTEND_WIDGET_FLAG_POINTER_INSIDE = 0x00020000" in header
-        assert "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED = 0x00080000" in header
-        assert "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION = 0x40000000" in header
+        for name, value in expected_flags.items():
+            assert f"{name} = 0x{value:08X}" in header
+
+    assert "current_enum_members" in frontend_sync
+    assert "EXPECTED_FLAG_MEMBERS" in frontend_sync
 
     consumers = {
+        "draw_frontend_widget": "FRONTEND_WIDGET_FLAG_FRAMELESS",
+        "initialize_frontend_widget": "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND",
+        "initialize_frontend_sprite_button": "FRONTEND_WIDGET_FLAG_SPRITE_MODE",
+        "update_frontend_widget_interaction": "FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION",
         "kill_border": "FRONTEND_WIDGET_FLAG_KILL_PENDING",
         "hide_border_init": "FRONTEND_WIDGET_FLAG_HIDDEN",
-        "border_input_text": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE",
-        "update_frontend_widget_interaction": "FRONTEND_WIDGET_FLAG_POINTER_INSIDE",
+        "border_input_text": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED",
         "set_frontend_widget_shortcut_key": "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED",
         "queue_frontend_widget_flag_after_delay": "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION",
+        "update_high_score_screen": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED",
     }
     for function_name, constant in consumers.items():
         scratch = (

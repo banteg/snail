@@ -57,7 +57,7 @@ void FrontendWidget::draw_frontend_widget()
     float width = layout_width;
     float height = layout_height;
 
-    if ((flags & 0x100000) != 0) {
+    if ((flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
         slider_color = current_text_color;
         tColour* color = &slider_color;
         float slider = slider_position_current;
@@ -107,7 +107,7 @@ void FrontendWidget::draw_frontend_widget()
         }
 
         int texture = texture_id;
-        if ((widget_flags & 2) != 0)
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)
             texture = sprite_hot_texture_id;
 
         float pad = border_edge * 0.5f;
@@ -128,7 +128,7 @@ void FrontendWidget::draw_frontend_widget()
         return;
     }
 
-    if ((widget_flags & 0x800) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) != 0) {
         float pad = border_edge * 0.5f;
         queue_axis_aligned_textured_quad_uv(
             texture_id,
@@ -164,7 +164,7 @@ void FrontendWidget::draw_frontend_widget()
         }
     }
 
-    if ((widget_flags & 0x400000) != 0)
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_FRAMELESS) != 0)
         return;
 
     float x = texture_hit_x;

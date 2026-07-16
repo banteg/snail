@@ -35,7 +35,7 @@ void FrontendWidget::layout_frontend_widget()
 
         float* layout_left_ptr;
         float* layout_top_ptr;
-        if ((result & 0x800) != 0) {
+        if ((result & FRONTEND_WIDGET_FLAG_SPRITE_MODE) != 0) {
             int left_bits = *(int*)&widget->layout_x;
             int top_bits = *(int*)&widget->layout_y;
             layout_left_ptr = &widget->layout_x;
@@ -103,7 +103,7 @@ void FrontendWidget::layout_frontend_widget()
             }
 
             float dx = widget->texture_hit_x - *layout_left_ptr;
-            result = flags & 0x100000;
+            result = flags & FRONTEND_WIDGET_FLAG_SLIDER;
             widget->layout_center_x = dx + widget->layout_center_x;
             widget->layout_anchor_x = dx + widget->layout_anchor_x;
             widget->layout_anchor_y =
@@ -115,7 +115,7 @@ void FrontendWidget::layout_frontend_widget()
             float clamped_top_local = clamped_top;
             *layout_top_ptr = clamped_top_local;
 
-            if ((flags & 0x100000) != 0) {
+            if ((flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
                 widget->slider_hit_left =
                     widget->layout_width * 0.100000001f + clamped_left + 4.0f -
                     12.0f;

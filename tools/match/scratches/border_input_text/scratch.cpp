@@ -21,7 +21,8 @@ void FrontendWidget::border_input_text()
             goto finish_input;
     }
 
-    if (key == 5 || (widget_flags & 0x08000000) != 0)
+    if (key == 5
+        || (widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED) != 0)
         goto finish_input;
 
     if (key == 6 && (input_flags & 1) == 0) {

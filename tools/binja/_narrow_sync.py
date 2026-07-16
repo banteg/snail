@@ -838,6 +838,62 @@ for name in names:
     }
 
 
+def current_enum_members(
+    repo_root: Path, *, target: str, enum_names: Iterable[str]
+) -> dict[str, tuple[tuple[str, int], ...] | None]:
+    names = tuple(enum_names)
+    code = f"""
+names = {json.dumps(names)}
+result = {{}}
+for name in names:
+    current = bv.get_type_by_name(name)
+    if current is None:
+        result[name] = None
+        continue
+    try:
+        result[name] = [
+            [str(member.name), int(member.value)]
+            for member in current.members
+        ]
+    except AttributeError:
+        result[name] = None
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        return {name: None for name in names}
+
+    result: dict[str, tuple[tuple[str, int], ...] | None] = {}
+    for name in names:
+        members = payload.get(name)
+        if not isinstance(members, list):
+            result[name] = None
+            continue
+        normalized: list[tuple[str, int]] = []
+        for member in members:
+            if (
+                not isinstance(member, list)
+                or len(member) != 2
+                or not isinstance(member[0], str)
+                or not isinstance(member[1], int)
+            ):
+                normalized = []
+                break
+            normalized.append((member[0], member[1]))
+        result[name] = tuple(normalized) if len(normalized) == len(members) else None
+    return result
+
+
 def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
     # Binary Ninja reports a forward declaration as a zero-sized struct. It is
     # not sufficient for replay: treating it as present causes the authoritative

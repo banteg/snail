@@ -62,7 +62,7 @@ void FrontendWidget::initialize_frontend_widget(
     tooltip.owner_widget = this;
     tooltip.tooltip_widget = 0;
     tooltip.owner_widget_38 = this;
-    widget_flags = flags | 0x40001;
+    widget_flags = flags | FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE | 1;
 
     hot_text_color.set_color_white();
     hot_fill_color.set_color_white();
@@ -129,7 +129,7 @@ void FrontendWidget::initialize_frontend_widget(
     layout_anchor_y = y;
     hover_blend_target = 1.0f;
 
-    if (((unsigned char)widget_flags & 2) != 0)
+    if (((unsigned char)widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)
         highlight_border();
     else
         unhighlight_border();
@@ -144,11 +144,11 @@ void FrontendWidget::initialize_frontend_widget(
         anchor_x + g_game->border_manager.justify_centre;
     mouse_history_warmup_frames = 1;
 
-    if ((widget_flags & 0x100000) != 0) {
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
         slider_more_widget = g_game->border_manager.allocate_border();
         float slider_y = y + 40.0f;
         slider_more_widget->initialize_frontend_sprite_button(
-            (widget_flags & 0x800000) | 0x20400814,
+            (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) | 0x20400814,
             42,
             g_game->border_manager.justify_centre + 458.0f,
             slider_y,
@@ -159,7 +159,7 @@ void FrontendWidget::initialize_frontend_widget(
 
         slider_less_widget = g_game->border_manager.allocate_border();
         slider_less_widget->initialize_frontend_sprite_button(
-            (widget_flags & 0x800000) | 0x20400814,
+            (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) | 0x20400814,
             38,
             g_game->border_manager.justify_centre + 118.0f,
             slider_y,
@@ -170,7 +170,7 @@ void FrontendWidget::initialize_frontend_widget(
 
         slider_value_widget = g_game->border_manager.allocate_border();
         slider_value_widget->initialize_frontend_widget(
-            0x400000,
+            FRONTEND_WIDGET_FLAG_FRAMELESS,
             (char*)"00%",
             21,
             0.0f,

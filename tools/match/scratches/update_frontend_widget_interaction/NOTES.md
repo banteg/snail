@@ -221,3 +221,20 @@ shows the same `FrontendWidget`, `GameRoot::active_bod_list`, player cursor,
 `BorderManager`, twinkle, tooltip, and slider-child owner graph as IDA; focused
 health checks guard both lanes against falling back to raw offsets or an
 anonymous receiver.
+
+## 2026-07-16 interaction/style flag closure
+
+The exact Windows initializers, interaction loop, draw/layout/kill helpers,
+and high-score text-submit path now provide producer/consumer pairs for thirteen
+additional interaction and style roles. Android `cRBorder::AI()` independently
+preserves the same highlight, hover, primary/secondary input, immediate-action,
+and sound-suppression branches. The shared enum therefore adds highlighted,
+hover-highlight, hover-text-effect, primary-input, secondary-input/action,
+sprite, snap-visual-state, slider, frameless, suppress-action-sound,
+immediate-action, and text-input-submit bits across source and replay headers.
+Bits that still
+lack a comparably closed role remain numeric. These vocabulary-only changes do
+not alter the focused machine-code matches. The narrow Binary Ninja replay now
+compares enum names and values as well as owner widths, so future same-width
+vocabulary changes cannot be silently skipped; a second live replay is cleanly
+idempotent.

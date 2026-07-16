@@ -9,6 +9,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     apply_user_var_updates,
+    current_enum_members,
     current_prototypes,
     current_type_widths,
     emit_summary,
@@ -29,6 +30,31 @@ EXPECTED_STRUCT_SIZES = {
     "FrontendWidget": 0x724,
     "Exit": 0x1C,
 }
+
+EXPECTED_FLAG_MEMBERS = (
+    ("FRONTEND_WIDGET_FLAG_HIGHLIGHTED", 0x00000002),
+    ("FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED", 0x00000004),
+    ("FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED", 0x00000008),
+    ("FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED", 0x00000010),
+    ("FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED", 0x00000020),
+    ("FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED", 0x00000040),
+    ("FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED", 0x00000080),
+    ("FRONTEND_WIDGET_FLAG_KILL_PENDING", 0x00000200),
+    ("FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE", 0x00000400),
+    ("FRONTEND_WIDGET_FLAG_SPRITE_MODE", 0x00000800),
+    ("FRONTEND_WIDGET_FLAG_HIDDEN", 0x00001000),
+    ("FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE", 0x00002000),
+    ("FRONTEND_WIDGET_FLAG_DISABLED", 0x00008000),
+    ("FRONTEND_WIDGET_FLAG_POINTER_INSIDE", 0x00020000),
+    ("FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE", 0x00040000),
+    ("FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED", 0x00080000),
+    ("FRONTEND_WIDGET_FLAG_SLIDER", 0x00100000),
+    ("FRONTEND_WIDGET_FLAG_FRAMELESS", 0x00400000),
+    ("FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND", 0x00800000),
+    ("FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION", 0x01000000),
+    ("FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED", 0x08000000),
+    ("FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION", 0x40000000),
+)
 
 FRONTEND_WIDGET_FIELDS = (
     ("0x00", "list_kind", "uint32_t"),
@@ -278,25 +304,39 @@ def main() -> int:
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
         if observed_widths.get(name) != expected_size
     )
-    if mismatched_types:
+    observed_flag_members = current_enum_members(
+        REPO_ROOT,
+        target=args.target,
+        enum_names=("FrontendWidgetFlag",),
+    ).get("FrontendWidgetFlag")
+    stale_flag_types = (
+        ()
+        if observed_flag_members == EXPECTED_FLAG_MEMBERS
+        else ("FrontendWidgetFlag",)
+    )
+    replay_types = (*mismatched_types, *stale_flag_types)
+    if replay_types:
         type_operation = types_declare_missing_only(
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
-            replace_types=mismatched_types,
-            include_types=EXPECTED_STRUCT_SIZES,
+            replace_types=replay_types,
+            include_types=(*EXPECTED_STRUCT_SIZES, "FrontendWidgetFlag"),
         )
-        type_operation["repaired_types"] = mismatched_types
+        type_operation["repaired_types"] = replay_types
         type_operation["expected_sizes"] = {
             name: EXPECTED_STRUCT_SIZES[name] for name in mismatched_types
         }
+        if stale_flag_types:
+            type_operation["expected_flag_members"] = EXPECTED_FLAG_MEMBERS
     else:
         type_operation = {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "front-end widget owner sizes already current",
+            "reason": "front-end widget owner sizes and flag members already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
+            "expected_flag_members": EXPECTED_FLAG_MEMBERS,
         }
 
     operations: list[dict[str, object]] = [

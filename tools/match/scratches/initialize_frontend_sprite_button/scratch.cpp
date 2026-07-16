@@ -51,7 +51,8 @@ void FrontendWidget::initialize_frontend_sprite_button(
     *(int*)(self + 0x38) = 1;
     unhide_border_init();
 
-    int widget_flags = flags | 0x40801;
+    int widget_flags = flags | FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE
+        | FRONTEND_WIDGET_FLAG_SPRITE_MODE | 1;
     this->widget_flags = widget_flags;
     previous_widget_flags = widget_flags;
     text_buffer[0] = 0;
@@ -65,7 +66,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     idle_text_color = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
     hot_text_color = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
 
-    if (((unsigned char)this->widget_flags & 2) != 0) {
+    if (((unsigned char)this->widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0) {
         hover_blend_target = 1.0f;
         target_padding = hot_padding;
     } else {

@@ -39,7 +39,8 @@ void HighScore::update_high_score_screen()
         if ((submit_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             submit_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             submit->widget_flags = submit_flags;
-            name_row_widgets[selected_rank]->widget_flags |= 0x8000000;
+            name_row_widgets[selected_rank]->widget_flags |=
+                FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED;
         }
 
         FrontendWidget* cancel = cancel_name_button;
