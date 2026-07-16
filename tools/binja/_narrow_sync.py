@@ -167,6 +167,10 @@ def find_function(identifier):
     return function
 
 
+def normalize_function_type(value):
+    return str(value).replace(" __pure", "")
+
+
 def find_member(type_obj, offset):
     for member in list(getattr(type_obj, "members", ())):
         if int(getattr(member, "offset", -1)) == offset:
@@ -327,7 +331,9 @@ try:
             function = find_function(entry["identifier"])
             observed = str(function.type)
             entry["observed"] = observed
-            entry["verified"] = observed == entry["expected"]
+            entry["verified"] = normalize_function_type(
+                observed
+            ) == normalize_function_type(entry["expected"])
         elif entry["op"] == "user_var_set":
             function = find_function(entry["identifier"])
             variable = find_variable(function, entry)
@@ -488,6 +494,10 @@ def find_function(identifier):
     return function
 
 
+def normalize_function_type(value):
+    return str(value).replace(" __pure", "")
+
+
 state = bv.begin_undo_actions()
 applied = []
 try:
@@ -505,7 +515,9 @@ try:
     for entry in applied:
         fn = find_function(entry["identifier"])
         entry["after"] = str(fn.type)
-        entry["verified"] = entry["after"] == entry["requested"]
+        entry["verified"] = normalize_function_type(
+            entry["after"]
+        ) == normalize_function_type(entry["requested"])
     if not all(entry["verified"] for entry in applied):
         raise RuntimeError(f"direct prototype verification failed: {{applied!r}}")
     bv.commit_undo_actions(state)

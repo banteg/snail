@@ -360,6 +360,7 @@ def test_direct_proto_batch_accepts_address_identifiers(monkeypatch) -> None:
     assert "address = int(text, 0)" in code
     assert "function = bv.get_function_at(address)" in code
     assert 'fn = find_function(identifier)' in code
+    assert 'return str(value).replace(" __pure", "")' in code
 
 
 def test_direct_proto_batch_requires_saved_snapshot(monkeypatch) -> None:
@@ -3818,6 +3819,7 @@ def test_previewed_batch_uses_one_transactional_python_preview_and_apply(monkeyp
     assert all("update_sub_lazer_projectile" in call[call.index("--code") + 1] for call in calls)
     assert "preview = True" in calls[0][calls[0].index("--code") + 1]
     assert "preview = False" in calls[1][calls[1].index("--code") + 1]
+    assert 'return str(value).replace(" __pure", "")' in calls[0][calls[0].index("--code") + 1]
     assert result["apply"]["committed"] is True
 
 
