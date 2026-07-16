@@ -1,10 +1,6 @@
 // update_mouse_authored_scale @ 0x44bbd0 (cdecl, ret)
 
-#include "rect.h"
-
-extern float g_mouse_screen_to_authored_y_scale; // data_777d68
-extern float g_mouse_screen_to_authored_x_scale; // data_777d6c
-extern Rect g_mouse_clip_rect; // data_777d88
+#include "mouse_input_state.h"
 
 int update_mouse_authored_scale(float authored_width, float authored_height)
 {

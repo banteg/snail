@@ -20,3 +20,7 @@
 borrowed IID, system GUID, and data format now come from the canonical
 DirectInput state bank used across initialization, polling, and teardown. The
 function remains exact at 46/46 instructions with all 18 operands clean.
+
+The same pass also gives the seeded X/Y coordinates their proven parallel
+two-slot extents and shares the cursor-hide latch with its setter and poller.
+This second ownership boundary is codegen-neutral at the same exact result.

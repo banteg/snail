@@ -79,3 +79,7 @@ The poller now borrows the canonical process-owned mouse device, and its
 `GetDeviceState` byte count derives from the complete 20-byte SDK state record.
 Initialization and teardown use the same shared parent/device lifetime. The
 function remains exact at 295/295 instructions with all 81 operands clean.
+
+The authored/live coordinate arrays and cursor-hide latch now come from the
+separate canonical two-slot mouse state bank. This keeps DirectInput interface
+lifetime distinct from pointer/window state and remains exact at 295/295.

@@ -3,6 +3,7 @@
 #include "direct_input_view.h"
 #include "game_root.h"
 #include "input_polling.h"
+#include "mouse_input_state.h"
 #include "mouse_window_state.h"
 #include "win32_window_state.h"
 
@@ -14,9 +15,6 @@ extern "C" __declspec(dllimport) int __stdcall ClipCursor(Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall SetCursor(int cursor);
 
 extern GameRoot* g_game; // data_4df904
-extern float g_mouse_live_x[]; // data_777d58
-extern float g_mouse_live_y[]; // data_777d60
-extern char g_hide_system_cursor_flag; // data_777d70
 
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
 unsigned char read_left_mouse_button_state(int slot); // @ 0x407810

@@ -1,6 +1,6 @@
 // consume_mouse_wheel_delta @ 0x4077f0 (cdecl, ret)
 
-extern int g_mouse_wheel_delta[2]; // data_4dfad0
+#include "mouse_input_state.h"
 
 int consume_mouse_wheel_delta(int slot)
 {

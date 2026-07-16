@@ -6,3 +6,8 @@ initializing the authored mouse scale for 640x480 coordinates.
 
 Exact match: 100.00%, 7/7 instructions, with the GetClipCursor import,
 g_mouse_clip_rect, and update_mouse_authored_scale operands resolved.
+
+2026-07-16 state-owner closure: the cached destination is now declared through
+the shared two-slot mouse state bank as the complete 16-byte Win32 `Rect` proven
+by its producer, consumer, and manifest extent. The `GetClipCursor` ABI is typed
+accordingly; focused output remains exact at 7/7 with all three operands clean.

@@ -55,3 +55,8 @@ late `xor eax, eax` as scheduler debt.
   destination offsets inherit the real four-byte branch-layout residual. They
   are identified owners, not waived operands; focused matching stays 94.33%,
   141/141, with 37 clean and 2 mismatched operands.
+
+2026-07-16 mouse-bank closure: both two-slot button state/latch pairs and the
+two-slot wheel delta now come from the shared Win32/DirectInput mouse owner.
+The procedure remains honestly partial at 94.33%, 141/141 instructions, with
+37 clean operands and only the two documented jump-table mismatches.

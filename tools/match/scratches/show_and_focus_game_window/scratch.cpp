@@ -1,6 +1,7 @@
 // show_and_focus_game_window @ 0x4073b0 (cdecl)
 
 #include "main_loop_state.h"
+#include "mouse_input_state.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
@@ -8,11 +9,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall ShowWindow(HWND window, int comm
 extern "C" __declspec(dllimport) BOOL __stdcall SetForegroundWindow(HWND window);
 extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND window);
 extern "C" __declspec(dllimport) HWND __stdcall SetActiveWindow(HWND window);
-
-extern unsigned char g_left_mouse_button_latch[2]; // data_4b7764
-extern unsigned char g_left_mouse_button_state[2]; // data_4b7234
-extern unsigned char g_right_mouse_button_latch[2]; // data_4b7230
-extern unsigned char g_right_mouse_button_state[2]; // data_4b7640
 
 int show_and_focus_game_window()
 {

@@ -1,8 +1,8 @@
 // initialize_mouse_authored_scale_from_clip_rect @ 0x44bbb0 (cdecl)
 
-extern "C" __declspec(dllimport) int __stdcall GetClipCursor(void* rect);
+#include "mouse_input_state.h"
 
-extern char g_mouse_clip_rect;
+extern "C" __declspec(dllimport) int __stdcall GetClipCursor(Rect* rect);
 
 int update_mouse_authored_scale(float authored_width, float authored_height);
 
