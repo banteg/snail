@@ -86,3 +86,14 @@ Ninja slice as `g_object_edge_build_edges: ObjectToonEdge*` and
 `g_object_edge_build_count: int32_t`. The refreshed artifact keeps the Object
 receiver and those borrowed globals visible; the honest 73.36% block-layout
 residual is unchanged.
+
+## 2026-07-16 dynamic-topology policy
+
+The internal-join cull now consumes `OBJECT_FLAG_DYNAMIC_VERTICES` instead of
+an isolated `4`. Startup and logo initialization produce that bit on animated
+objects, while grouped-buffer construction and vertex-buffer refresh consume
+it to retain source-vertex ownership across updates. This edge builder is the
+topology-side consumer: static objects may discard flat shared joins, but
+objects whose vertices move retain them so later normal changes cannot expose
+a missing toon edge. The focused result remains byte-identical at the honest
+73.36%; no new flag meaning was inferred.

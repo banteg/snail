@@ -32,7 +32,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
     ActiveLandscapeEntry* entry = active_entries;
     do {
         if (scripts[script_index].object_index == -1) {
-            entry->list_flags &= ~0x20;
+            entry->list_flags &= ~BOD_FLAG_RENDER_ENABLED;
             entry->set_bod_object(0);
         } else {
             BodNode* head = &g_game->subgame.landscape_slice_list_head;

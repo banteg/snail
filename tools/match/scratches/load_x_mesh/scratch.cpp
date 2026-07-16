@@ -131,7 +131,7 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
         object->facequads[i].uv[3].v = texture_coords[vertex_3].v;
         object->facequads[i].texture_ref =
             g_texture_refs.get_or_create_texture_ref("X/snail-turbo.tga", 0, 0);
-        object->facequads[i].texture_ref->flags |= 0x1000;
+        object->facequads[i].texture_ref->flags |= TEXTURE_REF_WRAP_ADDRESSING;
         object->facequads[i].vertex_2 = (unsigned short)vertex_2;
         object->facequads[i].vertex_1 = (unsigned short)vertex_1;
         object->facequads[i].vertex_0 = (unsigned short)vertex_0;
@@ -192,9 +192,9 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
 
                 *material_slot =
                     g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
-                (*material_slot)->flags |= 0x1000;
+                (*material_slot)->flags |= TEXTURE_REF_WRAP_ADDRESSING;
                 if ((options_flags & 2) != 0)
-                    (*material_slot)->flags |= 0x8000;
+                    (*material_slot)->flags |= TEXTURE_REF_SKIP_RUNTIME_LOAD;
             }
             ++material_index;
             ++material_slot;

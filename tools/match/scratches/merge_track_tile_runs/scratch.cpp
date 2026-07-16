@@ -28,7 +28,8 @@ unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
                 &(game)->runtime_cells[(row)][(first_lane) + (run_length)]      \
                      .lane_and_flags;                                           \
             do {                                                               \
-                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &= ~0x20;    \
+                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &=         \
+                    ~BOD_FLAG_RENDER_ENABLED;                                 \
                 *clear_lane_flags &=                                           \
                     ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \
                 clear_lane_flags -=                                           \

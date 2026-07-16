@@ -19,6 +19,6 @@ void LogoLetter::update_intro_logo_renderable()
     if (position->z > 16.0f || position->z < -4.0f) {
         list_flags &= 0xffffffdf;
     } else {
-        list_flags |= 0x20;
+        list_flags |= BOD_FLAG_RENDER_ENABLED;
     }
 }

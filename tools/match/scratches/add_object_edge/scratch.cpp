@@ -66,7 +66,7 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
         g_object_edge_build_edges[index].flags |= OBJECT_TOON_EDGE_FLAG_SHARED;
         g_object_edge_build_edges[index].normal_b = normal_index;
 
-        if ((flags & 4) == 0) {
+        if ((flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {
             Vector3 lhs = facequad_normals[g_object_edge_build_edges[index].normal_a];
             Vector3 rhs = facequad_normals[g_object_edge_build_edges[index].normal_b];
             Vector3 cross;

@@ -80,7 +80,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         cell->fringe_front = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
-                        cell->fringe_front->list_flags |= 0x20;
+                        cell->fringe_front->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_front->position = cell->position;
                         tColour color0;
                         tColour* skirt_color = get_track_skirt_color(&color0);
@@ -104,7 +104,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         cell->fringe_right = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
-                        cell->fringe_right->list_flags |= 0x20;
+                        cell->fringe_right->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_right->position = cell->position;
                         tColour color1;
                         tColour* skirt_color = get_track_skirt_color(&color1);
@@ -128,7 +128,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         cell->fringe_left = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
-                        cell->fringe_left->list_flags |= 0x20;
+                        cell->fringe_left->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_left->position = cell->position;
                         tColour color2;
                         tColour* skirt_color = get_track_skirt_color(&color2);
@@ -152,7 +152,7 @@ int SubgameRuntime::build_track_fringe_objects()
                         cell->fringe_back = object;
                         object->set_bod_object(
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
-                        cell->fringe_back->list_flags |= 0x20;
+                        cell->fringe_back->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_back->position = cell->position;
                         tColour color3;
                         tColour* skirt_color = get_track_skirt_color(&color3);
@@ -169,16 +169,16 @@ int SubgameRuntime::build_track_fringe_objects()
                     != 0) {
                     Fringe* object = cell->fringe_front;
                     if (object != 0)
-                        object->list_flags &= ~0x20;
+                        object->list_flags &= ~BOD_FLAG_RENDER_ENABLED;
                     object = cell->fringe_back;
                     if (object != 0)
-                        object->list_flags &= ~0x20;
+                        object->list_flags &= ~BOD_FLAG_RENDER_ENABLED;
                     object = cell->fringe_right;
                     if (object != 0)
-                        object->list_flags &= ~0x20;
+                        object->list_flags &= ~BOD_FLAG_RENDER_ENABLED;
                     object = cell->fringe_left;
                     if (object != 0)
-                        object->list_flags &= ~0x20;
+                        object->list_flags &= ~BOD_FLAG_RENDER_ENABLED;
                 }
 
                 ++cell;

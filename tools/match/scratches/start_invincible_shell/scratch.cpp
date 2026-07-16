@@ -21,6 +21,7 @@ void Invincible::start_invincible_shell()
     spin_phase_step = 0.0333333351f;
     fade_progress = 0.0f;
     fade_step = 0.0333333351f;
-    g_game->subgame.player.presentation.invincible_shell.list_flags |= 0x20;
+    g_game->subgame.player.presentation.invincible_shell.list_flags |=
+        BOD_FLAG_RENDER_ENABLED;
     g_audio_backend.play_registered_sound_sample_scaled(0x30, 1.0f);
 }

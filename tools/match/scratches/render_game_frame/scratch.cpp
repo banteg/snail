@@ -256,7 +256,7 @@ void GameRoot::render_game_frame()
                     --post_cursor;
                     RenderableBod* bod = *post_cursor;
                     unsigned int bod_flags = bod->list_flags;
-                    if ((bod_flags & 0x400) != 0) {
+                    if ((bod_flags & BOD_FLAG_USE_TRANSFORM) != 0) {
                         render_object(
                             bod->object,
                             &bod->transform,

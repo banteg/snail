@@ -45,10 +45,12 @@ int render_object(
 
                 if (pass == 0) {
                     if (pass_side == 1 &&
-                        (object->group_texture_refs[i]->flags & 0x10000) != 0)
+                        (object->group_texture_refs[i]->flags
+                            & TEXTURE_REF_HAS_ALPHA) != 0)
                         continue;
                 } else if (pass == 1 && pass_side == pass &&
-                    (object->group_texture_refs[i]->flags & 0x10000) == 0) {
+                    (object->group_texture_refs[i]->flags
+                        & TEXTURE_REF_HAS_ALPHA) == 0) {
                     continue;
                 }
 
@@ -71,7 +73,8 @@ int render_object(
                 }
 
                 if (tint->a != 1.0f &&
-                    (object->group_texture_refs[i]->flags & 0x10000) != 0) {
+                    (object->group_texture_refs[i]->flags
+                        & TEXTURE_REF_HAS_ALPHA) != 0) {
                     set_blend_mode(object->blend_mode);
                     if ((object->flags & (OBJECT_FLAG_REFRESH_TINT_EACH_DRAW
                             | OBJECT_FLAG_TINT_DIRTY)) != 0) {

@@ -189,3 +189,13 @@ five bits to three overlays and two player camera slots, while this method uses
 `RENDER_SCENE_MASK` identically for BOD, sprite, and queued-text selection.
 This broader owner replaces the temporary BOD-local viewport naming without
 changing the focused result.
+
+## 2026-07-16 render-policy propagation
+
+The remaining recovered BOD producers and consumers now use the same render
+policy names: fringe, landscape, banner, intro-logo, and shell lifecycles own
+`BOD_FLAG_RENDER_ENABLED`; attachment scheduling produces
+`BOD_FLAG_AFTER_SPRITES`; and this post-sprite replay consumes
+`BOD_FLAG_USE_TRANSFORM`. Exact constructors, the exact after-sprites query,
+and both render passes already prove those meanings. Replacing the residual
+raw constants leaves the full matcher board unchanged.

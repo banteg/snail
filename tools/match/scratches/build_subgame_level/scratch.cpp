@@ -186,7 +186,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     banners.slots[0].owner_player = embedded_player();
     banners.slots[0].position.z = (float)first_block_row_count;
     int row_alpha = 0x3f7fbe77;
-    banners.slots[0].list_flags = start_flags & ~0x20;
+    banners.slots[0].list_flags = start_flags & ~BOD_FLAG_RENDER_ENABLED;
     *(int*)&banners.slots[0].color.a = row_alpha;
 
     {

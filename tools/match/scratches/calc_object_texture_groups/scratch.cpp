@@ -19,7 +19,7 @@ void Object::calc_object_texture_groups()
                     quads[offset] |= 2;
                     TextureRef* active_texture =
                         *(TextureRef**)((char*)facequads + offset + 0x0c);
-                    active_texture->flags |= 0x20;
+                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;
                 }
 
                 quads = (char*)facequads;

@@ -112,3 +112,14 @@ Ninja's zero-sized `Object` shell to the shared `0xdc` layout; the refreshed
 snapshot again exposes the flags, grouped arrays, and render buffers rather
 than raw offsets. Narrow decompile health checks now guard both the owner and
 the float ABI.
+
+## 2026-07-16 texture policy propagation
+
+The render-pass split and blend gate now consume `TEXTURE_REF_HAS_ALPHA` from
+the shared `TextureRef` owner. Exact texture loading produces that bit from the
+decoded surface alpha, and exact stage-state restoration independently
+consumes it before this renderer uses it to separate opaque and alpha groups.
+The same shared enum now reaches X-mesh wrap/skip-load setup, startup texture
+registration, and the texture-group source-byte retention path. All affected
+listings remain byte-identical; composite startup masks with unresolved low
+bits deliberately remain numeric.

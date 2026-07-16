@@ -2893,7 +2893,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     TextureRef* texture_ref = g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/VapourLazer/Lazer.tga", 0, 0);
-    texture_ref->flags |= 0x400;
+    texture_ref->flags |= TEXTURE_REF_REGISTERED;
     texture_ref = g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/World00/Worm.tga", 0, 0);
     texture_ref->flags |= 0x1403;
@@ -2902,10 +2902,10 @@ char GameRoot::initialize_game_assets_and_world()
     texture_ref->flags |= 0x1402;
     texture_ref = g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/World00/TrackWarn.tga", 0, 0);
-    texture_ref->flags = 0x1000;
+    texture_ref->flags = TEXTURE_REF_WRAP_ADDRESSING;
     texture_ref = g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/Universe/Ramp.tga", 0, 0);
-    texture_ref->flags |= 0x1000;
+    texture_ref->flags |= TEXTURE_REF_WRAP_ADDRESSING;
     texture_ref = g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/World00/Track0.tga", 0, 0);
     texture_ref->flags |= 0x1002;
@@ -3018,7 +3018,8 @@ char GameRoot::initialize_game_assets_and_world()
     } while (fringe_family < TRACK_FRINGE_FAMILY_COUNT);
 
     g_texture_refs.get_or_create_texture_ref(
-        (char*)"Objects/Universe/Fringe.tga", 0, 0)->flags |= 0x400;
+        (char*)"Objects/Universe/Fringe.tga", 0, 0)->flags |=
+        TEXTURE_REF_REGISTERED;
 
     BodList* active_bods = &active_bod_list;
     GameInput* game_input = &game_inputs[0];
