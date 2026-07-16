@@ -10,6 +10,7 @@ from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
     apply_symbol_updates,
+    apply_user_var_updates,
     emit_summary,
     types_declare_if_changed,
 )
@@ -27,6 +28,21 @@ DATA_SYMBOL_UPDATES = (
 DATA_VAR_UPDATES = (
     ("0x74ec74", "char*"),
     ("0x74ec78", "LevelFileTextBuffer"),
+)
+
+# The selected entry is materialized as an EDX SSA owner after a native
+# 0x4088-stride calculation from the SMTracks base. That leaves the register
+# four bytes before the entry, so the exact anchor view preserves the count /
+# previous-tail prefix without shifting any entry field.
+SEGMENT_COPY_USER_VAR_UPDATES = (
+    (
+        "copy_segment_definition_to_level_slot",
+        "RegisterVariableSourceType",
+        113,
+        68,
+        "selected_entry_anchor",
+        "SegmentCatalogEntryAnchor*",
+    ),
 )
 
 PROTO_UPDATES = (
@@ -75,6 +91,11 @@ def main() -> int:
             updates=DATA_VAR_UPDATES,
         ),
         *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+        *apply_user_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=SEGMENT_COPY_USER_VAR_UPDATES,
+        ),
     ]
 
     return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)

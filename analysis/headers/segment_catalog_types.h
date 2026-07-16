@@ -60,6 +60,15 @@ typedef struct SegmentCatalogEntry {
     AuthoredSegmentRow rows[256];
 } SegmentCatalogEntry;
 
+/* The native importer strides 0x4088 bytes from the SMTracks base, leaving
+ * its EDX cursor four bytes before the selected entry. At index zero the
+ * prefix is SMTracks::count; at later indices it overlaps the previous
+ * entry's final word. Only entry is consumed through this analysis view. */
+typedef struct SegmentCatalogEntryAnchor {
+    int32_t stride_prefix_word;
+    SegmentCatalogEntry entry;
+} SegmentCatalogEntryAnchor;
+
 typedef struct SMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];

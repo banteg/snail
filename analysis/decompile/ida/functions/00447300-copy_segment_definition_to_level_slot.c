@@ -9,13 +9,13 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
   int32_t v4; // esi
   char *filename; // ebp
   SubSegment *v6; // ebp
-  char *v7; // edx
+  SegmentCatalogEntryAnchor *selected_entry_anchor; // edx
   char *v8; // edi
   char *v9; // ecx
-  int v10; // eax
+  int32_t v10; // eax
   char *v11; // esi
   char v12; // bl
-  int v13; // esi
+  int32_t v13; // esi
   int32_t *p_object_id; // ecx
   int32_t *v15; // eax
   int32_t *v16; // edi
@@ -44,13 +44,13 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
   {
     v6 = segment;
     ArgList = 8;
-    v7 = (char *)p_sm_tracks + 16520 * v4;
+    selected_entry_anchor = (SegmentCatalogEntryAnchor *)((char *)p_sm_tracks + 16520 * v4);
     v8 = segment->glyph_rows[0];
-    v9 = v7 + 140;
+    v9 = selected_entry_anchor->entry.glyph_columns[0];
     do
     {
       v10 = 0;
-      if ( *((int *)v7 + 34) > 0 )
+      if ( selected_entry_anchor->entry.row_count > 0 )
       {
         v11 = v9;
         do
@@ -59,7 +59,7 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
           v11 += 8;
           v8[v10++] = v12;
         }
-        while ( v10 < *((_DWORD *)v7 + 34) );
+        while ( v10 < selected_entry_anchor->entry.row_count );
       }
       ++v9;
       v8 += 256;
@@ -67,14 +67,14 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
     }
     while ( ArgList );
     v13 = 0;
-    segment->row_count = *((_DWORD *)v7 + 34);
-    segment->source_name = v7 + 68;
+    segment->row_count = selected_entry_anchor->entry.row_count;
+    segment->source_name = selected_entry_anchor->entry.filename;
     segment->angle_radians.bits = 0;
-    segment->path_index = *((_DWORD *)v7 + 33);
-    if ( *((int *)v7 + 34) > 0 )
+    segment->path_index = selected_entry_anchor->entry.id;
+    if ( selected_entry_anchor->entry.row_count > 0 )
     {
       p_object_id = &segment->rows[0].object_id;
-      v15 = (int32_t *)(v7 + 2208);
+      v15 = &selected_entry_anchor->entry.rows[0].object_id;
       do
       {
         *(p_object_id - 5) = *(v15 - 5);
@@ -97,7 +97,7 @@ void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *s
         *(p_object_id - 7) = *(v15 - 7);
         *(p_object_id - 6) = *(v15 - 6);
       }
-      while ( v13 < *((_DWORD *)v7 + 34) );
+      while ( v13 < selected_entry_anchor->entry.row_count );
       v6 = segment;
     }
     v6->message_text[0] = 0;

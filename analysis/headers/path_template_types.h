@@ -1012,6 +1012,13 @@ typedef struct SegmentCatalogEntry {
     AuthoredSegmentRow rows[256];
 } SegmentCatalogEntry;
 
+/* Native selected-entry cursor anchored four bytes before the entry while
+ * indexing 0x4088-byte records from the SMTracks base. */
+typedef struct SegmentCatalogEntryAnchor {
+    int32_t stride_prefix_word;
+    SegmentCatalogEntry entry;
+} SegmentCatalogEntryAnchor;
+
 typedef struct SMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];

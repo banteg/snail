@@ -47,6 +47,8 @@ DIRTY_FUNCTIONS = (
     0x448900,
 )
 
+SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -206,6 +208,112 @@ def _sync_builtin_grid_offset_lvar() -> dict[str, object]:
     }
 
 
+def _sync_segment_copy_entry_anchor_lvar() -> dict[str, object]:
+    selector = "copy_segment_definition_to_level_slot"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_stk_var()
+        and lvar.defea == SEGMENT_COPY_ENTRY_ANCHOR_DEFEA
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_entry_anchor_candidates",
+            "candidate_count": len(candidates),
+            "selector": selector,
+        }
+
+    lvar = candidates[0]
+    observed_type = _normalize_type_text(str(lvar.type()))
+    expected_types = {
+        "SegmentCatalogEntryAnchor *",
+        "struct SegmentCatalogEntryAnchor *",
+    }
+    if lvar.name == "selected_entry_anchor" and observed_type in expected_types:
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "defea": hex(lvar.defea),
+            "location": str(lvar.location),
+            "selector": selector,
+        }
+
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        "SegmentCatalogEntryAnchor *selected_entry_anchor;",
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_entry_anchor_type_failed",
+            "selector": selector,
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = "selected_entry_anchor"
+    info.type = local_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_entry_anchor_lvar_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_candidates = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_stk_var()
+        and candidate.defea == SEGMENT_COPY_ENTRY_ANCHOR_DEFEA
+        and candidate.name == "selected_entry_anchor"
+    ]
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "entry_anchor_readback_failed",
+            "candidate_count": len(verified_candidates),
+            "selector": selector,
+        }
+
+    verified = verified_candidates[0]
+    verified_type = _normalize_type_text(str(verified.type()))
+    if verified_type not in expected_types:
+        return {
+            "status": "failed",
+            "reason": "entry_anchor_type_readback_failed",
+            "observed_type": str(verified.type()),
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied",
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": verified.name,
+        "type": str(verified.type()),
+        "defea": hex(verified.defea),
+        "location": str(verified.location),
+        "selector": selector,
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
@@ -330,6 +438,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         ida_hexrays.mark_cfunc_dirty(address, True)
         dirty_functions.append(hex(address))
 
+    segment_entry_lvar = _sync_segment_copy_entry_anchor_lvar()
+    if segment_entry_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "copy_segment_definition_to_level_slot",
+                "segment_entry_lvar": segment_entry_lvar,
+            }
+        )
+
     grid_offset_lvar = _sync_builtin_grid_offset_lvar()
     if grid_offset_lvar.get("status") == "failed":
         failed.append(
@@ -352,6 +469,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
                 "dirty_functions": dirty_functions,
+                "segment_entry_lvar": segment_entry_lvar,
                 "grid_offset_lvar": grid_offset_lvar,
                 "missing": missing,
                 "failed": failed,

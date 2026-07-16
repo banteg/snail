@@ -2634,8 +2634,19 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "LevelFileTextBuffer" in binja_segment_sync
     assert "types_declare_if_changed" in binja_segment_sync
     assert "types_declare(" not in binja_segment_sync
+    assert "SEGMENT_COPY_USER_VAR_UPDATES" in binja_segment_sync
+    assert '"selected_entry_anchor"' in binja_segment_sync
+    assert '"SegmentCatalogEntryAnchor*"' in binja_segment_sync
+    for header in (analysis_path_header, analysis_segment_header):
+        assert "typedef struct SegmentCatalogEntryAnchor" in header
+        assert "int32_t stride_prefix_word;" in header
+        assert "SegmentCatalogEntry entry;" in header
     assert '"char g_level_file_text_buffer[10240];"' in ida_segment_sync
 
+    assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync
+    assert "SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372" in ida_segment_sync
+    assert '"SegmentCatalogEntryAnchor *selected_entry_anchor;"' in ida_segment_sync
+    assert 'info.name = "selected_entry_anchor"' in ida_segment_sync
     assert "_sync_builtin_grid_offset_lvar" in ida_segment_sync
     assert '"int32_t grid_offset;"' in ida_segment_sync
     assert 'info.name = "grid_offset"' in ida_segment_sync

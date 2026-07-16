@@ -96,3 +96,31 @@ stale raw global form so later narrow exports cannot silently lose this owner
 graph. Matcher source remains unchanged at the honest 85.60% frontier: all
 125 instructions and five masked operands agree, while the remaining register
 schedule is not being reshaped for score.
+
+## 2026-07-16 selected-entry stride anchor ownership
+
+- Native computes its EDX catalog cursor by adding `index * 0x4088` to the
+  `SMTracks` base, not to `entries[0]`. The register therefore remains four
+  bytes before the selected `SegmentCatalogEntry`: its prefix is
+  `SMTracks::count` for index zero and the previous entry's final word for
+  later indices.
+- A direct `SegmentCatalogEntry*` local probe was rejected because it shifted
+  every field by four bytes: the decompiler rendered `row_count` as glyph
+  bytes, `id` as `row_count`, and `filename` as `filename[4]`. That would have
+  been a false ownership claim even though the register points near the entry.
+- The analysis headers now carry the exact `SegmentCatalogEntryAnchor` view:
+  one neutral `stride_prefix_word` followed by the real entry. Binary Ninja's
+  proven EDX SSA identity (`RegisterVariableSourceType`, index 113, storage
+  68) and IDA's corresponding register local (definition EA `0x447372`) both
+  replay as
+  `selected_entry_anchor`. Both exports now expose the selected entry's
+  `row_count`, `filename`, `id`, column-major glyph grid, and authored row bank
+  through `selected_entry_anchor->entry`.
+- Both replays are idempotent: Binary Ninja verifies all 12 header types and
+  skips the already-current local owner, while IDA reports the same local and
+  all six catalog prototypes unchanged. Health checks reject both the old raw
+  byte-pointer form and the four-byte-shifted direct-entry form.
+- Matcher source remains unchanged at the honest 85.60% frontier: 125/125
+  instructions, prefix 74/125, and five clean masked operands. The remaining
+  metadata-copy differences are register scheduling, so no source was
+  contorted to improve the score.

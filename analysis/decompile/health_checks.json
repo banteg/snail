@@ -6771,13 +6771,22 @@
       "required_substrings": [
         "&g_game_base->subgame.sm_tracks",
         "g_current_level_definition_name",
+        "SegmentCatalogEntryAnchor* selected_entry_anchor",
+        "selected_entry_anchor->entry.row_count",
+        "selected_entry_anchor->entry.filename",
+        "selected_entry_anchor->entry.id",
+        "selected_entry_anchor->entry.rows[0].object_id",
         "segment_1->row_count",
         "segment_1->message_sample_id"
       ],
       "forbidden_substrings": [
         "data_74ec74",
         "MEMORY[",
-        "sub_447300"
+        "sub_447300",
+        "void* edx_5",
+        "*(edx_5 +",
+        "selected_entry_anchor->row_count",
+        "selected_entry_anchor->glyph_columns"
       ]
     },
     {
@@ -6816,6 +6825,11 @@
         "SMTracks *p_sm_tracks",
         "&g_game_base->subgame.sm_tracks",
         "g_current_level_definition_name",
+        "SegmentCatalogEntryAnchor *selected_entry_anchor",
+        "selected_entry_anchor->entry.row_count",
+        "selected_entry_anchor->entry.filename",
+        "selected_entry_anchor->entry.id",
+        "&selected_entry_anchor->entry.rows[0].object_id",
         "segment->glyph_rows[0]",
         "segment->row_count",
         "message_sample_id = -1"
@@ -6823,7 +6837,11 @@
       "forbidden_substrings": [
         "_DWORD *__stdcall copy_segment_definition_to_level_slot",
         "char *ArgList, _DWORD *a2",
+        "char *v7",
+        "*((int *)v7 +",
         "MEMORY[0x4DF904]",
+        "selected_entry_anchor->row_count",
+        "selected_entry_anchor->glyph_columns",
         "return (_DWORD *)report_errorf"
       ]
     },
