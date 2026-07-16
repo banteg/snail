@@ -223,7 +223,7 @@ update_after_input:
         }
 
         if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) == 0) {
-            if ((widget_flags & 0x10000) != 0) {
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT) != 0) {
                 layout_x = frame_x;
                 layout_y = frame_y;
                 layout_width = frame_width;

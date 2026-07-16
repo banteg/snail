@@ -42,7 +42,7 @@ void FrontendWidget::layout_frontend_widget()
             layout_top_ptr = &widget->layout_y;
             *(int*)&widget->layout_anchor_x = left_bits;
             *(int*)&widget->layout_anchor_y = top_bits;
-        } else if ((result & 0x10000) != 0) {
+        } else if ((result & FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT) != 0) {
             result = *(int*)&widget->frame_x;
             int authored_top = *(int*)&widget->frame_y;
             layout_left_ptr = &widget->layout_x;
@@ -81,7 +81,7 @@ void FrontendWidget::layout_frontend_widget()
         unsigned int flags = widget->widget_flags;
         int layout_top_bits = *(int*)layout_top_ptr;
         *(int*)&widget->texture_hit_y = layout_top_bits;
-        if ((flags & 0x20000000) == 0) {
+        if ((flags & FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN) == 0) {
             float right = *layout_left_ptr + widget->hot_padding;
             right += widget->layout_width;
             if (right > 640.0f) {

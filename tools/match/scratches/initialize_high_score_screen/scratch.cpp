@@ -97,7 +97,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 row_background_widgets[row_index] =
                     g_game->border_manager.allocate_border();
                 row_background_widgets[row_index]->initialize_frontend_widget(
-                    highlight | 0x20000000,
+                    highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                               ",
                     22, 0.0f, y,
                     color_49.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
@@ -157,7 +157,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 row_background_widgets[row_index] =
                     g_game->border_manager.allocate_border();
                 row_background_widgets[row_index]->initialize_frontend_widget(
-                    highlight | 0x20000000,
+                    highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                           ",
                     22, 0.0f, y,
                     color_44.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),

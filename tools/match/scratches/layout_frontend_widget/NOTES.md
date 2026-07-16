@@ -87,3 +87,14 @@ sync instead reported `snapshot_saved: true` and a fresh `bn proto get`
 confirmed the durable type. The source scratch remains the honest 84.18%,
 177/177-instruction transcription with all 20 audited operands clean; no EAX
 shaping was reintroduced.
+
+## 2026-07-16 authored rectangle and screen-clamp flags
+
+Android `cRBorder::RePosition()` independently preserves both Windows
+branches: `0x00010000` copies the four authored rectangle lanes into the live
+layout rectangle, while `0x20000000` skips the 640-by-480 clamp. The Windows
+galaxy bounds frame supplies both bits and immediately authors all four frame
+lanes; Android high-score rows supply the latter while placing widgets at
+`y = -273.0f`. These closed producer/consumer roles are now
+`USE_AUTHORED_RECT` and `ALLOW_OFFSCREEN`. The focused source remains
+codegen-equivalent; no still-unknown style bit was named.

@@ -7,7 +7,10 @@ void BorderManager::kill_all_borders()
     int result = 0;
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         result = borders[i].flags;
-        if (result != 0 && (result & 0x10000400) == 0) {
+        if (result != 0
+            && (result
+                    & (0x10000000 | FRONTEND_WIDGET_FLAG_TEARDOWN_ACTIVE))
+                == 0) {
             result = (result & 0xffffff01) | 0x200;
             borders[i].flags = result;
         }

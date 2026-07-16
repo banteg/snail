@@ -275,7 +275,8 @@ finish_input:
     }
     unsigned int cleared_flags =
         widget_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
-    unsigned int closing_flags = cleared_flags | 0x4000;
+    unsigned int closing_flags =
+        cleared_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
     int remaining_length = input_length - 1;
     widget_flags = cleared_flags;
     input_length = remaining_length;

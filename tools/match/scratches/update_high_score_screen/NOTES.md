@@ -83,3 +83,11 @@ return, register hint, dummy dependency, or volatile state is reintroduced.
 The exact proof also allows the repeatable Binary Ninja and IDA lifecycle
 prototype syncs to carry `void` instead of preserving their stale scalar
 fallback.
+
+## 2026-07-16 editor completion ownership
+
+The selected name row consumes and clears
+`FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE`, whose only producer is the exact
+finish path in `cRBorder::InputText()`. This separates the completed-editor
+handoff from the Submit button's `TEXT_INPUT_SUBMIT_REQUESTED` command and
+keeps the exact 205/205-instruction result unchanged.

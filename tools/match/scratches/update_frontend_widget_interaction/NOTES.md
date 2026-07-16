@@ -238,3 +238,18 @@ not alter the focused machine-code matches. The narrow Binary Ninja replay now
 compares enum names and values as well as owner widths, so future same-width
 vocabulary changes cannot be silently skipped; a second live replay is cleanly
 idempotent.
+
+## 2026-07-16 manager deactivation restore marker
+
+The Android `cRBorderManager::DeActivateBorders()` and all four
+`DeActivateOtherBorders()` overloads set `0x80000000` only when a live widget
+already has `DISABLED`, then force `DISABLED` for the batch. Its paired
+`ActivateBorders()` clears `DISABLED` only when that marker is absent and
+always clears the marker afterward, exactly matching Windows
+`activate_all_borders`. The bit is therefore
+`DISABLED_BEFORE_DEACTIVATION`. By contrast, `0x10000000` is only observed as
+a bulk hide/disable/kill exemption and still has no producer in either port,
+so it deliberately remains numeric. Binary Ninja represents the four-byte
+high-bit member as signed `-2147483648`; replay readback now normalizes enum
+values modulo their stored width, making the exact-member audit idempotent
+without changing the saved declaration.

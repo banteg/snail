@@ -454,6 +454,7 @@ def test_current_enum_members_batches_exact_readback(monkeypatch) -> None:
     assert len(calls) == 1
     assert calls[0][:2] == ("py", "exec")
     assert "member.value" in calls[0][-1]
+    assert "int(member.value) & value_mask" in calls[0][-1]
 
 
 def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
@@ -2486,6 +2487,20 @@ def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> N
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
+    paired_consumers = {
+        "border_input_text": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE",
+        "update_high_score_screen": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE",
+        "layout_frontend_widget": "FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN",
+        "activate_all_borders": (
+            "FRONTEND_WIDGET_FLAG_DISABLED_BEFORE_DEACTIVATION"
+        ),
+    }
+    for function_name, constant in paired_consumers.items():
+        scratch = (
+            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert constant in scratch
+
 
 def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
@@ -3243,7 +3258,9 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         "FRONTEND_WIDGET_FLAG_SPRITE_MODE": 0x00000800,
         "FRONTEND_WIDGET_FLAG_HIDDEN": 0x00001000,
         "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE": 0x00002000,
+        "FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE": 0x00004000,
         "FRONTEND_WIDGET_FLAG_DISABLED": 0x00008000,
+        "FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT": 0x00010000,
         "FRONTEND_WIDGET_FLAG_POINTER_INSIDE": 0x00020000,
         "FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE": 0x00040000,
         "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED": 0x00080000,
@@ -3252,7 +3269,9 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND": 0x00800000,
         "FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION": 0x01000000,
         "FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED": 0x08000000,
+        "FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN": 0x20000000,
         "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION": 0x40000000,
+        "FRONTEND_WIDGET_FLAG_DISABLED_BEFORE_DEACTIVATION": 0x80000000,
     }
     for name, value in expected_flags.items():
         assert f'("{name}", 0x{value:08X})' in frontend_sync
@@ -3271,6 +3290,7 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         "kill_border": "FRONTEND_WIDGET_FLAG_KILL_PENDING",
         "hide_border_init": "FRONTEND_WIDGET_FLAG_HIDDEN",
         "border_input_text": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED",
+        "layout_frontend_widget": "FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT",
         "set_frontend_widget_shortcut_key": "FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED",
         "queue_frontend_widget_flag_after_delay": "FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION",
         "update_high_score_screen": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_SUBMIT_REQUESTED",

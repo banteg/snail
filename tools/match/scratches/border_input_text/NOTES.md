@@ -97,3 +97,13 @@ Windows has one callsite at `0x402e48`; the next instruction tests
 authored ABI. The shared member and replay manifests therefore use `void`.
 The clear scratch remains 64.64% with 442/446 instructions and eight clean
 operands; no register forcing or other fakematching was introduced.
+
+## 2026-07-16 text-input completion handoff
+
+The editor finish path is the sole producer of widget bit `0x00004000`: it
+clears `TEXT_INPUT_ACTIVE`, sets this bit, relayouts, and optionally tears down
+the OK child. Exact `update_high_score_screen` is its independent consumer; it
+clears the bit before committing the edited name and destroying the screen.
+The shared role is therefore named `TEXT_INPUT_COMPLETE`, distinct from the
+earlier `TEXT_INPUT_SUBMIT_REQUESTED` command bit. The constant-only rewrite is
+codegen-neutral.

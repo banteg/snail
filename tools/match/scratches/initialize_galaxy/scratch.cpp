@@ -118,7 +118,9 @@ void Galaxy::initialize_galaxy()
         tColour color;
         bounds_frame_widget = g_game->border_manager.allocate_border();
         bounds_frame_widget->initialize_frontend_widget(
-            0x20010002,
+            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
+                | FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT
+                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_blank_text,
             20,
             30.0f,

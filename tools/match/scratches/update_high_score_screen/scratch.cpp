@@ -12,8 +12,8 @@ void HighScore::update_high_score_screen()
     if (entering_name != 0) {
         FrontendWidget* selected_name = name_row_widgets[selected_rank];
         unsigned int selected_flags = selected_name->widget_flags;
-        if ((selected_flags & 0x4000) != 0) {
-            selected_flags &= ~0x4000;
+        if ((selected_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE) != 0) {
+            selected_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
             selected_name->widget_flags = selected_flags;
 
             destroy_high_score_screen();

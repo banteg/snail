@@ -851,11 +851,15 @@ for name in names:
         result[name] = None
         continue
     try:
+        width = int(current.width)
+        if width <= 0:
+            raise ValueError("enum width must be positive")
+        value_mask = (1 << (width * 8)) - 1
         result[name] = [
-            [str(member.name), int(member.value)]
+            [str(member.name), int(member.value) & value_mask]
             for member in current.members
         ]
-    except AttributeError:
+    except (AttributeError, ValueError):
         result[name] = None
 """
     response = run_bn(
