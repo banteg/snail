@@ -3,6 +3,7 @@
 #include "golb.h"
 #include "player.h"
 #include "runtime_config.h"
+#include "sprite.h"
 
 void GolbShot::spawn_golb_impact_sprite(Vector3* position)
 {
@@ -12,7 +13,7 @@ void GolbShot::spawn_golb_impact_sprite(Vector3* position)
         int owner = owner_player->player_slot;
         Sprite* sprite = g_sprite_manager.allocate_sprite(owner, 0x21, -1, -1);
         int flags = sprite->flags;
-        flags |= 0x800;
+        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         Vector3 velocity;
         Vector3* out_velocity = &sprite->velocity;
         velocity.x = 0.0f;

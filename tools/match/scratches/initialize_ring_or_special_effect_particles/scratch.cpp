@@ -57,7 +57,7 @@ int SubRing::initialize_ring_or_special_effect_particles(int)
         particle->sprite->color =
             *color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.800000012f);
         unsigned int flags = particle->sprite->flags;
-        flags |= 0x800;
+        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         particle->sprite->flags = flags;
         particle->sprite->progress = 0.0f;
         particle->sprite->progress_step = 0.0f;

@@ -14,3 +14,12 @@ the traversal remains valid while the current node is moved back onto the free
 list.
 
 Exact match: 100.00%, 23/23 instructions, with three masked operands audited.
+
+## 2026-07-16 producer-side policy ownership
+
+The exact cleanup consumer and exact paused-update consumer jointly define
+`SPRITE_FLAG_GAMEPLAY_OWNED`; the flag is not an emitter-specific magic bit.
+All recovered producers now use the shared policy name: jet and ring particle
+pools, both SubGoldy ghosts, Golb impact/smoke/trail sprites, slug sprites, ring
+star showers, and the track health/jetpack pickups. The substitutions are
+byte-identical and make each allocation's pause/bulk-cleanup lifetime explicit.

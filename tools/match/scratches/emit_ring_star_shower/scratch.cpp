@@ -21,7 +21,7 @@ void SubRingStar::emit_ring_star_shower(Player* owner)
             -1,
             -1);
         star->progress = 0.0f;
-        star->flags |= 0x800;
+        star->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         star->progress_step = 0.111111104f;
         star->size_start = 0.40000001f;
         star->size_end = 0.2f;

@@ -1,6 +1,7 @@
 // spawn_golb_smoke @ 0x415c60 (thiscall, ret 0x4)
 
 #include "golb.h"
+#include "sprite.h"
 #include "subgame_runtime.h"
 
 void GolbShot::spawn_golb_smoke(Vector3* position)
@@ -13,7 +14,7 @@ void GolbShot::spawn_golb_smoke(Vector3* position)
 
     unsigned int flags = sprite->flags;
     sprite->progress = 0.0f;
-    flags |= 0x800;
+    flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->flags = flags;
 
     float rate = game->subgame_rate;

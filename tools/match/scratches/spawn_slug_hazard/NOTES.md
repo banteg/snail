@@ -152,3 +152,13 @@ does not define a coherent semantic result. A Windows `void` probe was still
 rejected: it removed the direct exhaustion epilogue and one tail instruction,
 falling to 94.34% at 158/160 instructions. The byte-identical non-void spelling
 therefore remains until stronger ABI evidence identifies its result role.
+
+## 2026-07-16 lifecycle policy flags
+
+The exact spawn now names the sprite's gameplay-owned lifetime and the
+inherited BOD contact policy. `SPRITE_FLAG_GAMEPLAY_OWNED` is consumed by the
+exact pause and bulk-cleanup traversals; clearing `BOD_FLAG_SUPPRESS_CONTACT`
+allows the newly active slug to enter the exact per-frame contact registry.
+The same contact bit is reserved by `create_golb` and released by exact
+`kill_golb`, closing the shared policy across both object families. All flag
+substitutions remain byte-identical.

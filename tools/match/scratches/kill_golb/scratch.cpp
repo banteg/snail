@@ -1,5 +1,6 @@
 // kill_golb @ 0x414670 (thiscall, ret)
 
+#include "bod_flags.h"
 #include "game_root.h"
 #include "golb.h"
 
@@ -100,7 +101,7 @@ void GolbShot::kill_golb()
             ContactTargetObject* target = homing_target_object;
             if (target != 0) {
                 unsigned int target_flags = target->list_flags;
-                target_flags &= ~0x1000;
+                target_flags &= ~BOD_FLAG_SUPPRESS_CONTACT;
                 target->list_flags = target_flags;
             }
             break;

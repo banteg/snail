@@ -1,10 +1,10 @@
 # set_subgoldy_ghost_z @ 0x43d3d0
 
-The helper is semantically pinned: it sets sprite flag `0x40` on the two cached
-SubGoldy ghost sprites at player offsets `+0x98` and `+0x9c`, then writes the
-same ghost z into each sprite's `position.z` lane (`+0x50`). The second pointer
-left in EAX is incidental; `update_subgoldy` immediately reloads its game/root
-values and consumes no result.
+The helper is semantically pinned: it sets `SPRITE_FLAG_RENDER_ENABLED` on the
+two cached SubGoldy ghost sprites at player offsets `+0x98` and `+0x9c`, then
+writes the same ghost z into each sprite's `position.z` lane (`+0x50`). The
+second pointer left in EAX is incidental; `update_subgoldy` immediately reloads
+its game/root values and consumes no result.
 
 2026-06-18 exact source-shape correction: spelling the z write as natural
 `Sprite::position.z` float stores produces a 100% Wibo match. The old raw-dword

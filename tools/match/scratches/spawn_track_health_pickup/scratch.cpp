@@ -48,7 +48,7 @@ void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* playe
         g_sprite_manager.allocate_sprite(player->player_slot, 57, -1, -1);
     slot->health_pickups[0].sprite = sprite;
     unsigned int flags = sprite->flags;
-    flags |= 0x800;
+    flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->flags = flags;
     slot->health_pickups[0].sprite->gravity_step = 0.0f;
     slot->health_pickups[0].sprite->progress = 0.0f;

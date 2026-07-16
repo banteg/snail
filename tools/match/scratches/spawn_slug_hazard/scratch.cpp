@@ -4,6 +4,7 @@
 // the live sprite presentation.
 
 #include "game_root.h"
+#include "bod_flags.h"
 #include "player.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
@@ -73,7 +74,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
         g_sprite_manager.allocate_sprite(owner_player->player_slot, 118, -1, -1);
     slug_hazards.slots[slot_index].sprite = sprite;
     unsigned int flags = sprite->flags;
-    flags |= 0x800;
+    flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->flags = flags;
     slug_hazards.slots[slot_index].sprite->color.set_color_white();
     slug_hazards.slots[slot_index].sprite->gravity_step = 0.0f;
@@ -96,7 +97,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
 
     int* node_flags_ref = &slug_hazards.slots[slot_index].list_flags;
     unsigned int node_flags = (unsigned int)*node_flags_ref;
-    node_flags &= ~0x1000u;
+    node_flags &= ~BOD_FLAG_SUPPRESS_CONTACT;
     *node_flags_ref = node_flags;
     slug_hazards.slots[slot_index].voice_active = 0;
     slug_hazards.slots[slot_index].player_encounter_latched = 0;

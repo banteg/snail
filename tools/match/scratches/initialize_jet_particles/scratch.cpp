@@ -12,7 +12,7 @@ void SubHover::initialize_jet_particles()
         do {
             slot->sprite = g_sprite_manager.allocate_sprite(1, 0x9e, -1, -1);
             unsigned int flags = slot->sprite->flags;
-            flags |= 0x800;
+            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             slot->sprite->flags = flags;
             slot->sprite->progress = 0.0f;
             slot->sprite->progress_step = 0.0f;

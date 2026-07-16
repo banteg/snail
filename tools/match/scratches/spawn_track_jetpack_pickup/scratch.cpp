@@ -56,7 +56,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(TrackRowCell* cell, Player* play
         g_sprite_manager.allocate_sprite(player->player_slot, 124, -1, -1);
     slot->jetpack_pickup.sprite = sprite;
     unsigned int flags = sprite->flags;
-    flags |= 0x800;
+    flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->flags = flags;
     slot->jetpack_pickup.sprite->gravity_step = 0.0f;
     slot->jetpack_pickup.sprite->progress = 0.0f;

@@ -8,7 +8,7 @@ void Player::initialize_subgoldy_ghost(int owner)
     tColour color;
 
     ghost_sprite_a = g_sprite_manager.allocate_sprite(owner, 159, -1, -1);
-    ghost_sprite_a->flags |= 0x800;
+    ghost_sprite_a->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     ghost_sprite_a->progress = 0.0f;
     ghost_sprite_a->progress_step = 0.0f;
     ghost_sprite_a->gravity_step = 0.0f;
@@ -20,7 +20,7 @@ void Player::initialize_subgoldy_ghost(int owner)
     ghost_sprite_a->position.z = 0.0f;
 
     ghost_sprite_b = g_sprite_manager.allocate_sprite(owner, 159, -1, -1);
-    ghost_sprite_b->flags |= 0x800;
+    ghost_sprite_b->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     ghost_sprite_b->progress = 0.0f;
     ghost_sprite_b->progress_step = 0.0f;
     ghost_sprite_b->gravity_step = 0.0f;
@@ -31,7 +31,7 @@ void Player::initialize_subgoldy_ghost(int owner)
     ghost_sprite_b->position.y = 1.0f;
     ghost_sprite_b->position.z = 0.0f;
 
-    int clear_visible_mask = ~0x40;
+    int clear_visible_mask = ~SPRITE_FLAG_RENDER_ENABLED;
     Sprite* first_ghost = ghost_sprite_a;
     first_ghost->flags &= clear_visible_mask;
 
