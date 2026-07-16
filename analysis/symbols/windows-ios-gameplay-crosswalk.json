@@ -790,10 +790,11 @@
     {
       "address": "0x43df10",
       "windows_name": "spawn_track_ring_or_special_effect",
-      "ios_symbol": "cRSubGame::AddRing(...)",
+      "ios_symbol": "cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)",
+      "android_symbol": "cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "v1.5 has AddRing(cRSubLoc*, int, cRSubGoldy*, float); v1.9 adds cRSubRow*. All five Windows callers discard EAX, while the iOS body returns from failure paths without establishing a result and ends by invoking cRSubRing::AI(), proving the shared void contract."
+      "notes": "The Android body independently confirms that the integer kind parameter is mutable, that the selected parent remains SubgameRuntime-owned embedded storage, and that kinds 0..8 retain distinct RR through RR13 streams. v1.9 adds a cRSubRow* parameter. All five Windows callers discard EAX, while the iOS body returns from failure paths without establishing a result and ends by invoking cRSubRing::AI(), supporting the shared void contract."
     },
     {
       "address": "0x43f130",

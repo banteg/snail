@@ -4,16 +4,14 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `64.09%`, `327/347` candidate/target instructions, prefix `3/347`, with
-  `48` masked operands ok, `10` known switch-grouping/table mismatches, and no
+- `93.10%`, `349/347` candidate/target instructions, prefix `20/347`, with
+  `74` masked operands ok, one explicit jump-table-label mismatch, and no
   unresolved operands.
-- The scratch is evidence-first rather than close-match source. The remaining
-  mismatch is dominated by switch scheduling and grouped equivalent cases, not
-  by the parent-field offsets below.
-- A fully duplicated switch version was rejected because MSVC failed before
-  emitting `scratch.obj`. The native kind `1` `RR2`/`RR3` path now compiles
-  when its semantically identical phase-step store is emitted immediately
-  after the switch; the remaining equivalent cases stay grouped.
+- All nine authored kind paths are present with their native RNG streams. The
+  remaining differences are a redundant bounded-scan proof check, two x87
+  store schedules, activation-store scheduling, and local branch labels.
+- No compiler flag, volatile barrier, artificial return, or matcher-only state
+  is retained.
 
 Evidence:
 
@@ -41,10 +39,9 @@ Native switch map:
 - Kinds `5..8` are also separate in native for RNG tags:
   `5 -> RR10`, `8 -> RR11`, `6 -> RR12`, `7 -> RR13`. All use the
   ring-speed-derived `active_phase_step`.
-- The current partial recovers the authored kind `1` `RR2`/`RR3` arm and uses
-  representative tags (`RR`/`RR1`, `RR4`/`RR5`, `RR10`) for the equivalent
-  cases that remain grouped. Their masked operand mismatches are known source
-  grouping, not field-layout evidence.
+- The current source recovers every path separately. Source case order follows
+  the native physical family order for the moving effects (`5`, `8`, `6`,
+  `7`), so `RR10` through `RR13` align without operand substitutions.
 
 Type consolidation:
 
@@ -55,8 +52,8 @@ Type consolidation:
 - 2026-06-17 renderable inheritance correction: the spawner initializes the
   inherited transform at `slot +0x38`, and the particle/updater/collision
   consumers read the parent center as `transform.position` at `+0x68`. The
-  scratch keeps its native-shaped raw `slot_base +0x35b7f4` position view to
-  avoid the known register-ownership regression.
+  current scratch expresses both through the typed manager-relative slot view
+  recovered in the 2026-07-16 pass below.
 - 2026-06-16 lives-snapshot correction: parent `+0x8c` is now named
   `owner_lives_snapshot`. The spawner stores `Player::lives` (`+0x404`) and
   `update_ring_or_special_effect_parent` compares the current lives count against that
@@ -281,3 +278,35 @@ regresses to 61.29%, and a semantic tag-selection spelling regresses to
 instructions, with 48 clean operands and ten explicit switch-family
 mismatches; no optimizer barrier, volatile state, or artificial control flow
 is retained.
+
+## 2026-07-16 complete authored switch and slot cursor
+
+- The optimizer-failure boundary above was caused by the scratch widening each
+  randomized x offset to `double`. Windows multiplies these lanes with dword
+  constants, and Android independently keeps them as `float`. Restoring float
+  locals and `3.0f` both removes the qword arithmetic and lets ordinary VC6
+  `/O2 /G5 /W3` compile the complete kind-4 `RR8`/`RR9` path. The kind-1
+  phase-step store also returns to its own arm; the post-switch workaround is
+  gone.
+- The iPhone v1.5 binary places
+  `cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)` at `0x1f710`, size
+  `0x800`, in `SubGame.o`. Android's body at `0x69eb8` independently mutates
+  the integer kind argument and preserves the distinct `RR` through `RR13`
+  streams. The Windows source now mutates `requested_kind` directly instead of
+  inventing a second value owner.
+- `SubRingSlotCursor` is a typed manager-relative view: its prefix is derived
+  from `offsetof(SubgameRuntime, ring_effects)` and its payload is one
+  `SubRing`. VC6 therefore retains the native `SubgameRuntime + index *
+  sizeof(SubRing)` cursor while every large displacement remains tied to the
+  real embedded owner. Once placement and activation finish, the source borrows
+  `&slot_cursor->ring`; the compiler performs the same one-time cursor-to-object
+  handoff before the active-BOD splice and child initialization.
+- The pool search is a bounded two-slot scan followed by an explicit exhausted
+  check. This recovers the native pool-full epilogue and a 20-instruction exact
+  prefix; VC6 retains one redundant proof comparison on the found path.
+- Moving-effect source order follows the native physical blocks (`5`, `8`,
+  `6`, `7`), eliminating the former `RR11`/`RR12`/`RR13` operand mispairings.
+  Focused matching rises from `64.09%`, `327/347`, prefix `3`, and ten masked
+  mismatches to `93.10%`, `349/347`, prefix `20`, and `74` clean masked
+  operands. The sole remaining audited mismatch is the compiler-local jump
+  table label map; nothing is unresolved.
