@@ -25,9 +25,9 @@ Recovered relationships:
   full 32-bit vertex indices, truncated only when written to the 16-bit index
   buffer. Edge `+0x0c/+0x10` are normal indices into the facequad-normal array
   at `Object +0x60`.
-- If edge flag bit `1` is set, the edge is emitted unconditionally. If clear,
-  native computes two dot products against the edge normals and emits when
-  their product is below `0.00999999978f`.
+- If `OBJECT_TOON_EDGE_FLAG_BOUNDARY` is set, the edge is emitted
+  unconditionally. A shared edge instead uses two dot products against its
+  face normals and emits when their product is below `0.00999999978f`.
 - Binds sprite texture id `0x5d` through the global `SpriteManager` owner and
   draws `DrawIndexedPrimitive` primitive type `2` through a cached global D3D
   device with `Object +0xc4` grouped vertex count.

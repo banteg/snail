@@ -60,7 +60,8 @@ int render_object_toon(Object* object, TransformMatrix* matrix)
                 object->vertex_count * sizeof(unsigned short),
                 (void**)&indices, 0);
 
-            if ((((ObjectToonEdge*)((char*)object->edges + edge_offset))->flags & 1) != 0) {
+            if ((((ObjectToonEdge*)((char*)object->edges + edge_offset))->flags
+                    & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {
                 indices[0] = ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a;
                 indices[1] = ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_b;
                 emitted = 2;

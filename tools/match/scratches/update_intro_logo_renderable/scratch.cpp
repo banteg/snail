@@ -14,7 +14,7 @@ void LogoLetter::update_intro_logo_renderable()
         color.a = 0.99900001f;
     }
 
-    object->flags |= 0x10;
+    object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
 
     if (position->z > 16.0f || position->z < -4.0f) {
         list_flags &= 0xffffffdf;

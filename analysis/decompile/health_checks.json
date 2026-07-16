@@ -5368,7 +5368,7 @@
         "set_bod_object(&self->fringe_mesh_bod",
         "struct Object* object = self->fringe_mesh_bod.object",
         "self->fringe_mesh_bod.color.r",
-        "object->flags | OBJECT_FLAG_DISABLE_CULLING",
+        "object->flags | OBJECT_FLAG_TINT_DIRTY | OBJECT_FLAG_DISABLE_CULLING",
         "object->blend_mode = 5",
         "self->bod.object->vertices",
         "object->facequads",
@@ -5378,6 +5378,28 @@
       "forbidden_substrings": [
         "PathTemplateStripMesh",
         "arg1",
+        "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_render_object_toon_owners",
+      "artifact": "analysis/decompile/binja/functions/004123e0-render_object_toon.c",
+      "required_substrings": [
+        "enum ObjectFlag flags = object->flags",
+        "matrix->position.x",
+        "matrix->position.y",
+        "matrix->position.z",
+        "object->toon_index_buffer->buffer",
+        "object->render_buffers->vertex_buffer",
+        "object->edge_count",
+        "object->edges",
+        "object->facequad_normals",
+        "object->vertices"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
         "analysis skipped",
         "unimplemented"
       ]

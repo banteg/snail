@@ -27,12 +27,15 @@ then calls `build_object_texture_group_buffers`.
 
 `Object +0x10` is one shared `ObjectFlag` word, not a collection of
 subsystem-local mesh flags. The named bits below each have an independent
-producer and consumer; the remaining colour/tint bits stay numeric.
+producer and consumer.
 
 | Bit | Name | Ownership evidence |
 |---|---|---|
+| `0x000001` | `OBJECT_FLAG_BUILD_TOON_EDGES` | `apply_object_toon` raises it on every toon object; `calc_object_edges` uses it as the edge-build gate. |
 | `0x000004` | `OBJECT_FLAG_DYNAMIC_VERTICES` | Animation, logo, and vapour setup opt in; grouped-buffer construction preserves source-vertex order and frame refresh rewrites the locked stream. |
 | `0x000008` | `OBJECT_FLAG_USE_OVERRIDE_TEXTURE` | Snail-skin transitions install `override_texture_ref`; `render_object` binds it instead of the group texture. |
+| `0x000010` | `OBJECT_FLAG_REFRESH_TINT_EACH_DRAW` | Shared Font3D objects and animated intro-logo records opt into per-draw diffuse refresh; `render_object` preserves the bit after applying the current BOD tint. |
+| `0x000040` | `OBJECT_FLAG_TINT_DIRTY` | Generated fringe meshes raise it after retaining their one BOD tint; `render_object` applies that tint to the grouped vertex stream and clears the bit. |
 | `0x000080` | `OBJECT_FLAG_TEXTURE_TRANSFORM` | Backdrop/path builders enable it; `render_object` installs the authored U/V texture transform. |
 | `0x004000` | `OBJECT_FLAG_TOON_ENABLED` | `apply_object_toon` sets it; the object builder and toon renderer consume it. |
 | `0x010000` | `OBJECT_FLAG_USE_VERTEX_COLOURS` | Path construction/mirroring preserves the colour bank; grouped-vertex construction packs it into diffuse values. |
@@ -50,6 +53,14 @@ it by omitting the fourth corner and second triangle. The struct member stays
 `uint8_t`; using the C enum as its storage type would corrupt the recovered
 layout. Bits `0x02`, `0x04`, and `0x10` remain numeric until their complete
 producer/consumer contracts are recovered.
+
+`ObjectToonEdge +0x00` is a separate 32-bit `ObjectToonEdgeFlag` owner.
+`OBJECT_TOON_EDGE_FLAG_BOUNDARY` is installed when `add_object_edge` first
+sees an edge, consumed by the optional closed-mesh cleanup in
+`calc_object_edges`, and rendered unconditionally by `render_object_toon`.
+Finding the reverse edge replaces that bit with
+`OBJECT_TOON_EDGE_FLAG_SHARED`, records the second face normal, and makes the
+renderer use the two-normal silhouette test.
 
 The object constructor body, `ApplyToon`, and the one-time edge allocator are
 side-effecting `void` methods. Their Windows exit registers contain assignment

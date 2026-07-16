@@ -2,142 +2,114 @@
 /* function: add_object_edge @ 0x4305a0 */
 /* selector: add_object_edge */
 
-// Adds or merges one candidate toon edge while tracking whether it is a boundary edge or shared by two faces, caching the edge direction, and discarding internal joins that should not outline.
-void __userpurge sub_4305A0(int a1@<ecx>, double a2@<st0>, int a3, int a4, int a5)
+// Adds or merges one candidate toon edge in the global build scratch array. Its two vertex members are 32-bit indices; new records store a normalized direction plus its original length, while shared records add the second face normal and may be removed when the join should not outline. iOS RObject.o names this `cRObject::AddEdge(int, int, int)`.
+void __thiscall add_object_edge(Object *object, int vertex_a, int vertex_b, int normal_index)
 {
-  int v5; // ebp
-  int v6; // edi
-  int v7; // ebx
-  int v9; // edx
-  _DWORD *v10; // ebp
+  int v4; // ebp
+  Object *v5; // edi
+  int v6; // ebx
+  Vec3 *v8; // edx
+  _DWORD *v9; // ebp
+  float *v10; // edi
   float *v11; // edi
-  float *v12; // edi
-  float *v13; // ebx
-  double v14; // st7
-  int v15; // edx
-  float *v16; // eax
-  float *v17; // ecx
-  double v18; // st7
-  float *v19; // eax
-  int v20; // ebx
-  int v21; // esi
-  int v22; // eax
-  int v23; // eax
-  float *v24; // ecx
-  float *v25; // eax
-  int v26; // eax
-  const void *v27; // esi
-  void *v28; // edi
-  int v29; // [esp+10h] [ebp-38h]
-  float v31; // [esp+18h] [ebp-30h] BYREF
-  float v32; // [esp+1Ch] [ebp-2Ch]
-  float v33; // [esp+20h] [ebp-28h]
-  float v34; // [esp+24h] [ebp-24h] BYREF
-  float v35; // [esp+28h] [ebp-20h]
-  float v36; // [esp+2Ch] [ebp-1Ch]
-  float v37[3]; // [esp+30h] [ebp-18h] BYREF
-  float v38[3]; // [esp+3Ch] [ebp-Ch] BYREF
-  float *v39; // [esp+50h] [ebp+8h]
+  float *v12; // ebx
+  Vec3 *vertices; // edx
+  float *p_x; // eax
+  float *v15; // ecx
+  int v16; // ebx
+  int v17; // esi
+  int v18; // eax
+  Vec3 *facequad_normals; // eax
+  int v20; // eax
+  const void *v21; // esi
+  void *v22; // edi
+  int v23; // [esp+10h] [ebp-38h]
+  Vec3 vector; // [esp+18h] [ebp-30h] BYREF
+  Vec3 rhs; // [esp+24h] [ebp-24h] BYREF
+  Vec3 lhs; // [esp+30h] [ebp-18h] BYREF
+  Vec3 out; // [esp+3Ch] [ebp-Ch] BYREF
+  float *vertex_ba; // [esp+50h] [ebp+8h]
 
-  v5 = a5;
-  v6 = a1;
-  vector_magnitude((float *)(*(_DWORD *)(a1 + 96) + 12 * a5));
-  if ( a2 < 0.89999998 )
+  v4 = normal_index;
+  v5 = object;
+  if ( vector_magnitude(&object->facequad_normals[normal_index]) < 0.89999998 )
     return;
-  v7 = MEMORY[0x503318];
-  v29 = 0;
-  if ( MEMORY[0x503318] <= 0 )
+  v6 = g_object_edge_build_count;
+  v23 = 0;
+  if ( g_object_edge_build_count <= 0 )
   {
 LABEL_13:
-    *(_DWORD *)(MEMORY[0x503300] + 36 * v7) = 1;
-    *(_DWORD *)(MEMORY[0x503300] + 36 * MEMORY[0x503318] + 4) = a3;
-    *(_DWORD *)(MEMORY[0x503300] + 36 * MEMORY[0x503318] + 8) = a4;
-    *(_DWORD *)(MEMORY[0x503300] + 36 * MEMORY[0x503318] + 12) = v5;
-    *(_DWORD *)(MEMORY[0x503300] + 36 * MEMORY[0x503318] + 16) = 0;
-    v15 = *(_DWORD *)(v6 + 56);
-    v16 = (float *)(v15 + 12 * a3);
-    v17 = (float *)(v15 + 12 * a4);
-    v34 = *v17 - *v16;
-    v35 = v17[1] - v16[1];
-    v18 = v17[2] - v16[2];
-    v31 = v34;
-    v32 = v35;
-    v36 = v18;
-    v33 = v36;
-    *(float *)(MEMORY[0x503300] + 36 * MEMORY[0x503318] + 32) = normalize_vector(&v31);
-    v19 = (float *)(MEMORY[0x503300] + 36 * MEMORY[0x503318] + 20);
-    *v19 = v31;
-    v19[1] = v32;
-    v19[2] = v33;
-    ++MEMORY[0x503318];
+    *(_DWORD *)(g_object_edge_build_edges + 36 * v6) = 1;
+    *(_DWORD *)(g_object_edge_build_edges + 36 * g_object_edge_build_count + 4) = vertex_a;
+    *(_DWORD *)(g_object_edge_build_edges + 36 * g_object_edge_build_count + 8) = vertex_b;
+    *(_DWORD *)(g_object_edge_build_edges + 36 * g_object_edge_build_count + 12) = v4;
+    *(_DWORD *)(g_object_edge_build_edges + 36 * g_object_edge_build_count + 16) = 0;
+    vertices = v5->vertices;
+    p_x = &vertices[vertex_a].x;
+    v15 = &vertices[vertex_b].x;
+    rhs.x = *v15 - *p_x;
+    rhs.y = v15[1] - p_x[1];
+    rhs.z = v15[2] - p_x[2];
+    vector = rhs;
+    *(float *)(g_object_edge_build_edges + 36 * g_object_edge_build_count + 32) = normalize_vector(&vector);
+    *(Vec3 *)(g_object_edge_build_edges + 36 * g_object_edge_build_count++ + 20) = vector;
     return;
   }
-  v9 = *(_DWORD *)(v6 + 56);
-  v39 = (float *)(v9 + 12 * a4);
-  v10 = (_DWORD *)(MEMORY[0x503300] + 8);
+  v8 = v5->vertices;
+  vertex_ba = &v8[vertex_b].x;
+  v9 = (_DWORD *)(g_object_edge_build_edges + 8);
   while ( 1 )
   {
-    v11 = (float *)(v9 + 12 * *(v10 - 1));
-    if ( *v11 != *v39 || v11[1] != v39[1] || v11[2] != v39[2] )
+    v10 = &v8[*(v9 - 1)].x;
+    if ( *v10 != *vertex_ba || v10[1] != vertex_ba[1] || v10[2] != vertex_ba[2] )
       goto LABEL_11;
-    v12 = (float *)(v9 + 12 * *v10);
-    v13 = (float *)(v9 + 12 * a3);
-    if ( *v12 == *v13 && v12[1] == v13[1] )
-    {
-      v14 = v12[2];
-      if ( v14 == v13[2] )
-        break;
-    }
-    v7 = MEMORY[0x503318];
+    v11 = &v8[*v9].x;
+    v12 = &v8[vertex_a].x;
+    if ( *v11 == *v12 && v11[1] == v12[1] && v11[2] == v12[2] )
+      break;
+    v6 = g_object_edge_build_count;
 LABEL_11:
-    v10 += 9;
-    if ( ++v29 >= v7 )
+    v9 += 9;
+    if ( ++v23 >= v6 )
     {
-      v5 = a5;
-      v6 = a1;
+      v4 = normal_index;
+      v5 = object;
       goto LABEL_13;
     }
   }
-  v20 = v29;
-  v21 = 36 * v29;
-  v22 = *(_DWORD *)(36 * v29 + MEMORY[0x503300]);
-  if ( (v22 & 1) != 0 )
+  v16 = v23;
+  v17 = 36 * v23;
+  v18 = *(_DWORD *)(36 * v23 + g_object_edge_build_edges);
+  if ( (v18 & 1) != 0 )
   {
-    LOBYTE(v22) = v22 & 0xFE;
-    *(_DWORD *)(v21 + MEMORY[0x503300]) = v22;
-    *(_DWORD *)(v21 + MEMORY[0x503300]) |= 2u;
-    *(_DWORD *)(v21 + MEMORY[0x503300] + 16) = a5;
-    if ( (*(_BYTE *)(a1 + 16) & 4) == 0 )
+    LOBYTE(v18) = v18 & 0xFE;
+    *(_DWORD *)(v17 + g_object_edge_build_edges) = v18;
+    *(_DWORD *)(v17 + g_object_edge_build_edges) |= 2u;
+    *(_DWORD *)(v17 + g_object_edge_build_edges + 16) = normal_index;
+    if ( (object->flags & 4) == 0 )
     {
-      v23 = *(_DWORD *)(a1 + 96);
-      v24 = (float *)(v23 + 12 * *(_DWORD *)(v21 + MEMORY[0x503300] + 12));
-      v37[0] = *v24;
-      v37[1] = v24[1];
-      v37[2] = v24[2];
-      v25 = (float *)(v23 + 12 * *(_DWORD *)(v21 + MEMORY[0x503300] + 16));
-      v34 = *v25;
-      v35 = v25[1];
-      v36 = v25[2];
-      cross_vectors(v38, v37, &v34);
-      vector_magnitude(v38);
-      if ( v14 <= 0.050000001 || dot_vector(v38, (float *)(v21 + MEMORY[0x503300] + 20)) > 0.0020000001 )
+      facequad_normals = object->facequad_normals;
+      lhs = facequad_normals[*(_DWORD *)(v17 + g_object_edge_build_edges + 12)];
+      rhs = facequad_normals[*(_DWORD *)(v17 + g_object_edge_build_edges + 16)];
+      cross_vectors(&out, &lhs, &rhs);
+      if ( vector_magnitude(&out) <= 0.050000001
+        || dot_vector(&out, (const Vec3 *)(v17 + g_object_edge_build_edges + 20)) > 0.0020000001 )
       {
-        if ( v29 < MEMORY[0x503318] - 1 )
+        if ( v23 < g_object_edge_build_count - 1 )
         {
-          v26 = 36 * v29;
+          v20 = 36 * v23;
           do
           {
-            ++v20;
-            v27 = (const void *)(v26 + MEMORY[0x503300] + 36);
-            v28 = (void *)(v26 + MEMORY[0x503300]);
-            v26 += 36;
-            qmemcpy(v28, v27, 0x24u);
+            ++v16;
+            v21 = (const void *)(v20 + g_object_edge_build_edges + 36);
+            v22 = (void *)(v20 + g_object_edge_build_edges);
+            v20 += 36;
+            qmemcpy(v22, v21, 0x24u);
           }
-          while ( v20 < MEMORY[0x503318] - 1 );
+          while ( v16 < g_object_edge_build_count - 1 );
         }
-        --MEMORY[0x503318];
+        --g_object_edge_build_count;
       }
     }
   }
 }
-

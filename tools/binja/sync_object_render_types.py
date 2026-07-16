@@ -378,6 +378,10 @@ PROTO_UPDATES = (
         "void __cdecl set_object_color(Object* object, tColour color)",
     ),
     (
+        "render_object_toon",
+        "int32_t __cdecl render_object_toon(Object* object, TransformMatrix* matrix)",
+    ),
+    (
         "render_object",
         "int32_t __cdecl render_object(Object* object, TransformMatrix* matrix, float texture_u, float texture_v, tColour* color, char after_sprites)",
     ),

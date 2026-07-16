@@ -2086,6 +2086,83 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         assert "void __thiscall request_object_texture_groups(" in header
 
 
+def test_object_policy_flags_keep_producers_and_consumers_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_object_render_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_object_render_types.h", "object_render_types.h")
+    ]
+
+    object_flags = (
+        "OBJECT_FLAG_BUILD_TOON_EDGES = 0x00000001",
+        "OBJECT_FLAG_REFRESH_TINT_EACH_DRAW = 0x00000010",
+        "OBJECT_FLAG_TINT_DIRTY = 0x00000040",
+    )
+    edge_flags = (
+        "OBJECT_TOON_EDGE_FLAG_BOUNDARY = 0x1",
+        "OBJECT_TOON_EDGE_FLAG_SHARED = 0x2",
+    )
+    for header in (matcher_header, *analysis_headers):
+        for declaration in (*object_flags, *edge_flags):
+            assert declaration in header
+    for header in analysis_headers:
+        assert "ObjectToonEdgeFlag flags;" in header
+        assert (
+            "int32_t __cdecl render_object_toon(\n"
+            "    Object* object, TransformMatrix* matrix);"
+        ) in header
+
+    assert (
+        "int32_t __cdecl render_object_toon(Object* object, "
+        "TransformMatrix* matrix)"
+    ) in binja_sync
+    assert (
+        "int __cdecl render_object_toon(Object* object, "
+        "TransformMatrix* matrix);"
+    ) in ida_sync
+
+    scratch_root = repo_root / "tools/match/scratches"
+    sources = {
+        name: (scratch_root / name / "scratch.cpp").read_text(encoding="utf-8")
+        for name in (
+            "add_object_edge",
+            "apply_object_toon",
+            "build_track_fringe_mesh",
+            "calc_object_edges",
+            "initialize_font3d_objects",
+            "render_object",
+            "render_object_toon",
+            "update_intro_logo_renderable",
+        )
+    }
+    assert "OBJECT_FLAG_BUILD_TOON_EDGES" in sources["apply_object_toon"]
+    assert "OBJECT_FLAG_BUILD_TOON_EDGES" in sources["calc_object_edges"]
+    assert "OBJECT_TOON_EDGE_FLAG_SHARED" in sources["add_object_edge"]
+    for name in ("add_object_edge", "calc_object_edges", "render_object_toon"):
+        assert "OBJECT_TOON_EDGE_FLAG_BOUNDARY" in sources[name]
+    assert "OBJECT_FLAG_TINT_DIRTY" in sources["build_track_fringe_mesh"]
+    assert "OBJECT_FLAG_TINT_DIRTY" in sources["render_object"]
+    for name in (
+        "initialize_font3d_objects",
+        "render_object",
+        "update_intro_logo_renderable",
+    ):
+        assert "OBJECT_FLAG_REFRESH_TINT_EACH_DRAW" in sources[name]
+
+    assert "OBJECT_FLAG_TOON_ENABLED | 1" not in sources["apply_object_toon"]
+    assert "flags & 0x50" not in sources["render_object"]
+    assert "flags &= ~0x40" not in sources["render_object"]
+
+
 def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     repo_root = Path(__file__).parents[1]
     sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(

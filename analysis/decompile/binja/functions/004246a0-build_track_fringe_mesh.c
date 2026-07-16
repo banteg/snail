@@ -11,7 +11,7 @@
 004246e5        self->fringe_mesh_bod.color.g = eax_1->g
 004246eb        self->fringe_mesh_bod.color.b = eax_1->b
 004246f1        self->fringe_mesh_bod.color.a = eax_1->a
-004246f7        enum ObjectFlag ebp_1 = object->flags | OBJECT_FLAG_DISABLE_CULLING | 0x40
+004246f7        enum ObjectFlag ebp_1 = object->flags | OBJECT_FLAG_TINT_DIRTY | OBJECT_FLAG_DISABLE_CULLING
 004246fd        object->blend_mode = 5
 00424704        object->flags = ebp_1
 00424714        request_object_vertices(object, (self->segment_count << 2) + 4)

@@ -73,8 +73,9 @@ int render_object(
                 if (tint->a != 1.0f &&
                     (object->group_texture_refs[i]->flags & 0x10000) != 0) {
                     set_blend_mode(object->blend_mode);
-                    if ((object->flags & 0x50) != 0) {
-                        object->flags &= ~0x40;
+                    if ((object->flags & (OBJECT_FLAG_REFRESH_TINT_EACH_DRAW
+                            | OBJECT_FLAG_TINT_DIRTY)) != 0) {
+                        object->flags &= ~OBJECT_FLAG_TINT_DIRTY;
                         set_object_color(object, *tint);
                     }
                 } else {

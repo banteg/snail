@@ -47,7 +47,7 @@ void initialize_font3d_objects(short font_id)
             bod->object->vertices[3].x = scale * bod->object->vertices[3].x;
 
             bod->object->blend_mode = 1;
-            bod->object->flags |= 0x10;
+            bod->object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
             *scale_out = scale;
             ++index;
             ++scale_out;

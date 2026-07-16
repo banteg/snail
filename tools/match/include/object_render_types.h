@@ -16,11 +16,13 @@ struct ObjectAnimation;
 struct XAnimationKeyframe;
 
 // Shared cRObject state word. Only bits with independent producer/consumer
-// evidence are named; the remaining tint bits stay numeric until their
-// ownership closes.
+// evidence are named.
 enum ObjectFlag {
+    OBJECT_FLAG_BUILD_TOON_EDGES = 0x00000001,
     OBJECT_FLAG_DYNAMIC_VERTICES = 0x00000004,
     OBJECT_FLAG_USE_OVERRIDE_TEXTURE = 0x00000008,
+    OBJECT_FLAG_REFRESH_TINT_EACH_DRAW = 0x00000010,
+    OBJECT_FLAG_TINT_DIRTY = 0x00000040,
     OBJECT_FLAG_TEXTURE_TRANSFORM = 0x00000080,
     OBJECT_FLAG_TOON_ENABLED = 0x00004000,
     OBJECT_FLAG_USE_VERTEX_COLOURS = 0x00010000,
@@ -107,8 +109,13 @@ typedef char ObjectFaceQuad_must_be_0x30[
 
 void __fastcall rotate_object_facequad_uv_pairs(ObjectFaceQuad* quad); // @ 0x430a30
 
+enum ObjectToonEdgeFlag {
+    OBJECT_TOON_EDGE_FLAG_BOUNDARY = 0x1,
+    OBJECT_TOON_EDGE_FLAG_SHARED = 0x2,
+};
+
 struct ObjectToonEdge {
-    unsigned int flags; // +0x00, bit 0 is boundary-only, bit 1 is shared edge
+    unsigned int flags; // +0x00, ObjectToonEdgeFlag bit owner
     int vertex_a; // +0x04
     int vertex_b; // +0x08
     int normal_a; // +0x0c

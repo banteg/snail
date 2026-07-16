@@ -12,14 +12,10 @@ int __cdecl render_object(
         char after_sprites)
 {
   int result; // eax
-  tColour *v7; // edi
-  int32_t v8; // esi
-  char v9; // cl
+  int32_t v7; // esi
+  char v8; // cl
   ObjectFlag flags; // eax
-  int v11; // [esp+Ch] [ebp-50h]
-  float *v12; // [esp+10h] [ebp-4Ch]
-  _BYTE v13[64]; // [esp+1Ch] [ebp-40h] BYREF
-  _UNKNOWN *retaddr; // [esp+5Ch] [ebp+0h] BYREF
+  _BYTE v10[64]; // [esp+1Ch] [ebp-40h] BYREF
 
   result = object->flags;
   if ( (result & 0x80000) != 0 && (result & 0x40000) == 0 )
@@ -28,49 +24,43 @@ int __cdecl render_object(
     if ( result )
     {
       refresh_object_vertex_buffer(object);
-      qmemcpy(v13, matrix, sizeof(v13));
-      v7 = (tColour *)&retaddr;
-      (*(void (__stdcall **)(int, int, _BYTE *))(*(_DWORD *)g_d3d_device + 148))(g_d3d_device, 256, v13);
+      qmemcpy(v10, matrix, sizeof(v10));
+      g_direct3d_renderer.device->vtbl->SetTransform(g_direct3d_renderer.device, 256, (TransformMatrix *)v10);
       set_cull_mode((object->flags & 0x100000) == 0);
-      v8 = 0;
+      v7 = 0;
       if ( object->texture_group_count > 0 )
       {
-        v7 = color;
-        v9 = g_object_render_pass_filter;
+        v8 = g_object_render_pass_filter;
         do
         {
-          if ( v9 )
+          if ( v8 )
           {
-            if ( v9 != 1 || after_sprites != 1 || (object->group_texture_refs[v8]->flags & 0x10000) != 0 )
+            if ( v8 != 1 || after_sprites != 1 || (object->group_texture_refs[v7]->flags & 0x10000) != 0 )
             {
 LABEL_13:
-              if ( object->group_texture_refs[v8] )
+              if ( object->group_texture_refs[v7] )
               {
                 if ( (object->flags & 8) != 0 )
-                  bind_texture_ref((int)object->override_texture_ref);
+                  bind_texture_ref(object->override_texture_ref);
                 else
-                  bind_texture_ref((int)object->group_texture_refs[v8]);
+                  bind_texture_ref(object->group_texture_refs[v7]);
                 if ( SLOBYTE(object->flags) >= 0 )
                 {
-                  (*(void (__stdcall **)(int, _DWORD, int, _DWORD))(*(_DWORD *)g_d3d_device + 252))(
-                    g_d3d_device,
-                    0,
-                    24,
-                    0);
+                  g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 24, 0);
                 }
                 else
                 {
-                  unk_5031F8 = LODWORD(texture_u);
-                  unk_5031FC = 1.0 - texture_v;
-                  (*(void (__stdcall **)(int, int, _DWORD *))(*(_DWORD *)g_d3d_device + 148))(
-                    g_d3d_device,
+                  g_object_texture_transform_matrix.basis_forward.x = texture_u;
+                  g_object_texture_transform_matrix.basis_forward.y = 1.0 - texture_v;
+                  g_direct3d_renderer.device->vtbl->SetTransform(
+                    g_direct3d_renderer.device,
                     16,
-                    g_object_texture_transform_matrix);
-                  (*(void (__stdcall **)(int, _DWORD, int, int))(*(_DWORD *)g_d3d_device + 252))(g_d3d_device, 0, 24, 2);
+                    &g_object_texture_transform_matrix);
+                  g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 24, 2);
                 }
-                if ( LODWORD(color->a) == 1065353216 || (object->group_texture_refs[v8]->flags & 0x10000) == 0 )
+                if ( LODWORD(color->a) == 1065353216 || (object->group_texture_refs[v7]->flags & 0x10000) == 0 )
                 {
-                  (*(void (__stdcall **)(int, int, _DWORD))(*(_DWORD *)g_d3d_device + 200))(g_d3d_device, 27, 0);
+                  g_direct3d_renderer.device->vtbl->SetRenderState(g_direct3d_renderer.device, 27, 0);
                 }
                 else
                 {
@@ -83,40 +73,39 @@ LABEL_13:
                     set_object_color(object, *color);
                   }
                 }
-                (*(void (__stdcall **)(int, _DWORD, ObjectVertexBuffer *, int))(*(_DWORD *)g_d3d_device + 332))(
-                  g_d3d_device,
+                g_direct3d_renderer.device->vtbl->SetStreamSource(
+                  g_direct3d_renderer.device,
                   0,
                   object->render_buffers->vertex_buffer,
                   24);
-                (*(void (__stdcall **)(int, int))(*(_DWORD *)g_d3d_device + 304))(g_d3d_device, 322);
-                (*(void (__stdcall **)(int, ObjectIndexBufferResource *, _DWORD))(*(_DWORD *)g_d3d_device + 340))(
-                  g_d3d_device,
+                g_direct3d_renderer.device->vtbl->SetVertexShader(g_direct3d_renderer.device, 322);
+                g_direct3d_renderer.device->vtbl->SetIndices(
+                  g_direct3d_renderer.device,
                   object->index_buffer->buffer,
                   0);
-                (*(void (__stdcall **)(int, int, _DWORD, int32_t, int32_t, int32_t))(*(_DWORD *)g_d3d_device + 284))(
-                  g_d3d_device,
+                g_direct3d_renderer.device->vtbl->DrawIndexedPrimitive(
+                  g_direct3d_renderer.device,
                   4,
                   0,
                   object->grouped_vertex_count,
-                  object->group_index_starts[v8],
-                  object->group_primitive_counts[v8]);
-                v9 = g_object_render_pass_filter;
-                g_render_triangle_count += object->group_primitive_counts[v8];
+                  object->group_index_starts[v7],
+                  object->group_primitive_counts[v7]);
+                v8 = g_object_render_pass_filter;
+                g_render_triangle_count += object->group_primitive_counts[v7];
                 ++g_draw_primitive_call_count;
               }
             }
           }
-          else if ( after_sprites != 1 || (object->group_texture_refs[v8]->flags & 0x10000) == 0 )
+          else if ( after_sprites != 1 || (object->group_texture_refs[v7]->flags & 0x10000) == 0 )
           {
             goto LABEL_13;
           }
-          ++v8;
+          ++v7;
         }
-        while ( v8 < object->texture_group_count );
+        while ( v7 < object->texture_group_count );
       }
-      return render_object_toon((int)object, (int)v7, v8, (int)object, (int)matrix, v11, v12);
+      return render_object_toon(object, matrix);
     }
   }
   return result;
 }
-

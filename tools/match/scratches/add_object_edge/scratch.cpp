@@ -38,7 +38,8 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
     }
 
     if (found_edge == 0) {
-        g_object_edge_build_edges[g_object_edge_build_count].flags = 1;
+        g_object_edge_build_edges[g_object_edge_build_count].flags =
+            OBJECT_TOON_EDGE_FLAG_BOUNDARY;
         g_object_edge_build_edges[g_object_edge_build_count].vertex_a = vertex_a;
         g_object_edge_build_edges[g_object_edge_build_count].vertex_b = vertex_b;
         g_object_edge_build_edges[g_object_edge_build_count].normal_a = normal_index;
@@ -58,9 +59,11 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
         return;
     }
 
-    if ((g_object_edge_build_edges[index].flags & 1) != 0) {
-        g_object_edge_build_edges[index].flags &= ~1u;
-        g_object_edge_build_edges[index].flags |= 2u;
+    if ((g_object_edge_build_edges[index].flags
+            & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {
+        g_object_edge_build_edges[index].flags &=
+            ~OBJECT_TOON_EDGE_FLAG_BOUNDARY;
+        g_object_edge_build_edges[index].flags |= OBJECT_TOON_EDGE_FLAG_SHARED;
         g_object_edge_build_edges[index].normal_b = normal_index;
 
         if ((flags & 4) == 0) {

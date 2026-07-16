@@ -3,9 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: apply_object_toon @ 0x42fa80 */
 
-0042fa96        int32_t eax_1 = *(arg1 + 0x2c)
-0042fa99        *(arg1 + 0x10) |= arg2 | 0x4001
-0042faa8        *(arg1 + 8) = allocate_tracked_memory(eax_1 * 0xc, "Object Toon Vertices")
-0042faba        void* result = allocate_tracked_memory(*(arg1 + 0x54) * 0x18, "Object Toon FaceQuadNormals")
-0042fac2        *(arg1 + 0xc) = result
-0042fac6        return result
+0042fa96        int32_t vertex_count = object->vertex_count
+0042fa99        object->flags |= toon_flags | 0x4001
+0042faa8        object->toon_vertices = allocate_tracked_memory(vertex_count * 0xc, "Object Toon Vertices")
+0042fac2        object->toon_facequad_normals = allocate_tracked_memory(object->facequad_count * 0x18, "Object Toon FaceQuadNormals")
+0042fac6        return

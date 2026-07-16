@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,19 +17,39 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_subgame_camera",
-      "address": "0x446020"
+      "name": "render_object_toon",
+      "address": "0x4123e0"
     },
     {
-      "name": "initialize_cameraman",
-      "address": "0x446160"
+      "name": "render_object",
+      "address": "0x4126c0"
     },
     {
-      "name": "update_cameraman",
-      "address": "0x4461d0"
+      "name": "update_intro_logo_renderable",
+      "address": "0x419a90"
+    },
+    {
+      "name": "build_track_fringe_mesh",
+      "address": "0x4246a0"
+    },
+    {
+      "name": "apply_object_toon",
+      "address": "0x42fa80"
+    },
+    {
+      "name": "add_object_edge",
+      "address": "0x4305a0"
+    },
+    {
+      "name": "calc_object_edges",
+      "address": "0x4308b0"
+    },
+    {
+      "name": "initialize_font3d_objects",
+      "address": "0x44ae10"
     }
   ],
-  "health_check_count": 427,
+  "health_check_count": 439,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -98,3 +98,12 @@ rewrite regressed to 32.00%, so the register-ownership residual is left visible.
 - This is analysis-only ownership recovery. The matcher source and honest
   96.83% result remain byte-identical; the two scheduler differences above
   remain deliberately visible.
+
+## Shared tint policy closure (2026-07-16)
+
+Each Font3D object is shared by many BOD draws whose colours can differ. Its
+low `0x10` bit is therefore the persistent
+`OBJECT_FLAG_REFRESH_TINT_EACH_DRAW`, paired with the renderer consumer that
+rewrites grouped diffuse colours without clearing the bit. This distinguishes
+the shared-font policy from the one-shot fringe `OBJECT_FLAG_TINT_DIRTY` bit
+without changing the honest 96.83% scheduler residual.

@@ -7,8 +7,10 @@ requests four vertices and two facequads per segment, extrudes the outer edge by
 0.4 units along the normalized edge direction, optionally clamps X by side, and
 builds the two textured facequads for each segment.
 
-The generated mesh raises `OBJECT_FLAG_DISABLE_CULLING`; the remaining low
-`0x40` tint bit is still numeric because its ownership has not closed.
+The generated mesh raises `OBJECT_FLAG_DISABLE_CULLING` and
+`OBJECT_FLAG_TINT_DIRTY`. The latter transfers the retained skirt colour into
+the grouped vertex stream on the first translucent draw; `render_object`
+clears it after calling `set_object_color`.
 
 Current focused result:
 

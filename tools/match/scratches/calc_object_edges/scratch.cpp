@@ -8,7 +8,7 @@ void* get_archive_data_base();
 
 void Object::calc_object_edges()
 {
-    if ((flags & 1) == 0) {
+    if ((flags & OBJECT_FLAG_BUILD_TOON_EDGES) == 0) {
         return;
     }
 
@@ -45,7 +45,7 @@ void Object::calc_object_edges()
         int index = 0;
         if (edge_count > 0) {
             do {
-                if ((build_edges[index].flags & 1) != 0) {
+                if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {
                     int shift_index = index;
                     if (index < edge_count - 1) {
                         do {

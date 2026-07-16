@@ -2,88 +2,87 @@
 /* function: calc_object_edges @ 0x4308b0 */
 /* selector: calc_object_edges */
 
-// Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`.
-void __usercall sub_4308B0(int a1@<ecx>, double a2@<st0>)
+// Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`. iOS RObject.o names this `cRObject::CalcEdges()`.
+void __thiscall calc_object_edges(Object *object)
 {
-  int v3; // esi
-  int v4; // edi
-  int v5; // ecx
-  int v6; // edi
-  int v7; // eax
-  int v8; // edx
-  int v9; // ebx
+  ObjectFaceQuad *facequads; // esi
+  _BYTE *archive_data_base; // edi
+  int32_t v4; // ecx
+  int v5; // edi
+  int32_t v6; // eax
+  int v7; // edx
+  int v8; // ebx
+  int32_t v9; // [esp+4h] [ebp-4h]
   int v10; // [esp+4h] [ebp-4h]
-  int v11; // [esp+4h] [ebp-4h]
 
-  if ( (*(_BYTE *)(a1 + 16) & 1) != 0 )
+  if ( (object->flags & 1) != 0 )
   {
-    v3 = *(_DWORD *)(a1 + 92);
-    v4 = get_archive_data_base();
-    v5 = 0;
-    MEMORY[0x503300] = v4;
-    MEMORY[0x503318] = 0;
-    v10 = 0;
-    if ( *(int *)(a1 + 84) > 0 )
+    facequads = object->facequads;
+    archive_data_base = get_archive_data_base();
+    v4 = 0;
+    g_object_edge_build_edges = archive_data_base;
+    g_object_edge_build_count = 0;
+    v9 = 0;
+    if ( object->facequad_count > 0 )
     {
-      v6 = 0;
+      v5 = 0;
       do
       {
-        add_object_edge(a1, a2, *(unsigned __int16 *)(v3 + 2), *(unsigned __int16 *)(v3 + 4), v6);
-        add_object_edge(a1, a2, *(unsigned __int16 *)(v3 + 6), *(unsigned __int16 *)(v3 + 2), v6);
-        add_object_edge(a1, a2, *(unsigned __int16 *)(v3 + 4), *(unsigned __int16 *)(v3 + 6), v6);
-        if ( *(char *)v3 >= 0 )
+        add_object_edge(object, facequads->vertex_0, facequads->vertex_1, v5);
+        add_object_edge(object, facequads->vertex_2, facequads->vertex_0, v5);
+        add_object_edge(object, facequads->vertex_1, facequads->vertex_2, v5);
+        if ( (facequads->flags & 0x80u) == 0 )
         {
-          add_object_edge(a1, a2, *(unsigned __int16 *)(v3 + 2), *(unsigned __int16 *)(v3 + 6), v6 + 1);
-          add_object_edge(a1, a2, *(unsigned __int16 *)(v3 + 8), *(unsigned __int16 *)(v3 + 2), v6 + 1);
-          add_object_edge(a1, a2, *(unsigned __int16 *)(v3 + 6), *(unsigned __int16 *)(v3 + 8), v6 + 1);
+          add_object_edge(object, facequads->vertex_0, facequads->vertex_2, v5 + 1);
+          add_object_edge(object, facequads->vertex_3, facequads->vertex_0, v5 + 1);
+          add_object_edge(object, facequads->vertex_2, facequads->vertex_3, v5 + 1);
         }
-        v3 += 48;
-        v6 += 2;
-        ++v10;
+        ++facequads;
+        v5 += 2;
+        ++v9;
       }
-      while ( v10 < *(_DWORD *)(a1 + 84) );
-      v4 = MEMORY[0x503300];
-      v5 = MEMORY[0x503318];
+      while ( v9 < object->facequad_count );
+      archive_data_base = (_BYTE *)g_object_edge_build_edges;
+      v4 = g_object_edge_build_count;
     }
-    if ( (BYTE1(*(_DWORD *)(a1 + 16)) & 0x80u) != 0 )
+    if ( (BYTE1(object->flags) & 0x80u) != 0 )
     {
-      v7 = 0;
-      if ( v5 > 0 )
+      v6 = 0;
+      if ( v4 > 0 )
       {
-        v8 = 0;
-        v11 = 0;
+        v7 = 0;
+        v10 = 0;
         do
         {
-          if ( (*(_BYTE *)(v8 + v4) & 1) != 0 )
+          if ( (archive_data_base[v7] & 1) != 0 )
           {
-            v9 = v7;
-            if ( v7 < v5 - 1 )
+            v8 = v6;
+            if ( v6 < v4 - 1 )
             {
               do
               {
-                ++v9;
-                qmemcpy((void *)(v8 + v4), (const void *)(v8 + v4 + 36), 0x24u);
-                v5 = MEMORY[0x503318];
-                v4 = MEMORY[0x503300];
-                v8 += 36;
+                ++v8;
+                qmemcpy(&archive_data_base[v7], &archive_data_base[v7 + 36], 0x24u);
+                v4 = g_object_edge_build_count;
+                archive_data_base = (_BYTE *)g_object_edge_build_edges;
+                v7 += 36;
               }
-              while ( v9 < MEMORY[0x503318] - 1 );
-              v8 = v11;
+              while ( v8 < g_object_edge_build_count - 1 );
+              v7 = v10;
             }
-            --v5;
-            --v7;
-            MEMORY[0x503318] = v5;
-            v8 -= 36;
+            --v4;
+            --v6;
+            g_object_edge_build_count = v4;
+            v7 -= 36;
           }
-          ++v7;
-          v8 += 36;
-          v11 = v8;
+          ++v6;
+          v7 += 36;
+          v10 = v7;
         }
-        while ( v7 < v5 );
+        while ( v6 < v4 );
       }
     }
-    request_object_edges((_DWORD *)a1, v5);
-    qmemcpy(*(void **)(a1 + 116), (const void *)MEMORY[0x503300], 36 * MEMORY[0x503318]);
+    request_object_edges(object, v4);
+    qmemcpy(object->edges, g_object_edge_build_edges, 36 * g_object_edge_build_count);
   }
 }
-

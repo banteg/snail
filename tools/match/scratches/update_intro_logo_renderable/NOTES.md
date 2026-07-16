@@ -50,3 +50,9 @@ Windows `LogoLetter`, and symbol-preserving iOS names the corresponding updater
 `cRLogoLetter::AI()`. Mobile `cRLogoRow::AI()` shares the same integration and
 fade body for row records. The owner promotion preserves the exact 42/42
 Windows result and all seven clean operands.
+
+2026-07-16 tint-policy closure: the updater's low object bit is
+`OBJECT_FLAG_REFRESH_TINT_EACH_DRAW`. This producer changes the BOD alpha each
+frame, and `render_object` consumes the persistent bit by copying that current
+tint into the grouped diffuse stream on every translucent draw. The symbolic
+substitution remains exact at 42/42.

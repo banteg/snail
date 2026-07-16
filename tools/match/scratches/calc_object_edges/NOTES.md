@@ -4,13 +4,14 @@ First source-shaped scratch for the toon edge builder.
 
 Semantics:
 
-- only runs when object `flags & 1` is set;
+- only runs when `OBJECT_FLAG_BUILD_TOON_EDGES` is set;
 - uses the archive-data base as a temporary `ObjectToonEdge` array at
   `data_503300` and tracks the live count at `data_503318`;
 - emits three directed edges for the first triangle of every facequad, plus the
   second triangle when `OBJECT_FACEQUAD_FLAG_TRIANGLE` is clear;
-- when `flags & 0x8000` is set, removes boundary-only edges before requesting
-  and copying the final edge array.
+- when `flags & 0x8000` is set, removes
+  `OBJECT_TOON_EDGE_FLAG_BOUNDARY` records before requesting and copying the
+  final edge array.
 
 This scratch also promotes the shared `ObjectToonEdge` layout used by
 `render_object_toon`, `request_object_edges`, and this builder.

@@ -48,8 +48,11 @@ typedef struct TextureRef {
 } TextureRef;
 
 typedef enum ObjectFlag {
+    OBJECT_FLAG_BUILD_TOON_EDGES = 0x00000001,
     OBJECT_FLAG_DYNAMIC_VERTICES = 0x00000004,
     OBJECT_FLAG_USE_OVERRIDE_TEXTURE = 0x00000008,
+    OBJECT_FLAG_REFRESH_TINT_EACH_DRAW = 0x00000010,
+    OBJECT_FLAG_TINT_DIRTY = 0x00000040,
     OBJECT_FLAG_TEXTURE_TRANSFORM = 0x00000080,
     OBJECT_FLAG_TOON_ENABLED = 0x00004000,
     OBJECT_FLAG_USE_VERTEX_COLOURS = 0x00010000,
@@ -120,8 +123,13 @@ typedef struct ObjectToonFaceQuadNormal {
     uint8_t raw[0x18];
 } ObjectToonFaceQuadNormal;
 
+typedef enum ObjectToonEdgeFlag {
+    OBJECT_TOON_EDGE_FLAG_BOUNDARY = 0x1,
+    OBJECT_TOON_EDGE_FLAG_SHARED = 0x2,
+} ObjectToonEdgeFlag;
+
 typedef struct ObjectToonEdge {
-    uint32_t flags;
+    ObjectToonEdgeFlag flags;
     int32_t vertex_a;
     int32_t vertex_b;
     int32_t normal_a;
@@ -518,6 +526,8 @@ void __cdecl refresh_object_vertex_buffer(Object* object);
 tColourSmall* __thiscall pack_color_rgba_u8(
     tColourSmall* out, tColour* color);
 void __cdecl set_object_color(Object* object, tColour color);
+int32_t __cdecl render_object_toon(
+    Object* object, TransformMatrix* matrix);
 int32_t __cdecl render_object(
     Object* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites);

@@ -33,7 +33,7 @@ void Path::build_track_fringe_mesh(char* texture_path, float clamp_side)
         fringe_mesh_bod.color = *color;
     }
 
-    mesh->flags |= OBJECT_FLAG_DISABLE_CULLING | 0x40;
+    mesh->flags |= OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_TINT_DIRTY;
     mesh->blend_mode = 5;
     mesh->request_object_vertices((segment_count << 2) + 4);
     mesh->request_object_facequads(segment_count << 1);

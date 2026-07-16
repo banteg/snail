@@ -7,7 +7,7 @@
 004308b8        if ((object->flags.b & 1) == 0)
 004308b8        return
 004308c0        struct ObjectFaceQuad* facequads = object->facequads
-004308c9        void* object_edge_build_edges_1 = get_archive_data_base()
+004308c9        struct ObjectToonEdge* object_edge_build_edges_1 = get_archive_data_base()
 004308cb        int32_t object_edge_build_count_1 = 0
 004308cd        g_object_edge_build_edges = object_edge_build_edges_1
 004308d3        g_object_edge_build_count = 0
@@ -60,10 +60,10 @@
 004309b9        int32_t i = i_1
 004309bd        if (i_1 s< object_edge_build_count_1 - 1)
 004309ca        i += 1
-004309cb        __builtin_memcpy(object_edge_build_edges_1 + object_2, &object_2->_pad_1c[8] + object_edge_build_edges_1, 0x24)
+004309cb        __builtin_memcpy(object_edge_build_edges_1 + object_2, &object_2->heightmap_sample_divisor + object_edge_build_edges_1, 0x24)
 004309cd        object_edge_build_count_1 = g_object_edge_build_count
 004309d3        object_edge_build_edges_1 = g_object_edge_build_edges
-004309d9        object_2 = &object_2->_pad_1c[8]
+004309d9        object_2 = &object_2->heightmap_sample_divisor
 004309e1        do while (i s< object_edge_build_count_1 - 1)
 004309e3        object_2 = object_1
 004309e7        object_edge_build_count_1 -= 1
@@ -71,7 +71,7 @@
 004309e9        g_object_edge_build_count = object_edge_build_count_1
 004309ef        object_2 -= 0x24
 004309f2        i_1 += 1
-004309f3        object_2 = &object_2->_pad_1c[8]
+004309f3        object_2 = &object_2->heightmap_sample_divisor
 004309f8        object_1 = object_2
 004309fc        do while (i_1 s< object_edge_build_count_1)
 00430a01        request_object_edges(object, object_edge_build_count_1)
