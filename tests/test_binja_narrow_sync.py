@@ -1209,6 +1209,53 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"' in ida_sync_source
 
 
+def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
+    binja_source = (BINJA_DIR / "sync_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
+    )
+
+    for declaration in (
+        "typedef enum RegisteredSoundLimits {",
+        "typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];",
+        "void __cdecl reset_registered_sound_sample_count(void);",
+        "int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class);",
+        "int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name);",
+        "extern RegisteredSoundSampleName g_registered_sound_sample_names[RSHELL_SOUND_MAX];",
+        "extern int32_t g_registered_sound_sample_count;",
+    ):
+        assert all(declaration in header for header in headers)
+
+    assert '("0x5088b0", "RegisteredSoundSampleName[256]")' in binja_source
+    assert '"int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class)"' in binja_source
+    assert '"int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name)"' in binja_source
+
+    assert "TRUSTED_ARRAY_DATA_ITEMS" in ida_source
+    assert "0x5088B0" in ida_source
+    assert "0x8000" in ida_source
+    assert '"char[32768]"' in ida_source
+    assert "_ensure_array_data_item" in ida_source
+    assert "ida_bytes.create_byte(address, size, True)" in ida_source
+    assert '"reason": "unexpected_array_data_item"' in ida_source
+    assert '"reason": "unexpected_stale_array_data_item"' in ida_source
+    assert 're.sub(r"\\s*\\[\\s*", "[", normalized)' in ida_source
+    assert '"RegisteredSoundSampleName g_registered_sound_sample_names[256];"' in ida_source
+    assert '"int __cdecl register_sound_sample(char* path, int normalization_class);"' in ida_source
+    assert '"int __cdecl find_registered_sound_sample_id_by_name(char* sample_name);"' in ida_source
+    assert "REGISTERED_SOUND_SPLIT_LVAR_SPECS" in ida_source
+    assert '"sample_size"' in ida_source
+    assert "0x432F2B" in ida_source
+    assert "_sync_split_lvar" in ida_source
+    assert "info.set_split_lvar()" in ida_source
+    assert "ida_hexrays.MLI_SET_FLAGS" in ida_source
+
+
 def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(

@@ -5,11 +5,11 @@
 
 00432fcb        int32_t i = 0
 00432fd0        if (g_registered_sound_sample_count s> 0)
-00432fd2        char* edi_1 = &g_registered_sound_sample_names
-00432fe3        if (find_case_insensitive_substring(arg1, edi_1) != 0)
+00432fd2        RegisteredSoundSampleName* edi_1 = &g_registered_sound_sample_names
+00432fe3        if (find_case_insensitive_substring(sample_name, edi_1) != 0)
 0043300e        return i
 00432fea        i += 1
-00432feb        edi_1 = &edi_1[0x80]
+00432feb        edi_1 = &edi_1[1]
 00432ff3        do while (i s< g_registered_sound_sample_count)
-00432ffb        report_errorf("Cannot Find Sample %s", arg1)
+00432ffb        report_errorf("Cannot Find Sample %s", sample_name)
 00433008        return 0

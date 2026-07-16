@@ -859,9 +859,30 @@
       "name": "reset_registered_sound_sample_count",
       "kind": "function",
       "aliases": [
-        "sub_432d40"
+        "sub_432d40",
+        "RShellSoundInit()"
       ],
-      "description": "Tiny helper that resets g_registered_sound_sample_count before archive-backed audio buffers are allocated."
+      "description": "Authored RShell.o helper that resets the independently owned g_registered_sound_sample_count before archive-backed audio buffers are allocated; Android retains the RShellSoundInit() name and same scalar store."
+    },
+    {
+      "address": "0x432f10",
+      "name": "register_sound_sample",
+      "kind": "function",
+      "aliases": [
+        "sub_432f10",
+        "RShellSoundRegister(char*, int)"
+      ],
+      "description": "Windows RShell.o registered-sample entry point: loads a path through the DAT/filesystem bridge, registers it with the platform audio backend, and owns the corresponding 128-byte name slot and scalar count update."
+    },
+    {
+      "address": "0x432fc0",
+      "name": "find_registered_sound_sample_id_by_name",
+      "kind": "function",
+      "aliases": [
+        "sub_432fc0",
+        "RShellFindSample(char*)"
+      ],
+      "description": "Authored RShell.o lookup that scans the 256 independently owned registered-sample name slots and returns their scalar table index."
     },
     {
       "address": "0x433050",
@@ -4084,20 +4105,22 @@
       "name": "g_registered_sound_sample_names",
       "kind": "global",
       "aliases": [
-        "data_5088b0"
+        "data_5088b0",
+        "RShellSoundName"
       ],
       "size": "0x8000",
-      "description": "256-entry table of 0x80-byte registered sound sample path/name slots populated by register_sound_sample and searched by find_registered_sound_sample_id_by_name."
+      "description": "RShell.o-owned 256 by 128-byte registered-sample path/name matrix populated by register_sound_sample and searched by find_registered_sound_sample_id_by_name; two Android ABIs independently export RShellSoundName at exactly 0x8000 bytes."
     },
     {
       "address": "0x5108b0",
       "name": "g_registered_sound_sample_count",
       "kind": "global",
       "aliases": [
-        "data_5108b0"
+        "data_5108b0",
+        "RShellSoundCount"
       ],
       "size": "0x4",
-      "description": "Current registered sound sample count and next sample id used by register_sound_sample and find_registered_sound_sample_id_by_name."
+      "description": "Independent RShell.o scalar holding the current registered-sample count and next id; two Android ABIs export the adjacent RShellSoundCount owner at exactly four bytes."
     },
     {
       "address": "0x5108b4",

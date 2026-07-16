@@ -12,11 +12,11 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 702,
-  "function_count": 702,
+  "selected_count": 703,
+  "function_count": 703,
   "mismatch_count": 0,
   "mismatches": [],
-  "analysis_refreshed": true,
+  "analysis_refreshed": false,
   "timed_out_function_reanalysis": {
     "interior_aliases": [],
     "reanalyzed": [],
@@ -1739,6 +1739,11 @@
       "address": "0x4327e0",
       "name": "read_repeating_text_input_key_code",
       "artifact": "analysis/decompile/binja/functions/004327e0-read_repeating_text_input_key_code.c"
+    },
+    {
+      "address": "0x432d40",
+      "name": "reset_registered_sound_sample_count",
+      "artifact": "analysis/decompile/binja/functions/00432d40-reset_registered_sound_sample_count.c"
     },
     {
       "address": "0x432d50",

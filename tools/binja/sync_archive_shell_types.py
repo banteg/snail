@@ -20,6 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_archive_shell_types.h"
 
 DATA_SYMBOL_UPDATES = (
+    ("0x5088b0", "g_registered_sound_sample_names"),
     ("0x5108b0", "g_registered_sound_sample_count"),
     ("0x5108b4", "g_tracked_allocation_total_bytes"),
     ("0x5108b8", "g_text_input_repeat_accumulator"),
@@ -32,12 +33,16 @@ DATA_SYMBOL_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x432d40", "reset_registered_sound_sample_count"),
+    ("0x432f10", "register_sound_sample"),
+    ("0x432fc0", "find_registered_sound_sample_id_by_name"),
     ("0x48b72d", "malloc"),
     ("0x48c211", "findfirst"),
     ("0x48c2db", "findnext"),
 )
 
 DATA_VAR_UPDATES = (
+    ("0x5088b0", "RegisteredSoundSampleName[256]"),
     ("0x5108b0", "int32_t"),
     ("0x5108b4", "int32_t"),
     ("0x5108b8", "float"),
@@ -50,6 +55,18 @@ DATA_VAR_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "reset_registered_sound_sample_count",
+        "void __cdecl reset_registered_sound_sample_count()",
+    ),
+    (
+        "register_sound_sample",
+        "int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class)",
+    ),
+    (
+        "find_registered_sound_sample_id_by_name",
+        "int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name)",
+    ),
     (
         "malloc",
         "void* __cdecl malloc(uint32_t size)",

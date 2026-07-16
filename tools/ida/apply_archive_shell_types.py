@@ -14,6 +14,18 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "reset_registered_sound_sample_count",
+        "void __cdecl reset_registered_sound_sample_count(void);",
+    ),
+    (
+        "register_sound_sample",
+        "int __cdecl register_sound_sample(char* path, int normalization_class);",
+    ),
+    (
+        "find_registered_sound_sample_id_by_name",
+        "int __cdecl find_registered_sound_sample_id_by_name(char* sample_name);",
+    ),
+    (
         "malloc",
         "void* __cdecl malloc(unsigned int size);",
     ),
@@ -144,6 +156,10 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
+    (0x432D40, "reset_registered_sound_sample_count"),
+    (0x432F10, "register_sound_sample"),
+    (0x432FC0, "find_registered_sound_sample_id_by_name"),
+    (0x5088B0, "g_registered_sound_sample_names"),
     (0x5108B0, "g_registered_sound_sample_count"),
     (0x5108B4, "g_tracked_allocation_total_bytes"),
     (0x5108B8, "g_text_input_repeat_accumulator"),
@@ -156,6 +172,11 @@ TRUSTED_NAMES = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (
+        0x5088B0,
+        "g_registered_sound_sample_names",
+        "RegisteredSoundSampleName g_registered_sound_sample_names[256];",
+    ),
     (
         0x5108B0,
         "g_registered_sound_sample_count",
@@ -189,6 +210,15 @@ TRUSTED_SCALAR_DATA_ITEMS = [
     (0x5108B8, 4),
 ]
 
+TRUSTED_ARRAY_DATA_ITEMS = [
+    (
+        0x5088B0,
+        0x8000,
+        "g_registered_sound_sample_names",
+        "char[32768]",
+    ),
+]
+
 STALE_DATA_ITEM_SPECS = [
     (0x5108B0, 0x10, "g_registered_sound_sample_count", "int[4]"),
 ]
@@ -206,6 +236,18 @@ ARCHIVE_SHELL_LVAR_SPECS = [
         None,
     ),
     ("write_file_bytes", "stream", "File* stream;", None, 0x4316C8),
+]
+
+REGISTERED_SOUND_SPLIT_LVAR_SPECS = [
+    (
+        "register_sound_sample",
+        "path",
+        "char *",
+        24,
+        0x432F2B,
+        "sample_size",
+        "int sample_size;",
+    ),
 ]
 
 STALE_STACK_LVAR_OVERRIDE_SPECS = [
@@ -234,6 +276,8 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
     normalized = re.sub(r"\s*\*\s*", " *", normalized)
+    normalized = re.sub(r"\s*\[\s*", "[", normalized)
+    normalized = re.sub(r"\s*\]\s*", "]", normalized)
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
     normalized = normalized.replace("(void)", "()")
@@ -246,7 +290,9 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
 
 
 def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
-    unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=;)", "", declaration, count=1)
+    unnamed = re.sub(
+        rf"\b{re.escape(selector)}\s*(?=\[|;)", "", declaration, count=1
+    )
     return _normalize_type_text(unnamed) or ""
 
 
@@ -338,6 +384,77 @@ def _ensure_scalar_data_item(address: int, size: int) -> dict[str, object]:
         return {
             "status": "failed",
             "reason": "scalar_data_item_readback_failed",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(verified_head),
+            "observed_size": verified_size,
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "item_size": verified_size,
+    }
+
+
+def _ensure_array_data_item(
+    address: int,
+    size: int,
+    expected_stale_name: str,
+    expected_stale_type: str,
+) -> dict[str, object]:
+    item_head = ida_bytes.get_item_head(address)
+    item_size = ida_bytes.get_item_size(item_head)
+    if item_head == address and item_size == size:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+            "item_size": item_size,
+        }
+
+    # Refuse to widen anything except the exact one-byte typed head recovered
+    # from the old database. create_byte(..., force=True) replaces that head and
+    # claims the complete non-overlapping extent in one operation.
+    if item_head != address or item_size != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_array_data_item",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(item_head),
+            "observed_size": item_size,
+        }
+
+    observed_name = idc.get_name(item_head)
+    observed_type = _normalize_type_text(idc.get_type(item_head))
+    normalized_expected_type = _normalize_type_text(expected_stale_type)
+    if (
+        observed_name != expected_stale_name
+        or observed_type != normalized_expected_type
+    ):
+        return {
+            "status": "failed",
+            "reason": "unexpected_stale_array_data_item",
+            "address": hex(address),
+            "expected_name": expected_stale_name,
+            "expected_type": normalized_expected_type,
+            "observed_name": observed_name,
+            "observed_type": observed_type,
+        }
+
+    if not ida_bytes.create_byte(address, size, True):
+        return {
+            "status": "failed",
+            "reason": "create_array_data_item_failed",
+            "address": hex(address),
+            "expected_size": size,
+        }
+
+    verified_head = ida_bytes.get_item_head(address)
+    verified_size = ida_bytes.get_item_size(verified_head)
+    if verified_head != address or verified_size != size:
+        return {
+            "status": "failed",
+            "reason": "array_data_item_readback_failed",
             "address": hex(address),
             "expected_size": size,
             "observed_head": hex(verified_head),
@@ -468,6 +585,131 @@ def _sync_lvar(
     }
 
 
+def _sync_split_lvar(
+    selector: str,
+    source_name: str,
+    source_type: str,
+    stack_offset: int,
+    split_definition_address: int,
+    expected_name: str,
+    declaration: str,
+) -> dict[str, object]:
+    address = _resolve_function(selector)
+    if address is None:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    local_type = ida_typeinf.tinfo_t()
+    if not ida_typeinf.parse_decl(
+        local_type,
+        None,
+        declaration,
+        ida_typeinf.PT_SIL,
+    ):
+        return {
+            "status": "failed",
+            "reason": "parse_split_local_type_failed",
+            "selector": selector,
+            "declaration": declaration,
+        }
+
+    expected_type = _normalize_type_text(str(local_type))
+    normalized_source_type = _normalize_type_text(source_type)
+    cfunc = ida_hexrays.decompile(address)
+    existing = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.name == expected_name
+        and _normalize_type_text(str(lvar.type())) == expected_type
+        and lvar.defea == split_definition_address
+    ]
+    if len(existing) == 1:
+        return {
+            "status": "unchanged",
+            "selector": selector,
+            "name": existing[0].name,
+            "type": str(existing[0].type()),
+            "definition_address": hex(existing[0].defea),
+        }
+    if existing:
+        return {
+            "status": "failed",
+            "reason": "unexpected_existing_split_local_candidates",
+            "selector": selector,
+            "candidate_count": len(existing),
+        }
+
+    sources = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if lvar.is_arg_var
+        and lvar.is_stk_var()
+        and lvar.get_stkoff() == stack_offset
+        and lvar.name == source_name
+        and _normalize_type_text(str(lvar.type())) == normalized_source_type
+    ]
+    if len(sources) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_split_source_candidates",
+            "selector": selector,
+            "source_name": source_name,
+            "stack_offset": stack_offset,
+            "candidate_count": len(sources),
+        }
+
+    source = sources[0]
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(
+        source.location,
+        split_definition_address,
+    )
+    info.name = expected_name
+    info.type = local_type
+    info.set_split_lvar()
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE | ida_hexrays.MLI_SET_FLAGS,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_split_lvar_info_failed",
+            "selector": selector,
+            "expected_name": expected_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified = [
+        lvar
+        for lvar in verified_cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.name == expected_name
+        and _normalize_type_text(str(lvar.type())) == expected_type
+        and lvar.defea == split_definition_address
+    ]
+    if len(verified) != 1:
+        return {
+            "status": "failed",
+            "reason": "split_local_readback_failed",
+            "selector": selector,
+            "expected_name": expected_name,
+            "definition_address": hex(split_definition_address),
+            "candidate_count": len(verified),
+        }
+
+    return {
+        "status": "applied",
+        "selector": selector,
+        "source_name": source.name,
+        "source_type": str(source.type()),
+        "name": verified[0].name,
+        "type": str(verified[0].type()),
+        "definition_address": hex(verified[0].defea),
+    }
+
+
 def _clear_stale_stack_lvar_override(
     selector: str,
     stack_offset: int,
@@ -564,6 +806,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
     data_unchanged = 0
     scalar_data_items_applied = 0
     scalar_data_items_unchanged = 0
+    array_data_items_applied = 0
+    array_data_items_unchanged = 0
     applied_functions = []
     function_type_changes = []
     missing = []
@@ -594,6 +838,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in scalar_data_items
         if result.get("status") == "failed"
     )
+
+    array_data_items = [
+        _ensure_array_data_item(address, size, stale_name, stale_type)
+        for address, size, stale_name, stale_type in TRUSTED_ARRAY_DATA_ITEMS
+    ]
+    array_data_items_applied = sum(
+        result.get("status") == "applied" for result in array_data_items
+    )
+    array_data_items_unchanged = sum(
+        result.get("status") == "unchanged" for result in array_data_items
+    )
+    failed.extend(
+        {"array_data_item": result}
+        for result in array_data_items
+        if result.get("status") == "failed"
+    )
     if failed:
         print(
             json.dumps(
@@ -604,6 +864,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "phase": "data_item_guard",
                     "cleared_data_items": cleared_data_items,
                     "scalar_data_items": scalar_data_items,
+                    "array_data_items": array_data_items,
                     "failed": failed,
                 },
                 indent=2,
@@ -711,6 +972,35 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result.get("status") == "failed"
     )
 
+    split_lvar_results = [
+        _sync_split_lvar(
+            selector,
+            source_name,
+            source_type,
+            stack_offset,
+            split_definition_address,
+            expected_name,
+            declaration,
+        )
+        for (
+            selector,
+            source_name,
+            source_type,
+            stack_offset,
+            split_definition_address,
+            expected_name,
+            declaration,
+        ) in REGISTERED_SOUND_SPLIT_LVAR_SPECS
+    ]
+    failed.extend(
+        {
+            "selector": result.get("selector"),
+            "split_lvar": result,
+        }
+        for result in split_lvar_results
+        if result.get("status") == "failed"
+    )
+
     lvar_results = [
         _sync_lvar(
             selector,
@@ -752,9 +1042,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "data_unchanged": data_unchanged,
                 "scalar_data_items_applied": scalar_data_items_applied,
                 "scalar_data_items_unchanged": scalar_data_items_unchanged,
+                "array_data_items_applied": array_data_items_applied,
+                "array_data_items_unchanged": array_data_items_unchanged,
                 "cleared_data_items": cleared_data_items,
                 "scalar_data_items": scalar_data_items,
+                "array_data_items": array_data_items,
                 "cleared_lvar_overrides": cleared_lvar_overrides,
+                "split_lvars": split_lvar_results,
                 "lvars": lvar_results,
                 "missing": missing,
                 "failed": failed,

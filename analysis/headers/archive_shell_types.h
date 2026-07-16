@@ -65,7 +65,19 @@ typedef struct ArchiveIndex {
 
 typedef char EnumeratedEntryName[128];
 
+typedef enum RegisteredSoundLimits {
+    RSHELL_SOUND_MAX = 256,
+    RSHELL_SOUND_NAME_BYTES = 128
+} RegisteredSoundLimits;
+
+typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];
+
 int32_t __cdecl get_stream_length_preserve_position(File* file);
+
+/* RShellSoundInit(), RShellSoundRegister(char*, int), and RShellFindSample(char*) */
+void __cdecl reset_registered_sound_sample_count(void);
+int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class);
+int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name);
 
 /* RShellInit() */
 uint8_t __cdecl initialize_game_data_archive(void);
@@ -112,6 +124,7 @@ extern void* g_archive_data_base;
 extern File* g_archive_file;
 extern uint8_t g_archive_startup_flag;
 extern ArchiveIndex* g_archive_index_records;
+extern RegisteredSoundSampleName g_registered_sound_sample_names[RSHELL_SOUND_MAX];
 extern int32_t g_registered_sound_sample_count;
 extern int32_t g_tracked_allocation_total_bytes;
 extern float g_text_input_repeat_accumulator;

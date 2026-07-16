@@ -22,3 +22,12 @@ Small registered-sample table lookup helper between `register_sound_sample` and
 
 Static callsite evidence ties the helper to `load_level_definition_file`, where
 it resolves per-segment `Sample="..."` message audio.
+
+## 2026-07-16 authored owner closure
+
+iOS and Android retain this ABI as `RShellFindSample(char*)` in `RShell.o`.
+Android independently preserves the same 128-byte slot stride, scalar-count loop
+bound, error path, and zero-on-miss contract. Its two ABI builds export
+`RShellSoundName` at exactly 0x8000 bytes and `RShellSoundCount` at four bytes,
+confirming the Windows lookup borrows a 256-by-128 matrix plus a separate scalar
+rather than a recovered aggregate struct.

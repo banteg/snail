@@ -12,7 +12,7 @@
 00430e73        uint8_t result = load_archive_index("SnailMail.dat")
 00430e7d        if (result == 0)
 00430e83        return result
-00430e84        sub_432d40()
+00430e84        reset_registered_sound_sample_count()
 00430ea2        g_archive_data_base = allocate_tracked_memory(&__dos_header, "Scratch Pad")
 00430eac        g_music_memory_buffer = allocate_tracked_memory(0x64000, "Music Memory Buffer")
 00430eb4        int32_t* i = &g_input_slot0_axis_y

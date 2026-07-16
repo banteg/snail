@@ -6596,6 +6596,86 @@
         "MEMORY[0x5108B8]",
         "MEMORY[0x53C7F5]"
       ]
+    },
+    {
+      "name": "bn_archive_init_registered_sound_owner",
+      "artifact": "analysis/decompile/binja/functions/00430e40-initialize_game_data_archive.c",
+      "required_substrings": [
+        "reset_registered_sound_sample_count()"
+      ],
+      "forbidden_substrings": [
+        "sub_432d40()"
+      ]
+    },
+    {
+      "name": "ida_registered_sound_reset_scalar_owner",
+      "artifact": "analysis/decompile/ida/functions/00432d40-reset_registered_sound_sample_count.c",
+      "required_substrings": [
+        "void __cdecl reset_registered_sound_sample_count()",
+        "g_registered_sound_sample_count = 0"
+      ],
+      "forbidden_substrings": [
+        "int __cdecl reset_registered_sound_sample_count"
+      ]
+    },
+    {
+      "name": "bn_registered_sound_matrix_owner",
+      "artifact": "analysis/decompile/binja/functions/00432f10-register_sound_sample.c",
+      "required_substrings": [
+        "normalization_class",
+        "g_registered_sound_sample_names[g_registered_sound_sample_count]",
+        "g_registered_sound_sample_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_5088b0"
+      ]
+    },
+    {
+      "name": "ida_registered_sound_matrix_and_split_local_owner",
+      "artifact": "analysis/decompile/ida/functions/00432f10-register_sound_sample.c",
+      "required_substrings": [
+        "int __cdecl register_sound_sample(char *path, int normalization_class)",
+        "int sample_size;",
+        "&sample_size",
+        "g_registered_sound_sample_names[g_registered_sound_sample_count]"
+      ],
+      "forbidden_substrings": [
+        "CompletionResultScreen",
+        "ArgList",
+        "(#83 *)",
+        "(int *)&path",
+        "128 * g_registered_sound_sample_count"
+      ]
+    },
+    {
+      "name": "bn_registered_sound_lookup_owner",
+      "artifact": "analysis/decompile/binja/functions/00432fc0-find_registered_sound_sample_id_by_name.c",
+      "required_substrings": [
+        "RegisteredSoundSampleName*",
+        "sample_name",
+        "g_registered_sound_sample_count"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_5088b0",
+        "data_5108b0"
+      ]
+    },
+    {
+      "name": "ida_registered_sound_lookup_owner",
+      "artifact": "analysis/decompile/ida/functions/00432fc0-find_registered_sound_sample_id_by_name.c",
+      "required_substrings": [
+        "int __cdecl find_registered_sound_sample_id_by_name(char *sample_name)",
+        "g_registered_sound_sample_names[0]",
+        "g_registered_sound_sample_count"
+      ],
+      "forbidden_substrings": [
+        "ArgList",
+        "g_registered_sound_sample_names;",
+        "128 * g_registered_sound_sample_count"
+      ]
     }
   ]
 }

@@ -2533,6 +2533,32 @@
       "notes": "All ports map held keyboard scancodes through the same repeat state. Android names the three owners gRShellKeyRepeatLife, gRShellKeyRepeatLifeRate, and gRShellOldKey, proving the Windows scalar globals and their RShell.o ownership."
     },
     {
+      "address": "0x432d40",
+      "windows_name": "reset_registered_sound_sample_count",
+      "android_symbol": "RShellSoundInit()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Android preserves the authored void helper as a single RShellSoundCount zero store. Its independently exported four-byte count and 0x8000-byte RShellSoundName matrix prove that Windows resets a scalar owner rather than a field in an invented aggregate."
+    },
+    {
+      "address": "0x432f10",
+      "windows_name": "register_sound_sample",
+      "ios_symbol": "RShellSoundRegister(char*, int)",
+      "android_symbol": "RShellSoundRegister(char*, int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports preserve the path and normalization-class ABI. Windows adds the platform-specific DAT/filesystem load and records the original path in RShellSoundName before advancing RShellSoundCount; Android delegates sample loading to its own audio backend."
+    },
+    {
+      "address": "0x432fc0",
+      "windows_name": "find_registered_sound_sample_id_by_name",
+      "ios_symbol": "RShellFindSample(char*)",
+      "android_symbol": "RShellFindSample(char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Windows and Android scan 128-byte RShellSoundName slots up to RShellSoundCount and return the matching index, with the same error-and-zero miss contract. Android exports the matrix at exactly 256 slots and the count as a separate four-byte scalar."
+    },
+    {
       "address": "0x44c3b0",
       "windows_name": "is_mouse_captured",
       "ios_symbol": "cRMouse::IsActive()",

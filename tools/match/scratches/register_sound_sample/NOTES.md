@@ -67,3 +67,14 @@ All three normalized listings remain byte-identical and proof-grade:
 - reset: `10cc8c23057039806e8185c1f8ac869d1ad353ce65a0c6701136ad931605ae75`
 - register: `4c26a7c9c45bbaa1fc167475662dda1dba4e7ff8527e74f64df1dc1a5adcd335`
 - lookup: `a5e0964564e48d057ecf9330e790301c5e03bfbb75aae62678151b8bf5cedc7b`
+
+## 2026-07-16 authored owner closure
+
+iOS and Android retain the public ABI as `RShellSoundRegister(char*, int)` in
+`RShell.o`. The backend body is platform-specific: Windows loads archive bytes
+when a DAT index is active, while Android delegates directly to its audio layer.
+The stable ownership is the path plus normalization-class ABI and, on Windows,
+the original path copy into one `RShellSoundName[256][128]` slot followed by the
+independent `RShellSoundCount` update. Both Android ABIs independently export the
+matrix at 0x8000 bytes and the scalar at four bytes, so no aggregate owner is
+invented around them.
