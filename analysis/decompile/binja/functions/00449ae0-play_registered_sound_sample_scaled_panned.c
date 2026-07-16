@@ -17,10 +17,10 @@
 00449b06        x87_r7_2 - temp3_1
 00449b0c        result = (x87_r7_2 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp3_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp3_1 ? 1 : 0) << 0xe
 00449b11        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || (result:1.b & 0x40) == 0)
-00449b19        int32_t eax
+00449b19        int32_t pan
 00449b19        int16_t x87control
 00449b19        int16_t x87control_1
-00449b19        eax, x87control_1 = __ftol(x87control, fconvert.t(arg4))
-00449b25        int32_t eax_1 = __ftol(x87control_1, fconvert.t(arg3))
-00449b39        return data_7527b4(*((arg1 << 2) + &data_7537e0), 0, eax_1, 0xffffffff, eax, 0)
+00449b19        pan, x87control_1 = ftol(x87control, fconvert.t(arg4))
+00449b25        int32_t frequency = ftol(x87control_1, fconvert.t(arg3))
+00449b39        return g_bass_sample_play_ex(g_registered_sound_sample_handles[arg1], 0, frequency, 0xffffffff, pan, 0)
 00449b3f        return result

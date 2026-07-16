@@ -71,11 +71,38 @@ typedef enum RegisteredSoundLimits {
 } RegisteredSoundLimits;
 
 typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];
+typedef char CachedMusicPath[256];
+
+typedef int32_t (__stdcall* BassChannelPlayFn)(
+    int32_t stream, int32_t restart, int32_t flags);
+typedef int32_t (__stdcall* BassSamplePlayExFn)(
+    int32_t sample_handle,
+    int32_t start,
+    int32_t frequency,
+    int32_t volume,
+    int32_t pan,
+    int32_t loop);
+typedef int32_t (__stdcall* BassSampleLoadFn)(
+    int32_t from_memory,
+    char* path_or_bytes,
+    int32_t offset,
+    int32_t byte_count,
+    int32_t max_instances,
+    int32_t flags);
+typedef int32_t (__stdcall* BassFreeFn)(void);
 
 int32_t __cdecl get_stream_length_preserve_position(File* file);
 
-/* RShellSoundInit(), RShellSoundRegister(char*, int), and RShellFindSample(char*) */
+/* RShell-owned music and registered-sample entry points. */
 void __cdecl reset_registered_sound_sample_count(void);
+char __cdecl cache_music_file(
+    char* path, int32_t unused, char* unused_default_path);
+int32_t __cdecl play_registered_warning_sample(int32_t sample_id);
+int32_t __cdecl stop_registered_warning_sample(int32_t sample_handle);
+void __cdecl play_sound_effect_backend(
+    int32_t sample_id, float gain, float pitch, float pan);
+void __cdecl play_voice_backend(
+    int32_t sample_id, float gain, float pitch, float pan);
 int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class);
 int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name);
 
@@ -124,8 +151,17 @@ extern void* g_archive_data_base;
 extern File* g_archive_file;
 extern uint8_t g_archive_startup_flag;
 extern ArchiveIndex* g_archive_index_records;
+extern CachedMusicPath g_cached_music_path;
+extern BassChannelPlayFn g_bass_channel_play;
+extern BassSamplePlayExFn g_bass_sample_play_ex;
+extern BassSampleLoadFn g_bass_sample_load;
+extern BassFreeFn g_bass_free;
 extern RegisteredSoundSampleName g_registered_sound_sample_names[RSHELL_SOUND_MAX];
 extern int32_t g_registered_sound_sample_count;
+extern int32_t g_registered_sound_sample_handles[RSHELL_SOUND_MAX];
+extern float g_stream_volume_scale;
+extern float g_audio_backend_sfx_normalization_scale;
+extern float g_audio_backend_voice_normalization_scale;
 extern int32_t g_tracked_allocation_total_bytes;
 extern float g_text_input_repeat_accumulator;
 extern TrackedAllocationStack g_tracked_allocation_stack;

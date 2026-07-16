@@ -6676,6 +6676,155 @@
         "g_registered_sound_sample_names;",
         "128 * g_registered_sound_sample_count"
       ]
+    },
+    {
+      "name": "bn_rshell_music_play_public_abi",
+      "artifact": "analysis/decompile/binja/functions/00432d50-cache_music_file.c",
+      "required_substrings": [
+        "g_archive_index_records",
+        "path",
+        "g_music_memory_buffer"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "CompletionResultScreen"
+      ]
+    },
+    {
+      "name": "ida_rshell_music_play_public_abi",
+      "artifact": "analysis/decompile/ida/functions/00432d50-cache_music_file.c",
+      "required_substrings": [
+        "char __cdecl cache_music_file(char *path, int32_t unused, char *unused_default_path)",
+        "g_archive_index_records",
+        "g_music_memory_buffer"
+      ],
+      "forbidden_substrings": [
+        "CompletionResultScreen",
+        "ArgList"
+      ]
+    },
+    {
+      "name": "bn_rshell_looped_sound_public_abi",
+      "artifact": "analysis/decompile/binja/functions/00432dd0-play_registered_warning_sample.c",
+      "required_substrings": [
+        "return play_registered_sound_sample_default(sample_id)"
+      ],
+      "forbidden_substrings": [
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_rshell_looped_sound_public_abi",
+      "artifact": "analysis/decompile/ida/functions/00432dd0-play_registered_warning_sample.c",
+      "required_substrings": [
+        "int __cdecl play_registered_warning_sample(int sample_id)",
+        "return play_registered_sound_sample_default(sample_id)"
+      ],
+      "forbidden_substrings": [
+        "int a1"
+      ]
+    },
+    {
+      "name": "bn_rshell_looped_sound_stop_public_abi",
+      "artifact": "analysis/decompile/binja/functions/00432de0-stop_registered_warning_sample.c",
+      "required_substrings": [
+        "return stop_sound_sample_handle(sample_handle)"
+      ],
+      "forbidden_substrings": [
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_rshell_looped_sound_stop_public_abi",
+      "artifact": "analysis/decompile/ida/functions/00432de0-stop_registered_warning_sample.c",
+      "required_substrings": [
+        "int __cdecl stop_registered_warning_sample(int sample_handle)",
+        "return stop_sound_sample_handle(sample_handle)"
+      ],
+      "forbidden_substrings": [
+        "int a1"
+      ]
+    },
+    {
+      "name": "bn_rshell_sfx_play_public_abi",
+      "artifact": "analysis/decompile/binja/functions/00432df0-play_sound_effect_backend.c",
+      "required_substrings": [
+        "sample_id",
+        "gain",
+        "pitch",
+        "pan",
+        "g_audio_backend_sfx_normalization_scale"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_753c68"
+      ]
+    },
+    {
+      "name": "ida_rshell_sfx_play_public_abi",
+      "artifact": "analysis/decompile/ida/functions/00432df0-play_sound_effect_backend.c",
+      "required_substrings": [
+        "void __cdecl play_sound_effect_backend(int sample_id, float gain, float pitch, float pan)",
+        "g_audio_backend_sfx_normalization_scale"
+      ],
+      "forbidden_substrings": [
+        "int a1",
+        "float a2"
+      ]
+    },
+    {
+      "name": "bn_rshell_voice_play_public_abi",
+      "artifact": "analysis/decompile/binja/functions/00432e80-play_voice_backend.c",
+      "required_substrings": [
+        "sample_id",
+        "gain",
+        "pitch",
+        "pan",
+        "g_audio_backend_voice_normalization_scale"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_753c6c"
+      ]
+    },
+    {
+      "name": "ida_rshell_voice_play_public_abi",
+      "artifact": "analysis/decompile/ida/functions/00432e80-play_voice_backend.c",
+      "required_substrings": [
+        "void __cdecl play_voice_backend(int sample_id, float gain, float pitch, float pan)",
+        "g_audio_backend_voice_normalization_scale"
+      ],
+      "forbidden_substrings": [
+        "int a1",
+        "float a2"
+      ]
+    },
+    {
+      "name": "ida_cached_music_path_and_bass_pointer_owners",
+      "artifact": "analysis/decompile/ida/functions/00449720-ensure_music_stream_from_path.c",
+      "required_substrings": [
+        "g_cached_music_path",
+        "g_bass_stream_create_file",
+        "g_bass_channel_play"
+      ],
+      "forbidden_substrings": [
+        "&g_cached_music_path[256]",
+        "g_cached_music_path[8492]"
+      ]
+    },
+    {
+      "name": "ida_registered_sample_handle_and_bass_pointer_owners",
+      "artifact": "analysis/decompile/ida/functions/00449920-load_registered_sound_sample_from_path.c",
+      "required_substrings": [
+        "g_bass_sample_load",
+        "g_registered_sound_sample_handles[a2]"
+      ],
+      "forbidden_substrings": [
+        "g_cached_music_path[8492]",
+        "(*(int"
+      ]
     }
   ]
 }

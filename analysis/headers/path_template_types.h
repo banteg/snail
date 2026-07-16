@@ -2489,12 +2489,6 @@ char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);
 
 double __cdecl parse_next_float32(char** cursor);
 
-char __cdecl cache_music_file(
-    char* path,
-    int32_t unused,
-    char* unused_default_path
-);
-
 void* __thiscall noop_this_constructor(void* self);
 
 /* D3DX 8 texture helpers use callee cleanup; exact arity is required for IDA. */

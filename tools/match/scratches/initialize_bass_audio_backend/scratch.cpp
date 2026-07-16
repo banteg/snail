@@ -7,7 +7,6 @@ typedef int (__stdcall* BassInitFn)(
 typedef int (__stdcall* BassSetConfigFn)(int option, int value);
 typedef int (__stdcall* BassProcFn)();
 
-extern char g_cached_music_path[]; // 0x7516a0
 extern int g_active_music_stream; // 0x753c20
 extern int g_active_music_stream_sync; // 0x751680
 extern int g_bass_module; // 0x753c90

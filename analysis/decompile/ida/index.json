@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 686,
-  "function_count": 686,
+  "selected_count": 688,
+  "function_count": 688,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -2302,6 +2302,20 @@
       "address": "0x432d50",
       "name": "cache_music_file",
       "artifact": "analysis/decompile/ida/functions/00432d50-cache_music_file.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "play_registered_warning_sample",
+      "address": "0x432dd0",
+      "name": "play_registered_warning_sample",
+      "artifact": "analysis/decompile/ida/functions/00432dd0-play_registered_warning_sample.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "stop_registered_warning_sample",
+      "address": "0x432de0",
+      "name": "stop_registered_warning_sample",
+      "artifact": "analysis/decompile/ida/functions/00432de0-stop_registered_warning_sample.c",
       "removed_stale_artifacts": []
     },
     {

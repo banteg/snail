@@ -781,10 +781,6 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "void __thiscall build_track_fringe_supertramp_mesh(Path* self, char* texture_path)",
     ),
     (
-        "cache_music_file",
-        "char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path)",
-    ),
-    (
         "set_color_rgba",
         "tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a)",
     ),

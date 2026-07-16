@@ -4,7 +4,7 @@
 /* function: uninitialize_bass_audio_backend @ 0x4496d0 */
 
 004496d0        data_753bfc()
-004496de        if (data_7537d8() == 0)
+004496de        if (g_bass_free() == 0)
 004496e5        report_errorf("Cannot Free BASS_Free()")
 004496fb        if (FreeLibrary(data_753c90) == 0)
 00449702        report_errorf("Cannot Free bass.dll library")

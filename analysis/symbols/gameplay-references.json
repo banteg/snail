@@ -865,6 +865,56 @@
       "description": "Authored RShell.o helper that resets the independently owned g_registered_sound_sample_count before archive-backed audio buffers are allocated; Android retains the RShellSoundInit() name and same scalar store."
     },
     {
+      "address": "0x432d50",
+      "name": "cache_music_file",
+      "kind": "function",
+      "aliases": [
+        "sub_432d50",
+        "RShellMusicPlay(char*, int, char*)"
+      ],
+      "description": "Authored RShell.o music entry point. Windows preserves the three-argument public ABI while implementing its cache through the DAT/filesystem bridge and BASS backend; iOS and both Android ABIs retain the RShellMusicPlay name."
+    },
+    {
+      "address": "0x432dd0",
+      "name": "play_registered_warning_sample",
+      "kind": "function",
+      "aliases": [
+        "sub_432dd0",
+        "RShellSoundPlayLooped(int)"
+      ],
+      "description": "Authored RShell.o looped-sample entry point. Its Windows BASS call sets the loop flag and returns the live handle stored by Warning; iOS retains the RShellSoundPlayLooped name."
+    },
+    {
+      "address": "0x432de0",
+      "name": "stop_registered_warning_sample",
+      "kind": "function",
+      "aliases": [
+        "sub_432de0",
+        "RShellSoundStopLooped(int)"
+      ],
+      "description": "Authored RShell.o looped-sample stop entry point taking the live playback handle; iOS and both Android ABIs retain the RShellSoundStopLooped name."
+    },
+    {
+      "address": "0x432df0",
+      "name": "play_sound_effect_backend",
+      "kind": "function",
+      "aliases": [
+        "sub_432df0",
+        "RShellSoundPlay(int, float, float, float)"
+      ],
+      "description": "Authored RShell.o sound-effect entry point preserving the sample-id, gain, pitch, and pan contract; Android independently retains the same sentinel, normalization, and dispatch behavior."
+    },
+    {
+      "address": "0x432e80",
+      "name": "play_voice_backend",
+      "kind": "function",
+      "aliases": [
+        "sub_432e80",
+        "RShellVoicePlay(int, float, float, float)"
+      ],
+      "description": "Authored RShell.o voice entry point preserving the sample-id, gain, pitch, and pan contract; Android independently retains the same sentinel, voice normalization, and dispatch behavior."
+    },
+    {
       "address": "0x432f10",
       "name": "register_sound_sample",
       "kind": "function",
@@ -974,24 +1024,6 @@
         "data_434064"
       ],
       "description": "Relocatable player-region owner offset used by update_damage_gauge state-2 exit checks."
-    },
-    {
-      "address": "0x432dd0",
-      "name": "play_registered_warning_sample",
-      "kind": "function",
-      "aliases": [
-        "sub_432dd0"
-      ],
-      "description": "Warning-sample playback helper called by play_warning_sample_backend."
-    },
-    {
-      "address": "0x432de0",
-      "name": "stop_registered_warning_sample",
-      "kind": "function",
-      "aliases": [
-        "sub_432de0"
-      ],
-      "description": "Warning-sample stop helper called by stop_warning_sample_handle."
     },
     {
       "address": "0x43381c",
@@ -4522,7 +4554,7 @@
         "byte_7516a0"
       ],
       "size": "0x100",
-      "description": "Cached active music path copied by the music stream loaders and compared before reloading archive-backed music."
+      "description": "Exactly 256 bytes of cached active music path copied by the music stream loaders and compared before reloading archive-backed music; the independently resolved g_bass_channel_play pointer starts at the hard 0x100-byte boundary."
     },
     {
       "address": "0x751680",
@@ -4540,6 +4572,7 @@
       "aliases": [
         "data_7527b4"
       ],
+      "size": "0x4",
       "description": "BASS_SamplePlayEx function pointer used by registered sample playback wrappers."
     },
     {
@@ -4549,6 +4582,7 @@
       "aliases": [
         "data_7517a0"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelPlay function pointer used by music stream loaders after creating or opening a stream."
     },
     {
@@ -4558,6 +4592,7 @@
       "aliases": [
         "data_7537cc"
       ],
+      "size": "0x4",
       "description": "BASS_SampleLoad function pointer used by registered sample loaders for filesystem paths and archive byte buffers."
     },
     {
@@ -4567,6 +4602,7 @@
       "aliases": [
         "data_7537d8"
       ],
+      "size": "0x4",
       "description": "BASS_Free function pointer used when uninitializing the BASS backend."
     },
     {
@@ -4577,7 +4613,8 @@
         "data_7537e0",
         "unk_7537e0"
       ],
-      "description": "Registered BASS sample handles indexed by gameplay sound sample id."
+      "size": "0x400",
+      "description": "Exactly 256 registered BASS sample handles indexed by the RSHELL_SOUND_MAX-bounded gameplay sample id. The unreferenced word at 0x753be0 remains outside this owner before the independent BASS function-pointer globals begin."
     },
     {
       "address": "0x753be4",
@@ -4658,6 +4695,7 @@
       "aliases": [
         "data_753c64"
       ],
+      "size": "0x4",
       "description": "Runtime stream-volume scale multiplied with the saved stream-volume config before applying audio settings."
     },
     {

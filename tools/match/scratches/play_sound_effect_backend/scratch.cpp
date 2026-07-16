@@ -2,8 +2,6 @@
 
 #include "audio_system.h"
 
-extern float g_audio_backend_sfx_normalization_scale; // g_audio_backend + 0x10
-
 void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan)
 {
     if (sample_id != -1) {

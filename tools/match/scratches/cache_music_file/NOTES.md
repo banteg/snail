@@ -12,3 +12,14 @@ Music stream cache entry point for archive-backed and filesystem-backed music.
 - When archive data is available, asks the backend whether the requested path
   needs a reload, reads bytes into `g_music_memory_buffer`, checks the native
   `0x64000` buffer limit, then starts playback from memory.
+
+## 2026-07-16 authored owner closure
+
+iOS and both Android ABIs preserve this entry point as
+`RShellMusicPlay(char*, int, char*)` in `RShell.o`. The Android body independently
+compares the requested path with its cache, stops an active stream when the path
+changes, copies the new path, starts platform music, and updates its active and
+pause flags. Windows keeps the same three-argument public ABI while implementing
+the cache through the DAT/filesystem bridge and BASS. This function now belongs
+to the narrow archive/RShell replay rather than the unrelated path-template
+replay. The exact Windows scratch remains 42/42 with 11 masked operands.

@@ -5,71 +5,81 @@
 // Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend.
 char __thiscall initialize_bass_audio_backend(_BYTE *this, int a2)
 {
-  _BYTE *file_bytes; // esi
+  void *v3; // esi
   int ElementCount; // [esp+Ch] [ebp-4h] BYREF
 
-  byte_7516A0 = 0;
+  g_cached_music_path[0] = 0;
   *(this + 24) = 0;
-  file_bytes = load_file_bytes(aBassDll, (#83 *)&ElementCount);
-  write_file_bytes(LibFileName, file_bytes, ElementCount);
-  free_tracked_memory((int)file_bytes);
-  MEMORY[0x753C90] = ((int (__stdcall *)(char *))LoadLibraryA)(LibFileName);
-  MEMORY[0x753C08] = (int (__stdcall *)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                                                  MEMORY[0x753C90],
-                                                                                  ProcName);
-  MEMORY[0x753C1C] = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                          MEMORY[0x753C90],
-                                                          aBassSetconfig);
-  MEMORY[0x7537D8] = (int (*)(void))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassFree);
-  MEMORY[0x751698] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassUpdate);
-  MEMORY[0x753BF8] = (int (__stdcall *)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                                                  MEMORY[0x753C90],
-                                                                                  aBassStreamcrea);
-  MEMORY[0x7517A0] = (int (__stdcall *)(_DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                                  MEMORY[0x753C90],
-                                                                  aBassStreamplay);
-  MEMORY[0x751670] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassStreampreb);
-  MEMORY[0x753BE4] = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                  MEMORY[0x753C90],
-                                                  aBassChannelsto);
-  MEMORY[0x753CB0] = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                  MEMORY[0x753C90],
-                                                  aBassStreamfree);
-  MEMORY[0x7537CC] = (int (__stdcall *)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                                                          MEMORY[0x753C90],
-                                                                                          aBassSampleload);
-  MEMORY[0x7527B4] = (int (__stdcall *)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                                                          MEMORY[0x753C90],
-                                                                                          aBassSampleplay);
-  MEMORY[0x753C94] = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                  MEMORY[0x753C90],
-                                                  aBassSamplestop);
-  MEMORY[0x753C1C] = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                          MEMORY[0x753C90],
-                                                          aBassSetconfig);
-  MEMORY[0x753BFC] = (int (*)(void))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassStop);
-  MEMORY[0x751660] = (int (*)(void))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassStart);
-  MEMORY[0x753CC0] = (int (*)(void))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassPause);
-  MEMORY[0x75162C] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassChannelbyt);
-  MEMORY[0x753CBC] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassChannelget);
-  MEMORY[0x753C18] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassChannelget_0);
-  MEMORY[0x753CC4] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassChannelset);
-  MEMORY[0x753C98] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassChannelget_1);
-  MEMORY[0x751674] = ((int (__stdcall *)(_DWORD, char *))GetProcAddress)(MEMORY[0x753C90], aBassErrorgetco);
-  MEMORY[0x75165C] = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                          MEMORY[0x753C90],
-                                                          aBassChannelrem);
-  MEMORY[0x753CA8] = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, char *))GetProcAddress)(
-                                                  MEMORY[0x753C90],
-                                                  aBassChannelisa);
+  v3 = load_file_bytes(aBassDll, &ElementCount);
+  write_file_bytes((char *)LibFileName, v3, ElementCount);
+  free_tracked_memory(v3);
+  g_bass_module = ((int (__stdcall *)(ObjectFaceQuad *))LoadLibraryA)(LibFileName);
+  g_bass_init = (int (__stdcall *)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                                             g_bass_module,
+                                                                             ProcName);
+  g_bass_set_config = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                           g_bass_module,
+                                                           aBassSetconfig);
+  g_bass_free = (BassFreeFn)((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassFree);
+  g_bass_update = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassUpdate);
+  g_bass_stream_create_file = (int (__stdcall *)(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                                                           g_bass_module,
+                                                                                           aBassStreamcrea);
+  g_bass_channel_play = (BassChannelPlayFn)((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                             g_bass_module,
+                                             aBassStreamplay);
+  g_bass_stream_prebuf = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassStreampreb);
+  g_bass_channel_stop = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                     g_bass_module,
+                                                     aBassChannelsto);
+  g_bass_stream_free = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                    g_bass_module,
+                                                    aBassStreamfree);
+  g_bass_sample_load = (BassSampleLoadFn)((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                           g_bass_module,
+                                           aBassSampleload);
+  g_bass_sample_play_ex = (BassSamplePlayExFn)((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                g_bass_module,
+                                                aBassSampleplay);
+  g_bass_sample_stop = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                    g_bass_module,
+                                                    aBassSamplestop);
+  g_bass_set_config = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                           g_bass_module,
+                                                           aBassSetconfig);
+  g_bass_stop = (int (*)(void))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassStop);
+  g_bass_start = (int (*)(void))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassStart);
+  g_bass_pause = (int (*)(void))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassPause);
+  g_bass_channel_bytes2_seconds = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                    g_bass_module,
+                                    aBassChannelbyt);
+  g_bass_channel_get_level = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                               g_bass_module,
+                               aBassChannelget);
+  g_bass_channel_get_data = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                              g_bass_module,
+                              aBassChannelget_0);
+  g_bass_channel_set_sync = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                              g_bass_module,
+                              aBassChannelset);
+  g_bass_channel_get_position = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                  g_bass_module,
+                                  aBassChannelget_1);
+  g_bass_error_get_code = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassErrorgetco);
+  g_bass_channel_remove_sync = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                                    g_bass_module,
+                                                                    aBassChannelrem);
+  g_bass_sample_is_active = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                                         g_bass_module,
+                                                         aBassChannelisa);
   *((_DWORD *)this + 1) = 0;
   *((_DWORD *)this + 2) = 1028443341;
   *this = 0;
-  if ( MEMORY[0x753C08](1, 44100, 0, a2, 0) )
+  if ( g_bass_init(1, 44100, 0, a2, 0) )
   {
-    MEMORY[0x753C1C](1, 50);
-    unk_753C20 = 0;
-    unk_751680 = 0;
+    g_bass_set_config(1, 50);
+    g_active_music_stream = 0;
+    g_active_music_stream_sync = 0;
     return 1;
   }
   else
@@ -78,4 +88,3 @@ char __thiscall initialize_bass_audio_backend(_BYTE *this, int a2)
     return 0;
   }
 }
-

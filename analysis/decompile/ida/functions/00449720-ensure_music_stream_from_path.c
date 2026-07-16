@@ -7,7 +7,7 @@ int __thiscall ensure_music_stream_from_path(_BYTE *this, char *ArgList, char a3
 {
   int result; // eax
   unsigned int v5; // kr04_4
-  int file; // eax
+  int32_t file; // eax
 
   if ( *this )
   {
@@ -28,10 +28,9 @@ int __thiscall ensure_music_stream_from_path(_BYTE *this, char *ArgList, char a3
   if ( !file )
     return report_errorf("Music Play Memory Failed %s", ArgList);
   if ( a3 )
-    result = (*(int (__stdcall **)(int, _DWORD, int))&g_cached_music_path[256])(file, 0, 4);
+    result = g_bass_channel_play(file, 0, 4);
   else
-    result = (*(int (__stdcall **)(int, _DWORD, _DWORD))&g_cached_music_path[256])(file, 0, 0);
+    result = g_bass_channel_play(file, 0, 0);
   *this = 1;
   return result;
 }
-

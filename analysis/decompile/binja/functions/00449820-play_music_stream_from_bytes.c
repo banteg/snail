@@ -16,15 +16,15 @@
 00449851        stop_music_stream(arg1)
 00449859        g_active_music_stream = 0
 00449863        if (not.d(i) - 1 s> 4)
-00449875        int32_t eax_2 = g_bass_stream_create_file(1, arg3, 0, arg4, 0)
-0044987d        g_active_music_stream = eax_2
-00449882        if (eax_2 != 0)
+00449875        int32_t stream = g_bass_stream_create_file(1, arg3, 0, arg4, 0)
+0044987d        g_active_music_stream = stream
+00449882        if (stream != 0)
 0044988a        if (arg5 == 0)
-004498a7        int32_t eax_4 = g_bass_channel_play(eax_2, 0, 0)
+004498a7        int32_t eax_3 = g_bass_channel_play(stream, 0, 0)
 004498ae        *arg1 = 1
-004498b5        return eax_4
-00449891        int32_t eax_3 = g_bass_channel_play(eax_2, 0, 4)
+004498b5        return eax_3
+00449891        int32_t eax_2 = g_bass_channel_play(stream, 0, 4)
 00449898        *arg1 = 1
-0044989f        return eax_3
+0044989f        return eax_2
 004498be        report_errorf("Music Play Memory Failed %s", arg2)
 004498ca        return 0

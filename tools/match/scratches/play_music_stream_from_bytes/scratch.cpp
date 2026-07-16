@@ -7,7 +7,6 @@ typedef int (__stdcall* BassStreamCreateFileFn)(
     int from_memory, char* path_or_bytes, int offset, int byte_count, int flags);
 typedef int (__stdcall* BassChannelPlayFn)(int stream, int restart, int flags);
 
-extern char g_cached_music_path[]; // 0x7516a0
 extern int g_active_music_stream; // 0x753c20
 extern BassChannelPlayFn g_bass_channel_play; // 0x7517a0
 extern BassStreamCreateFileFn g_bass_stream_create_file; // 0x753bf8

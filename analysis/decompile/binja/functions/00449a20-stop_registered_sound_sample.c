@@ -3,4 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: stop_registered_sound_sample @ 0x449a20 */
 
-00449a32        return data_753c94(*((arg1 << 2) + &data_7537e0))
+00449a32        return data_753c94(g_registered_sound_sample_handles[arg1])

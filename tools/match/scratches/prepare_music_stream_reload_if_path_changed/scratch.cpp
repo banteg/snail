@@ -2,8 +2,6 @@
 
 #include "audio_system.h"
 
-extern char g_cached_music_path[]; // 0x7516a0
-
 int strings_equal_case_insensitive_path(char* left, char* right); // @ 0x44e6c0
 
 char AudioBackend::prepare_music_stream_reload_if_path_changed(char* path)

@@ -7,10 +7,9 @@ char __thiscall prepare_music_stream_reload_if_path_changed(_BYTE *this, char *a
 {
   if ( *this )
   {
-    if ( sub_44E6C0(a2, byte_7516A0) )
+    if ( strings_equal_case_insensitive_path(a2, g_cached_music_path) )
       return 0;
     stop_music_stream(this);
   }
   return 1;
 }
-

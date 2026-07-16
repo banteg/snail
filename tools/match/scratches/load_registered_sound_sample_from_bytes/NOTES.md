@@ -36,3 +36,9 @@ keeping the method `int` regresses to 65.00% because VC6 saves the sample handle
 in `esi` for the final return. Changing only the bytes backend method to
 `void`, then using the side-effect debug report, matches 100.00%; the caller
 `register_sound_sample` and exact path sibling both stay at 100.00%.
+
+2026-07-16 ownership replay: this loader now borrows the canonical
+`g_registered_sound_sample_handles[RSHELL_SOUND_MAX]` declaration from
+`audio_system.h`. The exact 256-element extent is proved by the registration
+guard and the separate, unreferenced word at `0x753be0`; the normalized object
+remains byte-identical.

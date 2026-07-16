@@ -5,11 +5,10 @@
 // Stops the global BASS backend, frees the loaded `Bass.dll` state, unloads the temporary DLL, and deletes the extracted `tBass.dll` copy.
 int uninitialize_bass_audio_backend()
 {
-  MEMORY[0x753BFC]();
-  if ( !MEMORY[0x7537D8]() )
+  g_bass_stop();
+  if ( !g_bass_free() )
     report_errorf(aCannotFreeBass);
-  if ( !((int (__stdcall *)(_DWORD))FreeLibrary)(MEMORY[0x753C90]) )
+  if ( !((int (__stdcall *)(_DWORD))FreeLibrary)(g_bass_module) )
     report_errorf(aCannotFreeBass_0);
-  return delete_file_path_with_directory_walk(LibFileName);
+  return delete_file_path_with_directory_walk((char *)LibFileName);
 }
-

@@ -53,7 +53,12 @@ public:
 };
 
 extern AudioBackend g_audio_backend; // 0x753c58
+extern char g_cached_music_path[0x100]; // data_7516a0
 extern char g_registered_sound_sample_names[RSHELL_SOUND_MAX][0x80]; // data_5088b0
 extern int g_registered_sound_sample_count; // data_5108b0
+extern int g_registered_sound_sample_handles[RSHELL_SOUND_MAX]; // data_7537e0
+extern float g_stream_volume_scale; // g_audio_backend + 0x0c
+extern float g_audio_backend_sfx_normalization_scale; // g_audio_backend + 0x10
+extern float g_audio_backend_voice_normalization_scale; // g_audio_backend + 0x14
 
 #endif

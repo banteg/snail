@@ -5,7 +5,6 @@
 typedef int (__stdcall* BassSamplePlayExFn)(
     int sample_handle, int start, int frequency, int volume, int pan, int loop);
 
-extern int g_registered_sound_sample_handles[]; // 0x7537e0
 extern BassSamplePlayExFn g_bass_sample_play_ex; // 0x7527b4
 
 void AudioBackend::play_registered_sound_sample_scaled_panned(

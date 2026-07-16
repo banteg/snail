@@ -12,11 +12,11 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 703,
-  "function_count": 703,
+  "selected_count": 705,
+  "function_count": 705,
   "mismatch_count": 0,
   "mismatches": [],
-  "analysis_refreshed": false,
+  "analysis_refreshed": true,
   "timed_out_function_reanalysis": {
     "interior_aliases": [],
     "reanalyzed": [],
@@ -1749,6 +1749,16 @@
       "address": "0x432d50",
       "name": "cache_music_file",
       "artifact": "analysis/decompile/binja/functions/00432d50-cache_music_file.c"
+    },
+    {
+      "address": "0x432dd0",
+      "name": "play_registered_warning_sample",
+      "artifact": "analysis/decompile/binja/functions/00432dd0-play_registered_warning_sample.c"
+    },
+    {
+      "address": "0x432de0",
+      "name": "stop_registered_warning_sample",
+      "artifact": "analysis/decompile/binja/functions/00432de0-stop_registered_warning_sample.c"
     },
     {
       "address": "0x432df0",

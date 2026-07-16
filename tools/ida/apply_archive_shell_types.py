@@ -18,6 +18,26 @@ TRUSTED_DECLARATIONS = [
         "void __cdecl reset_registered_sound_sample_count(void);",
     ),
     (
+        "cache_music_file",
+        "char __cdecl cache_music_file(char* path, int unused, char* unused_default_path);",
+    ),
+    (
+        "play_registered_warning_sample",
+        "int __cdecl play_registered_warning_sample(int sample_id);",
+    ),
+    (
+        "stop_registered_warning_sample",
+        "int __cdecl stop_registered_warning_sample(int sample_handle);",
+    ),
+    (
+        "play_sound_effect_backend",
+        "void __cdecl play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);",
+    ),
+    (
+        "play_voice_backend",
+        "void __cdecl play_voice_backend(int sample_id, float gain, float pitch, float pan);",
+    ),
+    (
         "register_sound_sample",
         "int __cdecl register_sound_sample(char* path, int normalization_class);",
     ),
@@ -157,6 +177,11 @@ TRUSTED_DECLARATIONS = [
 
 TRUSTED_NAMES = [
     (0x432D40, "reset_registered_sound_sample_count"),
+    (0x432D50, "cache_music_file"),
+    (0x432DD0, "play_registered_warning_sample"),
+    (0x432DE0, "stop_registered_warning_sample"),
+    (0x432DF0, "play_sound_effect_backend"),
+    (0x432E80, "play_voice_backend"),
     (0x432F10, "register_sound_sample"),
     (0x432FC0, "find_registered_sound_sample_id_by_name"),
     (0x5088B0, "g_registered_sound_sample_names"),
@@ -169,6 +194,16 @@ TRUSTED_NAMES = [
     (0x53C7F0, "g_archive_file"),
     (0x53C7F4, "g_archive_startup_flag"),
     (0x53C7F8, "g_archive_index_records"),
+    (0x7516A0, "g_cached_music_path"),
+    (0x7517A0, "g_bass_channel_play"),
+    (0x7527B4, "g_bass_sample_play_ex"),
+    (0x7537CC, "g_bass_sample_load"),
+    (0x7537D8, "g_bass_free"),
+    (0x7537E0, "g_registered_sound_sample_handles"),
+    (0x753C58, "g_audio_backend"),
+    (0x753C64, "g_stream_volume_scale"),
+    (0x753C68, "g_audio_backend_sfx_normalization_scale"),
+    (0x753C6C, "g_audio_backend_voice_normalization_scale"),
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
@@ -202,25 +237,70 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x53C7F0, "g_archive_file", "File* g_archive_file;"),
     (0x53C7F4, "g_archive_startup_flag", "unsigned char g_archive_startup_flag;"),
     (0x53C7F8, "g_archive_index_records", "ArchiveIndex* g_archive_index_records;"),
+    (0x7516A0, "g_cached_music_path", "char g_cached_music_path[256];"),
+    (0x7517A0, "g_bass_channel_play", "BassChannelPlayFn g_bass_channel_play;"),
+    (
+        0x7527B4,
+        "g_bass_sample_play_ex",
+        "BassSamplePlayExFn g_bass_sample_play_ex;",
+    ),
+    (0x7537CC, "g_bass_sample_load", "BassSampleLoadFn g_bass_sample_load;"),
+    (0x7537D8, "g_bass_free", "BassFreeFn g_bass_free;"),
+    (
+        0x7537E0,
+        "g_registered_sound_sample_handles",
+        "int g_registered_sound_sample_handles[256];",
+    ),
+    (0x753C64, "g_stream_volume_scale", "float g_stream_volume_scale;"),
+    (
+        0x753C68,
+        "g_audio_backend_sfx_normalization_scale",
+        "float g_audio_backend_sfx_normalization_scale;",
+    ),
+    (
+        0x753C6C,
+        "g_audio_backend_voice_normalization_scale",
+        "float g_audio_backend_voice_normalization_scale;",
+    ),
 ]
 
 TRUSTED_SCALAR_DATA_ITEMS = [
     (0x5108B0, 4),
     (0x5108B4, 4),
     (0x5108B8, 4),
+    (0x7517A0, 4),
+    (0x7527B4, 4),
+    (0x7537CC, 4),
+    (0x7537D8, 4),
+    (0x753C64, 4),
+    (0x753C68, 4),
+    (0x753C6C, 4),
 ]
 
 TRUSTED_ARRAY_DATA_ITEMS = [
+    (
+        0x7516A0,
+        0x100,
+        "g_cached_music_path",
+        None,
+    ),
     (
         0x5088B0,
         0x8000,
         "g_registered_sound_sample_names",
         "char[32768]",
     ),
+    (
+        0x7537E0,
+        0x400,
+        "g_registered_sound_sample_handles",
+        "int[257]",
+    ),
 ]
 
 STALE_DATA_ITEM_SPECS = [
     (0x5108B0, 0x10, "g_registered_sound_sample_count", "int[4]"),
+    (0x7516A0, 0x2140, "g_cached_music_path", "char[8512]"),
 ]
 
 ARCHIVE_SHELL_LVAR_SPECS = [
@@ -400,7 +480,7 @@ def _ensure_array_data_item(
     address: int,
     size: int,
     expected_stale_name: str,
-    expected_stale_type: str,
+    expected_stale_type: str | None,
 ) -> dict[str, object]:
     item_head = ida_bytes.get_item_head(address)
     item_size = ida_bytes.get_item_size(item_head)

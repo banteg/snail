@@ -1220,19 +1220,58 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
     )
+    binja_path_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_path_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
 
     for declaration in (
         "typedef enum RegisteredSoundLimits {",
         "typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];",
+        "typedef char CachedMusicPath[256];",
+        "typedef int32_t (__stdcall* BassChannelPlayFn)(",
+        "typedef int32_t (__stdcall* BassSamplePlayExFn)(",
+        "typedef int32_t (__stdcall* BassSampleLoadFn)(",
+        "typedef int32_t (__stdcall* BassFreeFn)(void);",
         "void __cdecl reset_registered_sound_sample_count(void);",
+        "char __cdecl cache_music_file(",
+        "int32_t __cdecl play_registered_warning_sample(int32_t sample_id);",
+        "int32_t __cdecl stop_registered_warning_sample(int32_t sample_handle);",
+        "void __cdecl play_sound_effect_backend(",
+        "void __cdecl play_voice_backend(",
         "int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class);",
         "int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name);",
         "extern RegisteredSoundSampleName g_registered_sound_sample_names[RSHELL_SOUND_MAX];",
         "extern int32_t g_registered_sound_sample_count;",
+        "extern int32_t g_registered_sound_sample_handles[RSHELL_SOUND_MAX];",
+        "extern CachedMusicPath g_cached_music_path;",
+        "extern BassChannelPlayFn g_bass_channel_play;",
+        "extern BassSamplePlayExFn g_bass_sample_play_ex;",
+        "extern BassSampleLoadFn g_bass_sample_load;",
+        "extern BassFreeFn g_bass_free;",
+        "extern float g_stream_volume_scale;",
+        "extern float g_audio_backend_sfx_normalization_scale;",
+        "extern float g_audio_backend_voice_normalization_scale;",
     ):
         assert all(declaration in header for header in headers)
 
     assert '("0x5088b0", "RegisteredSoundSampleName[256]")' in binja_source
+    assert '("0x7516a0", "CachedMusicPath")' in binja_source
+    assert '("0x7517a0", "BassChannelPlayFn")' in binja_source
+    assert '("0x7527b4", "BassSamplePlayExFn")' in binja_source
+    assert '("0x7537cc", "BassSampleLoadFn")' in binja_source
+    assert '("0x7537d8", "BassFreeFn")' in binja_source
+    assert '("0x7537e0", "int32_t[256]")' in binja_source
+    assert '"char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path)"' in binja_source
+    assert '"int32_t __cdecl play_registered_warning_sample(int32_t sample_id)"' in binja_source
+    assert '"int32_t __cdecl stop_registered_warning_sample(int32_t sample_handle)"' in binja_source
+    assert '"void __cdecl play_sound_effect_backend(int32_t sample_id, float gain, float pitch, float pan)"' in binja_source
+    assert '"void __cdecl play_voice_backend(int32_t sample_id, float gain, float pitch, float pan)"' in binja_source
     assert '"int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class)"' in binja_source
     assert '"int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name)"' in binja_source
 
@@ -1246,14 +1285,97 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     assert '"reason": "unexpected_stale_array_data_item"' in ida_source
     assert 're.sub(r"\\s*\\[\\s*", "[", normalized)' in ida_source
     assert '"RegisteredSoundSampleName g_registered_sound_sample_names[256];"' in ida_source
+    assert '"char g_cached_music_path[256];"' in ida_source
+    assert '"BassChannelPlayFn g_bass_channel_play;"' in ida_source
+    assert '"BassSamplePlayExFn g_bass_sample_play_ex;"' in ida_source
+    assert '"BassSampleLoadFn g_bass_sample_load;"' in ida_source
+    assert '"BassFreeFn g_bass_free;"' in ida_source
+    assert '"int g_registered_sound_sample_handles[256];"' in ida_source
+    assert '"char __cdecl cache_music_file(char* path, int unused, char* unused_default_path);"' in ida_source
+    assert '"int __cdecl play_registered_warning_sample(int sample_id);"' in ida_source
+    assert '"int __cdecl stop_registered_warning_sample(int sample_handle);"' in ida_source
+    assert '"void __cdecl play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);"' in ida_source
+    assert '"void __cdecl play_voice_backend(int sample_id, float gain, float pitch, float pan);"' in ida_source
     assert '"int __cdecl register_sound_sample(char* path, int normalization_class);"' in ida_source
     assert '"int __cdecl find_registered_sound_sample_id_by_name(char* sample_name);"' in ida_source
+    assert "0x7537E0" in ida_source
+    assert "0x400" in ida_source
+    assert '"int[257]"' in ida_source
+    assert "0x7516A0" in ida_source
+    assert "0x2140" in ida_source
+    assert "0x100" in ida_source
+    assert '"char[8512]"' in ida_source
     assert "REGISTERED_SOUND_SPLIT_LVAR_SPECS" in ida_source
     assert '"sample_size"' in ida_source
     assert "0x432F2B" in ida_source
     assert "_sync_split_lvar" in ida_source
     assert "info.set_split_lvar()" in ida_source
     assert "ida_hexrays.MLI_SET_FLAGS" in ida_source
+
+    assert "cache_music_file" not in binja_path_source
+    assert "cache_music_file" not in ida_path_source
+    assert "cache_music_file" not in path_header
+
+
+def test_audio_system_header_owns_registered_audio_globals() -> None:
+    audio_header = (
+        Path(__file__).parents[1] / "tools/match/include/audio_system.h"
+    ).read_text(encoding="utf-8")
+    assert "extern char g_cached_music_path[0x100];" in audio_header
+    assert "extern int g_registered_sound_sample_handles[RSHELL_SOUND_MAX];" in audio_header
+    assert "extern float g_stream_volume_scale;" in audio_header
+    assert "extern float g_audio_backend_sfx_normalization_scale;" in audio_header
+    assert "extern float g_audio_backend_voice_normalization_scale;" in audio_header
+
+    scratch_names = (
+        "load_registered_sound_sample_from_path",
+        "load_registered_sound_sample_from_bytes",
+        "play_registered_sound_sample_scaled",
+        "stop_registered_sound_sample",
+        "is_registered_sound_sample_playing",
+        "play_registered_sound_sample_default",
+        "play_registered_sound_sample_backend",
+        "play_registered_sound_sample_scaled_panned",
+    )
+    scratch_root = Path(__file__).parents[1] / "tools/match/scratches"
+    for scratch_name in scratch_names:
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert "#include \"audio_system.h\"" in source
+        assert "extern int g_registered_sound_sample_handles[];" not in source
+
+    for scratch_name in (
+        "initialize_bass_audio_backend",
+        "prepare_music_stream_reload_if_path_changed",
+        "ensure_music_stream_from_path",
+        "play_music_stream_from_bytes",
+    ):
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert "#include \"audio_system.h\"" in source
+        assert "extern char g_cached_music_path[];" not in source
+
+    for scratch_name, stale_declaration in (
+        (
+            "apply_audio_config_volumes",
+            "extern float g_stream_volume_scale;",
+        ),
+        (
+            "play_sound_effect_backend",
+            "extern float g_audio_backend_sfx_normalization_scale;",
+        ),
+        (
+            "play_voice_backend",
+            "extern float g_audio_backend_voice_normalization_scale;",
+        ),
+    ):
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert "#include \"audio_system.h\"" in source
+        assert stale_declaration not in source
 
 
 def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:

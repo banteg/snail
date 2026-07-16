@@ -3,11 +3,10 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_bass_audio_backend @ 0x449460 */
 
-00449460        uint32_t var_4 = arg1
-00449468        char* edi = arg1
-0044946d        data_7516a0 = 0
-00449478        edi[0x18] = 0
-0044947b        char* eax = load_file_bytes("Bass.dll", &var_4)
+00449460        int32_t var_4 = arg1
+0044946d        g_cached_music_path[0] = 0
+00449478        *(arg1 + 0x18) = 0
+0044947b        void* eax = load_file_bytes("Bass.dll", &var_4)
 0044948d        write_file_bytes("tBass.dll", eax, var_4)
 00449493        free_tracked_memory(eax)
 004494a0        HMODULE hModule = LoadLibraryA("tBass.dll")
@@ -16,16 +15,16 @@
 004494b9        HMODULE hModule_8 = data_753c90
 004494c5        data_753c08 = eax_1
 004494cc        data_753c1c = GetProcAddress(hModule_8, "BASS_SetConfig")
-004494dc        int32_t eax_4 = GetProcAddress(data_753c90, "BASS_Free")
+004494dc        BassFreeFn eax_4 = GetProcAddress(data_753c90, "BASS_Free")
 004494de        HMODULE hModule_1 = data_753c90
-004494ea        data_7537d8 = eax_4
+004494ea        g_bass_free = eax_4
 004494ef        int32_t eax_5 = GetProcAddress(hModule_1, "BASS_Update")
 004494f1        HMODULE hModule_9 = data_753c90
 004494fd        data_751698 = eax_5
-00449504        data_753bf8 = GetProcAddress(hModule_9, "BASS_StreamCreateFile")
-00449514        int32_t eax_8 = GetProcAddress(data_753c90, "BASS_StreamPlay")
+00449504        g_bass_stream_create_file = GetProcAddress(hModule_9, "BASS_StreamCreateFile")
+00449514        BassChannelPlayFn eax_8 = GetProcAddress(data_753c90, "BASS_StreamPlay")
 00449516        HMODULE hModule_2 = data_753c90
-00449522        data_7517a0 = eax_8
+00449522        g_bass_channel_play = eax_8
 00449527        int32_t eax_9 = GetProcAddress(hModule_2, "BASS_StreamPreBuf")
 00449529        HMODULE hModule_10 = data_753c90
 00449535        data_751670 = eax_9
@@ -33,10 +32,10 @@
 0044954c        int32_t eax_12 = GetProcAddress(data_753c90, "BASS_StreamFree")
 0044954e        HMODULE hModule_3 = data_753c90
 0044955a        data_753cb0 = eax_12
-0044955f        int32_t eax_13 = GetProcAddress(hModule_3, "BASS_SampleLoad")
+0044955f        BassSampleLoadFn eax_13 = GetProcAddress(hModule_3, "BASS_SampleLoad")
 00449561        HMODULE hModule_11 = data_753c90
-0044956d        data_7537cc = eax_13
-00449574        data_7527b4 = GetProcAddress(hModule_11, "BASS_SamplePlayEx")
+0044956d        g_bass_sample_load = eax_13
+00449574        g_bass_sample_play_ex = GetProcAddress(hModule_11, "BASS_SamplePlayEx")
 00449584        int32_t eax_16 = GetProcAddress(data_753c90, "BASS_SampleStop")
 00449586        HMODULE hModule_4 = data_753c90
 00449592        data_753c94 = eax_16
@@ -66,17 +65,16 @@
 0044964d        data_751674 = eax_29
 00449654        data_75165c = GetProcAddress(hModule_15, "BASS_ChannelRemoveSync")
 00449672        data_753ca8 = GetProcAddress(data_753c90, "BASS_ChannelIsActive")
-00449679        *(edi + 4) = 0
-0044967c        *(edi + 8) = 0x3d4ccccd
-00449683        *edi = 0
+00449679        *(arg1 + 4) = 0
+0044967c        *(arg1 + 8) = 0x3d4ccccd
+00449683        *arg1 = 0
 0044968d        if (data_753c08(1, 0xac44, 0, arg2, 0) == 0)
 00449694        report_errorf("Can't initialize digital sound system")
-0044969c        int32_t eax_34
-0044969c        eax_34.b = 0
+0044969c        int32_t eax_35
+0044969c        eax_35.b = 0
 004496a2        return 0
-004496a9        data_753c1c(1, 0x32)
-004496b0        data_753c20 = 0
+004496a9        int32_t result = data_753c1c(1, 0x32)
+004496b0        g_active_music_stream = 0
 004496b6        data_751680 = 0
-004496bd        int32_t result
 004496bd        result.b = 1
 004496c1        return result

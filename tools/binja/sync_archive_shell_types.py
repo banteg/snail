@@ -30,10 +30,25 @@ DATA_SYMBOL_UPDATES = (
     ("0x53c7f0", "g_archive_file"),
     ("0x53c7f4", "g_archive_startup_flag"),
     ("0x53c7f8", "g_archive_index_records"),
+    ("0x7516a0", "g_cached_music_path"),
+    ("0x7517a0", "g_bass_channel_play"),
+    ("0x7527b4", "g_bass_sample_play_ex"),
+    ("0x7537cc", "g_bass_sample_load"),
+    ("0x7537d8", "g_bass_free"),
+    ("0x7537e0", "g_registered_sound_sample_handles"),
+    ("0x753c58", "g_audio_backend"),
+    ("0x753c64", "g_stream_volume_scale"),
+    ("0x753c68", "g_audio_backend_sfx_normalization_scale"),
+    ("0x753c6c", "g_audio_backend_voice_normalization_scale"),
 )
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x432d40", "reset_registered_sound_sample_count"),
+    ("0x432d50", "cache_music_file"),
+    ("0x432dd0", "play_registered_warning_sample"),
+    ("0x432de0", "stop_registered_warning_sample"),
+    ("0x432df0", "play_sound_effect_backend"),
+    ("0x432e80", "play_voice_backend"),
     ("0x432f10", "register_sound_sample"),
     ("0x432fc0", "find_registered_sound_sample_id_by_name"),
     ("0x48b72d", "malloc"),
@@ -52,12 +67,41 @@ DATA_VAR_UPDATES = (
     ("0x53c7f0", "File*"),
     ("0x53c7f4", "uint8_t"),
     ("0x53c7f8", "ArchiveIndex*"),
+    ("0x7516a0", "CachedMusicPath"),
+    ("0x7517a0", "BassChannelPlayFn"),
+    ("0x7527b4", "BassSamplePlayExFn"),
+    ("0x7537cc", "BassSampleLoadFn"),
+    ("0x7537d8", "BassFreeFn"),
+    ("0x7537e0", "int32_t[256]"),
+    ("0x753c64", "float"),
+    ("0x753c68", "float"),
+    ("0x753c6c", "float"),
 )
 
 PROTO_UPDATES = (
     (
         "reset_registered_sound_sample_count",
         "void __cdecl reset_registered_sound_sample_count()",
+    ),
+    (
+        "cache_music_file",
+        "char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path)",
+    ),
+    (
+        "play_registered_warning_sample",
+        "int32_t __cdecl play_registered_warning_sample(int32_t sample_id)",
+    ),
+    (
+        "stop_registered_warning_sample",
+        "int32_t __cdecl stop_registered_warning_sample(int32_t sample_handle)",
+    ),
+    (
+        "play_sound_effect_backend",
+        "void __cdecl play_sound_effect_backend(int32_t sample_id, float gain, float pitch, float pan)",
+    ),
+    (
+        "play_voice_backend",
+        "void __cdecl play_voice_backend(int32_t sample_id, float gain, float pitch, float pan)",
     ),
     (
         "register_sound_sample",

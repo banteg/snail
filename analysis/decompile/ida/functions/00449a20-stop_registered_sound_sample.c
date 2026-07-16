@@ -2,9 +2,8 @@
 /* function: stop_registered_sound_sample @ 0x449a20 */
 /* selector: stop_registered_sound_sample */
 
-// Stops playback for one registered runtime sample index by resolving it through the shared sound-bank table before forwarding into the lower audio backend.
-int __stdcall sub_449A20(int a1)
+// AudioBackend method that stops one registered runtime sample index by resolving it through the shared sound-bank table before calling BASS.
+int __stdcall stop_registered_sound_sample(int a1)
 {
-  return MEMORY[0x753C94](unk_7537E0[a1]);
+  return g_bass_sample_stop(g_registered_sound_sample_handles[a1]);
 }
-

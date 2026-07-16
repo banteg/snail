@@ -1,8 +1,6 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: is_registered_sound_sample_playing @ 0x449a40 */
+/* function: stop_registered_warning_sample @ 0x432de0 */
 
-00449a4c        int32_t result = data_753ca8(g_registered_sound_sample_handles[arg1])
-00449a55        result.b = result == 1
-00449a58        return result
+00432def        return stop_sound_sample_handle(sample_handle)

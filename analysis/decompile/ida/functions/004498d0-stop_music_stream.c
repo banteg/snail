@@ -3,21 +3,20 @@
 /* selector: stop_music_stream */
 
 // Stops the active BASS music stream, removes any registered sync callback, frees the stream handle, and clears the active-stream flag.
-int __thiscall sub_4498D0(_BYTE *this)
+int __thiscall stop_music_stream(_BYTE *this)
 {
   int result; // eax
 
   if ( *this )
   {
-    if ( unk_751680 )
+    if ( g_active_music_stream_sync )
     {
-      MEMORY[0x75165C](unk_753C20, unk_751680);
-      unk_751680 = 0;
+      g_bass_channel_remove_sync(g_active_music_stream, g_active_music_stream_sync);
+      g_active_music_stream_sync = 0;
     }
-    MEMORY[0x753BE4](unk_753C20);
-    result = MEMORY[0x753CB0](unk_753C20);
+    g_bass_channel_stop(g_active_music_stream);
+    result = g_bass_stream_free(g_active_music_stream);
     *this = 0;
   }
   return result;
 }
-

@@ -2,32 +2,32 @@
 /* function: play_sound_effect_backend @ 0x432df0 */
 /* selector: play_sound_effect_backend */
 
-// Shared SFX backend wrapper that plays one effect id with an explicit gain scale plus optional extra playback parameters before forwarding into the lower sound-bank calls.
-void __cdecl play_sound_effect_backend(int a1, float a2, float a3, float a4)
+// Windows RShellSoundPlay entry point: normalizes one effect's gain and preserves the authored sample-id, gain, pitch, and pan dispatch contract before forwarding into the BASS registered-sample backend.
+void __cdecl play_sound_effect_backend(int sample_id, float gain, float pitch, float pan)
 {
   float v4; // [esp+0h] [ebp-Ch]
   float v5; // [esp+4h] [ebp-8h]
   float v6; // [esp+8h] [ebp-4h]
 
-  if ( a1 != -1 )
+  if ( sample_id != -1 )
   {
-    if ( a4 == 0.0 )
+    if ( pan == 0.0 )
     {
-      if ( a3 == -1.0 )
+      if ( pitch == -1.0 )
       {
-        v6 = g_audio_backend_sfx_normalization_scale * a2;
-        play_registered_sound_sample_scaled(a1, v6);
+        v6 = g_audio_backend_sfx_normalization_scale * gain;
+        play_registered_sound_sample_scaled(sample_id, v6);
       }
       else
       {
-        v5 = g_audio_backend_sfx_normalization_scale * a2;
-        play_registered_sound_sample_backend(a1, v5, a3);
+        v5 = g_audio_backend_sfx_normalization_scale * gain;
+        play_registered_sound_sample_backend(sample_id, v5, pitch);
       }
     }
     else
     {
-      v4 = g_audio_backend_sfx_normalization_scale * a2;
-      play_registered_sound_sample_scaled_panned(a1, v4, -1.0, a4);
+      v4 = g_audio_backend_sfx_normalization_scale * gain;
+      play_registered_sound_sample_scaled_panned(sample_id, v4, -1.0, pan);
     }
   }
 }

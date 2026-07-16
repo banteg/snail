@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 19,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 19,
+  "ida_exported": 19,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -13,24 +13,84 @@
   "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": true,
+  "health_check_ran": false,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_game_data_archive",
-      "address": "0x430e40"
+      "name": "cache_music_file",
+      "address": "0x432d50"
     },
     {
-      "name": "read_pressed_text_input_key_code",
-      "address": "0x432440"
+      "name": "play_registered_warning_sample",
+      "address": "0x432dd0"
     },
     {
-      "name": "read_repeating_text_input_key_code",
-      "address": "0x4327e0"
+      "name": "stop_registered_warning_sample",
+      "address": "0x432de0"
+    },
+    {
+      "name": "play_sound_effect_backend",
+      "address": "0x432df0"
+    },
+    {
+      "name": "play_voice_backend",
+      "address": "0x432e80"
+    },
+    {
+      "name": "initialize_bass_audio_backend",
+      "address": "0x449460"
+    },
+    {
+      "name": "uninitialize_bass_audio_backend",
+      "address": "0x4496d0"
+    },
+    {
+      "name": "ensure_music_stream_from_path",
+      "address": "0x449720"
+    },
+    {
+      "name": "prepare_music_stream_reload_if_path_changed",
+      "address": "0x4497e0"
+    },
+    {
+      "name": "play_music_stream_from_bytes",
+      "address": "0x449820"
+    },
+    {
+      "name": "stop_music_stream",
+      "address": "0x4498d0"
+    },
+    {
+      "name": "load_registered_sound_sample_from_path",
+      "address": "0x449920"
+    },
+    {
+      "name": "load_registered_sound_sample_from_bytes",
+      "address": "0x449960"
+    },
+    {
+      "name": "play_registered_sound_sample_scaled",
+      "address": "0x4499a0"
+    },
+    {
+      "name": "stop_registered_sound_sample",
+      "address": "0x449a20"
+    },
+    {
+      "name": "is_registered_sound_sample_playing",
+      "address": "0x449a40"
+    },
+    {
+      "name": "play_registered_sound_sample_default",
+      "address": "0x449a60"
+    },
+    {
+      "name": "play_registered_sound_sample_backend",
+      "address": "0x449a80"
+    },
+    {
+      "name": "play_registered_sound_sample_scaled_panned",
+      "address": "0x449ae0"
     }
-  ],
-  "health_check_count": 386,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  ]
 }

@@ -2541,6 +2541,50 @@
       "notes": "Android preserves the authored void helper as a single RShellSoundCount zero store. Its independently exported four-byte count and 0x8000-byte RShellSoundName matrix prove that Windows resets a scalar owner rather than a field in an invented aggregate."
     },
     {
+      "address": "0x432d50",
+      "windows_name": "cache_music_file",
+      "ios_symbol": "RShellMusicPlay(char*, int, char*)",
+      "android_symbol": "RShellMusicPlay(char*, int, char*)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "iOS and both Android ABIs retain the exact authored three-argument name. Android compares the requested path with its cached path, stops an active stream when needed, copies the new path, starts platform music, and updates the active/pause flags; Windows preserves the same public ABI around its DAT/filesystem and BASS-specific cache."
+    },
+    {
+      "address": "0x432dd0",
+      "windows_name": "play_registered_warning_sample",
+      "ios_symbol": "RShellSoundPlayLooped(int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "iOS preserves the exact one-id authored name. Windows forwards the registered id into BASS_SamplePlayEx with its loop flag set and returns the live playback handle consumed by Warning, proving this is the looped public adapter rather than a generic one-shot wrapper."
+    },
+    {
+      "address": "0x432de0",
+      "windows_name": "stop_registered_warning_sample",
+      "ios_symbol": "RShellSoundStopLooped(int)",
+      "android_symbol": "RShellSoundStopLooped(int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports preserve the one-handle stop ABI. Both Android ABIs implement it as a four-byte tail branch to PfmAudioStopSample, while Windows binds the process audio backend and forwards the same live handle."
+    },
+    {
+      "address": "0x432df0",
+      "windows_name": "play_sound_effect_backend",
+      "ios_symbol": "RShellSoundPlay(int, float, float, float)",
+      "android_symbol": "RShellSoundPlay(int, float, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports preserve the sample-id, gain, pitch, and pan argument contract. Android independently retains the -1 sentinel, SFX normalization multiply, pitch/pan default branches, and platform sample dispatch; Windows callers discard the backend result, so its exact recovered public contract remains void."
+    },
+    {
+      "address": "0x432e80",
+      "windows_name": "play_voice_backend",
+      "ios_symbol": "RShellVoicePlay(int, float, float, float)",
+      "android_symbol": "RShellVoicePlay(int, float, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports preserve the sample-id, gain, pitch, and pan argument contract. Android independently retains the -1 sentinel, voice normalization multiply, pitch/pan default branches, and platform sample dispatch; Windows callers discard the backend result, so its exact recovered public contract remains void."
+    },
+    {
       "address": "0x432f10",
       "windows_name": "register_sound_sample",
       "ios_symbol": "RShellSoundRegister(char*, int)",

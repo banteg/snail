@@ -2,9 +2,8 @@
 /* function: is_registered_sound_sample_playing @ 0x449a40 */
 /* selector: is_registered_sound_sample_playing */
 
-// Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend.
-bool __stdcall sub_449A40(int a1)
+// AudioBackend method that reports whether one registered runtime sample index is active by querying its shared sound-bank table entry through BASS.
+bool __stdcall is_registered_sound_sample_playing(int a1)
 {
-  return MEMORY[0x753CA8](unk_7537E0[a1]) == 1;
+  return g_bass_sample_is_active(g_registered_sound_sample_handles[a1]) == 1;
 }
-

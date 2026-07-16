@@ -1909,27 +1909,27 @@
     {
       "address": "0x432d50",
       "name": "cache_music_file",
-      "description": "Ensures one `music/*.ogg` payload is resident in the shared music-file cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
+      "description": "Windows RShellMusicPlay entry point: preserves the authored three-argument music ABI while ensuring one `music/*.ogg` payload is resident in the shared cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
     },
     {
       "address": "0x432dd0",
       "name": "play_registered_warning_sample",
-      "description": "Forwards one registered warning sample id to the process audio backend's default sample-play method."
+      "description": "Windows RShellSoundPlayLooped entry point: forwards one registered warning sample id to the process audio backend's looped default sample-play method and returns the live playback handle."
     },
     {
       "address": "0x432de0",
       "name": "stop_registered_warning_sample",
-      "description": "Forwards one live warning sample handle to the process audio backend's handle-stop method."
+      "description": "Windows RShellSoundStopLooped entry point: forwards one live warning playback handle to the process audio backend's handle-stop method."
     },
     {
       "address": "0x432df0",
       "name": "play_sound_effect_backend",
-      "description": "Shared SFX backend wrapper that plays one effect id with an explicit gain scale plus optional extra playback parameters before forwarding into the lower sound-bank calls."
+      "description": "Windows RShellSoundPlay entry point: normalizes one effect's gain and preserves the authored sample-id, gain, pitch, and pan dispatch contract before forwarding into the BASS registered-sample backend."
     },
     {
       "address": "0x432e80",
       "name": "play_voice_backend",
-      "description": "Shared voice backend wrapper that plays one voice sample id with an explicit gain scale plus the same optional extra playback parameters used by the SFX backend."
+      "description": "Windows RShellVoicePlay entry point: normalizes one voice sample's gain and preserves the authored sample-id, gain, pitch, and pan dispatch contract before forwarding into the BASS registered-sample backend."
     },
     {
       "address": "0x432f10",

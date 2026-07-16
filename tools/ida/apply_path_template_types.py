@@ -978,10 +978,6 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_sbend_path_template_pair(Path* self, uint32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
     ),
     (
-        "cache_music_file",
-        "char __cdecl cache_music_file(char* path, int32_t unused, char* unused_default_path);",
-    ),
-    (
         "initialize_subgame",
         "void __thiscall initialize_subgame(SubgameRuntime* game);",
     ),

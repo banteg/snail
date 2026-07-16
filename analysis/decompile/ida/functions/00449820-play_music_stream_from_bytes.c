@@ -3,11 +3,11 @@
 /* selector: play_music_stream_from_bytes */
 
 // Stops any previous active music stream, opens a new BASS stream from already-read music bytes, and starts playback while caching the source path.
-int __thiscall play_music_stream_from_bytes(_BYTE *this, char *ArgList, int a3, int a4, char a5)
+int32_t __thiscall play_music_stream_from_bytes(_BYTE *this, char *ArgList, int a3, int a4, char a5)
 {
   unsigned int v6; // kr04_4
-  int file; // eax
-  int result; // eax
+  int32_t file; // eax
+  int32_t result; // eax
 
   v6 = strlen(ArgList) + 1;
   rstrcpy_checked_ascii(g_cached_music_path, ArgList);
@@ -21,10 +21,9 @@ int __thiscall play_music_stream_from_bytes(_BYTE *this, char *ArgList, int a3, 
   if ( !file )
     return report_errorf("Music Play Memory Failed %s", ArgList);
   if ( a5 )
-    result = (*(int (__stdcall **)(int, _DWORD, int))&g_cached_music_path[256])(file, 0, 4);
+    result = g_bass_channel_play(file, 0, 4);
   else
-    result = (*(int (__stdcall **)(int, _DWORD, _DWORD))&g_cached_music_path[256])(file, 0, 0);
+    result = g_bass_channel_play(file, 0, 0);
   *this = 1;
   return result;
 }
-
