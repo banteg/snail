@@ -1253,6 +1253,17 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
             "path_template_types.h",
         )
     )
+    replay_headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_high_score_bank_types.h",
+            "ida_high_score_bank_types.h",
+            "frontend_replay_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "path_template_types.h",
+        )
+    )
 
     binja_declarations = (
         "uint8_t __thiscall deserialize_compact_high_score_record(SubSolution* record, CompactHighScoreRecord* compact)",
@@ -1288,6 +1299,10 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     ):
         assert f'"{local_name}"' in binja_bank_source
 
+    for local_name in ("flag_destination", "flag_source"):
+        local_update = binja_bank_source.split(f'"{local_name}",', 1)[1]
+        assert '"uint16_t*"' in local_update.split("),", 1)[0]
+
     assert (
         '"load_high_scores_from_file",\n'
         '        "RegisterVariableSourceType",\n'
@@ -1301,6 +1316,13 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     assert 'lvar.name in {"file_bytes", "compact"}' in ida_bank_source
     assert 'info.name = "compact"' in ida_bank_source
     assert '"CompactHighScoreRecord"' in ida_bank_source
+
+    for header in replay_headers:
+        replay_record = header.split("typedef struct ReplayRunRecord {", 1)[1].split(
+            "} ReplayRunRecord;", 1
+        )[0]
+        assert "uint16_t flags;" in replay_record
+        assert "reserved_05" not in replay_record
 
     for header in headers:
         compact_header = "".join(header.split())
@@ -1316,6 +1338,13 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
         assert "SubSolutionScalarsalt_frequency;" in compact_header
         assert "0x88+replay_sample_count*5" in compact_header
         assert "HighScoreRecord*record" not in compact_header
+
+    assert "REPLAY_RUN_RECORD_FIELD_UPDATES = (" in binja_path_source
+    assert '("0x04", "flags", "uint16_t")' in binja_path_source
+    assert (
+        '("ReplayRunRecord", REPLAY_RUN_RECORD_FIELD_UPDATES)'
+        in binja_path_source
+    )
 
 
 def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:

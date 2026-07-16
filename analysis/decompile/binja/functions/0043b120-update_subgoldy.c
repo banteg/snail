@@ -136,18 +136,18 @@
 0043b601        if (game_3->track_state_latch != 0)
 0043b60c        if ((*(player->control_source + 4) & 0x4000) != 0)
 0043b614        int32_t edx_11 = game_3->replay_update_cursor * 3
-0043b617        (&game_3->current_high_score_record.run_records[0].flags)[edx_11 << 1] |= 1
+0043b617        (&game_3->current_high_score_record.run_records[0].flags)[edx_11].b |= 1
 0043b62f        if ((player->control_source->control_flags_b & 0x4000) != 0)
 0043b631        struct SubgameRuntime* game_4 = player->game
 0043b63d        int32_t ecx_35 = game_4->replay_update_cursor * 3
-0043b640        (&game_4->current_high_score_record.run_records[0].flags)[ecx_35 << 1] |= 2
+0043b640        (&game_4->current_high_score_record.run_records[0].flags)[ecx_35].b |= 2
 0043b64f        struct PlayerControlSource* control_source = player->control_source
 0043b65d        if ((control_source->control_flags_b & 0x4000) == 0 && (control_source->control_flags_a & 0x4000) == 0)
 0043b665        player->game->track_state_latch = 1
 0043b66c        game_2 = player->game
 0043b67a        if (game_2->track_state_latch != 0)
 0043b682        int32_t ecx_37 = game_2->replay_update_cursor * 3
-0043b685        (&game_2->current_high_score_record.run_records[0].flags)[ecx_37 << 1] |= 4
+0043b685        (&game_2->current_high_score_record.run_records[0].flags)[ecx_37].b |= 4
 0043b297        struct SubSolution* selected_level_record = eax_8->selected_level_record
 0043b29d        eax_8 = eax_8->replay_update_cursor
 0043b2b2        if (eax_8 s>= selected_level_record->replay_sample_count || player->click_start.state == CLICK_START_STATE_WAITING_FOR_START)
@@ -158,11 +158,11 @@
 0043b2ce        ebx_1->x = fconvert.s(st0_1)
 0043b2ce        top_1 = 0
 0043b2d0        struct SubgameRuntime* game_1 = player->game
-0043b2ed        if ((game_1->selected_level_record->run_records[game_1->replay_update_cursor].flags & 4) == 0)
+0043b2ed        if ((game_1->selected_level_record->run_records[game_1->replay_update_cursor].flags.b & 4) == 0)
 0043b2f8        game_1->track_state_latch = 0
 0043b2ef        game_1->track_state_latch = 1
 0043b2ff        game_2 = player->game
-0043b319        if ((game_2->selected_level_record->run_records[game_2->replay_update_cursor].flags & 8) != 0)
+0043b319        if ((game_2->selected_level_record->run_records[game_2->replay_update_cursor].flags.b & 8) != 0)
 0043b324        g_game_base->players[0].frontend_state = 0x1a
 0043b334        g_game_base->players[0].saved_frontend_state = 0xa
 0043b344        g_game_base->players[0].redispatch_requested = 1
@@ -1593,7 +1593,7 @@
 0043d18b        label_43d18b:
 0043d18e        if (((player->control_source->control_flags_b).w:1.b & 0x40) != 0)
 0043d18e        goto label_43d198
-0043d12c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags & 1) != 0)
+0043d12c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags.b & 1) != 0)
 0043d143        label_43d143:
 0043d143        play_movement_state_sound(player)
 0043d14b        update_movement_flag_emitters(player, player)
@@ -1604,7 +1604,7 @@
 0043d130        if (selected_level_record_active == 0)
 0043d130        goto label_43d138
 0043d168        label_43d168:
-0043d17c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags & 2) != 0)
+0043d17c        if ((game_17->selected_level_record->run_records[game_17->replay_update_cursor].flags.b & 2) != 0)
 0043d198        label_43d198:
 0043d198        player->movement_fire_progress = player->movement_fire_progress_step
 0043d19e        play_movement_state_sound(player)

@@ -3,6 +3,7 @@
 
 typedef int int32_t;
 typedef short int16_t;
+typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 
@@ -40,8 +41,7 @@ typedef union SubSolutionScalar {
 typedef struct ReplayRunRecord {
     int16_t lateral_x;
     int16_t delta_z;
-    uint8_t flags;
-    uint8_t reserved_05;
+    uint16_t flags;
 } ReplayRunRecord;
 
 typedef struct SubSolution {
@@ -73,8 +73,8 @@ typedef struct SubSolution {
 
 /*
  * Stable 0x88-byte prefix of the variable-length cRSubSolutionHeader record.
- * The payload packs lateral int16s, delta-z int16s, then one flags byte per
- * replay sample; byte_count is therefore 0x88 + replay_sample_count * 5.
+ * The payload packs lateral int16s, delta-z int16s, then the low byte of each
+ * expanded flags word; byte_count is therefore 0x88 + replay_sample_count * 5.
  */
 typedef struct CompactHighScoreRecord {
     int32_t byte_count;

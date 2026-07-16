@@ -17,7 +17,7 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
   int v12; // eax
 
   display_score_stats(&runtime->player);
-  runtime->current_high_score_record.run_records[runtime->replay_update_cursor].flags |= 8u;
+  LOBYTE(runtime->current_high_score_record.run_records[runtime->replay_update_cursor].flags) |= 8u;
   v3 = runtime->replay_update_cursor + 1;
   ++runtime->current_high_score_record.replay_sample_count;
   runtime->replay_update_cursor = v3;
@@ -55,7 +55,7 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
         {
           if ( v12 == 3 )
             add_time_trial_high_score(
-              (SubHighScore *)((char *)&g_high_score_bank + (_DWORD)runtime),
+              (SubHighScore *)((char *)&g_parcel_set_buckets[522].candidates[6].position.y + (_DWORD)runtime),
               &runtime->current_high_score_record,
               runtime->level_mode_arg,
               runtime->player.completion_handoff_active);
@@ -63,14 +63,14 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
         else
         {
           add_survival_high_score(
-            (SubHighScore *)((char *)&g_high_score_bank + (_DWORD)runtime),
+            (SubHighScore *)((char *)&g_parcel_set_buckets[522].candidates[6].position.y + (_DWORD)runtime),
             &runtime->current_high_score_record);
         }
       }
       else
       {
         add_arcade_high_score(
-          (SubHighScore *)((char *)&g_high_score_bank + (_DWORD)runtime),
+          (SubHighScore *)((char *)&g_parcel_set_buckets[522].candidates[6].position.y + (_DWORD)runtime),
           &runtime->current_high_score_record,
           runtime->level_mode_arg);
       }

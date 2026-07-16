@@ -13,8 +13,8 @@ Evidence from the paired serializer:
 - checksum is `(score * score) ^ 0xdeadbabe`
 - replay payload is packed as `int16 lateral_x[]`, `int16 delta_z[]`,
   then byte `flags[]`
-- compact load zero-extends each flags byte into the expanded record's `+0x04`
-  word, clearing the reserved byte at `+0x05`
+- compact load zero-extends each flags byte into the expanded record's 16-bit
+  `flags` owner at `+0x04`
 
 2026-06-20 larger-chunk audit:
 - Moving the second-lane destination cursor declaration before the packed
@@ -56,3 +56,11 @@ Evidence from the paired serializer:
   arrays. Strict paired export and ownership health checks pass.
 - No source-shape changes or matching tricks were needed: focused matching
   remains exact at 114/114 instructions with the masked operand clean.
+
+2026-07-16 replay flag-word closure:
+
+- The expanded six-byte `ReplayRunRecord` owns a 16-bit `flags` field at
+  `+0x04`; there is no independent reserved byte. This loader's native
+  `movzx` from the packed byte followed by a word store proves the widening.
+- Assigning the compact byte directly to that word removes the old aliasing
+  cast while preserving the exact 114/114 match and clean masked operand.

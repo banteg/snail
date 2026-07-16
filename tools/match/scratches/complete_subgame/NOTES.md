@@ -20,12 +20,12 @@ above is what the Zig bridge lanes need for verification.
 
 ## Scratch status
 
-Promoted to a matcher scratch on 2026-06-13. Current result: 75.28%,
-90/88 instructions, 7/88 prefix. The current scratch covers:
+Promoted to a matcher scratch on 2026-06-13. Current result: 87.50%,
+88/88 instructions, 20/88 prefix. The current scratch covers:
 
 - `Player::display_score_stats` on the embedded Player at `game+0x3bb764`
 - 6-byte run-record completion bit at `game+0xfd2b84 + cursor*6`, now
-  modeled as bit 3 (`0x08`, completed) in the first byte of the record
+  modeled as bit 3 (`0x08`, completed) in the 16-bit flags owner
 - completion counter and replay cursor increments
 - global `CheatState::flags & 1` snapshot suppression
 - result-record snapshot at `game+0xfd2b10`, including the six-dword stat
@@ -203,3 +203,12 @@ complete owner map. The tracked BN export contains no raw offsets: the snapshot
 comes from the embedded `Player`, lands in `current_high_score_record`, and is
 dispatched through the embedded `sub_high_score` bank. A health check pins that
 owner graph. Matching source remains unchanged at the honest 75.28% frontier.
+
+## 2026-07-16 replay flag-word closure
+
+Recovering `ReplayRunRecord::flags` as its actual 16-bit owner removes the
+false byte-plus-reserved split. The existing natural `flags |= 0x08` source
+now produces the native direct byte operation and raises this scratch from
+75.28% (90/88, prefix 7) to 87.50% (88/88, prefix 20), with all eight masked
+operands clean. The remaining snapshot-order differences are unrelated to the
+replay lane and remain honest.

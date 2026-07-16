@@ -19,8 +19,7 @@ struct ScoreBucketBlock {
 struct ReplayRunRecord {
     short lateral_x; // +0x00
     short delta_z; // +0x02, fixed-point z delta scaled by 32.0
-    unsigned char flags; // +0x04
-    char reserved_05; // +0x05, zeroed by compact replay load/init
+    unsigned short flags; // +0x04, compact persistence stores the low byte only
 };
 
 typedef char ReplayRunRecord_must_be_0x06[

@@ -1593,8 +1593,7 @@ typedef struct Completion {
 typedef struct ReplayRunRecord {
     int16_t lateral_x;
     int16_t delta_z;
-    uint8_t flags;
-    uint8_t reserved_05;
+    uint16_t flags;
 } ReplayRunRecord;
 
 typedef union SubSolutionScoreOrTime {

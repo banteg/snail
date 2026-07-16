@@ -445,9 +445,11 @@
         "source_lateral = &compact->replay_payload",
         "lateral_run->lateral_x",
         "source_delta_z",
-        "flag_destination"
+        "uint16_t* flag_destination"
       ],
       "forbidden_substrings": [
+        "uint8_t* flag_destination",
+        "reserved_05",
         "struct HighScoreRecord* record",
         "arg1[",
         "arg2 +",
@@ -462,9 +464,12 @@
         "compact->checksum",
         "record->replay_speed_scalar.bits",
         "record->run_records",
+        "uint16_t *p_flags",
+        "*p_flags = ",
         "compact->replay_payload"
       ],
       "forbidden_substrings": [
+        "reserved_05",
         "_DWORD *record",
         "HighScoreRecord *record",
         "arg1"
@@ -478,10 +483,12 @@
         "out_lateral = &compact->replay_payload",
         "lateral_run->lateral_x",
         "out_delta_z",
-        "flag_source",
+        "uint16_t* flag_source",
         "compact->byte_count = replay_sample_count_3 * 5 + 0x88"
       ],
       "forbidden_substrings": [
+        "uint8_t* flag_source",
+        "reserved_05",
         "struct HighScoreRecord* record",
         "arg1[",
         "arg2 +",
@@ -495,11 +502,14 @@
         "int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactHighScoreRecord *compact)",
         "compact->replay_speed_scalar.bits",
         "record->run_records",
+        "uint16_t *p_flags",
+        "*(_BYTE *)p_flags",
         "compact->replay_payload",
         "5 * record->replay_sample_count + 136",
         "compact->byte_count = result"
       ],
       "forbidden_substrings": [
+        "reserved_05",
         "_DWORD *record",
         "HighScoreRecord *record",
         "arg1"
@@ -771,6 +781,7 @@
       "name": "bn_complete_subgame_high_score_owner",
       "artifact": "analysis/decompile/binja/functions/00438700-complete_subgame.c",
       "required_substrings": [
+        "current_high_score_record.run_records[0].flags",
         "add_arcade_high_score(&game->sub_high_score, &game->current_high_score_record",
         "add_survival_high_score(&game->sub_high_score, &game->current_high_score_record",
         "add_time_trial_high_score(&game->sub_high_score, &game->current_high_score_record"
@@ -784,12 +795,45 @@
       "name": "ida_complete_subgame_high_score_owner",
       "artifact": "analysis/decompile/ida/functions/00438700-complete_subgame.c",
       "required_substrings": [
+        "current_high_score_record.run_records[runtime->replay_update_cursor].flags",
         "(SubHighScore *)",
         "&runtime->current_high_score_record"
       ],
       "forbidden_substrings": [
         "HighScoreBank",
         "HighScoreRecord"
+      ]
+    },
+    {
+      "name": "bn_update_click_start_replay_flag_word_owner",
+      "artifact": "analysis/decompile/binja/functions/00442290-update_click_start.c",
+      "required_substrings": [
+        "selected_level_record->run_records",
+        ".flags.b & 0x20",
+        "current_high_score_record.run_records[0].flags",
+        ".b |= 0x20",
+        "&= 0xfffe"
+      ],
+      "forbidden_substrings": [
+        "reserved_05",
+        "__offset(",
+        "uint8_t* flags"
+      ]
+    },
+    {
+      "name": "ida_update_click_start_replay_flag_word_owner",
+      "artifact": "analysis/decompile/ida/functions/00442290-update_click_start.c",
+      "required_substrings": [
+        "void __thiscall update_click_start(ClickStartController *controller)",
+        "selected_level_record->run_records",
+        ".flags & 0x20",
+        "LOBYTE(g_game_base->subgame.current_high_score_record.run_records",
+        ".flags &= ~1u"
+      ],
+      "forbidden_substrings": [
+        "reserved_05",
+        "sub_442290",
+        "*((_BYTE *)"
       ]
     },
     {

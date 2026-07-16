@@ -632,7 +632,8 @@ only as historical decompiler spelling in older evidence.
     - `+0x6c`: `replay_sample_count`
     - `+0x70 + i*6`: replay sample `lateral_x`
     - `+0x72 + i*6`: replay sample `delta_z`
-    - `+0x74 + i*6`: replay sample `flags`
+    - `+0x74 + i*6`: replay sample 16-bit `flags` (compact persistence stores
+      only the low byte)
 
 The `+0x72` sample lane is not a steering lane. `update_subgoldy` uses it on the non-selected
 Time Trial replay/ghost path by accumulating `convert_math_type16_to_32(sample, 32.0)` into

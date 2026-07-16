@@ -21,7 +21,6 @@
 00417ad2        (eax_3 - 0x72)->run_records[0].lateral_x = 0
 00417ad6        (eax_3 - 0x72)->run_records[0].delta_z = 0
 00417ad9        (eax_3 - 0x72)->run_records[0].flags = 0
-00417ad9        (eax_3 - 0x72)->run_records[0].reserved_05 = 0
 00417add        eax_3 = &eax_3[3]
 00417ae0        i = i_1
 00417ae0        i_1 -= 1

@@ -54,3 +54,11 @@ matching native register ownership while keeping the `int16[]`, `int16[]`,
 - Strict paired export and ownership health checks pass. Focused matching stays
   exact at 109/109 instructions with the masked operand clean; no fakematching
   was introduced.
+
+2026-07-16 replay flag-word closure:
+
+- The expanded record's `flags` member is a 16-bit owner. Compact persistence
+  intentionally writes only its low byte, retaining the on-disk five-byte
+  payload stride while the in-memory record remains six bytes.
+- The natural field read preserves the exact 109/109 match and clean masked
+  operand.

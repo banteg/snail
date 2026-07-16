@@ -16,7 +16,7 @@ unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *re
   int32_t v12; // ecx
   int32_t v13; // eax
   uint8_t *v14; // ebp
-  uint8_t *p_flags; // ecx
+  uint16_t *p_flags; // ecx
 
   if ( compact->checksum == ((compact->score * compact->score) ^ 0xDEADBABE) )
   {
@@ -78,8 +78,8 @@ unsigned __int8 __thiscall deserialize_compact_high_score_record(SubSolution *re
       p_flags = &record->run_records[0].flags;
       do
       {
-        *(_WORD *)p_flags = v14[v13++];
-        p_flags += 6;
+        *p_flags = v14[v13++];
+        p_flags += 3;
       }
       while ( v13 < record->replay_sample_count );
     }

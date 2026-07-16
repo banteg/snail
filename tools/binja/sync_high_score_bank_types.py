@@ -123,7 +123,7 @@ PERSISTENCE_USER_VAR_UPDATES = (
         300,
         67,
         "flag_destination",
-        "uint8_t*",
+        "uint16_t*",
     ),
     (
         "serialize_compact_high_score_record",
@@ -171,7 +171,7 @@ PERSISTENCE_USER_VAR_UPDATES = (
         287,
         72,
         "flag_source",
-        "uint8_t*",
+        "uint16_t*",
     ),
 )
 

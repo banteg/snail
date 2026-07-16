@@ -3,6 +3,7 @@
 
 typedef int int32_t;
 typedef short int16_t;
+typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;
 
@@ -239,8 +240,7 @@ typedef union ScoreOrTime {
 typedef struct ReplayRunRecord {
     int16_t lateral_x;
     int16_t delta_z;
-    uint8_t flags;
-    uint8_t reserved_05;
+    uint16_t flags;
 } ReplayRunRecord;
 
 typedef struct SubSolution {

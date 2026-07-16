@@ -50,9 +50,9 @@
 0044027f        int32_t replay_sample_count_2 = record->replay_sample_count
 00440282        int32_t i_2 = 0
 0044028d        if (replay_sample_count_2 s> 0)
-0044028f        uint8_t* flag_source = &record->run_records[0].flags
-00440292        uint8_t ecx_8 = *flag_source
-00440294        flag_source = &flag_source[6]
+0044028f        uint16_t* flag_source = &record->run_records[0].flags
+00440292        char ecx_8 = *flag_source
+00440294        flag_source = &flag_source[3]
 00440297        (&compact->replay_payload)[(replay_sample_count_2 << 2) + i_2] = ecx_8
 0044029d        i_2 += 1
 004402a0        do while (i_2 s< record->replay_sample_count)

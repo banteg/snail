@@ -1,4 +1,4 @@
-# update_subgoldy @ 0x43b120 — 74.20%, 2075/2087 insns, structure complete
+# update_subgoldy @ 0x43b120 — 74.43%, 2070/2087 insns, structure complete
 
 The boss of bosses (2091 insns, 8456 bytes) has a full scratch: every block
 of the function is transcribed and the diff is dominated by
@@ -374,6 +374,12 @@ fakematch was added.
 7. Free-lane z / case-2 x integrate operand commutation (velocity-first
    vs position-first) — VC6 commutes one site each way regardless of
    source order so far.
+
+2026-07-16 replay flag-word closure: the expanded six-byte replay sample owns
+one 16-bit `flags` field at `+0x04`; compact persistence merely stores its low
+byte. Replaying that true layout improves the focused result from 74.30%
+(2072/2087) to 74.43% (2070/2087), retaining 290 clean masked operands and the
+single audited follow jump-table mismatch. No source scheduling was changed.
 
 2026-07-11 damage-owner recovery: the compact scratch-local gauge view at
 player +0x3c4 is replaced by the shared exact 0x2c-byte `DamageGuage`

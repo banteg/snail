@@ -458,6 +458,12 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
     ),
 )
 
+REPLAY_RUN_RECORD_FIELD_UPDATES = (
+    ("0x00", "lateral_x", "int16_t"),
+    ("0x02", "delta_z", "int16_t"),
+    ("0x04", "flags", "uint16_t"),
+)
+
 SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x00", "scan_reset", "uint8_t"),
     ("0x01", "camera_snap_requested", "uint8_t"),
@@ -1593,6 +1599,7 @@ def main() -> int:
             target=args.target,
             struct_updates=(
                 ("GameRoot", GAME_ROOT_FIELD_UPDATES),
+                ("ReplayRunRecord", REPLAY_RUN_RECORD_FIELD_UPDATES),
                 ("SubPause", SUB_PAUSE_FIELD_UPDATES),
                 ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),

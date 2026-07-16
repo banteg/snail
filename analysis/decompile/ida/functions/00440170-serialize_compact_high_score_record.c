@@ -16,7 +16,7 @@ int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactH
   int32_t v11; // ecx
   int32_t v12; // eax
   uint8_t *v13; // edi
-  uint8_t *p_flags; // esi
+  uint16_t *p_flags; // esi
   uint8_t v15; // cl
   int result; // eax
 
@@ -80,8 +80,8 @@ int __thiscall serialize_compact_high_score_record(SubSolution *record, CompactH
     p_flags = &record->run_records[0].flags;
     do
     {
-      v15 = *p_flags;
-      p_flags += 6;
+      v15 = *(_BYTE *)p_flags;
+      p_flags += 3;
       v13[v12++] = v15;
     }
     while ( v12 < record->replay_sample_count );

@@ -63,9 +63,9 @@ start_subgame:
             g_game->subgame.current_high_score_record
                 .run_records[g_game->subgame.replay_update_cursor]
                 .flags |= 0x20;
-            *(unsigned short*)&g_game->subgame.current_high_score_record
-                                  .run_records[g_game->subgame.replay_update_cursor]
-                                  .flags &= 0xfffe;
+            g_game->subgame.current_high_score_record
+                .run_records[g_game->subgame.replay_update_cursor]
+                .flags &= 0xfffe;
             g_game->subgame.current_high_score_record.source_tail =
                 g_game->subgame.replay_update_cursor;
         }

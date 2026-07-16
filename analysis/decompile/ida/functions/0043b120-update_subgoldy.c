@@ -150,7 +150,7 @@ void __thiscall update_subgoldy(Player *player)
   {
     if ( g_game_base->players[0].frontend_state != 9 )
     {
-      update_damage_gauge((int)&player->damage_gauge);
+      update_damage_gauge(&player->damage_gauge);
       update_progress_bar(&player->progress_bar);
       update_warning((float *)&player->warning);
       update_row_event_display(&player->game->completion);
@@ -194,7 +194,7 @@ void __thiscall update_subgoldy(Player *player)
       if ( replay_update_cursor < selected_level_record->replay_sample_count
         && player->click_start.state != CLICK_START_STATE_WAITING_FOR_START )
       {
-        p_position = &player->body.transform.position;
+        p_position = (Vec3 *)&player->body.transform.position;
         player->body.transform.position.x = convert_math_type16_to_32(
                                               selected_level_record->run_records[replay_update_cursor].lateral_x,
                                               16.0);
@@ -787,7 +787,7 @@ LABEL_287:
           g_game_base->players[0].completion_handoff_transform.position.y = g_game_base->players[0].completion_handoff_transform.position.y
                                                                           - 1.0;
         }
-        update_damage_gauge((int)&player->damage_gauge);
+        update_damage_gauge(&player->damage_gauge);
         update_progress_bar(&player->progress_bar);
         wobble_alpha = player->sub_hover.wobble_alpha;
         player->cached_camera_target_world.x = p_position->x;
@@ -1086,7 +1086,7 @@ LABEL_40:
         player->body.transform.position.x = player->game->subgame_rate * 0.2 * (v17 - player->body.transform.position.x)
                                           + player->body.transform.position.x;
     }
-    p_position = &player->body.transform.position;
+    p_position = (Vec3 *)&player->body.transform.position;
     v18 = convert_math_type32_to_16(player->body.transform.position.x, 16.0);
     source_celld = convert_math_type16_to_32(v18, 16.0);
     player->body.transform.position.x = source_celld;
@@ -1120,16 +1120,16 @@ LABEL_40:
     if ( v22->track_state_latch )
     {
       if ( (player->control_source->control_flags_a & 0x4000) != 0 )
-        v22->current_high_score_record.run_records[v22->replay_update_cursor].flags |= 1u;
+        LOBYTE(v22->current_high_score_record.run_records[v22->replay_update_cursor].flags) |= 1u;
       if ( (player->control_source->control_flags_b & 0x4000) != 0 )
-        player->game->current_high_score_record.run_records[player->game->replay_update_cursor].flags |= 2u;
+        LOBYTE(player->game->current_high_score_record.run_records[player->game->replay_update_cursor].flags) |= 2u;
     }
     control_source = player->control_source;
     if ( (control_source->control_flags_b & 0x4000) == 0 && (control_source->control_flags_a & 0x4000) == 0 )
       player->game->track_state_latch = 1;
     v24 = player->game;
     if ( v24->track_state_latch )
-      v24->current_high_score_record.run_records[v24->replay_update_cursor].flags |= 4u;
+      LOBYTE(v24->current_high_score_record.run_records[v24->replay_update_cursor].flags) |= 4u;
     goto LABEL_60;
   }
 }

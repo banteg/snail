@@ -10,7 +10,7 @@ Recovered layout corrections:
 - `player_name` is 0x14 bytes at `+0x54`; `+0x68` is `runtime_build_seed`.
 - `replay_sample_count` is `+0x6c`.
 - replay records start at `+0x70`, are 21600 six-byte entries, and have their
-  per-entry `lateral_x`, `delta_z`, flags, and reserved byte fields.
+  per-entry `lateral_x`, `delta_z`, and 16-bit `flags` fields.
 
 2026-06-19 post-name-copy ordering:
 
@@ -42,3 +42,9 @@ Recovered layout corrections:
   shape.
 - Focused matching remains exact at 40/40 instructions with all three masked
   operands clean; strict paired export also passes.
+
+2026-07-16 replay flag-word closure:
+
+- The exact three-word clearing loop initializes `lateral_x`, `delta_z`, and
+  the complete 16-bit `flags` owner. It independently agrees with the compact
+  loader's widened store and keeps the exact 40/40 result unchanged.

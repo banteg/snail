@@ -53,10 +53,10 @@
 0044013a        int32_t replay_sample_count_1 = record->replay_sample_count
 0044013d        int32_t flag_index = 0
 0044014a        if (replay_sample_count_1 s> 0)
-0044014c        uint8_t* flag_destination = &record->run_records[0].flags
+0044014c        uint16_t* flag_destination = &record->run_records[0].flags
 00440154        *flag_destination = zx.w((&compact->replay_payload)[(replay_sample_count_1 << 2) + flag_index])
 0044015a        flag_index += 1
-0044015b        flag_destination = &flag_destination[6]
+0044015b        flag_destination = &flag_destination[3]
 00440160        do while (flag_index s< record->replay_sample_count)
 00440162        record->active = 1
 00440169        int32_t eax_9

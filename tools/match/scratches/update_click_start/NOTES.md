@@ -2,9 +2,8 @@
 
 First structured scratch for `update_click_start` @ `0x442290`.
 
-Match status: 84.06%, 138 target instructions, 138 candidate instructions,
-prefix 5/138, with 23 masked operands resolved and the candidate-local jump
-table symbol left honestly unresolved. No fakematching.
+Match status: exact, 138/138 instructions with full prefix and all 24 masked
+operands clean. No fakematching.
 
 Recovered relationships:
 
@@ -21,14 +20,12 @@ Recovered relationships:
 - states `3/4` kill the prompt, move the embedded render transform, and recycle
   the owner through the shared BOD free-list path.
 
-Residual mismatch:
+Previously resolved residual:
 
-- native and candidate now use the same five-entry jump-table dispatch and the
-  same 138-instruction budget; the remaining state-2 differences are register
-  allocation around the replay-record test and the byte flag update;
-- the candidate jump table is a local compiler symbol, so the matcher cannot
-  yet prove it is the native table even though the dispatch entries and case
-  order agree;
+- the earlier partial already used the same five-entry jump-table dispatch and
+  138-instruction budget, but differed around the replay-record flag update;
+- before the final layout correction, the candidate jump table remained a
+  local compiler symbol whose shifted case destinations could not be proved;
 - `GameRoot::backdrop.unknown_660` is the exact owner of the byte raised on
   waiting-state entry, but this is its sole Windows reference, so its role
   remains deliberately unnamed.
@@ -52,8 +49,8 @@ worse and still produced a compare tree, so no jump-table fakematch was kept.
 2026-07-12 replay/root ownership pass: the state-2 handoff now uses the exact
 `SubgameRuntime::replay_launch_active`, `replay_launch_record`, and
 `replay_update_cursor` fields. Live input records are addressed through
-`current_high_score_record.run_records[cursor]`; the low-byte `flags` view is
-ORed with `0x20`, the intentional 16-bit view clears bit zero, and
+`current_high_score_record.run_records[cursor]`; the 16-bit `flags` owner is
+ORed with `0x20` and then has bit zero cleared, while
 `current_high_score_record.source_tail` receives the cursor. State 3 seeds the
 RNG from `current_high_score_record.runtime_build_seed`. Prompt teardown and
 BOD recycling now use `GameRoot::border_manager` and `active_bod_list`.
@@ -118,3 +115,17 @@ load/or/store. Typed record pointers, a flattened byte lane, explicit casts,
 signedness, and a 16-bit union view were neutral or worse and were rejected.
 No alias, volatile qualifier, synthetic control flow, or local table alias was
 kept to hide the mismatch.
+
+## 2026-07-16 replay flag-word closure
+
+The paired compact loader proves that the expanded `ReplayRunRecord +0x04`
+lane is one 16-bit `flags` owner: it zero-extends a compact byte and stores a
+word. The exact initializer independently clears the same lane as one of three
+consecutive words. Compact serialization intentionally persists only its low
+byte.
+
+Using that recovered member directly lets VC6 emit the native memory byte-OR
+followed by the word AND. `update_click_start` is now exact at 138/138
+instructions with full prefix and all 24 masked operands clean, including the
+audited five-entry jump table. The source lost an aliasing cast; no scheduling
+hint or fakematch was added.

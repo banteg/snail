@@ -61,7 +61,7 @@ unsigned char SubSolution::deserialize_compact_high_score_record(
     if (replay_sample_count > 0) {
         ReplayRunRecord* flag_run = run_records;
         do {
-            *(unsigned short*)&flag_run->flags = source_flags[flag_index];
+            flag_run->flags = source_flags[flag_index];
             ++flag_index;
             ++flag_run;
         } while (flag_index < replay_sample_count);
