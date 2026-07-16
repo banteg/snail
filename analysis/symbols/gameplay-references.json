@@ -4023,10 +4023,11 @@
       "name": "g_text_input_repeat_step",
       "kind": "global",
       "aliases": [
-        "data_50339c"
+        "data_50339c",
+        "gRShellKeyRepeatLifeRate"
       ],
       "size": "0x4",
-      "description": "Current autorepeat step used by read_repeating_text_input_key_code after the held text-input key changes."
+      "description": "Windows counterpart of the authored RShell.o gRShellKeyRepeatLifeRate global: the autorepeat step added to g_text_input_repeat_accumulator by read_repeating_text_input_key_code."
     },
     {
       "address": "0x5033b0",
@@ -4113,10 +4114,11 @@
       "name": "g_text_input_repeat_accumulator",
       "kind": "global",
       "aliases": [
-        "data_5108b8"
+        "data_5108b8",
+        "gRShellKeyRepeatLife"
       ],
       "size": "0x4",
-      "description": "Autorepeat accumulator tested and advanced by read_repeating_text_input_key_code."
+      "description": "Windows counterpart of the authored RShell.o gRShellKeyRepeatLife global: the autorepeat accumulator tested and advanced by read_repeating_text_input_key_code."
     },
     {
       "address": "0x5108c0",
@@ -4165,10 +4167,11 @@
       "name": "g_text_input_last_repeat_code",
       "kind": "global",
       "aliases": [
-        "data_53c7f5"
+        "data_53c7f5",
+        "gRShellOldKey"
       ],
       "size": "0x1",
-      "description": "Last text-input code held by read_repeating_text_input_key_code for case-insensitive repeat comparison."
+      "description": "Windows counterpart of the authored RShell.o gRShellOldKey byte: the last text-input code held for the case-insensitive repeat comparison in read_repeating_text_input_key_code."
     },
     {
       "address": "0x53c7ec",

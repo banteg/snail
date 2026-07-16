@@ -27,6 +27,23 @@ GAME_INPUT_DATA_VAR_UPDATES = (
     ("0x4972f0", "void*"),
 )
 
+TEXT_INPUT_DATA_SYMBOL_UPDATES = (
+    ("0x50339c", "g_text_input_repeat_step"),
+    ("0x5108b8", "g_text_input_repeat_accumulator"),
+    ("0x53c7f5", "g_text_input_last_repeat_code"),
+)
+
+TEXT_INPUT_DATA_VAR_UPDATES = (
+    ("0x50339c", "float"),
+    ("0x5108b8", "float"),
+    ("0x53c7f5", "uint8_t"),
+)
+
+TEXT_INPUT_FUNCTION_SYMBOL_UPDATES = (
+    ("0x432440", "read_pressed_text_input_key_code"),
+    ("0x4327e0", "read_repeating_text_input_key_code"),
+)
+
 MOUSE_DATA_SYMBOL_UPDATES = (
     ("0x777d58", "g_mouse_live_x"),
     ("0x777d60", "g_mouse_live_y"),
@@ -108,6 +125,14 @@ GAME_INPUT_FIELDS = (
 )
 
 PROTO_UPDATES = (
+    (
+        "0x432440",
+        "char __cdecl read_pressed_text_input_key_code()",
+    ),
+    (
+        "0x4327e0",
+        "char __cdecl read_repeating_text_input_key_code()",
+    ),
     ("initialize_input", "int32_t __thiscall initialize_input(InputState* state)"),
     ("update_input", "void __thiscall update_input(InputState* state)"),
     ("update_game_input", "void __thiscall update_game_input(GameInput* game_input)"),
@@ -185,6 +210,23 @@ def main() -> int:
             REPO_ROOT,
             target=TARGET,
             updates=GAME_INPUT_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=TEXT_INPUT_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=TEXT_INPUT_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=TEXT_INPUT_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
         ),
         *apply_symbol_updates(
             REPO_ROOT,

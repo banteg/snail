@@ -2515,6 +2515,24 @@
       "notes": "All ports scan to a sign, dot, or digit, advance the caller-owned cursor, accumulate decimal digits and scale, and return a float; the recovered Windows source is instruction-exact."
     },
     {
+      "address": "0x432440",
+      "windows_name": "read_pressed_text_input_key_code",
+      "ios_symbol": "RShellInkey()",
+      "android_symbol": "RShellInkey()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports map newly pressed keyboard scancodes into the same ASCII and editor-control byte codes. The exact Windows body preserves the authored RShell input ownership."
+    },
+    {
+      "address": "0x4327e0",
+      "windows_name": "read_repeating_text_input_key_code",
+      "ios_symbol": "RShellInkeyInput()",
+      "android_symbol": "RShellInkeyInput()",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "All ports map held keyboard scancodes through the same repeat state. Android names the three owners gRShellKeyRepeatLife, gRShellKeyRepeatLifeRate, and gRShellOldKey, proving the Windows scalar globals and their RShell.o ownership."
+    },
+    {
       "address": "0x44c3b0",
       "windows_name": "is_mouse_captured",
       "ios_symbol": "cRMouse::IsActive()",

@@ -1209,6 +1209,79 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/archive_shell_types.h"' in ida_sync_source
 
 
+def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_input_state_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_input_state_types.h", "ida_input_state_types.h")
+    )
+
+    for declaration in (
+        "char __cdecl read_pressed_text_input_key_code(void);",
+        "char __cdecl read_repeating_text_input_key_code(void);",
+        "extern float g_text_input_repeat_step;",
+        "extern float g_text_input_repeat_accumulator;",
+        "extern uint8_t g_text_input_last_repeat_code;",
+    ):
+        assert all(declaration in header for header in headers)
+
+    for marker in (
+        '("0x50339c", "g_text_input_repeat_step")',
+        '("0x5108b8", "g_text_input_repeat_accumulator")',
+        '("0x53c7f5", "g_text_input_last_repeat_code")',
+        '"char __cdecl read_pressed_text_input_key_code()"',
+        '"char __cdecl read_repeating_text_input_key_code()"',
+    ):
+        assert marker in binja_source
+
+    for marker in (
+        '(0x50339C, 20, "g_text_input_repeat_step", "float[5]")',
+        '(0x53C7F5, 3, "g_text_input_last_repeat_code", "char[3]")',
+        "STALE_DATA_ITEM_SPECS",
+        "_clear_stale_data_item",
+        '"reason": "unexpected_stale_data_item"',
+        '"phase": "data_item_guard"',
+        'r"\\buint8_t\\b|\\bunsigned __int8\\b"',
+        '"char __cdecl read_repeating_text_input_key_code();"',
+        '"float g_text_input_repeat_step;"',
+        '"unsigned char g_text_input_last_repeat_code;"',
+    ):
+        assert marker in ida_source
+
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    aliases_by_address = {
+        entry["address"]: set(entry.get("aliases", []))
+        for entry in references["symbols"]
+    }
+    assert "gRShellKeyRepeatLifeRate" in aliases_by_address["0x50339c"]
+    assert "gRShellKeyRepeatLife" in aliases_by_address["0x5108b8"]
+    assert "gRShellOldKey" in aliases_by_address["0x53c7f5"]
+
+    crosswalk = json.loads(
+        (repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    entries_by_address = {
+        entry["address"]: entry for entry in crosswalk["entries"]
+    }
+    assert entries_by_address["0x432440"]["ios_symbol"] == "RShellInkey()"
+    assert (
+        entries_by_address["0x4327e0"]["ios_symbol"]
+        == "RShellInkeyInput()"
+    )
+
+
 def test_ida_lvar_inspector_reports_stable_local_identity() -> None:
     inspector = (IDA_DIR / "inspect_function_lvars.py").read_text(encoding="utf-8")
     wrapper = (IDA_DIR / "query_function_lvars.py").read_text(encoding="utf-8")

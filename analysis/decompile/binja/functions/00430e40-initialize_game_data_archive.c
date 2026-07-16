@@ -7,8 +7,8 @@
 00430e51        g_tracked_allocation_total_bytes = 0
 00430e57        initialize_enemy_manager(&g_tracked_allocation_stack)
 00430e61        g_text_input_repeat_accumulator = 0f
-00430e67        data_50339c = 0
-00430e6d        data_53c7f5 = 0
+00430e67        g_text_input_repeat_step = 0f
+00430e6d        g_text_input_last_repeat_code = 0
 00430e73        uint8_t result = load_archive_index("SnailMail.dat")
 00430e7d        if (result == 0)
 00430e83        return result

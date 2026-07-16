@@ -13,8 +13,8 @@ unsigned __int8 __cdecl initialize_game_data_archive()
   g_tracked_allocation_total_bytes = 0;
   initialize_enemy_manager(&g_tracked_allocation_stack.depth);
   g_text_input_repeat_accumulator = 0.0;
-  g_text_input_repeat_step[0] = 0.0;
-  g_text_input_last_repeat_code[0] = 0;
+  g_text_input_repeat_step = 0.0;
+  g_text_input_last_repeat_code = 0;
   result = load_archive_index(FileName);
   if ( result )
   {

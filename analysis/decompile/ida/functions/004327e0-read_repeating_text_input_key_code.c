@@ -3,7 +3,7 @@
 /* selector: read_repeating_text_input_key_code */
 
 // Maps held keyboard scancodes into the same text-input byte codes as read_pressed_text_input_key_code, but with the native repeat delay/rate state so border_input_text can autorepeat held edits and cursor moves.
-char sub_4327E0()
+char __cdecl read_repeating_text_input_key_code()
 {
   char v0; // bl
   double v2; // st7
@@ -284,33 +284,32 @@ LABEL_57:
   }
   else if ( !v0 )
   {
-    MEMORY[0x5108B8] = 0;
-    MEMORY[0x53C7F5] = 0;
+    g_text_input_repeat_accumulator = 0.0;
+    g_text_input_last_repeat_code = 0;
     return 0;
   }
-  if ( *(float *)&MEMORY[0x5108B8] == 0.0 )
+  if ( g_text_input_repeat_accumulator == 0.0 )
   {
-    MEMORY[0x53C7F5] = v0;
-    MEMORY[0x50339C] = 1023969417;
-    MEMORY[0x5108B8] = 1023969417;
+    g_text_input_last_repeat_code = v0;
+    g_text_input_repeat_step = 0.033333335;
+    g_text_input_repeat_accumulator = 0.033333335;
     return v0;
   }
   v3 = ascii_upper_if_lowercase(v4);
-  if ( v3 == ascii_upper_if_lowercase(MEMORY[0x53C7F5]) )
+  if ( v3 == ascii_upper_if_lowercase(g_text_input_last_repeat_code) )
   {
-    v2 = *(float *)&MEMORY[0x50339C] + *(float *)&MEMORY[0x5108B8];
-    *(float *)&MEMORY[0x5108B8] = v2;
+    v2 = g_text_input_repeat_step + g_text_input_repeat_accumulator;
+    g_text_input_repeat_accumulator = v2;
     if ( v2 > 1.0 )
     {
-      MEMORY[0x50339C] = 1038323256;
-      MEMORY[0x5108B8] = 1038323256;
+      g_text_input_repeat_step = 0.1111111;
+      g_text_input_repeat_accumulator = 0.1111111;
       return v0;
     }
     return 0;
   }
-  MEMORY[0x53C7F5] = v0;
-  MEMORY[0x50339C] = 1010174817;
-  MEMORY[0x5108B8] = 1010174817;
+  g_text_input_last_repeat_code = v0;
+  g_text_input_repeat_step = 0.011111111;
+  g_text_input_repeat_accumulator = 0.011111111;
   return v0;
 }
-

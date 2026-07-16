@@ -186,4 +186,11 @@ typedef struct Point {
     int32_t y;
 } Point;
 
+char __cdecl read_pressed_text_input_key_code(void);
+char __cdecl read_repeating_text_input_key_code(void);
+
+extern float g_text_input_repeat_step;
+extern float g_text_input_repeat_accumulator;
+extern uint8_t g_text_input_last_repeat_code;
+
 #endif

@@ -6535,6 +6535,67 @@
         "AnimationDispatchState",
         "return result"
       ]
+    },
+    {
+      "name": "bn_text_input_repeat_scalar_ownership",
+      "artifact": "analysis/decompile/binja/functions/004327e0-read_repeating_text_input_key_code.c",
+      "required_substrings": [
+        "g_text_input_repeat_step",
+        "g_text_input_repeat_accumulator",
+        "g_text_input_last_repeat_code"
+      ],
+      "forbidden_substrings": [
+        "data_50339c",
+        "data_5108b8",
+        "data_53c7f5"
+      ]
+    },
+    {
+      "name": "ida_text_input_repeat_scalar_ownership",
+      "artifact": "analysis/decompile/ida/functions/004327e0-read_repeating_text_input_key_code.c",
+      "required_substrings": [
+        "char __cdecl read_repeating_text_input_key_code()",
+        "g_text_input_repeat_step",
+        "g_text_input_repeat_accumulator",
+        "g_text_input_last_repeat_code"
+      ],
+      "forbidden_substrings": [
+        "MEMORY[0x50339C]",
+        "MEMORY[0x5108B8]",
+        "MEMORY[0x53C7F5]",
+        "g_text_input_repeat_step[",
+        "g_text_input_last_repeat_code["
+      ]
+    },
+    {
+      "name": "bn_archive_init_text_input_scalar_ownership",
+      "artifact": "analysis/decompile/binja/functions/00430e40-initialize_game_data_archive.c",
+      "required_substrings": [
+        "g_text_input_repeat_step = 0f",
+        "g_text_input_repeat_accumulator = 0f",
+        "g_text_input_last_repeat_code = 0"
+      ],
+      "forbidden_substrings": [
+        "data_50339c",
+        "data_5108b8",
+        "data_53c7f5"
+      ]
+    },
+    {
+      "name": "ida_archive_init_text_input_scalar_ownership",
+      "artifact": "analysis/decompile/ida/functions/00430e40-initialize_game_data_archive.c",
+      "required_substrings": [
+        "g_text_input_repeat_step = 0.0",
+        "g_text_input_repeat_accumulator = 0.0",
+        "g_text_input_last_repeat_code = 0"
+      ],
+      "forbidden_substrings": [
+        "g_text_input_repeat_step[",
+        "g_text_input_last_repeat_code[",
+        "MEMORY[0x50339C]",
+        "MEMORY[0x5108B8]",
+        "MEMORY[0x53C7F5]"
+      ]
     }
   ]
 }

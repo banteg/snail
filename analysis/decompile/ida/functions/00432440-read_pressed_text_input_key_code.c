@@ -3,7 +3,7 @@
 /* selector: read_pressed_text_input_key_code */
 
 // Maps newly pressed keyboard scancodes into the shared text-input byte codes used by frontend widgets, cheat entry, intro skip, and subgame ESC handling: ASCII for letters/digits/punctuation plus the small control-code set for edit and navigation keys.
-char sub_432440()
+char __cdecl read_pressed_text_input_key_code()
 {
   char v0; // bl
 
@@ -124,4 +124,3 @@ LABEL_57:
   else
     return v0;
 }
-

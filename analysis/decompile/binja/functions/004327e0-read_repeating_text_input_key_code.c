@@ -169,39 +169,40 @@
 00432c1c        if (is_key_down(0x3b) != 0)
 00432c1e        ebx.b = 0xc
 00432c20        var_4 = 0xc
-00432c30        int16_t result
-00432c30        if (is_key_down(0x1c).b == 0)
+00432c30        if (is_key_down(0x1c) == 0)
 00432c7e        if (ebx.b != 0)
 00432c7e        goto label_432c48
-00432c80        data_5108b8 = 0
-00432c8a        data_53c7f5 = ebx.b
-00432c3e        ebx.b = is_key_down(0x1d).b != 0
+00432c80        g_text_input_repeat_accumulator = 0f
+00432c8a        g_text_input_last_repeat_code = ebx.b
+00432c3e        ebx.b = is_key_down(0x1d) != 0
 00432c41        ebx += 5
 00432c44        var_4 = ebx.b
 00432c48        label_432c48:
-00432c48        long double x87_r7_1 = fconvert.t(data_5108b8)
+00432c48        long double x87_r7_1 = fconvert.t(g_text_input_repeat_accumulator)
 00432c4e        long double temp0_1 = fconvert.t(0f)
 00432c4e        x87_r7_1 - temp0_1
-00432c59        if ((((x87_r7_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x40) != 0)
-00432c5b        data_53c7f5 = ebx.b
-00432c61        result.b = ebx.b
-00432c63        data_50339c = 0x3d088889
-00432c6d        data_5108b8 = 0x3d088889
-00432c7b        return result
-00432cbc        if (ascii_upper_if_lowercase(var_4) != ascii_upper_if_lowercase(data_53c7f5).b)
-00432cf8        data_53c7f5 = ebx.b
-00432cfe        result.b = ebx.b
-00432d00        data_50339c = 0x3c360b61
-00432d0a        data_5108b8 = 0x3c360b61
-00432d18        return result
-00432cc4        long double x87_r7_3 = fconvert.t(data_50339c) + fconvert.t(data_5108b8)
-00432cca        data_5108b8 = fconvert.s(x87_r7_3)
+00432c54        int16_t eax_54 = (x87_r7_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp0_1 ? 1 : 0) << 0xe
+00432c59        if ((eax_54:1.b & 0x40) != 0)
+00432c5b        g_text_input_last_repeat_code = ebx.b
+00432c61        eax_54.b = ebx.b
+00432c63        g_text_input_repeat_step = 0.0333333351f
+00432c6d        g_text_input_repeat_accumulator = 0.0333333351f
+00432c7b        return eax_54.b
+00432cbc        if (ascii_upper_if_lowercase(var_4) != ascii_upper_if_lowercase(g_text_input_last_repeat_code))
+00432cf8        g_text_input_last_repeat_code = ebx.b
+00432d00        g_text_input_repeat_step = 0.0111111114f
+00432d0a        g_text_input_repeat_accumulator = 0.0111111114f
+00432d18        return ebx.b
+00432cc4        long double x87_r7_3 = fconvert.t(g_text_input_repeat_step) + fconvert.t(g_text_input_repeat_accumulator)
+00432cca        g_text_input_repeat_accumulator = fconvert.s(x87_r7_3)
 00432cd0        long double temp1_1 = fconvert.t(1f)
 00432cd0        x87_r7_3 - temp1_1
-00432cdb        if ((((x87_r7_3 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp1_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00432cdd        result.b = ebx.b
-00432cdf        data_50339c = 0x3de38e38
-00432ce9        data_5108b8 = 0x3de38e38
-00432cf7        return result
-00432c90        result.b = 0
-00432c96        return result
+00432cd6        int16_t eax_59 = (x87_r7_3 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp1_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp1_1 ? 1 : 0) << 0xe
+00432cdb        if ((eax_59:1.b & 0x41) == 0)
+00432cdd        eax_59.b = ebx.b
+00432cdf        g_text_input_repeat_step = 0.111111104f
+00432ce9        g_text_input_repeat_accumulator = 0.111111104f
+00432cf7        return eax_59.b
+00432c90        int32_t eax_55
+00432c90        eax_55.b = 0
+00432c96        return 0

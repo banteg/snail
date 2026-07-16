@@ -14,6 +14,11 @@ import idc
 
 TRUSTED_NAMES = [
     (0x4972F0, "g_game_input_callback_table"),
+    (0x432440, "read_pressed_text_input_key_code"),
+    (0x4327E0, "read_repeating_text_input_key_code"),
+    (0x50339C, "g_text_input_repeat_step"),
+    (0x5108B8, "g_text_input_repeat_accumulator"),
+    (0x53C7F5, "g_text_input_last_repeat_code"),
     (0x44BBB0, "initialize_mouse_authored_scale_from_clip_rect"),
     (0x44BBD0, "update_mouse_authored_scale"),
     (0x44BC20, "resolve_uncaptured_cursor_sensitivity_scale"),
@@ -45,6 +50,14 @@ TRUSTED_NAMES = [
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "read_pressed_text_input_key_code",
+        "char __cdecl read_pressed_text_input_key_code();",
+    ),
+    (
+        "read_repeating_text_input_key_code",
+        "char __cdecl read_repeating_text_input_key_code();",
+    ),
     (
         "initialize_input",
         "int __thiscall initialize_input(InputState *state);",
@@ -121,6 +134,17 @@ TRUSTED_DECLARATIONS = [
 
 TRUSTED_DATA_DECLARATIONS = [
     (0x4972F0, "g_game_input_callback_table", "void *g_game_input_callback_table;"),
+    (0x50339C, "g_text_input_repeat_step", "float g_text_input_repeat_step;"),
+    (
+        0x5108B8,
+        "g_text_input_repeat_accumulator",
+        "float g_text_input_repeat_accumulator;",
+    ),
+    (
+        0x53C7F5,
+        "g_text_input_last_repeat_code",
+        "unsigned char g_text_input_last_repeat_code;",
+    ),
     (0x777D58, "g_mouse_live_x", "float g_mouse_live_x[2];"),
     (0x777D60, "g_mouse_live_y", "float g_mouse_live_y[2];"),
     (0x777D68, "g_mouse_screen_to_authored_y_scale", "float g_mouse_screen_to_authored_y_scale;"),
@@ -142,6 +166,9 @@ TRUSTED_DATA_DECLARATIONS = [
 
 TRUSTED_DATA_ITEMS = [
     (0x4972F0, 4),
+    (0x50339C, 4),
+    (0x5108B8, 4),
+    (0x53C7F5, 1),
     (0x777D58, 8),
     (0x777D60, 8),
     (0x777D68, 4),
@@ -155,6 +182,11 @@ TRUSTED_DATA_ITEMS = [
     (0x777B2C, 4),
     (0x777B30, 4),
     (0x777B34, 16),
+]
+
+STALE_DATA_ITEM_SPECS = [
+    (0x50339C, 20, "g_text_input_repeat_step", "float[5]"),
+    (0x53C7F5, 3, "g_text_input_last_repeat_code", "char[3]"),
 ]
 
 TRUSTED_STRUCT_LVARS = (
@@ -179,6 +211,7 @@ def _normalize_type_text(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.strip().removesuffix(";")
+    normalized = re.sub(r"\buint8_t\b|\bunsigned __int8\b", "unsigned char", normalized)
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
@@ -201,22 +234,100 @@ def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
-def _ensure_data_item(address: int, size: int) -> str:
-    flags = ida_bytes.get_flags(address)
-    if ida_bytes.is_head(flags) and ida_bytes.get_item_size(address) == size:
-        return "already_current"
+def _clear_stale_data_item(
+    address: int,
+    expected_size: int,
+    expected_name: str,
+    expected_type: str,
+) -> dict[str, object]:
+    item_head = ida_bytes.get_item_head(address)
+    item_size = ida_bytes.get_item_size(item_head)
+    observed_name = idc.get_name(item_head)
+    observed_type = _normalize_type_text(idc.get_type(item_head))
+    if item_head != address or item_size != expected_size:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+            "item_head": hex(item_head),
+            "item_size": item_size,
+        }
+
+    normalized_expected_type = _normalize_type_text(expected_type)
+    if observed_name != expected_name or observed_type != normalized_expected_type:
+        return {
+            "status": "failed",
+            "reason": "unexpected_stale_data_item",
+            "address": hex(address),
+            "expected_name": expected_name,
+            "expected_type": normalized_expected_type,
+            "observed_name": observed_name,
+            "observed_type": observed_type,
+            "item_size": item_size,
+        }
+
+    if not ida_bytes.del_items(address, ida_bytes.DELIT_SIMPLE, expected_size):
+        return {
+            "status": "failed",
+            "reason": "delete_stale_data_item_failed",
+            "address": hex(address),
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "removed_name": observed_name,
+        "removed_type": observed_type,
+        "removed_size": item_size,
+    }
+
+
+def _ensure_data_item(address: int, size: int) -> dict[str, object]:
+    item_head = ida_bytes.get_item_head(address)
+    item_size = ida_bytes.get_item_size(item_head)
+    if item_head == address and item_size == size:
+        return {
+            "status": "unchanged",
+            "address": hex(address),
+            "item_size": item_size,
+        }
+
+    if item_head != address or item_size != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_data_item",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(item_head),
+            "observed_size": item_size,
+        }
 
     if size == 1:
         created = ida_bytes.create_byte(address, size, True)
     else:
         created = ida_bytes.create_dword(address, size, True)
     if not created:
-        return "create_failed"
+        return {
+            "status": "failed",
+            "reason": "create_data_item_failed",
+            "address": hex(address),
+            "expected_size": size,
+        }
 
-    flags = ida_bytes.get_flags(address)
-    if not ida_bytes.is_head(flags) or ida_bytes.get_item_size(address) != size:
-        return "verification_failed"
-    return "verified"
+    verified_head = ida_bytes.get_item_head(address)
+    verified_size = ida_bytes.get_item_size(verified_head)
+    if verified_head != address or verified_size != size:
+        return {
+            "status": "failed",
+            "reason": "data_item_readback_failed",
+            "address": hex(address),
+            "expected_size": size,
+            "observed_head": hex(verified_head),
+            "observed_size": verified_size,
+        }
+    return {
+        "status": "applied",
+        "address": hex(address),
+        "item_size": verified_size,
+    }
 
 
 def _sync_struct_lvar(
@@ -317,6 +428,20 @@ def _sync_struct_lvar(
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
+    if parse_errors:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "phase": "header_parse",
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     applied = 0
     unchanged = 0
     renamed = 0
@@ -326,20 +451,46 @@ def _sync_types(header_path: pathlib.Path) -> int:
     missing = []
     failed = []
 
-    for address, size in TRUSTED_DATA_ITEMS:
-        status = _ensure_data_item(address, size)
-        if status == "already_current":
-            data_items_unchanged += 1
-        elif status == "verified":
-            data_items_applied += 1
-        else:
-            failed.append(
+    cleared_data_items = [
+        _clear_stale_data_item(address, size, name, data_type)
+        for address, size, name, data_type in STALE_DATA_ITEM_SPECS
+    ]
+    failed.extend(
+        {"stale_data_item": result}
+        for result in cleared_data_items
+        if result.get("status") == "failed"
+    )
+
+    data_items = [
+        _ensure_data_item(address, size) for address, size in TRUSTED_DATA_ITEMS
+    ]
+    data_items_applied = sum(
+        result.get("status") == "applied" for result in data_items
+    )
+    data_items_unchanged = sum(
+        result.get("status") == "unchanged" for result in data_items
+    )
+    failed.extend(
+        {"data_item": result}
+        for result in data_items
+        if result.get("status") == "failed"
+    )
+    if failed:
+        print(
+            json.dumps(
                 {
-                    "address": hex(address),
-                    "size": size,
-                    "reason": f"data_item_{status}",
-                }
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "phase": "data_item_guard",
+                    "cleared_data_items": cleared_data_items,
+                    "data_items": data_items,
+                    "failed": failed,
+                },
+                indent=2,
             )
+        )
+        return 1
 
     for address, name in TRUSTED_NAMES:
         if idc.get_name(address) == name:
@@ -455,6 +606,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "data_items_applied": data_items_applied,
                 "data_items_unchanged": data_items_unchanged,
+                "cleared_data_items": cleared_data_items,
+                "data_items": data_items,
                 "struct_lvars": struct_lvars,
                 "missing": missing,
                 "failed": failed,

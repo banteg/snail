@@ -102,3 +102,14 @@ Remaining residuals:
   result to the stack and regress to 98.98%; `int` folded temporaries change the
   frame from the prologue. Keep the ternary and leave the repeat-tail residual
   pinned.
+- 2026-07-16 ownership replay: the symbol-bearing iOS and Android ports identify
+  this helper as authored `RShellInkeyInput()` in `RShell.o`, alongside
+  `gRShellKeyRepeatLife`, `gRShellKeyRepeatLifeRate`, and `gRShellOldKey`.
+  Those globals correspond to the Windows accumulator, step, and last-code byte.
+  The input-state replay now preserves all three scalar extents and the byte
+  return ABI in both analysis databases; IDA's stale `float[5]` and `char[3]`
+  items are split only behind exact name/type/size guards. The focused matcher
+  remains honestly pinned at 99.32%, 440/440 instructions, a 408/440 exact
+  prefix, and 73 clean masked operands. The remaining repeat-tail call order is
+  still a scheduling residual, not evidence for a different owner or source
+  model.
