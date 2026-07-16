@@ -2054,102 +2054,102 @@
     {
       "address": "0x434980",
       "name": "initialize_track_colour_bank_a_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank A."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupCheckBlack counterpart. The stable A suffix records constructor-table order; cross-port symbols recover the owned bank name."
     },
     {
       "address": "0x434990",
       "name": "initialize_track_colour_bank_a",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry track colour bank A before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupCheckBlack counterpart before build_track_colours seeds authored white values."
     },
     {
       "address": "0x4349b0",
       "name": "initialize_track_colour_banks_b_c_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour banks B and C."
+      "description": "CRT initializer-table thunk for the contiguous Windows Floor/Slide-0 colour owner. The stable B/C suffix records the two physical 51-entry views."
     },
     {
       "address": "0x4349c0",
       "name": "initialize_track_colour_banks_b_c",
-      "description": "Runs the folded no-op tColour constructor across the 102-entry contiguous B/C allocation before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the contiguous 102-entry Windows owner holding gLocColourLookupFloor followed by the first Slide view."
     },
     {
       "address": "0x4349e0",
       "name": "initialize_track_colour_bank_d_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank D."
+      "description": "CRT initializer-table thunk for the second physical Windows Slide colour bank."
     },
     {
       "address": "0x4349f0",
       "name": "initialize_track_colour_bank_d",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank D before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the second 51-entry Windows Slide bank; mobile BuildColours aliases both Slide calls to one gLocColourLookupSlide owner."
     },
     {
       "address": "0x434a10",
       "name": "initialize_track_colour_bank_e_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank E."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupWall counterpart."
     },
     {
       "address": "0x434a20",
       "name": "initialize_track_colour_bank_e",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank E before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupWall counterpart."
     },
     {
       "address": "0x434a40",
       "name": "initialize_track_colour_bank_f_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank F."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupTrampoline counterpart."
     },
     {
       "address": "0x434a50",
       "name": "initialize_track_colour_bank_f",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank F before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupTrampoline counterpart."
     },
     {
       "address": "0x434a70",
       "name": "initialize_track_colour_bank_g_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank G."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupRamp counterpart."
     },
     {
       "address": "0x434a80",
       "name": "initialize_track_colour_bank_g",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank G before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupRamp counterpart."
     },
     {
       "address": "0x434aa0",
       "name": "initialize_track_colour_bank_h_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank H."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupEmpty counterpart."
     },
     {
       "address": "0x434ab0",
       "name": "initialize_track_colour_bank_h",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank H before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupEmpty counterpart."
     },
     {
       "address": "0x434ad0",
       "name": "initialize_track_colour_bank_i_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank I."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPath counterpart."
     },
     {
       "address": "0x434ae0",
       "name": "initialize_track_colour_bank_i",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank I before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPath counterpart."
     },
     {
       "address": "0x434b00",
       "name": "initialize_track_colour_bank_j_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank J."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPathWorm counterpart."
     },
     {
       "address": "0x434b10",
       "name": "initialize_track_colour_bank_j",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank J before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWorm counterpart, which BuildColours intentionally visits twice."
     },
     {
       "address": "0x434b30",
       "name": "initialize_track_colour_bank_k_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent constructor loop for track colour bank K."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPathWarp counterpart."
     },
     {
       "address": "0x434b40",
       "name": "initialize_track_colour_bank_k",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry bank K before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWarp counterpart, which BuildColours intentionally visits twice."
     },
 
     {
@@ -2189,7 +2189,7 @@
     {
       "address": "0x435d40",
       "name": "build_track_colours",
-      "description": "Builds the active subgame track colour banks used by skirt, fringe, and row-cache rendering. Cross-port iOS symbols match this helper to `cRSubGame::BuildColours()` in `SubGame.o`."
+      "description": "Exact Windows `cRSubGame::BuildColours()`: seeds the CheckBlack, Floor, two physical Slide, Wall, Trampoline, Ramp, Empty, Path, PathWorm, and PathWarp banks. Android and iOS preserve the ten original gLocColourLookup* symbols and the same 13-call order; their two Slide calls alias one owner while Windows keeps separate storage."
     },
     {
       "address": "0x435df0",

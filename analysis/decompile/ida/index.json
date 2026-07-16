@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 689,
-  "function_count": 689,
+  "selected_count": 699,
+  "function_count": 699,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -2484,6 +2484,76 @@
       "address": "0x434800",
       "name": "update_star_positions",
       "artifact": "analysis/decompile/ida/functions/00434800-update_star_positions.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_a",
+      "address": "0x434990",
+      "name": "initialize_track_colour_bank_a",
+      "artifact": "analysis/decompile/ida/functions/00434990-initialize_track_colour_bank_a.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_banks_b_c",
+      "address": "0x4349c0",
+      "name": "initialize_track_colour_banks_b_c",
+      "artifact": "analysis/decompile/ida/functions/004349c0-initialize_track_colour_banks_b_c.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_d",
+      "address": "0x4349f0",
+      "name": "initialize_track_colour_bank_d",
+      "artifact": "analysis/decompile/ida/functions/004349f0-initialize_track_colour_bank_d.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_e",
+      "address": "0x434a20",
+      "name": "initialize_track_colour_bank_e",
+      "artifact": "analysis/decompile/ida/functions/00434a20-initialize_track_colour_bank_e.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_f",
+      "address": "0x434a50",
+      "name": "initialize_track_colour_bank_f",
+      "artifact": "analysis/decompile/ida/functions/00434a50-initialize_track_colour_bank_f.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_g",
+      "address": "0x434a80",
+      "name": "initialize_track_colour_bank_g",
+      "artifact": "analysis/decompile/ida/functions/00434a80-initialize_track_colour_bank_g.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_h",
+      "address": "0x434ab0",
+      "name": "initialize_track_colour_bank_h",
+      "artifact": "analysis/decompile/ida/functions/00434ab0-initialize_track_colour_bank_h.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_i",
+      "address": "0x434ae0",
+      "name": "initialize_track_colour_bank_i",
+      "artifact": "analysis/decompile/ida/functions/00434ae0-initialize_track_colour_bank_i.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_j",
+      "address": "0x434b10",
+      "name": "initialize_track_colour_bank_j",
+      "artifact": "analysis/decompile/ida/functions/00434b10-initialize_track_colour_bank_j.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_k",
+      "address": "0x434b40",
+      "name": "initialize_track_colour_bank_k",
+      "artifact": "analysis/decompile/ida/functions/00434b40-initialize_track_colour_bank_k.c",
       "removed_stale_artifacts": []
     },
     {

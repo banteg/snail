@@ -9,15 +9,32 @@ enum {
     TRACK_COLOUR_BANK_B_C_CAPACITY = 102,
 };
 
-extern tColour g_track_colour_bank_a[TRACK_COLOUR_BANK_CAPACITY]; // data_74e7e8
-extern tColour g_track_colour_banks_b_c[TRACK_COLOUR_BANK_B_C_CAPACITY]; // data_6437f8
-extern tColour g_track_colour_bank_d[TRACK_COLOUR_BANK_CAPACITY]; // data_53cb30
-extern tColour g_track_colour_bank_e[TRACK_COLOUR_BANK_CAPACITY]; // data_53ce60
-extern tColour g_track_colour_bank_f[TRACK_COLOUR_BANK_CAPACITY]; // data_6434c8
-extern tColour g_track_colour_bank_g[TRACK_COLOUR_BANK_CAPACITY]; // data_6444b8
-extern tColour g_track_colour_bank_h[TRACK_COLOUR_BANK_CAPACITY]; // data_644188
-extern tColour g_track_colour_bank_i[TRACK_COLOUR_BANK_CAPACITY]; // data_643e58
-extern tColour g_track_colour_bank_j[TRACK_COLOUR_BANK_CAPACITY]; // data_53c800
-extern tColour g_track_colour_bank_k[TRACK_COLOUR_BANK_CAPACITY]; // data_643198
+// Android and iOS preserve the original gLocColourLookup* names and the same
+// BuildColours call order. Windows keeps two physical Slide banks where both
+// mobile calls address the single gLocColourLookupSlide owner.
+struct TrackFloorSlideColourBanks {
+    tColour floor[TRACK_COLOUR_BANK_CAPACITY];
+    tColour slide_0[TRACK_COLOUR_BANK_CAPACITY];
+};
+
+typedef char TrackFloorSlideColourBanks_must_be_0x660[
+    (sizeof(TrackFloorSlideColourBanks) == 0x660) ? 1 : -1];
+
+extern tColour
+    g_loc_colour_lookup_check_black[TRACK_COLOUR_BANK_CAPACITY]; // data_74e7e8
+extern TrackFloorSlideColourBanks
+    g_loc_colour_lookup_floor_slide_0; // data_6437f8
+extern tColour
+    g_loc_colour_lookup_slide_1[TRACK_COLOUR_BANK_CAPACITY]; // data_53cb30
+extern tColour g_loc_colour_lookup_wall[TRACK_COLOUR_BANK_CAPACITY]; // data_53ce60
+extern tColour
+    g_loc_colour_lookup_trampoline[TRACK_COLOUR_BANK_CAPACITY]; // data_6434c8
+extern tColour g_loc_colour_lookup_ramp[TRACK_COLOUR_BANK_CAPACITY]; // data_6444b8
+extern tColour g_loc_colour_lookup_empty[TRACK_COLOUR_BANK_CAPACITY]; // data_644188
+extern tColour g_loc_colour_lookup_path[TRACK_COLOUR_BANK_CAPACITY]; // data_643e58
+extern tColour
+    g_loc_colour_lookup_path_worm[TRACK_COLOUR_BANK_CAPACITY]; // data_53c800
+extern tColour
+    g_loc_colour_lookup_path_warp[TRACK_COLOUR_BANK_CAPACITY]; // data_643198
 
 #endif

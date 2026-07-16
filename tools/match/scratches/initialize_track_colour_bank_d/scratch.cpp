@@ -4,7 +4,7 @@
 
 void initialize_track_colour_bank_d()
 {
-    tColour* colour = g_track_colour_bank_d;
+    tColour* colour = g_loc_colour_lookup_slide_1;
     int count = TRACK_COLOUR_BANK_CAPACITY;
     do {
         colour->noop_this_constructor();

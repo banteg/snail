@@ -7440,6 +7440,110 @@
         "ObjectFaceQuad",
         "((int (__stdcall"
       ]
+    },
+    {
+      "name": "bn_track_colour_build_semantic_owners",
+      "artifact": "analysis/decompile/binja/functions/00435d40-build_track_colours.c",
+      "required_substrings": [
+        "g_loc_colour_lookup_check_black",
+        "g_loc_colour_lookup_floor_slide_0",
+        "g_loc_colour_lookup_floor_slide_0.slide_0",
+        "g_loc_colour_lookup_slide_1",
+        "g_loc_colour_lookup_wall",
+        "g_loc_colour_lookup_trampoline",
+        "g_loc_colour_lookup_ramp",
+        "g_loc_colour_lookup_empty",
+        "g_loc_colour_lookup_path",
+        "g_loc_colour_lookup_path_worm",
+        "g_loc_colour_lookup_path_warp"
+      ],
+      "forbidden_substrings": [
+        "g_track_colour_bank",
+        "int32_t result",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_track_colour_build_semantic_owners",
+      "artifact": "analysis/decompile/ida/functions/00435d40-build_track_colours.c",
+      "required_substrings": [
+        "void __thiscall build_track_colours(SubgameRuntime *game)",
+        "g_loc_colour_lookup_check_black",
+        "g_loc_colour_lookup_floor_slide_0.floor",
+        "g_loc_colour_lookup_floor_slide_0.slide_0",
+        "g_loc_colour_lookup_slide_1",
+        "g_loc_colour_lookup_wall",
+        "g_loc_colour_lookup_trampoline",
+        "g_loc_colour_lookup_ramp",
+        "g_loc_colour_lookup_empty",
+        "g_loc_colour_lookup_path",
+        "g_loc_colour_lookup_path_worm",
+        "g_loc_colour_lookup_path_warp"
+      ],
+      "forbidden_substrings": [
+        "g_track_colour_bank",
+        "MEMORY[",
+        "unk_",
+        "int __thiscall build_track_colours",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_track_colour_check_black_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00434990-initialize_track_colour_bank_a.c",
+      "required_substrings": [
+        "struct tColour* esi = &g_loc_colour_lookup_check_black",
+        "int32_t i_1 = 0x33",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "g_track_colour_bank_a",
+        "void* result",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_track_colour_check_black_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/00434990-initialize_track_colour_bank_a.c",
+      "required_substrings": [
+        "void __cdecl initialize_track_colour_bank_a()",
+        "v0 = &g_loc_colour_lookup_check_black",
+        "v1 = 51"
+      ],
+      "forbidden_substrings": [
+        "g_track_colour_bank_a",
+        "ObjectVertexBufferVtbl",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_track_colour_floor_slide_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/004349c0-initialize_track_colour_banks_b_c.c",
+      "required_substrings": [
+        "struct TrackFloorSlideColourBanks* esi = &g_loc_colour_lookup_floor_slide_0",
+        "int32_t i_1 = 0x66",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "g_track_colour_banks_b_c",
+        "void* result",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_track_colour_floor_slide_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/004349c0-initialize_track_colour_banks_b_c.c",
+      "required_substrings": [
+        "void __cdecl initialize_track_colour_banks_b_c()",
+        "TrackFloorSlideColourBanks *v0",
+        "v0 = &g_loc_colour_lookup_floor_slide_0",
+        "v1 = 102"
+      ],
+      "forbidden_substrings": [
+        "g_track_colour_banks_b_c",
+        "ObjectVertexBufferVtbl",
+        "return result"
+      ]
     }
   ]
 }

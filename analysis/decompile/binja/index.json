@@ -12,11 +12,11 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 706,
-  "function_count": 706,
+  "selected_count": 716,
+  "function_count": 716,
   "mismatch_count": 0,
   "mismatches": [],
-  "analysis_refreshed": true,
+  "analysis_refreshed": false,
   "timed_out_function_reanalysis": {
     "interior_aliases": [],
     "reanalyzed": [],
@@ -1879,6 +1879,56 @@
       "address": "0x434800",
       "name": "update_star_positions",
       "artifact": "analysis/decompile/binja/functions/00434800-update_star_positions.c"
+    },
+    {
+      "address": "0x434990",
+      "name": "initialize_track_colour_bank_a",
+      "artifact": "analysis/decompile/binja/functions/00434990-initialize_track_colour_bank_a.c"
+    },
+    {
+      "address": "0x4349c0",
+      "name": "initialize_track_colour_banks_b_c",
+      "artifact": "analysis/decompile/binja/functions/004349c0-initialize_track_colour_banks_b_c.c"
+    },
+    {
+      "address": "0x4349f0",
+      "name": "initialize_track_colour_bank_d",
+      "artifact": "analysis/decompile/binja/functions/004349f0-initialize_track_colour_bank_d.c"
+    },
+    {
+      "address": "0x434a20",
+      "name": "initialize_track_colour_bank_e",
+      "artifact": "analysis/decompile/binja/functions/00434a20-initialize_track_colour_bank_e.c"
+    },
+    {
+      "address": "0x434a50",
+      "name": "initialize_track_colour_bank_f",
+      "artifact": "analysis/decompile/binja/functions/00434a50-initialize_track_colour_bank_f.c"
+    },
+    {
+      "address": "0x434a80",
+      "name": "initialize_track_colour_bank_g",
+      "artifact": "analysis/decompile/binja/functions/00434a80-initialize_track_colour_bank_g.c"
+    },
+    {
+      "address": "0x434ab0",
+      "name": "initialize_track_colour_bank_h",
+      "artifact": "analysis/decompile/binja/functions/00434ab0-initialize_track_colour_bank_h.c"
+    },
+    {
+      "address": "0x434ae0",
+      "name": "initialize_track_colour_bank_i",
+      "artifact": "analysis/decompile/binja/functions/00434ae0-initialize_track_colour_bank_i.c"
+    },
+    {
+      "address": "0x434b10",
+      "name": "initialize_track_colour_bank_j",
+      "artifact": "analysis/decompile/binja/functions/00434b10-initialize_track_colour_bank_j.c"
+    },
+    {
+      "address": "0x434b40",
+      "name": "initialize_track_colour_bank_k",
+      "artifact": "analysis/decompile/binja/functions/00434b40-initialize_track_colour_bank_k.c"
     },
     {
       "address": "0x434b60",

@@ -2,27 +2,25 @@
 /* function: build_track_colours @ 0x435d40 */
 /* selector: build_track_colours */
 
-int sub_435D40()
+// Exact Windows `cRSubGame::BuildColours()`: seeds the CheckBlack, Floor, two physical Slide, Wall, Trampoline, Ramp, Empty, Path, PathWorm, and PathWarp banks. Android and iOS preserve the ten original gLocColourLookup* symbols and the same 13-call order; their two Slide calls alias one owner while Windows keeps separate storage.
+void __thiscall build_track_colours(SubgameRuntime *game)
 {
   int i; // esi
-  int result; // eax
 
   for ( i = 0; i < 816; i += 16 )
   {
-    set_color_white((char *)&unk_74E7E8 + i);
-    set_color_white((char *)&unk_6437F8 + i);
-    set_color_white((char *)&unk_643B28 + i);
-    set_color_white((char *)&MEMORY[0x53CB30] + i);
-    set_color_white((char *)&MEMORY[0x53CE60] + i);
-    set_color_white((char *)&unk_6434C8 + i);
-    set_color_white((char *)&unk_6444B8 + i);
-    set_color_white((char *)&unk_644188 + i);
-    set_color_white((char *)&unk_643E58 + i);
-    set_color_white((char *)&MEMORY[0x53C800] + i);
-    set_color_white((char *)&MEMORY[0x53C800] + i);
-    set_color_white((char *)&unk_643198 + i);
-    result = set_color_white((char *)&unk_643198 + i);
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_check_black + i));
+    set_color_white(&g_loc_colour_lookup_floor_slide_0.floor[i / 0x10u]);
+    set_color_white(&g_loc_colour_lookup_floor_slide_0.slide_0[i / 0x10u]);
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_slide_1 + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_wall + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_trampoline + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_ramp + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_empty + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_path + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_path_worm + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_path_worm + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_path_warp + i));
+    set_color_white((tColour *)((char *)&g_loc_colour_lookup_path_warp + i));
   }
-  return result;
 }
-

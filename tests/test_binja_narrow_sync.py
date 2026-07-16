@@ -2975,6 +2975,93 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
         assert "int32_t __thiscall place_challenge_parcels_on_track" not in source
 
 
+def test_track_colour_banks_replay_semantic_owners_without_collapsing_slide() -> None:
+    repo_root = Path(__file__).parents[1]
+    header = (HEADER_DIR / "track_colour_bank_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/track_colour_banks.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_track_colour_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_apply = (IDA_DIR / "apply_track_colour_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "sync_track_colour_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )["symbols"]
+    by_address = {entry["address"].lower(): entry for entry in references}
+
+    for source in (header, matcher_header):
+        assert "TrackFloorSlideColourBanks" in source
+        assert "floor[TRACK_COLOUR_BANK_CAPACITY]" in source
+        assert "slide_0[TRACK_COLOUR_BANK_CAPACITY]" in source
+        assert "g_loc_colour_lookup_floor_slide_0" in source
+        assert "g_loc_colour_lookup_slide_1" in source
+
+    expected_names = {
+        "0x53c800": "g_loc_colour_lookup_path_worm",
+        "0x53cb30": "g_loc_colour_lookup_slide_1",
+        "0x53ce60": "g_loc_colour_lookup_wall",
+        "0x643198": "g_loc_colour_lookup_path_warp",
+        "0x6434c8": "g_loc_colour_lookup_trampoline",
+        "0x6437f8": "g_loc_colour_lookup_floor_slide_0",
+        "0x643b28": "g_loc_colour_lookup_slide_0",
+        "0x643e58": "g_loc_colour_lookup_path",
+        "0x644188": "g_loc_colour_lookup_empty",
+        "0x6444b8": "g_loc_colour_lookup_ramp",
+        "0x74e7e8": "g_loc_colour_lookup_check_black",
+    }
+    for address, name in expected_names.items():
+        assert by_address[address]["name"] == name
+        assert address.removeprefix("0x") in binja_sync.lower()
+        assert address.removeprefix("0x") in ida_apply.lower()
+        assert name in binja_sync
+        assert name in ida_apply
+
+    assert by_address["0x6437f8"]["size"] == "0x660"
+    assert by_address["0x643b28"]["kind"] == "offset"
+    assert by_address["0x643b28"]["size"] == "0x330"
+    assert "FUNCTION_SYMBOL_UPDATES = (" in binja_sync
+    assert '("0x434980", "initialize_track_colour_bank_a_thunk")' in binja_sync
+    assert '("0x435d40", "build_track_colours")' in binja_sync
+    assert "TRUSTED_FUNCTION_NAMES = (" in ida_apply
+    assert '(0x434980, "initialize_track_colour_bank_a_thunk")' in ida_apply
+    assert '(0x435D40, "build_track_colours")' in ida_apply
+    for source in (binja_sync, ida_apply):
+        assert "void __cdecl {name}" in source
+        assert "void __thiscall build_track_colours(SubgameRuntime" in source
+    assert "apply_struct_and_proto_updates" in binja_sync
+    assert "TRUSTED_FUNCTION_DECLARATIONS = tuple(" in ida_apply
+    assert 'FUNCTION_MANIFEST_PATH = REPO_ROOT / "analysis/symbols/gameplay-functions.json"' in ida_apply
+    assert "ida_funcs.set_func_cmt(function, description, True)" in ida_apply
+    assert '("0x6437f8", "TrackFloorSlideColourBanks")' in binja_sync
+    assert '("0x643b28", "tColour")' not in binja_sync
+    assert 'INTERIOR_FIELD = (0x643B28, "g_loc_colour_lookup_slide_0")' in ida_apply
+    assert '(0x643B28, "g_loc_colour_lookup_slide_0"),' not in ida_apply.split(
+        "TRUSTED_NAMES", 1
+    )[1].split("INTERIOR_FIELD", 1)[0]
+    assert "g_loc_colour_lookup_slide_0" not in ida_apply.split(
+        "TRUSTED_DATA_DECLARATIONS", 1
+    )[1].split("DIRTY_FUNCTIONS", 1)[0]
+    assert "shutil.copy2(db_path, preview_db_path)" in ida_sync
+    assert "if preview_exit_code:" in ida_sync
+
+    for stale in (
+        "extern tColour g_track_colour_bank_a",
+        "extern tColour g_track_colour_banks_b_c",
+        "extern tColour g_track_colour_bank_d",
+    ):
+        assert stale not in matcher_header
+
+
 def test_completion_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(

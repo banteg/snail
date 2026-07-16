@@ -508,7 +508,8 @@
       "windows_name": "build_track_colours",
       "ios_symbol": "cRSubGame::BuildColours()",
       "source_object": "SubGame.o",
-      "confidence": "high"
+      "confidence": "high",
+      "notes": "Android and iOS preserve the ten original gLocColourLookup* globals. Their shared 13-call order maps the Windows storage views to CheckBlack, Floor, Slide-0, Slide-1, Wall, Trampoline, Ramp, Empty, Path, PathWorm twice, and PathWarp twice. Mobile aliases both Slide calls to one gLocColourLookupSlide owner; Windows has two distinct 51-entry Slide banks, so the analysis retains that physical split rather than collapsing the addresses."
     },
     {
       "address": "0x434b60",

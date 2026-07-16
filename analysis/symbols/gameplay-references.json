@@ -4260,33 +4260,38 @@
     },
     {
       "address": "0x53c800",
-      "name": "g_track_colour_bank_j",
+      "name": "g_loc_colour_lookup_path_worm",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_j",
+        "gLocColourLookupPathWorm",
         "data_53c800"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupPathWorm bank. The BuildColours call order initializes this bank twice per slot on every port."
     },
     {
       "address": "0x53cb30",
-      "name": "g_track_colour_bank_d",
+      "name": "g_loc_colour_lookup_slide_1",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_d",
         "data_53cb30"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Second physical Windows Slide bank. Android and iOS address their single original gLocColourLookupSlide bank for both corresponding BuildColours calls; Windows instead keeps this 51-entry owner separate from slide_0."
     },
     {
       "address": "0x53ce60",
-      "name": "g_track_colour_bank_e",
+      "name": "g_loc_colour_lookup_wall",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_e",
+        "gLocColourLookupWall",
         "data_53ce60"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupWall bank, identified by the shared BuildColours call order."
     },
     {
       "address": "0x53d190",
@@ -4339,13 +4344,15 @@
     },
     {
       "address": "0x643198",
-      "name": "g_track_colour_bank_k",
+      "name": "g_loc_colour_lookup_path_warp",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_k",
+        "gLocColourLookupPathWarp",
         "data_643198"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupPathWarp bank. The BuildColours call order initializes this bank twice per slot on every port."
     },
     {
       "address": "0x643390",
@@ -4354,68 +4361,80 @@
       "aliases": [
         "data_643390"
       ],
-      "description": "End sentinel for the zero-parcel bucket count-lane reset in place_challenge_parcels_on_track; this address overlaps track colour bank K storage."
+      "description": "End sentinel for the zero-parcel bucket count-lane reset in place_challenge_parcels_on_track; this address overlaps g_loc_colour_lookup_path_warp storage."
     },
     {
       "address": "0x6434c8",
-      "name": "g_track_colour_bank_f",
+      "name": "g_loc_colour_lookup_trampoline",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_f",
+        "gLocColourLookupTrampoline",
         "data_6434c8"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupTrampoline bank, identified by the shared BuildColours call order."
     },
     {
       "address": "0x6437f8",
-      "name": "g_track_colour_banks_b_c",
+      "name": "g_loc_colour_lookup_floor_slide_0",
       "kind": "global",
       "aliases": [
+        "g_track_colour_banks_b_c",
         "g_track_colour_bank_b",
+        "gLocColourLookupFloor",
         "data_6437f8"
       ],
       "size": "0x660",
-      "description": "Contiguous 102-entry tColour allocation exposed to build_track_colours as 51-entry banks B and C. Its CRT constructor loop independently proves the combined extent."
+      "description": "Contiguous Windows owner containing the 51-entry Floor bank followed by the first 51-entry Slide bank. The 102-element CRT constructor proves the combined extent; Android and iOS preserve the original gLocColourLookupFloor base and address gLocColourLookupSlide at the equivalent boundary."
     },
     {
       "address": "0x643b28",
-      "name": "g_track_colour_bank_c",
-      "kind": "global",
+      "name": "g_loc_colour_lookup_slide_0",
+      "kind": "offset",
       "aliases": [
+        "g_track_colour_bank_c",
+        "gLocColourLookupSlide",
         "data_643b28"
       ],
       "size": "0x330",
-      "description": "Second 51-entry view at +0x330 within the contiguous track-colour B/C allocation."
+      "description": "First Windows Slide view at +0x330 inside g_loc_colour_lookup_floor_slide_0. Mobile BuildColours reaches its single original gLocColourLookupSlide owner at the equivalent post-Floor boundary, then calls that same owner again where Windows uses slide_1."
     },
     {
       "address": "0x643e58",
-      "name": "g_track_colour_bank_i",
+      "name": "g_loc_colour_lookup_path",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_i",
+        "gLocColourLookupPath",
         "data_643e58"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupPath bank, identified by the shared BuildColours call order."
     },
     {
       "address": "0x644188",
-      "name": "g_track_colour_bank_h",
+      "name": "g_loc_colour_lookup_empty",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_h",
+        "gLocColourLookupEmpty",
         "data_644188"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupEmpty bank, identified by the shared BuildColours call order."
     },
     {
       "address": "0x6444b8",
-      "name": "g_track_colour_bank_g",
+      "name": "g_loc_colour_lookup_ramp",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_g",
+        "gLocColourLookupRamp",
         "data_6444b8"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupRamp bank, identified by the shared BuildColours call order."
     },
     {
       "address": "0x6447e8",
@@ -4446,13 +4465,15 @@
     },
     {
       "address": "0x74e7e8",
-      "name": "g_track_colour_bank_a",
+      "name": "g_loc_colour_lookup_check_black",
       "kind": "global",
       "aliases": [
+        "g_track_colour_bank_a",
+        "gLocColourLookupCheckBlack",
         "data_74e7e8"
       ],
       "size": "0x330",
-      "description": "51-entry track colour bank initialized by build_track_colours."
+      "description": "Windows 51-entry counterpart of the original mobile gLocColourLookupCheckBlack bank, identified by the shared BuildColours call order."
     },
     {
       "address": "0x74ec74",
