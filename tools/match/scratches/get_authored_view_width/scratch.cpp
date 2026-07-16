@@ -1,6 +1,6 @@
 // get_authored_view_width @ 0x433030 (cdecl)
 
-extern float g_authored_view_width; // data_4df85c
+#include "authored_view_state.h"
 
 float get_authored_view_width()
 {

@@ -28,3 +28,7 @@ block, cached display format, and typed `IDirect3DDevice8::Reset` from the one
 canonical renderer. Refreshed pseudocode also keeps texture-stage restoration
 and baseline-state restoration on that same receiver; no scratch rewrite was
 needed.
+
+2026-07-16 authored-view ownership: the final cursor recenter now consumes the
+same logical width/height pair written by startup and used by mouse conversion.
+The function remains exact at 84/84 instructions with all 29 operands clean.

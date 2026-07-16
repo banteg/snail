@@ -1,5 +1,6 @@
 // initialize_mouse_input @ 0x44c310 (cdecl)
 
+#include "authored_view_state.h"
 #include "direct_input_view.h"
 #include "mouse_input_state.h"
 #include "win32_window_state.h"
@@ -12,8 +13,6 @@ extern "C" int __stdcall DirectInput8Create(
     DirectInput** out_input,
     void* outer_unknown);
 
-extern float g_authored_view_width; // data_4df85c
-extern float g_authored_view_height; // data_4b7760
 
 int initialize_mouse_input(HWND hwnd)
 {

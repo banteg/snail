@@ -24,3 +24,7 @@ function remains exact at 46/46 instructions with all 18 operands clean.
 The same pass also gives the seeded X/Y coordinates their proven parallel
 two-slot extents and shares the cursor-hide latch with its setter and poller.
 This second ownership boundary is codegen-neutral at the same exact result.
+
+The half-viewport seed now borrows the canonical logical authored width/height
+pair as well. Its split process storage is preserved, and the function remains
+exact at 46/46 instructions with all 18 operands clean.

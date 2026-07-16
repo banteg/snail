@@ -197,3 +197,9 @@ window destruction jumps directly to class unregistration.
 - Together these recoveries improve the honest focused result from 63.84% to
   64.28% (`344/325` instructions, `127` clean masked operands, no unresolved
   operands, and three structural mismatches).
+
+2026-07-16 authored-view ownership: the startup writes are now the canonical
+producer of one logical 640x480 coordinate-space pair shared by renderer and
+mouse code. Width and height remain separate process globals at their proven
+addresses; no contiguous struct is invented. Focused output stays at the honest
+64.28% baseline with 127 clean operands and three structural mismatches.

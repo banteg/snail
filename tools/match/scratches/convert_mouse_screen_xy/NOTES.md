@@ -66,3 +66,7 @@ and 32 clean masked operands.
 Final focused Wibo is exact: 100.00% (`115/115`, full prefix), with all 35
 masked operands resolved and equal. No register hints, volatile state, dummy
 control flow, or flag changes are used.
+
+2026-07-16 authored-view ownership: captured and uncaptured conversion now
+borrow the canonical logical viewport pair rather than redeclaring two globals.
+This preserves the exact 115/115 result and all 35 clean operands.

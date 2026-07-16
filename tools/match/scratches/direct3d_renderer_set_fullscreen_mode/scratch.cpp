@@ -1,5 +1,6 @@
 // Direct3DRenderer::direct3d_renderer_set_fullscreen_mode @ 0x414270
 
+#include "authored_view_state.h"
 #include "direct3d_renderer.h"
 #include "win32_window_state.h"
 
@@ -13,8 +14,6 @@ extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND window);
 extern "C" __declspec(dllimport) BOOL __stdcall SetCursorPos(int x, int y);
 
 extern int debug_report_stub(char* message); // @ 0x449c00
-extern float g_authored_view_width;  // data_4df85c
-extern float g_authored_view_height; // data_4b7760
 
 void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(int enabled)
 {

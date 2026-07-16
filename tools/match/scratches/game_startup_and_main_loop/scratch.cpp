@@ -1,5 +1,6 @@
 // game_startup_and_main_loop @ 0x406dc0 (stdcall, ret 0x10)
 
+#include "authored_view_state.h"
 #include "frontend_fade.h"
 #include "font_system.h"
 #include "game_root.h"
@@ -23,8 +24,6 @@ extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
 extern GameRoot* g_game;                     // data_4df904
-extern float g_authored_view_width;          // data_4df85c
-extern float g_authored_view_height;         // data_4b7760
 
 int query_directx_runtime_version(); // @ 0x44afc0
 char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0

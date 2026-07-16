@@ -1,5 +1,6 @@
 // convert_mouse_screen_xy @ 0x44c100 (cdecl)
 
+#include "authored_view_state.h"
 #include "game_root.h"
 #include "mouse_input_state.h"
 #include "runtime_config.h"
@@ -12,8 +13,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall SetCursorPos(int x, int y);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern GameRoot* g_game; // data_4df904
-extern float g_authored_view_width; // data_4df85c
-extern float g_authored_view_height; // data_4b7760
 
 void convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
 {

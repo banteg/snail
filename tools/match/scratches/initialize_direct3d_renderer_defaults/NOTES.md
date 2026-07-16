@@ -22,3 +22,10 @@ The live database now types this member as
 `void __thiscall(Direct3DRenderer*)` and renders every `+0xbb90..+0xbcbc`
 write through the canonical receiver. `g_direct3d_renderer` owns one complete
 0xbcc0-byte value; its device pointer is not recreated as a standalone global.
+
+## 2026-07-16 authored-view ownership
+
+The two integer conversions now borrow the canonical logical viewport pair
+seeded by startup and shared with fullscreen recentering and mouse setup. The
+split storage is preserved, and renderer initialization remains exact at 38/38
+instructions with all 15 operands clean.
