@@ -248,11 +248,14 @@ REQUIRED_HEADER_STRUCTS = (
     "SMTracks",
     "SmtrackHeightfieldAnimator",
     "AuthoredSegmentRowFlag",
+    "SubSegmentRowStrideAnchor",
     "SubLocOpenEdgeFlag",
     "SubLocFlag",
     "TrackRowCell",
     "SubRowFlag",
     "SubRow",
+    "RuntimeRowStrideAnchor",
+    "RuntimeCellStrideAnchor",
     "Path",
     "PathPair",
     "DamageGuageState",
@@ -455,6 +458,46 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
         66,
         "list_flags",
         "uint32_t",
+    ),
+)
+
+# VC6 retains containing-owner bases while advancing one authored row, one
+# runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
+# Binary Ninja otherwise flattens all three into void-pointer displacement
+# arithmetic. The stack slot is the matching authored-row ordinal, not the
+# SubgameRuntime pointer inferred from an earlier compiler-reused lifetime.
+POPULATE_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "populate_runtime_track_cells_from_segments",
+        "StackVariableSourceType",
+        1077,
+        -52,
+        "segment_row_index",
+        "int32_t",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1363,
+        72,
+        "segment_row_anchor",
+        "SubSegmentRowStrideAnchor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        1448,
+        69,
+        "runtime_row_anchor",
+        "RuntimeRowStrideAnchor*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        2002,
+        72,
+        "runtime_cell_anchor",
+        "RuntimeCellStrideAnchor*",
     ),
 )
 
@@ -1744,6 +1787,7 @@ def main() -> int:
             updates=(
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
+                *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),
         )

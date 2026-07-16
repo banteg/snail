@@ -7943,6 +7943,49 @@
       "forbidden_substrings": [
         "follow_state._pad_3c"
       ]
+    },
+    {
+      "name": "bn_runtime_cell_stride_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "int32_t segment_row_index = 0",
+        "struct SubSegmentRowStrideAnchor* segment_row_anchor",
+        "struct RuntimeRowStrideAnchor* runtime_row_anchor",
+        "struct RuntimeCellStrideAnchor* runtime_cell_anchor",
+        "runtime_row_anchor->row.source_segment",
+        "runtime_cell_anchor->previous_row_same_lane_tile_id",
+        "runtime_cell_anchor->cell.attachment_template_record",
+        "runtime_row_anchor->row.attachment_body"
+      ],
+      "forbidden_substrings": [
+        "struct SubgameRuntime* segment_count_2",
+        "void* esi_9",
+        "void* ebx_5",
+        "void* esi_11",
+        "*(ebx_5 + 0x5ccbb4)",
+        "*(esi_9 + 0x814)",
+        "*(esi_11 + 0x3bfb04)"
+      ]
+    },
+    {
+      "name": "ida_runtime_cell_stride_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "SubSegmentRowStrideAnchor *segment_row_anchor;",
+        "RuntimeRowStrideAnchor *runtime_row_anchor;",
+        "RuntimeCellStrideAnchor *runtime_cell_anchor;",
+        "int32_t segment_row_index;",
+        "segment_row_anchor->row.object_position",
+        "v31->rows[segment_row_index].parcel_set_id",
+        "runtime_cell_anchor->previous_row_same_lane_tile_id",
+        "runtime_cell_anchor->cell.attachment_template_record"
+      ],
+      "forbidden_substrings": [
+        "int32_t *segment_row_anchor;",
+        "uint8_t *runtime_row_anchor;",
+        "char *runtime_cell_anchor;",
+        "SubgameRuntime *segment_row_index;"
+      ]
     }
   ]
 }

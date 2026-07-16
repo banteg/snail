@@ -572,3 +572,23 @@ one loop, but pinning the old float view would falsely type integer flags,
 indices, and pointers as scalar floats. The honest integer cursor is retained;
 the surrounding `SubRow` layout remains proved by its declarations and later
 typed consumers.
+
+## 2026-07-16 containing-owner stride cursors
+
+VC6 does not materialize final element pointers in the central construction
+loop. It keeps three containing-owner bases and advances them at the exact
+native strides: `SubSegment + row * 0x38`, `SubgameRuntime + row * 0xf4`, and
+`SubgameRuntime + cell * 0x54`. Analysis-only overlapping views now preserve
+that real source ownership while exposing the consumed `AuthoredSegmentRow`,
+`SubRow`, and `TrackRowCell` members at `+0x814`, `+0x5ccac8`, and `+0x3bfac8`.
+The cell view also names the guarded same-lane tile one eight-cell row behind
+the current cell instead of rendering it as an unrelated prefix byte.
+
+The compiler-reused stack lifetime at the authored-row ordinal is now the
+integer `segment_row_index` in both decompilers; it is no longer tainted as a
+`SubgameRuntime*`. Binary Ninja's exact SSA identities and IDA's exact lvar
+definition addresses replay idempotently. This removes 39 raw owner
+displacements from Binary Ninja and recovers the same owner chain in IDA.
+Matcher source is unchanged at the honest 29.67%, 1,229/1,245-instruction
+frontier with the two documented alignment mismatches; no score-shaped source
+or operand fakematch was introduced.

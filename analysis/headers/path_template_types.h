@@ -239,6 +239,14 @@ struct SubSegment {
     int32_t message_sample_id;
 };
 
+/* The runtime-cell builder advances an ESI cursor by one 0x38-byte authored
+ * row while retaining the enclosing SubSegment base. Only row at +0x814 is
+ * consumed through this overlapping analysis view. */
+typedef struct SubSegmentRowStrideAnchor {
+    uint8_t segment_prefix[0x814];
+    AuthoredSegmentRow row;
+} SubSegmentRowStrideAnchor;
+
 /* Exact 0x1a5978-byte authored cRSubTracks level-definition owner. */
 typedef struct SubTracks {
     int32_t segment_count;
@@ -1115,6 +1123,23 @@ typedef struct SubRow {
     SubSegment* source_segment;
     int32_t row_event_id;
 } SubRow;
+
+/* Native retains the enclosing SubgameRuntime base while advancing one
+ * 0xf4-byte runtime-row lane. Only row at +0x5ccac8 is consumed here. */
+typedef struct RuntimeRowStrideAnchor {
+    uint8_t runtime_prefix[0x5ccac8];
+    SubRow row;
+} RuntimeRowStrideAnchor;
+
+/* Native likewise carries a SubgameRuntime-relative 0x54-byte cell cursor.
+ * The guarded previous-row tile access is one row stride (0x2a0) behind the
+ * current cell's tile_id; the current TrackRowCell begins at +0x3bfac8. */
+typedef struct RuntimeCellStrideAnchor {
+    uint8_t runtime_prefix_before_previous_row_tile_id[0x3bf864];
+    uint8_t previous_row_same_lane_tile_id;
+    uint8_t runtime_prefix_after_previous_row_tile_id[0x263];
+    TrackRowCell cell;
+} RuntimeCellStrideAnchor;
 
 typedef enum PathTemplateKind {
     PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00,

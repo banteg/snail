@@ -2663,6 +2663,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ida_segment_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
         encoding="utf-8"
     )
+    ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     binja_segment_sync = (
         BINJA_DIR / "sync_segment_catalog_types.py"
     ).read_text(encoding="utf-8")
@@ -2726,6 +2729,35 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "uint8_t catalog_prefix[0x88c];" in header
         assert "AuthoredSegmentRow row;" in header
     assert '"char g_level_file_text_buffer[10240];"' in ida_segment_sync
+
+    assert "POPULATE_RUNTIME_USER_VAR_UPDATES" in binja_source
+    assert '"StackVariableSourceType",\n        1077,\n        -52,' in binja_source
+    assert '"RegisterVariableSourceType",\n        1363,\n        72,' in binja_source
+    assert '"RegisterVariableSourceType",\n        1448,\n        69,' in binja_source
+    assert '"RegisterVariableSourceType",\n        2002,\n        72,' in binja_source
+    for name, type_name in (
+        ("segment_row_index", "int32_t"),
+        ("segment_row_anchor", "SubSegmentRowStrideAnchor*"),
+        ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
+        ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+
+    assert "typedef struct SubSegmentRowStrideAnchor" in analysis_path_header
+    assert "uint8_t segment_prefix[0x814];" in analysis_path_header
+    assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
+    assert "uint8_t runtime_prefix[0x5ccac8];" in analysis_path_header
+    assert "typedef struct RuntimeCellStrideAnchor" in analysis_path_header
+    assert "uint8_t previous_row_same_lane_tile_id;" in analysis_path_header
+    assert "uint8_t runtime_prefix_after_previous_row_tile_id[0x263];" in analysis_path_header
+
+    assert "POPULATE_RUNTIME_LVAR_SPECS" in ida_path_sync
+    assert "0x4362E6" in ida_path_sync
+    assert "0x436404" in ida_path_sync
+    assert "0x436459" in ida_path_sync
+    assert "0x436683" in ida_path_sync
+    assert "_sync_populate_runtime_lvars" in ida_path_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync
     assert "SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372" in ida_segment_sync

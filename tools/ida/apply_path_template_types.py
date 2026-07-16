@@ -80,6 +80,28 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43B120,  # update_subgoldy
 )
 
+POPULATE_RUNTIME_LVAR_SPECS = (
+    ("segment_row_index", "int32_t segment_row_index;", 0x4362E6, 56),
+    (
+        "segment_row_anchor",
+        "SubSegmentRowStrideAnchor *segment_row_anchor;",
+        0x436404,
+        None,
+    ),
+    (
+        "runtime_row_anchor",
+        "RuntimeRowStrideAnchor *runtime_row_anchor;",
+        0x436459,
+        None,
+    ),
+    (
+        "runtime_cell_anchor",
+        "RuntimeCellStrideAnchor *runtime_cell_anchor;",
+        0x436683,
+        None,
+    ),
+)
+
 # These displacement values are relocatable offsets into GameRoot, but several
 # of their numeric values also land on named code or historical offset-symbol
 # addresses. IDA then renders the individual instruction operand as an address
@@ -1197,6 +1219,150 @@ def _sync_color_lvars(selector: str) -> dict[str, object]:
     }
 
 
+def _sync_populate_runtime_lvars() -> dict[str, object]:
+    selector = "populate_runtime_track_cells_from_segments"
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    pending = []
+    results = []
+    for expected_name, declaration, definition_address, stack_offset in (
+        POPULATE_RUNTIME_LVAR_SPECS
+    ):
+        candidates = [
+            lvar
+            for lvar in cfunc.get_lvars()
+            if not lvar.is_arg_var
+            and lvar.defea == definition_address
+            and (
+                (stack_offset is None and not lvar.is_stk_var())
+                or (
+                    stack_offset is not None
+                    and lvar.is_stk_var()
+                    and lvar.get_stkoff() == stack_offset
+                )
+            )
+        ]
+        if len(candidates) != 1:
+            return {
+                "status": "failed",
+                "reason": "unexpected_local_candidates",
+                "selector": selector,
+                "expected_name": expected_name,
+                "definition_address": hex(definition_address),
+                "stack_offset": stack_offset,
+                "candidate_count": len(candidates),
+            }
+
+        local_type = ida_typeinf.tinfo_t()
+        if not ida_typeinf.parse_decl(
+            local_type,
+            None,
+            declaration,
+            ida_typeinf.PT_SIL,
+        ):
+            return {
+                "status": "failed",
+                "reason": "parse_local_type_failed",
+                "selector": selector,
+                "expected_name": expected_name,
+                "declaration": declaration,
+            }
+
+        lvar = candidates[0]
+        expected_type = _normalize_type_text(str(local_type))
+        observed_type = _normalize_type_text(str(lvar.type()))
+        if lvar.name == expected_name and observed_type == expected_type:
+            results.append(
+                {
+                    "status": "unchanged",
+                    "name": lvar.name,
+                    "type": str(lvar.type()),
+                    "definition_address": hex(definition_address),
+                }
+            )
+            continue
+
+        pending.append(
+            {
+                "lvar": lvar,
+                "expected_name": expected_name,
+                "expected_type": expected_type,
+                "local_type": local_type,
+                "definition_address": definition_address,
+                "stack_offset": stack_offset,
+                "before_name": lvar.name,
+                "before_type": str(lvar.type()),
+            }
+        )
+
+    for update in pending:
+        lvar = update["lvar"]
+        info = ida_hexrays.lvar_saved_info_t()
+        info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+        info.name = update["expected_name"]
+        info.type = update["local_type"]
+        if not ida_hexrays.modify_user_lvar_info(
+            address,
+            ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+            info,
+        ):
+            return {
+                "status": "failed",
+                "reason": "modify_user_lvar_info_failed",
+                "selector": selector,
+                "expected_name": update["expected_name"],
+            }
+
+    if pending:
+        ida_hexrays.mark_cfunc_dirty(address, True)
+        cfunc = ida_hexrays.decompile(address)
+
+    for update in pending:
+        verified = [
+            candidate
+            for candidate in cfunc.get_lvars()
+            if not candidate.is_arg_var
+            and candidate.name == update["expected_name"]
+            and candidate.defea == update["definition_address"]
+            and _normalize_type_text(str(candidate.type())) == update["expected_type"]
+            and (
+                (update["stack_offset"] is None and not candidate.is_stk_var())
+                or (
+                    update["stack_offset"] is not None
+                    and candidate.is_stk_var()
+                    and candidate.get_stkoff() == update["stack_offset"]
+                )
+            )
+        ]
+        if len(verified) != 1:
+            return {
+                "status": "failed",
+                "reason": "local_readback_failed",
+                "selector": selector,
+                "expected_name": update["expected_name"],
+                "candidate_count": len(verified),
+            }
+        results.append(
+            {
+                "status": "applied",
+                "before_name": update["before_name"],
+                "before_type": update["before_type"],
+                "name": verified[0].name,
+                "type": str(verified[0].type()),
+                "definition_address": hex(update["definition_address"]),
+            }
+        )
+
+    return {
+        "status": "applied" if pending else "unchanged",
+        "selector": selector,
+        "locals": results,
+    }
+
+
 def _sync_subgame_receiver_lvar(
     selector: str,
     *,
@@ -1524,6 +1690,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "color_lvars": get_track_skirt_color_lvars,
             }
         )
+    populate_runtime_lvars = _sync_populate_runtime_lvars()
+    if populate_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "populate_runtime_track_cells_from_segments",
+                "runtime_lvars": populate_runtime_lvars,
+            }
+        )
     subgame_receiver_lvar_specs = {
         "initialize_subgame": 1,
         "destroy_subgame": 1,
@@ -1574,6 +1748,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
+                "populate_runtime_lvars": populate_runtime_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,
                 "dirty_functions": dirty_functions,
                 "missing": missing,

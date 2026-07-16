@@ -39,90 +39,87 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t v33; // esi
   int32_t runtime_row_count; // ecx
   int v35; // eax
-  int32_t *v36; // esi
+  SubSegmentRowStrideAnchor *segment_row_anchor; // esi
   char *v37; // eax
   int v38; // ecx
   char *v39; // eax
   int v40; // ecx
-  uint8_t *v41; // ebx
+  RuntimeRowStrideAnchor *runtime_row_anchor; // ebx
   int v42; // eax
-  _DWORD *v43; // edx
+  int v43; // eax
   int v44; // eax
-  char *v45; // eax
-  _DWORD *v46; // ecx
-  int v47; // eax
-  int v48; // eax
-  int v49; // ebp
-  char *v50; // esi
-  int v51; // eax
-  char *v52; // edi
-  char *v53; // ebp
-  char v54; // al
-  int v55; // eax
-  int v56; // eax
-  int v57; // eax
-  int v58; // eax
-  int v59; // eax
-  int v60; // eax
-  int v61; // eax
-  int v62; // eax
-  int v63; // eax
-  int v64; // eax
-  int v65; // eax
-  int v66; // eax
-  int v67; // eax
-  int v68; // eax
-  int v69; // eax
-  int v70; // eax
-  int v71; // eax
-  int v72; // ecx
-  unsigned int v73; // ebp
-  bool v74; // zf
-  unsigned int v75; // eax
-  int v76; // eax
-  int v77; // eax
-  int v78; // eax
-  int v79; // eax
-  int v80; // eax
-  int v81; // eax
-  int v82; // eax
-  int v83; // eax
-  int v84; // ecx
+  int v45; // eax
+  int v46; // ebp
+  RuntimeCellStrideAnchor *runtime_cell_anchor; // esi
+  uint32_t lane_and_flags; // eax
+  TrackRowCell *p_cell; // edi
+  char *v50; // ebp
+  char v51; // al
+  uint32_t list_flags; // eax
+  uint32_t v53; // eax
+  uint32_t v54; // eax
+  uint32_t v55; // eax
+  uint32_t v56; // eax
+  uint32_t v57; // eax
+  uint32_t v58; // eax
+  uint32_t v59; // eax
+  uint32_t v60; // eax
+  uint32_t v61; // eax
+  uint32_t v62; // eax
+  uint32_t v63; // eax
+  uint32_t v64; // eax
+  uint32_t v65; // eax
+  uint32_t v66; // eax
+  uint32_t v67; // eax
+  uint32_t v68; // eax
+  int v69; // ecx
+  uint32_t v70; // ebp
+  bool v71; // zf
+  uint32_t v72; // eax
+  uint32_t v73; // eax
+  uint32_t v74; // eax
+  uint32_t v75; // eax
+  uint32_t v76; // eax
+  uint32_t v77; // eax
+  uint32_t v78; // eax
+  uint32_t v79; // eax
+  uint32_t v80; // eax
+  int v81; // ecx
   PathPair *p_secondary; // ecx
-  int v86; // edx
-  char *v87; // ecx
-  int v88; // eax
-  int v89; // ecx
-  int v90; // eax
-  int v91; // eax
-  float *v92; // edi
-  char v93; // al
-  char v94; // al
-  double v95; // st7
-  double v96; // st7
+  signed int v83; // edx
+  char *v84; // ecx
+  int v85; // eax
+  int v86; // ecx
+  uint32_t v87; // eax
+  uint32_t v88; // eax
+  Vec3 *p_anchor_position; // edi
+  uint8_t tile_id; // al
+  uint8_t v91; // al
+  double v92; // st7
+  double v93; // st7
   tColour *track_skirt_color; // eax
-  int v98; // eax
-  char v99; // al
-  _DWORD *v100; // ecx
-  int v101; // edx
-  _DWORD *v102; // eax
-  _DWORD *v103; // eax
-  bool v104; // cc
-  float v105; // [esp+0h] [ebp-5Ch]
-  char v106; // [esp+1Ah] [ebp-42h]
-  char v107; // [esp+1Bh] [ebp-41h]
-  int32_t v108; // [esp+1Ch] [ebp-40h]
+  int v95; // eax
+  uint8_t v96; // al
+  FringeObject **v97; // ecx
+  int v98; // edx
+  FringeObject *v99; // eax
+  int p_position; // eax
+  bool v101; // cc
+  float v102; // [esp+0h] [ebp-5Ch]
+  char v103; // [esp+1Ah] [ebp-42h]
+  char v104; // [esp+1Bh] [ebp-41h]
+  int32_t v105; // [esp+1Ch] [ebp-40h]
   SubSegment *p_first_segment; // [esp+20h] [ebp-3Ch]
-  int32_t v111; // [esp+28h] [ebp-34h]
-  int v112; // [esp+2Ch] [ebp-30h]
-  int v113; // [esp+2Ch] [ebp-30h]
-  int v114; // [esp+30h] [ebp-2Ch]
+  int32_t segment_row_index; // [esp+28h] [ebp-34h]
+  int v109; // [esp+2Ch] [ebp-30h]
+  int v110; // [esp+2Ch] [ebp-30h]
+  int v111; // [esp+30h] [ebp-2Ch]
   FringeObject **p_fringe_front; // [esp+34h] [ebp-28h]
-  float v116; // [esp+34h] [ebp-28h]
-  int v117; // [esp+38h] [ebp-24h]
-  int v118; // [esp+3Ch] [ebp-20h]
+  float v113; // [esp+34h] [ebp-28h]
+  int v114; // [esp+38h] [ebp-24h]
+  int v115; // [esp+3Ch] [ebp-20h]
   int random_length; // [esp+40h] [ebp-1Ch]
-  char v120; // [esp+40h] [ebp-1Ch]
+  char v117; // [esp+40h] [ebp-1Ch]
   tColour out; // [esp+4Ch] [ebp-10h] BYREF
 
   if ( game->selected_level_record_active )
@@ -215,7 +212,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
         }
         while ( v10 < game->level_definition.segment_count );
       }
-      v117 = 0;
+      v114 = 0;
     }
     game->completion_row_start = game->runtime_row_count - game->level_definition.last_segment.row_count;
     if ( game->runtime_row_count >= 3100 )
@@ -234,19 +231,19 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       game->runtime_row_count = v9;
     }
     while ( v8 );
-    v117 = 0;
+    v114 = 0;
     game->completion_row_start = v9 - game->level_definition.last_segment.row_count;
     game->completion_row_start = v9 - game->level_definition.last_segment.row_count;
   }
   game->track_mirror_enabled = 0;
   game->track_mirror_repeat_count = 0;
-  v118 = 0;
-  v106 = 0;
-  v114 = 0;
+  v115 = 0;
+  v103 = 0;
+  v111 = 0;
   game->player.follow_state.flag_3c = 0;
   p_fringe_front = &game->runtime_cells[0][0].fringe_front;
   v12 = (_DWORD *)((char *)&unk_5CCB5C + (_DWORD)game);
-  v112 = 3200;
+  v109 = 3200;
   do
   {
     v13 = 8;
@@ -294,9 +291,9 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
     while ( v18 );
     p_fringe_front = v17;
     v12 += 61;
-    --v112;
+    --v109;
   }
-  while ( v112 );
+  while ( v109 );
   if ( game->level_definition.random_enabled == 1 )
   {
     v20 = 0;
@@ -312,7 +309,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       while ( v20 < game->level_definition.segment_count );
     }
   }
-  v108 = 0;
+  v105 = 0;
   if ( game->runtime_row_count > 0 )
   {
     v22 = 0;
@@ -331,16 +328,16 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                             * (double)v23->level_definition.segment_count;
             else
               segment_count = (double)v23->level_definition.segment_count;
-            v105 = segment_count;
-            p_last_segment = (int)&v23->level_definition.segment_slots[(__int64)((double)(int)(__int64)random_float_below(v105)
+            v102 = segment_count;
+            p_last_segment = (int)&v23->level_definition.segment_slots[(__int64)((double)(int)(__int64)random_float_below(v102)
                                                                                * v23->base_subgame_rate)];
             p_first_segment = (SubSegment *)p_last_segment;
             *(_BYTE *)(p_last_segment + 8) = 1;
           }
           else
           {
-            v26 = v117;
-            v27 = v117++;
+            v26 = v114;
+            v27 = v114++;
             p_last_segment = (int)v23->level_definition.segment_slots + 0x4000 * v27 + 512 * v26 + 32 * v26;
             p_first_segment = (SubSegment *)p_last_segment;
           }
@@ -348,7 +345,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
         else
         {
           p_last_segment = (int)&v23->level_definition.last_segment;
-          v106 = 1;
+          v103 = 1;
           p_first_segment = &v23->level_definition.last_segment;
           v23->level_definition.last_segment.row_base = v22;
         }
@@ -356,7 +353,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       else
       {
         p_last_segment = (int)&v23->level_definition.first_segment;
-        v106 = 1;
+        v103 = 1;
         p_first_segment = &v23->level_definition.first_segment;
         v23->level_definition.first_segment.row_base = 0;
       }
@@ -365,12 +362,12 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
       *(_DWORD *)p_last_segment = v22;
       if ( v28 < 0 )
         report_errorf(aNegativeSegmen);
-      v111 = 0;
+      segment_row_index = 0;
       if ( v22 < v23->runtime_row_count )
       {
         do
         {
-          if ( v111 >= p_first_segment->row_count )
+          if ( segment_row_index >= p_first_segment->row_count )
             break;
           v29 = v23->level_mode;
           if ( v29 == 2 || (completion_row_start = v23->completion_row_start, v22 < completion_row_start) )
@@ -389,13 +386,13 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
             }
             p_first_segment = v31;
             if ( v22 == completion_row_start )
-              v111 = 0;
+              segment_row_index = 0;
           }
           if ( v29 != 2 )
           {
             row_count = v31->row_count;
             v33 = v23->completion_row_start;
-            if ( v22 + row_count - v111 <= v33 )
+            if ( v22 + row_count - segment_row_index <= v33 )
             {
               v31 = p_first_segment;
             }
@@ -409,7 +406,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
                 && p_first_segment != &v23->level_definition.last_segment )
               {
                 runtime_row_count = v23->runtime_row_count;
-                v35 = v22 + row_count - v33 - v111;
+                v35 = v22 + row_count - v33 - segment_row_index;
                 v23->completion_row_start = v35 + v33;
                 v23->runtime_row_count = v35 + runtime_row_count;
               }
@@ -417,218 +414,212 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
           }
           if ( v23->track_mirror_enabled )
             *(_DWORD *)&byte_5CCAC8[(_DWORD)v23 + 244 * v22] |= 0x20u;
-          v36 = &v31->row_base + 14 * v111;
-          if ( (v36[517] & 0x100) != 0 )
+          segment_row_anchor = (SubSegmentRowStrideAnchor *)((char *)v31 + 56 * segment_row_index);
+          if ( (segment_row_anchor->row.flags & 0x100) != 0 )
           {
             v37 = &byte_5CCAC8[(_DWORD)v23 + 244 * v22];
             v38 = *(_DWORD *)v37;
             BYTE1(v38) = BYTE1(*(_DWORD *)v37) | 1;
             *(_DWORD *)v37 = v38;
           }
-          if ( (BYTE1(v36[517]) & 0x80u) != 0 )
+          if ( (BYTE1(segment_row_anchor->row.flags) & 0x80u) != 0 )
           {
             v39 = &byte_5CCAC8[(_DWORD)v23 + 244 * v22];
             v40 = *(_DWORD *)v39;
             BYTE1(v40) = BYTE1(*(_DWORD *)v39) | 0x80;
             *(_DWORD *)v39 = v40;
           }
-          v41 = &v23->scan_reset + 244 * v22;
-          *(_DWORD *)((char *)&unk_5CCBB4 + (_DWORD)v41) = v31;
-          *(int *)((char *)unk_5CCBB8 + (_DWORD)v41) = v114;
-          if ( (v36[517] & 2) != 0 )
+          runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)v23 + 244 * v22);
+          *(_DWORD *)((char *)&unk_5CCBB4 + (_DWORD)runtime_row_anchor) = v31;
+          *(int *)((char *)unk_5CCBB8 + (_DWORD)runtime_row_anchor) = v111;
+          if ( (segment_row_anchor->row.flags & 2) != 0 )
           {
-            v42 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v41];
+            v42 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
             LOBYTE(v42) = v42 | 2;
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v42;
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v42;
             set_bod_object(
-              (BodBase *)((char *)&unk_5CCACC + (_DWORD)v41),
-              g_game_base->directx_loader.cached_x_mesh_slots[v36[522]].object);
-            set_matrix_identity((TransformMatrix *)((char *)&unk_5CCB04 + (_DWORD)v41));
-            v43 = (_DWORD *)((char *)&unk_5CCB34 + (_DWORD)v41);
-            *v43 = v36[523];
-            v43[1] = v36[524];
-            v43[2] = v36[525];
-            *((float *)v41 + 1520335) = (double)v108 + *((float *)v41 + 1520335);
-            if ( (v36[517] & 8) != 0 )
+              (BodBase *)((char *)&unk_5CCACC + (_DWORD)runtime_row_anchor),
+              g_game_base->directx_loader.cached_x_mesh_slots[segment_row_anchor->row.object_id].object);
+            set_matrix_identity((TransformMatrix *)((char *)&unk_5CCB04 + (_DWORD)runtime_row_anchor));
+            *(Vec3 *)((char *)&unk_5CCB34 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.object_position;
+            runtime_row_anchor->row.primary_body.transform.position.z = (double)v105
+                                                                      + runtime_row_anchor->row.primary_body.transform.position.z;
+            if ( (segment_row_anchor->row.flags & 8) != 0 )
             {
-              v44 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v41];
-              LOBYTE(v44) = v44 | 8;
-              *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v44;
-              v45 = (char *)&unk_5CCB4C + (_DWORD)v41;
-              *(_DWORD *)((char *)&unk_5CCB4C + (_DWORD)v41) = v36[526];
-              *((_DWORD *)v45 + 1) = v36[527];
-              *((_DWORD *)v45 + 2) = v36[528];
+              v43 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+              LOBYTE(v43) = v43 | 8;
+              *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v43;
+              *(Vec3 *)((char *)&unk_5CCB4C + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.object_velocity;
             }
             else
             {
-              *(_DWORD *)((char *)&unk_5CCB54 + (_DWORD)v41) = 0;
-              *(_DWORD *)((char *)&unk_5CCB50 + (_DWORD)v41) = 0;
-              *(_DWORD *)((char *)&unk_5CCB4C + (_DWORD)v41) = 0;
+              *(_DWORD *)((char *)&unk_5CCB54 + (_DWORD)runtime_row_anchor) = 0;
+              *(_DWORD *)((char *)&unk_5CCB50 + (_DWORD)runtime_row_anchor) = 0;
+              *(_DWORD *)((char *)&unk_5CCB4C + (_DWORD)runtime_row_anchor) = 0;
             }
             v31 = p_first_segment;
           }
-          if ( (v36[517] & 1) != 0 )
+          if ( (segment_row_anchor->row.flags & 1) != 0 )
           {
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] |= 0x4001u;
-            v46 = (_DWORD *)((char *)&unk_5CCB58 + (_DWORD)v41);
-            *(_DWORD *)((char *)&unk_5CCB64 + (_DWORD)v41) = v31->rows[v111].parcel_set_id;
-            *v46 = v36[519];
-            v46[1] = v36[520];
-            v46[2] = v36[521];
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x4001u;
+            *(_DWORD *)((char *)&unk_5CCB64 + (_DWORD)runtime_row_anchor) = v31->rows[segment_row_index].parcel_set_id;
+            *(Vec3 *)((char *)&unk_5CCB58 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.local_position;
           }
-          if ( (v36[517] & 8) != 0 )
+          if ( (segment_row_anchor->row.flags & 8) != 0 )
           {
-            v47 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v41];
-            LOBYTE(v47) = v47 | 8;
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v47;
-            *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)v41) = v36[529];
+            v44 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+            LOBYTE(v44) = v44 | 8;
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v44;
+            *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.path_template_index;
           }
-          if ( (v36[517] & 4) != 0 )
+          if ( (segment_row_anchor->row.flags & 4) != 0 )
           {
-            v48 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v41];
-            LOBYTE(v48) = v48 | 4;
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v48;
+            v45 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+            LOBYTE(v45) = v45 | 4;
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v45;
           }
-          if ( (v36[517] & 0x200) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] |= 0x200u;
-          if ( (v36[517] & 0x400) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] |= 0x400u;
-          if ( (v36[517] & 0x2000) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] |= 0x2000u;
-          if ( (v36[517] & 0x800) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] |= 0x800u;
-          if ( (v36[517] & 0x1000) != 0 )
-            *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] |= 0x1000u;
-          v107 = 0;
-          v113 = 0;
-          *((_DWORD *)&v23->runtime_rows[0].ring_speed + 60 * v22 + v22) = v36[530];
+          if ( (segment_row_anchor->row.flags & 0x200) != 0 )
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x200u;
+          if ( (segment_row_anchor->row.flags & 0x400) != 0 )
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x400u;
+          if ( (segment_row_anchor->row.flags & 0x2000) != 0 )
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x2000u;
+          if ( (segment_row_anchor->row.flags & 0x800) != 0 )
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x800u;
+          if ( (segment_row_anchor->row.flags & 0x1000) != 0 )
+            *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] |= 0x1000u;
+          v104 = 0;
+          v110 = 0;
+          *((_DWORD *)&v23->runtime_rows[0].ring_speed + 60 * v22 + v22) = segment_row_anchor->row.ring_speed.bits;
           do
           {
             if ( game->track_mirror_enabled )
-              v49 = 7 - v113;
+              v46 = 7 - v110;
             else
-              v49 = v113;
-            v50 = (char *)game + 672 * v108 + 84 * v113;
-            v51 = *((_DWORD *)v50 + 982722);
-            LOBYTE(v51) = v51 & 0xE0;
-            *((_DWORD *)v50 + 982722) = v113 & 7 ^ v51;
-            *((_DWORD *)v50 + 982723) = 0;
-            *((_DWORD *)v50 + 982724) = 0;
-            *((_DWORD *)v50 + 982725) = 0;
-            *((_DWORD *)v50 + 982726) = 0;
-            if ( v108 < game->first_block_row_count || (v120 = 0, v108 >= game->completion_row_start) )
-              v120 = 1;
-            v52 = v50 + 3930824;
-            set_bod_object((BodBase *)(v50 + 3930824), nullptr);
-            v53 = &p_first_segment->glyph_rows[v49][v111];
-            v54 = normalize_segment_glyph_for_track_flags((int)game, *v53, v108, v120);
-            switch ( v54 )
+              v46 = v110;
+            runtime_cell_anchor = (RuntimeCellStrideAnchor *)((char *)game + 672 * v105 + 84 * v110);
+            lane_and_flags = runtime_cell_anchor->cell.lane_and_flags;
+            LOBYTE(lane_and_flags) = lane_and_flags & 0xE0;
+            runtime_cell_anchor->cell.lane_and_flags = v110 & 7 ^ lane_and_flags;
+            runtime_cell_anchor->cell.fringe_front = nullptr;
+            runtime_cell_anchor->cell.fringe_right = nullptr;
+            runtime_cell_anchor->cell.fringe_left = nullptr;
+            runtime_cell_anchor->cell.fringe_back = nullptr;
+            if ( v105 < game->first_block_row_count || (v117 = 0, v105 >= game->completion_row_start) )
+              v117 = 1;
+            p_cell = &runtime_cell_anchor->cell;
+            set_bod_object((BodBase *)&runtime_cell_anchor->cell, nullptr);
+            v50 = &p_first_segment->glyph_rows[v46][segment_row_index];
+            v51 = normalize_segment_glyph_for_track_flags((int)game, *v50, v105, v117);
+            switch ( v51 )
             {
               case ' ':
-                v50[3930884] = 0;
-                v55 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v55) = v55 & 0xDF;
-                *((_DWORD *)v50 + 982707) = v55;
+                runtime_cell_anchor->cell.tile_id = 0;
+                list_flags = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(list_flags) = list_flags & 0xDF;
+                runtime_cell_anchor->cell.bod.list_flags = list_flags;
                 break;
               case '#':
-                v50[3930884] = 32;
-                v57 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v57) = v57 & 0xDF;
-                *((_DWORD *)v50 + 982707) = v57;
+                runtime_cell_anchor->cell.tile_id = 32;
+                v54 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v54) = v54 & 0xDF;
+                runtime_cell_anchor->cell.bod.list_flags = v54;
                 break;
               case '$':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 23;
-                v60 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v60) = v60 | 0x20;
-                *((_DWORD *)v50 + 982707) = v60;
+                runtime_cell_anchor->cell.tile_id = 23;
+                v57 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v57) = v57 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v57;
                 break;
               case '&':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                v50[3930884] = 34;
-                v66 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v66) = v66 | 0x20;
-                *((_DWORD *)v50 + 982707) = v66;
+                runtime_cell_anchor->cell.tile_id = 34;
+                v63 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v63) = v63 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v63;
                 break;
               case '(':
-                v72 = v118 + 1;
-                v73 = *((_DWORD *)v50 + 982707) & 0xFFFFFFDF;
-                v74 = v118++ == 14;
-                *((_DWORD *)v50 + 982707) = v73;
-                v75 = v73;
-                if ( v74 )
+                v69 = v115 + 1;
+                v70 = runtime_cell_anchor->cell.bod.list_flags & 0xFFFFFFDF;
+                v71 = v115++ == 14;
+                runtime_cell_anchor->cell.bod.list_flags = v70;
+                v72 = v70;
+                if ( v71 )
                 {
-                  v118 = 0;
-                  v50[3930884] = 22;
+                  v115 = 0;
+                  runtime_cell_anchor->cell.tile_id = 22;
                 }
                 else
                 {
-                  if ( v72 == 8 )
+                  if ( v69 == 8 )
                   {
                     set_bod_object(
-                      (BodBase *)(v50 + 3930824),
+                      (BodBase *)&runtime_cell_anchor->cell,
                       (Object *)g_game_base->root_bod_catalog.trampoline.object);
-                    *((_DWORD *)v50 + 982707) |= 0x20u;
-                    store_color4f(&game->runtime_cells[v108][v113].color, 1.0, 1.0, 1.0, 0.99900001);
+                    runtime_cell_anchor->cell.bod.list_flags |= 0x20u;
+                    store_color4f(&game->runtime_cells[v105][v110].color, 1.0, 1.0, 1.0, 0.99900001);
                   }
                   else
                   {
-                    LOBYTE(v75) = v73 & 0xDF;
-                    *((_DWORD *)v50 + 982707) = v75;
+                    LOBYTE(v72) = v70 & 0xDF;
+                    runtime_cell_anchor->cell.bod.list_flags = v72;
                   }
-                  v50[3930884] = 22;
+                  runtime_cell_anchor->cell.tile_id = 22;
                 }
                 break;
               case '+':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 24;
-                v68 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v68) = v68 | 0x20;
-                *((_DWORD *)v50 + 982707) = v68;
+                runtime_cell_anchor->cell.tile_id = 24;
+                v65 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v65) = v65 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v65;
                 break;
               case ',':
-                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.universe_hole.object);
-                v50[3930884] = 28;
-                v67 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v67) = v67 | 0x20;
-                *((_DWORD *)v50 + 982707) = v67;
+                set_bod_object(
+                  (BodBase *)&runtime_cell_anchor->cell,
+                  (Object *)g_game_base->root_bod_catalog.universe_hole.object);
+                runtime_cell_anchor->cell.tile_id = 28;
+                v64 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v64) = v64 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v64;
                 break;
               case '-':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                v50[3930884] = 21;
-                v70 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v70) = v70 | 0x20;
-                *((_DWORD *)v50 + 982707) = v70;
+                runtime_cell_anchor->cell.tile_id = 21;
+                v67 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v67) = v67 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v67;
                 break;
               case '.':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                v50[3930884] = 1;
-                v64 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v64) = v64 | 0x20;
-                *((_DWORD *)v50 + 982707) = v64;
+                runtime_cell_anchor->cell.tile_id = 1;
+                v61 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v61) = v61 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v61;
                 break;
               case '0':
                 if ( game->level_mode == 1 )
                 {
-                  v89 = *(_DWORD *)&byte_5CCAC8[(_DWORD)v41];
-                  BYTE1(v89) &= ~0x40u;
-                  *(_DWORD *)&byte_5CCAC8[(_DWORD)v41] = v89 | 1;
-                  *(_DWORD *)((char *)&unk_5CCB64 + (_DWORD)v41) = 0;
-                  *((float *)v41 + 1520342) = (double)v113 - 4.0 + 0.5;
-                  *(_DWORD *)((char *)&unk_5CCB5C + (_DWORD)v41) = *((_DWORD *)v50 + 982711);
-                  *((float *)v41 + 1520344) = (double)v108 + 0.5;
+                  v86 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
+                  BYTE1(v86) &= ~0x40u;
+                  *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor] = v86 | 1;
+                  *(_DWORD *)((char *)&unk_5CCB64 + (_DWORD)runtime_row_anchor) = 0;
+                  runtime_row_anchor->row.projection_payload.x = (double)v110 - 4.0 + 0.5;
+                  *(float *)((char *)&unk_5CCB5C + (_DWORD)runtime_row_anchor) = runtime_cell_anchor->cell.anchor_position.y;
+                  runtime_row_anchor->row.projection_payload.z = (double)v105 + 0.5;
                   if ( game->track_mirror_enabled )
-                    *((float *)v41 + 1520342) = *((float *)v41 + 1520342) * -1.0;
+                    runtime_row_anchor->row.projection_payload.x = runtime_row_anchor->row.projection_payload.x * -1.0;
                 }
                 goto LABEL_173;
               case '1':
@@ -641,358 +632,366 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               case '8':
               case '9':
 LABEL_173:
-                if ( (byte_5CCAC8[(_DWORD)v41] & 0xC0) == 0 )
+                if ( (byte_5CCAC8[(_DWORD)runtime_row_anchor] & 0xC0) == 0 )
                   goto LABEL_174;
-                v91 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v91) = v91 & 0xDF;
-                *((_DWORD *)v50 + 982707) = v91;
-                v50[3930884] = 0;
+                v88 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v88) = v88 & 0xDF;
+                runtime_cell_anchor->cell.bod.list_flags = v88;
+                runtime_cell_anchor->cell.tile_id = 0;
                 break;
               case '<':
-                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
-                *((_DWORD *)v50 + 982713) = 0;
-                *((_DWORD *)v50 + 982714) = 0;
-                v50[3930884] = 6;
-                v82 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v82) = v82 | 0x20;
-                *((_DWORD *)v50 + 982707) = v82;
+                set_bod_object(
+                  (BodBase *)&runtime_cell_anchor->cell,
+                  (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
+                runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                runtime_cell_anchor->cell.tile_id = 6;
+                v79 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v79) = v79 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v79;
                 break;
               case '=':
               case '|':
-                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.pillars[0].object);
-                v50[3930884] = 14;
-                v71 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v71) = v71 | 0x20;
-                *((_DWORD *)v50 + 982707) = v71;
+                set_bod_object(
+                  (BodBase *)&runtime_cell_anchor->cell,
+                  (Object *)g_game_base->root_bod_catalog.pillars[0].object);
+                runtime_cell_anchor->cell.tile_id = 14;
+                v68 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v68) = v68 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v68;
                 break;
               case '>':
-                if ( v108 > 0 && v50[3930212] == 3 )
+                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane_tile_id == 3 )
                 {
                   set_bod_object(
-                    (BodBase *)(v50 + 3930824),
+                    (BodBase *)&runtime_cell_anchor->cell,
                     (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
-                  *((_DWORD *)v50 + 982713) = 0;
-                  *((_DWORD *)v50 + 982714) = 0;
-                  v50[3930884] = 9;
-                  v76 = *((_DWORD *)v50 + 982707);
-                  LOBYTE(v76) = v76 | 0x20;
-                  *((_DWORD *)v50 + 982707) = v76;
-                  v50[3930212] = 12;
+                  runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                  runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                  runtime_cell_anchor->cell.tile_id = 9;
+                  v73 = runtime_cell_anchor->cell.bod.list_flags;
+                  LOBYTE(v73) = v73 | 0x20;
+                  runtime_cell_anchor->cell.bod.list_flags = v73;
+                  runtime_cell_anchor->previous_row_same_lane_tile_id = 12;
                 }
                 else
                 {
                   set_bod_object(
-                    (BodBase *)(v50 + 3930824),
+                    (BodBase *)&runtime_cell_anchor->cell,
                     (Object *)g_game_base->root_bod_catalog.ramp_edges[1].object);
-                  *((_DWORD *)v50 + 982713) = 0;
-                  *((_DWORD *)v50 + 982714) = 0;
-                  v50[3930884] = 3;
-                  v77 = *((_DWORD *)v50 + 982707);
-                  LOBYTE(v77) = v77 | 0x20;
-                  *((_DWORD *)v50 + 982707) = v77;
+                  runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                  runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                  runtime_cell_anchor->cell.tile_id = 3;
+                  v74 = runtime_cell_anchor->cell.bod.list_flags;
+                  LOBYTE(v74) = v74 | 0x20;
+                  runtime_cell_anchor->cell.bod.list_flags = v74;
                 }
                 break;
               case '@':
-                v50[3930884] = 0;
-                v58 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v58) = v58 & 0xDF;
-                *((_DWORD *)v50 + 982707) = v58;
+                runtime_cell_anchor->cell.tile_id = 0;
+                v55 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v55) = v55 & 0xDF;
+                runtime_cell_anchor->cell.bod.list_flags = v55;
                 switch_track_mirror(game);
                 break;
               case 'F':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 19;
-                v63 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v63) = v63 | 0x20;
-                *((_DWORD *)v50 + 982707) = v63;
+                runtime_cell_anchor->cell.tile_id = 19;
+                v60 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v60) = v60 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v60;
                 break;
               case 'G':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 17;
-                v59 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v59) = v59 | 0x20;
-                *((_DWORD *)v50 + 982707) = v59;
+                runtime_cell_anchor->cell.tile_id = 17;
+                v56 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v56) = v56 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v56;
                 break;
               case 'J':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 25;
-                v69 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v69) = v69 | 0x20;
-                *((_DWORD *)v50 + 982707) = v69;
+                runtime_cell_anchor->cell.tile_id = 25;
+                v66 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v66) = v66 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v66;
                 break;
               case 'M':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 18;
-                v62 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v62) = v62 | 0x20;
-                *((_DWORD *)v50 + 982707) = v62;
+                runtime_cell_anchor->cell.tile_id = 18;
+                v59 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v59) = v59 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v59;
                 break;
               case 'P':
               case 'p':
-                if ( v54 == 80 )
+                if ( v51 == 80 )
                 {
-                  v50[3930884] = 30;
+                  runtime_cell_anchor->cell.tile_id = 30;
                 }
-                else if ( v54 == 112 )
+                else if ( v51 == 112 )
                 {
-                  v50[3930884] = 29;
+                  runtime_cell_anchor->cell.tile_id = 29;
                 }
-                v84 = *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)v41);
+                v81 = *(_DWORD *)((char *)&unk_5CCB68 + (_DWORD)runtime_row_anchor);
                 if ( game->track_mirror_enabled )
-                  p_secondary = (PathPair *)&game->path_pairs[v84].secondary;
+                  p_secondary = (PathPair *)&game->path_pairs[v81].secondary;
                 else
-                  p_secondary = &game->path_pairs[v84];
-                *((_DWORD *)v50 + 982720) = p_secondary;
-                *((_DWORD *)v50 + 982707) &= ~0x20u;
-                if ( !v107 )
+                  p_secondary = &game->path_pairs[v81];
+                runtime_cell_anchor->cell.attachment_template_record = &p_secondary->primary;
+                runtime_cell_anchor->cell.bod.list_flags &= ~0x20u;
+                if ( !v104 )
                 {
-                  v107 = 1;
-                  set_bod_object((BodBase *)(v50 + 3930824), *(Object **)(*((_DWORD *)v50 + 982720) + 36));
-                  *((_DWORD *)v50 + 982707) |= 0x20u;
+                  v104 = 1;
                   set_bod_object(
-                    (BodBase *)((char *)&unk_5CCB78 + (_DWORD)v41),
-                    *(Object **)(*((_DWORD *)v50 + 982720) + 132));
-                  *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)v41) |= 0x20u;
-                  *(_DWORD *)((char *)&unk_5CCB74 + (_DWORD)v41) = p_first_segment->angle_radians.bits;
-                  v86 = 0;
-                  if ( *(int *)(*((_DWORD *)v50 + 982720) + 72) > 0 )
+                    (BodBase *)&runtime_cell_anchor->cell,
+                    runtime_cell_anchor->cell.attachment_template_record->bod.object);
+                  runtime_cell_anchor->cell.bod.list_flags |= 0x20u;
+                  set_bod_object(
+                    (BodBase *)((char *)&unk_5CCB78 + (_DWORD)runtime_row_anchor),
+                    runtime_cell_anchor->cell.attachment_template_record->fringe_mesh_bod.object);
+                  *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)runtime_row_anchor) |= 0x20u;
+                  *(_DWORD *)((char *)&unk_5CCB74 + (_DWORD)runtime_row_anchor) = p_first_segment->angle_radians.bits;
+                  v83 = 0;
+                  if ( (int)runtime_cell_anchor->cell.attachment_template_record->row_span_count > 0 )
                   {
-                    v87 = &byte_5CCAC8[(_DWORD)v41];
+                    v84 = &byte_5CCAC8[(_DWORD)runtime_row_anchor];
                     do
                     {
-                      v88 = *(_DWORD *)v87;
-                      if ( (*(_DWORD *)v87 & 0x40) != 0 )
+                      v85 = *(_DWORD *)v84;
+                      if ( (*(_DWORD *)v84 & 0x40) != 0 )
                       {
-                        LOBYTE(v88) = v88 | 0x80;
-                        *(_DWORD *)v87 = v88;
-                        *((_DWORD *)v87 + 42) = v52;
+                        LOBYTE(v85) = v85 | 0x80;
+                        *(_DWORD *)v84 = v85;
+                        *((_DWORD *)v84 + 42) = p_cell;
                       }
                       else
                       {
-                        LOBYTE(v88) = v88 | 0x40;
-                        *(_DWORD *)v87 = v88;
-                        *((_DWORD *)v87 + 41) = v52;
+                        LOBYTE(v85) = v85 | 0x40;
+                        *(_DWORD *)v84 = v85;
+                        *((_DWORD *)v84 + 41) = p_cell;
                       }
-                      ++v86;
-                      v87 += 244;
+                      ++v83;
+                      v84 += 244;
                     }
-                    while ( v86 < *(_DWORD *)(*((_DWORD *)v50 + 982720) + 72) );
+                    while ( v83 < (signed int)runtime_cell_anchor->cell.attachment_template_record->row_span_count );
                   }
                 }
                 break;
               case 'R':
-                v50[3930884] = 35;
-                v56 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v56) = v56 & 0xDF;
-                *((_DWORD *)v50 + 982707) = v56;
+                runtime_cell_anchor->cell.tile_id = 35;
+                v53 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v53) = v53 & 0xDF;
+                runtime_cell_anchor->cell.bod.list_flags = v53;
                 break;
               case '[':
-                set_bod_object((BodBase *)(v50 + 3930824), (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
-                *((_DWORD *)v50 + 982713) = 0;
-                *((_DWORD *)v50 + 982714) = 0;
-                v50[3930884] = 5;
-                v83 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v83) = v83 | 0x20;
-                *((_DWORD *)v50 + 982707) = v83;
+                set_bod_object(
+                  (BodBase *)&runtime_cell_anchor->cell,
+                  (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
+                runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                runtime_cell_anchor->cell.tile_id = 5;
+                v80 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v80) = v80 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v80;
                 break;
               case '_':
 LABEL_174:
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 15;
-                v90 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v90) = v90 | 0x20;
-                *((_DWORD *)v50 + 982707) = v90;
+                runtime_cell_anchor->cell.tile_id = 15;
+                v87 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v87) = v87 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v87;
                 break;
               case 'o':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.slide_slices.storage[0].object);
-                v50[3930884] = 16;
-                v61 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v61) = v61 | 0x20;
-                *((_DWORD *)v50 + 982707) = v61;
+                runtime_cell_anchor->cell.tile_id = 16;
+                v58 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v58) = v58 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v58;
                 break;
               case 's':
                 set_bod_object(
-                  (BodBase *)(v50 + 3930824),
+                  (BodBase *)&runtime_cell_anchor->cell,
                   (Object *)g_game_base->root_bod_catalog.floor_slices.storage[0].object);
-                v50[3930884] = 33;
-                v65 = *((_DWORD *)v50 + 982707);
-                LOBYTE(v65) = v65 | 0x20;
-                *((_DWORD *)v50 + 982707) = v65;
+                runtime_cell_anchor->cell.tile_id = 33;
+                v62 = runtime_cell_anchor->cell.bod.list_flags;
+                LOBYTE(v62) = v62 | 0x20;
+                runtime_cell_anchor->cell.bod.list_flags = v62;
                 break;
               case '{':
-                if ( v108 > 0 && v50[3930212] == 3 )
+                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane_tile_id == 3 )
                 {
                   set_bod_object(
-                    (BodBase *)(v50 + 3930824),
+                    (BodBase *)&runtime_cell_anchor->cell,
                     (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
-                  *((_DWORD *)v50 + 982713) = 0;
-                  *((_DWORD *)v50 + 982714) = 0;
-                  v50[3930884] = 8;
-                  v80 = *((_DWORD *)v50 + 982707);
-                  LOBYTE(v80) = v80 | 0x20;
-                  *((_DWORD *)v50 + 982707) = v80;
-                  v50[3930212] = 11;
+                  runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                  runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                  runtime_cell_anchor->cell.tile_id = 8;
+                  v77 = runtime_cell_anchor->cell.bod.list_flags;
+                  LOBYTE(v77) = v77 | 0x20;
+                  runtime_cell_anchor->cell.bod.list_flags = v77;
+                  runtime_cell_anchor->previous_row_same_lane_tile_id = 11;
                 }
                 else
                 {
                   set_bod_object(
-                    (BodBase *)(v50 + 3930824),
+                    (BodBase *)&runtime_cell_anchor->cell,
                     (Object *)g_game_base->root_bod_catalog.ramp_edges[0].object);
-                  *((_DWORD *)v50 + 982713) = 0;
-                  *((_DWORD *)v50 + 982714) = 0;
-                  v50[3930884] = 2;
-                  v81 = *((_DWORD *)v50 + 982707);
-                  LOBYTE(v81) = v81 | 0x20;
-                  *((_DWORD *)v50 + 982707) = v81;
+                  runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                  runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                  runtime_cell_anchor->cell.tile_id = 2;
+                  v78 = runtime_cell_anchor->cell.bod.list_flags;
+                  LOBYTE(v78) = v78 | 0x20;
+                  runtime_cell_anchor->cell.bod.list_flags = v78;
                 }
                 break;
               case '}':
-                if ( v108 > 0 && v50[3930212] == 3 )
+                if ( v105 > 0 && runtime_cell_anchor->previous_row_same_lane_tile_id == 3 )
                 {
                   set_bod_object(
-                    (BodBase *)(v50 + 3930824),
+                    (BodBase *)&runtime_cell_anchor->cell,
                     (Object *)g_game_base->root_bod_catalog.ramp_edges[2].object);
-                  *((_DWORD *)v50 + 982713) = 0;
-                  *((_DWORD *)v50 + 982714) = 0;
-                  v50[3930884] = 10;
-                  v78 = *((_DWORD *)v50 + 982707);
-                  LOBYTE(v78) = v78 | 0x20;
-                  *((_DWORD *)v50 + 982707) = v78;
-                  v50[3930212] = 13;
+                  runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                  runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                  runtime_cell_anchor->cell.tile_id = 10;
+                  v75 = runtime_cell_anchor->cell.bod.list_flags;
+                  LOBYTE(v75) = v75 | 0x20;
+                  runtime_cell_anchor->cell.bod.list_flags = v75;
+                  runtime_cell_anchor->previous_row_same_lane_tile_id = 13;
                 }
                 else
                 {
                   set_bod_object(
-                    (BodBase *)(v50 + 3930824),
+                    (BodBase *)&runtime_cell_anchor->cell,
                     (Object *)g_game_base->root_bod_catalog.ramp_edges[2].object);
-                  *((_DWORD *)v50 + 982713) = 0;
-                  *((_DWORD *)v50 + 982714) = 0;
-                  v50[3930884] = 4;
-                  v79 = *((_DWORD *)v50 + 982707);
-                  LOBYTE(v79) = v79 | 0x20;
-                  *((_DWORD *)v50 + 982707) = v79;
+                  runtime_cell_anchor->cell.render_arg_1c = 0.0;
+                  runtime_cell_anchor->cell.render_arg_20 = 0.0;
+                  runtime_cell_anchor->cell.tile_id = 4;
+                  v76 = runtime_cell_anchor->cell.bod.list_flags;
+                  LOBYTE(v76) = v76 | 0x20;
+                  runtime_cell_anchor->cell.bod.list_flags = v76;
                 }
                 break;
               default:
-                normalize_segment_glyph_for_track_flags((int)game, *v53, v108, 1);
+                normalize_segment_glyph_for_track_flags((int)game, *v50, v105, 1);
                 debug_report_stub();
                 break;
             }
-            v92 = (float *)(v50 + 3930840);
-            *((_DWORD *)v50 + 982712) = 0;
-            *((_DWORD *)v50 + 982711) = 0;
-            *((_DWORD *)v50 + 982710) = 0;
-            *(_DWORD *)((char *)&unk_5CCB90 + (_DWORD)v41) = 0;
-            *(_DWORD *)((char *)&unk_5CCB8C + (_DWORD)v41) = 0;
-            *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)v41) = 0;
-            v93 = v50[3930884];
-            if ( v93 == 29 || v93 == 30 )
+            p_anchor_position = &runtime_cell_anchor->cell.anchor_position;
+            runtime_cell_anchor->cell.anchor_position.z = 0.0;
+            runtime_cell_anchor->cell.anchor_position.y = 0.0;
+            runtime_cell_anchor->cell.anchor_position.x = 0.0;
+            *(_DWORD *)((char *)&unk_5CCB90 + (_DWORD)runtime_row_anchor) = 0;
+            *(_DWORD *)((char *)&unk_5CCB8C + (_DWORD)runtime_row_anchor) = 0;
+            *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)runtime_row_anchor) = 0;
+            tile_id = runtime_cell_anchor->cell.tile_id;
+            if ( tile_id == 29 || tile_id == 30 )
             {
-              *v92 = 0.0;
-              v95 = (double)v108 + 0.5;
-              v116 = v95;
-              v96 = v95 - 0.5;
-              *((float *)v50 + 982712) = v96;
+              p_anchor_position->x = 0.0;
+              v92 = (double)v105 + 0.5;
+              v113 = v92;
+              v93 = v92 - 0.5;
+              runtime_cell_anchor->cell.anchor_position.z = v93;
               if ( (g_runtime_config.render_flags & 0x20) != 0 )
               {
-                *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)v41) = 0;
-                *((float *)v41 + 1520356) = v96;
+                *(_DWORD *)((char *)&unk_5CCB88 + (_DWORD)runtime_row_anchor) = 0;
+                runtime_row_anchor->row.attachment_body.position.z = v93;
                 track_skirt_color = get_track_skirt_color(&g_game_base->subgame, &out);
-                *(tColour *)((char *)&unk_5CCBA0 + (_DWORD)v41) = *track_skirt_color;
-                set_object_color(*(Object **)((char *)&unk_5CCB9C + (_DWORD)v41), *track_skirt_color);
+                *(tColour *)((char *)&unk_5CCBA0 + (_DWORD)runtime_row_anchor) = *track_skirt_color;
+                set_object_color(*(Object **)((char *)&unk_5CCB9C + (_DWORD)runtime_row_anchor), *track_skirt_color);
               }
               else
               {
-                v98 = *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)v41);
-                LOBYTE(v98) = v98 & 0xDF;
-                *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)v41) = v98;
+                v95 = *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)runtime_row_anchor);
+                LOBYTE(v95) = v95 & 0xDF;
+                *(_DWORD *)((char *)&unk_5CCB7C + (_DWORD)runtime_row_anchor) = v95;
               }
             }
             else
             {
-              *v92 = (double)v113 - 4.0 + 0.5;
-              *((_DWORD *)v50 + 982711) = 0;
-              v94 = v50[3930884];
-              if ( v94 == 8 || v94 == 9 || v94 == 10 )
-                *((_DWORD *)v50 + 982711) = 1056964608;
-              v116 = (double)v108 + 0.5;
-              *((float *)v50 + 982712) = v116;
+              p_anchor_position->x = (double)v110 - 4.0 + 0.5;
+              runtime_cell_anchor->cell.anchor_position.y = 0.0;
+              v91 = runtime_cell_anchor->cell.tile_id;
+              if ( v91 == 8 || v91 == 9 || v91 == 10 )
+                runtime_cell_anchor->cell.anchor_position.y = 0.5;
+              v113 = (double)v105 + 0.5;
+              runtime_cell_anchor->cell.anchor_position.z = v113;
             }
-            if ( v108 < 4 && game->level_mode != 2 )
-              *((_DWORD *)v50 + 982711) = LODWORD(game->path_pairs[36].primary.primary_samples->transform.position.y);
-            if ( v50[3930884] == 28 )
-              *((float *)v50 + 982711) = *((float *)v50 + 982711) - 0.029999999;
-            v99 = v50[3930884];
-            if ( v99 == 1
-              || v99 == 21
-              || v99 == 20
-              || v99 == 33
-              || v99 == 34
-              || v99 == 15
-              || v99 == 16
-              || v99 == 23
-              || v99 == 24
-              || v99 == 25
-              || v99 == 26
-              || v99 == 27
-              || v99 == 18
-              || v99 == 19
-              || v99 == 17 )
+            if ( v105 < 4 && game->level_mode != 2 )
+              runtime_cell_anchor->cell.anchor_position.y = game->path_pairs[36].primary.primary_samples->transform.position.y;
+            if ( runtime_cell_anchor->cell.tile_id == 28 )
+              runtime_cell_anchor->cell.anchor_position.y = runtime_cell_anchor->cell.anchor_position.y - 0.029999999;
+            v96 = runtime_cell_anchor->cell.tile_id;
+            if ( v96 == 1
+              || v96 == 21
+              || v96 == 20
+              || v96 == 33
+              || v96 == 34
+              || v96 == 15
+              || v96 == 16
+              || v96 == 23
+              || v96 == 24
+              || v96 == 25
+              || v96 == 26
+              || v96 == 27
+              || v96 == 18
+              || v96 == 19
+              || v96 == 17 )
             {
-              *((float *)v50 + 982713) = (double)(8 - v113) * 0.125;
-              *((float *)v50 + 982714) = (double)(v108 % 8) * 0.125;
+              runtime_cell_anchor->cell.render_arg_1c = (double)(8 - v110) * 0.125;
+              runtime_cell_anchor->cell.render_arg_20 = (double)(v105 % 8) * 0.125;
             }
-            if ( v50[3930884] == 31 )
-              *v92 = *v92 * 1.1;
-            if ( v50[3930884] == 22 )
+            if ( runtime_cell_anchor->cell.tile_id == 31 )
+              p_anchor_position->x = p_anchor_position->x * 1.1;
+            if ( runtime_cell_anchor->cell.tile_id == 22 )
             {
               if ( game->level_mode != 3 || (game->runtime_flags & 0x400) != 0 )
-                *((_DWORD *)v50 + 982711) = -1069547520;
-              *((float *)v50 + 982712) = v116;
+                runtime_cell_anchor->cell.anchor_position.y = -3.0;
+              runtime_cell_anchor->cell.anchor_position.z = v113;
             }
-            v100 = v50 + 3930892;
-            v101 = 4;
+            v97 = &runtime_cell_anchor->cell.fringe_front;
+            v98 = 4;
             do
             {
-              v102 = (_DWORD *)*v100;
-              if ( *v100 )
+              v99 = *v97;
+              if ( *v97 )
               {
-                v102[6] = 0;
-                v102[5] = 0;
-                v102[4] = 0;
-                v103 = (_DWORD *)(*v100 + 16);
-                *v103 = *(_DWORD *)v92;
-                v103[1] = *((_DWORD *)v50 + 982711);
-                v103[2] = *((_DWORD *)v50 + 982712);
+                v99->position.z = 0.0;
+                v99->position.y = 0.0;
+                v99->position.x = 0.0;
+                p_position = (int)&(*v97)->position;
+                *(float *)p_position = p_anchor_position->x;
+                *(float *)(p_position + 4) = runtime_cell_anchor->cell.anchor_position.y;
+                *(float *)(p_position + 8) = runtime_cell_anchor->cell.anchor_position.z;
               }
-              ++v100;
-              --v101;
+              ++v97;
+              --v98;
             }
-            while ( v101 );
-            ++v113;
+            while ( v98 );
+            ++v110;
           }
-          while ( v113 < 8 );
-          ++v111;
-          v104 = ++v108 < game->runtime_row_count;
-          v22 = v108;
+          while ( v110 < 8 );
+          ++segment_row_index;
+          v101 = ++v105 < game->runtime_row_count;
+          v22 = v105;
           v23 = game;
         }
-        while ( v104 );
+        while ( v101 );
       }
-      if ( v23->level_mode != 3 || !v106 )
-        ++v114;
+      if ( v23->level_mode != 3 || !v103 )
+        ++v111;
     }
     while ( v22 < v23->runtime_row_count );
   }

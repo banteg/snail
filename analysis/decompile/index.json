@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_builtin_segment_definitions",
-      "address": "0x448060"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     }
   ],
-  "health_check_count": 470,
+  "health_check_count": 472,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
