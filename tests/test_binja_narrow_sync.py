@@ -566,15 +566,21 @@ def test_data_var_updates_skip_current_types(monkeypatch) -> None:
     def fake_run_bn(_repo_root, *args):
         calls.append(args)
         return {
-            "result": [
-                {
-                    "address": "0x4ac5c8",
-                    "requested_type": "TipData",
-                    "before_type": "struct TipData",
-                    "after_type": "struct TipData",
-                    "changed": False,
-                }
-            ]
+            "result": {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "results": [
+                    {
+                        "address": "0x4ac5c8",
+                        "requested_type": "TipData",
+                        "before_type": "struct TipData",
+                        "after_type": "struct TipData",
+                        "changed": False,
+                    }
+                ],
+                "snapshot_saved": False,
+            }
         }
 
     monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
@@ -595,7 +601,58 @@ def test_data_var_updates_skip_current_types(monkeypatch) -> None:
         }
     ]
     assert len(calls) == 1
-    assert "if changed:" in calls[0][-1]
+    assert "preview = True" in calls[0][-1]
+    assert "bv.begin_undo_actions()" in calls[0][-1]
+    assert "bv.revert_undo_actions(state)" in calls[0][-1]
+
+
+def test_data_var_updates_preview_before_saved_apply(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
+                "success": True,
+                "preview": preview,
+                "committed": not preview,
+                "results": [
+                    {
+                        "address": "0x53d190",
+                        "requested_type": "ParcelBucket[0x800]",
+                        "before_type": None,
+                        "after_type": "struct ParcelBucket[2048]",
+                        "changed": True,
+                    }
+                ],
+                "snapshot_saved": not preview,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.apply_data_var_updates(
+        Path("."),
+        target="snail-mail.exe",
+        updates=(("0x53d190", "ParcelBucket[0x800]"),),
+    ) == [
+        {
+            "op": "data_var_set",
+            "address": "0x53d190",
+            "type": "ParcelBucket[0x800]",
+            "before_type": None,
+            "after_type": "struct ParcelBucket[2048]",
+            "status": "verified",
+            "reason": None,
+        }
+    ]
+    assert len(calls) == 2
+    assert "preview = True" in calls[0][-1]
+    assert "preview = False" in calls[1][-1]
+    assert "bv.commit_undo_actions(state)" in calls[1][-1]
+    assert "bv.file.save_auto_snapshot()" in calls[1][-1]
 
 
 def test_run_bn_reads_failure_spill_before_raising(monkeypatch, tmp_path) -> None:

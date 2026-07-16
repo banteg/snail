@@ -1573,32 +1573,115 @@ def apply_data_var_updates(
     if not update_list:
         return []
 
-    code = f"""
+    def run_batch(*, preview: bool) -> dict[str, object]:
+        code = f"""
 updates = {json.dumps(update_list)}
+preview = {preview!r}
 out = []
-for address_text, type_text in updates:
-    address = int(address_text, 0)
-    parsed_type, _ = bv.parse_type_string(type_text)
-    before = bv.get_data_var_at(address)
-    before_type = str(before.type) if before is not None else None
-    requested_type = str(parsed_type)
-    changed = before_type != requested_type
-    if changed:
-        bv.define_user_data_var(address, parsed_type)
-    after = bv.get_data_var_at(address)
-    out.append({{
-        "address": hex(address),
-        "requested_type": type_text,
-        "before_type": before_type,
-        "after_type": str(after.type) if after is not None else None,
-        "changed": changed,
-    }})
-result = out
+state = bv.begin_undo_actions()
+undo_closed = False
+snapshot_saved = False
+try:
+    for address_text, type_text in updates:
+        address = int(address_text, 0)
+        parsed_type, _ = bv.parse_type_string(type_text)
+        before = bv.get_data_var_at(address)
+        before_type = str(before.type) if before is not None else None
+        requested_type = str(parsed_type)
+        changed = before_type != requested_type
+        if changed:
+            bv.define_user_data_var(address, parsed_type)
+        out.append({{
+            "address": hex(address),
+            "requested_type": type_text,
+            "before_type": before_type,
+            "requested_rendered_type": requested_type,
+            "changed": changed,
+        }})
+
+    bv.update_analysis_and_wait()
+    for entry in out:
+        address = int(entry["address"], 0)
+        after = bv.get_data_var_at(address)
+        entry["after_type"] = str(after.type) if after is not None else None
+        entry["verified"] = entry["after_type"] == entry["requested_rendered_type"]
+    if not all(entry["verified"] for entry in out):
+        raise RuntimeError(f"data-variable verification failed: {{out!r}}")
+
+    if preview:
+        bv.revert_undo_actions(state)
+        undo_closed = True
+        bv.update_analysis_and_wait()
+        for entry in out:
+            address = int(entry["address"], 0)
+            restored = bv.get_data_var_at(address)
+            entry["restored_type"] = str(restored.type) if restored is not None else None
+            entry["reverted"] = entry["restored_type"] == entry["before_type"]
+        if not all(entry["reverted"] for entry in out):
+            raise RuntimeError(f"data-variable preview rollback failed: {{out!r}}")
+    else:
+        bv.commit_undo_actions(state)
+        undo_closed = True
+        snapshot_saved = bv.file.save_auto_snapshot()
+except Exception:
+    if not undo_closed:
+        bv.revert_undo_actions(state)
+        bv.update_analysis_and_wait()
+    raise
+
+result = {{
+    "success": True,
+    "preview": preview,
+    "committed": not preview,
+    "results": out,
+    "snapshot_saved": snapshot_saved,
+}}
 """
-    result = run_bn(repo_root, "py", "exec", "--target", target, "--format", "json", "--code", code)
-    payload = result.get("result") if isinstance(result, dict) else None
-    if not isinstance(payload, list):
-        payload = []
+        response = run_bn(
+            repo_root,
+            "py",
+            "exec",
+            "--target",
+            target,
+            "--format",
+            "json",
+            "--code",
+            code,
+        )
+        payload = response.get("result") if isinstance(response, dict) else None
+        if (
+            not isinstance(payload, dict)
+            or payload.get("success") is not True
+            or payload.get("preview") is not preview
+            or payload.get("committed") is not (not preview)
+        ):
+            phase = "preview" if preview else "apply"
+            raise RuntimeError(f"Binary Ninja data-variable {phase} failed: {response!r}")
+        return payload
+
+    preview_result = run_batch(preview=True)
+    preview_entries = preview_result.get("results")
+    if not isinstance(preview_entries, list):
+        raise RuntimeError(f"Binary Ninja data-variable preview is malformed: {preview_result!r}")
+
+    changed = any(
+        isinstance(entry, dict) and entry.get("changed") is True
+        for entry in preview_entries
+    )
+    if changed:
+        applied_result = run_batch(preview=False)
+        if applied_result.get("snapshot_saved") is not True:
+            raise RuntimeError(
+                "data-variable batch changed the live analysis without a saved snapshot"
+            )
+        payload = applied_result.get("results")
+        if not isinstance(payload, list):
+            raise RuntimeError(
+                f"Binary Ninja data-variable apply is malformed: {applied_result!r}"
+            )
+    else:
+        payload = preview_entries
+
     return [
         {
             "op": "data_var_set",
