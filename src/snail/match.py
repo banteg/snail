@@ -19,6 +19,7 @@ import os
 from pathlib import Path
 import re
 import struct
+from threading import Lock
 
 import capstone
 
@@ -2108,6 +2109,7 @@ class _ScratchIncludeResolver:
     def __init__(self, match_root: Path) -> None:
         self.include_dir = match_root / "include"
         self._direct_dependencies: dict[tuple[Path, bool], tuple[Path, ...]] = {}
+        self._lock = Lock()
 
     def direct_dependencies(
         self, including_path: Path, *, source: bool
@@ -2116,31 +2118,40 @@ class _ScratchIncludeResolver:
         if cache_key in self._direct_dependencies:
             return self._direct_dependencies[cache_key]
 
-        try:
-            text = including_path.read_text(encoding="latin1")
-        except OSError:
-            self._direct_dependencies[cache_key] = ()
-            return ()
+        # Cold status sweeps populate this resolver from compile threads. Keep
+        # the miss path serialized so two consumers cannot parse the same
+        # shared header before either one publishes its result.
+        with self._lock:
+            if cache_key in self._direct_dependencies:
+                return self._direct_dependencies[cache_key]
 
-        dependencies: list[Path] = []
-        seen: set[Path] = set()
-        for match in LOCAL_INCLUDE_RE.finditer(text):
-            include_name = Path(match.group(1).replace("\\", "/"))
-            candidates = [self.include_dir / include_name]
-            if not source:
-                candidates.insert(0, including_path.parent / include_name)
-            dependency = next((path for path in candidates if path.is_file()), None)
-            if dependency is None:
-                continue
-            dependency = dependency.resolve()
-            if dependency in seen:
-                continue
-            seen.add(dependency)
-            dependencies.append(dependency)
+            try:
+                text = including_path.read_text(encoding="latin1")
+            except OSError:
+                self._direct_dependencies[cache_key] = ()
+                return ()
 
-        resolved = tuple(dependencies)
-        self._direct_dependencies[cache_key] = resolved
-        return resolved
+            dependencies: list[Path] = []
+            seen: set[Path] = set()
+            for match in LOCAL_INCLUDE_RE.finditer(text):
+                include_name = Path(match.group(1).replace("\\", "/"))
+                candidates = [self.include_dir / include_name]
+                if not source:
+                    candidates.insert(0, including_path.parent / include_name)
+                dependency = next(
+                    (path for path in candidates if path.is_file()), None
+                )
+                if dependency is None:
+                    continue
+                dependency = dependency.resolve()
+                if dependency in seen:
+                    continue
+                seen.add(dependency)
+                dependencies.append(dependency)
+
+            resolved = tuple(dependencies)
+            self._direct_dependencies[cache_key] = resolved
+            return resolved
 
 
 def _scratch_include_headers(
@@ -2195,7 +2206,6 @@ def _scratch_build_dependencies(
     compiler_exe = match_root / "compilers" / config.compiler / "Bin" / "CL.EXE"
     return (
         config.directory / "scratch.cpp",
-        config.directory / "scratch.conf",
         match_root / "cl.sh",
         compiler_exe,
         *_scratch_include_headers(config, match_root, resolver=include_resolver),
@@ -3154,10 +3164,10 @@ def collect_scratch_statuses(
 ) -> list[ScratchStatus]:
     """Match every scratch, reusing cached results for unchanged ones.
 
-    The cache keys on scratch source/conf, transitive shared headers, compiler inputs,
-    image, function/reference manifests, and matcher mtimes. An unchanged
-    scratch therefore costs a dependency-stat pass instead of a compile,
-    disassembly, and diff while target-map or normalizer changes still
+    The cache keys on parsed scratch config, source, transitive shared headers,
+    compiler inputs, image, function/reference manifests, and matcher mtimes.
+    An unchanged scratch therefore costs a dependency-stat pass instead of a
+    compile, disassembly, and diff while target-map or normalizer changes still
     invalidate old scores.
     """
     if jobs < 1:

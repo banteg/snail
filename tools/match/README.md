@@ -95,11 +95,14 @@ Useful analysis helpers:
   matching (the default is the smaller of 8 and the host CPU count; use
   `-j 1` for a sequential diagnostic run). Build keys follow each scratch's
   transitive local includes, so editing one shared header rebuilds only its
-  consumers instead of all scratches. Compilation uses threads around the
-  Wibo subprocesses; CPU-heavy matching uses worker processes and falls back
-  to sequential matching only when a restricted host cannot create them. A
-  status or audit sweep parses each shared include edge once, so warm cache
-  checks do not repeatedly reread the same header graph for every consumer.
+  consumers instead of all scratches. Match-only `scratch.conf` changes reuse
+  the compiled object while invalidating the detailed match through the parsed
+  config key. Compilation uses threads around the Wibo subprocesses; CPU-heavy
+  matching uses worker processes and falls back to sequential matching only
+  when a restricted host cannot create them. A status or audit sweep parses
+  each shared include edge once, including during cold parallel rebuilds, so
+  cache checks do not repeatedly reread the same header graph for every
+  consumer.
 - `uv run snail match lint` cross-checks every `extern ... g_name; // data_xxx`
   annotation across headers and scratches. It flags the same identifier
   declared with different types at one address (a future C2040/C2373 compile

@@ -2657,7 +2657,17 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     store_status()
     stamp += 10
     os.utime(scratch_dir / "scratch.conf", (stamp, stamp))
-    assert load_status() is None
+    assert load_status() == fields
+
+    changed_match_config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=0x1010,
+        symbol=None,
+    )
+    assert load_status(changed_match_config) is None
 
     store_status()
     stamp += 10
@@ -2793,6 +2803,49 @@ def test_scratch_include_resolver_reuses_shared_header_parses(
         shared,
     )
     assert header_reads == {shared: 1, leaf: 1}
+
+
+def test_scratch_include_resolver_serializes_parallel_cache_misses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+
+    from snail.match import _ScratchIncludeResolver
+
+    match_root = tmp_path / "match"
+    include_dir = match_root / "include"
+    include_dir.mkdir(parents=True)
+    shared = include_dir / "shared.h"
+    leaf = include_dir / "leaf.h"
+    shared.write_text('#include "leaf.h"\n')
+    leaf.write_text("struct Leaf {};\n")
+
+    original_read_text = Path.read_text
+    shared_reads = 0
+    count_lock = threading.Lock()
+
+    def slow_counted_read_text(path: Path, *args, **kwargs) -> str:
+        nonlocal shared_reads
+        if path == shared:
+            with count_lock:
+                shared_reads += 1
+            time.sleep(0.05)
+        return original_read_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", slow_counted_read_text)
+    resolver = _ScratchIncludeResolver(match_root)
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        results = list(
+            executor.map(
+                lambda _index: resolver.direct_dependencies(shared, source=False),
+                range(2),
+            )
+        )
+
+    assert results == [(leaf.resolve(),), (leaf.resolve(),)]
+    assert shared_reads == 1
 
 
 def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
@@ -3181,7 +3234,17 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
 
     os.utime(header, (base, base))
     os.utime(scratch_dir / "scratch.conf", (base + 20, base + 20))
-    assert not _scratch_object_is_current(obj_path, config, match_root)
+    assert _scratch_object_is_current(obj_path, config, match_root)
+
+    changed_match_config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=0x1010,
+        symbol="candidate",
+    )
+    assert _scratch_object_is_current(obj_path, changed_match_config, match_root)
 
 
 def test_format_cl_failure_identifies_diagnostic_free_vc6_ice(tmp_path: Path) -> None:
