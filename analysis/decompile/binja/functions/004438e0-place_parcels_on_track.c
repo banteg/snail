@@ -8,10 +8,10 @@
 00443905        return place_challenge_parcels_on_track(game)
 00443906        int32_t i_1 = 0
 0044390f        if (i_4 == 0 || i_4 == 7)
-00443915        void* i = nullptr
+00443915        int32_t i = 0
 0044392d        while (i s< 0x106000)
-00443917        *(i + &data_53d390) = 0
-0044391d        *(i + 0x6489e8) = 0
+00443917        *(i + &g_zero_parcel_buckets.candidate_count) = 0
+0044391d        *(i + &g_parcel_set_buckets.candidate_count) = 0
 00443923        i += 0x20c
 00443935        int32_t i_3 = 0
 00443939        float out_angle_1 = 0f
@@ -41,24 +41,24 @@
 004439bb        while (true)
 004439bb        if (((out_angle_5 - 0xb094)->:0xb08c.b & 1) != 0 && (out_angle_5 - 0xb094)->level_definition.segment_slots[0].rows[0].parcel_set_id == eax_2)
 004439c3        if (eax_2 != 0)
-00443a34        *(ecx_3 + &data_6489f0) = i_1
-00443a43        *((*(ecx_3 + 0x6489e8) << 4) + ecx_3 + 0x6487e8) = edx_4
-00443a55        int32_t* eax_14 = (*(ecx_3 + 0x6489e8) << 4) + ecx_3 + 0x6487ec
+00443a34        *(ecx_3 + &g_parcel_set_buckets.segment_index) = i_1
+00443a43        *((*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &g_parcel_set_buckets) = edx_4
+00443a55        int32_t* eax_14 = (*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &(*g_parcel_set_buckets.candidates)[0].position
 00443a5c        *eax_14 = out_angle_5->x
 00443a61        eax_14[1] = out_angle_5->y
 00443a67        eax_14[2] = out_angle_5->z
-00443a6e        *(ecx_3 + 0x6489ec) = var_200_1
-00443a7b        *(ecx_3 + 0x6489e8) += 1
+00443a6e        *(ecx_3 + &g_parcel_set_buckets.set_id) = var_200_1
+00443a7b        *(ecx_3 + &g_parcel_set_buckets.candidate_count) += 1
 004439d0        int32_t eax_7 = i_3 * 0x20c
-004439d3        *(eax_7 + 0x53d398) = i_1
-004439e2        *((*(eax_7 + &data_53d390) << 4) + eax_7 + 0x53d190) = edx_4
-004439f4        float* ebx_6 = (*(eax_7 + &data_53d390) << 4) + eax_7 + 0x53d194
+004439d3        (&g_zero_parcel_buckets)[i_3].segment_index = i_1
+004439e2        *(((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_7 + &g_zero_parcel_buckets) = edx_4
+004439f4        int32_t* ebx_6 = ((&g_zero_parcel_buckets)[i_3].candidate_count << 4) + eax_7 + &(*g_zero_parcel_buckets.candidates)[0].position
 004439fb        *ebx_6 = out_angle_5->x
 00443a00        ebx_6[1] = out_angle_5->y
 00443a0a        ebx_6[2] = out_angle_5->z
-00443a0d        *(eax_7 + 0x53d394) = 0
+00443a0d        (&g_zero_parcel_buckets)[i_3].set_id = 0
 00443a1e        i_3 = i_6 + 1
-00443a1f        *(eax_7 + &data_53d390) += 1
+00443a1f        (&g_zero_parcel_buckets)[i_3].candidate_count += 1
 00443a2a        int32_t i_7 = i_3
 00443a2e        out_angle_1 += 1
 00443a8c        int32_t var_204_1 = 0
@@ -67,19 +67,19 @@
 00443bd6        bool cond:8_1
 00443aaf        if (sx.d((var_1ec_1 - 0xa88c)->:0xa88c.b) == var_200_1 + 0x30)
 00443abb        if (var_200_1 != 0)
-00443b4b        *(ecx_3 + &data_6489f0) = i_1
-00443b60        *((*(ecx_3 + 0x6489e8) << 4) + ecx_3 + 0x6487e8) = edx_4
-00443b76        float* edi_21 = (*(ecx_3 + 0x6489e8) << 4) + ecx_3 + 0x6487ec
+00443b4b        *(ecx_3 + &g_parcel_set_buckets.segment_index) = i_1
+00443b60        *((*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &g_parcel_set_buckets) = edx_4
+00443b76        int32_t* edi_21 = (*(ecx_3 + &g_parcel_set_buckets.candidate_count) << 4) + ecx_3 + &(*g_parcel_set_buckets.candidates)[0].position
 00443b7d        int32_t var_1d8_1 = 0
 00443b85        int32_t var_1d4_1 = 0
 00443b95        *edi_21 = fconvert.s(float.t(var_204_1) - fconvert.t(4f) + fconvert.t(0.5f))
 00443b9b        edi_21[1] = var_1d8_1
 00443ba2        edi_21[2] = var_1d4_1
-00443ba9        *(ecx_3 + 0x6489ec) = var_200_1
-00443bb6        *(ecx_3 + 0x6489e8) += 1
-00443ac5        *(eax_22 + 0x53d398) = i_1
-00443ada        *((*(eax_22 + &data_53d390) << 4) + eax_22 + 0x53d190) = edx_4
-00443af0        float* edi_14 = (*(eax_22 + &data_53d390) << 4) + eax_22 + 0x53d194
+00443ba9        *(ecx_3 + &g_parcel_set_buckets.set_id) = var_200_1
+00443bb6        *(ecx_3 + &g_parcel_set_buckets.candidate_count) += 1
+00443ac5        *(eax_22 + &g_zero_parcel_buckets.segment_index) = i_1
+00443ada        *((*(eax_22 + &g_zero_parcel_buckets.candidate_count) << 4) + eax_22 + &g_zero_parcel_buckets) = edx_4
+00443af0        int32_t* edi_14 = (*(eax_22 + &g_zero_parcel_buckets.candidate_count) << 4) + eax_22 + &(*g_zero_parcel_buckets.candidates)[0].position
 00443af7        int32_t var_1e4_1 = 0
 00443aff        int32_t var_1e0_1 = 0
 00443b07        eax_22 += 0x20c
@@ -103,9 +103,9 @@
 00443bfb        if (edx_4 s>= (ebx_1 - 0xa87c)->level_definition.segment_slots[0].row_count)
 00443bfb        break
 004439aa        eax_2 = var_200_1
-00443c01        int32_t eax_23 = *(ecx_3 + 0x6489e8)
+00443c01        int32_t eax_23 = *(ecx_3 + &g_parcel_set_buckets.candidate_count)
 00443c09        if (eax_23 s> 0)
-00443c0b        int32_t edx_5 = *(ecx_3 + &data_6489f0)
+00443c0b        int32_t edx_5 = *(ecx_3 + &g_parcel_set_buckets.segment_index)
 00443c21        int32_t __saved_edi
 00443c21        if (eax_23 s< var_190[edx_5])
 00443c23        (&__saved_edi)[edx_5 + 0x25] = eax_23
@@ -157,49 +157,48 @@
 00443d51        int32_t eax_30
 00443d51        eax_30, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_8))))
 00443d58        int32_t var_214_2 = 0
-00443d68        int32_t edi_32 = eax_30 * 0x20c
-00443d6b        int32_t eax_31 = *(edi_32 + 0x6489e8)
-00443d75        var_210_1 = ebx_26 + eax_31
-00443d79        if (eax_31 s> 0)
-00443d7f        int32_t* ebx_28 = edi_32 + 0x6487ec
+00443d6b        int32_t candidate_count = (&g_parcel_set_buckets)[eax_30].candidate_count
+00443d75        var_210_1 = ebx_26 + candidate_count
+00443d79        if (candidate_count s> 0)
+00443d7f        int32_t* ebx_28 = eax_30 * 0x20c + &(*g_parcel_set_buckets.candidates)[0].position
 00443e59        bool cond:14_1
-00443da8        float out_angle_3 = game->level_definition.segment_slots[*(edi_32 + &data_6489f0)].row_base + ebx_28[-1]
+00443da8        float out_angle_3 = game->level_definition.segment_slots[(&g_parcel_set_buckets)[eax_30].segment_index].row_base + ebx_28[-1]
 00443daa        out_angle = out_angle_3
-00443db7        void* esi_3 = &game->unknown_000000[out_angle_3 i* 0xf4]
-00443dc1        if ((*(esi_3 + 0x5ccac8) & 0x10) != 0)
+00443db7        void* esi_3 = game + out_angle_3 i* 0xf4
+00443dc1        if ((*(esi_3 + &data_5ccac8) & 0x10) != 0)
 00443dd3        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
 00443dec        long double x87_r7_9 = float.t(out_angle)
-00443df0        *(esi_3 + 0x5ccac8) |= 0x11
-00443dfc        *(esi_3 + 0x5ccb58) = *ebx_28
-00443e01        *(esi_3 + 0x5ccb5c) = ebx_28[1]
-00443e07        *(esi_3 + 0x5ccb60) = ebx_28[2]
-00443e16        *(esi_3 + 0x5ccb60) = fconvert.s(x87_r7_9 + fconvert.t(*(esi_3 + 0x5ccb60)) + fconvert.t(0.5f))
-00443e28        *(esi_3 + 0x5ccb5c) = fconvert.s(fconvert.t(*(esi_3 + 0x5ccb5c)) + fconvert.t(1f))
-00443e35        if ((*(esi_3 + 0x5ccac8) & 0x20) != 0)
-00443e43        *(esi_3 + 0x5ccb58) = fconvert.s(fconvert.t(*(esi_3 + 0x5ccb58)) * fconvert.t(-1f))
+00443df0        *(esi_3 + &data_5ccac8) |= 0x11
+00443dfc        *(esi_3 + &data_5ccb58) = *ebx_28
+00443e01        *(esi_3 + &data_5ccb5c) = ebx_28[1]
+00443e07        *(esi_3 + &data_5ccb60) = ebx_28[2]
+00443e16        *(esi_3 + &data_5ccb60) = fconvert.s(x87_r7_9 + fconvert.t(*(esi_3 + &data_5ccb60)) + fconvert.t(0.5f))
+00443e28        *(esi_3 + &data_5ccb5c) = fconvert.s(fconvert.t(*(esi_3 + &data_5ccb5c)) + fconvert.t(1f))
+00443e35        if ((*(esi_3 + &data_5ccac8) & 0x20) != 0)
+00443e43        *(esi_3 + &data_5ccb58) = fconvert.s(fconvert.t(*(esi_3 + &data_5ccb58)) * fconvert.t(-1f))
 00443e50        ebx_28 = &ebx_28[4]
-00443e53        cond:14_1 = var_214_2 + 1 s< *(edi_32 + 0x6489e8)
+00443e53        cond:14_1 = var_214_2 + 1 s< (&g_parcel_set_buckets)[eax_30].candidate_count
 00443e55        var_214_2 += 1
 00443e59        do while (cond:14_1)
-00443e5f        int32_t eax_39 = *(edi_32 + &data_6489f0)
+00443e5f        int32_t segment_index = (&g_parcel_set_buckets)[eax_30].segment_index
 00443e65        int32_t ecx_29 = 0
 00443e6b        i_2 = i_8
 00443e71        int32_t var_208_2 = 0
 00443e75        if (i_2 s> 0)
 00443e7b        float out_angle_6 = i_2 - 1
 00443e7e        int32_t* edx_21 = &data_648bf4
-00443e83        int32_t* esi_4 = &data_6489f0
+00443e83        int32_t* esi_4 = &g_parcel_set_buckets.segment_index
 00443e88        out_angle = out_angle_6
 00443e8c        int32_t* var_1f0_2 = &data_648bf4
-00443e90        int32_t* var_1f4_2 = &data_6489f0
-00443e9a        if (*esi_4 == eax_39)
+00443e90        int32_t* var_1f4_2 = &g_parcel_set_buckets.segment_index
+00443e9a        if ((esi_4 - 0x208)->segment_index == segment_index)
 00443ea2        if (ecx_29 s< out_angle_6)
-00443ea4        int32_t* eax_40 = edx_21
+00443ea4        int32_t* eax_38 = edx_21
 00443eaa        int32_t var_214_3 = out_angle_6 i- ecx_29
 00443f10        bool cond:16_1
 00443eb0        int32_t j = 0
-00443eb4        if (*eax_40 s> 0)
-00443eb6        int32_t* ecx_30 = &eax_40[-0x103]
+00443eb4        if (*eax_38 s> 0)
+00443eb6        int32_t* ecx_30 = &eax_38[-0x103]
 00443ebc        int32_t* esi_6 = &ecx_30[0x83]
 00443ec2        int32_t* edi_33 = ecx_30
 00443ec4        j += 1
@@ -208,12 +207,12 @@
 00443ecf        edi_33[1] = esi_6[1]
 00443ed5        edi_33[2] = esi_6[2]
 00443edb        edi_33[3] = esi_6[3]
-00443ee2        do while (j s< *eax_40)
+00443ee2        do while (j s< *eax_38)
 00443ee4        ecx_29 = var_208_2
-00443eea        eax_40[-0x83] = *eax_40
-00443ef3        eax_40[-0x81] = eax_40[2]
-00443efc        eax_40[-0x82] = eax_40[1]
-00443f06        eax_40 = &eax_40[0x83]
+00443eea        eax_38[-0x83] = *eax_38
+00443ef3        eax_38[-0x81] = eax_38[2]
+00443efc        eax_38[-0x82] = eax_38[1]
+00443f06        eax_38 = &eax_38[0x83]
 00443f0b        cond:16_1 = var_214_3 != 1
 00443f0c        var_214_3 -= 1
 00443f10        do while (cond:16_1)
@@ -245,41 +244,41 @@
 00443f85        while (i_3 s> 0)
 00443f8f        void* var_228_5 = &data_4a3f0c
 00443f94        int32_t parcel_count_3 = parcel_count_1
-00443fa0        int32_t eax_42
-00443fa0        eax_42, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_6))))
-00443fb9        int32_t esi_10 = eax_42 * 0x20c
-00443fc4        int32_t eax_44 = *(esi_10 + 0x53d398)
-00443fcc        var_210_1 += *(esi_10 + &data_53d390)
-00443fe0        out_angle = esi_10 + 0x53d190
+00443fa0        int32_t eax_40
+00443fa0        eax_40, x87control = ftol(x87control, random_float_below(fconvert.s(float.t(i_6))))
+00443fc4        int32_t segment_index_1 = (&g_zero_parcel_buckets)[eax_40].segment_index
+00443fcc        var_210_1 += (&g_zero_parcel_buckets)[eax_40].candidate_count
+00443fe0        out_angle = &(&g_zero_parcel_buckets)[eax_40]
 00443fee        int32_t edx_38
-00443fee        edx_38.b = *(esi_10 + 0x53d190)
-00443fee        edx_38:1.b = *(esi_10 + 0x53d191)
-00443fee        edx_38:2.b = *(esi_10 + 0x53d192)
-00443fee        edx_38:3.b = *(esi_10 + 0x53d193)
-00443ff0        int32_t eax_46 = game->level_definition.segment_slots[eax_44].row_base + edx_38
-00443ffc        int32_t edx_39 = eax_46 * 0x3d
-00444008        void* edi_35 = &game->unknown_000000[edx_39 << 2]
+00443fee        edx_38.b = (&g_zero_parcel_buckets)[eax_40].candidates[0].row.b
+00443fee        edx_38:1.b = (&(*g_zero_parcel_buckets.candidates)[0].row:1)[eax_40].candidates[0].row.b
+00443fee        edx_38:2.b = (&(*g_zero_parcel_buckets.candidates)[0].row:2)[eax_40].candidates[0].row.b
+00443fee        edx_38:3.b = (&(*g_zero_parcel_buckets.candidates)[0].row:3)[eax_40].candidates[0].row.b
+00443ff0        int32_t eax_43 = game->level_definition.segment_slots[segment_index_1].row_base + edx_38
+00443ffc        int32_t edx_39 = eax_43 * 0x3d
+00444008        void* edi_35 = game + (edx_39 << 2)
 0044400b        if ((*(&game->runtime_rows + (edx_39 << 2)) & 0x10) != 0)
 0044401c        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
-0044403d        *(edi_35 + 0x5ccac8) |= 0x11
+00444033        char* ecx_36 = eax_40 * 0x20c + &(*g_zero_parcel_buckets.candidates)[0].position
+0044403d        *(edi_35 + &data_5ccac8) |= 0x11
 00444043        float esi_11
-00444043        esi_11.b = *(esi_10 + 0x53d194)
-00444043        esi_11:1.b = *(esi_10 + 0x53d195)
-00444043        esi_11:2.b = *(esi_10 + 0x53d196)
-00444043        esi_11:3.b = *(esi_10 + 0x53d197)
-00444047        *(edi_35 + 0x5ccb58) = esi_11
-0044404c        *(edi_35 + 0x5ccb5c) = *(esi_10 + 0x53d198)
+00444043        esi_11.b = *ecx_36
+00444043        esi_11:1.b = ecx_36[1]
+00444043        esi_11:2.b = ecx_36[2]
+00444043        esi_11:3.b = ecx_36[3]
+00444047        *(edi_35 + &data_5ccb58) = esi_11
+0044404c        *(edi_35 + &data_5ccb5c) = *(ecx_36 + 4)
 0044404f        int32_t ecx_37
-0044404f        ecx_37.b = *(esi_10 + 0x53d19c)
-0044404f        ecx_37:1.b = *(esi_10 + 0x53d19d)
-00444052        *(edi_35 + 0x5ccb60) = ecx_37
-00444061        *(edi_35 + 0x5ccb60) = fconvert.s(float.t(eax_46) + fconvert.t(*(edi_35 + 0x5ccb60)) + fconvert.t(0.5f))
-00444073        *(edi_35 + 0x5ccb5c) = fconvert.s(fconvert.t(*(edi_35 + 0x5ccb5c)) + fconvert.t(1f))
-00444080        if ((*(edi_35 + 0x5ccac8) & 0x20) != 0)
-0044408a        *(edi_35 + 0x5ccb58) = fconvert.s(fconvert.t(*(edi_35 + 0x5ccb58)) * fconvert.t(-1f))
-00444092        if (eax_42 s< parcel_count_4)
+0044404f        ecx_37.b = ecx_36[8]
+0044404f        ecx_37:1.b = ecx_36[9]
+00444052        *(edi_35 + &data_5ccb60) = ecx_37
+00444061        *(edi_35 + &data_5ccb60) = fconvert.s(float.t(eax_43) + fconvert.t(*(edi_35 + &data_5ccb60)) + fconvert.t(0.5f))
+00444073        *(edi_35 + &data_5ccb5c) = fconvert.s(fconvert.t(*(edi_35 + &data_5ccb5c)) + fconvert.t(1f))
+00444080        if ((*(edi_35 + &data_5ccac8) & 0x20) != 0)
+0044408a        *(edi_35 + &data_5ccb58) = fconvert.s(fconvert.t(*(edi_35 + &data_5ccb58)) * fconvert.t(-1f))
+00444092        if (eax_40 s< parcel_count_4)
 00444094        float out_angle_4 = out_angle
-00444098        int32_t j_2 = parcel_count_4 - eax_42
+00444098        int32_t j_2 = parcel_count_4 - eax_40
 004440df        int32_t j_1
 004440a4        j_1 = j_2
 004440a4        j_2 -= 1
@@ -308,26 +307,27 @@
 0044414e        i_4 = game->runtime_row_count
 00444153        int32_t i_5 = 0
 0044415b        if (i_4 s> 0)
-00444161        struct SubRow (* esi_18)[0xc80] = &game->runtime_rows
-00444167        uint8_t flags = ((esi_18 - 0x5ccac8)->runtime_rows[0].flags).b
-00444173        if ((flags & 1) != 0 && (flags & 0x40) != 0)
-0044417f        int32_t eax_56 = get_track_cell_row_index((esi_18 - 0x5ccac8)->runtime_rows[0].primary_attachment_cell)
-0044418c        int32_t eax_57
-0044418c        eax_57, x87control = ftol(x87control, fconvert.t((esi_18 - 0x5ccac8)->runtime_rows[0].projection_payload.z))
-00444193        int32_t node = eax_57 - eax_56
-00444195        if (eax_57 - eax_56 s< 0)
+00444161        int32_t* esi_18 = &game->runtime_rows
+00444167        char eax_53 = (*esi_18).b
+00444173        if ((eax_53 & 1) != 0 && (eax_53 & 0x40) != 0)
+0044417f        int32_t eax_54 = get_track_cell_row_index(esi_18[0x29])
+0044418c        int32_t eax_55
+0044418c        eax_55, x87control = ftol(x87control, fconvert.t(esi_18[0x26]))
+00444193        int32_t node = eax_55 - eax_54
+00444195        if (eax_55 - eax_54 s< 0)
 00444197        node = 0
-00444199        struct TrackRowCell* primary_attachment_cell = (esi_18 - 0x5ccac8)->runtime_rows[0].primary_attachment_cell
-0044419f        struct Path* attachment_template_record = primary_attachment_cell->attachment_template_record
+00444199        SubLoc* cell = esi_18[0x29]
+0044419f        struct Path* attachment_template_record = cell->attachment_template_record
 004441a6        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
-00444201        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)
-00444212        get_path_position_at_node((esi_18 - 0x5ccac8)->runtime_rows[0].primary_attachment_cell->attachment_template_record, esi_18 + 0x90, node, row_index, esi_18 + 0x90)
+00444201        int32_t row_index = get_track_cell_row_index(cell)
+00444212        get_path_position_at_node(*(esi_18[0x29] + 0x38), &esi_18[0x24], node, row_index, &esi_18[0x24])
 004441d9        struct TransformMatrix transform
-004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], (esi_18 - 0x5ccac8)->runtime_rows[0].projection_payload.x, (esi_18 - 0x5ccac8)->runtime_rows[0].projection_payload.y, &transform, &out_angle)
-004441ec        (esi_18 - 0x5ccac8)->runtime_rows[0].projection_payload.x = transform.position.x
-004441f2        (esi_18 - 0x5ccac8)->runtime_rows[0].projection_payload.y = transform.position.y
+004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], esi_18[0x24], esi_18[0x25], &transform, &out_angle)
+004441e5        float y = transform.position.y
+004441ec        esi_18[0x24] = transform.position.x
+004441f2        esi_18[0x25] = y
 0044421e        i_4 = i_5 + 1
-0044421f        esi_18 = &(*esi_18)[1]
+0044421f        esi_18 = &esi_18[0x3d]
 00444227        i_5 = i_4
 0044422b        do while (i_4 s< game->runtime_row_count)
 0044423b        return i_4

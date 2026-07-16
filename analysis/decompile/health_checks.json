@@ -4535,12 +4535,44 @@
       ]
     },
     {
+      "name": "bn_parcel_set_bucket_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/00443870-initialize_parcel_set_bucket_pool.c",
+      "required_substrings": [
+        "struct ParcelBucket* base = &g_parcel_set_buckets",
+        "int32_t i_1 = 0x800",
+        "base = &base[1]",
+        "initialize_array_with_constructor(base, 0x10, 0x20, noop_runtime_slot_constructor)"
+      ],
+      "forbidden_substrings": [
+        "data_6487e8",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_zero_parcel_bucket_constructor_owner",
+      "artifact": "analysis/decompile/binja/functions/004438b0-initialize_zero_parcel_bucket_pool.c",
+      "required_substrings": [
+        "struct ParcelBucket* base = &g_zero_parcel_buckets",
+        "int32_t i_1 = 0x800",
+        "base = &base[1]",
+        "initialize_array_with_constructor(base, 0x10, 0x20, noop_runtime_slot_constructor)"
+      ],
+      "forbidden_substrings": [
+        "data_53d190",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_normal_parcel_placement_owner_graph",
       "artifact": "analysis/decompile/binja/functions/004438e0-place_parcels_on_track.c",
       "required_substrings": [
         "game->level_definition.segment_count",
         "game->level_definition.parcel_count",
-        "game->runtime_rows"
+        "game->runtime_rows",
+        "g_zero_parcel_buckets.candidate_count",
+        "g_parcel_set_buckets.candidate_count"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
@@ -4555,11 +4587,43 @@
       "required_substrings": [
         "game->completion_bonus_x_source",
         "game->level_definition.parcel_count",
-        "game->runtime_rows"
+        "game->runtime_rows",
+        "g_zero_parcel_buckets.candidate_count",
+        "g_parcel_group_survival_0"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
         "*(arg1 + 0x28)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_parcel_set_bucket_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/00443870-initialize_parcel_set_bucket_pool.c",
+      "required_substrings": [
+        "ParcelBucket *v0",
+        "v0 = g_parcel_set_buckets",
+        "v1 = 2048",
+        "initialize_array_with_constructor(v0++, 16, 32, noop_runtime_slot_constructor)"
+      ],
+      "forbidden_substrings": [
+        "v0 = (ParcelBucket *)data_6487e8",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_zero_parcel_bucket_constructor_owner",
+      "artifact": "analysis/decompile/ida/functions/004438b0-initialize_zero_parcel_bucket_pool.c",
+      "required_substrings": [
+        "ParcelBucket *v0",
+        "v0 = g_zero_parcel_buckets",
+        "v1 = 2048",
+        "initialize_array_with_constructor(v0++, 16, 32, noop_runtime_slot_constructor)"
+      ],
+      "forbidden_substrings": [
+        "v0 = (ParcelBucket *)data_53d190",
         "__asm",
         "_ET1"
       ]
@@ -4570,7 +4634,10 @@
       "required_substrings": [
         "place_parcels_on_track(SubgameRuntime *game)",
         "game->level_definition.segment_count",
-        "game->level_definition.segment_slots"
+        "game->level_definition.segment_slots",
+        "g_zero_parcel_buckets",
+        "g_parcel_set_buckets",
+        ".candidate_count"
       ],
       "forbidden_substrings": [
         "place_parcels_on_track(Game *game)",
@@ -4584,7 +4651,9 @@
       "required_substrings": [
         "place_challenge_parcels_on_track(SubgameRuntime *game)",
         "game->completion_bonus_x_source",
-        "game->level_definition.parcel_count"
+        "game->level_definition.parcel_count",
+        "g_zero_parcel_bucket_count_lane_end",
+        "g_parcel_group_survival_0"
       ],
       "forbidden_substrings": [
         "place_challenge_parcels_on_track(void *arg1)",

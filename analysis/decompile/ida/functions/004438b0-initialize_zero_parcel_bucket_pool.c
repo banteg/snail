@@ -3,21 +3,17 @@
 /* selector: initialize_zero_parcel_bucket_pool */
 
 // Initializes the 0x800-entry zero-parcel fallback bucket pool at `data_53d190`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` uses it for `0`-parcel filler rows.
-int sub_4438B0()
+void __cdecl initialize_zero_parcel_bucket_pool()
 {
-  int *v0; // esi
+  ParcelBucket *v0; // esi
   int v1; // edi
-  int result; // eax
 
-  v0 = MEMORY[0x53D190];
+  v0 = g_zero_parcel_buckets;
   v1 = 2048;
   do
   {
-    result = initialize_array_with_constructor((int)v0, 16, 32, (int (__thiscall *)(int))Iostream_init::Iostream_init);
-    v0 += 131;
+    initialize_array_with_constructor(v0++, 16, 32, noop_runtime_slot_constructor);
     --v1;
   }
   while ( v1 );
-  return result;
 }
-

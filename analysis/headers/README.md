@@ -58,6 +58,12 @@ we keep a narrow handwritten header and a matching IDA import script instead.
 
 Current checked-in example:
 
+- `parcel_bucket_types.h`
+- `uv run python tools/ida/sync_parcel_bucket_types.py`
+  - Previews on a temporary database before replaying the two exact 0x800-entry
+    `ParcelBucket` banks and the adjacent 0x1000-entry survival row-index bank.
+    The count-lane end address remains a symbol-only comparison sentinel because
+    it overlaps separately owned track-colour storage.
 - `frame_renderer_types.h`
 - `uv run python tools/ida/sync_frame_renderer_types.py`
 - `logo_types.h`
@@ -115,6 +121,15 @@ intentional.
   - Width-gates the exact 0x0c-byte global cRLoadingBar owner, names its
     `g_loading_bar` instance, and replays the caller-proven void Init, UnInit,
     and AI contracts without importing unrelated renderer state.
+- `parcel_bucket_types.h`
+- `uv run python tools/binja/sync_parcel_bucket_types.py --target SnailMail_unwrapped.exe.bndb`
+  - Uses the same shared header as IDA to recover both constructor-bounded
+    `ParcelBucket` banks and the survival index bank. Binary Ninja deliberately
+    types one bucket at each bank base rather than claiming the full array:
+    those absolute ranges overlap numeric `SubgameRuntime` offsets in BN's
+    unified address namespace. The guarded replay removes the former wide
+    claims, preserves the canonical runtime fields, and still records the exact
+    bank extents in the shared header and IDA.
 - `bn_backdrop_types.h`
 - `uv run python tools/binja/sync_backdrop_types.py`
 - `uv run python tools/ida/sync_backdrop_types.py`

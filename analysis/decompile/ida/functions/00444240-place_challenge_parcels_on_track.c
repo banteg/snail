@@ -2,11 +2,11 @@
 /* function: place_challenge_parcels_on_track @ 0x444240 */
 /* selector: place_challenge_parcels_on_track */
 
-// Scans parcel-capable runtime rows whose copied parcel id is zero, records their row indices in the global survival scratch bank, and randomly places from that filtered set while compacting the bank in place. Cross-port Android and iOS preserve `cRSubGame::PlaceParcelsSurvival()` and the bank symbol `gParcelGroupSurvival0`.
+// Implements `cRSubGame::PlaceParcelsSurvival()` on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place.
 int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
 {
   int32_t v2; // eax
-  int *v3; // eax
+  int32_t *p_candidate_count; // eax
   int v4; // esi
   int32_t v5; // eax
   int *v6; // edx
@@ -34,19 +34,19 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
      + 1;
   game->level_definition.parcel_count = v2;
   game->level_definition.parcel_quota = v2;
-  v3 = &g_zero_parcel_buckets[128];
+  p_candidate_count = &g_zero_parcel_buckets[0].candidate_count;
   do
   {
-    *v3 = 0;
-    v3 += 131;
+    *p_candidate_count = 0;
+    p_candidate_count += 131;
   }
-  while ( (int)v3 < (int)g_zero_parcel_bucket_count_lane_end );
+  while ( (int)p_candidate_count < (int)g_zero_parcel_bucket_count_lane_end );
   v4 = 0;
   v5 = 0;
   v21 = 0;
   if ( game->runtime_row_count > 0 )
   {
-    v6 = g_challenge_parcel_rows;
+    v6 = g_parcel_group_survival_0;
     v7 = (_DWORD *)((char *)&unk_5CCB64 + (_DWORD)game);
     do
     {
@@ -71,9 +71,9 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
       v20 = (float)v21;
       v10 = (__int64)random_float_below(v20);
       v11 = (_DWORD *)(4 * v10 + 6572008);
-      out_angle = g_challenge_parcel_rows[(_DWORD)v10];
+      out_angle = g_parcel_group_survival_0[(_DWORD)v10];
       ++v8;
-      v12 = &game->_pad_00[244 * out_angle];
+      v12 = &game->scan_reset + 244 * out_angle;
       *(_DWORD *)&byte_5CCAC8[(_DWORD)v12] |= 0x11u;
       *((float *)v12 + 1520343) = *((float *)v12 + 1520343) + 1.0;
       if ( (byte_5CCAC8[(_DWORD)v12] & 0x20) != 0 )

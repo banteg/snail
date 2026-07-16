@@ -3,4 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: noop_runtime_slot_constructor @ 0x408600 */
 
-00408602        return arg1
+00408602        return slot

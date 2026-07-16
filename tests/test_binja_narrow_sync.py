@@ -2709,6 +2709,67 @@ def test_parcel_state_ownership_stays_aligned() -> None:
         assert constant in scratch
 
 
+def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
+    header = (HEADER_DIR / "parcel_bucket_types.h").read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_parcel_bucket_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_apply = (IDA_DIR / "apply_parcel_bucket_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "sync_parcel_bucket_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for declaration in (
+        "#define PARCEL_BUCKET_CAPACITY 0x800",
+        "#define PARCEL_CANDIDATE_CAPACITY 0x20",
+        "#define SURVIVAL_PARCEL_GROUP_CAPACITY 0x1000",
+        "typedef struct ParcelCandidate",
+        "int32_t row;",
+        "Vec3 position;",
+        "typedef struct ParcelBucket",
+        "ParcelCandidate candidates[PARCEL_CANDIDATE_CAPACITY];",
+        "int32_t candidate_count;",
+        "int32_t set_id;",
+        "int32_t segment_index;",
+    ):
+        assert declaration in header
+
+    for source in (binja_sync, ida_apply):
+        for address, name in (
+            ("53d190", "g_zero_parcel_buckets"),
+            ("643390", "g_zero_parcel_bucket_count_lane_end"),
+            ("6447e8", "g_parcel_group_survival_0"),
+            ("6487e8", "g_parcel_set_buckets"),
+        ):
+            assert address.lower() in source.lower()
+            assert name in source
+        assert "ParcelBucket" in source
+        assert "place_parcels_on_track" in source
+        assert "place_challenge_parcels_on_track" in source
+
+    assert 'LEGACY_WIDE_DATA_VAR_REMOVALS = (' in binja_sync
+    assert '("0x53d190", "ParcelBucket[0x800]")' in binja_sync
+    assert '("0x6487e8", "ParcelBucket[0x800]")' in binja_sync
+    assert 'NARROW_PARCEL_DATA_VAR_UPDATES = (' in binja_sync
+    assert '("0x53d190", "ParcelBucket")' in binja_sync
+    assert '("0x6487e8", "ParcelBucket")' in binja_sync
+    assert '("0x6447e8", "int32_t[0x1000]")' in binja_sync
+    assert "apply_data_var_removals" in binja_sync
+    assert "apply_data_var_updates" in binja_sync
+    assert "g_zero_parcel_bucket_count_lane_end" not in binja_sync.split(
+        "DATA_VAR_UPDATES", 1
+    )[1].split("PROTO_UPDATES", 1)[0]
+
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/parcel_bucket_types.h"' in ida_sync
+    assert "shutil.copy2(db_path, preview_db_path)" in ida_sync
+    assert "if preview_exit_code:" in ida_sync
+    assert "g_zero_parcel_bucket_count_lane_end" not in ida_apply.split(
+        "TRUSTED_DATA_DECLARATIONS", 1
+    )[1].split("TRUSTED_FUNCTION_DECLARATIONS", 1)[0]
+
+
 def test_completion_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(

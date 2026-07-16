@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 38,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 38,
-  "ida_exported": 38,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,156 +17,28 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "game_startup_and_main_loop",
-      "address": "0x406dc0"
+      "name": "initialize_array_with_constructor",
+      "address": "0x401000"
     },
     {
-      "name": "handle_game_window_activate",
-      "address": "0x4072f0"
+      "name": "noop_runtime_slot_constructor",
+      "address": "0x408600"
     },
     {
-      "name": "handle_game_window_deactivate",
-      "address": "0x407440"
+      "name": "initialize_parcel_set_bucket_pool",
+      "address": "0x443870"
     },
     {
-      "name": "game_window_proc",
-      "address": "0x4074b0"
+      "name": "initialize_zero_parcel_bucket_pool",
+      "address": "0x4438b0"
     },
     {
-      "name": "initialize_audio_subsystem",
-      "address": "0x407a10"
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
     },
     {
-      "name": "shutdown_bass_audio_window",
-      "address": "0x407b00"
-    },
-    {
-      "name": "apply_audio_config_volumes",
-      "address": "0x41b070"
-    },
-    {
-      "name": "cache_music_file",
-      "address": "0x432d50"
-    },
-    {
-      "name": "play_registered_warning_sample",
-      "address": "0x432dd0"
-    },
-    {
-      "name": "stop_registered_warning_sample",
-      "address": "0x432de0"
-    },
-    {
-      "name": "play_sound_effect_backend",
-      "address": "0x432df0"
-    },
-    {
-      "name": "play_voice_backend",
-      "address": "0x432e80"
-    },
-    {
-      "name": "register_sound_sample",
-      "address": "0x432f10"
-    },
-    {
-      "name": "start_invincible_shell",
-      "address": "0x444ae0"
-    },
-    {
-      "name": "initialize_voice_manager",
-      "address": "0x448ee0"
-    },
-    {
-      "name": "play_voice_manager",
-      "address": "0x4492d0"
-    },
-    {
-      "name": "is_voice_playing",
-      "address": "0x449410"
-    },
-    {
-      "name": "initialize_bass_audio_backend",
-      "address": "0x449460"
-    },
-    {
-      "name": "uninitialize_bass_audio_backend",
-      "address": "0x4496d0"
-    },
-    {
-      "name": "ensure_music_stream_from_path",
-      "address": "0x449720"
-    },
-    {
-      "name": "prepare_music_stream_reload_if_path_changed",
-      "address": "0x4497e0"
-    },
-    {
-      "name": "play_music_stream_from_bytes",
-      "address": "0x449820"
-    },
-    {
-      "name": "stop_music_stream",
-      "address": "0x4498d0"
-    },
-    {
-      "name": "load_registered_sound_sample_from_path",
-      "address": "0x449920"
-    },
-    {
-      "name": "load_registered_sound_sample_from_bytes",
-      "address": "0x449960"
-    },
-    {
-      "name": "play_registered_sound_sample_scaled",
-      "address": "0x4499a0"
-    },
-    {
-      "name": "stop_sound_sample_handle",
-      "address": "0x449a10"
-    },
-    {
-      "name": "stop_registered_sound_sample",
-      "address": "0x449a20"
-    },
-    {
-      "name": "is_registered_sound_sample_playing",
-      "address": "0x449a40"
-    },
-    {
-      "name": "play_registered_sound_sample_default",
-      "address": "0x449a60"
-    },
-    {
-      "name": "play_registered_sound_sample_backend",
-      "address": "0x449a80"
-    },
-    {
-      "name": "play_registered_sound_sample_scaled_panned",
-      "address": "0x449ae0"
-    },
-    {
-      "name": "set_global_sample_volume_config",
-      "address": "0x449b50"
-    },
-    {
-      "name": "set_global_stream_volume_config",
-      "address": "0x449b70"
-    },
-    {
-      "name": "stop_audio_backend",
-      "address": "0x449b90"
-    },
-    {
-      "name": "resume_audio_backend_if_paused",
-      "address": "0x449ba0"
-    },
-    {
-      "name": "pause_audio_backend_if_running",
-      "address": "0x449bc0"
-    },
-    {
-      "name": "set_audio_normalization_scales",
-      "address": "0x449be0"
+      "name": "place_challenge_parcels_on_track",
+      "address": "0x444240"
     }
   ],
   "health_check_count": 418,

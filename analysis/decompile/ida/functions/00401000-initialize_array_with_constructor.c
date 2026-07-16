@@ -3,23 +3,23 @@
 /* selector: initialize_array_with_constructor */
 
 // Walks `count` entries from `base` using the supplied byte stride and calls the provided constructor/helper on each slot; shared by game-runtime, enemy-manager, and parcel-bucket pool setup.
-int __stdcall sub_401000(int a1, int a2, int a3, int (__thiscall *a4)(int))
+void __stdcall initialize_array_with_constructor(
+        void *base,
+        int32_t stride,
+        int32_t count,
+        void *(__thiscall *constructor)(void *slot))
 {
-  int result; // eax
-  int v6; // edi
+  int32_t v5; // edi
 
-  result = a3 - 1;
-  if ( a3 - 1 >= 0 )
+  if ( count - 1 >= 0 )
   {
-    v6 = a3;
+    v5 = count;
     do
     {
-      result = a4(a1);
-      a1 += a2;
-      --v6;
+      constructor(base);
+      base = (char *)base + stride;
+      --v5;
     }
-    while ( v6 );
+    while ( v5 );
   }
-  return result;
 }
-
