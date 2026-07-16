@@ -100,12 +100,12 @@ The tracked IDA exports are materially clearer after the sync:
 - `update_cameraman` now reads the tile-family lean pulse and live heading lane as `player->lane_lean_amplitude`, `player->lane_lean_progress`, and `player->heading_roll` instead of `player + 0x354/+0x358/+0x370`.
 - `update_subgoldy` and `update_track_attachment_follow_state` now expose the same player-side `lane_lean_*` / `heading_roll` lanes that the Zig port already mirrors.
 - the live BN lane now also reads `game->first_block_row_count` and `game->track_center_x` directly in `update_cameraman` and nearby ring or hazard helpers instead of raw `game->__offset(0x50)` / `game->__offset(0x38)`.
+- the former `cameraman + 0xcc` byte is now the borrowed-camera handoff flag `force_camera_update`; `update_subgame_camera` copies it into `SubgameRuntime::camera_snap_requested`, parallel to the cutscene branch.
 - `look_at_point` now reads directly against `TransformMatrix.position`.
 - the world-axis rotation helpers now mutate `basis_right`, `basis_up`, and `basis_forward` explicitly.
 
 ## Current Limits
 
-- the byte at `cameraman + 0xcc` is still unresolved and intentionally unnamed beyond `unresolved_cc`
 - most player-side attachment and presentation fields that `update_cameraman` touches are still only partially typed
 - the authoritative checked-in header now drives both the IDA sync lane and the live BN camera-mutator pass; `uv run python tools/binja/sync_path_template_types.py` queries all required widths in one bridge call, imports only missing complete types, and batches guarded field/prototype readback so the full proven presentation and `SubgameRuntime` owner graph can be replayed without the former whole-header timeout
 - the remaining BN caller residue in `update_cameraman` is now localized to presentation noise around `rotate_matrix_world_z` rather than the broader helper signature set; `linear_interpolate_matrix`, `initialize_cutscene`, and `dispatch_cutscene_animation` are safe to replay through the narrow BN sync lane

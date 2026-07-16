@@ -1268,6 +1268,10 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     for declaration in ida_declarations:
         assert f'"{declaration}"' in ida_bank_source
         assert f'"{declaration}"' in ida_path_source
+    assert (
+        'normalized.replace("unsigned __int8", "unsigned char")'
+        in ida_path_source
+    )
 
     for local_name in (
         "source_lateral",
@@ -3030,6 +3034,29 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
     assert '"update_banner"' in path_sync
     assert '"list_flags"' in path_sync
     assert '"uint32_t"' in path_sync
+
+
+def test_cameraman_force_update_owner_survives_path_replay() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher = (repo_root / "tools/match/include/cameraman.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    cameraman = path_header.split("typedef struct Cameraman {", 1)[1].split(
+        "} Cameraman;", 1
+    )[0]
+
+    assert "unsigned char force_camera_update; // +0xcc" in matcher
+    assert "uint8_t force_camera_update;" in cameraman
+    assert "unresolved_cc" not in cameraman
+    assert "CAMERAMAN_FIELD_UPDATES" in path_sync
+    assert '("0xcc", "force_camera_update", "uint8_t")' in path_sync
+    assert '("Cameraman", CAMERAMAN_FIELD_UPDATES)' in path_sync
 
 
 def test_sub_garbage_owner_replays_stay_aligned() -> None:

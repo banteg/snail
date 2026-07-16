@@ -13,7 +13,7 @@
 00446085        if (runtime->player.presentation.cutscene.state == CUT_SCENE_STATE_INACTIVE)
 004460bb        float fov_degrees = runtime->player.cameraman.fov_degrees
 004460c1        __builtin_memcpy(&var_80, &runtime->player.cameraman, 0x40)
-004460c9        runtime->camera_snap_requested = runtime->player.cameraman.unresolved_cc
+004460c9        runtime->camera_snap_requested = runtime->player.cameraman.force_camera_update
 004460d1        g_game_base->players[0].camera.fov_degrees = fov_degrees
 00446093        runtime->camera_snap_requested = runtime->player.presentation.cutscene.force_camera_update
 00446096        struct GameRoot* game_base_1 = g_game_base

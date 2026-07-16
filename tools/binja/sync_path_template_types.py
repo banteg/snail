@@ -124,6 +124,10 @@ CUT_SCENE_FIELD_UPDATES = (
     ("0x58", "force_camera_update", "uint8_t"),
 )
 
+CAMERAMAN_FIELD_UPDATES = (
+    ("0xcc", "force_camera_update", "uint8_t"),
+)
+
 SNAIL_SKIN_FIELD_UPDATES = (
     ("0x00", "selected_slot", "int32_t"),
     ("0x04", "material_overrides", "TextureRef*[0x3]"),
@@ -1574,6 +1578,7 @@ def main() -> int:
                 ("Weapon", WEAPON_FIELD_UPDATES),
                 ("AnimManager", ANIM_MANAGER_FIELD_UPDATES),
                 ("Invincible", INVINCIBLE_FIELD_UPDATES),
+                ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
                 ("SnailSkin", SNAIL_SKIN_FIELD_UPDATES),
             ),

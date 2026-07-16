@@ -718,14 +718,16 @@
         "follow_state",
         "post_follow_exit_roll",
         "attachment_exit_pending",
-        "desired_matrix"
+        "desired_matrix",
+        "cameraman->force_camera_update = 0"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
         "unimplemented",
         "__offset(",
-        "struct Game*"
+        "struct Game*",
+        "unresolved_cc"
       ]
     },
     {
@@ -911,11 +913,29 @@
       "artifact": "analysis/decompile/binja/functions/00446160-initialize_cameraman.c",
       "required_substrings": [
         "cameraman->game = &g_game_base->subgame",
-        "cameraman->player = &g_game_base->subgame.player"
+        "cameraman->player = &g_game_base->subgame.player",
+        "cameraman->force_camera_update = 0"
       ],
       "forbidden_substrings": [
         "struct Game*",
-        "g_game_base->subgame.__offset"
+        "g_game_base->subgame.__offset",
+        "unresolved_cc"
+      ]
+    },
+    {
+      "name": "ida_nested_subgame_initialize_cameraman_owner",
+      "artifact": "analysis/decompile/ida/functions/00446160-initialize_cameraman.c",
+      "required_substrings": [
+        "void __thiscall initialize_cameraman(Cameraman *cameraman)",
+        "p_subgame = &g_game_base->subgame",
+        "cameraman->force_camera_update = 0",
+        "cameraman->game = p_subgame"
+      ],
+      "forbidden_substrings": [
+        "CameramanState",
+        "unresolved_cc",
+        "return result",
+        "Game *"
       ]
     },
     {
@@ -926,13 +946,18 @@
         "follow_state",
         "post_follow_exit_roll",
         "attachment_exit_pending",
-        "desired_matrix"
+        "desired_matrix",
+        "void __thiscall update_cameraman(Cameraman *cameraman)",
+        "cameraman->force_camera_update = 0"
       ],
       "forbidden_substrings": [
         "__asm",
         "_ET1",
         "unimplemented",
-        "__offset("
+        "__offset(",
+        "unresolved_cc",
+        "CameramanState",
+        "return result"
       ]
     },
     {
@@ -3325,6 +3350,8 @@
         "runtime->camera_snap_requested",
         "runtime->player.cameraman",
         "runtime->player.presentation.cutscene",
+        "runtime->player.cameraman.force_camera_update",
+        "runtime->player.presentation.cutscene.force_camera_update",
         "linear_interpolate_matrix"
       ],
       "forbidden_substrings": [
@@ -3333,7 +3360,8 @@
         "return linear_interpolate_matrix",
         "struct Game*",
         "__asm",
-        "_ET1"
+        "_ET1",
+        "unresolved_cc"
       ]
     },
     {
@@ -3343,7 +3371,9 @@
         "void __thiscall update_subgame_camera(SubgameRuntime *runtime)",
         "runtime->camera_snap_requested",
         "runtime->player.cameraman",
-        "runtime->player.presentation.cutscene"
+        "runtime->player.presentation.cutscene",
+        "runtime->player.cameraman.force_camera_update",
+        "runtime->player.presentation.cutscene.force_camera_update"
       ],
       "forbidden_substrings": [
         "char __thiscall update_subgame_camera",
@@ -3351,7 +3381,8 @@
         "runtime->__offset(",
         "sub_446020",
         "__asm",
-        "_ET1"
+        "_ET1",
+        "unresolved_cc"
       ]
     },
     {

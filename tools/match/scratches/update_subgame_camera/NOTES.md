@@ -54,3 +54,9 @@ Both databases now use `void __thiscall(SubgameRuntime*)`. The refreshed BN
 and IDA decompiles expose `camera_snap_requested`, the embedded Cameraman, and
 the cutscene owner without raw receiver offsets or a fabricated return value.
 The matcher remains exact at 70/70 instructions with all nine operands clean.
+
+2026-07-16 replay durability: Binary Ninja's path replay now pins the normal
+branch source as `Cameraman::force_camera_update` at +0xcc instead of allowing
+the structurally identical older `unresolved_cc` name to survive. The
+cutscene and Cameraman branches therefore retain the same explicit handoff
+semantic across fresh replays; matching remains exact.

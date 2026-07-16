@@ -2,8 +2,8 @@
 /* function: update_cameraman @ 0x4461d0 */
 /* selector: update_cameraman */
 
-// Builds the live follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom before handing the matrix back to `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::AI()`.
-int32_t __thiscall update_cameraman(CameramanState *cameraman)
+// Advances the exact cRCameraman owner: builds the desired follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom, smooths FOV and lift envelopes, and blends the live matrix before `update_subgame_camera` consumes it. Android and iOS retain this method as `cRCameraman::AI()`.
+void __thiscall update_cameraman(Cameraman *cameraman)
 {
   Player *player; // eax
   TransformMatrix *p_desired_matrix; // ebx
@@ -12,7 +12,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   double v6; // st7
   double v7; // st6
   Player *v8; // ecx
-  PathTemplate *template_record; // edx
+  Path *template_record; // edx
   PathTemplateKind kind; // eax
   double v11; // st7
   Player *v12; // ecx
@@ -24,11 +24,10 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   Player *v18; // esi
   Player *v19; // eax
   Player *v20; // eax
-  PathTemplate *v21; // ecx
+  Path *v21; // ecx
   double v22; // st7
   double v23; // st7
-  Game *game; // eax
-  int32_t result; // eax
+  SubgameRuntime *game; // eax
   float m30; // [esp+0h] [ebp-64h]
   float angle; // [esp+Ch] [ebp-58h]
   float anglea; // [esp+Ch] [ebp-58h]
@@ -37,13 +36,13 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   float angled; // [esp+Ch] [ebp-58h]
   float anglee; // [esp+Ch] [ebp-58h]
   float anglef; // [esp+Ch] [ebp-58h]
+  float v33; // [esp+20h] [ebp-44h]
   float v34; // [esp+20h] [ebp-44h]
   float v35; // [esp+20h] [ebp-44h]
-  float v36; // [esp+20h] [ebp-44h]
   TransformMatrix transform; // [esp+24h] [ebp-40h] BYREF
 
   player = cameraman->player;
-  cameraman->unresolved_cc = 0;
+  cameraman->force_camera_update = 0;
   p_desired_matrix = &cameraman->desired_matrix;
   m30 = player->cached_camera_target_world.x * 0.40000001;
   qmemcpy(
@@ -87,12 +86,12 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     {
       v6 = 0.0;
     }
-    v34 = 1.0 - v6;
+    v33 = 1.0 - v6;
     v7 = (1.0 - v6) * v4->cached_camera_target_world.y * 1.15 + cameraman->desired_matrix.position.y;
     cameraman->desired_matrix.position.y = v7;
     cameraman->desired_matrix.position.y = v6 * 0.34999999 * v4->cached_camera_target_world.y + v7;
-    angle = v34 * 0.87249994;
-    rotate_matrix_world_x(&cameraman->desired_matrix, angle);
+    angle = v33 * 0.87249994;
+    rotate_matrix_local_x(&cameraman->desired_matrix, angle);
   }
   v8 = cameraman->player;
   if ( v8->follow_state.active == 1
@@ -107,7 +106,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
      || kind == PATH_TEMPLATE_KIND_START
      || kind == (PATH_TEMPLATE_KIND_LOOPTHELOOPW|0x8)) )
   {
-    v11 = (v8->live_matrix.position.z - v8->follow_state.source_cell->anchor_position.z)
+    v11 = (v8->body.transform.position.z - v8->follow_state.source_cell->anchor_position.z)
         / template_record->segment_count_f;
     if ( v11 >= 0.0 )
     {
@@ -152,37 +151,37 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     cameraman->previous_desired_matrix.position.z = v15 - 3.0;
   }
   v17 = (-2.0 - (v13->cached_camera_target_world.y - 0.49000001) * 5.0) * 0.017449999;
-  v35 = v17;
+  v34 = v17;
   if ( v17 >= -1.2214999 )
   {
-    if ( v35 > 1.2214999 )
-      v35 = 1.2214999;
-    rotate_matrix_world_x(&cameraman->desired_matrix, v35);
+    if ( v34 > 1.2214999 )
+      v34 = 1.2214999;
+    rotate_matrix_local_x(&cameraman->desired_matrix, v34);
   }
   else
   {
-    rotate_matrix_world_x(&cameraman->desired_matrix, -1.2214999);
+    rotate_matrix_local_x(&cameraman->desired_matrix, -1.2214999);
   }
   v18 = cameraman->player;
   anglec = v18->lane_lean_progress * 3.1415927;
   angled = (0.5 - cosine(anglec) * 0.5) * v18->lane_lean_amplitude * 6.2831855
          + v18->cached_camera_target_world.x * -8.0 * 0.017449999 * 0.17;
-  rotate_matrix_world_z(&cameraman->desired_matrix, angled);
+  rotate_matrix_local_z(&cameraman->desired_matrix, angled);
   if ( cameraman->player->follow_state.active == 1 )
   {
     set_matrix_identity(&transform);
-    rotate_matrix_world_z(&transform, cameraman->player->follow_state.orientation_a);
-    multiply_matrix_in_place(&cameraman->desired_matrix, &transform);
-    rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b);
+    rotate_matrix_local_z(&transform, cameraman->player->follow_state.orientation_a);
+    multiply_matrix(&cameraman->desired_matrix, &transform);
+    rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b);
   }
   v19 = cameraman->player;
   if ( v19->attachment_exit_pending )
-    rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_exit_roll);
-  rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->heading_roll);
+    rotate_matrix_local_z(&cameraman->desired_matrix, v19->post_follow_exit_roll);
+  rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->heading_roll);
   v20 = cameraman->player;
   if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
   {
-    v22 = (v20->live_matrix.position.z - v20->follow_state.source_cell->anchor_position.z) / v21->segment_count_f;
+    v22 = (v20->body.transform.position.z - v20->follow_state.source_cell->anchor_position.z) / v21->segment_count_f;
     if ( v22 >= 0.0 )
     {
       if ( v22 > 1.0 )
@@ -193,9 +192,9 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
       v22 = 0.0;
     }
     anglee = v22 * 6.2831855;
-    v36 = 0.5 - cosine(anglee) * 0.5;
-    sub_449C00();
-    v23 = v36 * 50.0 + 110.0;
+    v35 = 0.5 - cosine(anglee) * 0.5;
+    debug_report_stub();
+    v23 = v35 * 50.0 + 110.0;
   }
   else
   {
@@ -210,5 +209,4 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     &cameraman->desired_matrix,
     anglef);
   qmemcpy(&cameraman->previous_desired_matrix, p_desired_matrix, sizeof(cameraman->previous_desired_matrix));
-  return result;
 }

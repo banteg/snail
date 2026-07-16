@@ -169,3 +169,12 @@ the first rotation with the adjacent multiply. Canonicalizing intersecting
 alias sets before pairing clears the false mismatch and audits 73 operands
 cleanly. The honest instruction score remains 92.55% with its documented
 register and x87 scheduling residuals.
+
+## 2026-07-16 durable force-camera replay
+
+Live struct readback exposed that Binary Ninja still retained the historical
+`unresolved_cc` member even though the matcher, canonical path header, and
+outer `update_subgame_camera` consumer had already proved
+`force_camera_update`. The guarded path replay now reapplies that exact byte
+field after type import. This is ownership-only; the honest 92.55% instruction
+score and 73 clean operands remain unchanged.

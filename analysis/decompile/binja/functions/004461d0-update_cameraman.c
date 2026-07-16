@@ -4,7 +4,7 @@
 /* function: update_cameraman @ 0x4461d0 */
 
 004461de        struct Player* player = cameraman->player
-004461e4        cameraman->unresolved_cc = 0
+004461e4        cameraman->force_camera_update = 0
 00446201        struct Cameraman* cameraman_1 = cameraman
 00446233        struct TransformMatrix var_40
 00446233        struct TransformMatrix* eax = initialize_matrix_from_values(&var_40, 1f, 0f, 0f, 0f, 0f, 0.946000993f, 0.324162006f, 0f, 0f, -0.324162006f, 0.946000993f, 0f, fconvert.s(fconvert.t(player->cached_camera_target_world.x) * fconvert.t(0.400000006f)), 1.79999995f, -0.5f, 1f)

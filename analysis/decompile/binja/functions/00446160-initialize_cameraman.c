@@ -4,7 +4,7 @@
 /* function: initialize_cameraman @ 0x446160 */
 
 0044616d        cameraman->player = &g_game_base->subgame.player
-0044617f        cameraman->unresolved_cc = 0
+0044617f        cameraman->force_camera_update = 0
 00446186        cameraman->game = &g_game_base->subgame
 00446192        set_matrix_identity(&cameraman->previous_desired_matrix)
 0044619a        set_matrix_identity(&cameraman->desired_matrix)

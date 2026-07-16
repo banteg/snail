@@ -35,3 +35,9 @@ remains exact at 20/20 instructions with six clean masked operands.
 `camera_snap_requested` gate used by `CutScene::force_camera_update`; the
 Cameraman initializer and AI both clear the request in the shipped Windows
 path. The semantic rename is instruction-exact in this initializer.
+
+2026-07-16 durable replay closure: the path-template BN replay now guards
+`Cameraman +0xcc` explicitly as `force_camera_update`. This prevents the live
+database from retaining the older `unresolved_cc` spelling even when the
+complete imported type is structurally unchanged. The exact 20/20 initializer
+and its six clean operands are unaffected.

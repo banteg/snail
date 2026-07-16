@@ -1261,6 +1261,7 @@ def _normalize_type_text(value: str | None) -> str | None:
         return None
     normalized = value.strip().removesuffix(";")
     normalized = re.sub(r"\s+", " ", normalized)
+    normalized = normalized.replace("unsigned __int8", "unsigned char")
     normalized = re.sub(r"\s*\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
