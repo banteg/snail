@@ -11,3 +11,7 @@ Owns the hidden BASS window/class shutdown path.
   only after the fatal-error call on the destroy-failure path.
 - Both Win32 failures dispatch the existing startup-fatal error helper; the
   unregister failure is emitted as the native tail return.
+
+2026-07-16 replay closure: the proof-grade `int __cdecl(void)` ABI and function
+name are now persistent in both decompiler lanes. This also prevents the
+Binary Ninja database from regressing to the anonymous `sub_407b00` caller.

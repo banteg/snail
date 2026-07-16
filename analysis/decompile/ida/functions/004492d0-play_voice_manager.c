@@ -2,9 +2,10 @@
 /* function: play_voice_manager @ 0x4492d0 */
 /* selector: play_voice_manager */
 
-char __thiscall sub_4492D0(int this, int a2, unsigned int a3, int a4)
+// Exact `cRVoiceManager::Play(int, int, int)` member: applies current-voice and frequency gating, optionally stops the active sample, and dispatches through the selected inline VoiceSet.
+char __thiscall play_voice_manager(int this, int a2, unsigned int a3, int a4)
 {
-  int v5; // eax
+  int32_t v5; // eax
   char result; // al
 
   if ( a3 < 2 )
@@ -18,11 +19,10 @@ char __thiscall sub_4492D0(int this, int a2, unsigned int a3, int a4)
   {
     v5 = is_voice_playing((int *)this);
     if ( v5 != -1 )
-      stop_registered_sound_sample(v5);
+      stop_registered_sound_sample((AudioBackend *)g_audio_backend, v5);
   }
   result = play_voice_set((float *)(this + 24 * a2), a4);
   if ( result == 1 && (a3 == 1 || a3 == 2) )
     *(_DWORD *)(this + 384) = 0;
   return result;
 }
-

@@ -7,19 +7,18 @@ char handle_game_window_deactivate()
 {
   char result; // al
 
-  result = unk_4B7654;
-  if ( !unk_4B7654 )
+  result = g_window_deactivated;
+  if ( !g_window_deactivated )
   {
-    if ( byte_4DF920[0] )
+    if ( g_runtime_config.fullscreen_enabled )
     {
-      pause_audio_backend_if_running(unk_753C58);
-      unk_4B7654 = 1;
-      ((void (__stdcall *)(_DWORD, int))ShowWindow)(MEMORY[0x4DFAF0], 6);
+      pause_audio_backend_if_running((AudioBackend *)g_audio_backend);
+      g_window_deactivated = 1;
+      ((void (__stdcall *)(int, int))ShowWindow)(g_main_window, 6);
     }
-    result = dword_4DF860;
-    if ( dword_4DF860 )
-      dword_4DF860 = 0;
+    result = g_pending_window_deactivate;
+    if ( g_pending_window_deactivate )
+      g_pending_window_deactivate = 0;
   }
   return result;
 }
-

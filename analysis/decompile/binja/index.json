@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 705,
-  "function_count": 705,
+  "selected_count": 706,
+  "function_count": 706,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -389,6 +389,11 @@
       "address": "0x407a10",
       "name": "initialize_audio_subsystem",
       "artifact": "analysis/decompile/binja/functions/00407a10-initialize_audio_subsystem.c"
+    },
+    {
+      "address": "0x407b00",
+      "name": "shutdown_bass_audio_window",
+      "artifact": "analysis/decompile/binja/functions/00407b00-shutdown_bass_audio_window.c"
     },
     {
       "address": "0x407b50",

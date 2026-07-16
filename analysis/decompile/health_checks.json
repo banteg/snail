@@ -6707,7 +6707,7 @@
       "name": "bn_rshell_looped_sound_public_abi",
       "artifact": "analysis/decompile/binja/functions/00432dd0-play_registered_warning_sample.c",
       "required_substrings": [
-        "return play_registered_sound_sample_default(sample_id)"
+        "return play_registered_sound_sample_default(&g_audio_backend, sample_id)"
       ],
       "forbidden_substrings": [
         "arg1"
@@ -6718,7 +6718,7 @@
       "artifact": "analysis/decompile/ida/functions/00432dd0-play_registered_warning_sample.c",
       "required_substrings": [
         "int __cdecl play_registered_warning_sample(int sample_id)",
-        "return play_registered_sound_sample_default(sample_id)"
+        "return play_registered_sound_sample_default((AudioBackend *)g_audio_backend, sample_id)"
       ],
       "forbidden_substrings": [
         "int a1"
@@ -6728,7 +6728,7 @@
       "name": "bn_rshell_looped_sound_stop_public_abi",
       "artifact": "analysis/decompile/binja/functions/00432de0-stop_registered_warning_sample.c",
       "required_substrings": [
-        "return stop_sound_sample_handle(sample_handle)"
+        "return stop_sound_sample_handle(&g_audio_backend, sample_handle)"
       ],
       "forbidden_substrings": [
         "arg1"
@@ -6739,7 +6739,7 @@
       "artifact": "analysis/decompile/ida/functions/00432de0-stop_registered_warning_sample.c",
       "required_substrings": [
         "int __cdecl stop_registered_warning_sample(int sample_handle)",
-        "return stop_sound_sample_handle(sample_handle)"
+        "return stop_sound_sample_handle((AudioBackend *)g_audio_backend, sample_handle)"
       ],
       "forbidden_substrings": [
         "int a1"
@@ -6805,11 +6805,16 @@
       "name": "ida_cached_music_path_and_bass_pointer_owners",
       "artifact": "analysis/decompile/ida/functions/00449720-ensure_music_stream_from_path.c",
       "required_substrings": [
+        "int32_t __thiscall ensure_music_stream_from_path(",
+        "AudioBackend *backend",
+        "backend->music_stream_active",
         "g_cached_music_path",
         "g_bass_stream_create_file",
         "g_bass_channel_play"
       ],
       "forbidden_substrings": [
+        "_BYTE *this",
+        "char *ArgList",
         "&g_cached_music_path[256]",
         "g_cached_music_path[8492]"
       ]
@@ -6818,12 +6823,135 @@
       "name": "ida_registered_sample_handle_and_bass_pointer_owners",
       "artifact": "analysis/decompile/ida/functions/00449920-load_registered_sound_sample_from_path.c",
       "required_substrings": [
+        "int32_t __thiscall load_registered_sound_sample_from_path(",
+        "AudioBackend *backend",
         "g_bass_sample_load",
-        "g_registered_sound_sample_handles[a2]"
+        "g_registered_sound_sample_handles[sample_id]"
       ],
       "forbidden_substrings": [
+        "__stdcall load_registered_sound_sample_from_path",
+        "g_registered_sound_sample_handles[a2]",
         "g_cached_music_path[8492]",
         "(*(int"
+      ]
+    },
+    {
+      "name": "bn_audio_backend_music_member_owner",
+      "artifact": "analysis/decompile/binja/functions/00449720-ensure_music_stream_from_path.c",
+      "required_substrings": [
+        "backend->music_stream_active",
+        "stop_music_stream(backend)",
+        "path",
+        "play_mode"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_753c58"
+      ]
+    },
+    {
+      "name": "bn_audio_backend_sample_member_owner",
+      "artifact": "analysis/decompile/binja/functions/004499a0-play_registered_sound_sample_scaled.c",
+      "required_substrings": [
+        "g_registered_sound_sample_handles[sample_id]",
+        "volume"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2"
+      ]
+    },
+    {
+      "name": "ida_audio_backend_sample_member_owner",
+      "artifact": "analysis/decompile/ida/functions/004499a0-play_registered_sound_sample_scaled.c",
+      "required_substrings": [
+        "void __thiscall play_registered_sound_sample_scaled(AudioBackend *backend, int32_t sample_id, float volume)",
+        "g_registered_sound_sample_handles[sample_id]"
+      ],
+      "forbidden_substrings": [
+        "__stdcall play_registered_sound_sample_scaled",
+        "int a1",
+        "float a2"
+      ]
+    },
+    {
+      "name": "ida_audio_backend_receiver_unused_stop_owner",
+      "artifact": "analysis/decompile/ida/functions/00449b90-stop_audio_backend.c",
+      "required_substrings": [
+        "int32_t __thiscall stop_audio_backend(AudioBackend *backend)"
+      ],
+      "forbidden_substrings": [
+        "int stop_audio_backend(void)",
+        "int stop_audio_backend()"
+      ]
+    },
+    {
+      "name": "bn_audio_backend_pause_member_owner",
+      "artifact": "analysis/decompile/binja/functions/00449bc0-pause_audio_backend_if_running.c",
+      "required_substrings": [
+        "backend->is_paused",
+        "is_paused"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "data_753c70"
+      ]
+    },
+    {
+      "name": "ida_audio_backend_pause_member_owner",
+      "artifact": "analysis/decompile/ida/functions/00449bc0-pause_audio_backend_if_running.c",
+      "required_substrings": [
+        "char __thiscall pause_audio_backend_if_running(AudioBackend *backend)",
+        "backend->is_paused"
+      ],
+      "forbidden_substrings": [
+        "_BYTE *this",
+        "__fastcall pause_audio_backend_if_running"
+      ]
+    },
+    {
+      "name": "bn_audio_backend_normalization_prefix",
+      "artifact": "analysis/decompile/binja/functions/00449be0-set_audio_normalization_scales.c",
+      "required_substrings": [
+        "backend->music_normalization_scale = music_scale",
+        "backend->sfx_normalization_scale = sfx_scale",
+        "backend->voice_normalization_scale = voice_scale"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_753c64",
+        "data_753c68",
+        "data_753c6c"
+      ]
+    },
+    {
+      "name": "ida_audio_backend_normalization_prefix",
+      "artifact": "analysis/decompile/ida/functions/00449be0-set_audio_normalization_scales.c",
+      "required_substrings": [
+        "void __thiscall set_audio_normalization_scales(",
+        "AudioBackend *backend",
+        "backend->music_normalization_scale = music_scale",
+        "backend->sfx_normalization_scale = sfx_scale",
+        "backend->voice_normalization_scale = voice_scale"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *this",
+        "int a2",
+        "int a3",
+        "int a4"
+      ]
+    },
+    {
+      "name": "ida_audio_backend_uninitialize_member_owner",
+      "artifact": "analysis/decompile/ida/functions/004496d0-uninitialize_bass_audio_backend.c",
+      "required_substrings": [
+        "void __thiscall uninitialize_bass_audio_backend(AudioBackend *backend)"
+      ],
+      "forbidden_substrings": [
+        "int uninitialize_bass_audio_backend()",
+        "int uninitialize_bass_audio_backend(void)"
       ]
     }
   ]

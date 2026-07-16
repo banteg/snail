@@ -2,26 +2,25 @@
 /* function: start_invincible_shell @ 0x444ae0 */
 /* selector: start_invincible_shell */
 
-// Arms the runner-owned invincible-shell controller when the native invincible bit becomes active, seeds its fade timers, raises the shared render bit, and plays `SFX2/INVINCIBLE.OGG`.
-void __thiscall start_invincible_shell(InvincibleShellController *shell)
+// Authored `cRInvincible::Start()`: arms the embedded visual owner when the native invincible bit becomes active, seeds its spin/fade lanes, raises the shared render bit, and plays `SFX2/INVINCIBLE.OGG`.
+void __thiscall start_invincible_shell(Invincible *invincible)
 {
-  int32_t state; // eax
+  InvincibleState state; // eax
 
-  state = shell->state;
+  state = invincible->state;
   if ( state )
   {
-    if ( state == 3 )
-      shell->state = 1;
+    if ( state == INVINCIBLE_STATE_FADING_OUT )
+      invincible->state = INVINCIBLE_STATE_FADING_IN;
   }
   else
   {
-    shell->state = 1;
-    shell->spin_phase = 0.0;
-    shell->spin_phase_step = 0.033333335;
-    shell->fade_progress = 0.0;
-    shell->fade_step = 0.033333335;
-    *((_DWORD *)MEMORY[0x4DF904] + 1101798) |= 0x20u;
-    play_registered_sound_sample_scaled(48, 1.0);
+    invincible->state = INVINCIBLE_STATE_FADING_IN;
+    invincible->spin_phase = 0.0;
+    invincible->spin_phase_step = 0.033333335;
+    invincible->fade_progress = 0.0;
+    invincible->fade_step = 0.033333335;
+    g_game_base->subgame.player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x20u;
+    play_registered_sound_sample_scaled((AudioBackend *)g_audio_backend, 48, 1.0);
   }
 }
-

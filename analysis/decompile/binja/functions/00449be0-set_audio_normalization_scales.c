@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_audio_normalization_scales @ 0x449be0 */
 
-00449be8        *(arg1 + 0xc) = arg2
-00449bef        *(arg1 + 0x10) = arg3
-00449bf2        *(arg1 + 0x14) = arg4
-00449bf5        return arg4
+00449be8        backend->music_normalization_scale = music_scale
+00449bef        backend->sfx_normalization_scale = sfx_scale
+00449bf2        backend->voice_normalization_scale = voice_scale
+00449bf5        return

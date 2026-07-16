@@ -5,5 +5,5 @@
 // Windows RShellSoundPlayLooped entry point: forwards one registered warning sample id to the process audio backend's looped default sample-play method and returns the live playback handle.
 int __cdecl play_registered_warning_sample(int sample_id)
 {
-  return play_registered_sound_sample_default(sample_id);
+  return play_registered_sound_sample_default((AudioBackend *)g_audio_backend, sample_id);
 }

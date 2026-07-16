@@ -14,21 +14,20 @@
 0040761a        data_4dfad0 = 0xffffffff
 0040762a        return 0
 004074d2        if (arg2 - 2 u<= 0xfe)
-004074da        int32_t edx_1
-004074da        edx_1.b = *(arg2 + &jump_table_4076ac[5]:2)
+004074d8        int32_t edx_1 = 0
+004074da        edx_1.b = *(arg2 + &game_window_proc_low_message_jump_table[5]:2)
 004074e0        switch (edx_1)
 004074f5        case 0
 004074f5        return 0
 0040756d        case 1
 0040756d        if (arg3 == 1)
-0040756f        char* var_10_3 = "WM_MINIMIZED\n"
-00407581        pause_audio_backend_if_running(0x753c58)
-00407586        data_4b7654 = 1
+00407581        pause_audio_backend_if_running(&g_audio_backend)
+00407586        g_window_deactivated = 1
 0040758c        restore_desktop_display_mode()
 00407597        return 0
 0040759e        if (arg3 == 0)
-004075a5        resume_audio_backend_if_paused(0x753c58)
-004075aa        data_4b7654 = 0
+004075a5        resume_audio_backend_if_paused(&g_audio_backend)
+004075aa        g_window_deactivated = 0
 004075ba        int32_t var_4_1 = 0
 004075cd        data_4dfb00 = fconvert.s(float.t(timeGetTime().q) * fconvert.t(0.00100000005f))
 004075d3        pdb_internal::Array<struct PortablePDB::MethodInfo>::reset(0x4df9e0)
@@ -36,13 +35,11 @@
 0040750c        case 2
 0040750c        uint32_t eax_3 = zx.d(arg3.w)
 00407511        if (eax_3 == 0)
-00407518        pause_audio_backend_if_running(0x753c58)
-0040751d        char* var_10_1 = "WM_ACTIVATE INACTIVE\n"
+00407518        pause_audio_backend_if_running(&g_audio_backend)
 0040752a        handle_game_window_deactivate()
 00407535        return 0
 0040753b        if (eax_3 == 1)
-00407542        resume_audio_backend_if_paused(0x753c58)
-00407547        char* var_10_2 = "WM_ACTIVATE ACTIVE\n"
+00407542        resume_audio_backend_if_paused(&g_audio_backend)
 00407554        handle_game_window_activate()
 0040755f        return 0
 004074e9        case 3

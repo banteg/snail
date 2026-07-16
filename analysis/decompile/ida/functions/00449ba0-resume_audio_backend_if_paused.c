@@ -3,15 +3,11 @@
 /* selector: resume_audio_backend_if_paused */
 
 // Restarts the global BASS backend only when the audio state flag at `backend + 0x18` says the backend is currently paused, then clears that paused flag.
-int __thiscall sub_449BA0(_BYTE *this)
+void __thiscall resume_audio_backend_if_paused(AudioBackend *backend)
 {
-  int result; // eax
-
-  if ( *(this + 24) == 1 )
+  if ( backend->is_paused == 1 )
   {
-    result = MEMORY[0x751660]();
-    *(this + 24) = 0;
+    g_bass_start();
+    backend->is_paused = 0;
   }
-  return result;
 }
-

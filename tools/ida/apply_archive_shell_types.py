@@ -14,6 +14,10 @@ import idc
 
 TRUSTED_DECLARATIONS = [
     (
+        "shutdown_bass_audio_window",
+        "int __cdecl shutdown_bass_audio_window(void);",
+    ),
+    (
         "reset_registered_sound_sample_count",
         "void __cdecl reset_registered_sound_sample_count(void);",
     ),
@@ -44,6 +48,90 @@ TRUSTED_DECLARATIONS = [
     (
         "find_registered_sound_sample_id_by_name",
         "int __cdecl find_registered_sound_sample_id_by_name(char* sample_name);",
+    ),
+    (
+        "initialize_bass_audio_backend",
+        "char __thiscall initialize_bass_audio_backend(AudioBackend* backend, void* hwnd);",
+    ),
+    (
+        "uninitialize_bass_audio_backend",
+        "void __thiscall uninitialize_bass_audio_backend(AudioBackend* backend);",
+    ),
+    (
+        "ensure_music_stream_from_path",
+        "int __thiscall ensure_music_stream_from_path(AudioBackend* backend, char* path, char play_mode);",
+    ),
+    (
+        "prepare_music_stream_reload_if_path_changed",
+        "char __thiscall prepare_music_stream_reload_if_path_changed(AudioBackend* backend, char* path);",
+    ),
+    (
+        "play_music_stream_from_bytes",
+        "int __thiscall play_music_stream_from_bytes(AudioBackend* backend, char* path, char* bytes, int byte_count, char play_mode);",
+    ),
+    (
+        "stop_music_stream",
+        "void __thiscall stop_music_stream(AudioBackend* backend);",
+    ),
+    (
+        "load_registered_sound_sample_from_path",
+        "int __thiscall load_registered_sound_sample_from_path(AudioBackend* backend, char* path, int sample_id, int normalization_class);",
+    ),
+    (
+        "load_registered_sound_sample_from_bytes",
+        "void __thiscall load_registered_sound_sample_from_bytes(AudioBackend* backend, char* bytes, int byte_count, int sample_id, int normalization_class);",
+    ),
+    (
+        "play_registered_sound_sample_scaled",
+        "void __thiscall play_registered_sound_sample_scaled(AudioBackend* backend, int sample_id, float volume);",
+    ),
+    (
+        "stop_sound_sample_handle",
+        "int __thiscall stop_sound_sample_handle(AudioBackend* backend, int sample_handle);",
+    ),
+    (
+        "stop_registered_sound_sample",
+        "void __thiscall stop_registered_sound_sample(AudioBackend* backend, int sample_id);",
+    ),
+    (
+        "is_registered_sound_sample_playing",
+        "bool __thiscall is_registered_sound_sample_playing(AudioBackend* backend, int sample_id);",
+    ),
+    (
+        "play_registered_sound_sample_default",
+        "int __thiscall play_registered_sound_sample_default(AudioBackend* backend, int sample_id);",
+    ),
+    (
+        "play_registered_sound_sample_backend",
+        "void __thiscall play_registered_sound_sample_backend(AudioBackend* backend, int sample_id, float volume, float pitch);",
+    ),
+    (
+        "play_registered_sound_sample_scaled_panned",
+        "void __thiscall play_registered_sound_sample_scaled_panned(AudioBackend* backend, int sample_id, float volume, float pitch, float pan);",
+    ),
+    (
+        "set_global_sample_volume_config",
+        "int __thiscall set_global_sample_volume_config(AudioBackend* backend, float volume);",
+    ),
+    (
+        "set_global_stream_volume_config",
+        "int __thiscall set_global_stream_volume_config(AudioBackend* backend, float volume);",
+    ),
+    (
+        "stop_audio_backend",
+        "int __thiscall stop_audio_backend(AudioBackend* backend);",
+    ),
+    (
+        "resume_audio_backend_if_paused",
+        "void __thiscall resume_audio_backend_if_paused(AudioBackend* backend);",
+    ),
+    (
+        "pause_audio_backend_if_running",
+        "char __thiscall pause_audio_backend_if_running(AudioBackend* backend);",
+    ),
+    (
+        "set_audio_normalization_scales",
+        "void __thiscall set_audio_normalization_scales(AudioBackend* backend, float music_scale, float sfx_scale, float voice_scale);",
     ),
     (
         "malloc",
@@ -176,6 +264,7 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_NAMES = [
+    (0x407B00, "shutdown_bass_audio_window"),
     (0x432D40, "reset_registered_sound_sample_count"),
     (0x432D50, "cache_music_file"),
     (0x432DD0, "play_registered_warning_sample"),
@@ -184,6 +273,27 @@ TRUSTED_NAMES = [
     (0x432E80, "play_voice_backend"),
     (0x432F10, "register_sound_sample"),
     (0x432FC0, "find_registered_sound_sample_id_by_name"),
+    (0x449460, "initialize_bass_audio_backend"),
+    (0x4496D0, "uninitialize_bass_audio_backend"),
+    (0x449720, "ensure_music_stream_from_path"),
+    (0x4497E0, "prepare_music_stream_reload_if_path_changed"),
+    (0x449820, "play_music_stream_from_bytes"),
+    (0x4498D0, "stop_music_stream"),
+    (0x449920, "load_registered_sound_sample_from_path"),
+    (0x449960, "load_registered_sound_sample_from_bytes"),
+    (0x4499A0, "play_registered_sound_sample_scaled"),
+    (0x449A10, "stop_sound_sample_handle"),
+    (0x449A20, "stop_registered_sound_sample"),
+    (0x449A40, "is_registered_sound_sample_playing"),
+    (0x449A60, "play_registered_sound_sample_default"),
+    (0x449A80, "play_registered_sound_sample_backend"),
+    (0x449AE0, "play_registered_sound_sample_scaled_panned"),
+    (0x449B50, "set_global_sample_volume_config"),
+    (0x449B70, "set_global_stream_volume_config"),
+    (0x449B90, "stop_audio_backend"),
+    (0x449BA0, "resume_audio_backend_if_paused"),
+    (0x449BC0, "pause_audio_backend_if_running"),
+    (0x449BE0, "set_audio_normalization_scales"),
     (0x5088B0, "g_registered_sound_sample_names"),
     (0x5108B0, "g_registered_sound_sample_count"),
     (0x5108B4, "g_tracked_allocation_total_bytes"),

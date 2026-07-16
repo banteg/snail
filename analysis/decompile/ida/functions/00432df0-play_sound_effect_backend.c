@@ -16,18 +16,18 @@ void __cdecl play_sound_effect_backend(int sample_id, float gain, float pitch, f
       if ( pitch == -1.0 )
       {
         v6 = g_audio_backend_sfx_normalization_scale * gain;
-        play_registered_sound_sample_scaled(sample_id, v6);
+        play_registered_sound_sample_scaled((AudioBackend *)g_audio_backend, sample_id, v6);
       }
       else
       {
         v5 = g_audio_backend_sfx_normalization_scale * gain;
-        play_registered_sound_sample_backend(sample_id, v5, pitch);
+        play_registered_sound_sample_backend((AudioBackend *)g_audio_backend, sample_id, v5, pitch);
       }
     }
     else
     {
       v4 = g_audio_backend_sfx_normalization_scale * gain;
-      play_registered_sound_sample_scaled_panned(sample_id, v4, -1.0, pan);
+      play_registered_sound_sample_scaled_panned((AudioBackend *)g_audio_backend, sample_id, v4, -1.0, pan);
     }
   }
 }

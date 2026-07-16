@@ -4,4 +4,4 @@
 /* function: set_global_sample_volume_config @ 0x449b50 */
 
 00449b68        int16_t x87control
-00449b68        return data_753c1c(4, __ftol(x87control, fconvert.t(arg1) * fconvert.t(100f)))
+00449b68        return data_753c1c(4, ftol(x87control, fconvert.t(volume) * fconvert.t(100f)))

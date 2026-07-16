@@ -14,14 +14,19 @@ int __cdecl register_sound_sample(char *path, int normalization_class)
   {
     load_file_bytes_from_archive_or_fs(path, g_music_memory_buffer, &sample_size);
     load_registered_sound_sample_from_bytes(
-      (int)g_music_memory_buffer,
+      (AudioBackend *)g_audio_backend,
+      g_music_memory_buffer,
       sample_size,
       g_registered_sound_sample_count,
       normalization_class);
   }
   else
   {
-    load_registered_sound_sample_from_path((int)path, g_registered_sound_sample_count, normalization_class);
+    load_registered_sound_sample_from_path(
+      (AudioBackend *)g_audio_backend,
+      path,
+      g_registered_sound_sample_count,
+      normalization_class);
   }
   rstrcpy_checked_ascii(g_registered_sound_sample_names[g_registered_sound_sample_count], v2);
   v3 = ++g_registered_sound_sample_count;

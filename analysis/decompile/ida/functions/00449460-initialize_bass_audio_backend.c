@@ -3,13 +3,13 @@
 /* selector: initialize_bass_audio_backend */
 
 // Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend.
-char __thiscall initialize_bass_audio_backend(_BYTE *this, int a2)
+char __thiscall initialize_bass_audio_backend(AudioBackend *backend, void *hwnd)
 {
   void *v3; // esi
   int ElementCount; // [esp+Ch] [ebp-4h] BYREF
 
   g_cached_music_path[0] = 0;
-  *(this + 24) = 0;
+  backend->is_paused = 0;
   v3 = load_file_bytes(aBassDll, &ElementCount);
   write_file_bytes((char *)LibFileName, v3, ElementCount);
   free_tracked_memory(v3);
@@ -47,7 +47,9 @@ char __thiscall initialize_bass_audio_backend(_BYTE *this, int a2)
   g_bass_set_config = (int (__stdcall *)(_DWORD, _DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
                                                            g_bass_module,
                                                            aBassSetconfig);
-  g_bass_stop = (int (*)(void))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassStop);
+  g_bass_stop = (int (__thiscall *)(_DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
+                                              g_bass_module,
+                                              aBassStop);
   g_bass_start = (int (*)(void))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassStart);
   g_bass_pause = (int (*)(void))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(g_bass_module, aBassPause);
   g_bass_channel_bytes2_seconds = ((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
@@ -72,10 +74,10 @@ char __thiscall initialize_bass_audio_backend(_BYTE *this, int a2)
   g_bass_sample_is_active = (int (__stdcall *)(_DWORD))((int (__stdcall *)(_DWORD, ObjectFaceQuad *))GetProcAddress)(
                                                          g_bass_module,
                                                          aBassChannelisa);
-  *((_DWORD *)this + 1) = 0;
-  *((_DWORD *)this + 2) = 1028443341;
-  *this = 0;
-  if ( g_bass_init(1, 44100, 0, a2, 0) )
+  backend->unknown_04 = 0;
+  backend->unknown_08 = 0.050000001;
+  backend->music_stream_active = 0;
+  if ( g_bass_init(1, 44100, 0, hwnd, 0) )
   {
     g_bass_set_config(1, 50);
     g_active_music_stream = 0;

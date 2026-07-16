@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 688,
-  "function_count": 688,
+  "selected_count": 689,
+  "function_count": 689,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -515,6 +515,13 @@
       "address": "0x407a10",
       "name": "initialize_audio_subsystem",
       "artifact": "analysis/decompile/ida/functions/00407a10-initialize_audio_subsystem.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "shutdown_bass_audio_window",
+      "address": "0x407b00",
+      "name": "shutdown_bass_audio_window",
+      "artifact": "analysis/decompile/ida/functions/00407b00-shutdown_bass_audio_window.c",
       "removed_stale_artifacts": []
     },
     {

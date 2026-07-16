@@ -53,6 +53,8 @@ SYMBOL_UPDATES = (
 FUNCTION_SYMBOL_UPDATES = (
     ("0x408000", "initialize_game_player"),
     ("0x4107d0", "update_frontend_state_machine"),
+    ("0x4119c0", "initialize_game_window_and_input_wrapper"),
+    ("0x4119d0", "initialize_game_window_and_input"),
     ("0x44c3b0", "is_mouse_captured"),
     ("0x44c3c0", "capture_mouse_cursor"),
     ("0x44c400", "release_mouse_cursor"),
@@ -65,6 +67,14 @@ DATA_VAR_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "initialize_game_window_and_input_wrapper",
+        "int32_t __cdecl initialize_game_window_and_input_wrapper(char* window_name)",
+    ),
+    (
+        "initialize_game_window_and_input",
+        "int32_t __cdecl initialize_game_window_and_input(char* window_name)",
+    ),
     (
         "initialize_game_player",
         "GamePlayer* __thiscall initialize_game_player(GamePlayer* player)",
@@ -373,6 +383,14 @@ def main() -> int:
         )
     ]
     operations.extend(
+        apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        )
+    )
+    operations.extend(
         apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
@@ -407,14 +425,6 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=DATA_VAR_UPDATES,
-        )
-    )
-    operations.extend(
-        apply_symbol_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=FUNCTION_SYMBOL_UPDATES,
-            kind="function",
         )
     )
     return emit_summary(

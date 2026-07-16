@@ -3,7 +3,7 @@
 /* selector: stop_registered_sound_sample */
 
 // AudioBackend method that stops one registered runtime sample index by resolving it through the shared sound-bank table before calling BASS.
-int __stdcall stop_registered_sound_sample(int a1)
+void __thiscall stop_registered_sound_sample(AudioBackend *backend, int32_t sample_id)
 {
-  return g_bass_sample_stop(g_registered_sound_sample_handles[a1]);
+  g_bass_sample_stop(g_registered_sound_sample_handles[sample_id]);
 }

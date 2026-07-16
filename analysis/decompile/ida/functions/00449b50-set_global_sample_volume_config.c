@@ -3,8 +3,7 @@
 /* selector: set_global_sample_volume_config */
 
 // Scales one normalized [0,1] sample-volume scalar onto BASS config option `4` (`BASS_CONFIG_GVOL_SAMPLE`) before the backend stores it as the live global SFX sample volume.
-int __stdcall sub_449B50(float a1)
+int32_t __thiscall set_global_sample_volume_config(AudioBackend *backend, float volume)
 {
-  return MEMORY[0x753C1C](4, (__int64)(a1 * 100.0));
+  return g_bass_set_config(4, (__int64)(volume * 100.0));
 }
-

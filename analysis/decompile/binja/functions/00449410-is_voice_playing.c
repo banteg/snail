@@ -7,7 +7,7 @@
 00449418        struct VoiceManager* manager_1 = manager
 0044941c        int32_t j = 0
 00449420        if (manager_1->sets[0].sample_count s> 0)
-00449435        if (is_registered_sound_sample_playing(manager_1->sets[0].bites[j]) != 0)
+00449435        if (is_registered_sound_sample_playing(&g_audio_backend, manager_1->sets[0].bites[j]) != 0)
 0044945d        return manager->sets[i].bites[j]
 00449439        j += 1
 0044943c        do while (j s< manager_1->sets[0].sample_count)

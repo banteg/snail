@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 19,
+  "function_count": 38,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 19,
-  "ida_exported": 19,
+  "bn_exported": 38,
+  "ida_exported": 38,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -13,9 +13,37 @@
   "sync_ida_symbols": false,
   "binja_refreshed": true,
   "ida_refreshed": true,
-  "health_check_ran": false,
+  "health_check_ran": true,
   "strict": true,
   "selected_functions": [
+    {
+      "name": "game_startup_and_main_loop",
+      "address": "0x406dc0"
+    },
+    {
+      "name": "handle_game_window_activate",
+      "address": "0x4072f0"
+    },
+    {
+      "name": "handle_game_window_deactivate",
+      "address": "0x407440"
+    },
+    {
+      "name": "game_window_proc",
+      "address": "0x4074b0"
+    },
+    {
+      "name": "initialize_audio_subsystem",
+      "address": "0x407a10"
+    },
+    {
+      "name": "shutdown_bass_audio_window",
+      "address": "0x407b00"
+    },
+    {
+      "name": "apply_audio_config_volumes",
+      "address": "0x41b070"
+    },
     {
       "name": "cache_music_file",
       "address": "0x432d50"
@@ -35,6 +63,26 @@
     {
       "name": "play_voice_backend",
       "address": "0x432e80"
+    },
+    {
+      "name": "register_sound_sample",
+      "address": "0x432f10"
+    },
+    {
+      "name": "start_invincible_shell",
+      "address": "0x444ae0"
+    },
+    {
+      "name": "initialize_voice_manager",
+      "address": "0x448ee0"
+    },
+    {
+      "name": "play_voice_manager",
+      "address": "0x4492d0"
+    },
+    {
+      "name": "is_voice_playing",
+      "address": "0x449410"
     },
     {
       "name": "initialize_bass_audio_backend",
@@ -73,6 +121,10 @@
       "address": "0x4499a0"
     },
     {
+      "name": "stop_sound_sample_handle",
+      "address": "0x449a10"
+    },
+    {
       "name": "stop_registered_sound_sample",
       "address": "0x449a20"
     },
@@ -91,6 +143,34 @@
     {
       "name": "play_registered_sound_sample_scaled_panned",
       "address": "0x449ae0"
+    },
+    {
+      "name": "set_global_sample_volume_config",
+      "address": "0x449b50"
+    },
+    {
+      "name": "set_global_stream_volume_config",
+      "address": "0x449b70"
+    },
+    {
+      "name": "stop_audio_backend",
+      "address": "0x449b90"
+    },
+    {
+      "name": "resume_audio_backend_if_paused",
+      "address": "0x449ba0"
+    },
+    {
+      "name": "pause_audio_backend_if_running",
+      "address": "0x449bc0"
+    },
+    {
+      "name": "set_audio_normalization_scales",
+      "address": "0x449be0"
     }
-  ]
+  ],
+  "health_check_count": 413,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

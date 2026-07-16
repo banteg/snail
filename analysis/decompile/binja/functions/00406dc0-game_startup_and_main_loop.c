@@ -41,7 +41,7 @@
 00406ede        do while (i != 0)
 00406ee6        if (data_4df90c != 0)
 00406eec        initialize_audio_subsystem()
-00406ef6        int32_t enabled = sub_4119c0("SnailMail")
+00406ef6        int32_t enabled = initialize_game_window_and_input_wrapper("SnailMail")
 00406f00        enabled.b = g_runtime_config.fullscreen_enabled
 00406f07        set_fullscreen_mode(enabled)
 00406f0f        sub_406d70()
@@ -121,7 +121,7 @@
 004070f7        HWND eax_17 = GetActiveWindow()
 00407106        if (eax_17 == g_main_window)
 0040710f        if (data_753c70 == 1)
-00407116        resume_audio_backend_if_paused(0x753c58)
+00407116        resume_audio_backend_if_paused(&g_audio_backend)
 00407121        if (eax_17 == g_main_window || g_window_deactivated != 0)
 00407121        goto label_407156
 00407121        goto label_40712c
@@ -168,8 +168,8 @@
 00407213        break
 00407217        if (edi != 0)
 00407217        break
-00407222        stop_audio_backend()
-00407227        sub_407b00()
+00407222        stop_audio_backend(&g_audio_backend)
+00407227        shutdown_bass_audio_window()
 0040723a        save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1)
 0040724d        save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 2)
 0040725f        save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 4)

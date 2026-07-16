@@ -3,11 +3,13 @@
 /* selector: set_audio_normalization_scales */
 
 // Stores the normalized music, SFX, and voice gain scales parsed from `VOICE/_VOICE.TXT` into the shared backend lanes that the music, sound, and voice wrappers multiply into live playback volume.
-int __thiscall sub_449BE0(_DWORD *this, int a2, int a3, int a4)
+void __thiscall set_audio_normalization_scales(
+        AudioBackend *backend,
+        float music_scale,
+        float sfx_scale,
+        float voice_scale)
 {
-  *(this + 3) = a2;
-  *(this + 4) = a3;
-  *(this + 5) = a4;
-  return a4;
+  backend->music_normalization_scale = music_scale;
+  backend->sfx_normalization_scale = sfx_scale;
+  backend->voice_normalization_scale = voice_scale;
 }
-

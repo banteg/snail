@@ -15,3 +15,12 @@ Raw image disassembly:
 ```
 
 Focused Wibo result: 100.00%, 5/5 instructions, 1 clean masked operand.
+
+2026-07-16 replay closure:
+
+- The exact wrapper and the window/input body now have persistent
+  `int __cdecl(char* window_name)` declarations in both decompiler lanes.
+- This removes an unrelated `PresentationWeaponChannel` type that had leaked
+  onto the IDA parameter and made Hex-Rays reject the startup call at
+  `0x406ef6`. The wrapper disassembly, its `"SnailMail"` caller, and the
+  forwarded callee argument jointly prove the narrow string ownership.

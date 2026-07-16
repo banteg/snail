@@ -3,7 +3,7 @@
 /* selector: play_registered_sound_sample_default */
 
 // Plays one registered runtime sample index through the default `BASS_SamplePlayEx` wrapper with the hard-coded playback parameters used by the warning-owned sample path.
-int32_t __stdcall play_registered_sound_sample_default(int a1)
+int32_t __thiscall play_registered_sound_sample_default(AudioBackend *backend, int32_t sample_id)
 {
-  return g_bass_sample_play_ex(g_registered_sound_sample_handles[a1], 0, -1, -1, 101, 1);
+  return g_bass_sample_play_ex(g_registered_sound_sample_handles[sample_id], 0, -1, -1, 101, 1);
 }

@@ -3,8 +3,12 @@
 /* selector: play_registered_sound_sample_backend */
 
 // AudioBackend method that forwards one registered runtime sample index plus normalized volume and pitch into the `BASS_SamplePlayEx` lane shared by the SFX and voice wrappers.
-void __stdcall play_registered_sound_sample_backend(int a1, float a2, float a3)
+void __thiscall play_registered_sound_sample_backend(
+        AudioBackend *backend,
+        int32_t sample_id,
+        float volume,
+        float pitch)
 {
-  if ( a2 >= 0.0 && (a2 > 1.0 || a2 != 0.0) )
-    g_bass_sample_play_ex(g_registered_sound_sample_handles[a1], 0, (__int64)a3, -1, 101, 0);
+  if ( volume >= 0.0 && (volume > 1.0 || volume != 0.0) )
+    g_bass_sample_play_ex(g_registered_sound_sample_handles[sample_id], 0, (__int64)pitch, -1, 101, 0);
 }

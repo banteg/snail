@@ -5,5 +5,5 @@
 // Windows RShellSoundStopLooped entry point: forwards one live warning playback handle to the process audio backend's handle-stop method.
 int __cdecl stop_registered_warning_sample(int sample_handle)
 {
-  return stop_sound_sample_handle(sample_handle);
+  return stop_sound_sample_handle((AudioBackend *)g_audio_backend, sample_handle);
 }

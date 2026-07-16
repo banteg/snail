@@ -73,6 +73,22 @@ typedef enum RegisteredSoundLimits {
 typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];
 typedef char CachedMusicPath[256];
 
+/*
+ * Recovered AudioBackend prefix used by exact member-function scratches.
+ * The global object is deliberately not assigned this type until its tail
+ * boundary is independently proven.
+ */
+typedef struct AudioBackend {
+    uint8_t music_stream_active;
+    uint8_t unknown_01[3];
+    int32_t unknown_04;
+    float unknown_08;
+    float music_normalization_scale;
+    float sfx_normalization_scale;
+    float voice_normalization_scale;
+    uint8_t is_paused;
+} AudioBackend;
+
 typedef int32_t (__stdcall* BassChannelPlayFn)(
     int32_t stream, int32_t restart, int32_t flags);
 typedef int32_t (__stdcall* BassSamplePlayExFn)(
@@ -104,6 +120,63 @@ void __cdecl play_voice_backend(
     int32_t sample_id, float gain, float pitch, float pan);
 int32_t __cdecl register_sound_sample(char* path, int32_t normalization_class);
 int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name);
+int32_t __cdecl shutdown_bass_audio_window(void);
+
+char __thiscall initialize_bass_audio_backend(
+    AudioBackend* backend, void* hwnd);
+void __thiscall uninitialize_bass_audio_backend(AudioBackend* backend);
+int32_t __thiscall ensure_music_stream_from_path(
+    AudioBackend* backend, char* path, char play_mode);
+char __thiscall prepare_music_stream_reload_if_path_changed(
+    AudioBackend* backend, char* path);
+int32_t __thiscall play_music_stream_from_bytes(
+    AudioBackend* backend,
+    char* path,
+    char* bytes,
+    int32_t byte_count,
+    char play_mode);
+void __thiscall stop_music_stream(AudioBackend* backend);
+int32_t __thiscall load_registered_sound_sample_from_path(
+    AudioBackend* backend,
+    char* path,
+    int32_t sample_id,
+    int32_t normalization_class);
+void __thiscall load_registered_sound_sample_from_bytes(
+    AudioBackend* backend,
+    char* bytes,
+    int32_t byte_count,
+    int32_t sample_id,
+    int32_t normalization_class);
+void __thiscall play_registered_sound_sample_scaled(
+    AudioBackend* backend, int32_t sample_id, float volume);
+int32_t __thiscall stop_sound_sample_handle(
+    AudioBackend* backend, int32_t sample_handle);
+void __thiscall stop_registered_sound_sample(
+    AudioBackend* backend, int32_t sample_id);
+bool __thiscall is_registered_sound_sample_playing(
+    AudioBackend* backend, int32_t sample_id);
+int32_t __thiscall play_registered_sound_sample_default(
+    AudioBackend* backend, int32_t sample_id);
+void __thiscall play_registered_sound_sample_backend(
+    AudioBackend* backend, int32_t sample_id, float volume, float pitch);
+void __thiscall play_registered_sound_sample_scaled_panned(
+    AudioBackend* backend,
+    int32_t sample_id,
+    float volume,
+    float pitch,
+    float pan);
+int32_t __thiscall set_global_sample_volume_config(
+    AudioBackend* backend, float volume);
+int32_t __thiscall set_global_stream_volume_config(
+    AudioBackend* backend, float volume);
+int32_t __thiscall stop_audio_backend(AudioBackend* backend);
+void __thiscall resume_audio_backend_if_paused(AudioBackend* backend);
+char __thiscall pause_audio_backend_if_running(AudioBackend* backend);
+void __thiscall set_audio_normalization_scales(
+    AudioBackend* backend,
+    float music_scale,
+    float sfx_scale,
+    float voice_scale);
 
 uint8_t __cdecl initialize_game_data_archive(void);
 int32_t __cdecl uninitialize_game_data_archive(void);
@@ -145,6 +218,7 @@ extern int32_t g_registered_sound_sample_handles[RSHELL_SOUND_MAX];
 extern float g_stream_volume_scale;
 extern float g_audio_backend_sfx_normalization_scale;
 extern float g_audio_backend_voice_normalization_scale;
+extern AudioBackend g_audio_backend;
 extern int32_t g_tracked_allocation_total_bytes;
 extern float g_text_input_repeat_accumulator;
 extern TrackedAllocationStack g_tracked_allocation_stack;

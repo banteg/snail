@@ -15,26 +15,22 @@
 00407a44        wndClass.lpszMenuName = 0
 00407a48        wndClass.lpszClassName = "BASS"
 00407a59        if (RegisterClassA(&wndClass) == 0)
-00407a5b        abort_startup_with_3d_error()
-00407a60        int32_t eax_2
+00407a5b        int32_t eax_2 = abort_startup_with_3d_error()
 00407a60        eax_2.b = 0
 00407a66        return eax_2
-00407a85        HWND eax_3 = CreateWindowExA(WS_EX_LEFT, "BASS", &data_4dfb08, 0x86000000, 0, 0, 0, 0, nullptr, nullptr, data_4dfad8, nullptr)
-00407a8d        data_4dfaf8 = eax_3
-00407a92        if (eax_3 == 0)
-00407a94        sub_407b00()
-00407a99        abort_startup_with_3d_error()
-00407a9e        int32_t eax_4
-00407a9e        eax_4.b = 0
-00407aa4        return eax_4
-00407ab2        if (initialize_bass_audio_backend(0x753c58, eax_3) != 0)
-00407ad9        set_global_sample_volume_config(data_4df918)
-00407aea        set_global_stream_volume_config(data_4df91c)
-00407aef        int32_t eax_8
-00407aef        eax_8.b = 1
-00407af5        return eax_8
+00407a85        HWND hwnd = CreateWindowExA(WS_EX_LEFT, "BASS", &g_blank_text, 0x86000000, 0, 0, 0, 0, nullptr, nullptr, data_4dfad8, nullptr)
+00407a8d        data_4dfaf8 = hwnd
+00407a92        if (hwnd == 0)
+00407a94        shutdown_bass_audio_window()
+00407a99        int32_t eax_3 = abort_startup_with_3d_error()
+00407a9e        eax_3.b = 0
+00407aa4        return eax_3
+00407ab2        if (initialize_bass_audio_backend(&g_audio_backend, hwnd) != 0)
+00407ad9        set_global_sample_volume_config(&g_audio_backend, g_runtime_config.sample_volume)
+00407aea        int32_t eax_7 = set_global_stream_volume_config(&g_audio_backend, g_runtime_config.stream_volume)
+00407aef        eax_7.b = 1
+00407af5        return eax_7
 00407ab4        abort_startup_with_3d_error()
-00407ac0        EndDialog(data_4dfaf8, 0)
-00407ac6        BOOL eax_7
-00407ac6        eax_7.b = 0
-00407acc        return eax_7
+00407ac0        BOOL eax_6 = EndDialog(data_4dfaf8, 0)
+00407ac6        eax_6.b = 0
+00407acc        return eax_6

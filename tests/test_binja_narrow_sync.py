@@ -1378,6 +1378,135 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
         assert stale_declaration not in source
 
 
+def test_archive_shell_replays_preserve_audio_backend_member_abi() -> None:
+    binja_source = (BINJA_DIR / "sync_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
+    )
+
+    for declaration in (
+        "typedef struct AudioBackend {",
+        "uint8_t music_stream_active;",
+        "int32_t unknown_04;",
+        "float unknown_08;",
+        "float music_normalization_scale;",
+        "float sfx_normalization_scale;",
+        "float voice_normalization_scale;",
+        "uint8_t is_paused;",
+        "extern AudioBackend g_audio_backend;",
+        "int32_t __cdecl shutdown_bass_audio_window(void);",
+        "char __thiscall initialize_bass_audio_backend(",
+        "void __thiscall uninitialize_bass_audio_backend(AudioBackend* backend);",
+        "int32_t __thiscall ensure_music_stream_from_path(",
+        "char __thiscall prepare_music_stream_reload_if_path_changed(",
+        "int32_t __thiscall play_music_stream_from_bytes(",
+        "void __thiscall stop_music_stream(AudioBackend* backend);",
+        "int32_t __thiscall load_registered_sound_sample_from_path(",
+        "void __thiscall load_registered_sound_sample_from_bytes(",
+        "void __thiscall play_registered_sound_sample_scaled(",
+        "int32_t __thiscall stop_sound_sample_handle(",
+        "void __thiscall stop_registered_sound_sample(",
+        "bool __thiscall is_registered_sound_sample_playing(",
+        "int32_t __thiscall play_registered_sound_sample_default(",
+        "void __thiscall play_registered_sound_sample_backend(",
+        "void __thiscall play_registered_sound_sample_scaled_panned(",
+        "int32_t __thiscall set_global_sample_volume_config(",
+        "int32_t __thiscall set_global_stream_volume_config(",
+        "int32_t __thiscall stop_audio_backend(AudioBackend* backend);",
+        "void __thiscall resume_audio_backend_if_paused(AudioBackend* backend);",
+        "char __thiscall pause_audio_backend_if_running(AudioBackend* backend);",
+        "void __thiscall set_audio_normalization_scales(",
+    ):
+        assert all(declaration in header for header in headers)
+
+    for address, name in (
+        ("0x407b00", "shutdown_bass_audio_window"),
+        ("0x449460", "initialize_bass_audio_backend"),
+        ("0x4496d0", "uninitialize_bass_audio_backend"),
+        ("0x449720", "ensure_music_stream_from_path"),
+        ("0x4497e0", "prepare_music_stream_reload_if_path_changed"),
+        ("0x449820", "play_music_stream_from_bytes"),
+        ("0x4498d0", "stop_music_stream"),
+        ("0x449920", "load_registered_sound_sample_from_path"),
+        ("0x449960", "load_registered_sound_sample_from_bytes"),
+        ("0x4499a0", "play_registered_sound_sample_scaled"),
+        ("0x449a10", "stop_sound_sample_handle"),
+        ("0x449a20", "stop_registered_sound_sample"),
+        ("0x449a40", "is_registered_sound_sample_playing"),
+        ("0x449a60", "play_registered_sound_sample_default"),
+        ("0x449a80", "play_registered_sound_sample_backend"),
+        ("0x449ae0", "play_registered_sound_sample_scaled_panned"),
+        ("0x449b50", "set_global_sample_volume_config"),
+        ("0x449b70", "set_global_stream_volume_config"),
+        ("0x449b90", "stop_audio_backend"),
+        ("0x449ba0", "resume_audio_backend_if_paused"),
+        ("0x449bc0", "pause_audio_backend_if_running"),
+        ("0x449be0", "set_audio_normalization_scales"),
+    ):
+        assert f'("{address}", "{name}")' in binja_source
+        assert name in ida_source
+
+    for marker in (
+        "int32_t __cdecl shutdown_bass_audio_window()",
+        "initialize_bass_audio_backend(AudioBackend* backend, void* hwnd)",
+        "load_registered_sound_sample_from_path(AudioBackend* backend, char* path",
+        "play_registered_sound_sample_scaled(AudioBackend* backend, int32_t sample_id",
+        "set_global_sample_volume_config(AudioBackend* backend, float volume)",
+        "stop_audio_backend(AudioBackend* backend)",
+        "set_audio_normalization_scales(AudioBackend* backend, float music_scale",
+    ):
+        assert marker in binja_source
+
+    for marker in (
+        "int __cdecl shutdown_bass_audio_window(void);",
+        "initialize_bass_audio_backend(AudioBackend* backend, void* hwnd);",
+        "load_registered_sound_sample_from_path(AudioBackend* backend, char* path",
+        "play_registered_sound_sample_scaled(AudioBackend* backend, int sample_id",
+        "set_global_sample_volume_config(AudioBackend* backend, float volume);",
+        "stop_audio_backend(AudioBackend* backend);",
+        "set_audio_normalization_scales(AudioBackend* backend, float music_scale",
+    ):
+        assert marker in ida_source
+
+
+def test_frame_replays_preserve_window_bootstrap_abi() -> None:
+    binja_source = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for address, name in (
+        ("0x4119c0", "initialize_game_window_and_input_wrapper"),
+        ("0x4119d0", "initialize_game_window_and_input"),
+    ):
+        assert f'("{address}", "{name}")' in binja_source
+        assert name in ida_source
+
+    for marker in (
+        "int32_t __cdecl initialize_game_window_and_input_wrapper(char* window_name)",
+        "int32_t __cdecl initialize_game_window_and_input(char* window_name)",
+    ):
+        assert marker in binja_source
+
+    for marker in (
+        "int __cdecl initialize_game_window_and_input_wrapper(char *window_name);",
+        "int __cdecl initialize_game_window_and_input(char *window_name);",
+    ):
+        assert marker in ida_source
+
+    symbol_update = binja_source.index("updates=FUNCTION_SYMBOL_UPDATES")
+    prototype_update = binja_source.index("proto_updates=resolved_proto_updates")
+    assert symbol_update < prototype_update
+
+
 def test_input_state_replays_preserve_text_input_repeat_ownership() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(

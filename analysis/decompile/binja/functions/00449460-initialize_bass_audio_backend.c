@@ -3,11 +3,11 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_bass_audio_backend @ 0x449460 */
 
-00449460        int32_t var_4 = arg1
+00449460        int32_t backend_1 = backend
 0044946d        g_cached_music_path[0] = 0
-00449478        *(arg1 + 0x18) = 0
-0044947b        void* eax = load_file_bytes("Bass.dll", &var_4)
-0044948d        write_file_bytes("tBass.dll", eax, var_4)
+00449478        backend->is_paused = 0
+0044947b        void* eax = load_file_bytes("Bass.dll", &backend_1)
+0044948d        write_file_bytes("tBass.dll", eax, backend_1)
 00449493        free_tracked_memory(eax)
 004494a0        HMODULE hModule = LoadLibraryA("tBass.dll")
 004494b2        data_753c90 = hModule
@@ -65,16 +65,17 @@
 0044964d        data_751674 = eax_29
 00449654        data_75165c = GetProcAddress(hModule_15, "BASS_ChannelRemoveSync")
 00449672        data_753ca8 = GetProcAddress(data_753c90, "BASS_ChannelIsActive")
-00449679        *(arg1 + 4) = 0
-0044967c        *(arg1 + 8) = 0x3d4ccccd
-00449683        *arg1 = 0
-0044968d        if (data_753c08(1, 0xac44, 0, arg2, 0) == 0)
+00449679        backend->unknown_04 = 0
+0044967c        backend->unknown_08 = 0.0500000007f
+00449683        backend->music_stream_active = 0
+0044968d        if (data_753c08(1, 0xac44, 0, hwnd, 0) == 0)
 00449694        report_errorf("Can't initialize digital sound system")
 0044969c        int32_t eax_35
 0044969c        eax_35.b = 0
 004496a2        return 0
-004496a9        int32_t result = data_753c1c(1, 0x32)
+004496a9        data_753c1c(1, 0x32)
 004496b0        g_active_music_stream = 0
 004496b6        data_751680 = 0
-004496bd        result.b = 1
-004496c1        return result
+004496bd        int32_t eax_37
+004496bd        eax_37.b = 1
+004496c1        return 1

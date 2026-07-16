@@ -12,23 +12,23 @@ int __stdcall game_window_proc(int hWnd, unsigned int Msg, int wParam, int lPara
     switch ( Msg )
     {
       case 0x201u:
-        unk_4B7764[0] = 1;
-        unk_4B7234[0] = 1;
+        g_left_mouse_button_latch[0] = 1;
+        g_left_mouse_button_state[0] = 1;
         result = 0;
         break;
       case 0x202u:
-        unk_4B7764[0] = 0;
-        unk_4B7234[0] = 0;
+        g_left_mouse_button_latch[0] = 0;
+        g_left_mouse_button_state[0] = 0;
         result = 0;
         break;
       case 0x204u:
-        unk_4B7230[0] = 1;
-        LOBYTE(flt_4B763C[1]) = 1;
+        g_right_mouse_button_latch[0] = 1;
+        LOBYTE(g_current_frame_update_steps[1]) = 1;
         result = 0;
         break;
       case 0x205u:
-        unk_4B7230[0] = 0;
-        LOBYTE(flt_4B763C[1]) = 0;
+        g_right_mouse_button_latch[0] = 0;
+        LOBYTE(g_current_frame_update_steps[1]) = 0;
         result = 0;
         break;
       case 0x20Au:
@@ -45,12 +45,12 @@ LABEL_19:
     if ( SHIWORD(wParam) <= 0 )
     {
       if ( wParam < 0 )
-        unk_4DFAD0[0] = -1;
+        g_mouse_wheel_delta[0] = -1;
       return 0;
     }
     else
     {
-      unk_4DFAD0[0] = 1;
+      g_mouse_wheel_delta[0] = 1;
       return 0;
     }
   }
@@ -63,9 +63,9 @@ LABEL_19:
       case 5u:
         if ( wParam == 1 )
         {
-          sub_449C00();
-          pause_audio_backend_if_running(unk_753C58);
-          unk_4B7654 = 1;
+          debug_report_stub();
+          pause_audio_backend_if_running((AudioBackend *)g_audio_backend);
+          g_window_deactivated = 1;
           restore_desktop_display_mode();
           return 0;
         }
@@ -73,10 +73,10 @@ LABEL_19:
         {
           if ( !wParam )
           {
-            resume_audio_backend_if_paused(unk_753C58);
-            unk_4B7654 = 0;
-            flt_4DFAFC[1] = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
-            sub_407920(unk_4DF9E0);
+            resume_audio_backend_if_paused((AudioBackend *)g_audio_backend);
+            g_window_deactivated = 0;
+            g_previous_frame_timestamp_seconds = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
+            reset_display_mode_probe_count(g_display_mode_state);
           }
           return 0;
         }
@@ -85,16 +85,16 @@ LABEL_19:
         {
           if ( (unsigned __int16)wParam == 1 )
           {
-            resume_audio_backend_if_paused(unk_753C58);
-            sub_449C00();
+            resume_audio_backend_if_paused((AudioBackend *)g_audio_backend);
+            debug_report_stub();
             handle_game_window_activate();
           }
           return 0;
         }
         else
         {
-          pause_audio_backend_if_running(unk_753C58);
-          sub_449C00();
+          pause_audio_backend_if_running((AudioBackend *)g_audio_backend);
+          debug_report_stub();
           handle_game_window_deactivate();
           return 0;
         }
@@ -119,4 +119,3 @@ LABEL_5:
   }
   return result;
 }
-

@@ -2,7 +2,7 @@
 /* function: is_voice_playing @ 0x449410 */
 /* selector: is_voice_playing */
 
-int __thiscall sub_449410(int *this)
+int __thiscall is_voice_playing(int *this)
 {
   int v2; // ebx
   int *i; // edi
@@ -18,11 +18,10 @@ LABEL_5:
     if ( ++v2 >= 16 )
       return -1;
   }
-  while ( !is_registered_sound_sample_playing(*(_DWORD *)(i[3] + 4 * v4)) )
+  while ( !is_registered_sound_sample_playing((AudioBackend *)g_audio_backend, *(_DWORD *)(i[3] + 4 * v4)) )
   {
     if ( ++v4 >= *i )
       goto LABEL_5;
   }
   return *(_DWORD *)(*(this + 6 * v2 + 3) + 4 * v4);
 }
-

@@ -4,8 +4,7 @@
 
 // Forwards directly into the global BASS stop export to halt active backend playback during shutdown or full audio resets.
 // attributes: thunk
-int stop_audio_backend(void)
+int32_t __thiscall stop_audio_backend(AudioBackend *backend)
 {
-  return MEMORY[0x753BFC]();
+  return g_bass_stop(backend);
 }
-

@@ -3,8 +3,7 @@
 /* selector: stop_sound_sample_handle */
 
 // Forwards one raw runtime sample handle directly into `BASS_SampleStop`, underneath the registered-sample and warning-owned stop wrappers.
-int __stdcall sub_449A10(int a1)
+int32_t __thiscall stop_sound_sample_handle(AudioBackend *backend, int32_t sample_handle)
 {
-  return MEMORY[0x753C94](a1);
+  return g_bass_sample_stop(sample_handle);
 }
-

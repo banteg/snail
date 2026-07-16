@@ -4686,7 +4686,7 @@
       "aliases": [
         "unk_753c58"
       ],
-      "description": "Shared audio backend object used by voice, sample, and stream helpers."
+      "description": "Shared AudioBackend receiver used by 21 exact music, sample, config, pause, and shutdown member helpers. Windows callsites bind ECX to this address before every receiver-unused method as well as field-consuming methods; the field prefix through +0x18 is proven, while the object's tail boundary remains deliberately unclaimed."
     },
     {
       "address": "0x753c64",

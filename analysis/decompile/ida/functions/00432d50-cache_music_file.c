@@ -7,18 +7,23 @@ char __cdecl cache_music_file(char *path, int32_t unused, char *unused_default_p
 {
   char *v3; // esi
   char result; // al
-  void *file_bytes_from_archive_or_fs; // edi
+  char *file_bytes_from_archive_or_fs; // edi
 
   if ( !g_archive_index_records )
-    return ensure_music_stream_from_path(g_audio_backend, path, 1);
+    return ensure_music_stream_from_path((AudioBackend *)g_audio_backend, path, 1);
   v3 = path;
-  result = prepare_music_stream_reload_if_path_changed(g_audio_backend, path);
+  result = prepare_music_stream_reload_if_path_changed((AudioBackend *)g_audio_backend, path);
   if ( result )
   {
-    file_bytes_from_archive_or_fs = load_file_bytes_from_archive_or_fs(v3, g_music_memory_buffer, (int *)&path);
+    file_bytes_from_archive_or_fs = (char *)load_file_bytes_from_archive_or_fs(v3, g_music_memory_buffer, (int *)&path);
     if ( (int)path >= 409600 )
       report_errorf(aMusicBufferOve);
-    return play_music_stream_from_bytes(g_audio_backend, v3, (int)file_bytes_from_archive_or_fs, (int)path, 1);
+    return play_music_stream_from_bytes(
+             (AudioBackend *)g_audio_backend,
+             v3,
+             file_bytes_from_archive_or_fs,
+             (int32_t)path,
+             1);
   }
   return result;
 }

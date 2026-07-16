@@ -43,6 +43,7 @@ DATA_SYMBOL_UPDATES = (
 )
 
 FUNCTION_SYMBOL_UPDATES = (
+    ("0x407b00", "shutdown_bass_audio_window"),
     ("0x432d40", "reset_registered_sound_sample_count"),
     ("0x432d50", "cache_music_file"),
     ("0x432dd0", "play_registered_warning_sample"),
@@ -51,6 +52,27 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x432e80", "play_voice_backend"),
     ("0x432f10", "register_sound_sample"),
     ("0x432fc0", "find_registered_sound_sample_id_by_name"),
+    ("0x449460", "initialize_bass_audio_backend"),
+    ("0x4496d0", "uninitialize_bass_audio_backend"),
+    ("0x449720", "ensure_music_stream_from_path"),
+    ("0x4497e0", "prepare_music_stream_reload_if_path_changed"),
+    ("0x449820", "play_music_stream_from_bytes"),
+    ("0x4498d0", "stop_music_stream"),
+    ("0x449920", "load_registered_sound_sample_from_path"),
+    ("0x449960", "load_registered_sound_sample_from_bytes"),
+    ("0x4499a0", "play_registered_sound_sample_scaled"),
+    ("0x449a10", "stop_sound_sample_handle"),
+    ("0x449a20", "stop_registered_sound_sample"),
+    ("0x449a40", "is_registered_sound_sample_playing"),
+    ("0x449a60", "play_registered_sound_sample_default"),
+    ("0x449a80", "play_registered_sound_sample_backend"),
+    ("0x449ae0", "play_registered_sound_sample_scaled_panned"),
+    ("0x449b50", "set_global_sample_volume_config"),
+    ("0x449b70", "set_global_stream_volume_config"),
+    ("0x449b90", "stop_audio_backend"),
+    ("0x449ba0", "resume_audio_backend_if_paused"),
+    ("0x449bc0", "pause_audio_backend_if_running"),
+    ("0x449be0", "set_audio_normalization_scales"),
     ("0x48b72d", "malloc"),
     ("0x48c211", "findfirst"),
     ("0x48c2db", "findnext"),
@@ -79,6 +101,10 @@ DATA_VAR_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "shutdown_bass_audio_window",
+        "int32_t __cdecl shutdown_bass_audio_window()",
+    ),
     (
         "reset_registered_sound_sample_count",
         "void __cdecl reset_registered_sound_sample_count()",
@@ -110,6 +136,90 @@ PROTO_UPDATES = (
     (
         "find_registered_sound_sample_id_by_name",
         "int32_t __cdecl find_registered_sound_sample_id_by_name(char* sample_name)",
+    ),
+    (
+        "initialize_bass_audio_backend",
+        "char __thiscall initialize_bass_audio_backend(AudioBackend* backend, void* hwnd)",
+    ),
+    (
+        "uninitialize_bass_audio_backend",
+        "void __thiscall uninitialize_bass_audio_backend(AudioBackend* backend)",
+    ),
+    (
+        "ensure_music_stream_from_path",
+        "int32_t __thiscall ensure_music_stream_from_path(AudioBackend* backend, char* path, char play_mode)",
+    ),
+    (
+        "prepare_music_stream_reload_if_path_changed",
+        "char __thiscall prepare_music_stream_reload_if_path_changed(AudioBackend* backend, char* path)",
+    ),
+    (
+        "play_music_stream_from_bytes",
+        "int32_t __thiscall play_music_stream_from_bytes(AudioBackend* backend, char* path, char* bytes, int32_t byte_count, char play_mode)",
+    ),
+    (
+        "stop_music_stream",
+        "void __thiscall stop_music_stream(AudioBackend* backend)",
+    ),
+    (
+        "load_registered_sound_sample_from_path",
+        "int32_t __thiscall load_registered_sound_sample_from_path(AudioBackend* backend, char* path, int32_t sample_id, int32_t normalization_class)",
+    ),
+    (
+        "load_registered_sound_sample_from_bytes",
+        "void __thiscall load_registered_sound_sample_from_bytes(AudioBackend* backend, char* bytes, int32_t byte_count, int32_t sample_id, int32_t normalization_class)",
+    ),
+    (
+        "play_registered_sound_sample_scaled",
+        "void __thiscall play_registered_sound_sample_scaled(AudioBackend* backend, int32_t sample_id, float volume)",
+    ),
+    (
+        "stop_sound_sample_handle",
+        "int32_t __thiscall stop_sound_sample_handle(AudioBackend* backend, int32_t sample_handle)",
+    ),
+    (
+        "stop_registered_sound_sample",
+        "void __thiscall stop_registered_sound_sample(AudioBackend* backend, int32_t sample_id)",
+    ),
+    (
+        "is_registered_sound_sample_playing",
+        "bool __thiscall is_registered_sound_sample_playing(AudioBackend* backend, int32_t sample_id)",
+    ),
+    (
+        "play_registered_sound_sample_default",
+        "int32_t __thiscall play_registered_sound_sample_default(AudioBackend* backend, int32_t sample_id)",
+    ),
+    (
+        "play_registered_sound_sample_backend",
+        "void __thiscall play_registered_sound_sample_backend(AudioBackend* backend, int32_t sample_id, float volume, float pitch)",
+    ),
+    (
+        "play_registered_sound_sample_scaled_panned",
+        "void __thiscall play_registered_sound_sample_scaled_panned(AudioBackend* backend, int32_t sample_id, float volume, float pitch, float pan)",
+    ),
+    (
+        "set_global_sample_volume_config",
+        "int32_t __thiscall set_global_sample_volume_config(AudioBackend* backend, float volume)",
+    ),
+    (
+        "set_global_stream_volume_config",
+        "int32_t __thiscall set_global_stream_volume_config(AudioBackend* backend, float volume)",
+    ),
+    (
+        "stop_audio_backend",
+        "int32_t __thiscall stop_audio_backend(AudioBackend* backend)",
+    ),
+    (
+        "resume_audio_backend_if_paused",
+        "void __thiscall resume_audio_backend_if_paused(AudioBackend* backend)",
+    ),
+    (
+        "pause_audio_backend_if_running",
+        "char __thiscall pause_audio_backend_if_running(AudioBackend* backend)",
+    ),
+    (
+        "set_audio_normalization_scales",
+        "void __thiscall set_audio_normalization_scales(AudioBackend* backend, float music_scale, float sfx_scale, float voice_scale)",
     ),
     (
         "malloc",
@@ -220,7 +330,7 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the narrow RShell archive/file ownership slice to Binary Ninja."
+        description="Apply the narrow RShell archive/audio ownership slice to Binary Ninja."
     )
     parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
     parser.add_argument(

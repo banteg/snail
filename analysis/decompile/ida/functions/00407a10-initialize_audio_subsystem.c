@@ -4,41 +4,40 @@
 
 char initialize_audio_subsystem()
 {
-  int v0; // eax
+  void *v0; // eax
   _DWORD WndClass[10]; // [esp+4h] [ebp-28h] BYREF
 
   WndClass[0] = 0;
-  WndClass[1] = sub_4079E0;
+  WndClass[1] = bass_audio_window_proc;
   WndClass[2] = 0;
   WndClass[3] = 0;
-  WndClass[4] = MEMORY[0x4DFAD8];
+  WndClass[4] = g_mouse_wheel_delta[2];
   memset(&WndClass[5], 0, 16);
   WndClass[9] = ClassName;
   if ( !(unsigned __int16)((int (__stdcall *)(_DWORD *))RegisterClassA)(WndClass) )
     abort_startup_with_3d_error();
-  v0 = ((int (__stdcall *)(_DWORD, char *, float *, int, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD))CreateWindowExA)(
-         0,
-         ClassName,
-         &flt_4DFAFC[3],
-         -2046820352,
-         0,
-         0,
-         0,
-         0,
-         0,
-         0,
-         MEMORY[0x4DFAD8],
-         0);
-  MEMORY[0x4DFAF8] = v0;
+  v0 = (void *)((int (__stdcall *)(_DWORD, ObjectFaceQuad *, ObjectFaceQuad *, int, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, int, _DWORD))CreateWindowExA)(
+                 0,
+                 ClassName,
+                 g_blank_text,
+                 -2046820352,
+                 0,
+                 0,
+                 0,
+                 0,
+                 0,
+                 0,
+                 g_mouse_wheel_delta[2],
+                 0);
+  g_bass_window = v0;
   if ( !v0 )
   {
-    sub_407B00();
+    shutdown_bass_audio_window();
     abort_startup_with_3d_error();
   }
-  if ( !initialize_bass_audio_backend(unk_753C58, v0) )
+  if ( !initialize_bass_audio_backend((AudioBackend *)g_audio_backend, v0) )
     abort_startup_with_3d_error();
-  set_global_sample_volume_config(unk_4DF918);
-  set_global_stream_volume_config(unk_4DF91C);
+  set_global_sample_volume_config((AudioBackend *)g_audio_backend, g_runtime_config.sample_volume);
+  set_global_stream_volume_config((AudioBackend *)g_audio_backend, g_runtime_config.stream_volume);
   return 1;
 }
-

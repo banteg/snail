@@ -8,4 +8,5 @@
 004496e5        report_errorf("Cannot Free BASS_Free()")
 004496fb        if (FreeLibrary(data_753c90) == 0)
 00449702        report_errorf("Cannot Free bass.dll library")
-00449715        return delete_file_path_with_directory_walk("tBass.dll")
+0044970f        delete_file_path_with_directory_walk("tBass.dll")
+00449715        return

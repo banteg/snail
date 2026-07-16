@@ -7,7 +7,7 @@ void __thiscall apply_audio_config_volumes(Options *options)
 {
   float v1; // [esp+0h] [ebp-4h]
 
-  set_global_sample_volume_config(g_runtime_config.sample_volume);
+  set_global_sample_volume_config((AudioBackend *)g_audio_backend, g_runtime_config.sample_volume);
   v1 = g_stream_volume_scale * g_runtime_config.stream_volume;
-  set_global_stream_volume_config(v1);
+  set_global_stream_volume_config((AudioBackend *)g_audio_backend, v1);
 }
