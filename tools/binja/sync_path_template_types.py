@@ -678,6 +678,16 @@ PATH_FIELD_UPDATES = (
     ("0xa4", "entry_base_strip_mesh", "Object*"),
 )
 
+PATH_TEMPLATE_SAMPLE_FIELD_UPDATES = (
+    ("0xa4", "lateral_source", "float"),
+)
+
+FOLLOW_STATE_FIELD_UPDATES = (
+    # Reset by populate_runtime_track_cells_from_segments and read by
+    # update_subgoldy. No nonzero producer is proved yet.
+    ("0x3c", "flag_3c", "uint8_t"),
+)
+
 JET_PARTICLE_SLOT_FIELD_UPDATES = (
     ("0x00", "sprite", "Sprite*"),
     ("0x04", "wobble_x", "float"),
@@ -1616,7 +1626,9 @@ def main() -> int:
                 ("FringeObject", FRINGE_OBJECT_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
                 ("SubRow", SUB_ROW_FIELD_UPDATES),
+                ("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES),
                 ("Path", PATH_FIELD_UPDATES),
+                ("FollowState", FOLLOW_STATE_FIELD_UPDATES),
                 ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
                 ("SubHover", SUB_HOVER_FIELD_UPDATES),
                 ("TipManager", TIP_MANAGER_FIELD_UPDATES),

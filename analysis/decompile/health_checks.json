@@ -7628,6 +7628,66 @@
         "arg1",
         "data_4972f0"
       ]
+    },
+    {
+      "name": "bn_path_sample_lateral_source_owner",
+      "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template.c",
+      "required_substrings": [
+        "lateral_source"
+      ],
+      "forbidden_substrings": [
+        "_pad_a4"
+      ]
+    },
+    {
+      "name": "ida_path_sample_lateral_source_owner",
+      "artifact": "analysis/decompile/ida/functions/0042c600-finalize_path_template.c",
+      "required_substrings": [
+        "lateral_source"
+      ],
+      "forbidden_substrings": [
+        "_pad_a4"
+      ]
+    },
+    {
+      "name": "bn_follow_state_tail_reader_owner",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "follow_state.flag_3c"
+      ],
+      "forbidden_substrings": [
+        "follow_state._pad_3c"
+      ]
+    },
+    {
+      "name": "ida_follow_state_tail_reader_owner",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "follow_state.flag_3c"
+      ],
+      "forbidden_substrings": [
+        "follow_state._pad_3c"
+      ]
+    },
+    {
+      "name": "bn_follow_state_tail_reset_owner",
+      "artifact": "analysis/decompile/binja/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "follow_state.flag_3c = 0"
+      ],
+      "forbidden_substrings": [
+        "follow_state._pad_3c"
+      ]
+    },
+    {
+      "name": "ida_follow_state_tail_reset_owner",
+      "artifact": "analysis/decompile/ida/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
+      "required_substrings": [
+        "follow_state.flag_3c = 0"
+      ],
+      "forbidden_substrings": [
+        "follow_state._pad_3c"
+      ]
     }
   ]
 }

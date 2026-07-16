@@ -588,6 +588,16 @@ lane retains the established player, subgame, and tip-manager owners. The
 matching source remains unchanged at 74.30%, 2,072/2,087 instructions, prefix
 12/2,087, with 290 clean operands and the same bounded jump-table mismatch.
 
+## 2026-07-16 follow-state tail ownership
+
+The live byte at `FollowState +0x3c` is now carried into both analysis lanes as
+`flag_3c`. `update_subgoldy` reads it together with
+`completion_handoff_active` before forcing the track-z handoff values. The only
+other recovered access clears it while runtime cells are rebuilt; no nonzero
+producer is known, so the neutral offset-based name is retained rather than
+inventing stronger semantics. This is an analysis ownership correction only;
+the matching source and its documented residual remain unchanged.
+
 The void prototype also lets BN eliminate one transient `GameRoot*` name in
 the completion-copy block. Its health check now asserts the durable
 `players[0].transform` and `players[0].completion_handoff_transform` ownership

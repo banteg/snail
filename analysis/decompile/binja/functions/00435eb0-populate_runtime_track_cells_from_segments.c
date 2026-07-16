@@ -83,24 +83,24 @@
 004360d5        int32_t var_20 = 0
 004360d9        char var_42 = 0
 004360de        int32_t var_2c = 0
-004360e2        game->player.follow_state._pad_3c[0] = 0
+004360e2        game->player.follow_state.flag_3c = 0
 004360e9        struct FringeObject** var_28 = &game->runtime_cells[0][0].fringe_front
-004360ed        float* edi = &game->runtime_rows[0].projection_payload.y
+004360ed        int32_t* edi = &game->runtime_rows[0].projection_payload.y
 004360f3        int32_t var_30 = 0xc80
 00436192        struct SubgameRuntime* segment_count
 00436192        bool cond:3_1
 004360fd        int32_t i_7 = 8
-00436102        (edi - 0x5ccb5c)->runtime_rows[0].flags = 0
-00436108        (edi - 0x5ccb5c)->runtime_rows[0].installed_heading_delta = 0f
-0043610b        (edi - 0x5ccb5c)->runtime_rows[0].attachment_template_index = 0
-0043610e        (edi - 0x5ccb5c)->runtime_rows[0].ring_speed = 0f
-00436111        (edi - 0x5ccb5c)->runtime_rows[0].primary_attachment_cell = nullptr
-00436114        (edi - 0x5ccb5c)->runtime_rows[0].projection_payload.z = 0f
-00436117        (edi - 0x5ccb5c)->runtime_rows[0].projection_payload.y = 0f
-00436119        (edi - 0x5ccb5c)->runtime_rows[0].projection_payload.x = 0
-0043611c        (edi - 0x5ccb5c)->runtime_rows[0].parcel_set_id = 0
-0043611f        (edi - 0x5ccb5c)->runtime_rows[0].source_segment = nullptr
-00436122        (edi - 0x5ccb5c)->runtime_rows[0].row_event_id = 0
+00436102        edi[-0x25] = 0
+00436108        edi[6] = 0
+0043610b        edi[3] = 0
+0043610e        edi[0x15] = 0
+00436111        edi[4] = 0
+00436114        edi[1] = 0
+00436117        *edi = 0
+00436119        edi[-1] = 0
+0043611c        edi[2] = 0
+0043611f        edi[0x16] = 0
+00436122        edi[0x17] = 0
 00436129        uint32_t* esi_5 = &var_28[-1]
 0043615f        int32_t i_2
 0043612c        uint32_t lane_and_flags = (esi_5 - 0x3bfb08)->runtime_cells[0][0].lane_and_flags
@@ -236,9 +236,9 @@
 0043645c        *(ebx_5 + 0x5ccbb4) = edx_17
 00436462        *(ebx_5 + 0x5ccbb8) = var_2c
 0043646f        if ((*(esi_9 + 0x814) & 2) != 0)
-00436475        int32_t eax_48 = *(ebx_5 + 0x5ccac8)
+00436475        int32_t eax_48 = *(ebx_5 + &data_5ccac8)
 0043647b        eax_48.b |= 2
-0043647d        *(ebx_5 + 0x5ccac8) = eax_48
+0043647d        *(ebx_5 + &data_5ccac8) = eax_48
 004364a5        set_bod_object(ebx_5 + 0x5ccacc, g_game_base->directx_loader.cached_x_mesh_slots[*(esi_9 + 0x828)].object)
 004364b0        set_matrix_identity(ebx_5 + 0x5ccb04)
 004364c5        int32_t eax_51
@@ -257,44 +257,44 @@
 0043651c        *(ebx_5 + 0x5ccb54) = 0
 00436522        *(ebx_5 + 0x5ccb50) = 0
 00436528        *(ebx_5 + 0x5ccb4c) = 0
-004364ea        int32_t eax_53 = *(ebx_5 + 0x5ccac8)
+004364ea        int32_t eax_53 = *(ebx_5 + &data_5ccac8)
 004364f6        eax_53.b |= 8
-004364f8        *(ebx_5 + 0x5ccac8) = eax_53
+004364f8        *(ebx_5 + &data_5ccac8) = eax_53
 00436506        *(ebx_5 + 0x5ccb4c) = *(esi_9 + 0x838)
 0043650f        *(ebx_5 + 0x5ccb50) = *(esi_9 + 0x83c)
 00436515        *(ebx_5 + 0x5ccb54) = *(esi_9 + 0x840)
 0043652e        edx_17 = var_3c_1
 00436539        if ((*(esi_9 + 0x814) & 1) != 0)
-00436546        *(ebx_5 + 0x5ccac8) |= 0x4001
-0043656b        *(ebx_5 + 0x5ccb64) = *(edx_17 + (&segment_count_2->runtime_row_scan_end + 1) * 0x38)
+00436546        *(ebx_5 + &data_5ccac8) |= 0x4001
+0043656b        *(ebx_5 + &data_5ccb64) = *(edx_17 + (&segment_count_2->runtime_row_scan_end + 1) * 0x38)
 00436571        int32_t edx_26 = *(esi_9 + 0x81c)
-00436573        *(ebx_5 + 0x5ccb58) = edx_26.b
+00436573        *(ebx_5 + &data_5ccb58) = edx_26.b
 00436573        *(ebx_5 + 0x5ccb59) = edx_26:1.b
 00436573        *(ebx_5 + 0x5ccb5a) = edx_26:2.b
 00436573        *(ebx_5 + 0x5ccb5b) = edx_26:3.b
-00436578        *(ebx_5 + 0x5ccb5c) = *(esi_9 + 0x820)
+00436578        *(ebx_5 + &data_5ccb5c) = *(esi_9 + 0x820)
 0043657b        int16_t eax_60 = (*(esi_9 + 0x824)).w
-0043657e        *(ebx_5 + 0x5ccb60) = eax_60.b
+0043657e        *(ebx_5 + &data_5ccb60) = eax_60.b
 0043657e        *(ebx_5 + 0x5ccb61) = eax_60:1.b
 00436588        if ((*(esi_9 + 0x814) & 8) != 0)
-0043658a        int32_t eax_61 = *(ebx_5 + 0x5ccac8)
+0043658a        int32_t eax_61 = *(ebx_5 + &data_5ccac8)
 00436590        eax_61.b |= 8
-00436592        *(ebx_5 + 0x5ccac8) = eax_61
+00436592        *(ebx_5 + &data_5ccac8) = eax_61
 0043659e        *(ebx_5 + 0x5ccb68) = *(esi_9 + 0x844)
 004365ab        if ((*(esi_9 + 0x814) & 4) != 0)
-004365ad        int32_t eax_62 = *(ebx_5 + 0x5ccac8)
+004365ad        int32_t eax_62 = *(ebx_5 + &data_5ccac8)
 004365b3        eax_62.b |= 4
-004365b5        *(ebx_5 + 0x5ccac8) = eax_62
+004365b5        *(ebx_5 + &data_5ccac8) = eax_62
 004365c8        if ((0x200 & *(esi_9 + 0x814)) != 0)
-004365ca        *(ebx_5 + 0x5ccac8) |= 0x200
+004365ca        *(ebx_5 + &data_5ccac8) |= 0x200
 004365dd        if ((0x400 & *(esi_9 + 0x814)) != 0)
-004365df        *(ebx_5 + 0x5ccac8) |= 0x400
+004365df        *(ebx_5 + &data_5ccac8) |= 0x400
 004365f2        if ((0x2000 & *(esi_9 + 0x814)) != 0)
-004365f4        *(ebx_5 + 0x5ccac8) |= 0x2000
+004365f4        *(ebx_5 + &data_5ccac8) |= 0x2000
 00436607        if ((0x800 & *(esi_9 + 0x814)) != 0)
-00436609        *(ebx_5 + 0x5ccac8) |= 0x800
+00436609        *(ebx_5 + &data_5ccac8) |= 0x800
 0043661c        if ((0x1000 & *(esi_9 + 0x814)) != 0)
-0043661e        *(ebx_5 + 0x5ccac8) |= 0x1000
+0043661e        *(ebx_5 + &data_5ccac8) |= 0x1000
 00436631        char var_41_1 = 0
 00436636        int32_t var_30_1 = 0
 00436648        *(runtime + ((i_5 + (i_5 * 3 + 0x12414) * 0x14 + 0x615c) << 2)) = *(esi_9 + 0x848)
@@ -414,19 +414,19 @@
 004368be        *(esi_11 + 0x3bfacc) = eax_90
 00436e02        case 9
 00436e02        if (game->level_mode == 1)
-00436e08        int32_t ecx_112 = *(ebx_5 + 0x5ccac8)
+00436e08        int32_t ecx_112 = *(ebx_5 + &data_5ccac8)
 00436e0e        ecx_112:1.b &= 0xbf
-00436e1a        *(ebx_5 + 0x5ccac8) = ecx_112 | 1
-00436e20        *(ebx_5 + 0x5ccb64) = 0
-00436e30        *(ebx_5 + 0x5ccb58) = fconvert.s(float.t(var_30_1) - fconvert.t(4f) + fconvert.t(0.5f))
-00436e40        *(ebx_5 + 0x5ccb5c) = *(esi_11 + 0x3bfadc)
-00436e4c        *(ebx_5 + 0x5ccb60) = fconvert.s(float.t(j_1) + fconvert.t(0.5f))
+00436e1a        *(ebx_5 + &data_5ccac8) = ecx_112 | 1
+00436e20        *(ebx_5 + &data_5ccb64) = 0
+00436e30        *(ebx_5 + &data_5ccb58) = fconvert.s(float.t(var_30_1) - fconvert.t(4f) + fconvert.t(0.5f))
+00436e40        *(ebx_5 + &data_5ccb5c) = *(esi_11 + 0x3bfadc)
+00436e4c        *(ebx_5 + &data_5ccb60) = fconvert.s(float.t(j_1) + fconvert.t(0.5f))
 00436e57        if (game->track_mirror_enabled != 0)
-00436e65        *(ebx_5 + 0x5ccb58) = fconvert.s(fconvert.t(*(ebx_5 + 0x5ccb58)) * fconvert.t(-1f))
+00436e65        *(ebx_5 + &data_5ccb58) = fconvert.s(fconvert.t(*(ebx_5 + &data_5ccb58)) * fconvert.t(-1f))
 00436e02        goto label_436e6b
 00436e6b        case 0xa
 00436e6b        label_436e6b:
-00436e72        if ((*(ebx_5 + 0x5ccac8) & 0xc0) != 0)
+00436e72        if ((*(ebx_5 + &data_5ccac8) & 0xc0) != 0)
 00436e9e        int32_t eax_139 = *(esi_11 + 0x3bfacc)
 00436ea4        eax_139.b &= 0xdf
 00436ea6        *(esi_11 + 0x3bfacc) = eax_139
@@ -543,7 +543,7 @@
 00436da8        *(ebx_5 + 0x5ccb74) = var_3c_1->angle_radians.bits
 00436db4        int32_t k = 0
 00436dbb        if (*(*(esi_11 + 0x3bfb00) + 0x48) s> 0)
-00436dc1        char* ecx_111 = ebx_5 + 0x5ccac8
+00436dc1        char* ecx_111 = ebx_5 + &data_5ccac8
 00436dc7        int32_t eax_134
 00436dc7        eax_134.b = *ecx_111
 00436dc7        eax_134:1.b = ecx_111[1]

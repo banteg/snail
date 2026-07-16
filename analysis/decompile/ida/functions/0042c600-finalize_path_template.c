@@ -2,8 +2,8 @@
 /* function: finalize_path_template @ 0x42c600 */
 /* selector: finalize_path_template */
 
-// Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state.
-int32_t __fastcall finalize_path_template_record(PathTemplate *self)
+// Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state. iOS Path.o names this finalizer family `cRPath::CalcLengthZ()`.
+int32_t __fastcall finalize_path_template(Path *self)
 {
   signed int segment_count; // ebx
   signed int v3; // ebp
@@ -14,15 +14,15 @@ int32_t __fastcall finalize_path_template_record(PathTemplate *self)
   signed int v8; // ebx
   int v9; // edi
   PathTemplateSample *primary_samples; // edx
-  uint8_t *pad_a4; // ecx
-  PathTemplateStripMesh *strip_mesh; // eax
-  PathTemplateStripMeshFlags flags; // ecx
-  PathTemplateStripMesh *v14; // esi
+  float *p_lateral_source; // ecx
+  Object *object; // eax
+  ObjectFlag flags; // ecx
+  Object *v14; // esi
   int32_t result; // eax
-  Vec3 v16; // [esp+10h] [ebp-Ch] BYREF
+  Vec3 out; // [esp+10h] [ebp-Ch] BYREF
 
   segment_count = self->segment_count;
-  self->_pad_48 = 0;
+  self->row_span_count = 0;
   if ( segment_count > 0 )
   {
     v3 = segment_count;
@@ -30,8 +30,8 @@ int32_t __fastcall finalize_path_template_record(PathTemplate *self)
     do
     {
       v5 = (__int64)(*p_z + 1.0);
-      if ( (int)v5 > (signed int)self->_pad_48 )
-        self->_pad_48 = v5;
+      if ( (int)v5 > (signed int)self->row_span_count )
+        self->row_span_count = v5;
       p_z += 42;
       --v3;
     }
@@ -44,11 +44,11 @@ int32_t __fastcall finalize_path_template_record(PathTemplate *self)
     do
     {
       invert_matrix_from_source(
-        (float *)self->primary_samples[v7]._pad_40,
-        &self->primary_samples[v7].transform.basis_right.x);
+        (TransformMatrix *)self->primary_samples[v7]._pad_40,
+        &self->primary_samples[v7].transform);
       invert_matrix_from_source(
-        (float *)self->secondary_samples[v7]._pad_40,
-        &self->secondary_samples[v7].transform.basis_right.x);
+        (TransformMatrix *)self->secondary_samples[v7]._pad_40,
+        &self->secondary_samples[v7].transform);
       ++v6;
       ++v7;
     }
@@ -61,33 +61,30 @@ int32_t __fastcall finalize_path_template_record(PathTemplate *self)
     do
     {
       cross_vectors(
-        &v16,
-        (Vec3 *)&self->primary_samples[v9].transform.basis_forward,
-        (Vec3 *)&self->primary_samples[v9 + 1].transform.basis_forward);
-      *(float *)self->primary_samples[v9]._pad_a4 = dot_vector(
-                                                      &v16.x,
-                                                      &self->primary_samples[v9].transform.basis_right.x);
+        &out,
+        (const Vec3 *)&self->primary_samples[v9].transform.basis_forward,
+        (const Vec3 *)&self->primary_samples[v9 + 1].transform.basis_forward);
+      self->primary_samples[v9].lateral_source = dot_vector(&out, (const Vec3 *)&self->primary_samples[v9]);
       if ( self->is_mirrored_x )
-        *(float *)self->primary_samples[v9]._pad_a4 = *(float *)self->primary_samples[v9]._pad_a4 * -1.0;
+        self->primary_samples[v9].lateral_source = self->primary_samples[v9].lateral_source * -1.0;
       primary_samples = self->primary_samples;
-      if ( *(float *)primary_samples[v9]._pad_a4 > 0.0 )
-        *(_DWORD *)primary_samples[v9]._pad_a4 = 0;
-      pad_a4 = self->primary_samples[v9]._pad_a4;
-      if ( *(float *)pad_a4 < -0.1 )
-        *(_DWORD *)pad_a4 = -1110651699;
+      if ( primary_samples[v9].lateral_source > 0.0 )
+        primary_samples[v9].lateral_source = 0.0;
+      p_lateral_source = &self->primary_samples[v9].lateral_source;
+      if ( *p_lateral_source < -0.1 )
+        *p_lateral_source = -0.1;
       ++v8;
       ++v9;
     }
     while ( v8 < (signed int)(self->segment_count - 1) );
   }
-  *(_DWORD *)self->primary_samples[self->segment_count - 1]._pad_a4 = 0;
-  strip_mesh = self->strip_mesh;
-  flags = strip_mesh->flags;
+  self->primary_samples[self->segment_count - 1].lateral_source = 0.0;
+  object = self->bod.object;
+  flags = object->flags;
   LOBYTE(flags) = flags | 0x80;
-  strip_mesh->flags = flags;
-  v14 = self->strip_mesh;
+  object->flags = flags;
+  v14 = self->bod.object;
   result = v14->flags & 0xFFEFFFFF;
   v14->flags = result;
   return result;
 }
-

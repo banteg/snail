@@ -70,6 +70,14 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
 ]
 
+# Header field-name changes need an explicit Hex-Rays refresh even when the
+# owning function prototype itself was already current.
+PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x42C600,  # finalize_path_template
+    0x435EB0,  # populate_runtime_track_cells_from_segments
+    0x43B120,  # update_subgoldy
+)
+
 
 TRUSTED_DECLARATIONS = [
     (
@@ -1448,6 +1456,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if receiver_lvar.get("status") == "failed":
             failed.append({"selector": selector, "receiver_lvar": receiver_lvar})
 
+    dirty_functions = []
+    for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:
+        if ida_funcs.get_func(address) is not None:
+            ida_hexrays.mark_cfunc_dirty(address, True)
+            dirty_functions.append(hex(address))
+
     print(
         json.dumps(
             {
@@ -1466,6 +1480,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,
+                "dirty_functions": dirty_functions,
                 "missing": missing,
                 "failed": failed,
             },

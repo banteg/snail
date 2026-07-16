@@ -13,7 +13,7 @@
 0043b1a0        if (eax_2 s>= segment_count)
 0043b1a2        eax_2 = segment_count - 1
 0043b1ac        struct Object* object_2 = player->presentation.body.bod.object
-0043b1d9        object_2->distort.z_wave = fconvert.s((fconvert.t((&template_record->primary_samples->_pad_a4)[eax_2 * 0x2a]) * fconvert.t(-3f) - fconvert.t(object_2->distort.z_wave)) * fconvert.t(0.100000001f) + fconvert.t(object_2->distort.z_wave))
+0043b1d9        object_2->distort.z_wave = fconvert.s((fconvert.t((&template_record->primary_samples->lateral_source)[eax_2 * 0x2a]) * fconvert.t(-3f) - fconvert.t(object_2->distort.z_wave)) * fconvert.t(0.100000001f) + fconvert.t(object_2->distort.z_wave))
 0043b209        update_squidge(&player->squidge)
 0043b216        player->presentation.body.bod.object->distort.y_squash = player->squidge.y_output
 0043b21c        struct Object* object_1 = player->presentation.body.bod.object
@@ -37,7 +37,7 @@
 0043b291        if (eax_8->selected_level_record_active == 0)
 0043b360        label_43b360:
 0043b360        int16_t eax_11
-0043b360        eax_11.b = player->follow_state._pad_3c[0]
+0043b360        eax_11.b = player->follow_state.flag_3c
 0043b368        if (eax_11.b == 0)
 0043b38a        label_43b38a:
 0043b38a        eax_11.b = player->control_override_active

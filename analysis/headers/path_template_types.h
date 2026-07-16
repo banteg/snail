@@ -1706,7 +1706,9 @@ typedef struct PathTemplateSample {
     float rotation_scalar_98;
     float lateral_scale;
     float special_scalar;
-    uint8_t _pad_a4[0x4];
+    /* Cross/dot-derived lateral source, mirrored and clamped by
+     * finalize_path_template. */
+    float lateral_source;
 } PathTemplateSample;
 
 /* Authored cRPath, exact 0xa8 bytes. Windows stores 126 instances as 63
@@ -1750,7 +1752,10 @@ typedef struct FollowState {
     Vec3 orientation_up;
     Vec3 output_position;
     Player* player;
-    uint8_t _pad_3c[0x4];
+    /* Cleared while rebuilding runtime cells and consumed by update_subgoldy.
+     * No nonzero producer has been recovered, so retain the neutral name. */
+    uint8_t flag_3c;
+    uint8_t _pad_3d[0x3];
 } FollowState;
 
 typedef struct GolbPathFollowState {

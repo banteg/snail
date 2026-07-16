@@ -85,3 +85,14 @@ The current-right dot operand now uses the recovered const-reference member
 surface directly. The compiler-critical byte-offset lifetime is unchanged:
 focused output remains 81.78%, 112/113 instructions, prefix 24/113, with all
 nine operands clean.
+
+## 2026-07-16 analysis replay ownership
+
+The durable analysis type now names sample `+0xa4` as the same `float
+lateral_source` already proved by the matcher. `finalize_path_template` is its
+eight-reference producer: it stores the cross/dot result, mirrors it for an
+x-mirrored path, clamps it to `[-0.1, 0]`, and clears the terminal sample.
+Both analysis replay lanes now update the field explicitly so the checked-in
+decompiles cannot fall back to a four-byte padding view. This is an ownership
+replay only; focused matching remains 81.78%, 112/113 instructions, prefix
+24/113, with nine clean operands.

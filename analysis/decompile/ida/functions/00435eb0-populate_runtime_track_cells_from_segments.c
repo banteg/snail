@@ -243,7 +243,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   v118 = 0;
   v106 = 0;
   v114 = 0;
-  game->player.follow_state._pad_3c[0] = 0;
+  game->player.follow_state.flag_3c = 0;
   p_fringe_front = &game->runtime_cells[0][0].fringe_front;
   v12 = (_DWORD *)((char *)&unk_5CCB5C + (_DWORD)game);
   v112 = 3200;

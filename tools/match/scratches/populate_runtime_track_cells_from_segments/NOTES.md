@@ -555,3 +555,20 @@ The mode-3 tile-`0x16` branch now consumes the shared game-wide
 the per-row `SUBROW_FLAG_NO_FALL` lane. Focused output is byte-identical at
 29.67%, 1,229/1,245 instructions, 66 clean operands, and the same two
 documented mismatches.
+
+## 2026-07-16 follow-state tail reset
+
+The initialization write at `Player::follow_state +0x3c` now resolves through
+the durable `FollowState::flag_3c` owner in both analysis lanes. This function
+is the only recovered writer and clears the byte before constructing runtime
+rows; `update_subgoldy` is the only recovered reader. Because no nonzero
+producer is proved, the field remains neutrally named. The matching source and
+its 29.67%, 1,229/1,245-instruction result are unchanged.
+
+Reanalysis also corrected the pre-biased EDI row-reset cursor from a historical
+`float*` inference to `int32_t*`, matching the matcher source's intentional
+mixed-field word cursor. That costs some incidental HLIL field folding in this
+one loop, but pinning the old float view would falsely type integer flags,
+indices, and pointers as scalar floats. The honest integer cursor is retained;
+the surrounding `SubRow` layout remains proved by its declarations and later
+typed consumers.

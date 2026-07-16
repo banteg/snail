@@ -5115,3 +5115,45 @@ def test_twinkle_array_ownership_and_void_abis_are_persisted() -> None:
 
     assert "void update_twinkle_manager();" in matcher_manager_header
     assert "int update_twinkle_manager();" not in matcher_manager_header
+
+
+def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    matcher_sample = (
+        repo_root / "tools/match/include/attachment_sample.h"
+    ).read_text(encoding="utf-8")
+    matcher_follow = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+
+    sample_struct = analysis_header.split(
+        "typedef struct PathTemplateSample {", 1
+    )[1].split("} PathTemplateSample;", 1)[0]
+    follow_struct = analysis_header.split("typedef struct FollowState {", 1)[1].split(
+        "} FollowState;", 1
+    )[0]
+
+    for source in (sample_struct, matcher_sample):
+        assert "float lateral_source;" in source
+    assert "_pad_a4" not in sample_struct
+    assert '("0xa4", "lateral_source", "float")' in binja_sync
+    assert '("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES)' in binja_sync
+
+    assert "uint8_t flag_3c;" in follow_struct
+    assert "unsigned char flag_3c;" in matcher_follow
+    assert "_pad_3c" not in follow_struct
+    assert '("0x3c", "flag_3c", "uint8_t")' in binja_sync
+    assert '("FollowState", FOLLOW_STATE_FIELD_UPDATES)' in binja_sync
+    for address in ("0x42C600", "0x435EB0", "0x43B120"):
+        assert address in ida_sync
+    assert "for address in PATH_OWNERSHIP_DIRTY_FUNCTIONS:" in ida_sync
+    assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_sync
