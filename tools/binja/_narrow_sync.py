@@ -19,6 +19,7 @@ ProtoUpdate = tuple[str, str]
 SymbolUpdate = tuple[str, str]
 SymbolRemoval = tuple[str, str]
 DataVarUpdate = tuple[str, str]
+DataVarRemoval = tuple[str, str]
 StructUpdateGroup = tuple[str, Iterable[FieldUpdate]]
 UserVarUpdate = tuple[str, str, int, int, str, str]
 
@@ -1719,6 +1720,197 @@ result = {{
             "after_type": entry.get("after_type"),
             "status": "verified" if entry.get("changed") else "skipped",
             "reason": None if entry.get("changed") else "already current",
+        }
+        for entry in payload
+        if isinstance(entry, dict)
+    ]
+
+
+def apply_data_var_removals(
+    repo_root: Path,
+    *,
+    target: str,
+    removals: Iterable[DataVarRemoval],
+    replacements: Iterable[DataVarUpdate] = (),
+) -> list[dict[str, object]]:
+    removal_list = list(removals)
+    if not removal_list:
+        return []
+
+    replacement_map = dict(replacements)
+    unknown_replacements = set(replacement_map).difference(
+        address for address, _expected_type in removal_list
+    )
+    if unknown_replacements:
+        raise ValueError(
+            "data-variable replacements require matching removals: "
+            f"{sorted(unknown_replacements)!r}"
+        )
+
+    def run_batch(*, preview: bool) -> dict[str, object]:
+        code = f"""
+removals = {json.dumps(removal_list)}
+replacements = {json.dumps(replacement_map)}
+preview = {preview!r}
+out = []
+state = bv.begin_undo_actions()
+undo_closed = False
+snapshot_saved = False
+try:
+    for address_text, expected_type_text in removals:
+        address = int(address_text, 0)
+        expected_type, _ = bv.parse_type_string(expected_type_text)
+        expected_rendered_type = str(expected_type)
+        replacement_type_text = replacements.get(address_text)
+        replacement_rendered_type = None
+        if replacement_type_text is not None:
+            replacement_type, _ = bv.parse_type_string(replacement_type_text)
+            replacement_rendered_type = str(replacement_type)
+
+        before = bv.get_data_var_at(address)
+        before_type = str(before.type) if before is not None else None
+        before_width = int(before.type.width) if before is not None else None
+        already_absent = before_width in (None, 0)
+        already_replaced = (
+            replacement_rendered_type is not None
+            and before_type == replacement_rendered_type
+        )
+        if already_absent:
+            changed = False
+            reason = "already absent"
+        elif already_replaced:
+            changed = False
+            reason = "already replaced"
+        elif before_type != expected_rendered_type:
+            raise RuntimeError(
+                f"refusing to remove unexpected data variable at {{hex(address)}}: "
+                f"expected {{expected_rendered_type}}, found {{before_type}}"
+            )
+        else:
+            bv.undefine_user_data_var(address)
+            changed = True
+            reason = None
+
+        out.append({{
+            "address": hex(address),
+            "expected_type": expected_type_text,
+            "expected_rendered_type": expected_rendered_type,
+            "replacement_type": replacement_type_text,
+            "replacement_rendered_type": replacement_rendered_type,
+            "before_type": before_type,
+            "before_width": before_width,
+            "changed": changed,
+            "reason": reason,
+        }})
+
+    bv.update_analysis_and_wait()
+    for entry in out:
+        address = int(entry["address"], 0)
+        after = bv.get_data_var_at(address)
+        entry["after_type"] = str(after.type) if after is not None else None
+        entry["after_width"] = int(after.type.width) if after is not None else None
+        entry["verified"] = (
+            entry["after_width"] in (None, 0)
+            if entry["changed"]
+            else entry["after_type"] == entry["before_type"]
+        )
+    if not all(entry["verified"] for entry in out):
+        raise RuntimeError(f"data-variable removal verification failed: {{out!r}}")
+
+    if preview:
+        bv.revert_undo_actions(state)
+        undo_closed = True
+        bv.update_analysis_and_wait()
+        for entry in out:
+            address = int(entry["address"], 0)
+            restored = bv.get_data_var_at(address)
+            entry["restored_type"] = str(restored.type) if restored is not None else None
+            entry["restored_width"] = (
+                int(restored.type.width) if restored is not None else None
+            )
+            entry["reverted"] = (
+                entry["restored_type"] == entry["before_type"]
+                and entry["restored_width"] == entry["before_width"]
+            )
+        if not all(entry["reverted"] for entry in out):
+            raise RuntimeError(f"data-variable removal rollback failed: {{out!r}}")
+    else:
+        bv.commit_undo_actions(state)
+        undo_closed = True
+        snapshot_saved = bv.file.save_auto_snapshot()
+except Exception:
+    if not undo_closed:
+        bv.revert_undo_actions(state)
+        bv.update_analysis_and_wait()
+    raise
+
+result = {{
+    "success": True,
+    "preview": preview,
+    "committed": not preview,
+    "results": out,
+    "snapshot_saved": snapshot_saved,
+}}
+"""
+        response = run_bn(
+            repo_root,
+            "py",
+            "exec",
+            "--target",
+            target,
+            "--format",
+            "json",
+            "--code",
+            code,
+        )
+        payload = response.get("result") if isinstance(response, dict) else None
+        if (
+            not isinstance(payload, dict)
+            or payload.get("success") is not True
+            or payload.get("preview") is not preview
+            or payload.get("committed") is not (not preview)
+        ):
+            phase = "preview" if preview else "apply"
+            raise RuntimeError(
+                f"Binary Ninja data-variable removal {phase} failed: {response!r}"
+            )
+        return payload
+
+    preview_result = run_batch(preview=True)
+    preview_entries = preview_result.get("results")
+    if not isinstance(preview_entries, list):
+        raise RuntimeError(
+            f"Binary Ninja data-variable removal preview is malformed: {preview_result!r}"
+        )
+
+    changed = any(
+        isinstance(entry, dict) and entry.get("changed") is True
+        for entry in preview_entries
+    )
+    if changed:
+        applied_result = run_batch(preview=False)
+        if applied_result.get("snapshot_saved") is not True:
+            raise RuntimeError(
+                "data-variable removal changed the live analysis without a saved snapshot"
+            )
+        payload = applied_result.get("results")
+        if not isinstance(payload, list):
+            raise RuntimeError(
+                f"Binary Ninja data-variable removal apply is malformed: {applied_result!r}"
+            )
+    else:
+        payload = preview_entries
+
+    return [
+        {
+            "op": "data_var_remove",
+            "address": entry.get("address"),
+            "expected_type": entry.get("expected_type"),
+            "replacement_type": entry.get("replacement_type"),
+            "before_type": entry.get("before_type"),
+            "after_type": entry.get("after_type"),
+            "status": "verified" if entry.get("changed") else "skipped",
+            "reason": entry.get("reason"),
         }
         for entry in payload
         if isinstance(entry, dict)

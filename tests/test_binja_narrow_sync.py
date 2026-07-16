@@ -676,6 +676,112 @@ def test_data_var_updates_preview_before_saved_apply(monkeypatch) -> None:
     assert "bv.file.save_auto_snapshot()" in calls[1][-1]
 
 
+def test_data_var_removals_preview_before_saved_apply(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        code = args[-1]
+        preview = "preview = True" in code
+        return {
+            "result": {
+                "success": True,
+                "preview": preview,
+                "committed": not preview,
+                "results": [
+                    {
+                        "address": "0x53d190",
+                        "expected_type": "ParcelBucket[0x800]",
+                        "replacement_type": "ParcelBucket",
+                        "before_type": "struct ParcelBucket[2048]",
+                        "after_type": None,
+                        "changed": True,
+                        "reason": None,
+                    }
+                ],
+                "snapshot_saved": not preview,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.apply_data_var_removals(
+        Path("."),
+        target="snail-mail.exe",
+        removals=(("0x53d190", "ParcelBucket[0x800]"),),
+        replacements=(("0x53d190", "ParcelBucket"),),
+    ) == [
+        {
+            "op": "data_var_remove",
+            "address": "0x53d190",
+            "expected_type": "ParcelBucket[0x800]",
+            "replacement_type": "ParcelBucket",
+            "before_type": "struct ParcelBucket[2048]",
+            "after_type": None,
+            "status": "verified",
+            "reason": None,
+        }
+    ]
+    assert len(calls) == 2
+    assert "preview = True" in calls[0][-1]
+    assert "preview = False" in calls[1][-1]
+    assert "bv.undefine_user_data_var(address)" in calls[0][-1]
+    assert "refusing to remove unexpected data variable" in calls[0][-1]
+    assert "bv.revert_undo_actions(state)" in calls[0][-1]
+    assert "bv.commit_undo_actions(state)" in calls[1][-1]
+    assert "bv.file.save_auto_snapshot()" in calls[1][-1]
+
+
+def test_data_var_removals_accept_the_intended_replacement(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "success": True,
+                "preview": True,
+                "committed": False,
+                "results": [
+                    {
+                        "address": "0x53d190",
+                        "expected_type": "ParcelBucket[0x800]",
+                        "replacement_type": "ParcelBucket",
+                        "before_type": "struct ParcelBucket",
+                        "after_type": "struct ParcelBucket",
+                        "changed": False,
+                        "reason": "already replaced",
+                    }
+                ],
+                "snapshot_saved": False,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.apply_data_var_removals(
+        Path("."),
+        target="snail-mail.exe",
+        removals=(("0x53d190", "ParcelBucket[0x800]"),),
+        replacements=(("0x53d190", "ParcelBucket"),),
+    )[0]["reason"] == "already replaced"
+    assert len(calls) == 1
+
+
+def test_data_var_removals_reject_unpaired_replacements() -> None:
+    try:
+        _narrow_sync.apply_data_var_removals(
+            Path("."),
+            target="snail-mail.exe",
+            removals=(("0x53d190", "ParcelBucket[0x800]"),),
+            replacements=(("0x6487e8", "ParcelBucket"),),
+        )
+    except ValueError as error:
+        assert "replacements require matching removals" in str(error)
+    else:
+        raise AssertionError("unpaired data-variable replacement was accepted")
+
+
 def test_run_bn_reads_failure_spill_before_raising(monkeypatch, tmp_path) -> None:
     spill_path = tmp_path / "batch-failure.json"
     spill_path.write_text(
