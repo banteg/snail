@@ -223,7 +223,9 @@ typedef struct Banner {
     float color_b;
     float color_a;
     int32_t visibility_mode;
-    uint8_t unknown_3c[0x54 - 0x3c];
+    uint8_t unknown_3c[0x48 - 0x3c];
+    SubgameRuntime* owner_game;
+    uint8_t unknown_4c[0x54 - 0x4c];
     Player* owner_player;
     float phase;
     float phase_step;

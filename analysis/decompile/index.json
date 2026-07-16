@@ -21,11 +21,11 @@
       "address": "0x40acf0"
     },
     {
-      "name": "get_or_create_texture_ref",
-      "address": "0x44e810"
+      "name": "update_banner",
+      "address": "0x441d40"
     }
   ],
-  "health_check_count": 424,
+  "health_check_count": 426,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -42,3 +42,11 @@ before calling `sine`.
 existing `Player* +0x54`. The shared header and Binary Ninja `Banner` type now
 preserve both owners. `update_banner` does not read the new field and remains
 exact at 44/44.
+
+2026-07-16 durable replay closure: the `+0x48` backlink now also lives in both
+canonical subgame analysis headers and in every Binary Ninja replay lane that
+can revisit `Banner`. This prevents broad runtime/path imports from flattening
+it back into the `+0x3c..+0x54` padding span. IDA startup can now render the
+producer as `banners.slots[i].owner_game = &game->subgame`; live Binary Ninja
+struct readback independently retains the same field. The exact 44/44
+implementation and its seven clean operands are unchanged.

@@ -263,7 +263,9 @@ typedef struct SubSpeedUp {
 typedef struct Banner {
     BodBase bod;
     int32_t visibility_mode;
-    uint8_t _pad_3c[0x54 - 0x3c];
+    uint8_t _pad_3c[0x48 - 0x3c];
+    SubgameRuntime* owner_game;
+    uint8_t _pad_4c[0x54 - 0x4c];
     Player* owner_player;
     float phase;
     float phase_step;

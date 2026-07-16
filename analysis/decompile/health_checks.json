@@ -2181,6 +2181,7 @@
         "game->track.track_textures[0]",
         "game->track.slide_textures[3]",
         "game->track.current_texture_set = 0",
+        "game->subgame.banners.slots[0].bod.object",
         "->mip_levels = 2"
       ],
       "forbidden_substrings": [
@@ -2200,6 +2201,26 @@
         "game->texture_set_selector",
         "->unknown_a0 = 2",
         "analysis skipped",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "bn_banner_borrowed_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00441d40-update_banner.c",
+      "required_substrings": [
+        "struct Banner* banner_2 = banner",
+        "banner_2->visibility_mode",
+        "banner = banner_2->owner_player",
+        "banner_2->owner_player->body.transform.position.z",
+        "uint32_t list_flags",
+        "banner_2->bod.position.y",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "void* esi = arg1",
+        "*(esi +",
+        "int32_t result",
+        "return result",
         "unimplemented"
       ]
     },
@@ -6171,6 +6192,7 @@
         "game->track.track_textures[0]",
         "game->track.slide_textures[3]",
         "game->track.current_texture_set = 0",
+        "game->subgame.banners.slots[i].owner_game = &game->subgame",
         "->mip_levels = 2"
       ],
       "forbidden_substrings": [
@@ -6179,11 +6201,29 @@
         "game->border_manager.unknown_000010",
         "FrameBorderManager",
         "char __thiscall initialize_game_assets_and_world(int this)",
+        "banners.slots[i]._pad_3c[12]",
         "game->texture_set_selector",
         "->unknown_a0 = 2",
         "this + 19820376",
         "this + 324412",
         "byte_6FFAE0[this]"
+      ]
+    },
+    {
+      "name": "ida_banner_borrowed_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00441d40-update_banner.c",
+      "required_substrings": [
+        "void __thiscall update_banner(Banner *banner)",
+        "banner->visibility_mode",
+        "banner->owner_player->body.transform.position.z",
+        "banner->bod.bod.list_flags",
+        "banner->phase_step + banner->phase",
+        "banner->bod.position.y"
+      ],
+      "forbidden_substrings": [
+        "update_banner(int this)",
+        "_DWORD *)(this",
+        "return result"
       ]
     },
     {

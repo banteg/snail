@@ -146,6 +146,10 @@ JETPACK_FIELD_UPDATES = (
     ("0x38", "state", "TrackPickupState"),
 )
 
+BANNER_FIELD_UPDATES = (
+    ("0x48", "owner_game", "SubgameRuntime*"),
+)
+
 TIMES_UP_FIELD_UPDATES = (
     ("0x00", "state", "TimesUpState"),
 )
@@ -456,6 +460,7 @@ def main() -> int:
                 ("GalaxyRouteNameRecord", GALAXY_ROUTE_NAME_FIELD_UPDATES),
                 ("Galaxy", GALAXY_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
+                ("Banner", BANNER_FIELD_UPDATES),
                 ("Completion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),
                 ("TimesUp", TIMES_UP_FIELD_UPDATES),

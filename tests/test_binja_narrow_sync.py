@@ -179,9 +179,11 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         encoding="utf-8"
     )
     assert "UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+    assert "UPDATE_BANNER_USER_VAR_UPDATES" in bn_path_sync
     assert '"game_bytes_for_message"' in bn_path_sync
     assert '"game_bytes_for_duration"' in bn_path_sync
-    assert "updates=UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+    assert "*UPDATE_SUBGOLDY_USER_VAR_UPDATES" in bn_path_sync
+    assert "*UPDATE_BANNER_USER_VAR_UPDATES" in bn_path_sync
 
 
 def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
@@ -2988,6 +2990,46 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
 
     assert "class SubLazer : public RenderableBod" in matcher_sub_lazer
     assert "class Salt : public RenderableBod" in matcher_salt
+
+
+def test_banner_backlink_owner_survives_every_replay_lane() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher = (repo_root / "tools/match/include/banner.h").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "path_template_types.h",
+        )
+    )
+    syncs = tuple(
+        (BINJA_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "sync_subgame_hazard_pool_types.py",
+            "sync_subgame_runtime_types.py",
+            "sync_path_template_types.py",
+        )
+    )
+
+    assert "SubgameRuntime* owner_game; // +0x48" in matcher
+    for header in headers:
+        banner = header.split("typedef struct Banner {", 1)[1].split(
+            "} Banner;", 1
+        )[0]
+        assert "SubgameRuntime* owner_game;" in banner
+        assert banner.index("owner_game") < banner.index("owner_player")
+        assert "0x48 - 0x3c" in banner
+        assert "0x54 - 0x4c" in banner
+    for sync in syncs:
+        assert '("0x48", "owner_game", "SubgameRuntime*")' in sync
+        assert '("Banner", BANNER_FIELD_UPDATES)' in sync
+    path_sync = syncs[2]
+    assert '"update_banner"' in path_sync
+    assert '"list_flags"' in path_sync
+    assert '"uint32_t"' in path_sync
 
 
 def test_sub_garbage_owner_replays_stay_aligned() -> None:

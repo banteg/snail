@@ -793,7 +793,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     *((_DWORD *)v319 + 996780) = 0;
     *((_DWORD *)v319 + 996779) = 0;
     *((_DWORD *)v319 + 996778) = 0;
-    *(_DWORD *)&game->subgame.banners.slots[i]._pad_3c[12] = &game->subgame;
+    game->subgame.banners.slots[i].owner_game = &game->subgame;
     *((_DWORD *)v319 + 996788) = i;
     *((_DWORD *)v319 + 996796) = 0;
     *((_DWORD *)v319 + 996797) = 1004768824;

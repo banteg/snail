@@ -854,3 +854,15 @@ passes `mip_levels` to both D3DX creation paths; exact
 eleven direct stores then raise selected world and track textures to two mip
 levels. No unknown padding was promoted without a concrete consumer, and the
 matcher source remains byte-stable.
+
+## 2026-07-16 durable Banner backlink replay
+
+The startup-proved `Banner +0x48` `SubgameRuntime*` backlink had survived in
+the matcher and the live narrow hazard replay but had drifted back into padding
+in the canonical BN, IDA, and path ownership headers. All three headers and the
+broader BN replay lanes now retain `owner_game` before the independent
+`Player* +0x54` row source. IDA therefore exposes the two startup producer
+stores through `banners.slots[i].owner_game`; Binary Ninja's native
+root-relative induction remains intentionally strength-reduced, while exact
+struct readback preserves the same owner. This is analysis-only and leaves the
+honest initializer frontier unchanged.

@@ -405,6 +405,20 @@ UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
     ),
 )
 
+# EAX first carries Banner::visibility_mode and later the inherited BOD flags.
+# Keep the second SSA owner unsigned so Player* flow through ECX cannot taint
+# the independent bitfield update in HLIL.
+UPDATE_BANNER_USER_VAR_UPDATES = (
+    (
+        "update_banner",
+        "RegisterVariableSourceType",
+        11,
+        66,
+        "list_flags",
+        "uint32_t",
+    ),
+)
+
 SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x00", "scan_reset", "uint8_t"),
     ("0x01", "camera_snap_requested", "uint8_t"),
@@ -508,6 +522,10 @@ JETPACK_FIELD_UPDATES = (
     ("0x44", "owner_game", "SubgameRuntime*"),
     ("0x74", "vapour_a", "Vapour"),
     ("0x108", "vapour_b", "Vapour"),
+)
+
+BANNER_FIELD_UPDATES = (
+    ("0x48", "owner_game", "SubgameRuntime*"),
 )
 
 WARNING_FIELD_UPDATES = (
@@ -1535,6 +1553,7 @@ def main() -> int:
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
+                ("Banner", BANNER_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("Nuke", NUKE_FIELD_UPDATES),
@@ -1565,7 +1584,10 @@ def main() -> int:
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=UPDATE_SUBGOLDY_USER_VAR_UPDATES,
+            updates=(
+                *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
+                *UPDATE_BANNER_USER_VAR_UPDATES,
+            ),
         )
     )
     operations.extend(report_deferred_subgame_owner_prototypes(target=args.target))
