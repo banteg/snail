@@ -37,6 +37,8 @@ struct ParcelBucket {
 typedef char ParcelBucket_must_be_0x20c[
     (sizeof(ParcelBucket) == 0x20c) ? 1 : -1];
 
+// Cross-port originals: gGroup is the parcel-set bank and gGroup0 is the
+// digit-0 fallback bank. The semantic names retain each bank's actual role.
 extern ParcelBucket g_parcel_set_buckets[PARCEL_BUCKET_CAPACITY];  // data_6487e8
 extern ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY]; // data_53d190
 // One-past candidate_count-lane cursor for g_zero_parcel_buckets. The address

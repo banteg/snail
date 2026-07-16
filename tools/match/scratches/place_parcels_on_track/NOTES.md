@@ -230,3 +230,22 @@ bit. The native `0x11` claim write is the named combination of candidate and
 spawn-request state, matching its duplicate-request diagnostic. Focused output
 remains 30.93%, 635/639 instructions, with 40 clean operands and the same two
 honest operand mismatches.
+
+## Final-segment scratch lifetime and void ABI (2026-07-16)
+
+Windows initializes the maximum parcel-set size inside the outer segment loop,
+not once for the whole level. Android's `cRSubGame::PlaceParcels()` independently
+resets the analogous local at the start of every segment and uses its value
+after the loop. The post-loop 80-percent target therefore intentionally
+subtracts the final segment's maximum. Naming that lifetime directly improves
+focused Wibo from 30.93% (635/639) to 31.50% (631/639).
+
+The method is also authored `void`. Android exposes unrelated path-helper and
+loop residues on different exits, while Windows exposes the mode value, the
+survival call residue, or the final row counter depending on the path; its only
+caller ignores EAX. Restoring the void member ABI improves focused Wibo again
+to 33.81% (633/639), retaining 40 clean operands and the same two honest
+candidate-bank address-shape mismatches. A constructor-shaped scoped `Vector3`
+glyph temporary was re-tested against the newly recovered lifetime and rejected:
+it expands the frame from the candidate's 0x204 to 0x220 and regresses the
+focused score to 27.70% without adding ownership evidence.

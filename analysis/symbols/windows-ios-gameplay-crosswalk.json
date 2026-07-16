@@ -960,7 +960,7 @@
       "android_symbol": "cRSubGame::PlaceParcels()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All three ports dispatch on the same cRSubGame receiver. The level definition and runtime rows are SubgameRuntime-owned; the normal digit/set candidate banks are global scratch."
+      "notes": "All three ports dispatch the authored void method on the same cRSubGame receiver. The level definition and runtime rows are SubgameRuntime-owned; the normal digit/set candidate banks are global scratch and retain the mobile names gGroup0/gGroup. Windows and Android independently reset the maximum set size inside each segment iteration, so the post-loop target intentionally uses the final segment's maximum rather than a level-wide maximum."
     },
     {
       "address": "0x444240",
@@ -969,7 +969,7 @@
       "android_symbol": "cRSubGame::PlaceParcelsSurvival()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All three ports use the same cRSubGame receiver and owned runtime rows. The filtered row-index bank retains the mobile symbol gParcelGroupSurvival0 and is global scratch rather than an embedded owner."
+      "notes": "All three ports use the same cRSubGame receiver and owned runtime rows. The method is authored void: mobile decompilers expose path-dependent incidental return residues and the sole Windows caller discards EAX. The filtered row-index bank retains the mobile symbol gParcelGroupSurvival0 and is global scratch rather than an embedded owner."
     },
     {
       "address": "0x4444b0",

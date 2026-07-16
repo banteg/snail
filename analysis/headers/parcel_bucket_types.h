@@ -31,6 +31,7 @@ typedef struct ParcelBucket {
     int32_t segment_index;
 } ParcelBucket;
 
+/* Cross-port original gGroup0: the digit-0 fallback scratch bank. */
 extern ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY];
 /*
  * One-past candidate_count-lane cursor. This overlaps the independently owned
@@ -39,6 +40,7 @@ extern ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY];
 extern char g_zero_parcel_bucket_count_lane_end;
 extern int32_t
     g_parcel_group_survival_0[SURVIVAL_PARCEL_GROUP_CAPACITY];
+/* Cross-port original gGroup: the positive parcel-set scratch bank. */
 extern ParcelBucket g_parcel_set_buckets[PARCEL_BUCKET_CAPACITY];
 
 #endif

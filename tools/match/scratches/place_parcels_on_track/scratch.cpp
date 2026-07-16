@@ -19,12 +19,14 @@ void report_errorf(const char* format, ...);
 // +0x90, count accumulator +0x94, row-center accumulator +0x98, and primary
 // attachment cell ptr +0xa4. SubRowFlag owns the packed state transitions.
 
-int SubgameRuntime::place_parcels_on_track()
+void SubgameRuntime::place_parcels_on_track()
 {
-    if (level_mode == 1)
-        return place_challenge_parcels_on_track();
+    if (level_mode == 1) {
+        place_challenge_parcels_on_track();
+        return;
+    }
     if (level_mode != 0 && level_mode != 7)
-        return level_mode;
+        return;
 
     for (int reset = 0;
          reset < (int)sizeof(g_zero_parcel_buckets);
@@ -39,9 +41,10 @@ int SubgameRuntime::place_parcels_on_track()
     int zero_entry_count = 0;
     int zero_candidate_total = 0;
     int set_entry_count = 0;
-    int max_set_size = 0;
+    int last_segment_max_set_size;
 
     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
+        last_segment_max_set_size = 0;
         SubSegment* record = &level_definition.segment_slots[segment];
         min_set_sizes[segment] = 10000;
         for (int set = 0; set < 10; ++set) {
@@ -102,15 +105,15 @@ int SubgameRuntime::place_parcels_on_track()
                 int size = set_entry->candidate_count;
                 if (size < min_set_sizes[set_entry->segment_index])
                     min_set_sizes[set_entry->segment_index] = size;
-                if (size > max_set_size)
-                    max_set_size = size;
+                if (size > last_segment_max_set_size)
+                    last_segment_max_set_size = size;
                 ++set_entry_count;
             }
         }
     }
 
     int required = level_definition.parcel_count;
-    int set_target = 80 * required / 100 - max_set_size;
+    int set_target = 80 * required / 100 - last_segment_max_set_size;
     int reachable = zero_candidate_total;
     for (int check = 0; check < level_definition.segment_count; ++check) {
         if (min_set_sizes[check] != 10000)
@@ -221,7 +224,6 @@ int SubgameRuntime::place_parcels_on_track()
 
     TransformMatrix transform;
     float out_angle;
-    int result = runtime_row_count;
     SubRow* row_record = runtime_rows;
     for (int row = 0; row < runtime_row_count; ++row, ++row_record) {
         if ((row_record->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
@@ -249,7 +251,5 @@ int SubgameRuntime::place_parcels_on_track()
                     row_record->projection_payload);
             }
         }
-        result = row + 1;
     }
-    return result;
 }

@@ -2879,6 +2879,7 @@ def test_parcel_state_ownership_stays_aligned() -> None:
 
 def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
     header = (HEADER_DIR / "parcel_bucket_types.h").read_text(encoding="utf-8")
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
     binja_sync = (BINJA_DIR / "sync_parcel_bucket_types.py").read_text(
         encoding="utf-8"
     )
@@ -2886,6 +2887,12 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
         encoding="utf-8"
     )
     ida_sync = (IDA_DIR / "sync_parcel_bucket_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_apply = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
 
@@ -2936,6 +2943,36 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
     assert "g_zero_parcel_bucket_count_lane_end" not in ida_apply.split(
         "TRUSTED_DATA_DECLARATIONS", 1
     )[1].split("TRUSTED_FUNCTION_DECLARATIONS", 1)[0]
+
+    for source in (binja_sync, path_binja_sync):
+        assert (
+            "void __thiscall place_parcels_on_track(SubgameRuntime* game)" in source
+        )
+        assert (
+            "void __thiscall "
+            "place_challenge_parcels_on_track(SubgameRuntime* game)" in source
+        )
+        assert "int32_t __thiscall place_parcels_on_track" not in source
+        assert "int32_t __thiscall place_challenge_parcels_on_track" not in source
+
+    assert (
+        "void __thiscall place_parcels_on_track(SubgameRuntime* game);" in path_header
+    )
+    assert (
+        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);"
+        in path_header
+    )
+    assert "int32_t __thiscall place_parcels_on_track" not in path_header
+    assert "int32_t __thiscall place_challenge_parcels_on_track" not in path_header
+
+    for source in (ida_apply, path_ida_apply):
+        assert "void __thiscall place_parcels_on_track(SubgameRuntime" in source
+        assert (
+            "void __thiscall place_challenge_parcels_on_track(SubgameRuntime"
+            in source
+        )
+        assert "int32_t __thiscall place_parcels_on_track" not in source
+        assert "int32_t __thiscall place_challenge_parcels_on_track" not in source
 
 
 def test_completion_state_ownership_stays_aligned() -> None:

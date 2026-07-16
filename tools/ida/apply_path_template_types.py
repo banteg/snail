@@ -1026,11 +1026,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "place_parcels_on_track",
-        "int32_t __thiscall place_parcels_on_track(SubgameRuntime* game);",
+        "void __thiscall place_parcels_on_track(SubgameRuntime* game);",
     ),
     (
         "place_challenge_parcels_on_track",
-        "int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);",
+        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);",
     ),
     (
         "mark_track_warning_zones",

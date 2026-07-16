@@ -2584,8 +2584,8 @@ void __thiscall rebuild_track_runtime_from_segments(
 
 void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);
 
-int32_t __thiscall place_parcels_on_track(SubgameRuntime* game);
-int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);
+void __thiscall place_parcels_on_track(SubgameRuntime* game);
+void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);
 
 void __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 

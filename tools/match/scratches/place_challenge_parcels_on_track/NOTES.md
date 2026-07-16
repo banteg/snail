@@ -123,3 +123,13 @@ and parcel-coordinate-space lanes on `SubRow`. In particular, `0x4000` is
 proved as `SUBROW_FLAG_PARCEL_Z_IS_LOCAL`: only rows carrying it add the
 selected absolute row and `0.5` to authored z. Focused output is byte-identical
 at 81.40%, 173/171 instructions, with all 33 operands clean.
+
+## Void ABI closure (2026-07-16)
+
+Cross-port control flow shows no stable return value for
+`cRSubGame::PlaceParcelsSurvival()`: Android exposes receiver, format-call, and
+loop residues on different exits, and Windows leaves the final row counter in
+EAX while its sole caller ignores it. The authored member is therefore `void`,
+matching the mobile symbol and the normal placement dispatch. Correcting the
+header and both decompiler replay paths is byte-neutral here: focused Wibo
+remains 81.40%, 173/171 instructions, with all 33 operands clean.

@@ -4296,7 +4296,7 @@
         "data_53d190"
       ],
       "size": "0x106000",
-      "description": "0x800-bucket zero parcel pool initialized by initialize_zero_parcel_bucket_pool."
+      "description": "0x800-bucket digit-0 fallback parcel pool initialized by initialize_zero_parcel_bucket_pool; Android preserves the original global symbol gGroup0."
     },
     {
       "address": "0x641184",
@@ -4435,7 +4435,7 @@
         "data_6487e8"
       ],
       "size": "0x106000",
-      "description": "0x800-bucket parcel-set pool initialized by initialize_parcel_set_bucket_pool."
+      "description": "0x800-bucket positive parcel-set pool initialized by initialize_parcel_set_bucket_pool; Android preserves the original global symbol gGroup."
     },
     {
       "address": "0x68b4c8",

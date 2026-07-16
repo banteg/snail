@@ -8,7 +8,7 @@
 double random_float_below(float upper_bound, const char* tag);
 int debug_report_stub(char* format, ...);
 
-int SubgameRuntime::place_challenge_parcels_on_track()
+void SubgameRuntime::place_challenge_parcels_on_track()
 {
     float source_scaled = (float)completion_bonus_x_source * 50.0f;
     source_scaled = source_scaled * 0.00999999978f;
@@ -77,9 +77,8 @@ int SubgameRuntime::place_challenge_parcels_on_track()
     level_definition.parcel_count = placed;
     debug_report_stub("Challenge parcel count %i\n", placed);
 
-    int result = runtime_row_count;
     int scan = 0;
-    if (result > 0) {
+    if (runtime_row_count > 0) {
         do {
             if ((runtime_rows[scan].flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
                 && (runtime_rows[scan].flags
@@ -119,9 +118,7 @@ int SubgameRuntime::place_challenge_parcels_on_track()
                 }
             }
             ++scan;
-            result = scan;
         } while (scan < runtime_row_count);
     }
 
-    return result;
 }

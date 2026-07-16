@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100057/317040** bytes (**31.56%**) are proof-grade, and overall fuzzy is **76.12%**.
+**626/782** mapped gameplay functions matched, **782/782** mapped gameplay functions have a scratch, **100057/317040** bytes (**31.56%**) are proof-grade, and overall fuzzy is **76.14%**.
 
 **3** reference-only library functions (**8104** curated-extent bytes) remain available for semantic and extent context but are excluded from gameplay totals.
 
@@ -810,7 +810,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 610/668 | 23.32% | 0/668 | 36 ok |  |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 529/579 | 40.61% | 0/579 | 36 ok |  |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1229/1245 | 29.67% | 2/1245 | 2 mismatch, 66 ok |  |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 635/639 | 30.93% | 0/639 | 2 mismatch, 40 ok |  |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 633/639 | 33.81% | 0/639 | 2 mismatch, 40 ok |  |
 | 🚧 | draw_font_text_instance | 0x44a360 | 867 | 221/272 | 35.70% | 1/272 | 19 ok |  |
 
 ## Reference Only (third-party) (3)

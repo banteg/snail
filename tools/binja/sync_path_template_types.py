@@ -1362,11 +1362,11 @@ CORE_SUBGAME_PROTO_UPDATES = (
     ),
     (
         "place_parcels_on_track",
-        "int32_t __thiscall place_parcels_on_track(SubgameRuntime* game)",
+        "void __thiscall place_parcels_on_track(SubgameRuntime* game)",
     ),
     (
         "place_challenge_parcels_on_track",
-        "int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime* game)",
+        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game)",
     ),
 )
 

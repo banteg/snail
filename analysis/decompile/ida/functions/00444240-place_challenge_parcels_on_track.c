@@ -3,7 +3,7 @@
 /* selector: place_challenge_parcels_on_track */
 
 // Implements `cRSubGame::PlaceParcelsSurvival()` on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place.
-int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
+void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
 {
   int32_t v2; // eax
   int32_t *p_candidate_count; // eax
@@ -17,15 +17,14 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   _DWORD *v11; // esi
   uint8_t *v12; // ecx
   int v13; // ecx
-  int32_t result; // eax
-  char *v15; // esi
-  int v16; // edi
-  SubLoc *v17; // ecx
+  char *v14; // esi
+  int v15; // edi
+  SubLoc *v16; // ecx
   float y; // ecx
   int32_t track_cell_row_index; // eax
-  float v20; // [esp+0h] [ebp-60h]
-  int v21; // [esp+18h] [ebp-48h]
-  int32_t v22; // [esp+18h] [ebp-48h]
+  float v19; // [esp+0h] [ebp-60h]
+  int v20; // [esp+18h] [ebp-48h]
+  int32_t v21; // [esp+18h] [ebp-48h]
   int out_angle; // [esp+1Ch] [ebp-44h] BYREF
   TransformMatrix transform; // [esp+20h] [ebp-40h] BYREF
 
@@ -43,7 +42,7 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   while ( (int)p_candidate_count < (int)g_zero_parcel_bucket_count_lane_end );
   v4 = 0;
   v5 = 0;
-  v21 = 0;
+  v20 = 0;
   if ( game->runtime_row_count > 0 )
   {
     v6 = g_parcel_group_survival_0;
@@ -60,7 +59,7 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
       v7 += 61;
     }
     while ( v5 < game->runtime_row_count );
-    v21 = v4;
+    v20 = v4;
   }
   v8 = 0;
   if ( game->level_definition.parcel_count > 0 )
@@ -68,8 +67,8 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
     v9 = v4 - 1;
     while ( v4 > 0 )
     {
-      v20 = (float)v21;
-      v10 = (__int64)random_float_below(v20);
+      v19 = (float)v20;
+      v10 = (__int64)random_float_below(v19);
       v11 = (_DWORD *)(4 * v10 + 6572008);
       out_angle = g_parcel_group_survival_0[(_DWORD)v10];
       ++v8;
@@ -92,56 +91,53 @@ int32_t __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
         while ( v13 );
       }
       --v9;
-      --v21;
+      --v20;
       if ( v8 >= game->level_definition.parcel_count )
         break;
-      v4 = v21;
+      v4 = v20;
     }
   }
   game->level_definition.parcel_count = v8;
   debug_report_stub();
-  result = game->runtime_row_count;
-  v22 = 0;
-  if ( result > 0 )
+  v21 = 0;
+  if ( game->runtime_row_count > 0 )
   {
-    v15 = &byte_5CCAC8[(_DWORD)game];
+    v14 = &byte_5CCAC8[(_DWORD)game];
     do
     {
-      if ( (*(_DWORD *)v15 & 1) != 0 && (*(_DWORD *)v15 & 0x40) != 0 )
+      if ( (*(_DWORD *)v14 & 1) != 0 && (*(_DWORD *)v14 & 0x40) != 0 )
       {
-        v16 = (__int64)*((float *)v15 + 38) - get_track_cell_row_index(*((SubLoc **)v15 + 41));
-        if ( v16 < 0 )
-          v16 = 0;
-        v17 = *((SubLoc **)v15 + 41);
-        if ( v17->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
+        v15 = (__int64)*((float *)v14 + 38) - get_track_cell_row_index(*((SubLoc **)v14 + 41));
+        if ( v15 < 0 )
+          v15 = 0;
+        v16 = *((SubLoc **)v14 + 41);
+        if ( v16->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
         {
           compute_kind42_attachment_transform(
-            v17->attachment_template_record,
-            v17->attachment_template_record->primary_samples[v16].special_scalar,
-            *((float *)v15 + 36),
-            *((float *)v15 + 37),
+            v16->attachment_template_record,
+            v16->attachment_template_record->primary_samples[v15].special_scalar,
+            *((float *)v14 + 36),
+            *((float *)v14 + 37),
             &transform,
             (float *)&out_angle);
           y = transform.position.y;
-          *((_DWORD *)v15 + 36) = LODWORD(transform.position.x);
-          *((float *)v15 + 37) = y;
+          *((_DWORD *)v14 + 36) = LODWORD(transform.position.x);
+          *((float *)v14 + 37) = y;
         }
         else
         {
-          track_cell_row_index = get_track_cell_row_index(v17);
+          track_cell_row_index = get_track_cell_row_index(v16);
           get_path_position_at_node(
-            *(_DWORD **)(*((_DWORD *)v15 + 41) + 56),
-            (float *)v15 + 36,
-            v16,
+            *(_DWORD **)(*((_DWORD *)v14 + 41) + 56),
+            (float *)v14 + 36,
+            v15,
             track_cell_row_index,
-            (float *)v15 + 36);
+            (float *)v14 + 36);
         }
       }
-      result = v22 + 1;
-      v15 += 244;
-      ++v22;
+      v14 += 244;
+      ++v21;
     }
-    while ( v22 < game->runtime_row_count );
+    while ( v21 < game->runtime_row_count );
   }
-  return result;
 }
