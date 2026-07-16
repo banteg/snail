@@ -18,11 +18,11 @@ void Salt::update_salt_hazard()
         GameRoot* game = g_game;
         SaltListAnchor* anchor = &game->active_bod_list;
         int flags = list_flags;
-        if ((flags & 0x200) == 0) {
+        if ((flags & BOD_FLAG_LINKED) == 0) {
             report_errorf("List remove");
             goto first_remove_error;
         } else {
-            if ((flags & 0x40) != 0) {
+            if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
                 report_errorf("List remove NEXTBOD");
                 state = 0;
                 return;
@@ -37,7 +37,7 @@ void Salt::update_salt_hazard()
                 anchor->free_top = this;
                 int updated = list_flags;
                 state = 0;
-                updated &= ~0x200;
+                updated &= ~BOD_FLAG_LINKED;
                 list_flags = updated;
             }
         }

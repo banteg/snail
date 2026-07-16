@@ -36,7 +36,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
             entry->set_bod_object(0);
         } else {
             BodNode* head = &g_game->subgame.landscape_slice_list_head;
-            if ((entry->list_flags & 0x200) != 0) {
+            if ((entry->list_flags & BOD_FLAG_LINKED) != 0) {
                 report_errorf("List ADDafter");
             } else {
                 entry->list_prev = head;
@@ -44,7 +44,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
                 head->list_next = entry;
                 if (entry->list_next != 0)
                     entry->list_next->list_prev = entry;
-                entry->list_flags |= 0x200;
+                entry->list_flags |= BOD_FLAG_LINKED;
             }
 
             entry->state = 1;

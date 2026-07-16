@@ -71,7 +71,7 @@ void SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* play
     BodNode* node = (BodNode*)slot;
     BodNode* tail = &this->player;
     BodList* active_list = &g_game->active_bod_list;
-    if ((node->list_flags & 0x200) != 0) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDbefore");
     } else {
         node->list_next = tail;
@@ -84,7 +84,7 @@ void SubgameRuntime::spawn_track_garbage_hazard(TrackRowCell* cell, Player* play
             tail->list_prev = node;
             node->list_prev->list_next = node;
         }
-        node->list_flags |= 0x200u;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     Sprite* sprite = g_sprite_manager.allocate_sprite(

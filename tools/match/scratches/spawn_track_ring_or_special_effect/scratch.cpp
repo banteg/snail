@@ -184,7 +184,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
                 slot_cursor->ring.active_phase_step * -1.0f;
 
         SubRing* slot = &slot_cursor->ring;
-        if ((slot->list_flags & 0x200) != 0) {
+        if ((slot->list_flags & BOD_FLAG_LINKED) != 0) {
             report_errorf("List ADD");
         } else {
             SubRingListAnchor* active_list =
@@ -200,7 +200,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
                 *active_head = (SubRing*)(*active_head)->list_prev;
                 (*active_head)->list_prev = 0;
             }
-            slot->list_flags |= 0x200;
+            slot->list_flags |= BOD_FLAG_LINKED;
         }
 
         slot->initialize_ring_or_special_effect_particles(player->lives);

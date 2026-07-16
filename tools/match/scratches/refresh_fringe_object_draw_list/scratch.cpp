@@ -21,11 +21,11 @@ void Fringe::refresh_fringe_object_draw_list()
     if (current_z < g_game->subgame.embedded_player()->interaction_max_z) {
         unsigned int flags = list_flags;
         BodList* list = &g_game->active_bod_list;
-        if ((flags & 0x200) == 0) {
+        if ((flags & BOD_FLAG_LINKED) == 0) {
             report_errorf("List remove");
             return;
         }
-        if ((flags & 0x40) != 0) {
+        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
             report_errorf("List remove NEXTBOD");
             return;
         }
@@ -44,7 +44,7 @@ void Fringe::refresh_fringe_object_draw_list()
         list->free_top = this;
 
         unsigned int updated = list_flags;
-        updated &= ~0x200;
+        updated &= ~BOD_FLAG_LINKED;
         list_flags = updated;
     }
 }

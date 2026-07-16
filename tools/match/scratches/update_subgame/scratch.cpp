@@ -251,7 +251,7 @@ void SubgameRuntime::update_subgame()
                     & SUBROW_FLAG_ROW_MODEL_PRESENT)
                 != zero) {
                 BodNode* row_node = &runtime_rows[cell_index].row_model;
-                if ((row_node->list_flags & 0x200) != zero) {
+                if ((row_node->list_flags & BOD_FLAG_LINKED) != zero) {
                     report_errorf("List ADD");
                 } else {
                     BodNode** first_ref =
@@ -268,7 +268,7 @@ void SubgameRuntime::update_subgame()
                         *first_ref = new_first;
                         new_first->list_prev = 0;
                     }
-                    row_node->list_flags |= 0x200;
+                    row_node->list_flags |= BOD_FLAG_LINKED;
                 }
             }
 
@@ -288,7 +288,7 @@ void SubgameRuntime::update_subgame()
                             + sizeof(TrackRowCell)
                                 * (attachment_count
                                     + SUBGAME_TRACK_LANE_COUNT * cell_index));
-                    if ((cell_slot->cell.list_flags & 0x200) == zero) {
+                    if ((cell_slot->cell.list_flags & BOD_FLAG_LINKED) == zero) {
                         if ((cell_slot->cell.lane_and_flags
                                 & SUBLOC_FLAG_UNCACHED_BODY)
                             != zero) {
@@ -297,7 +297,7 @@ void SubgameRuntime::update_subgame()
                                 if (cell_slot->cell.object != 0) {
                                 BodNode* node = &cell_slot->cell;
                                 BodNode* active_list = &special_track_cell_list_head;
-                                if ((node->list_flags & 0x200) != zero) {
+                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
                                     node->list_prev = active_list;
@@ -305,7 +305,7 @@ void SubgameRuntime::update_subgame()
                                     active_list->list_next = node;
                                     if (node->list_next != 0)
                                         node->list_next->list_prev = node;
-                                    node->list_flags |= 0x200;
+                                    node->list_flags |= BOD_FLAG_LINKED;
                                 }
 
                                 cell_slot->cell.render_arg_20 =
@@ -313,7 +313,7 @@ void SubgameRuntime::update_subgame()
                                     * 0.125f;
                                 node = &runtime_rows[cell_index].attachment_body;
                                 active_list = &fringe_attachment_list_head;
-                                if ((node->list_flags & 0x200) != zero) {
+                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
                                     node->list_prev = active_list;
@@ -321,14 +321,14 @@ void SubgameRuntime::update_subgame()
                                     active_list->list_next = node;
                                     if (node->list_next != 0)
                                         node->list_next->list_prev = node;
-                                    node->list_flags |= 0x200;
+                                    node->list_flags |= BOD_FLAG_LINKED;
                                 }
                                 runtime_rows[cell_index].attachment_body.position = cell_slot->cell.position;
                                 }
                             } else {
                                 BodNode* node = &cell_slot->cell;
                                 BodNode* active_list = &track_body_list_head;
-                                if ((node->list_flags & 0x200) != zero) {
+                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
                                     node->list_prev = active_list;
@@ -336,7 +336,7 @@ void SubgameRuntime::update_subgame()
                                     active_list->list_next = node;
                                     if (node->list_next != 0)
                                         node->list_next->list_prev = node;
-                                    node->list_flags |= 0x200;
+                                    node->list_flags |= BOD_FLAG_LINKED;
                                 }
                             }
                             ((BodAiDispatch*)&cell_slot->cell)->update_bod_ai();
@@ -350,7 +350,7 @@ void SubgameRuntime::update_subgame()
                             if (object != 0) {
                                 BodNode* node = (BodNode*)object;
                                 BodNode* active_list = &fringe_attachment_list_head;
-                                if ((node->list_flags & 0x200) != zero) {
+                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
                                     report_errorf("List ADDafter");
                                 } else {
                                     node->list_prev = active_list;
@@ -358,7 +358,7 @@ void SubgameRuntime::update_subgame()
                                     active_list->list_next = node;
                                     if (node->list_next != 0)
                                         node->list_next->list_prev = node;
-                                    node->list_flags |= 0x200;
+                                    node->list_flags |= BOD_FLAG_LINKED;
                                 }
                                 tColour* color =
                                     g_game->subgame.get_track_skirt_color(&skirt_color);

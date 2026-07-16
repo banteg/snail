@@ -20,7 +20,7 @@ void ClickStart::initialize_click_start(Player* new_player)
     int flags = list_flags;
     hide_prompt = 1;
     owner_player = new_player;
-    if ((flags & 0x200) != 0) {
+    if ((flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -38,7 +38,7 @@ void ClickStart::initialize_click_start(Player* new_player)
             *first_ref = current->list_prev;
             (*first_ref)->list_prev = 0;
         }
-        list_flags |= 0x200;
+        list_flags |= BOD_FLAG_LINKED;
     }
 
     state = CLICK_START_STATE_WAITING_FOR_START;

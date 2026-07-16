@@ -20,7 +20,7 @@ void SegmentCache::remove_track_render_cache_bods()
             unsigned int* flags_ref = (unsigned int*)((char*)next_ref
                 + (int)offsetof(BodNode, list_flags)
                 - (int)offsetof(BodNode, list_next));
-            if ((*flags_ref & 0x200) != 0) {
+            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {
                 BodList* list = &g_game->active_bod_list;
                 list->remove_bod((BodNode*)((char*)next_ref
                     - (int)offsetof(BodNode, list_next)));

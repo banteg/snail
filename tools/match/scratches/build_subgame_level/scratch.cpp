@@ -167,7 +167,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
     BodNode* track_bod_list = &track_body_list_head;
     {
         BodNode* start_row = &banners.slots[0];
-        if ((start_row->list_flags & 0x200) != zero) {
+        if ((start_row->list_flags & BOD_FLAG_LINKED) != zero) {
             report_errorf("List ADDafter");
         } else {
             start_row->list_prev = track_bod_list;
@@ -175,7 +175,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
             track_bod_list->list_next = start_row;
             if (start_row->list_next != 0)
                 start_row->list_next->list_prev = start_row;
-            start_row->list_flags |= 0x200;
+            start_row->list_flags |= BOD_FLAG_LINKED;
         }
     }
 
@@ -191,7 +191,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     {
         BodNode* completion_row = &banners.slots[1];
-        if ((completion_row->list_flags & 0x200) != zero) {
+        if ((completion_row->list_flags & BOD_FLAG_LINKED) != zero) {
             report_errorf("List ADDafter");
         } else {
             completion_row->list_prev = track_bod_list;
@@ -199,7 +199,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
             track_bod_list->list_next = completion_row;
             if (completion_row->list_next != 0)
                 completion_row->list_next->list_prev = completion_row;
-            completion_row->list_flags |= 0x200;
+            completion_row->list_flags |= BOD_FLAG_LINKED;
         }
     }
 
@@ -227,7 +227,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
 
     BodNode* node =
         &embedded_player()->presentation.jetpack_channel;
-    if ((node->list_flags & 0x200) != zero) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -243,11 +243,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     node = &embedded_player()->presentation.weapon_channels[0];
-    if ((node->list_flags & 0x200) != zero) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -263,11 +263,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     node = &embedded_player()->presentation.weapon_channels[1];
-    if ((node->list_flags & 0x200) != zero) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -283,11 +283,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     node = &embedded_player()->presentation.weapon_channels[2];
-    if ((node->list_flags & 0x200) != zero) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -303,11 +303,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     node = (BodNode*)&embedded_player()->presentation.invincible_shell;
-    if ((node->list_flags & 0x200) != zero) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -323,14 +323,14 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
     unsigned int visible_flags = node->list_flags;
     ((unsigned char*)&visible_flags)[0] |= 0x80;
     node->list_flags = visible_flags;
 
     node = (BodNode*)&embedded_player()->presentation;
-    if ((node->list_flags & 0x200) != zero) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -346,11 +346,11 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        node->list_flags |= 0x200;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     BodNode* player_node = (BodNode*)embedded_player();
-    if ((player_node->list_flags & 0x200) != zero) {
+    if ((player_node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -366,14 +366,14 @@ void SubgameRuntime::build_subgame_level(int level_index)
             *first_ref = new_first;
             new_first->list_prev = 0;
         }
-        player_node->list_flags |= 0x200;
+        player_node->list_flags |= BOD_FLAG_LINKED;
     }
 
     slug_voice_manager.initialize_slug_voice_manager();
 
     BodNode* barrier_node = &barrier;
     BodNode* barrier_list = &barrier_sub_lazer_list_head;
-    if ((barrier_node->list_flags & 0x200) != zero) {
+    if ((barrier_node->list_flags & BOD_FLAG_LINKED) != zero) {
         report_errorf("List ADDafter");
     } else {
         barrier_node->list_prev = barrier_list;
@@ -381,7 +381,7 @@ void SubgameRuntime::build_subgame_level(int level_index)
         barrier_list->list_next = barrier_node;
         if (barrier_node->list_next != 0)
             barrier_node->list_next->list_prev = barrier_node;
-        barrier_node->list_flags |= 0x200;
+        barrier_node->list_flags |= BOD_FLAG_LINKED;
     }
     barrier.owner_player = embedded_player();
 

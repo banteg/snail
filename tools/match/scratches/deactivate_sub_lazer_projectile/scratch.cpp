@@ -14,11 +14,11 @@ void SubLazer::deactivate_sub_lazer_projectile()
     int flags = list_flags;
     BodNode* next;
     BodNode* prev;
-    if ((flags & 0x200) == 0) {
+    if ((flags & BOD_FLAG_LINKED) == 0) {
         report_errorf("List remove");
         state = SUB_LAZER_STATE_INACTIVE;
     } else {
-        if ((flags & 0x40) != 0) {
+        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
             report_errorf("List remove NEXTBOD");
             state = SUB_LAZER_STATE_INACTIVE;
         } else {
@@ -34,7 +34,7 @@ void SubLazer::deactivate_sub_lazer_projectile()
             anchor->free_top = this;
             int updated = list_flags;
             state = SUB_LAZER_STATE_INACTIVE;
-            updated &= ~0x200;
+            updated &= ~BOD_FLAG_LINKED;
             list_flags = updated;
         }
     }

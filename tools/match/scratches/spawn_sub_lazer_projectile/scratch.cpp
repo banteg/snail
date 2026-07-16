@@ -17,7 +17,7 @@ void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* 
     sprite_bob_phase_step = owner_game->subgame_rate * 0.0055555557f;
 
     BodNode* head = &owner_game->barrier_sub_lazer_list_head;
-    if ((list_flags & 0x200) != 0) {
+    if ((list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDafter");
     } else {
         list_prev = head;
@@ -26,7 +26,7 @@ void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* 
         if (list_next != 0) {
             list_next->list_prev = this;
         }
-        list_flags |= 0x200;
+        list_flags |= BOD_FLAG_LINKED;
     }
 
     live_matrix->set_matrix_z_direction(velocity);

@@ -26,7 +26,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
     slug_bounce_armed = 0;
 
     BodNode* body = &primary_body;
-    if ((body->list_flags & 0x200) != 0) {
+    if ((body->list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADD");
     } else {
         BodNode** first_ref = &g_game->active_bod_list.first;
@@ -44,7 +44,7 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
             body->list_prev = 0;
             (*first_ref)->list_next = 0;
         }
-        body->list_flags |= 0x200;
+        body->list_flags |= BOD_FLAG_LINKED;
     }
 
     owner_player = player_;
@@ -212,7 +212,7 @@ after_movement_flag_source:
 
                 char* node = (char*)&tertiary_body;
                 DWORD* node_words = (DWORD*)node;
-                if ((node_words[1] & 0x200) != 0) {
+                if ((node_words[1] & BOD_FLAG_LINKED) != 0) {
                     report_errorf("List ADD");
                 } else {
                     char* anchor = (char*)&g_game->active_bod_list.first;
@@ -228,7 +228,7 @@ after_movement_flag_source:
                         node_words[2] = 0;
                         *(DWORD*)(*(DWORD*)anchor + 12) = 0;
                     }
-                    node_words[1] |= 0x200;
+                    node_words[1] |= BOD_FLAG_LINKED;
                 }
 
                 this->emitter_index = emitter_index;
@@ -251,7 +251,7 @@ after_movement_flag_source:
 
             BodNode* node = &secondary_body;
             BodNode* anchor = &g_game->subgame.golb_vapour_list_head;
-            if ((secondary_body.list_flags & 0x200) != 0) {
+            if ((secondary_body.list_flags & BOD_FLAG_LINKED) != 0) {
                 report_errorf("List ADDafter");
             } else {
                 secondary_body.list_prev = anchor;
@@ -259,7 +259,7 @@ after_movement_flag_source:
                 anchor->list_next = node;
                 if (secondary_body.list_next)
                     secondary_body.list_next->list_prev = node;
-                secondary_body.list_flags |= 0x200;
+                secondary_body.list_flags |= BOD_FLAG_LINKED;
             }
 
             vapour.reset_vapour((float*)spawn_selector);

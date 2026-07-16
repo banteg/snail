@@ -25,7 +25,7 @@ int report_errorf(char* format, ...);
         DWORD flags = BOD_NEXT_LINK_FLAGS(next_link);             \
         if ((flags & (linked_flag_expr)) == 0) {                  \
             report_errorf("List remove");                        \
-        } else if ((flags & 0x40) != 0) {                         \
+        } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {  \
             report_errorf("List remove NEXTBOD");                \
         } else {                                                  \
             BodNode* next = *next_link;                           \
@@ -39,7 +39,7 @@ int report_errorf(char* format, ...);
             *next_link = list->free_top;                         \
             list->free_top = BOD_NODE_FROM_NEXT_LINK(next_link);  \
             DWORD updated = BOD_NEXT_LINK_FLAGS(next_link);       \
-            updated &= ~0x200u;                                  \
+            updated &= ~BOD_FLAG_LINKED;                         \
             BOD_NEXT_LINK_FLAGS(next_link) = updated;             \
         }                                                         \
     } while (0)
@@ -51,7 +51,7 @@ int report_errorf(char* format, ...);
         DWORD flags = node->list_flags;                           \
         if ((flags & (linked_flag_expr)) == 0) {                  \
             report_errorf("List remove");                        \
-        } else if ((flags & 0x40) != 0) {                         \
+        } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {  \
             report_errorf("List remove NEXTBOD");                \
         } else {                                                  \
             BodNode* next = node->list_next;                      \
@@ -65,7 +65,7 @@ int report_errorf(char* format, ...);
             node->list_next = list->free_top;                     \
             list->free_top = node;                                \
             DWORD updated = node->list_flags;                     \
-            updated &= ~0x200u;                                   \
+            updated &= ~BOD_FLAG_LINKED;                          \
             node->list_flags = updated;                           \
         }                                                         \
     } while (0)
@@ -84,7 +84,7 @@ void SubgameRuntime::destroy_subgame()
     remove_subgame_bods();
 
     DWORD subgame_state = this->subgame_state;
-    DWORD linked_flag = 0x200;
+    DWORD linked_flag = BOD_FLAG_LINKED;
     if (subgame_state != 1) {
         DWORD level_mode = this->level_mode;
         if (level_mode == 0 || level_mode == 1)

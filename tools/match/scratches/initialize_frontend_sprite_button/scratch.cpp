@@ -19,7 +19,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     char* self = (char*)this;
     FrontendWidget* head = (FrontendWidget*)&g_game->border_manager;
 
-    if ((list_flags & 0x200) != 0) {
+    if ((list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDafter");
     } else {
         list_prev = head;
@@ -28,7 +28,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
         BodNode* next = list_next;
         if (next != 0)
             next->list_prev = this;
-        list_flags |= 0x200;
+        list_flags |= BOD_FLAG_LINKED;
     }
 
     border_texture_id = 5;

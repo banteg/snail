@@ -53,7 +53,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
     BodNode* node = &slug_hazards.slots[slot_index];
     BodNode* tail = &this->player;
     BodList* anchor = &g_game->active_bod_list;
-    if ((node->list_flags & 0x200) != 0) {
+    if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDbefore");
     } else {
         node->list_next = tail;
@@ -66,7 +66,7 @@ int SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
             tail->list_prev = node;
             node->list_prev->list_next = node;
         }
-        node->list_flags |= 0x200u;
+        node->list_flags |= BOD_FLAG_LINKED;
     }
 
     Sprite* sprite =

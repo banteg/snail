@@ -11,9 +11,9 @@ void GolbShot::kill_golb()
 {
     BodList* list = &g_game->active_bod_list;
     unsigned int flags = primary_body.list_flags;
-    if ((flags & 0x200) == 0) {
+    if ((flags & BOD_FLAG_LINKED) == 0) {
         report_errorf("List remove");
-    } else if ((flags & 0x40) != 0) {
+    } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
         report_errorf("List remove NEXTBOD");
     } else {
         BodNode* next = primary_body.list_next;
@@ -30,7 +30,7 @@ void GolbShot::kill_golb()
         list->free_top = &primary_body;
 
         unsigned int updated = primary_body.list_flags;
-        updated &= ~0x200;
+        updated &= ~BOD_FLAG_LINKED;
         primary_body.list_flags = updated;
     }
 
@@ -45,9 +45,9 @@ void GolbShot::kill_golb()
             BodNode* body = &secondary_body;
             BodList* list_kind1 = &g_game->active_bod_list;
             unsigned int kind1_flags = body->list_flags;
-            if ((kind1_flags & 0x200) == 0) {
+            if ((kind1_flags & BOD_FLAG_LINKED) == 0) {
                 report_errorf("List remove");
-            } else if ((kind1_flags & 0x40) != 0) {
+            } else if ((kind1_flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
                 report_errorf("List remove NEXTBOD");
             } else {
                 BodNode* next = body->list_next;
@@ -64,7 +64,7 @@ void GolbShot::kill_golb()
                 list_kind1->free_top = body;
 
                 unsigned int updated = body->list_flags;
-                updated &= ~0x200;
+                updated &= ~BOD_FLAG_LINKED;
                 body->list_flags = updated;
             }
             break;
@@ -74,9 +74,9 @@ void GolbShot::kill_golb()
             BodNode* body = &tertiary_body;
             BodList* list_kind2 = &g_game->active_bod_list;
             unsigned int kind2_flags = body->list_flags;
-            if ((kind2_flags & 0x200) == 0) {
+            if ((kind2_flags & BOD_FLAG_LINKED) == 0) {
                 report_errorf("List remove");
-            } else if ((kind2_flags & 0x40) != 0) {
+            } else if ((kind2_flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
                 report_errorf("List remove NEXTBOD");
             } else {
                 BodNode* next = body->list_next;
@@ -93,7 +93,7 @@ void GolbShot::kill_golb()
                 list_kind2->free_top = body;
 
                 unsigned int updated = body->list_flags;
-                updated &= ~0x200;
+                updated &= ~BOD_FLAG_LINKED;
                 body->list_flags = updated;
             }
 

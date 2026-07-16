@@ -33,11 +33,11 @@ void Logo::destroy_intro_screen()
             BodNode* next;
             BodNode* prev;
             int updated;
-            if ((flags & 0x200) == 0) {
+            if ((flags & BOD_FLAG_LINKED) == 0) {
                 report_errorf("List remove");
                 goto next_renderable;
             }
-            if ((flags & 0x40) != 0) {
+            if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
                 report_errorf("List remove NEXTBOD");
                 goto next_renderable;
             }
@@ -61,7 +61,7 @@ void Logo::destroy_intro_screen()
                 - (int)offsetof(BodNode, list_next));
 
             updated = *flags_ref;
-            updated &= ~0x200;
+            updated &= ~BOD_FLAG_LINKED;
             *flags_ref = updated;
 
 next_renderable:

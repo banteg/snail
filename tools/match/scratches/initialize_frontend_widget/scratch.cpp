@@ -47,7 +47,7 @@ void FrontendWidget::initialize_frontend_widget(
     render_inset_dynamic = 0;
     head = (FrontendWidget*)&g_game->border_manager;
 
-    if ((list_flags & 0x200) != 0) {
+    if ((list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDafter");
     } else {
         list_prev = head;
@@ -55,7 +55,7 @@ void FrontendWidget::initialize_frontend_widget(
         head->list_next = this;
         if (list_next != 0)
             list_next->list_prev = this;
-        list_flags |= 0x200;
+        list_flags |= BOD_FLAG_LINKED;
     }
 
     tooltip.state = 0;

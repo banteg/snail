@@ -33,12 +33,12 @@ int SaltManager::spawn_salt_hazard(const Vector3* position)
     slot->collision_armed() = 1;
     int* list_flags = &slot->list_flags;
     BodNode* head = &g_game->subgame.salt_hazard_list_head;
-    if ((*list_flags & 0x200) != 0)
+    if ((*list_flags & BOD_FLAG_LINKED) != 0)
         return report_errorf("List ADDafter");
     slot->list_prev = head;
     slot->list_next = head->list_next;
     head->list_next = slot;
     if (slot->list_next)
         slot->list_next->list_prev = slot;
-    return *list_flags |= 0x200;
+    return *list_flags |= BOD_FLAG_LINKED;
 }

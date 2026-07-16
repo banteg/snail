@@ -14,13 +14,13 @@ void LandscapeManager::clear_active_landscape_entries()
     int count = sizeof(active_entries) / sizeof(active_entries[0]);
     do {
         unsigned int flags = entry->list_flags;
-        if ((flags & 0x200) != 0) {
+        if ((flags & BOD_FLAG_LINKED) != 0) {
             entry->state = 0;
             BodList* list = &g_game->active_bod_list;
             flags = entry->list_flags;
-            if ((flags & 0x200) == 0) {
+            if ((flags & BOD_FLAG_LINKED) == 0) {
                 report_errorf("List remove");
-            } else if ((flags & 0x40) != 0) {
+            } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
                 report_errorf("List remove NEXTBOD");
             } else {
                 ActiveLandscapeEntry* next =
@@ -39,7 +39,7 @@ void LandscapeManager::clear_active_landscape_entries()
                 list->free_top = entry;
 
                 unsigned int updated = entry->list_flags;
-                updated &= ~0x200;
+                updated &= ~BOD_FLAG_LINKED;
                 entry->list_flags = updated;
             }
         }

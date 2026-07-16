@@ -25,9 +25,9 @@ enum {
         BodList* list = &g_game->active_bod_list;                 \
         BodNode* node = (node_expr);                              \
         DWORD flags = node->list_flags;                           \
-        if ((flags & 0x200) == 0) {                               \
+        if ((flags & BOD_FLAG_LINKED) == 0) {                    \
             report_errorf("List remove");                        \
-        } else if ((flags & 0x40) != 0) {                         \
+        } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {  \
             report_errorf("List remove NEXTBOD");                \
         } else {                                                  \
             BodNode* next = node->list_next;                      \
@@ -49,7 +49,7 @@ enum {
         BodNode* node = (node_expr);                              \
         DWORD flags = node->list_flags;                           \
         BodList* list = &g_game->active_bod_list;                 \
-        if ((flags & 0x40) != 0) {                                \
+        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {         \
             report_errorf("List remove NEXTBOD");                \
         } else {                                                  \
             BodNode* next = node->list_next;                      \
@@ -70,25 +70,26 @@ void SubLoc::remove_sub_loc()
 {
     int row_index = get_track_cell_row_index();
     unsigned char tile = tile_id;
-    DWORD unlink_mask = 0xfffffdffu;
+    DWORD unlink_mask = ~BOD_FLAG_LINKED;
 
     if (tile == 0x1d || tile == 0x1e) {
         char* row_record = (char*)g_game + row_index * sizeof(SubRow);
         if ((OUTER_RUNTIME_ROW(row_record)->flags
                 & SUBROW_FLAG_PATH_OR_MODEL_VELOCITY)
             != 0) {
-            if ((OUTER_RUNTIME_ROW(row_record)->attachment_body.list_flags & 0x200) != 0)
+            if ((OUTER_RUNTIME_ROW(row_record)->attachment_body.list_flags
+                    & BOD_FLAG_LINKED) != 0)
                 REMOVE_BOD_NODE(&OUTER_RUNTIME_ROW(row_record)->attachment_body, unlink_mask);
         }
     }
 
-    if ((list_flags & 0x200) != 0)
+    if ((list_flags & BOD_FLAG_LINKED) != 0)
         REMOVE_PRECHECKED_BOD_NODE(this, unlink_mask);
 
     Fringe** fringe = fringes;
     for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {
         Fringe* object = fringe[i];
-        if (object != 0 && (object->list_flags & 0x200) != 0)
+        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)
             REMOVE_BOD_NODE(object, unlink_mask);
     }
 }

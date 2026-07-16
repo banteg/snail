@@ -16,10 +16,10 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
 
     BodList* anchor = &g_game->active_bod_list;
     int flags = list_flags;
-    if ((flags & 0x200) == 0) {
+    if ((flags & BOD_FLAG_LINKED) == 0) {
         report_errorf("List remove");
     } else {
-        if ((flags & 0x40) != 0) {
+        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
             report_errorf("List remove NEXTBOD");
         } else {
             SubGarbage* next = (SubGarbage*)list_next;
@@ -36,7 +36,7 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
             anchor->free_top = this;
 
             int updated = list_flags;
-            updated &= ~0x200;
+            updated &= ~BOD_FLAG_LINKED;
             list_flags = updated;
         }
     }

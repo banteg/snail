@@ -135,6 +135,16 @@ while the current node's virtual AI runs, then cleared before advancing;
 the native `List remove NEXTBOD` diagnostic. The shared names preserve the
 exact 135/135 instruction stream and all 23 audited operands.
 
+## 2026-07-16 active-list policy propagation
+
+The shared `BodFlag` owner now reaches every recovered inlined list insertion,
+membership precheck, unlink, and `List remove NEXTBOD` guard. The evidence is
+closed in both directions: `add_bod_to_front`/`append_bod_to_end` produce
+`BOD_FLAG_LINKED`, the canonical and inlined removers clear it, and this frame
+walk is the producer for `BOD_FLAG_NEXT_UPDATE_GUARD` consumed by those
+removers. The parallel exact audit remains clean after replacing the remaining
+raw `0x200` and `0x40` spellings; no new bit name was inferred.
+
 ## 2026-07-14 canonical subgame analysis owner
 
 Binary Ninja's frame bootstrap originally left `GameRoot::subgame` typed as a

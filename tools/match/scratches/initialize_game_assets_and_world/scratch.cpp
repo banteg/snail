@@ -52,7 +52,7 @@ static __forceinline void link_root_bod(BodBase* bod)
 {
     char* node = (char*)bod;
     unsigned int* flags = (unsigned int*)(node + 4);
-    if ((*flags & 0x200) != 0) {
+    if ((*flags & BOD_FLAG_LINKED) != 0) {
         report_errorf((char*)"List ADD");
         return;
     }
@@ -70,7 +70,7 @@ static __forceinline void link_root_bod(BodBase* bod)
         *(int*)(node + 8) = 0;
         *(int*)(*(char**)head + 12) = 0;
     }
-    *flags |= 0x200;
+    *flags |= BOD_FLAG_LINKED;
 }
 
 static __forceinline void initialize_overlay_slot(Overlay* overlay)

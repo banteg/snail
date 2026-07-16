@@ -39,7 +39,7 @@ int report_errorf(char* format, ...);
 #define REMOVE_INLINE_BOD_NODE_IF_LINKED(node_expr)               \
     do {                                                          \
         BodNode* node = (node_expr);                              \
-        if ((node->list_flags & 0x200) != 0)                      \
+        if ((node->list_flags & BOD_FLAG_LINKED) != 0)           \
             REMOVE_INLINE_BOD_NODE(node);                         \
     } while (0)
 
@@ -49,7 +49,7 @@ void SubgameRuntime::remove_subgame_bods()
     BodNode** row_next = &runtime_rows[0].row_model.list_next;
     int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);
     do {
-        if ((BOD_NEXT_LINK_FLAGS(row_next) & 0x200) != 0)
+        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)
             REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);
 
         int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
@@ -68,7 +68,7 @@ void SubgameRuntime::remove_subgame_bods()
     BodNode** health_next = &health_pickups[0].list_next;
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     do {
-        if ((BOD_NEXT_LINK_FLAGS(health_next) & 0x200) != 0)
+        if ((BOD_NEXT_LINK_FLAGS(health_next) & BOD_FLAG_LINKED) != 0)
             REMOVE_BOD_NODE_FROM_NEXT_LINK(health_next);
         ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state =
             TRACK_PICKUP_STATE_INACTIVE;
@@ -77,12 +77,12 @@ void SubgameRuntime::remove_subgame_bods()
     } while (health_count != 0);
 
     BodNode* speedup = &speedup_pickup;
-    if ((speedup->list_flags & 0x200) != 0)
+    if ((speedup->list_flags & BOD_FLAG_LINKED) != 0)
         REMOVE_INLINE_BOD_NODE(speedup);
     speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
 
     BodNode* jetpack = &jetpack_pickup;
-    if ((jetpack->list_flags & 0x200) != 0)
+    if ((jetpack->list_flags & BOD_FLAG_LINKED) != 0)
         REMOVE_INLINE_BOD_NODE(jetpack);
     jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
 
@@ -90,7 +90,7 @@ void SubgameRuntime::remove_subgame_bods()
     int garbage_count =
         sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
-        if ((BOD_NEXT_LINK_FLAGS(garbage_next) & 0x200) != 0) {
+        if ((BOD_NEXT_LINK_FLAGS(garbage_next) & BOD_FLAG_LINKED) != 0) {
             ((SubGarbage*)BOD_NODE_FROM_NEXT_LINK(garbage_next))->state =
                 SUB_GARBAGE_STATE_INACTIVE;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(garbage_next);
@@ -102,7 +102,7 @@ void SubgameRuntime::remove_subgame_bods()
     BodNode** slug_next = &slug_hazards.slots[0].list_next;
     int slug_count = sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {
-        if ((BOD_NEXT_LINK_FLAGS(slug_next) & 0x200) != 0) {
+        if ((BOD_NEXT_LINK_FLAGS(slug_next) & BOD_FLAG_LINKED) != 0) {
             ((Slug*)BOD_NODE_FROM_NEXT_LINK(slug_next))->state =
                 SUB_SLUG_STATE_INACTIVE;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(slug_next);
@@ -153,7 +153,7 @@ void SubgameRuntime::remove_subgame_bods()
         ++shot;
     }
 
-    if ((player.click_start.list_flags & 0x200) != 0)
+    if ((player.click_start.list_flags & BOD_FLAG_LINKED) != 0)
         g_game->active_bod_list.recycle_bod_to_free_list(
             (BodNode*)&player.click_start);
 
