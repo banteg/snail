@@ -14,3 +14,8 @@ rather than renumbering them by output mask order.
 Exact source-shape note: the native loop is count-driven (`slot <
 g_joystick_count`) with a separate null-device break. Spelling the loop as
 `while (*device_ref != 0)` adds an unwanted pretest of the first device pointer.
+
+2026-07-16 caller-side ABI proof: the main loop pushes `g_main_window` before
+this cdecl call and releases it in the shared three-poller stack cleanup. The
+poller does not consume the argument, so its exact body could not expose that
+parameter; the recovered `HWND` signature remains 100.00%.

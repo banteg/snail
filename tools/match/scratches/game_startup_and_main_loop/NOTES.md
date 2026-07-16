@@ -176,3 +176,24 @@ window destruction jumps directly to class unregistration.
 - The sampled display dimensions and minimized-window helper now use their
   curated names and exact types; these ownership/name promotions are
   codegen-neutral.
+
+2026-07-16 input ABI and warmup arithmetic recovery:
+
+- Native `0x40715d..0x407180` loads and pushes `g_main_window` separately for
+  `update_keyboard_input`, `update_joystick_input`, and `update_mouse`, then
+  releases all three cdecl arguments with one `add esp, 0xc`. The keyboard and
+  joystick bodies do not read their window arguments, but this caller-side
+  evidence closes their otherwise invisible ABI and is now shared through
+  `input_polling.h`.
+- All three poller owners remain exact after the signature promotion. The main
+  loop gains the native argument loads/pushes and reduces its masked mismatches
+  from five to three; the whole-function similarity metric shifts because the
+  added instructions expose an existing fixed-update block-layout difference.
+- The warmup count is a signed cast of the unsigned `timeGetTime()` result
+  before `% 1000`. That produces native's `cdq; idiv` without corrupting the
+  later unsigned timestamp conversion, which deliberately uses a zero-extended
+  qword and `fild qword`. Changing the imported return type itself was rejected:
+  it emitted `fild dword`, shrank the frame, and regressed the match.
+- Together these recoveries improve the honest focused result from 63.84% to
+  64.28% (`344/325` instructions, `127` clean masked operands, no unresolved
+  operands, and three structural mismatches).

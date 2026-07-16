@@ -2,6 +2,7 @@
 
 #include "direct_input_view.h"
 #include "game_root.h"
+#include "input_polling.h"
 #include "mouse_window_state.h"
 #include "win32_window_state.h"
 

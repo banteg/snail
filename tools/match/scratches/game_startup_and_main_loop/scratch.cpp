@@ -3,6 +3,7 @@
 #include "frontend_fade.h"
 #include "font_system.h"
 #include "game_root.h"
+#include "input_polling.h"
 #include "sub_high_score.h"
 #include "display_mode_state.h"
 #include "loading_bar.h"
@@ -49,9 +50,6 @@ int show_and_focus_game_window(); // @ 0x4073b0
 void minimize_game_window(); // @ 0x407490
 int render_game_frame_scene(); // @ 0x4134c0
 int present_backbuffer(); // @ 0x413520
-int update_keyboard_input(); // @ 0x44b870
-int update_joystick_input(); // @ 0x44b570
-int update_mouse(HWND hwnd); // @ 0x44bc50
 int shutdown_bass_audio_window(); // @ 0x407b00
 void free_tracked_allocations_to_mark(); // @ 0x431c70
 void scalar_delete(void* pointer); // @ 0x48ba34
@@ -115,7 +113,7 @@ int __stdcall game_startup_and_main_loop(
             initialize_main_loop_display_state();
             g_loading_bar.initialize_loading_screen();
 
-            int warmup_count = timeGetTime() % 1000;
+            int warmup_count = (int)timeGetTime() % 1000;
             if (warmup_count > 0) {
                 do {
                     random_float_below(1.0f, 0);
@@ -192,8 +190,8 @@ update_game:
                 int update_index = 0;
                 if (g_game->fixed_update_count > 0) {
                     do {
-                        update_keyboard_input();
-                        update_joystick_input();
+                        update_keyboard_input(g_main_window);
+                        update_joystick_input(g_main_window);
                         update_mouse(g_main_window);
                         update_font_wave_state();
                         int frame_result = g_game->run_frame_update();

@@ -1,6 +1,7 @@
 // update_keyboard_input @ 0x44b870 (cdecl)
 
 #include "direct_input_view.h"
+#include "input_polling.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 extern "C" void* memset(void* destination, int value, unsigned int count);
@@ -12,7 +13,7 @@ extern DirectInputDevice* g_keyboard_device; // data_777d50
 extern unsigned char g_keyboard_previous_state[0x100]; // data_777b4c
 extern unsigned char g_keyboard_current_state[0x100]; // data_777c4c
 
-int update_keyboard_input()
+int update_keyboard_input(HWND)
 {
     DirectInputDevice* device = g_keyboard_device;
     if (device != 0) {

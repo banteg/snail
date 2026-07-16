@@ -1,10 +1,11 @@
 // update_joystick_input @ 0x44b570 (cdecl)
 
 #include "direct_input_view.h"
+#include "input_polling.h"
 
 int update_input_controller_slot_button_axes(int slot, int buttons, float axis_x, float axis_y);
 
-int update_joystick_input()
+int update_joystick_input(HWND)
 {
     int slot = 0;
     if (g_joystick_count > 0) {
