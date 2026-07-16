@@ -4,4 +4,4 @@
 /* function: set_global_stream_volume_config @ 0x449b70 */
 
 00449b88        int16_t x87control
-00449b88        return data_753c1c(5, ftol(x87control, fconvert.t(volume) * fconvert.t(100f)))
+00449b88        return g_bass_set_config(5, ftol(x87control, fconvert.t(volume) * fconvert.t(100f)))

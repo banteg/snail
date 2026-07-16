@@ -1234,9 +1234,9 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
         "typedef enum RegisteredSoundLimits {",
         "typedef char RegisteredSoundSampleName[RSHELL_SOUND_NAME_BYTES];",
         "typedef char CachedMusicPath[256];",
-        "typedef int32_t (__stdcall* BassChannelPlayFn)(",
-        "typedef int32_t (__stdcall* BassSamplePlayExFn)(",
-        "typedef int32_t (__stdcall* BassSampleLoadFn)(",
+        "typedef int32_t (__stdcall* BassStreamPlayFn)(",
+        "typedef BassHandle (__stdcall* BassSamplePlayExFn)(",
+        "typedef BassHandle (__stdcall* BassSampleLoadFn)(",
         "typedef int32_t (__stdcall* BassFreeFn)(void);",
         "void __cdecl reset_registered_sound_sample_count(void);",
         "char __cdecl cache_music_file(",
@@ -1250,7 +1250,7 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
         "extern int32_t g_registered_sound_sample_count;",
         "extern int32_t g_registered_sound_sample_handles[RSHELL_SOUND_MAX];",
         "extern CachedMusicPath g_cached_music_path;",
-        "extern BassChannelPlayFn g_bass_channel_play;",
+        "extern BassStreamPlayFn g_bass_stream_play;",
         "extern BassSamplePlayExFn g_bass_sample_play_ex;",
         "extern BassSampleLoadFn g_bass_sample_load;",
         "extern BassFreeFn g_bass_free;",
@@ -1262,7 +1262,7 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
 
     assert '("0x5088b0", "RegisteredSoundSampleName[256]")' in binja_source
     assert '("0x7516a0", "CachedMusicPath")' in binja_source
-    assert '("0x7517a0", "BassChannelPlayFn")' in binja_source
+    assert '("0x7517a0", "BassStreamPlayFn")' in binja_source
     assert '("0x7527b4", "BassSamplePlayExFn")' in binja_source
     assert '("0x7537cc", "BassSampleLoadFn")' in binja_source
     assert '("0x7537d8", "BassFreeFn")' in binja_source
@@ -1286,7 +1286,7 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     assert 're.sub(r"\\s*\\[\\s*", "[", normalized)' in ida_source
     assert '"RegisteredSoundSampleName g_registered_sound_sample_names[256];"' in ida_source
     assert '"char g_cached_music_path[256];"' in ida_source
-    assert '"BassChannelPlayFn g_bass_channel_play;"' in ida_source
+    assert '"BassStreamPlayFn g_bass_stream_play;"' in ida_source
     assert '"BassSamplePlayExFn g_bass_sample_play_ex;"' in ida_source
     assert '"BassSampleLoadFn g_bass_sample_load;"' in ida_source
     assert '"BassFreeFn g_bass_free;"' in ida_source
@@ -1317,6 +1317,98 @@ def test_archive_shell_replays_preserve_registered_sound_ownership() -> None:
     assert "cache_music_file" not in path_header
 
 
+def test_archive_shell_replays_preserve_exact_bass_dispatch_table() -> None:
+    binja_source = (BINJA_DIR / "sync_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_archive_shell_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bn_archive_shell_types.h", "archive_shell_types.h")
+    )
+    import_headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in ("bass_min.h", "snail_bn_import.h")
+    )
+
+    for declaration in (
+        "DWORD WINAPI BASS_SetConfig(DWORD option, DWORD value);",
+        "BOOL WINAPI BASS_Update(void);",
+        "void WINAPI BASS_StreamFree(HSTREAM stream);",
+        "HCHANNEL WINAPI BASS_SamplePlayEx(HSAMPLE sample, DWORD start, INT freq, INT volume, INT pan, BOOL loop);",
+        "float WINAPI BASS_ChannelBytes2Seconds(DWORD channel, QWORD position);",
+        "HSYNC WINAPI BASS_ChannelSetSync(DWORD channel, DWORD sync_type, QWORD parameter, SYNCPROC *proc, DWORD user);",
+        "QWORD WINAPI BASS_ChannelGetPosition(DWORD channel);",
+    ):
+        assert all(declaration in header for header in import_headers)
+
+    dispatch = (
+        ("0x75162c", "g_bass_channel_bytes2_seconds", "BassChannelBytes2SecondsFn"),
+        ("0x75165c", "g_bass_channel_remove_sync", "BassChannelRemoveSyncFn"),
+        ("0x751660", "g_bass_start", "BassStartFn"),
+        ("0x751670", "g_bass_stream_prebuf", "BassStreamPreBufFn"),
+        ("0x751674", "g_bass_error_get_code", "BassErrorGetCodeFn"),
+        ("0x751698", "g_bass_update", "BassUpdateFn"),
+        ("0x7517a0", "g_bass_stream_play", "BassStreamPlayFn"),
+        ("0x7527b4", "g_bass_sample_play_ex", "BassSamplePlayExFn"),
+        ("0x7537cc", "g_bass_sample_load", "BassSampleLoadFn"),
+        ("0x7537d8", "g_bass_free", "BassFreeFn"),
+        ("0x753be4", "g_bass_channel_stop", "BassChannelStopFn"),
+        ("0x753bf8", "g_bass_stream_create_file", "BassStreamCreateFileFn"),
+        ("0x753bfc", "g_bass_stop", "BassStopFn"),
+        ("0x753c08", "g_bass_init", "BassInitFn"),
+        ("0x753c18", "g_bass_channel_get_data", "BassChannelGetDataFn"),
+        ("0x753c1c", "g_bass_set_config", "BassSetConfigFn"),
+        ("0x753c94", "g_bass_sample_stop", "BassSampleStopFn"),
+        ("0x753c98", "g_bass_channel_get_position", "BassChannelGetPositionFn"),
+        ("0x753ca8", "g_bass_channel_is_active", "BassChannelIsActiveFn"),
+        ("0x753cb0", "g_bass_stream_free", "BassStreamFreeFn"),
+        ("0x753cbc", "g_bass_channel_get_level", "BassChannelGetLevelFn"),
+        ("0x753cc0", "g_bass_pause", "BassPauseFn"),
+        ("0x753cc4", "g_bass_channel_set_sync", "BassChannelSetSyncFn"),
+    )
+    for address, name, type_name in dispatch:
+        assert f'("{address}", "{name}")' in binja_source
+        assert f'("{address}", "{type_name}")' in binja_source
+        assert all(f"extern {type_name} {name};" in header for header in headers)
+        ida_address = address.upper().replace("0X", "0x")
+        assert f'({ida_address}, "{name}"' in ida_source
+        assert f'"{type_name} {name};"' in ida_source
+
+    for declaration in (
+        "typedef float (__stdcall* BassChannelBytes2SecondsFn)(",
+        "BassHandle channel_handle, BassQword position);",
+        "typedef void (__stdcall* BassStreamFreeFn)(BassHandle stream_handle);",
+        "typedef int32_t (__stdcall* BassStreamPlayFn)(",
+        "typedef BassQword (__stdcall* BassChannelGetPositionFn)(",
+        "typedef BassHandle (__stdcall* BassChannelSetSyncFn)(",
+        "BassQword parameter,",
+        "BassSyncProc callback,",
+    ):
+        assert all(declaration in header for header in headers)
+
+    for address, name, type_name in (
+        ("0x751680", "g_active_music_stream_sync", "BassHandle"),
+        ("0x753c20", "g_active_music_stream", "BassHandle"),
+        ("0x753c90", "g_bass_module", "void*"),
+    ):
+        assert f'("{address}", "{name}")' in binja_source
+        assert f'("{address}", "{type_name}")' in binja_source
+        assert all(f"extern {type_name} {name};" in header for header in headers)
+
+    for address, name, type_name in (
+        ("0x49701c", "GetProcAddress", "Win32GetProcAddressFn"),
+        ("0x497020", "LoadLibraryA", "Win32LoadLibraryAFn"),
+        ("0x497024", "FreeLibrary", "Win32FreeLibraryFn"),
+    ):
+        assert f'("{address}", "{type_name}")' in binja_source
+        assert all(f"extern {type_name} {name};" in header for header in headers)
+        ida_address = address.upper().replace("0X", "0x")
+        assert f'({ida_address}, "{name}", "{type_name} {name};")' in ida_source
+
+
 def test_audio_system_header_owns_registered_audio_globals() -> None:
     audio_header = (
         Path(__file__).parents[1] / "tools/match/include/audio_system.h"
@@ -1326,6 +1418,10 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
     assert "extern float g_stream_volume_scale;" in audio_header
     assert "extern float g_audio_backend_sfx_normalization_scale;" in audio_header
     assert "extern float g_audio_backend_voice_normalization_scale;" in audio_header
+    assert "typedef void (__stdcall* BassStreamFreeFn)(BassHandle stream_handle);" in audio_header
+    assert "extern BassStreamPlayFn g_bass_stream_play;" in audio_header
+    assert "extern BassChannelIsActiveFn g_bass_channel_is_active;" in audio_header
+    assert "extern void* g_bass_module;" in audio_header
 
     scratch_names = (
         "load_registered_sound_sample_from_path",
@@ -1376,6 +1472,33 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
         )
         assert "#include \"audio_system.h\"" in source
         assert stale_declaration not in source
+
+    for scratch_name in (
+        "initialize_bass_audio_backend",
+        "ensure_music_stream_from_path",
+        "play_music_stream_from_bytes",
+        "load_registered_sound_sample_from_path",
+        "load_registered_sound_sample_from_bytes",
+        "play_registered_sound_sample_scaled",
+        "play_registered_sound_sample_default",
+        "play_registered_sound_sample_backend",
+        "play_registered_sound_sample_scaled_panned",
+        "stop_sound_sample_handle",
+        "stop_registered_sound_sample",
+        "is_registered_sound_sample_playing",
+        "stop_music_stream",
+        "set_global_sample_volume_config",
+        "set_global_stream_volume_config",
+        "stop_audio_backend",
+        "resume_audio_backend_if_paused",
+        "pause_audio_backend_if_running",
+        "uninitialize_bass_audio_backend",
+    ):
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert "typedef " not in source
+        assert "extern Bass" not in source
 
 
 def test_archive_shell_replays_preserve_audio_backend_member_abi() -> None:

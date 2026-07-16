@@ -2,10 +2,6 @@
 
 #include "audio_system.h"
 
-typedef int (__stdcall* BassSetConfigFn)(int option, int value);
-
-extern BassSetConfigFn g_bass_set_config; // 0x753c1c
-
 int AudioBackend::set_global_stream_volume_config(float volume)
 {
     return g_bass_set_config(5, (int)(volume * 100.0f));

@@ -2,11 +2,6 @@
 
 #include "audio_system.h"
 
-typedef int (__stdcall* BassSampleLoadFn)(
-    int from_memory, char* path_or_bytes, int offset, int byte_count, int max_instances, int flags);
-
-extern BassSampleLoadFn g_bass_sample_load; // 0x7537cc
-
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 void AudioBackend::load_registered_sound_sample_from_bytes(

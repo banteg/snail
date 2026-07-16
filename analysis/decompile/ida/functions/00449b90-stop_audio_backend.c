@@ -6,5 +6,5 @@
 // attributes: thunk
 int32_t __thiscall stop_audio_backend(AudioBackend *backend)
 {
-  return g_bass_stop(backend);
+  return g_bass_stop();
 }

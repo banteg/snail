@@ -2,11 +2,6 @@
 
 #include "audio_system.h"
 
-typedef int (__stdcall* BassSamplePlayExFn)(
-    int sample_handle, int start, int frequency, int volume, int pan, int loop);
-
-extern BassSamplePlayExFn g_bass_sample_play_ex; // 0x7527b4
-
 void AudioBackend::play_registered_sound_sample_backend(
     int sample_id, float volume, float pitch)
 {

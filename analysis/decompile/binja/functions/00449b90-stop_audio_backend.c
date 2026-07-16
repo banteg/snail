@@ -3,4 +3,4 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: stop_audio_backend @ 0x449b90 */
 
-00449b90        jump(data_753bfc)
+00449b90        return g_bass_stop() __tailcall

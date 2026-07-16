@@ -5,6 +5,6 @@
 
 00449bc3        uint8_t is_paused = backend->is_paused
 00449bc8        if (is_paused == 0)
-00449bca        is_paused = data_753cc0()
+00449bca        is_paused = g_bass_pause()
 00449bd0        backend->is_paused = 1
 00449bd5        return is_paused

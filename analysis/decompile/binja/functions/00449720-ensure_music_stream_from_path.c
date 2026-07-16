@@ -21,14 +21,14 @@
 00449772        stop_music_stream(backend)
 0044977a        g_active_music_stream = 0
 00449785        if (not.d(i) - 1 s> 4)
-00449790        int32_t stream = g_bass_stream_create_file(0, path, 0, 0, 0)
-00449798        g_active_music_stream = stream
-0044979d        if (stream != 0)
+00449790        BassHandle stream_handle = g_bass_stream_create_file(0, path, 0, 0, 0)
+00449798        g_active_music_stream = stream_handle
+0044979d        if (stream_handle != 0)
 004497a5        if (play_mode == 0)
-004497bf        int32_t eax_4 = g_bass_channel_play(stream, 0, 0)
+004497bf        int32_t eax_4 = g_bass_stream_play(stream_handle, 0, 0)
 004497c5        backend->music_stream_active = 1
 004497ca        return eax_4
-004497ac        int32_t eax_3 = g_bass_channel_play(stream, 0, 4)
+004497ac        int32_t eax_3 = g_bass_stream_play(stream_handle, 0, 4)
 004497b2        backend->music_stream_active = 1
 004497b7        return eax_3
 004497d3        return report_errorf("Music Play Memory Failed %s", path)

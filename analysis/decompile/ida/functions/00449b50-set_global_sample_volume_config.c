@@ -5,5 +5,5 @@
 // Scales one normalized [0,1] sample-volume scalar onto BASS config option `4` (`BASS_CONFIG_GVOL_SAMPLE`) before the backend stores it as the live global SFX sample volume.
 int32_t __thiscall set_global_sample_volume_config(AudioBackend *backend, float volume)
 {
-  return g_bass_set_config(4, (__int64)(volume * 100.0));
+  return g_bass_set_config(4u, (__int64)(volume * 100.0));
 }

@@ -10,9 +10,9 @@ void __thiscall load_registered_sound_sample_from_bytes(
         int32_t sample_id,
         int32_t normalization_class)
 {
-  int32_t v5; // eax
+  BassHandle v5; // eax
 
-  v5 = g_bass_sample_load(1, bytes, 0, byte_count, normalization_class, 131088);
+  v5 = g_bass_sample_load(1, bytes, 0, byte_count, normalization_class, 0x20010u);
   g_registered_sound_sample_handles[sample_id] = v5;
   if ( !v5 )
     debug_report_stub();

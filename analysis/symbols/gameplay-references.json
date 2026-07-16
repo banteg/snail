@@ -4498,6 +4498,7 @@
       "aliases": [
         "data_75162c"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelBytes2Seconds function pointer resolved during BASS backend initialization."
     },
     {
@@ -4507,6 +4508,7 @@
       "aliases": [
         "data_75165c"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelRemoveSync function pointer used when stopping the active music stream."
     },
     {
@@ -4516,6 +4518,7 @@
       "aliases": [
         "data_751660"
       ],
+      "size": "0x4",
       "description": "BASS_Start function pointer used to resume the audio backend."
     },
     {
@@ -4525,6 +4528,7 @@
       "aliases": [
         "data_751670"
       ],
+      "size": "0x4",
       "description": "BASS_StreamPreBuf function pointer resolved during BASS backend initialization."
     },
     {
@@ -4534,6 +4538,7 @@
       "aliases": [
         "data_751674"
       ],
+      "size": "0x4",
       "description": "BASS_ErrorGetCode function pointer resolved during BASS backend initialization."
     },
     {
@@ -4543,6 +4548,7 @@
       "aliases": [
         "data_751698"
       ],
+      "size": "0x4",
       "description": "BASS_Update function pointer resolved during BASS backend initialization."
     },
     {
@@ -4554,7 +4560,7 @@
         "byte_7516a0"
       ],
       "size": "0x100",
-      "description": "Exactly 256 bytes of cached active music path copied by the music stream loaders and compared before reloading archive-backed music; the independently resolved g_bass_channel_play pointer starts at the hard 0x100-byte boundary."
+      "description": "Exactly 256 bytes of cached active music path copied by the music stream loaders and compared before reloading archive-backed music; the independently resolved g_bass_stream_play pointer starts at the hard 0x100-byte boundary."
     },
     {
       "address": "0x751680",
@@ -4577,13 +4583,14 @@
     },
     {
       "address": "0x7517a0",
-      "name": "g_bass_channel_play",
+      "name": "g_bass_stream_play",
       "kind": "function_pointer",
       "aliases": [
+        "g_bass_channel_play",
         "data_7517a0"
       ],
       "size": "0x4",
-      "description": "BASS_ChannelPlay function pointer used by music stream loaders after creating or opening a stream."
+      "description": "BASS_StreamPlay function pointer used by music stream loaders after creating a stream. The prior g_bass_channel_play spelling was retired because the exact resolver export and bundled BASS 2.0 header both identify this API as BASS_StreamPlay."
     },
     {
       "address": "0x7537cc",
@@ -4623,6 +4630,7 @@
       "aliases": [
         "data_753be4"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelStop function pointer used when stopping the active music stream."
     },
     {
@@ -4632,6 +4640,7 @@
       "aliases": [
         "data_753bf8"
       ],
+      "size": "0x4",
       "description": "BASS_StreamCreateFile function pointer used by filesystem-backed and memory-backed music stream loaders."
     },
     {
@@ -4641,6 +4650,7 @@
       "aliases": [
         "data_753bfc"
       ],
+      "size": "0x4",
       "description": "BASS_Stop function pointer used by audio backend stop/uninitialize helpers."
     },
     {
@@ -4650,6 +4660,7 @@
       "aliases": [
         "data_753c08"
       ],
+      "size": "0x4",
       "description": "BASS_Init function pointer resolved and called by initialize_bass_audio_backend."
     },
     {
@@ -4659,6 +4670,7 @@
       "aliases": [
         "data_753c18"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelGetData function pointer resolved during BASS backend initialization."
     },
     {
@@ -4668,6 +4680,7 @@
       "aliases": [
         "data_753c1c"
       ],
+      "size": "0x4",
       "description": "BASS_SetConfig function pointer used by sample and stream volume config wrappers."
     },
     {
@@ -4725,6 +4738,7 @@
       "aliases": [
         "data_753c90"
       ],
+      "size": "0x4",
       "description": "Loaded BASS module handle used when resolving and freeing BASS functions."
     },
     {
@@ -4734,6 +4748,7 @@
       "aliases": [
         "data_753c94"
       ],
+      "size": "0x4",
       "description": "BASS_SampleStop function pointer used by registered sample stop wrappers."
     },
     {
@@ -4743,16 +4758,19 @@
       "aliases": [
         "data_753c98"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelGetPosition function pointer resolved during BASS backend initialization."
     },
     {
       "address": "0x753ca8",
-      "name": "g_bass_sample_is_active",
+      "name": "g_bass_channel_is_active",
       "kind": "function_pointer",
       "aliases": [
+        "g_bass_sample_is_active",
         "data_753ca8"
       ],
-      "description": "BASS_SampleIsActive function pointer used by registered sample state checks."
+      "size": "0x4",
+      "description": "BASS_ChannelIsActive function pointer used by registered sample-channel state checks. The prior g_bass_sample_is_active spelling was retired because the exact resolver export and bundled BASS 2.0 header identify the handle-level API as BASS_ChannelIsActive."
     },
     {
       "address": "0x753cb0",
@@ -4761,6 +4779,7 @@
       "aliases": [
         "data_753cb0"
       ],
+      "size": "0x4",
       "description": "BASS_StreamFree function pointer used when stopping the active music stream."
     },
     {
@@ -4770,6 +4789,7 @@
       "aliases": [
         "data_753cbc"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelGetLevel function pointer resolved during BASS backend initialization."
     },
     {
@@ -4779,6 +4799,7 @@
       "aliases": [
         "data_753cc0"
       ],
+      "size": "0x4",
       "description": "BASS_Pause function pointer used to pause the audio backend."
     },
     {
@@ -4788,6 +4809,7 @@
       "aliases": [
         "data_753cc4"
       ],
+      "size": "0x4",
       "description": "BASS_ChannelSetSync function pointer resolved during BASS backend initialization."
     },
     {

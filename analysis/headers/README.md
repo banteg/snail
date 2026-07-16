@@ -28,7 +28,7 @@ Current high-value targets for these headers:
 - `enumerate_input_controllers`
 - `initialize_keyboard_input`
 - `initialize_mouse_input`
-- `sub_449460` (`tBass.dll` loader)
+- `initialize_bass_audio_backend` (`tBass.dll` loader)
 
 Observed DLL facts behind `bass_min.h`:
 
@@ -37,6 +37,9 @@ Observed DLL facts behind `bass_min.h`:
 - the exported surface is still the older pre-2.1 API family used by the game
 - the official `bass20.zip` SDK header parses to the same `100` named BASS functions
   once wrapped for BN import
+- the exact resolver table owns 23 typed function-pointer globals; its
+  `BASS_StreamPlay` and `BASS_ChannelIsActive` names supersede the earlier
+  gameplay-biased channel-play and sample-is-active spellings
 
 Why this lives in-repo:
 

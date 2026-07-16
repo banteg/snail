@@ -7,7 +7,7 @@ int32_t __thiscall ensure_music_stream_from_path(AudioBackend *backend, char *pa
 {
   int32_t result; // eax
   unsigned int v5; // kr04_4
-  int32_t file; // eax
+  BassHandle file; // eax
 
   if ( backend->music_stream_active )
   {
@@ -28,9 +28,9 @@ int32_t __thiscall ensure_music_stream_from_path(AudioBackend *backend, char *pa
   if ( !file )
     return report_errorf("Music Play Memory Failed %s", path);
   if ( play_mode )
-    result = g_bass_channel_play(file, 0, 4);
+    result = g_bass_stream_play(file, 0, 4u);
   else
-    result = g_bass_channel_play(file, 0, 0);
+    result = g_bass_stream_play(file, 0, 0);
   backend->music_stream_active = 1;
   return result;
 }

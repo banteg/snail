@@ -6810,13 +6810,14 @@
         "backend->music_stream_active",
         "g_cached_music_path",
         "g_bass_stream_create_file",
-        "g_bass_channel_play"
+        "g_bass_stream_play"
       ],
       "forbidden_substrings": [
         "_BYTE *this",
         "char *ArgList",
         "&g_cached_music_path[256]",
-        "g_cached_music_path[8492]"
+        "g_cached_music_path[8492]",
+        "g_bass_channel_play"
       ]
     },
     {
@@ -6842,12 +6843,36 @@
         "backend->music_stream_active",
         "stop_music_stream(backend)",
         "path",
-        "play_mode"
+        "play_mode",
+        "g_bass_stream_play"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
-        "data_753c58"
+        "data_753c58",
+        "g_bass_channel_play"
+      ]
+    },
+    {
+      "name": "bn_bass_channel_active_dispatch_owner",
+      "artifact": "analysis/decompile/binja/functions/00449a40-is_registered_sound_sample_playing.c",
+      "required_substrings": [
+        "g_bass_channel_is_active(g_registered_sound_sample_handles[sample_id])"
+      ],
+      "forbidden_substrings": [
+        "g_bass_sample_is_active",
+        "data_753ca8"
+      ]
+    },
+    {
+      "name": "ida_bass_channel_active_dispatch_owner",
+      "artifact": "analysis/decompile/ida/functions/00449a40-is_registered_sound_sample_playing.c",
+      "required_substrings": [
+        "g_bass_channel_is_active(g_registered_sound_sample_handles[sample_id])"
+      ],
+      "forbidden_substrings": [
+        "g_bass_sample_is_active",
+        "data_753ca8"
       ]
     },
     {
@@ -6944,14 +6969,59 @@
       ]
     },
     {
+      "name": "bn_bass_loader_dispatch_owners",
+      "artifact": "analysis/decompile/binja/functions/00449460-initialize_bass_audio_backend.c",
+      "required_substrings": [
+        "g_bass_module = eax_1",
+        "GetProcAddress(eax_1, \"BASS_Init\")",
+        "g_bass_stream_play = eax_9",
+        "g_bass_channel_is_active = GetProcAddress(g_bass_module, \"BASS_ChannelIsActive\")"
+      ],
+      "forbidden_substrings": [
+        "g_bass_channel_play",
+        "g_bass_sample_is_active",
+        "data_7517a0",
+        "data_753ca8"
+      ]
+    },
+    {
+      "name": "ida_bass_loader_dispatch_owners",
+      "artifact": "analysis/decompile/ida/functions/00449460-initialize_bass_audio_backend.c",
+      "required_substrings": [
+        "g_bass_module = LoadLibraryA((const char *)LibFileName)",
+        "g_bass_init = (BassInitFn)GetProcAddress(g_bass_module",
+        "g_bass_stream_play = (BassStreamPlayFn)GetProcAddress(g_bass_module",
+        "g_bass_channel_is_active = (BassChannelIsActiveFn)GetProcAddress(g_bass_module"
+      ],
+      "forbidden_substrings": [
+        "ObjectFaceQuad",
+        "((int (__stdcall",
+        "g_bass_channel_play",
+        "g_bass_sample_is_active"
+      ]
+    },
+    {
+      "name": "bn_bass_module_uninitialize_owner",
+      "artifact": "analysis/decompile/binja/functions/004496d0-uninitialize_bass_audio_backend.c",
+      "required_substrings": [
+        "FreeLibrary(g_bass_module)"
+      ],
+      "forbidden_substrings": [
+        "data_753c90"
+      ]
+    },
+    {
       "name": "ida_audio_backend_uninitialize_member_owner",
       "artifact": "analysis/decompile/ida/functions/004496d0-uninitialize_bass_audio_backend.c",
       "required_substrings": [
-        "void __thiscall uninitialize_bass_audio_backend(AudioBackend *backend)"
+        "void __thiscall uninitialize_bass_audio_backend(AudioBackend *backend)",
+        "FreeLibrary(g_bass_module)"
       ],
       "forbidden_substrings": [
         "int uninitialize_bass_audio_backend()",
-        "int uninitialize_bass_audio_backend(void)"
+        "int uninitialize_bass_audio_backend(void)",
+        "ObjectFaceQuad",
+        "((int (__stdcall"
       ]
     }
   ]

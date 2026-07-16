@@ -2,10 +2,6 @@
 
 #include "audio_system.h"
 
-typedef int (__stdcall* BassPauseFn)();
-
-extern BassPauseFn g_bass_pause; // 0x753cc0
-
 char AudioBackend::pause_audio_backend_if_running()
 {
     char result = is_paused;

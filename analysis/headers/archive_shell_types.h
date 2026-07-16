@@ -89,23 +89,75 @@ typedef struct AudioBackend {
     uint8_t is_paused;
 } AudioBackend;
 
-typedef int32_t (__stdcall* BassChannelPlayFn)(
-    int32_t stream, int32_t restart, int32_t flags);
-typedef int32_t (__stdcall* BassSamplePlayExFn)(
-    int32_t sample_handle,
-    int32_t start,
+typedef uint32_t BassHandle;
+typedef unsigned __int64 BassQword;
+typedef void (__stdcall* BassSyncProc)(
+    BassHandle sync_handle,
+    BassHandle channel,
+    uint32_t data,
+    uint32_t user);
+typedef uint32_t (__stdcall* BassSetConfigFn)(
+    uint32_t option, uint32_t value);
+typedef uint32_t (__stdcall* BassErrorGetCodeFn)(void);
+typedef int32_t (__stdcall* BassInitFn)(
+    uint32_t device,
+    uint32_t frequency,
+    uint32_t flags,
+    void* hwnd,
+    const void* direct_sound_guid);
+typedef int32_t (__stdcall* BassFreeFn)(void);
+typedef int32_t (__stdcall* BassUpdateFn)(void);
+typedef int32_t (__stdcall* BassStartFn)(void);
+typedef int32_t (__stdcall* BassStopFn)(void);
+typedef int32_t (__stdcall* BassPauseFn)(void);
+typedef BassHandle (__stdcall* BassSampleLoadFn)(
+    int32_t from_memory,
+    const void* path_or_bytes,
+    uint32_t offset,
+    uint32_t byte_count,
+    uint32_t max_instances,
+    uint32_t flags);
+typedef BassHandle (__stdcall* BassSamplePlayExFn)(
+    BassHandle sample_handle,
+    uint32_t start,
     int32_t frequency,
     int32_t volume,
     int32_t pan,
     int32_t loop);
-typedef int32_t (__stdcall* BassSampleLoadFn)(
+typedef int32_t (__stdcall* BassSampleStopFn)(BassHandle sample_handle);
+typedef BassHandle (__stdcall* BassStreamCreateFileFn)(
     int32_t from_memory,
-    char* path_or_bytes,
-    int32_t offset,
-    int32_t byte_count,
-    int32_t max_instances,
-    int32_t flags);
-typedef int32_t (__stdcall* BassFreeFn)(void);
+    const void* path_or_bytes,
+    uint32_t offset,
+    uint32_t byte_count,
+    uint32_t flags);
+typedef void (__stdcall* BassStreamFreeFn)(BassHandle stream_handle);
+typedef int32_t (__stdcall* BassStreamPreBufFn)(BassHandle stream_handle);
+typedef int32_t (__stdcall* BassStreamPlayFn)(
+    BassHandle stream_handle, int32_t flush, uint32_t flags);
+typedef float (__stdcall* BassChannelBytes2SecondsFn)(
+    BassHandle channel_handle, BassQword position);
+typedef uint32_t (__stdcall* BassChannelIsActiveFn)(
+    BassHandle channel_handle);
+typedef int32_t (__stdcall* BassChannelStopFn)(BassHandle channel_handle);
+typedef BassQword (__stdcall* BassChannelGetPositionFn)(
+    BassHandle channel_handle);
+typedef uint32_t (__stdcall* BassChannelGetLevelFn)(
+    BassHandle channel_handle);
+typedef uint32_t (__stdcall* BassChannelGetDataFn)(
+    BassHandle channel_handle, void* buffer, uint32_t byte_count);
+typedef BassHandle (__stdcall* BassChannelSetSyncFn)(
+    BassHandle channel_handle,
+    uint32_t sync_type,
+    BassQword parameter,
+    BassSyncProc callback,
+    uint32_t user);
+typedef int32_t (__stdcall* BassChannelRemoveSyncFn)(
+    BassHandle channel_handle, BassHandle sync_handle);
+typedef void* (__stdcall* Win32LoadLibraryAFn)(const char* library_name);
+typedef void* (__stdcall* Win32GetProcAddressFn)(
+    void* module, const char* export_name);
+typedef int32_t (__stdcall* Win32FreeLibraryFn)(void* module);
 
 int32_t __cdecl get_stream_length_preserve_position(File* file);
 
@@ -226,10 +278,35 @@ extern File* g_archive_file;
 extern uint8_t g_archive_startup_flag;
 extern ArchiveIndex* g_archive_index_records;
 extern CachedMusicPath g_cached_music_path;
-extern BassChannelPlayFn g_bass_channel_play;
+extern BassChannelBytes2SecondsFn g_bass_channel_bytes2_seconds;
+extern BassChannelRemoveSyncFn g_bass_channel_remove_sync;
+extern BassStartFn g_bass_start;
+extern BassStreamPreBufFn g_bass_stream_prebuf;
+extern BassErrorGetCodeFn g_bass_error_get_code;
+extern BassHandle g_active_music_stream_sync;
+extern BassUpdateFn g_bass_update;
+extern BassStreamPlayFn g_bass_stream_play;
 extern BassSamplePlayExFn g_bass_sample_play_ex;
 extern BassSampleLoadFn g_bass_sample_load;
 extern BassFreeFn g_bass_free;
+extern BassChannelStopFn g_bass_channel_stop;
+extern BassStreamCreateFileFn g_bass_stream_create_file;
+extern BassStopFn g_bass_stop;
+extern BassInitFn g_bass_init;
+extern BassChannelGetDataFn g_bass_channel_get_data;
+extern BassSetConfigFn g_bass_set_config;
+extern BassHandle g_active_music_stream;
+extern void* g_bass_module;
+extern BassSampleStopFn g_bass_sample_stop;
+extern BassChannelGetPositionFn g_bass_channel_get_position;
+extern BassChannelIsActiveFn g_bass_channel_is_active;
+extern BassStreamFreeFn g_bass_stream_free;
+extern BassChannelGetLevelFn g_bass_channel_get_level;
+extern BassPauseFn g_bass_pause;
+extern BassChannelSetSyncFn g_bass_channel_set_sync;
+extern Win32GetProcAddressFn GetProcAddress;
+extern Win32LoadLibraryAFn LoadLibraryA;
+extern Win32FreeLibraryFn FreeLibrary;
 extern RegisteredSoundSampleName g_registered_sound_sample_names[RSHELL_SOUND_MAX];
 extern int32_t g_registered_sound_sample_count;
 extern int32_t g_registered_sound_sample_handles[RSHELL_SOUND_MAX];

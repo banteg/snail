@@ -11,7 +11,7 @@ int32_t __thiscall load_registered_sound_sample_from_path(
 {
   int32_t result; // eax
 
-  result = g_bass_sample_load(0, path, 0, 0, normalization_class, 131088);
+  result = g_bass_sample_load(0, path, 0, 0, normalization_class, 0x20010u);
   g_registered_sound_sample_handles[sample_id] = result;
   if ( !result )
     return debug_report_stub();

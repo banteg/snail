@@ -19,7 +19,7 @@ Source-shape note:
 
 ## 2026-07-16 cached-path boundary
 
-The cache is exactly 0x100 bytes: `g_bass_channel_play` begins at
+The cache is exactly 0x100 bytes: `g_bass_stream_play` begins at
 `g_cached_music_path + 0x100`, is independently called by both music loaders,
 and is assigned from the `BASS_StreamPlay` export during backend initialization.
 That hard boundary rejects IDA's old next-symbol-derived `char[8512]` guess,

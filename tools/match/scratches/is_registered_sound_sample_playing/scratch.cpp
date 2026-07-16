@@ -2,12 +2,8 @@
 
 #include "audio_system.h"
 
-typedef int (__stdcall* BassSampleIsActiveFn)(int sample_handle);
-
-extern BassSampleIsActiveFn g_bass_sample_is_active;  // 0x753ca8
-
 bool AudioBackend::is_registered_sound_sample_playing(int sample_id)
 {
-    bool active = g_bass_sample_is_active(g_registered_sound_sample_handles[sample_id]) == 1;
+    bool active = g_bass_channel_is_active(g_registered_sound_sample_handles[sample_id]) == 1;
     return active;
 }

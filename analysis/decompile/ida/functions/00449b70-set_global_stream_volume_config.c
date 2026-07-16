@@ -5,5 +5,5 @@
 // Scales one normalized [0,1] stream-volume scalar onto BASS config option `5` (`BASS_CONFIG_GVOL_STREAM`) before the backend stores it as the live music or stream volume.
 int32_t __thiscall set_global_stream_volume_config(AudioBackend *backend, float volume)
 {
-  return g_bass_set_config(5, (__int64)(volume * 100.0));
+  return g_bass_set_config(5u, (__int64)(volume * 100.0));
 }

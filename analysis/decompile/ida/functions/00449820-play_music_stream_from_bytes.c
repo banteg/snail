@@ -11,7 +11,7 @@ int32_t __thiscall play_music_stream_from_bytes(
         char play_mode)
 {
   unsigned int v6; // kr04_4
-  int32_t file; // eax
+  BassHandle file; // eax
   int32_t result; // eax
 
   v6 = strlen(path) + 1;
@@ -26,9 +26,9 @@ int32_t __thiscall play_music_stream_from_bytes(
   if ( !file )
     return report_errorf("Music Play Memory Failed %s", path);
   if ( play_mode )
-    result = g_bass_channel_play(file, 0, 4);
+    result = g_bass_stream_play(file, 0, 4u);
   else
-    result = g_bass_channel_play(file, 0, 0);
+    result = g_bass_stream_play(file, 0, 0);
   backend->music_stream_active = 1;
   return result;
 }

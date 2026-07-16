@@ -3,14 +3,6 @@
 #include "audio_system.h"
 #include <string.h>
 
-typedef int (__stdcall* BassStreamCreateFileFn)(
-    int from_memory, char* path_or_bytes, int offset, int byte_count, int flags);
-typedef int (__stdcall* BassChannelPlayFn)(int stream, int restart, int flags);
-
-extern int g_active_music_stream; // 0x753c20
-extern BassChannelPlayFn g_bass_channel_play; // 0x7517a0
-extern BassStreamCreateFileFn g_bass_stream_create_file; // 0x753bf8
-
 int strings_equal_case_insensitive_path(char* left, char* right); // @ 0x44e6c0
 void rstrcpy_checked_ascii(char* destination, char* source);
 int report_errorf(char* format, ...);
@@ -41,9 +33,9 @@ int AudioBackend::ensure_music_stream_from_path(char* path, char play_mode)
         if (stream != 0) {
             int result;
             if (play_mode) {
-                result = g_bass_channel_play(stream, 0, 4);
+                result = g_bass_stream_play(stream, 0, 4);
             } else {
-                result = g_bass_channel_play(stream, 0, 0);
+                result = g_bass_stream_play(stream, 0, 0);
             }
             backend->music_stream_active = 1;
             return result;

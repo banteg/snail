@@ -5,11 +5,11 @@
 
 004498d6        if (backend->music_stream_active == 0)
 004498d6        return
-004498d8        int32_t eax_1 = data_751680
-004498df        if (eax_1 != 0)
-004498e8        data_75165c(g_active_music_stream, eax_1)
-004498ee        data_751680 = 0
-004498ff        data_753be4(g_active_music_stream)
-0044990c        data_753cb0(g_active_music_stream)
+004498d8        uint32_t active_music_stream_sync_1 = g_active_music_stream_sync
+004498df        if (active_music_stream_sync_1 != 0)
+004498e8        g_bass_channel_remove_sync(g_active_music_stream, active_music_stream_sync_1)
+004498ee        g_active_music_stream_sync = 0
+004498ff        g_bass_channel_stop(g_active_music_stream)
+0044990c        g_bass_stream_free(g_active_music_stream)
 00449912        backend->music_stream_active = 0
 00449916        return

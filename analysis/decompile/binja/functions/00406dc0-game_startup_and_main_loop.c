@@ -6,8 +6,7 @@
 00406dcf        int32_t edi = 0
 00406dd9        if (FindWindowExA(nullptr, nullptr, "SnailMailWindowClass", nullptr) != 0)
 00406de2        return 0
-00406def        int32_t* esi
-00406def        if (sub_44afc0(esi, nullptr) s< 0x801)
+00406def        if (sub_44afc0() s< 0x801)
 00406df1        abort_startup_with_3d_error()
 00406dfd        return 0
 00406e00        rebuild_game_archive_if_needed()
@@ -18,7 +17,6 @@
 00406e2f        initialize_trigonometry_tables()
 00406e3b        if (initialize_game_data_archive() == 0)
 00406e44        return 0
-00406e48        int32_t* var_34 = esi
 00406e49        snapshot_current_display_mode()
 00406e4e        initialize_mouse_authored_scale_from_clip_rect()
 00406e53        probe_display_mode_count()
