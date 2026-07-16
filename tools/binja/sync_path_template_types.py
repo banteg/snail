@@ -508,6 +508,95 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
+# CondenseTrack carries field-first cursors for the row attachment flags and
+# every cell lane-and-flags lifetime. The three scanners deliberately use
+# different element types: floor and wall advance the tile byte at +0x3c,
+# while slide advances the uint32_t lane-and-flags field at +0x40. Preserve
+# those exact native identities so BN does not re-home the reused registers in
+# an unrelated GameRoot field or flatten the continuation cleanup ownership.
+MERGE_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "merge_track_tile_runs",
+        "StackVariableSourceType",
+        83,
+        -4,
+        "row_attachment_flags",
+        "uint32_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        20,
+        66,
+        "seed_lane_flags",
+        "uint32_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        87,
+        69,
+        "cell_lane_flags",
+        "uint32_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        105,
+        73,
+        "cell",
+        "TrackRowCell*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        155,
+        67,
+        "floor_tile_cursor",
+        "uint8_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        281,
+        66,
+        "floor_cleanup_lane_flags",
+        "uint32_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        365,
+        73,
+        "slide_lane_flags_cursor",
+        "uint32_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        475,
+        66,
+        "slide_cleanup_lane_flags",
+        "uint32_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        613,
+        68,
+        "wall_tile_cursor",
+        "uint8_t*",
+    ),
+    (
+        "merge_track_tile_runs",
+        "RegisterVariableSourceType",
+        773,
+        66,
+        "wall_cleanup_lane_flags",
+        "uint32_t*",
+    ),
+)
+
 # SlideSmoothTrack carries the same SubgameRuntime-relative cell cursor in two
 # disjoint ESI lifetimes. The first compares the current cell with the next
 # same-lane row; the second compares it with the previous same-lane row.
@@ -1817,6 +1906,7 @@ def main() -> int:
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
+                *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *HARMONIZE_RUNTIME_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),

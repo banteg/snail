@@ -143,3 +143,26 @@ That `0x4d00`-byte extent ends exactly where the independently recovered
 `DirectXLoader` begins, so these names describe real root ownership rather
 than a broad pointer overlay. The scratch source is unchanged; focused output
 remains 67.50%, 284/276 instructions, with all 12 operands clean.
+
+## 2026-07-17 native cursor identity replay
+
+The native register lifetimes now replay explicitly in both decompilers. The
+seed and current-cell owners are `uint32_t*` cursors over
+`TrackRowCell::lane_and_flags`; the genuine containing-cell lifetime is a
+`TrackRowCell*`; floor and wall scan `uint8_t*` tile cursors; slide scans a
+`uint32_t*` lane-flags cursor; and each branch's backward continuation cleanup
+has its own `uint32_t*` lane-flags cursor. The row stack slot is separately
+owned by `SubRow::attachment_body.list_flags`.
+
+This removes Binary Ninja's false register-reuse path through
+`Player::squidge`, preserves IDA's exact definition-address identities, and
+makes the three cleanup walks durable under replay. A temporary IDA operand
+stroff experiment proved the native run-index displacements for
+`floor_slices`, `slide_slices`, and `pillars`, but did not improve Hex-Rays'
+pseudocode choice of adjacent arrays, so no overlapping catalog type or live
+catalog-operand mutation was retained. The scratch already uses those
+independently proven real banks.
+
+No matching source changed. The retained result remains the honest 67.50%,
+284/276-instruction frontier with all 12 masked operands clean; the catalog
+presentation residual is documented instead of fakematched.

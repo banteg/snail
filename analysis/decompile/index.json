@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 1,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 1,
+  "ida_exported": 1,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,15 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "harmonize_center_lane_floor_slide_variants",
-      "address": "0x4356f0"
-    },
-    {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
+      "name": "merge_track_tile_runs",
+      "address": "0x435180"
     }
   ],
-  "health_check_count": 474,
+  "health_check_count": 476,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

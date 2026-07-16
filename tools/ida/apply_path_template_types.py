@@ -76,6 +76,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x420CB0,  # update_track_attachment_follow_state
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
+    0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x43B120,  # update_subgoldy
@@ -100,6 +101,44 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         "RuntimeCellStrideAnchor *runtime_cell_anchor;",
         0x436683,
         None,
+    ),
+)
+
+MERGE_RUNTIME_LVAR_SPECS = (
+    ("seed_lane_flags", "uint32_t *seed_lane_flags;", 0x435195, None),
+    ("cell_lane_flags", "uint32_t *cell_lane_flags;", 0x4351D8, None),
+    ("cell", "TrackRowCell *cell;", 0x4351EA, None),
+    ("floor_tile_cursor", "uint8_t *floor_tile_cursor;", 0x43521C, None),
+    (
+        "floor_cleanup_lane_flags",
+        "uint32_t *floor_cleanup_lane_flags;",
+        0x43529A,
+        None,
+    ),
+    (
+        "slide_lane_flags_cursor",
+        "uint32_t *slide_lane_flags_cursor;",
+        0x4352EE,
+        None,
+    ),
+    (
+        "slide_cleanup_lane_flags",
+        "uint32_t *slide_cleanup_lane_flags;",
+        0x43535C,
+        None,
+    ),
+    ("wall_tile_cursor", "uint8_t *wall_tile_cursor;", 0x4353E6, None),
+    (
+        "wall_cleanup_lane_flags",
+        "uint32_t *wall_cleanup_lane_flags;",
+        0x435486,
+        None,
+    ),
+    (
+        "row_attachment_flags",
+        "uint32_t *row_attachment_flags;",
+        0x4351D4,
+        32,
     ),
 )
 
@@ -1408,6 +1447,13 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_merge_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "merge_track_tile_runs",
+        MERGE_RUNTIME_LVAR_SPECS,
+    )
+
+
 def _sync_harmonize_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "harmonize_center_lane_floor_slide_variants",
@@ -1761,6 +1807,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": populate_runtime_lvars,
             }
         )
+    merge_runtime_lvars = _sync_merge_runtime_lvars()
+    if merge_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "merge_track_tile_runs",
+                "runtime_lvars": merge_runtime_lvars,
+            }
+        )
     harmonize_runtime_lvars = _sync_harmonize_runtime_lvars()
     if harmonize_runtime_lvars.get("status") == "failed":
         failed.append(
@@ -1821,6 +1875,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "populate_runtime_lvars": populate_runtime_lvars,
+                "merge_runtime_lvars": merge_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,
                 "dirty_functions": dirty_functions,

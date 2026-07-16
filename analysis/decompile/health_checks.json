@@ -2212,6 +2212,29 @@
       }
     },
     {
+      "name": "bn_merge_track_tile_run_cursor_owners",
+      "artifact": "analysis/decompile/binja/functions/00435180-merge_track_tile_runs.c",
+      "required_substrings": [
+        "uint32_t* seed_lane_flags",
+        "uint32_t* row_attachment_flags",
+        "uint32_t* cell_lane_flags",
+        "uint8_t* floor_tile_cursor",
+        "uint32_t* floor_cleanup_lane_flags",
+        "uint32_t* slide_lane_flags_cursor",
+        "uint32_t* slide_cleanup_lane_flags",
+        "uint8_t* wall_tile_cursor",
+        "uint32_t* wall_cleanup_lane_flags",
+        "runtime_rows[0].attachment_body.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "player.squidge",
+        "uint32_t* eax_1",
+        "uint32_t* var_4_1",
+        "uint32_t* ebx_1",
+        "(eax_1 - 0x3bfb08)"
+      ]
+    },
+    {
       "name": "bn_runtime_row_lookup_owner",
       "artifact": "analysis/decompile/binja/functions/0043d480-get_track_runtime_cell_at_world_z.c",
       "required_substrings": [
@@ -2259,6 +2282,30 @@
         "game->_pad_",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "ida_merge_track_tile_run_cursor_owners",
+      "artifact": "analysis/decompile/ida/functions/00435180-merge_track_tile_runs.c",
+      "required_substrings": [
+        "uint32_t *seed_lane_flags;",
+        "uint32_t *cell_lane_flags;",
+        "TrackRowCell *cell;",
+        "uint8_t *floor_tile_cursor;",
+        "uint32_t *floor_cleanup_lane_flags;",
+        "uint32_t *slide_lane_flags_cursor;",
+        "uint32_t *slide_cleanup_lane_flags;",
+        "uint8_t *wall_tile_cursor;",
+        "uint32_t *wall_cleanup_lane_flags;",
+        "uint32_t *row_attachment_flags;",
+        "cell = CONTAINING_RECORD(cell_lane_flags, TrackRowCell, lane_and_flags);"
+      ],
+      "forbidden_substrings": [
+        "int *v7;",
+        "int *v9;",
+        "_DWORD *v12;",
+        "_DWORD *v39;",
+        "p_lane_and_flags"
       ]
     },
     {

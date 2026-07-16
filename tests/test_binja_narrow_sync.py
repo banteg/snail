@@ -2744,6 +2744,36 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert f'"{name}"' in binja_source
         assert f'"{type_name}"' in binja_source
 
+    assert "MERGE_RUNTIME_USER_VAR_UPDATES" in binja_source
+    for identity in (
+        '"StackVariableSourceType",\n        83,\n        -4,',
+        '"RegisterVariableSourceType",\n        20,\n        66,',
+        '"RegisterVariableSourceType",\n        87,\n        69,',
+        '"RegisterVariableSourceType",\n        105,\n        73,',
+        '"RegisterVariableSourceType",\n        155,\n        67,',
+        '"RegisterVariableSourceType",\n        281,\n        66,',
+        '"RegisterVariableSourceType",\n        365,\n        73,',
+        '"RegisterVariableSourceType",\n        475,\n        66,',
+        '"RegisterVariableSourceType",\n        613,\n        68,',
+        '"RegisterVariableSourceType",\n        773,\n        66,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("row_attachment_flags", "uint32_t*"),
+        ("seed_lane_flags", "uint32_t*"),
+        ("cell_lane_flags", "uint32_t*"),
+        ("cell", "TrackRowCell*"),
+        ("floor_tile_cursor", "uint8_t*"),
+        ("floor_cleanup_lane_flags", "uint32_t*"),
+        ("slide_lane_flags_cursor", "uint32_t*"),
+        ("slide_cleanup_lane_flags", "uint32_t*"),
+        ("wall_tile_cursor", "uint8_t*"),
+        ("wall_cleanup_lane_flags", "uint32_t*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+    assert "*MERGE_RUNTIME_USER_VAR_UPDATES" in binja_source
+
     assert "typedef struct SubSegmentRowStrideAnchor" in analysis_path_header
     assert "uint8_t segment_prefix[0x814];" in analysis_path_header
     assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
@@ -2765,6 +2795,20 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "0x436404" in ida_path_sync
     assert "0x436459" in ida_path_sync
     assert "0x436683" in ida_path_sync
+    assert "MERGE_RUNTIME_LVAR_SPECS" in ida_path_sync
+    for definition_address in (
+        "0x435195",
+        "0x4351D8",
+        "0x4351EA",
+        "0x43521C",
+        "0x43529A",
+        "0x4352EE",
+        "0x43535C",
+        "0x4353E6",
+        "0x435486",
+        "0x4351D4",
+    ):
+        assert definition_address in ida_path_sync
     assert "HARMONIZE_RUNTIME_LVAR_SPECS" in ida_path_sync
     assert "0x435753" in ida_path_sync
     assert "0x4358DD" in ida_path_sync
@@ -2773,6 +2817,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "(0x435A1F, 1, 0x4423C)" in ida_path_sync
     assert "_sync_exact_lvars" in ida_path_sync
     assert "_sync_populate_runtime_lvars" in ida_path_sync
+    assert "_sync_merge_runtime_lvars" in ida_path_sync
     assert "_sync_harmonize_runtime_lvars" in ida_path_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync
