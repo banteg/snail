@@ -923,14 +923,58 @@
         "struct SubgameRuntime* game",
         "struct SubGarbage* i_2 = player->game->garbage_hazards.active_head",
         "i_2->body.transform.position.z",
-        "player->presentation.wobble.lift_phase_step"
+        "player->presentation.wobble.lift_phase_step",
+        "salt_cursor->salt.body.transform.position.z",
+        "sub_lazer_cursor->sub_lazer.body.transform.position.z",
+        "slug_cursor->slug.body.transform.position.z",
+        "parcel_cursor->parcel.position.z",
+        "health_cursor->health.world_position.z",
+        "ring_cursor->ring.world_position.z"
       ],
       "forbidden_substrings": [
         "struct Game*",
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
         "i_2->world_position",
-        "presentation.__offset(0x15c8)"
+        "presentation.__offset(0x15c8)",
+        "void* eax_2 = player->game + i",
+        "void* eax_8 = player->game + i_1",
+        "void* eax_19 = i_3 + game_8",
+        "void* eax_31 = i_4 + game_4",
+        "void* eax_38 = i_5 + game_5",
+        "void* eax_53 = i_6 + game_9"
+      ]
+    },
+    {
+      "name": "ida_collision_pool_cursor_owners",
+      "artifact": "analysis/decompile/ida/functions/00444cf0-handle_subgoldy_collisions.c",
+      "required_substrings": [
+        "SaltSlotCursor *salt_cursor",
+        "SubLazerSlotCursor *sub_lazer_cursor",
+        "SlugSlotCursor *slug_cursor",
+        "ParcelSlotCursor *parcel_cursor",
+        "SubHealthSlotCursor *health_cursor",
+        "SubRingSlotCursor *ring_cursor",
+        "salt_cursor->salt.body.transform.position.z",
+        "sub_lazer_cursor->sub_lazer.body.transform.position.z",
+        "slug_cursor->slug.body.transform.position.z",
+        "parcel_cursor->parcel.bod.position.z",
+        "health_cursor->health.world_position.z",
+        "ring_cursor->ring.body.transform.position.z"
+      ],
+      "forbidden_substrings": [
+        "float *v3; // eax",
+        "float *v6; // eax",
+        "float *v14; // eax",
+        "float *v26; // eax",
+        "float *v31; // eax",
+        "float *v47; // eax",
+        "v3[876106]",
+        "v6[875226]",
+        "v14[874754]",
+        "v26[4815140]",
+        "v31[874500]",
+        "v47[880125]"
       ]
     },
     {

@@ -6,10 +6,10 @@
 void __thiscall handle_subgoldy_collisions(Player *player)
 {
   int i; // edi
-  float *v3; // eax
+  SaltSlotCursor *salt_cursor; // eax
   double v4; // st7
   int j; // edi
-  float *v6; // eax
+  SubLazerSlotCursor *sub_lazer_cursor; // eax
   double v7; // st7
   SubGarbage *k; // edi
   double v9; // st7
@@ -17,7 +17,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   int m; // edi
   SubgameRuntime *game; // edx
   int32_t state; // ecx
-  float *v14; // eax
+  SlugSlotCursor *slug_cursor; // eax
   double v15; // st7
   double v16; // st7
   SubgameRuntime *v17; // eax
@@ -29,12 +29,12 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   double v23; // st7
   double subgame_rate; // st7
   int n; // edi
-  float *v26; // eax
+  ParcelSlotCursor *parcel_cursor; // eax
   double v27; // st7
   SubgameRuntime *v28; // eax
   int32_t v29; // ebx
   int ii; // edi
-  float *v31; // eax
+  SubHealthSlotCursor *health_cursor; // eax
   double v32; // st7
   double y; // st7
   double v35; // st7
@@ -48,7 +48,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   double v44; // st7
   double v45; // st7
   int jj; // edi
-  float *v47; // eax
+  SubRingSlotCursor *ring_cursor; // eax
   double v48; // st7
   SubgameRuntime *v49; // ecx
   SubRingKind kind; // eax
@@ -79,12 +79,12 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     {
       for ( i = 0; i < 40; ++i )
       {
-        v3 = (float *)(&player->game->scan_reset + i * 152);
-        if ( *((_DWORD *)v3 + 876112) == 1 && *((_BYTE *)v3 + 3504468) == 1 )
+        salt_cursor = (SaltSlotCursor *)(&player->game->scan_reset + i * 152);
+        if ( salt_cursor->salt.state == 1 && salt_cursor->salt.collision_armed == 1 )
         {
-          v61.x = v3[876106] - player->cached_camera_target_world.x;
-          v61.y = v3[876107] - player->cached_camera_target_world.y;
-          v4 = v3[876108] - player->cached_camera_target_world.z;
+          v61.x = salt_cursor->salt.body.transform.position.x - player->cached_camera_target_world.x;
+          v61.y = salt_cursor->salt.body.transform.position.y - player->cached_camera_target_world.y;
+          v4 = salt_cursor->salt.body.transform.position.z - player->cached_camera_target_world.z;
           v61.z = v4;
           vector = v61;
           if ( v4 < 1.0 && normalize_vector(&vector) < 0.98000002 )
@@ -92,25 +92,25 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             if ( player->damage_retrigger_timer == 0.0 )
               player->damage_retrigger_timer = player->damage_retrigger_step;
             player->game->salt_hazards.slots[i].collision_armed = 0;
-            apply_damage_gauge_delta((float *)&player->damage_gauge, 0.15000001, 0);
+            apply_damage_gauge_delta(&player->damage_gauge, 0.15000001, 0);
           }
         }
       }
     }
     for ( j = 0; j < 20; ++j )
     {
-      v6 = (float *)(&player->game->scan_reset + j * 176);
-      if ( *((_DWORD *)v6 + 875232) == 1 )
+      sub_lazer_cursor = (SubLazerSlotCursor *)(&player->game->scan_reset + j * 176);
+      if ( sub_lazer_cursor->sub_lazer.state == 1 )
       {
-        v61.x = v6[875226] - player->cached_camera_target_world.x;
-        v61.y = v6[875227] - player->cached_camera_target_world.y;
-        v7 = v6[875228] - player->cached_camera_target_world.z;
+        v61.x = sub_lazer_cursor->sub_lazer.body.transform.position.x - player->cached_camera_target_world.x;
+        v61.y = sub_lazer_cursor->sub_lazer.body.transform.position.y - player->cached_camera_target_world.y;
+        v7 = sub_lazer_cursor->sub_lazer.body.transform.position.z - player->cached_camera_target_world.z;
         v61.z = v7;
         v59 = v61;
         if ( v7 < 1.0 && normalize_vector(&v59) < 0.49000001 )
         {
           player->game->sub_lazers.slots[j].state = 2;
-          apply_damage_gauge_delta((float *)&player->damage_gauge, 0.02, 0);
+          apply_damage_gauge_delta(&player->damage_gauge, 0.02, 0);
         }
       }
     }
@@ -136,7 +136,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           else
             k->collision_side = 2;
           add_subgoldy_score(player, 0, 0);
-          apply_damage_gauge_delta((float *)&player->damage_gauge, 0.039999999, 0);
+          apply_damage_gauge_delta(&player->damage_gauge, 0.039999999, 0);
           v10 = (__int64)((double)next_math_random_value() * -0.000061035156);
           play_sound_effect(39 - v10);
         }
@@ -146,12 +146,12 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     {
       game = player->game;
       state = game->slug_hazards.slots[m].state;
-      v14 = (float *)(&game->scan_reset + m * 236);
+      slug_cursor = (SlugSlotCursor *)(&game->scan_reset + m * 236);
       if ( state == 1 || state == 4 )
       {
-        v61.x = v14[874754] - player->cached_camera_target_world.x;
-        v61.y = v14[874755] - player->cached_camera_target_world.y;
-        v15 = v14[874756] - player->cached_camera_target_world.z;
+        v61.x = slug_cursor->slug.body.transform.position.x - player->cached_camera_target_world.x;
+        v61.y = slug_cursor->slug.body.transform.position.y - player->cached_camera_target_world.y;
+        v15 = slug_cursor->slug.body.transform.position.z - player->cached_camera_target_world.z;
         v61.z = v15;
         v59 = v61;
         if ( v15 < 2.0 )
@@ -168,7 +168,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             {
               subgame_rate = player->game->subgame_rate;
               player->velocity.z = subgame_rate * subgame_rate * 0.0040000002 * -8.0;
-              apply_damage_gauge_delta((float *)&player->damage_gauge, 1.0, 0);
+              apply_damage_gauge_delta(&player->damage_gauge, 1.0, 0);
             }
             else
             {
@@ -209,12 +209,12 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     }
     for ( n = 0; n < 50; ++n )
     {
-      v26 = (float *)(&player->game->scan_reset + n * 140);
-      if ( *((_DWORD *)v26 + 4815150) == 1 )
+      parcel_cursor = (ParcelSlotCursor *)(&player->game->scan_reset + n * 140);
+      if ( parcel_cursor->parcel.state == PARCEL_STATE_TRACK_ACTIVE )
       {
-        vector.x = v26[4815140] - player->cached_camera_target_world.x;
-        vector.y = v26[4815141] - player->cached_camera_target_world.y;
-        v27 = v26[4815142] - player->cached_camera_target_world.z;
+        vector.x = parcel_cursor->parcel.bod.position.x - player->cached_camera_target_world.x;
+        vector.y = parcel_cursor->parcel.bod.position.y - player->cached_camera_target_world.y;
+        v27 = parcel_cursor->parcel.bod.position.z - player->cached_camera_target_world.z;
         vector.z = v27;
         v69 = vector;
         if ( v27 < 1.0 && normalize_vector(&v69) < 1.24 )
@@ -234,12 +234,12 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   }
   for ( ii = 0; ii < 8; ++ii )
   {
-    v31 = (float *)(&player->game->scan_reset + ii * 116);
-    if ( *((_DWORD *)v31 + 874510) == 1 )
+    health_cursor = (SubHealthSlotCursor *)(&player->game->scan_reset + ii * 116);
+    if ( health_cursor->health.state == TRACK_PICKUP_STATE_ACTIVE )
     {
-      v59.x = v31[874500] - player->cached_camera_target_world.x;
-      v59.y = v31[874501] - player->cached_camera_target_world.y;
-      v32 = v31[874502] - player->cached_camera_target_world.z;
+      v59.x = health_cursor->health.world_position.x - player->cached_camera_target_world.x;
+      v59.y = health_cursor->health.world_position.y - player->cached_camera_target_world.y;
+      v32 = health_cursor->health.world_position.z - player->cached_camera_target_world.z;
       v60.x = v59.x;
       v60.y = v59.y;
       v59.z = v32;
@@ -255,7 +255,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           play_sound_effect(14);
           player->game->health_pickups[ii].state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
           health_collect_particles((int)player, (int)&player->game->health_pickups[ii]);
-          apply_damage_gauge_delta((float *)&player->damage_gauge, -0.5, 0);
+          apply_damage_gauge_delta(&player->damage_gauge, -0.5, 0);
         }
       }
     }
@@ -303,12 +303,12 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   }
   for ( jj = 0; jj < 2; ++jj )
   {
-    v47 = (float *)(&player->game->scan_reset + jj * 504);
-    if ( *((_DWORD *)v47 + 880131) == 1 )
+    ring_cursor = (SubRingSlotCursor *)(&player->game->scan_reset + jj * 504);
+    if ( ring_cursor->ring.state == SUB_RING_STATE_ACTIVE )
     {
-      vector.x = v47[880125] - player->cached_camera_target_world.x;
-      vector.y = v47[880126] - player->cached_camera_target_world.y;
-      v48 = v47[880127] - player->cached_camera_target_world.z;
+      vector.x = ring_cursor->ring.body.transform.position.x - player->cached_camera_target_world.x;
+      vector.y = ring_cursor->ring.body.transform.position.y - player->cached_camera_target_world.y;
+      v48 = ring_cursor->ring.body.transform.position.z - player->cached_camera_target_world.z;
       vector.z = v48;
       v70 = vector;
       if ( v48 < 1.0 && normalize_vector(&v70) < 0.98000002 )

@@ -3,6 +3,21 @@
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The low ratio is systematic small deltas, leads for next pass:
 
+2026-07-17 collision-pool cursor ownership pass: the six byte-strided sweeps
+that VC6 carries as `SubgameRuntime + slot_offset` now have explicit
+analysis-only manager-relative cursor views in both tracked decompilers. The
+views preserve the enclosing `SubgameRuntime` as the sole storage owner and
+name only the terminal embedded slot: salt `+0x3578c0`, sub-lazer `+0x356b00`,
+slug `+0x3563a0`, parcel `+0x125e480`, health `+0x356000`, and ring
+`+0x35b78c`. Binary Ninja and IDA read back the exact local identities and now
+render the collision positions through `salt`, `sub_lazer`, `slug`, `parcel`,
+`health`, and `ring` fields instead of raw large-displacement loads. These are
+aliases for decompiler analysis, not new allocations or competing owners. The
+scratch source remains unchanged because its byte-strided spelling already
+encodes the native cursor lifetime; focused matching remains an honest
+`54.23%`, `651/673` instructions, prefix `8/673`, with `88 ok / 0 unresolved /
+0 mismatch` masked operands.
+
 2026-07-15 RNG source-type pass: both collision-selected sound variants now
 multiply the integer RNG result as `float`, matching the target's two
 `fmul dword` sites and the independently exact slug AI's RNG conversion idiom.

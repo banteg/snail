@@ -225,6 +225,11 @@ REQUIRED_HEADER_STRUCTS = (
     "SubRingState",
     "SubRingKind",
     "SubRingSlotCursor",
+    "SubHealthSlotCursor",
+    "SlugSlotCursor",
+    "SubLazerSlotCursor",
+    "SaltSlotCursor",
+    "ParcelSlotCursor",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -962,6 +967,61 @@ SPAWN_TRACK_RING_USER_VAR_UPDATES = (
         67,
         "promoted_head",
         "BodNode*",
+    ),
+)
+
+# The collision dispatcher keeps byte offsets in EDI and repeatedly forms a
+# temporary `SubgameRuntime + slot_offset` pointer in EAX. These analysis-only
+# cursor views name the embedded slot reached by each large displacement while
+# retaining the real SubgameRuntime owner and the native byte-strided lifetime.
+COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        80,
+        66,
+        "salt_cursor",
+        "SaltSlotCursor*",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        310,
+        66,
+        "sub_lazer_cursor",
+        "SubLazerSlotCursor*",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        828,
+        66,
+        "slug_cursor",
+        "SlugSlotCursor*",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        1385,
+        66,
+        "parcel_cursor",
+        "ParcelSlotCursor*",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        1663,
+        66,
+        "health_cursor",
+        "SubHealthSlotCursor*",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "RegisterVariableSourceType",
+        2353,
+        66,
+        "ring_cursor",
+        "SubRingSlotCursor*",
     ),
 )
 
@@ -2462,6 +2522,7 @@ def main() -> int:
                 *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
                 *REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES,
                 *SPAWN_TRACK_RING_USER_VAR_UPDATES,
+                *COLLISION_POOL_CURSOR_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

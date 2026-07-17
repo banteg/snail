@@ -6069,3 +6069,77 @@ def test_spawn_track_ring_slot_and_list_ownership_is_replayed() -> None:
         assert f'"{declaration}"' in ida_sync
     assert "_sync_spawn_track_ring_lvars" in ida_sync
     assert '"spawn_track_ring_lvars"' in ida_sync
+
+
+def test_collision_pool_cursor_ownership_is_replayed() -> None:
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for cursor_name, prefix, field_declaration in (
+        ("SubHealthSlotCursor", "0x356000", "SubHealth health;"),
+        ("SlugSlotCursor", "0x3563a0", "Slug slug;"),
+        ("SubLazerSlotCursor", "0x356b00", "SubLazer sub_lazer;"),
+        ("SaltSlotCursor", "0x3578c0", "Salt salt;"),
+        ("ParcelSlotCursor", "0x125e480", "Parcel parcel;"),
+    ):
+        assert f"typedef struct {cursor_name} {{" in analysis_header
+        assert f"uint8_t subgame_prefix[{prefix}];" in analysis_header
+        assert field_declaration in analysis_header
+        assert f"}} {cursor_name};" in analysis_header
+        assert f'"{cursor_name}"' in binja_sync
+
+    assert "COLLISION_POOL_CURSOR_USER_VAR_UPDATES" in binja_sync
+    for index, storage in (
+        (80, 66),
+        (310, 66),
+        (828, 66),
+        (1385, 66),
+        (1663, 66),
+        (2353, 66),
+    ):
+        assert (
+            f'"RegisterVariableSourceType",\n        {index},\n        {storage},'
+            in binja_sync
+        )
+    for name, type_name in (
+        ("salt_cursor", "SaltSlotCursor*"),
+        ("sub_lazer_cursor", "SubLazerSlotCursor*"),
+        ("slug_cursor", "SlugSlotCursor*"),
+        ("parcel_cursor", "ParcelSlotCursor*"),
+        ("health_cursor", "SubHealthSlotCursor*"),
+        ("ring_cursor", "SubRingSlotCursor*"),
+    ):
+        assert f'"{name}"' in binja_sync
+        assert f'"{type_name}"' in binja_sync
+    assert "*COLLISION_POOL_CURSOR_USER_VAR_UPDATES" in binja_sync
+
+    assert "COLLISION_POOL_CURSOR_LVAR_SPECS" in ida_sync
+    for definition_address in (
+        "0x444D41",
+        "0x444E27",
+        "0x44502D",
+        "0x44525A",
+        "0x445370",
+        "0x445622",
+    ):
+        assert definition_address in ida_sync
+    for name, declaration in (
+        ("salt_cursor", "SaltSlotCursor *salt_cursor;"),
+        ("sub_lazer_cursor", "SubLazerSlotCursor *sub_lazer_cursor;"),
+        ("slug_cursor", "SlugSlotCursor *slug_cursor;"),
+        ("parcel_cursor", "ParcelSlotCursor *parcel_cursor;"),
+        ("health_cursor", "SubHealthSlotCursor *health_cursor;"),
+        ("ring_cursor", "SubRingSlotCursor *ring_cursor;"),
+    ):
+        assert f'"{name}"' in ida_sync
+        assert f'"{declaration}"' in ida_sync
+    assert "_sync_collision_pool_cursor_lvars" in ida_sync
+    assert '"collision_pool_cursor_lvars"' in ida_sync
+    assert "0x444CF0,  # handle_subgoldy_collisions" in ida_sync

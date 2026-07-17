@@ -945,6 +945,38 @@ typedef struct SubRingSlotCursor {
     SubRing ring;
 } SubRingSlotCursor;
 
+/*
+ * Analysis-only manager-relative views for the byte-strided pool sweeps in
+ * Player::handle_subgoldy_collisions. Each prefix aliases the enclosing
+ * SubgameRuntime; the final field is one embedded slot, not separately owned
+ * storage. The views preserve native `subgame + slot_offset` cursor lifetimes
+ * without misrepresenting them as additional SubgameRuntime instances.
+ */
+typedef struct SubHealthSlotCursor {
+    uint8_t subgame_prefix[0x356000];
+    SubHealth health;
+} SubHealthSlotCursor;
+
+typedef struct SlugSlotCursor {
+    uint8_t subgame_prefix[0x3563a0];
+    Slug slug;
+} SlugSlotCursor;
+
+typedef struct SubLazerSlotCursor {
+    uint8_t subgame_prefix[0x356b00];
+    SubLazer sub_lazer;
+} SubLazerSlotCursor;
+
+typedef struct SaltSlotCursor {
+    uint8_t subgame_prefix[0x3578c0];
+    Salt salt;
+} SaltSlotCursor;
+
+typedef struct ParcelSlotCursor {
+    uint8_t subgame_prefix[0x125e480];
+    Parcel parcel;
+} ParcelSlotCursor;
+
 typedef struct SlugVoiceManager {
     uint8_t active;
     uint8_t _pad_01[0x3];

@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "spawn_track_ring_or_special_effect",
-      "address": "0x43df10"
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     }
   ],
   "health_check_count": 485,
