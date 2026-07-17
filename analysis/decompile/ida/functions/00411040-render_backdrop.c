@@ -9,19 +9,19 @@ void __thiscall render_backdrop(Backdrop *backdrop)
   double v3; // st6
   float *v4; // esi
   double v5; // st7
-  float v6; // [esp+0h] [ebp-8Ch]
-  float v7; // [esp+4h] [ebp-88h]
-  float v8; // [esp+8h] [ebp-84h]
-  float v9; // [esp+Ch] [ebp-80h]
-  float v10; // [esp+10h] [ebp-7Ch]
-  float v11; // [esp+14h] [ebp-78h]
-  float v12; // [esp+18h] [ebp-74h]
-  float v13; // [esp+1Ch] [ebp-70h]
+  float x0; // [esp+0h] [ebp-8Ch]
+  float y0; // [esp+4h] [ebp-88h]
+  float x1; // [esp+8h] [ebp-84h]
+  float y1; // [esp+Ch] [ebp-80h]
+  float x2; // [esp+10h] [ebp-7Ch]
+  float y2; // [esp+14h] [ebp-78h]
+  float x3; // [esp+18h] [ebp-74h]
+  float y3; // [esp+1Ch] [ebp-70h]
   tColour *v14; // [esp+2Ch] [ebp-60h]
-  float v15; // [esp+30h] [ebp-5Ch]
-  float v16; // [esp+34h] [ebp-58h]
-  float v17; // [esp+38h] [ebp-54h]
-  float v18; // [esp+3Ch] [ebp-50h]
+  float u0; // [esp+30h] [ebp-5Ch]
+  float v0; // [esp+34h] [ebp-58h]
+  float u1; // [esp+38h] [ebp-54h]
+  float v1; // [esp+3Ch] [ebp-50h]
   float v19; // [esp+54h] [ebp-38h]
   float v20; // [esp+58h] [ebp-34h]
   float v21; // [esp+5Ch] [ebp-30h]
@@ -46,45 +46,45 @@ void __thiscall render_backdrop(Backdrop *backdrop)
       v23 = v2 * 68.571426;
       if ( backdrop->active_flip )
       {
-        v17 = 0.80000001 - v3 * 0.089285716;
-        v16 = v2 * 0.13392857;
-        v15 = 0.80000001 - v19 * 0.089285716;
+        u1 = 0.80000001 - v3 * 0.089285716;
+        v0 = v2 * 0.13392857;
+        u0 = 0.80000001 - v19 * 0.089285716;
         v14 = set_color_rgba((tColour *)&v26, 1.0, 1.0, 1.0, 1.0);
       }
       else
       {
-        v17 = v3 * 0.089285716;
-        v16 = v2 * 0.13392857;
-        v15 = v19 * 0.089285716;
+        u1 = v3 * 0.089285716;
+        v0 = v2 * 0.13392857;
+        u0 = v19 * 0.089285716;
         v14 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
       }
-      v13 = v21 + v4[75];
-      v12 = v24 + v4[74];
-      v11 = v21 + v4[81];
-      v10 = v22 + v4[80];
-      v9 = v23 + v4[33];
-      v8 = v22 + v4[32];
-      v7 = v23 + v4[27];
-      v6 = v24 + v4[26];
-      v18 = v20 * 0.13392857;
+      y3 = v21 + v4[75];
+      x3 = v24 + v4[74];
+      y2 = v21 + v4[81];
+      x2 = v22 + v4[80];
+      y1 = v23 + v4[33];
+      x1 = v22 + v4[32];
+      y0 = v23 + v4[27];
+      x0 = v24 + v4[26];
+      v1 = v20 * 0.13392857;
       queue_textured_quad_corners(
         backdrop->active_primary_texture_id,
-        v6,
-        v7,
-        v8,
-        v9,
-        v10,
-        v11,
-        v12,
-        v13,
+        x0,
+        y0,
+        x1,
+        y1,
+        x2,
+        y2,
+        x3,
+        y3,
         0,
         0,
         0x8000000u,
         v14,
-        v15,
-        v16,
-        v17,
-        v18,
+        u0,
+        v0,
+        u1,
+        v1,
         0,
         0.0);
       v2 = v20;

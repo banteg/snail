@@ -7558,6 +7558,48 @@
       ]
     },
     {
+      "name": "bn_split_backdrop_receiver_owner",
+      "artifact": "analysis/decompile/binja/functions/00410f90-draw_split_backdrop.c",
+      "required_substrings": [
+        "backdrop->active_primary_texture_id",
+        "backdrop->active_secondary_texture_id",
+        "return queue_axis_aligned_textured_quad_uv"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void* backdrop"
+      ]
+    },
+    {
+      "name": "bn_render_backdrop_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00411040-render_backdrop.c",
+      "required_substrings": [
+        "struct Backdrop* backdrop_9 = backdrop",
+        "backdrop_9->active_flip",
+        "backdrop_9->active_primary_texture_id",
+        "004112e7        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_update_backdrop_receiver_owner",
+      "artifact": "analysis/decompile/binja/functions/004112f0-update_backdrop.c",
+      "required_substrings": [
+        "backdrop->backdrop_change_queued",
+        "&backdrop->distort_grid",
+        "backdrop->active_primary_texture_id",
+        "draw_split_backdrop(backdrop)",
+        "render_backdrop(backdrop)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "float* ebx = arg1"
+      ]
+    },
+    {
       "name": "ida_render_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/00411040-render_backdrop.c",
       "required_substrings": [

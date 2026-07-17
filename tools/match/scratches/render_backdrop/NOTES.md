@@ -61,3 +61,12 @@ Binary Ninja. The tracked decompile names the `active_flip` and texture owner
 through a real `Backdrop *` receiver instead of `int this` arithmetic. This is
 analysis-only: the honest result remains 86.61% at 189/192 instructions, with
 26 clean operands and no masked-operand mismatches.
+
+## 2026-07-17 Binary Ninja consumer ABI closure
+
+A guarded preview and persisted replay now give the three remaining Backdrop
+consumers their real receiver owner. `render_backdrop` keeps the cross-port
+authored `void __thiscall` contract, while `draw_split_backdrop` and Windows'
+folded `update_backdrop` retain their observed `int32_t` results. This removes
+scalar fastcall views without pretending the Windows update result is void.
+No matcher source changed; the honest 86.61% render result remains visible.

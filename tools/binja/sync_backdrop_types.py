@@ -47,6 +47,18 @@ PROTO_UPDATES = (
         "set_backdrop_texture_target",
         "void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world)",
     ),
+    (
+        "draw_split_backdrop",
+        "int32_t __thiscall draw_split_backdrop(Backdrop* backdrop)",
+    ),
+    (
+        "render_backdrop",
+        "void __thiscall render_backdrop(Backdrop* backdrop)",
+    ),
+    (
+        "update_backdrop",
+        "int32_t __thiscall update_backdrop(Backdrop* backdrop)",
+    ),
 )
 
 

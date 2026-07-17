@@ -254,6 +254,9 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
         "void __thiscall change_backdrop_real(Backdrop* backdrop)",
         "void __thiscall initialize_backdrop(Backdrop* backdrop, int32_t last_mode)",
         "void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world)",
+        "int32_t __thiscall draw_split_backdrop(Backdrop* backdrop)",
+        "void __thiscall render_backdrop(Backdrop* backdrop)",
+        "int32_t __thiscall update_backdrop(Backdrop* backdrop)",
     ):
         assert prototype in source
 

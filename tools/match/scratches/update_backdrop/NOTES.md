@@ -60,3 +60,9 @@ Binary Ninja. The tracked decompile names the queued change, 8x8 distortion
 grid, and active texture through a real `Backdrop *` receiver. This is
 analysis-only: the honest result remains 88.24% at 69/67 instructions, with
 seven clean operands and no masked-operand mismatches.
+
+2026-07-17 Binary Ninja ABI closure: the live function is now an explicit
+`int32_t __thiscall` Backdrop member. Its Windows result contract is retained;
+only the analyzer's inferred fastcall spelling and unnamed receiver are
+removed. The split renderer remains `int32_t`, while the cross-port-authored
+single-texture renderer is `void`.

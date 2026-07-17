@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: draw_split_backdrop @ 0x410f90 */
 
-00410fc0        struct Color4f color
-00410fc0        struct Color4f* eax = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00410fdd        queue_axis_aligned_textured_quad_uv(*(arg1 + 0x3c), 0, 0, 512f, 512f, 0x8000000, eax, 0, 0, 0x3f800000, 0x3f800000, 0, 0)
-0041100f        struct Color4f* eax_2 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-0041103b        return queue_axis_aligned_textured_quad_uv(*(arg1 + 0x44), 0x44000000, 0, 128f, 512f, 0x8000000, eax_2, 0, 0, 0x3f800000, 0x3f800000, 0, 0)
+00410fc0        struct tColour color
+00410fc0        struct tColour* color_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00410fdd        queue_axis_aligned_textured_quad_uv(backdrop->active_primary_texture_id, 0f, 0f, 512f, 512f, 0x8000000, color_1, 0f, 0f, 1f, 1f, 0, 0f)
+0041100f        struct tColour* color_2 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+0041103b        return queue_axis_aligned_textured_quad_uv(backdrop->active_secondary_texture_id, 512f, 0f, 128f, 512f, 0x8000000, color_2, 0f, 0f, 1f, 1f, 0, 0f)

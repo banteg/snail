@@ -3,41 +3,27 @@
 /* selector: draw_split_backdrop */
 
 // Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout.
-void __thiscall sub_410F90(int *this)
+void __thiscall draw_split_backdrop(int *this)
 {
-  int *v2; // eax
-  int *v3; // eax
-  _DWORD v4[4]; // [esp+4h] [ebp-10h] BYREF
+  tColour *v2; // eax
+  tColour *v3; // eax
+  Color4f color; // [esp+4h] [ebp-10h] BYREF
 
-  v2 = set_color_rgba(v4, 1065353216, 1065353216, 1065353216, 1065353216);
-  queue_axis_aligned_textured_quad_uv(
-    *(this + 15),
-    0,
-    0,
-    1140850688,
-    1140850688,
-    0x8000000,
-    v2,
-    0,
-    0,
-    1065353216,
-    1065353216,
-    0,
-    0);
-  v3 = set_color_rgba(v4, 1065353216, 1065353216, 1065353216, 1065353216);
+  v2 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
+  queue_axis_aligned_textured_quad_uv(*(this + 15), 0.0, 0.0, 512.0, 512.0, 0x8000000u, v2, 0.0, 0.0, 1.0, 1.0, 0, 0.0);
+  v3 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   queue_axis_aligned_textured_quad_uv(
     *(this + 17),
-    1140850688,
-    0,
-    1124073472,
-    1140850688,
-    0x8000000,
+    512.0,
+    0.0,
+    128.0,
+    512.0,
+    0x8000000u,
     v3,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
     0,
-    0,
-    1065353216,
-    1065353216,
-    0,
-    0);
+    0.0);
 }
-
