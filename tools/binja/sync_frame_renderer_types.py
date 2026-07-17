@@ -48,6 +48,7 @@ REQUIRED_STRUCTS = (
 )
 
 SYMBOL_UPDATES = (
+    ("0x4972f4", "g_game_player_callback_table"),
     ("0x4e5510", "g_sprite_depth_nodes"),
     ("0x4f7050", "g_sprite_depth_buckets"),
 )
@@ -63,6 +64,7 @@ FUNCTION_SYMBOL_UPDATES = (
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4972f4", "void*"),
     ("0x4df904", "GameRoot*"),
     ("0x4e5510", "SpriteDepthNode[3000]"),
     ("0x4f7050", "SpriteDepthNode*[256]"),
@@ -126,9 +128,15 @@ FRONTEND_OVERLAY_FIELD_UPDATES = (
     ("0x14", "current", "FrameColor4f"),
 )
 
+FRAME_RENDER_CAMERA_FIELD_UPDATES = (
+    ("0x00", "body", "FrameRenderableBod"),
+    ("0x80", "view_matrix", "FrameTransformMatrix"),
+    ("0xc0", "fov_degrees", "float"),
+    ("0xc4", "render_mask", "uint32_t"),
+)
+
 GAME_PLAYER_FIELD_UPDATES = (
-    ("0x00", "vtable", "void*"),
-    ("0x38", "transform", "FrameTransformMatrix"),
+    ("0x00", "body", "FrameRenderableBod"),
     ("0x80", "player_name", "char[0x14]"),
     ("0x94", "frontend_state", "int32_t"),
     ("0x98", "saved_frontend_state", "int32_t"),
@@ -400,6 +408,7 @@ def main() -> int:
                 ("GameInput", GAME_INPUT_FIELD_UPDATES),
                 ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
                 ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),
+                ("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES),
                 ("GamePlayer", GAME_PLAYER_FIELD_UPDATES),
                 ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),

@@ -129,21 +129,21 @@ LABEL_18:
 LABEL_27:
             v11 = g_game_base;
           }
-          v26 = v11->players[0].transform.basis_forward.y * 6.0;
-          v27 = v11->players[0].transform.basis_forward.z * 6.0;
-          v22 = v11->players[0].transform.basis_up.y + v11->players[0].transform.basis_up.y;
-          v23 = v11->players[0].transform.basis_up.z + v11->players[0].transform.basis_up.z;
-          v16 = v11->players[0].transform.basis_right.y * 7.3000002;
-          v18 = v11->players[0].transform.basis_right.z * 7.3000002;
-          v20 = v16 + v11->players[0].transform.position.y;
-          v21 = v18 + v11->players[0].transform.position.z;
+          v26 = v11->players[0].body.transform.basis_forward.y * 6.0;
+          v27 = v11->players[0].body.transform.basis_forward.z * 6.0;
+          v22 = v11->players[0].body.transform.basis_up.y + v11->players[0].body.transform.basis_up.y;
+          v23 = v11->players[0].body.transform.basis_up.z + v11->players[0].body.transform.basis_up.z;
+          v16 = v11->players[0].body.transform.basis_right.y * 7.3000002;
+          v18 = v11->players[0].body.transform.basis_right.z * 7.3000002;
+          v20 = v16 + v11->players[0].body.transform.position.y;
+          v21 = v18 + v11->players[0].body.transform.position.z;
           v24 = v20 + v22;
           v25 = v21 + v23;
-          v15 = v11->players[0].transform.basis_up.x
-              + v11->players[0].transform.basis_up.x
-              + v11->players[0].transform.basis_right.x * 7.3000002
-              + v11->players[0].transform.position.x
-              + v11->players[0].transform.basis_forward.x * 6.0;
+          v15 = v11->players[0].body.transform.basis_up.x
+              + v11->players[0].body.transform.basis_up.x
+              + v11->players[0].body.transform.basis_right.x * 7.3000002
+              + v11->players[0].body.transform.position.x
+              + v11->players[0].body.transform.basis_forward.x * 6.0;
           completion->widget_world.x = v15;
           v17 = v24 + v26;
           completion->widget_world.y = v17;

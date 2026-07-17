@@ -237,7 +237,7 @@
         "g_game_base->players[0].saved_frontend_state",
         "g_game_base->players[0].redispatch_requested",
         "players[0].completion_handoff_transform",
-        "players[0].transform",
+        "players[0].body.transform",
         "g_game_base->players[0].completion_handoff_transform.position.y"
       ],
       "forbidden_substrings": [
@@ -254,7 +254,7 @@
         "g_game_base->players[0].saved_frontend_state",
         "g_game_base->players[0].redispatch_requested",
         "g_game_base->players[0].completion_handoff_transform",
-        "g_game_base->players[0].transform",
+        "g_game_base->players[0].body.transform",
         "completion_handoff_transform.position.y"
       ],
       "forbidden_substrings": [
@@ -2729,6 +2729,7 @@
         "game->active_bod_list.first",
         "game->subgame.level_mode",
         "initialize_enemy_manager(&game->subgame.enemy_manager)",
+        "game->players[0].body.bod.bod.vtable",
         "game->input_sampling_gate"
       ],
       "forbidden_substrings": [
@@ -3040,7 +3041,8 @@
         "game->players[0].frontend_overlay",
         "game->active_bod_list.first",
         "game->subgame.level_mode",
-        "game->subgame.contact_targets.count",
+        "game->subgame.enemy_manager.count",
+        "game->players[0].body.bod.bod.vtable",
         "game->input_sampling_gate"
       ],
       "forbidden_substrings": [
@@ -3133,8 +3135,8 @@
         "game_input->input.authored_y",
         "player->mouse_cursor.saved_x",
         "player->mouse_cursor.saved_y",
-        "player->camera.transform",
-        "player->transform"
+        "player->camera.body.transform",
+        "player->body.transform"
       ],
       "forbidden_substrings": [
         "*(arg1 + 0x168)",
@@ -3153,8 +3155,8 @@
         "game_input->input.authored_y",
         "player->mouse_cursor.saved_x",
         "player->mouse_cursor.saved_y",
-        "player->camera.transform",
-        "player->transform"
+        "player->camera.body.transform",
+        "player->body.transform"
       ],
       "forbidden_substrings": [
         "this + 360",
@@ -9965,6 +9967,63 @@
         "SingleWaitBlock",
         "P@{",
         "sub_406BD0"
+      ]
+    },
+    {
+      "name": "analysis_frame_player_nested_body_owner",
+      "artifact": "analysis/headers/frame_renderer_types.h",
+      "required_substrings": [
+        "typedef struct FrameRenderCamera {\n    FrameRenderableBod body;",
+        "typedef struct GamePlayer {\n    FrameRenderableBod body;"
+      ],
+      "forbidden_substrings": [
+        "uint8_t unknown_00[0x38]"
+      ]
+    },
+    {
+      "name": "bn_frame_player_nested_body_owner",
+      "artifact": "analysis/headers/bn_frame_renderer_types.h",
+      "required_substrings": [
+        "typedef struct FrameRenderCamera {\n    FrameRenderableBod body;",
+        "typedef struct GamePlayer {\n    FrameRenderableBod body;"
+      ],
+      "forbidden_substrings": [
+        "uint8_t unknown_00[0x38]"
+      ]
+    },
+    {
+      "name": "bn_game_player_constructor_nested_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00408000-initialize_game_player.c",
+      "required_substrings": [
+        "initialize_renderable_bod(player)",
+        "initialize_renderable_bod(&player->camera)",
+        "player->camera.body.bod.bod.vtable = &g_noop_runtime_callback_table",
+        "player->body.bod.bod.vtable = &g_game_player_callback_table",
+        "return player"
+      ],
+      "forbidden_substrings": [
+        "data_4972f4",
+        "player->vtable",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_game_player_constructor_nested_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408000-initialize_game_player.c",
+      "required_substrings": [
+        "GamePlayer *__thiscall initialize_game_player(GamePlayer *player)",
+        "initialize_renderable_bod((RenderableBod *)player)",
+        "initialize_renderable_bod((RenderableBod *)&player->camera)",
+        "player->camera.body.bod.bod.vtable = &g_noop_runtime_callback_table",
+        "player->body.bod.bod.vtable = &g_game_player_callback_table",
+        "noop_this_constructor(&player->frontend_overlay.target)",
+        "noop_this_constructor(&player->frontend_overlay.current)",
+        "return player"
+      ],
+      "forbidden_substrings": [
+        "data_4972f4",
+        "player->vtable",
+        "sub_408000"
       ]
     }
   ]

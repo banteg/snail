@@ -49,6 +49,7 @@ TRUSTED_NAMES = [
     (0x44C3B0, "is_mouse_captured"),
     (0x44C3C0, "capture_mouse_cursor"),
     (0x44C400, "release_mouse_cursor"),
+    (0x4972F4, "g_game_player_callback_table"),
     (0x4E5510, "g_sprite_depth_nodes"),
     (0x4F7050, "g_sprite_depth_buckets"),
 ]
@@ -139,6 +140,11 @@ TRUSTED_FUNCTION_DECLARATIONS = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (
+        0x4972F4,
+        "g_game_player_callback_table",
+        "void *g_game_player_callback_table;",
+    ),
     (
         0x4DF904,
         "g_game_base",

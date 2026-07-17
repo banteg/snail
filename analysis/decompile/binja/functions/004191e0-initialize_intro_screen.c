@@ -7,14 +7,14 @@
 004191f9        cache_music_file("music/introtext.ogg", 0, &g_blank_text)
 00419211        int32_t eax_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceRed.txt")
 0041921d        struct GameRoot* game_base_1 = g_game_base
-00419230        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_1 * 0x124 + 0x106c7bc], 0)
+00419230        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax_1], 0)
 00419242        set_border_justify_centre(&g_game_base->border_manager, 0f)
 00419252        unhide_star_field(&g_game_base->star_manager)
 00419260        void* pointer_1 = load_file_bytes(file_name, nullptr)
 0041929e        logo->saved_render_flags = g_runtime_config.render_flags
 004192a1        struct TransformMatrix transform
 004192a1        struct TransformMatrix* eax_3 = initialize_matrix_from_values(&transform, 1f, 0f, 0f, 0f, 0f, 0.634392977f, 0.773010015f, 0f, 0f, -0.773010015f, 0.634392977f, 0f, 0f, 0f, 0f, 1f)
-004192b9        __builtin_memcpy(&g_game_base->players[0].transform, eax_3, 0x40)
+004192b9        __builtin_memcpy(&g_game_base->players[0].body.transform, eax_3, 0x40)
 004192c1        g_game_base->players[0].camera.fov_degrees = 100f
 004192cb        logo->progress = 0
 004192ce        logo->progress_step = 0.00166666671f
@@ -61,18 +61,18 @@
 004193bf        logo->renderable_count
 004193da        if ((0x200 & logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags) == 0)
 004193eb        struct GameRoot* game_base_2 = g_game_base
-004193f7        struct FrameBodBase* first = game_base_2->active_bod_list.first
+004193f7        struct BodNode* first = game_base_2->active_bod_list.first
 004193ff        if (first != 0)
-0041940d        first->bod.list_prev = &logo->letters[logo->:0x14.d]
+0041940d        first->list_prev = &logo->letters[logo->:0x14.d]
 00419410        void* first_1 = game_base_2->active_bod_list.first
 00419415        *(*(first_1 + 8) + 0xc) = first_1
-0041941a        void* list_prev = game_base_2->active_bod_list.first->bod.list_prev
+0041941a        void* list_prev = game_base_2->active_bod_list.first->list_prev
 0041941d        game_base_2->active_bod_list.first = list_prev
 0041941f        *(list_prev + 8) = 0
 00419401        game_base_2->active_bod_list.first = &logo->letters[logo->:0x14.d]
-00419403        logo->letters[logo->:0x14.d].renderable.o.list_prev = nullptr
-00419408        game_base_2->active_bod_list.first->bod.list_next = 0
-00419422        logo->letters[logo->:0x14.d].renderable.o.list_flags |= 0x200
+00419403        logo->letters[logo->:0x14.d].renderable.__offset(0x8).d = nullptr
+00419408        game_base_2->active_bod_list.first->list_next = 0
+00419422        logo->letters[logo->:0x14.d].renderable.__offset(0x4).d |= 0x200
 004193e1        report_errorf("List ADD")
 00419439        set_bod_object(&logo->letters[logo->renderable_count], (var_168_1 - 0x2403c)->image_donors[0].renderable.bod.object)
 00419462        logo->letters[logo->renderable_count].renderable.bod.object->facequads->texture_ref = get_or_create_texture_ref(&g_texture_refs, &texture_path, 0, 0)
@@ -135,26 +135,26 @@
 004196b1        float var_174_2 = fconvert.s(fconvert.t(var_164_1) * fconvert.t(0.5f) * fconvert.t(0.800000012f))
 00419849        bool cond:3_1
 004196b5        logo->renderable_count
-004196c9        uint32_t list_flags
+004196c9        uint32_t renderable
 004196c9        if (((logo->letters[logo->:0x14.d].renderable.bod.bod.list_flags).w:1.b & 2) == 0)
 004196da        struct GameRoot* game_base_3 = g_game_base
-004196e6        struct FrameBodBase* first_2 = game_base_3->active_bod_list.first
+004196e6        struct BodNode* first_2 = game_base_3->active_bod_list.first
 004196ee        if (first_2 != 0)
-004196fc        first_2->bod.list_prev = &logo->letters[logo->:0x14.d]
+004196fc        first_2->list_prev = &logo->letters[logo->:0x14.d]
 004196ff        void* first_3 = game_base_3->active_bod_list.first
 00419704        *(*(first_3 + 8) + 0xc) = first_3
-00419709        void* list_prev_1 = game_base_3->active_bod_list.first->bod.list_prev
+00419709        void* list_prev_1 = game_base_3->active_bod_list.first->list_prev
 0041970c        game_base_3->active_bod_list.first = list_prev_1
 0041970e        *(list_prev_1 + 8) = 0
 004196f0        game_base_3->active_bod_list.first = &logo->letters[logo->:0x14.d]
-004196f2        logo->letters[logo->:0x14.d].renderable.o.list_prev = nullptr
-004196f7        game_base_3->active_bod_list.first->bod.list_next = 0
-00419711        list_flags = logo->letters[logo->:0x14.d].renderable.o.list_flags
-00419714        list_flags:1.b |= 2
-00419717        logo->letters[logo->:0x14.d].renderable.o.list_flags = list_flags
-004196d0        list_flags = report_errorf("List ADD")
-0041971a        list_flags.b = *cursor_5
-0041971d        int32_t eax_57 = font_slot_index_for_char(list_flags.b)
+004196f2        logo->letters[logo->:0x14.d].renderable.__offset(0x8).d = nullptr
+004196f7        game_base_3->active_bod_list.first->list_next = 0
+00419711        renderable = logo->letters[logo->:0x14.d].renderable.__offset(0x4).d
+00419714        renderable:1.b |= 2
+00419717        logo->letters[logo->:0x14.d].renderable.__offset(0x4).d = renderable
+004196d0        renderable = report_errorf("List ADD")
+0041971a        renderable.b = *cursor_5
+0041971d        int32_t eax_57 = font_slot_index_for_char(renderable.b)
 00419743        set_bod_object(&logo->letters[logo->renderable_count], g_font3d_bods[eax_57].object)
 00419755        set_matrix_identity(&logo->letters[logo->renderable_count].renderable.transform)
 0041975a        int32_t renderable_count_2 = logo->renderable_count

@@ -1212,7 +1212,7 @@
 0043cad8        update_jetpack_gauge(&player->sub_hover)
 0043cae5        if (player->completion_handoff_active != 0)
 0043cae7        struct GameRoot* game_base_3 = g_game_base
-0043cafd        __builtin_memcpy(&game_base_3->players[0].completion_handoff_transform, &game_base_3->players[0].transform, 0x40)
+0043cafd        __builtin_memcpy(&game_base_3->players[0].completion_handoff_transform, &game_base_3->players[0].body.transform, 0x40)
 0043cb06        unimplemented  {fld st0, dword [eax+0x300]}
 0043cb0c        unimplemented  {fsub st0, dword [0x497220]}
 0043cb12        g_game_base->players[0].completion_handoff_transform.position.y = fconvert.s(unimplemented  {fstp dword [eax+0x300], st0})
@@ -1401,9 +1401,9 @@
 0043cde1        struct SubgameRuntime* game_23 = game_16
 0043cde2        unimplemented  {fild st0, dword [edx+0x54]}
 0043cdeb        unimplemented  {fdivr st0, dword [ebp+0x70]}
-0043cdee        float var_54_50 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+0043cdee        float zoom = fconvert.s(unimplemented  {fstp dword [esp], st0})
 0043cdee        unimplemented  {fstp dword [esp], st0}
-0043cdf1        set_backdrop_progress_fraction(&g_game_base->backdrop, var_54_50)
+0043cdf1        set_backdrop_progress_fraction(&g_game_base->backdrop, zoom)
 0043cdfc        unimplemented  {fild st0, dword [ecx+0x58]}
 0043cdff        unimplemented  {fsub st0, dword [0x4972c0]}
 0043ce05        unimplemented  {fld st0, dword [ebp+0x70]}

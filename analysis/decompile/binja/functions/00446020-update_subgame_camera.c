@@ -5,7 +5,7 @@
 
 00446036        int32_t subgame_state = runtime->subgame_state
 00446042        struct TransformMatrix from
-00446042        __builtin_memcpy(&from, &g_game_base->players[0].transform, 0x40)
+00446042        __builtin_memcpy(&from, &g_game_base->players[0].body.transform, 0x40)
 00446047        runtime->camera_snap_requested = 0
 0044604b        struct TransformMatrix var_80
 0044604b        if (subgame_state != 1)
@@ -26,8 +26,8 @@
 00446103        struct GameRoot* game_base_2 = g_game_base
 0044610d        float alpha
 0044610d        __builtin_strncpy(&alpha, "fff?", 4)
-0044611e        linear_interpolate_matrix(&game_base_2->players[0].transform, &from, &var_80, alpha)
+0044611e        linear_interpolate_matrix(&game_base_2->players[0].body.transform, &from, &var_80, alpha)
 0044612c        return
-004460f3        __builtin_memcpy(&g_game_base->players[0].transform, &var_80, 0x40)
+004460f3        __builtin_memcpy(&g_game_base->players[0].body.transform, &var_80, 0x40)
 004460f6        runtime->camera_snap_requested = 0
 00446102        return

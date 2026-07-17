@@ -26,3 +26,11 @@ clean masked operands.
 now reached through `frontend_overlay.target/current`. Together with the exact
 overlay initializer/drawer and `run_frame_update`, their enclosing 0x24-byte
 owner is proven at player `+0x184`. The constructor remains exact at 17/17.
+
+2026-07-17 root-player body pass: the analysis owners now embed the complete
+0x80-byte `FrameRenderableBod` at `GamePlayer +0x00` and
+`FrameRenderCamera +0x00`, preserving the exact 0x1f8-byte player and 0xc8-byte
+camera sizes. The constructor and downstream frame/frontend consumers now
+resolve the inherited vtables and transforms through those nested bodies.
+The callback table at 0x4972f4 is named `g_game_player_callback_table`; the
+camera continues to use the shared `g_noop_runtime_callback_table`.

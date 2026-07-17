@@ -5097,6 +5097,9 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
 
     assert "TransformMatrix completion_handoff_transform; // +0x1a8" in matcher_header
     for header in (binja_header, ida_header):
+        assert "typedef struct FrameRenderCamera" in header
+        assert "typedef struct GamePlayer" in header
+        assert header.count("FrameRenderableBod body;") == 2
         assert "FrameTransformMatrix completion_handoff_transform;" in header
         assert "typedef struct BorderStackEntry" in header
         assert "BorderStackEntry entries[200];" in header
@@ -5123,6 +5126,13 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "uint8_t unknown_00067c[0xb24 - 0x67c];" not in ida_header
 
     assert '("0x4df904", "GameRoot*")' in binja_sync
+    assert '("0x4972f4", "g_game_player_callback_table")' in binja_sync
+    assert '("0x4972f4", "void*")' in binja_sync
+    assert "FRAME_RENDER_CAMERA_FIELD_UPDATES = (" in binja_sync
+    assert '("0x00", "body", "FrameRenderableBod")' in binja_sync
+    assert '("FrameRenderCamera", FRAME_RENDER_CAMERA_FIELD_UPDATES)' in binja_sync
+    assert '("GamePlayer", GAME_PLAYER_FIELD_UPDATES)' in binja_sync
+    assert "g_game_player_callback_table" in ida_sync
     assert (
         '("0x1a8", "completion_handoff_transform", "FrameTransformMatrix")'
         in binja_sync

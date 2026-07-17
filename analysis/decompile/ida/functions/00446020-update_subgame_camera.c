@@ -11,7 +11,7 @@ void __thiscall update_subgame_camera(SubgameRuntime *runtime)
   TransformMatrix from; // [esp+4Ch] [ebp-40h] BYREF
 
   subgame_state = runtime->subgame_state;
-  qmemcpy(&from, &g_game_base->players[0].transform, sizeof(from));
+  qmemcpy(&from, &g_game_base->players[0].body.transform, sizeof(from));
   runtime->camera_snap_requested = 0;
   if ( subgame_state == 1 )
   {
@@ -38,11 +38,11 @@ void __thiscall update_subgame_camera(SubgameRuntime *runtime)
   }
   if ( runtime->camera_snap_requested )
   {
-    qmemcpy(&g_game_base->players[0].transform, &transform, sizeof(g_game_base->players[0].transform));
+    qmemcpy(&g_game_base->players[0].body.transform, &transform, sizeof(g_game_base->players[0].body.transform));
     runtime->camera_snap_requested = 0;
   }
   else
   {
-    linear_interpolate_matrix((TransformMatrix *)&g_game_base->players[0].transform, &from, &transform, 0.89999998);
+    linear_interpolate_matrix((TransformMatrix *)&g_game_base->players[0].body.transform, &from, &transform, 0.89999998);
   }
 }

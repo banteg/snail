@@ -7,9 +7,9 @@ GamePlayer *__thiscall initialize_game_player(GamePlayer *player)
 {
   initialize_renderable_bod((RenderableBod *)player);
   initialize_renderable_bod((RenderableBod *)&player->camera);
-  *(_DWORD *)player->camera.unknown_00 = &g_noop_runtime_callback_table;
+  player->camera.body.bod.bod.vtable = &g_noop_runtime_callback_table;
   noop_this_constructor(&player->frontend_overlay.target);
   noop_this_constructor(&player->frontend_overlay.current);
-  player->vtable = g_game_player_callback_table;
+  player->body.bod.bod.vtable = &g_game_player_callback_table;
   return player;
 }

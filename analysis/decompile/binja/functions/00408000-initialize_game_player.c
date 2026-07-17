@@ -5,9 +5,6 @@
 
 00408004        initialize_renderable_bod(player)
 00408011        initialize_renderable_bod(&player->camera)
-0040801c        player->camera.unknown_00[0] = 0xb0
-0040801c        player->camera.unknown_00[1] = 0x72
-0040801c        player->camera.unknown_00[2] = 0x49
-0040801c        player->camera.unknown_00[3] = 0
-00408032        player->vtable = &data_4972f4
+0040801c        player->camera.body.bod.bod.vtable = &g_noop_runtime_callback_table
+00408032        player->body.bod.bod.vtable = &g_game_player_callback_table
 0040803c        return player

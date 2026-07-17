@@ -34,40 +34,37 @@
 0040a46b        long double temp1_1
 0040a3a8        game->fixed_update_accumulator = fconvert.s(fconvert.t(game->fixed_update_accumulator) - fconvert.t(1f))
 0040a3ae        draw_frontend_overlay_color_lerp(&game->players[0].frontend_overlay)
-0040a3b3        struct FrameBodBase* first = game->active_bod_list.first
+0040a3b3        struct BodNode* first = game->active_bod_list.first
 0040a3bb        if (first != 0)
 0040a3c1        while (true)
-0040a3c1        if ((first->bod.list_flags.b & 0x10) != 0)
+0040a3c1        if ((first->list_flags.b & 0x10) != 0)
 0040a3c8        report_errorf("Debug Bod AI")
-0040a3d0        struct FrameBodBase* list_next = first->bod.list_next
+0040a3d0        struct BodNode* list_next = first->list_next
 0040a3d5        if (list_next != 0)
-0040a3d7        uint32_t list_flags = list_next->bod.list_flags
+0040a3d7        uint32_t list_flags = list_next->list_flags
 0040a3da        list_flags.b |= 0x40
-0040a3dc        list_next->bod.list_flags = list_flags
-0040a3e3        (*first->bod.vtable)()
+0040a3dc        list_next->list_flags = list_flags
+0040a3e3        (*first->vtable)()
 0040a3e9        first = list_next
 0040a3ee        var_14 += 1
 0040a3f2        if (list_next == 0)
 0040a3f2        break
-0040a3f4        uint32_t list_flags_1 = list_next->bod.list_flags
+0040a3f4        uint32_t list_flags_1 = list_next->list_flags
 0040a3f7        list_flags_1.b &= 0xbf
-0040a3f9        list_next->bod.list_flags = list_flags_1
-0040a40a        (*game->players[0].vtable)()
+0040a3f9        list_next->list_flags = list_flags_1
+0040a40a        (*game->players[0].body.bod.bod.vtable)()
 0040a413        if (game->subgame.level_mode == 6)
-0040a421        (*game->players[1].vtable)()
+0040a421        (*game->players[1].body.bod.bod.vtable)()
 0040a423        struct Sprite** i = &g_sprite_active_heads
 0040a446        while (i s< &g_sprite_free_head)
 0040a428        struct Sprite* sprite = *i
 0040a42c        if (sprite != 0)
-0040a43b        struct Sprite* j
-0040a42e        j.b = sprite->next.b
-0040a42e        j:1.b = sprite->next:1.b
-0040a42e        j:2.b = sprite->next:2.b
-0040a42e        j:3.b = sprite->next:3.b
+0040a43b        struct Sprite* next
+0040a42e        next = sprite->next
 0040a431        update_sprite(sprite)
 0040a436        ebx += 1
-0040a437        sprite = j
-0040a43b        do while (j != 0)
+0040a437        sprite = next
+0040a43b        do while (next != 0)
 0040a43d        i = &i[1]
 0040a44e        initialize_enemy_manager(&game->subgame.enemy_manager)
 0040a453        x87_r7_9 = fconvert.t(game->fixed_update_accumulator)

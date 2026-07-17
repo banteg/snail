@@ -21,9 +21,9 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   _BYTE *v16; // eax
   int32_t renderable_count; // ecx
   LogoLetter *v18; // eax
-  FrameBodBase **p_first; // ecx
-  FrameBodBase *first; // edx
-  FrameBodBase *list_prev; // edx
+  BodNode **p_first; // ecx
+  BodNode *first; // edx
+  struct BodNode *list_prev; // edx
   float v22; // esi
   int32_t v23; // eax
   Vec4 *p_position; // ecx
@@ -40,9 +40,9 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   int32_t v35; // ecx
   uint32_t list_flags; // eax
   LogoLetter *v37; // ecx
-  FrameBodBase **v38; // eax
-  FrameBodBase *v39; // edx
-  FrameBodBase *v40; // edx
+  BodNode **v38; // eax
+  BodNode *v39; // edx
+  struct BodNode *v40; // edx
   uint32_t v41; // eax
   int v42; // eax
   double v43; // st7
@@ -67,7 +67,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   float v62; // [esp+28h] [ebp-160h]
   int v63; // [esp+2Ch] [ebp-15Ch]
   float v64; // [esp+30h] [ebp-158h]
-  char *file_bytes; // [esp+34h] [ebp-154h]
+  void *pointer; // [esp+34h] [ebp-154h]
   int v66; // [esp+38h] [ebp-150h]
   int v67; // [esp+3Ch] [ebp-14Ch]
   float v68; // [esp+40h] [ebp-148h]
@@ -84,10 +84,10 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
   unhide_star_field(&g_game_base->star_manager);
-  file_bytes = load_file_bytes(file_name, nullptr);
+  pointer = load_file_bytes(file_name, nullptr);
   logo->saved_render_flags = g_runtime_config.render_flags;
   qmemcpy(
-    &g_game_base->players[0].transform,
+    &g_game_base->players[0].body.transform,
     initialize_matrix_from_values(
       &transform,
       1.0,
@@ -106,12 +106,12 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
       0.0,
       0.0,
       1.0),
-    sizeof(g_game_base->players[0].transform));
+    sizeof(g_game_base->players[0].body.transform));
   g_game_base->players[0].camera.fov_degrees = 100.0;
   logo->progress = 0.0;
   logo->progress_step = 0.0016666667;
   release_mouse_cursor(&g_game_base->players[0].mouse_cursor);
-  v5 = file_bytes;
+  v5 = (char *)pointer;
   logo->state = 0;
   v59 = 0.2;
   logo->renderable_count = 0;
@@ -162,17 +162,17 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
           first = g_game_base->active_bod_list.first;
           if ( first )
           {
-            first->bod.list_prev = (FrameBodBase *)v18;
-            (*p_first)->bod.list_prev->bod.list_next = *p_first;
-            list_prev = (*p_first)->bod.list_prev;
+            first->list_prev = &v18->renderable.bod.bod;
+            (*p_first)->list_prev->list_next = *p_first;
+            list_prev = (*p_first)->list_prev;
             *p_first = list_prev;
-            list_prev->bod.list_prev = nullptr;
+            list_prev->list_prev = nullptr;
           }
           else
           {
-            *p_first = (FrameBodBase *)v18;
+            *p_first = &v18->renderable.bod.bod;
             v18->renderable.bod.bod.list_prev = nullptr;
-            (*p_first)->bod.list_next = nullptr;
+            (*p_first)->list_next = nullptr;
           }
           v18->renderable.bod.bod.list_flags |= 0x200u;
         }
@@ -273,17 +273,17 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
               v39 = g_game_base->active_bod_list.first;
               if ( v39 )
               {
-                v39->bod.list_prev = (FrameBodBase *)v37;
-                (*v38)->bod.list_prev->bod.list_next = *v38;
-                v40 = (*v38)->bod.list_prev;
+                v39->list_prev = &v37->renderable.bod.bod;
+                (*v38)->list_prev->list_next = *v38;
+                v40 = (*v38)->list_prev;
                 *v38 = v40;
-                v40->bod.list_prev = nullptr;
+                v40->list_prev = nullptr;
               }
               else
               {
-                *v38 = (FrameBodBase *)v37;
+                *v38 = &v37->renderable.bod.bod;
                 v37->renderable.bod.bod.list_prev = nullptr;
-                (*v38)->bod.list_next = nullptr;
+                (*v38)->list_next = nullptr;
               }
               v41 = v37->renderable.bod.bod.list_flags;
               BYTE1(v41) |= 2u;
@@ -329,7 +329,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
       }
     }
     while ( v8 < v69 );
-    v5 = file_bytes;
+    v5 = (char *)pointer;
   }
   cursor = find_case_insensitive_substring(aDuration, v5);
   cursor = find_case_insensitive_substring(asc_4A1644, cursor);
@@ -355,5 +355,5 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
     }
     while ( v2 < logo->renderable_count );
   }
-  free_tracked_memory((int)v5);
+  free_tracked_memory(v5);
 }

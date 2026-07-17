@@ -40,9 +40,9 @@ void __thiscall play_movement_state_sound(Player *player)
   {
     if ( player->attachment_exit_pending )
     {
-      v10.x = g_game_base->players[0].transform.position.x - player->body.transform.position.x;
-      v10.y = g_game_base->players[0].transform.position.y - player->body.transform.position.y;
-      v10.z = g_game_base->players[0].transform.position.z - player->body.transform.position.z;
+      v10.x = g_game_base->players[0].body.transform.position.x - player->body.transform.position.x;
+      v10.y = g_game_base->players[0].body.transform.position.y - player->body.transform.position.y;
+      v10.z = g_game_base->players[0].body.transform.position.z - player->body.transform.position.z;
       vector = v10;
       v7 = 1.0 - normalize_vector(&vector) * 0.016666668;
       v8 = v7;

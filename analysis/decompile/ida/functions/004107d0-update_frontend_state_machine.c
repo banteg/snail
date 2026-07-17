@@ -141,7 +141,9 @@ LABEL_31:
   game_input = player->game_input;
   player->mouse_cursor.saved_x = game_input->input.authored_x;
   authored_y = game_input->input.authored_y;
-  qmemcpy(&player->camera.transform, &player->transform, sizeof(player->camera.transform));
+  qmemcpy(&player->camera.body.transform, &player->body.transform, sizeof(player->camera.body.transform));
   player->mouse_cursor.saved_y = authored_y;
-  invert_matrix_from_source((TransformMatrix *)&player->camera.view_matrix, (const TransformMatrix *)&player->transform);
+  invert_matrix_from_source(
+    (TransformMatrix *)&player->camera.view_matrix,
+    (const TransformMatrix *)&player->body.transform);
 }

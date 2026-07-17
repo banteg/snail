@@ -117,8 +117,8 @@ void __thiscall update_subgoldy(Player *player)
   float z; // [esp-Ch] [ebp-64h]
   float v113; // [esp-Ch] [ebp-64h]
   float v114; // [esp+0h] [ebp-58h]
-  SubLoc *value; // [esp+4h] [ebp-54h]
-  SubLoc *valuea; // [esp+4h] [ebp-54h]
+  TrackRowCell *value; // [esp+4h] [ebp-54h]
+  TrackRowCell *valuea; // [esp+4h] [ebp-54h]
   float valueb; // [esp+4h] [ebp-54h]
   float valuec; // [esp+4h] [ebp-54h]
   float valued; // [esp+4h] [ebp-54h]
@@ -396,9 +396,9 @@ LABEL_101:
                 v126 = player->velocity.x * 1.05;
                 v129 = player->velocity.y * 1.05;
                 v132 = player->velocity.z * 1.05;
-                value = *(SubLoc **)((char *)unk_5CCB6C
-                                   + (unsigned int)player->game
-                                   + 244 * get_track_cell_row_index(v41));
+                value = *(TrackRowCell **)((char *)unk_5CCB6C
+                                         + (unsigned int)player->game
+                                         + 244 * get_track_cell_row_index(v41));
                 x = p_position->x;
                 y = p_position->y;
                 z = p_position->z;
@@ -419,9 +419,9 @@ LABEL_101:
                 v127 = player->velocity.x * 1.05;
                 v130 = player->velocity.y * 1.05;
                 v133 = player->velocity.z * 1.05;
-                valuea = *(SubLoc **)((char *)unk_5CCB70
-                                    + (unsigned int)player->game
-                                    + 244 * get_track_cell_row_index(v41));
+                valuea = *(TrackRowCell **)((char *)unk_5CCB70
+                                          + (unsigned int)player->game
+                                          + 244 * get_track_cell_row_index(v41));
                 v109 = p_position->x;
                 v111 = p_position->y;
                 v113 = p_position->z;
@@ -781,7 +781,7 @@ LABEL_287:
         {
           qmemcpy(
             &g_game_base->players[0].completion_handoff_transform,
-            &g_game_base->players[0].transform,
+            &g_game_base->players[0].body.transform,
             sizeof(g_game_base->players[0].completion_handoff_transform));
           g_game_base->players[0].completion_handoff_transform.position.y = g_game_base->players[0].completion_handoff_transform.position.y
                                                                           - 1.0;
