@@ -8,10 +8,10 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_proto_updates,
     apply_struct_field_updates,
-    current_prototypes,
     emit_summary,
-    types_declare,
+    types_declare_if_changed,
 )
 
 
@@ -50,25 +50,6 @@ PROTO_UPDATES = (
 )
 
 
-def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
-    observed_prototypes = current_prototypes(
-        REPO_ROOT,
-        target=target,
-        identifiers=(identifier for identifier, _prototype in PROTO_UPDATES),
-    )
-    return [
-        {
-            "op": "proto_owner_deferred",
-            "status": "deferred",
-            "reason": "Binary Ninja restores the stale scalar prototype during live verification",
-            "identifier": identifier,
-            "desired_prototype": prototype,
-            "observed_prototype": observed_prototypes.get(identifier),
-        }
-        for identifier, prototype in PROTO_UPDATES
-    ]
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the narrow cRBackdrop ownership slice to Binary Ninja."
@@ -90,7 +71,11 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
-    operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
+    operations.append(
+        types_declare_if_changed(
+            REPO_ROOT, target=args.target, header_path=header_path
+        )
+    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,
@@ -99,7 +84,9 @@ def main() -> int:
             updates=GAME_ROOT_FIELD_UPDATES,
         )
     )
-    operations.extend(report_deferred_prototypes(target=args.target))
+    operations.extend(
+        apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES)
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

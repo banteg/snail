@@ -235,6 +235,29 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     assert 'analysis/headers/bn_backdrop_types.h' in backdrop_sync
 
 
+def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
+    source = (BINJA_DIR / "sync_backdrop_types.py").read_text(encoding="utf-8")
+    header = (HEADER_DIR / "bn_backdrop_types.h").read_text(encoding="utf-8")
+
+    assert "apply_proto_updates" in source
+    assert "types_declare_if_changed" in source
+    assert "report_deferred_prototypes" not in source
+    assert "proto_owner_deferred" not in source
+    assert "typedef struct LandscapeScriptRecord {" in header
+    assert "int32_t backdrop_texture_id;" in header
+    assert "uint8_t split_backdrop_texture_pair;" in header
+    assert "float distort;" in header
+    for prototype in (
+        "void __thiscall set_backdrop_progress_fraction(Backdrop* backdrop, float zoom)",
+        "void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort)",
+        "void __thiscall change_backdrop(Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",
+        "void __thiscall change_backdrop_real(Backdrop* backdrop)",
+        "void __thiscall initialize_backdrop(Backdrop* backdrop, int32_t last_mode)",
+        "void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world)",
+    ):
+        assert prototype in source
+
+
 def test_ida_catalog_and_loader_lanes_replay_the_shared_root_graph() -> None:
     catalog_apply = (IDA_DIR / "apply_root_bod_catalog_types.py").read_text(
         encoding="utf-8"

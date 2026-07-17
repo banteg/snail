@@ -3,22 +3,22 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: change_backdrop_real @ 0x410dc0 */
 
-00410dc5        int32_t eax = *(arg1 + 0x40)
-00410dca        if (eax == 0)
-00410e03        char edx_2 = *(arg1 + 0x54)
-00410e06        eax.b = *(arg1 + 0x39)
-00410e09        *(arg1 + 0x658) = 0
-00410e0f        *(arg1 + 0x55) = edx_2
-00410e12        *(arg1 + 0x38) = eax.b
-00410e16        return eax
-00410dcf        if (eax != *(arg1 + 0x3c))
-00410dd1        *(arg1 + 0x3c) = eax
-00410dd7        *(arg1 + 0x44) = *(arg1 + 0x48)
-00410dda        *(arg1 + 0x6c8) = 0
-00410de6        set_backdrop_distort(arg1, *(arg1 + 0x50))
-00410deb        char edx_1 = *(arg1 + 0x54)
-00410dee        char eax_2 = *(arg1 + 0x39)
-00410df1        *(arg1 + 0x658) = 1
-00410dfb        *(arg1 + 0x55) = edx_1
-00410dfe        *(arg1 + 0x38) = eax_2
-00410e02        return eax_2
+00410dc5        int32_t pending_primary_texture_id = backdrop->pending_primary_texture_id
+00410dca        if (pending_primary_texture_id == 0)
+00410e03        uint8_t pending_flip_1 = backdrop->pending_flip
+00410e06        uint8_t pending_split_backdrop_pair_1 = backdrop->pending_split_backdrop_pair
+00410e09        backdrop->backdrop_render_enabled = 0
+00410e0f        backdrop->active_flip = pending_flip_1
+00410e12        backdrop->active_split_backdrop_pair = pending_split_backdrop_pair_1
+00410e16        return
+00410dcf        if (pending_primary_texture_id != backdrop->active_primary_texture_id)
+00410dd1        backdrop->active_primary_texture_id = pending_primary_texture_id
+00410dd7        backdrop->active_secondary_texture_id = backdrop->pending_secondary_texture_id
+00410dda        backdrop->zoom = 0f
+00410de6        set_backdrop_distort(backdrop, backdrop->pending_distort)
+00410deb        uint8_t pending_flip = backdrop->pending_flip
+00410dee        uint8_t pending_split_backdrop_pair = backdrop->pending_split_backdrop_pair
+00410df1        backdrop->backdrop_render_enabled = 1
+00410dfb        backdrop->active_flip = pending_flip
+00410dfe        backdrop->active_split_backdrop_pair = pending_split_backdrop_pair
+00410e02        return

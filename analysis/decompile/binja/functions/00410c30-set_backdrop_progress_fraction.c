@@ -3,5 +3,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_backdrop_progress_fraction @ 0x410c30 */
 
-00410c34        *(arg1 + 0x6c8) = arg2
-00410c3a        return arg2
+00410c34        backdrop->zoom = zoom
+00410c3a        return

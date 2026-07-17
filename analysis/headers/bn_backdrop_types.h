@@ -28,7 +28,16 @@ typedef struct BackdropWorldBlend {
     int32_t current_world;
 } BackdropWorldBlend;
 
-typedef struct LandscapeScriptRecord LandscapeScriptRecord;
+typedef struct LandscapeScriptRecord {
+    int32_t id;
+    char name[0x84 - 0x04];
+    int32_t backdrop_texture_id;
+    uint8_t split_backdrop_texture_pair;
+    char backdrop_texture_path[0x10c - 0x89];
+    int32_t object_index;
+    tColour fog_color;
+    float distort;
+} LandscapeScriptRecord;
 
 typedef struct Backdrop {
     uint8_t bod_base[0x38];

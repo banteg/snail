@@ -7466,6 +7466,98 @@
       ]
     },
     {
+      "name": "bn_backdrop_zoom_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_progress_fraction.c",
+      "required_substrings": [
+        "backdrop->zoom = zoom",
+        "00410c3a        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return zoom"
+      ]
+    },
+    {
+      "name": "bn_backdrop_distort_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00410c40-set_backdrop_distort.c",
+      "required_substrings": [
+        "struct Backdrop* backdrop_1 = backdrop",
+        "fconvert.t(distort)",
+        "00410d42        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_change_backdrop_record_owner",
+      "artifact": "analysis/decompile/binja/functions/00410d50-change_backdrop.c",
+      "required_substrings": [
+        "record->backdrop_texture_id",
+        "record->split_backdrop_texture_pair",
+        "record->distort",
+        "backdrop->pending_primary_texture_id",
+        "00410dbc        return"
+      ],
+      "forbidden_substrings": [
+        "record->__offset",
+        "arg1",
+        "arg2",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_change_backdrop_real_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00410dc0-change_backdrop_real.c",
+      "required_substrings": [
+        "backdrop->pending_primary_texture_id",
+        "backdrop->active_primary_texture_id",
+        "set_backdrop_distort(backdrop, backdrop->pending_distort)",
+        "backdrop->active_split_backdrop_pair"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return eax",
+        "return eax_2"
+      ]
+    },
+    {
+      "name": "bn_initialize_backdrop_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00410e20-initialize_backdrop.c",
+      "required_substrings": [
+        "set_backdrop_texture_target(backdrop, 5)",
+        "if (last_mode == 0)",
+        "backdrop->primary_world_blend.current_world",
+        "backdrop->secondary_world_blend.current_world",
+        "set_backdrop_distort(backdrop, 0f)",
+        "00410f34        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return set_backdrop_distort"
+      ]
+    },
+    {
+      "name": "bn_backdrop_world_target_void_owner",
+      "artifact": "analysis/decompile/binja/functions/00410f40-set_backdrop_texture_target.c",
+      "required_substrings": [
+        "backdrop->primary_world_blend.previous_world",
+        "backdrop->primary_world_blend.current_world = world",
+        "backdrop->secondary_world_blend.previous_world",
+        "backdrop->secondary_world_blend.current_world = world",
+        "00410f8c        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "return world"
+      ]
+    },
+    {
       "name": "ida_render_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/00411040-render_backdrop.c",
       "required_substrings": [

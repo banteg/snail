@@ -3,26 +3,23 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: change_backdrop @ 0x410d50 */
 
-00410d50        void* result = arg2
 00410d55        int32_t edx = 0
-00410d5e        int32_t esi = *(result + 0x84)
-00410d66        if (*(result + 0x88) == 0)
-00410d8e        if (esi != 0)
-00410d90        *(arg1 + 0x39) = 0
+00410d5e        int32_t backdrop_texture_id = record->backdrop_texture_id
+00410d66        if (record->split_backdrop_texture_pair == 0)
+00410d8e        if (backdrop_texture_id != 0)
+00410d90        backdrop->pending_split_backdrop_pair = 0
 00410d93        edx = 1
-00410d98        *(arg1 + 0x4c) = 1
-00410da1        *(arg1 + 0x40) = *(result + 0x84)
-00410da4        label_410da4:
-00410da4        result = *(result + 0x120)
-00410daa        *(arg1 + 0x50) = result
-00410dad        result.b = arg3
-00410db1        *(arg1 + 0x54) = result.b
-00410d6a        if (esi != 0)
+00410d98        backdrop->backdrop_change_queued = 1
+00410da1        backdrop->pending_primary_texture_id = record->backdrop_texture_id
+00410daa        backdrop->pending_distort = record->distort
+00410db1        backdrop->pending_flip = flip
+00410d6a        if (backdrop_texture_id != 0)
 00410d6c        edx = 1
-00410d71        *(arg1 + 0x39) = 1
-00410d74        *(arg1 + 0x4c) = 1
-00410d7d        *(arg1 + 0x40) = *(result + 0x84)
-00410d87        *(arg1 + 0x48) = *(result + 0x84) + 1
-00410d8a        goto label_410da4
-00410db5        *(arg1 + 0x658) = edx
-00410dbc        return result
+00410d71        backdrop->pending_split_backdrop_pair = 1
+00410d74        backdrop->backdrop_change_queued = 1
+00410d7d        backdrop->pending_primary_texture_id = record->backdrop_texture_id
+00410d87        backdrop->pending_secondary_texture_id = record->backdrop_texture_id + 1
+00410daa        backdrop->pending_distort = record->distort
+00410db1        backdrop->pending_flip = flip
+00410db5        backdrop->backdrop_render_enabled = edx
+00410dbc        return
