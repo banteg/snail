@@ -599,6 +599,127 @@ BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
     ),
 )
 
+# create_golb inlines BodList::add_bod twice: first for the zero-offset primary
+# body and later for the embedded tertiary body at +0x118. The root list only
+# borrows those intrusive BodNode links; it does not own either GolbShot. Pin
+# the native register lifetimes so the primary splice stays rooted at
+# GameRoot::active_bod_list.first and the tertiary splice does not collapse
+# into an offset-GolbShot pointer after ECX/EAX/EDX reuse.
+CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES = (
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        52,
+        66,
+        "active_first_ref_primary",
+        "BodNode**",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        57,
+        67,
+        "active_first_primary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        78,
+        67,
+        "active_first_link_primary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        80,
+        73,
+        "active_previous_first_primary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        86,
+        67,
+        "active_first_empty_primary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        88,
+        67,
+        "active_new_first_primary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1431,
+        67,
+        "tertiary_node",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1500,
+        66,
+        "active_first_ref_tertiary",
+        "BodNode**",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1506,
+        68,
+        "active_first_tertiary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1521,
+        66,
+        "active_first_empty_tertiary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1531,
+        68,
+        "active_first_link_tertiary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1533,
+        71,
+        "active_previous_first_tertiary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1539,
+        68,
+        "active_first_reload_tertiary",
+        "BodNode*",
+    ),
+    (
+        "create_golb",
+        "RegisterVariableSourceType",
+        1541,
+        68,
+        "active_new_first_tertiary",
+        "BodNode*",
+    ),
+)
+
 # VC6 retains containing-owner bases while advancing one authored row, one
 # runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
 # Binary Ninja otherwise flattens all three into void-pointer displacement
@@ -2079,6 +2200,7 @@ def main() -> int:
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
+                *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

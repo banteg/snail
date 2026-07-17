@@ -5021,6 +5021,39 @@
       ]
     },
     {
+      "name": "bn_create_golb_active_bod_owners",
+      "artifact": "analysis/decompile/binja/functions/00415280-create_golb.c",
+      "required_substrings": [
+        "struct BodNode** active_first_ref_primary = &g_game_base->active_bod_list.first",
+        "active_first_link_primary->list_prev->list_next = active_first_link_primary",
+        "struct BodNode* active_first_tertiary = game_base_1->active_bod_list.first",
+        "active_first_tertiary->list_prev = &shot->..tertiary_body.bod.bod",
+        "active_first_link_tertiary->list_prev->list_next = active_first_link_tertiary",
+        "game_base_1->active_bod_list.first = &shot->..tertiary_body.bod.bod"
+      ],
+      "forbidden_substrings": [
+        "FrameBodBase",
+        "(eax_2 - 0x5ac)",
+        "__offset(GolbShot, 0x118)"
+      ]
+    },
+    {
+      "name": "ida_create_golb_active_bod_owners",
+      "artifact": "analysis/decompile/ida/functions/00415280-create_golb.c",
+      "required_substrings": [
+        "BodNode **p_first",
+        "first->list_prev = &shot->primary_body.bod.bod;",
+        "(*p_first)->list_prev->list_next = *p_first;",
+        "BodNode **v40",
+        "v41->list_prev = &p_tertiary_body->bod.bod;",
+        "*v40 = &p_tertiary_body->bod.bod;"
+      ],
+      "forbidden_substrings": [
+        "FrameBodBase",
+        "(FrameBodBase *)"
+      ]
+    },
+    {
       "name": "bn_complete_subgame_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00438700-complete_subgame.c",
       "required_substrings": [

@@ -2931,6 +2931,35 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"Player*"' in binja_source
     assert "*BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
 
+    assert "CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        52,\n        66,',
+        '"RegisterVariableSourceType",\n        57,\n        67,',
+        '"RegisterVariableSourceType",\n        78,\n        67,',
+        '"RegisterVariableSourceType",\n        80,\n        73,',
+        '"RegisterVariableSourceType",\n        86,\n        67,',
+        '"RegisterVariableSourceType",\n        88,\n        67,',
+        '"RegisterVariableSourceType",\n        1431,\n        67,',
+        '"RegisterVariableSourceType",\n        1500,\n        66,',
+        '"RegisterVariableSourceType",\n        1506,\n        68,',
+        '"RegisterVariableSourceType",\n        1521,\n        66,',
+        '"RegisterVariableSourceType",\n        1531,\n        68,',
+        '"RegisterVariableSourceType",\n        1533,\n        71,',
+        '"RegisterVariableSourceType",\n        1539,\n        68,',
+        '"RegisterVariableSourceType",\n        1541,\n        68,',
+    ):
+        assert identity in binja_source
+    for name in (
+        "active_first_ref_primary",
+        "active_first_link_primary",
+        "tertiary_node",
+        "active_first_ref_tertiary",
+        "active_first_link_tertiary",
+        "active_new_first_tertiary",
+    ):
+        assert f'"{name}"' in binja_source
+    assert "*CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
+
     assert "BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS" in ida_path_sync
     for definition_address in (
         "0x4383CD",

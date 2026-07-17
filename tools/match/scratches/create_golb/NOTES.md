@@ -259,3 +259,24 @@ Binary Ninja/IDA artifacts. This replaces IDA's stale
 propagate the complete `GolbShot` and `Player` owners through the movement,
 presentation, and path-follow branches. The matcher source is unchanged at
 the honest 36.08% frontier.
+
+## 2026-07-17 active-list insertion lifetime replay
+
+The two inlined `BodList::add_bod` sites now retain their exact intrusive-node
+owners in Binary Ninja and the independently refreshed IDA artifact. The first
+site borrows the zero-offset `GolbShot::primary_body.bod.bod`; the kind-2 site
+borrows `GolbShot::tertiary_body.bod.bod` at `+0x118`. Neither splice transfers
+ownership of the enclosing `GolbShot` or allocates a list node.
+
+Fourteen exact Binary Ninja register lifetimes preserve the shared
+`GameRoot::active_bod_list.first` anchor across ECX/EAX/EDX reuse. This removes
+the stale `(eax_2 - 0x5ac)` root reconstruction and the
+`__offset(GolbShot, 0x118)` alias from the tracked decompile. IDA independently
+propagates `BodNode**`/`BodNode*` through both splices from the canonical root
+field, with no `FrameBodBase` casts. Both lanes are guarded by durable health
+checks.
+
+The matcher source is deliberately unchanged. Focused Wibo remains at the
+honest 36.08%, 460/582 instructions, prefix 1/582, with 35 clean masked
+operands and no unresolved or mismatched operands; this slice improves analysis
+ownership only and introduces no byte-shaping.

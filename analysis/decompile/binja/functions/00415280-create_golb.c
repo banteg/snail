@@ -6,18 +6,18 @@
 0041528f        shot->skip_one_tick = 0
 00415295        shot->slug_bounce_armed = 0
 0041529e        if ((shot->..__offset(0x4).d & 0x200) == 0)
-004152b4        struct FrameBodBase** eax_2 = &g_game_base->active_bod_list.first
-004152b9        struct FrameBodBase* first = (eax_2 - 0x5ac)->active_bod_list.first
-004152bd        if (first != 0)
-004152cb        first->bod.list_prev = shot
-004152ce        struct FrameBodBase* first_1 = (eax_2 - 0x5ac)->active_bod_list.first
-004152d3        first_1->bod.list_prev->bod.list_next = first_1
-004152d8        struct FrameBodBase* list_prev = (eax_2 - 0x5ac)->active_bod_list.first->bod.list_prev
-004152db        (eax_2 - 0x5ac)->active_bod_list.first = list_prev
-004152dd        list_prev->bod.list_prev = nullptr
-004152bf        (eax_2 - 0x5ac)->active_bod_list.first = shot
+004152b4        struct BodNode** active_first_ref_primary = &g_game_base->active_bod_list.first
+004152b9        struct BodNode* active_first_primary = *active_first_ref_primary
+004152bd        if (active_first_primary != 0)
+004152cb        active_first_primary->list_prev = shot
+004152ce        struct BodNode* active_first_link_primary = *active_first_ref_primary
+004152d3        active_first_link_primary->list_prev->list_next = active_first_link_primary
+004152d8        struct BodNode* active_new_first_primary = (*active_first_ref_primary)->list_prev
+004152db        *active_first_ref_primary = active_new_first_primary
+004152dd        active_new_first_primary->list_prev = nullptr
+004152bf        *active_first_ref_primary = shot
 004152c1        shot->..__offset(0x8).d = 0
-004152c6        (eax_2 - 0x5ac)->active_bod_list.first->bod.list_next = nullptr
+004152c6        (*active_first_ref_primary)->list_next = nullptr
 004152e0        shot->..__offset(0x4).d |= 0x200
 004152a5        report_errorf("List ADD")
 004152e7        shot->owner_player = player
@@ -42,7 +42,7 @@
 0041538d        shot->flight_transform.position.z = fconvert.s(fconvert.t(color.b) + fconvert.t(shot->flight_transform.position.z))
 00415390        struct Player* owner_player_1 = shot->owner_player
 00415396        uint8_t movement_flags_1 = (owner_player_1->movement_flags).b
-0041539e        float* eax_8
+0041539e        float* eax_7
 0041539e        float b
 0041539e        if ((movement_flags_1 & 5) != 0)
 00415606        struct Vec3 (* edx_15)[0x13]
@@ -61,13 +61,13 @@
 00415643        if ((owner_player_1->movement_flags.b & 4) == 0)
 00415724        long double x87_r7_34 = fconvert.t(owner_player_1->velocity.z) + fconvert.t(1f)
 0041572a        color.r = 0
-00415736        eax_8 = &shot->velocity
+00415736        eax_7 = &shot->velocity
 0041573c        color.g = 0
-00415748        *eax_8 = color.r
+00415748        *eax_7 = color.r
 0041574a        color.b = fconvert.s(x87_r7_34)
 0041574e        b = color.b
-00415752        eax_8[1] = 0
-00415755        eax_8[2] = b
+00415752        eax_7[1] = 0
+00415755        eax_7[2] = b
 0041564c        if (spawn_selector == 3)
 0041565a        color.r = 0x3dcccccd
 0041566c        color.g = 0
@@ -103,13 +103,13 @@
 004153fc        shot->flight_transform.position.x = fconvert.s(fconvert.t(shot->flight_transform.position.x) - fconvert.t(0.5f))
 00415404        long double x87_r7_11 = fconvert.t(owner_player_1->velocity.z) + fconvert.t(1f)
 0041540a        color.r = 0
-00415416        eax_8 = &shot->velocity
+00415416        eax_7 = &shot->velocity
 0041541c        color.g = 0
-00415428        *eax_8 = color.r
+00415428        *eax_7 = color.r
 0041542a        color.b = fconvert.s(x87_r7_11)
 0041542e        b = color.b
-00415432        eax_8[1] = 0
-00415755        eax_8[2] = b
+00415432        eax_7[1] = 0
+00415755        eax_7[2] = b
 0041543c        if ((movement_flags_1 & 0x18) != 0)
 0041554b        if (spawn_selector != 2)
 0041558b        shot->flight_transform.position.x = owner_player_1->presentation.snail_hotspots_world[7].x
@@ -187,24 +187,24 @@
 004159bc        struct Player* owner_player_3 = shot->owner_player
 004159c2        shot->lifetime = 0f
 004159df        shot->lifetime_step = fconvert.s(fconvert.t(game_2->subgame_rate) * fconvert.t(0.0416666679f))
-004159ec        struct Sprite* eax_42 = allocate_sprite(&g_sprite_manager, owner_player_3->player_slot, 0x82, 0xffffffff, 0xffffffff)
-004159f1        shot->render_body_owner = eax_42
-00415a05        eax_42->flags |= SPRITE_FLAG_GAMEPLAY_OWNED
+004159ec        struct Sprite* eax_38 = allocate_sprite(&g_sprite_manager, owner_player_3->player_slot, 0x82, 0xffffffff, 0xffffffff)
+004159f1        shot->render_body_owner = eax_38
+00415a05        eax_38->flags |= SPRITE_FLAG_GAMEPLAY_OWNED
 00415a18        *(shot->render_body_owner + 0x68) = 0
 00415a2a        *(shot->render_body_owner + 0x6c) = 0
 00415a33        *(shot->render_body_owner + 0x78) = 0
-00415a36        struct tColour* eax_44 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-00415a43        float* ecx_27 = shot->render_body_owner + 0x2c
-00415a46        *ecx_27 = eax_44->r
-00415a4b        ecx_27[1] = eax_44->g
-00415a51        ecx_27[2] = eax_44->b
-00415a57        ecx_27[3] = eax_44->a
+00415a36        struct tColour* eax_40 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00415a43        float* ecx_25 = shot->render_body_owner + 0x2c
+00415a46        *ecx_25 = eax_40->r
+00415a4b        ecx_25[1] = eax_40->g
+00415a51        ecx_25[2] = eax_40->b
+00415a57        ecx_25[3] = eax_40->a
 00415a65        *(shot->render_body_owner + 0x60) = 0x3efae148
 00415a70        *(shot->render_body_owner + 0x64) = 0x3efae148
-00415a7b        float* eax_47 = shot->render_body_owner + 0x48
-00415a7e        *eax_47 = shot->flight_transform.position.x
-00415a83        eax_47[1] = shot->flight_transform.position.y
-00415a89        eax_47[2] = shot->flight_transform.position.z
+00415a7b        float* eax_43 = shot->render_body_owner + 0x48
+00415a7e        *eax_43 = shot->flight_transform.position.x
+00415a83        eax_43[1] = shot->flight_transform.position.y
+00415a89        eax_43[2] = shot->flight_transform.position.z
 00415aab        *(shot->render_body_owner + 0x7c) = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f))
 00415ac7        *(shot->render_body_owner + 0x80) = fconvert.s(fconvert.t(*(shot->game i+ 0x38)) * fconvert.t(0.58177644f))
 00415acd        shot->object_ref = emitter_index
@@ -213,14 +213,14 @@
 00415906        shot->lifetime = 0f
 0041591b        shot->..__offset(0x114).d = shot
 00415926        shot->lifetime_step = fconvert.s(fconvert.t(game_1->subgame_rate) * fconvert.t(0.0416666679f))
-00415932        struct BodBase* eax_37 = &g_game_base->subgame.golb_vapour_list_head
+00415932        struct BodBase* eax_33 = &g_game_base->subgame.golb_vapour_list_head
 0041593d        if ((0x200 & shot->..__offset(0x84).d) == 0)
-0041594e        shot->..__offset(0x88).d = eax_37
-00415954        shot->..__offset(0x8c).d = eax_37->bod.list_next
-00415957        eax_37->bod.list_next = &shot->..secondary_body.bod.bod.vtable
-0041595a        void* eax_38 = shot->..__offset(0x8c).d
-0041595f        if (eax_38 != 0)
-00415961        *(eax_38 + 8) = &shot->..secondary_body.bod.bod.vtable
+0041594e        shot->..__offset(0x88).d = eax_33
+00415954        shot->..__offset(0x8c).d = eax_33->bod.list_next
+00415957        eax_33->bod.list_next = &shot->..secondary_body.bod.bod.vtable
+0041595a        void* eax_34 = shot->..__offset(0x8c).d
+0041595f        if (eax_34 != 0)
+00415961        *(eax_34 + 8) = &shot->..secondary_body.bod.bod.vtable
 00415964        shot->..__offset(0x84).d |= 0x200
 00415944        report_errorf("List ADDafter")
 0041596e        reset_vapour(&shot->..secondary_body.bod.bod.vtable, spawn_selector)
@@ -237,37 +237,37 @@
 00415829        __builtin_strncpy(&shot->spin_step, "PwV>", 4)
 00415833        shot->homing_target_object = nullptr
 00415839        shot->lifetime_step = fconvert.s(x87_r7_48)
-00415845        if (((shot->..__offset(0x11c).d).w:1.b & 2) == 0)
+00415845        if (((shot->..tertiary_body.bod.bod.list_flags).w:1.b & 2) == 0)
 00415856        struct GameRoot* game_base_1 = g_game_base
-00415862        struct FrameBodBase* first_2 = game_base_1->active_bod_list.first
-0041586a        if (first_2 != 0)
-00415878        first_2->bod.list_prev = &shot->..tertiary_body.bod.bod.vtable
-0041587b        void* __offset(GolbShot, 0x118) first_3 = game_base_1->active_bod_list.first
-00415880        *((first_3 - 0x118)->..__offset(0x120).d + 0xc) = first_3
-00415885        void* __offset(GolbShot, 0x118) edx_22 = (game_base_1->active_bod_list.first - 0x118)->..__offset(0x120).d
-00415888        game_base_1->active_bod_list.first = edx_22
-0041588a        (edx_22 - 0x118)->..__offset(0x120).d = 0
-0041586c        game_base_1->active_bod_list.first = &shot->..tertiary_body.bod.bod.vtable
-0041586e        shot->..__offset(0x120).d = 0
-00415873        (game_base_1->active_bod_list.first - 0x118)->..__offset(0x124).d = 0
-0041588d        int32_t eax_34 = shot->..__offset(0x11c).d
-00415890        eax_34:1.b |= 2
-00415893        shot->..__offset(0x11c).d = eax_34
+00415862        struct BodNode* active_first_tertiary = game_base_1->active_bod_list.first
+0041586a        if (active_first_tertiary != 0)
+00415878        active_first_tertiary->list_prev = &shot->..tertiary_body.bod.bod
+0041587b        struct BodNode* active_first_link_tertiary = game_base_1->active_bod_list.first
+00415880        active_first_link_tertiary->list_prev->list_next = active_first_link_tertiary
+00415885        struct BodNode* active_new_first_tertiary = game_base_1->active_bod_list.first->list_prev
+00415888        game_base_1->active_bod_list.first = active_new_first_tertiary
+0041588a        active_new_first_tertiary->list_prev = nullptr
+0041586c        game_base_1->active_bod_list.first = &shot->..tertiary_body.bod.bod
+0041586e        shot->..tertiary_body.bod.bod.list_prev = nullptr
+00415873        game_base_1->active_bod_list.first->list_next = nullptr
+0041588d        uint32_t list_flags = shot->..tertiary_body.bod.bod.list_flags
+00415890        list_flags:1.b |= 2
+00415893        shot->..tertiary_body.bod.bod.list_flags = list_flags
 0041584c        report_errorf("List ADD")
 004158a7        shot->object_ref = emitter_index
-004158ad        float eax_30 = search_path_for_golb(&shot->game->enemy_manager, &shot->flight_transform.position)
-004158b4        if (eax_30 != 0)
-004158ba        struct ContactTargetObject* ecx_17 = *(eax_30 i+ 0x14)
-004158bd        shot->homing_target_object = ecx_17
-004158c7        if (*eax_30 == 0)
-004158c9        int32_t list_flags = ecx_17->list_flags
-004158cc        list_flags:1.b |= 0x10
-004158cf        ecx_17->list_flags = list_flags
-004158dd        shot->homing_target.x = *(eax_30 i+ 4)
-004158e2        shot->homing_target.y = *(eax_30 i+ 8)
-004158e5        eax_30 = *(eax_30 i+ 0xc)
+004158ad        float eax_29 = search_path_for_golb(&shot->game->enemy_manager, &shot->flight_transform.position)
+004158b4        if (eax_29 != 0)
+004158ba        struct ContactTargetObject* ecx_15 = *(eax_29 i+ 0x14)
+004158bd        shot->homing_target_object = ecx_15
+004158c7        if (*eax_29 == 0)
+004158c9        int32_t list_flags_1 = ecx_15->list_flags
+004158cc        list_flags_1:1.b |= 0x10
+004158cf        ecx_15->list_flags = list_flags_1
+004158dd        shot->homing_target.x = *(eax_29 i+ 4)
+004158e2        shot->homing_target.y = *(eax_29 i+ 8)
+004158e5        eax_29 = *(eax_29 i+ 0xc)
 004158e8        shot->homing_blend = 0f
-004158ee        shot->homing_target.z = eax_30
+004158ee        shot->homing_target.z = eax_29
 004158f1        shot->homing_blend_step = 0.0333333351f
 00415ad3        struct Player* owner_player_2 = shot->owner_player
 00415ae1        long double x87_r7_58

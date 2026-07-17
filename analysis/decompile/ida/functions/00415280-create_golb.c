@@ -5,9 +5,9 @@
 // Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and the independent iOS body establish no result contract.
 void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_selector, int32_t emitter_index)
 {
-  FrameBodBase **p_first; // eax
-  FrameBodBase *first; // ecx
-  FrameBodBase *list_prev; // ecx
+  BodNode **p_first; // eax
+  BodNode *first; // ecx
+  struct BodNode *list_prev; // ecx
   uint32_t movement_flags; // eax
   Player *owner_player; // eax
   Vec4 *p_position; // edi
@@ -40,9 +40,9 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
   SubgameRuntime *game; // ecx
   double v38; // st7
   RenderableBod *p_tertiary_body; // ecx
-  FrameBodBase **v40; // eax
-  FrameBodBase *v41; // edx
-  FrameBodBase *v42; // edx
+  BodNode **v40; // eax
+  BodNode *v41; // edx
+  struct BodNode *v42; // edx
   uint32_t list_flags; // eax
   EnemyManager *p_enemy_manager; // ecx
   ContactTargetEntry *v45; // eax
@@ -79,17 +79,17 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
     first = g_game_base->active_bod_list.first;
     if ( first )
     {
-      first->bod.list_prev = (FrameBodBase *)shot;
-      (*p_first)->bod.list_prev->bod.list_next = *p_first;
-      list_prev = (*p_first)->bod.list_prev;
+      first->list_prev = &shot->primary_body.bod.bod;
+      (*p_first)->list_prev->list_next = *p_first;
+      list_prev = (*p_first)->list_prev;
       *p_first = list_prev;
-      list_prev->bod.list_prev = nullptr;
+      list_prev->list_prev = nullptr;
     }
     else
     {
-      *p_first = (FrameBodBase *)shot;
+      *p_first = &shot->primary_body.bod.bod;
       shot->primary_body.bod.bod.list_prev = nullptr;
-      (*p_first)->bod.list_next = nullptr;
+      (*p_first)->list_next = nullptr;
     }
     shot->primary_body.bod.bod.list_flags |= 0x200u;
   }
@@ -340,17 +340,17 @@ LABEL_51:
           v41 = g_game_base->active_bod_list.first;
           if ( v41 )
           {
-            v41->bod.list_prev = (FrameBodBase *)p_tertiary_body;
-            (*v40)->bod.list_prev->bod.list_next = *v40;
-            v42 = (*v40)->bod.list_prev;
+            v41->list_prev = &p_tertiary_body->bod.bod;
+            (*v40)->list_prev->list_next = *v40;
+            v42 = (*v40)->list_prev;
             *v40 = v42;
-            v42->bod.list_prev = nullptr;
+            v42->list_prev = nullptr;
           }
           else
           {
-            *v40 = (FrameBodBase *)p_tertiary_body;
+            *v40 = &p_tertiary_body->bod.bod;
             shot->tertiary_body.bod.bod.list_prev = nullptr;
-            (*v40)->bod.list_next = nullptr;
+            (*v40)->list_next = nullptr;
           }
           list_flags = shot->tertiary_body.bod.bod.list_flags;
           BYTE1(list_flags) |= 2u;
