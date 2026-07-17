@@ -111,3 +111,19 @@ shared vertex byte-cursor lifetime it changed the global register plan,
 regressed to `25.34%`, and introduced a masked allocation-call mismatch. The
 native register is therefore documented as residual ownership rather than
 forced with hints or dummy lifetime padding.
+
+## 2026-07-17 live owner and ABI closure
+
+Dump carried the same stale returning `PathTemplate*` method shape as Hump.
+Native `ret 0x1c`, the iOS
+`cRPath::BuildDump(float, float, int, bool, char*, char*)` symbol, the matcher
+declaration, and Windows callsites prove the shared seven stack inputs, with a
+Windows-only cap texture following the portable six-argument interface.
+
+The guarded migration fingerprints the exact legacy parameters, the persisted
+stack-24 `arg6` annotation, and the absent stack-28 cap slot before recreating
+the function as a void `Path*` owner. Direct readback confirms every parameter;
+the refreshed decompilation exposes `height_scale` in the negative cosine
+profile and no longer returns the finalizer. Focused Wibo remains 40.57%
+(641/690), with 34 masked operands ok, 0 unresolved, 0 mismatch. No dummy use
+was added for uniform interface arguments that this body optimizes away.

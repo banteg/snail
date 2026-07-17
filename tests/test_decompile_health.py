@@ -17,6 +17,8 @@ def test_load_decompile_health_checks_parses_minimal_config(tmp_path: Path) -> N
                         "artifact": "analysis/decompile/binja/functions/foo.c",
                         "required_substrings": ["foo"],
                         "forbidden_substrings": ["bar"],
+                        "required_regexes": ["foo\\s+foo"],
+                        "forbidden_regexes": ["bar\\d+"],
                         "min_counts": {"foo": 1},
                         "max_counts": {"bar": 0},
                     }
@@ -32,6 +34,8 @@ def test_load_decompile_health_checks_parses_minimal_config(tmp_path: Path) -> N
     assert checks[0].name == "sample"
     assert checks[0].required_substrings == ("foo",)
     assert checks[0].forbidden_substrings == ("bar",)
+    assert checks[0].required_regexes == (r"foo\s+foo",)
+    assert checks[0].forbidden_regexes == (r"bar\d+",)
     assert checks[0].min_counts == {"foo": 1}
     assert checks[0].max_counts == {"bar": 0}
 
@@ -39,7 +43,7 @@ def test_load_decompile_health_checks_parses_minimal_config(tmp_path: Path) -> N
 def test_evaluate_decompile_health_checks_flags_missing_and_over_limit(tmp_path: Path) -> None:
     artifact = tmp_path / "analysis/decompile/binja/functions/foo.c"
     artifact.parent.mkdir(parents=True, exist_ok=True)
-    artifact.write_text("foo foo __offset(\n", encoding="utf-8")
+    artifact.write_text("foo foo __offset(\nforbidden42\n", encoding="utf-8")
     config_path = tmp_path / "health.json"
     config_path.write_text(
         json.dumps(
@@ -50,6 +54,8 @@ def test_evaluate_decompile_health_checks_flags_missing_and_over_limit(tmp_path:
                         "artifact": "analysis/decompile/binja/functions/foo.c",
                         "required_substrings": ["foo", "missing"],
                         "forbidden_substrings": ["forbidden"],
+                        "required_regexes": ["missing\\d+"],
+                        "forbidden_regexes": ["forbidden\\d+"],
                         "min_counts": {"foo": 3},
                         "max_counts": {"__offset(": 0},
                     }
@@ -71,6 +77,15 @@ def test_evaluate_decompile_health_checks_flags_missing_and_over_limit(tmp_path:
     assert any("missing required substring: missing" == failure for failure in check["failures"])
     assert any("count below minimum for foo: 2 < 3" == failure for failure in check["failures"])
     assert any("count above maximum for __offset(: 1 > 0" == failure for failure in check["failures"])
+    assert check["observed_regex_counts"][r"missing\d+"] == 0
+    assert check["observed_regex_counts"][r"forbidden\d+"] == 1
+    assert any(
+        failure == r"missing required regex: missing\d+" for failure in check["failures"]
+    )
+    assert any(
+        failure == r"forbidden regex present: forbidden\d+ (1)"
+        for failure in check["failures"]
+    )
 
 
 def test_evaluate_decompile_health_checks_passes_clean_artifact(tmp_path: Path) -> None:
@@ -88,9 +103,10 @@ def test_evaluate_decompile_health_checks_passes_clean_artifact(tmp_path: Path) 
                         "required_substrings": [
                             "cached_camera_target_world",
                             "follow_state",
-                            "desired_matrix"
+                            "desired_matrix",
                         ],
-                        "forbidden_substrings": ["__asm", "__offset("]
+                        "forbidden_substrings": ["__asm", "__offset("],
+                        "required_regexes": ["follow_state\\s+desired_matrix"],
                     }
                 ]
             }
@@ -105,3 +121,28 @@ def test_evaluate_decompile_health_checks_passes_clean_artifact(tmp_path: Path) 
 
     assert summary["passed"] is True
     assert summary["failing_check_count"] == 0
+
+
+def test_load_decompile_health_checks_rejects_invalid_regex(tmp_path: Path) -> None:
+    config_path = tmp_path / "health.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "checks": [
+                    {
+                        "name": "sample",
+                        "artifact": "foo.c",
+                        "required_regexes": ["("],
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    try:
+        load_decompile_health_checks(config_path)
+    except ValueError as error:
+        assert "required_regexes[0] is not a valid regex" in str(error)
+    else:
+        raise AssertionError("invalid regex was accepted")

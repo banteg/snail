@@ -124,3 +124,20 @@ reached `40.69%`, both below the `40.91%` baseline. The full `Vector3`
 multiply/add mesh expression was rejected much earlier at `18.39%`. These are
 real residual ownership clues, not license to force the native register or
 stack layout.
+
+## 2026-07-17 live owner and ABI closure
+
+Live Binary Ninja still described Hump as a returning `PathTemplate*` method
+with five stack arguments. The native `ret 0x1c`, the iOS
+`cRPath::BuildHump(float, float, int, bool, char*, char*)` symbol, the matcher
+source, and the Windows world-initializer callsites agree on seven stack inputs:
+`curve_source`, `height_scale`, `width_cells_`, `side_exit`, two surface
+textures, and the Windows-only cap texture.
+
+The guarded recreation accepts only the observed six-parameter legacy view,
+the automatic stack-24 texture candidate, and an absent stack-28 candidate.
+Direct readback confirms a void `Path*` owner and all eight parameters including
+`this`. Decompilation now names `height_scale` in the cosine profile and ends
+with an ordinary `finalize_path_template(self)` call. Focused Wibo remains
+40.91% (640/685), with 35 masked operands ok, 0 unresolved, 0 mismatch; the
+source was not changed to manufacture the recovered unused interface inputs.

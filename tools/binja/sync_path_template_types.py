@@ -2315,6 +2315,14 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
     ),
     (
+        "initialize_hump_path_template_pair",
+        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
+        "initialize_dump_path_template_pair",
+        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
         "allocate_path_template_samples",
         "void __fastcall allocate_path_template_samples(Path* self)",
     ),

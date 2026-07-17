@@ -2441,13 +2441,15 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_hump_path_template_pair(
+void __thiscall initialize_hump_path_template_pair(
     Path* self,
-    float arg2,
-    float arg3,
-    int32_t arg4,
+    float curve_source,
+    float height_scale,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
 void __thiscall initialize_looptheloopw_path_template_pair(
@@ -2460,13 +2462,15 @@ void __thiscall initialize_looptheloopw_path_template_pair(
     char* cap_texture
 );
 
-int32_t __thiscall initialize_dump_path_template_pair(
+void __thiscall initialize_dump_path_template_pair(
     Path* self,
-    float arg2,
-    float arg3,
-    int32_t arg4,
+    float curve_source,
+    float height_scale,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
 int32_t __thiscall initialize_dip_path_template_pair(

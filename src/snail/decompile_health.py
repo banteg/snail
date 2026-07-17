@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 
 
 @dataclass(frozen=True, slots=True)
@@ -11,6 +12,8 @@ class DecompileHealthCheck:
     artifact: str
     required_substrings: tuple[str, ...]
     forbidden_substrings: tuple[str, ...]
+    required_regexes: tuple[str, ...]
+    forbidden_regexes: tuple[str, ...]
     min_counts: dict[str, int]
     max_counts: dict[str, int]
 
@@ -41,6 +44,16 @@ def _load_int_dict(raw: dict[str, object], key: str) -> dict[str, int]:
     return result
 
 
+def _load_regex_list(raw: dict[str, object], key: str) -> tuple[str, ...]:
+    patterns = _load_string_list(raw, key)
+    for index, pattern in enumerate(patterns):
+        try:
+            re.compile(pattern)
+        except re.error as error:
+            raise ValueError(f"{key}[{index}] is not a valid regex: {error}") from error
+    return patterns
+
+
 def load_decompile_health_checks(path: Path) -> tuple[DecompileHealthCheck, ...]:
     raw = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
@@ -65,6 +78,8 @@ def load_decompile_health_checks(path: Path) -> tuple[DecompileHealthCheck, ...]
                 artifact=artifact,
                 required_substrings=_load_string_list(raw_check, "required_substrings"),
                 forbidden_substrings=_load_string_list(raw_check, "forbidden_substrings"),
+                required_regexes=_load_regex_list(raw_check, "required_regexes"),
+                forbidden_regexes=_load_regex_list(raw_check, "forbidden_regexes"),
                 min_counts=_load_int_dict(raw_check, "min_counts"),
                 max_counts=_load_int_dict(raw_check, "max_counts"),
             )
@@ -91,6 +106,7 @@ def evaluate_decompile_health_checks(
                     "passed": False,
                     "failures": [f"missing artifact: {check.artifact}"],
                     "observed_counts": {},
+                    "observed_regex_counts": {},
                 }
             )
             failing += 1
@@ -104,6 +120,10 @@ def evaluate_decompile_health_checks(
             *check.max_counts.keys(),
         }
         observed_counts = {token: text.count(token) for token in sorted(observed_tokens)}
+        observed_regex_counts = {
+            pattern: sum(1 for _ in re.finditer(pattern, text, flags=re.MULTILINE))
+            for pattern in sorted({*check.required_regexes, *check.forbidden_regexes})
+        }
         failures: list[str] = []
 
         for token in check.required_substrings:
@@ -112,6 +132,14 @@ def evaluate_decompile_health_checks(
         for token in check.forbidden_substrings:
             if observed_counts[token] != 0:
                 failures.append(f"forbidden substring present: {token} ({observed_counts[token]})")
+        for pattern in check.required_regexes:
+            if observed_regex_counts[pattern] == 0:
+                failures.append(f"missing required regex: {pattern}")
+        for pattern in check.forbidden_regexes:
+            if observed_regex_counts[pattern] != 0:
+                failures.append(
+                    f"forbidden regex present: {pattern} ({observed_regex_counts[pattern]})"
+                )
         for token, minimum in sorted(check.min_counts.items()):
             if observed_counts[token] < minimum:
                 failures.append(f"count below minimum for {token}: {observed_counts[token]} < {minimum}")
@@ -130,6 +158,7 @@ def evaluate_decompile_health_checks(
                 "passed": passed,
                 "failures": failures,
                 "observed_counts": observed_counts,
+                "observed_regex_counts": observed_regex_counts,
             }
         )
 

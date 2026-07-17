@@ -1323,6 +1323,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_hump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_dump_path_template_pair(Path* self, float curve_source, float height_scale, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __fastcall allocate_path_template_samples(Path* self)",
         "void __fastcall finalize_path_template(Path* self)",
         "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
@@ -1337,6 +1339,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "initialize_looptheloop_path_template_pair",
         "initialize_looptheloopw_path_template_pair",
         "initialize_loopout_path_template_pair",
+        "initialize_hump_path_template_pair",
+        "initialize_dump_path_template_pair",
         "allocate_path_template_samples",
         "finalize_path_template",
         "initialize_worm_path_template_pair",
@@ -1354,6 +1358,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "STALE_VARIABLE_ANNOTATIONS = SPEC.get(" in repair_source
     assert "ALLOWED_MISSING_STALE_VARIABLE_KEYS = {" in repair_source
     assert 'stale_variable_annotations=((20, "arg5", "char*"),)' in repair_source
+    assert 'stale_variable_annotations=((24, "arg6", "char*"),)' in repair_source
     assert 'missing_stale_variable_storages=(16,)' in repair_source
     assert 'missing_stale_variable_storages=(24,)' in repair_source
     assert 'before_annotations["parameter_count"] not in allowed_parameter_counts' in repair_source

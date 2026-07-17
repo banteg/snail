@@ -6052,11 +6052,45 @@
       ]
     },
     {
+      "name": "bn_hump_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0041d030-initialize_hump_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_FAMILY_10",
+        "self->width_cells = width_cells_",
+        "fconvert.t(height_scale)",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_dump_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0041da30-initialize_dump_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_FAMILY_11",
+        "self->width_cells = width_cells_",
+        "fconvert.t(height_scale)",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "return finalize_path_template"
+      ]
+    },
+    {
       "name": "bn_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
-        "initialize_cage2_path_template_pair(&game->subgame.path_pairs[0xf]",
         "initialize_toad_path_template_pair(&game->subgame.path_pairs[0x2f], 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Track0.tga\", \"Objects/Path/VeryDark.tga\")"
+      ],
+      "required_regexes": [
+        "initialize_cage2_path_template_pair\\(&game->subgame\\.path_pairs\\[0xf\\](?:\\.primary)?, 3, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_cage2_path_template_pair(&game->subgame.path_pairs[0xf].primary.bod.bod.vtable",
@@ -6066,15 +6100,27 @@
     {
       "name": "bn_loop_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
-      "required_substrings": [
-        "initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[0x33], 6f, 3, 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Back.tga\", \"Objects/Path/VeryDark.tga\")",
-        "initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[0x39], 8f, 4, 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Back.tga\", \"Objects/Path/VeryDark.tga\")",
-        "initialize_loopout_path_template_pair(&game->subgame.path_pairs[0x19].primary, 3f, 4, 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Back.tga\", \"Objects/Path/VeryDark.tga\")"
+      "required_regexes": [
+        "initialize_looptheloop_path_template_pair\\(&game->subgame\\.path_pairs\\[0x33\\](?:\\.primary)?, 6f, 3, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_looptheloopw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x39\\](?:\\.primary)?, 8f, 4, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_loopout_path_template_pair\\(&game->subgame\\.path_pairs\\[0x19\\](?:\\.primary)?, 3f, 4, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
-        "initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[0x33], 6f, 3, 1, \"Objects/World00/Slide0.tga\")",
-        "initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[0x39], 8f, 4, 1, \"Objects/World00/Slide0.tga\")",
-        "initialize_loopout_path_template_pair(&game->subgame.path_pairs[0x19].primary, 3f, 4, 1, \"Objects/World00/Slide0.tga\")"
+        "initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[0x33].primary.bod.bod.vtable",
+        "initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[0x39].primary.bod.bod.vtable",
+        "initialize_loopout_path_template_pair(&game->subgame.path_pairs[0x19].primary.bod.bod.vtable"
+      ]
+    },
+    {
+      "name": "bn_hump_dump_path_constructor_callsite_abis",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_regexes": [
+        "initialize_hump_path_template_pair\\(&game->subgame\\.path_pairs\\[0x10\\]\\.primary, 4f, 1f, 3, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_dump_path_template_pair\\(&game->subgame\\.path_pairs\\[0x11\\]\\.primary, 4f, 1f, 3, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+      ],
+      "forbidden_substrings": [
+        "initialize_hump_path_template_pair(&game->subgame.path_pairs[0x10].primary.bod.bod.vtable",
+        "initialize_dump_path_template_pair(&game->subgame.path_pairs[0x11].primary.bod.bod.vtable"
       ]
     },
     {
