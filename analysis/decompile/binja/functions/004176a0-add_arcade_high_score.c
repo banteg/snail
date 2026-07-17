@@ -24,9 +24,9 @@
 0041770b        edx_1->__offset(0x1fb00).d = ebx
 00417711        ebx -= 1
 00417714        do while (ebx s> eax)
-00417730        void* edx_2 = bank + eax * 0x1fac0
-0041773a        __builtin_memcpy(edx_2 + 8, record, 0x1fac0)
-0041773c        *(edx_2 + 0x48) = eax
+00417730        struct SubHighScorePostalRankCursor* postal_rank_cursor = bank + eax * 0x1fac0
+0041773a        __builtin_memcpy(&postal_rank_cursor->record, record, 0x1fac0)
+0041773c        postal_rank_cursor->record.route_or_rank_index = eax
 00417747        g_game_base->players[0].frontend_state = 0x14
 00417758        g_game_base->players[0].high_score_entry_pending = 1
 00417765        g_game_base->players[0].selected_high_score_rank = eax

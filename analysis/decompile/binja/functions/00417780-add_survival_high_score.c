@@ -26,16 +26,16 @@
 00417801        ebp_1->__offset(0x1fb00).d = ebx
 00417807        ebx -= 1
 0041780a        do while (ebx s> eax)
-00417828        void* ebx_1 = eax * 0x1fac0 + bank
-00417836        __builtin_memcpy(ebx_1 + 0x15c648, record, 0x1fac0)
-0041783d        *(ebx_1 + 0x15c684) = 1
-00417843        *(ebx_1 + 0x15c688) = eax
+00417828        struct SubHighScoreSurvivalRankCursor* survival_rank_cursor = eax * 0x1fac0 + bank
+00417836        __builtin_memcpy(&survival_rank_cursor->record, record, 0x1fac0)
+0041783d        survival_rank_cursor->record.high_score_mode_tag = 1
+00417843        survival_rank_cursor->record.route_or_rank_index = eax
 0041784f        g_game_base->players[0].frontend_state = 0x14
 0041785f        g_game_base->players[0].high_score_entry_pending = 1
 00417865        if (eax == 0xffffffff)
 00417865        return
 00417867        record->high_score_mode_tag = 1
-0041786a        *(ebx_1 + 0x15c684) = 1
+0041786a        survival_rank_cursor->record.high_score_mode_tag = 1
 0041787c        g_game_base->subgame.sub_high_score.active_record_bank = &bank->survival_records
 00417888        g_game_base->players[0].selected_high_score_rank = eax
 00417893        g_game_base->players[0].selected_high_score_mode = 1

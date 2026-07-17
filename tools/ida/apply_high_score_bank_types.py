@@ -3,6 +3,7 @@ import pathlib
 import re
 import sys
 
+import ida_bytes
 import ida_funcs
 import ida_hexrays
 import ida_name
@@ -92,9 +93,19 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
-def _sync_load_compact_cursor_lvar() -> dict[str, object]:
-    selector = "load_high_scores_from_file"
-    definition_address = 0x417608
+def _normalize_struct_pointer_type(value: str) -> str:
+    return (_normalize_type_text(value) or "").removeprefix("struct ")
+
+
+def _sync_named_pointer_lvar(
+    *,
+    selector: str,
+    definition_address: int,
+    accepted_names: set[str],
+    accepted_types: set[str],
+    target_name: str,
+    target_struct_name: str,
+) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
@@ -105,26 +116,23 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
         for lvar in cfunc.get_lvars()
         if not lvar.is_arg_var
         and lvar.defea == definition_address
-        and lvar.name in {"file_bytes", "compact"}
-        and (
-            (_normalize_type_text(str(lvar.type())) or "").removeprefix("struct ")
-            in {"char *", "CompactHighScoreRecord *"}
-        )
+        and lvar.name in accepted_names
+        and _normalize_struct_pointer_type(str(lvar.type())) in accepted_types
     ]
     if len(candidates) != 1:
         return {
             "status": "failed",
-            "reason": "unexpected_compact_cursor_candidates",
+            "reason": "unexpected_pointer_lvar_candidates",
             "candidate_count": len(candidates),
             "definition_address": hex(definition_address),
             "selector": selector,
+            "target_name": target_name,
         }
 
     lvar = candidates[0]
-    observed_type = (_normalize_type_text(str(lvar.type())) or "").removeprefix(
-        "struct "
-    )
-    if lvar.name == "compact" and observed_type == "CompactHighScoreRecord *":
+    target_pointer_type = f"{target_struct_name} *"
+    observed_type = _normalize_struct_pointer_type(str(lvar.type()))
+    if lvar.name == target_name and observed_type == target_pointer_type:
         return {
             "status": "unchanged",
             "name": lvar.name,
@@ -133,29 +141,31 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
             "selector": selector,
         }
 
-    compact_type = ida_typeinf.tinfo_t()
-    if not compact_type.get_named_type(
+    target_type = ida_typeinf.tinfo_t()
+    if not target_type.get_named_type(
         None,
-        "CompactHighScoreRecord",
+        target_struct_name,
         ida_typeinf.BTF_STRUCT,
     ):
         return {
             "status": "failed",
-            "reason": "missing_CompactHighScoreRecord_type",
+            "reason": "missing_target_struct_type",
+            "target_struct_name": target_struct_name,
             "selector": selector,
         }
 
     pointer_type = ida_typeinf.tinfo_t()
-    if not pointer_type.create_ptr(compact_type):
+    if not pointer_type.create_ptr(target_type):
         return {
             "status": "failed",
-            "reason": "create_CompactHighScoreRecord_pointer_failed",
+            "reason": "create_target_struct_pointer_failed",
+            "target_struct_name": target_struct_name,
             "selector": selector,
         }
 
     info = ida_hexrays.lvar_saved_info_t()
     info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
-    info.name = "compact"
+    info.name = target_name
     info.type = pointer_type
     if not ida_hexrays.modify_user_lvar_info(
         address,
@@ -175,25 +185,25 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
         for candidate in verified_cfunc.get_lvars()
         if not candidate.is_arg_var
         and candidate.defea == definition_address
-        and candidate.name == "compact"
+        and candidate.name == target_name
     ]
     if len(verified_candidates) != 1:
         return {
             "status": "failed",
-            "reason": "compact_cursor_readback_failed",
+            "reason": "pointer_lvar_readback_failed",
             "candidate_count": len(verified_candidates),
             "selector": selector,
+            "target_name": target_name,
         }
 
     verified = verified_candidates[0]
-    verified_type = (_normalize_type_text(str(verified.type())) or "").removeprefix(
-        "struct "
-    )
-    if verified_type != "CompactHighScoreRecord *":
+    verified_type = _normalize_struct_pointer_type(str(verified.type()))
+    if verified_type != target_pointer_type:
         return {
             "status": "failed",
-            "reason": "compact_cursor_type_readback_failed",
+            "reason": "pointer_lvar_type_readback_failed",
             "observed_type": str(verified.type()),
+            "target_type": target_pointer_type,
             "selector": selector,
         }
 
@@ -204,127 +214,108 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
         "name": verified.name,
         "type": str(verified.type()),
         "definition_address": hex(verified.defea),
+        "selector": selector,
+    }
+
+
+def _sync_load_compact_cursor_lvar() -> dict[str, object]:
+    return _sync_named_pointer_lvar(
+        selector="load_high_scores_from_file",
+        definition_address=0x417608,
+        accepted_names={"file_bytes", "compact"},
+        accepted_types={"char *", "CompactHighScoreRecord *"},
+        target_name="compact",
+        target_struct_name="CompactHighScoreRecord",
+    )
+
+
+def _sync_add_arcade_rank_cursor_lvar() -> dict[str, object]:
+    return _sync_named_pointer_lvar(
+        selector="add_arcade_high_score",
+        definition_address=0x417731,
+        accepted_names={"v9", "postal_rank_cursor"},
+        accepted_types={"char *", "SubHighScorePostalRankCursor *"},
+        target_name="postal_rank_cursor",
+        target_struct_name="SubHighScorePostalRankCursor",
+    )
+
+
+def _sync_add_survival_rank_cursor_lvar() -> dict[str, object]:
+    return _sync_named_pointer_lvar(
+        selector="add_survival_high_score",
+        definition_address=0x417829,
+        accepted_names={"v8", "survival_rank_cursor"},
+        accepted_types={"SubSolution * *", "SubHighScoreSurvivalRankCursor *"},
+        target_name="survival_rank_cursor",
+        target_struct_name="SubHighScoreSurvivalRankCursor",
+    )
+
+
+def _sync_survival_active_bank_operand() -> dict[str, object]:
+    selector = "add_survival_high_score"
+    function_address = 0x417780
+    store_address = 0x41787C
+    expected_bytes = bytes.fromhex("89 aa e0 fa 6f 00")
+    expected_owner = "g_game_base->subgame.sub_high_score.active_record_bank"
+
+    observed_bytes = ida_bytes.get_bytes(store_address, len(expected_bytes))
+    if observed_bytes != expected_bytes:
+        return {
+            "status": "failed",
+            "reason": "unexpected_active_bank_store_instruction",
+            "address": hex(store_address),
+            "observed_bytes": None if observed_bytes is None else observed_bytes.hex(),
+            "selector": selector,
+        }
+
+    before_disassembly = idc.generate_disasm_line(store_address, 0)
+    was_offset = bool(ida_bytes.is_off0(ida_bytes.get_full_flags(store_address)))
+    if was_offset and not idc.op_num(store_address, 0):
+        return {
+            "status": "failed",
+            "reason": "clear_false_active_bank_offset_failed",
+            "address": hex(store_address),
+            "selector": selector,
+        }
+
+    if ida_bytes.is_off0(ida_bytes.get_full_flags(store_address)):
+        return {
+            "status": "failed",
+            "reason": "active_bank_operand_readback_failed",
+            "address": hex(store_address),
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(function_address, True)
+    pseudocode = str(ida_hexrays.decompile(function_address))
+    if expected_owner not in pseudocode or "byte_6FFAE0" in pseudocode:
+        return {
+            "status": "failed",
+            "reason": "active_bank_owner_readback_failed",
+            "address": hex(store_address),
+            "expected_owner": expected_owner,
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied" if was_offset else "unchanged",
+        "address": hex(store_address),
+        "before_disassembly": before_disassembly,
+        "disassembly": idc.generate_disasm_line(store_address, 0),
+        "owner": expected_owner,
         "selector": selector,
     }
 
 
 def _sync_add_time_trial_route_cursor_lvar() -> dict[str, object]:
-    selector = "add_time_trial_high_score"
-    definition_address = 0x417902
-    address = idc.get_name_ea_simple(selector)
-    if address == idc.BADADDR:
-        return {"status": "failed", "reason": "missing_function", "selector": selector}
-
-    cfunc = ida_hexrays.decompile(address)
-    candidates = [
-        lvar
-        for lvar in cfunc.get_lvars()
-        if not lvar.is_arg_var
-        and lvar.defea == definition_address
-        and lvar.name in {"v4", "time_trial_route_cursor"}
-        and (
-            (_normalize_type_text(str(lvar.type())) or "").removeprefix("struct ")
-            in {"char *", "SubHighScoreTimeTrialRouteCursor *"}
-        )
-    ]
-    if len(candidates) != 1:
-        return {
-            "status": "failed",
-            "reason": "unexpected_time_trial_route_cursor_candidates",
-            "candidate_count": len(candidates),
-            "definition_address": hex(definition_address),
-            "selector": selector,
-        }
-
-    lvar = candidates[0]
-    observed_type = (_normalize_type_text(str(lvar.type())) or "").removeprefix(
-        "struct "
+    return _sync_named_pointer_lvar(
+        selector="add_time_trial_high_score",
+        definition_address=0x417902,
+        accepted_names={"v4", "time_trial_route_cursor"},
+        accepted_types={"char *", "SubHighScoreTimeTrialRouteCursor *"},
+        target_name="time_trial_route_cursor",
+        target_struct_name="SubHighScoreTimeTrialRouteCursor",
     )
-    if (
-        lvar.name == "time_trial_route_cursor"
-        and observed_type == "SubHighScoreTimeTrialRouteCursor *"
-    ):
-        return {
-            "status": "unchanged",
-            "name": lvar.name,
-            "type": str(lvar.type()),
-            "definition_address": hex(lvar.defea),
-            "selector": selector,
-        }
-
-    cursor_type = ida_typeinf.tinfo_t()
-    if not cursor_type.get_named_type(
-        None,
-        "SubHighScoreTimeTrialRouteCursor",
-        ida_typeinf.BTF_STRUCT,
-    ):
-        return {
-            "status": "failed",
-            "reason": "missing_SubHighScoreTimeTrialRouteCursor_type",
-            "selector": selector,
-        }
-
-    pointer_type = ida_typeinf.tinfo_t()
-    if not pointer_type.create_ptr(cursor_type):
-        return {
-            "status": "failed",
-            "reason": "create_SubHighScoreTimeTrialRouteCursor_pointer_failed",
-            "selector": selector,
-        }
-
-    info = ida_hexrays.lvar_saved_info_t()
-    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
-    info.name = "time_trial_route_cursor"
-    info.type = pointer_type
-    if not ida_hexrays.modify_user_lvar_info(
-        address,
-        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
-        info,
-    ):
-        return {
-            "status": "failed",
-            "reason": "modify_user_lvar_info_failed",
-            "selector": selector,
-        }
-
-    ida_hexrays.mark_cfunc_dirty(address, True)
-    verified_cfunc = ida_hexrays.decompile(address)
-    verified_candidates = [
-        candidate
-        for candidate in verified_cfunc.get_lvars()
-        if not candidate.is_arg_var
-        and candidate.defea == definition_address
-        and candidate.name == "time_trial_route_cursor"
-    ]
-    if len(verified_candidates) != 1:
-        return {
-            "status": "failed",
-            "reason": "time_trial_route_cursor_readback_failed",
-            "candidate_count": len(verified_candidates),
-            "selector": selector,
-        }
-
-    verified = verified_candidates[0]
-    verified_type = (_normalize_type_text(str(verified.type())) or "").removeprefix(
-        "struct "
-    )
-    if verified_type != "SubHighScoreTimeTrialRouteCursor *":
-        return {
-            "status": "failed",
-            "reason": "time_trial_route_cursor_type_readback_failed",
-            "observed_type": str(verified.type()),
-            "selector": selector,
-        }
-
-    return {
-        "status": "applied",
-        "before_name": lvar.name,
-        "before_type": str(lvar.type()),
-        "name": verified.name,
-        "type": str(verified.type()),
-        "definition_address": hex(verified.defea),
-        "selector": selector,
-    }
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
@@ -413,6 +404,33 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    postal_rank_cursor_lvar = _sync_add_arcade_rank_cursor_lvar()
+    if postal_rank_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "add_arcade_high_score",
+                "postal_rank_cursor_lvar": postal_rank_cursor_lvar,
+            }
+        )
+
+    survival_rank_cursor_lvar = _sync_add_survival_rank_cursor_lvar()
+    if survival_rank_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "add_survival_high_score",
+                "survival_rank_cursor_lvar": survival_rank_cursor_lvar,
+            }
+        )
+
+    survival_active_bank_operand = _sync_survival_active_bank_operand()
+    if survival_active_bank_operand.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "add_survival_high_score",
+                "survival_active_bank_operand": survival_active_bank_operand,
+            }
+        )
+
     time_trial_route_cursor_lvar = _sync_add_time_trial_route_cursor_lvar()
     if time_trial_route_cursor_lvar.get("status") == "failed":
         failed.append(
@@ -433,6 +451,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "compact_cursor_lvar": compact_cursor_lvar,
+                "postal_rank_cursor_lvar": postal_rank_cursor_lvar,
+                "survival_rank_cursor_lvar": survival_rank_cursor_lvar,
+                "survival_active_bank_operand": survival_active_bank_operand,
                 "time_trial_route_cursor_lvar": time_trial_route_cursor_lvar,
                 "missing": missing,
                 "failed": failed,

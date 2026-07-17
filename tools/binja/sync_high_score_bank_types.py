@@ -70,6 +70,22 @@ SYMBOL_UPDATES = (
 
 PERSISTENCE_USER_VAR_UPDATES = (
     (
+        "add_arcade_high_score",
+        "RegisterVariableSourceType",
+        144,
+        68,
+        "postal_rank_cursor",
+        "SubHighScorePostalRankCursor*",
+    ),
+    (
+        "add_survival_high_score",
+        "RegisterVariableSourceType",
+        168,
+        69,
+        "survival_rank_cursor",
+        "SubHighScoreSurvivalRankCursor*",
+    ),
+    (
         "add_time_trial_high_score",
         "RegisterVariableSourceType",
         81,

@@ -343,12 +343,18 @@
       "required_substrings": [
         "struct SubHighScore* bank_1 = bank",
         "&bank->current_result_record",
-        "&bank->postal_records[0].score"
+        "&bank->postal_records[0].score",
+        "struct SubHighScorePostalRankCursor* postal_rank_cursor",
+        "__builtin_memcpy(&postal_rank_cursor->record, record, 0x1fac0)",
+        "postal_rank_cursor->record.route_or_rank_index = eax"
       ],
       "forbidden_substrings": [
         "struct HighScoreBank",
         "return eax",
-        "void* arg1"
+        "void* arg1",
+        "void* edx_2",
+        "edx_2 + 8",
+        "*(edx_2 + 0x48)"
       ]
     },
     {
@@ -357,12 +363,18 @@
       "required_substrings": [
         "void __thiscall add_arcade_high_score(SubHighScore *bank, SubSolution *record, int level_arg)",
         "&bank->current_result_record",
-        "&bank->postal_records[0].score"
+        "&bank->postal_records[0].score",
+        "struct SubHighScorePostalRankCursor *postal_rank_cursor",
+        "qmemcpy(&postal_rank_cursor->record, record, sizeof(postal_rank_cursor->record))",
+        "postal_rank_cursor->record.route_or_rank_index = v4"
       ],
       "forbidden_substrings": [
         "int __thiscall add_arcade_high_score",
         "_DWORD *this",
-        "return result"
+        "return result",
+        "char *v9",
+        "v9 + 8",
+        "*((_DWORD *)v9 + 18)"
       ]
     },
     {
@@ -372,12 +384,21 @@
         "struct SubHighScore* bank_1 = bank",
         "&bank->current_result_record",
         "&bank->survival_pending_record",
-        "&bank->survival_records[0].score"
+        "&bank->survival_records[0].score",
+        "struct SubHighScoreSurvivalRankCursor* survival_rank_cursor",
+        "__builtin_memcpy(&survival_rank_cursor->record, record, 0x1fac0)",
+        "survival_rank_cursor->record.high_score_mode_tag = 1",
+        "survival_rank_cursor->record.route_or_rank_index = eax",
+        "g_game_base->subgame.sub_high_score.active_record_bank = &bank->survival_records"
       ],
       "forbidden_substrings": [
         "struct HighScoreBank",
         "return eax",
-        "void* arg1"
+        "void* arg1",
+        "void* ebx_1",
+        "ebx_1 + 0x15c648",
+        "*(ebx_1 + 0x15c684)",
+        "*(ebx_1 + 0x15c688)"
       ]
     },
     {
@@ -387,12 +408,23 @@
         "void __thiscall add_survival_high_score(SubHighScore *bank, SubSolution *record)",
         "&bank->current_result_record",
         "&bank->survival_pending_record",
-        "&bank->survival_records[0].score"
+        "&bank->survival_records[0].score",
+        "struct SubHighScoreSurvivalRankCursor *survival_rank_cursor",
+        "qmemcpy(&survival_rank_cursor->record, record, sizeof(survival_rank_cursor->record))",
+        "survival_rank_cursor->record.high_score_mode_tag = 1",
+        "survival_rank_cursor->record.route_or_rank_index = v3",
+        "g_game_base->subgame.sub_high_score.active_record_bank = bank->survival_records"
       ],
       "forbidden_substrings": [
         "int __thiscall add_survival_high_score",
         "_DWORD *this",
-        "return result"
+        "return result",
+        "SubSolution **v8",
+        "v8 + 356754",
+        "v8[356769]",
+        "v8[356770]",
+        "byte_6FFAE0",
+        "g_parcel_set_buckets"
       ]
     },
     {

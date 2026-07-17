@@ -133,3 +133,21 @@ Residual:
   remaining two instructions save and reload the destination handle across
   `rep movsd`; native instead addresses its rank field through the decremented
   cursor. That allocator choice remains visible rather than fakematched.
+
+2026-07-17 inserted-record cursor and active-bank ownership:
+
+- The native `bank + rank * sizeof(SubSolution)` lifetime is now replayed as
+  `SubHighScoreSurvivalRankCursor *` in both decompilers. Its prefix aliases the
+  bank through `survival_records`; `record` aliases `survival_records[rank]`.
+  This is an analysis view, not a second bank or allocation.
+- Binary Ninja pins the exact EBX identity at
+  `RegisterVariableSourceType / 168 / 69`; IDA pins definition `0x417829`.
+  Both now express the inserted copy, mode tag, and rank through `record`.
+- IDA had separately mistaken native displacement `0x6ffae0` at `0x41787c`
+  for an address inside the large `g_parcel_set_buckets` data item. The replay
+  verifies the exact instruction bytes, clears only that false offset flag,
+  and reads back the proved owner
+  `GameRoot::subgame.sub_high_score.active_record_bank`.
+- Matching source is unchanged. Focused matching remains honestly at 89.41%,
+  86/84 candidate/target instructions, prefix 36/84, and six clean masks; the
+  remaining allocator/scheduler residual stays visible.

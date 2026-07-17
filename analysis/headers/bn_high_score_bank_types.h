@@ -115,6 +115,22 @@ typedef struct SubHighScore {
     SubSolution survival_pending_record;
 } SubHighScore;
 
+/* Analysis-only SubHighScore-relative view for AddArcade's native
+ * `bank + rank * sizeof(SubSolution)` cursor. The prefix aliases the bank and
+ * record aliases postal_records[rank]; this is not additional storage. */
+typedef struct SubHighScorePostalRankCursor {
+    uint8_t bank_prefix[0x8];
+    SubSolution record;
+} SubHighScorePostalRankCursor;
+
+/* Analysis-only SubHighScore-relative view for AddSurvival's native
+ * `bank + rank * sizeof(SubSolution)` cursor. The prefix aliases the bank and
+ * record aliases survival_records[rank]; this is not additional storage. */
+typedef struct SubHighScoreSurvivalRankCursor {
+    uint8_t bank_prefix[0x15c648];
+    SubSolution record;
+} SubHighScoreSurvivalRankCursor;
+
 /* Analysis-only SubHighScore-relative view for AddTimeTrial's native
  * `bank + route_index * sizeof(SubSolution)` cursor. The prefix aliases the
  * enclosing bank and record aliases time_trial_route_records[route_index];

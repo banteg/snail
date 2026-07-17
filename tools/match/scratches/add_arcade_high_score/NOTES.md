@@ -60,3 +60,16 @@ Rejected/neutral source-shape probes:
 2026-07-10 cRPlayer state ownership: the four frontend writes now target
 `GameRoot::players[0]` directly (`frontend_state`, pending byte, entry rank,
 and entry bank). The owner promotion is byte-neutral at the exact 70/70 anchor.
+
+2026-07-17 postal rank-cursor ownership:
+
+- The native `bank + rank * sizeof(SubSolution)` lifetime is now replayed as
+  `SubHighScorePostalRankCursor *` in both decompilers. Its eight-byte prefix
+  aliases `active_record_bank` and `active_record_count`; `record` aliases
+  `postal_records[rank]`. It is an analysis view, not new bank storage.
+- Binary Ninja pins the exact EDX identity at
+  `RegisterVariableSourceType / 144 / 68`; IDA pins definition `0x417731`.
+  The inserted record copy and rank rewrite now render through the owned
+  `record` instead of raw `+0x8/+0x48` offsets.
+- Matching source is unchanged. The function remains honestly byte-exact at
+  70/70 instructions with four clean masked operands.

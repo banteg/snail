@@ -10,7 +10,7 @@ void __thiscall add_survival_high_score(SubHighScore *bank, SubSolution *record)
   int v5; // ebx
   SubSolution *v6; // ebp
   SubSolution *v7; // edi
-  SubSolution **v8; // ebx
+  struct SubHighScoreSurvivalRankCursor *survival_rank_cursor; // ebx
 
   v3 = 0;
   record->high_score_mode_tag = 1;
@@ -32,17 +32,17 @@ void __thiscall add_survival_high_score(SubHighScore *bank, SubSolution *record)
     v6[1].route_or_rank_index = v5--;
   }
   while ( v5 > v3 );
-  v8 = &bank->active_record_bank + 32432 * v3;
-  qmemcpy(v8 + 356754, record, 0x1FAC0u);
-  v8[356769] = (SubSolution *)1;
-  v8[356770] = (SubSolution *)v3;
+  survival_rank_cursor = (struct SubHighScoreSurvivalRankCursor *)((char *)bank + 129728 * v3);
+  qmemcpy(&survival_rank_cursor->record, record, sizeof(survival_rank_cursor->record));
+  survival_rank_cursor->record.high_score_mode_tag = 1;
+  survival_rank_cursor->record.route_or_rank_index = v3;
   g_game_base->players[0].frontend_state = 20;
   g_game_base->players[0].high_score_entry_pending = 1;
   if ( v3 != -1 )
   {
     record->high_score_mode_tag = 1;
-    v8[356769] = (SubSolution *)1;
-    *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] = bank->survival_records;
+    survival_rank_cursor->record.high_score_mode_tag = 1;
+    g_game_base->subgame.sub_high_score.active_record_bank = bank->survival_records;
     g_game_base->players[0].selected_high_score_rank = v3;
     g_game_base->players[0].selected_high_score_mode = 1;
   }

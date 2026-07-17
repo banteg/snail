@@ -10,7 +10,7 @@ void __thiscall add_arcade_high_score(SubHighScore *bank, SubSolution *record, i
   int v6; // ebx
   SubSolution *v7; // edx
   SubSolution *v8; // edi
-  char *v9; // edx
+  struct SubHighScorePostalRankCursor *postal_rank_cursor; // edx
 
   v4 = 0;
   record->route_or_rank_index = level_arg;
@@ -30,9 +30,9 @@ void __thiscall add_arcade_high_score(SubHighScore *bank, SubSolution *record, i
     v7[1].route_or_rank_index = v6--;
   }
   while ( v6 > v4 );
-  v9 = (char *)bank + 129728 * v4;
-  qmemcpy(v9 + 8, record, 0x1FAC0u);
-  *((_DWORD *)v9 + 18) = v4;
+  postal_rank_cursor = (struct SubHighScorePostalRankCursor *)((char *)bank + 129728 * v4);
+  qmemcpy(&postal_rank_cursor->record, record, sizeof(postal_rank_cursor->record));
+  postal_rank_cursor->record.route_or_rank_index = v4;
   g_game_base->players[0].frontend_state = 20;
   g_game_base->players[0].high_score_entry_pending = 1;
   g_game_base->players[0].selected_high_score_rank = v4;

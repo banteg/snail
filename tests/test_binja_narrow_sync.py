@@ -1399,6 +1399,56 @@ def test_high_score_replays_preserve_void_insertion_abis() -> None:
     assert '"char* __thiscall save_high_scores_and_config' not in ida_source
 
 
+def test_ranked_high_score_replays_preserve_owned_record_cursors() -> None:
+    binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_high_score_bank_types.h",
+            "ida_high_score_bank_types.h",
+        )
+    )
+
+    for header in headers:
+        assert "typedef struct SubHighScorePostalRankCursor" in header
+        assert "uint8_t bank_prefix[0x8];" in header
+        assert "} SubHighScorePostalRankCursor;" in header
+        assert "typedef struct SubHighScoreSurvivalRankCursor" in header
+        assert "uint8_t bank_prefix[0x15c648];" in header
+        assert "} SubHighScoreSurvivalRankCursor;" in header
+
+    assert '"RegisterVariableSourceType",\n        144,\n        68,' in binja_source
+    assert '"postal_rank_cursor"' in binja_source
+    assert '"SubHighScorePostalRankCursor*"' in binja_source
+    assert '"RegisterVariableSourceType",\n        168,\n        69,' in binja_source
+    assert '"survival_rank_cursor"' in binja_source
+    assert '"SubHighScoreSurvivalRankCursor*"' in binja_source
+
+    assert "def _sync_named_pointer_lvar(" in ida_source
+    assert "and lvar.defea == definition_address" in ida_source
+    assert "and candidate.defea == definition_address" in ida_source
+    assert "_normalize_struct_pointer_type" in ida_source
+    for expected in (
+        "definition_address=0x417731",
+        'target_name="postal_rank_cursor"',
+        'target_struct_name="SubHighScorePostalRankCursor"',
+        "definition_address=0x417829",
+        'target_name="survival_rank_cursor"',
+        'target_struct_name="SubHighScoreSurvivalRankCursor"',
+    ):
+        assert expected in ida_source
+    assert 'accepted_types={"SubSolution * *",' in ida_source
+    assert "store_address = 0x41787C" in ida_source
+    assert 'expected_bytes = bytes.fromhex("89 aa e0 fa 6f 00")' in ida_source
+    assert "idc.op_num(store_address, 0)" in ida_source
+    assert 'expected_owner = "g_game_base->subgame.sub_high_score.active_record_bank"' in ida_source
+
+
 def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"
@@ -1426,9 +1476,9 @@ def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> N
     assert '"SubHighScoreTimeTrialRouteCursor*"' in binja_source
 
     assert "_sync_add_time_trial_route_cursor_lvar" in ida_source
-    assert "definition_address = 0x417902" in ida_source
-    assert 'info.name = "time_trial_route_cursor"' in ida_source
-    assert '"SubHighScoreTimeTrialRouteCursor *"' in ida_source
+    assert "definition_address=0x417902" in ida_source
+    assert 'target_name="time_trial_route_cursor"' in ida_source
+    assert 'target_struct_name="SubHighScoreTimeTrialRouteCursor"' in ida_source
 
 
 def test_compact_high_score_replays_preserve_persistence_owners() -> None:
@@ -1512,11 +1562,11 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     ) in binja_bank_source
 
     assert "_sync_load_compact_cursor_lvar" in ida_bank_source
-    assert "definition_address = 0x417608" in ida_bank_source
-    assert 'lvar.name in {"file_bytes", "compact"}' in ida_bank_source
-    assert ').removeprefix("struct ")' in ida_bank_source
-    assert 'info.name = "compact"' in ida_bank_source
-    assert '"CompactHighScoreRecord"' in ida_bank_source
+    assert "definition_address=0x417608" in ida_bank_source
+    assert 'accepted_names={"file_bytes", "compact"}' in ida_bank_source
+    assert '.removeprefix("struct ")' in ida_bank_source
+    assert 'target_name="compact"' in ida_bank_source
+    assert 'target_struct_name="CompactHighScoreRecord"' in ida_bank_source
 
     for header in replay_headers:
         replay_record = header.split("typedef struct ReplayRunRecord {", 1)[1].split(
