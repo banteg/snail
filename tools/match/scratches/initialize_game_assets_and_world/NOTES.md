@@ -917,3 +917,20 @@ equivalent owners while pinning full arity and rejecting nested-BOD receivers.
 This is analysis-only: Sweep remains 33.20% (565/652) with 34 clean operands,
 and Snake remains 30.61% (570/652) with 37 clean operands; neither audit has
 unresolved or mismatched operands.
+
+## 2026-07-17 Start and turn-family constructor ABI closure
+
+Start, Turnover, TurnoverDouble, and Turnunder now expose their proven Windows
+owner contracts: a `Path*` receiver, the portable float/width/mode prefix, two
+surface textures, and a Windows-only final texture slot. All four native
+callees return with `retn 0x18`; the iOS Path.o symbols independently preserve
+the first five stack-argument types. Turnunder's final slot is specifically the
+vertical texture, while the other three use a cap texture.
+
+After guarded recreation and post-restart readback, the refreshed initializer
+shows complete seven-operand calls for Start primary and secondary at slot
+`0x24`, then primary owners at `0x25`, `0x26`, and `0x27`. Health checks pin
+those indices, owners, and arities while tolerating only Binary Ninja's two
+equivalent spellings for a zero-offset primary `Path`. The focused matcher
+scores and all four clean operand audits are unchanged, so this records real
+analysis ownership without altering source for metric alignment.

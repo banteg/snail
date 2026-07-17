@@ -6203,6 +6203,74 @@
       ]
     },
     {
+      "name": "bn_start_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00426400-initialize_start_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_START",
+        "self->width_cells = width_cells_",
+        "self->segment_count = eax_1 + 0x10",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_turnover_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00426cb0-initialize_turnover_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_TURNOVER",
+        "self->width_cells = width_cells_",
+        "self->segment_count = eax_1 + 8",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_turnoverdouble_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00427640-initialize_turnoverdouble_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_TURNOVERDOUBLE",
+        "self->width_cells = width_cells_",
+        "self->segment_count = i_6 + 8",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_turnunder_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00427fe0-initialize_turnunder_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY",
+        "self->width_cells = width_cells_",
+        "self->segment_count = eax_1 + 8",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
       "name": "bn_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
@@ -6278,6 +6346,24 @@
       "forbidden_substrings": [
         "initialize_sweep_path_template_pair(&game->subgame.path_pairs[0x1c].primary.bod.bod.vtable",
         "initialize_snake_path_template_pair(&game->subgame.path_pairs[0x1d].primary.bod.bod.vtable"
+      ]
+    },
+    {
+      "name": "bn_start_turn_path_constructor_callsite_abis",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_regexes": [
+        "initialize_start_path_template_pair\\(&game->subgame\\.path_pairs\\[0x24\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_start_path_template_pair\\(&game->subgame\\.path_pairs\\[0x24\\]\\.secondary, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_turnover_path_template_pair\\(&game->subgame\\.path_pairs\\[0x25\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_turnoverdouble_path_template_pair\\(&game->subgame\\.path_pairs\\[0x26\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_turnunder_path_template_pair\\(&game->subgame\\.path_pairs\\[0x27\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+      ],
+      "forbidden_substrings": [
+        "initialize_start_path_template_pair(&game->subgame.path_pairs[0x24].primary.bod.bod.vtable",
+        "initialize_start_path_template_pair(&game->subgame.path_pairs[0x24].secondary.bod.bod.vtable",
+        "initialize_turnover_path_template_pair(&game->subgame.path_pairs[0x25].primary.bod.bod.vtable",
+        "initialize_turnoverdouble_path_template_pair(&game->subgame.path_pairs[0x26].primary.bod.bod.vtable",
+        "initialize_turnunder_path_template_pair(&game->subgame.path_pairs[0x27].primary.bod.bod.vtable"
       ]
     },
     {

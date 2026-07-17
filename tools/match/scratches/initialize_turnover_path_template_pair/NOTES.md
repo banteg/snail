@@ -83,3 +83,18 @@ the terminal endpoint and passing it through an inlined helper scored 48.98%
 (656/671), again with the exact frame and 15-instruction prefix. These probes
 locate the remaining frame pressure in the mesh owner without justifying a
 lower-agreement rewrite.
+
+## 2026-07-17 live constructor ABI closure
+
+The restarted Binary Ninja session confirms the native `retn 0x18` contract:
+`Path* self`, `float length`, integer width and side-exit mode, two surface
+textures, and the Windows-only cap texture. This agrees with the portable iOS
+`cRPath::BuildTurnover(float, int, bool, char*, char*)` prefix. The stale
+database prototype stopped after two textures and mislabeled the final known
+stack slot, leaving the cap texture absent.
+
+Guarded recreation and post-write readback now report the exact seven-parameter
+prototype with no pending operation. The refreshed caller passes all six stack
+operands through `path_pairs[0x25].primary`, and the callee exposes `Path`
+fields plus void finalizer flow. This is analysis-only: focused matching remains
+52.22% (612/671) with 36 clean masked operands.

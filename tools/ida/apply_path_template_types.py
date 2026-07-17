@@ -1439,19 +1439,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_start_path_template_pair",
-        "int32_t __thiscall initialize_start_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_path);",
+        "void __thiscall initialize_start_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_turnover_path_template_pair",
-        "int32_t __thiscall initialize_turnover_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_turnover_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_turnoverdouble_path_template_pair",
-        "int32_t __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_turnoverdouble_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_turnunder_path_template_pair",
-        "int32_t __thiscall initialize_turnunder_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_turnunder_path_template_pair(Path* self, float turns, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_wibble_path_template_pair",

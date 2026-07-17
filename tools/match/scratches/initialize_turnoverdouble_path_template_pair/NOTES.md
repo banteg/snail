@@ -63,3 +63,18 @@ helper boundary until their native loop owners can be recovered together.
 Target-shaped mesh transplants in the sibling recovered frame pressure but
 reduced whole-function agreement, so this target does not repeat those
 lower-signal rewrites.
+
+## 2026-07-17 live constructor ABI closure
+
+The restarted Binary Ninja session confirms the native `retn 0x18` contract:
+`Path* self`, `float length`, integer width and side-exit mode, two surface
+textures, and the Windows-only cap texture. This agrees with the portable iOS
+`cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)` prefix. The stale
+database prototype stopped after two textures and mislabeled the final known
+stack slot, leaving the cap texture absent.
+
+Guarded recreation and post-write readback now report the exact seven-parameter
+prototype with no pending operation. The refreshed caller passes all six stack
+operands through `path_pairs[0x26].primary`, and the callee exposes `Path`
+fields plus void finalizer flow. This is analysis-only: focused matching remains
+51.70% (616/680) with 43 clean masked operands.

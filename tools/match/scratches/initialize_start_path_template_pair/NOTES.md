@@ -182,3 +182,18 @@ was byte-neutral. Reversing the redundant parity condition and spelling the
 curve guard as `curve_index < curve_segments` were score-neutral; both are
 retained because they reflect the observed branch direction and logical owner.
 The candidate frame remains 0x48 versus the target's 0x44.
+
+## 2026-07-17 live constructor ABI closure
+
+The restarted Binary Ninja session confirms the native `retn 0x18` contract:
+`Path* self`, `float length`, integer width and side-exit mode, two surface
+textures, and the Windows-only cap texture. This agrees with the portable iOS
+`cRPath::BuildStart(float, int, bool, char*, char*)` prefix. The stale database
+prototype had only three stack arguments, shifted the first texture into the
+mode slot, and omitted the final three arguments.
+
+Guarded recreation and post-write readback now report the exact seven-parameter
+prototype with no pending operation. The refreshed callee exposes `Path` fields
+and void finalizer flow, while both initializer callsites use the primary and
+secondary `Path` owners with all six stack operands. This is analysis-only:
+focused matching remains 60.84% (603/610) with 31 clean masked operands.

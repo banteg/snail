@@ -2559,35 +2559,44 @@ int32_t __thiscall initialize_p_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_start_path_template_pair(
+void __thiscall initialize_start_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
-    char* texture_path
+    float length,
+    int32_t width_cells_,
+    int32_t side_exit,
+    char* texture_a,
+    char* texture_b,
+    char* cap_texture
 );
 
-int32_t __thiscall initialize_turnover_path_template_pair(
+void __thiscall initialize_turnover_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
+    float length,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
-int32_t __thiscall initialize_turnoverdouble_path_template_pair(
+void __thiscall initialize_turnoverdouble_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
+    float length,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
-int32_t __thiscall initialize_turnunder_path_template_pair(
+void __thiscall initialize_turnunder_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
+    float turns,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 int32_t __thiscall initialize_wibble_path_template_pair(

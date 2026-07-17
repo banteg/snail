@@ -86,3 +86,19 @@ Rejected: retaining an explicit `tail_start_index` across the tail and curved
 loops reduced focused Wibo to 46.11% (623/687), with the operand audit still
 clean. Although the target preserves a related byte offset, that source-level
 lifetime does not reproduce it; keep the direct count-relative spelling.
+
+## 2026-07-17 live constructor ABI closure
+
+The restarted Binary Ninja session and the tail at `0x428987` confirm the
+native `retn 0x18` contract: `Path* self`, `float turns`, integer width and
+side-exit mode, two surface textures, and the Windows-only vertical texture.
+This agrees with the portable iOS
+`cRPath::BuildTurnunder(float, int, bool, char*, char*)` prefix. The stale
+database prototype stopped after two textures and mislabeled the final known
+stack slot, leaving the vertical texture absent.
+
+Guarded recreation and post-write readback now report the exact seven-parameter
+prototype with no pending operation. The refreshed caller passes all six stack
+operands through `path_pairs[0x27].primary`, and the callee exposes `Path`
+fields plus void finalizer flow. This is analysis-only: focused matching remains
+48.06% (628/687) with 41 clean masked operands.
