@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "remove_subgame_bods",
-      "address": "0x440910"
+      "name": "spawn_track_ring_or_special_effect",
+      "address": "0x43df10"
     }
   ],
   "health_check_count": 485,

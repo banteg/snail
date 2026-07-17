@@ -84,6 +84,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
+    0x43DF10,  # spawn_track_ring_or_special_effect
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x447090,  # initialize_fringe_manager
@@ -202,6 +203,18 @@ REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS = (
         None,
     ),
     ("golb_shot_cursor", "GolbShot *golb_shot_cursor;", 0x440F15, None),
+)
+
+SPAWN_TRACK_RING_LVAR_SPECS = (
+    ("slot_index", "int32_t slot_index;", 0x43DF14, None),
+    ("state_cursor", "SubRingState *state_cursor;", 0x43DF1C, None),
+    ("slot_cursor", "SubRingSlotCursor *slot_cursor;", 0x43DF5D, None),
+    ("default_phase_step", "float default_phase_step;", 0x43DF83, 32),
+    ("effective_kind", "int32_t effective_kind;", 0x43DF8C, None),
+    ("selected_ring", "SubRing *selected_ring;", 0x43E3DB, None),
+    ("active_head", "BodNode **active_head;", 0x43E400, None),
+    ("active_first", "BodNode *active_first;", 0x43E405, None),
+    ("promoted_head", "BodNode *promoted_head;", 0x43E424, None),
 )
 
 MERGE_RUNTIME_LVAR_SPECS = (
@@ -1785,6 +1798,13 @@ def _sync_remove_subgame_bods_cursor_lvars() -> dict[str, object]:
     )
 
 
+def _sync_spawn_track_ring_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "spawn_track_ring_or_special_effect",
+        SPAWN_TRACK_RING_LVAR_SPECS,
+    )
+
+
 def _sync_merge_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "merge_track_tile_runs",
@@ -2235,6 +2255,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "cursor_lvars": remove_subgame_bods_cursor_lvars,
             }
         )
+    spawn_track_ring_lvars = _sync_spawn_track_ring_lvars()
+    if spawn_track_ring_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "spawn_track_ring_or_special_effect",
+                "ownership_lvars": spawn_track_ring_lvars,
+            }
+        )
     merge_runtime_lvars = _sync_merge_runtime_lvars()
     if merge_runtime_lvars.get("status") == "failed":
         failed.append(
@@ -2327,6 +2355,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
+                "spawn_track_ring_lvars": spawn_track_ring_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,

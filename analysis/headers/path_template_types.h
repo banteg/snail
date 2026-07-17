@@ -934,6 +934,17 @@ typedef struct SubRingPool {
 
 typedef SubRingPool RingOrSpecialEffectPool;
 
+/*
+ * Analysis-only manager-relative view used while VC6 retains
+ * `SubgameRuntime + slot_index * sizeof(SubRing)` instead of materializing a
+ * direct SubRing pointer. The prefix is not separately owned storage: `ring`
+ * aliases one of SubgameRuntime::ring_effects.slots.
+ */
+typedef struct SubRingSlotCursor {
+    uint8_t subgame_prefix[0x35b78c];
+    SubRing ring;
+} SubRingSlotCursor;
+
 typedef struct SlugVoiceManager {
     uint8_t active;
     uint8_t _pad_01[0x3];

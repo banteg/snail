@@ -10,10 +10,10 @@ void __thiscall spawn_track_ring_or_special_effect(
         Player *player,
         float ring_speed)
 {
-  int v5; // eax
-  SubRingState *i; // ecx
-  char *v8; // esi
-  int32_t v9; // ebp
+  int32_t slot_index; // eax
+  SubRingState *state_cursor; // ecx
+  SubRingSlotCursor *slot_cursor; // esi
+  int32_t effective_kind; // ebp
   double v10; // st7
   double v11; // st7
   double v12; // st7
@@ -21,12 +21,12 @@ void __thiscall spawn_track_ring_or_special_effect(
   double v14; // st7
   double v15; // st7
   double v16; // st7
-  int v17; // eax
-  SubRing *v18; // esi
-  FrameBodBase **p_first; // eax
-  FrameBodBase *first; // ecx
-  FrameBodBase *list_prev; // ecx
-  float v22; // [esp+10h] [ebp-10h]
+  uint32_t list_flags; // eax
+  SubRing *selected_ring; // esi
+  BodNode **active_head; // eax
+  BodNode *active_first; // ecx
+  BodNode *promoted_head; // ecx
+  float default_phase_step; // [esp+10h] [ebp-10h]
   float v23; // [esp+18h] [ebp-8h]
   float v24; // [esp+18h] [ebp-8h]
   float v25; // [esp+18h] [ebp-8h]
@@ -40,128 +40,128 @@ void __thiscall spawn_track_ring_or_special_effect(
   float v33; // [esp+1Ch] [ebp-4h]
   float v34; // [esp+1Ch] [ebp-4h]
 
-  v5 = 0;
-  for ( i = &game->ring_effects.slots[0].state; *i; i += 126 )
+  slot_index = 0;
+  for ( state_cursor = &game->ring_effects.slots[0].state; *state_cursor; state_cursor += 126 )
   {
-    if ( ++v5 >= 2 )
+    if ( ++slot_index >= 2 )
       return;
   }
-  v8 = (char *)game + 504 * v5;
-  v22 = 1.0
-      / ((2.0 - game->base_subgame_rate * 0.30000001)
-       * 60.0)
-      * ((double)player->movement_flag_selector
-       * 0.125)
-      * game->subgame_rate
-      * 6.2831855;
-  set_matrix_identity((TransformMatrix *)(v8 + 3520452));
-  v9 = requested_kind;
-  *((_DWORD *)v8 + 880132) = player;
+  slot_cursor = (SubRingSlotCursor *)((char *)game + 504 * slot_index);
+  default_phase_step = 1.0
+                     / ((2.0 - game->base_subgame_rate * 0.30000001)
+                      * 60.0)
+                     * ((double)player->movement_flag_selector
+                      * 0.125)
+                     * game->subgame_rate
+                     * 6.2831855;
+  set_matrix_identity(&slot_cursor->ring.body.transform);
+  effective_kind = requested_kind;
+  slot_cursor->ring.owner_player = player;
   if ( requested_kind == 4
     && (random_float_below(1.0) > 0.93000001 || random_float_below(1.0) > 0.5 && game->level_mode == 4) )
   {
-    v9 = 3;
+    effective_kind = 3;
   }
-  switch ( v9 )
+  switch ( effective_kind )
   {
     case 0:
     case 4:
       v25 = cell->anchor_position.y + 2.5;
       v14 = cell->anchor_position.z + 6.0;
-      *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
       v31 = v14;
-      *((float *)v8 + 880126) = v25;
-      *((float *)v8 + 880127) = v31;
+      slot_cursor->ring.body.transform.position.y = v25;
+      slot_cursor->ring.body.transform.position.z = v31;
       v15 = random_float_below(1.0);
-      *((float *)v8 + 880125) = (v15 - 0.5 + v15 - 0.5) * 3.0;
+      slot_cursor->ring.body.transform.position.x = (v15 - 0.5 + v15 - 0.5) * 3.0;
       goto LABEL_13;
     case 1:
     case 3:
       v24 = cell->anchor_position.y + 2.5;
       v12 = cell->anchor_position.z + 6.0;
-      *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
       v30 = v12;
-      *((float *)v8 + 880126) = v24;
-      *((float *)v8 + 880127) = v30;
+      slot_cursor->ring.body.transform.position.y = v24;
+      slot_cursor->ring.body.transform.position.z = v30;
       v13 = random_float_below(1.0);
-      *((float *)v8 + 880125) = (v13 - 0.5 + v13 - 0.5) * 3.0;
+      slot_cursor->ring.body.transform.position.x = (v13 - 0.5 + v13 - 0.5) * 3.0;
       goto LABEL_13;
     case 2:
       v23 = cell->anchor_position.y + 3.5;
       v10 = cell->anchor_position.z + 17.0;
-      *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
       v29 = v10;
-      *((float *)v8 + 880126) = v23;
-      *((float *)v8 + 880127) = v29;
+      slot_cursor->ring.body.transform.position.y = v23;
+      slot_cursor->ring.body.transform.position.z = v29;
       v11 = random_float_below(1.0);
-      *((float *)v8 + 880125) = (v11 - 0.5 + v11 - 0.5) * 3.0;
+      slot_cursor->ring.body.transform.position.x = (v11 - 0.5 + v11 - 0.5) * 3.0;
 LABEL_13:
-      *((float *)v8 + 880219) = random_float_below(1.0) * 6.2831855;
-      *((float *)v8 + 880220) = v22;
+      slot_cursor->ring.active_phase = random_float_below(1.0) * 6.2831855;
+      slot_cursor->ring.active_phase_step = default_phase_step;
       break;
     case 5:
       z = cell->anchor_position.z;
       v26 = cell->anchor_position.y + 2.5;
-      *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
-      *((float *)v8 + 880126) = v26;
-      *((float *)v8 + 880127) = z;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      slot_cursor->ring.body.transform.position.y = v26;
+      slot_cursor->ring.body.transform.position.z = z;
       goto LABEL_19;
     case 6:
       v33 = cell->anchor_position.z;
       v27 = cell->anchor_position.y + 2.5;
-      *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
-      *((float *)v8 + 880126) = v27;
-      *((float *)v8 + 880127) = v33;
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
+      slot_cursor->ring.body.transform.position.y = v27;
+      slot_cursor->ring.body.transform.position.z = v33;
       goto LABEL_19;
     case 7:
     case 8:
       v16 = cell->anchor_position.y + 2.5;
       v34 = cell->anchor_position.z;
-      *((_DWORD *)v8 + 880125) = LODWORD(cell->anchor_position.x);
+      slot_cursor->ring.body.transform.position.x = cell->anchor_position.x;
       v28 = v16;
-      *((float *)v8 + 880126) = v28;
-      *((float *)v8 + 880127) = v34;
+      slot_cursor->ring.body.transform.position.y = v28;
+      slot_cursor->ring.body.transform.position.z = v34;
 LABEL_19:
-      *((float *)v8 + 880219) = random_float_below(1.0) * 6.2831855;
-      *((float *)v8 + 880220) = 1.0 / (ring_speed * 60.0) * game->subgame_rate * 6.2831855;
+      slot_cursor->ring.active_phase = random_float_below(1.0) * 6.2831855;
+      slot_cursor->ring.active_phase_step = 1.0 / (ring_speed * 60.0) * game->subgame_rate * 6.2831855;
       break;
     default:
       break;
   }
-  if ( get_track_grid_cell_at_world_position(game, (Vec3 *)v8 + 293375)->tile_id != 14 )
+  if ( get_track_grid_cell_at_world_position(game, (Vec3 *)&slot_cursor->ring.body.transform.position)->tile_id != 14 )
   {
-    *((_DWORD *)v8 + 880133) = v9;
-    *((_DWORD *)v8 + 880134) = player->lives;
-    *((_DWORD *)v8 + 880131) = 1;
+    slot_cursor->ring.kind = effective_kind;
+    slot_cursor->ring.owner_lives_snapshot = player->lives;
+    slot_cursor->ring.state = SUB_RING_STATE_ACTIVE;
     if ( random_float_below(1.0) > 0.5 )
-      *((float *)v8 + 880220) = *((float *)v8 + 880220) * -1.0;
-    v17 = *((_DWORD *)v8 + 880100);
-    v18 = (SubRing *)(v8 + 3520396);
-    if ( (v17 & 0x200) != 0 )
+      slot_cursor->ring.active_phase_step = slot_cursor->ring.active_phase_step * -1.0;
+    list_flags = slot_cursor->ring.body.bod.bod.list_flags;
+    selected_ring = &slot_cursor->ring;
+    if ( (list_flags & 0x200) != 0 )
     {
       report_errorf(aListAdd);
     }
     else
     {
-      p_first = &g_game_base->active_bod_list.first;
-      first = g_game_base->active_bod_list.first;
-      if ( first )
+      active_head = &g_game_base->active_bod_list.first;
+      active_first = g_game_base->active_bod_list.first;
+      if ( active_first )
       {
-        first->bod.list_prev = (FrameBodBase *)v18;
-        (*p_first)->bod.list_prev->bod.list_next = *p_first;
-        list_prev = (*p_first)->bod.list_prev;
-        *p_first = list_prev;
-        list_prev->bod.list_prev = nullptr;
+        active_first->list_prev = &selected_ring->body.bod.bod;
+        (*active_head)->list_prev->list_next = *active_head;
+        promoted_head = (*active_head)->list_prev;
+        *active_head = promoted_head;
+        promoted_head->list_prev = nullptr;
       }
       else
       {
-        *p_first = (FrameBodBase *)v18;
-        v18->body.bod.bod.list_prev = nullptr;
-        (*p_first)->bod.list_next = nullptr;
+        *active_head = &selected_ring->body.bod.bod;
+        selected_ring->body.bod.bod.list_prev = nullptr;
+        (*active_head)->list_next = nullptr;
       }
-      v18->body.bod.bod.list_flags |= 0x200u;
+      selected_ring->body.bod.bod.list_flags |= 0x200u;
     }
-    initialize_ring_or_special_effect_particles(v18, player->lives);
-    (*(void (__thiscall **)(SubRing *))v18->body.bod.bod.vtable)(v18);
+    initialize_ring_or_special_effect_particles(selected_ring, player->lives);
+    (*(void (__thiscall **)(SubRing *))selected_ring->body.bod.bod.vtable)(selected_ring);
   }
 }

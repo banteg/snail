@@ -310,3 +310,21 @@ is retained.
   mismatches to `93.10%`, `349/347`, prefix `20`, and `74` clean masked
   operands. The sole remaining audited mismatch is the compiler-local jump
   table label map; nothing is unresolved.
+
+## 2026-07-17 selected-slot and intrusive-list ownership
+
+- Binary Ninja and IDA now preserve the native manager-relative selected-slot
+  lifetime as `SubRingSlotCursor`. Its large prefix aliases the enclosing
+  `SubgameRuntime`; only `ring` names embedded storage, so the view does not
+  invent a second runtime owner or a heap allocation.
+- The bounded scan is explicitly a `SubRingState* state_cursor` plus
+  `slot_index`, after which the same ESI lifetime owns all placement,
+  activation, phase, and transform writes through `slot_cursor->ring`.
+- The later `selected_ring = &slot_cursor->ring` handoff is a borrow for child
+  initialization and slot-zero AI dispatch. The root active list remains a
+  `BodNode** active_head`; it links the embedded bod prefix but does not own or
+  free the selected ring.
+- Both analysis databases replay the exact native local identities, and the
+  tracked decompiles no longer expose the slot as `void*`/`char*` plus raw
+  `0x35b...` displacements. Matcher output remains honestly `93.10%`; this is
+  ownership recovery, not an instruction-shape claim.

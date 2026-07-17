@@ -5987,3 +5987,85 @@ def test_remove_subgame_bods_cursor_ownership_is_replayed() -> None:
         assert f'"{declaration}"' in ida_sync
     assert "_sync_remove_subgame_bods_cursor_lvars" in ida_sync
     assert '"remove_subgame_bods_cursor_lvars"' in ida_sync
+
+
+def test_spawn_track_ring_slot_and_list_ownership_is_replayed() -> None:
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "typedef struct SubRingSlotCursor {" in analysis_header
+    assert "uint8_t subgame_prefix[0x35b78c];" in analysis_header
+    assert "SubRing ring;" in analysis_header
+    assert "} SubRingSlotCursor;" in analysis_header
+    assert '"SubRingSlotCursor"' in binja_sync
+
+    assert "SPAWN_TRACK_RING_USER_VAR_UPDATES" in binja_sync
+    for index, storage in (
+        (3, 66),
+        (11, 67),
+        (76, 72),
+        (123, 71),
+        (1263, 66),
+        (1268, 67),
+        (1289, 67),
+        (1291, 71),
+        (1297, 67),
+        (1299, 67),
+    ):
+        assert (
+            f'"RegisterVariableSourceType",\n        {index},\n        {storage},'
+            in binja_sync
+        )
+    assert '"StackVariableSourceType",\n        114,\n        -16,' in binja_sync
+    for name, type_name in (
+        ("slot_index", "int32_t"),
+        ("state_cursor", "SubRingState*"),
+        ("slot_cursor", "SubRingSlotCursor*"),
+        ("default_phase_step", "float"),
+        ("effective_kind", "int32_t"),
+        ("active_head", "BodNode**"),
+        ("active_first", "BodNode*"),
+        ("first_for_link", "BodNode*"),
+        ("linked_head", "BodNode*"),
+        ("first_for_promote", "BodNode*"),
+        ("promoted_head", "BodNode*"),
+    ):
+        assert f'"{name}"' in binja_sync
+        assert f'"{type_name}"' in binja_sync
+    assert "*SPAWN_TRACK_RING_USER_VAR_UPDATES" in binja_sync
+
+    assert "SPAWN_TRACK_RING_LVAR_SPECS" in ida_sync
+    for definition_address in (
+        "0x43DF14",
+        "0x43DF1C",
+        "0x43DF5D",
+        "0x43DF83",
+        "0x43DF8C",
+        "0x43E3DB",
+        "0x43E400",
+        "0x43E405",
+        "0x43E424",
+    ):
+        assert definition_address in ida_sync
+    for name, declaration in (
+        ("slot_index", "int32_t slot_index;"),
+        ("state_cursor", "SubRingState *state_cursor;"),
+        ("slot_cursor", "SubRingSlotCursor *slot_cursor;"),
+        ("default_phase_step", "float default_phase_step;"),
+        ("effective_kind", "int32_t effective_kind;"),
+        ("selected_ring", "SubRing *selected_ring;"),
+        ("active_head", "BodNode **active_head;"),
+        ("active_first", "BodNode *active_first;"),
+        ("promoted_head", "BodNode *promoted_head;"),
+    ):
+        assert f'"{name}"' in ida_sync
+        assert f'"{declaration}"' in ida_sync
+    assert "_sync_spawn_track_ring_lvars" in ida_sync
+    assert '"spawn_track_ring_lvars"' in ida_sync

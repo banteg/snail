@@ -224,6 +224,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubgameRuntimeFlagPreset",
     "SubRingState",
     "SubRingKind",
+    "SubRingSlotCursor",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -865,6 +866,102 @@ REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES = (
         72,
         "golb_shot_cursor",
         "GolbShot*",
+    ),
+)
+
+# The ring spawner retains a manager-relative ESI cursor until activation is
+# complete, then borrows the embedded SubRing's BodNode prefix for insertion in
+# the root active list. Preserve those two ownership domains explicitly: the
+# cursor does not own another SubgameRuntime, and the root list owns neither the
+# selected ring nor any other embedded bod.
+SPAWN_TRACK_RING_USER_VAR_UPDATES = (
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        3,
+        66,
+        "slot_index",
+        "int32_t",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        11,
+        67,
+        "state_cursor",
+        "SubRingState*",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        76,
+        72,
+        "slot_cursor",
+        "SubRingSlotCursor*",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "StackVariableSourceType",
+        114,
+        -16,
+        "default_phase_step",
+        "float",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        123,
+        71,
+        "effective_kind",
+        "int32_t",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        1263,
+        66,
+        "active_head",
+        "BodNode**",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        1268,
+        67,
+        "active_first",
+        "BodNode*",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        1289,
+        67,
+        "first_for_link",
+        "BodNode*",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        1291,
+        71,
+        "linked_head",
+        "BodNode*",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        1297,
+        67,
+        "first_for_promote",
+        "BodNode*",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "RegisterVariableSourceType",
+        1299,
+        67,
+        "promoted_head",
+        "BodNode*",
     ),
 )
 
@@ -2364,6 +2461,7 @@ def main() -> int:
                 *CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
                 *REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES,
+                *SPAWN_TRACK_RING_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

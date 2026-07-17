@@ -68,3 +68,11 @@ stride without pretending the tile-byte view owns separate storage.
   pointer, so those incompatible incidental values cannot form a semantic
   result. The shared method contract is therefore the cross-port
   `void cRSubGame::WarnTrack()` mutator.
+
+2026-07-17 bounded reload-order retest: moving the cell increment from the
+`for` iteration expression into the body and reversing the two ordinary
+iteration-expression increments both preserved semantics but regressed focused
+matching from `98.99%` to `97.98%`. Neither changed the saved-row-first reload;
+the latter also scheduled the pointer add before the column increment. The
+source-shaped `++col, ++cell` loop remains the best form, and the final two
+independent loads remain intentionally unmatched rather than barrier-forced.
