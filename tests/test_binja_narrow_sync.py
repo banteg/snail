@@ -3675,8 +3675,10 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert '("Slug", SLUG_FIELD_UPDATES)' in pool_sync
     assert '("0x00", "body", "RenderableBod")' in pool_sync
     assert "SlugHazardRuntime*" not in pool_sync
-    assert "void __fastcall update_slug_hazard_ai(Slug* slug)" in pool_sync
     assert "void __thiscall update_slug_hazard_ai(Slug* slug)" in pool_sync
+    assert "void __fastcall update_slug_hazard_ai(Slug* slug)" not in pool_sync
+    assert "DEFERRED_PROTO_UPDATES" not in pool_sync
+    assert "report_deferred_prototypes" not in pool_sync
 
     for header in (*analysis_headers, matcher_header):
         assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header

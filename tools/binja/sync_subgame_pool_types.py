@@ -9,7 +9,6 @@ import sys
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
-    current_prototypes,
     current_type_widths,
     emit_summary,
     struct_exists,
@@ -142,11 +141,12 @@ PROTO_UPDATES = (
         "kill_slug_hazard",
         "void __thiscall kill_slug_hazard(Slug* slug)",
     ),
-    # Binary Ninja preserves this one-ECX-argument method as fastcall. Keep the
-    # live ABI while still promoting the exact authored receiver owner.
+    # The slot constructor installs this exact function as Slug's member AI
+    # callback; the one-ECX ABI is therefore authored thiscall, not a free
+    # fastcall helper.
     (
         "update_slug_hazard_ai",
-        "void __fastcall update_slug_hazard_ai(Slug* slug)",
+        "void __thiscall update_slug_hazard_ai(Slug* slug)",
     ),
     (
         "initialize_track_health_pickup_runtime",
@@ -196,35 +196,6 @@ PROTO_UPDATES = (
         "void __thiscall update_ring_or_special_effect_parent(SubRing* ring)",
     ),
 )
-
-DEFERRED_PROTO_UPDATES = (
-    (
-        "update_slug_hazard_ai",
-        "void __thiscall update_slug_hazard_ai(Slug* slug)",
-    ),
-)
-
-
-def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
-    observed_prototypes = current_prototypes(
-        REPO_ROOT,
-        target=target,
-        identifiers=(identifier for identifier, _prototype in DEFERRED_PROTO_UPDATES),
-    )
-    return [
-        {
-            "op": "proto_owner_deferred",
-            "status": "deferred",
-            "reason": (
-                "Binary Ninja preserves the equivalent single-ECX-argument "
-                "fastcall ABI during live verification"
-            ),
-            "identifier": identifier,
-            "desired_prototype": prototype,
-            "observed_prototype": observed_prototypes.get(identifier),
-        }
-        for identifier, prototype in DEFERRED_PROTO_UPDATES
-    ]
 
 
 def parse_args() -> argparse.Namespace:
@@ -297,7 +268,6 @@ def main() -> int:
             struct_updates=struct_updates,
             proto_updates=PROTO_UPDATES,
         ),
-        *report_deferred_prototypes(target=args.target),
     ]
 
     return emit_summary(

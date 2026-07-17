@@ -47,6 +47,16 @@ Residuals at the 66.15% baseline, all resolved by the exact closure below:
 - State-2 death-direction sign correction and list-removal scheduling remain
   register/x87 allocation debt rather than missing behavior.
 
+## 2026-07-17 Binary Ninja member ABI closure
+
+The exact slot constructor installs this function as the Slug AI callback,
+and the cross-port owner is `Slug::update_slug_hazard_ai`; the single ECX
+argument is therefore an authored thiscall member even though the raw ABI is
+indistinguishable from a one-argument fastcall. A guarded Binary Ninja preview
+now accepts and reverts that convention cleanly, so normal replay owns the
+explicit `void __thiscall(Slug*)` prototype instead of carrying duplicate
+deferred metadata. The exact 464/464 instruction match is unchanged.
+
 Rejected probes:
 
 - Caching `owner_game` in a local regressed the prologue by saving `ebp`; direct
