@@ -10,7 +10,6 @@ from _narrow_sync import (
     apply_symbol_updates,
     apply_user_var_updates,
     current_enum_members,
-    current_prototypes,
     current_type_widths,
     emit_summary,
     types_declare_missing_only,
@@ -158,7 +157,7 @@ TWINKLE_MANAGER_FIELDS = (
     ("0xf4", "twinkle_count", "int32_t"),
 )
 
-DEFERRED_PROTO_UPDATES = (
+PROTO_UPDATES = (
     (
         "initialize_exit_prompt",
         "void __thiscall initialize_exit_prompt(Exit* exit_prompt)",
@@ -167,9 +166,6 @@ DEFERRED_PROTO_UPDATES = (
         "draw_frontend_widget",
         "void __thiscall draw_frontend_widget(FrontendWidget* widget)",
     ),
-)
-
-PROTO_UPDATES = (
     (
         "initialize_frontend_widget",
         "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
@@ -257,27 +253,6 @@ SYMBOL_UPDATES = (
 )
 
 
-def report_deferred_prototypes(*, target: str) -> list[dict[str, object]]:
-    observed_prototypes = current_prototypes(
-        REPO_ROOT,
-        target=target,
-        identifiers=(
-            identifier for identifier, _prototype in DEFERRED_PROTO_UPDATES
-        ),
-    )
-    return [
-        {
-            "op": "proto_owner_deferred",
-            "status": "deferred",
-            "reason": "stale explicit function type requires guarded recreation",
-            "identifier": identifier,
-            "desired_prototype": prototype,
-            "observed_prototype": observed_prototypes.get(identifier),
-        }
-        for identifier, prototype in DEFERRED_PROTO_UPDATES
-    ]
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Replay the complete FrontendWidget owner and directly mutable member ABIs."
@@ -360,7 +335,6 @@ def main() -> int:
             target=args.target,
             updates=USER_VAR_UPDATES,
         ),
-        *report_deferred_prototypes(target=args.target),
         *apply_symbol_updates(
             REPO_ROOT,
             target=args.target,

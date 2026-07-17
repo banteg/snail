@@ -3,12 +3,11 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: draw_frontend_widget @ 0x401130 */
 
-00401158        void var_20
-00401158        struct GameRoot* result = noop_this_constructor(&var_20)
-0040115d        result.b = g_render_queue_active
-00401164        if (result.b != 0)
-0040116a        result = widget->widget_flags
-00401173        if ((result:1.b & 0x10) == 0)
+00401164        if (g_render_queue_active == 0)
+00401164        return
+0040116a        enum FrontendWidgetFlag widget_flags = widget->widget_flags
+00401173        if ((widget_flags:1.b & 0x10) != 0)
+00401173        return
 00401180        int32_t blend_mode
 00401180        struct tColour color_2
 00401180        int32_t blend_mode_1
@@ -22,7 +21,7 @@
 004011a6        float width_3 = widget->layout_width
 004011ac        float layout_height = widget->layout_height
 004011b7        float width_2 = width_3
-004011bf        if ((result & 0x100000) != 0)
+004011bf        if ((widget_flags & 0x100000) != 0)
 004011c5        long double x87_r7_1 = fconvert.t(widget->slider_position_current)
 004011d7        long double temp1_1 = fconvert.t(0f)
 004011d7        x87_r7_1 - temp1_1
@@ -65,23 +64,25 @@
 004013b3        int32_t texture_layer_2 = texture_layer
 004013b6        float x = fconvert.s(x87_r7_21 + fconvert.t(widget->texture_hit_x) - x87_r6_4)
 004013bb        if ((widget->widget_flags.b & 2) == 0)
-004013e7        return queue_axis_aligned_textured_quad_uv(widget->texture_id, x, y, width, height, 0x1000000, &widget->current_text_color, 0f, 0f, 1f, 1f, texture_layer, 0f)
-004013d0        return queue_axis_aligned_textured_quad_uv(widget->background_texture_id, x, y, width, height, 0x1000000, &widget->current_text_color, 0f, 0f, 1f, 1f, texture_layer, 0f)
-004013e8        result = widget->widget_flags
+004013d8        queue_axis_aligned_textured_quad_uv(widget->texture_id, x, y, width, height, 0x1000000, &widget->current_text_color, 0f, 0f, 1f, 1f, texture_layer, 0f)
+004013e7        return
+004013c1        queue_axis_aligned_textured_quad_uv(widget->background_texture_id, x, y, width, height, 0x1000000, &widget->current_text_color, 0f, 0f, 1f, 1f, texture_layer, 0f)
+004013d0        return
 004013f1        struct tColour color
-004013f1        if ((result:1.b & 8) != 0)
+004013f1        int16_t eax_14
+004013f1        if (((widget->widget_flags).w:1.b & 8) != 0)
 004013f7        int32_t texture_layer_1 = widget->texture_layer
 00401405        long double x87_r7_29 = fconvert.t(widget->border_edge) * fconvert.t(0.5f)
 00401432        int32_t texture_layer_9 = texture_layer_1
 00401448        int32_t texture_layer_7 = texture_layer_1
 00401454        int32_t texture_layer_5 = texture_layer_1
 00401460        int32_t texture_layer_3 = texture_layer_1
-00401467        result = queue_axis_aligned_textured_quad_uv(widget->texture_id, fconvert.s(fconvert.t(widget->texture_hit_x) - x87_r7_29), fconvert.s(fconvert.t(widget->texture_hit_y) - x87_r7_29), fconvert.s(fconvert.t(widget->border_edge) + fconvert.t(widget->texture_hit_width)), fconvert.s(fconvert.t(widget->texture_hit_height) + fconvert.t(widget->border_edge)), 0x1000000, &widget->current_text_color, 0f, 0f, 1f, 1f, texture_layer_1, 0f)
+00401467        queue_axis_aligned_textured_quad_uv(widget->texture_id, fconvert.s(fconvert.t(widget->texture_hit_x) - x87_r7_29), fconvert.s(fconvert.t(widget->texture_hit_y) - x87_r7_29), fconvert.s(fconvert.t(widget->border_edge) + fconvert.t(widget->texture_hit_width)), fconvert.s(fconvert.t(widget->texture_hit_height) + fconvert.t(widget->border_edge)), 0x1000000, &widget->current_text_color, 0f, 0f, 1f, 1f, texture_layer_1, 0f)
 0040146c        long double x87_r7_31 = fconvert.t(widget->sprite_shadow_offset)
 00401472        long double temp3_1 = fconvert.t(0f)
 00401472        x87_r7_31 - temp3_1
-0040147b        result.w = (x87_r7_31 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_31, temp3_1) ? 1 : 0) << 0xa | (x87_r7_31 == temp3_1 ? 1 : 0) << 0xe
-00401480        if ((result:1.b & 0x41) == 0)
+0040147b        eax_14 = (x87_r7_31 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_31, temp3_1) ? 1 : 0) << 0xa | (x87_r7_31 == temp3_1 ? 1 : 0) << 0xe
+00401480        if ((eax_14:1.b & 0x41) == 0)
 004014a4        float var_54_1 = fconvert.s(fconvert.t(widget->border_edge) * fconvert.t(0.5f))
 004014b7        struct tColour* color_3
 004014b7        int32_t ecx_6
@@ -90,10 +91,10 @@
 004014de        int32_t var_b0_5 = ecx_6
 004014ee        int32_t var_b4_5 = ecx_6
 00401502        int32_t var_b8_5 = ecx_6
-00401511        result = queue_axis_aligned_textured_quad_uv(widget->texture_id, fconvert.s(fconvert.t(widget->sprite_shadow_offset) + fconvert.t(widget->texture_hit_x) - fconvert.t(var_54_1)), fconvert.s(fconvert.t(widget->sprite_shadow_offset) + fconvert.t(widget->texture_hit_y) - fconvert.t(var_54_1)), fconvert.s(fconvert.t(widget->border_edge) + fconvert.t(widget->texture_hit_width)), fconvert.s(fconvert.t(widget->texture_hit_height) + fconvert.t(widget->border_edge)), 0x1000000, color_3, 0f, 0f, 1f, 1f, 2, 0f)
-00401523        if ((widget->widget_flags & &__dos_header) == 0)
-00401529        int16_t eax_12
-00401529        eax_12.b = widget->render_inset_dynamic
+00401511        queue_axis_aligned_textured_quad_uv(widget->texture_id, fconvert.s(fconvert.t(widget->sprite_shadow_offset) + fconvert.t(widget->texture_hit_x) - fconvert.t(var_54_1)), fconvert.s(fconvert.t(widget->sprite_shadow_offset) + fconvert.t(widget->texture_hit_y) - fconvert.t(var_54_1)), fconvert.s(fconvert.t(widget->border_edge) + fconvert.t(widget->texture_hit_width)), fconvert.s(fconvert.t(widget->texture_hit_height) + fconvert.t(widget->border_edge)), 0x1000000, color_3, 0f, 0f, 1f, 1f, 2, 0f)
+00401523        if ((widget->widget_flags & &__dos_header) != 0)
+00401523        return
+00401529        eax_14.b = widget->render_inset_dynamic
 00401531        float texture_hit_y
 00401531        float texture_hit_x
 00401531        float height_1
@@ -101,7 +102,7 @@
 00401531        float var_64_1
 00401531        float var_60_3
 00401531        float var_5c_1
-00401531        if (eax_12.b == 0)
+00401531        if (eax_14.b == 0)
 0040158c        long double x87_r7_52 = fconvert.t(widget->current_padding)
 00401592        long double temp4_1 = fconvert.t(widget->render_inset_base)
 00401592        x87_r7_52 - temp4_1
@@ -149,8 +150,9 @@
 004017eb        queue_axis_aligned_textured_quad_uv(widget->border_texture_id, x_3, y_1, var_64_1, var_64_1, 0x1000000, &widget->current_fill_color, 0f, ebx_1, var_60_3, 1f, blend_mode, 0f)
 0040181f        queue_axis_aligned_textured_quad_uv(widget->border_texture_id, texture_hit_x, y_1, width_1, var_64_1, 0x1000000, &widget->current_fill_color, var_60_3, ebx_1, ebx_1, 1f, blend_mode, 0f)
 00401859        queue_axis_aligned_textured_quad_uv(widget->border_texture_id, x_1, y_1, var_64_1, var_64_1, 0x1000000, &widget->current_fill_color, ebx_1, ebx_1, 1f, 1f, blend_mode, 0f)
-0040185e        result = g_game_base
-0040187a        if (result->border_manager.delayed_widget_active != 0 && widget == result->border_manager.delayed_widget)
+0040185e        struct GameRoot* game_base_2 = g_game_base
+0040187a        if (game_base_2->border_manager.delayed_widget_active == 0 || widget != game_base_2->border_manager.delayed_widget)
+0040187a        return
 0040188d        set_color_white(&color_2)
 004018ac        struct tColour* var_8c_2 = &color_2
 004018bb        store_color4f(&color, color_2.r, color_2.g, color_2.b, fconvert.s(fconvert.t(1f) - fconvert.t(g_game_base->border_manager.delayed_widget_progress)))
@@ -164,5 +166,5 @@
 004019cc        queue_axis_aligned_textured_quad_uv(0x63, x_1, texture_hit_y, var_54_2, height_1, 0x1000000, &color, ebx_1, var_60_3, 1f, ebx_1, 3, 0f)
 004019f9        queue_axis_aligned_textured_quad_uv(0x63, x_2, y_1, var_54_2, var_54_2, 0x1000000, &color, 0f, ebx_1, var_60_3, 1f, 3, 0f)
 00401a29        queue_axis_aligned_textured_quad_uv(0x63, texture_hit_x, y_1, width_1, var_54_2, 0x1000000, &color, var_60_3, ebx_1, ebx_1, 1f, 3, 0f)
-00401a51        return queue_axis_aligned_textured_quad_uv(0x63, x_1, y_1, var_54_2, var_54_2, 0x1000000, &color, ebx_1, ebx_1, 1f, 1f, 3, 0f)
-00401a60        return result
+00401a51        queue_axis_aligned_textured_quad_uv(0x63, x_1, y_1, var_54_2, var_54_2, 0x1000000, &color, ebx_1, ebx_1, 1f, 1f, 3, 0f)
+00401a60        return

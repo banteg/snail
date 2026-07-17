@@ -4419,8 +4419,8 @@ def test_frontend_widget_draw_owner_replay_stays_aligned() -> None:
     assert "apply_user_var_updates" in frontend_sync
     assert '"RegisterVariableSourceType"' in frontend_sync
     assert '"widget",\n        "FrontendWidget*"' in frontend_sync
-    assert "proto_owner_deferred" in frontend_sync
-    assert "stale explicit function type requires guarded recreation" in frontend_sync
+    assert "DEFERRED_PROTO_UPDATES" not in frontend_sync
+    assert "proto_owner_deferred" not in frontend_sync
     assert f'"{expected};"' in ida_frontend_sync
     assert '(0x401130, "draw_frontend_widget")' in ida_frontend_sync
 
@@ -4461,14 +4461,13 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
         encoding="utf-8"
     )
 
-    deferred = frontend_sync.split("\nDEFERRED_PROTO_UPDATES = (", 1)[1].split(
-        "\nPROTO_UPDATES = (", 1
-    )[0]
     direct = frontend_sync.split("\nPROTO_UPDATES = (", 1)[1].split(
         "\nUSER_VAR_UPDATES = (", 1
     )[0]
 
     expected = (
+        "void __thiscall initialize_exit_prompt(Exit* exit_prompt)",
+        "void __thiscall draw_frontend_widget(FrontendWidget* widget)",
         "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
         "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
         "void __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)",
@@ -4483,9 +4482,15 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
         "void __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)",
     )
     for prototype in expected:
-        assert prototype not in deferred
         assert prototype in direct
-        assert f'"{prototype};"' in ida_path_sync
+        if not prototype.startswith(
+            (
+                "void __thiscall initialize_exit_prompt",
+                "void __thiscall draw_frontend_widget",
+            )
+        ):
+            assert f'"{prototype};"' in ida_path_sync
+    assert "DEFERRED_PROTO_UPDATES" not in frontend_sync
     assert (
         '"initialize_frontend_widget",\n'
         '        "RegisterVariableSourceType",\n'

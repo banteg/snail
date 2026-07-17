@@ -118,3 +118,23 @@ function-recreation debt instead of being claimed without verification. This is
 ownership recovery only: the focused scratch remains honestly partial at
 67.28%, 694/712 instructions, prefix 3/712, with all 61 operands clean and no
 source-shape coercion.
+
+## 2026-07-17 durable Binary Ninja draw ABI
+
+After restarting the live Binary Ninja session, a rollback preview cleanly
+retyped the stale `GameRoot* __fastcall` shell as the authored
+`void __thiscall draw_frontend_widget(FrontendWidget*)` member. The direct
+replay now uses the same preview/readback/snapshot path as the other widget
+methods instead of reporting permanent recreation debt. The refreshed HLIL
+has bare early exits and side-effect-only quad calls; it no longer invents a
+shared `GameRoot* result` or returns individual queue-call results.
+
+The paired IDA refresh also carries the canonical `BorderManager` delayed
+widget, progress, and active fields through both glow branches. Its persistent
+render locals now retain float ownership for the texture-hit coordinates and
+blend mode instead of reverting to integer low-word aliases and repeated
+`unknown_000b48` casts.
+
+This is an analysis ownership correction only. The matching source remains at
+the honest 67.28%, 694/712-instruction frontier with all 61 operands clean;
+no return-shaped source dependency or register coercion was introduced.

@@ -1367,12 +1367,21 @@
         "widget->current_text_color",
         "widget->current_fill_color",
         "widget->border_edge",
-        "widget->render_inset_dynamic"
+        "widget->render_inset_dynamic",
+        "float texture_hit_y;",
+        "float texture_hit_x;",
+        "int32_t blend_mode;",
+        "g_game_base->border_manager.delayed_widget_active",
+        "g_game_base->border_manager.delayed_widget_progress",
+        "g_game_base->border_manager.delayed_widget"
       ],
       "forbidden_substrings": [
         "sub_401130",
         "int this",
         "this +",
+        "unknown_000b48",
+        "texture_hit_y_low",
+        "texture_hit_x_low",
         "return result",
         "final text draw",
         "__asm",
@@ -1383,21 +1392,60 @@
       "name": "bn_frontend_widget_draw_receiver_and_manager_owner",
       "artifact": "analysis/decompile/binja/functions/00401130-draw_frontend_widget.c",
       "required_substrings": [
+        "00401164        return",
         "widget->widget_flags",
         "widget->current_text_color",
         "widget->current_fill_color",
         "widget->border_edge",
         "border_manager.delayed_widget_active",
         "border_manager.delayed_widget_progress",
-        "border_manager.delayed_widget"
+        "border_manager.delayed_widget",
+        "00401a60        return"
       ],
       "forbidden_substrings": [
         "arg1",
         "*(widget +",
+        "struct GameRoot* result =",
+        "return queue_axis_aligned_textured_quad_uv",
         "data_4df904",
         "0x440ec",
         "0x440f0",
         "0x440f8"
+      ]
+    },
+    {
+      "name": "bn_frontend_exit_prompt_void_owner",
+      "artifact": "analysis/decompile/binja/functions/004060d0-initialize_exit_prompt.c",
+      "required_substrings": [
+        "hide_all_borders(&g_game_base->border_manager)",
+        "switch (exit_prompt->state - 2)",
+        "exit_prompt->prompt_title",
+        "exit_prompt->yes_button",
+        "exit_prompt->no_button",
+        "004067b0        return"
+      ],
+      "forbidden_substrings": [
+        "exit_controller",
+        "struct GameRoot* result",
+        "return initialize_frontend_widget",
+        "hide_all_borders((int32_t*)"
+      ]
+    },
+    {
+      "name": "ida_frontend_exit_prompt_void_owner",
+      "artifact": "analysis/decompile/ida/functions/004060d0-initialize_exit_prompt.c",
+      "required_substrings": [
+        "void __thiscall initialize_exit_prompt(Exit *exit_controller)",
+        "hide_all_borders(&g_game_base->border_manager)",
+        "exit_controller->prompt_title",
+        "exit_controller->yes_button",
+        "exit_controller->no_button"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall initialize_exit_prompt",
+        "hide_all_borders((int *)",
+        "return initialize_frontend_widget",
+        "sub_4060D0"
       ]
     },
     {

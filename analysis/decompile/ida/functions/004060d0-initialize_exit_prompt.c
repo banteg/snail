@@ -45,7 +45,7 @@ void __thiscall initialize_exit_prompt(Exit *exit_controller)
   Color4f v39; // [esp+124h] [ebp-20h] BYREF
   Color4f v40; // [esp+134h] [ebp-10h] BYREF
 
-  hide_all_borders((int *)&g_game_base->border_manager);
+  hide_all_borders(&g_game_base->border_manager);
   switch ( exit_controller->state )
   {
     case 2:

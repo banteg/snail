@@ -49,3 +49,7 @@
   ABIs lets Binary Ninja retain the exact void `Exit*` initializer prototype.
   The refreshed artifact names the 0x1c-byte receiver and its state, prompt-y,
   and three widget fields without borrowing the subgame Completion owner.
+- 2026-07-17 replay cleanup: the live prototype remains the exact void
+  `Exit*` member across restart and readback, so it now travels through the
+  ordinary previewed direct-prototype lane rather than the obsolete deferred
+  list. The exact 441/441 matching body is unchanged.
