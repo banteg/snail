@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
+      "name": "update_subgame",
+      "address": "0x438b90"
     }
   ],
-  "health_check_count": 485,
+  "health_check_count": 486,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

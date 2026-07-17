@@ -49,7 +49,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
   uint8_t v43; // al
   int32_t v44; // eax
   char *v45; // eax
-  char *v46; // eax
+  TimeTrialRouteRecordCursor *time_trial_route_cursor; // eax
   char *v47; // eax
   int32_t total_score; // eax
   FrontendWidget *bottom_score_widget; // ecx
@@ -593,10 +593,10 @@ LABEL_209:
       {
         v45 = format_time_trial_string(&game->time_trial, &game->player.stopwatch);
         rstrcpy_checked_ascii((char *)&game->top_score_widget->text_buffer, v45);
-        v46 = (char *)game + 129728 * game->level_mode_arg;
-        if ( *((_DWORD *)v46 + 2429012) == 1 )
+        time_trial_route_cursor = (TimeTrialRouteRecordCursor *)((char *)game + 129728 * game->level_mode_arg);
+        if ( time_trial_route_cursor->record.active == 1 )
         {
-          v47 = format_time_trial_string(&game->time_trial, (Time *)(v46 + 9716056));
+          v47 = format_time_trial_string(&game->time_trial, (Time *)&time_trial_route_cursor->record.score_or_time);
           rstrcpy_checked_ascii((char *)&game->bottom_score_widget->text_buffer, v47);
           goto LABEL_214;
         }

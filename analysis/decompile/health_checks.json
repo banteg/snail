@@ -3668,7 +3668,10 @@
         "runtime_cell_anchor->previous_lane_same_row.tile_id",
         "runtime_cell_anchor->next_lane_same_row.tile_id",
         "runtime_cell_anchor->projected_row_six_ahead_same_lane",
-        "game->time_trial"
+        "game->time_trial",
+        "struct TimeTrialRouteRecordCursor* time_trial_route_cursor",
+        "time_trial_route_cursor->record.active",
+        "&time_trial_route_cursor->record.score_or_time"
       ],
       "forbidden_substrings": [
         "struct Game*",
@@ -3677,6 +3680,9 @@
         "data_5cc",
         "edi_1 + 0x5cc",
         "edi_3 + 0x3bf",
+        "void* eax_98 = game->level_mode_arg * 0x1fac0 + game",
+        "*(eax_98 + 0x944150)",
+        "eax_98 + 0x944158",
         "__asm",
         "_ET1"
       ],
@@ -3701,7 +3707,10 @@
         "runtime_cell_anchor->previous_lane_same_row.tile_id",
         "runtime_cell_anchor->next_lane_same_row.tile_id",
         "runtime_cell_anchor->projected_row_six_ahead_same_lane",
-        "game->time_trial"
+        "game->time_trial",
+        "TimeTrialRouteRecordCursor *time_trial_route_cursor",
+        "time_trial_route_cursor->record.active",
+        "&time_trial_route_cursor->record.score_or_time"
       ],
       "forbidden_substrings": [
         "sub_438B90(int this)",
@@ -3715,6 +3724,9 @@
         "3930884",
         "982707",
         "char *v23",
+        "char *v46; // eax",
+        "*((_DWORD *)v46 + 2429012)",
+        "v46 + 9716056",
         "__asm",
         "_ET1"
       ]

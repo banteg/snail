@@ -1750,6 +1750,15 @@ typedef struct SubSolution {
     int32_t unknown_1fabc;
 } SubSolution;
 
+/* Analysis-only SubgameRuntime-relative view for update_subgame's native
+ * `game + route_index * sizeof(SubSolution)` cursor. The prefix aliases the
+ * enclosing runtime and the terminal field aliases one record owned by
+ * SubHighScore::time_trial_route_records; this is not additional storage. */
+typedef struct TimeTrialRouteRecordCursor {
+    uint8_t subgame_prefix[0x944150];
+    SubSolution record;
+} TimeTrialRouteRecordCursor;
+
 /* Stable prefix of the variable cRSubSolutionHeader record: byte_count is
  * 0x88 + replay_sample_count * 5 for two int16 lanes and one byte lane. */
 typedef struct CompactHighScoreRecord {

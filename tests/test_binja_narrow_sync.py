@@ -2835,16 +2835,22 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         in analysis_path_header
     )
     assert "TrackRowCell projected_row_six_ahead_same_lane;" in analysis_path_header
+    assert "typedef struct TimeTrialRouteRecordCursor" in analysis_path_header
+    assert "uint8_t subgame_prefix[0x944150];" in analysis_path_header
+    assert "SubSolution record;" in analysis_path_header
+    assert "} TimeTrialRouteRecordCursor;" in analysis_path_header
 
     assert "UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES" in binja_source
     for identity in (
         '"RegisterVariableSourceType",\n        1188,\n        73,',
         '"RegisterVariableSourceType",\n        1384,\n        73,',
+        '"RegisterVariableSourceType",\n        3386,\n        66,',
     ):
         assert identity in binja_source
     for name, type_name in (
         ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
+        ("time_trial_route_cursor", "TimeTrialRouteRecordCursor*"),
     ):
         assert f'"{name}"' in binja_source
         assert f'"{type_name}"' in binja_source
@@ -2908,7 +2914,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "(0x434C0C, 1, 0x5CCAC8)" in ida_path_sync
     assert "fringe_runtime_row_offset_operands = _normalize_root_offset_operands(" in ida_path_sync
     assert "UPDATE_SUBGAME_RUNTIME_LVAR_SPECS" in ida_path_sync
-    for definition_address in ("0x439035", "0x439038", "0x4390F9"):
+    for definition_address in ("0x439035", "0x439038", "0x4390F9", "0x4398CB"):
         assert definition_address in ida_path_sync
     for name, declaration in (
         ("runtime_row_anchor", "RuntimeRowStrideAnchor *runtime_row_anchor;"),
@@ -2917,6 +2923,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
             "RuntimeRowStrideAnchor *runtime_row_anchor_saved;",
         ),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor *runtime_cell_anchor;"),
+        (
+            "time_trial_route_cursor",
+            "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
+        ),
     ):
         assert f'"{name}"' in ida_path_sync
         assert f'"{declaration}"' in ida_path_sync

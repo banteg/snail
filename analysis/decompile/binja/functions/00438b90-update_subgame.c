@@ -404,12 +404,12 @@
 00439983        return
 00439899        format_time_trial_string(&game->time_trial, &game->player.stopwatch)
 004398ac        rstrcpy_checked_ascii(&game->top_score_widget->text_buffer, 0x751478)
-004398ca        void* eax_98 = game->level_mode_arg * 0x1fac0 + game
-004398d3        if (*(eax_98 + 0x944150) != 1)
+004398ca        struct TimeTrialRouteRecordCursor* time_trial_route_cursor = game->level_mode_arg * 0x1fac0 + game
+004398d3        if (time_trial_route_cursor->record.active != 1)
 0043990d        hide_border_init(game->bottom_score_widget)
 00439914        update_subgame_camera(game)
 00439920        return
-004398dd        format_time_trial_string(&game->time_trial, eax_98 + 0x944158)
+004398dd        format_time_trial_string(&game->time_trial, &time_trial_route_cursor->record.score_or_time)
 004398f0        rstrcpy_checked_ascii(&game->bottom_score_widget->text_buffer, 0x751478)
 004398fa        update_subgame_camera(game)
 00439906        return

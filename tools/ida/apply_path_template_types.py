@@ -169,6 +169,12 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
         0x4390F9,
         None,
     ),
+    (
+        "time_trial_route_cursor",
+        "TimeTrialRouteRecordCursor *time_trial_route_cursor;",
+        0x4398CB,
+        None,
+    ),
 )
 
 REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS = (

@@ -233,6 +233,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
+    "TimeTrialRouteRecordCursor",
     "CompactHighScoreRecord",
     "SubTracks",
     "SlugVoiceManager",
@@ -787,8 +788,10 @@ CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
 
 # The main subgame tick carries the same containing-owner bases while scanning
 # one runtime row and its eight cells. EDI's two disjoint MLIL identities are
-# already split cleanly by Binary Ninja, so pin only those exact lifetimes and
-# leave the surrounding row/cell index arithmetic as native integers.
+# already split cleanly by Binary Ninja. The terminal time-trial HUD path also
+# retains `game + route_index * sizeof(SubSolution)` as a native EAX cursor;
+# type that exact lifetime as an alias of the SubHighScore-owned route record.
+# Leave the surrounding row/cell/record index arithmetic as native integers.
 UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
     (
         "update_subgame",
@@ -805,6 +808,14 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
         73,
         "runtime_cell_anchor",
         "RuntimeCellStrideAnchor*",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        3386,
+        66,
+        "time_trial_route_cursor",
+        "TimeTrialRouteRecordCursor*",
     ),
 )
 

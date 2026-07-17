@@ -416,3 +416,20 @@ identity mismatches.
   justified by the metadata pass. The honest focused baseline remains 79.75%,
   1036 candidate versus 1033 target instructions, 117 clean masked operands,
   and the same two real jump-table target-identity mismatches.
+
+## 2026-07-17 time-trial route-record cursor ownership
+
+The mode-4 HUD path retains the native `game + level_mode_arg * 0x1fac0`
+pointer before reading the persistent route record. Binary Ninja's exact EAX
+identity is `RegisterVariableSourceType / 3386 / 66`; IDA defines the same
+register lifetime at `0x4398cb`. Both now read back as
+`TimeTrialRouteRecordCursor *` and render `record.active` plus the record's
+score/time union instead of raw `+0x944150/+0x944158` loads.
+
+The cursor's prefix aliases the enclosing `SubgameRuntime`; its terminal
+`SubSolution` is the record already owned by
+`SubHighScore::time_trial_route_records[level_mode_arg]`. It is not a second
+record bank or a new allocation. The matching source already expresses that
+primary owner, so no source edit is justified and the honest baseline remains
+79.75%, 1036/1033 instructions, prefix 9/1033, 117 clean masked operands, and
+the same two jump-table target-identity mismatches.
