@@ -50,3 +50,13 @@ operands and one mismatch. The remaining audit issue pairs the native first mesh
 allocation call with the candidate's second call because the still-shorter
 sample-orientation region shifts structural alignment; it is kept visible
 rather than hidden with a dummy relocation or reordered behavior.
+
+2026-07-17 live owner-ABI closure: the native tail is `retn 0x18`, the iOS
+counterpart is `cRPath::BuildDip(float, int, bool, char*, char*)`, and the
+Windows caller supplies the additional final cap-texture argument. Binary
+Ninja's stale five-parameter view had shifted the first texture onto the mode
+slot, retained a user-authored `char*` at stack `+0x14`, and omitted `+0x18`.
+The guarded recreation now owns the exact `Path*` receiver and six stack
+arguments through `cap_texture`; direct readback confirms storages `+4..+24`.
+This is analysis-only: focused Wibo remains 34.74% (600/655), with 26 clean
+masked operands and no unresolved or mismatched operands.

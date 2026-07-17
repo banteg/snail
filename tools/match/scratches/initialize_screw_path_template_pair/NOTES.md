@@ -52,3 +52,13 @@ calls fell to 26.77% (630/685) with one call mismatch. A mutating five-sample
 departure loop remained audit-clean but regressed to 39.72% (619/685). These
 forms are not retained until the surrounding orientation lifetimes explain the
 native schedule as a whole.
+
+2026-07-17 live owner-ABI closure: the native tail is `retn 0x18`, the iOS
+counterpart is `cRPath::BuildScrew(int, int, bool, char*, char*)`, and the
+Windows caller supplies the additional final cap-texture argument. Binary
+Ninja's stale five-parameter view had shifted the first texture onto the mode
+slot, retained a user-authored `char*` at stack `+0x14`, and omitted `+0x18`.
+The guarded recreation now owns the exact `Path*` receiver and six stack
+arguments through `cap_texture`; direct readback confirms storages `+4..+24`.
+This is analysis-only: focused Wibo remains 39.88% (619/685), with 32 clean
+masked operands and no unresolved or mismatched operands.

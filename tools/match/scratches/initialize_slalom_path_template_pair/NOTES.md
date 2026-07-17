@@ -81,3 +81,14 @@ fuzzy alignment.
 Z conversion into an expanded direct initializer regressed the clean result to
 28.29% (626/696) and 26 clean operands. The inline helper remains until the
 surrounding sample-pointer lifetime explains that schedule.
+
+2026-07-17 live owner-ABI closure: the native tail is `retn 0x18`, the iOS
+counterpart is `cRPath::BuildSlalom(int, int, bool, char*, char*)`, and the
+Windows caller supplies the additional final cap-texture argument. Binary
+Ninja's stale five-parameter view had also made the width unsigned, shifted the
+first texture onto the mode slot, retained a user-authored `char*` at stack
+`+0x14`, and omitted `+0x18`. The guarded recreation now owns the exact
+`Path*` receiver and six stack arguments through `cap_texture`; direct readback
+confirms signed width and storages `+4..+24`. This is analysis-only: focused
+Wibo remains 28.42% (627/696), with 27 clean masked operands and no unresolved
+or mismatched operands.

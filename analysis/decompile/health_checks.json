@@ -6084,6 +6084,57 @@
       ]
     },
     {
+      "name": "bn_dip_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0041e440-initialize_dip_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_CAGE2",
+        "self->width_cells = width_cells_",
+        "fconvert.t(curve_source)",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_screw_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0041eda0-initialize_screw_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_SCREW",
+        "self->width_cells = width_cells_",
+        "self->segment_count = curve_source + 8",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_slalom_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0041f760-initialize_slalom_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_SLALOM",
+        "self->width_cells = width_cells_",
+        "int32_t width_cells_1 = curve_source + 4",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "arg3",
+        "return finalize_path_template"
+      ]
+    },
+    {
       "name": "bn_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
@@ -6121,6 +6172,20 @@
       "forbidden_substrings": [
         "initialize_hump_path_template_pair(&game->subgame.path_pairs[0x10].primary.bod.bod.vtable",
         "initialize_dump_path_template_pair(&game->subgame.path_pairs[0x11].primary.bod.bod.vtable"
+      ]
+    },
+    {
+      "name": "bn_dip_screw_slalom_path_constructor_callsite_abis",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_regexes": [
+        "initialize_dip_path_template_pair\\(&game->subgame\\.path_pairs\\[0x14\\]\\.primary, 4f, 2, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_screw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x15\\]\\.primary, 0x18, 3, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_slalom_path_template_pair\\(&game->subgame\\.path_pairs\\[0x16\\]\\.primary, 0x20, 4, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+      ],
+      "forbidden_substrings": [
+        "initialize_dip_path_template_pair(&game->subgame.path_pairs[0x14].primary.bod.bod.vtable",
+        "initialize_screw_path_template_pair(&game->subgame.path_pairs[0x15].primary.bod.bod.vtable",
+        "initialize_slalom_path_template_pair(&game->subgame.path_pairs[0x16].primary.bod.bod.vtable"
       ]
     },
     {

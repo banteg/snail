@@ -866,3 +866,20 @@ stores through `banners.slots[i].owner_game`; Binary Ninja's native
 root-relative induction remains intentionally strength-reduced, while exact
 struct readback preserves the same owner. This is analysis-only and leaves the
 honest initializer frontier unchanged.
+
+## 2026-07-17 Dip, Screw, and Slalom constructor ABI closure
+
+The three adjacent constructors now share their proven Windows owner contract:
+`Path*`, the portable curve/width/mode prefix, two surface textures, and the
+Windows-only final cap-texture slot. Each native callee returns with
+`retn 0x18`; the iOS Path.o symbols independently preserve the first five
+stack-argument types. Guarded live recreation replaces the stale shifted
+five-parameter prototypes without inventing use for the two arguments that
+these Windows bodies ignore.
+
+The refreshed initializer now shows all seven call operands at path-pair slots
+`0x14`, `0x15`, and `0x16`, while the three callee artifacts expose the real
+`Path` fields and void finalizer flow. Regex-backed health checks pin call
+arity without depending on Binary Ninja's volatile automatic local names.
+This is analysis-only; all three focused matcher frontiers and clean masked
+operand audits are unchanged.
