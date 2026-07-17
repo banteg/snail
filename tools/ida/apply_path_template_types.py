@@ -27,6 +27,9 @@ TRUSTED_NAMES = [
     (0x404580, "border_mouse_test"),
     (0x408040, "initialize_noop_renderable_bod"),
     (0x408060, "initialize_runtime_pools_and_path_template_bank"),
+    (0x4084B0, "initialize_track_speedup_runtime"),
+    (0x4084D0, "initialize_track_jetpack_pickup_runtime"),
+    (0x408510, "initialize_track_health_pickup_runtime"),
     (0x408590, "initialize_track_row_runtime"),
     (0x408650, "initialize_fringe_object"),
     (0x4086D0, "initialize_player_presentation_controller"),
@@ -35,6 +38,10 @@ TRUSTED_NAMES = [
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
     (0x4413F0, "apply_damage_gauge_delta"),
+    (0x442500, "initialize_vapour"),
+    (0x442540, "reset_vapour"),
+    (0x442560, "add_vapour_point"),
+    (0x4425F0, "update_vapour"),
     (0x447090, "initialize_fringe_manager"),
     (0x4470A0, "allocate_fringe_object"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
@@ -67,6 +74,10 @@ TRUSTED_NAMES = [
     (0x453467, "d3dx_create_texture_from_file"),
     (0x4AC5C8, "g_default_tip_message"),
     (0x4972B0, "g_noop_runtime_callback_table"),
+    (0x497314, "g_sub_speed_up_vtable"),
+    (0x497318, "g_jet_pack_vtable"),
+    (0x49731C, "g_vapour_vtable"),
+    (0x497320, "g_sub_health_vtable"),
     (0x497330, "g_row_model_vtable"),
     (0x497344, "g_fringe_vtable"),
     (0x497354, "g_player_presentation_noop_vtable"),
@@ -81,6 +92,10 @@ TRUSTED_DATA_DECLARATIONS = [
         "g_noop_runtime_callback_table",
         "void *g_noop_runtime_callback_table;",
     ),
+    (0x497314, "g_sub_speed_up_vtable", "void *g_sub_speed_up_vtable;"),
+    (0x497318, "g_jet_pack_vtable", "void *g_jet_pack_vtable;"),
+    (0x49731C, "g_vapour_vtable", "void *g_vapour_vtable;"),
+    (0x497320, "g_sub_health_vtable", "void *g_sub_health_vtable;"),
     (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
     (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
 ]
@@ -91,6 +106,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x407B60,  # construct_game_runtime
     0x408040,  # initialize_noop_renderable_bod
     0x408060,  # initialize_runtime_pools_and_path_template_bank
+    0x4084B0,  # initialize_track_speedup_runtime
+    0x4084D0,  # initialize_track_jetpack_pickup_runtime
+    0x408510,  # initialize_track_health_pickup_runtime
     0x408590,  # initialize_track_row_runtime
     0x408650,  # initialize_fringe_object
     0x408670,  # initialize_click_start_controller_runtime
@@ -114,10 +132,17 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
     0x43DF10,  # spawn_track_ring_or_special_effect
+    0x43ECC0,  # update_track_health_pickup
+    0x43EE50,  # update_track_speedup
+    0x43EFB0,  # update_track_jetpack_pickup
     0x440910,  # remove_subgame_bods
     0x4417D0,  # update_sub_lazer_projectile
     0x442170,  # initialize_click_start
     0x442290,  # update_click_start
+    0x442500,  # initialize_vapour
+    0x442540,  # reset_vapour
+    0x442560,  # add_vapour_point
+    0x4425F0,  # update_vapour
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x4444B0,  # project_position_onto_track_attachment
@@ -256,6 +281,30 @@ SPAWN_TRACK_RING_LVAR_SPECS = (
     ("active_head", "BodNode **active_head;", 0x43E400, None),
     ("active_first", "BodNode *active_first;", 0x43E405, None),
     ("promoted_head", "BodNode *promoted_head;", 0x43E424, None),
+)
+
+SPAWN_TRACK_HEALTH_LVAR_SPECS = (
+    (
+        "health_cursor",
+        "SubHealthSlotCursor *health_cursor;",
+        0x43D6FD,
+        None,
+    ),
+    ("health_node", "BodNode *health_node;", 0x43D749, None),
+    ("sprite", "Sprite *sprite;", 0x43D7C1, None),
+)
+
+SPAWN_TRACK_JETPACK_LVAR_SPECS = (
+    (
+        "jetpack_cursor",
+        "JetPackSlotCursor *jetpack_cursor;",
+        0x43D8CE,
+        None,
+    ),
+    ("position_x", "float *position_x;", 0x43D8F0, None),
+    ("jetpack_node", "BodNode *jetpack_node;", 0x43D95A, None),
+    ("sprite", "Sprite *sprite;", 0x43D9CC, None),
+    ("sprite_position", "Vec3 *sprite_position;", 0x43DA1A, None),
 )
 
 COLLISION_POOL_CURSOR_LVAR_SPECS = (
@@ -1935,6 +1984,20 @@ def _sync_spawn_track_ring_lvars() -> dict[str, object]:
     )
 
 
+def _sync_spawn_track_health_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "spawn_track_health_pickup",
+        SPAWN_TRACK_HEALTH_LVAR_SPECS,
+    )
+
+
+def _sync_spawn_track_jetpack_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "spawn_track_jetpack_pickup",
+        SPAWN_TRACK_JETPACK_LVAR_SPECS,
+    )
+
+
 def _sync_collision_pool_cursor_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "handle_subgoldy_collisions",
@@ -2411,6 +2474,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ownership_lvars": spawn_track_ring_lvars,
             }
         )
+    spawn_track_health_lvars = _sync_spawn_track_health_lvars()
+    if spawn_track_health_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "spawn_track_health_pickup",
+                "ownership_lvars": spawn_track_health_lvars,
+            }
+        )
+    spawn_track_jetpack_lvars = _sync_spawn_track_jetpack_lvars()
+    if spawn_track_jetpack_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "spawn_track_jetpack_pickup",
+                "ownership_lvars": spawn_track_jetpack_lvars,
+            }
+        )
     collision_pool_cursor_lvars = _sync_collision_pool_cursor_lvars()
     if collision_pool_cursor_lvars.get("status") == "failed":
         failed.append(
@@ -2514,6 +2593,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
                 "remove_subgame_bods_cursor_lvars": remove_subgame_bods_cursor_lvars,
                 "spawn_track_ring_lvars": spawn_track_ring_lvars,
+                "spawn_track_health_lvars": spawn_track_health_lvars,
+                "spawn_track_jetpack_lvars": spawn_track_jetpack_lvars,
                 "collision_pool_cursor_lvars": collision_pool_cursor_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,

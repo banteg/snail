@@ -8,12 +8,10 @@ extern void* g_vapour_vtable;               // off_49731c / data_49731c
 JetPack* JetPack::initialize_track_jetpack_pickup_runtime()
 {
     initialize_bod_base();
-    RenderableBod* vapour = (RenderableBod*)&vapour_a;
-    vapour->initialize_renderable_bod();
-    vapour->vtable = &g_vapour_vtable;
-    vapour = (RenderableBod*)&vapour_b;
-    vapour->initialize_renderable_bod();
-    vapour->vtable = &g_vapour_vtable;
+    vapour_a.initialize_renderable_bod();
+    vapour_a.vtable = &g_vapour_vtable;
+    vapour_b.initialize_renderable_bod();
+    vapour_b.vtable = &g_vapour_vtable;
     vtable = &g_jet_pack_vtable;
     return this;
 }

@@ -54,3 +54,12 @@ The remaining Windows source shape is now recovered:
 
 Focused Windows result: **100.00%**, `227/227` candidate/target instructions,
 full `227/227` prefix, and no masked operands.
+
+## 2026-07-17 inherited render owner
+
+The complete `RenderableBod` prefix proven by the JetPack constructor now
+owns the callback/list flags and output `Object*` consumed here. The source
+uses inherited `object` directly instead of the duplicate `owner +0x24` view;
+the callback remains authored `cRVapour::AI()` while the matcher models its
+Windows table explicitly rather than adding a second compiler-generated
+vptr. Focused output remains exact at 227/227 instructions.

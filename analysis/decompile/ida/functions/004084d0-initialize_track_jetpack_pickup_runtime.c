@@ -2,15 +2,14 @@
 /* function: initialize_track_jetpack_pickup_runtime @ 0x4084d0 */
 /* selector: initialize_track_jetpack_pickup_runtime */
 
-// Constructs the single jetpack-pickup runtime record by seeding its shared bod header plus two embedded renderable bodies. `spawn_track_jetpack_pickup` uses the resulting `game->jetpack_pickup` lane at `0x355e64`, whose `0x19c` footprint matches the native `cRJetPack` size ledger.
-_DWORD *__thiscall sub_4084D0(_DWORD *this)
+// Exact Windows constructor for the authored `JetPack` (`cRJetPack` cross-port) singleton: constructs its inherited BOD, constructs two complete embedded 0x94-byte `cRVapour` children, and installs the table whose entry is `update_track_jetpack_pickup`. The complete 0x19c extent exactly matches the native `Size of cRJetPack` ledger.
+JetPack *__thiscall initialize_track_jetpack_pickup_runtime(JetPack *jetpack)
 {
-  initialize_bod_base(this);
-  initialize_renderable_bod(this + 29);
-  *(this + 29) = &off_49731C;
-  initialize_renderable_bod(this + 66);
-  *(this + 66) = &off_49731C;
-  *this = &off_497318;
-  return this;
+  initialize_bod_base(&jetpack->bod);
+  initialize_renderable_bod(&jetpack->vapour_a.body);
+  jetpack->vapour_a.body.bod.bod.vtable = &g_vapour_vtable;
+  initialize_renderable_bod(&jetpack->vapour_b.body);
+  jetpack->vapour_b.body.bod.bod.vtable = &g_vapour_vtable;
+  jetpack->bod.bod.vtable = &g_jet_pack_vtable;
+  return jetpack;
 }
-

@@ -3,10 +3,9 @@
 /* selector: initialize_track_speedup_runtime */
 
 // Exact Windows constructor for the authored `SubSpeedUp` (`cRSubSpeedUp` cross-port) singleton: constructs the inherited renderable BOD and installs the table whose entry is the exact `update_track_speedup`. Its 0xb4 extent exactly matches the native `Size of cRSubSpeedUp` ledger.
-_DWORD *__thiscall initialize_track_speedup_runtime(_DWORD *this)
+SubSpeedUp *__thiscall initialize_track_speedup_runtime(SubSpeedUp *speedup)
 {
-  initialize_renderable_bod(this);
-  *this = g_track_speedup_vtable;
-  return this;
+  initialize_renderable_bod(&speedup->body);
+  speedup->body.bod.bod.vtable = &g_sub_speed_up_vtable;
+  return speedup;
 }
-

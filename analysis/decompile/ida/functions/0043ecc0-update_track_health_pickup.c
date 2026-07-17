@@ -2,103 +2,100 @@
 /* function: update_track_health_pickup @ 0x43ecc0 */
 /* selector: update_track_health_pickup */
 
-// Type-sync note: `this` is TrackHealthPickup*. The first gate is
-// `owner_game +0x09` (`TrackHealthPickup::owner_game` at +0x44), now named
-// `subgame_pause_gate`, not a source/visibility cell. The row source cell
-// remains the separate +0x68 field.
-void __thiscall update_track_health_pickup(int this)
+// Exact `cRSubHealth::AI()`: runs one live `SubHealth` through bobbing and teardown states, inlining the shared `cLinkedList<cRBod>::Remove` operation in both removal arms. The Windows constructor table at 0x497320 points directly here, while Android and iOS retain the authored member.
+void __thiscall update_track_health_pickup(SubHealth *pickup)
 {
-  int v2; // eax
-  int v3; // eax
-  int v4; // eax
-  char *v5; // ecx
-  int v6; // eax
-  int v7; // eax
-  int v8; // eax
-  int v9; // eax
-  int v10; // eax
-  int v11; // eax
-  int v12; // ecx
+  TrackPickupState state; // eax
+  __int32 v3; // eax
+  uint32_t list_flags; // eax
+  BodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v8; // eax
+  struct BodNode *v9; // eax
+  struct BodNode *v10; // eax
+  uint32_t v11; // eax
+  Sprite *sprite; // ecx
   double v13; // st7
   unsigned __int8 v15; // c0
   unsigned __int8 v16; // c3
   float v17; // [esp+0h] [ebp-Ch]
 
-  if ( !*(_BYTE *)(*(_DWORD *)(this + 68) + 9) )
+  if ( !pickup->owner_game->subgame_pause_gate )
   {
-    v2 = *(_DWORD *)(this + 56);
-    if ( v2 )
+    state = pickup->state;
+    if ( state )
     {
-      v3 = v2 - 1;
+      v3 = state - 1;
       if ( v3 )
       {
         if ( v3 == 1 )
         {
-          v4 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 56) = 0;
-          v5 = (char *)MEMORY[0x4DF904] + 1448;
-          if ( (v4 & 0x200) == 0 )
+          list_flags = pickup->bod.bod.list_flags;
+          pickup->state = TRACK_PICKUP_STATE_INACTIVE;
+          p_active_bod_list = &g_game_base->active_bod_list;
+          if ( (list_flags & 0x200) == 0 )
           {
 LABEL_6:
             report_errorf(aListRemove);
-            kill_sprite(*(_DWORD *)(this + 100));
+            kill_sprite((int)pickup->sprite);
             return;
           }
-          if ( (v4 & 0x40) != 0 )
+          if ( (list_flags & 0x40) != 0 )
             goto LABEL_8;
-          v6 = *(_DWORD *)(this + 12);
-          if ( v6 )
-            *(_DWORD *)(v6 + 8) = *(_DWORD *)(this + 8);
-          v7 = *(_DWORD *)(this + 8);
-          if ( v7 )
+          list_next = pickup->bod.bod.list_next;
+          if ( list_next )
+            list_next->list_prev = pickup->bod.bod.list_prev;
+          list_prev = pickup->bod.bod.list_prev;
+          if ( list_prev )
           {
-            *(_DWORD *)(v7 + 12) = *(_DWORD *)(this + 12);
+            list_prev->list_next = pickup->bod.bod.list_next;
 LABEL_21:
-            *(_DWORD *)(this + 12) = *((_DWORD *)v5 + 2);
-            *((_DWORD *)v5 + 2) = this;
-            v11 = *(_DWORD *)(this + 4);
-            v12 = *(_DWORD *)(this + 100);
+            pickup->bod.bod.list_next = p_active_bod_list->free_top;
+            p_active_bod_list->free_top = &pickup->bod.bod;
+            v11 = pickup->bod.bod.list_flags;
+            sprite = pickup->sprite;
             BYTE1(v11) &= ~2u;
-            *(_DWORD *)(this + 4) = v11;
-            kill_sprite(v12);
+            pickup->bod.bod.list_flags = v11;
+            kill_sprite((int)sprite);
             return;
           }
           goto LABEL_20;
         }
       }
-      else if ( *(float *)(this + 24) < (double)*(float *)(*(_DWORD *)(this + 60) + 10624) )
+      else if ( pickup->bod.position.z < (double)pickup->owner->interaction_max_z )
       {
-        v8 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 56) = 0;
-        v5 = (char *)MEMORY[0x4DF904] + 1448;
+        v8 = pickup->bod.bod.list_flags;
+        pickup->state = TRACK_PICKUP_STATE_INACTIVE;
+        p_active_bod_list = &g_game_base->active_bod_list;
         if ( (v8 & 0x200) == 0 )
           goto LABEL_6;
         if ( (v8 & 0x40) != 0 )
         {
 LABEL_8:
           report_errorf(aListRemoveNext);
-          kill_sprite(*(_DWORD *)(this + 100));
+          kill_sprite((int)pickup->sprite);
           return;
         }
-        v9 = *(_DWORD *)(this + 12);
+        v9 = pickup->bod.bod.list_next;
         if ( v9 )
-          *(_DWORD *)(v9 + 8) = *(_DWORD *)(this + 8);
-        v10 = *(_DWORD *)(this + 8);
+          v9->list_prev = pickup->bod.bod.list_prev;
+        v10 = pickup->bod.bod.list_prev;
         if ( v10 )
         {
-          *(_DWORD *)(v10 + 12) = *(_DWORD *)(this + 12);
+          v10->list_next = pickup->bod.bod.list_next;
           goto LABEL_21;
         }
 LABEL_20:
-        *((_DWORD *)v5 + 1) = *(_DWORD *)(this + 12);
+        p_active_bod_list->first = pickup->bod.bod.list_next;
         goto LABEL_21;
       }
-      v13 = *(float *)(this + 112) + *(float *)(this + 108);
-      *(float *)(this + 108) = v13;
+      v13 = pickup->bob_phase_step + pickup->bob_phase;
+      pickup->bob_phase = v13;
       if ( !(v15 | v16) )
-        *(float *)(this + 108) = v13 - 1.0;
-      v17 = *(float *)(this + 108) * 6.2831855;
-      *(float *)(*(_DWORD *)(this + 100) + 76) = (sine(v17) + 1.0) * 0.30000001 + *(float *)(this + 20);
+        pickup->bob_phase = v13 - 1.0;
+      v17 = pickup->bob_phase * 6.2831855;
+      pickup->sprite->position.y = (sine(v17) + 1.0) * 0.30000001 + pickup->bod.position.y;
     }
   }
 }

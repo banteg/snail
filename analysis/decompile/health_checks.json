@@ -1047,7 +1047,7 @@
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.position.z",
-        "health_cursor->health.world_position.z",
+        "health_cursor->health.bod.position.z",
         "ring_cursor->ring.world_position.z"
       ],
       "forbidden_substrings": [
@@ -1078,7 +1078,7 @@
         "sub_lazer_cursor->sub_lazer.body.transform.position.z",
         "slug_cursor->slug.body.transform.position.z",
         "parcel_cursor->parcel.bod.position.z",
-        "health_cursor->health.world_position.z",
+        "health_cursor->health.bod.position.z",
         "ring_cursor->ring.body.transform.position.z"
       ],
       "forbidden_substrings": [
@@ -4128,7 +4128,7 @@
       "required_substrings": [
         "&game->runtime_cells",
         "&game->runtime_rows[0].row_model.body.bod.bod.list_next",
-        "&game->health_pickups[0].list_next",
+        "&game->health_pickups[0].bod.bod.list_next",
         "&game->ring_effects.slots[0].bod.list_next",
         "game->player.body.bod.bod.list_flags",
         "struct TrackRowCell* runtime_cell_cursor",
@@ -4161,7 +4161,7 @@
         "void __thiscall remove_subgame_bods(SubgameRuntime *game)",
         "game->runtime_cells[0]",
         "remove_track_render_cache_bods(&game->segment_cache)",
-        "&game->health_pickups[0].bod.list_next",
+        "&game->health_pickups[0].bod.bod.list_next",
         "&game->ring_effects.slots[0].body.bod.bod.list_next",
         "game->player.body.bod.bod.list_flags",
         "TrackRowCell *runtime_cell_cursor",
@@ -5224,6 +5224,11 @@
       "required_substrings": [
         "&game->health_pickups[0].state",
         "TRACK_PICKUP_STATE_INACTIVE",
+        "struct SubHealthSlotCursor* health_cursor",
+        "health_cursor->health.state = TRACK_PICKUP_STATE_ACTIVE",
+        "health_cursor->health.bod.position",
+        "health_cursor->health.sprite",
+        "health_cursor->health.source_cell",
         "cell_1->anchor_position",
         "return"
       ],
@@ -5241,6 +5246,11 @@
       "required_substrings": [
         "void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
         "&game->health_pickups[0].state",
+        "SubHealthSlotCursor *health_cursor",
+        "health_cursor->health.state = TRACK_PICKUP_STATE_ACTIVE",
+        "health_cursor->health.bod.position",
+        "health_cursor->health.sprite",
+        "health_cursor->health.source_cell",
         "game->health_pickups[v3].bob_phase_step",
         "return;"
       ],
@@ -5259,6 +5269,11 @@
       "required_substrings": [
         "&game->jetpack_pickup.state",
         "TRACK_PICKUP_STATE_INACTIVE",
+        "struct JetPackSlotCursor* jetpack_cursor",
+        "jetpack_cursor->jetpack.state = TRACK_PICKUP_STATE_ACTIVE",
+        "jetpack_cursor->jetpack.bod.position",
+        "jetpack_cursor->jetpack.sprite",
+        "jetpack_cursor->jetpack.source_cell",
         "cell->anchor_position",
         "return"
       ],
@@ -5276,6 +5291,11 @@
       "required_substrings": [
         "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
         "&game->jetpack_pickup.state",
+        "JetPackSlotCursor *jetpack_cursor",
+        "jetpack_cursor->jetpack.state = TRACK_PICKUP_STATE_ACTIVE",
+        "jetpack_cursor->jetpack.bod.position",
+        "jetpack_cursor->jetpack.sprite",
+        "jetpack_cursor->jetpack.source_cell",
         "cell->anchor_position",
         "return;"
       ],
@@ -6720,10 +6740,10 @@
       "artifact": "analysis/decompile/binja/functions/0043ee50-update_track_speedup.c",
       "required_substrings": [
         "speedup->owner_game->subgame_pause_gate",
-        "speedup->world_position.z",
+        "speedup->body.transform.position.z",
         "speedup->owner->interaction_max_z",
-        "speedup->list_next",
-        "speedup->list_prev",
+        "speedup->body.bod.bod.list_next",
+        "speedup->body.bod.bod.list_prev",
         "speedup->sprite"
       ],
       "forbidden_substrings": [
@@ -9601,13 +9621,179 @@
       "artifact": "analysis/decompile/binja/functions/004084b0-initialize_track_speedup_runtime.c",
       "required_substrings": [
         "initialize_renderable_bod(speedup)",
-        "speedup->vtable",
+        "speedup->body.bod.bod.vtable = &g_sub_speed_up_vtable",
         "return speedup"
       ],
       "forbidden_substrings": [
         "arg1",
         "void*** result",
         "return result"
+      ]
+    },
+    {
+      "name": "ida_speedup_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/004084b0-initialize_track_speedup_runtime.c",
+      "required_substrings": [
+        "SubSpeedUp *__thiscall initialize_track_speedup_runtime(SubSpeedUp *speedup)",
+        "initialize_renderable_bod(&speedup->body)",
+        "speedup->body.bod.bod.vtable = &g_sub_speed_up_vtable",
+        "return speedup"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall",
+        "sub_4084B0",
+        "speedup->vtable"
+      ]
+    },
+    {
+      "name": "bn_jetpack_constructor_nested_vapour_owners",
+      "artifact": "analysis/decompile/binja/functions/004084d0-initialize_track_jetpack_pickup_runtime.c",
+      "required_substrings": [
+        "initialize_bod_base(jetpack)",
+        "initialize_renderable_bod(&jetpack->vapour_a)",
+        "jetpack->vapour_a.body.bod.bod.vtable = &g_vapour_vtable",
+        "initialize_renderable_bod(&jetpack->vapour_b)",
+        "jetpack->vapour_b.body.bod.bod.vtable = &g_vapour_vtable",
+        "jetpack->bod.bod.vtable = &g_jet_pack_vtable",
+        "return jetpack"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "vapour_a.vtable",
+        "vapour_b.vtable",
+        "jetpack->vtable"
+      ]
+    },
+    {
+      "name": "ida_jetpack_constructor_nested_vapour_owners",
+      "artifact": "analysis/decompile/ida/functions/004084d0-initialize_track_jetpack_pickup_runtime.c",
+      "required_substrings": [
+        "JetPack *__thiscall initialize_track_jetpack_pickup_runtime(JetPack *jetpack)",
+        "initialize_bod_base(&jetpack->bod)",
+        "initialize_renderable_bod(&jetpack->vapour_a.body)",
+        "jetpack->vapour_a.body.bod.bod.vtable = &g_vapour_vtable",
+        "initialize_renderable_bod(&jetpack->vapour_b.body)",
+        "jetpack->vapour_b.body.bod.bod.vtable = &g_vapour_vtable",
+        "jetpack->bod.bod.vtable = &g_jet_pack_vtable",
+        "return jetpack"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall",
+        "sub_4084D0",
+        "vapour_a.vtable",
+        "vapour_b.vtable",
+        "jetpack->vtable"
+      ]
+    },
+    {
+      "name": "bn_health_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00408510-initialize_track_health_pickup_runtime.c",
+      "required_substrings": [
+        "initialize_bod_base(pickup)",
+        "pickup->bod.bod.vtable = &g_sub_health_vtable",
+        "return pickup"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "pickup->vtable",
+        "data_497320"
+      ]
+    },
+    {
+      "name": "ida_health_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408510-initialize_track_health_pickup_runtime.c",
+      "required_substrings": [
+        "SubHealth *__thiscall initialize_track_health_pickup_runtime(SubHealth *pickup)",
+        "initialize_bod_base(&pickup->bod)",
+        "pickup->bod.bod.vtable = &g_sub_health_vtable",
+        "return pickup"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall",
+        "sub_408510",
+        "pickup->vtable"
+      ]
+    },
+    {
+      "name": "bn_vapour_initializer_nested_object_owner",
+      "artifact": "analysis/decompile/binja/functions/00442500-initialize_vapour.c",
+      "required_substrings": [
+        "struct Object* object = vapour->body.bod.object",
+        "vapour->half_width = half_width",
+        "vapour->capacity = eax_1",
+        "vapour->points = allocate_tracked_memory",
+        "reset_vapour(vapour, nullptr)"
+      ],
+      "forbidden_substrings": [
+        "vapour->owner",
+        "vapour->__offset",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_vapour_initializer_nested_object_owner",
+      "artifact": "analysis/decompile/ida/functions/00442500-initialize_vapour.c",
+      "required_substrings": [
+        "void __thiscall initialize_vapour(Vapour *vapour, Object *unused, float half_width)",
+        "object = vapour->body.bod.object",
+        "vapour->half_width = half_width",
+        "vapour->points = (TransformMatrix *)allocate_tracked_memory",
+        "reset_vapour(vapour, nullptr)"
+      ],
+      "forbidden_substrings": [
+        "sub_442500",
+        "vapour->owner",
+        "vapour->__offset"
+      ]
+    },
+    {
+      "name": "bn_vapour_update_nested_renderable_owner",
+      "artifact": "analysis/decompile/binja/functions/004425f0-update_vapour.c",
+      "required_substrings": [
+        "vapour->body.bod.bod.list_flags",
+        "vapour->body.bod.object->vertex_count",
+        "&vapour->body.bod.object->vertices",
+        "vapour->body.bod.object->facequads",
+        "*vapour->body.bod.object->group_primitive_counts"
+      ],
+      "forbidden_substrings": [
+        "vapour->flags",
+        "vapour->owner",
+        "vapour->__offset"
+      ]
+    },
+    {
+      "name": "ida_vapour_update_nested_renderable_owner",
+      "artifact": "analysis/decompile/ida/functions/004425f0-update_vapour.c",
+      "required_substrings": [
+        "void __thiscall update_vapour(Vapour *vapour)",
+        "vapour->body.bod.bod.list_flags",
+        "vapour->body.bod.object->vertex_count",
+        "&vapour->body.bod.object->vertices",
+        "vapour->body.bod.object->facequads",
+        "*vapour->body.bod.object->group_primitive_counts"
+      ],
+      "forbidden_substrings": [
+        "sub_4425F0",
+        "vapour->flags",
+        "vapour->owner",
+        "vapour->__offset"
+      ]
+    },
+    {
+      "name": "analysis_vapour_and_pickup_nested_base_owners",
+      "artifact": "analysis/headers/path_template_types.h",
+      "required_substrings": [
+        "typedef struct SubSpeedUp {\n    RenderableBod body;",
+        "typedef struct Vapour {\n    RenderableBod body;",
+        "typedef struct JetPack {\n    BodBase bod;",
+        "typedef struct SubHealth {\n    BodBase bod;",
+        "typedef struct JetPackSlotCursor {\n    uint8_t subgame_prefix[0x355e64];\n    JetPack jetpack;"
+      ],
+      "forbidden_substrings": [
+        "typedef struct Vapour {\n    void* vtable;",
+        "typedef struct JetPack {\n    BodNode bod;",
+        "typedef struct SubHealth {\n    BodNode bod;"
       ]
     },
     {

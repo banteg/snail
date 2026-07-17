@@ -163,3 +163,14 @@ the same declaration and receiver lvar. Refreshed artifacts now expose the
 owned `jetpack_pickup` singleton, its lifecycle state, and honest empty
 `return;` paths; incompatible incidental register values remain deliberately
 unexported.
+
+## 2026-07-17 singleton cursor ownership
+
+The exact allocator retains `esi` at the shifted slot cursor and addresses the
+singleton at `+0x355e64`; rebasing it to `JetPack*` would invent different
+register ownership. The recovered analysis-only `JetPackSlotCursor` therefore
+owns the prefix followed by one exact `0x19c`-byte `JetPack`. That object ends
+at `0x356000`, exactly where the eight-record `SubHealth` pool begins. Applying
+the cursor type to the exact MLIL variable makes both decompilers expose the
+same nested BOD, sprite, source-cell, and bobbing owners while preserving the
+native cursor shape.

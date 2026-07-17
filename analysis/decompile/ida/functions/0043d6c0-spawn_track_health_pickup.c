@@ -8,16 +8,15 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *ce
   int v3; // ebx
   TrackPickupState *i; // eax
   TrackRowCell *v5; // ebp
-  FrameBodBase *v6; // esi
-  FrameBodBase *v7; // eax
-  FrameBodBase **p_first; // ecx
-  FrameBodBase *first; // edx
-  FrameBodBase *list_prev; // edx
+  SubHealthSlotCursor *health_cursor; // esi
+  BodNode *health_node; // eax
+  BodNode **p_first; // ecx
+  BodNode *first; // edx
+  struct BodNode *list_prev; // edx
   uint32_t list_flags; // ecx
-  _DWORD *sprite; // eax
-  int v13; // ecx
-  _DWORD *v14; // ecx
-  float v16; // [esp+Ch] [ebp-8h]
+  Sprite *sprite; // eax
+  SpriteFlag flags; // ecx
+  float v15; // [esp+Ch] [ebp-8h]
   float z; // [esp+10h] [ebp-4h]
 
   v3 = 0;
@@ -27,16 +26,16 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *ce
       return;
   }
   v5 = cell;
-  v6 = (FrameBodBase *)((char *)game + 116 * v3);
-  v6[62465].bod.vtable = (void **)1;
-  v6[62465].bod.list_flags = (uint32_t)player;
+  health_cursor = (SubHealthSlotCursor *)((char *)game + 116 * v3);
+  health_cursor->health.state = TRACK_PICKUP_STATE_ACTIVE;
+  health_cursor->health.owner = player;
   z = cell->anchor_position.z;
-  v16 = cell->anchor_position.y + 0.60000002;
-  v6[62464].position.x = cell->anchor_position.x;
-  v6[62464].position.y = v16;
-  v6[62464].position.z = z;
-  v7 = v6 + 62464;
-  if ( (v6[62464].bod.list_flags & 0x200) != 0 )
+  v15 = cell->anchor_position.y + 0.60000002;
+  health_cursor->health.bod.position.x = cell->anchor_position.x;
+  health_cursor->health.bod.position.y = v15;
+  health_cursor->health.bod.position.z = z;
+  health_node = &health_cursor->health.bod.bod;
+  if ( (health_cursor->health.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -46,42 +45,39 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *ce
     first = g_game_base->active_bod_list.first;
     if ( first )
     {
-      first->bod.list_prev = v7;
-      (*p_first)->bod.list_prev->bod.list_next = *p_first;
+      first->list_prev = health_node;
+      (*p_first)->list_prev->list_next = *p_first;
       v5 = cell;
-      list_prev = (*p_first)->bod.list_prev;
+      list_prev = (*p_first)->list_prev;
       *p_first = list_prev;
-      list_prev->bod.list_prev = nullptr;
+      list_prev->list_prev = nullptr;
     }
     else
     {
-      *p_first = v7;
-      v6[62464].bod.list_prev = nullptr;
-      (*p_first)->bod.list_next = nullptr;
+      *p_first = health_node;
+      health_cursor->health.bod.bod.list_prev = nullptr;
+      (*p_first)->list_next = nullptr;
     }
-    list_flags = v6[62464].bod.list_flags;
+    list_flags = health_cursor->health.bod.bod.list_flags;
     BYTE1(list_flags) |= 2u;
-    v6[62464].bod.list_flags = list_flags;
+    health_cursor->health.bod.bod.list_flags = list_flags;
   }
-  sprite = allocate_sprite(g_sprite_manager, player->player_slot, 57, -1, -1);
-  LODWORD(v6[62465].color.g) = sprite;
-  v13 = sprite[1];
-  BYTE1(v13) |= 8u;
-  sprite[1] = v13;
-  *(_DWORD *)(LODWORD(v6[62465].color.g) + 120) = 0;
-  *(_DWORD *)(LODWORD(v6[62465].color.g) + 104) = 0;
-  *(_DWORD *)(LODWORD(v6[62465].color.g) + 108) = 0;
-  *(_DWORD *)(LODWORD(v6[62465].color.g) + 96) = 1058642330;
-  *(_DWORD *)(LODWORD(v6[62465].color.g) + 100) = 1058642330;
-  v14 = (_DWORD *)(LODWORD(v6[62465].color.g) + 72);
-  *v14 = LODWORD(v6[62464].position.x);
-  v14[1] = LODWORD(v6[62464].position.y);
-  v14[2] = LODWORD(v6[62464].position.z);
-  LODWORD(v6[62465].color.b) = v5;
-  v6[62465].color.a = 0.0;
-  if ( ((__int64)v6[62464].position.z & 1) != 0 )
-    v6[62465].color.a = 0.0;
+  sprite = (Sprite *)allocate_sprite(g_sprite_manager, player->player_slot, 57, -1, -1);
+  health_cursor->health.sprite = sprite;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
+  health_cursor->health.sprite->gravity_step = 0.0;
+  health_cursor->health.sprite->progress = 0.0;
+  health_cursor->health.sprite->progress_step = 0.0;
+  health_cursor->health.sprite->size_start = 0.60000002;
+  health_cursor->health.sprite->size_end = 0.60000002;
+  health_cursor->health.sprite->position = health_cursor->health.bod.position;
+  health_cursor->health.source_cell = v5;
+  health_cursor->health.bob_phase = 0.0;
+  if ( ((__int64)health_cursor->health.bod.position.z & 1) != 0 )
+    health_cursor->health.bob_phase = 0.0;
   else
-    v6[62465].color.a = 0.5;
+    health_cursor->health.bob_phase = 0.5;
   game->health_pickups[v3].bob_phase_step = 0.012820513;
 }

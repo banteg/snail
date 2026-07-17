@@ -306,11 +306,7 @@ typedef struct BannerPool {
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
-    void* vtable;
-    int32_t flags;
-    uint8_t _pad_08[0x24 - 0x08];
-    Object* owner;
-    uint8_t _pad_28[0x80 - 0x28];
+    RenderableBod body;
     int32_t point_count;
     int32_t capacity;
     union {
@@ -323,9 +319,7 @@ typedef struct Vapour {
 
 /* Exact 0x19c-byte Windows cRJetPack singleton. */
 typedef struct JetPack {
-    BodNode bod;
-    Vec3 world_position;
-    uint8_t _pad_1c[0x38 - 0x1c];
+    BodBase bod;
     TrackPickupState state;
     Player* owner;
     uint8_t _pad_40[0x44 - 0x40];
@@ -763,9 +757,7 @@ typedef SubLazer SubLazerSlot;
 
 /* Exact 0x74-byte authored cRSubHealth pickup slot. */
 typedef struct SubHealth {
-    BodNode bod;
-    Vec3 world_position;
-    uint8_t _pad_1c[0x38 - 0x1c];
+    BodBase bod;
     TrackPickupState state;
     Player* owner;
     uint8_t _pad_40[0x44 - 0x40];
@@ -948,6 +940,11 @@ typedef struct SubRingSlotCursor {
  * storage. The views preserve native `subgame + slot_offset` cursor lifetimes
  * without misrepresenting them as additional SubgameRuntime instances.
  */
+typedef struct JetPackSlotCursor {
+    uint8_t subgame_prefix[0x355e64];
+    JetPack jetpack;
+} JetPackSlotCursor;
+
 typedef struct SubHealthSlotCursor {
     uint8_t subgame_prefix[0x356000];
     SubHealth health;

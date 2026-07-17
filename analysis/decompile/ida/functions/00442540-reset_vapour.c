@@ -2,15 +2,14 @@
 /* function: reset_vapour @ 0x442540 */
 /* selector: reset_vapour */
 
-int32_t __thiscall reset_vapour(VapourTrail *trail, int32_t z_floor)
+// Exact void Windows `cRVapour::ReSet(float*)`: clears the point count and visible flag and retains an optional borrowed z-floor clamp. Android returns directly after the same stores, proving that Windows' final flags value is incidental.
+void __thiscall reset_vapour(Vapour *vapour, float *z_floor)
 {
-  int32_t result; // eax
+  uint32_t list_flags; // eax
 
-  trail->point_count = 0;
-  trail->z_floor = z_floor;
-  result = trail->flags;
-  LOBYTE(result) = result & 0xDF;
-  trail->flags = result;
-  return result;
+  vapour->point_count = 0;
+  vapour->z_floor = z_floor;
+  list_flags = vapour->body.bod.bod.list_flags;
+  LOBYTE(list_flags) = list_flags & 0xDF;
+  vapour->body.bod.bod.list_flags = list_flags;
 }
-

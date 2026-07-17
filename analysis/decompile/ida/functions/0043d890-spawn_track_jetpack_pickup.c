@@ -7,18 +7,18 @@ void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *c
 {
   TrackPickupState *p_state; // eax
   int v4; // edx
-  char *v5; // esi
-  float *v6; // ebx
+  JetPackSlotCursor *jetpack_cursor; // esi
+  float *position_x; // ebx
   uint32_t v7; // eax
   double v8; // st7
-  FrameBodBase *v9; // ecx
-  FrameBodBase **p_first; // eax
-  FrameBodBase *first; // edx
-  FrameBodBase *list_prev; // edx
-  int v13; // eax
-  _DWORD *sprite; // eax
-  int v15; // ecx
-  _DWORD *v16; // edx
+  BodNode *jetpack_node; // ecx
+  BodNode **p_first; // eax
+  BodNode *first; // edx
+  struct BodNode *list_prev; // edx
+  uint32_t list_flags; // eax
+  Sprite *sprite; // eax
+  SpriteFlag flags; // ecx
+  Vec3 *sprite_position; // edx
   float v17; // [esp+Ch] [ebp-8h]
   float z; // [esp+10h] [ebp-4h]
 
@@ -31,30 +31,30 @@ void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *c
     if ( v4 >= 1 )
       return;
   }
-  v5 = (char *)game + 412 * v4;
-  *((_DWORD *)v5 + 874407) = 1;
-  *((_DWORD *)v5 + 874408) = player;
-  v6 = (float *)(v5 + 3497588);
+  jetpack_cursor = (JetPackSlotCursor *)((char *)game + 412 * v4);
+  jetpack_cursor->jetpack.state = TRACK_PICKUP_STATE_ACTIVE;
+  jetpack_cursor->jetpack.owner = player;
+  position_x = &jetpack_cursor->jetpack.bod.position.x;
   z = cell->anchor_position.z;
   v17 = cell->anchor_position.y + 1.5;
-  *((_DWORD *)v5 + 874397) = LODWORD(cell->anchor_position.x);
-  *((float *)v5 + 874398) = v17;
-  *((float *)v5 + 874399) = z;
+  jetpack_cursor->jetpack.bod.position.x = cell->anchor_position.x;
+  jetpack_cursor->jetpack.bod.position.y = v17;
+  jetpack_cursor->jetpack.bod.position.z = z;
   v7 = cell->lane_and_flags & 7;
   if ( v7 == 3 && cell[-1].tile_id == 14 && cell[2].tile_id == 14 )
   {
-    v8 = *v6 + 0.5;
+    v8 = *position_x + 0.5;
   }
   else
   {
     if ( v7 != 4 || cell[-2].tile_id != 14 || cell[1].tile_id != 14 )
       goto LABEL_14;
-    v8 = *v6 - 0.5;
+    v8 = *position_x - 0.5;
   }
-  *v6 = v8;
+  *position_x = v8;
 LABEL_14:
-  v9 = (FrameBodBase *)(v5 + 3497572);
-  if ( (*((_DWORD *)v5 + 874394) & 0x200) != 0 )
+  jetpack_node = &jetpack_cursor->jetpack.bod.bod;
+  if ( (jetpack_cursor->jetpack.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -64,41 +64,41 @@ LABEL_14:
     first = g_game_base->active_bod_list.first;
     if ( first )
     {
-      first->bod.list_prev = v9;
-      (*p_first)->bod.list_prev->bod.list_next = *p_first;
-      list_prev = (*p_first)->bod.list_prev;
+      first->list_prev = jetpack_node;
+      (*p_first)->list_prev->list_next = *p_first;
+      list_prev = (*p_first)->list_prev;
       *p_first = list_prev;
-      list_prev->bod.list_prev = nullptr;
+      list_prev->list_prev = nullptr;
     }
     else
     {
-      *p_first = v9;
-      *((_DWORD *)v5 + 874395) = 0;
-      (*p_first)->bod.list_next = nullptr;
+      *p_first = jetpack_node;
+      jetpack_cursor->jetpack.bod.bod.list_prev = nullptr;
+      (*p_first)->list_next = nullptr;
     }
-    v13 = *((_DWORD *)v5 + 874394);
-    BYTE1(v13) |= 2u;
-    *((_DWORD *)v5 + 874394) = v13;
+    list_flags = jetpack_cursor->jetpack.bod.bod.list_flags;
+    BYTE1(list_flags) |= 2u;
+    jetpack_cursor->jetpack.bod.bod.list_flags = list_flags;
   }
-  sprite = allocate_sprite(g_sprite_manager, player->player_slot, 124, -1, -1);
-  *((_DWORD *)v5 + 874418) = sprite;
-  v15 = sprite[1];
-  BYTE1(v15) |= 8u;
-  sprite[1] = v15;
-  *(_DWORD *)(*((_DWORD *)v5 + 874418) + 120) = 0;
-  *(_DWORD *)(*((_DWORD *)v5 + 874418) + 104) = 0;
-  *(_DWORD *)(*((_DWORD *)v5 + 874418) + 108) = 0;
-  *(_DWORD *)(*((_DWORD *)v5 + 874418) + 96) = 1069547520;
-  *(_DWORD *)(*((_DWORD *)v5 + 874418) + 100) = 1069547520;
-  v16 = (_DWORD *)(*((_DWORD *)v5 + 874418) + 72);
-  *v16 = *(_DWORD *)v6;
-  v16[1] = *((_DWORD *)v5 + 874398);
-  v16[2] = *((_DWORD *)v5 + 874399);
-  *((_DWORD *)v5 + 874419) = cell;
-  *((_DWORD *)v5 + 874420) = 0;
-  if ( ((__int64)*((float *)v5 + 874399) & 1) != 0 )
-    *((_DWORD *)v5 + 874420) = 0;
+  sprite = (Sprite *)allocate_sprite(g_sprite_manager, player->player_slot, 124, -1, -1);
+  jetpack_cursor->jetpack.sprite = sprite;
+  flags = sprite->flags;
+  BYTE1(flags) |= 8u;
+  sprite->flags = flags;
+  jetpack_cursor->jetpack.sprite->gravity_step = 0.0;
+  jetpack_cursor->jetpack.sprite->progress = 0.0;
+  jetpack_cursor->jetpack.sprite->progress_step = 0.0;
+  jetpack_cursor->jetpack.sprite->size_start = 1.5;
+  jetpack_cursor->jetpack.sprite->size_end = 1.5;
+  sprite_position = &jetpack_cursor->jetpack.sprite->position;
+  sprite_position->x = *position_x;
+  sprite_position->y = jetpack_cursor->jetpack.bod.position.y;
+  sprite_position->z = jetpack_cursor->jetpack.bod.position.z;
+  jetpack_cursor->jetpack.source_cell = cell;
+  jetpack_cursor->jetpack.bob_phase = 0.0;
+  if ( ((__int64)jetpack_cursor->jetpack.bod.position.z & 1) != 0 )
+    jetpack_cursor->jetpack.bob_phase = 0.0;
   else
-    *((_DWORD *)v5 + 874420) = 1056964608;
-  *((_DWORD *)v5 + 874421) = 1012010273;
+    jetpack_cursor->jetpack.bob_phase = 0.5;
+  jetpack_cursor->jetpack.bob_phase_step = 0.012820513;
 }

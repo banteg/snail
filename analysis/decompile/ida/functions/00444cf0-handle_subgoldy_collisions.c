@@ -237,9 +237,9 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     health_cursor = (SubHealthSlotCursor *)(&player->game->scan_reset + ii * 116);
     if ( health_cursor->health.state == TRACK_PICKUP_STATE_ACTIVE )
     {
-      v59.x = health_cursor->health.world_position.x - player->cached_camera_target_world.x;
-      v59.y = health_cursor->health.world_position.y - player->cached_camera_target_world.y;
-      v32 = health_cursor->health.world_position.z - player->cached_camera_target_world.z;
+      v59.x = health_cursor->health.bod.position.x - player->cached_camera_target_world.x;
+      v59.y = health_cursor->health.bod.position.y - player->cached_camera_target_world.y;
+      v32 = health_cursor->health.bod.position.z - player->cached_camera_target_world.z;
       v60.x = v59.x;
       v60.y = v59.y;
       v59.z = v32;
@@ -287,9 +287,9 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   v43 = player->game;
   if ( v43->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE )
   {
-    v59.x = v43->jetpack_pickup.world_position.x - player->cached_camera_target_world.x;
-    v59.y = v43->jetpack_pickup.world_position.y - player->cached_camera_target_world.y;
-    v44 = v43->jetpack_pickup.world_position.z - player->cached_camera_target_world.z;
+    v59.x = v43->jetpack_pickup.bod.position.x - player->cached_camera_target_world.x;
+    v59.y = v43->jetpack_pickup.bod.position.y - player->cached_camera_target_world.y;
+    v44 = v43->jetpack_pickup.bod.position.z - player->cached_camera_target_world.z;
     v60.x = v59.x;
     v60.y = v59.y;
     v59.z = v44;

@@ -6,7 +6,7 @@ void Vapour::reset_vapour(float* new_z_floor)
 {
     point_count = 0;
     z_floor = new_z_floor;
-    int result = flags;
+    int result = list_flags;
     result &= ~0x20;
-    flags = result;
+    list_flags = result;
 }

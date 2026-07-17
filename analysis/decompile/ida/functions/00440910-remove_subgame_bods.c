@@ -118,7 +118,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   }
   while ( v3 );
   remove_track_render_cache_bods(&game->segment_cache);
-  health_list_next_cursor = &game->health_pickups[0].bod.list_next;
+  health_list_next_cursor = &game->health_pickups[0].bod.bod.list_next;
   v10 = 8;
   do
   {
@@ -184,9 +184,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
     }
     game->speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
   }
-  if ( (game->jetpack_pickup.bod.list_flags & 0x200) != 0 )
+  if ( (game->jetpack_pickup.bod.bod.list_flags & 0x200) != 0 )
   {
-    v20 = game->jetpack_pickup.bod.list_flags;
+    v20 = game->jetpack_pickup.bod.bod.list_flags;
     v21 = &g_game_base->active_bod_list;
     if ( (v20 & 0x200) != 0 )
     {
@@ -196,19 +196,19 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
       }
       else
       {
-        v22 = game->jetpack_pickup.bod.list_next;
+        v22 = game->jetpack_pickup.bod.bod.list_next;
         if ( v22 )
-          v22->list_prev = game->jetpack_pickup.bod.list_prev;
-        v23 = game->jetpack_pickup.bod.list_prev;
+          v22->list_prev = game->jetpack_pickup.bod.bod.list_prev;
+        v23 = game->jetpack_pickup.bod.bod.list_prev;
         if ( v23 )
-          v23->list_next = game->jetpack_pickup.bod.list_next;
+          v23->list_next = game->jetpack_pickup.bod.bod.list_next;
         else
-          v21->first = game->jetpack_pickup.bod.list_next;
-        game->jetpack_pickup.bod.list_next = v21->free_top;
-        v21->free_top = &game->jetpack_pickup.bod;
-        v24 = game->jetpack_pickup.bod.list_flags;
+          v21->first = game->jetpack_pickup.bod.bod.list_next;
+        game->jetpack_pickup.bod.bod.list_next = v21->free_top;
+        v21->free_top = &game->jetpack_pickup.bod.bod;
+        v24 = game->jetpack_pickup.bod.bod.list_flags;
         BYTE1(v24) &= ~2u;
-        game->jetpack_pickup.bod.list_flags = v24;
+        game->jetpack_pickup.bod.bod.list_flags = v24;
       }
     }
     else

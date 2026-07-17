@@ -1232,7 +1232,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "SubRow runtime_rows[3200];" in header
     assert "TrackAttachmentRuntimeRow" not in header
     assert '"RingOrSpecialEffectPool"' not in source
-    assert '"SubSpeedUp"' not in source
+    assert '("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES)' in source
     assert '"SaltHazardSlot"' not in source
     stable_prototypes = source.split("CORE_SUBGAME_PROTO_UPDATES = (", 1)[1].split(
         "\n)\n\n# These five receivers", 1
@@ -6676,3 +6676,78 @@ def test_collision_pool_cursor_ownership_is_replayed() -> None:
     assert "_sync_collision_pool_cursor_lvars" in ida_sync
     assert '"collision_pool_cursor_lvars"' in ida_sync
     assert "0x444CF0,  # handle_subgoldy_collisions" in ida_sync
+
+
+def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
+    repo_root = Path(__file__).parents[1]
+    analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/vapour.h").read_text(
+        encoding="utf-8"
+    )
+    jetpack_scratch = (
+        repo_root
+        / "tools/match/scratches/initialize_track_jetpack_pickup_runtime/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    vapour_scratch = (
+        repo_root / "tools/match/scratches/update_vapour/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class Vapour : public RenderableBod" in matcher_header
+    assert "virtual void update_vapour" not in matcher_header
+    assert "Object* owner;" not in matcher_header
+    for declaration in (
+        "typedef struct Vapour {\n    RenderableBod body;",
+        "typedef struct JetPack {\n    BodBase bod;",
+        "typedef struct SubHealth {\n    BodBase bod;",
+        "typedef struct JetPackSlotCursor {\n    uint8_t subgame_prefix[0x355e64];\n    JetPack jetpack;",
+    ):
+        assert declaration in analysis_header
+
+    assert "vapour_a.initialize_renderable_bod()" in jetpack_scratch
+    assert "vapour_b.initialize_renderable_bod()" in jetpack_scratch
+    assert "RenderableBod* vapour" not in jetpack_scratch
+    assert "object->vertex_count" in vapour_scratch
+    assert "owner->" not in vapour_scratch
+
+    for address, name in (
+        ("0x497314", "g_sub_speed_up_vtable"),
+        ("0x497318", "g_jet_pack_vtable"),
+        ("0x49731c", "g_vapour_vtable"),
+        ("0x497320", "g_sub_health_vtable"),
+    ):
+        assert f'("{address}", "{name}")' in binja_sync
+        assert f'("{address}", "void*")' in binja_sync
+        assert name in ida_sync
+
+    for update in (
+        '("Vapour", VAPOUR_FIELD_UPDATES)',
+        '("JetPack", JETPACK_FIELD_UPDATES)',
+        '("SubHealth", SUB_HEALTH_FIELD_UPDATES)',
+        '("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES)',
+    ):
+        assert update in binja_sync
+    assert '("0x00", "body", "RenderableBod")' in binja_sync
+    assert '("0x00", "bod", "BodBase")' in binja_sync
+    assert '"JetPackSlotCursor",' in binja_sync
+    for replay in (
+        '"spawn_track_health_pickup",\n        "RegisterVariableSourceType",\n        60,\n        72,\n        "health_cursor",\n        "SubHealthSlotCursor*"',
+        '"spawn_track_jetpack_pickup",\n        "RegisterVariableSourceType",\n        61,\n        72,\n        "jetpack_cursor",\n        "JetPackSlotCursor*"',
+    ):
+        assert replay in binja_sync
+    for replay in (
+        '"SubHealthSlotCursor *health_cursor;",\n        0x43D6FD',
+        '"JetPackSlotCursor *jetpack_cursor;",\n        0x43D8CE',
+        '("sprite", "Sprite *sprite;", 0x43D7C1, None)',
+        '("sprite", "Sprite *sprite;", 0x43D9CC, None)',
+        "_sync_spawn_track_health_lvars()",
+        "_sync_spawn_track_jetpack_lvars()",
+    ):
+        assert replay in ida_sync

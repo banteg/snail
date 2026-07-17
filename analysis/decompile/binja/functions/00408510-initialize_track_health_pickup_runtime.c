@@ -4,5 +4,5 @@
 /* function: initialize_track_health_pickup_runtime @ 0x408510 */
 
 00408513        initialize_bod_base(pickup)
-00408518        pickup->vtable = &data_497320
+00408518        pickup->bod.bod.vtable = &g_sub_health_vtable
 00408521        return pickup

@@ -2,10 +2,10 @@
 /* function: initialize_track_health_pickup_runtime @ 0x408510 */
 /* selector: initialize_track_health_pickup_runtime */
 
-// Constructs one health-pickup runtime slot by seeding the shared bod header and installing the pickup vtable. `spawn_track_health_pickup` allocates from the 8-slot pool at `0x356000`, whose total `0x3a0` footprint matches the native `cRSubHealth` size ledger.
-TrackHealthPickup *__thiscall initialize_track_health_pickup_runtime(TrackHealthPickup *pickup)
+// Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `SubgameRuntime` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger.
+SubHealth *__thiscall initialize_track_health_pickup_runtime(SubHealth *pickup)
 {
-  initialize_bod_base(pickup);
-  pickup->vtable = &off_497320;
+  initialize_bod_base(&pickup->bod);
+  pickup->bod.bod.vtable = &g_sub_health_vtable;
   return pickup;
 }

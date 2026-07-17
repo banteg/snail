@@ -43,7 +43,7 @@
 004409b2        i_6 -= 1
 004409b3        do while (i != 1)
 004409c0        remove_track_render_cache_bods(&game->segment_cache)
-004409c5        struct BodNode** health_list_next_cursor = &game->health_pickups[0].list_next
+004409c5        struct BodNode** health_list_next_cursor = &game->health_pickups[0].bod.bod.list_next
 004409cb        int32_t i_7 = 8
 00440a47        int32_t i_1
 004409d2        int16_t eax_9 = (health_list_next_cursor[-2]).w
@@ -74,48 +74,48 @@
 00440a46        i_1 = i_7
 00440a46        i_7 -= 1
 00440a47        do while (i_1 != 1)
-00440a52        if (((game->speedup_pickup.list_flags).w:1.b & 2) != 0)
+00440a52        if (((game->speedup_pickup.body.bod.bod.list_flags).w:1.b & 2) != 0)
 00440a60        struct BodList* edx_11 = &g_game_base->active_bod_list
-00440a66        uint16_t list_flags_2 = (game->speedup_pickup.list_flags).w
+00440a66        uint16_t list_flags_2 = (game->speedup_pickup.body.bod.bod.list_flags).w
 00440a6c        if ((list_flags_2:1.b & 2) == 0)
 00440a73        report_errorf("List remove")
 00440a80        if ((list_flags_2.b & 0x40) == 0)
-00440a91        struct SubSpeedUp* list_next_1 = game->speedup_pickup.list_next
+00440a91        struct BodNode* list_next_1 = game->speedup_pickup.body.bod.bod.list_next
 00440a96        if (list_next_1 != 0)
-00440a98        int16_t list_prev_6 = (game->speedup_pickup.list_prev).w
+00440a98        int16_t list_prev_6 = (game->speedup_pickup.body.bod.bod.list_prev).w
 00440a9b        list_next_1->list_prev.b = list_prev_6.b
 00440a9b        list_next_1->list_prev:1.b = list_prev_6:1.b
-00440a9e        struct SubSpeedUp* list_prev_1 = game->speedup_pickup.list_prev
+00440a9e        struct BodNode* list_prev_1 = game->speedup_pickup.body.bod.bod.list_prev
 00440aa3        if (list_prev_1 == 0)
-00440ab0        edx_11->first = game->speedup_pickup.list_next
-00440aa8        list_prev_1->list_next = game->speedup_pickup.list_next
-00440ab6        game->speedup_pickup.list_next = edx_11->free_top
+00440ab0        edx_11->first = game->speedup_pickup.body.bod.bod.list_next
+00440aa8        list_prev_1->list_next = game->speedup_pickup.body.bod.bod.list_next
+00440ab6        game->speedup_pickup.body.bod.bod.list_next = edx_11->free_top
 00440ab9        edx_11->free_top = &game->speedup_pickup
-00440abc        uint32_t list_flags_3 = game->speedup_pickup.list_flags
+00440abc        uint32_t list_flags_3 = game->speedup_pickup.body.bod.bod.list_flags
 00440abf        list_flags_3:1.b &= 0xfd
-00440ac2        game->speedup_pickup.list_flags = list_flags_3
+00440ac2        game->speedup_pickup.body.bod.bod.list_flags = list_flags_3
 00440a87        report_errorf("List remove NEXTBOD")
 00440ac5        game->speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE
-00440ad4        if (((game->jetpack_pickup.bod.list_flags).w:1.b & 2) != 0)
-00440adc        uint16_t list_flags_4 = (game->jetpack_pickup.bod.list_flags).w
+00440ad4        if (((game->jetpack_pickup.bod.bod.list_flags).w:1.b & 2) != 0)
+00440adc        uint16_t list_flags_4 = (game->jetpack_pickup.bod.bod.list_flags).w
 00440ae8        struct BodList* edx_15 = &g_game_base->active_bod_list
 00440af1        if ((list_flags_4:1.b & 2) == 0)
 00440af8        report_errorf("List remove")
 00440b05        if ((list_flags_4.b & 0x40) == 0)
-00440b16        struct BodNode* list_next_2 = game->jetpack_pickup.bod.list_next
+00440b16        struct BodNode* list_next_2 = game->jetpack_pickup.bod.bod.list_next
 00440b1b        if (list_next_2 != 0)
-00440b1d        int16_t list_prev_7 = (game->jetpack_pickup.bod.list_prev).w
+00440b1d        int16_t list_prev_7 = (game->jetpack_pickup.bod.bod.list_prev).w
 00440b20        list_next_2->list_prev.b = list_prev_7.b
 00440b20        list_next_2->list_prev:1.b = list_prev_7:1.b
-00440b23        struct BodNode* list_prev_2 = game->jetpack_pickup.bod.list_prev
+00440b23        struct BodNode* list_prev_2 = game->jetpack_pickup.bod.bod.list_prev
 00440b28        if (list_prev_2 == 0)
-00440b35        edx_15->first = game->jetpack_pickup.bod.list_next
-00440b2d        list_prev_2->list_next = game->jetpack_pickup.bod.list_next
-00440b3b        game->jetpack_pickup.bod.list_next = edx_15->free_top
+00440b35        edx_15->first = game->jetpack_pickup.bod.bod.list_next
+00440b2d        list_prev_2->list_next = game->jetpack_pickup.bod.bod.list_next
+00440b3b        game->jetpack_pickup.bod.bod.list_next = edx_15->free_top
 00440b3e        edx_15->free_top = &game->jetpack_pickup
-00440b41        uint32_t list_flags_5 = game->jetpack_pickup.bod.list_flags
+00440b41        uint32_t list_flags_5 = game->jetpack_pickup.bod.bod.list_flags
 00440b44        list_flags_5:1.b &= 0xfd
-00440b47        game->jetpack_pickup.bod.list_flags = list_flags_5
+00440b47        game->jetpack_pickup.bod.bod.list_flags = list_flags_5
 00440b0c        report_errorf("List remove NEXTBOD")
 00440b4a        game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE
 00440b50        struct BodNode** garbage_list_next_cursor = &game->garbage_hazards.slots[0].body.bod.bod.list_next

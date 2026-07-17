@@ -215,3 +215,13 @@ the already honest matcher source. Guarded recreation now installs
 verified with the same receiver lvar and declaration. Both tracked artifacts
 expose the owned eight-slot `health_pickups` array and ordinary `return;`
 paths. No incidental EAX value is promoted into a fake result.
+
+## 2026-07-17 pool cursor ownership
+
+The allocator deliberately keeps `esi` at the shifted slot cursor rather than
+rebasing it to the pickup. The recovered analysis-only `SubHealthSlotCursor`
+owns a `0x356000`-byte subgame prefix followed by one `SubHealth`; applying
+that type to the exact MLIL variable proves every later write belongs to the
+same `health` record without pretending the compiler chose a direct pickup
+pointer. Binary Ninja and IDA now independently render the cursor, inherited
+BOD, sprite, source-cell, and bobbing fields through that owner.

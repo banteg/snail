@@ -162,11 +162,11 @@
 00445369        struct SubgameRuntime* game_5 = player->game
 0044536f        struct SubHealthSlotCursor* health_cursor = i_5 + game_5
 0044537b        if (*(&game_5->health_pickups[0].state + i_5) == 1)
-0044538d        vector.x = fconvert.s(fconvert.t(health_cursor->health.world_position.x) - fconvert.t(player->cached_camera_target_world.x))
-004453a1        vector.y = fconvert.s(fconvert.t(health_cursor->health.world_position.y) - fconvert.t(player->cached_camera_target_world.y))
+0044538d        vector.x = fconvert.s(fconvert.t(health_cursor->health.bod.position.x) - fconvert.t(player->cached_camera_target_world.x))
+004453a1        vector.y = fconvert.s(fconvert.t(health_cursor->health.bod.position.y) - fconvert.t(player->cached_camera_target_world.y))
 004453b5        vector_1.x = vector.x
 004453b9        vector_1.y = vector.y
-004453bd        vector.z = fconvert.s(fconvert.t(health_cursor->health.world_position.z) - fconvert.t(player->cached_camera_target_world.z))
+004453bd        vector.z = fconvert.s(fconvert.t(health_cursor->health.bod.position.z) - fconvert.t(player->cached_camera_target_world.z))
 004453c1        long double x87_r7_64 = fconvert.t(player->body.transform.position.y)
 004453c4        long double temp0_1 = fconvert.t(0.49000001f)
 004453c4        x87_r7_64 - temp0_1
@@ -196,11 +196,11 @@
 0044546c        i_5 += 0x74
 0044547b        struct SubgameRuntime* game_2 = player->game
 00445487        if (game_2->speedup_pickup.state == TRACK_PICKUP_STATE_ACTIVE)
-00445499        vector.x = fconvert.s(fconvert.t(game_2->speedup_pickup.world_position.x) - fconvert.t(player->cached_camera_target_world.x))
-004454ad        vector.y = fconvert.s(fconvert.t(game_2->speedup_pickup.world_position.y) - fconvert.t(player->cached_camera_target_world.y))
+00445499        vector.x = fconvert.s(fconvert.t(game_2->speedup_pickup.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
+004454ad        vector.y = fconvert.s(fconvert.t(game_2->speedup_pickup.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
 004454c1        vector_1.x = vector.x
 004454c5        vector_1.y = vector.y
-004454c9        vector.z = fconvert.s(fconvert.t(game_2->speedup_pickup.world_position.z) - fconvert.t(player->cached_camera_target_world.z))
+004454c9        vector.z = fconvert.s(fconvert.t(game_2->speedup_pickup.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z))
 004454cd        long double x87_r7_75 = fconvert.t(player->body.transform.position.y)
 004454d0        long double temp2_1 = fconvert.t(0.49000001f)
 004454d0        x87_r7_75 - temp2_1
@@ -227,11 +227,11 @@
 00445556        player->velocity.z = fconvert.s(fconvert.t(player->game->subgame_rate) * fconvert.t(0.5f))
 0044555c        struct SubgameRuntime* game_3 = player->game
 00445568        if (game_3->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE)
-0044557a        vector.x = fconvert.s(fconvert.t(game_3->jetpack_pickup.world_position.x) - fconvert.t(player->cached_camera_target_world.x))
-0044558e        vector.y = fconvert.s(fconvert.t(game_3->jetpack_pickup.world_position.y) - fconvert.t(player->cached_camera_target_world.y))
+0044557a        vector.x = fconvert.s(fconvert.t(game_3->jetpack_pickup.bod.position.x) - fconvert.t(player->cached_camera_target_world.x))
+0044558e        vector.y = fconvert.s(fconvert.t(game_3->jetpack_pickup.bod.position.y) - fconvert.t(player->cached_camera_target_world.y))
 004455a2        vector_1.x = vector.x
 004455a6        vector_1.y = vector.y
-004455aa        vector.z = fconvert.s(fconvert.t(game_3->jetpack_pickup.world_position.z) - fconvert.t(player->cached_camera_target_world.z))
+004455aa        vector.z = fconvert.s(fconvert.t(game_3->jetpack_pickup.bod.position.z) - fconvert.t(player->cached_camera_target_world.z))
 004455ae        long double x87_r7_88 = fconvert.t(player->body.transform.position.y)
 004455b1        long double temp4_1 = fconvert.t(0.49000001f)
 004455b1        x87_r7_88 - temp4_1

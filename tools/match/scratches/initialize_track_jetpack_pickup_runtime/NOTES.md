@@ -21,3 +21,8 @@ the parent installs table `0x497318`, whose entry is
 `BodBase::initialize_bod_base()` directly. The parent remains exact at 17/17
 instructions with six clean operands, both embedded Vapour constructors remain
 unchanged, and the complete object still ends at `+0x19c`.
+
+2026-07-17 child inheritance closure: both embedded `Vapour` owners now derive
+from the exact `RenderableBod` subobject this constructor initializes. The
+temporary cast-only views are retired; the two child callback stores resolve
+through their inherited bodies while the constructor remains exact at 17/17.

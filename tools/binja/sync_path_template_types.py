@@ -31,10 +31,21 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 SYMBOL_UPDATES = (
     ("0x408040", "initialize_noop_renderable_bod"),
     ("0x408060", "initialize_runtime_pools_and_path_template_bank"),
+    ("0x4084b0", "initialize_track_speedup_runtime"),
+    ("0x4084d0", "initialize_track_jetpack_pickup_runtime"),
+    ("0x408510", "initialize_track_health_pickup_runtime"),
     ("0x408590", "initialize_track_row_runtime"),
     ("0x408650", "initialize_fringe_object"),
     ("0x42f6e0", "initialize_object_constructor_thunk"),
+    ("0x442500", "initialize_vapour"),
+    ("0x442540", "reset_vapour"),
+    ("0x442560", "add_vapour_point"),
+    ("0x4425f0", "update_vapour"),
     ("0x4972b0", "g_noop_runtime_callback_table"),
+    ("0x497314", "g_sub_speed_up_vtable"),
+    ("0x497318", "g_jet_pack_vtable"),
+    ("0x49731c", "g_vapour_vtable"),
+    ("0x497320", "g_sub_health_vtable"),
     ("0x497330", "g_row_model_vtable"),
     ("0x497344", "g_fringe_vtable"),
     ("0x44c870", "initialize_global_identity_matrix_thunk"),
@@ -241,6 +252,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubRingState",
     "SubRingKind",
     "SubRingSlotCursor",
+    "JetPackSlotCursor",
     "SubHealthSlotCursor",
     "SlugSlotCursor",
     "SubLazerSlotCursor",
@@ -992,6 +1004,28 @@ SPAWN_TRACK_RING_USER_VAR_UPDATES = (
     ),
 )
 
+# The pickup spawners retain a SubgameRuntime-relative cursor while advancing
+# the fixed-size slot stride. These prefix views make the inline JetPack and
+# SubHealth owners visible without pretending the cursor owns another runtime.
+SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES = (
+    (
+        "spawn_track_health_pickup",
+        "RegisterVariableSourceType",
+        60,
+        72,
+        "health_cursor",
+        "SubHealthSlotCursor*",
+    ),
+    (
+        "spawn_track_jetpack_pickup",
+        "RegisterVariableSourceType",
+        61,
+        72,
+        "jetpack_cursor",
+        "JetPackSlotCursor*",
+    ),
+)
+
 # The collision dispatcher keeps byte offsets in EDI and repeatedly forms a
 # temporary `SubgameRuntime + slot_offset` pointer in EAX. These analysis-only
 # cursor views name the embedded slot reached by each large displacement while
@@ -1448,7 +1482,7 @@ GAME_ROOT_FIELD_UPDATES = (
 )
 
 VAPOUR_FIELD_UPDATES = (
-    ("0x24", "owner", "Object*"),
+    ("0x00", "body", "RenderableBod"),
     ("0x80", "point_count", "int32_t"),
     ("0x84", "capacity", "int32_t"),
     ("0x88", "half_width", "float"),
@@ -1457,9 +1491,18 @@ VAPOUR_FIELD_UPDATES = (
 )
 
 JETPACK_FIELD_UPDATES = (
+    ("0x00", "bod", "BodBase"),
     ("0x44", "owner_game", "SubgameRuntime*"),
     ("0x74", "vapour_a", "Vapour"),
     ("0x108", "vapour_b", "Vapour"),
+)
+
+SUB_HEALTH_FIELD_UPDATES = (
+    ("0x00", "bod", "BodBase"),
+)
+
+SUB_SPEED_UP_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
 )
 
 BANNER_FIELD_UPDATES = (
@@ -1618,6 +1661,10 @@ TUTORIAL_FIELD_UPDATES = (
 
 DATA_VAR_UPDATES = (
     ("0x4972b0", "void*"),
+    ("0x497314", "void*"),
+    ("0x497318", "void*"),
+    ("0x49731c", "void*"),
+    ("0x497320", "void*"),
     ("0x4ac5c8", "TipData"),
 )
 
@@ -2234,12 +2281,20 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "void __thiscall update_twinkle_manager(TwinkleManager* manager)",
     ),
     (
+        "initialize_track_speedup_runtime",
+        "SubSpeedUp* __thiscall initialize_track_speedup_runtime(SubSpeedUp* speedup)",
+    ),
+    (
         "initialize_track_jetpack_pickup_runtime",
         "JetPack* __thiscall initialize_track_jetpack_pickup_runtime(JetPack* jetpack)",
     ),
     (
         "update_track_jetpack_pickup",
         "void __thiscall update_track_jetpack_pickup(JetPack* jetpack)",
+    ),
+    (
+        "initialize_track_health_pickup_runtime",
+        "SubHealth* __thiscall initialize_track_health_pickup_runtime(SubHealth* pickup)",
     ),
     (
         "initialize_vapour",
@@ -2729,6 +2784,8 @@ def main() -> int:
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
+                ("SubHealth", SUB_HEALTH_FIELD_UPDATES),
+                ("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
@@ -2789,6 +2846,7 @@ def main() -> int:
                 *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
                 *REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES,
                 *SPAWN_TRACK_RING_USER_VAR_UPDATES,
+                *SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES,
                 *COLLISION_POOL_CURSOR_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,

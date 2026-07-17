@@ -7,14 +7,14 @@ void Vapour::update_vapour()
 {
     int count = point_count;
     if (count < 2) {
-        int result = flags;
+        int result = list_flags;
         result &= ~0x20;
-        flags = result;
+        list_flags = result;
         return;
     }
 
-    flags |= 0x20;
-    owner->vertex_count = (count << 2) - 4;
+    list_flags |= 0x20;
+    object->vertex_count = (count << 2) - 4;
 
     if (z_floor != 0) {
         for (int clamp_index = 0; clamp_index < point_count; ++clamp_index) {
@@ -26,40 +26,40 @@ void Vapour::update_vapour()
 
     float uv_mid = 0.5f;
     for (int segment = 0; segment < point_count - 1; ++segment) {
-        owner->vertices[segment * 4] =
+        object->vertices[segment * 4] =
             points[segment].basis_right * half_width + points[segment].position;
-        owner->vertices[segment * 4 + 1] =
+        object->vertices[segment * 4 + 1] =
             points[segment].basis_right * -half_width + points[segment].position;
-        owner->vertices[segment * 4 + 2] =
+        object->vertices[segment * 4 + 2] =
             points[segment].basis_right * -half_width + points[segment + 1].position;
-        owner->vertices[segment * 4 + 3] =
+        object->vertices[segment * 4 + 3] =
             points[segment].basis_right * half_width + points[segment + 1].position;
 
         int current_count = point_count;
         if (current_count == 2) {
-            owner->facequads[segment].uv[0].v = 0.0f;
-            owner->facequads[segment].uv[1].v = 0.0f;
-            owner->facequads[segment].uv[2].v = 1.0f;
-            owner->facequads[segment].uv[3].v = 1.0f;
+            object->facequads[segment].uv[0].v = 0.0f;
+            object->facequads[segment].uv[1].v = 0.0f;
+            object->facequads[segment].uv[2].v = 1.0f;
+            object->facequads[segment].uv[3].v = 1.0f;
         } else if (segment == 0) {
-            owner->facequads[0].uv[0].v = 0.0f;
-            owner->facequads[0].uv[1].v = 0.0f;
-            owner->facequads[0].uv[2].v = uv_mid;
-            owner->facequads[0].uv[3].v = uv_mid;
+            object->facequads[0].uv[0].v = 0.0f;
+            object->facequads[0].uv[1].v = 0.0f;
+            object->facequads[0].uv[2].v = uv_mid;
+            object->facequads[0].uv[3].v = uv_mid;
         } else if (segment == current_count - 2) {
-            owner->facequads[segment].uv[0].v = uv_mid;
-            owner->facequads[segment].uv[1].v = uv_mid;
-            owner->facequads[segment].uv[2].v = 1.0f;
-            owner->facequads[segment].uv[3].v = 1.0f;
+            object->facequads[segment].uv[0].v = uv_mid;
+            object->facequads[segment].uv[1].v = uv_mid;
+            object->facequads[segment].uv[2].v = 1.0f;
+            object->facequads[segment].uv[3].v = 1.0f;
         } else {
-            owner->facequads[segment].uv[0].v = uv_mid;
-            owner->facequads[segment].uv[1].v = uv_mid;
-            owner->facequads[segment].uv[2].v = uv_mid;
-            owner->facequads[segment].uv[3].v = uv_mid;
+            object->facequads[segment].uv[0].v = uv_mid;
+            object->facequads[segment].uv[1].v = uv_mid;
+            object->facequads[segment].uv[2].v = uv_mid;
+            object->facequads[segment].uv[3].v = uv_mid;
         }
 
     }
 
     int result = point_count * 2 - 2;
-    *owner->group_primitive_counts = result;
+    *object->group_primitive_counts = result;
 }

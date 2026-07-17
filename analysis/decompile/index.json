@@ -1,116 +1,84 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 23,
+  "function_count": 16,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 23,
-  "ida_exported": 699,
+  "bn_exported": 16,
+  "ida_exported": 16,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "ida_refreshed": false,
-  "health_check_ran": true,
+  "ida_refreshed": true,
+  "health_check_ran": false,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_looptheloop_path_template_pair",
-      "address": "0x41b0f0"
+      "name": "initialize_track_speedup_runtime",
+      "address": "0x4084b0"
     },
     {
-      "name": "initialize_loopout_path_template_pair",
-      "address": "0x41c5f0"
+      "name": "initialize_track_jetpack_pickup_runtime",
+      "address": "0x4084d0"
     },
     {
-      "name": "initialize_hump_path_template_pair",
-      "address": "0x41d030"
+      "name": "initialize_track_health_pickup_runtime",
+      "address": "0x408510"
     },
     {
-      "name": "initialize_dump_path_template_pair",
-      "address": "0x41da30"
+      "name": "initialize_golb_shot",
+      "address": "0x408690"
     },
     {
-      "name": "initialize_dip_path_template_pair",
-      "address": "0x41e440"
+      "name": "update_golb_ai",
+      "address": "0x414820"
     },
     {
-      "name": "initialize_screw_path_template_pair",
-      "address": "0x41eda0"
+      "name": "spawn_track_health_pickup",
+      "address": "0x43d6c0"
     },
     {
-      "name": "initialize_slalombig_path_template_pair",
-      "address": "0x4221f0"
+      "name": "spawn_track_jetpack_pickup",
+      "address": "0x43d890"
     },
     {
-      "name": "initialize_sweep_path_template_pair",
-      "address": "0x422c00"
+      "name": "update_track_health_pickup",
+      "address": "0x43ecc0"
     },
     {
-      "name": "initialize_snake_path_template_pair",
-      "address": "0x423580"
+      "name": "update_track_speedup",
+      "address": "0x43ee50"
     },
     {
-      "name": "initialize_supertramp_path_template_pair",
-      "address": "0x423f10"
+      "name": "update_track_jetpack_pickup",
+      "address": "0x43efb0"
     },
     {
-      "name": "initialize_p_path_template_pair",
-      "address": "0x425a40"
+      "name": "remove_subgame_bods",
+      "address": "0x440910"
     },
     {
-      "name": "initialize_start_path_template_pair",
-      "address": "0x426400"
+      "name": "initialize_vapour",
+      "address": "0x442500"
     },
     {
-      "name": "initialize_turnover_path_template_pair",
-      "address": "0x426cb0"
+      "name": "reset_vapour",
+      "address": "0x442540"
     },
     {
-      "name": "initialize_turnoverdouble_path_template_pair",
-      "address": "0x427640"
+      "name": "add_vapour_point",
+      "address": "0x442560"
     },
     {
-      "name": "initialize_turnunder_path_template_pair",
-      "address": "0x427fe0"
+      "name": "update_vapour",
+      "address": "0x4425f0"
     },
     {
-      "name": "initialize_wibble_path_template_pair",
-      "address": "0x4289a0"
-    },
-    {
-      "name": "initialize_invert_path_template_pair",
-      "address": "0x429250"
-    },
-    {
-      "name": "initialize_halfpipe_path_template_pair",
-      "address": "0x429b20"
-    },
-    {
-      "name": "initialize_twister_path_template_pair",
-      "address": "0x42a540"
-    },
-    {
-      "name": "initialize_twister2_path_template_pair",
-      "address": "0x42af30"
-    },
-    {
-      "name": "initialize_loopbow_path_template_pair",
-      "address": "0x42ba80"
-    },
-    {
-      "name": "initialize_hill_valley_path_template_pair",
-      "address": "0x42d570"
-    },
-    {
-      "name": "initialize_sbend_path_template_pair",
-      "address": "0x42df00"
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     }
-  ],
-  "health_check_count": 503,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  ]
 }

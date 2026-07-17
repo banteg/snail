@@ -2,103 +2,100 @@
 /* function: update_track_jetpack_pickup @ 0x43efb0 */
 /* selector: update_track_jetpack_pickup */
 
-// Updates one live track jetpack pickup: handles state 1/2 removal, kills the
-// nested sprite on cleanup, and advances the sine bob while the pickup is live.
-// The entry gate reads owner_game +0x09, now named subgame_pause_gate; this is
-// distinct from the global/UI Game::pause_gate view at root +0x74621.
-void __thiscall update_track_jetpack_pickup(int this)
+// Exact `cRJetPack::AI()`: runs the owned JetPack singleton through bobbing and teardown states, inlining the shared `cLinkedList<cRBod>::Remove` operation in both removal arms. The Windows constructor table at 0x497318 points directly here, while Android and iOS retain the authored member.
+void __thiscall update_track_jetpack_pickup(JetPack *jetpack)
 {
-  int v2; // eax
-  int v3; // eax
-  int v4; // eax
-  char *v5; // ecx
-  int v6; // eax
-  int v7; // eax
-  int v8; // eax
-  int v9; // eax
-  int v10; // eax
-  int v11; // eax
-  int v12; // ecx
+  TrackPickupState state; // eax
+  __int32 v3; // eax
+  uint32_t list_flags; // eax
+  BodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v8; // eax
+  struct BodNode *v9; // eax
+  struct BodNode *v10; // eax
+  uint32_t v11; // eax
+  Sprite *sprite; // ecx
   double v13; // st7
   unsigned __int8 v15; // c0
   unsigned __int8 v16; // c3
   float v17; // [esp+0h] [ebp-Ch]
 
-  if ( !*(_BYTE *)(*(_DWORD *)(this + 68) + 9) )
+  if ( !jetpack->owner_game->subgame_pause_gate )
   {
-    v2 = *(_DWORD *)(this + 56);
-    if ( v2 )
+    state = jetpack->state;
+    if ( state )
     {
-      v3 = v2 - 1;
+      v3 = state - 1;
       if ( v3 )
       {
         if ( v3 == 1 )
         {
-          v4 = *(_DWORD *)(this + 4);
-          *(_DWORD *)(this + 56) = 0;
-          v5 = (char *)MEMORY[0x4DF904] + 1448;
-          if ( (v4 & 0x200) == 0 )
+          list_flags = jetpack->bod.bod.list_flags;
+          jetpack->state = TRACK_PICKUP_STATE_INACTIVE;
+          p_active_bod_list = &g_game_base->active_bod_list;
+          if ( (list_flags & 0x200) == 0 )
           {
 LABEL_6:
             report_errorf(aListRemove);
-            kill_sprite(*(_DWORD *)(this + 100));
+            kill_sprite((int)jetpack->sprite);
             return;
           }
-          if ( (v4 & 0x40) != 0 )
+          if ( (list_flags & 0x40) != 0 )
             goto LABEL_8;
-          v6 = *(_DWORD *)(this + 12);
-          if ( v6 )
-            *(_DWORD *)(v6 + 8) = *(_DWORD *)(this + 8);
-          v7 = *(_DWORD *)(this + 8);
-          if ( v7 )
+          list_next = jetpack->bod.bod.list_next;
+          if ( list_next )
+            list_next->list_prev = jetpack->bod.bod.list_prev;
+          list_prev = jetpack->bod.bod.list_prev;
+          if ( list_prev )
           {
-            *(_DWORD *)(v7 + 12) = *(_DWORD *)(this + 12);
+            list_prev->list_next = jetpack->bod.bod.list_next;
 LABEL_21:
-            *(_DWORD *)(this + 12) = *((_DWORD *)v5 + 2);
-            *((_DWORD *)v5 + 2) = this;
-            v11 = *(_DWORD *)(this + 4);
-            v12 = *(_DWORD *)(this + 100);
+            jetpack->bod.bod.list_next = p_active_bod_list->free_top;
+            p_active_bod_list->free_top = &jetpack->bod.bod;
+            v11 = jetpack->bod.bod.list_flags;
+            sprite = jetpack->sprite;
             BYTE1(v11) &= ~2u;
-            *(_DWORD *)(this + 4) = v11;
-            kill_sprite(v12);
+            jetpack->bod.bod.list_flags = v11;
+            kill_sprite((int)sprite);
             return;
           }
           goto LABEL_20;
         }
       }
-      else if ( *(float *)(this + 24) < (double)*(float *)(*(_DWORD *)(this + 60) + 10624) )
+      else if ( jetpack->bod.position.z < (double)jetpack->owner->interaction_max_z )
       {
-        v8 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 56) = 0;
-        v5 = (char *)MEMORY[0x4DF904] + 1448;
+        v8 = jetpack->bod.bod.list_flags;
+        jetpack->state = TRACK_PICKUP_STATE_INACTIVE;
+        p_active_bod_list = &g_game_base->active_bod_list;
         if ( (v8 & 0x200) == 0 )
           goto LABEL_6;
         if ( (v8 & 0x40) != 0 )
         {
 LABEL_8:
           report_errorf(aListRemoveNext);
-          kill_sprite(*(_DWORD *)(this + 100));
+          kill_sprite((int)jetpack->sprite);
           return;
         }
-        v9 = *(_DWORD *)(this + 12);
+        v9 = jetpack->bod.bod.list_next;
         if ( v9 )
-          *(_DWORD *)(v9 + 8) = *(_DWORD *)(this + 8);
-        v10 = *(_DWORD *)(this + 8);
+          v9->list_prev = jetpack->bod.bod.list_prev;
+        v10 = jetpack->bod.bod.list_prev;
         if ( v10 )
         {
-          *(_DWORD *)(v10 + 12) = *(_DWORD *)(this + 12);
+          v10->list_next = jetpack->bod.bod.list_next;
           goto LABEL_21;
         }
 LABEL_20:
-        *((_DWORD *)v5 + 1) = *(_DWORD *)(this + 12);
+        p_active_bod_list->first = jetpack->bod.bod.list_next;
         goto LABEL_21;
       }
-      v13 = *(float *)(this + 112) + *(float *)(this + 108);
-      *(float *)(this + 108) = v13;
+      v13 = jetpack->bob_phase_step + jetpack->bob_phase;
+      jetpack->bob_phase = v13;
       if ( !(v15 | v16) )
-        *(float *)(this + 108) = v13 - 1.0;
-      v17 = *(float *)(this + 108) * 6.2831855;
-      *(float *)(*(_DWORD *)(this + 100) + 76) = sine(v17) * 0.30000001 + *(float *)(this + 20);
+        jetpack->bob_phase = v13 - 1.0;
+      v17 = jetpack->bob_phase * 6.2831855;
+      jetpack->sprite->position.y = sine(v17) * 0.30000001 + jetpack->bod.position.y;
     }
   }
 }
