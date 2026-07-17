@@ -13,3 +13,8 @@ with one clean masked operand.
 means the next AI tick immediately wraps into the opaque state and plays the
 warning sample. Matching remains exact at 4/4 instructions with one clean
 operand.
+
+2026-07-17 paired replay: IDA now agrees with Binary Ninja on the authored
+`void __thiscall(Warning*)` ABI, including `warning->phase`, `state`, and owned
+`border`. Focused matching remains exact at 4/4 instructions with one clean
+masked operand.

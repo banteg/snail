@@ -178,6 +178,30 @@ def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None
     )
 
 
+def test_warning_replay_keeps_exact_owner_and_six_member_abis() -> None:
+    binja_sync = (BINJA_DIR / "sync_warning_types.py").read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_warning_types.py").read_text(encoding="utf-8")
+    ida_runner = (IDA_DIR / "sync_warning_types.py").read_text(encoding="utf-8")
+    analysis_header = (HEADER_DIR / "warning_types.h").read_text(encoding="utf-8")
+
+    for source in (binja_sync, ida_sync):
+        assert "void __thiscall initialize_warning(Warning* warning)" in source
+        assert "void __thiscall uninit_warning(Warning* warning)" in source
+        assert "void __thiscall start_warning(Warning* warning)" in source
+        assert "void __thiscall stop_warning(Warning* warning)" in source
+        assert "void __thiscall stop_warning_sample(Warning* warning)" in source
+        assert "void __thiscall update_warning(Warning* warning)" in source
+
+    assert '"Warning": 0x10' in binja_sync
+    assert '"WarningState": 0x04' in binja_sync
+    assert 'struct_updates=(("Warning", WARNING_FIELD_UPDATES),)' in binja_sync
+    assert "typedef enum WarningState {" in analysis_header
+    assert "struct FrontendWidget* border;" in analysis_header
+    assert "Warning_must_be_0x10" in analysis_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "Warning": 0x10,' in ida_sync
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/warning_types.h"' in ida_runner
+
+
 def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     high_score_sync = (BINJA_DIR / "sync_high_score_screen_types.py").read_text(

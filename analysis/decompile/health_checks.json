@@ -4140,6 +4140,145 @@
       ]
     },
     {
+      "name": "bn_warning_initializer_exact_owner",
+      "artifact": "analysis/decompile/binja/functions/00446e80-initialize_warning.c",
+      "required_substrings": [
+        "warning->border = allocate_border(&g_game_base->border_manager)",
+        "warning->border->sprite_shadow_offset = 0f",
+        "warning->phase_step = 0.0833333358f",
+        "warning->phase = 0f",
+        "warning->state = 0"
+      ],
+      "forbidden_substrings": [
+        "actor->",
+        "data_4df904",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_warning_initializer_exact_owner",
+      "artifact": "analysis/decompile/ida/functions/00446e80-initialize_warning.c",
+      "required_substrings": [
+        "void __thiscall initialize_warning(Warning *warning)",
+        "warning->border = allocate_border(&g_game_base->border_manager);",
+        "warning->border->sprite_shadow_offset = 0.0;",
+        "warning->phase_step = 0.083333336;",
+        "warning->state = WARNING_STATE_INACTIVE;"
+      ],
+      "forbidden_substrings": [
+        "sub_446E80",
+        "int *this",
+        "*(this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_warning_start_owner",
+      "artifact": "analysis/decompile/binja/functions/00446f30-start_warning.c",
+      "required_substrings": [
+        "warning->phase = 1f",
+        "warning->state = 2",
+        "unhide_border_init(warning->border)"
+      ],
+      "forbidden_substrings": [
+        "actor->",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_warning_start_owner_and_void_abi",
+      "artifact": "analysis/decompile/ida/functions/00446f30-start_warning.c",
+      "required_substrings": [
+        "void __thiscall start_warning(Warning *warning)",
+        "warning->phase = 1.0;",
+        "warning->state = WARNING_STATE_FADING;",
+        "unhide_border_init(warning->border);"
+      ],
+      "forbidden_substrings": [
+        "__int16 __thiscall",
+        "sub_446F30",
+        "_DWORD *this",
+        "return unhide_border_init",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_warning_stop_owner",
+      "artifact": "analysis/decompile/binja/functions/00446f50-stop_warning.c",
+      "required_substrings": [
+        "warning->state = 0",
+        "hide_border_init(warning->border)"
+      ],
+      "forbidden_substrings": [
+        "actor->",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_warning_stop_owner",
+      "artifact": "analysis/decompile/ida/functions/00446f50-stop_warning.c",
+      "required_substrings": [
+        "void __thiscall stop_warning(Warning *warning)",
+        "warning->state = WARNING_STATE_INACTIVE;",
+        "hide_border_init(warning->border);"
+      ],
+      "forbidden_substrings": [
+        "sub_446F50",
+        "_DWORD **this",
+        "*this = nullptr",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_warning_update_state_border_and_sound_owners",
+      "artifact": "analysis/decompile/binja/functions/00446f80-update_warning.c",
+      "required_substrings": [
+        "enum WarningState state = warning->state",
+        "warning->border->hot_text_color.a",
+        "warning->phase_step",
+        "warning->phase",
+        "play_sound_effect(&g_sound_effect_manager, 0x32)"
+      ],
+      "forbidden_substrings": [
+        "float* arg1",
+        "actor->",
+        "data_4df904",
+        "play_sound_effect(0x32)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_warning_update_state_border_and_sound_owners",
+      "artifact": "analysis/decompile/ida/functions/00446f80-update_warning.c",
+      "required_substrings": [
+        "void __thiscall update_warning(Warning *warning)",
+        "warning->state == WARNING_STATE_OPAQUE",
+        "warning->state == WARNING_STATE_FADING",
+        "warning->border->hot_text_color.a",
+        "warning->phase_step + warning->phase",
+        "play_sound_effect(&g_sound_effect_manager, 50);"
+      ],
+      "forbidden_substrings": [
+        "float *this",
+        "*(_DWORD *)this",
+        "*((_DWORD *)this",
+        "MEMORY[0x4DF904]",
+        "play_sound_effect(50)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_warning_sound_manager_handle_flow",
       "artifact": "analysis/decompile/binja/functions/00446f60-stop_warning_sample.c",
       "required_substrings": [
@@ -4157,10 +4296,12 @@
       "name": "ida_warning_sound_manager_handle_flow",
       "artifact": "analysis/decompile/ida/functions/00446f60-stop_warning_sample.c",
       "required_substrings": [
-        "v0 = play_warning_sample_backend(&g_sound_effect_manager, 50);",
-        "stop_warning_sample_handle(&g_sound_effect_manager, v0);"
+        "void __thiscall stop_warning_sample(Warning *warning)",
+        "v1 = play_warning_sample_backend(&g_sound_effect_manager, 50);",
+        "stop_warning_sample_handle(&g_sound_effect_manager, v1);"
       ],
       "forbidden_substrings": [
+        "void stop_warning_sample()",
         "play_warning_sample_backend(50)",
         "return stop_warning_sample_handle",
         "__asm",

@@ -3,36 +3,36 @@
 /* selector: update_warning */
 
 // Advances Player's embedded cRWarning phase and warning-border alpha while gameplay is unpaused, alternating its solid and fade states and replaying the warning cue. Android and iOS retain the same owner role as cRWarning::AI().
-void __thiscall update_warning(float *this)
+void __thiscall update_warning(Warning *warning)
 {
   double v1; // st7
   double v2; // st7
 
-  if ( !g_game_base->subgame.subgame_pause_gate && *(_DWORD *)this )
+  if ( !g_game_base->subgame.subgame_pause_gate && warning->state )
   {
-    if ( *(_DWORD *)this == 1 )
+    if ( warning->state == WARNING_STATE_OPAQUE )
     {
-      *(_DWORD *)(*((_DWORD *)this + 3) + 520) = 1065336439;
-      v2 = *(this + 2) + *(this + 1);
-      *(this + 1) = v2;
+      warning->border->hot_text_color.a = 0.99900001;
+      v2 = warning->phase_step + warning->phase;
+      warning->phase = v2;
       if ( v2 > 1.0 )
       {
-        *(this + 1) = 0.0;
-        *(_DWORD *)this = 2;
+        warning->phase = 0.0;
+        warning->state = WARNING_STATE_FADING;
       }
     }
-    else if ( *(_DWORD *)this == 2 )
+    else if ( warning->state == WARNING_STATE_FADING )
     {
-      if ( *(this + 1) >= 0.5 )
-        *(_DWORD *)(*((_DWORD *)this + 3) + 520) = 0;
+      if ( warning->phase >= 0.5 )
+        warning->border->hot_text_color.a = 0.0;
       else
-        *(float *)(*((_DWORD *)this + 3) + 520) = 1.0 - (*(this + 1) + *(this + 1));
-      v1 = *(this + 2) + *(this + 1);
-      *(this + 1) = v1;
+        warning->border->hot_text_color.a = 1.0 - (warning->phase + warning->phase);
+      v1 = warning->phase_step + warning->phase;
+      warning->phase = v1;
       if ( v1 > 1.0 )
       {
-        *(this + 1) = 0.0;
-        *(_DWORD *)this = 1;
+        warning->phase = 0.0;
+        warning->state = WARNING_STATE_OPAQUE;
         play_sound_effect(&g_sound_effect_manager, 50);
       }
     }

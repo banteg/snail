@@ -34,3 +34,12 @@ Initialization now names the authored controller's reset state as
 `WARNING_STATE_INACTIVE`. The complete Windows field-xref set and Android
 `cRWarning` methods expose only states 0, 1, and 2. Focused output remains exact
 at 32/32 instructions with six clean operands.
+
+## 2026-07-17 paired decompiler ownership replay
+
+The narrow `Warning` replay now guards the exact `0x10` Windows owner and all
+six `void __thiscall(Warning*)` lifecycle ABIs in both databases. Binary Ninja
+was already current through the broader root replay; IDA applied the missing
+receiver types, so both tracked decompiles now expose `state`, `phase`,
+`phase_step`, and the owned `FrontendWidget* border` directly. Focused matching
+remains exact at 32/32 instructions with six clean masked operands.

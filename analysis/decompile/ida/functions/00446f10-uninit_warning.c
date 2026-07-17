@@ -2,8 +2,8 @@
 /* function: uninit_warning @ 0x446f10 */
 /* selector: uninit_warning */
 
-void __thiscall sub_446F10(_DWORD **this)
+// Releases the border owned by Player's embedded cRWarning. Android preserves this lifecycle edge as cRWarning::UnInit().
+void __thiscall uninit_warning(Warning *warning)
 {
-  kill_border(*(this + 3));
+  kill_border(&warning->border->list_kind);
 }
-

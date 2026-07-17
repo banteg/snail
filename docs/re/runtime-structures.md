@@ -389,6 +389,10 @@ Current practical read:
   - `start_warning` seeds the fading phase at `1.0`, forcing the next update to
     wrap into opaque and play sample 50; opaque then advances back into the
     fading/zero-hold half-cycle until `stop_warning` returns it to inactive
+  - the paired narrow replay guards this exact owner in both databases: all six
+    lifecycle methods are `void __thiscall(Warning*)`, IDA now renders the
+    state/phase/border fields directly, and the receiver-free Windows
+    `StopSample` body remains a member because the mobile ports retain that edge
 - `apply_damage_gauge_delta` ignores unforced positive damage while
   `state == DAMAGE_GUAGE_STATE_DRAINING`; the draining auto-decay path is the
   forced caller

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 10,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 10,
-  "ida_exported": 10,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,12 +17,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_game_assets_and_world",
-      "address": "0x40acf0"
+      "name": "initialize_warning",
+      "address": "0x446e80"
     },
     {
-      "name": "shoot_subgoldy",
-      "address": "0x441ad0"
+      "name": "uninit_warning",
+      "address": "0x446f10"
+    },
+    {
+      "name": "start_warning",
+      "address": "0x446f30"
+    },
+    {
+      "name": "stop_warning",
+      "address": "0x446f50"
     },
     {
       "name": "stop_warning_sample",
@@ -31,33 +39,9 @@
     {
       "name": "update_warning",
       "address": "0x446f80"
-    },
-    {
-      "name": "initialize_sound_bank",
-      "address": "0x44dcb0"
-    },
-    {
-      "name": "play_sound_effect_at_position",
-      "address": "0x44dce0"
-    },
-    {
-      "name": "play_sound_effect",
-      "address": "0x44dde0"
-    },
-    {
-      "name": "play_sound_effect_scaled",
-      "address": "0x44de00"
-    },
-    {
-      "name": "play_warning_sample_backend",
-      "address": "0x44de20"
-    },
-    {
-      "name": "stop_warning_sample_handle",
-      "address": "0x44de30"
     }
   ],
-  "health_check_count": 625,
+  "health_check_count": 643,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

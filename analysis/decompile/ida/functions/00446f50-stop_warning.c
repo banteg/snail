@@ -2,9 +2,9 @@
 /* function: stop_warning @ 0x446f50 */
 /* selector: stop_warning */
 
-void __thiscall sub_446F50(_DWORD **this)
+// Stops the embedded cRWarning state machine and hides its border. Android and iOS retain this method as cRWarning::Stop().
+void __thiscall stop_warning(Warning *warning)
 {
-  *this = nullptr;
-  hide_border_init(*(this + 3));
+  warning->state = WARNING_STATE_INACTIVE;
+  hide_border_init(warning->border);
 }
-

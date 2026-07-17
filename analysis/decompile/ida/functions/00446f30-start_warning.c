@@ -2,10 +2,10 @@
 /* function: start_warning @ 0x446f30 */
 /* selector: start_warning */
 
-__int16 __thiscall sub_446F30(_DWORD *this)
+// Starts the embedded cRWarning fade cycle and unhides its border. Android cRDamageGuage::AI() calls cRWarning::Start() through the same owner relationship.
+void __thiscall start_warning(Warning *warning)
 {
-  *(this + 1) = 1065353216;
-  *this = 2;
-  return unhide_border_init((_DWORD *)*(this + 3));
+  warning->phase = 1.0;
+  warning->state = WARNING_STATE_FADING;
+  unhide_border_init(warning->border);
 }
-

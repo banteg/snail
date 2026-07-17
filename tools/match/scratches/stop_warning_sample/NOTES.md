@@ -13,3 +13,10 @@ The exact Windows sequence also proves both nested audio helpers are
 `SoundEffectManager` methods: it loads `g_sound_effect_manager @ 0x78ff88`
 before the play call, passes the returned handle, reloads the same receiver,
 and calls the stop helper. Both callee bodies remain exact after promotion.
+
+2026-07-17 paired replay: IDA now retains the authored
+`void __thiscall(Warning*)` ABI even though the Windows body does not read its
+receiver, matching the mobile `cRWarning::StopSample` ownership edge. Both
+tracked decompilers also preserve the nested `g_sound_effect_manager` receiver.
+Focused matching remains exact at 7/7 instructions with four clean masked
+operands.

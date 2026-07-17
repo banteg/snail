@@ -11,3 +11,8 @@ with one clean masked operand.
 
 `Stop` now returns the owned actor to `WARNING_STATE_INACTIVE` before hiding
 its border. Matching remains exact at 3/3 instructions with one clean operand.
+
+2026-07-17 paired replay: IDA now agrees with Binary Ninja on the authored
+`void __thiscall(Warning*)` ABI and renders the inactive state plus owned border
+directly. Focused matching remains exact at 3/3 instructions with one clean
+masked operand.

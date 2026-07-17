@@ -91,3 +91,13 @@ the six direct reads/writes are confined to `Init`, `Start`, `Stop`, and `AI`,
 while the remaining three are whole-owner references from subgame/player
 clients. Focused output remains byte-stable at 98.08%, 52/52 instructions,
 prefix 8, with all seven operands clean and the same `sub`/`cmp` residual.
+
+## 2026-07-17 paired decompiler ownership replay
+
+IDA now agrees with Binary Ninja on `void __thiscall(Warning*)` and renders the
+complete state/phase/border graph plus the nested `g_sound_effect_manager`
+call without raw `float*` receiver arithmetic. The ownership-only replay does
+not alter matching source: focused output remains an honest 98.08%, 52/52
+instructions, prefix 8, with seven clean masked operands and only native
+`sub eax, edx` versus source-shaped `cmp eax, edx`. The rejected
+subtract-through-zero fakematch remains absent.
