@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "mini_delete_high_score_entry",
-      "address": "0x417af0"
+      "name": "initialize_high_score_screen",
+      "address": "0x416910"
     }
   ],
-  "health_check_count": 490,
+  "health_check_count": 492,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

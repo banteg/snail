@@ -1449,6 +1449,72 @@ def test_ranked_high_score_replays_preserve_owned_record_cursors() -> None:
     assert 'expected_owner = "g_game_base->subgame.sub_high_score.active_record_bank"' in ida_source
 
 
+def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
+    binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for source_type, index, storage, name, type_name in (
+        ("RegisterVariableSourceType", 451, 69, "row", "int32_t"),
+        (
+            "RegisterVariableSourceType",
+            453,
+            66,
+            "record_offset_bytes",
+            "int32_t",
+        ),
+        ("StackVariableSourceType", 456, -204, "saved_row", "int32_t"),
+        (
+            "StackVariableSourceType",
+            460,
+            -200,
+            "saved_record_offset_bytes",
+            "int32_t",
+        ),
+        (
+            "RegisterVariableSourceType",
+            464,
+            72,
+            "name_widget_cursor",
+            "FrontendWidget**",
+        ),
+    ):
+        update = (
+            '"initialize_high_score_screen",\n'
+            f'        "{source_type}",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}",'
+        )
+        assert update in binja_source
+
+    for expected in (
+        "def _sync_high_score_screen_active_bank_operands()",
+        '(0x416A89, 1, 0x6FFAE8, "8d 88 e8 fa 6f 00")',
+        '(0x416A33, 0, 0x6FFAE0, "89 90 e0 fa 6f 00")',
+        '(0x416F2C, 1, 0x6FFAE0, "8b 91 e0 fa 6f 00")',
+        "idc.op_num(operand_address, operand_index)",
+        '"byte_6FFAE0", "unk_6FFAE4", "g_parcel_set_buckets"',
+        "def _sync_high_score_screen_loop_lvars()",
+        "definition_address=0x416AD4",
+        'target_name="row"',
+        "definition_address=0x416AD6",
+        'target_name="record_offset_bytes"',
+        "definition_address=0x416AE1",
+        'target_name="name_widget_cursor"',
+        "definition_address=0x416AD9",
+        'target_name="saved_row"',
+        "definition_address=0x416ADD",
+        'target_name="record_index"',
+        '"high_score_screen_loop_lvars": high_score_screen_loop_lvars',
+    ):
+        assert expected in ida_source
+
+
 def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> None:
     binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"

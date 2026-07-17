@@ -13,7 +13,7 @@
 00416968        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
 00416980        int32_t eax_2 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "Menubg.txt")
 0041698d        struct GameRoot* game_base_1 = g_game_base
-004169a0        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax_2 * 0x124 + 0x106c7bc], 0)
+004169a0        change_backdrop(&game_base_1->backdrop, game_base_1 + eax_2 * 0x124 + 0x106c7bc, 0)
 004169b6        set_border_justify_centre(&g_game_base->border_manager, 25f)
 004169c6        capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)
 004169dc        high_score->title_widget = allocate_border(&g_game_base->border_manager)
@@ -38,117 +38,117 @@
 00416ab2        if (high_score->entering_name != 0)
 00416ac2        rstrcpy_checked_ascii(&high_score->title_widget->text_buffer, "Enter your name here!")
 00416acd        layout_frontend_widget(high_score->title_widget)
-00416ad3        int32_t ebx = 0
-00416ad5        int32_t i = 0
-00416ad8        int32_t var_cc = 0
-00416adc        int32_t i_1 = 0
-00416ae0        struct FrontendWidget* (* esi)[0xa] = &high_score->name_row_widgets
+00416ad3        int32_t row = 0
+00416ad5        int32_t record_offset_bytes = 0
+00416ad8        int32_t saved_row = 0
+00416adc        int32_t saved_record_offset_bytes = 0
+00416ae0        struct FrontendWidget** name_widget_cursor = &high_score->name_row_widgets
 00417043        struct tColour color_1
 00417043        struct tColour color_4
-00416ae3        (esi - 0x7c)->replay_row_widgets[0] = 0
+00416ae3        name_widget_cursor[0x14] = 0
 00416aed        int32_t ecx_17 = 0
-00416af1        ecx_17.b = ebx != high_score->selected_rank
+00416af1        ecx_17.b = row != high_score->selected_rank
 00416af5        int32_t ecx_19 = (ecx_17 - 1) & 2
 00416afa        struct GameRoot* game_base_4 = g_game_base
-00416b0a        if (*(game_base_4->subgame.sub_high_score.active_record_bank + i) == 1)
+00416b0a        if (*(game_base_4->subgame.sub_high_score.active_record_bank + record_offset_bytes) == 1)
 00416b10        int32_t selected_bank_2 = high_score->selected_bank
 00416b16        if (selected_bank_2 == 0)
-00416d79        float y_1 = fconvert.s(float.t(var_cc) * fconvert.t(var_c4) + fconvert.t(111f))
-00416da4        (esi - 0x7c)->row_background_widgets[0] = allocate_border(&game_base_4->border_manager)
+00416d79        float y_1 = fconvert.s(float.t(saved_row) * fconvert.t(var_c4) + fconvert.t(111f))
+00416da4        name_widget_cursor[-0x14] = allocate_border(&game_base_4->border_manager)
 00416da7        struct tColour color_7
 00416da7        struct tColour* color_20 = set_color_rgba(&color_7, 1f, 1f, 1f, 1f)
-00416dc6        initialize_frontend_widget((esi - 0x7c)->row_background_widgets[0], ecx_19 | 0x20000000, "                                               ", 0x16, 0f, y_1, color_20, 1, -228f)
-00416e00        (esi - 0x7c)->rank_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416dc6        initialize_frontend_widget(name_widget_cursor[-0x14], ecx_19 | 0x20000000, "                                               ", 0x16, 0f, y_1, color_20, 1, -228f)
+00416e00        name_widget_cursor[-0xa] = allocate_border(&g_game_base->border_manager)
 00416e03        uint32_t widget_flags_3 = ecx_19 | 0x20400000
 00416e09        struct tColour color_11
 00416e09        struct tColour* color_21 = set_color_rgba(&color_11, 1f, 1f, 1f, 1f)
-00416e21        initialize_frontend_widget((esi - 0x7c)->rank_row_widgets[0], widget_flags_3, &g_blank_text, 0x16, 0f, y_1, color_21, 1, -222f)
-00416e2f        border_add_text_number((esi - 0x7c)->rank_row_widgets[0], var_cc + 1)
-00416e37        layout_frontend_widget((esi - 0x7c)->rank_row_widgets[0])
-00416e6f        (esi - 0x7c)->name_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416e21        initialize_frontend_widget(name_widget_cursor[-0xa], widget_flags_3, &g_blank_text, 0x16, 0f, y_1, color_21, 1, -222f)
+00416e2f        border_add_text_number(name_widget_cursor[-0xa], saved_row + 1)
+00416e37        layout_frontend_widget(name_widget_cursor[-0xa])
+00416e6f        *name_widget_cursor = allocate_border(&g_game_base->border_manager)
 00416e71        struct tColour color_9
 00416e71        struct tColour* color_22 = set_color_rgba(&color_9, 1f, 1f, 1f, 1f)
-00416e97        initialize_frontend_widget((esi - 0x7c)->name_row_widgets[0], widget_flags_3, &g_game_base->subgame.sub_high_score.active_record_bank->player_name[i_1], 0x16, 0f, y_1, color_22, 1, -180f)
-00416ea5        if (var_cc == high_score->selected_rank)
-00416eb2        border_input_text_init((esi - 0x7c)->name_row_widgets[0], 0x10, &g_runtime_config.last_entered_player_name, 0x10)
-00416eb7        struct FrontendWidget* eax_37 = (esi - 0x7c)->name_row_widgets[0]
+00416e97        initialize_frontend_widget(*name_widget_cursor, widget_flags_3, &g_game_base->subgame.sub_high_score.active_record_bank->player_name[saved_record_offset_bytes], 0x16, 0f, y_1, color_22, 1, -180f)
+00416ea5        if (saved_row == high_score->selected_rank)
+00416eb2        border_input_text_init(*name_widget_cursor, 0x10, &g_runtime_config.last_entered_player_name, 0x10)
+00416eb7        struct FrontendWidget* eax_37 = *name_widget_cursor
 00416eb9        enum FrontendWidgetFlag widget_flags_1 = eax_37->widget_flags
 00416ebf        widget_flags_1:1.b |= 0x20
 00416ec2        eax_37->widget_flags = widget_flags_1
-00416eca        layout_frontend_widget((esi - 0x7c)->name_row_widgets[0])
-00416f02        (esi - 0x7c)->score_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416eca        layout_frontend_widget(*name_widget_cursor)
+00416f02        name_widget_cursor[0xa] = allocate_border(&g_game_base->border_manager)
 00416f05        struct tColour color_6
 00416f05        struct tColour* color_23 = set_color_rgba(&color_6, 1f, 1f, 1f, 1f)
-00416f1d        initialize_frontend_widget((esi - 0x7c)->score_row_widgets[0], widget_flags_3, &g_blank_text, 0x16, 0f, y_1, color_23, 3, 160f)
-00416f3a        border_add_text_number((esi - 0x7c)->score_row_widgets[0], *(&g_game_base->subgame.sub_high_score.active_record_bank->score + i_1))
-00416f42        layout_frontend_widget((esi - 0x7c)->score_row_widgets[0])
-00416f7a        (esi - 0x7c)->replay_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416f1d        initialize_frontend_widget(name_widget_cursor[0xa], widget_flags_3, &g_blank_text, 0x16, 0f, y_1, color_23, 3, 160f)
+00416f3a        border_add_text_number(name_widget_cursor[0xa], *(&g_game_base->subgame.sub_high_score.active_record_bank->score + saved_record_offset_bytes))
+00416f42        layout_frontend_widget(name_widget_cursor[0xa])
+00416f7a        name_widget_cursor[0x14] = allocate_border(&g_game_base->border_manager)
 00416f7d        struct tColour color_8
 00416f7d        struct tColour* color_24 = set_color_rgba(&color_8, 1f, 1f, 1f, 1f)
-00416f9b        initialize_frontend_widget((esi - 0x7c)->replay_row_widgets[0], ecx_19 | 0x20000014, "Replay", 0x16, 0f, y_1, color_24, 2, 125f)
-00416fa3        hide_border_init((esi - 0x7c)->replay_row_widgets[0])
+00416f9b        initialize_frontend_widget(name_widget_cursor[0x14], ecx_19 | 0x20000014, "Replay", 0x16, 0f, y_1, color_24, 2, 125f)
+00416fa3        hide_border_init(name_widget_cursor[0x14])
 00416b1d        if (selected_bank_2 == 1)
-00416b37        float y = fconvert.s(float.t(var_cc) * fconvert.t(var_c4) + fconvert.t(111f))
-00416b5f        (esi - 0x7c)->row_background_widgets[0] = allocate_border(&game_base_4->border_manager)
+00416b37        float y = fconvert.s(float.t(saved_row) * fconvert.t(var_c4) + fconvert.t(111f))
+00416b5f        name_widget_cursor[-0x14] = allocate_border(&game_base_4->border_manager)
 00416b62        struct tColour* color_15 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00416b82        initialize_frontend_widget((esi - 0x7c)->row_background_widgets[0], ecx_19 | 0x20000000, "                                           ", 0x16, 0f, y, color_15, 1, -228f)
-00416bb9        (esi - 0x7c)->rank_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416b82        initialize_frontend_widget(name_widget_cursor[-0x14], ecx_19 | 0x20000000, "                                           ", 0x16, 0f, y, color_15, 1, -228f)
+00416bb9        name_widget_cursor[-0xa] = allocate_border(&g_game_base->border_manager)
 00416bbc        uint32_t widget_flags_2 = ecx_19 | 0x20400000
 00416bc2        struct tColour* color_16 = set_color_rgba(&color_3, 1f, 1f, 1f, 1f)
-00416bda        initialize_frontend_widget((esi - 0x7c)->rank_row_widgets[0], widget_flags_2, &g_blank_text, 0x16, 0f, y, color_16, 1, -222f)
-00416be8        border_add_text_number((esi - 0x7c)->rank_row_widgets[0], var_cc + 1)
-00416bf0        layout_frontend_widget((esi - 0x7c)->rank_row_widgets[0])
-00416c28        (esi - 0x7c)->name_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416bda        initialize_frontend_widget(name_widget_cursor[-0xa], widget_flags_2, &g_blank_text, 0x16, 0f, y, color_16, 1, -222f)
+00416be8        border_add_text_number(name_widget_cursor[-0xa], saved_row + 1)
+00416bf0        layout_frontend_widget(name_widget_cursor[-0xa])
+00416c28        *name_widget_cursor = allocate_border(&g_game_base->border_manager)
 00416c2a        struct tColour color_10
 00416c2a        struct tColour* color_17 = set_color_rgba(&color_10, 1f, 1f, 1f, 1f)
-00416c51        initialize_frontend_widget((esi - 0x7c)->name_row_widgets[0], widget_flags_2, &g_game_base->subgame.sub_high_score.active_record_bank->player_name[i_1], 0x16, 0f, y, color_17, 1, -180f)
-00416c5f        if (var_cc == high_score->selected_rank)
-00416c6c        border_input_text_init((esi - 0x7c)->name_row_widgets[0], 0x10, &g_runtime_config.last_entered_player_name, 0x10)
-00416c71        struct FrontendWidget* eax_19 = (esi - 0x7c)->name_row_widgets[0]
+00416c51        initialize_frontend_widget(*name_widget_cursor, widget_flags_2, &g_game_base->subgame.sub_high_score.active_record_bank->player_name[saved_record_offset_bytes], 0x16, 0f, y, color_17, 1, -180f)
+00416c5f        if (saved_row == high_score->selected_rank)
+00416c6c        border_input_text_init(*name_widget_cursor, 0x10, &g_runtime_config.last_entered_player_name, 0x10)
+00416c71        struct FrontendWidget* eax_19 = *name_widget_cursor
 00416c73        enum FrontendWidgetFlag widget_flags = eax_19->widget_flags
 00416c79        widget_flags:1.b |= 0x20
 00416c7c        eax_19->widget_flags = widget_flags
-00416c84        layout_frontend_widget((esi - 0x7c)->name_row_widgets[0])
-00416cb8        (esi - 0x7c)->score_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416c84        layout_frontend_widget(*name_widget_cursor)
+00416cb8        name_widget_cursor[0xa] = allocate_border(&g_game_base->border_manager)
 00416cbb        struct tColour color_5
 00416cbb        struct tColour* color_18 = set_color_rgba(&color_5, 1f, 1f, 1f, 1f)
-00416cd3        initialize_frontend_widget((esi - 0x7c)->score_row_widgets[0], widget_flags_2, &g_blank_text, 0x16, 0f, y, color_18, 3, 125f)
-00416cf0        border_add_text_number((esi - 0x7c)->score_row_widgets[0], *(&g_game_base->subgame.sub_high_score.active_record_bank->score + i_1))
-00416cf8        layout_frontend_widget((esi - 0x7c)->score_row_widgets[0])
-00416d2f        (esi - 0x7c)->replay_row_widgets[0] = allocate_border(&g_game_base->border_manager)
+00416cd3        initialize_frontend_widget(name_widget_cursor[0xa], widget_flags_2, &g_blank_text, 0x16, 0f, y, color_18, 3, 125f)
+00416cf0        border_add_text_number(name_widget_cursor[0xa], *(&g_game_base->subgame.sub_high_score.active_record_bank->score + saved_record_offset_bytes))
+00416cf8        layout_frontend_widget(name_widget_cursor[0xa])
+00416d2f        name_widget_cursor[0x14] = allocate_border(&g_game_base->border_manager)
 00416d32        struct tColour color_12
 00416d32        struct tColour* color_19 = set_color_rgba(&color_12, 1f, 1f, 1f, 1f)
-00416d50        initialize_frontend_widget((esi - 0x7c)->replay_row_widgets[0], ecx_19 | 0x20000014, "Replay", 0x16, 0f, y, color_19, 2, 170f)
+00416d50        initialize_frontend_widget(name_widget_cursor[0x14], ecx_19 | 0x20000014, "Replay", 0x16, 0f, y, color_19, 2, 170f)
 00416d5a        if (high_score->entering_name != 0)
-00416fa3        hide_border_init((esi - 0x7c)->replay_row_widgets[0])
-00416fa8        ebx = var_cc
-00416faf        if ((ebx.b & 1) != 0)
+00416fa3        hide_border_init(name_widget_cursor[0x14])
+00416fa8        row = saved_row
+00416faf        if ((row.b & 1) != 0)
 00416fc9        struct tColour* eax_43 = set_color_rgba(&color_4, 0.329411775f, 0.184313729f, 0.419607848f, 0.699999988f)
-00416fd3        struct tColour* ecx_80 = &(esi - 0x7c)->row_background_widgets[0]->idle_fill_color
-00416fe8        ecx_80->r = eax_43->r
-00416ff2        ecx_80->g = eax_43->g
-00416ff8        ecx_80->b = eax_43->b
+00416fd3        float* ecx_80 = &name_widget_cursor[-0x14]->idle_fill_color.r
+00416fe8        *ecx_80 = eax_43->r
+00416ff2        ecx_80[1] = eax_43->g
+00416ff8        ecx_80[2] = eax_43->b
 00416ffb        float a = eax_43->a
-00416ffe        ecx_80->a.b = a.b
-00416ffe        ecx_80->a:1.b = a:1.b
-00416ffe        ecx_80->a:2.b = a:2.b
-00416ffe        ecx_80->a:3.b = a:3.b
+00416ffe        ecx_80[3].b = a.b
+00416ffe        *(ecx_80 + 0xd) = a:1.b
+00416ffe        *(ecx_80 + 0xe) = a:2.b
+00416ffe        *(ecx_80 + 0xf) = a:3.b
 00417005        struct tColour* eax_44 = set_color_rgba(&color_1, 0.329411775f, 0.184313729f, 0.419607848f, 0.699999988f)
-0041700f        struct tColour* ecx_83 = &(esi - 0x7c)->replay_row_widgets[0]->idle_fill_color
-00417015        ecx_83->r = eax_44->r
-0041701a        ecx_83->g = eax_44->g
-00417020        ecx_83->b = eax_44->b
+0041700f        float* ecx_83 = &name_widget_cursor[0x14]->idle_fill_color.r
+00417015        *ecx_83 = eax_44->r
+0041701a        ecx_83[1] = eax_44->g
+00417020        ecx_83[2] = eax_44->b
 00417023        float a_1 = eax_44->a
-00417026        ecx_83->a.b = a_1.b
-00417026        ecx_83->a:1.b = a_1:1.b
-00417026        ecx_83->a:2.b = a_1:2.b
-00417026        ecx_83->a:3.b = a_1:3.b
-0041702d        ebx += 1
-0041702e        i = i_1 + 0x1fac0
-00417033        esi = &(*esi)[1]
-0041703b        var_cc = ebx
-0041703f        i_1 = i
-00417043        do while (i s< 0x13cb80)
+00417026        ecx_83[3].b = a_1.b
+00417026        *(ecx_83 + 0xd) = a_1:1.b
+00417026        *(ecx_83 + 0xe) = a_1:2.b
+00417026        *(ecx_83 + 0xf) = a_1:3.b
+0041702d        row += 1
+0041702e        record_offset_bytes = saved_record_offset_bytes + 0x1fac0
+00417033        name_widget_cursor = &name_widget_cursor[1]
+0041703b        saved_row = row
+0041703f        saved_record_offset_bytes = record_offset_bytes
+00417043        do while (record_offset_bytes s< 0x13cb80)
 00417060        float y_2 = fconvert.s(fconvert.t(var_c4) * fconvert.t(10f) + fconvert.t(111f))
 00417064        if (high_score->entering_name != 0)
 0041709a        high_score->cancel_name_button = allocate_border(&g_game_base->border_manager)

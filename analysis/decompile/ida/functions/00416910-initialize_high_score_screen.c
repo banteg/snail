@@ -9,9 +9,9 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   int32_t v5; // eax
   tColour *v6; // eax
   tColour *v7; // eax
-  int v8; // ebx
-  int v9; // eax
-  FrontendWidget **name_row_widgets; // esi
+  int row; // ebx
+  int record_offset_bytes; // eax
+  FrontendWidget **name_widget_cursor; // esi
   int v11; // edi
   int32_t v12; // eax
   tColour *v13; // eax
@@ -36,8 +36,8 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   float y; // [esp+8h] [ebp-D0h]
   float ya; // [esp+8h] [ebp-D0h]
   float yb; // [esp+8h] [ebp-D0h]
-  int v35; // [esp+Ch] [ebp-CCh]
-  int v36; // [esp+10h] [ebp-C8h]
+  int saved_row; // [esp+Ch] [ebp-CCh]
+  int record_index; // [esp+10h] [ebp-C8h]
   float v37; // [esp+14h] [ebp-C4h]
   Color4f v38; // [esp+18h] [ebp-C0h] BYREF
   Color4f v39; // [esp+28h] [ebp-B0h] BYREF
@@ -56,7 +56,7 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   high_score->selected_rank = selected_rank;
   high_score->entering_name = selected_rank != -1;
   hide_star_field(&g_game_base->star_manager);
-  hide_gameplay_scores(&g_game_base->subgame.scan_reset);
+  hide_gameplay_scores((FrontendWidget **)&g_game_base->subgame);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
   landscape_script_by_name = load_landscape_script_by_name(
                                (char *)&g_game_base->subgame.landscape_manager,
@@ -70,16 +70,16 @@ void __thiscall initialize_high_score_screen(HighScore *high_score, int selected
   {
     v7 = set_color_rgba((tColour *)&v39, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(high_score->title_widget, 0, aPostalHighScor, 23, 0.0, 64.0, v7, 2, 0.0);
-    *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] = (char *)&unk_6FFAE8 + (_DWORD)g_game_base;
-    *(_DWORD *)((char *)&unk_6FFAE4 + (_DWORD)g_game_base) = 10;
+    g_game_base->subgame.sub_high_score.active_record_bank = g_game_base->subgame.sub_high_score.postal_records;
+    g_game_base->subgame.sub_high_score.active_record_count = 10;
     goto LABEL_8;
   }
   if ( v5 == 1 )
   {
     v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(high_score->title_widget, 0, aChallengeHighS, 23, 0.0, 64.0, v6, 2, 0.0);
-    *(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] = g_game_base->subgame.sub_high_score.survival_records;
-    *(_DWORD *)((char *)&unk_6FFAE4 + (_DWORD)g_game_base) = 10;
+    g_game_base->subgame.sub_high_score.active_record_bank = g_game_base->subgame.sub_high_score.survival_records;
+    g_game_base->subgame.sub_high_score.active_record_count = 10;
 LABEL_8:
     v37 = 27.0;
   }
@@ -88,30 +88,30 @@ LABEL_8:
     rstrcpy_checked_ascii((char *)&high_score->title_widget->text_buffer, aEnterYourNameH);
     layout_frontend_widget(high_score->title_widget);
   }
-  v8 = 0;
-  v9 = 0;
-  v35 = 0;
-  v36 = 0;
-  name_row_widgets = high_score->name_row_widgets;
+  row = 0;
+  record_offset_bytes = 0;
+  saved_row = 0;
+  record_index = 0;
+  name_widget_cursor = high_score->name_row_widgets;
   do
   {
-    name_row_widgets[20] = nullptr;
-    v11 = v8 != high_score->selected_rank ? 0 : 2;
-    if ( *(_DWORD *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] + v9) != 1 )
+    name_widget_cursor[20] = nullptr;
+    v11 = row != high_score->selected_rank ? 0 : 2;
+    if ( *(int32_t *)((char *)&g_game_base->subgame.sub_high_score.active_record_bank->active + record_offset_bytes) != 1 )
       goto LABEL_25;
     v12 = high_score->selected_bank;
     if ( v12 )
     {
       if ( v12 != 1 )
         goto LABEL_23;
-      y = (double)v35 * v37 + 111.0;
-      *(name_row_widgets - 20) = allocate_border(&g_game_base->border_manager);
+      y = (double)saved_row * v37 + 111.0;
+      *(name_widget_cursor - 20) = allocate_border(&g_game_base->border_manager);
       v13 = set_color_rgba((tColour *)&v39, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget(*(name_row_widgets - 20), v11 | 0x20000000, asc_4A3830, 22, 0.0, y, v13, 1, -228.0);
-      *(name_row_widgets - 10) = allocate_border(&g_game_base->border_manager);
+      initialize_frontend_widget(*(name_widget_cursor - 20), v11 | 0x20000000, asc_4A3830, 22, 0.0, y, v13, 1, -228.0);
+      *(name_widget_cursor - 10) = allocate_border(&g_game_base->border_manager);
       v14 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(
-        *(name_row_widgets - 10),
+        *(name_widget_cursor - 10),
         v11 | 0x20400000,
         (char *)g_blank_text,
         22,
@@ -120,32 +120,32 @@ LABEL_8:
         v14,
         1,
         -222.0);
-      border_add_text_number(*(name_row_widgets - 10), v35 + 1);
-      layout_frontend_widget(*(name_row_widgets - 10));
-      *name_row_widgets = allocate_border(&g_game_base->border_manager);
+      border_add_text_number(*(name_widget_cursor - 10), saved_row + 1);
+      layout_frontend_widget(*(name_widget_cursor - 10));
+      *name_widget_cursor = allocate_border(&g_game_base->border_manager);
       v15 = set_color_rgba((tColour *)&v47, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(
-        *name_row_widgets,
+        *name_widget_cursor,
         v11 | 0x20400000,
-        (char *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] + v36 + 84),
+        g_game_base->subgame.sub_high_score.active_record_bank[record_index].player_name,
         22,
         0.0,
         y,
         v15,
         1,
         -180.0);
-      if ( v35 == high_score->selected_rank )
+      if ( saved_row == high_score->selected_rank )
       {
-        border_input_text_init(*name_row_widgets, 16, g_runtime_config.last_entered_player_name, 16);
-        widget_flags = (*name_row_widgets)->widget_flags;
+        border_input_text_init(*name_widget_cursor, 16, g_runtime_config.last_entered_player_name, 16);
+        widget_flags = (*name_widget_cursor)->widget_flags;
         BYTE1(widget_flags) |= 0x20u;
-        (*name_row_widgets)->widget_flags = widget_flags;
+        (*name_widget_cursor)->widget_flags = widget_flags;
       }
-      layout_frontend_widget(*name_row_widgets);
-      name_row_widgets[10] = allocate_border(&g_game_base->border_manager);
+      layout_frontend_widget(*name_widget_cursor);
+      name_widget_cursor[10] = allocate_border(&g_game_base->border_manager);
       v17 = set_color_rgba((tColour *)&v42, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(
-        name_row_widgets[10],
+        name_widget_cursor[10],
         v11 | 0x20400000,
         (char *)g_blank_text,
         22,
@@ -154,24 +154,26 @@ LABEL_8:
         v17,
         3,
         125.0);
-      border_add_text_number(name_row_widgets[10], *(_DWORD *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] + v36 + 4));
-      layout_frontend_widget(name_row_widgets[10]);
-      name_row_widgets[20] = allocate_border(&g_game_base->border_manager);
+      border_add_text_number(
+        name_widget_cursor[10],
+        g_game_base->subgame.sub_high_score.active_record_bank[record_index].score);
+      layout_frontend_widget(name_widget_cursor[10]);
+      name_widget_cursor[20] = allocate_border(&g_game_base->border_manager);
       v18 = set_color_rgba((tColour *)&v49, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget(name_row_widgets[20], v11 | 0x20000014, aReplay, 22, 0.0, y, v18, 2, 170.0);
+      initialize_frontend_widget(name_widget_cursor[20], v11 | 0x20000014, aReplay, 22, 0.0, y, v18, 2, 170.0);
       if ( !high_score->entering_name )
         goto LABEL_23;
     }
     else
     {
-      ya = (double)v35 * v37 + 111.0;
-      *(name_row_widgets - 20) = allocate_border(&g_game_base->border_manager);
+      ya = (double)saved_row * v37 + 111.0;
+      *(name_widget_cursor - 20) = allocate_border(&g_game_base->border_manager);
       v19 = set_color_rgba((tColour *)&v44, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget(*(name_row_widgets - 20), v11 | 0x20000000, asc_4A37F8, 22, 0.0, ya, v19, 1, -228.0);
-      *(name_row_widgets - 10) = allocate_border(&g_game_base->border_manager);
+      initialize_frontend_widget(*(name_widget_cursor - 20), v11 | 0x20000000, asc_4A37F8, 22, 0.0, ya, v19, 1, -228.0);
+      *(name_widget_cursor - 10) = allocate_border(&g_game_base->border_manager);
       v20 = set_color_rgba((tColour *)&v48, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(
-        *(name_row_widgets - 10),
+        *(name_widget_cursor - 10),
         v11 | 0x20400000,
         (char *)g_blank_text,
         22,
@@ -180,32 +182,32 @@ LABEL_8:
         v20,
         1,
         -222.0);
-      border_add_text_number(*(name_row_widgets - 10), v35 + 1);
-      layout_frontend_widget(*(name_row_widgets - 10));
-      *name_row_widgets = allocate_border(&g_game_base->border_manager);
+      border_add_text_number(*(name_widget_cursor - 10), saved_row + 1);
+      layout_frontend_widget(*(name_widget_cursor - 10));
+      *name_widget_cursor = allocate_border(&g_game_base->border_manager);
       v21 = set_color_rgba((tColour *)&v46, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(
-        *name_row_widgets,
+        *name_widget_cursor,
         v11 | 0x20400000,
-        (char *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] + v36 + 84),
+        g_game_base->subgame.sub_high_score.active_record_bank[record_index].player_name,
         22,
         0.0,
         ya,
         v21,
         1,
         -180.0);
-      if ( v35 == high_score->selected_rank )
+      if ( saved_row == high_score->selected_rank )
       {
-        border_input_text_init(*name_row_widgets, 16, g_runtime_config.last_entered_player_name, 16);
-        v22 = (*name_row_widgets)->widget_flags;
+        border_input_text_init(*name_widget_cursor, 16, g_runtime_config.last_entered_player_name, 16);
+        v22 = (*name_widget_cursor)->widget_flags;
         BYTE1(v22) |= 0x20u;
-        (*name_row_widgets)->widget_flags = v22;
+        (*name_widget_cursor)->widget_flags = v22;
       }
-      layout_frontend_widget(*name_row_widgets);
-      name_row_widgets[10] = allocate_border(&g_game_base->border_manager);
+      layout_frontend_widget(*name_widget_cursor);
+      name_widget_cursor[10] = allocate_border(&g_game_base->border_manager);
       v23 = set_color_rgba((tColour *)&v43, 1.0, 1.0, 1.0, 1.0);
       initialize_frontend_widget(
-        name_row_widgets[10],
+        name_widget_cursor[10],
         v11 | 0x20400000,
         (char *)g_blank_text,
         22,
@@ -214,37 +216,39 @@ LABEL_8:
         v23,
         3,
         160.0);
-      border_add_text_number(name_row_widgets[10], *(_DWORD *)(*(_DWORD *)&byte_6FFAE0[(_DWORD)g_game_base] + v36 + 4));
-      layout_frontend_widget(name_row_widgets[10]);
-      name_row_widgets[20] = allocate_border(&g_game_base->border_manager);
+      border_add_text_number(
+        name_widget_cursor[10],
+        g_game_base->subgame.sub_high_score.active_record_bank[record_index].score);
+      layout_frontend_widget(name_widget_cursor[10]);
+      name_widget_cursor[20] = allocate_border(&g_game_base->border_manager);
       v24 = set_color_rgba((tColour *)&v45, 1.0, 1.0, 1.0, 1.0);
-      initialize_frontend_widget(name_row_widgets[20], v11 | 0x20000014, aReplay, 22, 0.0, ya, v24, 2, 125.0);
+      initialize_frontend_widget(name_widget_cursor[20], v11 | 0x20000014, aReplay, 22, 0.0, ya, v24, 2, 125.0);
     }
-    hide_border_init(name_row_widgets[20]);
+    hide_border_init(name_widget_cursor[20]);
 LABEL_23:
-    v8 = v35;
-    if ( (v35 & 1) != 0 )
+    row = saved_row;
+    if ( (saved_row & 1) != 0 )
     {
-      (*(name_row_widgets - 20))->idle_fill_color = *set_color_rgba(
-                                                       (tColour *)&v41,
-                                                       0.32941177,
-                                                       0.18431373,
-                                                       0.41960785,
-                                                       0.69999999);
-      name_row_widgets[20]->idle_fill_color = *set_color_rgba(
-                                                 (tColour *)&v38,
-                                                 0.32941177,
-                                                 0.18431373,
-                                                 0.41960785,
-                                                 0.69999999);
+      (*(name_widget_cursor - 20))->idle_fill_color = *set_color_rgba(
+                                                         (tColour *)&v41,
+                                                         0.32941177,
+                                                         0.18431373,
+                                                         0.41960785,
+                                                         0.69999999);
+      name_widget_cursor[20]->idle_fill_color = *set_color_rgba(
+                                                   (tColour *)&v38,
+                                                   0.32941177,
+                                                   0.18431373,
+                                                   0.41960785,
+                                                   0.69999999);
     }
 LABEL_25:
-    ++v8;
-    v9 = v36 + 129728;
-    ++name_row_widgets;
-    v25 = v36 + 129728 < 1297280;
-    v35 = v8;
-    v36 += 129728;
+    ++row;
+    record_offset_bytes = record_index * 129728 + 129728;
+    ++name_widget_cursor;
+    v25 = record_index * 129728 + 129728 < 1297280;
+    saved_row = row;
+    ++record_index;
   }
   while ( v25 );
   yb = v37 * 10.0 + 111.0;

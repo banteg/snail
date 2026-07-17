@@ -218,6 +218,232 @@ def _sync_named_pointer_lvar(
     }
 
 
+def _sync_named_lvar(
+    *,
+    selector: str,
+    definition_address: int,
+    accepted_names: set[str],
+    accepted_types: set[str],
+    target_name: str,
+) -> dict[str, object]:
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.defea == definition_address
+        and lvar.name in accepted_names
+        and (_normalize_type_text(str(lvar.type())) or "") in accepted_types
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_named_lvar_candidates",
+            "candidate_count": len(candidates),
+            "definition_address": hex(definition_address),
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    lvar = candidates[0]
+    if lvar.name == target_name:
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+            "selector": selector,
+        }
+
+    before_name = lvar.name
+    before_type = str(lvar.type())
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = target_name
+    if not ida_hexrays.modify_user_lvar_info(address, ida_hexrays.MLI_NAME, info):
+        return {
+            "status": "failed",
+            "reason": "modify_named_lvar_info_failed",
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_candidates = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == target_name
+        and (_normalize_type_text(str(candidate.type())) or "") in accepted_types
+    ]
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "named_lvar_readback_failed",
+            "candidate_count": len(verified_candidates),
+            "definition_address": hex(definition_address),
+            "selector": selector,
+            "target_name": target_name,
+        }
+
+    verified = verified_candidates[0]
+    return {
+        "status": "applied",
+        "before_name": before_name,
+        "before_type": before_type,
+        "name": verified.name,
+        "type": str(verified.type()),
+        "definition_address": hex(verified.defea),
+        "selector": selector,
+    }
+
+
+def _sync_high_score_screen_active_bank_operands() -> dict[str, object]:
+    selector = "initialize_high_score_screen"
+    function_address = 0x416910
+    operand_specs = (
+        (0x416A33, 0, 0x6FFAE0, "89 90 e0 fa 6f 00"),
+        (0x416A3E, 0, 0x6FFAE4, "c7 80 e4 fa 6f 00 0a 00 00 00"),
+        (0x416A89, 1, 0x6FFAE8, "8d 88 e8 fa 6f 00"),
+        (0x416A8F, 0, 0x6FFAE0, "89 88 e0 fa 6f 00"),
+        (0x416A9B, 0, 0x6FFAE4, "c7 82 e4 fa 6f 00 0a 00 00 00"),
+        (0x416B00, 1, 0x6FFAE0, "8b 91 e0 fa 6f 00"),
+        (0x416C3A, 1, 0x6FFAE0, "8b 91 e0 fa 6f 00"),
+        (0x416CE2, 1, 0x6FFAE0, "8b 82 e0 fa 6f 00"),
+        (0x416E87, 1, 0x6FFAE0, "8b 88 e0 fa 6f 00"),
+        (0x416F2C, 1, 0x6FFAE0, "8b 91 e0 fa 6f 00"),
+    )
+
+    entries = []
+    changed_count = 0
+    for operand_address, operand_index, expected_offset, expected_hex in operand_specs:
+        expected_bytes = bytes.fromhex(expected_hex)
+        observed_bytes = ida_bytes.get_bytes(operand_address, len(expected_bytes))
+        if observed_bytes != expected_bytes:
+            return {
+                "status": "failed",
+                "reason": "unexpected_high_score_screen_operand_instruction",
+                "address": hex(operand_address),
+                "observed_bytes": (
+                    None if observed_bytes is None else observed_bytes.hex()
+                ),
+                "selector": selector,
+            }
+
+        before_disassembly = idc.generate_disasm_line(operand_address, 0)
+        before_operand = idc.print_operand(operand_address, operand_index)
+        idc.op_num(operand_address, operand_index)
+        after_operand = idc.print_operand(operand_address, operand_index)
+        observed_offset = idc.get_operand_value(operand_address, operand_index)
+        if (
+            observed_offset != expected_offset
+            or f"{expected_offset:X}H" not in after_operand.upper()
+        ):
+            return {
+                "status": "failed",
+                "reason": "high_score_screen_operand_readback_failed",
+                "address": hex(operand_address),
+                "operand_index": operand_index,
+                "expected_offset": hex(expected_offset),
+                "observed_offset": hex(observed_offset),
+                "before_operand": before_operand,
+                "after_operand": after_operand,
+                "selector": selector,
+            }
+
+        changed = before_operand != after_operand
+        changed_count += int(changed)
+        entries.append(
+            {
+                "address": hex(operand_address),
+                "operand_index": operand_index,
+                "expected_offset": hex(expected_offset),
+                "before_disassembly": before_disassembly,
+                "disassembly": idc.generate_disasm_line(operand_address, 0),
+                "before_operand": before_operand,
+                "after_operand": after_operand,
+                "changed": changed,
+            }
+        )
+
+    ida_hexrays.mark_cfunc_dirty(function_address, True)
+    pseudocode = str(ida_hexrays.decompile(function_address))
+    required_owners = (
+        "g_game_base->subgame.sub_high_score.active_record_bank",
+        "g_game_base->subgame.sub_high_score.active_record_count",
+        "g_game_base->subgame.sub_high_score.postal_records",
+    )
+    missing_owners = [owner for owner in required_owners if owner not in pseudocode]
+    forbidden_names = [
+        name
+        for name in ("byte_6FFAE0", "unk_6FFAE4", "g_parcel_set_buckets")
+        if name in pseudocode
+    ]
+    if missing_owners or forbidden_names:
+        return {
+            "status": "failed",
+            "reason": "high_score_screen_owner_readback_failed",
+            "missing_owners": missing_owners,
+            "forbidden_names": forbidden_names,
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied" if changed_count else "unchanged",
+        "changed_count": changed_count,
+        "entries": entries,
+        "selector": selector,
+    }
+
+
+def _sync_high_score_screen_loop_lvars() -> dict[str, dict[str, object]]:
+    selector = "initialize_high_score_screen"
+    scalar_types = {"int", "int32_t"}
+    return {
+        "row": _sync_named_lvar(
+            selector=selector,
+            definition_address=0x416AD4,
+            accepted_names={"v8", "row"},
+            accepted_types=scalar_types,
+            target_name="row",
+        ),
+        "record_offset_bytes": _sync_named_lvar(
+            selector=selector,
+            definition_address=0x416AD6,
+            accepted_names={"v9", "record_offset_bytes"},
+            accepted_types=scalar_types,
+            target_name="record_offset_bytes",
+        ),
+        "name_widget_cursor": _sync_named_lvar(
+            selector=selector,
+            definition_address=0x416AE1,
+            accepted_names={"name_row_widgets", "name_widget_cursor"},
+            accepted_types={"FrontendWidget * *"},
+            target_name="name_widget_cursor",
+        ),
+        "saved_row": _sync_named_lvar(
+            selector=selector,
+            definition_address=0x416AD9,
+            accepted_names={"v35", "saved_row"},
+            accepted_types=scalar_types,
+            target_name="saved_row",
+        ),
+        "record_index": _sync_named_lvar(
+            selector=selector,
+            definition_address=0x416ADD,
+            accepted_names={"v36", "saved_record_offset_bytes", "record_index"},
+            accepted_types=scalar_types,
+            target_name="record_index",
+        ),
+    }
+
+
 def _sync_load_compact_cursor_lvar() -> dict[str, object]:
     return _sync_named_pointer_lvar(
         selector="load_high_scores_from_file",
@@ -428,6 +654,27 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
         applied += 1
 
+    high_score_screen_active_bank_operands = (
+        _sync_high_score_screen_active_bank_operands()
+    )
+    if high_score_screen_active_bank_operands.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "initialize_high_score_screen",
+                "active_bank_operands": high_score_screen_active_bank_operands,
+            }
+        )
+
+    high_score_screen_loop_lvars = _sync_high_score_screen_loop_lvars()
+    for lvar_name, lvar_result in high_score_screen_loop_lvars.items():
+        if lvar_result.get("status") == "failed":
+            failed.append(
+                {
+                    "selector": "initialize_high_score_screen",
+                    lvar_name: lvar_result,
+                }
+            )
+
     compact_cursor_lvar = _sync_load_compact_cursor_lvar()
     if compact_cursor_lvar.get("status") == "failed":
         failed.append(
@@ -497,6 +744,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
+                "high_score_screen_active_bank_operands": (
+                    high_score_screen_active_bank_operands
+                ),
+                "high_score_screen_loop_lvars": high_score_screen_loop_lvars,
                 "compact_cursor_lvar": compact_cursor_lvar,
                 "postal_rank_cursor_lvar": postal_rank_cursor_lvar,
                 "survival_rank_cursor_lvar": survival_rank_cursor_lvar,

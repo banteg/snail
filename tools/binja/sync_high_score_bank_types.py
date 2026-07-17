@@ -70,6 +70,46 @@ SYMBOL_UPDATES = (
 
 PERSISTENCE_USER_VAR_UPDATES = (
     (
+        "initialize_high_score_screen",
+        "RegisterVariableSourceType",
+        451,
+        69,
+        "row",
+        "int32_t",
+    ),
+    (
+        "initialize_high_score_screen",
+        "RegisterVariableSourceType",
+        453,
+        66,
+        "record_offset_bytes",
+        "int32_t",
+    ),
+    (
+        "initialize_high_score_screen",
+        "StackVariableSourceType",
+        456,
+        -204,
+        "saved_row",
+        "int32_t",
+    ),
+    (
+        "initialize_high_score_screen",
+        "StackVariableSourceType",
+        460,
+        -200,
+        "saved_record_offset_bytes",
+        "int32_t",
+    ),
+    (
+        "initialize_high_score_screen",
+        "RegisterVariableSourceType",
+        464,
+        72,
+        "name_widget_cursor",
+        "FrontendWidget**",
+    ),
+    (
         "add_arcade_high_score",
         "RegisterVariableSourceType",
         144,

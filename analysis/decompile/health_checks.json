@@ -2194,6 +2194,57 @@
       ]
     },
     {
+      "name": "bn_high_score_screen_record_widget_cursors",
+      "artifact": "analysis/decompile/binja/functions/00416910-initialize_high_score_screen.c",
+      "required_substrings": [
+        "int32_t row = 0",
+        "int32_t record_offset_bytes = 0",
+        "int32_t saved_row = 0",
+        "int32_t saved_record_offset_bytes = 0",
+        "struct FrontendWidget** name_widget_cursor = &high_score->name_row_widgets",
+        "name_widget_cursor[-0x14]",
+        "*name_widget_cursor",
+        "name_widget_cursor[0xa]",
+        "name_widget_cursor[0x14]",
+        "record_offset_bytes = saved_record_offset_bytes + 0x1fac0"
+      ],
+      "forbidden_substrings": [
+        "int32_t ebx = 0",
+        "int32_t i = 0",
+        "int32_t var_cc = 0",
+        "int32_t i_1 = 0",
+        "struct FrontendWidget* (* esi)[0xa]",
+        "(esi - 0x7c)"
+      ]
+    },
+    {
+      "name": "ida_high_score_screen_record_widget_cursors",
+      "artifact": "analysis/decompile/ida/functions/00416910-initialize_high_score_screen.c",
+      "required_substrings": [
+        "int row;",
+        "int record_offset_bytes;",
+        "FrontendWidget **name_widget_cursor;",
+        "int saved_row;",
+        "int record_index;",
+        "active_record_bank = g_game_base->subgame.sub_high_score.postal_records",
+        "active_record_bank = g_game_base->subgame.sub_high_score.survival_records",
+        "active_record_bank[record_index].player_name",
+        "active_record_bank[record_index].score",
+        "record_offset_bytes = record_index * 129728 + 129728;",
+        "++record_index;"
+      ],
+      "forbidden_substrings": [
+        "int v8;",
+        "int v9;",
+        "FrontendWidget **name_row_widgets;",
+        "int v35;",
+        "int v36;",
+        "byte_6FFAE0",
+        "unk_6FFAE4",
+        "g_parcel_set_buckets"
+      ]
+    },
+    {
       "name": "ida_high_score_update_void_owner",
       "artifact": "analysis/decompile/ida/functions/00417260-update_high_score_screen.c",
       "required_substrings": [

@@ -110,3 +110,26 @@ Removing the synthetic return preserves this initializer at 98.00%, 600/600,
 prefix 80, with all 137 operands clean. Binary Ninja accepts the void preview
 but restores the stale scalar form during live verification, so the narrow
 sync reports it as deferred.
+
+## 2026-07-17 displayed-record and widget cursors
+
+The native ten-row loop now carries explicit ownership in both decompilers.
+Binary Ninja identifies ESI as the borrowed `FrontendWidget **` cursor rooted
+at `HighScore::name_row_widgets`; its `-20`, `-10`, `0`, `+10`, and `+20`
+positions are the background, rank, name, score, and replay banks. The EBX/EAX
+register values and their stack spills are named `row`, `saved_row`,
+`record_offset_bytes`, and `saved_record_offset_bytes`, preserving the native
+`0x1fac0` record stride.
+
+Hex-Rays normalizes the same physical record-offset spill into a `SubSolution`
+element index after the root field operands are corrected, so its honest name
+is `record_index`; the EAX reload remains `record_offset_bytes` and exposes the
+inserted `record_index * 129728` conversion. Ten exact instructions from
+`0x416a33` through `0x416f2c` had false operand offsets into
+`g_parcel_set_buckets`. The replay verifies their bytes and operand indices,
+then restores `SubHighScore::active_record_bank`, `active_record_count`, and
+the postal/survival record owners without retaining those false xrefs.
+
+No matching source changed. Focused Wibo remains honestly 98.00%, 600/600
+instructions, prefix 80, with all 137 masked operands clean; the twelve colour
+temporary stack-slot permutations remain visible.
