@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,11 +17,19 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "merge_track_tile_runs",
-      "address": "0x435180"
+      "name": "build_track_fringe_objects",
+      "address": "0x434be0"
+    },
+    {
+      "name": "initialize_fringe_manager",
+      "address": "0x447090"
+    },
+    {
+      "name": "allocate_fringe_object",
+      "address": "0x4470a0"
     }
   ],
-  "health_check_count": 476,
+  "health_check_count": 480,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

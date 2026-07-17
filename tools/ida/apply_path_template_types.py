@@ -30,6 +30,8 @@ TRUSTED_NAMES = [
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
     (0x4413F0, "apply_damage_gauge_delta"),
+    (0x447090, "initialize_fringe_manager"),
+    (0x4470A0, "allocate_fringe_object"),
     (0x44C870, "initialize_global_identity_matrix_thunk"),
     (0x44C880, "initialize_global_identity_matrix"),
     (0x44CAC0, "multiply_vector_by_matrix_copy"),
@@ -76,10 +78,13 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x420CB0,  # update_track_attachment_follow_state
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
+    0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x43B120,  # update_subgoldy
+    0x447090,  # initialize_fringe_manager
+    0x4470A0,  # allocate_fringe_object
 )
 
 POPULATE_RUNTIME_LVAR_SPECS = (
@@ -140,6 +145,16 @@ MERGE_RUNTIME_LVAR_SPECS = (
         0x4351D4,
         32,
     ),
+)
+
+FRINGE_RUNTIME_LVAR_SPECS = (
+    ("row", "SubRow *row;", 0x434C0D, None),
+    ("cell", "TrackRowCell *cell;", 0x434C15, None),
+    ("row_cursor", "SubRow *row_cursor;", 0x434C1B, 40),
+    ("fringe_front_new", "FringeObject *fringe_front_new;", 0x434D44, None),
+    ("fringe_right_new", "FringeObject *fringe_right_new;", 0x434E48, None),
+    ("fringe_left_new", "FringeObject *fringe_left_new;", 0x434F4C, None),
+    ("fringe_back_new", "FringeObject *fringe_back_new;", 0x435050, None),
 )
 
 HARMONIZE_RUNTIME_LVAR_SPECS = (
@@ -210,8 +225,24 @@ HARMONIZE_ROOT_OFFSET_OPERANDS = (
     (0x435A1F, 1, 0x4423C),  # floor_corners[0].object replacement
 )
 
+# The runtime-row displacement numerically collides with an IDA auto-symbol at
+# 0x5ccac8. Normalize this one proven LEA operand so Hex-Rays can fold the
+# already typed SubgameRuntime receiver into runtime_rows instead of treating
+# the displacement as the address of an unrelated byte global.
+FRINGE_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x434C0C, 1, 0x5CCAC8),
+)
+
 
 TRUSTED_DECLARATIONS = [
+    (
+        "initialize_fringe_manager",
+        "void __thiscall initialize_fringe_manager(FringeManager* manager);",
+    ),
+    (
+        "allocate_fringe_object",
+        "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager);",
+    ),
     (
         "initialize_golb_shot",
         "GolbShot* __thiscall initialize_golb_shot(GolbShot* shot);",
@@ -1454,6 +1485,13 @@ def _sync_merge_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_fringe_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "build_track_fringe_objects",
+        FRINGE_RUNTIME_LVAR_SPECS,
+    )
+
+
 def _sync_harmonize_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "harmonize_center_lane_floor_slide_variants",
@@ -1771,6 +1809,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    fringe_runtime_row_offset_operands = _normalize_root_offset_operands(
+        FRINGE_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in fringe_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "build_track_fringe_objects",
+                    "root_offset_operand": result,
+                }
+            )
 
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
@@ -1813,6 +1862,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "merge_track_tile_runs",
                 "runtime_lvars": merge_runtime_lvars,
+            }
+        )
+    fringe_runtime_lvars = _sync_fringe_runtime_lvars()
+    if fringe_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "build_track_fringe_objects",
+                "runtime_lvars": fringe_runtime_lvars,
             }
         )
     harmonize_runtime_lvars = _sync_harmonize_runtime_lvars()
@@ -1870,12 +1927,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
+                "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "populate_runtime_lvars": populate_runtime_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
+                "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,
                 "dirty_functions": dirty_functions,

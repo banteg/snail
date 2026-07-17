@@ -4602,16 +4602,22 @@
       "artifact": "analysis/decompile/binja/functions/00434be0-build_track_fringe_objects.c",
       "required_substrings": [
         "struct SubgameRuntime* game_1 = game",
-        "initialize_fringe_manager",
-        "allocate_fringe_object",
+        "initialize_fringe_manager(&g_game_base->subgame.fringe_manager)",
+        "allocate_fringe_object(&g_game_base->subgame.fringe_manager)",
         "game_1->runtime_row_count",
-        "&game_1->runtime_rows",
-        "&game_1->runtime_cells",
-        "runtime_cells[0][0].fringe_front",
-        "g_game_base->root_bod_catalog.fringe_catalog"
+        "struct SubRow* row = &game_1->runtime_rows",
+        "struct TrackRowCell* cell = &game_1->runtime_cells",
+        "struct SubRow* row_cursor = row",
+        "cell->fringe_front",
+        "cell = &cell[1]",
+        "row = &row[1]",
+        "g_game_base->root_bod_catalog.fringe_catalog.entries[0][3]"
       ],
       "forbidden_substrings": [
         "struct Game*",
+        "struct TrackRowCell (*",
+        " - 0x3bfac8",
+        " - 0x5ccac8",
         "__offset(Game",
         "data_4df904 +",
         "__asm",
@@ -4624,15 +4630,85 @@
       "required_substrings": [
         "int32_t __thiscall build_track_fringe_objects(SubgameRuntime *game)",
         "v1->runtime_row_count",
-        "v4 = v1->runtime_cells[0]",
-        "v4->fringe_front",
-        "FringeObject *fringe_back"
+        "SubRow *row;",
+        "TrackRowCell *cell;",
+        "SubRow *row_cursor;",
+        "row = v1->runtime_rows;",
+        "cell = v1->runtime_cells[0];",
+        "FringeObject *fringe_front_new;",
+        "FringeObject *fringe_right_new;",
+        "FringeObject *fringe_left_new;",
+        "FringeObject *fringe_back_new;",
+        "initialize_fringe_manager(&g_game_base->subgame.fringe_manager)",
+        "allocate_fringe_object(&g_game_base->subgame.fringe_manager)",
+        "g_game_base->root_bod_catalog.fringe_catalog.entries[0][3]",
+        "++cell;",
+        "++row_cursor;"
       ],
       "forbidden_substrings": [
         "build_track_fringe_objects(Game *game)",
+        "byte_5CCAC8",
+        "char *row;",
+        "char *row_cursor;",
+        "BodBase *fringe_",
+        "unknown_000044[3521400]",
+        "unknown_000b48[",
         "sub_434BE0",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "bn_initialize_fringe_manager_pool_owner",
+      "artifact": "analysis/decompile/binja/functions/00447090-initialize_fringe_manager.c",
+      "required_substrings": [
+        "manager->count = 0"
+      ],
+      "forbidden_substrings": [
+        "arg1 + 0x5fb40",
+        "__offset("
+      ]
+    },
+    {
+      "name": "ida_initialize_fringe_manager_pool_owner",
+      "artifact": "analysis/decompile/ida/functions/00447090-initialize_fringe_manager.c",
+      "required_substrings": [
+        "void __thiscall initialize_fringe_manager(FringeManager *manager)",
+        "manager->count = 0"
+      ],
+      "forbidden_substrings": [
+        "_DWORD",
+        "this +"
+      ]
+    },
+    {
+      "name": "bn_allocate_fringe_object_pool_owner",
+      "artifact": "analysis/decompile/binja/functions/004470a0-allocate_fringe_object.c",
+      "required_substrings": [
+        "int32_t count = manager->count",
+        "count != 0x1b58",
+        "manager->count = count + 1",
+        "return &manager->objects[count]",
+        "Too many Fringes increase RFRINGEMANAGER_NUMBER"
+      ],
+      "forbidden_substrings": [
+        "arg1 +",
+        "void*"
+      ]
+    },
+    {
+      "name": "ida_allocate_fringe_object_pool_owner",
+      "artifact": "analysis/decompile/ida/functions/004470a0-allocate_fringe_object.c",
+      "required_substrings": [
+        "FringeObject *__thiscall allocate_fringe_object(FringeManager *manager)",
+        "count = manager->count",
+        "count == 7000",
+        "manager->count = count + 1",
+        "return &manager->objects[count]"
+      ],
+      "forbidden_substrings": [
+        "_DWORD",
+        "this +"
       ]
     },
     {

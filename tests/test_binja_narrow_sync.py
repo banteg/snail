@@ -2774,6 +2774,34 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert f'"{type_name}"' in binja_source
     assert "*MERGE_RUNTIME_USER_VAR_UPDATES" in binja_source
 
+    assert "FRINGE_RUNTIME_USER_VAR_UPDATES" in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        44,\n        68,',
+        '"RegisterVariableSourceType",\n        52,\n        72,',
+        '"StackVariableSourceType",\n        58,\n        -68,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("row", "SubRow*"),
+        ("cell", "TrackRowCell*"),
+        ("row_cursor", "SubRow*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+    assert "*FRINGE_RUNTIME_USER_VAR_UPDATES" in binja_source
+    for selector, declaration in (
+        (
+            "initialize_fringe_manager",
+            "void __thiscall initialize_fringe_manager(FringeManager* manager)",
+        ),
+        (
+            "allocate_fringe_object",
+            "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager)",
+        ),
+    ):
+        assert f'"{selector}"' in binja_source
+        assert f'"{declaration}"' in binja_source
+
     assert "typedef struct SubSegmentRowStrideAnchor" in analysis_path_header
     assert "uint8_t segment_prefix[0x814];" in analysis_path_header
     assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
@@ -2809,16 +2837,50 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         "0x4351D4",
     ):
         assert definition_address in ida_path_sync
+    assert "FRINGE_RUNTIME_LVAR_SPECS" in ida_path_sync
+    for definition_address in (
+        "0x434C0D",
+        "0x434C15",
+        "0x434C1B",
+        "0x434D44",
+        "0x434E48",
+        "0x434F4C",
+        "0x435050",
+    ):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("row", "SubRow *row;"),
+        ("cell", "TrackRowCell *cell;"),
+        ("row_cursor", "SubRow *row_cursor;"),
+        ("fringe_front_new", "FringeObject *fringe_front_new;"),
+        ("fringe_right_new", "FringeObject *fringe_right_new;"),
+        ("fringe_left_new", "FringeObject *fringe_left_new;"),
+        ("fringe_back_new", "FringeObject *fringe_back_new;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
     assert "HARMONIZE_RUNTIME_LVAR_SPECS" in ida_path_sync
     assert "0x435753" in ida_path_sync
     assert "0x4358DD" in ida_path_sync
     assert "HARMONIZE_ROOT_OFFSET_OPERANDS" in ida_path_sync
     assert "(0x4357A0, 1, 0x447B4)" in ida_path_sync
     assert "(0x435A1F, 1, 0x4423C)" in ida_path_sync
+    assert "FRINGE_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
+    assert "(0x434C0C, 1, 0x5CCAC8)" in ida_path_sync
+    assert "fringe_runtime_row_offset_operands = _normalize_root_offset_operands(" in ida_path_sync
     assert "_sync_exact_lvars" in ida_path_sync
     assert "_sync_populate_runtime_lvars" in ida_path_sync
     assert "_sync_merge_runtime_lvars" in ida_path_sync
+    assert "_sync_fringe_runtime_lvars" in ida_path_sync
     assert "_sync_harmonize_runtime_lvars" in ida_path_sync
+    for address, name in (
+        ("0x447090", "initialize_fringe_manager"),
+        ("0x4470A0", "allocate_fringe_object"),
+    ):
+        assert f'({address}, "{name}")' in ida_path_sync
+        assert f'"{name}"' in ida_path_sync
+    for address in ("0x434BE0", "0x447090", "0x4470A0"):
+        assert address in ida_path_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync
     assert "SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372" in ida_segment_sync

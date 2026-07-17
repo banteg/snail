@@ -9,192 +9,192 @@
 00434bfe        int32_t ebx = 0
 00434c02        int32_t var_48 = 0
 00434c06        if (game_1->runtime_row_count s> 0)
-00434c0c        struct SubRow (* edx_1)[0xc80] = &game_1->runtime_rows
-00434c14        struct TrackRowCell (* esi_1)[0xc80][0x8] = &game_1->runtime_cells
-00434c1a        struct SubRow (* var_44_1)[0xc80] = edx_1
+00434c0c        struct SubRow* row = &game_1->runtime_rows
+00434c14        struct TrackRowCell* cell = &game_1->runtime_cells
+00434c1a        struct SubRow* row_cursor = row
 0043514c        bool cond:2_1
 00434c1e        int32_t var_4c_1 = 8
 0043512e        bool cond:1_1
-00434c26        uint8_t ecx_1 = (esi_1 - 0x3bfac8)->:0x3bfb05.b
+00434c26        uint8_t open_edge_mask = cell->open_edge_mask
 00434c29        int32_t edi_1 = 0
-00434c2e        if (ecx_1 == 9)
+00434c2e        if (open_edge_mask == 9)
 00434c30        edi_1 = 1
-00434c3a        if (ecx_1 == 5)
+00434c3a        if (open_edge_mask == 5)
 00434c3c        edi_1 = 3
-00434c46        if (ecx_1 == 0xa)
+00434c46        if (open_edge_mask == 0xa)
 00434c48        edi_1 = 2
-00434c52        if (ecx_1 == 6)
+00434c52        if (open_edge_mask == 6)
 00434c54        edi_1 = 4
-00434c59        uint8_t eax_2 = (esi_1 - 0x3bfac8)->:0x3bfb04.b
-00434c66        if (eax_2 == 2 || eax_2 == 8 || eax_2 == 5)
+00434c59        uint8_t tile_id = cell->tile_id
+00434c66        if (tile_id == 2 || tile_id == 8 || tile_id == 5)
 00434c68        edi_1 = 5
-00434c83        if (eax_2 == 3 || eax_2 == 9 || eax_2 == 0xb || eax_2 == 0xc || eax_2 == 0xd || eax_2 == 6)
+00434c83        if (tile_id == 3 || tile_id == 9 || tile_id == 0xb || tile_id == 0xc || tile_id == 0xd || tile_id == 6)
 00434c85        edi_1 = 6
-00434c94        if (eax_2 == 4 || eax_2 == 0xa || eax_2 == 7)
+00434c94        if (tile_id == 4 || tile_id == 0xa || tile_id == 7)
 00434c96        edi_1 = 7
-00434cbb        if (((edx_1 - 0x5ccac8)->:0x5ccac8.b & 4) != 0 || ecx_1 == 0 || eax_2 == 0x20 || (g_runtime_config.render_flags.b & 0x20) == 0)
-004350e0        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front = nullptr
-004350e3        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right = nullptr
-004350e6        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left = nullptr
-004350e9        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back = nullptr
-00434ccd        if (is_neighbor_cell_solid(game_1, esi_1, 0, 0) == 1)
-00434ce0        if (is_neighbor_cell_solid(game_1, esi_1, 0, 1) != 0)
-00434dd4        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front = nullptr
-00434cf4        if (is_neighbor_cell_solid(game_1, esi_1, 1, 1) != 1)
-00434cfc        int32_t eax_6 = is_neighbor_cell_solid(game_1, esi_1, 1, 0)
-00434d01        eax_6.b -= 1
-00434d03        char temp1_1 = eax_6.b
-00434d03        eax_6.b = neg.b(eax_6.b)
-00434d0a        ebx = neg.d(sbb.d(eax_6, eax_6, temp1_1 != 0)) + 1
+00434cbb        if ((row->flags.b & 4) != 0 || open_edge_mask == 0 || tile_id == 0x20 || (g_runtime_config.render_flags.b & 0x20) == 0)
+004350e0        cell->fringe_front = nullptr
+004350e3        cell->fringe_right = nullptr
+004350e6        cell->fringe_left = nullptr
+004350e9        cell->fringe_back = nullptr
+00434ccd        if (is_neighbor_cell_solid(game_1, cell, 0, 0) == 1)
+00434ce0        if (is_neighbor_cell_solid(game_1, cell, 0, 1) != 0)
+00434dd4        cell->fringe_front = nullptr
+00434cf4        if (is_neighbor_cell_solid(game_1, cell, 1, 1) != 1)
+00434cfc        int32_t eax_5 = is_neighbor_cell_solid(game_1, cell, 1, 0)
+00434d01        eax_5.b -= 1
+00434d03        char temp1_1 = eax_5.b
+00434d03        eax_5.b = neg.b(eax_5.b)
+00434d0a        ebx = neg.d(sbb.d(eax_5, eax_5, temp1_1 != 0)) + 1
 00434d1a        int32_t ebp
-00434d1a        if (is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 1) != 1)
-00434d27        int32_t eax_11 = is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 0)
-00434d2c        eax_11.b -= 1
-00434d2e        char temp2_1 = eax_11.b
-00434d2e        eax_11.b = neg.b(eax_11.b)
-00434d35        ebp = neg.d(sbb.d(eax_11, eax_11, temp2_1 != 0)) + 1
+00434d1a        if (is_neighbor_cell_solid(game_1, cell, 0xffffffff, 1) != 1)
+00434d27        int32_t eax_10 = is_neighbor_cell_solid(game_1, cell, 0xffffffff, 0)
+00434d2c        eax_10.b -= 1
+00434d2e        char temp2_1 = eax_10.b
+00434d2e        eax_10.b = neg.b(eax_10.b)
+00434d35        ebp = neg.d(sbb.d(eax_10, eax_10, temp2_1 != 0)) + 1
 00434d1c        ebp = 0
-00434d43        struct FringeObject* eax_15 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
-00434d4b        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front = eax_15
-00434d70        set_bod_object(eax_15, g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][0][(ebx + edi_1 * 0xc) * 3 + ebp].object)
-00434d75        struct FringeObject* fringe_front = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front
+00434d43        struct FringeObject* bod = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00434d4b        cell->fringe_front = bod
+00434d70        set_bod_object(bod, g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][0][(ebx + edi_1 * 0xc) * 3 + ebp].object)
+00434d75        struct FringeObject* fringe_front = cell->fringe_front
 00434d81        fringe_front->bod.list_flags |= 0x20
-00434d89        struct Vec3* eax_17 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front->position
-00434d8c        eax_17->x = (esi_1 + 0x10)->x
-00434d91        eax_17->y = (esi_1 + 0x10)->y
-00434d97        eax_17->z = (esi_1 + 0x10)->z
+00434d89        struct Vec3* eax_15 = &cell->fringe_front->position
+00434d8c        eax_15->x = cell->anchor_position.x
+00434d91        eax_15->y = cell->anchor_position.y
+00434d97        eax_15->z = cell->anchor_position.z
 00434dab        struct tColour out
-00434dab        struct tColour* eax_18 = get_track_skirt_color(&g_game_base->subgame, &out)
-00434db5        struct Color4f* edx_9 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front->color
+00434dab        struct tColour* eax_16 = get_track_skirt_color(&g_game_base->subgame, &out)
+00434db5        struct Color4f* edx_8 = &cell->fringe_front->color
 00434db8        game_1 = game_2
 00434dbc        ebx = 0
-00434dbe        edx_9->r = eax_18->r
-00434dc3        edx_9->g = eax_18->g
-00434dc9        edx_9->b = eax_18->b
-00434dcf        edx_9->a = eax_18->a
-00434de4        if (is_neighbor_cell_solid(game_1, esi_1, 1, 0) != 0)
-00434ed8        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right = nullptr
-00434df8        if (is_neighbor_cell_solid(game_1, esi_1, 1, 0xffffffff) != 1)
-00434e00        int32_t eax_22 = is_neighbor_cell_solid(game_1, esi_1, 0, 0xffffffff)
-00434e05        eax_22.b -= 1
-00434e07        char temp3_1 = eax_22.b
-00434e07        eax_22.b = neg.b(eax_22.b)
-00434e0e        ebx = neg.d(sbb.d(eax_22, eax_22, temp3_1 != 0)) + 1
+00434dbe        edx_8->r = eax_16->r
+00434dc3        edx_8->g = eax_16->g
+00434dc9        edx_8->b = eax_16->b
+00434dcf        edx_8->a = eax_16->a
+00434de4        if (is_neighbor_cell_solid(game_1, cell, 1, 0) != 0)
+00434ed8        cell->fringe_right = nullptr
+00434df8        if (is_neighbor_cell_solid(game_1, cell, 1, 0xffffffff) != 1)
+00434e00        int32_t eax_20 = is_neighbor_cell_solid(game_1, cell, 0, 0xffffffff)
+00434e05        eax_20.b -= 1
+00434e07        char temp3_1 = eax_20.b
+00434e07        eax_20.b = neg.b(eax_20.b)
+00434e0e        ebx = neg.d(sbb.d(eax_20, eax_20, temp3_1 != 0)) + 1
 00434e1e        int32_t ebp_3
-00434e1e        if (is_neighbor_cell_solid(game_1, esi_1, 1, 1) != 1)
-00434e2b        int32_t eax_27 = is_neighbor_cell_solid(game_1, esi_1, 0, 1)
-00434e30        eax_27.b -= 1
-00434e32        char temp4_1 = eax_27.b
-00434e32        eax_27.b = neg.b(eax_27.b)
-00434e39        ebp_3 = neg.d(sbb.d(eax_27, eax_27, temp4_1 != 0)) + 1
+00434e1e        if (is_neighbor_cell_solid(game_1, cell, 1, 1) != 1)
+00434e2b        int32_t eax_25 = is_neighbor_cell_solid(game_1, cell, 0, 1)
+00434e30        eax_25.b -= 1
+00434e32        char temp4_1 = eax_25.b
+00434e32        eax_25.b = neg.b(eax_25.b)
+00434e39        ebp_3 = neg.d(sbb.d(eax_25, eax_25, temp4_1 != 0)) + 1
 00434e20        ebp_3 = 0
-00434e47        struct FringeObject* eax_31 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
-00434e4f        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right = eax_31
-00434e74        set_bod_object(eax_31, g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][0][(ebx + edi_1 * 0xc) * 3 + ebp_3].object)
-00434e79        struct FringeObject* fringe_right = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right
+00434e47        struct FringeObject* bod_1 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00434e4f        cell->fringe_right = bod_1
+00434e74        set_bod_object(bod_1, g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][0][(ebx + edi_1 * 0xc) * 3 + ebp_3].object)
+00434e79        struct FringeObject* fringe_right = cell->fringe_right
 00434e85        fringe_right->bod.list_flags |= 0x20
-00434e8d        struct Vec3* eax_33 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right->position
-00434e90        eax_33->x = (esi_1 + 0x10)->x
-00434e95        eax_33->y = (esi_1 + 0x10)->y
-00434e9b        eax_33->z = (esi_1 + 0x10)->z
+00434e8d        struct Vec3* eax_30 = &cell->fringe_right->position
+00434e90        eax_30->x = cell->anchor_position.x
+00434e95        eax_30->y = cell->anchor_position.y
+00434e9b        eax_30->z = cell->anchor_position.z
 00434eaf        struct tColour out_1
-00434eaf        struct tColour* eax_34 = get_track_skirt_color(&g_game_base->subgame, &out_1)
-00434eb9        struct Color4f* edx_17 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right->color
+00434eaf        struct tColour* eax_31 = get_track_skirt_color(&g_game_base->subgame, &out_1)
+00434eb9        struct Color4f* edx_16 = &cell->fringe_right->color
 00434ebc        game_1 = game_2
 00434ec0        ebx = 0
-00434ec2        edx_17->r = eax_34->r
-00434ec7        edx_17->g = eax_34->g
-00434ecd        edx_17->b = eax_34->b
-00434ed3        edx_17->a = eax_34->a
-00434ee8        if (is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 0) != 0)
-00434fdc        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left = nullptr
-00434efc        if (is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 1) != 1)
-00434f04        int32_t eax_38 = is_neighbor_cell_solid(game_1, esi_1, 0, 1)
-00434f09        eax_38.b -= 1
-00434f0b        char temp5_1 = eax_38.b
-00434f0b        eax_38.b = neg.b(eax_38.b)
-00434f12        ebx = neg.d(sbb.d(eax_38, eax_38, temp5_1 != 0)) + 1
+00434ec2        edx_16->r = eax_31->r
+00434ec7        edx_16->g = eax_31->g
+00434ecd        edx_16->b = eax_31->b
+00434ed3        edx_16->a = eax_31->a
+00434ee8        if (is_neighbor_cell_solid(game_1, cell, 0xffffffff, 0) != 0)
+00434fdc        cell->fringe_left = nullptr
+00434efc        if (is_neighbor_cell_solid(game_1, cell, 0xffffffff, 1) != 1)
+00434f04        int32_t eax_35 = is_neighbor_cell_solid(game_1, cell, 0, 1)
+00434f09        eax_35.b -= 1
+00434f0b        char temp5_1 = eax_35.b
+00434f0b        eax_35.b = neg.b(eax_35.b)
+00434f12        ebx = neg.d(sbb.d(eax_35, eax_35, temp5_1 != 0)) + 1
 00434f22        int32_t ebp_6
-00434f22        if (is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 0xffffffff) != 1)
-00434f2f        int32_t eax_43 = is_neighbor_cell_solid(game_1, esi_1, 0, 0xffffffff)
-00434f34        eax_43.b -= 1
-00434f36        char temp6_1 = eax_43.b
-00434f36        eax_43.b = neg.b(eax_43.b)
-00434f3d        ebp_6 = neg.d(sbb.d(eax_43, eax_43, temp6_1 != 0)) + 1
+00434f22        if (is_neighbor_cell_solid(game_1, cell, 0xffffffff, 0xffffffff) != 1)
+00434f2f        int32_t eax_40 = is_neighbor_cell_solid(game_1, cell, 0, 0xffffffff)
+00434f34        eax_40.b -= 1
+00434f36        char temp6_1 = eax_40.b
+00434f36        eax_40.b = neg.b(eax_40.b)
+00434f3d        ebp_6 = neg.d(sbb.d(eax_40, eax_40, temp6_1 != 0)) + 1
 00434f24        ebp_6 = 0
-00434f4b        struct FringeObject* eax_47 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
-00434f53        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left = eax_47
-00434f78        set_bod_object(eax_47, g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][0][(ebx + edi_1 * 0xc) * 3 + ebp_6].object)
-00434f7d        struct FringeObject* fringe_left = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left
+00434f4b        struct FringeObject* bod_2 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00434f53        cell->fringe_left = bod_2
+00434f78        set_bod_object(bod_2, g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][0][(ebx + edi_1 * 0xc) * 3 + ebp_6].object)
+00434f7d        struct FringeObject* fringe_left = cell->fringe_left
 00434f89        fringe_left->bod.list_flags |= 0x20
-00434f91        struct Vec3* eax_49 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left->position
-00434f94        eax_49->x = (esi_1 + 0x10)->x
-00434f99        eax_49->y = (esi_1 + 0x10)->y
-00434f9f        eax_49->z = (esi_1 + 0x10)->z
+00434f91        struct Vec3* eax_45 = &cell->fringe_left->position
+00434f94        eax_45->x = cell->anchor_position.x
+00434f99        eax_45->y = cell->anchor_position.y
+00434f9f        eax_45->z = cell->anchor_position.z
 00434fb3        struct tColour out_2
-00434fb3        struct tColour* eax_50 = get_track_skirt_color(&g_game_base->subgame, &out_2)
-00434fbd        struct Color4f* edx_25 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left->color
+00434fb3        struct tColour* eax_46 = get_track_skirt_color(&g_game_base->subgame, &out_2)
+00434fbd        struct Color4f* edx_24 = &cell->fringe_left->color
 00434fc0        game_1 = game_2
 00434fc4        ebx = 0
-00434fc6        edx_25->r = eax_50->r
-00434fcb        edx_25->g = eax_50->g
-00434fd1        edx_25->b = eax_50->b
-00434fd7        edx_25->a = eax_50->a
-00434fec        if (is_neighbor_cell_solid(game_1, esi_1, 0, 0xffffffff) != 0)
-004350e9        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back = nullptr
-00435000        if (is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 0xffffffff) != 1)
-00435008        int32_t eax_54 = is_neighbor_cell_solid(game_1, esi_1, 0xffffffff, 0)
-0043500d        eax_54.b -= 1
-0043500f        char temp7_1 = eax_54.b
-0043500f        eax_54.b = neg.b(eax_54.b)
-00435016        ebx = neg.d(sbb.d(eax_54, eax_54, temp7_1 != 0)) + 1
+00434fc6        edx_24->r = eax_46->r
+00434fcb        edx_24->g = eax_46->g
+00434fd1        edx_24->b = eax_46->b
+00434fd7        edx_24->a = eax_46->a
+00434fec        if (is_neighbor_cell_solid(game_1, cell, 0, 0xffffffff) != 0)
+004350e9        cell->fringe_back = nullptr
+00435000        if (is_neighbor_cell_solid(game_1, cell, 0xffffffff, 0xffffffff) != 1)
+00435008        int32_t eax_50 = is_neighbor_cell_solid(game_1, cell, 0xffffffff, 0)
+0043500d        eax_50.b -= 1
+0043500f        char temp7_1 = eax_50.b
+0043500f        eax_50.b = neg.b(eax_50.b)
+00435016        ebx = neg.d(sbb.d(eax_50, eax_50, temp7_1 != 0)) + 1
 00435026        int32_t ebp_9
-00435026        if (is_neighbor_cell_solid(game_1, esi_1, 1, 0xffffffff) != 1)
-00435033        int32_t eax_59 = is_neighbor_cell_solid(game_1, esi_1, 1, 0)
-00435038        eax_59.b -= 1
-0043503a        char temp8_1 = eax_59.b
-0043503a        eax_59.b = neg.b(eax_59.b)
-00435041        ebp_9 = neg.d(sbb.d(eax_59, eax_59, temp8_1 != 0)) + 1
+00435026        if (is_neighbor_cell_solid(game_1, cell, 1, 0xffffffff) != 1)
+00435033        int32_t eax_55 = is_neighbor_cell_solid(game_1, cell, 1, 0)
+00435038        eax_55.b -= 1
+0043503a        char temp8_1 = eax_55.b
+0043503a        eax_55.b = neg.b(eax_55.b)
+00435041        ebp_9 = neg.d(sbb.d(eax_55, eax_55, temp8_1 != 0)) + 1
 00435028        ebp_9 = 0
-0043504f        struct FringeObject* eax_63 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
-00435057        (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back = eax_63
-0043507c        set_bod_object(eax_63, g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][0][(ebx + edi_1 * 0xc) * 3 + ebp_9].object)
-00435081        struct FringeObject* fringe_back = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back
+0043504f        struct FringeObject* bod_3 = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00435057        cell->fringe_back = bod_3
+0043507c        set_bod_object(bod_3, g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][0][(ebx + edi_1 * 0xc) * 3 + ebp_9].object)
+00435081        struct FringeObject* fringe_back = cell->fringe_back
 0043508d        fringe_back->bod.list_flags |= 0x20
-00435095        struct Vec3* eax_65 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back->position
-00435098        eax_65->x = *(esi_1 + 0x10)
-0043509d        eax_65->y = *(esi_1 + 0x14)
-004350a3        eax_65->z = *(esi_1 + 0x18)
+00435095        struct Vec3* eax_60 = &cell->fringe_back->position
+00435098        eax_60->x = cell->anchor_position.x
+0043509d        eax_60->y = cell->anchor_position.y
+004350a3        eax_60->z = cell->anchor_position.z
 004350b7        struct tColour out_3
-004350b7        int32_t* eax_66 = get_track_skirt_color(&g_game_base->subgame, &out_3)
-004350c1        struct Color4f* edx_33 = &(esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back->color
+004350b7        struct tColour* eax_61 = get_track_skirt_color(&g_game_base->subgame, &out_3)
+004350c1        struct Color4f* edx_32 = &cell->fringe_back->color
 004350c4        game_1 = game_2
 004350c8        ebx = 0
-004350ca        edx_33->r = *eax_66
-004350cf        edx_33->g = eax_66[1]
-004350d5        edx_33->b = eax_66[2]
-004350db        edx_33->a = eax_66[3]
-004350ec        edx_1 = var_44_1
-004350f3        if (((edx_1 - 0x5ccac8)->:0x5ccac8.b & 4) != 0)
-004350f5        struct FringeObject* fringe_front_1 = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_front
+004350ca        edx_32->r = eax_61->r
+004350cf        edx_32->g = eax_61->g
+004350d5        edx_32->b = eax_61->b
+004350db        edx_32->a = eax_61->a
+004350ec        row = row_cursor
+004350f3        if ((row->flags.b & 4) != 0)
+004350f5        struct FringeObject* fringe_front_1 = cell->fringe_front
 004350ff        if (fringe_front_1 != 0)
 00435101        fringe_front_1->bod.list_flags &= 0xffffffdf
-00435104        struct FringeObject* fringe_back_1 = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_back
+00435104        struct FringeObject* fringe_back_1 = cell->fringe_back
 00435109        if (fringe_back_1 != 0)
 0043510b        fringe_back_1->bod.list_flags &= 0xffffffdf
-0043510e        struct FringeObject* fringe_right_1 = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_right
+0043510e        struct FringeObject* fringe_right_1 = cell->fringe_right
 00435113        if (fringe_right_1 != 0)
 00435115        fringe_right_1->bod.list_flags &= 0xffffffdf
-00435118        struct FringeObject* fringe_left_1 = (esi_1 - 0x3bfac8)->runtime_cells[0][0].fringe_left
+00435118        struct FringeObject* fringe_left_1 = cell->fringe_left
 0043511d        if (fringe_left_1 != 0)
 0043511f        fringe_left_1->bod.list_flags &= 0xffffffdf
-00435126        esi_1 = &(*esi_1)[0][1]
+00435126        cell = &cell[1]
 00435129        cond:1_1 = var_4c_1 != 1
 0043512a        var_4c_1 -= 1
 0043512e        do while (cond:1_1)
-0043513c        edx_1 = &(*edx_1)[1]
+0043513c        row = &row[1]
 00435142        cond:2_1 = var_48 + 1 s< game_1->runtime_row_count
 00435144        var_48 += 1
-00435148        var_44_1 = edx_1
+00435148        row_cursor = row
 0043514c        do while (cond:2_1)
 00435173        return 0

@@ -597,6 +597,38 @@ MERGE_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
+# MakeFringe owns a plain SubRow cursor and advances one TrackRowCell at a
+# time. BN otherwise interprets both register lifetimes as pointers to the
+# complete embedded arrays and compensates with GameRoot-sized subtraction.
+# Preserve the exact register and spill identities recovered from the native
+# loop so the row, cell, and final-row increment retain their real owners.
+FRINGE_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "build_track_fringe_objects",
+        "RegisterVariableSourceType",
+        44,
+        68,
+        "row",
+        "SubRow*",
+    ),
+    (
+        "build_track_fringe_objects",
+        "RegisterVariableSourceType",
+        52,
+        72,
+        "cell",
+        "TrackRowCell*",
+    ),
+    (
+        "build_track_fringe_objects",
+        "StackVariableSourceType",
+        58,
+        -68,
+        "row_cursor",
+        "SubRow*",
+    ),
+)
+
 # SlideSmoothTrack carries the same SubgameRuntime-relative cell cursor in two
 # disjoint ESI lifetimes. The first compares the current cell with the next
 # same-lane row; the second compares it with the previous same-lane row.
@@ -1089,6 +1121,14 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_bod_base",
         "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
+    ),
+    (
+        "initialize_fringe_manager",
+        "void __thiscall initialize_fringe_manager(FringeManager* manager)",
+    ),
+    (
+        "allocate_fringe_object",
+        "FringeObject* __thiscall allocate_fringe_object(FringeManager* manager)",
     ),
     (
         "apply_bod_position",
@@ -1907,6 +1947,7 @@ def main() -> int:
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
+                *FRINGE_RUNTIME_USER_VAR_UPDATES,
                 *HARMONIZE_RUNTIME_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),

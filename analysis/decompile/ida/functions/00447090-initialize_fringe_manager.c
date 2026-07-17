@@ -3,8 +3,7 @@
 /* selector: initialize_fringe_manager */
 
 // Resets the shared fringe-manager pool counter at `data_4df904 + 0x3d01d4` before one track rebuild emits directional fringe objects. Cross-port Android symbols match this helper to `cRFringeManager::Init()`.
-void __thiscall sub_447090(_DWORD *this)
+void __thiscall initialize_fringe_manager(FringeManager *manager)
 {
-  *(this + 98000) = 0;
+  manager->count = 0;
 }
-
