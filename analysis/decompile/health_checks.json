@@ -126,6 +126,113 @@
       ]
     },
     {
+      "name": "bn_times_up_ai_tail_owner",
+      "artifact": "analysis/decompile/binja/functions/00445e20-update_times_up.c",
+      "required_substrings": [
+        "enum TimesUpState state = times_up->state",
+        "times_up->progress_step",
+        "times_up->progress",
+        "uninit_times_up(times_up)",
+        "kill_subgoldy(&g_game_base->subgame.player)"
+      ],
+      "forbidden_substrings": [
+        "controller->",
+        "data_4df904",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_times_up_ai_tail_owner",
+      "artifact": "analysis/decompile/ida/functions/00445e20-update_times_up.c",
+      "required_substrings": [
+        "void __thiscall update_times_up(TimesUp *times_up)",
+        "times_up->state == TIMES_UP_STATE_DISPLAYING",
+        "times_up->state == TIMES_UP_STATE_EXPIRED",
+        "times_up->progress_step + times_up->progress",
+        "uninit_times_up(times_up);",
+        "times_up->state = TIMES_UP_STATE_INACTIVE;"
+      ],
+      "forbidden_substrings": [
+        "void __thiscall update_times_up(int this)",
+        "*(_DWORD *)this",
+        "*(float *)(this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_times_up_uninit_tail_owner",
+      "artifact": "analysis/decompile/binja/functions/00445e70-uninit_times_up.c",
+      "required_substrings": [
+        "times_up->state != TIMES_UP_STATE_INACTIVE",
+        "g_game_base",
+        "kill_border(times_up->border)"
+      ],
+      "forbidden_substrings": [
+        "controller->",
+        "data_4df904",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_times_up_uninit_tail_owner",
+      "artifact": "analysis/decompile/ida/functions/00445e70-uninit_times_up.c",
+      "required_substrings": [
+        "void __thiscall uninit_times_up(TimesUp *times_up)",
+        "if ( times_up->state )",
+        "kill_border(&times_up->border->list_kind);"
+      ],
+      "forbidden_substrings": [
+        "sub_445E70",
+        "_DWORD **this",
+        "*this",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_times_up_init_tail_owner",
+      "artifact": "analysis/decompile/binja/functions/00445e90-show_times_up_message.c",
+      "required_substrings": [
+        "times_up->state != TIMES_UP_STATE_INACTIVE",
+        "times_up->border = allocate_border(&g_game_base->border_manager)",
+        "initialize_frontend_widget(times_up->border",
+        "times_up->progress = 0f",
+        "times_up->progress_step = 0.00555555569f"
+      ],
+      "forbidden_substrings": [
+        "controller->",
+        "data_4df904",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_times_up_init_tail_owner",
+      "artifact": "analysis/decompile/ida/functions/00445e90-show_times_up_message.c",
+      "required_substrings": [
+        "void __thiscall show_times_up_message(TimesUp *times_up)",
+        "times_up->state == TIMES_UP_STATE_INACTIVE",
+        "times_up->border = allocate_border(&g_game_base->border_manager);",
+        "initialize_frontend_widget(times_up->border",
+        "times_up->progress_step = 0.0055555557;",
+        "times_up->state = TIMES_UP_STATE_DISPLAYING;"
+      ],
+      "forbidden_substrings": [
+        "sub_445E90",
+        "int *this",
+        "*(this +",
+        "MEMORY[0x4DF904]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_update_subgoldy_selected_replay_lane",
       "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
       "required_substrings": [

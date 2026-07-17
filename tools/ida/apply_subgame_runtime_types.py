@@ -271,6 +271,18 @@ TRUSTED_DECLARATIONS = [
         "Parcel* __thiscall spawn_track_parcel(SubgameRuntime* runtime, Vec3* world_position, Player* source_player);",
     ),
     (
+        "update_times_up",
+        "void __thiscall update_times_up(TimesUp* times_up);",
+    ),
+    (
+        "uninit_times_up",
+        "void __thiscall uninit_times_up(TimesUp* times_up);",
+    ),
+    (
+        "show_times_up_message",
+        "void __thiscall show_times_up_message(TimesUp* times_up);",
+    ),
+    (
         "initialize_challenge_setup_screen",
         "void __thiscall initialize_challenge_setup_screen(GUI* gui);",
     ),

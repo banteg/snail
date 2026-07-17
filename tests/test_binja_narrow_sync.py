@@ -4520,6 +4520,9 @@ def test_times_up_state_ownership_stays_aligned() -> None:
     runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -4538,6 +4541,10 @@ def test_times_up_state_ownership_stays_aligned() -> None:
     assert '"TimesUpState",' in runtime_sync
     assert '("0x00", "state", "TimesUpState")' in runtime_sync
     assert '"TimesUpState",' in path_sync
+    for replay in (runtime_sync, ida_runtime_sync):
+        assert "void __thiscall update_times_up(TimesUp* times_up)" in replay
+        assert "void __thiscall uninit_times_up(TimesUp* times_up)" in replay
+        assert "void __thiscall show_times_up_message(TimesUp* times_up)" in replay
     for header in (*analysis_headers, matcher_header):
         assert "TIMES_UP_STATE_INACTIVE = 0" in header
         assert "TIMES_UP_STATE_DISPLAYING = 1" in header

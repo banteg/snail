@@ -630,6 +630,9 @@ only as historical decompiler spelling in older evidence.
   - `show_times_up_message` moves `INACTIVE -> DISPLAYING` and seeds its
     progress pair; AI advances to `EXPIRED`, tears down the borrowed widget,
     kills the embedded player on the following tick, and returns to `INACTIVE`
+  - the maintained BN/IDA runtime replay now applies all three
+    `void __thiscall(TimesUp*)` ABIs, so both tracked decompilers preserve the
+    state/progress/border owner instead of raw receiver arithmetic
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`

@@ -18,3 +18,8 @@ Init now accepts only `TIMES_UP_STATE_INACTIVE` and enters
 `TIMES_UP_STATE_DISPLAYING` after constructing the message. This closes the
 producer edge into exact AI while preserving 31/31 instructions and all six
 clean operands.
+
+2026-07-17 paired runtime replay: the corrected maintained IDA replay now
+agrees with Binary Ninja on `void __thiscall(TimesUp*)`, the borrowed border,
+and the complete state/progress producer edge. Focused output remains exact at
+31/31 instructions with six clean masked operands.

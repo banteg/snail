@@ -2,9 +2,9 @@
 /* function: uninit_times_up @ 0x445e70 */
 /* selector: uninit_times_up */
 
-void __thiscall sub_445E70(_DWORD **this)
+// Exact Windows `TimesUp::uninit_times_up`: returns the borrowed message widget to BorderManager whenever the embedded owner is active. Android retains `cRTimesUp::UnInit()`.
+void __thiscall uninit_times_up(TimesUp *times_up)
 {
-  if ( *this )
-    kill_border(*(this + 1));
+  if ( times_up->state )
+    kill_border(&times_up->border->list_kind);
 }
-
