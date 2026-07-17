@@ -2960,6 +2960,54 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert f'"{name}"' in binja_source
     assert "*CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
 
+    assert "PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES" in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        1239,\n        72,',
+        '"RegisterVariableSourceType",\n        1832,\n        73,',
+        '"RegisterVariableSourceType",\n        2177,\n        72,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("parcel_set_runtime_row_anchor", "RuntimeRowStrideAnchor*"),
+        ("zero_runtime_row_anchor", "RuntimeRowStrideAnchor*"),
+        ("projection_row", "SubRow*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+    assert "*PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES" in binja_source
+
+    assert "PLACE_PARCELS_RUNTIME_LVAR_SPECS" in ida_path_sync
+    for definition_address in (
+        "0x443DB8",
+        "0x444009",
+        "0x444162",
+    ):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        (
+            "parcel_set_runtime_row_anchor",
+            "RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor;",
+        ),
+        ("zero_runtime_row_anchor", "RuntimeRowStrideAnchor *zero_runtime_row_anchor;"),
+        ("projection_row", "SubRow *projection_row;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
+    assert "_sync_place_parcels_runtime_lvars" in ida_path_sync
+    assert "PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
+    for operand_spec in (
+        "(0x443DBA, 0, 0x5CCAC8)",
+        "(0x443DE6, 1, 0x5CCB58)",
+        "(0x443FFF, 1, 0x5CCAC8)",
+        "(0x44402A, 1, 0x5CCB58)",
+        "(0x444161, 1, 0x5CCAC8)",
+    ):
+        assert operand_spec in ida_path_sync
+    assert (
+        "place_parcels_runtime_row_offset_operands = _normalize_root_offset_operands("
+        in ida_path_sync
+    )
+
     assert "BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS" in ida_path_sync
     for definition_address in (
         "0x4383CD",

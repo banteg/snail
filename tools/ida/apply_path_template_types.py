@@ -83,6 +83,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x43B120,  # update_subgoldy
+    0x4438E0,  # place_parcels_on_track
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
 )
@@ -105,6 +106,27 @@ POPULATE_RUNTIME_LVAR_SPECS = (
         "runtime_cell_anchor",
         "RuntimeCellStrideAnchor *runtime_cell_anchor;",
         0x436683,
+        None,
+    ),
+)
+
+PLACE_PARCELS_RUNTIME_LVAR_SPECS = (
+    (
+        "parcel_set_runtime_row_anchor",
+        "RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor;",
+        0x443DB8,
+        None,
+    ),
+    (
+        "zero_runtime_row_anchor",
+        "RuntimeRowStrideAnchor *zero_runtime_row_anchor;",
+        0x444009,
+        None,
+    ),
+    (
+        "projection_row",
+        "SubRow *projection_row;",
+        0x444162,
         None,
     ),
 )
@@ -360,6 +382,26 @@ HARMONIZE_ROOT_OFFSET_OPERANDS = (
 # the displacement as the address of an unrelated byte global.
 FRINGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x434C0C, 1, 0x5CCAC8),
+)
+
+# Both parcel-claim loops retain a containing SubgameRuntime base and access a
+# borrowed SubRow through the 0x5ccac8 runtime-row slab offset. Those numeric
+# displacements collide with IDA auto-symbol addresses, so Hex-Rays otherwise
+# prints byte_5CCAC8/unk_5CCB58 even after the exact locals are typed. Normalize
+# only the proven row-field operands; the surrounding registers keep their
+# native RuntimeRowStrideAnchor identities and the final pass keeps SubRow*.
+PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x443DBA, 0, 0x5CCAC8),  # parcel-set row flags test
+    (0x443DDB, 1, 0x5CCAC8),  # parcel-set row flags load
+    (0x443DE6, 1, 0x5CCB58),  # parcel-set projection payload
+    (0x443DF0, 0, 0x5CCAC8),  # parcel-set row flags store
+    (0x443E2E, 0, 0x5CCAC8),  # parcel-set mirrored-row test
+    (0x443FFF, 1, 0x5CCAC8),  # zero-bucket row flags test
+    (0x444024, 1, 0x5CCAC8),  # zero-bucket row flags load
+    (0x44402A, 1, 0x5CCB58),  # zero-bucket projection payload
+    (0x44403D, 0, 0x5CCAC8),  # zero-bucket row flags store
+    (0x444079, 0, 0x5CCAC8),  # zero-bucket mirrored-row test
+    (0x444161, 1, 0x5CCAC8),  # final direct SubRow cursor
 )
 
 
@@ -1607,6 +1649,13 @@ def _sync_populate_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_place_parcels_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "place_parcels_on_track",
+        PLACE_PARCELS_RUNTIME_LVAR_SPECS,
+    )
+
+
 def _sync_merge_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "merge_track_tile_runs",
@@ -1956,6 +2005,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    place_parcels_runtime_row_offset_operands = _normalize_root_offset_operands(
+        PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in place_parcels_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "place_parcels_on_track",
+                    "root_offset_operand": result,
+                }
+            )
 
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
@@ -1990,6 +2050,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "populate_runtime_track_cells_from_segments",
                 "runtime_lvars": populate_runtime_lvars,
+            }
+        )
+    place_parcels_runtime_lvars = _sync_place_parcels_runtime_lvars()
+    if place_parcels_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "place_parcels_on_track",
+                "runtime_lvars": place_parcels_runtime_lvars,
             }
         )
     merge_runtime_lvars = _sync_merge_runtime_lvars()
@@ -2072,11 +2140,13 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
+                "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "populate_runtime_lvars": populate_runtime_lvars,
+                "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,

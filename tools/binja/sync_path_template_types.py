@@ -720,6 +720,38 @@ CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES = (
     ),
 )
 
+# place_parcels_on_track retains a containing SubgameRuntime base while its two
+# candidate-claim loops advance one 0xf4 SubRow lane. The final projection pass
+# instead carries a direct borrowed SubRow cursor. Pin those native register
+# lifetimes so the row fields do not collapse back into absolute data symbols;
+# neither cursor owns the runtime-row slab.
+PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        1239,
+        72,
+        "parcel_set_runtime_row_anchor",
+        "RuntimeRowStrideAnchor*",
+    ),
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        1832,
+        73,
+        "zero_runtime_row_anchor",
+        "RuntimeRowStrideAnchor*",
+    ),
+    (
+        "place_parcels_on_track",
+        "RegisterVariableSourceType",
+        2177,
+        72,
+        "projection_row",
+        "SubRow*",
+    ),
+)
+
 # VC6 retains containing-owner bases while advancing one authored row, one
 # runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
 # Binary Ninja otherwise flattens all three into void-pointer displacement
@@ -2201,6 +2233,7 @@ def main() -> int:
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
+                *PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

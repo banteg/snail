@@ -166,18 +166,17 @@
 00443e59        bool cond:14_1
 00443da8        float out_angle_3 = game->level_definition.segment_slots[(&g_parcel_set_buckets)[eax_29].segment_index].row_base + ebx_28[-1]
 00443daa        out_angle = out_angle_3
-00443db7        void* esi_3 = game + out_angle_3 i* 0xf4
-00443dc1        if ((*(esi_3 + &data_5ccac8) & 0x10) != 0)
+00443db7        struct RuntimeRowStrideAnchor* parcel_set_runtime_row_anchor = game + out_angle_3 i* 0xf4
+00443dc1        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x10) != 0)
 00443dd3        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
-00443dec        long double x87_r7_9 = float.t(out_angle)
-00443df0        *(esi_3 + &data_5ccac8) |= 0x11
-00443dfc        *(esi_3 + &data_5ccb58) = *ebx_28
-00443e01        *(esi_3 + &data_5ccb5c) = ebx_28[1]
-00443e07        *(esi_3 + &data_5ccb60) = ebx_28[2]
-00443e16        *(esi_3 + &data_5ccb60) = fconvert.s(x87_r7_9 + fconvert.t(*(esi_3 + &data_5ccb60)) + fconvert.t(0.5f))
-00443e28        *(esi_3 + &data_5ccb5c) = fconvert.s(fconvert.t(*(esi_3 + &data_5ccb5c)) + fconvert.t(1f))
-00443e35        if ((*(esi_3 + &data_5ccac8) & 0x20) != 0)
-00443e43        *(esi_3 + &data_5ccb58) = fconvert.s(fconvert.t(*(esi_3 + &data_5ccb58)) * fconvert.t(-1f))
+00443df0        parcel_set_runtime_row_anchor->row.flags |= 0x11
+00443dfc        parcel_set_runtime_row_anchor->row.projection_payload.x = *ebx_28
+00443e01        parcel_set_runtime_row_anchor->row.projection_payload.y = ebx_28[1]
+00443e07        parcel_set_runtime_row_anchor->row.projection_payload.z = ebx_28[2]
+00443e16        parcel_set_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(out_angle) + fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
+00443e28        parcel_set_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
+00443e35        if ((parcel_set_runtime_row_anchor->row.flags.b & 0x20) != 0)
+00443e43        parcel_set_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(parcel_set_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
 00443e50        ebx_28 = &ebx_28[4]
 00443e53        cond:14_1 = var_214_2 + 1 s< (&g_parcel_set_buckets)[eax_29].candidate_count
 00443e55        var_214_2 += 1
@@ -189,11 +188,11 @@
 00443e75        if (i_2 s> 0)
 00443e7b        float out_angle_6 = i_2 - 1
 00443e7e        int32_t* edx_21 = &data_648bf4
-00443e83        int32_t* esi_4 = &g_parcel_set_buckets.segment_index
+00443e83        int32_t* esi_3 = &g_parcel_set_buckets.segment_index
 00443e88        out_angle = out_angle_6
 00443e8c        int32_t* var_1f0_2 = &data_648bf4
 00443e90        int32_t* var_1f4_2 = &g_parcel_set_buckets.segment_index
-00443e9a        if ((esi_4 - 0x208)->segment_index == segment_index)
+00443e9a        if ((esi_3 - 0x208)->segment_index == segment_index)
 00443ea2        if (ecx_29 s< out_angle_6)
 00443ea4        int32_t* eax_37 = edx_21
 00443eaa        int32_t var_214_3 = out_angle_6 i- ecx_29
@@ -201,14 +200,14 @@
 00443eb0        int32_t j = 0
 00443eb4        if (*eax_37 s> 0)
 00443eb6        int32_t* ecx_30 = &eax_37[-0x103]
-00443ebc        int32_t* esi_6 = &ecx_30[0x83]
+00443ebc        int32_t* esi_5 = &ecx_30[0x83]
 00443ec2        int32_t* edi_33 = ecx_30
 00443ec4        j += 1
 00443ec5        ecx_30 = &ecx_30[4]
-00443eca        *edi_33 = *esi_6
-00443ecf        edi_33[1] = esi_6[1]
-00443ed5        edi_33[2] = esi_6[2]
-00443edb        edi_33[3] = esi_6[3]
+00443eca        *edi_33 = *esi_5
+00443ecf        edi_33[1] = esi_5[1]
+00443ed5        edi_33[2] = esi_5[2]
+00443edb        edi_33[3] = esi_5[3]
 00443ee2        do while (j s< *eax_37)
 00443ee4        ecx_29 = var_208_2
 00443eea        eax_37[-0x83] = *eax_37
@@ -220,9 +219,9 @@
 00443f10        do while (cond:16_1)
 00443f12        out_angle_6 = out_angle
 00443f16        edx_21 = var_1f0_2
-00443f1a        esi_4 = var_1f4_2
+00443f1a        esi_3 = var_1f4_2
 00443f22        ecx_29 -= 1
-00443f23        esi_4 -= 0x20c
+00443f23        esi_3 -= 0x20c
 00443f29        edx_21 -= 0x20c
 00443f2f        int32_t i_7 = i_6 - 1
 00443f30        out_angle_6 -= 1
@@ -230,10 +229,10 @@
 00443f35        out_angle = out_angle_6
 00443f39        i_2 = i_7
 00443f3b        ecx_29 += 1
-00443f3c        esi_4 = &esi_4[0x83]
+00443f3c        esi_3 = &esi_3[0x83]
 00443f42        edx_21 = &edx_21[0x83]
 00443f4a        var_208_2 = ecx_29
-00443f4e        var_1f4_2 = esi_4
+00443f4e        var_1f4_2 = esi_3
 00443f52        var_1f0_2 = edx_21
 00443f56        do while (ecx_29 s< i_2)
 00443f5c        ebx_26 = var_210_1
@@ -258,26 +257,26 @@
 00443fee        edx_38:3.b = (&(*g_zero_parcel_buckets.candidates)[0].row:3)[eax_39].candidates[0].row.b
 00443ff0        int32_t eax_42 = game->level_definition.segment_slots[segment_index_1].row_base + edx_38
 00443ffc        int32_t edx_39 = eax_42 * 0x3d
-00444008        void* edi_35 = game + (edx_39 << 2)
+00444008        struct RuntimeRowStrideAnchor* zero_runtime_row_anchor = game + (edx_39 << 2)
 0044400b        if ((*(&game->runtime_rows + (edx_39 << 2)) & 0x10) != 0)
 0044401c        report_errorf("Duplicate Parcel Request in %s.", &game->level_definition.level_display_name)
 00444033        char* ecx_36 = eax_39 * 0x20c + &(*g_zero_parcel_buckets.candidates)[0].position
-0044403d        *(edi_35 + &data_5ccac8) |= 0x11
-00444043        float esi_11
-00444043        esi_11.b = *ecx_36
-00444043        esi_11:1.b = ecx_36[1]
-00444043        esi_11:2.b = ecx_36[2]
-00444043        esi_11:3.b = ecx_36[3]
-00444047        *(edi_35 + &data_5ccb58) = esi_11
-0044404c        *(edi_35 + &data_5ccb5c) = *(ecx_36 + 4)
+0044403d        zero_runtime_row_anchor->row.flags |= 0x11
+00444043        float esi_10
+00444043        esi_10.b = *ecx_36
+00444043        esi_10:1.b = ecx_36[1]
+00444043        esi_10:2.b = ecx_36[2]
+00444043        esi_10:3.b = ecx_36[3]
+00444047        zero_runtime_row_anchor->row.projection_payload.x = esi_10
+0044404c        zero_runtime_row_anchor->row.projection_payload.y = *(ecx_36 + 4)
 0044404f        int32_t ecx_37
 0044404f        ecx_37.b = ecx_36[8]
 0044404f        ecx_37:1.b = ecx_36[9]
-00444052        *(edi_35 + &data_5ccb60) = ecx_37
-00444061        *(edi_35 + &data_5ccb60) = fconvert.s(float.t(eax_42) + fconvert.t(*(edi_35 + &data_5ccb60)) + fconvert.t(0.5f))
-00444073        *(edi_35 + &data_5ccb5c) = fconvert.s(fconvert.t(*(edi_35 + &data_5ccb5c)) + fconvert.t(1f))
-00444080        if ((*(edi_35 + &data_5ccac8) & 0x20) != 0)
-0044408a        *(edi_35 + &data_5ccb58) = fconvert.s(fconvert.t(*(edi_35 + &data_5ccb58)) * fconvert.t(-1f))
+00444052        zero_runtime_row_anchor->row.projection_payload.z = ecx_37
+00444061        zero_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(eax_42) + fconvert.t(zero_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
+00444073        zero_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
+00444080        if ((zero_runtime_row_anchor->row.flags.b & 0x20) != 0)
+0044408a        zero_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
 00444092        if (eax_39 s< parcel_count_4)
 00444094        float out_angle_4 = out_angle
 00444098        int32_t j_2 = parcel_count_4 - eax_39
@@ -309,27 +308,26 @@
 00444153        int32_t var_214_5 = 0
 0044415b        if (game->runtime_row_count s<= 0)
 0044415b        return
-00444161        int32_t* esi_18 = &game->runtime_rows
+00444161        struct SubRow* projection_row = &game->runtime_rows
 0044422b        bool cond:12_1
-00444167        char eax_53 = (*esi_18).b
-00444173        if ((eax_53 & 1) != 0 && (eax_53 & 0x40) != 0)
-0044417f        int32_t eax_54 = get_track_cell_row_index(esi_18[0x29])
-0044418c        int32_t eax_55
-0044418c        eax_55, x87control = ftol(x87control, fconvert.t(esi_18[0x26]))
-00444193        int32_t node = eax_55 - eax_54
-00444195        if (eax_55 - eax_54 s< 0)
+00444167        uint8_t flags = (projection_row->flags).b
+00444173        if ((flags & 1) != 0 && (flags & 0x40) != 0)
+0044417f        int32_t eax_53 = get_track_cell_row_index(projection_row->primary_attachment_cell)
+0044418c        int32_t eax_54
+0044418c        eax_54, x87control = ftol(x87control, fconvert.t(projection_row->projection_payload.z))
+00444193        int32_t node = eax_54 - eax_53
+00444195        if (eax_54 - eax_53 s< 0)
 00444197        node = 0
-00444199        SubLoc* cell = esi_18[0x29]
-0044419f        struct Path* attachment_template_record = cell->attachment_template_record
+00444199        struct TrackRowCell* primary_attachment_cell = projection_row->primary_attachment_cell
+0044419f        struct Path* attachment_template_record = primary_attachment_cell->attachment_template_record
 004441a6        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
-00444201        int32_t row_index = get_track_cell_row_index(cell)
-00444212        get_path_position_at_node(*(esi_18[0x29] + 0x38), &esi_18[0x24], node, row_index, &esi_18[0x24])
+00444201        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)
+00444212        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->projection_payload, node, row_index, &projection_row->projection_payload)
 004441d9        struct TransformMatrix transform
-004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], esi_18[0x24], esi_18[0x25], &transform, &out_angle)
-004441e5        float y = transform.position.y
-004441ec        esi_18[0x24] = transform.position.x
-004441f2        esi_18[0x25] = y
-0044421f        esi_18 = &esi_18[0x3d]
+004441d9        x87control = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->projection_payload.x, projection_row->projection_payload.y, &transform, &out_angle)
+004441ec        projection_row->projection_payload.x = transform.position.x
+004441f2        projection_row->projection_payload.y = transform.position.y
+0044421f        projection_row = &projection_row[1]
 00444225        cond:12_1 = var_214_5 + 1 s< game->runtime_row_count
 00444227        var_214_5 += 1
 0044422b        do while (cond:12_1)

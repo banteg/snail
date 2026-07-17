@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "create_golb",
-      "address": "0x415280"
+      "name": "place_parcels_on_track",
+      "address": "0x4438e0"
     }
   ],
   "health_check_count": 485,

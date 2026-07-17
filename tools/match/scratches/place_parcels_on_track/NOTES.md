@@ -1,4 +1,4 @@
-# Dossier — scratch not yet written (639 insns, 2396 bytes)
+# Dossier — matching scratch (639 target insns, 2396 bytes)
 
 place_parcels_on_track @ 0x4438e0. target.asm committed.
 
@@ -249,3 +249,27 @@ candidate-bank address-shape mismatches. A constructor-shaped scoped `Vector3`
 glyph temporary was re-tested against the newly recovered lifetime and rejected:
 it expands the frame from the candidate's 0x204 to 0x220 and regresses the
 focused score to 27.70% without adding ownership evidence.
+
+## Runtime-row claim ownership replay (2026-07-17)
+
+The two placement passes and the final projection pass now agree across source,
+Binary Ninja, and IDA on one ownership model. The parcel-set and digit-0 loops
+retain a containing `SubgameRuntime` base while advancing to a borrowed
+`SubRow` at the native `0xf4` stride; the final pass carries a direct borrowed
+`SubRow*` cursor through the owned `runtime_rows` slab. Neither candidate bank
+nor any row cursor owns or transfers that storage.
+
+Binary Ninja replay pins the exact register-variable identities 1239/ESI and
+1832/EDI as `RuntimeRowStrideAnchor*`, plus 2177/ESI as `SubRow*`. IDA replay
+pins the corresponding definition addresses `0x443db8`, `0x444009`, and
+`0x444162` and normalizes only the eleven proven row-slab operands whose
+numeric displacements collided with `byte_5CCAC8` and `unk_5CCB58`. Readback in
+both lanes now exposes `row.flags`, `row.projection_payload`, and
+`primary_attachment_cell` without absolute-data aliases. A separate payload
+local was previewed and rejected because the normalized IDA expression folds
+that lifetime into the row field and no longer has a stable local identity.
+
+No scratch source change was justified: it already expresses the direct
+`runtime_rows[absolute_row]` claims and sequential projection cursor. Focused
+Wibo therefore remains honestly at 33.81% (633/639 instructions, 40 clean
+masked operands, two known candidate-bank address-shape mismatches).

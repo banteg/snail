@@ -39,65 +39,62 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   int v32; // edi
   int32_t v33; // eax
   Vec3 *v34; // ebx
-  float *v35; // esi
-  float *v36; // eax
-  double v37; // st7
+  RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor; // esi
+  double v36; // st7
   float x; // ecx
-  float *v39; // ecx
-  ParcelBucket *v40; // edi
+  Vec3 *v38; // ecx
+  ParcelBucket *v39; // edi
   int32_t *p_candidate_count; // edx
   int32_t *p_segment_index; // esi
-  int32_t *v43; // eax
-  int32_t v44; // edx
-  int32_t *v45; // ecx
-  int32_t *v46; // esi
-  int32_t *v47; // edi
-  int v48; // ebx
-  int v49; // esi
-  int32_t v50; // eax
-  float *v51; // edi
-  float *v52; // edx
-  float v53; // eax
-  char *v54; // edx
-  int32_t v55; // ecx
-  SubgameRuntime *v56; // ebp
-  int32_t v57; // eax
+  int32_t *v42; // eax
+  int32_t v43; // edx
+  int32_t *v44; // ecx
+  int32_t *v45; // esi
+  int32_t *v46; // edi
+  int v47; // ebx
+  int32_t v48; // eax
+  RuntimeRowStrideAnchor *zero_runtime_row_anchor; // edi
+  float v50; // eax
+  char *v51; // edx
+  int32_t v52; // ecx
+  SubgameRuntime *v53; // ebp
+  int32_t v54; // eax
   int32_t parcel_quota; // ecx
-  char *v59; // esi
-  int v60; // edi
-  SubLoc *v61; // ecx
+  SubRow *projection_row; // esi
+  int v57; // edi
+  TrackRowCell *primary_attachment_cell; // ecx
   float y; // edx
   int32_t track_cell_row_index; // eax
-  float v64; // [esp+0h] [ebp-22Ch]
-  float v65; // [esp+0h] [ebp-22Ch]
-  int32_t *v66; // [esp+18h] [ebp-214h]
+  float v61; // [esp+0h] [ebp-22Ch]
+  float v62; // [esp+0h] [ebp-22Ch]
+  int32_t *v63; // [esp+18h] [ebp-214h]
+  int v64; // [esp+18h] [ebp-214h]
+  int32_t v65; // [esp+18h] [ebp-214h]
+  char *v66; // [esp+18h] [ebp-214h]
   int v67; // [esp+18h] [ebp-214h]
   int32_t v68; // [esp+18h] [ebp-214h]
-  char *v69; // [esp+18h] [ebp-214h]
-  int v70; // [esp+18h] [ebp-214h]
-  int32_t v71; // [esp+18h] [ebp-214h]
-  float v72; // [esp+1Ch] [ebp-210h]
-  int32_t v73; // [esp+1Ch] [ebp-210h]
+  float v69; // [esp+1Ch] [ebp-210h]
+  int32_t v70; // [esp+1Ch] [ebp-210h]
   ParcelBucket *out_angle; // [esp+20h] [ebp-20Ch] BYREF
-  float *v75; // [esp+24h] [ebp-208h]
-  int v76; // [esp+28h] [ebp-204h]
-  int32_t v77; // [esp+2Ch] [ebp-200h]
-  SubgameRuntime *v78; // [esp+30h] [ebp-1FCh]
-  int v79; // [esp+34h] [ebp-1F8h]
-  int32_t *v80; // [esp+38h] [ebp-1F4h]
-  int32_t *v81; // [esp+3Ch] [ebp-1F0h]
-  int32_t *v82; // [esp+40h] [ebp-1ECh]
-  float v83; // [esp+44h] [ebp-1E8h]
-  int v84; // [esp+48h] [ebp-1E4h]
-  int v85; // [esp+4Ch] [ebp-1E0h]
-  float v86; // [esp+50h] [ebp-1DCh]
-  int v87; // [esp+54h] [ebp-1D8h]
-  int v88; // [esp+58h] [ebp-1D4h]
+  Vec3 *p_projection_payload; // [esp+24h] [ebp-208h]
+  int v73; // [esp+28h] [ebp-204h]
+  int32_t v74; // [esp+2Ch] [ebp-200h]
+  SubgameRuntime *v75; // [esp+30h] [ebp-1FCh]
+  int v76; // [esp+34h] [ebp-1F8h]
+  int32_t *v77; // [esp+38h] [ebp-1F4h]
+  int32_t *v78; // [esp+3Ch] [ebp-1F0h]
+  int32_t *v79; // [esp+40h] [ebp-1ECh]
+  float v80; // [esp+44h] [ebp-1E8h]
+  int v81; // [esp+48h] [ebp-1E4h]
+  int v82; // [esp+4Ch] [ebp-1E0h]
+  float v83; // [esp+50h] [ebp-1DCh]
+  int v84; // [esp+54h] [ebp-1D8h]
+  int v85; // [esp+58h] [ebp-1D4h]
   TransformMatrix transform; // [esp+5Ch] [ebp-1D0h] BYREF
-  _DWORD v90[100]; // [esp+9Ch] [ebp-190h] BYREF
+  _DWORD v87[100]; // [esp+9Ch] [ebp-190h] BYREF
 
   level_mode = game->level_mode;
-  v78 = game;
+  v75 = game;
   if ( level_mode == 1 )
   {
     place_challenge_parcels_on_track(game);
@@ -114,27 +111,27 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
       }
       segment_count = game->level_definition.segment_count;
       v5 = 0;
-      v72 = 0.0;
+      v69 = 0.0;
+      v73 = 0;
       v76 = 0;
-      v79 = 0;
       if ( segment_count > 0 )
       {
         p_row_count = &game->level_definition.segment_slots[0].row_count;
-        v80 = v90;
-        v66 = &game->level_definition.segment_slots[0].row_count;
+        v77 = v87;
+        v63 = &game->level_definition.segment_slots[0].row_count;
         do
         {
           v7 = 0;
-          v75 = nullptr;
-          v77 = 0;
-          *v80 = 10000;
-          v8 = v79;
+          p_projection_payload = nullptr;
+          v74 = 0;
+          *v77 = 10000;
+          v8 = v76;
           while ( 1 )
           {
             v9 = 0;
             if ( *p_row_count > 0 )
             {
-              v81 = p_row_count + 4;
+              v78 = p_row_count + 4;
               p_y = (ParcelBucket *)(p_row_count + 518);
               out_angle = (ParcelBucket *)(p_row_count + 518);
               while ( 1 )
@@ -151,7 +148,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                     *v14 = p_y->candidates[0].row;
                     v14[1] = LODWORD(p_y->candidates[0].position.x);
                     v14[2] = LODWORD(p_y->candidates[0].position.y);
-                    g_parcel_set_buckets[v8].set_id = v77;
+                    g_parcel_set_buckets[v8].set_id = v74;
                     ++g_parcel_set_buckets[v8].candidate_count;
                   }
                   else
@@ -163,37 +160,37 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                     p_position = &g_zero_parcel_buckets[v5].candidates[g_zero_parcel_buckets[v5].candidate_count].position;
                     LODWORD(p_position->x) = p_y->candidates[0].row;
                     p_position->y = p_y->candidates[0].position.x;
-                    v13 = v76;
+                    v13 = v73;
                     p_position->z = p_y->candidates[0].position.y;
                     g_zero_parcel_buckets[v11].set_id = 0;
                     v5 = v13 + 1;
                     ++g_zero_parcel_buckets[v11].candidate_count;
-                    v76 = v5;
-                    ++LODWORD(v72);
+                    v73 = v5;
+                    ++LODWORD(v69);
                   }
                 }
-                v76 = 0;
-                v82 = v81;
+                v73 = 0;
+                v79 = v78;
                 v15 = 131 * v5;
                 do
                 {
-                  if ( *(char *)v82 == v77 + 48 )
+                  if ( *(char *)v79 == v74 + 48 )
                   {
-                    v16 = (double)v76;
-                    if ( v77 )
+                    v16 = (double)v73;
+                    if ( v74 )
                     {
                       g_parcel_set_buckets[v8].segment_index = v2;
                       *(int32_t *)((char *)&g_parcel_set_buckets[0].candidates[g_parcel_set_buckets[v8].candidate_count].row
                                  + v8 * 524) = v9;
                       v18 = (char *)&g_parcel_set_buckets[0].candidates[g_parcel_set_buckets[v8].candidate_count].position
                           + v8 * 524;
-                      v87 = 0;
-                      v88 = 0;
-                      v86 = v16 - 4.0 + 0.5;
-                      *(float *)v18 = v86;
-                      *((_DWORD *)v18 + 1) = v87;
-                      *((_DWORD *)v18 + 2) = v88;
-                      g_parcel_set_buckets[v8].set_id = v77;
+                      v84 = 0;
+                      v85 = 0;
+                      v83 = v16 - 4.0 + 0.5;
+                      *(float *)v18 = v83;
+                      *((_DWORD *)v18 + 1) = v84;
+                      *((_DWORD *)v18 + 2) = v85;
+                      g_parcel_set_buckets[v8].set_id = v74;
                       ++g_parcel_set_buckets[v8].candidate_count;
                     }
                     else
@@ -203,304 +200,305 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
                                  + v15 * 4) = v9;
                       v17 = (char *)&g_zero_parcel_buckets[0].candidates[g_zero_parcel_buckets[v15 / 0x83].candidate_count].position
                           + v15 * 4;
-                      v84 = 0;
-                      v85 = 0;
+                      v81 = 0;
+                      v82 = 0;
                       v15 += 131;
-                      v83 = v16 - 4.0 + 0.5;
-                      *(float *)v17 = v83;
-                      *((_DWORD *)v17 + 1) = v84;
-                      *((_DWORD *)v17 + 2) = v85;
+                      v80 = v16 - 4.0 + 0.5;
+                      *(float *)v17 = v80;
+                      *((_DWORD *)v17 + 1) = v81;
+                      *((_DWORD *)v17 + 2) = v82;
                       unk_53D188[v15] = 0;
                       ++v5;
                       ++unk_53D184[v15];
-                      ++LODWORD(v72);
+                      ++LODWORD(v69);
                     }
                   }
-                  v19 = ++v76 < 8;
-                  v82 += 64;
+                  v19 = ++v73 < 8;
+                  v79 += 64;
                 }
                 while ( v19 );
                 ++v9;
                 p_y = (ParcelBucket *)&out_angle->candidates[3].position.y;
-                v76 = v5;
-                v81 = (int32_t *)((char *)v81 + 1);
-                p_row_count = v66;
+                v73 = v5;
+                v78 = (int32_t *)((char *)v78 + 1);
+                p_row_count = v63;
                 out_angle = (ParcelBucket *)((char *)out_angle + 56);
-                if ( v9 >= *v66 )
+                if ( v9 >= *v63 )
                   break;
-                v7 = v77;
+                v7 = v74;
               }
             }
             candidate_count = g_parcel_set_buckets[v8].candidate_count;
             if ( candidate_count > 0 )
             {
               segment_index = g_parcel_set_buckets[v8].segment_index;
-              v22 = v90[segment_index];
-              v23 = &v90[segment_index];
+              v22 = v87[segment_index];
+              v23 = &v87[segment_index];
               if ( candidate_count < v22 )
                 *v23 = candidate_count;
-              if ( candidate_count > (int)v75 )
-                v75 = (float *)candidate_count;
+              if ( candidate_count > (int)p_projection_payload )
+                p_projection_payload = (Vec3 *)candidate_count;
               ++v8;
-              ++v79;
+              ++v76;
             }
-            if ( ++v77 >= 10 )
+            if ( ++v74 >= 10 )
               break;
-            v7 = v77;
+            v7 = v74;
           }
           ++v2;
-          v24 = v78->level_definition.segment_count;
+          v24 = v75->level_definition.segment_count;
           p_row_count += 4232;
-          ++v80;
-          v66 = p_row_count;
+          ++v77;
+          v63 = p_row_count;
         }
         while ( v2 < v24 );
       }
-      parcel_count = v78->level_definition.parcel_count;
-      v26 = v78->level_definition.segment_count;
-      v27 = 80 * parcel_count / 100 - (_DWORD)v75;
-      v77 = v27;
-      *(float *)&out_angle = v72;
+      parcel_count = v75->level_definition.parcel_count;
+      v26 = v75->level_definition.segment_count;
+      v27 = 80 * parcel_count / 100 - (_DWORD)p_projection_payload;
+      v74 = v27;
+      out_angle = (ParcelBucket *)LODWORD(v69);
       if ( v26 <= 0 )
       {
         v28 = out_angle;
       }
       else
       {
-        v67 = v26;
+        v64 = v26;
         v28 = out_angle;
-        v29 = v90;
+        v29 = v87;
         do
         {
           if ( *v29 != 10000 )
             v28 = (ParcelBucket *)((char *)v28 + *v29);
           ++v29;
-          --v67;
+          --v64;
         }
-        while ( v67 );
+        while ( v64 );
       }
       if ( (int)v28 < parcel_count )
         report_errorf(
           "Parcel Allocation could fail in %s.  Add more parcel Sets",
-          v78->level_definition.level_display_name);
-      if ( v78->level_definition.parcel_count - v27 > SLODWORD(v72) )
+          v75->level_definition.level_display_name);
+      if ( v75->level_definition.parcel_count - v27 > SLODWORD(v69) )
         report_errorf(
           "Parcel Allocation could fail in %s. Add more 0 parcels ",
-          v78->level_definition.level_display_name);
+          v75->level_definition.level_display_name);
       v30 = 0;
-      v73 = 0;
+      v70 = 0;
       if ( v27 > 0 )
       {
-        v31 = v79;
+        v31 = v76;
         do
         {
           if ( v31 <= 0 )
             break;
-          v64 = (float)v79;
-          v68 = 0;
-          v32 = (__int64)random_float_below(v64);
+          v61 = (float)v76;
+          v65 = 0;
+          v32 = (__int64)random_float_below(v61);
           v33 = g_parcel_set_buckets[v32].candidate_count;
-          v73 = v33 + v30;
+          v70 = v33 + v30;
           if ( v33 > 0 )
           {
             v34 = &g_parcel_set_buckets[v32].candidates[0].position;
             do
             {
               out_angle = (ParcelBucket *)(LODWORD(v34[-1].z)
-                                         + v78->level_definition.segment_slots[g_parcel_set_buckets[v32].segment_index].row_base);
-              v35 = (float *)(&v78->scan_reset + 244 * (_DWORD)out_angle);
-              if ( (byte_5CCAC8[(_DWORD)v35] & 0x10) != 0 )
-                report_errorf("Duplicate Parcel Request in %s.", v78->level_definition.level_display_name);
-              v36 = (float *)((char *)&unk_5CCB58 + (_DWORD)v35);
-              v37 = (double)(int)out_angle;
-              *(_DWORD *)&byte_5CCAC8[(_DWORD)v35] |= 0x11u;
+                                         + v75->level_definition.segment_slots[g_parcel_set_buckets[v32].segment_index].row_base);
+              parcel_set_runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)v75 + 244 * (_DWORD)out_angle);
+              if ( (parcel_set_runtime_row_anchor->row.flags & 0x10) != 0 )
+                report_errorf("Duplicate Parcel Request in %s.", v75->level_definition.level_display_name);
+              v36 = (double)(int)out_angle;
+              parcel_set_runtime_row_anchor->row.flags |= 0x11u;
               x = v34->x;
-              v75 = v36;
-              *v36 = x;
-              v36[1] = v34->y;
-              v36[2] = v34->z;
-              v35[1520344] = v37 + v35[1520344] + 0.5;
-              v35[1520343] = v35[1520343] + 1.0;
-              if ( (byte_5CCAC8[(_DWORD)v35] & 0x20) != 0 )
-                *v75 = *v75 * -1.0;
+              p_projection_payload = &parcel_set_runtime_row_anchor->row.projection_payload;
+              parcel_set_runtime_row_anchor->row.projection_payload.x = x;
+              parcel_set_runtime_row_anchor->row.projection_payload.y = v34->y;
+              parcel_set_runtime_row_anchor->row.projection_payload.z = v34->z;
+              parcel_set_runtime_row_anchor->row.projection_payload.z = v36
+                                                                      + parcel_set_runtime_row_anchor->row.projection_payload.z
+                                                                      + 0.5;
+              parcel_set_runtime_row_anchor->row.projection_payload.y = parcel_set_runtime_row_anchor->row.projection_payload.y
+                                                                      + 1.0;
+              if ( (parcel_set_runtime_row_anchor->row.flags & 0x20) != 0 )
+                p_projection_payload->x = p_projection_payload->x * -1.0;
               v34 = (Vec3 *)((char *)v34 + 16);
-              ++v68;
+              ++v65;
             }
-            while ( v68 < g_parcel_set_buckets[v32].candidate_count );
+            while ( v65 < g_parcel_set_buckets[v32].candidate_count );
           }
-          v39 = nullptr;
-          v82 = (int32_t *)g_parcel_set_buckets[v32].segment_index;
-          v31 = v79;
-          v75 = nullptr;
-          if ( v79 > 0 )
+          v38 = nullptr;
+          v79 = (int32_t *)g_parcel_set_buckets[v32].segment_index;
+          v31 = v76;
+          p_projection_payload = nullptr;
+          if ( v76 > 0 )
           {
-            v40 = (ParcelBucket *)(v79 - 1);
+            v39 = (ParcelBucket *)(v76 - 1);
             p_candidate_count = &g_parcel_set_buckets[1].candidate_count;
             p_segment_index = &g_parcel_set_buckets[0].segment_index;
-            out_angle = (ParcelBucket *)(v79 - 1);
-            v81 = &g_parcel_set_buckets[1].candidate_count;
-            v80 = &g_parcel_set_buckets[0].segment_index;
+            out_angle = (ParcelBucket *)(v76 - 1);
+            v78 = &g_parcel_set_buckets[1].candidate_count;
+            v77 = &g_parcel_set_buckets[0].segment_index;
             do
             {
-              if ( (int32_t *)*p_segment_index == v82 )
+              if ( (int32_t *)*p_segment_index == v79 )
               {
-                if ( (int)v39 < (int)v40 )
+                if ( (int)v38 < (int)v39 )
                 {
-                  v43 = p_candidate_count;
-                  v69 = (char *)((char *)v40 - (char *)v39);
+                  v42 = p_candidate_count;
+                  v66 = (char *)((char *)v39 - (char *)v38);
                   do
                   {
-                    v44 = 0;
-                    if ( *v43 > 0 )
+                    v43 = 0;
+                    if ( *v42 > 0 )
                     {
-                      v45 = v43 - 259;
+                      v44 = v42 - 259;
                       do
                       {
-                        v46 = v45 + 131;
-                        v47 = v45;
-                        ++v44;
-                        v45 += 4;
-                        *v47 = *v46;
-                        v47[1] = v46[1];
-                        v47[2] = v46[2];
-                        v47[3] = v46[3];
+                        v45 = v44 + 131;
+                        v46 = v44;
+                        ++v43;
+                        v44 += 4;
+                        *v46 = *v45;
+                        v46[1] = v45[1];
+                        v46[2] = v45[2];
+                        v46[3] = v45[3];
                       }
-                      while ( v44 < *v43 );
-                      v39 = v75;
+                      while ( v43 < *v42 );
+                      v38 = p_projection_payload;
                     }
-                    *(v43 - 131) = *v43;
-                    *(v43 - 129) = v43[2];
-                    *(v43 - 130) = v43[1];
-                    v43 += 131;
-                    --v69;
+                    *(v42 - 131) = *v42;
+                    *(v42 - 129) = v42[2];
+                    *(v42 - 130) = v42[1];
+                    v42 += 131;
+                    --v66;
                   }
-                  while ( v69 );
-                  v40 = out_angle;
-                  p_candidate_count = v81;
-                  p_segment_index = v80;
+                  while ( v66 );
+                  v39 = out_angle;
+                  p_candidate_count = v78;
+                  p_segment_index = v77;
                 }
-                v39 = (float *)((char *)v39 - 1);
+                v38 = (Vec3 *)((char *)v38 - 1);
                 p_segment_index -= 131;
                 p_candidate_count -= 131;
-                v40 = (ParcelBucket *)((char *)v40 - 1);
-                --v79;
-                out_angle = v40;
-                v31 = v79;
+                v39 = (ParcelBucket *)((char *)v39 - 1);
+                --v76;
+                out_angle = v39;
+                v31 = v76;
               }
-              v39 = (float *)((char *)v39 + 1);
+              v38 = (Vec3 *)((char *)v38 + 1);
               p_segment_index += 131;
               p_candidate_count += 131;
-              v75 = v39;
-              v80 = p_segment_index;
-              v81 = p_candidate_count;
+              p_projection_payload = v38;
+              v77 = p_segment_index;
+              v78 = p_candidate_count;
             }
-            while ( (int)v39 < v31 );
+            while ( (int)v38 < v31 );
           }
-          v30 = v73;
+          v30 = v70;
         }
-        while ( v73 < v77 );
+        while ( v70 < v74 );
       }
-      if ( v30 < v78->level_definition.parcel_count )
+      if ( v30 < v75->level_definition.parcel_count )
       {
-        v75 = (float *)(v5 - 1);
+        p_projection_payload = (Vec3 *)(v5 - 1);
         do
         {
           if ( v5 <= 0 )
             break;
-          v65 = (float)v76;
-          v48 = (__int64)random_float_below(v65);
-          v49 = v48;
-          v50 = g_zero_parcel_buckets[v48].segment_index;
-          v73 += g_zero_parcel_buckets[v48].candidate_count;
-          out_angle = &g_zero_parcel_buckets[v48];
-          v70 = out_angle->candidates[0].row + v78->level_definition.segment_slots[v50].row_base;
-          v51 = (float *)(&v78->scan_reset + 244 * v70);
-          if ( (byte_5CCAC8[(_DWORD)v51] & 0x10) != 0 )
-            report_errorf("Duplicate Parcel Request in %s.", v78->level_definition.level_display_name);
-          *(_DWORD *)&byte_5CCAC8[(_DWORD)v51] |= 0x11u;
-          v52 = (float *)((char *)&unk_5CCB58 + (_DWORD)v51);
-          *v52 = g_zero_parcel_buckets[v48].candidates[0].position.x;
-          v52[1] = g_zero_parcel_buckets[v49].candidates[0].position.y;
-          v52[2] = g_zero_parcel_buckets[v49].candidates[0].position.z;
-          v51[1520344] = (double)v70 + v51[1520344] + 0.5;
-          v51[1520343] = v51[1520343] + 1.0;
-          if ( (byte_5CCAC8[(_DWORD)v51] & 0x20) != 0 )
-            *(float *)((char *)&unk_5CCB58 + (_DWORD)v51) = *(float *)((char *)&unk_5CCB58 + (_DWORD)v51) * -1.0;
-          if ( v48 < (int)v75 )
+          v62 = (float)v73;
+          v47 = (__int64)random_float_below(v62);
+          v48 = g_zero_parcel_buckets[v47].segment_index;
+          v70 += g_zero_parcel_buckets[v47].candidate_count;
+          out_angle = &g_zero_parcel_buckets[v47];
+          v67 = out_angle->candidates[0].row + v75->level_definition.segment_slots[v48].row_base;
+          zero_runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)v75 + 244 * v67);
+          if ( (zero_runtime_row_anchor->row.flags & 0x10) != 0 )
+            report_errorf("Duplicate Parcel Request in %s.", v75->level_definition.level_display_name);
+          zero_runtime_row_anchor->row.flags |= 0x11u;
+          zero_runtime_row_anchor->row.projection_payload = g_zero_parcel_buckets[v47].candidates[0].position;
+          zero_runtime_row_anchor->row.projection_payload.z = (double)v67
+                                                            + zero_runtime_row_anchor->row.projection_payload.z
+                                                            + 0.5;
+          zero_runtime_row_anchor->row.projection_payload.y = zero_runtime_row_anchor->row.projection_payload.y + 1.0;
+          if ( (zero_runtime_row_anchor->row.flags & 0x20) != 0 )
+            zero_runtime_row_anchor->row.projection_payload.x = zero_runtime_row_anchor->row.projection_payload.x * -1.0;
+          if ( v47 < (int)p_projection_payload )
           {
-            v53 = *(float *)&out_angle;
-            v54 = (char *)v75 - v48;
+            v50 = *(float *)&out_angle;
+            v51 = (char *)p_projection_payload - v47;
             do
             {
-              --v54;
-              *(_DWORD *)LODWORD(v53) = *(_DWORD *)(LODWORD(v53) + 524);
-              *(_DWORD *)(LODWORD(v53) + 4) = *(_DWORD *)(LODWORD(v53) + 528);
-              *(_DWORD *)(LODWORD(v53) + 8) = *(_DWORD *)(LODWORD(v53) + 532);
-              *(_DWORD *)(LODWORD(v53) + 12) = *(_DWORD *)(LODWORD(v53) + 536);
-              *(_DWORD *)(LODWORD(v53) + 512) = *(_DWORD *)(LODWORD(v53) + 1036);
-              *(_DWORD *)(LODWORD(v53) + 520) = *(_DWORD *)(LODWORD(v53) + 1044);
-              *(_DWORD *)(LODWORD(v53) + 516) = 0;
-              LODWORD(v53) += 524;
+              --v51;
+              *(_DWORD *)LODWORD(v50) = *(_DWORD *)(LODWORD(v50) + 524);
+              *(_DWORD *)(LODWORD(v50) + 4) = *(_DWORD *)(LODWORD(v50) + 528);
+              *(_DWORD *)(LODWORD(v50) + 8) = *(_DWORD *)(LODWORD(v50) + 532);
+              *(_DWORD *)(LODWORD(v50) + 12) = *(_DWORD *)(LODWORD(v50) + 536);
+              *(_DWORD *)(LODWORD(v50) + 512) = *(_DWORD *)(LODWORD(v50) + 1036);
+              *(_DWORD *)(LODWORD(v50) + 520) = *(_DWORD *)(LODWORD(v50) + 1044);
+              *(_DWORD *)(LODWORD(v50) + 516) = 0;
+              LODWORD(v50) += 524;
             }
-            while ( v54 );
+            while ( v51 );
           }
           --v5;
-          v55 = v78->level_definition.parcel_count;
-          v75 = (float *)((char *)v75 - 1);
-          v76 = v5;
+          v52 = v75->level_definition.parcel_count;
+          p_projection_payload = (Vec3 *)((char *)p_projection_payload - 1);
+          v73 = v5;
         }
-        while ( v73 < v55 );
+        while ( v70 < v52 );
       }
-      v56 = v78;
-      v57 = v78->level_definition.parcel_count;
-      if ( v73 != v57 )
+      v53 = v75;
+      v54 = v75->level_definition.parcel_count;
+      if ( v70 != v54 )
       {
-        report_errorf("Did not generate required Parcels(%i) in %s", v57, v78->level_definition.level_display_name);
-        parcel_quota = v78->level_definition.parcel_quota;
+        report_errorf("Did not generate required Parcels(%i) in %s", v54, v75->level_definition.level_display_name);
+        parcel_quota = v75->level_definition.parcel_quota;
         if ( parcel_quota )
-          v78->level_definition.parcel_quota = v73 * v78->level_definition.parcel_count / parcel_quota;
+          v75->level_definition.parcel_quota = v70 * v75->level_definition.parcel_count / parcel_quota;
       }
-      v56->level_definition.parcel_count = v73;
-      v71 = 0;
-      if ( v56->runtime_row_count > 0 )
+      v53->level_definition.parcel_count = v70;
+      v68 = 0;
+      if ( v53->runtime_row_count > 0 )
       {
-        v59 = &byte_5CCAC8[(_DWORD)v56];
+        projection_row = v53->runtime_rows;
         do
         {
-          if ( (*(_DWORD *)v59 & 1) != 0 && (*(_DWORD *)v59 & 0x40) != 0 )
+          if ( (projection_row->flags & 1) != 0 && (projection_row->flags & 0x40) != 0 )
           {
-            v60 = (__int64)*((float *)v59 + 38) - get_track_cell_row_index(*((SubLoc **)v59 + 41));
-            if ( v60 < 0 )
-              v60 = 0;
-            v61 = *((SubLoc **)v59 + 41);
-            if ( v61->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
+            v57 = (__int64)projection_row->projection_payload.z
+                - get_track_cell_row_index(projection_row->primary_attachment_cell);
+            if ( v57 < 0 )
+              v57 = 0;
+            primary_attachment_cell = projection_row->primary_attachment_cell;
+            if ( primary_attachment_cell->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
             {
               compute_kind42_attachment_transform(
-                v61->attachment_template_record,
-                v61->attachment_template_record->primary_samples[v60].special_scalar,
-                *((float *)v59 + 36),
-                *((float *)v59 + 37),
+                primary_attachment_cell->attachment_template_record,
+                primary_attachment_cell->attachment_template_record->primary_samples[v57].special_scalar,
+                projection_row->projection_payload.x,
+                projection_row->projection_payload.y,
                 &transform,
                 (float *)&out_angle);
               y = transform.position.y;
-              *((_DWORD *)v59 + 36) = LODWORD(transform.position.x);
-              *((float *)v59 + 37) = y;
+              projection_row->projection_payload.x = transform.position.x;
+              projection_row->projection_payload.y = y;
             }
             else
             {
-              track_cell_row_index = get_track_cell_row_index(v61);
+              track_cell_row_index = get_track_cell_row_index(primary_attachment_cell);
               get_path_position_at_node(
-                *(_DWORD **)(*((_DWORD *)v59 + 41) + 56),
-                (float *)v59 + 36,
-                v60,
+                &projection_row->primary_attachment_cell->attachment_template_record->bod.bod.vtable,
+                &projection_row->projection_payload.x,
+                v57,
                 track_cell_row_index,
-                (float *)v59 + 36);
+                &projection_row->projection_payload.x);
             }
           }
-          v59 += 244;
-          ++v71;
+          ++projection_row;
+          ++v68;
         }
-        while ( v71 < v56->runtime_row_count );
+        while ( v68 < v53->runtime_row_count );
       }
     }
   }

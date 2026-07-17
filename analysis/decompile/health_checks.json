@@ -5150,10 +5150,23 @@
         "game->level_definition.parcel_count",
         "game->runtime_rows",
         "g_zero_parcel_buckets.candidate_count",
-        "g_parcel_set_buckets.candidate_count"
+        "g_parcel_set_buckets.candidate_count",
+        "struct RuntimeRowStrideAnchor* parcel_set_runtime_row_anchor",
+        "parcel_set_runtime_row_anchor->row.projection_payload.x",
+        "struct RuntimeRowStrideAnchor* zero_runtime_row_anchor",
+        "zero_runtime_row_anchor->row.projection_payload.x",
+        "struct SubRow* projection_row",
+        "projection_row->primary_attachment_cell"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
+        "data_5ccac8",
+        "data_5ccb58",
+        "data_5ccb5c",
+        "data_5ccb60",
+        "void* esi_3",
+        "void* edi_35",
+        "int32_t* esi_18",
         "struct Game* game",
         "return place_challenge_parcels_on_track(game)",
         "return i_4",
@@ -5218,11 +5231,21 @@
         "game->level_definition.segment_slots",
         "g_zero_parcel_buckets",
         "g_parcel_set_buckets",
-        ".candidate_count"
+        ".candidate_count",
+        "RuntimeRowStrideAnchor *parcel_set_runtime_row_anchor",
+        "parcel_set_runtime_row_anchor->row.projection_payload.x",
+        "RuntimeRowStrideAnchor *zero_runtime_row_anchor",
+        "zero_runtime_row_anchor->row.projection_payload.x",
+        "SubRow *projection_row",
+        "projection_row->primary_attachment_cell"
       ],
       "forbidden_substrings": [
         "int32_t __thiscall place_parcels_on_track",
         "place_parcels_on_track(Game *game)",
+        "byte_5CCAC8",
+        "unk_5CCB58",
+        "1520344",
+        "1520343",
         "return result;",
         "__asm",
         "_ET1"
