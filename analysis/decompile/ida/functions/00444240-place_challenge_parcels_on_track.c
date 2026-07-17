@@ -15,11 +15,11 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   int v9; // ebx
   __int64 v10; // rax
   _DWORD *v11; // esi
-  uint8_t *v12; // ecx
+  RuntimeRowStrideAnchor *challenge_runtime_row_anchor; // ecx
   int v13; // ecx
-  char *v14; // esi
+  SubRow *projection_row; // esi
   int v15; // edi
-  SubLoc *v16; // ecx
+  TrackRowCell *primary_attachment_cell; // ecx
   float y; // ecx
   int32_t track_cell_row_index; // eax
   float v19; // [esp+0h] [ebp-60h]
@@ -72,13 +72,17 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
       v11 = (_DWORD *)(4 * v10 + 6572008);
       out_angle = g_parcel_group_survival_0[(_DWORD)v10];
       ++v8;
-      v12 = &game->scan_reset + 244 * out_angle;
-      *(_DWORD *)&byte_5CCAC8[(_DWORD)v12] |= 0x11u;
-      *((float *)v12 + 1520343) = *((float *)v12 + 1520343) + 1.0;
-      if ( (byte_5CCAC8[(_DWORD)v12] & 0x20) != 0 )
-        *((float *)v12 + 1520342) = *((float *)v12 + 1520342) * -1.0;
-      if ( (*(_DWORD *)&byte_5CCAC8[(_DWORD)v12] & 0x4000) != 0 )
-        *((float *)v12 + 1520344) = (double)out_angle + *((float *)v12 + 1520344) + 0.5;
+      challenge_runtime_row_anchor = (RuntimeRowStrideAnchor *)((char *)game + 244 * out_angle);
+      challenge_runtime_row_anchor->row.flags |= 0x11u;
+      challenge_runtime_row_anchor->row.projection_payload.y = challenge_runtime_row_anchor->row.projection_payload.y
+                                                             + 1.0;
+      if ( (challenge_runtime_row_anchor->row.flags & 0x20) != 0 )
+        challenge_runtime_row_anchor->row.projection_payload.x = challenge_runtime_row_anchor->row.projection_payload.x
+                                                               * -1.0;
+      if ( (challenge_runtime_row_anchor->row.flags & 0x4000) != 0 )
+        challenge_runtime_row_anchor->row.projection_payload.z = (double)out_angle
+                                                               + challenge_runtime_row_anchor->row.projection_payload.z
+                                                               + 0.5;
       if ( (int)v10 < v9 )
       {
         v13 = v9 - v10;
@@ -102,40 +106,41 @@ void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
   v21 = 0;
   if ( game->runtime_row_count > 0 )
   {
-    v14 = &byte_5CCAC8[(_DWORD)game];
+    projection_row = game->runtime_rows;
     do
     {
-      if ( (*(_DWORD *)v14 & 1) != 0 && (*(_DWORD *)v14 & 0x40) != 0 )
+      if ( (projection_row->flags & 1) != 0 && (projection_row->flags & 0x40) != 0 )
       {
-        v15 = (__int64)*((float *)v14 + 38) - get_track_cell_row_index(*((SubLoc **)v14 + 41));
+        v15 = (__int64)projection_row->projection_payload.z
+            - get_track_cell_row_index(projection_row->primary_attachment_cell);
         if ( v15 < 0 )
           v15 = 0;
-        v16 = *((SubLoc **)v14 + 41);
-        if ( v16->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
+        primary_attachment_cell = projection_row->primary_attachment_cell;
+        if ( primary_attachment_cell->attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
         {
           compute_kind42_attachment_transform(
-            v16->attachment_template_record,
-            v16->attachment_template_record->primary_samples[v15].special_scalar,
-            *((float *)v14 + 36),
-            *((float *)v14 + 37),
+            primary_attachment_cell->attachment_template_record,
+            primary_attachment_cell->attachment_template_record->primary_samples[v15].special_scalar,
+            projection_row->projection_payload.x,
+            projection_row->projection_payload.y,
             &transform,
             (float *)&out_angle);
           y = transform.position.y;
-          *((_DWORD *)v14 + 36) = LODWORD(transform.position.x);
-          *((float *)v14 + 37) = y;
+          projection_row->projection_payload.x = transform.position.x;
+          projection_row->projection_payload.y = y;
         }
         else
         {
-          track_cell_row_index = get_track_cell_row_index(v16);
+          track_cell_row_index = get_track_cell_row_index(primary_attachment_cell);
           get_path_position_at_node(
-            *(_DWORD **)(*((_DWORD *)v14 + 41) + 56),
-            (float *)v14 + 36,
+            &projection_row->primary_attachment_cell->attachment_template_record->bod.bod.vtable,
+            &projection_row->projection_payload.x,
             v15,
             track_cell_row_index,
-            (float *)v14 + 36);
+            &projection_row->projection_payload.x);
         }
       }
-      v14 += 244;
+      ++projection_row;
       ++v21;
     }
     while ( v21 < game->runtime_row_count );

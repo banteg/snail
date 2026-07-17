@@ -133,3 +133,31 @@ EAX while its sole caller ignores it. The authored member is therefore `void`,
 matching the mobile symbol and the normal placement dispatch. Correcting the
 header and both decompiler replay paths is byte-neutral here: focused Wibo
 remains 81.40%, 173/171 instructions, with all 33 operands clean.
+
+## Runtime-row claim ownership replay (2026-07-17)
+
+The selected-row claim and final projection pass now carry the same ownership
+model as normal parcel placement in both decompiler lanes. The claim keeps the
+containing `SubgameRuntime` base while borrowing one `SubRow` through a
+`RuntimeRowStrideAnchor*`; the projection pass advances a direct borrowed
+`SubRow*`. Neither lifetime owns or transfers the `runtime_rows` slab, and the
+global survival row-index bank remains independent scratch storage.
+
+Binary Ninja splits only the selected-row ECX definition at `0x44432d`
+(identity 237/ECX) before typing it as
+`challenge_runtime_row_anchor`; the stable final ESI identity 407 becomes
+`projection_row`. A previewed split of the earlier `parcel_set_id` scan cursor
+was rejected because it lost the loop-carried initialization. That cursor
+therefore remains an honest native field-offset lifetime rather than a
+fabricated container-of owner.
+
+IDA pins the corresponding lvars at definition addresses `0x44432e` and
+`0x4443d8`, and normalizes only eleven proven selected-row/runtime-slab
+operands whose numeric displacements collided with address symbols. Readback
+now exposes `row.flags`, all three `projection_payload` components, and
+`primary_attachment_cell` without `byte_5CCAC8` aliases in those passes.
+
+No source change is justified. Focused Wibo remains honestly at 81.40%
+(171 target versus 173 candidate instructions, 33 clean masked operands); the
+two-instruction/frame residual remains the documented source-cell borrow
+lifetime rather than something to force with a cast or dummy local.

@@ -84,6 +84,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x435EB0,  # populate_runtime_track_cells_from_segments
     0x43B120,  # update_subgoldy
     0x4438E0,  # place_parcels_on_track
+    0x444240,  # place_challenge_parcels_on_track
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
 )
@@ -127,6 +128,21 @@ PLACE_PARCELS_RUNTIME_LVAR_SPECS = (
         "projection_row",
         "SubRow *projection_row;",
         0x444162,
+        None,
+    ),
+)
+
+CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS = (
+    (
+        "challenge_runtime_row_anchor",
+        "RuntimeRowStrideAnchor *challenge_runtime_row_anchor;",
+        0x44432E,
+        None,
+    ),
+    (
+        "projection_row",
+        "SubRow *projection_row;",
+        0x4443D8,
         None,
     ),
 )
@@ -402,6 +418,25 @@ PLACE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x44403D, 0, 0x5CCAC8),  # zero-bucket row flags store
     (0x444079, 0, 0x5CCAC8),  # zero-bucket mirrored-row test
     (0x444161, 1, 0x5CCAC8),  # final direct SubRow cursor
+)
+
+# Challenge placement has the same containing-anchor and direct-row cursor
+# ownership as normal placement. Normalize only the selected-row field
+# operands and final runtime_rows LEA whose numeric displacements collide with
+# IDA auto-symbol addresses; the earlier parcel_set_id scan intentionally
+# remains a native field cursor rather than a fabricated container-of owner.
+CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x444323, 1, 0x5CCAC8),  # selected row flags load before anchor LEA
+    (0x444331, 0, 0x5CCAC8),  # selected row flags store
+    (0x444337, 1, 0x5CCB5C),  # selected row projection y load
+    (0x444343, 1, 0x5CCB5C),  # selected row projection y store
+    (0x444349, 0, 0x5CCAC8),  # selected row mirrored test
+    (0x444352, 1, 0x5CCB58),  # selected row projection x load
+    (0x44435E, 1, 0x5CCB58),  # selected row projection x store
+    (0x444364, 1, 0x5CCAC8),  # selected row parcel-coordinate flags load
+    (0x444373, 1, 0x5CCB60),  # selected row projection z load
+    (0x44437F, 1, 0x5CCB60),  # selected row projection z store
+    (0x4443D7, 1, 0x5CCAC8),  # final direct SubRow cursor
 )
 
 
@@ -1656,6 +1691,13 @@ def _sync_place_parcels_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_challenge_parcels_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "place_challenge_parcels_on_track",
+        CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS,
+    )
+
+
 def _sync_merge_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "merge_track_tile_runs",
@@ -2016,6 +2058,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    challenge_parcels_runtime_row_offset_operands = _normalize_root_offset_operands(
+        CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in challenge_parcels_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "place_challenge_parcels_on_track",
+                    "root_offset_operand": result,
+                }
+            )
 
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
@@ -2058,6 +2111,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "place_parcels_on_track",
                 "runtime_lvars": place_parcels_runtime_lvars,
+            }
+        )
+    challenge_parcels_runtime_lvars = _sync_challenge_parcels_runtime_lvars()
+    if challenge_parcels_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "place_challenge_parcels_on_track",
+                "runtime_lvars": challenge_parcels_runtime_lvars,
             }
         )
     merge_runtime_lvars = _sync_merge_runtime_lvars()
@@ -2141,12 +2202,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
                 "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
+                "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,
                 "populate_runtime_lvars": populate_runtime_lvars,
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
+                "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,

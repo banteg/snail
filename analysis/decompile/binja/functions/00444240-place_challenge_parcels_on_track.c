@@ -42,13 +42,13 @@
 00444315        out_angle = out_angle_1
 00444319        edi_2 += 1
 00444320        int32_t ecx = out_angle_1 i* 0x3d
-0044432d        runtime_row_count = game + (ecx << 2)
-00444331        *(runtime_row_count + &data_5ccac8) = *(&game->runtime_rows + (ecx << 2)) | 0x11
-00444343        *(runtime_row_count + &data_5ccb5c) = fconvert.s(fconvert.t(*(runtime_row_count + &data_5ccb5c)) + fconvert.t(1f))
-00444350        if ((*(runtime_row_count + &data_5ccac8) & 0x20) != 0)
-0044435e        *(runtime_row_count + &data_5ccb58) = fconvert.s(fconvert.t(*(runtime_row_count + &data_5ccb58)) * fconvert.t(-1f))
-0044436d        if (((*(runtime_row_count + &data_5ccac8)).w:1.b & 0x40) != 0)
-0044437f        *(runtime_row_count + &data_5ccb60) = fconvert.s(float.t(out_angle) + fconvert.t(*(runtime_row_count + &data_5ccb60)) + fconvert.t(0.5f))
+0044432d        struct RuntimeRowStrideAnchor* challenge_runtime_row_anchor = game + (ecx << 2)
+00444331        challenge_runtime_row_anchor->row.flags = *(&game->runtime_rows + (ecx << 2)) | 0x11
+00444343        challenge_runtime_row_anchor->row.projection_payload.y = fconvert.s(fconvert.t(challenge_runtime_row_anchor->row.projection_payload.y) + fconvert.t(1f))
+00444350        if ((challenge_runtime_row_anchor->row.flags.b & 0x20) != 0)
+0044435e        challenge_runtime_row_anchor->row.projection_payload.x = fconvert.s(fconvert.t(challenge_runtime_row_anchor->row.projection_payload.x) * fconvert.t(-1f))
+0044436d        if (((challenge_runtime_row_anchor->row.flags).w:1.b & 0x40) != 0)
+0044437f        challenge_runtime_row_anchor->row.projection_payload.z = fconvert.s(float.t(out_angle) + fconvert.t(challenge_runtime_row_anchor->row.projection_payload.z) + fconvert.t(0.5f))
 00444387        if (eax_3 s< ebx_1)
 0044438b        runtime_row_count = ebx_1 - eax_3
 00444396        int32_t j
@@ -66,27 +66,26 @@
 004443c9        int32_t var_48 = 0
 004443d1        if (game->runtime_row_count s<= 0)
 004443d1        return
-004443d7        int32_t* esi_1 = &game->runtime_rows
+004443d7        struct SubRow* projection_row = &game->runtime_rows
 0044449b        bool cond:1_1
-004443dd        char eax_6 = (*esi_1).b
-004443e9        if ((eax_6 & 1) != 0 && (eax_6 & 0x40) != 0)
-004443f5        int32_t eax_7 = get_track_cell_row_index(esi_1[0x29])
-00444402        int32_t eax_8
-00444402        eax_8, x87control_1 = ftol(x87control_1, fconvert.t(esi_1[0x26]))
-00444409        int32_t node = eax_8 - eax_7
-0044440b        if (eax_8 - eax_7 s< 0)
+004443dd        uint8_t flags = (projection_row->flags).b
+004443e9        if ((flags & 1) != 0 && (flags & 0x40) != 0)
+004443f5        int32_t eax_6 = get_track_cell_row_index(projection_row->primary_attachment_cell)
+00444402        int32_t eax_7
+00444402        eax_7, x87control_1 = ftol(x87control_1, fconvert.t(projection_row->projection_payload.z))
+00444409        int32_t node = eax_7 - eax_6
+0044440b        if (eax_7 - eax_6 s< 0)
 0044440d        node = 0
-0044440f        SubLoc* cell = esi_1[0x29]
-00444415        struct Path* attachment_template_record = cell->attachment_template_record
+0044440f        struct TrackRowCell* primary_attachment_cell = projection_row->primary_attachment_cell
+00444415        struct Path* attachment_template_record = primary_attachment_cell->attachment_template_record
 0044441c        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
-00444471        int32_t row_index = get_track_cell_row_index(cell)
-00444482        get_path_position_at_node(*(esi_1[0x29] + 0x38), &esi_1[0x24], node, row_index, &esi_1[0x24])
+00444471        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)
+00444482        get_path_position_at_node(projection_row->primary_attachment_cell->attachment_template_record, &projection_row->projection_payload, node, row_index, &projection_row->projection_payload)
 0044444f        struct TransformMatrix transform
-0044444f        x87control_1 = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], esi_1[0x24], esi_1[0x25], &transform, &out_angle)
-00444458        float y = transform.position.y
-0044445c        esi_1[0x24] = transform.position.x
-00444462        esi_1[0x25] = y
-0044448f        esi_1 = &esi_1[0x3d]
+0044444f        x87control_1 = compute_kind42_attachment_transform(attachment_template_record, (&attachment_template_record->primary_samples->special_scalar)[node * 0x2a], projection_row->projection_payload.x, projection_row->projection_payload.y, &transform, &out_angle)
+0044445c        projection_row->projection_payload.x = transform.position.x
+00444462        projection_row->projection_payload.y = transform.position.y
+0044448f        projection_row = &projection_row[1]
 00444495        cond:1_1 = var_48 + 1 s< game->runtime_row_count
 00444497        var_48 += 1
 0044449b        do while (cond:1_1)

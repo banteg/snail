@@ -12,6 +12,7 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_and_proto_updates,
     apply_struct_field_updates,
+    apply_split_user_var_update,
     apply_symbol_updates,
     apply_user_var_updates,
     current_header_type_equivalence,
@@ -746,6 +747,32 @@ PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
         "place_parcels_on_track",
         "RegisterVariableSourceType",
         2177,
+        72,
+        "projection_row",
+        "SubRow*",
+    ),
+)
+
+# The challenge placer reuses ECX for the runtime count, the native
+# parcel_set_id field cursor, one selected-row containing anchor, and the
+# candidate-bank compaction count. Split only the selected-row definition;
+# typing the merged ECX lifetime would falsely claim the unrelated integer and
+# field-cursor values. The final ESI loop is a stable borrowed SubRow cursor.
+CHALLENGE_PARCELS_RUNTIME_ANCHOR_SPLIT_DEFINITIONS = (
+    ("0x44432d", "mlil", "RegisterVariableSourceType", 237, 67),
+)
+
+CHALLENGE_PARCELS_RUNTIME_ANCHOR_TARGET_VAR = (
+    "RegisterVariableSourceType",
+    237,
+    67,
+)
+
+CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "place_challenge_parcels_on_track",
+        "RegisterVariableSourceType",
+        407,
         72,
         "projection_row",
         "SubRow*",
@@ -2225,6 +2252,17 @@ def main() -> int:
         )
     )
     operations.extend(
+        apply_split_user_var_update(
+            REPO_ROOT,
+            target=args.target,
+            identifier="place_challenge_parcels_on_track",
+            definitions=CHALLENGE_PARCELS_RUNTIME_ANCHOR_SPLIT_DEFINITIONS,
+            target_var=CHALLENGE_PARCELS_RUNTIME_ANCHOR_TARGET_VAR,
+            variable_name="challenge_runtime_row_anchor",
+            variable_type="RuntimeRowStrideAnchor*",
+        )
+    )
+    operations.extend(
         apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
@@ -2234,6 +2272,7 @@ def main() -> int:
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
                 *PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES,
+                *CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

@@ -3008,6 +3008,48 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         in ida_path_sync
     )
 
+    assert "CHALLENGE_PARCELS_RUNTIME_ANCHOR_SPLIT_DEFINITIONS" in binja_source
+    assert (
+        '("0x44432d", "mlil", "RegisterVariableSourceType", 237, 67)'
+        in binja_source
+    )
+    assert "CHALLENGE_PARCELS_RUNTIME_ANCHOR_TARGET_VAR" in binja_source
+    assert "CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES" in binja_source
+    assert 'identifier="place_challenge_parcels_on_track"' in binja_source
+    assert 'variable_name="challenge_runtime_row_anchor"' in binja_source
+    assert 'variable_type="RuntimeRowStrideAnchor*"' in binja_source
+    assert '"RegisterVariableSourceType",\n        407,\n        72,' in binja_source
+    assert '"projection_row"' in binja_source
+    assert '"SubRow*"' in binja_source
+    assert "*CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES" in binja_source
+
+    assert "CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS" in ida_path_sync
+    for definition_address in ("0x44432E", "0x4443D8"):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        (
+            "challenge_runtime_row_anchor",
+            "RuntimeRowStrideAnchor *challenge_runtime_row_anchor;",
+        ),
+        ("projection_row", "SubRow *projection_row;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
+    assert "_sync_challenge_parcels_runtime_lvars" in ida_path_sync
+    assert "CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
+    for operand_spec in (
+        "(0x444323, 1, 0x5CCAC8)",
+        "(0x444343, 1, 0x5CCB5C)",
+        "(0x44435E, 1, 0x5CCB58)",
+        "(0x44437F, 1, 0x5CCB60)",
+        "(0x4443D7, 1, 0x5CCAC8)",
+    ):
+        assert operand_spec in ida_path_sync
+    assert (
+        "challenge_parcels_runtime_row_offset_operands = "
+        "_normalize_root_offset_operands(" in ida_path_sync
+    )
+
     assert "BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS" in ida_path_sync
     for definition_address in (
         "0x4383CD",

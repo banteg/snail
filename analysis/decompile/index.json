@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "place_parcels_on_track",
-      "address": "0x4438e0"
+      "name": "place_challenge_parcels_on_track",
+      "address": "0x444240"
     }
   ],
   "health_check_count": 485,
