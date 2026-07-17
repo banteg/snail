@@ -7,6 +7,22 @@
   0x42f6e0 on the embedded height-field animator's `FrameSequence`, not
   `initialize_object` directly.
 
+## 2026-07-17 enclosing SubgameRuntime ABI
+
+The exact 227-instruction constructor, its sole `GameRoot::subgame` caller,
+and every independently closed embedded pool establish
+`SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime*)`.
+Applying that receiver type exposes the complete pool graph in both decompilers
+instead of 80 raw `arg1 + offset` expressions. The runtime-row constructor now
+also lands on the authored `RowModel` nested in each `SubRow`.
+
+The stronger owner graph also makes `build_subgame_level` retain
+`&game->player` without the former SSA-local `initialized_player` override, so
+that stale identity is removed from the canonical BN replay. In IDA, the one
+proven `lea` at `0x4082ec` is normalized from the colliding `byte_5CCAC8`
+auto-symbol back to the numeric `SubgameRuntime::runtime_rows` displacement;
+the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
+
 ## 2026-07-10 path-bank ownership
 
 - The pass at `SubgameRuntime +0xff2914` initializes exactly `126` records at

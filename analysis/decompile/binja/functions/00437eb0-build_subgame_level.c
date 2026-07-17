@@ -84,19 +84,19 @@
 00438255        activate_landscape_entry(&game->landscape_manager, game->level_definition.landscape_script_index)
 00438193        int32_t __saved_ebp_10 = 0
 004381a1        int32_t eax_9 = ftol(x87control_1, random_float_below(4f))
-004381a9        int32_t level_index_1
+004381a9        int32_t script_index
 004381a9        if (eax_9 u> 3)
-00438200        level_index_1 = level_index
+00438200        script_index = level_index
 004381ab        switch (eax_9)
 004381b2        case 0
-004381f9        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceBluesWhorl.txt")
+004381f9        script_index = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceBluesWhorl.txt")
 004381ca        case 1
-004381ca        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceGreenWarp.txt")
+004381ca        script_index = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceGreenWarp.txt")
 004381e2        case 2
-004381e2        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpacePurple.txt")
+004381e2        script_index = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpacePurple.txt")
 004381e9        case 3
-004381f9        level_index_1 = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceRed.txt")
-0043820b        activate_landscape_entry(&game->landscape_manager, level_index_1)
+004381f9        script_index = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "SpaceRed.txt")
+0043820b        activate_landscape_entry(&game->landscape_manager, script_index)
 00438210        int32_t __saved_ebp_13 = 0
 00438216        long double st0_5 = random_float_below(1f)
 0043821b        long double temp1_1 = fconvert.t(0.5f)
@@ -148,10 +148,8 @@
 00438389        release_mouse_cursor(&g_game_base->players[0].mouse_cursor)
 00438391        game->player.movement_mode_selector = 1
 00438397        game->player.steering_mode_selector = 0
-0043839d        struct SubgameRuntime* runtime
-0043839d        struct Player* initialized_player
-0043839d        runtime, initialized_player = initialize_subgoldy(&game->player, 1)
-004383b5        if ((0x200 & runtime->player.presentation.jetpack_channel.body.bod.bod.list_flags) == 0)
+0043839d        initialize_subgoldy(&game->player, 1)
+004383b5        if ((0x200 & game->player.presentation.jetpack_channel.body.bod.bod.list_flags) == 0)
 004383cc        struct BodNode** active_first_ref_jetpack = &g_game_base->active_bod_list.first
 004383d2        struct BodNode* active_first_jetpack
 004383d2        active_first_jetpack.b = *active_first_ref_jetpack
@@ -159,7 +157,7 @@
 004383d2        active_first_jetpack:2.b = *(active_first_ref_jetpack + 2)
 004383d2        active_first_jetpack:3.b = *(active_first_ref_jetpack + 3)
 004383d6        if (active_first_jetpack != 0)
-004383e4        active_first_jetpack->list_prev = &runtime->player.presentation.jetpack_channel.body.bod.bod
+004383e4        active_first_jetpack->list_prev = &game->player.presentation.jetpack_channel
 004383e7        struct BodNode* active_first_link_jetpack
 004383e7        active_first_link_jetpack.b = *active_first_ref_jetpack
 004383e7        active_first_link_jetpack:1.b = *(active_first_ref_jetpack + 1)
@@ -177,108 +175,108 @@
 004383f9        *(active_first_ref_jetpack + 2) = active_new_first_jetpack:2.b
 004383f9        *(active_first_ref_jetpack + 3) = active_new_first_jetpack:3.b
 004383fb        active_new_first_jetpack->list_prev = nullptr
-004383d8        *active_first_ref_jetpack = (&runtime->player.presentation.jetpack_channel.body.bod.bod).b
-004383d8        *(active_first_ref_jetpack + 1) = (&runtime->player.presentation.jetpack_channel.body.bod.bod):1.b
-004383d8        *(active_first_ref_jetpack + 2) = (&runtime->player.presentation.jetpack_channel.body.bod.bod):2.b
-004383d8        *(active_first_ref_jetpack + 3) = (&runtime->player.presentation.jetpack_channel.body.bod.bod):3.b
-004383da        runtime->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr
+004383d8        *active_first_ref_jetpack = (&game->player.presentation.jetpack_channel).b
+004383d8        *(active_first_ref_jetpack + 1) = (&game->player.presentation.jetpack_channel):1.b
+004383d8        *(active_first_ref_jetpack + 2) = (&game->player.presentation.jetpack_channel):2.b
+004383d8        *(active_first_ref_jetpack + 3) = (&game->player.presentation.jetpack_channel):3.b
+004383da        game->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr
 004383dd        struct BodNode* active_first_empty_jetpack
 004383dd        active_first_empty_jetpack.b = *active_first_ref_jetpack
 004383dd        active_first_empty_jetpack:1.b = *(active_first_ref_jetpack + 1)
 004383dd        active_first_empty_jetpack:2.b = *(active_first_ref_jetpack + 2)
 004383dd        active_first_empty_jetpack:3.b = *(active_first_ref_jetpack + 3)
 004383df        active_first_empty_jetpack->list_next = nullptr
-004383fe        runtime->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200
+004383fe        game->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200
 004383bc        report_errorf("List ADD")
-0043840f        if ((0x200 & runtime->player.presentation.weapon_channels[0].body.bod.bod.list_flags) == 0)
+0043840f        if ((0x200 & game->player.presentation.weapon_channels[0].body.bod.bod.list_flags) == 0)
 00438425        struct BodNode** active_first_ref_weapon_0 = &g_game_base->active_bod_list.first
 0043842a        struct BodNode* edx_12 = *active_first_ref_weapon_0
 0043842e        if (edx_12 != 0)
-0043843c        edx_12->list_prev = &runtime->player.presentation.weapon_channels
+0043843c        edx_12->list_prev = &game->player.presentation.weapon_channels
 0043843f        struct BodNode* edx_14 = *active_first_ref_weapon_0
 00438444        edx_14->list_prev->list_next = edx_14
 0043844e        struct BodNode* list_prev = (*active_first_ref_weapon_0)->list_prev
 00438451        *active_first_ref_weapon_0 = list_prev
 00438453        list_prev->list_prev = nullptr
-00438430        *active_first_ref_weapon_0 = &runtime->player.presentation.weapon_channels
-00438432        runtime->player.presentation.weapon_channels:8.d.b = nullptr
-00438432        runtime->player.presentation.weapon_channels:8.d:1.b = 0
+00438430        *active_first_ref_weapon_0 = &game->player.presentation.weapon_channels
+00438432        game->player.__offset(0x2fd8).b = nullptr
+00438432        game->player.__offset(0x2fd9).b = 0
 00438437        (*active_first_ref_weapon_0)->list_next = nullptr
-00438456        runtime->player.presentation.weapon_channels:4.d |= 0x200
+00438456        game->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200
 00438416        report_errorf("List ADD")
-00438467        if ((0x200 & runtime->player.presentation.weapon_channels[1].body.bod.bod.list_flags) == 0)
+00438467        if ((0x200 & game->player.presentation.weapon_channels[1].body.bod.bod.list_flags) == 0)
 0043847d        struct BodNode** active_first_ref_weapon_1 = &g_game_base->active_bod_list.first
 00438482        struct BodNode* edx_16 = *active_first_ref_weapon_1
 00438486        if (edx_16 != 0)
-00438494        edx_16->list_prev = &runtime->player.presentation.weapon_channels[1].body.bod.bod
+00438494        edx_16->list_prev = &game->player.presentation.weapon_channels[1]
 00438497        struct BodNode* edx_18 = *active_first_ref_weapon_1
 0043849c        edx_18->list_prev->list_next = edx_18
 004384a6        struct BodNode* list_prev_1 = (*active_first_ref_weapon_1)->list_prev
 004384a9        *active_first_ref_weapon_1 = list_prev_1
 004384ab        list_prev_1->list_prev = nullptr
-00438488        *active_first_ref_weapon_1 = &runtime->player.presentation.weapon_channels[1].body.bod.bod
-0043848a        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_prev.b = nullptr
-0043848a        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_prev:1.b = 0
+00438488        *active_first_ref_weapon_1 = &game->player.presentation.weapon_channels[1]
+0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev.b = nullptr
+0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev:1.b = 0
 0043848f        (*active_first_ref_weapon_1)->list_next = nullptr
-004384ae        runtime->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200
+004384ae        game->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200
 0043846e        report_errorf("List ADD")
-004384bf        if ((0x200 & runtime->player.presentation.weapon_channels[2].body.bod.bod.list_flags) == 0)
+004384bf        if ((0x200 & game->player.presentation.weapon_channels[2].body.bod.bod.list_flags) == 0)
 004384d5        struct BodNode** active_first_ref_weapon_2 = &g_game_base->active_bod_list.first
 004384da        struct BodNode* edx_20 = *active_first_ref_weapon_2
 004384de        if (edx_20 != 0)
-004384ec        edx_20->list_prev = &runtime->player.presentation.weapon_channels[2].body.bod.bod
+004384ec        edx_20->list_prev = &game->player.presentation.weapon_channels[2]
 004384ef        struct BodNode* edx_22 = *active_first_ref_weapon_2
 004384f4        edx_22->list_prev->list_next = edx_22
 004384fe        struct BodNode* list_prev_2 = (*active_first_ref_weapon_2)->list_prev
 00438501        *active_first_ref_weapon_2 = list_prev_2
 00438503        list_prev_2->list_prev = nullptr
-004384e0        *active_first_ref_weapon_2 = &runtime->player.presentation.weapon_channels[2].body.bod.bod
-004384e2        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_prev.b = nullptr
-004384e2        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_prev:1.b = 0
+004384e0        *active_first_ref_weapon_2 = &game->player.presentation.weapon_channels[2]
+004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev.b = nullptr
+004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev:1.b = 0
 004384e7        (*active_first_ref_weapon_2)->list_next = nullptr
-00438506        runtime->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200
+00438506        game->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200
 004384c6        report_errorf("List ADD")
-00438517        if ((0x200 & runtime->player.presentation.invincible_shell.body.bod.bod.list_flags) == 0)
+00438517        if ((0x200 & game->player.presentation.invincible_shell.body.bod.bod.list_flags) == 0)
 0043852d        struct BodNode** active_first_ref_invincible_shell = &g_game_base->active_bod_list.first
 00438532        struct BodNode* edx_24 = *active_first_ref_invincible_shell
 00438536        if (edx_24 != 0)
-00438544        edx_24->list_prev = &runtime->player.presentation.invincible_shell.body.bod.bod
+00438544        edx_24->list_prev = &game->player.presentation.invincible_shell
 00438547        struct BodNode* edx_26 = *active_first_ref_invincible_shell
 0043854c        edx_26->list_prev->list_next = edx_26
 00438556        struct BodNode* list_prev_3 = (*active_first_ref_invincible_shell)->list_prev
 00438559        *active_first_ref_invincible_shell = list_prev_3
 0043855b        list_prev_3->list_prev = nullptr
-00438538        *active_first_ref_invincible_shell = &runtime->player.presentation.invincible_shell.body.bod.bod
-0043853a        runtime->player.presentation.invincible_shell.body.bod.bod.list_prev.b = nullptr
-0043853a        runtime->player.presentation.invincible_shell.body.bod.bod.list_prev:1.b = 0
+00438538        *active_first_ref_invincible_shell = &game->player.presentation.invincible_shell
+0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev.b = nullptr
+0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev:1.b = 0
 0043853f        (*active_first_ref_invincible_shell)->list_next = nullptr
-0043855e        runtime->player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x200
+0043855e        game->player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x200
 0043851e        report_errorf("List ADD")
-00438561        uint32_t list_flags_1 = runtime->player.presentation.invincible_shell.body.bod.bod.list_flags
+00438561        uint32_t list_flags_1 = game->player.presentation.invincible_shell.body.bod.bod.list_flags
 00438567        list_flags_1.b |= 0x80
-0043856a        runtime->player.presentation.invincible_shell.body.bod.bod.list_flags = list_flags_1
-0043857e        if ((0x200 & runtime->player.presentation.body.bod.bod.list_flags) == 0)
+0043856a        game->player.presentation.invincible_shell.body.bod.bod.list_flags = list_flags_1
+0043857e        if ((0x200 & game->player.presentation.body.bod.bod.list_flags) == 0)
 00438594        struct BodNode** active_first_ref_presentation = &g_game_base->active_bod_list.first
 00438599        struct BodNode* edx_29 = *active_first_ref_presentation
 0043859d        if (edx_29 != 0)
-004385ab        edx_29->list_prev = &runtime->player.presentation.body.bod.bod
+004385ab        edx_29->list_prev = &game->player.presentation
 004385ae        struct BodNode* edx_31 = *active_first_ref_presentation
 004385b3        edx_31->list_prev->list_next = edx_31
 004385bd        struct BodNode* list_prev_4 = (*active_first_ref_presentation)->list_prev
 004385c0        *active_first_ref_presentation = list_prev_4
 004385c2        list_prev_4->list_prev = nullptr
-0043859f        *active_first_ref_presentation = &runtime->player.presentation.body.bod.bod
-004385a1        runtime->player.presentation.body.bod.bod.list_prev.b = nullptr
-004385a1        runtime->player.presentation.body.bod.bod.list_prev:1.b = 0
+0043859f        *active_first_ref_presentation = &game->player.presentation
+004385a1        game->player.presentation.body.bod.bod.list_prev.b = nullptr
+004385a1        game->player.presentation.body.bod.bod.list_prev:1.b = 0
 004385a6        (*active_first_ref_presentation)->list_next = nullptr
-004385c5        runtime->player.presentation.body.bod.bod.list_flags |= 0x200
+004385c5        game->player.presentation.body.bod.bod.list_flags |= 0x200
 00438585        report_errorf("List ADD")
-004385cb        if ((initialized_player->body.bod.bod.list_flags & 0x200) == 0)
+004385cb        if ((game->player.body.bod.bod.list_flags & 0x200) == 0)
 004385e1        struct BodNode** active_first_ref_player = &g_game_base->active_bod_list.first
 004385e6        struct BodNode* ecx_40 = *active_first_ref_player
 004385ea        if (ecx_40 != 0)
-004385f8        ecx_40->list_prev.b = initialized_player.b
-004385f8        ecx_40->list_prev:1.b = initialized_player:1.b
+004385f8        ecx_40->list_prev.b = (&game->player).b
+004385f8        ecx_40->list_prev:1.b = (&game->player):1.b
 004385fb        struct BodNode* ecx_42 = *active_first_ref_player
 004385fd        struct BodNode* active_new_first_player
 004385fd        active_new_first_player.b = ecx_42->list_prev.b
@@ -291,32 +289,32 @@
 00438608        *active_first_ref_player = ecx_44
 0043860a        ecx_44->list_prev.b = nullptr
 0043860a        ecx_44->list_prev:1.b = 0
-004385ec        *active_first_ref_player = initialized_player
-004385ee        initialized_player->body.bod.bod.list_prev = nullptr
+004385ec        *active_first_ref_player = &game->player
+004385ee        game->player.body.bod.bod.list_prev = nullptr
 004385f3        (*active_first_ref_player)->list_next = nullptr
-0043860d        initialized_player->body.bod.bod.list_flags |= 0x200
+0043860d        game->player.body.bod.bod.list_flags |= 0x200
 004385d2        report_errorf("List ADD")
-00438616        initialize_slug_voice_manager(&runtime->slug_voice_manager.active)
-0043862f        if ((0x200 & runtime->barrier.bod.bod.list_flags) == 0)
-00438640        runtime->barrier.bod.bod.list_prev = &runtime->barrier_sub_lazer_list_head
-00438646        runtime->barrier.bod.bod.list_next = runtime->barrier_sub_lazer_list_head.bod.list_next
-00438649        runtime->barrier_sub_lazer_list_head.bod.list_next = &runtime->barrier.bod.bod
-0043864c        struct BodNode* list_next_2 = runtime->barrier.bod.bod.list_next
+00438616        initialize_slug_voice_manager(&game->slug_voice_manager)
+0043862f        if ((0x200 & game->barrier.bod.bod.list_flags) == 0)
+00438640        game->barrier.bod.bod.list_prev = &game->barrier_sub_lazer_list_head
+00438646        game->barrier.bod.bod.list_next = game->barrier_sub_lazer_list_head.bod.list_next
+00438649        game->barrier_sub_lazer_list_head.bod.list_next = &game->barrier
+0043864c        struct BodNode* list_next_2 = game->barrier.bod.bod.list_next
 00438651        if (list_next_2 != 0)
-00438653        list_next_2->list_prev.b = (&runtime->barrier.bod.bod).b
-00438653        list_next_2->list_prev:1.b = (&runtime->barrier.bod.bod):1.b
-00438656        runtime->barrier.bod.bod.list_flags |= 0x200
+00438653        list_next_2->list_prev.b = (&game->barrier).b
+00438653        list_next_2->list_prev:1.b = (&game->barrier):1.b
+00438656        game->barrier.bod.bod.list_flags |= 0x200
 00438636        report_errorf("List ADDafter")
-0043865c        runtime->barrier.owner_player = initialized_player
-00438665        if (runtime->level_mode == 0)
-00438673        int32_t __saved_ebp_15 = runtime->level_definition.parcel_count
-00438680        sprintf(&runtime->lives_text_widget->text_buffer.raw, "0/%i")
-0043868e        unhide_border_init(runtime->lives_icon_widget)
-00438699        unhide_border_init(runtime->lives_text_widget)
+0043865c        game->barrier.owner_player = &game->player
+00438665        if (game->level_mode == 0)
+00438673        int32_t __saved_ebp_15 = game->level_definition.parcel_count
+00438680        sprintf(&game->lives_text_widget->text_buffer, "0/%i")
+0043868e        unhide_border_init(game->lives_icon_widget)
+00438699        unhide_border_init(game->lives_text_widget)
 004386aa        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004386b7        set_input_controller_pointer_authored_xy(1, 320f, 240f)
-004386c1        runtime->player.track_z_offset = 320f
-004386c7        runtime->player.track_z_anchor = 320f
-004386cd        runtime->scan_reset = 1
-004386d0        calc_subgame_rate(runtime)
+004386c1        game->player.track_z_offset = 320f
+004386c7        game->player.track_z_anchor = 320f
+004386cd        game->scan_reset = 1
+004386d0        calc_subgame_rate(game)
 004386d9        return

@@ -97,13 +97,13 @@ LABEL_64:
           fringe_front_new = allocate_fringe_object(&g_game_base->subgame.fringe_manager);
           cell->fringe_front = fringe_front_new;
           set_bod_object(
-            (BodBase *)fringe_front_new,
+            &fringe_front_new->bod,
             (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][8 * v6][12 * v6 + 2 * v2 + v8 + v2].object);
-          cell->fringe_front->bod.list_flags |= 0x20u;
-          cell->fringe_front->position = cell->anchor_position;
+          cell->fringe_front->bod.bod.list_flags |= 0x20u;
+          cell->fringe_front->bod.position = cell->anchor_position;
           v1 = game;
           v2 = 0;
-          cell->fringe_front->color = *get_track_skirt_color(&g_game_base->subgame, &out);
+          cell->fringe_front->bod.color = *get_track_skirt_color(&g_game_base->subgame, &out);
         }
         if ( is_neighbor_cell_solid(v1, cell, 1, 0) )
         {
@@ -120,13 +120,13 @@ LABEL_64:
           fringe_right_new = allocate_fringe_object(&g_game_base->subgame.fringe_manager);
           cell->fringe_right = fringe_right_new;
           set_bod_object(
-            (BodBase *)fringe_right_new,
+            &fringe_right_new->bod,
             (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][8 * v6][12 * v6 + 2 * v2 + v10 + v2].object);
-          cell->fringe_right->bod.list_flags |= 0x20u;
-          cell->fringe_right->position = cell->anchor_position;
+          cell->fringe_right->bod.bod.list_flags |= 0x20u;
+          cell->fringe_right->bod.position = cell->anchor_position;
           v1 = game;
           v2 = 0;
-          cell->fringe_right->color = *get_track_skirt_color(&g_game_base->subgame, &v27);
+          cell->fringe_right->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v27);
         }
         if ( is_neighbor_cell_solid(v1, cell, -1, 0) )
         {
@@ -143,13 +143,13 @@ LABEL_64:
           fringe_left_new = allocate_fringe_object(&g_game_base->subgame.fringe_manager);
           cell->fringe_left = fringe_left_new;
           set_bod_object(
-            (BodBase *)fringe_left_new,
+            &fringe_left_new->bod,
             (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][8 * v6][12 * v6 + 2 * v2 + v12 + v2].object);
-          cell->fringe_left->bod.list_flags |= 0x20u;
-          cell->fringe_left->position = cell->anchor_position;
+          cell->fringe_left->bod.bod.list_flags |= 0x20u;
+          cell->fringe_left->bod.position = cell->anchor_position;
           v1 = game;
           v2 = 0;
-          cell->fringe_left->color = *get_track_skirt_color(&g_game_base->subgame, &v28);
+          cell->fringe_left->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v28);
         }
         if ( is_neighbor_cell_solid(v1, cell, 0, -1) )
           goto LABEL_64;
@@ -162,29 +162,29 @@ LABEL_64:
         fringe_back_new = allocate_fringe_object(&g_game_base->subgame.fringe_manager);
         cell->fringe_back = fringe_back_new;
         set_bod_object(
-          (BodBase *)fringe_back_new,
+          &fringe_back_new->bod,
           (Object *)g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][8 * v6][12 * v6 + 2 * v2 + v14 + v2].object);
-        cell->fringe_back->bod.list_flags |= 0x20u;
-        cell->fringe_back->position = cell->anchor_position;
+        cell->fringe_back->bod.bod.list_flags |= 0x20u;
+        cell->fringe_back->bod.position = cell->anchor_position;
         v1 = game;
         v2 = 0;
-        cell->fringe_back->color = *get_track_skirt_color(&g_game_base->subgame, &v29);
+        cell->fringe_back->bod.color = *get_track_skirt_color(&g_game_base->subgame, &v29);
 LABEL_65:
         row = row_cursor;
         if ( (row_cursor->flags & 4) != 0 )
         {
           fringe_front = cell->fringe_front;
           if ( fringe_front )
-            fringe_front->bod.list_flags &= ~0x20u;
+            fringe_front->bod.bod.list_flags &= ~0x20u;
           fringe_back = cell->fringe_back;
           if ( fringe_back )
-            fringe_back->bod.list_flags &= ~0x20u;
+            fringe_back->bod.bod.list_flags &= ~0x20u;
           fringe_right = cell->fringe_right;
           if ( fringe_right )
-            fringe_right->bod.list_flags &= ~0x20u;
+            fringe_right->bod.bod.list_flags &= ~0x20u;
           fringe_left = cell->fringe_left;
           if ( fringe_left )
-            fringe_left->bod.list_flags &= ~0x20u;
+            fringe_left->bod.bod.list_flags &= ~0x20u;
         }
         ++cell;
         --v23;

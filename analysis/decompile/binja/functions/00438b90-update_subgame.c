@@ -156,23 +156,23 @@
 00439027        int32_t ecx_31 = runtime_row_scan_begin * 0x3d
 00439034        struct RuntimeRowStrideAnchor* runtime_row_anchor = game + (ecx_31 << 2)
 0043903b        if ((*(&game->runtime_rows + (ecx_31 << 2)) & 2) != 0)
-0043904c        if (((runtime_row_anchor->row.primary_body.bod.bod.list_flags).w:1.b & 2) == 0)
+0043904c        if (((runtime_row_anchor->row.row_model.body.bod.bod.list_flags).w:1.b & 2) == 0)
 0043905d        struct GameRoot* game_base_3 = g_game_base
 00439069        struct BodNode* first = game_base_3->active_bod_list.first
 00439071        if (first != 0)
-0043907f        first->list_prev = &runtime_row_anchor->row.primary_body
-00439082        struct RenderableBod* first_1 = game_base_3->active_bod_list.first
-00439087        first_1->bod.bod.list_prev->list_next = first_1
-0043908e        struct RenderableBod* list_prev = game_base_3->active_bod_list.first->vtable.56.bod.list_prev
+0043907f        first->list_prev = &runtime_row_anchor->row.row_model
+00439082        struct RowModel* first_1 = game_base_3->active_bod_list.first
+00439087        first_1->body.bod.bod.list_prev->list_next = first_1
+0043908e        struct RowModel* list_prev = game_base_3->active_bod_list.first->vtable.128.bod.bod.list_prev
 00439091        game_base_3->active_bod_list.first = list_prev
-00439093        list_prev->bod.bod.list_prev = nullptr
-00439073        game_base_3->active_bod_list.first = &runtime_row_anchor->row.primary_body
-00439075        runtime_row_anchor->row.primary_body.bod.bod.list_prev.b = nullptr
-00439075        runtime_row_anchor->row.primary_body.bod.bod.list_prev:1.b = 0
-0043907a        game_base_3->active_bod_list.first->vtable.56.bod.list_next = nullptr
-00439096        uint32_t list_flags = runtime_row_anchor->row.primary_body.bod.bod.list_flags
+00439093        list_prev->body.bod.bod.list_prev = nullptr
+00439073        game_base_3->active_bod_list.first = &runtime_row_anchor->row.row_model
+00439075        runtime_row_anchor->row.row_model.body.bod.bod.list_prev.b = nullptr
+00439075        runtime_row_anchor->row.row_model.body.bod.bod.list_prev:1.b = 0
+0043907a        game_base_3->active_bod_list.first->vtable.128.bod.bod.list_next = nullptr
+00439096        uint32_t list_flags = runtime_row_anchor->row.row_model.body.bod.bod.list_flags
 00439099        list_flags:1.b |= 2
-0043909c        runtime_row_anchor->row.primary_body.bod.bod.list_flags = list_flags
+0043909c        runtime_row_anchor->row.row_model.body.bod.bod.list_flags = list_flags
 00439053        report_errorf("List ADD")
 004390af        if ((runtime_row_anchor->row.flags.b & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
 004390c1        spawn_track_parcel(game, &runtime_row_anchor->row.projection_payload, &game->player)
@@ -231,21 +231,21 @@
 004392d9        bool cond:8_1
 0043925a        struct FringeObject* fringe_front = (ebx_8 - 0x3bfb0c)->cell.fringe_front
 0043925e        if (fringe_front != 0)
-0043926c        if (((fringe_front->bod.list_flags).w:1.b & 2) == 0)
-0043927d        fringe_front->bod.list_prev = &game->fringe_attachment_list_head
-00439283        fringe_front->bod.list_next = game->fringe_attachment_list_head.bod.list_next
+0043926c        if (((fringe_front->bod.bod.list_flags).w:1.b & 2) == 0)
+0043927d        fringe_front->bod.bod.list_prev = &game->fringe_attachment_list_head
+00439283        fringe_front->bod.bod.list_next = game->fringe_attachment_list_head.bod.list_next
 00439286        game->fringe_attachment_list_head.bod.list_next = fringe_front
-00439289        struct BodNode* list_next_3 = fringe_front->bod.list_next
+00439289        struct BodNode* list_next_3 = fringe_front->bod.bod.list_next
 0043928e        if (list_next_3 != 0)
 00439290        list_next_3->list_prev.b = fringe_front.b
 00439290        list_next_3->list_prev:1.b = fringe_front:1.b
-00439293        uint32_t list_flags_2 = fringe_front->bod.list_flags
+00439293        uint32_t list_flags_2 = fringe_front->bod.bod.list_flags
 00439296        list_flags_2:1.b |= 2
-00439299        fringe_front->bod.list_flags = list_flags_2
+00439299        fringe_front->bod.bod.list_flags = list_flags_2
 00439273        report_errorf("List ADDafter")
 004392ad        struct tColour out
 004392ad        int32_t* eax_44 = get_track_skirt_color(&g_game_base->subgame, &out)
-004392b6        struct Color4f* edx_16 = &(ebx_8 - 0x3bfb0c)->cell.fringe_front->color
+004392b6        struct Color4f* edx_16 = &(ebx_8 - 0x3bfb0c)->cell.fringe_front->bod.color
 004392b9        edx_16->r = *eax_44
 004392be        edx_16->g = eax_44[1]
 004392c4        edx_16->b = eax_44[2]

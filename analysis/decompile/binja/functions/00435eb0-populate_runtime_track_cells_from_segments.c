@@ -239,30 +239,30 @@
 00436475        uint32_t flags = runtime_row_anchor->row.flags
 0043647b        flags.b |= 2
 0043647d        runtime_row_anchor->row.flags = flags
-004364a5        set_bod_object(&runtime_row_anchor->row.primary_body, g_game_base->directx_loader.cached_x_mesh_slots[segment_row_anchor->row.object_id].object)
-004364b0        set_matrix_identity(&runtime_row_anchor->row.primary_body.transform)
+004364a5        set_bod_object(&runtime_row_anchor->row.row_model, g_game_base->directx_loader.cached_x_mesh_slots[segment_row_anchor->row.object_id].object)
+004364b0        set_matrix_identity(&runtime_row_anchor->row.row_model.body.transform)
 004364c5        int32_t eax_50
 004364c5        eax_50.b = segment_row_anchor->row.object_position.x.b
 004364c5        eax_50:1.b = segment_row_anchor->row.object_position.x:1.b
 004364c5        eax_50:2.b = segment_row_anchor->row.object_position.x:2.b
 004364c5        eax_50:3.b = segment_row_anchor->row.object_position.x:3.b
-004364c7        runtime_row_anchor->row.primary_body.transform.position.x = eax_50
-004364cc        runtime_row_anchor->row.primary_body.transform.position.y = segment_row_anchor->row.object_position.y
+004364c7        runtime_row_anchor->row.row_model.body.transform.position.x = eax_50
+004364cc        runtime_row_anchor->row.row_model.body.transform.position.y = segment_row_anchor->row.object_position.y
 004364cf        float ecx_43
 004364cf        ecx_43.b = segment_row_anchor->row.object_position.z.b
 004364cf        ecx_43:1.b = segment_row_anchor->row.object_position.z:1.b
-004364d2        runtime_row_anchor->row.primary_body.transform.position.z = ecx_43
-004364db        runtime_row_anchor->row.primary_body.transform.position.z = fconvert.s(float.t(j_1) + fconvert.t(runtime_row_anchor->row.primary_body.transform.position.z))
+004364d2        runtime_row_anchor->row.row_model.body.transform.position.z = ecx_43
+004364db        runtime_row_anchor->row.row_model.body.transform.position.z = fconvert.s(float.t(j_1) + fconvert.t(runtime_row_anchor->row.row_model.body.transform.position.z))
 004364e8        if ((segment_row_anchor->row.flags.b & 8) == 0)
-0043651c        runtime_row_anchor->row.authored_object_velocity.z = 0f
-00436522        runtime_row_anchor->row.authored_object_velocity.y = 0f
-00436528        runtime_row_anchor->row.authored_object_velocity.x = 0
+0043651c        runtime_row_anchor->row.row_model.velocity.z = 0f
+00436522        runtime_row_anchor->row.row_model.velocity.y = 0f
+00436528        runtime_row_anchor->row.row_model.velocity.x = 0
 004364ea        uint32_t flags_1 = runtime_row_anchor->row.flags
 004364f6        flags_1.b |= 8
 004364f8        runtime_row_anchor->row.flags = flags_1
-00436506        runtime_row_anchor->row.authored_object_velocity.x = segment_row_anchor->row.object_velocity.x
-0043650f        runtime_row_anchor->row.authored_object_velocity.y = segment_row_anchor->row.object_velocity.y
-00436515        runtime_row_anchor->row.authored_object_velocity.z = segment_row_anchor->row.object_velocity.z
+00436506        runtime_row_anchor->row.row_model.velocity.x = segment_row_anchor->row.object_velocity.x
+0043650f        runtime_row_anchor->row.row_model.velocity.y = segment_row_anchor->row.object_velocity.y
+00436515        runtime_row_anchor->row.row_model.velocity.z = segment_row_anchor->row.object_velocity.z
 0043652e        edx_17 = var_3c_1
 00436539        if ((segment_row_anchor->row.flags.b & 1) != 0)
 00436546        runtime_row_anchor->row.flags |= 0x4001

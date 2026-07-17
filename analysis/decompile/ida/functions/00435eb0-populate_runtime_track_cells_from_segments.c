@@ -442,8 +442,8 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
               g_game_base->directx_loader.cached_x_mesh_slots[segment_row_anchor->row.object_id].object);
             set_matrix_identity((TransformMatrix *)((char *)&unk_5CCB04 + (_DWORD)runtime_row_anchor));
             *(Vec3 *)((char *)&unk_5CCB34 + (_DWORD)runtime_row_anchor) = segment_row_anchor->row.object_position;
-            runtime_row_anchor->row.primary_body.transform.position.z = (double)v105
-                                                                      + runtime_row_anchor->row.primary_body.transform.position.z;
+            runtime_row_anchor->row.row_model.body.transform.position.z = (double)v105
+                                                                        + runtime_row_anchor->row.row_model.body.transform.position.z;
             if ( (segment_row_anchor->row.flags & 8) != 0 )
             {
               v43 = *(_DWORD *)&byte_5CCAC8[(_DWORD)runtime_row_anchor];
@@ -968,10 +968,10 @@ LABEL_174:
               v99 = *v97;
               if ( *v97 )
               {
-                v99->position.z = 0.0;
-                v99->position.y = 0.0;
-                v99->position.x = 0.0;
-                p_position = (int)&(*v97)->position;
+                v99->bod.position.z = 0.0;
+                v99->bod.position.y = 0.0;
+                v99->bod.position.x = 0.0;
+                p_position = (int)&(*v97)->bod.position;
                 *(float *)p_position = p_anchor_position->x;
                 *(float *)(p_position + 4) = runtime_cell_anchor->cell.anchor_position.y;
                 *(float *)(p_position + 8) = runtime_cell_anchor->cell.anchor_position.z;

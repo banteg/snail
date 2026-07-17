@@ -58,14 +58,14 @@
 00434d4b        cell->fringe_front = bod
 00434d70        set_bod_object(bod, g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][0][(ebx + edi_1 * 0xc) * 3 + ebp].object)
 00434d75        struct FringeObject* fringe_front = cell->fringe_front
-00434d81        fringe_front->bod.list_flags |= 0x20
-00434d89        struct Vec3* eax_15 = &cell->fringe_front->position
+00434d81        fringe_front->bod.bod.list_flags |= 0x20
+00434d89        struct Vec3* eax_15 = &cell->fringe_front->bod.position
 00434d8c        eax_15->x = cell->anchor_position.x
 00434d91        eax_15->y = cell->anchor_position.y
 00434d97        eax_15->z = cell->anchor_position.z
 00434dab        struct tColour out
 00434dab        struct tColour* eax_16 = get_track_skirt_color(&g_game_base->subgame, &out)
-00434db5        struct Color4f* edx_8 = &cell->fringe_front->color
+00434db5        struct Color4f* edx_8 = &cell->fringe_front->bod.color
 00434db8        game_1 = game_2
 00434dbc        ebx = 0
 00434dbe        edx_8->r = eax_16->r
@@ -92,14 +92,14 @@
 00434e4f        cell->fringe_right = bod_1
 00434e74        set_bod_object(bod_1, g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][0][(ebx + edi_1 * 0xc) * 3 + ebp_3].object)
 00434e79        struct FringeObject* fringe_right = cell->fringe_right
-00434e85        fringe_right->bod.list_flags |= 0x20
-00434e8d        struct Vec3* eax_30 = &cell->fringe_right->position
+00434e85        fringe_right->bod.bod.list_flags |= 0x20
+00434e8d        struct Vec3* eax_30 = &cell->fringe_right->bod.position
 00434e90        eax_30->x = cell->anchor_position.x
 00434e95        eax_30->y = cell->anchor_position.y
 00434e9b        eax_30->z = cell->anchor_position.z
 00434eaf        struct tColour out_1
 00434eaf        struct tColour* eax_31 = get_track_skirt_color(&g_game_base->subgame, &out_1)
-00434eb9        struct Color4f* edx_16 = &cell->fringe_right->color
+00434eb9        struct Color4f* edx_16 = &cell->fringe_right->bod.color
 00434ebc        game_1 = game_2
 00434ec0        ebx = 0
 00434ec2        edx_16->r = eax_31->r
@@ -126,14 +126,14 @@
 00434f53        cell->fringe_left = bod_2
 00434f78        set_bod_object(bod_2, g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][0][(ebx + edi_1 * 0xc) * 3 + ebp_6].object)
 00434f7d        struct FringeObject* fringe_left = cell->fringe_left
-00434f89        fringe_left->bod.list_flags |= 0x20
-00434f91        struct Vec3* eax_45 = &cell->fringe_left->position
+00434f89        fringe_left->bod.bod.list_flags |= 0x20
+00434f91        struct Vec3* eax_45 = &cell->fringe_left->bod.position
 00434f94        eax_45->x = cell->anchor_position.x
 00434f99        eax_45->y = cell->anchor_position.y
 00434f9f        eax_45->z = cell->anchor_position.z
 00434fb3        struct tColour out_2
 00434fb3        struct tColour* eax_46 = get_track_skirt_color(&g_game_base->subgame, &out_2)
-00434fbd        struct Color4f* edx_24 = &cell->fringe_left->color
+00434fbd        struct Color4f* edx_24 = &cell->fringe_left->bod.color
 00434fc0        game_1 = game_2
 00434fc4        ebx = 0
 00434fc6        edx_24->r = eax_46->r
@@ -160,14 +160,14 @@
 00435057        cell->fringe_back = bod_3
 0043507c        set_bod_object(bod_3, g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][0][(ebx + edi_1 * 0xc) * 3 + ebp_9].object)
 00435081        struct FringeObject* fringe_back = cell->fringe_back
-0043508d        fringe_back->bod.list_flags |= 0x20
-00435095        struct Vec3* eax_60 = &cell->fringe_back->position
+0043508d        fringe_back->bod.bod.list_flags |= 0x20
+00435095        struct Vec3* eax_60 = &cell->fringe_back->bod.position
 00435098        eax_60->x = cell->anchor_position.x
 0043509d        eax_60->y = cell->anchor_position.y
 004350a3        eax_60->z = cell->anchor_position.z
 004350b7        struct tColour out_3
 004350b7        struct tColour* eax_61 = get_track_skirt_color(&g_game_base->subgame, &out_3)
-004350c1        struct Color4f* edx_32 = &cell->fringe_back->color
+004350c1        struct Color4f* edx_32 = &cell->fringe_back->bod.color
 004350c4        game_1 = game_2
 004350c8        ebx = 0
 004350ca        edx_32->r = eax_61->r
@@ -178,16 +178,16 @@
 004350f3        if ((row->flags.b & 4) != 0)
 004350f5        struct FringeObject* fringe_front_1 = cell->fringe_front
 004350ff        if (fringe_front_1 != 0)
-00435101        fringe_front_1->bod.list_flags &= 0xffffffdf
+00435101        fringe_front_1->bod.bod.list_flags &= 0xffffffdf
 00435104        struct FringeObject* fringe_back_1 = cell->fringe_back
 00435109        if (fringe_back_1 != 0)
-0043510b        fringe_back_1->bod.list_flags &= 0xffffffdf
+0043510b        fringe_back_1->bod.bod.list_flags &= 0xffffffdf
 0043510e        struct FringeObject* fringe_right_1 = cell->fringe_right
 00435113        if (fringe_right_1 != 0)
-00435115        fringe_right_1->bod.list_flags &= 0xffffffdf
+00435115        fringe_right_1->bod.bod.list_flags &= 0xffffffdf
 00435118        struct FringeObject* fringe_left_1 = cell->fringe_left
 0043511d        if (fringe_left_1 != 0)
-0043511f        fringe_left_1->bod.list_flags &= 0xffffffdf
+0043511f        fringe_left_1->bod.bod.list_flags &= 0xffffffdf
 00435126        cell = &cell[1]
 00435129        cond:1_1 = var_4c_1 != 1
 0043512a        var_4c_1 -= 1

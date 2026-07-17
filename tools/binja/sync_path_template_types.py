@@ -29,6 +29,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 SYMBOL_UPDATES = (
+    ("0x408040", "initialize_noop_renderable_bod"),
+    ("0x408060", "initialize_runtime_pools_and_path_template_bank"),
+    ("0x408590", "initialize_track_row_runtime"),
+    ("0x408650", "initialize_fringe_object"),
+    ("0x42f6e0", "initialize_object_constructor_thunk"),
+    ("0x4972b0", "g_noop_runtime_callback_table"),
+    ("0x497330", "g_row_model_vtable"),
+    ("0x497344", "g_fringe_vtable"),
     ("0x44c870", "initialize_global_identity_matrix_thunk"),
     ("0x44c880", "initialize_global_identity_matrix"),
     ("0x44cac0", "multiply_vector_by_matrix_copy"),
@@ -270,6 +278,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubLocFlag",
     "TrackRowCell",
     "SubRowFlag",
+    "RowModel",
     "SubRow",
     "RuntimeRowStrideAnchor",
     "RuntimeCellStrideAnchor",
@@ -490,17 +499,11 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
 # active-list anchor is the same BodNode** owner at all seven sites, but BN
 # otherwise inherits FrameBodBase** at the first lifetime and void** after the
 # register changes. Preserve those exact anchor identities and only the native
-# jetpack/Player lifetimes where register reuse prevents the BodNode* type from
-# propagating through otherwise full-width pointer loads and stores.
+# jetpack/Player list-node lifetimes where register reuse prevents the BodNode*
+# type from propagating through otherwise full-width pointer loads and stores.
+# The former initialized_player override is intentionally absent: the canonical
+# SubgameRuntime receiver now keeps `&game->player` typed without an SSA patch.
 BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
-    (
-        "build_subgame_level",
-        "RegisterVariableSourceType",
-        1261,
-        73,
-        "initialized_player",
-        "Player*",
-    ),
     (
         "build_subgame_level",
         "RegisterVariableSourceType",
@@ -1510,7 +1513,7 @@ BOD_BASE_FIELD_UPDATES = (
 )
 
 FRINGE_OBJECT_FIELD_UPDATES = (
-    ("0x24", "object", "Object*"),
+    ("0x00", "bod", "BodBase"),
 )
 
 TRACK_ROW_CELL_FIELD_UPDATES = (
@@ -1530,10 +1533,14 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x50", "fringe_back", "FringeObject*"),
 )
 
+ROW_MODEL_FIELD_UPDATES = (
+    ("0x00", "body", "RenderableBod"),
+    ("0x80", "velocity", "Vec3"),
+)
+
 SUB_ROW_FIELD_UPDATES = (
     ("0x00", "flags", "uint32_t"),
-    ("0x04", "primary_body", "RenderableBod"),
-    ("0x84", "authored_object_velocity", "Vec3"),
+    ("0x04", "row_model", "RowModel"),
     ("0x90", "projection_payload", "Vec3"),
     ("0x9c", "parcel_set_id", "int32_t"),
     ("0xa0", "attachment_template_index", "int32_t"),
@@ -1609,7 +1616,8 @@ TUTORIAL_FIELD_UPDATES = (
     ("0x0c", "game", "SubgameRuntime*"),
 )
 
-TIP_DATA_VAR_UPDATES = (
+DATA_VAR_UPDATES = (
+    ("0x4972b0", "void*"),
     ("0x4ac5c8", "TipData"),
 )
 
@@ -1743,6 +1751,26 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
     (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body)",
+    ),
+    (
+        "initialize_noop_renderable_bod",
+        "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
+    ),
+    (
+        "initialize_runtime_pools_and_path_template_bank",
+        "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game)",
+    ),
+    (
+        "initialize_track_row_runtime",
+        "SubRow* __thiscall initialize_track_row_runtime(SubRow* row)",
+    ),
+    (
+        "initialize_fringe_object",
+        "FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe)",
+    ),
+    (
+        "initialize_object_constructor_thunk",
+        "Object* __thiscall initialize_object_constructor_thunk(Object* object)",
     ),
     (
         "initialize_click_start_controller_runtime",
@@ -2711,6 +2739,7 @@ def main() -> int:
                 ("BodBase", BOD_BASE_FIELD_UPDATES),
                 ("FringeObject", FRINGE_OBJECT_FIELD_UPDATES),
                 ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
+                ("RowModel", ROW_MODEL_FIELD_UPDATES),
                 ("SubRow", SUB_ROW_FIELD_UPDATES),
                 ("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES),
                 ("Path", PATH_FIELD_UPDATES),
@@ -2793,7 +2822,7 @@ def main() -> int:
         apply_data_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=TIP_DATA_VAR_UPDATES,
+            updates=DATA_VAR_UPDATES,
         )
     )
     operations.extend(

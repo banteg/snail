@@ -108,13 +108,9 @@ typedef struct RenderableBod {
     uint8_t unknown_7c[0x4];
 } RenderableBod;
 
+/* Compatibility spelling for the authored cRFringe owner. */
 typedef struct FringeObject {
-    BodNode bod;
-    Vec3 position;
-    float render_arg_1c;
-    float render_arg_20;
-    Object* object;
-    tColour color;
+    BodBase bod;
 } FringeObject;
 
 typedef struct Player Player;
@@ -1158,10 +1154,15 @@ typedef enum SubRowFlag {
     SUBROW_FLAG_JETPACK_OFF = 0x8000,
 } SubRowFlag;
 
+/* Exact 0x8c-byte authored cRRowModel embedded in each SubRow. */
+typedef struct RowModel {
+    RenderableBod body;
+    Vec3 velocity;
+} RowModel;
+
 typedef struct SubRow {
     uint32_t flags;
-    RenderableBod primary_body;
-    Vec3 authored_object_velocity;
+    RowModel row_model;
     Vec3 projection_payload;
     int32_t parcel_set_id;
     int32_t attachment_template_index;
@@ -2261,6 +2262,12 @@ void __thiscall update_pause_menu(SubPause* pause);
 int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
 BodBase* __thiscall initialize_bod_base(BodBase* bod);
 RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);
+RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);
+SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(
+    SubgameRuntime* game
+);
+SubRow* __thiscall initialize_track_row_runtime(SubRow* row);
+FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe);
 ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);
 void __thiscall initialize_click_start(ClickStart* click_start, Player* player);
 void __thiscall update_click_start(ClickStart* click_start);
@@ -2279,6 +2286,7 @@ Object* __thiscall apply_bod_position(
     BodBase* bod,
     TransformMatrix* matrix
 );
+Object* __thiscall initialize_object_constructor_thunk(Object* object);
 void __thiscall request_object_vertices(Object* object, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(Object* object);
 void __thiscall request_object_facequads(Object* object, int32_t facequad_count);

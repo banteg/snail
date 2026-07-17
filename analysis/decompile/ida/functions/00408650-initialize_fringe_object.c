@@ -2,11 +2,10 @@
 /* function: initialize_fringe_object @ 0x408650 */
 /* selector: initialize_fringe_object */
 
-// Constructs one 0x38-byte fringe render object by clearing the shared object base and installing the fringe-object vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 7000-entry fringe-manager pool later consumed by `allocate_fringe_object`.
-_DWORD *__thiscall sub_408650(_DWORD *this)
+// Exact constructor wrapper for one authored `Fringe` (`cRFringe` cross-port): runs the shared body constructor, installs the Windows fringe vtable whose callback is 0x439b00, and returns the receiver. The runtime-pool constructor invokes it over the 7000-entry inline cRFringeManager array.
+FringeObject *__thiscall initialize_fringe_object(FringeObject *fringe)
 {
-  initialize_bod_base(this);
-  *this = &off_497344;
-  return this;
+  initialize_bod_base(&fringe->bod);
+  fringe->bod.bod.vtable = &g_fringe_vtable;
+  return fringe;
 }
-

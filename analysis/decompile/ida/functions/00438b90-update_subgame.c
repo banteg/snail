@@ -21,7 +21,7 @@ void __thiscall update_subgame(SubgameRuntime *game)
   int32_t v15; // eax
   int32_t runtime_row_scan_begin; // ebp
   RuntimeRowStrideAnchor *runtime_row_anchor; // edi
-  RenderableBod *p_primary_body; // ecx
+  RowModel *p_row_model; // ecx
   BodNode **p_first; // eax
   BodNode *first; // edx
   struct BodNode *list_prev; // edx
@@ -247,8 +247,8 @@ LABEL_65:
         runtime_row_anchor_saved = runtime_row_anchor;
         if ( (runtime_row_anchor->row.flags & 2) != 0 )
         {
-          p_primary_body = &runtime_row_anchor->row.primary_body;
-          if ( (runtime_row_anchor->row.primary_body.bod.bod.list_flags & 0x200) != 0 )
+          p_row_model = &runtime_row_anchor->row.row_model;
+          if ( (runtime_row_anchor->row.row_model.body.bod.bod.list_flags & 0x200) != 0 )
           {
             report_errorf(aListAdd);
           }
@@ -258,7 +258,7 @@ LABEL_65:
             first = g_game_base->active_bod_list.first;
             if ( first )
             {
-              first->list_prev = &p_primary_body->bod.bod;
+              first->list_prev = &p_row_model->body.bod.bod;
               (*p_first)->list_prev->list_next = *p_first;
               list_prev = (*p_first)->list_prev;
               *p_first = list_prev;
@@ -266,13 +266,13 @@ LABEL_65:
             }
             else
             {
-              *p_first = &p_primary_body->bod.bod;
-              runtime_row_anchor->row.primary_body.bod.bod.list_prev = nullptr;
+              *p_first = &p_row_model->body.bod.bod;
+              runtime_row_anchor->row.row_model.body.bod.bod.list_prev = nullptr;
               (*p_first)->list_next = nullptr;
             }
-            list_flags = runtime_row_anchor->row.primary_body.bod.bod.list_flags;
+            list_flags = runtime_row_anchor->row.row_model.body.bod.bod.list_flags;
             BYTE1(list_flags) |= 2u;
-            runtime_row_anchor->row.primary_body.bod.bod.list_flags = list_flags;
+            runtime_row_anchor->row.row_model.body.bod.bod.list_flags = list_flags;
           }
         }
         if ( (runtime_row_anchor->row.flags & 0x10) != 0 && ((unsigned int)&unk_800000 & game->runtime_flags) != 0 )
@@ -373,7 +373,7 @@ LABEL_65:
                 BYTE1(v35) |= 2u;
                 v33->list_flags = v35;
               }
-              (*p_fringe_front)->color = *get_track_skirt_color(&g_game_base->subgame, &out);
+              (*p_fringe_front)->bod.color = *get_track_skirt_color(&g_game_base->subgame, &out);
             }
             ++p_fringe_front;
             --v53;

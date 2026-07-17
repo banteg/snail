@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 699,
-  "function_count": 699,
+  "selected_count": 702,
+  "function_count": 702,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -406,6 +406,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_global_noop_renderable_bods",
+      "address": "0x406bd0",
+      "name": "initialize_global_noop_renderable_bods",
+      "artifact": "analysis/decompile/ida/functions/00406bd0-initialize_global_noop_renderable_bods.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_default_runtime_config_thunk",
       "address": "0x406c10",
       "name": "initialize_default_runtime_config_thunk",
@@ -543,6 +550,13 @@
       "address": "0x408000",
       "name": "initialize_game_player",
       "artifact": "analysis/decompile/ida/functions/00408000-initialize_game_player.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_noop_renderable_bod",
+      "address": "0x408040",
+      "name": "initialize_noop_renderable_bod",
+      "artifact": "analysis/decompile/ida/functions/00408040-initialize_noop_renderable_bod.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1861,6 +1875,13 @@
       "address": "0x42f680",
       "name": "apply_bod_position",
       "artifact": "analysis/decompile/ida/functions/0042f680-apply_bod_position.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_object_constructor_thunk",
+      "address": "0x42f6e0",
+      "name": "initialize_object_constructor_thunk",
+      "artifact": "analysis/decompile/ida/functions/0042f6e0-initialize_object_constructor_thunk.c",
       "removed_stale_artifacts": []
     },
     {

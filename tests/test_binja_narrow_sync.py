@@ -1492,6 +1492,50 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
     assert "no-argument auto prototype" not in binja_source
 
 
+def test_runtime_pool_constructor_replay_preserves_nested_owners() -> None:
+    binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    compact_header = "".join(header.split())
+
+    declarations = (
+        "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
+        "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game)",
+        "SubRow* __thiscall initialize_track_row_runtime(SubRow* row)",
+        "FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe)",
+        "Object* __thiscall initialize_object_constructor_thunk(Object* object)",
+    )
+    for declaration in declarations:
+        assert declaration in binja_source
+        assert declaration + ";" in ida_source
+        assert "".join(declaration.split()) + ";" in compact_header
+
+    for address, name in (
+        ("0x408040", "initialize_noop_renderable_bod"),
+        ("0x408060", "initialize_runtime_pools_and_path_template_bank"),
+        ("0x408590", "initialize_track_row_runtime"),
+        ("0x408650", "initialize_fringe_object"),
+        ("0x42f6e0", "initialize_object_constructor_thunk"),
+        ("0x4972b0", "g_noop_runtime_callback_table"),
+        ("0x497330", "g_row_model_vtable"),
+        ("0x497344", "g_fringe_vtable"),
+    ):
+        assert f'("{address}", "{name}")' in binja_source
+
+    assert "typedef struct RowModel" in header
+    assert "RenderableBod body;" in header
+    assert "Vec3 velocity;" in header
+    assert "RowModel row_model;" in header
+    assert "BodBase bod;" in header
+    assert '("RowModel", ROW_MODEL_FIELD_UPDATES)' in binja_source
+    assert '("0x04", "row_model", "RowModel")' in binja_source
+    assert '("0x4972b0", "void*")' in binja_source
+
+
 def test_subgoldy_replays_preserve_void_lifecycle_abis() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -3396,7 +3440,6 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"BodList"' in binja_source
     assert '("0x5a8", "active_bod_list", "BodList")' in binja_source
     for identity in (
-        '"RegisterVariableSourceType",\n        1261,\n        73,',
         '"RegisterVariableSourceType",\n        1308,\n        67,',
         '"RegisterVariableSourceType",\n        1314,\n        68,',
         '"RegisterVariableSourceType",\n        1325,\n        68,',
@@ -3424,8 +3467,15 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ):
         assert f'"active_first_ref_{owner}"' in binja_source
     assert '"BodNode**"' in binja_source
-    assert '"initialized_player"' in binja_source
-    assert '"Player*"' in binja_source
+    assert '"initialized_player"' not in binja_source
+    assert '"RegisterVariableSourceType",\n        1261,\n        73,' not in binja_source
+
+    assert "RUNTIME_POOL_ROW_OFFSET_OPERANDS" in ida_path_sync
+    assert "(0x4082EC, 1, 0x5CCAC8)" in ida_path_sync
+    assert (
+        "runtime_pool_row_offset_operands = _normalize_root_offset_operands("
+        in ida_path_sync
+    )
     assert "*BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
 
     assert "CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source

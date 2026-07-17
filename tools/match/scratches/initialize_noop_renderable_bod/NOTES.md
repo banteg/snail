@@ -11,3 +11,11 @@ masked operands.
 `RenderableBod` lifecycle view. Its independently observed users are retained
 as evidence that this is a common passive-renderable policy rather than a
 scratch-specific vtable guess.
+
+2026-07-17: the exact wrapper, its three `construct_game_runtime` callers, and
+the shared 0x80-byte base close the native ABI as
+`RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod*)`.
+The unrelated `Concurrency::details::SingleWaitBlock` symbol at this address
+was a false imported-library attribution and is retired from both replays.
+The callback slot at `0x4972b0` is likewise replayed as a pointer-sized table
+owner rather than IDA's former four-byte character literal (`"P@{"`).

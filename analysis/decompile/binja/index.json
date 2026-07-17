@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 716,
-  "function_count": 716,
+  "selected_count": 719,
+  "function_count": 719,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -311,6 +311,11 @@
       "artifact": "analysis/decompile/binja/functions/004067e0-update_completion_screen.c"
     },
     {
+      "address": "0x406bd0",
+      "name": "initialize_global_noop_renderable_bods",
+      "artifact": "analysis/decompile/binja/functions/00406bd0-initialize_global_noop_renderable_bods.c"
+    },
+    {
       "address": "0x406c10",
       "name": "initialize_default_runtime_config_thunk",
       "artifact": "analysis/decompile/binja/functions/00406c10-initialize_default_runtime_config_thunk.c"
@@ -409,6 +414,11 @@
       "address": "0x408000",
       "name": "initialize_game_player",
       "artifact": "analysis/decompile/binja/functions/00408000-initialize_game_player.c"
+    },
+    {
+      "address": "0x408040",
+      "name": "initialize_noop_renderable_bod",
+      "artifact": "analysis/decompile/binja/functions/00408040-initialize_noop_renderable_bod.c"
     },
     {
       "address": "0x408060",
@@ -1434,6 +1444,11 @@
       "address": "0x42f680",
       "name": "apply_bod_position",
       "artifact": "analysis/decompile/binja/functions/0042f680-apply_bod_position.c"
+    },
+    {
+      "address": "0x42f6e0",
+      "name": "initialize_object_constructor_thunk",
+      "artifact": "analysis/decompile/binja/functions/0042f6e0-initialize_object_constructor_thunk.c"
     },
     {
       "address": "0x42f6f0",

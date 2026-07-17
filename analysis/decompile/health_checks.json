@@ -3882,7 +3882,7 @@
         "game->runtime_rows",
         "game->runtime_cells",
         "struct RuntimeRowStrideAnchor* runtime_row_anchor",
-        "runtime_row_anchor->row.primary_body",
+        "runtime_row_anchor->row.row_model",
         "runtime_row_anchor->row.projection_payload",
         "runtime_row_anchor->row.attachment_body",
         "struct RuntimeCellStrideAnchor* runtime_cell_anchor",
@@ -3922,7 +3922,7 @@
         "game->runtime_rows[0].ring_speed",
         "runtime_row_anchor = (RuntimeRowStrideAnchor *)",
         "runtime_row_anchor_saved = runtime_row_anchor",
-        "runtime_row_anchor->row.primary_body",
+        "runtime_row_anchor->row.row_model",
         "runtime_row_anchor_saved->row.attachment_body",
         "runtime_cell_anchor = (RuntimeCellStrideAnchor *)",
         "runtime_cell_anchor->cell.fringe_front",
@@ -4125,7 +4125,7 @@
       "artifact": "analysis/decompile/binja/functions/00440910-remove_subgame_bods.c",
       "required_substrings": [
         "&game->runtime_cells",
-        "&game->runtime_rows[0].primary_body",
+        "&game->runtime_rows[0].row_model.body.bod.bod.list_next",
         "&game->health_pickups[0].list_next",
         "&game->ring_effects.slots[0].bod.list_next",
         "game->player.body.bod.bod.list_flags",
@@ -5295,10 +5295,10 @@
         "game->banners.slots",
         "game->level_definition.selected_speed.bits",
         "game->player.damage_gauge",
-        "runtime->player.presentation.weapon_channels",
-        "runtime->slug_voice_manager",
-        "runtime->level_definition.parcel_count",
-        "runtime->barrier.owner_player"
+        "game->player.presentation.weapon_channels",
+        "game->slug_voice_manager",
+        "game->level_definition.parcel_count",
+        "game->barrier.owner_player"
       ],
       "forbidden_substrings": [
         "struct Game",
@@ -5344,14 +5344,15 @@
         "active_first_link_jetpack->list_prev->list_next = active_first_link_jetpack",
         "struct BodNode** active_first_ref_weapon_0 = &g_game_base->active_bod_list.first",
         "struct BodNode** active_first_ref_invincible_shell = &g_game_base->active_bod_list.first",
-        "initialized_player->body.bod.bod.list_flags",
+        "game->player.body.bod.bod.list_flags",
         "active_new_first_player->list_next"
       ],
       "forbidden_substrings": [
         "struct FrameBodBase**",
         "void** active_first_ref",
         "(ecx_35 - 0x5ac)",
-        "runtime->player.__offset(0x2fd8)"
+        "runtime->player.__offset(0x2fd8)",
+        "initialized_player"
       ]
     },
     {
@@ -9760,6 +9761,210 @@
         "int this",
         "sub_418AC0",
         "this +"
+      ]
+    },
+    {
+      "name": "analysis_runtime_row_and_fringe_nested_owners",
+      "artifact": "analysis/headers/path_template_types.h",
+      "required_substrings": [
+        "typedef struct RowModel {",
+        "RenderableBod body;",
+        "Vec3 velocity;",
+        "RowModel row_model;",
+        "typedef struct FringeObject {",
+        "BodBase bod;"
+      ],
+      "forbidden_substrings": [
+        "Vec3 authored_object_velocity;"
+      ],
+      "forbidden_regexes": [
+        "typedef struct SubRow \\{[\\s\\S]{0,220}RenderableBod primary_body;",
+        "typedef struct SubRow \\{[\\s\\S]{0,220}Vec3 authored_object_velocity;"
+      ]
+    },
+    {
+      "name": "bn_noop_renderable_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00408040-initialize_noop_renderable_bod.c",
+      "required_substrings": [
+        "initialize_renderable_bod(body)",
+        "body->bod.bod.vtable = &g_noop_runtime_callback_table",
+        "return body"
+      ],
+      "forbidden_substrings": [
+        "SingleWaitBlock",
+        "P@{",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_noop_renderable_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408040-initialize_noop_renderable_bod.c",
+      "required_substrings": [
+        "RenderableBod *__thiscall initialize_noop_renderable_bod(RenderableBod *body)",
+        "initialize_renderable_bod(body)",
+        "body->bod.bod.vtable = &g_noop_runtime_callback_table",
+        "return body"
+      ],
+      "forbidden_substrings": [
+        "SingleWaitBlock",
+        "P@{",
+        "sub_408040"
+      ]
+    },
+    {
+      "name": "bn_runtime_pool_constructor_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00408060-initialize_runtime_pools_and_path_template_bank.c",
+      "required_substrings": [
+        "&game->segment_cache.slots",
+        "&game->fringe_manager",
+        "&game->player",
+        "&game->runtime_cells",
+        "&game->runtime_rows",
+        "initialize_track_row_runtime(row)",
+        "&game->path_pairs",
+        "initialize_object_constructor_thunk(&game->smtrack_heightfield.frame_sequence)"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "byte_5CCAC8",
+        "SingleWaitBlock",
+        "_Vector_iterator"
+      ]
+    },
+    {
+      "name": "ida_runtime_pool_constructor_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00408060-initialize_runtime_pools_and_path_template_bank.c",
+      "required_substrings": [
+        "SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime *game)",
+        "&game->segment_cache",
+        "&game->fringe_manager",
+        "&game->player.body",
+        "game->runtime_cells[0]",
+        "runtime_rows = game->runtime_rows",
+        "initialize_track_row_runtime(runtime_rows++)",
+        "path_pairs = game->path_pairs",
+        "initialize_object_constructor_thunk((Object *)&game->smtrack_heightfield.frame_sequence)"
+      ],
+      "forbidden_substrings": [
+        "byte_5CCAC8",
+        "int this",
+        "sub_408060"
+      ]
+    },
+    {
+      "name": "bn_track_row_constructor_nested_owner",
+      "artifact": "analysis/decompile/binja/functions/00408590-initialize_track_row_runtime.c",
+      "required_substrings": [
+        "initialize_renderable_bod(&row->row_model)",
+        "row->row_model.body.bod.bod.vtable = &g_row_model_vtable",
+        "initialize_bod_base(&row->attachment_body)",
+        "return row"
+      ],
+      "forbidden_substrings": [
+        "primary_body",
+        "authored_object_velocity",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_track_row_constructor_nested_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408590-initialize_track_row_runtime.c",
+      "required_substrings": [
+        "SubRow *__thiscall initialize_track_row_runtime(SubRow *row)",
+        "p_row_model = &row->row_model",
+        "initialize_renderable_bod(&row->row_model.body)",
+        "p_row_model->body.bod.bod.vtable = g_row_model_vtable",
+        "initialize_bod_base(&row->attachment_body)",
+        "return row"
+      ],
+      "forbidden_substrings": [
+        "primary_body",
+        "authored_object_velocity",
+        "sub_408590"
+      ]
+    },
+    {
+      "name": "bn_fringe_constructor_nested_owner",
+      "artifact": "analysis/decompile/binja/functions/00408650-initialize_fringe_object.c",
+      "required_substrings": [
+        "initialize_bod_base(fringe)",
+        "fringe->bod.bod.vtable = &g_fringe_vtable",
+        "return fringe"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "struct BodNode"
+      ]
+    },
+    {
+      "name": "ida_fringe_constructor_nested_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408650-initialize_fringe_object.c",
+      "required_substrings": [
+        "FringeObject *__thiscall initialize_fringe_object(FringeObject *fringe)",
+        "initialize_bod_base(&fringe->bod)",
+        "fringe->bod.bod.vtable = &g_fringe_vtable",
+        "return fringe"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "sub_408650"
+      ]
+    },
+    {
+      "name": "bn_object_constructor_thunk_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042f6e0-initialize_object_constructor_thunk.c",
+      "required_substrings": [
+        "initialize_object(object)",
+        "return object"
+      ],
+      "forbidden_substrings": [
+        "_Vector_iterator",
+        "operator++",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_object_constructor_thunk_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/0042f6e0-initialize_object_constructor_thunk.c",
+      "required_substrings": [
+        "Object *__thiscall initialize_object_constructor_thunk(Object *object)",
+        "initialize_object(object)",
+        "return object"
+      ],
+      "forbidden_substrings": [
+        "_Vector_iterator",
+        "operator++",
+        "sub_42F6E0"
+      ]
+    },
+    {
+      "name": "bn_construct_game_runtime_named_constructor_edges",
+      "artifact": "analysis/decompile/binja/functions/00407b60-construct_game_runtime.c",
+      "required_substrings": [
+        "initialize_game_player(player)",
+        "initialize_noop_renderable_bod",
+        "initialize_runtime_pools_and_path_template_bank"
+      ],
+      "forbidden_substrings": [
+        "SingleWaitBlock",
+        "_Vector_iterator",
+        "operator++"
+      ]
+    },
+    {
+      "name": "ida_global_noop_renderable_callback_owner",
+      "artifact": "analysis/decompile/ida/functions/00406bd0-initialize_global_noop_renderable_bods.c",
+      "required_substrings": [
+        "RenderableBod *initialize_global_noop_renderable_bods()",
+        "initialize_renderable_bod(&g_startup_noop_renderable_bods)",
+        "g_startup_noop_renderable_bods.bod.bod.vtable = &g_noop_runtime_callback_table",
+        "stru_4B7078.bod.bod.vtable = &g_noop_runtime_callback_table",
+        "stru_4B713C.bod.bod.vtable = &g_noop_runtime_callback_table"
+      ],
+      "forbidden_substrings": [
+        "SingleWaitBlock",
+        "P@{",
+        "sub_406BD0"
       ]
     }
   ]

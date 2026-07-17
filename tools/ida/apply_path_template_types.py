@@ -25,7 +25,12 @@ TRUSTED_NAMES = [
     (0x404070, "draw_twinkle"),
     (0x404080, "update_twinkle"),
     (0x404580, "border_mouse_test"),
+    (0x408040, "initialize_noop_renderable_bod"),
+    (0x408060, "initialize_runtime_pools_and_path_template_bank"),
+    (0x408590, "initialize_track_row_runtime"),
+    (0x408650, "initialize_fringe_object"),
     (0x4086D0, "initialize_player_presentation_controller"),
+    (0x42F6E0, "initialize_object_constructor_thunk"),
     (0x440F80, "update_barrier_ai"),
     (0x440FA0, "initialize_damage_gauge"),
     (0x440FD0, "update_damage_gauge"),
@@ -61,6 +66,9 @@ TRUSTED_NAMES = [
     (0x453404, "d3dx_create_texture_from_file_ex"),
     (0x453467, "d3dx_create_texture_from_file"),
     (0x4AC5C8, "g_default_tip_message"),
+    (0x4972B0, "g_noop_runtime_callback_table"),
+    (0x497330, "g_row_model_vtable"),
+    (0x497344, "g_fringe_vtable"),
     (0x497354, "g_player_presentation_noop_vtable"),
     (0x497358, "g_invincible_shell_update_vtable"),
     (0x49735C, "g_weapon_noop_vtable"),
@@ -68,6 +76,11 @@ TRUSTED_NAMES = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
+    (
+        0x4972B0,
+        "g_noop_runtime_callback_table",
+        "void *g_noop_runtime_callback_table;",
+    ),
     (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
     (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
 ]
@@ -75,6 +88,11 @@ TRUSTED_DATA_DECLARATIONS = [
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x407B60,  # construct_game_runtime
+    0x408040,  # initialize_noop_renderable_bod
+    0x408060,  # initialize_runtime_pools_and_path_template_bank
+    0x408590,  # initialize_track_row_runtime
+    0x408650,  # initialize_fringe_object
     0x408670,  # initialize_click_start_controller_runtime
     0x408820,  # initialize_active_landscape_entry
     0x414820,  # update_golb_ai
@@ -88,6 +106,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x42CA90,  # is_point_inside_track_attachment
     0x42F650,  # initialize_renderable_bod
+    0x42F6E0,  # initialize_object_constructor_thunk
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
@@ -95,6 +114,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
     0x43DF10,  # spawn_track_ring_or_special_effect
+    0x440910,  # remove_subgame_bods
     0x4417D0,  # update_sub_lazer_projectile
     0x442170,  # initialize_click_start
     0x442290,  # update_click_start
@@ -502,10 +522,16 @@ HARMONIZE_ROOT_OFFSET_OPERANDS = (
     (0x435A1F, 1, 0x4423C),  # floor_corners[0].object replacement
 )
 
-# The runtime-row displacement numerically collides with an IDA auto-symbol at
-# 0x5ccac8. Normalize this one proven LEA operand so Hex-Rays can fold the
-# already typed SubgameRuntime receiver into runtime_rows instead of treating
-# the displacement as the address of an unrelated byte global.
+# The pool constructor's runtime-row displacement numerically collides with an
+# IDA auto-symbol at 0x5ccac8. Normalize this one proven LEA operand so
+# Hex-Rays can fold the typed SubgameRuntime receiver into runtime_rows instead
+# of treating the displacement as the address of an unrelated byte global.
+RUNTIME_POOL_ROW_OFFSET_OPERANDS = (
+    (0x4082EC, 1, 0x5CCAC8),
+)
+
+# The fringe builder has the same runtime-row displacement collision. Normalize
+# only its proven LEA operand and preserve the surrounding typed owner graph.
 FRINGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x434C0C, 1, 0x5CCAC8),
 )
@@ -570,6 +596,26 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);",
+    ),
+    (
+        "initialize_noop_renderable_bod",
+        "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);",
+    ),
+    (
+        "initialize_runtime_pools_and_path_template_bank",
+        "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game);",
+    ),
+    (
+        "initialize_track_row_runtime",
+        "SubRow* __thiscall initialize_track_row_runtime(SubRow* row);",
+    ),
+    (
+        "initialize_fringe_object",
+        "FringeObject* __thiscall initialize_fringe_object(FringeObject* fringe);",
+    ),
+    (
+        "initialize_object_constructor_thunk",
+        "Object* __thiscall initialize_object_constructor_thunk(Object* object);",
     ),
     (
         "initialize_click_start_controller_runtime",
@@ -2234,6 +2280,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    runtime_pool_row_offset_operands = _normalize_root_offset_operands(
+        RUNTIME_POOL_ROW_OFFSET_OPERANDS
+    )
+    for result in runtime_pool_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "initialize_runtime_pools_and_path_template_bank",
+                    "root_offset_operand": result,
+                }
+            )
     fringe_runtime_row_offset_operands = _normalize_root_offset_operands(
         FRINGE_RUNTIME_ROW_OFFSET_OPERANDS
     )
@@ -2442,6 +2499,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,
                 "harmonize_root_offset_operands": harmonize_root_offset_operands,
+                "runtime_pool_row_offset_operands": runtime_pool_row_offset_operands,
                 "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,

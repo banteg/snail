@@ -15,3 +15,8 @@ The table's sole callback points to exact `update_row_model @ 0x443070`, which
 iOS names `cRRowModel::AI()`. `RowModel` owns the former unexplained bytes
 through its velocity at model `+0x80` / outer row `+0x84`; its exact 0x8c-byte
 extent ends at `SubRow::projection_payload +0x90`.
+
+2026-07-17: the analysis type now preserves that 0x8c-byte `RowModel` as one
+nested owner instead of flattening it into `primary_body` plus a detached
+velocity. The exact same-slot return closes the ABI as
+`SubRow* __thiscall initialize_track_row_runtime(SubRow*)`.
