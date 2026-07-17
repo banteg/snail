@@ -160,7 +160,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 }
 
 void Path::initialize_hill_valley_path_template_pair(
-    int width_cells_, float height, float length, int centered,
+    int width_cells_, float height, float length, char centered,
     char* texture_a, char* texture_b, char* vertical_texture)
 {
     kind = 0x10;

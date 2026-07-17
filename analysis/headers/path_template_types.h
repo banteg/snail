@@ -2662,14 +2662,15 @@ void __thiscall initialize_toad_path_template_pair(
     char* vertical_texture
 );
 
-int32_t __thiscall initialize_hill_valley_path_template_pair(
+void __thiscall initialize_hill_valley_path_template_pair(
     Path* self,
-    int32_t arg2,
-    float arg3,
-    float arg4,
-    char arg5,
+    int32_t width_cells_,
+    float height,
+    float length,
+    char centered,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 void __thiscall initialize_sbend_path_template_pair(

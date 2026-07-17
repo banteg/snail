@@ -177,7 +177,7 @@ struct Path : public BodBase {
         int width_cells_,
         float height,
         float length,
-        int centered,
+        char centered,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);

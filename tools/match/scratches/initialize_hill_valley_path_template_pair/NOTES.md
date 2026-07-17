@@ -85,3 +85,17 @@ same ownership pattern. Focused Wibo rises from 21.53% (577/668) to 23.32%
 (610/668), and the masked audit improves from 32 ok / 1 mismatch to 36 ok /
 0 mismatch. Expanding the already inlined secondary helper was semantically
 neutral but slightly regressed the score, so its local pointer shape remains.
+
+## 2026-07-17 constructor ABI closure
+
+The native tail returns with `retn 0x1c`, proving seven stack arguments after
+the `Path*` receiver. A representative world-initializer construction pushes
+integer width, float height and length, a byte centered flag, two surface
+textures, and the Windows-only vertical texture. The iOS `BuildHill` symbol
+independently preserves the portable first six types.
+
+Guarded Binary Ninja recreation and readback now recover the exact void member
+ABI and the full family-10 owner flow. Correcting the shared declaration and
+scratch from `int centered` to `char centered` is a real source improvement:
+focused Wibo rises from 23.32% to 23.63% (610/668), while all 36 masked
+operands remain clean.

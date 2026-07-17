@@ -982,3 +982,17 @@ The callsite invariants therefore track owner and arity; native pushes and the
 callee byte branches remain the evidence for exact flag values. The world
 initializer stays at 80.50% (5392/5411), with 1639 clean operands and its
 existing 36 mismatches.
+
+## 2026-07-17 Hill/Valley constructor ABI closure
+
+The refreshed initializer now carries the Windows-only seventh stack argument
+for every Hill/Valley construction: rising slots `8`, `0xa`, and `9`, then
+descending slots `0xb`, `0xd`, and `0xc`. The calls preserve their width,
+signed height, length, centered flag, two surface textures, and final vertical
+texture while resolving the receiver to the public `PathPair` root or its
+equivalent zero-offset primary member.
+
+Health checks pin all six public indices, full arity, and authored scalar
+profiles while rejecting nested-BOD receivers. This is analysis-only for the
+world initializer, which remains 80.50% (5392/5411) with 1639 clean operands
+and its existing 36 mismatches.

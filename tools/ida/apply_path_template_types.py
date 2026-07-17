@@ -1479,7 +1479,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_hill_valley_path_template_pair",
-        "int32_t __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t arg2, float arg3, float arg4, char arg5, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_hill_valley_path_template_pair(Path* self, int32_t width_cells_, float height, float length, char centered, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_sbend_path_template_pair",
