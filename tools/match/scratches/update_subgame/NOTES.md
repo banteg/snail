@@ -393,3 +393,26 @@ them alone.
 This is analysis-only. The honest focused frontier remains 79.75% at
 1,036/1,033 instructions, with 117 clean operands and the same two jump-table
 identity mismatches.
+
+## 2026-07-17 runtime row/cell containing-owner replay
+
+- The native row scan retains a borrowed `SubgameRuntime`-relative containing
+  base at the `0xf4` row stride. Binary Ninja's exact EDI identity is
+  `RegisterVariableSourceType / 1188 / 73`; IDA's register definition is
+  `0x439035`, with the saved stack lifetime at `0x439038` / stack offset 76.
+  Both now read back as `RuntimeRowStrideAnchor *`, exposing row flags, the
+  primary and attachment bodies, projection payload, and attachment position.
+- The eight-lane cell scan reuses EDI under the disjoint Binary Ninja identity
+  `RegisterVariableSourceType / 1384 / 73`; IDA defines the same lifetime at
+  `0x4390f9`. `RuntimeCellStrideAnchor *` keeps the native `0x54` cell stride
+  while naming the current cell, the immediate previous/next lanes, same-lane
+  neighboring rows, and the projected cell six rows (`0xfc0`) ahead.
+- IDA's address-symbol collisions at `0x5ccac8`, `0x5ccacc`, `0x5ccad0`,
+  `0x5ccb58`, `0x5ccb78`, and `0x5ccb88` are normalized only at the nine proven
+  instructions. Replay then renders structure fields instead of unrelated
+  `byte_`/`unk_` globals; the operand values read back unchanged.
+- These are borrowed cursors into `SubgameRuntime`; neither lifetime owns or
+  transfers any row, cell, body, or fringe allocation. No source change is
+  justified by the metadata pass. The honest focused baseline remains 79.75%,
+  1036 candidate versus 1033 target instructions, 117 clean masked operands,
+  and the same two real jump-table target-identity mismatches.

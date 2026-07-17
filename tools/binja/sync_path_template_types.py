@@ -779,6 +779,29 @@ CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
+# The main subgame tick carries the same containing-owner bases while scanning
+# one runtime row and its eight cells. EDI's two disjoint MLIL identities are
+# already split cleanly by Binary Ninja, so pin only those exact lifetimes and
+# leave the surrounding row/cell index arithmetic as native integers.
+UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        1188,
+        73,
+        "runtime_row_anchor",
+        "RuntimeRowStrideAnchor*",
+    ),
+    (
+        "update_subgame",
+        "RegisterVariableSourceType",
+        1384,
+        73,
+        "runtime_cell_anchor",
+        "RuntimeCellStrideAnchor*",
+    ),
+)
+
 # VC6 retains containing-owner bases while advancing one authored row, one
 # runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
 # Binary Ninja otherwise flattens all three into void-pointer displacement
@@ -2273,6 +2296,7 @@ def main() -> int:
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
                 *PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES,
+                *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

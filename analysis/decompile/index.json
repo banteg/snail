@@ -17,8 +17,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "place_challenge_parcels_on_track",
-      "address": "0x444240"
+      "name": "update_subgame",
+      "address": "0x438b90"
     }
   ],
   "health_check_count": 485,

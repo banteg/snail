@@ -82,6 +82,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x435180,  # merge_track_tile_runs
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435EB0,  # populate_runtime_track_cells_from_segments
+    0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
@@ -143,6 +144,27 @@ CHALLENGE_PARCELS_RUNTIME_LVAR_SPECS = (
         "projection_row",
         "SubRow *projection_row;",
         0x4443D8,
+        None,
+    ),
+)
+
+UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
+    (
+        "runtime_row_anchor",
+        "RuntimeRowStrideAnchor *runtime_row_anchor;",
+        0x439035,
+        None,
+    ),
+    (
+        "runtime_row_anchor_saved",
+        "RuntimeRowStrideAnchor *runtime_row_anchor_saved;",
+        0x439038,
+        76,
+    ),
+    (
+        "runtime_cell_anchor",
+        "RuntimeCellStrideAnchor *runtime_cell_anchor;",
+        0x4390F9,
         None,
     ),
 )
@@ -437,6 +459,22 @@ CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x444373, 1, 0x5CCB60),  # selected row projection z load
     (0x44437F, 1, 0x5CCB60),  # selected row projection z store
     (0x4443D7, 1, 0x5CCAC8),  # final direct SubRow cursor
+)
+
+# The main tick carries one SubgameRuntime-relative row anchor through a stack
+# save while EDI is reused for the eight-cell scan. These are the only row
+# displacements whose numeric values collide with IDA address symbols; the
+# cell and projected-ring offsets remain ordinary structure displacements.
+UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS = (
+    (0x43902B, 1, 0x5CCAC8),  # row flags load before anchor LEA
+    (0x43903D, 1, 0x5CCAD0),  # row primary-body list flags
+    (0x439043, 1, 0x5CCACC),  # row primary-body base
+    (0x43909F, 0, 0x5CCAC8),  # row parcel-spawn flag
+    (0x4390B7, 1, 0x5CCB58),  # row projection payload
+    (0x4391D4, 1, 0x5CCB78),  # row attachment-body base
+    (0x439228, 1, 0x5CCB88),  # row attachment-body position
+    (0x439569, 1, 0x5CCAC8),  # authored-ring row flags
+    (0x439827, 1, 0x5CCAC8),  # ambient-ring row flags
 )
 
 
@@ -1698,6 +1736,13 @@ def _sync_challenge_parcels_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_update_subgame_runtime_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "update_subgame",
+        UPDATE_SUBGAME_RUNTIME_LVAR_SPECS,
+    )
+
+
 def _sync_merge_runtime_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "merge_track_tile_runs",
@@ -2069,6 +2114,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "root_offset_operand": result,
                 }
             )
+    update_subgame_runtime_row_offset_operands = _normalize_root_offset_operands(
+        UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS
+    )
+    for result in update_subgame_runtime_row_offset_operands:
+        if result["status"] == "failed":
+            failed.append(
+                {
+                    "selector": "update_subgame",
+                    "root_offset_operand": result,
+                }
+            )
 
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
@@ -2119,6 +2175,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "selector": "place_challenge_parcels_on_track",
                 "runtime_lvars": challenge_parcels_runtime_lvars,
+            }
+        )
+    update_subgame_runtime_lvars = _sync_update_subgame_runtime_lvars()
+    if update_subgame_runtime_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "update_subgame",
+                "runtime_lvars": update_subgame_runtime_lvars,
             }
         )
     merge_runtime_lvars = _sync_merge_runtime_lvars()
@@ -2203,6 +2267,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_runtime_row_offset_operands": fringe_runtime_row_offset_operands,
                 "place_parcels_runtime_row_offset_operands": place_parcels_runtime_row_offset_operands,
                 "challenge_parcels_runtime_row_offset_operands": challenge_parcels_runtime_row_offset_operands,
+                "update_subgame_runtime_row_offset_operands": update_subgame_runtime_row_offset_operands,
                 "lvar_view": lvar_view,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
@@ -2210,6 +2275,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "populate_runtime_lvars": populate_runtime_lvars,
                 "place_parcels_runtime_lvars": place_parcels_runtime_lvars,
                 "challenge_parcels_runtime_lvars": challenge_parcels_runtime_lvars,
+                "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,

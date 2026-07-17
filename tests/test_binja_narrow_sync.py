@@ -2819,8 +2819,36 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "uint8_t runtime_prefix[0x5ccac8];" in analysis_path_header
     assert "typedef struct RuntimeCellStrideAnchor" in analysis_path_header
     assert "TrackRowCell previous_row_same_lane;" in analysis_path_header
-    assert "uint8_t runtime_gap_previous_to_current[0x24c];" in analysis_path_header
+    assert (
+        "uint8_t runtime_gap_previous_row_to_previous_lane[0x1f8];"
+        in analysis_path_header
+    )
+    assert "TrackRowCell previous_lane_same_row;" in analysis_path_header
+    assert "TrackRowCell next_lane_same_row;" in analysis_path_header
+    assert (
+        "uint8_t runtime_gap_next_lane_to_next_row[0x1f8];"
+        in analysis_path_header
+    )
     assert "TrackRowCell next_row_same_lane;" in analysis_path_header
+    assert (
+        "uint8_t runtime_gap_next_row_to_projected_row[0xccc];"
+        in analysis_path_header
+    )
+    assert "TrackRowCell projected_row_six_ahead_same_lane;" in analysis_path_header
+
+    assert "UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES" in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        1188,\n        73,',
+        '"RegisterVariableSourceType",\n        1384,\n        73,',
+    ):
+        assert identity in binja_source
+    for name, type_name in (
+        ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
+        ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
+    ):
+        assert f'"{name}"' in binja_source
+        assert f'"{type_name}"' in binja_source
+    assert "*UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES" in binja_source
 
     assert "HARMONIZE_RUNTIME_USER_VAR_UPDATES" in binja_source
     assert '"RegisterVariableSourceType",\n        98,\n        72,' in binja_source
@@ -2879,11 +2907,42 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "FRINGE_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
     assert "(0x434C0C, 1, 0x5CCAC8)" in ida_path_sync
     assert "fringe_runtime_row_offset_operands = _normalize_root_offset_operands(" in ida_path_sync
+    assert "UPDATE_SUBGAME_RUNTIME_LVAR_SPECS" in ida_path_sync
+    for definition_address in ("0x439035", "0x439038", "0x4390F9"):
+        assert definition_address in ida_path_sync
+    for name, declaration in (
+        ("runtime_row_anchor", "RuntimeRowStrideAnchor *runtime_row_anchor;"),
+        (
+            "runtime_row_anchor_saved",
+            "RuntimeRowStrideAnchor *runtime_row_anchor_saved;",
+        ),
+        ("runtime_cell_anchor", "RuntimeCellStrideAnchor *runtime_cell_anchor;"),
+    ):
+        assert f'"{name}"' in ida_path_sync
+        assert f'"{declaration}"' in ida_path_sync
+    assert "UPDATE_SUBGAME_RUNTIME_ROW_OFFSET_OPERANDS" in ida_path_sync
+    for operand_spec in (
+        "(0x43902B, 1, 0x5CCAC8)",
+        "(0x43903D, 1, 0x5CCAD0)",
+        "(0x439043, 1, 0x5CCACC)",
+        "(0x43909F, 0, 0x5CCAC8)",
+        "(0x4390B7, 1, 0x5CCB58)",
+        "(0x4391D4, 1, 0x5CCB78)",
+        "(0x439228, 1, 0x5CCB88)",
+        "(0x439569, 1, 0x5CCAC8)",
+        "(0x439827, 1, 0x5CCAC8)",
+    ):
+        assert operand_spec in ida_path_sync
+    assert (
+        "update_subgame_runtime_row_offset_operands = _normalize_root_offset_operands("
+        in ida_path_sync
+    )
     assert "_sync_exact_lvars" in ida_path_sync
     assert "_sync_populate_runtime_lvars" in ida_path_sync
     assert "_sync_merge_runtime_lvars" in ida_path_sync
     assert "_sync_fringe_runtime_lvars" in ida_path_sync
     assert "_sync_harmonize_runtime_lvars" in ida_path_sync
+    assert "_sync_update_subgame_runtime_lvars" in ida_path_sync
     for address, name in (
         ("0x447090", "initialize_fringe_manager"),
         ("0x4470A0", "allocate_fringe_object"),

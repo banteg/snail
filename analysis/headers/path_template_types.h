@@ -1139,15 +1139,21 @@ typedef struct RuntimeRowStrideAnchor {
 } RuntimeRowStrideAnchor;
 
 /* Native likewise carries a SubgameRuntime-relative 0x54-byte cell cursor.
- * The same-lane neighbors are one eight-cell row stride (0x2a0) before and
- * after the current TrackRowCell at +0x3bfac8. */
+ * The immediate lane neighbors are one cell stride away, the same-lane row
+ * neighbors are one eight-cell row stride (0x2a0) away, and update_subgame's
+ * projected ring cell is six rows (0xfc0) ahead of the current cell at
+ * +0x3bfac8. */
 typedef struct RuntimeCellStrideAnchor {
     uint8_t runtime_prefix_before_previous_row_same_lane[0x3bf828];
     TrackRowCell previous_row_same_lane;
-    uint8_t runtime_gap_previous_to_current[0x24c];
+    uint8_t runtime_gap_previous_row_to_previous_lane[0x1f8];
+    TrackRowCell previous_lane_same_row;
     TrackRowCell cell;
-    uint8_t runtime_gap_current_to_next[0x24c];
+    TrackRowCell next_lane_same_row;
+    uint8_t runtime_gap_next_lane_to_next_row[0x1f8];
     TrackRowCell next_row_same_lane;
+    uint8_t runtime_gap_next_row_to_projected_row[0xccc];
+    TrackRowCell projected_row_six_ahead_same_lane;
 } RuntimeCellStrideAnchor;
 
 typedef enum PathTemplateKind {

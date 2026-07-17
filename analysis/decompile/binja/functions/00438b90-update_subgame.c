@@ -154,129 +154,129 @@
 00439016        if (runtime_row_scan_begin s< game->runtime_row_scan_end)
 00439872        bool cond:6_1
 00439027        int32_t ecx_31 = runtime_row_scan_begin * 0x3d
-00439034        void* edi_1 = game + (ecx_31 << 2)
+00439034        struct RuntimeRowStrideAnchor* runtime_row_anchor = game + (ecx_31 << 2)
 0043903b        if ((*(&game->runtime_rows + (ecx_31 << 2)) & 2) != 0)
-0043904c        if (((*(edi_1 + 0x5ccad0)).w:1.b & 2) == 0)
+0043904c        if (((runtime_row_anchor->row.primary_body.bod.bod.list_flags).w:1.b & 2) == 0)
 0043905d        struct GameRoot* game_base_3 = g_game_base
-00439069        struct FrameBodBase* first = game_base_3->active_bod_list.first
+00439069        struct BodNode* first = game_base_3->active_bod_list.first
 00439071        if (first != 0)
-0043907f        first->bod.list_prev = edi_1 + 0x5ccacc
-00439082        void* first_1 = game_base_3->active_bod_list.first
-00439087        *(*(first_1 + 8) + 0xc) = first_1
-0043908e        void* list_prev = game_base_3->active_bod_list.first->bod.list_prev
+0043907f        first->list_prev = &runtime_row_anchor->row.primary_body
+00439082        struct RenderableBod* first_1 = game_base_3->active_bod_list.first
+00439087        first_1->bod.bod.list_prev->list_next = first_1
+0043908e        struct RenderableBod* list_prev = game_base_3->active_bod_list.first->vtable.56.bod.list_prev
 00439091        game_base_3->active_bod_list.first = list_prev
-00439093        *(list_prev + 8) = 0
-00439073        game_base_3->active_bod_list.first = edi_1 + 0x5ccacc
-00439075        (edi_1 + 0x5ccacc)->bod.list_prev.b = nullptr
-00439075        (edi_1 + 0x5ccacc)->bod.list_prev:1.b = 0
-0043907a        game_base_3->active_bod_list.first->bod.list_next = 0
-00439096        uint32_t list_flags = (edi_1 + 0x5ccacc)->bod.list_flags
+00439093        list_prev->bod.bod.list_prev = nullptr
+00439073        game_base_3->active_bod_list.first = &runtime_row_anchor->row.primary_body
+00439075        runtime_row_anchor->row.primary_body.bod.bod.list_prev.b = nullptr
+00439075        runtime_row_anchor->row.primary_body.bod.bod.list_prev:1.b = 0
+0043907a        game_base_3->active_bod_list.first->vtable.56.bod.list_next = nullptr
+00439096        uint32_t list_flags = runtime_row_anchor->row.primary_body.bod.bod.list_flags
 00439099        list_flags:1.b |= 2
-0043909c        (edi_1 + 0x5ccacc)->bod.list_flags = list_flags
+0043909c        runtime_row_anchor->row.primary_body.bod.bod.list_flags = list_flags
 00439053        report_errorf("List ADD")
-004390af        if ((*(edi_1 + &data_5ccac8) & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
-004390c1        spawn_track_parcel(game, edi_1 + &data_5ccb58, &game->player)
+004390af        if ((runtime_row_anchor->row.flags.b & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
+004390c1        spawn_track_parcel(game, &runtime_row_anchor->row.projection_payload, &game->player)
 004390c6        float var_3c_1 = 0f
 00439863        bool cond:5_1
 004390d5        if (runtime_row_scan_begin s>= 0 && runtime_row_scan_begin s< game->runtime_row_count)
 004390eb        int32_t edx_8 = (var_3c_1 i+ (runtime_row_scan_begin << 3)) i* 0x15
-004390f8        void* edi_3 = game + (edx_8 << 2)
+004390f8        struct RuntimeCellStrideAnchor* runtime_cell_anchor = game + (edx_8 << 2)
 004390fb        if ((((&game->runtime_cells[0][0].bod.list_flags)[edx_8]).w:1.b & 2) == 0)
-0043910a        if (((*(edi_3 + 0x3bfb08)).w:1.b & 0x40) != 0)
-00439110        char eax_34 = *(edi_3 + 0x3bfb04)
-0043911c        if (eax_34 == 0x1d || eax_34 == 0x1e)
-00439171        if (*(edi_3 + 0x3bfaec) != 0)
-00439190        if ((0x200 & *(edi_3 + 0x3bfacc)) == 0)
-004391a1        (edi_3 + 0x3bfac8)->list_prev = &game->special_track_cell_list_head
-004391a7        (edi_3 + 0x3bfac8)->list_next = game->special_track_cell_list_head.bod.list_next
-004391aa        game->special_track_cell_list_head.bod.list_next = edi_3 + 0x3bfac8
-004391ad        struct BodNode* list_next_1 = (edi_3 + 0x3bfac8)->list_next
+0043910a        if (((runtime_cell_anchor->cell.lane_and_flags).w:1.b & 0x40) != 0)
+00439110        uint8_t tile_id = runtime_cell_anchor->cell.tile_id
+0043911c        if (tile_id == 0x1d || tile_id == 0x1e)
+00439171        if (runtime_cell_anchor->cell.object != 0)
+00439190        if ((0x200 & runtime_cell_anchor->cell.bod.list_flags) == 0)
+004391a1        runtime_cell_anchor->cell.bod.list_prev = &game->special_track_cell_list_head
+004391a7        runtime_cell_anchor->cell.bod.list_next = game->special_track_cell_list_head.bod.list_next
+004391aa        game->special_track_cell_list_head.bod.list_next = &runtime_cell_anchor->cell
+004391ad        struct BodNode* list_next_1 = runtime_cell_anchor->cell.bod.list_next
 004391b2        if (list_next_1 != 0)
-004391b4        list_next_1->list_prev.b = (edi_3 + 0x3bfac8).b
-004391b4        list_next_1->list_prev:1.b = (edi_3 + 0x3bfac8):1.b
-004391b7        (edi_3 + 0x3bfac8)->list_flags |= 0x200
+004391b4        list_next_1->list_prev.b = (&runtime_cell_anchor->cell).b
+004391b4        list_next_1->list_prev:1.b = (&runtime_cell_anchor->cell):1.b
+004391b7        runtime_cell_anchor->cell.bod.list_flags |= 0x200
 00439197        report_errorf("List ADDafter")
-004391bc        int32_t eax_39 = runtime_row_scan_begin & 0x80000007
-004391c1        if (eax_39 s< 0)
-004391c7        eax_39 = ((eax_39 - 1) | 0xfffffff8) + 1
-004391e6        *(edi_3 + 0x3bfae8) = fconvert.s(float.t(eax_39) * fconvert.t(0.125f))
-004391f2        if ((((edi_1 + 0x5ccb78)->list_flags).w:1.b & 2) == 0)
-00439203        (edi_1 + 0x5ccb78)->list_prev = &game->fringe_attachment_list_head
-00439209        (edi_1 + 0x5ccb78)->list_next = game->fringe_attachment_list_head.bod.list_next
-0043920c        game->fringe_attachment_list_head.bod.list_next = edi_1 + 0x5ccb78
-0043920f        struct BodNode* list_next_2 = (edi_1 + 0x5ccb78)->list_next
+004391bc        int32_t eax_38 = runtime_row_scan_begin & 0x80000007
+004391c1        if (eax_38 s< 0)
+004391c7        eax_38 = ((eax_38 - 1) | 0xfffffff8) + 1
+004391e6        runtime_cell_anchor->cell.render_arg_20 = fconvert.s(float.t(eax_38) * fconvert.t(0.125f))
+004391f2        if (((runtime_row_anchor->row.attachment_body.bod.list_flags).w:1.b & 2) == 0)
+00439203        runtime_row_anchor->row.attachment_body.bod.list_prev = &game->fringe_attachment_list_head.bod
+00439209        runtime_row_anchor->row.attachment_body.bod.list_next = game->fringe_attachment_list_head.bod.list_next
+0043920c        game->fringe_attachment_list_head.bod.list_next = &runtime_row_anchor->row.attachment_body
+0043920f        struct BodNode* list_next_2 = runtime_row_anchor->row.attachment_body.bod.list_next
 00439214        if (list_next_2 != 0)
-00439216        list_next_2->list_prev.b = (edi_1 + 0x5ccb78).b
-00439216        list_next_2->list_prev:1.b = (edi_1 + 0x5ccb78):1.b
-00439219        uint32_t list_flags_1 = (edi_1 + 0x5ccb78)->list_flags
+00439216        list_next_2->list_prev.b = (&runtime_row_anchor->row.attachment_body).b
+00439216        list_next_2->list_prev:1.b = (&runtime_row_anchor->row.attachment_body):1.b
+00439219        uint32_t list_flags_1 = runtime_row_anchor->row.attachment_body.bod.list_flags
 0043921c        list_flags_1:1.b |= 2
-0043921f        (edi_1 + 0x5ccb78)->list_flags = list_flags_1
+0043921f        runtime_row_anchor->row.attachment_body.bod.list_flags = list_flags_1
 004391f9        report_errorf("List ADDafter")
-00439230        *(edi_1 + 0x5ccb88) = *(edi_3 + 0x3bfad8)
-00439235        *(edi_1 + 0x5ccb8c) = *(edi_3 + 0x3bfadc)
-0043923b        *(edi_1 + 0x5ccb90) = *(edi_3 + 0x3bfae0)
-00439137        if ((0x200 & *(edi_3 + 0x3bfacc)) == 0)
-0043914b        (edi_3 + 0x3bfac8)->list_prev = &game->track_body_list_head
-00439151        (edi_3 + 0x3bfac8)->list_next = game->track_body_list_head.bod.list_next
-00439154        game->track_body_list_head.bod.list_next = edi_3 + 0x3bfac8
-00439157        struct BodNode* list_next = (edi_3 + 0x3bfac8)->list_next
+00439230        runtime_row_anchor->row.attachment_body.position.x = runtime_cell_anchor->cell.anchor_position.x
+00439235        runtime_row_anchor->row.attachment_body.position.y = runtime_cell_anchor->cell.anchor_position.y
+0043923b        runtime_row_anchor->row.attachment_body.position.z = runtime_cell_anchor->cell.anchor_position.z
+00439137        if ((0x200 & runtime_cell_anchor->cell.bod.list_flags) == 0)
+0043914b        runtime_cell_anchor->cell.bod.list_prev = &game->track_body_list_head
+00439151        runtime_cell_anchor->cell.bod.list_next = game->track_body_list_head.bod.list_next
+00439154        game->track_body_list_head.bod.list_next = &runtime_cell_anchor->cell
+00439157        struct BodNode* list_next = runtime_cell_anchor->cell.bod.list_next
 0043915c        if (list_next != 0)
-0043915e        list_next->list_prev.b = (edi_3 + 0x3bfac8).b
-0043915e        list_next->list_prev:1.b = (edi_3 + 0x3bfac8):1.b
-00439161        (edi_3 + 0x3bfac8)->list_flags |= 0x200
+0043915e        list_next->list_prev.b = (&runtime_cell_anchor->cell).b
+0043915e        list_next->list_prev:1.b = (&runtime_cell_anchor->cell):1.b
+00439161        runtime_cell_anchor->cell.bod.list_flags |= 0x200
 0043913e        report_errorf("List ADDafter")
-0043924a        (**(edi_3 + 0x3bfac8))()
-0043924c        int32_t* ebx_8 = edi_3 + 0x3bfb0c
+0043924a        (*runtime_cell_anchor->cell.bod.vtable)()
+0043924c        struct FringeObject** ebx_8 = &runtime_cell_anchor->cell.fringe_front
 00439252        uint32_t var_38_2 = 4
 004392d9        bool cond:8_1
-0043925a        struct BodNode* eax_45 = *ebx_8
-0043925e        if (eax_45 != 0)
-0043926c        if (((eax_45->list_flags).w:1.b & 2) == 0)
-0043927d        eax_45->list_prev = &game->fringe_attachment_list_head
-00439283        eax_45->list_next = game->fringe_attachment_list_head.bod.list_next
-00439286        game->fringe_attachment_list_head.bod.list_next = eax_45
-00439289        struct BodNode* list_next_3 = eax_45->list_next
+0043925a        struct FringeObject* fringe_front = (ebx_8 - 0x3bfb0c)->cell.fringe_front
+0043925e        if (fringe_front != 0)
+0043926c        if (((fringe_front->bod.list_flags).w:1.b & 2) == 0)
+0043927d        fringe_front->bod.list_prev = &game->fringe_attachment_list_head
+00439283        fringe_front->bod.list_next = game->fringe_attachment_list_head.bod.list_next
+00439286        game->fringe_attachment_list_head.bod.list_next = fringe_front
+00439289        struct BodNode* list_next_3 = fringe_front->bod.list_next
 0043928e        if (list_next_3 != 0)
-00439290        list_next_3->list_prev.b = eax_45.b
-00439290        list_next_3->list_prev:1.b = eax_45:1.b
-00439293        uint32_t list_flags_2 = eax_45->list_flags
+00439290        list_next_3->list_prev.b = fringe_front.b
+00439290        list_next_3->list_prev:1.b = fringe_front:1.b
+00439293        uint32_t list_flags_2 = fringe_front->bod.list_flags
 00439296        list_flags_2:1.b |= 2
-00439299        eax_45->list_flags = list_flags_2
+00439299        fringe_front->bod.list_flags = list_flags_2
 00439273        report_errorf("List ADDafter")
 004392ad        struct tColour out
-004392ad        struct tColour* eax_46 = get_track_skirt_color(&g_game_base->subgame, &out)
-004392b6        float* edx_16 = *ebx_8 + 0x28
-004392b9        *edx_16 = eax_46->r
-004392be        edx_16[1] = eax_46->g
-004392c4        edx_16[2] = eax_46->b
-004392ca        edx_16[3] = eax_46->a
+004392ad        int32_t* eax_44 = get_track_skirt_color(&g_game_base->subgame, &out)
+004392b6        struct Color4f* edx_16 = &(ebx_8 - 0x3bfb0c)->cell.fringe_front->color
+004392b9        edx_16->r = *eax_44
+004392be        edx_16->g = eax_44[1]
+004392c4        edx_16->b = eax_44[2]
+004392ca        edx_16->a = eax_44[3]
 004392d1        ebx_8 = &ebx_8[1]
 004392d4        cond:8_1 = var_38_2 != 1
 004392d5        var_38_2 -= 1
 004392d9        do while (cond:8_1)
-004392f8        if (*(edi_3 + 0x3bfb04) == 0x17 && (game->runtime_flags:1.b & 8) != 0 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
-0043930a        spawn_track_health_pickup(game, edi_3 + 0x3bfac8, &game->player)
-00439320        if (*(edi_3 + 0x3bfb04) == 0x18 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
+004392f8        if (runtime_cell_anchor->cell.tile_id == 0x17 && (game->runtime_flags:1.b & 8) != 0 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
+0043930a        spawn_track_health_pickup(game, &runtime_cell_anchor->cell, &game->player)
+00439320        if (runtime_cell_anchor->cell.tile_id == 0x18 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
 0043932e        uint32_t var_50_9 = &game->player.body.bod.bod.vtable
-0043932f        void* var_54_3 = edi_3 + 0x3bfac8
-00439348        if (*(edi_3 + 0x3bfb04) == 0x19 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
-0043935a        spawn_track_jetpack_pickup(game, edi_3 + 0x3bfac8, &game->player)
-0043935f        char eax_51 = *(edi_3 + 0x3bfb04)
-00439367        if (eax_51 == 0x21)
-0043949f        spawn_track_garbage_hazard(game, edi_3 + 0x3bfac8, &game->player)
-00439399        if ((*(edi_3 + 0x3bfb08) & 0x10) == 0 && (eax_51 == 1 || eax_51 == 0x15) && (game->runtime_flags.b & 2) != 0)
+0043932f        struct TrackRowCell* var_54_3 = &runtime_cell_anchor->cell
+00439348        if (runtime_cell_anchor->cell.tile_id == 0x19 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
+0043935a        spawn_track_jetpack_pickup(game, &runtime_cell_anchor->cell, &game->player)
+0043935f        uint8_t tile_id_1 = runtime_cell_anchor->cell.tile_id
+00439367        if (tile_id_1 == 0x21)
+0043949f        spawn_track_garbage_hazard(game, &runtime_cell_anchor->cell, &game->player)
+00439399        if ((runtime_cell_anchor->cell.lane_and_flags.b & 0x10) == 0 && (tile_id_1 == 1 || tile_id_1 == 0x15) && (game->runtime_flags.b & 2) != 0)
 0043939f        void* var_50_12 = &data_4a4dbc
 004393a9        long double st0_2 = random_float_below(1f)
 004393c3        long double x87_r6_4 = (fconvert.t(1f) - fconvert.t(game->garbage_frequency)) * fconvert.t(0.200000003f) + fconvert.t(0.800000012f)
 004393c9        x87_r6_4 - st0_2
-004393cb        int16_t eax_53 = (x87_r6_4 < st0_2 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_4, st0_2) ? 1 : 0) << 0xa | (x87_r6_4 == st0_2 ? 1 : 0) << 0xe
-004393d0        if ((eax_53:1.b & 1) != 0)
+004393cb        int16_t eax_50 = (x87_r6_4 < st0_2 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_4, st0_2) ? 1 : 0) << 0xa | (x87_r6_4 == st0_2 ? 1 : 0) << 0xe
+004393d0        if ((eax_50:1.b & 1) != 0)
 004393dc        if (var_3c_1 != 0)
-004393de        eax_53.b = *(edi_3 + 0x3bfab0)
-004393f2        if (var_3c_1 == 0 || eax_53.b == 1 || eax_53.b == 0x14 || eax_53.b == 0x15 || eax_53.b == 0x20)
+004393de        eax_50.b = runtime_cell_anchor->previous_lane_same_row.tile_id
+004393f2        if (var_3c_1 == 0 || eax_50.b == 1 || eax_50.b == 0x14 || eax_50.b == 0x15 || eax_50.b == 0x20)
 004393fb        if (var_3c_1 != 7)
-004393fd        eax_53.b = *(edi_3 + 0x3bfb58)
-00439411        if ((var_3c_1 == 7 || eax_53.b == 1 || eax_53.b == 0x14 || eax_53.b == 0x15 || eax_53.b == 0x20) && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START)
+004393fd        eax_50.b = runtime_cell_anchor->next_lane_same_row.tile_id
+00439411        if ((var_3c_1 == 7 || eax_50.b == 1 || eax_50.b == 0x14 || eax_50.b == 0x15 || eax_50.b == 0x20) && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START)
 00439432        long double st0_3
 00439432        long double x87_r6_7
 00439432        if (game->level_mode == 4)
@@ -293,40 +293,40 @@
 00439480        x87_r6_10 = fconvert.t(game->base_subgame_rate) * fconvert.t(0.600000024f) + fconvert.t(0.400000006f)
 00439486        x87_r6_10 - st0_4
 0043948d        if (game->level_mode != 0 || (((x87_r6_10 < st0_4 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_10, st0_4) ? 1 : 0) << 0xa | (x87_r6_10 == st0_4 ? 1 : 0) << 0xe):1.b & 1) == 0)
-0043949f        spawn_track_garbage_hazard(game, edi_3 + 0x3bfac8, &game->player)
-004394a4        char eax_60 = *(edi_3 + 0x3bfb04)
-004394ac        if (eax_60 != 0x22)
-004394e6        if ((*(edi_3 + 0x3bfb08) & 8) == 0 && (eax_60 == 1 || eax_60 == 0xf) && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START && (game->runtime_flags & 0x10000) != 0)
+0043949f        spawn_track_garbage_hazard(game, &runtime_cell_anchor->cell, &game->player)
+004394a4        uint8_t tile_id_2 = runtime_cell_anchor->cell.tile_id
+004394ac        if (tile_id_2 != 0x22)
+004394e6        if ((runtime_cell_anchor->cell.lane_and_flags.b & 8) == 0 && (tile_id_2 == 1 || tile_id_2 == 0xf) && game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START && (game->runtime_flags & 0x10000) != 0)
 004394e8        void* var_50_16 = &data_4a4db0
 004394f2        long double st0_5 = random_float_below(1f)
 0043950c        long double x87_r6_14 = (fconvert.t(1f) - fconvert.t(game->salt_frequency)) * fconvert.t(0.0199999996f) + fconvert.t(0.980000019f)
 00439512        x87_r6_14 - st0_5
 00439523        if ((((x87_r6_14 < st0_5 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_14, st0_5) ? 1 : 0) << 0xa | (x87_r6_14 == st0_5 ? 1 : 0) << 0xe):1.b & 1) != 0 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
-00439532        spawn_salt_hazard(&game->salt_hazards, edi_3 + 0x3bfad8)
+00439532        spawn_salt_hazard(&game->salt_hazards, &runtime_cell_anchor->cell.anchor_position)
 004394ba        if (runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
-00439532        spawn_salt_hazard(&game->salt_hazards, edi_3 + 0x3bfad8)
-0043954e        if ((game->runtime_flags.b & 0x80) != 0 && *(edi_3 + 0x3bfb04) == 0x12 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
-00439560        spawn_slug_hazard(game, edi_3 + 0x3bfac8, &game->player)
-00439569        int16_t edx_22 = (*(edi_1 + &data_5ccac8)).w
-00439572        if ((edx_22:1.b & 2) == 0)
-00439578        char ecx_56 = *(edi_3 + 0x3bfb04)
+00439532        spawn_salt_hazard(&game->salt_hazards, &runtime_cell_anchor->cell.anchor_position)
+0043954e        if ((game->runtime_flags.b & 0x80) != 0 && runtime_cell_anchor->cell.tile_id == 0x12 && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
+00439560        spawn_slug_hazard(game, &runtime_cell_anchor->cell, &game->player)
+00439569        uint16_t flags = (runtime_row_anchor->row.flags).w
+00439572        if ((flags:1.b & 2) == 0)
+00439578        uint8_t tile_id_3 = runtime_cell_anchor->cell.tile_id
 00439581        int32_t requested_kind
 00439581        struct Player* player
 00439581        float ring_speed
-00439581        if (ecx_56 != 0x23)
+00439581        if (tile_id_3 != 0x23)
 00439647        long double x87_r7_16
 00439647        long double temp5_1
-00439647        if (ecx_56 == 2 || ecx_56 == 3 || ecx_56 == 4 || ecx_56 == 5 || ecx_56 == 6 || ecx_56 == 7)
+00439647        if (tile_id_3 == 2 || tile_id_3 == 3 || tile_id_3 == 4 || tile_id_3 == 5 || tile_id_3 == 6 || tile_id_3 == 7)
 00439653        x87_r7_16 = fconvert.t(game->player.last_ring_spawn_z) + fconvert.t(10f)
-00439659        temp5_1 = fconvert.t(*(edi_3 + 0x3bfae0))
+00439659        temp5_1 = fconvert.t(runtime_cell_anchor->cell.anchor_position.z)
 00439659        x87_r7_16 - temp5_1
-00439647        if ((ecx_56 != 2 && ecx_56 != 3 && ecx_56 != 4 && ecx_56 != 5 && ecx_56 != 6 && ecx_56 != 7) || (((x87_r7_16 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_16, temp5_1) ? 1 : 0) << 0xa | (x87_r7_16 == temp5_1 ? 1 : 0) << 0xe):1.b & 1) == 0 || runtime_row_scan_begin s>= game->completion_row_start)
-004397c2        if (ecx_56 == 8 || ecx_56 == 9 || ecx_56 == 0xa)
+00439647        if ((tile_id_3 != 2 && tile_id_3 != 3 && tile_id_3 != 4 && tile_id_3 != 5 && tile_id_3 != 6 && tile_id_3 != 7) || (((x87_r7_16 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_16, temp5_1) ? 1 : 0) << 0xa | (x87_r7_16 == temp5_1 ? 1 : 0) << 0xe):1.b & 1) == 0 || runtime_row_scan_begin s>= game->completion_row_start)
+004397c2        if (tile_id_3 == 8 || tile_id_3 == 9 || tile_id_3 == 0xa)
 004397ce        long double x87_r7_21 = fconvert.t(game->player.last_ring_spawn_z) + fconvert.t(10f)
-004397d4        long double temp6_1 = fconvert.t(*(edi_3 + 0x3bfae0))
+004397d4        long double temp6_1 = fconvert.t(runtime_cell_anchor->cell.anchor_position.z)
 004397d4        x87_r7_21 - temp6_1
 004397e4        if ((((x87_r7_21 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp6_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp6_1 ? 1 : 0) << 0xe):1.b & 1) != 0 && runtime_row_scan_begin s< game->completion_row_start)
-004397e9        if ((edx_22:1.b & 8) != 0)
+004397e9        if ((flags:1.b & 8) != 0)
 004397ff        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 0043983a        label_43983a:
 0043983a        player = &game->player
@@ -336,43 +336,43 @@
 0043980c        long double st0_7 = random_float_below(1f)
 00439811        long double temp7_1 = fconvert.t(0.699999988f)
 00439811        st0_7 - temp7_1
-00439830        if ((((st0_7 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp7_1) ? 1 : 0) << 0xa | (st0_7 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7 || ((*(edi_1 + &data_5ccac8)).w:1.b & 8) != 0)
+00439830        if ((((st0_7 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp7_1) ? 1 : 0) << 0xa | (st0_7 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7 || ((runtime_row_anchor->row.flags).w:1.b & 8) != 0)
 00439832        ring_speed = 0f
 00439832        goto label_43983a
-00439676        if ((edx_22:1.b & 0x20) != 0)
-0043969f        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, 8, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
-00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3c0aa0)
-004396b2        if ((edx_22:1.b & 8) != 0)
-004396db        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, 6, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
-00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3c0aa0)
-004396ee        if ((edx_22:1.b & 0x10) != 0)
-00439717        spawn_track_ring_or_special_effect(game, edi_3 + 0x3c0a88, 7, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
-00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3c0aa0)
+00439676        if ((flags:1.b & 0x20) != 0)
+0043969f        spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->projected_row_six_ahead_same_lane, 8, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439851        game->player.last_ring_spawn_z = runtime_cell_anchor->projected_row_six_ahead_same_lane.anchor_position.z
+004396b2        if ((flags:1.b & 8) != 0)
+004396db        spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->projected_row_six_ahead_same_lane, 6, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439851        game->player.last_ring_spawn_z = runtime_cell_anchor->projected_row_six_ahead_same_lane.anchor_position.z
+004396ee        if ((flags:1.b & 0x10) != 0)
+00439717        spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->projected_row_six_ahead_same_lane, 7, &game->player, *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439851        game->player.last_ring_spawn_z = runtime_cell_anchor->projected_row_six_ahead_same_lane.anchor_position.z
 0043972b        if ((game->runtime_flags.b & 8) != 0)
 00439731        void* var_50_21 = &data_4a4dac
 0043973b        long double st0_6 = random_float_below(1f)
 00439740        long double temp8_1 = fconvert.t(0.699999988f)
 00439740        st0_6 - temp8_1
-00439749        int16_t eax_87 = (st0_6 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(st0_6, temp8_1) ? 1 : 0) << 0xa | (st0_6 == temp8_1 ? 1 : 0) << 0xe
-00439754        if ((eax_87:1.b & 0x41) == 0 || game->level_mode == 7)
-0043975a        eax_87.b = *(edi_3 + 0x3bfb04)
-00439772        if (eax_87.b != 5 && eax_87.b != 6 && eax_87.b != 7)
-0043978c        spawn_track_ring_or_special_effect(game, edi_3 + 0x3bfac8, 4, &game->player, 0f)
+00439749        int16_t eax_83 = (st0_6 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(st0_6, temp8_1) ? 1 : 0) << 0xa | (st0_6 == temp8_1 ? 1 : 0) << 0xe
+00439754        if ((eax_83:1.b & 0x41) == 0 || game->level_mode == 7)
+0043975a        eax_83.b = runtime_cell_anchor->cell.tile_id
+00439772        if (eax_83.b != 5 && eax_83.b != 6 && eax_83.b != 7)
+0043978c        spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->cell, 4, &game->player, 0f)
 00439798        if (game->player.lives s< 0xa)
-00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3bfae0)
-004397aa        game->player.last_ring_spawn_z = fconvert.s(fconvert.t(*(edi_3 + 0x3bfae0)) + fconvert.t(35f))
-0043958a        if ((edx_22:1.b & 4) == 0)
-004395b2        if ((edx_22:1.b & 0x20) != 0)
+00439851        game->player.last_ring_spawn_z = runtime_cell_anchor->cell.anchor_position.z
+004397aa        game->player.last_ring_spawn_z = fconvert.s(fconvert.t(runtime_cell_anchor->cell.anchor_position.z) + fconvert.t(35f))
+0043958a        if ((flags:1.b & 4) == 0)
+004395b2        if ((flags:1.b & 0x20) != 0)
 004395ce        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 004395cf        player = &game->player
 004395d0        requested_kind = 8
 004395d2        goto label_439846
-004395da        if ((edx_22:1.b & 8) != 0)
+004395da        if ((flags:1.b & 8) != 0)
 004395f6        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 004395f7        player = &game->player
 004395f8        requested_kind = 6
 004395fa        goto label_439846
-00439602        if ((edx_22:1.b & 0x10) != 0)
+00439602        if ((flags:1.b & 0x10) != 0)
 00439622        ring_speed = *(game + ((runtime_row_scan_begin + (runtime_row_scan_begin * 3 + 0x12414) * 0x14 + 0x615c) << 2))
 00439623        player = &game->player
 00439624        requested_kind = 7
@@ -381,8 +381,8 @@
 004395a7        player = &game->player
 004395a8        requested_kind = 5
 00439846        label_439846:
-00439846        spawn_track_ring_or_special_effect(game, edi_3 + 0x3bfac8, requested_kind, player, ring_speed)
-00439851        game->player.last_ring_spawn_z = *(edi_3 + 0x3bfae0)
+00439846        spawn_track_ring_or_special_effect(game, &runtime_cell_anchor->cell, requested_kind, player, ring_speed)
+00439851        game->player.last_ring_spawn_z = runtime_cell_anchor->cell.anchor_position.z
 0043985c        cond:5_1 = var_3c_1 i+ 1 s< 8
 0043985f        var_3c_1 += 1
 00439863        do while (cond:5_1)
@@ -404,12 +404,12 @@
 00439983        return
 00439899        format_time_trial_string(&game->time_trial, &game->player.stopwatch)
 004398ac        rstrcpy_checked_ascii(&game->top_score_widget->text_buffer, 0x751478)
-004398ca        void* eax_102 = game->level_mode_arg * 0x1fac0 + game
-004398d3        if (*(eax_102 + 0x944150) != 1)
+004398ca        void* eax_98 = game->level_mode_arg * 0x1fac0 + game
+004398d3        if (*(eax_98 + 0x944150) != 1)
 0043990d        hide_border_init(game->bottom_score_widget)
 00439914        update_subgame_camera(game)
 00439920        return
-004398dd        format_time_trial_string(&game->time_trial, eax_102 + 0x944158)
+004398dd        format_time_trial_string(&game->time_trial, eax_98 + 0x944158)
 004398f0        rstrcpy_checked_ascii(&game->bottom_score_widget->text_buffer, 0x751478)
 004398fa        update_subgame_camera(game)
 00439906        return
