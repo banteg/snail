@@ -382,6 +382,10 @@ Current practical read:
 
 - `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
 - `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
+- the adjacent authored `cRProgressBar` is an empty one-byte owner at
+  `player + 0x3f0`; its exact `AI` ignores `this`, but typed callsites and the
+  mobile class names preserve ownership while both decompilers now expose its
+  player-z and subgame-row inputs through `GameRoot`
 - the controller drives the exact `0x10`-byte authored `cRWarning` at
   `player + 0x3f4` through `start_warning` / `update_warning` / `stop_warning`
   - `WarningState` is a complete three-state graph: `INACTIVE (0)`,

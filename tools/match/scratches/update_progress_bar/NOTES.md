@@ -57,3 +57,13 @@ Player +0x3f0/+0x3f4. The three-byte gap is alignment after an empty one-byte
 C++ class, not an invented ProgressBar state word. The shared type now records
 that ownership explicitly. Focused Wibo remains exact at 110/110 instructions
 with 19 clean masked operands.
+
+## 2026-07-17 tracked ownership refresh
+
+Live readback confirms both databases already carry the authored
+`void __thiscall(ProgressBar*)` ABI through the maintained broad owner replay,
+while the folded `noop_runtime_ai @ 0x407b50` correctly remains polymorphic.
+The stale tracked decompiles are refreshed instead of adding a redundant narrow
+sync script: both now expose `Player::body.transform.position.z` and the
+`SubgameRuntime` first/completion row bounds through `GameRoot`. Focused matching
+remains exact at 110/110 instructions with 19 clean masked operands.

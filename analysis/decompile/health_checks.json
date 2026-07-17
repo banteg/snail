@@ -83,6 +83,49 @@
       ]
     },
     {
+      "name": "bn_progress_bar_empty_owner_and_root_inputs",
+      "artifact": "analysis/decompile/binja/functions/00437c40-update_progress_bar.c",
+      "required_substrings": [
+        "struct GameRoot* game_base_1 = g_game_base",
+        "game_base_1->subgame.player.body.transform.position.z",
+        "game_base_1->subgame.first_block_row_count",
+        "game_base_1->subgame.completion_row_start",
+        "float height",
+        "queue_axis_aligned_textured_quad_uv(0x9d",
+        "queue_axis_aligned_textured_quad_uv(0x9b",
+        "queue_axis_aligned_textured_quad_uv(0x9c"
+      ],
+      "forbidden_substrings": [
+        "data_4df904",
+        "*(eax + 0x74668)",
+        "*(eax + 0x42fdec)",
+        "arg1",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_progress_bar_empty_owner_and_root_inputs",
+      "artifact": "analysis/decompile/ida/functions/00437c40-update_progress_bar.c",
+      "required_substrings": [
+        "void __thiscall update_progress_bar(ProgressBar *progress_bar)",
+        "g_game_base->subgame.player.body.transform.position.z",
+        "g_game_base->subgame.first_block_row_count",
+        "g_game_base->subgame.completion_row_start",
+        "height = (1.0 - v2) * 232.0 + 12.0;",
+        "queue_axis_aligned_textured_quad_uv(157",
+        "queue_axis_aligned_textured_quad_uv(155",
+        "queue_axis_aligned_textured_quad_uv(156"
+      ],
+      "forbidden_substrings": [
+        "void sub_437C40()",
+        "MEMORY[0x4DF904]",
+        "*((float *)MEMORY",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_update_subgoldy_selected_replay_lane",
       "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
       "required_substrings": [
