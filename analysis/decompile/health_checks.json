@@ -462,6 +462,46 @@
       ]
     },
     {
+      "name": "bn_mini_delete_high_score_active_bank_cursors",
+      "artifact": "analysis/decompile/binja/functions/00417af0-mini_delete_high_score_entry.c",
+      "required_substrings": [
+        "int32_t row = rank",
+        "int32_t record_offset_bytes = row * 0x1fac0",
+        "struct SubSolution* source_cursor = &bank->survival_records[1] + record_offset_bytes",
+        "struct SubSolution* destination = record_offset_bytes + bank->active_record_bank",
+        "struct SubSolution* source = source_cursor",
+        "source_cursor = &source_cursor[1]",
+        "__builtin_memcpy(destination, source, 0x1fac0)"
+      ],
+      "forbidden_substrings": [
+        "int32_t rank_1",
+        "int32_t i =",
+        "void* ebx_1",
+        "void* edi_2",
+        "void* esi_1"
+      ]
+    },
+    {
+      "name": "ida_mini_delete_high_score_active_bank_cursors",
+      "artifact": "analysis/decompile/ida/functions/00417af0-mini_delete_high_score_entry.c",
+      "required_substrings": [
+        "void __thiscall mini_delete_high_score_entry(SubHighScore *bank, int rank)",
+        "struct SubSolution *source_cursor",
+        "struct SubSolution *destination",
+        "struct SubSolution *source",
+        "source_cursor = &bank->survival_records[rank + 1]",
+        "destination = &bank->active_record_bank[v3]",
+        "qmemcpy(destination, source, sizeof(struct SubSolution))",
+        "bank->active_record_bank[v3 - 1].route_or_rank_index = v2++"
+      ],
+      "forbidden_substrings": [
+        "SubSolution *v4",
+        "SubSolution *v5",
+        "SubSolution *v6",
+        "qmemcpy(v5, v6"
+      ]
+    },
+    {
       "name": "bn_save_high_scores_void_owner",
       "artifact": "analysis/decompile/binja/functions/00417940-save_high_scores_and_config.c",
       "required_substrings": [

@@ -1481,6 +1481,44 @@ def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> N
     assert 'target_struct_name="SubHighScoreTimeTrialRouteCursor"' in ida_source
 
 
+def test_mini_delete_high_score_replays_preserve_active_bank_cursors() -> None:
+    binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for index, storage, name, type_name in (
+        (34, 66, "record_offset_bytes", "int32_t"),
+        (37, 69, "source_cursor", "SubSolution*"),
+        (1, 71, "row", "int32_t"),
+        (51, 73, "destination", "SubSolution*"),
+        (53, 72, "source", "SubSolution*"),
+    ):
+        update = (
+            '"mini_delete_high_score_entry",\n'
+            '        "RegisterVariableSourceType",\n'
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{type_name}",'
+        )
+        assert update in binja_source
+
+    for expected in (
+        "definition_address=0x417B16",
+        'target_name="source_cursor"',
+        "definition_address=0x417B24",
+        'target_name="destination"',
+        "definition_address=0x417B26",
+        'target_name="source"',
+        'target_struct_name="SubSolution"',
+        '"mini_delete_cursor_lvars": mini_delete_cursor_lvars',
+    ):
+        assert expected in ida_source
+
+
 def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     binja_bank_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"

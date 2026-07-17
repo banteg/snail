@@ -318,6 +318,39 @@ def _sync_add_time_trial_route_cursor_lvar() -> dict[str, object]:
     )
 
 
+def _sync_mini_delete_source_cursor_lvar() -> dict[str, object]:
+    return _sync_named_pointer_lvar(
+        selector="mini_delete_high_score_entry",
+        definition_address=0x417B16,
+        accepted_names={"v4", "source_cursor"},
+        accepted_types={"SubSolution *"},
+        target_name="source_cursor",
+        target_struct_name="SubSolution",
+    )
+
+
+def _sync_mini_delete_destination_lvar() -> dict[str, object]:
+    return _sync_named_pointer_lvar(
+        selector="mini_delete_high_score_entry",
+        definition_address=0x417B24,
+        accepted_names={"v5", "destination"},
+        accepted_types={"SubSolution *"},
+        target_name="destination",
+        target_struct_name="SubSolution",
+    )
+
+
+def _sync_mini_delete_source_lvar() -> dict[str, object]:
+    return _sync_named_pointer_lvar(
+        selector="mini_delete_high_score_entry",
+        definition_address=0x417B26,
+        accepted_names={"v6", "source"},
+        accepted_types={"SubSolution *"},
+        target_name="source",
+        target_struct_name="SubSolution",
+    )
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
@@ -440,6 +473,20 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    mini_delete_cursor_lvars = {
+        "source_cursor": _sync_mini_delete_source_cursor_lvar(),
+        "destination": _sync_mini_delete_destination_lvar(),
+        "source": _sync_mini_delete_source_lvar(),
+    }
+    for cursor_name, cursor_lvar in mini_delete_cursor_lvars.items():
+        if cursor_lvar.get("status") == "failed":
+            failed.append(
+                {
+                    "selector": "mini_delete_high_score_entry",
+                    cursor_name: cursor_lvar,
+                }
+            )
+
     print(
         json.dumps(
             {
@@ -455,6 +502,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "survival_rank_cursor_lvar": survival_rank_cursor_lvar,
                 "survival_active_bank_operand": survival_active_bank_operand,
                 "time_trial_route_cursor_lvar": time_trial_route_cursor_lvar,
+                "mini_delete_cursor_lvars": mini_delete_cursor_lvars,
                 "missing": missing,
                 "failed": failed,
             },

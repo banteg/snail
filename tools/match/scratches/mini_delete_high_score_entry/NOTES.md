@@ -64,3 +64,18 @@ Match status: 84.85% (33/33 instructions, 15/33 exact prefix).
   records, and reordered source/destination declarations regress much further.
   The retained post-increment/subtract source remains the best available copy
   schedule.
+
+2026-07-17 active-bank cursor replay:
+
+- Binary Ninja now pins the native row, byte-offset, source cursor, copy source,
+  and destination lifetimes at exact register identities. The three pointers
+  read back as `SubSolution *`; the copy now renders from
+  `survival_records[1]` into the borrowed `active_record_bank` instead of three
+  raw `void *` temporaries.
+- IDA already inferred the same three pointer types. Exact lvar definitions
+  `0x417b16`, `0x417b24`, and `0x417b26` are now replayed as `source_cursor`,
+  `destination`, and `source`, making the same ownership graph persistent and
+  idempotent across both decompilers.
+- No matching-source change is justified. Focused matching remains honestly at
+  84.85%, 33/33 instructions, prefix 15/33, with no masked operands; the
+  remaining address-folding/register-allocation residual stays visible.
