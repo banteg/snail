@@ -102,7 +102,7 @@ void __thiscall kill_golb(GolbShot *shot)
     }
     else
     {
-      v16 = shot->secondary_body.bod.bod.list_flags;
+      v16 = shot->vapour.body.bod.bod.list_flags;
       v17 = &g_game_base->active_bod_list;
       if ( (v16 & 0x200) != 0 )
       {
@@ -112,19 +112,19 @@ void __thiscall kill_golb(GolbShot *shot)
         }
         else
         {
-          v18 = shot->secondary_body.bod.bod.list_next;
+          v18 = shot->vapour.body.bod.bod.list_next;
           if ( v18 )
-            v18->list_prev = shot->secondary_body.bod.bod.list_prev;
-          v19 = shot->secondary_body.bod.bod.list_prev;
+            v18->list_prev = shot->vapour.body.bod.bod.list_prev;
+          v19 = shot->vapour.body.bod.bod.list_prev;
           if ( v19 )
-            v19->list_next = shot->secondary_body.bod.bod.list_next;
+            v19->list_next = shot->vapour.body.bod.bod.list_next;
           else
-            v17->first = shot->secondary_body.bod.bod.list_next;
-          shot->secondary_body.bod.bod.list_next = v17->free_top;
-          v17->free_top = &shot->secondary_body.bod.bod;
-          v20 = shot->secondary_body.bod.bod.list_flags;
+            v17->first = shot->vapour.body.bod.bod.list_next;
+          shot->vapour.body.bod.bod.list_next = v17->free_top;
+          v17->free_top = &shot->vapour.body.bod.bod;
+          v20 = shot->vapour.body.bod.bod.list_flags;
           BYTE1(v20) &= ~2u;
-          shot->secondary_body.bod.bod.list_flags = v20;
+          shot->vapour.body.bod.bod.list_flags = v20;
         }
       }
       else

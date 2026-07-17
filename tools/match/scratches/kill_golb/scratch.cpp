@@ -42,7 +42,7 @@ void GolbShot::kill_golb()
             break;
 
         case 1: {
-            BodNode* body = &secondary_body;
+            BodNode* body = &vapour;
             BodList* list_kind1 = &g_game->active_bod_list;
             unsigned int kind1_flags = body->list_flags;
             if ((kind1_flags & BOD_FLAG_LINKED) == 0) {

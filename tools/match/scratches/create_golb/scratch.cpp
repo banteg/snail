@@ -248,21 +248,21 @@ after_movement_flag_source:
             vapour_owner_shot = this;
             lifetime_step = game->subgame_rate * 0.041666668f;
 
-            BodNode* node = &secondary_body;
+            BodNode* node = &vapour;
             BodNode* anchor = &g_game->subgame.golb_vapour_list_head;
-            if ((secondary_body.list_flags & BOD_FLAG_LINKED) != 0) {
+            if ((vapour.list_flags & BOD_FLAG_LINKED) != 0) {
                 report_errorf("List ADDafter");
             } else {
-                secondary_body.list_prev = anchor;
-                secondary_body.list_next = anchor->list_next;
+                vapour.list_prev = anchor;
+                vapour.list_next = anchor->list_next;
                 anchor->list_next = node;
-                if (secondary_body.list_next)
-                    secondary_body.list_next->list_prev = node;
-                secondary_body.list_flags |= BOD_FLAG_LINKED;
+                if (vapour.list_next)
+                    vapour.list_next->list_prev = node;
+                vapour.list_flags |= BOD_FLAG_LINKED;
             }
 
             vapour.reset_vapour((float*)spawn_selector);
-            secondary_body.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
+            vapour.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->emitter_index = emitter_index;
             vapour.add_vapour_point(&flight_transform);
             vapour.update_vapour();

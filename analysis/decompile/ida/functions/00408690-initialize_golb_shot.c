@@ -6,8 +6,8 @@
 GolbShot *__thiscall initialize_golb_shot(GolbShot *shot)
 {
   initialize_renderable_bod(&shot->primary_body);
-  initialize_renderable_bod(&shot->secondary_body);
-  shot->secondary_body.bod.bod.vtable = &g_vapour_vtable;
+  initialize_renderable_bod(&shot->vapour.body);
+  shot->vapour.body.bod.bod.vtable = &g_vapour_vtable;
   initialize_renderable_bod(&shot->tertiary_body);
   shot->tertiary_body.bod.bod.vtable = g_golb_noop_body_vtable;
   shot->primary_body.bod.bod.vtable = &g_golb_shot_vtable;

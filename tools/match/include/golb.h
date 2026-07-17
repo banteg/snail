@@ -66,22 +66,10 @@ public:
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80
 
-    union {
-        struct {
-            RenderableBod primary_body;  // +0x000
-            // Kind-1 also treats this subobject as the Vapour body prefix.
-            RenderableBod secondary_body; // +0x080
-            char unknown_100[0x114 - 0x100];
-            GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
-            RenderableBod tertiary_body; // +0x118
-        };
-        struct {
-            char unknown_000[0x080];
-            Vapour vapour; // +0x080, kind-1 trail renderer/BOD-compatible view
-            char unknown_114[0x150 - 0x114];
-            TransformMatrix live_matrix; // +0x150
-        };
-    };
+    RenderableBod primary_body; // +0x000, projectile AI/list owner
+    Vapour vapour; // +0x080, complete kind-1 trail renderer
+    GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
+    RenderableBod tertiary_body; // +0x118, kind-2 rocket body
     ContactTargetObject* homing_target_object; // +0x198, reserved target owner
     Vector3 homing_target;           // +0x19c
     GolbShot* rocket_owner_shot;     // +0x1a8, kind-2 embedded-body backlink

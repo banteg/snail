@@ -215,7 +215,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
           {
             v22 = shot->spin_step + shot->spin;
             shot->spin = v22;
-            qmemcpy(&shot->live_matrix, &shot->source_matrix, sizeof(shot->live_matrix));
+            qmemcpy(&shot->tertiary_body.transform, &shot->source_matrix, sizeof(shot->tertiary_body.transform));
             if ( !(v24 | v25) )
               shot->spin = v22 - 6.2831855;
             spawn_golb_smoke(shot, (Vec3 *)&shot->source_matrix.position);

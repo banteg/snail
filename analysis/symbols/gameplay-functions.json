@@ -547,7 +547,7 @@
     {
       "address": "0x408690",
       "name": "initialize_golb_shot",
-      "description": "Constructs one 0x2e8-byte Golb shot slot by seeding its three renderable-body prefixes and installing the `update_golb_ai`, vapour, and no-op child callback tables. `initialize_runtime_pools_and_path_template_bank` uses it for the 12-shot bank later driven by `create_golb`."
+      "description": "Constructs one 0x2e8-byte Golb shot slot by seeding its primary `RenderableBod`, complete embedded `Vapour`, and tertiary rocket `RenderableBod`, then installing the `update_golb_ai`, vapour, and no-op child callback tables. `initialize_runtime_pools_and_path_template_bank` uses it for the 12-shot bank later driven by `create_golb`."
     },
     {
       "address": "0x4086d0",
@@ -992,17 +992,17 @@
     {
       "address": "0x414670",
       "name": "kill_golb",
-      "description": "Void `cRSubGolb::Kill()` teardown for one 0x2e8-byte `GolbShot`: removes its primary body, releases the kind-specific sprite, vapour body, or homing-target reservation, and marks the owned player-bank slot inactive."
+      "description": "Void `cRSubGolb::Kill()` teardown for one 0x2e8-byte `GolbShot`: removes its primary body, releases the kind-specific sprite, complete embedded vapour body, or tertiary rocket and homing-target reservation, and marks the owned player-bank slot inactive."
     },
     {
       "address": "0x414820",
       "name": "update_golb_ai",
-      "description": "Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and the shared `SubGarbagePool` collision chain for straight-flight or path-follow motion, impact transitions, trail effects, and final cleanup."
+      "description": "Advances one live Golb shot actor, borrowing the authored `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup."
     },
     {
       "address": "0x415280",
       "name": "create_golb",
-      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and the independent iOS body establish no result contract."
+      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract."
     },
     {
       "address": "0x415bb0",

@@ -142,7 +142,7 @@ void GolbShot::update_golb_ai()
     case 2: {
         float spun = spin_step + spin;
         spin = spun;
-        live_matrix = source_matrix;
+        tertiary_body.transform = source_matrix;
         if (spun > 6.2831855f)
             spin = spun - 6.2831855f;
         spawn_golb_smoke(&source_matrix.position);
@@ -169,8 +169,8 @@ void GolbShot::update_golb_ai()
     new_direction = &direction;
     *new_direction = *new_output - previous_flight_transform.position;
     if (kind == 2) {
-        live_matrix.set_matrix_z_direction(direction);
-        live_matrix.rotate_matrix_local_z(spin);
+        tertiary_body.transform.set_matrix_z_direction(direction);
+        tertiary_body.transform.rotate_matrix_local_z(spin);
     }
     lived = lifetime_step + lifetime;
     lifetime = lived;

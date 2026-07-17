@@ -118,14 +118,14 @@
 00414d7f        position_2.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(fconvert.s(fconvert.t(shot->direction.z) * fconvert.t(0.600000024f))))
 00414d83        spawn_golb_trail_sprite(shot, &position_2)
 00414b96        if (kind_1 == 1)
-00414c75        add_vapour_point(&shot->..secondary_body.bod.bod.vtable, &shot->source_matrix)
+00414c75        add_vapour_point(&shot->vapour, &shot->source_matrix)
 00414b9d        if (kind_1 == 2)
 00414ba9        long double x87_r7_41 = fconvert.t(shot->spin_step) + fconvert.t(shot->spin)
 00414bc0        long double temp13_1 = fconvert.t(6.28318548f)
 00414bc0        x87_r7_41 - temp13_1
 00414bc6        shot->spin = fconvert.s(x87_r7_41)
 00414bc6        bool c1_1 = unknown  {fst dword [ebp+0x1b4], st0}
-00414bcc        __builtin_memcpy(&shot->..tertiary_body.transform.basis_right.x, &shot->source_matrix, 0x40)
+00414bcc        __builtin_memcpy(&shot->tertiary_body.transform, &shot->source_matrix, 0x40)
 00414bd3        if ((((x87_r7_41 < temp13_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_41, temp13_1) ? 1 : 0) << 0xa | (x87_r7_41 == temp13_1 ? 1 : 0) << 0xe | 0x3800):1.b & 0x41) == 0)
 00414bdb        shot->spin = fconvert.s(x87_r7_41 - fconvert.t(6.28318548f))
 00414bee        spawn_golb_smoke(shot, &shot->source_matrix.position)
@@ -138,8 +138,8 @@
 00414dcb        shot->direction.y = fconvert.s(fconvert.t(shot->source_matrix.position.y) - fconvert.t(shot->previous_flight_transform.position.y))
 00414dd6        shot->direction.z = fconvert.s(fconvert.t(shot->source_matrix.position.z) - fconvert.t(shot->previous_flight_transform.position.z))
 00414de1        if (shot->kind == 2)
-00414dec        set_matrix_z_direction(&shot->..tertiary_body.transform.basis_right.x, &shot->direction)
-00414dfa        rotate_matrix_local_z(&shot->..tertiary_body.transform.basis_right.x, shot->spin)
+00414dec        set_matrix_z_direction(&shot->tertiary_body.transform, &shot->direction)
+00414dfa        rotate_matrix_local_z(&shot->tertiary_body.transform, shot->spin)
 00414e05        long double x87_r7_72 = fconvert.t(shot->lifetime_step) + fconvert.t(shot->lifetime)
 00414e0f        shot->lifetime = fconvert.s(x87_r7_72)
 00414e18        shot->previous_flight_transform.position.x = shot->source_matrix.position.x

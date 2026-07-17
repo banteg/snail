@@ -7,19 +7,19 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
 {
   FrameOverlay *p_overlay_0; // eax
   uint32_t *p_list_flags; // edx
-  FrameBodBase **p_first; // ecx
-  FrameBodBase *first; // edi
-  FrameBodBase *list_prev; // eax
+  BodNode **p_first; // ecx
+  BodNode *first; // edi
+  struct BodNode *list_prev; // eax
   uint32_t v7; // eax
   FrameOverlay *p_overlay_2; // eax
-  FrameBodBase **v9; // ecx
-  FrameBodBase *v10; // edx
-  FrameBodBase *v11; // eax
+  BodNode **v9; // ecx
+  BodNode *v10; // edx
+  struct BodNode *v11; // eax
   uint32_t v12; // ecx
   FrameOverlay *p_overlay_1; // ecx
-  FrameBodBase **v14; // eax
-  FrameBodBase *v15; // edx
-  FrameBodBase *v16; // ecx
+  BodNode **v14; // eax
+  BodNode *v15; // edx
+  struct BodNode *v16; // ecx
   uint32_t v17; // ecx
   char *v18; // edi
   Object *v19; // eax
@@ -65,9 +65,9 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   int i; // edi
   Object *v60; // eax
   BodBase *p_track_body_list_head; // edi
-  FrameBodBase *v62; // ecx
-  FrameBodBase **v63; // eax
-  FrameBodBase *v64; // ecx
+  BodNode *v62; // ecx
+  BodNode **v63; // eax
+  struct BodNode *v64; // ecx
   uint32_t list_flags; // eax
   BodBase *p_barrier_sub_lazer_list_head; // eax
   uint32_t *v67; // ecx
@@ -359,7 +359,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->fixed_update_accumulator = 0.0;
   game->frame_counter = 0;
   game->inactive_bod_sentinel.bod.list_next = nullptr;
-  game->active_bod_list.free_top = &game->inactive_bod_sentinel;
+  game->active_bod_list.free_top = (BodNode *)&game->inactive_bod_sentinel;
   game->active_bod_list.first = nullptr;
   game->unknown_000b48 = 0;
   memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
@@ -383,17 +383,17 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     first = g_game_base->active_bod_list.first;
     if ( first )
     {
-      first->bod.list_prev = &p_overlay_0->bod.bod;
-      (*p_first)->bod.list_prev->bod.list_next = *p_first;
-      list_prev = (*p_first)->bod.list_prev;
+      first->list_prev = (struct BodNode *)p_overlay_0;
+      (*p_first)->list_prev->list_next = *p_first;
+      list_prev = (*p_first)->list_prev;
       *p_first = list_prev;
-      list_prev->bod.list_prev = nullptr;
+      list_prev->list_prev = nullptr;
     }
     else
     {
-      *p_first = &p_overlay_0->bod.bod;
+      *p_first = (BodNode *)p_overlay_0;
       game->overlay_0.bod.bod.bod.list_prev = nullptr;
-      (*p_first)->bod.list_next = nullptr;
+      (*p_first)->list_next = nullptr;
     }
     v7 = *p_list_flags;
     BYTE1(v7) = BYTE1(*p_list_flags) | 2;
@@ -448,17 +448,17 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     v10 = g_game_base->active_bod_list.first;
     if ( v10 )
     {
-      v10->bod.list_prev = &p_overlay_2->bod.bod;
-      (*v9)->bod.list_prev->bod.list_next = *v9;
-      v11 = (*v9)->bod.list_prev;
+      v10->list_prev = (struct BodNode *)p_overlay_2;
+      (*v9)->list_prev->list_next = *v9;
+      v11 = (*v9)->list_prev;
       *v9 = v11;
-      v11->bod.list_prev = nullptr;
+      v11->list_prev = nullptr;
     }
     else
     {
-      *v9 = &p_overlay_2->bod.bod;
+      *v9 = (BodNode *)p_overlay_2;
       game->overlay_2.bod.bod.bod.list_prev = nullptr;
-      (*v9)->bod.list_next = nullptr;
+      (*v9)->list_next = nullptr;
     }
     v12 = *v315;
     BYTE1(v12) = BYTE1(*v315) | 2;
@@ -484,17 +484,17 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     v15 = g_game_base->active_bod_list.first;
     if ( v15 )
     {
-      v15->bod.list_prev = &p_overlay_1->bod.bod;
-      (*v14)->bod.list_prev->bod.list_next = *v14;
-      v16 = (*v14)->bod.list_prev;
+      v15->list_prev = (struct BodNode *)p_overlay_1;
+      (*v14)->list_prev->list_next = *v14;
+      v16 = (*v14)->list_prev;
       *v14 = v16;
-      v16->bod.list_prev = nullptr;
+      v16->list_prev = nullptr;
     }
     else
     {
-      *v14 = &p_overlay_1->bod.bod;
+      *v14 = (BodNode *)p_overlay_1;
       game->overlay_1.bod.bod.bod.list_prev = nullptr;
-      (*v14)->bod.list_next = nullptr;
+      (*v14)->list_next = nullptr;
     }
     v17 = *v316;
     BYTE1(v17) = BYTE1(*v316) | 2;
@@ -809,17 +809,17 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     v63 = &game->active_bod_list.first;
     if ( v62 )
     {
-      v62->bod.list_prev = (FrameBodBase *)p_track_body_list_head;
-      (*v63)->bod.list_prev->bod.list_next = *v63;
-      v64 = (*v63)->bod.list_prev;
+      v62->list_prev = &p_track_body_list_head->bod;
+      (*v63)->list_prev->list_next = *v63;
+      v64 = (*v63)->list_prev;
       *v63 = v64;
-      v64->bod.list_prev = nullptr;
+      v64->list_prev = nullptr;
     }
     else
     {
-      *v63 = (FrameBodBase *)p_track_body_list_head;
+      *v63 = &p_track_body_list_head->bod;
       game->subgame.track_body_list_head.bod.list_prev = nullptr;
-      (*v63)->bod.list_next = nullptr;
+      (*v63)->list_next = nullptr;
     }
     list_flags = game->subgame.track_body_list_head.bod.list_flags;
     BYTE1(list_flags) |= 2u;
@@ -972,7 +972,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   debug_report_stub();
   v98 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[0].primary.bod, v98);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[0].primary, 6.0, 3, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[0].primary,
+    6.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[0].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[0].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[0].primary.bod.position.x = 0.0;
@@ -992,7 +999,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[0].secondary.fringe_mesh_bod.position.x = 0.0;
   v100 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[1].primary.bod, v100);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[1].primary, 6.0, 2, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[1].primary,
+    6.0,
+    2,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[1].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[1].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[1].primary.bod.position.x = 0.0;
@@ -1012,7 +1026,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[1].secondary.fringe_mesh_bod.position.x = 0.0;
   v102 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[2].primary.bod, v102);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[2].primary, 8.0, 4, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[2].primary,
+    8.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[2].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[2].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[2].primary.bod.position.x = 0.0;
@@ -1032,7 +1053,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[2].secondary.fringe_mesh_bod.position.x = 0.0;
   v104 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[6].primary.bod, v104);
-  initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[6].primary, 8.0, 4, (char *)1, texture_a);
+  initialize_looptheloopw_path_template_pair(
+    &game->subgame.path_pairs[6].primary,
+    8.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[6].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[6].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[6].primary.bod.position.x = 0.0;
@@ -1052,7 +1080,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[6].secondary.fringe_mesh_bod.position.x = 0.0;
   v106 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[3].primary.bod, v106);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[3].primary, 3.0, 2, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[3].primary,
+    3.0,
+    2,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[3].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[3].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[3].primary.bod.position.x = 0.0;
@@ -1072,7 +1107,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[3].secondary.fringe_mesh_bod.position.x = 0.0;
   v108 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[4].primary.bod, v108);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[4].primary, 3.0, 3, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[4].primary,
+    3.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[4].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[4].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[4].primary.bod.position.x = 0.0;
@@ -1092,7 +1134,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[4].secondary.fringe_mesh_bod.position.x = 0.0;
   v110 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[5].primary.bod, v110);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[5].primary, 3.0, 4, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[5].primary,
+    3.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[5].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[5].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[5].primary.bod.position.x = 0.0;
@@ -1112,7 +1161,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[5].secondary.fringe_mesh_bod.position.x = 0.0;
   v112 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[7].primary.bod, v112);
-  initialize_loopbow_path_template_pair(&game->subgame.path_pairs[7].primary, 6.0, 4u, (char *)1, texture_a);
+  initialize_loopbow_path_template_pair(
+    &game->subgame.path_pairs[7].primary,
+    6.0,
+    4u,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[7].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[7].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[7].primary.bod.position.x = 0.0;
@@ -1132,7 +1188,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[7].secondary.fringe_mesh_bod.position.x = 0.0;
   v114 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[37].primary.bod, v114);
-  initialize_turnover_path_template_pair(&game->subgame.path_pairs[37].primary, 6.0, 4, (char *)1, texture_a);
+  initialize_turnover_path_template_pair(
+    &game->subgame.path_pairs[37].primary,
+    6.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[37].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[37].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[37].primary.bod.position.x = 0.0;
@@ -1152,7 +1215,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[37].secondary.fringe_mesh_bod.position.x = 0.0;
   v116 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[38].primary.bod, v116);
-  initialize_turnoverdouble_path_template_pair(&game->subgame.path_pairs[38].primary, 6.0, 4, (char *)1, texture_a);
+  initialize_turnoverdouble_path_template_pair(
+    &game->subgame.path_pairs[38].primary,
+    6.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[38].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[38].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[38].primary.bod.position.x = 0.0;
@@ -1172,7 +1242,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[38].secondary.fringe_mesh_bod.position.x = 0.0;
   v118 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[43].primary.bod, v118);
-  initialize_twister_path_template_pair(&game->subgame.path_pairs[43].primary, 2.5, 3, 1, texture_a, texture_b);
+  initialize_twister_path_template_pair(
+    &game->subgame.path_pairs[43].primary,
+    2.5,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[43].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[43].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[43].primary.bod.position.x = 0.0;
@@ -1192,7 +1269,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[43].secondary.fringe_mesh_bod.position.x = 0.0;
   v120 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[44].primary.bod, v120);
-  initialize_twister_path_template_pair(&game->subgame.path_pairs[44].primary, 2.5, 3, 0, texture_a, texture_b);
+  initialize_twister_path_template_pair(
+    &game->subgame.path_pairs[44].primary,
+    2.5,
+    3,
+    0,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[44].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[44].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[44].primary.bod.position.x = 0.0;
@@ -1212,7 +1296,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[44].secondary.fringe_mesh_bod.position.x = 0.0;
   v122 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[45].primary.bod, v122);
-  initialize_twister2_path_template_pair(&game->subgame.path_pairs[45].primary, 2.5, 3, 1, texture_a, texture_b);
+  initialize_twister2_path_template_pair(
+    &game->subgame.path_pairs[45].primary,
+    2.5,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[45].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[45].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[45].primary.bod.position.x = 0.0;
@@ -1232,7 +1323,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[45].secondary.fringe_mesh_bod.position.x = 0.0;
   v124 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[46].primary.bod, v124);
-  initialize_twister2_path_template_pair(&game->subgame.path_pairs[46].primary, 2.5, 3, 0, texture_a, texture_b);
+  initialize_twister2_path_template_pair(
+    &game->subgame.path_pairs[46].primary,
+    2.5,
+    3,
+    0,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[46].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[46].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[46].primary.bod.position.x = 0.0;
@@ -1252,7 +1350,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[46].secondary.fringe_mesh_bod.position.x = 0.0;
   v126 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[39].primary.bod, v126);
-  initialize_turnunder_path_template_pair(&game->subgame.path_pairs[39].primary, 6.0, 4, (char *)1, texture_a);
+  initialize_turnunder_path_template_pair(
+    &game->subgame.path_pairs[39].primary,
+    6.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[39].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[39].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[39].primary.bod.position.x = 0.0;
@@ -1272,7 +1377,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[39].secondary.fringe_mesh_bod.position.x = 0.0;
   v128 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[41].primary.bod, v128);
-  initialize_invert_path_template_pair(&game->subgame.path_pairs[41].primary, 1086324736, (char *)8, (char *)1);
+  initialize_invert_path_template_pair(
+    &game->subgame.path_pairs[41].primary,
+    6.0,
+    8,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[41].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[41].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[41].primary.bod.position.x = 0.0;
@@ -1292,7 +1404,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[41].secondary.fringe_mesh_bod.position.x = 0.0;
   v130 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[42].primary.bod, v130);
-  initialize_halfpipe_path_template_pair(&game->subgame.path_pairs[42].primary, 1086324736, (char *)8, (char *)1);
+  initialize_halfpipe_path_template_pair(
+    &game->subgame.path_pairs[42].primary,
+    6.0,
+    8,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[42].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[42].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[42].primary.bod.position.x = 0.0;
@@ -1312,7 +1431,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[42].secondary.fringe_mesh_bod.position.x = 0.0;
   v132 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[40].primary.bod, v132);
-  initialize_wibble_path_template_pair(&game->subgame.path_pairs[40].primary, 1086324736, (char *)8, (char *)1);
+  initialize_wibble_path_template_pair(
+    &game->subgame.path_pairs[40].primary,
+    6.0,
+    8,
+    1,
+    texture_a,
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[40].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[40].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[40].primary.bod.position.x = 0.0;
@@ -1336,9 +1462,11 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[31].primary,
     6.0,
     2,
-    (char *)1,
+    1,
     texture_a,
-    texture_b);
+    texture_b,
+    aObjectsPathVer,
+    aObjectsWorld00_0);
   game->subgame.path_pairs[31].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[31].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[31].primary.bod.position.x = 0.0;
@@ -1352,9 +1480,11 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[31].secondary,
     6.0,
     2,
-    (char *)1,
+    1,
     texture_a,
-    texture_b);
+    texture_b,
+    aObjectsPathVer,
+    aObjectsWorld00_0);
   game->subgame.path_pairs[31].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[31].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[31].secondary.bod.position.x = 0.0;
@@ -1364,7 +1494,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[31].secondary.fringe_mesh_bod.position.x = 0.0;
   v136 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[36].primary.bod, v136);
-  initialize_start_path_template_pair(&game->subgame.path_pairs[36].primary, 4.0, 8, (char *)1);
+  initialize_start_path_template_pair(
+    &game->subgame.path_pairs[36].primary,
+    4.0,
+    8,
+    1,
+    texture_a,
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[36].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[36].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[36].primary.bod.position.x = 0.0;
@@ -1374,7 +1511,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[36].primary.fringe_mesh_bod.position.x = 0.0;
   v137 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[36].secondary.bod, v137);
-  initialize_start_path_template_pair(&game->subgame.path_pairs[36].secondary, 4.0, 8, (char *)1);
+  initialize_start_path_template_pair(
+    &game->subgame.path_pairs[36].secondary,
+    4.0,
+    8,
+    1,
+    texture_a,
+    aObjectsWorld00_3,
+    aObjectsPathVer);
   game->subgame.path_pairs[36].secondary.bod.position.z = 0.0;
   game->subgame.path_pairs[36].secondary.bod.position.y = 0.0;
   game->subgame.path_pairs[36].secondary.bod.position.x = 0.0;
@@ -1384,7 +1528,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[36].secondary.fringe_mesh_bod.position.x = 0.0;
   v138 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[25].primary.bod, v138);
-  initialize_loopout_path_template_pair(&game->subgame.path_pairs[25].primary, 3.0, 4, (char *)1, texture_a);
+  initialize_loopout_path_template_pair(
+    &game->subgame.path_pairs[25].primary,
+    3.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[25].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[25].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[25].primary.bod.position.x = 0.0;
@@ -1404,7 +1555,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[25].secondary.fringe_mesh_bod.position.x = 0.0;
   v140 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[27].primary.bod, v140);
-  initialize_loopout_path_template_pair(&game->subgame.path_pairs[27].primary, 5.0, 4, (char *)1, texture_a);
+  initialize_loopout_path_template_pair(
+    &game->subgame.path_pairs[27].primary,
+    5.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[27].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[27].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[27].primary.bod.position.x = 0.0;
@@ -1424,7 +1582,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[27].secondary.fringe_mesh_bod.position.x = 0.0;
   v142 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[26].primary.bod, v142);
-  initialize_loopout_path_template_pair(&game->subgame.path_pairs[26].primary, 3.0, 3, (char *)1, texture_a);
+  initialize_loopout_path_template_pair(
+    &game->subgame.path_pairs[26].primary,
+    3.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[26].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[26].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[26].primary.bod.position.x = 0.0;
@@ -1444,7 +1609,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[26].secondary.fringe_mesh_bod.position.x = 0.0;
   v144 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[16].primary.bod, v144);
-  initialize_hump_path_template_pair(&game->subgame.path_pairs[16].primary, 4.0, 1.0, 3, (char *)1, texture_a);
+  initialize_hump_path_template_pair(
+    &game->subgame.path_pairs[16].primary,
+    4.0,
+    1.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[16].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[16].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[16].primary.bod.position.x = 0.0;
@@ -1464,7 +1637,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[16].secondary.fringe_mesh_bod.position.x = 0.0;
   v146 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[17].primary.bod, v146);
-  initialize_dump_path_template_pair(&game->subgame.path_pairs[17].primary, 4.0, 1.0, 3, (char *)1, texture_a);
+  initialize_dump_path_template_pair(
+    &game->subgame.path_pairs[17].primary,
+    4.0,
+    1.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[17].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[17].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[17].primary.bod.position.x = 0.0;
@@ -1484,7 +1665,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[17].secondary.fringe_mesh_bod.position.x = 0.0;
   v148 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[18].primary.bod, v148);
-  initialize_hump_path_template_pair(&game->subgame.path_pairs[18].primary, 4.0, 0.30000001, 3, (char *)1, texture_a);
+  initialize_hump_path_template_pair(
+    &game->subgame.path_pairs[18].primary,
+    4.0,
+    0.30000001,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[18].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[18].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[18].primary.bod.position.x = 0.0;
@@ -1504,7 +1693,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[18].secondary.fringe_mesh_bod.position.x = 0.0;
   v150 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[19].primary.bod, v150);
-  initialize_dump_path_template_pair(&game->subgame.path_pairs[19].primary, 4.0, 0.30000001, 3, (char *)1, texture_a);
+  initialize_dump_path_template_pair(
+    &game->subgame.path_pairs[19].primary,
+    4.0,
+    0.30000001,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[19].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[19].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[19].primary.bod.position.x = 0.0;
@@ -1524,7 +1721,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[19].secondary.fringe_mesh_bod.position.x = 0.0;
   v152 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[8].primary.bod, v152);
-  initialize_hill_valley_path_template_pair(&game->subgame.path_pairs[8].primary, 8, 4.0, 20.0, 1, texture_a, texture_a);
+  initialize_hill_valley_path_template_pair(
+    &game->subgame.path_pairs[8].primary,
+    8,
+    4.0,
+    20.0,
+    1,
+    texture_a,
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[8].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[8].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[8].primary.bod.position.x = 0.0;
@@ -1551,7 +1756,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     20.0,
     0,
     texture_a,
-    texture_b);
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[10].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[10].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[10].primary.bod.position.x = 0.0;
@@ -1571,7 +1777,15 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[10].secondary.fringe_mesh_bod.position.x = 0.0;
   v156 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[9].primary.bod, v156);
-  initialize_hill_valley_path_template_pair(&game->subgame.path_pairs[9].primary, 4, 4.0, 20.0, 1, texture_a, texture_b);
+  initialize_hill_valley_path_template_pair(
+    &game->subgame.path_pairs[9].primary,
+    4,
+    4.0,
+    20.0,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[9].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[9].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[9].primary.bod.position.x = 0.0;
@@ -1593,12 +1807,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   set_bod_object(&game->subgame.path_pairs[14].primary.bod, v158);
   initialize_sbend_path_template_pair(
     &game->subgame.path_pairs[14].primary,
-    8u,
+    8,
     8.0,
     14.0,
     1,
     aObjectsWorld00,
-    aObjectsWorld00);
+    aObjectsWorld00,
+    aObjectsPathVer);
   game->subgame.path_pairs[14].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[14].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[14].primary.bod.position.x = 0.0;
@@ -1625,7 +1840,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     20.0,
     1,
     texture_a,
-    texture_a);
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[11].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[11].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[11].primary.bod.position.x = 0.0;
@@ -1652,7 +1868,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     20.0,
     0,
     texture_a,
-    texture_a);
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[13].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[13].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[13].primary.bod.position.x = 0.0;
@@ -1679,7 +1896,8 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     20.0,
     1,
     texture_a,
-    texture_a);
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[12].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[12].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[12].primary.bod.position.x = 0.0;
@@ -1699,7 +1917,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[12].secondary.fringe_mesh_bod.position.x = 0.0;
   v166 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[20].primary.bod, v166);
-  initialize_dip_path_template_pair(&game->subgame.path_pairs[20].primary, 4.0, 2, (char *)1, texture_a);
+  initialize_dip_path_template_pair(
+    &game->subgame.path_pairs[20].primary,
+    4.0,
+    2,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[20].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[20].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[20].primary.bod.position.x = 0.0;
@@ -1719,7 +1944,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[20].secondary.fringe_mesh_bod.position.x = 0.0;
   v168 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[21].primary.bod, v168);
-  initialize_screw_path_template_pair(&game->subgame.path_pairs[21].primary, 24, 3, (char *)1, texture_a);
+  initialize_screw_path_template_pair(
+    &game->subgame.path_pairs[21].primary,
+    24,
+    3,
+    1,
+    texture_a,
+    texture_a,
+    aObjectsPathVer);
   game->subgame.path_pairs[21].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[21].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[21].primary.bod.position.x = 0.0;
@@ -1739,7 +1971,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[21].secondary.fringe_mesh_bod.position.x = 0.0;
   v170 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[22].primary.bod, v170);
-  initialize_slalom_path_template_pair(&game->subgame.path_pairs[22].primary, 32, 4u, (char *)1, texture_a);
+  initialize_slalom_path_template_pair(
+    &game->subgame.path_pairs[22].primary,
+    32,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[22].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[22].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[22].primary.bod.position.x = 0.0;
@@ -1759,7 +1998,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[22].secondary.fringe_mesh_bod.position.x = 0.0;
   v172 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[23].primary.bod, v172);
-  initialize_slalombig_path_template_pair(&game->subgame.path_pairs[23].primary, 32, 4u, (char *)1, texture_a);
+  initialize_slalombig_path_template_pair(
+    &game->subgame.path_pairs[23].primary,
+    32,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[23].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[23].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[23].primary.bod.position.x = 0.0;
@@ -1779,7 +2025,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[23].secondary.fringe_mesh_bod.position.x = 0.0;
   v174 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[32].primary.bod, v174);
-  initialize_slalomdouble_path_template_pair(&game->subgame.path_pairs[32].primary, 32, (char *)4, (char *)1);
+  initialize_slalomdouble_path_template_pair(
+    &game->subgame.path_pairs[32].primary,
+    32,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[32].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[32].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[32].primary.bod.position.x = 0.0;
@@ -1819,7 +2072,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[24].secondary.bod.object->blend_mode = 8;
   v180 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[28].primary.bod, v180);
-  initialize_sweep_path_template_pair(&game->subgame.path_pairs[28].primary, 1082130432, (char *)4, (char *)1);
+  initialize_sweep_path_template_pair(
+    &game->subgame.path_pairs[28].primary,
+    4.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[28].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[28].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[28].primary.bod.position.x = 0.0;
@@ -1839,7 +2099,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[28].secondary.fringe_mesh_bod.position.x = 0.0;
   v182 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[15].primary.bod, v182);
-  initialize_cage2_path_template_pair(&game->subgame.path_pairs[15].primary, 3, texture_a, texture_b);
+  initialize_cage2_path_template_pair(&game->subgame.path_pairs[15].primary, 3, texture_a, texture_b, aObjectsPathVer);
   game->subgame.path_pairs[15].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[15].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[15].primary.bod.position.x = 0.0;
@@ -1862,12 +2122,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   initialize_p_path_template_pair(
     &game->subgame.path_pairs[33].primary,
     0,
-    0x40800000u,
-    COERCE_FLOAT(3),
+    4.0,
+    3,
     0.5,
-    -1071644672,
-    (char *)0xE,
-    texture_a);
+    -2.5,
+    14,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[33].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[33].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[33].primary.bod.position.x = 0.0;
@@ -1890,12 +2152,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   initialize_p_path_template_pair(
     &game->subgame.path_pairs[34].primary,
     1,
-    0x40800000u,
-    COERCE_FLOAT(3),
+    4.0,
+    3,
     -2.5,
-    1075838976,
-    (char *)0xE,
-    texture_a);
+    2.5,
+    14,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[34].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[34].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[34].primary.bod.position.x = 0.0;
@@ -1918,12 +2182,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   initialize_p_path_template_pair(
     &game->subgame.path_pairs[35].primary,
     2,
-    0x40800000u,
-    COERCE_FLOAT(3),
+    4.0,
+    3,
     2.5,
-    1056964608,
-    (char *)0xE,
-    texture_a);
+    0.5,
+    14,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[35].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[35].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[35].primary.bod.position.x = 0.0;
@@ -1943,7 +2209,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[35].secondary.fringe_mesh_bod.position.x = 0.0;
   v190 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[29].primary.bod, v190);
-  initialize_snake_path_template_pair(&game->subgame.path_pairs[29].primary, 0x40000000, (char *)4, (char *)1);
+  initialize_snake_path_template_pair(
+    &game->subgame.path_pairs[29].primary,
+    2.0,
+    4,
+    1,
+    texture_a,
+    aObjectsWorld00,
+    aObjectsPathVer);
   game->subgame.path_pairs[29].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[29].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[29].primary.bod.position.x = 0.0;
@@ -1963,7 +2236,12 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[29].secondary.fringe_mesh_bod.position.x = 0.0;
   v192 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[47].primary.bod, v192);
-  initialize_toad_path_template_pair(&game->subgame.path_pairs[47].primary, 1, texture_a, aObjectsWorld00);
+  initialize_toad_path_template_pair(
+    &game->subgame.path_pairs[47].primary,
+    1,
+    texture_a,
+    aObjectsWorld00,
+    aObjectsPathVer);
   game->subgame.path_pairs[47].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[47].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[47].primary.bod.position.x = 0.0;
@@ -1983,7 +2261,12 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[47].secondary.fringe_mesh_bod.position.x = 0.0;
   v194 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[48].primary.bod, v194);
-  initialize_toad_path_template_pair(&game->subgame.path_pairs[48].primary, 0, texture_a, aObjectsWorld00);
+  initialize_toad_path_template_pair(
+    &game->subgame.path_pairs[48].primary,
+    0,
+    texture_a,
+    aObjectsWorld00,
+    aObjectsPathVer);
   game->subgame.path_pairs[48].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[48].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[48].primary.bod.position.x = 0.0;
@@ -2003,7 +2286,12 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[48].secondary.fringe_mesh_bod.position.x = 0.0;
   v196 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[49].primary.bod, v196);
-  initialize_toad_path_template_pair(&game->subgame.path_pairs[49].primary, 1, texture_a, aObjectsWorld00);
+  initialize_toad_path_template_pair(
+    &game->subgame.path_pairs[49].primary,
+    1,
+    texture_a,
+    aObjectsWorld00,
+    aObjectsPathVer);
   game->subgame.path_pairs[49].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[49].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[49].primary.bod.position.x = 0.0;
@@ -2023,7 +2311,12 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[49].secondary.fringe_mesh_bod.position.x = 0.0;
   v198 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[50].primary.bod, v198);
-  initialize_toad_path_template_pair(&game->subgame.path_pairs[50].primary, 0, texture_a, aObjectsWorld00);
+  initialize_toad_path_template_pair(
+    &game->subgame.path_pairs[50].primary,
+    0,
+    texture_a,
+    aObjectsWorld00,
+    aObjectsPathVer);
   game->subgame.path_pairs[50].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[50].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[50].primary.bod.position.x = 0.0;
@@ -2045,7 +2338,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   store_color4f((tColour *)&color, 1.0, 1.0, 1.0, 0.60000002);
   v200 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[51].primary.bod, v200);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[51].primary, 6.0, 3, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[51].primary,
+    6.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[51].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[51].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[51].primary.bod.position.x = 0.0;
@@ -2072,7 +2372,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[0].secondary.entry_base_strip_mesh = v204;
   v205 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[52].primary.bod, v205);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[52].primary, 6.0, 2, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[52].primary,
+    6.0,
+    2,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[52].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[52].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[52].primary.bod.position.x = 0.0;
@@ -2098,7 +2405,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[1].secondary.entry_transition_strip_mesh = v208;
   v209 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[53].primary.bod, v209);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[53].primary, 8.0, 4, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[53].primary,
+    8.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[53].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[53].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[53].primary.bod.position.x = 0.0;
@@ -2124,7 +2438,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[2].secondary.entry_base_strip_mesh = game->subgame.path_pairs[2].secondary.bod.object;
   v213 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[57].primary.bod, v213);
-  initialize_looptheloopw_path_template_pair(&game->subgame.path_pairs[57].primary, 8.0, 4, (char *)1, texture_a);
+  initialize_looptheloopw_path_template_pair(
+    &game->subgame.path_pairs[57].primary,
+    8.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[57].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[57].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[57].primary.bod.position.x = 0.0;
@@ -2148,7 +2469,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[6].secondary.entry_base_strip_mesh = game->subgame.path_pairs[6].secondary.bod.object;
   v215 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[54].primary.bod, v215);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[54].primary, 3.0, 2, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[54].primary,
+    3.0,
+    2,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[54].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[54].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[54].primary.bod.position.x = 0.0;
@@ -2172,7 +2500,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[3].secondary.entry_base_strip_mesh = game->subgame.path_pairs[3].secondary.bod.object;
   v217 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[55].primary.bod, v217);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[55].primary, 3.0, 3, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[55].primary,
+    3.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[55].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[55].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[55].primary.bod.position.x = 0.0;
@@ -2196,7 +2531,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[4].secondary.entry_base_strip_mesh = game->subgame.path_pairs[4].secondary.bod.object;
   v219 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[56].primary.bod, v219);
-  initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[56].primary, 3.0, 4, (char *)1, texture_a);
+  initialize_looptheloop_path_template_pair(
+    &game->subgame.path_pairs[56].primary,
+    3.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[56].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[56].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[56].primary.bod.position.x = 0.0;
@@ -2220,7 +2562,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[5].secondary.entry_base_strip_mesh = game->subgame.path_pairs[5].secondary.bod.object;
   v221 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[58].primary.bod, v221);
-  initialize_loopbow_path_template_pair(&game->subgame.path_pairs[58].primary, 6.0, 4u, (char *)1, texture_a);
+  initialize_loopbow_path_template_pair(
+    &game->subgame.path_pairs[58].primary,
+    6.0,
+    4u,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[58].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[58].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[58].primary.bod.position.x = 0.0;
@@ -2244,7 +2593,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[7].secondary.entry_base_strip_mesh = game->subgame.path_pairs[7].secondary.bod.object;
   v223 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[62].primary.bod, v223);
-  initialize_invert_path_template_pair(&game->subgame.path_pairs[62].primary, 1086324736, (char *)8, (char *)1);
+  initialize_invert_path_template_pair(
+    &game->subgame.path_pairs[62].primary,
+    6.0,
+    8,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[62].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[62].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[62].primary.bod.position.x = 0.0;
@@ -2268,7 +2624,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[41].secondary.entry_base_strip_mesh = game->subgame.path_pairs[41].secondary.bod.object;
   v225 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[59].primary.bod, v225);
-  initialize_loopout_path_template_pair(&game->subgame.path_pairs[59].primary, 3.0, 4, (char *)1, texture_a);
+  initialize_loopout_path_template_pair(
+    &game->subgame.path_pairs[59].primary,
+    3.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[59].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[59].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[59].primary.bod.position.x = 0.0;
@@ -2292,7 +2655,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[25].secondary.entry_base_strip_mesh = game->subgame.path_pairs[25].secondary.bod.object;
   v227 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[61].primary.bod, v227);
-  initialize_loopout_path_template_pair(&game->subgame.path_pairs[61].primary, 5.0, 4, (char *)1, texture_a);
+  initialize_loopout_path_template_pair(
+    &game->subgame.path_pairs[61].primary,
+    5.0,
+    4,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   game->subgame.path_pairs[61].primary.bod.position.z = 0.0;
   game->subgame.path_pairs[61].primary.bod.position.y = 0.0;
   game->subgame.path_pairs[61].primary.bod.position.x = 0.0;
@@ -2316,7 +2686,14 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.path_pairs[27].secondary.entry_base_strip_mesh = game->subgame.path_pairs[27].secondary.bod.object;
   v229 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[60].primary.bod, v229);
-  initialize_loopout_path_template_pair(&game->subgame.path_pairs[60].primary, 3.0, 3, (char *)1, texture_a);
+  initialize_loopout_path_template_pair(
+    &game->subgame.path_pairs[60].primary,
+    3.0,
+    3,
+    1,
+    texture_a,
+    texture_b,
+    aObjectsPathVer);
   zero_vector3(&game->subgame.path_pairs[60].primary.bod.position.x);
   v230 = add_object_to_list(&g_object_list);
   set_bod_object(&game->subgame.path_pairs[60].secondary.bod, v230);

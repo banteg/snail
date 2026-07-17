@@ -5400,14 +5400,18 @@
         "struct BodNode** active_first_ref_primary = &g_game_base->active_bod_list.first",
         "active_first_link_primary->list_prev->list_next = active_first_link_primary",
         "struct BodNode* active_first_tertiary = game_base_1->active_bod_list.first",
-        "active_first_tertiary->list_prev = &shot->..tertiary_body.bod.bod",
+        "active_first_tertiary->list_prev = &shot->tertiary_body.bod.bod",
         "active_first_link_tertiary->list_prev->list_next = active_first_link_tertiary",
-        "game_base_1->active_bod_list.first = &shot->..tertiary_body.bod.bod"
+        "game_base_1->active_bod_list.first = &shot->tertiary_body.bod.bod",
+        "shot->vapour_owner_shot = shot",
+        "shot->vapour.body.bod.bod.list_flags"
       ],
       "forbidden_substrings": [
         "FrameBodBase",
         "(eax_2 - 0x5ac)",
-        "__offset(GolbShot, 0x118)"
+        "__offset(GolbShot, 0x118)",
+        "secondary_body",
+        "shot->live_matrix"
       ]
     },
     {
@@ -5419,11 +5423,125 @@
         "(*p_first)->list_prev->list_next = *p_first;",
         "BodNode **v40",
         "v41->list_prev = &p_tertiary_body->bod.bod;",
-        "*v40 = &p_tertiary_body->bod.bod;"
+        "*v40 = &p_tertiary_body->bod.bod;",
+        "shot->vapour_owner_shot = shot;",
+        "shot->vapour.body.bod.bod.list_flags"
       ],
       "forbidden_substrings": [
         "FrameBodBase",
-        "(FrameBodBase *)"
+        "(FrameBodBase *)",
+        "secondary_body",
+        "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "analysis_golb_shot_nested_vapour_owner",
+      "artifact": "analysis/headers/path_template_types.h",
+      "required_substrings": [
+        "typedef struct GolbShot {\n    RenderableBod primary_body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    RenderableBod tertiary_body;"
+      ],
+      "forbidden_substrings": [
+        "RenderableBod secondary_body",
+        "uint8_t _pad_114[0x150 - 0x114]"
+      ]
+    },
+    {
+      "name": "bn_golb_shot_constructor_nested_owners",
+      "artifact": "analysis/decompile/binja/functions/00408690-initialize_golb_shot.c",
+      "required_substrings": [
+        "initialize_renderable_bod(&shot->vapour)",
+        "shot->vapour.body.bod.bod.vtable = &g_vapour_vtable",
+        "initialize_renderable_bod(&shot->tertiary_body)",
+        "shot->primary_body.bod.bod.vtable = &g_golb_shot_vtable"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "ida_golb_shot_constructor_nested_owners",
+      "artifact": "analysis/decompile/ida/functions/00408690-initialize_golb_shot.c",
+      "required_substrings": [
+        "GolbShot *__thiscall initialize_golb_shot(GolbShot *shot)",
+        "initialize_renderable_bod(&shot->vapour.body);",
+        "shot->vapour.body.bod.bod.vtable = &g_vapour_vtable;",
+        "initialize_renderable_bod(&shot->tertiary_body);",
+        "shot->primary_body.bod.bod.vtable = &g_golb_shot_vtable;"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "bn_kill_golb_nested_body_owners",
+      "artifact": "analysis/decompile/binja/functions/00414670-kill_golb.c",
+      "required_substrings": [
+        "shot->primary_body.bod.bod.list_flags",
+        "shot->vapour.body.bod.bod.list_flags",
+        "edx_6->free_top = &shot->vapour",
+        "shot->tertiary_body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        "shot->live_matrix",
+        "__offset(GolbShot"
+      ]
+    },
+    {
+      "name": "ida_kill_golb_nested_body_owners",
+      "artifact": "analysis/decompile/ida/functions/00414670-kill_golb.c",
+      "required_substrings": [
+        "void __thiscall kill_golb(GolbShot *shot)",
+        "shot->primary_body.bod.bod.list_flags",
+        "shot->vapour.body.bod.bod.list_flags",
+        "shot->tertiary_body.bod.bod.list_flags"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "bn_update_golb_nested_render_owners",
+      "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
+      "required_substrings": [
+        "add_vapour_point(&shot->vapour, &shot->source_matrix)",
+        "__builtin_memcpy(&shot->tertiary_body.transform, &shot->source_matrix, 0x40)",
+        "set_matrix_z_direction(&shot->tertiary_body.transform, &shot->direction)",
+        "rotate_matrix_local_z(&shot->tertiary_body.transform, shot->spin)"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "ida_update_golb_nested_render_owners",
+      "artifact": "analysis/decompile/ida/functions/00414820-update_golb_ai.c",
+      "required_substrings": [
+        "void __thiscall update_golb_ai(GolbShot *shot)",
+        "add_vapour_point(&shot->vapour, &shot->source_matrix);",
+        "qmemcpy(&shot->tertiary_body.transform, &shot->source_matrix, sizeof(shot->tertiary_body.transform));",
+        "set_matrix_z_direction(&shot->tertiary_body.transform, &shot->direction);"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        "shot->live_matrix"
+      ]
+    },
+    {
+      "name": "bn_world_assets_golb_nested_owners",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "game->subgame.player.golb_shots[0].tertiary_body.bod.object",
+        "game->subgame.player.golb_shots[0].vapour.body.bod.object",
+        "initialize_vapour(&esi_2[-9]"
+      ],
+      "forbidden_substrings": [
+        "secondary_body",
+        ".live_matrix"
       ]
     },
     {

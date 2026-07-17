@@ -219,7 +219,13 @@ For projectile-only ownership work, use `uv run python
 tools/binja/sync_path_template_types.py --golb-only`. It declares just the
 missing `GolbPathFollowState`, replays the explicit `GolbShot` fields, and
 updates the curated Golb/path-follow prototype set without reimporting
-unrelated forward-declared presentation types.
+unrelated forward-declared presentation types. The proved prefix is a primary
+`RenderableBod` at `+0x000`, a complete `Vapour` at `+0x080`, its enclosing-shot
+backlink at `+0x114`, and a tertiary `RenderableBod` at `+0x118`. The former
+anonymous union and direct `live_matrix +0x150` view are retired because that
+matrix is exactly `tertiary_body.transform`. Binary Ninja replays the four
+fields plus the enclosing `kill_golb` receiver lifetime; the IDA sync replaces
+only the legacy overlapping prefix and verifies the `0x2e8` owner on readback.
 
 The selected-record BN lane is even narrower:
 - just the expanded in-memory selected replay/high-score entry

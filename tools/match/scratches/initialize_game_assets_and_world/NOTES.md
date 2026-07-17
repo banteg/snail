@@ -79,11 +79,11 @@ barrier, and render-cache handoff at `0x40fb46..0x40ffd6`:
   vtable/padding view. Its inherited object at `+0x24` owns
   `invincible-base-000.x`; startup clears
   `OBJECT_FLAG_DISABLE_CULLING` after loading it.
-- Each `GolbShot` overlays a `Vapour` at `+0x080` with its secondary render
-  body, while the tertiary rocket body at `+0x118` overlaps the live matrix at
-  `+0x150`. The shared rocket mesh is owned by shot zero and borrowed by all
-  twelve shots. The checked C and C++ layouts retain this as a union; the
-  Binary Ninja projection deliberately does not flatten the overlapping views.
+- Each `GolbShot` owns a complete `Vapour` at `+0x080..+0x113`, followed by
+  its enclosing-shot backlink at `+0x114` and the tertiary rocket body at
+  `+0x118`. The apparent matrix at `+0x150` is exactly the tertiary body's
+  inherited `transform`, not an overlapping sibling owner. The shared rocket
+  mesh is owned by shot zero and borrowed by all twelve shots.
 - The animation donors and their live presentation objects raise
   `OBJECT_FLAG_DYNAMIC_VERTICES`; vapour output combines that bit with
   `OBJECT_FLAG_DISABLE_CULLING`. These are shared render-object policies, not
@@ -100,8 +100,10 @@ operands) to 54.48% (4,887/5,411, 1,516 clean operands). The one unresolved
 early helper remains, with 56 expected broad-alignment mismatches. The native
 Golb loop chooses an object-field induction pointer while the semantic source
 keeps a `GolbShot*`; that small code-shape difference is retained rather than
-replacing the recovered owner with offset arithmetic. No fake padding or
-score-only scaffolding was added.
+replacing the recovered owner with offset arithmetic. The analysis headers and
+both decompilers now carry the non-overlapping owner graph even though the
+native induction pointer still targets the Vapour object field. No fake
+padding or score-only scaffolding was added.
 
 2026-06-20 font bootstrap audit: the native FONT-MENU-HOVER setup call pushes
 `0x3f400000` (`0.75f`) for the width scale and `0x3f800000` (`1.0f`) for the
@@ -1009,3 +1011,17 @@ Health checks pin the primary/secondary owners and full arity while rejecting
 nested-BOD receivers. This is analysis-only for the world initializer, which
 remains 80.50% (5392/5411) with 1639 clean operands and its existing 36
 mismatches.
+
+## 2026-07-17 Golb asset-owner closure
+
+The twelve-shot asset loop establishes the same `0x2e8` stride as construction
+and lifecycle teardown. Its induction pointer lands on each embedded
+`Vapour::body.bod.object`; the shared rocket object is installed into the
+separate `tertiary_body`. Together with exact `sizeof(Vapour) == 0x94`, this
+proves the non-overlapping primary/Vapour/backlink/tertiary prefix and retires
+the old anonymous union.
+
+The semantic matcher keeps a `GolbShot*` cursor while native VC6 keeps the
+object-field cursor. No pointer arithmetic was introduced to imitate that
+schedule. Focused matching remains 80.50% (5392/5411) with 1639 clean operands
+and the existing 36 broad-alignment mismatches.

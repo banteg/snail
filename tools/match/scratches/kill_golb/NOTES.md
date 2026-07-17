@@ -7,7 +7,7 @@ This helper tears down one live Golb projectile:
 - removes the primary projectile BOD from the shared active/free list;
 - clears the live state at `+0x244`;
 - for kind `0`, kills the owner sprite at `+0x248`;
-- for kind `1`, removes the secondary BOD at `+0x80`; and
+- for kind `1`, removes the embedded `Vapour::body` at `+0x80`; and
 - for kind `2`, removes the tertiary BOD at `+0x118` and clears
   `BOD_FLAG_SUPPRESS_CONTACT` on the reserved contact-target object at
   `+0x198`.
@@ -20,7 +20,7 @@ Type consolidation:
 
 - `GolbShot` is now promoted in `tools/match/include/golb.h` for this
   teardown and the small trail/smoke/impact sprite emitters. This exact match
-  anchors the primary/secondary/tertiary `BodNode` offsets, `kind +0x1c0`,
+  anchors the primary/Vapour/tertiary `BodNode` offsets, `kind +0x1c0`,
   `state +0x244`, and the variant-specific owners at `+0x198`/`+0x248`.
 - The exact `EnemyManager` search/register pair proves that `+0x198`
   is a borrowed `ContactTargetObject*`: `create_golb` sets its reservation bit
@@ -42,3 +42,15 @@ The exact teardown paths and mobile `cRSubGolb::Kill()` symbol establish
 not make the receiver a `FrameBodBase`, and none of the callers consume a
 result. Both analysis replay catalogs now preserve that owner and void return.
 The exact 132/132 match remains unchanged.
+
+## 2026-07-17 enclosing-shot lifetime closure
+
+The callee-saved ESI lifetime is now replayed as the enclosing `GolbShot*`, so
+all three teardown branches retain their real subobject owners: `primary_body`,
+`vapour.body`, and `tertiary_body`. The complete `Vapour` extent ending at
+`+0x114` rules out the old `secondary_body` alias, while the tertiary transform
+accounts for the former direct `live_matrix +0x150` view.
+
+Both tracked decompilers now show those owners without raw `+0x80`/`+0x118`
+casts. The matcher stays exact at 132/132 instructions with all 16 masked
+operands clean.

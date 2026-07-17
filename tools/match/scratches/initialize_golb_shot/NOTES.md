@@ -35,3 +35,15 @@ caller, and the independent mobile `cRSubGolb` class symbols close the ABI as
 IDA replay catalogs now preserve that concrete receiver and same-slot return
 instead of their legacy `BodBase*` inference. The exact 17/17 match is
 unchanged.
+
+## 2026-07-17 nested projectile-owner closure
+
+The exact constructor resolves the former `+0x000..+0x197` overlap. It builds
+the primary `RenderableBod` at `+0x000`, then a complete `sizeof(Vapour) ==
+0x94` child at `+0x080`, followed by the enclosing-shot backlink at `+0x114`
+and the tertiary `RenderableBod` at `+0x118`. The old direct matrix view at
+`+0x150` is precisely `tertiary_body.transform`.
+
+The checked C/C++ owners, Binary Ninja replay, and guarded IDA UDT refresh now
+agree on those four non-overlapping members. The constructor remains exact at
+17/17 instructions; no code-shape or score-only alias was introduced.

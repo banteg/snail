@@ -112,8 +112,12 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x408590,  # initialize_track_row_runtime
     0x408650,  # initialize_fringe_object
     0x408670,  # initialize_click_start_controller_runtime
+    0x408690,  # initialize_golb_shot
     0x408820,  # initialize_active_landscape_entry
+    0x40ACF0,  # initialize_game_assets_and_world
+    0x414670,  # kill_golb
     0x414820,  # update_golb_ai
+    0x415280,  # create_golb
     0x418870,  # activate_landscape_entry
     0x418A30,  # clear_active_landscape_entries
     0x418AC0,  # update_active_landscape_entry
@@ -149,6 +153,21 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x444CF0,  # handle_subgoldy_collisions
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
+)
+
+GOLB_SHOT_EXPECTED_SIZE = 0x2E8
+GOLB_SHOT_PREFIX_END = 0x198
+GOLB_SHOT_PREFIX_MEMBERS = (
+    (0x000, 0x080, "primary_body", "RenderableBod"),
+    (0x080, 0x094, "vapour", "Vapour"),
+    (0x114, 0x004, "vapour_owner_shot", "GolbShot *"),
+    (0x118, 0x080, "tertiary_body", "RenderableBod"),
+)
+GOLB_SHOT_HEADER_MARKERS = (
+    "RenderableBod primary_body;",
+    "Vapour vapour;",
+    "struct GolbShot* vapour_owner_shot;",
+    "RenderableBod tertiary_body;",
 )
 
 POPULATE_RUNTIME_LVAR_SPECS = (
@@ -2210,6 +2229,150 @@ def _normalize_root_offset_operands(
     return results
 
 
+def _normalize_udt_type(value: str) -> str:
+    normalized = _normalize_type_text(value) or ""
+    return re.sub(r"\b(?:struct|class|union)\s+", "", normalized)
+
+
+def _golb_shot_prefix_snapshot(owner: ida_typeinf.tinfo_t) -> list[dict[str, object]] | None:
+    udt = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(udt):
+        return None
+    return [
+        {
+            "index": index,
+            "offset": int(member.offset) // 8,
+            "size": int(member.size) // 8,
+            "name": member.name,
+            "type": _normalize_udt_type(member.type.dstr()),
+        }
+        for index, member in enumerate(udt)
+        if int(member.offset) // 8 < GOLB_SHOT_PREFIX_END
+    ]
+
+
+def _golb_shot_prefix_readback(owner: ida_typeinf.tinfo_t) -> dict[str, object]:
+    return {
+        "size": owner.get_size(),
+        "members": _golb_shot_prefix_snapshot(owner),
+    }
+
+
+def _golb_shot_prefix_is_canonical(owner: ida_typeinf.tinfo_t) -> bool:
+    snapshot = _golb_shot_prefix_snapshot(owner)
+    if owner.get_size() != GOLB_SHOT_EXPECTED_SIZE or snapshot is None:
+        return False
+    observed = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in snapshot
+    )
+    return observed == GOLB_SHOT_PREFIX_MEMBERS
+
+
+def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]:
+    """Replace the obsolete anonymous overlap with the proved nested owners."""
+
+    header_text = header_path.read_text(encoding="utf-8")
+    missing_markers = [
+        marker for marker in GOLB_SHOT_HEADER_MARKERS if marker not in header_text
+    ]
+    if missing_markers:
+        return {
+            "status": "failed",
+            "reason": "noncanonical_golb_shot_header",
+            "missing_markers": missing_markers,
+        }
+
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, "GolbShot", ida_typeinf.BTF_STRUCT):
+        return {"status": "failed", "reason": "missing_GolbShot_type"}
+    if owner.get_size() != GOLB_SHOT_EXPECTED_SIZE:
+        return {
+            "status": "failed",
+            "reason": "owner_size_mismatch",
+            "expected": GOLB_SHOT_EXPECTED_SIZE,
+            "observed": owner.get_size(),
+        }
+    if _golb_shot_prefix_is_canonical(owner):
+        return {"status": "unchanged", "readback": _golb_shot_prefix_readback(owner)}
+
+    udt = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(udt):
+        return {"status": "failed", "reason": "missing_GolbShot_members"}
+    overlapping = [
+        (index, member)
+        for index, member in enumerate(udt)
+        if int(member.offset) // 8 < GOLB_SHOT_PREFIX_END
+    ]
+    if len(overlapping) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_prefix_member_count",
+            "readback": _golb_shot_prefix_readback(owner),
+        }
+    old_index, old_member = overlapping[0]
+    if (
+        int(old_member.offset) // 8 != 0
+        or int(old_member.size) // 8 != GOLB_SHOT_PREFIX_END
+        or old_member.name
+        or not old_member.type.is_union()
+    ):
+        return {
+            "status": "failed",
+            "reason": "unexpected_legacy_prefix_owner",
+            "readback": _golb_shot_prefix_readback(owner),
+        }
+
+    old_union_type = ida_typeinf.tinfo_t(old_member.type)
+    code = owner.del_udm(old_index)
+    if code != ida_typeinf.TERR_OK:
+        return {
+            "status": "failed",
+            "reason": "delete_legacy_prefix_failed",
+            "error": ida_typeinf.tinfo_errstr(code),
+        }
+
+    try:
+        for offset, _size, name, type_name in GOLB_SHOT_PREFIX_MEMBERS:
+            code = owner.add_udm(ida_typeinf.udm_t(name, type_name, offset * 8))
+            if code != ida_typeinf.TERR_OK:
+                raise RuntimeError(
+                    f"add {name}: {ida_typeinf.tinfo_errstr(code)}"
+                )
+    except (RuntimeError, ValueError) as exc:
+        rollback_udt = ida_typeinf.udt_type_data_t()
+        if owner.get_udt_details(rollback_udt):
+            for index in reversed(
+                [
+                    index
+                    for index, member in enumerate(rollback_udt)
+                    if int(member.offset) // 8 < GOLB_SHOT_PREFIX_END
+                ]
+            ):
+                owner.del_udm(index)
+        rollback_code = owner.add_udm(ida_typeinf.udm_t("", old_union_type, 0))
+        return {
+            "status": "failed",
+            "reason": "mutation_failed",
+            "error": str(exc),
+            "rollback": ida_typeinf.tinfo_errstr(rollback_code),
+            "readback": _golb_shot_prefix_readback(owner),
+        }
+
+    if not _golb_shot_prefix_is_canonical(owner):
+        return {
+            "status": "failed",
+            "reason": "verification_failed",
+            "readback": _golb_shot_prefix_readback(owner),
+        }
+    return {"status": "applied", "readback": _golb_shot_prefix_readback(owner)}
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
@@ -2221,6 +2384,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
     data_unchanged = 0
     missing = []
     failed = []
+
+    golb_shot_prefix_owner = _sync_golb_shot_prefix_owner(header_path)
+    if golb_shot_prefix_owner.get("status") == "failed":
+        failed.append({"golb_shot_prefix_owner": golb_shot_prefix_owner})
 
     for address, name in TRUSTED_NAMES:
         if idc.get_name(address) == name:
@@ -2574,6 +2741,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "names_unchanged": names_unchanged,
                 "data_applied": data_applied,
                 "data_unchanged": data_unchanged,
+                "golb_shot_prefix_owner": golb_shot_prefix_owner,
                 "game_root_owner_graph": game_root_owner_graph,
                 "attachment_entry_root_offset_operands": attachment_entry_root_offset_operands,
                 "attachment_follow_root_offset_operands": attachment_follow_root_offset_operands,

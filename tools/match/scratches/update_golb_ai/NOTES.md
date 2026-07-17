@@ -59,11 +59,11 @@ redefinition without changing code shape: focused Wibo remains 73.34%,
 
 The local `GolbShot` and `PathFollow` field slices are now promoted into
 `include/golb.h`. The shared projectile layout keeps the existing exact-helper
-names (`primary_body`, `secondary_body`, `tertiary_body`, `render_body_owner`,
-`object_ref`, `owner_player`) and adds the update-only overlays for the
-vapour/live-matrix lane at `+0x80..+0x190`, homing state at `+0x198..+0x1bf`,
-`owner_body`/`player` aliases, the source matrix at `+0x27c`, path-follow state
-at `+0x2bc`, and the path-entry z latch at `+0x2e4`.
+names (`primary_body`, `vapour`, `tertiary_body`, `render_body_owner`,
+`object_ref`, `owner_player`) and adds the update-only views for the complete
+Vapour at `+0x80..+0x113`, `tertiary_body.transform` at `+0x150`, homing state
+at `+0x198..+0x1bf`, `owner_body`/`player` aliases, the source matrix at
+`+0x27c`, path-follow state at `+0x2bc`, and the path-entry z latch at `+0x2e4`.
 
 Focused Wibo for this scratch stays pinned at `73.34%`, target `694`,
 candidate `645`, prefix `9/694`, with `68 ok, 0 unresolved, 0 mismatch`.
@@ -370,7 +370,7 @@ Measured source-shape rejections:
 
 Recovered this pass (full field map in scratch.cpp):
 
-- GolbShot layout: live matrix +0x150; homing target/blend +0x198-0x1b0;
+- GolbShot layout: tertiary-body transform +0x150; homing target/blend +0x198-0x1b0;
   spin pair +0x1b4; skip byte +0x1bc; bounce byte +0x1bd; kind +0x1c0
   (0 golb, 1 lazer/vapour, 2 rocket); flight transform +0x1c4 (position row
   +0x1f4); previous-flight transform +0x204 (position row +0x234); state
@@ -378,7 +378,7 @@ Recovered this pass (full field map in scratch.cpp):
   velocity +0x24c; direction +0x258; path factor +0x264; lifetime pair
   +0x268; game +0x270; player +0x278; source transform +0x27c whose
   POSITION ROW is the output position at +0x2ac (one matrix, two views —
-  the 0x40 qmemcpy to the live matrix spans both); path-follow object
+  the 0x40 qmemcpy targets `tertiary_body.transform`); path-follow object
   +0x2bc with output at +0x18; path-entry z latch +0x2e4
 - golb (kind 0) gravity: vy -= subgame_rate * 0.017 while y outside
   [0, 0.49]; vy = 0 inside the band
@@ -550,3 +550,15 @@ homing staging vector extended its lifetime, grew the frame from `0x70` to
 `0x7c`, and fell to 69.20%. The collision lanes therefore remain componentwise
 until their distinct original staging local/source scope is recovered; neither
 rejected form is retained for score.
+
+## 2026-07-17 nested Vapour and rocket-transform closure
+
+The kind-1 trail calls now target the complete `GolbShot::vapour` child at
+`+0x080`; the kind-2 copy, direction setup, and spin all target
+`GolbShot::tertiary_body.transform` at `+0x150`. This retires the overlapping
+`secondary_body` and direct `live_matrix` aliases without changing any native
+access.
+
+Binary Ninja and IDA independently read back the same nested owners. Focused
+matching remains honestly byte-stable at 81.88% (669/694 instructions) with 66
+clean masked operands and no unresolved or mismatched operands.

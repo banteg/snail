@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 16,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 16,
-  "ida_exported": 16,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,68 +17,24 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_track_speedup_runtime",
-      "address": "0x4084b0"
-    },
-    {
-      "name": "initialize_track_jetpack_pickup_runtime",
-      "address": "0x4084d0"
-    },
-    {
-      "name": "initialize_track_health_pickup_runtime",
-      "address": "0x408510"
-    },
-    {
       "name": "initialize_golb_shot",
       "address": "0x408690"
+    },
+    {
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
+    },
+    {
+      "name": "kill_golb",
+      "address": "0x414670"
     },
     {
       "name": "update_golb_ai",
       "address": "0x414820"
     },
     {
-      "name": "spawn_track_health_pickup",
-      "address": "0x43d6c0"
-    },
-    {
-      "name": "spawn_track_jetpack_pickup",
-      "address": "0x43d890"
-    },
-    {
-      "name": "update_track_health_pickup",
-      "address": "0x43ecc0"
-    },
-    {
-      "name": "update_track_speedup",
-      "address": "0x43ee50"
-    },
-    {
-      "name": "update_track_jetpack_pickup",
-      "address": "0x43efb0"
-    },
-    {
-      "name": "remove_subgame_bods",
-      "address": "0x440910"
-    },
-    {
-      "name": "initialize_vapour",
-      "address": "0x442500"
-    },
-    {
-      "name": "reset_vapour",
-      "address": "0x442540"
-    },
-    {
-      "name": "add_vapour_point",
-      "address": "0x442560"
-    },
-    {
-      "name": "update_vapour",
-      "address": "0x4425f0"
-    },
-    {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
+      "name": "create_golb",
+      "address": "0x415280"
     }
   ]
 }

@@ -280,3 +280,16 @@ The matcher source is deliberately unchanged. Focused Wibo remains at the
 honest 36.08%, 460/582 instructions, prefix 1/582, with 35 clean masked
 operands and no unresolved or mismatched operands; this slice improves analysis
 ownership only and introduces no byte-shaping.
+
+## 2026-07-17 nested projectile-owner closure
+
+Kind 1 now links and initializes the complete `GolbShot::vapour` child rather
+than a `secondary_body`/union view; kind 2 continues through the independent
+`tertiary_body` at `+0x118`. The exact `sizeof(Vapour) == 0x94` boundary ends at
+the enclosing-shot backlink at `+0x114`, and the tertiary body's transform at
+`+0x150` accounts for the old direct matrix alias.
+
+This is deliberately an ownership correction, not a fakematch. Focused output
+remains at the current honest 34.77% frontier (459/582 instructions) with all
+35 masked operands clean. Both analysis lanes now preserve `vapour.body`, the
+backlink, and `tertiary_body` directly.

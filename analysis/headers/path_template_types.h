@@ -1876,21 +1876,10 @@ typedef struct GolbPathFollowState {
 } GolbPathFollowState;
 
 typedef struct GolbShot {
-    union {
-        struct {
-            RenderableBod primary_body;
-            RenderableBod secondary_body;
-            uint8_t _pad_100[0x114 - 0x100];
-            struct GolbShot* vapour_owner_shot;
-            RenderableBod tertiary_body;
-        };
-        struct {
-            uint8_t _pad_000[0x080];
-            Vapour vapour;
-            uint8_t _pad_114[0x150 - 0x114];
-            TransformMatrix live_matrix;
-        };
-    };
+    RenderableBod primary_body;
+    Vapour vapour;
+    struct GolbShot* vapour_owner_shot;
+    RenderableBod tertiary_body;
     ContactTargetObject* homing_target_object;
     Vec3 homing_target;
     struct GolbShot* rocket_owner_shot;

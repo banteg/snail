@@ -51,7 +51,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
   Vec3 *v48; // eax
   float z; // eax
   SubgameRuntime *v50; // ecx
-  RenderableBod *p_secondary_body; // ebp
+  Vapour *p_vapour; // ebp
   double v52; // st7
   BodBase *p_golb_vapour_list_head; // eax
   struct BodNode *list_next; // eax
@@ -383,30 +383,30 @@ LABEL_51:
     {
       v50 = shot->game;
       shot->lifetime = 0.0;
-      p_secondary_body = &shot->secondary_body;
+      p_vapour = &shot->vapour;
       v52 = v50->subgame_rate * 0.041666668;
       shot->vapour_owner_shot = shot;
       shot->lifetime_step = v52;
       p_golb_vapour_list_head = &g_game_base->subgame.golb_vapour_list_head;
-      if ( (shot->secondary_body.bod.bod.list_flags & 0x200) != 0 )
+      if ( (shot->vapour.body.bod.bod.list_flags & 0x200) != 0 )
       {
         report_errorf(aListAddafter);
       }
       else
       {
-        shot->secondary_body.bod.bod.list_prev = &p_golb_vapour_list_head->bod;
-        shot->secondary_body.bod.bod.list_next = p_golb_vapour_list_head->bod.list_next;
-        p_golb_vapour_list_head->bod.list_next = &p_secondary_body->bod.bod;
-        list_next = shot->secondary_body.bod.bod.list_next;
+        shot->vapour.body.bod.bod.list_prev = &p_golb_vapour_list_head->bod;
+        shot->vapour.body.bod.bod.list_next = p_golb_vapour_list_head->bod.list_next;
+        p_golb_vapour_list_head->bod.list_next = &p_vapour->body.bod.bod;
+        list_next = shot->vapour.body.bod.bod.list_next;
         if ( list_next )
-          list_next->list_prev = &p_secondary_body->bod.bod;
-        shot->secondary_body.bod.bod.list_flags |= 0x200u;
+          list_next->list_prev = &p_vapour->body.bod.bod;
+        shot->vapour.body.bod.bod.list_flags |= 0x200u;
       }
       reset_vapour(&shot->vapour, (float *)spawn_selector);
-      store_color4f(&shot->secondary_body.bod.color, 1.0, 1.0, 1.0, 0.99000001);
+      store_color4f(&shot->vapour.body.bod.color, 1.0, 1.0, 1.0, 0.99000001);
       shot->object_ref = (void *)emitter_index;
       add_vapour_point(&shot->vapour, &shot->flight_transform);
-      (*(void (__thiscall **)(Vapour *))p_secondary_body->bod.bod.vtable)(&shot->vapour);
+      (*(void (__thiscall **)(Vapour *))p_vapour->body.bod.bod.vtable)(&shot->vapour);
     }
   }
   else

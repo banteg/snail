@@ -200,9 +200,13 @@ typedef struct GolbPathFollowState {
 """.strip()
 
 GOLB_SHOT_FIELD_UPDATES = (
-    # GolbShot +0x000..+0x197 is an overlapping body/vapour/live-matrix
-    # union in the import header. Do not flatten it with field updates here:
-    # installing the +0x118 body view would evict the +0x150 matrix view.
+    # The exact constructor seeds three zero-offset-compatible owners at
+    # +0x000, +0x080, and +0x118. The middle owner is the complete 0x94-byte
+    # Vapour; the old +0x150 live_matrix alias is tertiary_body.transform.
+    ("0x000", "primary_body", "RenderableBod"),
+    ("0x080", "vapour", "Vapour"),
+    ("0x114", "vapour_owner_shot", "GolbShot*"),
+    ("0x118", "tertiary_body", "RenderableBod"),
     ("0x198", "homing_target_object", "ContactTargetObject*"),
     ("0x19c", "homing_target", "Vec3"),
     ("0x1a8", "rocket_owner_shot", "GolbShot*"),
@@ -748,6 +752,20 @@ CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES = (
         68,
         "active_new_first_tertiary",
         "BodNode*",
+    ),
+)
+
+# kill_golb moves the GolbShot receiver from ECX into ESI before its three
+# inlined intrusive-list removals. Keep that callee-saved lifetime typed as the
+# enclosing shot so the +0x80 Vapour and +0x118 tertiary body remain visible.
+KILL_GOLB_OWNER_USER_VAR_UPDATES = (
+    (
+        "kill_golb",
+        "RegisterVariableSourceType",
+        6,
+        72,
+        "shot_cursor",
+        "GolbShot*",
     ),
 )
 
@@ -2754,6 +2772,13 @@ def main() -> int:
     )
     if args.golb_only:
         operations.extend(
+            apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=KILL_GOLB_OWNER_USER_VAR_UPDATES,
+            )
+        )
+        operations.extend(
             apply_proto_updates(
                 REPO_ROOT,
                 target=args.target,
@@ -2841,6 +2866,7 @@ def main() -> int:
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *CREATE_GOLB_ACTIVE_BOD_USER_VAR_UPDATES,
+                *KILL_GOLB_OWNER_USER_VAR_UPDATES,
                 *PLACE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *CHALLENGE_PARCELS_RUNTIME_USER_VAR_UPDATES,
                 *UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,

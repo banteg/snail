@@ -2878,9 +2878,9 @@ char GameRoot::initialize_game_assets_and_world()
     Object* rocket_object = golb_shot->tertiary_body.object;
     int golb_shot_count = 12;
     do {
-        golb_shot->secondary_body.set_bod_object(
+        golb_shot->vapour.set_bod_object(
             g_object_list.add_object_to_list());
-        Object* vapour_object = golb_shot->secondary_body.object;
+        Object* vapour_object = golb_shot->vapour.object;
         vapour_object->flags |=
             OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;
         vapour_object->blend_mode = 9;
