@@ -1227,6 +1227,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "spawn_track_health_pickup",
         "spawn_track_jetpack_pickup",
         "get_track_runtime_cell_at_world_z",
+        "project_position_onto_track_attachment",
     ):
         assert f'"{function_name}"' in deferred_prototypes
     assert (
@@ -1261,6 +1262,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "spawn_track_health_pickup",
         "spawn_track_jetpack_pickup",
         "get_track_runtime_cell_at_world_z",
+        "project_position_onto_track_attachment",
     ):
         assert f'"{function_name}": {{' in repair_source
     for address in (
@@ -1279,6 +1281,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "0x43D6C0",
         "0x43D890",
         "0x43D480",
+        "0x4444B0",
     ):
         assert f'"address": {address}' in repair_source
     assert "from repair_initialize_subgame_owner import main" in repair_entrypoint
@@ -1294,6 +1297,14 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
         'SubgameRuntime* game, Vec3* position);"'
     ) in ida_source
+    projection_declaration = (
+        "void __thiscall project_position_onto_track_attachment("
+        "SubgameRuntime* game, Vec3* position, float* out_angle);"
+    )
+    compact_projection_declaration = "".join(projection_declaration.split())
+    assert compact_projection_declaration in compact_header
+    assert compact_projection_declaration in compact_ida_source
+    assert projection_declaration.removesuffix(";") in deferred_prototypes
     for function_name in (
         "spawn_track_health_pickup",
         "spawn_track_jetpack_pickup",
@@ -1309,6 +1320,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '"spawn_track_jetpack_pickup": 3' in ida_source
     assert '"get_track_grid_cell_at_world_position": 2' in ida_source
     assert '"sample_track_floor_height_at_position": 2' in ida_source
+    assert '"project_position_onto_track_attachment": 3' in ida_source
     assert "if stale and comments:" in repair_source
     assert "if stale and tags:" in repair_source
     assert '"allowed_auto_tag_types": ("Unresolved Stack Pointer Value",)' in repair_source

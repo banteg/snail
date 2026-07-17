@@ -4414,6 +4414,7 @@
         "game->garbage_hazards.slots[0].state",
         "game->garbage_hazards.active_head",
         "game->player.body.bod.bod.list_prev",
+        "project_position_onto_track_attachment(game,",
         "return"
       ],
       "forbidden_substrings": [
@@ -6683,6 +6684,7 @@
       "required_substrings": [
         "&game->slug_hazards.slots[0].state",
         "&game->player",
+        "project_position_onto_track_attachment(game,",
         "g_game_base->subgame.subgame_rate",
         "game->next_slug_voice_trigger_z",
         "game->slug_voice_trigger_spacing_z"
@@ -9427,6 +9429,43 @@
         "3930888",
         "3931496",
         "unknown_000b48["
+      ]
+    },
+    {
+      "name": "bn_track_projection_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/004444b0-project_position_onto_track_attachment.c",
+      "required_substrings": [
+        "game->runtime_rows",
+        "SubLoc* cell",
+        "struct Path* attachment_template_record",
+        "cell->attachment_template_record",
+        "attachment_template_record->primary_samples",
+        "compute_kind42_attachment_transform(attachment_template_record",
+        "position->x",
+        "position->z",
+        "out_angle"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "arg3",
+        "struct PathTemplate*",
+        "int32_t eax_8 = compute_kind42_attachment_transform",
+        "return eax_8"
+      ]
+    },
+    {
+      "name": "bn_kind42_attachment_path_owner",
+      "artifact": "analysis/decompile/binja/functions/0042b920-compute_kind42_attachment_transform.c",
+      "required_substrings": [
+        "struct Path* self_2 = self",
+        "rotate_matrix_local_z(transform, *out_angle)",
+        "transform->position.x",
+        "transform->position.y"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate*",
+        "rotate_matrix_world_z"
       ]
     }
   ]

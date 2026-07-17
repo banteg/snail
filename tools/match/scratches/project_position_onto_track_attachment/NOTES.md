@@ -110,3 +110,15 @@ barrier, volatile local, cast, or lane-order override is retained.
 The exact projection gate now uses `SUBROW_FLAG_PRIMARY_ATTACHMENT`, tying the
 borrowed path cell at `+0xa4` to its owning span bit. The helper remains exact
 at 106/106 instructions with all five operands clean.
+
+## 2026-07-17 native ABI and owner closure
+
+The native function has a `__thiscall` receiver in ECX, two stack arguments,
+and both exits use `retn 8`. Its only callers, `spawn_track_garbage_hazard` and
+`spawn_slug_hazard`, pass a `Vec3*` plus `float*` and discard EAX immediately.
+Together with the exact cross-port `cRSubGame::CalcRealPos(tVector&, float&)`
+signature, this closes the Windows ABI as
+`void SubgameRuntime::project_position_onto_track_attachment(Vec3*, float*)`.
+The guarded Binary Ninja repair records and replaces only the observed stale
+`char* (int32_t, int32_t*, float*)` identity; the shared header and BN/IDA
+replay catalogs now preserve the recovered owner and argument types.

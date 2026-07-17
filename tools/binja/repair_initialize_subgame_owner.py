@@ -388,6 +388,44 @@ FUNCTION_SPECS = {
             },
         ),
     },
+    "project_position_onto_track_attachment": {
+        "address": 0x4444B0,
+        "expected_prototype": (
+            "void __thiscall(struct SubgameRuntime* game, "
+            "struct Vec3* position, float* out_angle)"
+        ),
+        "stale_prototype": (
+            "char* __thiscall(int32_t arg1, int32_t* arg2, float* arg3)"
+        ),
+        "declaration": (
+            "void __thiscall project_position_onto_track_attachment("
+            "SubgameRuntime* game, Vec3* position, float* out_angle)"
+        ),
+        "parameter_count": 3,
+        "variables": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "position",
+                "type": "struct Vec3*",
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 8,
+                "name": "out_angle",
+                "type": "float*",
+            },
+        ),
+    },
 }
 
 

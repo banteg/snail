@@ -87,6 +87,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43DF10,  # spawn_track_ring_or_special_effect
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
+    0x4444B0,  # project_position_onto_track_attachment
     0x444CF0,  # handle_subgoldy_collisions
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
@@ -1346,6 +1347,10 @@ TRUSTED_DECLARATIONS = [
         "SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);",
     ),
     (
+        "project_position_onto_track_attachment",
+        "void __thiscall project_position_onto_track_attachment(SubgameRuntime* game, Vec3* position, float* out_angle);",
+    ),
+    (
         "sample_track_floor_height_at_position",
         "double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);",
     ),
@@ -2347,6 +2352,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         "select_track_tile_edge_variants": 1,
         "get_track_grid_cell_at_world_position": 2,
         "sample_track_floor_height_at_position": 2,
+        "project_position_onto_track_attachment": 3,
         "spawn_track_health_pickup": 3,
         "spawn_track_jetpack_pickup": 3,
     }

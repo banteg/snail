@@ -2298,6 +2298,10 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
         "get_track_runtime_cell_at_world_z",
         "SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
     ),
+    (
+        "project_position_onto_track_attachment",
+        "void __thiscall project_position_onto_track_attachment(SubgameRuntime* game, Vec3* position, float* out_angle)",
+    ),
 )
 
 
