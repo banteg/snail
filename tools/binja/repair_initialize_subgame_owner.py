@@ -399,16 +399,25 @@ def _path_function_spec(
     stale_return_type: str,
     calling_convention: str,
     parameters: tuple[tuple[str, str, str], ...] = (),
+    stale_parameters: tuple[tuple[str, str], ...] | None = None,
+    missing_stale_variable_storages: tuple[int, ...] = (),
     discard_variables: tuple[dict[str, object], ...] = (),
 ) -> dict[str, object]:
     expected_parameters = (("self", "struct Path*"),) + tuple(
         (parameter_name, expected_type)
         for parameter_name, expected_type, _stale_type in parameters
     )
-    stale_parameters = (("self", "struct PathTemplate*"),) + tuple(
-        (parameter_name, stale_type)
-        for parameter_name, _expected_type, stale_type in parameters
+    stale_stack_parameters = (
+        tuple(
+            (parameter_name, stale_type)
+            for parameter_name, _expected_type, stale_type in parameters
+        )
+        if stale_parameters is None
+        else stale_parameters
     )
+    stale_parameters_with_owner = (
+        ("self", "struct PathTemplate*"),
+    ) + stale_stack_parameters
 
     def render_prototype(result_type: str, values: tuple[tuple[str, str], ...]) -> str:
         rendered = ", ".join(
@@ -452,9 +461,21 @@ def _path_function_spec(
         "owner_type": "Path",
         "owner_size": PATH_SIZE,
         "expected_prototype": render_prototype(return_type, expected_parameters),
-        "stale_prototype": render_prototype(stale_return_type, stale_parameters),
+        "stale_prototype": render_prototype(
+            stale_return_type,
+            stale_parameters_with_owner,
+        ),
         "declaration": render_declaration(expected_parameters),
         "parameter_count": len(expected_parameters),
+        "stale_parameter_counts": (len(stale_parameters_with_owner),),
+        "allowed_missing_stale_variable_keys": tuple(
+            (
+                "VariableSourceType.StackVariableSourceType",
+                0,
+                storage,
+            )
+            for storage in missing_stale_variable_storages
+        ),
         "variables": tuple(variables),
         "discard_variables": discard_variables,
     }
@@ -493,6 +514,43 @@ FUNCTION_SPECS.update(
                 },
             ),
         ),
+        "initialize_cage2_path_template_pair": _path_function_spec(
+            address=0x42E720,
+            name="initialize_cage2_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("width_cells_", "int32_t", "int32_t"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("vertical_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "int32_t"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+            missing_stale_variable_storages=(16,),
+        ),
+        "initialize_toad_path_template_pair": _path_function_spec(
+            address=0x42CBF0,
+            name="initialize_toad_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("turn_left", "char", "char"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("vertical_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "char"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+        ),
         "mirror_path_template_pair_x": _path_function_spec(
             address=0x421DC0,
             name="mirror_path_template_pair_x",
@@ -517,8 +575,15 @@ STALE_PROTOTYPE = SPEC["stale_prototype"]
 STALE_PROTOTYPES = {STALE_PROTOTYPE, *SPEC.get("legacy_prototypes", ())}
 DECLARATION = SPEC["declaration"]
 EXPECTED_PARAMETER_COUNT = SPEC["parameter_count"]
+STALE_PARAMETER_COUNTS = set(
+    SPEC.get("stale_parameter_counts", (EXPECTED_PARAMETER_COUNT,))
+)
 EXPECTED_VARIABLES = SPEC["variables"]
 DISCARD_VARIABLES = SPEC.get("discard_variables", ())
+ALLOWED_MISSING_STALE_VARIABLE_KEYS = {
+    tuple(value)
+    for value in SPEC.get("allowed_missing_stale_variable_keys", ())
+}
 ALLOWED_AUTO_TAG_TYPES = set(SPEC.get("allowed_auto_tag_types", ()))
 OWNER_TYPE_NAME = SPEC.get("owner_type", "SubgameRuntime")
 OWNER_SIZE = SPEC.get("owner_size", __SUBGAME_RUNTIME_SIZE__)
@@ -534,6 +599,10 @@ def variable_record(fn, var):
         "storage": int(var.storage),
         "user_defined": bool(fn.is_var_user_defined(var)),
     }
+
+
+def variable_key(record):
+    return (record["source_type"], record["index"], record["storage"])
 
 
 def tag_record(fn, entry):
@@ -750,10 +819,19 @@ else:
         for record in user_vars
     ):
         conflicts.append("discarded_variable_survived_repair")
-    if before_annotations["parameter_count"] != EXPECTED_PARAMETER_COUNT:
+    allowed_parameter_counts = (
+        STALE_PARAMETER_COUNTS if stale else {EXPECTED_PARAMETER_COUNT}
+    )
+    if before_annotations["parameter_count"] not in allowed_parameter_counts:
         conflicts.append("unexpected_parameter_count")
     if any(
         entry["candidate_count"] != 1
+        and not (
+            stale
+            and entry["candidate_count"] == 0
+            and variable_key(entry["expected"])
+            in ALLOWED_MISSING_STALE_VARIABLE_KEYS
+        )
         for entry in before_annotations["variables"]
     ):
         conflicts.append("unexpected_variable_candidates")

@@ -73,3 +73,14 @@ rotation, 0x40-byte transform copy, and basis-up offset. Focused Wibo rises
 from 27.94% (597/663) to 45.89% (601/663), while the masked audit improves from
 22 ok / 2 mismatch to 27 ok / 0 mismatch. A direct-array rewrite of the delta
 loop regressed to 41.35%, so its better local sample-pointer shape remains.
+
+2026-07-17 owner and ABI closure: the Windows body ends in `ret 0x10`, and all
+four asset-constructor callsites push the turn selector plus three textures
+after `this`. The previous Binary Ninja prototype left the fourth texture as an
+unpromoted stack local, kept the receiver on the legacy partial `PathTemplate`,
+and inferred an `int32_t` result from register residue. Guarded recreation now
+records `void __thiscall(Path* self, char turn_left, char* texture_a, char*
+texture_b, char* vertical_texture)`, and the tracked caller renders the complete
+ABI including `Objects/Path/VeryDark.tga`. The matcher source already carried
+that honest declaration, so focused Wibo remains **45.89%** (601/663), with its
+1-instruction prefix and clean 27-operand masked audit unchanged.

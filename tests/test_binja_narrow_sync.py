@@ -1323,6 +1323,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "void __fastcall allocate_path_template_samples(Path* self)",
         "void __fastcall finalize_path_template(Path* self)",
         "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
+        "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
+        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
         "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
     ):
         assert declaration in deferred_path_prototypes
@@ -1332,6 +1334,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "allocate_path_template_samples",
         "finalize_path_template",
         "initialize_worm_path_template_pair",
+        "initialize_cage2_path_template_pair",
+        "initialize_toad_path_template_pair",
         "mirror_path_template_pair_x",
     ):
         assert f'"{function_name}": _path_function_spec(' in repair_source
@@ -1340,6 +1344,10 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '"storage": 8' in repair_source
     assert '"name": "arg2"' in repair_source
     assert "DISCARD_VARIABLES = SPEC.get(\"discard_variables\", ())" in repair_source
+    assert "STALE_PARAMETER_COUNTS = set(" in repair_source
+    assert "ALLOWED_MISSING_STALE_VARIABLE_KEYS = {" in repair_source
+    assert 'missing_stale_variable_storages=(16,)' in repair_source
+    assert 'before_annotations["parameter_count"] not in allowed_parameter_counts' in repair_source
     assert "stale_discard_variable_changed" in repair_source
     assert "discarded_variable_survived_repair" in repair_source
     assert "def _sync_subgame_receiver_lvar" in ida_source

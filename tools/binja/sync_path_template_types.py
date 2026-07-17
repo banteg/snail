@@ -2315,6 +2315,14 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
     ),
     (
+        "initialize_cage2_path_template_pair",
+        "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
+        "initialize_toad_path_template_pair",
+        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture)",
+    ),
+    (
         "mirror_path_template_pair_x",
         "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
     ),

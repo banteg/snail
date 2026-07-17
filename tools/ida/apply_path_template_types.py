@@ -1375,7 +1375,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_cage2_path_template_pair",
-        "int32_t __thiscall initialize_cage2_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_cage2_path_template_pair(Path* self, int32_t width_cells_, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_supertramp_path_template_pair",
@@ -1475,7 +1475,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_toad_path_template_pair",
-        "int32_t __thiscall initialize_toad_path_template_pair(Path* self, char arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_toad_path_template_pair(Path* self, char turn_left, char* texture_a, char* texture_b, char* vertical_texture);",
     ),
     (
         "initialize_hill_valley_path_template_pair",

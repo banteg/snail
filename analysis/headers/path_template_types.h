@@ -2413,11 +2413,12 @@ int32_t __thiscall initialize_loopout_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_cage2_path_template_pair(
+void __thiscall initialize_cage2_path_template_pair(
     Path* self,
-    int32_t arg2,
+    int32_t width_cells_,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 int32_t __thiscall initialize_supertramp_path_template_pair(
@@ -2602,11 +2603,12 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_toad_path_template_pair(
+void __thiscall initialize_toad_path_template_pair(
     Path* self,
-    char arg2,
+    char turn_left,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 int32_t __thiscall initialize_hill_valley_path_template_pair(

@@ -161,3 +161,26 @@ masked operands: 39 ok, 0 unresolved, 1 mismatch
 
 The shared type report now removes this initializer from the
 `Path` scratch-local list.
+
+## 2026-07-17 owner and ABI closure
+
+The Windows body ends in `ret 0x10`, and the asset constructor pushes four
+arguments after `this`: width plus the two surface textures and the vertical
+texture. The previous Binary Ninja prototype omitted the unused fourth texture,
+kept the receiver on the legacy partial `PathTemplate`, and inferred an
+`int32_t` result from register residue. A guarded function recreation now records
+the complete native ABI:
+
+```text
+void __thiscall initialize_cage2_path_template_pair(
+    Path* self,
+    int32_t width_cells_,
+    char* texture_a,
+    char* texture_b,
+    char* vertical_texture)
+```
+
+The tracked caller now renders the full `Path` owner and all four stack
+arguments. The matcher source already carried this honest member declaration,
+so focused Wibo remains **56.54%** (629/648), with 39 masked operands accepted
+and the existing single symbolic-call mismatch unchanged.

@@ -5978,6 +5978,47 @@
       ]
     },
     {
+      "name": "bn_cage2_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042e720-initialize_cage2_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_DETOUR",
+        "self->width_cells = width_cells_",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_toad_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/0042cbf0-initialize_toad_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY",
+        "if (turn_left == 0)",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "arg2",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_path_constructor_callsite_abis",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_cage2_path_template_pair(&game->subgame.path_pairs[0xf].primary, 3, var_288, texture_b, vertical_texture)",
+        "initialize_toad_path_template_pair(&game->subgame.path_pairs[0x2f], 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Track0.tga\", \"Objects/Path/VeryDark.tga\")"
+      ],
+      "forbidden_substrings": [
+        "initialize_cage2_path_template_pair(&game->subgame.path_pairs[0xf].primary.bod.bod.vtable",
+        "initialize_toad_path_template_pair(&game->subgame.path_pairs[0x2f], 1, \"Objects/World00/Slide0.tga\", \"Objects/World00/Track0.tga\")"
+      ]
+    },
+    {
       "name": "bn_neighbor_cell_lane_owner",
       "artifact": "analysis/decompile/binja/functions/00434b60-is_neighbor_cell_solid.c",
       "required_substrings": [
