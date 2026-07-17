@@ -401,6 +401,7 @@ def _path_function_spec(
     parameters: tuple[tuple[str, str, str], ...] = (),
     stale_parameters: tuple[tuple[str, str], ...] | None = None,
     stale_variable_annotations: tuple[tuple[int, str, str], ...] = (),
+    stale_auto_variable_annotations: tuple[tuple[int, str, str], ...] = (),
     missing_stale_variable_storages: tuple[int, ...] = (),
     discard_variables: tuple[dict[str, object], ...] = (),
 ) -> dict[str, object]:
@@ -479,6 +480,17 @@ def _path_function_spec(
                 "user_defined": True,
             }
             for storage, variable_name, variable_type in stale_variable_annotations
+        )
+        + tuple(
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": storage,
+                "name": variable_name,
+                "type": variable_type,
+                "user_defined": False,
+            }
+            for storage, variable_name, variable_type in stale_auto_variable_annotations
         ),
         "allowed_missing_stale_variable_keys": tuple(
             (
@@ -736,6 +748,54 @@ FUNCTION_SPECS.update(
             stale_variable_annotations=((20, "arg5", "char*"),),
             missing_stale_variable_storages=(24,),
         ),
+        "initialize_sweep_path_template_pair": _path_function_spec(
+            address=0x422C00,
+            name="initialize_sweep_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("scale_arg", "float", "int32_t"),
+                ("width_cells_", "int32_t", "char*"),
+                ("side_exit", "int32_t", "char*"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("cap_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "int32_t"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+            stale_auto_variable_annotations=(
+                (16, "texture_path_2", "char*"),
+                (20, "texture_path_3", "char*"),
+            ),
+            missing_stale_variable_storages=(24,),
+        ),
+        "initialize_snake_path_template_pair": _path_function_spec(
+            address=0x423580,
+            name="initialize_snake_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("scale_arg", "float", "int32_t"),
+                ("width_cells_", "int32_t", "char*"),
+                ("side_exit", "int32_t", "char*"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("cap_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "int32_t"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+            stale_variable_annotations=((16, "arg4", "char*"),),
+            stale_auto_variable_annotations=((20, "texture_path_2", "char*"),),
+            missing_stale_variable_storages=(24,),
+        ),
         "initialize_slalomdouble_path_template_pair": _path_function_spec(
             address=0x425050,
             name="initialize_slalomdouble_path_template_pair",
@@ -756,6 +816,7 @@ FUNCTION_SPECS.update(
                 ("texture_b", "char*"),
             ),
             stale_variable_annotations=((16, "arg4", "char*"),),
+            stale_auto_variable_annotations=((20, "texture_path_2", "char*"),),
             missing_stale_variable_storages=(24,),
         ),
         "initialize_cage2_path_template_pair": _path_function_spec(

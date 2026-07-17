@@ -1423,11 +1423,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_sweep_path_template_pair",
-        "int32_t __thiscall initialize_sweep_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_snake_path_template_pair",
-        "int32_t __thiscall initialize_snake_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_slalomdouble_path_template_pair",

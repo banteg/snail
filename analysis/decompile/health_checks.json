@@ -6152,6 +6152,40 @@
       ]
     },
     {
+      "name": "bn_sweep_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00422c00-initialize_sweep_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_SWEEP",
+        "self->width_cells = width_cells_",
+        "self->segment_count = 0x1e",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "self->width_cells = texture_a",
+        "arg2",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_snake_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00423580-initialize_snake_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_SNAKE",
+        "self->width_cells = width_cells_",
+        "self->segment_count = 0x1b",
+        "allocate_path_template_samples(self)",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate* self",
+        "self->width_cells = texture_a",
+        "arg2",
+        "return finalize_path_template"
+      ]
+    },
+    {
       "name": "bn_slalomdouble_path_full_owner_abi",
       "artifact": "analysis/decompile/binja/functions/00425050-initialize_slalomdouble_path_template_pair.c",
       "required_substrings": [
@@ -6188,7 +6222,7 @@
       "required_regexes": [
         "initialize_looptheloop_path_template_pair\\(&game->subgame\\.path_pairs\\[0x33\\](?:\\.primary)?, 6f, 3, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
         "initialize_looptheloopw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x39\\](?:\\.primary)?, 8f, 4, 1, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_loopout_path_template_pair\\(&game->subgame\\.path_pairs\\[0x19\\](?:\\.primary)?, 3f, 4, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_loopout_path_template_pair\\(&game->subgame\\.path_pairs\\[0x19\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_looptheloop_path_template_pair(&game->subgame.path_pairs[0x33].primary.bod.bod.vtable",
@@ -6200,8 +6234,8 @@
       "name": "bn_hump_dump_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_regexes": [
-        "initialize_hump_path_template_pair\\(&game->subgame\\.path_pairs\\[0x10\\]\\.primary, 4f, 1f, 3, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_dump_path_template_pair\\(&game->subgame\\.path_pairs\\[0x11\\]\\.primary, 4f, 1f, 3, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_hump_path_template_pair\\(&game->subgame\\.path_pairs\\[0x10\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_dump_path_template_pair\\(&game->subgame\\.path_pairs\\[0x11\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_hump_path_template_pair(&game->subgame.path_pairs[0x10].primary.bod.bod.vtable",
@@ -6212,9 +6246,9 @@
       "name": "bn_dip_screw_slalom_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_regexes": [
-        "initialize_dip_path_template_pair\\(&game->subgame\\.path_pairs\\[0x14\\]\\.primary, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_screw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x15\\]\\.primary, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_slalom_path_template_pair\\(&game->subgame\\.path_pairs\\[0x16\\]\\.primary, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_dip_path_template_pair\\(&game->subgame\\.path_pairs\\[0x14\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_screw_path_template_pair\\(&game->subgame\\.path_pairs\\[0x15\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_slalom_path_template_pair\\(&game->subgame\\.path_pairs\\[0x16\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_dip_path_template_pair(&game->subgame.path_pairs[0x14].primary.bod.bod.vtable",
@@ -6226,12 +6260,24 @@
       "name": "bn_extended_slalom_path_constructor_callsite_abis",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_regexes": [
-        "initialize_slalombig_path_template_pair\\(&game->subgame\\.path_pairs\\[0x17\\]\\.primary, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
-        "initialize_slalomdouble_path_template_pair\\(&game->subgame\\.path_pairs\\[0x20\\]\\.primary, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+        "initialize_slalombig_path_template_pair\\(&game->subgame\\.path_pairs\\[0x17\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_slalomdouble_path_template_pair\\(&game->subgame\\.path_pairs\\[0x20\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
       ],
       "forbidden_substrings": [
         "initialize_slalombig_path_template_pair(&game->subgame.path_pairs[0x17].primary.bod.bod.vtable",
         "initialize_slalomdouble_path_template_pair(&game->subgame.path_pairs[0x20].primary.bod.bod.vtable"
+      ]
+    },
+    {
+      "name": "bn_sweep_snake_path_constructor_callsite_abis",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_regexes": [
+        "initialize_sweep_path_template_pair\\(&game->subgame\\.path_pairs\\[0x1c\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)",
+        "initialize_snake_path_template_pair\\(&game->subgame\\.path_pairs\\[0x1d\\](?:\\.primary)?, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^,\\n]+, [^)\\n]+\\)"
+      ],
+      "forbidden_substrings": [
+        "initialize_sweep_path_template_pair(&game->subgame.path_pairs[0x1c].primary.bod.bod.vtable",
+        "initialize_snake_path_template_pair(&game->subgame.path_pairs[0x1d].primary.bod.bod.vtable"
       ]
     },
     {

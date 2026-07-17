@@ -1315,6 +1315,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "restore_preserved_auto_tags(repaired, preserved_auto_tags)" in repair_source
     assert "record[\"auto\"] and record[\"type\"] in ALLOWED_AUTO_TAG_TYPES" in repair_source
     assert "function_has_unpreserved_user_vars" in repair_source
+    assert "stale_auto_variable_annotations" in repair_source
+    assert '"user_defined": False' in repair_source
     assert "def restore_old_function():" in repair_source
     assert '"--apply"' in repair_source
     assert "Without this flag the tool" in repair_source
@@ -1329,6 +1331,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "void __thiscall initialize_screw_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_sweep_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_snake_path_template_pair(Path* self, float scale_arg, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __fastcall allocate_path_template_samples(Path* self)",
         "void __fastcall finalize_path_template(Path* self)",
@@ -1350,6 +1354,8 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "initialize_screw_path_template_pair",
         "initialize_slalom_path_template_pair",
         "initialize_slalombig_path_template_pair",
+        "initialize_sweep_path_template_pair",
+        "initialize_snake_path_template_pair",
         "initialize_slalomdouble_path_template_pair",
         "allocate_path_template_samples",
         "finalize_path_template",

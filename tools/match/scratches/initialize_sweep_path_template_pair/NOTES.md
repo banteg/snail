@@ -104,3 +104,14 @@ That target-backed induction variable leaves the final focused result at
 33.20% (565/652), with 34 clean masked operands and no unresolved or mismatched
 operands. The small fuzzy tradeoff is retained as an ownership clarification,
 not compensated with a synthetic scheduling hint.
+
+2026-07-17 live owner-ABI closure: the native tail at `0x42356c` is
+`retn 0x18`, the iOS counterpart is
+`cRPath::BuildSweep(float, int, bool, char*, char*)`, and the Windows caller
+supplies the additional final cap-texture argument. Binary Ninja's stale view
+returned `int32_t`, owned a `PathTemplate*`, and exposed only `int32_t, char*,
+char*`; analyzer-only candidates occupied `+0x10/+0x14`, while `+0x18` was
+absent. The guarded recreation now owns the exact void `Path*` contract and all
+six stack arguments. Post-restart readback confirms authored parameter storages
+`+4..+24`. This is analysis-only: focused Wibo remains 33.20% (565/652), with
+34 clean masked operands and no unresolved or mismatched operands.

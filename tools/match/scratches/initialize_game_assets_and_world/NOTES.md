@@ -900,3 +900,20 @@ real `Path` fields and void finalizer flow. This is analysis-only: SlalomBig
 remains 28.64% (617/696) with 27 clean operands, and SlalomDouble remains
 33.98% (606/683) with 33 clean operands; neither audit has unresolved or
 mismatched operands.
+
+## 2026-07-17 Sweep and Snake constructor ABI closure
+
+Sweep and Snake now expose the contract already preserved by their matcher
+sources and iOS Path.o symbols: a `Path*` receiver, `float` scale, integer
+width and mode, two surface textures, and the Windows-only cap texture. Both
+native callees return with `retn 0x18`; their stale Binary Ninja views had
+shifted width and mode into texture-typed slots and truncated the final three
+arguments.
+
+The refreshed initializer now shows complete seven-operand calls at path-pair
+slots `0x1c` and `0x1d`. Binary Ninja may spell the zero-offset primary `Path`
+as either the `PathPair` root or `.primary`, so health checks accept those two
+equivalent owners while pinning full arity and rejecting nested-BOD receivers.
+This is analysis-only: Sweep remains 33.20% (565/652) with 34 clean operands,
+and Snake remains 30.61% (570/652) with 37 clean operands; neither audit has
+unresolved or mismatched operands.

@@ -139,3 +139,15 @@ outcomes push the same texture argument (`texture_a` for the first face and
 `texture_b` for the second). Synthesizing a source-level no-op conditional
 would be fakematching rather than recovered semantics, so the scratch leaves
 that scheduling artifact as an honest residual.
+
+2026-07-17 live owner-ABI closure: the native tail at `0x423ef4` is
+`retn 0x18`, the iOS counterpart is
+`cRPath::BuildSnake(float, int, bool, char*, char*)`, and the Windows caller
+supplies the additional final cap-texture argument. Binary Ninja's stale view
+returned `int32_t`, owned a `PathTemplate*`, and exposed only `int32_t, char*,
+char*`; an authored `arg4` survived at `+0x10`, `+0x14` was analyzer-owned, and
+`+0x18` was absent. The guarded recreation now owns the exact void `Path*`
+contract and all six stack arguments. Post-restart readback confirms authored
+parameter storages `+4..+24`. This is analysis-only: focused Wibo remains
+30.61% (570/652), with 37 clean masked operands and no unresolved or mismatched
+operands.
