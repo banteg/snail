@@ -242,3 +242,19 @@ cast. Focused matching stays honestly unchanged at 55.52%, `400/425`, with all
 seven masked operands clean. The exact 16-instruction initializer also remains
 proof-grade after loading `SubLoc::attachment_template_record` and
 `SubLoc::position` directly.
+
+## 2026-07-17 durable Golb-follow owner export
+
+The live Binary Ninja prototype now reads back as
+`int32_t __thiscall(GolbPathFollowState*, float, Vec3*, Vec3*)`, and all four
+native exits use `retn 0xc`. That agrees with iOS
+`cRPathFollowGolb::Traverse(float, tVector&, tVector*)` and the typed call from
+`update_golb_ai`.
+
+Refreshing the tracked decompile replaces the last remaining BN
+`struct PathTemplate*` owner with the complete `GolbPathFollowState` graph:
+borrowed `Path*` and `SubLoc*`, progress and output state, and the owning
+`GolbShot` flight transform. The shared header and IDA replay now carry both
+the initializer and traverse ABIs, while health checks pin the owner and its
+consumer. No matching source was changed; focused matching remains honestly
+at 71.82%, 416/425 instructions, with all seven operands clean.

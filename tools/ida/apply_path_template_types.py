@@ -75,7 +75,10 @@ TRUSTED_DATA_DECLARATIONS = [
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x414820,  # update_golb_ai
     0x420CB0,  # update_track_attachment_follow_state
+    0x421770,  # initialize_path_follow_golb
+    0x4217B0,  # calc_path_length_z
     0x42C600,  # finalize_path_template
     0x42C770,  # try_enter_track_attachment_from_swept_motion
     0x434BE0,  # build_track_fringe_objects
@@ -593,6 +596,14 @@ TRUSTED_DECLARATIONS = [
     (
         "spawn_golb_impact_sprite",
         "void __thiscall spawn_golb_impact_sprite(GolbShot* shot, Vec3* position);",
+    ),
+    (
+        "initialize_path_follow_golb",
+        "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot);",
+    ),
+    (
+        "calc_path_length_z",
+        "int32_t __thiscall calc_path_length_z(GolbPathFollowState* state, float path_factor, Vec3* position, Vec3* velocity);",
     ),
     (
         "d3dx_create_texture_from_file_in_memory_ex",

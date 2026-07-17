@@ -9467,6 +9467,41 @@
         "struct PathTemplate*",
         "rotate_matrix_world_z"
       ]
+    },
+    {
+      "name": "bn_golb_path_follow_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/004217b0-calc_path_length_z.c",
+      "required_substrings": [
+        "struct Path* template_record_1 = state->template_record",
+        "state->sample_index",
+        "state->progress",
+        "state->vertical_offset",
+        "state->source_cell->anchor_position.z",
+        "state->shot->flight_transform.position",
+        "compute_kind42_attachment_transform(template_record_1",
+        "shot->velocity.x = shot->direction.x",
+        "state->template_record->side_exit_mode"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate*",
+        "*(arg1 +",
+        "arg2",
+        "arg3",
+        "arg4"
+      ]
+    },
+    {
+      "name": "bn_golb_path_follow_consumer",
+      "artifact": "analysis/decompile/binja/functions/00414820-update_golb_ai.c",
+      "required_substrings": [
+        "switch (calc_path_length_z(&shot->path_follow, shot->path_factor, &shot->flight_transform.position, &shot->velocity))",
+        "shot->path_follow.output_position",
+        "initialize_path_follow_golb(&shot->path_follow"
+      ],
+      "forbidden_substrings": [
+        "calc_path_length_z(shot +",
+        "shot->__offset"
+      ]
     }
   ]
 }

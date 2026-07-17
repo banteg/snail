@@ -1165,6 +1165,39 @@ def test_types_declare_if_changed_replays_semantic_drift(monkeypatch) -> None:
     assert result["stale_types"] == ("LevelFileTextBuffer",)
 
 
+def test_path_sync_owns_golb_follow_abis() -> None:
+    source = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
+    ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    compact_header = "".join(header.split())
+    compact_ida_source = "".join(ida_source.split())
+    golb_prototypes = source.split("GOLB_PROTO_UPDATES = (", 1)[1].split(
+        "\n)\n\nCUT_SCENE_PROTO_UPDATES", 1
+    )[0]
+
+    declarations = (
+        "int32_t __thiscall initialize_path_follow_golb("
+        "GolbPathFollowState* state, TrackRowCell* source_cell, "
+        "const Vec3* position, GolbShot* shot);",
+        "int32_t __thiscall calc_path_length_z("
+        "GolbPathFollowState* state, float path_factor, "
+        "Vec3* position, Vec3* velocity);",
+    )
+    for declaration in declarations:
+        compact_declaration = "".join(declaration.split())
+        assert declaration.removesuffix(";") in golb_prototypes
+        assert compact_declaration in compact_header
+        assert compact_declaration in compact_ida_source
+
+    assert "Path* template_record;" in header
+    assert "TrackRowCell* source_cell;" in header
+    assert "GolbPathFollowState path_follow;" in header
+    for address in ("0x414820", "0x421770", "0x4217B0"):
+        assert address in ida_source
+
+
 def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     source = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     repair_source = (BINJA_DIR / "repair_initialize_subgame_owner.py").read_text(

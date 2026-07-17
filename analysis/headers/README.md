@@ -209,17 +209,16 @@ checked-in header and IDA lane carry the recovered owner.
 It also retains the complete canonical `SubgameRuntime` field map accumulated
 by the path, player, hazard, landscape, and lifecycle slices. The stable
 `reset_subgame` and `complete_subgame` receiver ABIs are replayed with that map.
-Five older functions still carry a pinned user-defined `Game*` parameter in BN;
-the sync reports those owner-only corrections as deferred because both the
-prototype and local-retype APIs restore the old tag. Their exact/working match
-sources and cross-port `cRSubGame` symbols remain the ownership authority. The
-same reporting guard covers `get_track_runtime_cell_at_world_z`, whose exact
-receiver ownership is pinned by the canonical `runtime_rows` array.
+Functions that still carry a pinned user-defined stale receiver in BN are
+handled by the guarded owner-repair catalog. The sync reports those corrections
+as current or deferred instead of claiming a mutation that analysis restores.
+Their exact/working match sources and cross-port symbols remain the ownership
+authority.
 
 For projectile-only ownership work, use `uv run python
 tools/binja/sync_path_template_types.py --golb-only`. It declares just the
 missing `GolbPathFollowState`, replays the explicit `GolbShot` fields, and
-updates the three previewable Golb/path-follow prototypes without reimporting
+updates the curated Golb/path-follow prototype set without reimporting
 unrelated forward-declared presentation types.
 
 The selected-record BN lane is even narrower:

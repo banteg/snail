@@ -2243,6 +2243,18 @@ void __thiscall compute_kind42_attachment_transform(
     TransformMatrix* transform,
     float* out_angle
 );
+int32_t __thiscall initialize_path_follow_golb(
+    GolbPathFollowState* state,
+    TrackRowCell* source_cell,
+    const Vec3* position,
+    GolbShot* shot
+);
+int32_t __thiscall calc_path_length_z(
+    GolbPathFollowState* state,
+    float path_factor,
+    Vec3* position,
+    Vec3* velocity
+);
 void __thiscall uninit_pause_menu(SubPause* pause);
 void __thiscall initialize_pause_menu(SubPause* pause);
 void __thiscall update_pause_menu(SubPause* pause);
