@@ -17,11 +17,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "add_time_trial_high_score",
+      "address": "0x4178b0"
     }
   ],
-  "health_check_count": 486,
+  "health_check_count": 488,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -9,7 +9,7 @@ void __thiscall add_time_trial_high_score(
         int route_index,
         unsigned __int8 route_active)
 {
-  char *v4; // ebp
+  struct SubHighScoreTimeTrialRouteCursor *time_trial_route_cursor; // ebp
 
   record->high_score_mode_tag = 2;
   record->route_or_rank_index = route_index;
@@ -19,11 +19,12 @@ void __thiscall add_time_trial_high_score(
   qmemcpy(&bank->current_result_record, record, sizeof(bank->current_result_record));
   if ( route_active )
   {
-    v4 = (char *)bank + 129728 * route_index;
-    if ( record->score_or_time.total_seconds < (double)*((float *)v4 + 713508) || *((float *)v4 + 713508) == 0.0 )
+    time_trial_route_cursor = (struct SubHighScoreTimeTrialRouteCursor *)((char *)bank + 129728 * route_index);
+    if ( record->score_or_time.total_seconds < (double)time_trial_route_cursor->record.score_or_time.total_seconds
+      || time_trial_route_cursor->record.score_or_time.total_seconds == 0.0 )
     {
-      qmemcpy(v4 + 2854024, record, 0x1FAC0u);
-      *((_DWORD *)v4 + 713522) = route_index;
+      qmemcpy(&time_trial_route_cursor->record, record, sizeof(time_trial_route_cursor->record));
+      time_trial_route_cursor->record.route_or_rank_index = route_index;
     }
   }
 }

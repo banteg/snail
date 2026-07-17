@@ -115,6 +115,15 @@ typedef struct SubHighScore {
     SubSolution survival_pending_record;
 } SubHighScore;
 
+/* Analysis-only SubHighScore-relative view for AddTimeTrial's native
+ * `bank + route_index * sizeof(SubSolution)` cursor. The prefix aliases the
+ * enclosing bank and record aliases time_trial_route_records[route_index];
+ * this is not additional storage. */
+typedef struct SubHighScoreTimeTrialRouteCursor {
+    uint8_t bank_prefix[0x2b8c88];
+    SubSolution record;
+} SubHighScoreTimeTrialRouteCursor;
+
 uint8_t __thiscall deserialize_compact_high_score_record(
     SubSolution* record,
     CompactHighScoreRecord* compact

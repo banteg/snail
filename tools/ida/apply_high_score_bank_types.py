@@ -94,6 +94,7 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
 
 def _sync_load_compact_cursor_lvar() -> dict[str, object]:
     selector = "load_high_scores_from_file"
+    definition_address = 0x417608
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function", "selector": selector}
@@ -103,9 +104,10 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
         lvar
         for lvar in cfunc.get_lvars()
         if not lvar.is_arg_var
+        and lvar.defea == definition_address
         and lvar.name in {"file_bytes", "compact"}
         and (
-            (_normalize_type_text(str(lvar.type())) or "")
+            (_normalize_type_text(str(lvar.type())) or "").removeprefix("struct ")
             in {"char *", "CompactHighScoreRecord *"}
         )
     ]
@@ -114,6 +116,7 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
             "status": "failed",
             "reason": "unexpected_compact_cursor_candidates",
             "candidate_count": len(candidates),
+            "definition_address": hex(definition_address),
             "selector": selector,
         }
 
@@ -126,6 +129,7 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
             "status": "unchanged",
             "name": lvar.name,
             "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
             "selector": selector,
         }
 
@@ -169,7 +173,9 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
     verified_candidates = [
         candidate
         for candidate in verified_cfunc.get_lvars()
-        if not candidate.is_arg_var and candidate.name == "compact"
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == "compact"
     ]
     if len(verified_candidates) != 1:
         return {
@@ -197,6 +203,126 @@ def _sync_load_compact_cursor_lvar() -> dict[str, object]:
         "before_type": str(lvar.type()),
         "name": verified.name,
         "type": str(verified.type()),
+        "definition_address": hex(verified.defea),
+        "selector": selector,
+    }
+
+
+def _sync_add_time_trial_route_cursor_lvar() -> dict[str, object]:
+    selector = "add_time_trial_high_score"
+    definition_address = 0x417902
+    address = idc.get_name_ea_simple(selector)
+    if address == idc.BADADDR:
+        return {"status": "failed", "reason": "missing_function", "selector": selector}
+
+    cfunc = ida_hexrays.decompile(address)
+    candidates = [
+        lvar
+        for lvar in cfunc.get_lvars()
+        if not lvar.is_arg_var
+        and lvar.defea == definition_address
+        and lvar.name in {"v4", "time_trial_route_cursor"}
+        and (
+            (_normalize_type_text(str(lvar.type())) or "").removeprefix("struct ")
+            in {"char *", "SubHighScoreTimeTrialRouteCursor *"}
+        )
+    ]
+    if len(candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "unexpected_time_trial_route_cursor_candidates",
+            "candidate_count": len(candidates),
+            "definition_address": hex(definition_address),
+            "selector": selector,
+        }
+
+    lvar = candidates[0]
+    observed_type = (_normalize_type_text(str(lvar.type())) or "").removeprefix(
+        "struct "
+    )
+    if (
+        lvar.name == "time_trial_route_cursor"
+        and observed_type == "SubHighScoreTimeTrialRouteCursor *"
+    ):
+        return {
+            "status": "unchanged",
+            "name": lvar.name,
+            "type": str(lvar.type()),
+            "definition_address": hex(lvar.defea),
+            "selector": selector,
+        }
+
+    cursor_type = ida_typeinf.tinfo_t()
+    if not cursor_type.get_named_type(
+        None,
+        "SubHighScoreTimeTrialRouteCursor",
+        ida_typeinf.BTF_STRUCT,
+    ):
+        return {
+            "status": "failed",
+            "reason": "missing_SubHighScoreTimeTrialRouteCursor_type",
+            "selector": selector,
+        }
+
+    pointer_type = ida_typeinf.tinfo_t()
+    if not pointer_type.create_ptr(cursor_type):
+        return {
+            "status": "failed",
+            "reason": "create_SubHighScoreTimeTrialRouteCursor_pointer_failed",
+            "selector": selector,
+        }
+
+    info = ida_hexrays.lvar_saved_info_t()
+    info.ll = ida_hexrays.lvar_locator_t(lvar.location, lvar.defea)
+    info.name = "time_trial_route_cursor"
+    info.type = pointer_type
+    if not ida_hexrays.modify_user_lvar_info(
+        address,
+        ida_hexrays.MLI_NAME | ida_hexrays.MLI_TYPE,
+        info,
+    ):
+        return {
+            "status": "failed",
+            "reason": "modify_user_lvar_info_failed",
+            "selector": selector,
+        }
+
+    ida_hexrays.mark_cfunc_dirty(address, True)
+    verified_cfunc = ida_hexrays.decompile(address)
+    verified_candidates = [
+        candidate
+        for candidate in verified_cfunc.get_lvars()
+        if not candidate.is_arg_var
+        and candidate.defea == definition_address
+        and candidate.name == "time_trial_route_cursor"
+    ]
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "time_trial_route_cursor_readback_failed",
+            "candidate_count": len(verified_candidates),
+            "selector": selector,
+        }
+
+    verified = verified_candidates[0]
+    verified_type = (_normalize_type_text(str(verified.type())) or "").removeprefix(
+        "struct "
+    )
+    if verified_type != "SubHighScoreTimeTrialRouteCursor *":
+        return {
+            "status": "failed",
+            "reason": "time_trial_route_cursor_type_readback_failed",
+            "observed_type": str(verified.type()),
+            "selector": selector,
+        }
+
+    return {
+        "status": "applied",
+        "before_name": lvar.name,
+        "before_type": str(lvar.type()),
+        "name": verified.name,
+        "type": str(verified.type()),
+        "definition_address": hex(verified.defea),
         "selector": selector,
     }
 
@@ -287,6 +413,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
+    time_trial_route_cursor_lvar = _sync_add_time_trial_route_cursor_lvar()
+    if time_trial_route_cursor_lvar.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "add_time_trial_high_score",
+                "time_trial_route_cursor_lvar": time_trial_route_cursor_lvar,
+            }
+        )
+
     print(
         json.dumps(
             {
@@ -298,6 +433,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "compact_cursor_lvar": compact_cursor_lvar,
+                "time_trial_route_cursor_lvar": time_trial_route_cursor_lvar,
                 "missing": missing,
                 "failed": failed,
             },

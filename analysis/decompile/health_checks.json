@@ -396,6 +396,40 @@
       ]
     },
     {
+      "name": "bn_add_time_trial_high_score_route_cursor_owner",
+      "artifact": "analysis/decompile/binja/functions/004178b0-add_time_trial_high_score.c",
+      "required_substrings": [
+        "struct SubHighScoreTimeTrialRouteCursor* time_trial_route_cursor",
+        "&bank->current_result_record",
+        "time_trial_route_cursor->record.score_or_time.total_seconds",
+        "__builtin_memcpy(&time_trial_route_cursor->record, record, 0x1fac0)",
+        "time_trial_route_cursor->record.route_or_rank_index = route_index"
+      ],
+      "forbidden_substrings": [
+        "void* ebp_1",
+        "*(ebp_1 + 0x2b8c90)",
+        "ebp_1 + 0x2b8c88",
+        "*(ebp_1 + 0x2b8cc8)"
+      ]
+    },
+    {
+      "name": "ida_add_time_trial_high_score_route_cursor_owner",
+      "artifact": "analysis/decompile/ida/functions/004178b0-add_time_trial_high_score.c",
+      "required_substrings": [
+        "struct SubHighScoreTimeTrialRouteCursor *time_trial_route_cursor",
+        "&bank->current_result_record",
+        "time_trial_route_cursor->record.score_or_time.total_seconds",
+        "qmemcpy(&time_trial_route_cursor->record, record, sizeof(time_trial_route_cursor->record))",
+        "time_trial_route_cursor->record.route_or_rank_index = route_index"
+      ],
+      "forbidden_substrings": [
+        "char *v4",
+        "*((float *)v4 + 713508)",
+        "v4 + 2854024",
+        "*((_DWORD *)v4 + 713522)"
+      ]
+    },
+    {
       "name": "bn_save_high_scores_void_owner",
       "artifact": "analysis/decompile/binja/functions/00417940-save_high_scores_and_config.c",
       "required_substrings": [

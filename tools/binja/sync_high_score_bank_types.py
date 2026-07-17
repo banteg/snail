@@ -70,6 +70,14 @@ SYMBOL_UPDATES = (
 
 PERSISTENCE_USER_VAR_UPDATES = (
     (
+        "add_time_trial_high_score",
+        "RegisterVariableSourceType",
+        81,
+        71,
+        "time_trial_route_cursor",
+        "SubHighScoreTimeTrialRouteCursor*",
+    ),
+    (
         "load_high_scores_from_file",
         "RegisterVariableSourceType",
         39,

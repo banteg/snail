@@ -95,3 +95,23 @@ Rejected source-shape probes:
   49/49 instructions, 29/49 prefix, with the masked operand clean. The only
   residual is still native's `add ebp, ecx` owner-base mutation versus VC6's
   equivalent folded indexed address.
+
+## 2026-07-17 persistent route-record cursor ownership
+
+The producer-side native cursor is now recovered in both decompilers. Binary
+Ninja's exact EBP identity is `RegisterVariableSourceType / 81 / 71`; IDA
+defines the same lifetime at `0x417902`. Both read back as
+`SubHighScoreTimeTrialRouteCursor *` and render the timer comparison, record
+copy, and route-index rewrite through `record` instead of raw
+`+0x2b8c88/+0x2b8c90/+0x2b8cc8` offsets.
+
+The cursor prefix aliases the enclosing `SubHighScore`; its terminal
+`SubSolution` aliases `time_trial_route_records[route_index]`. It is not a new
+bank or allocation. The replay also exposed and fixed an existing IDA
+idempotence bug: the compact-record cursor selector now pins definition
+`0x417608` and normalizes IDA's optional `struct` qualifier before comparison.
+
+No matching-source change is justified. Focused matching remains honestly at
+89.80%, 49/49 instructions, prefix 29/49, with one clean masked operand and the
+same register-scheduler residual (`add ebp, ecx` versus a folded indexed
+address).

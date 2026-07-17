@@ -1399,6 +1399,38 @@ def test_high_score_replays_preserve_void_insertion_abis() -> None:
     assert '"char* __thiscall save_high_scores_and_config' not in ida_source
 
 
+def test_time_trial_high_score_replays_preserve_route_record_cursor_owner() -> None:
+    binja_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+    headers = tuple(
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_high_score_bank_types.h",
+            "ida_high_score_bank_types.h",
+        )
+    )
+
+    for header in headers:
+        assert "typedef struct SubHighScoreTimeTrialRouteCursor" in header
+        assert "uint8_t bank_prefix[0x2b8c88];" in header
+        assert "SubSolution record;" in header
+        assert "} SubHighScoreTimeTrialRouteCursor;" in header
+
+    assert "PERSISTENCE_USER_VAR_UPDATES" in binja_source
+    assert '"RegisterVariableSourceType",\n        81,\n        71,' in binja_source
+    assert '"time_trial_route_cursor"' in binja_source
+    assert '"SubHighScoreTimeTrialRouteCursor*"' in binja_source
+
+    assert "_sync_add_time_trial_route_cursor_lvar" in ida_source
+    assert "definition_address = 0x417902" in ida_source
+    assert 'info.name = "time_trial_route_cursor"' in ida_source
+    assert '"SubHighScoreTimeTrialRouteCursor *"' in ida_source
+
+
 def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     binja_bank_source = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
         encoding="utf-8"
@@ -1480,7 +1512,9 @@ def test_compact_high_score_replays_preserve_persistence_owners() -> None:
     ) in binja_bank_source
 
     assert "_sync_load_compact_cursor_lvar" in ida_bank_source
+    assert "definition_address = 0x417608" in ida_bank_source
     assert 'lvar.name in {"file_bytes", "compact"}' in ida_bank_source
+    assert ').removeprefix("struct ")' in ida_bank_source
     assert 'info.name = "compact"' in ida_bank_source
     assert '"CompactHighScoreRecord"' in ida_bank_source
 
