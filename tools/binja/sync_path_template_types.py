@@ -2335,6 +2335,14 @@ DEFERRED_PATH_OWNER_PROTO_UPDATES = (
         "void __thiscall initialize_slalom_path_template_pair(Path* self, int32_t curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
     ),
     (
+        "initialize_slalombig_path_template_pair",
+        "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
+        "initialize_slalomdouble_path_template_pair",
+        "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+    ),
+    (
         "allocate_path_template_samples",
         "void __fastcall allocate_path_template_samples(Path* self)",
     ),

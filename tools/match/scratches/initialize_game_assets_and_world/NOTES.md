@@ -883,3 +883,20 @@ The refreshed initializer now shows all seven call operands at path-pair slots
 arity without depending on Binary Ninja's volatile automatic local names.
 This is analysis-only; all three focused matcher frontiers and clean masked
 operand audits are unchanged.
+
+## 2026-07-17 extended Slalom constructor ABI closure
+
+SlalomBig and SlalomDouble now share the same proven Windows owner contract as
+the adjacent Slalom constructor: a `Path*` receiver, the portable
+curve/width/mode prefix, two surface textures, and the Windows-only final
+cap-texture slot. Both native callees return with `retn 0x18`; the iOS Path.o
+symbols independently preserve the first five stack-argument types.
+
+The refreshed initializer now shows the complete seven-operand calls through
+the primary `Path` owners at path-pair slots `0x17` and `0x20`. Health checks
+pin those owners and the full arity while deliberately ignoring Binary Ninja's
+volatile `color` temporary names. The callee checks separately retain their
+real `Path` fields and void finalizer flow. This is analysis-only: SlalomBig
+remains 28.64% (617/696) with 27 clean operands, and SlalomDouble remains
+33.98% (606/683) with 33 clean operands; neither audit has unresolved or
+mismatched operands.

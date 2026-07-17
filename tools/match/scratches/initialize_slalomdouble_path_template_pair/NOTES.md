@@ -99,3 +99,14 @@ an explicit subtract-bound `do/while` regressed 30.03% (589/683) to 29.80%
 (599/683), and rewriting the already post-tested face-column loop explicitly
 regressed 33.05% (606/683) to 32.27%. Neither changed the operand audit, so the
 smaller equivalent loop spellings remain instead of tuning control flow.
+
+2026-07-17 live owner-ABI closure: the native tail is `retn 0x18`, the iOS
+counterpart is `cRPath::BuildSlalomDouble(int, int, bool, char*, char*)`, and
+the Windows caller supplies the additional final cap-texture argument. Binary
+Ninja's stale view returned `int32_t`, owned a `PathTemplate*`, and exposed only
+three stack parameters; a user-authored `char*` survived at `+0x10`, `+0x14`
+was merely automatic, and the final `+0x18` slot was absent. The guarded
+recreation now owns the exact void `Path*` contract and all six stack arguments.
+Post-restart readback confirms authored parameter storages `+4..+24`. This is
+analysis-only: focused Wibo remains 33.98% (606/683), with 33 clean masked
+operands and no unresolved or mismatched operands.

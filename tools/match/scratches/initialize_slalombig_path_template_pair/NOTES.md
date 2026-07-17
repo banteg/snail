@@ -88,3 +88,14 @@ unresolved or mismatched operands.
 the roll-source recovery regressed the clean result from 28.64% to 27.46%
 (615/696). Both compact forms remain until their surrounding lifetimes provide
 stronger evidence.
+
+2026-07-17 live owner-ABI closure: the native tail is `retn 0x18`, the iOS
+counterpart is `cRPath::BuildSlalomBig(int, int, bool, char*, char*)`, and the
+Windows caller supplies the additional final cap-texture argument. Binary
+Ninja's stale view returned `int32_t`, owned a `PathTemplate*`, exposed only
+four stack parameters, retained a user-authored `char*` at `+0x14`, and omitted
+the final `+0x18` slot. The guarded recreation now owns the exact void `Path*`
+contract and all six stack arguments. Post-restart readback confirms authored
+parameter storages `+4..+24`. This is analysis-only: focused Wibo remains
+28.64% (617/696), with 27 clean masked operands and no unresolved or mismatched
+operands.

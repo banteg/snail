@@ -1419,7 +1419,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_slalombig_path_template_pair",
-        "int32_t __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t arg2, uint32_t arg3, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_slalombig_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_sweep_path_template_pair",
@@ -1431,7 +1431,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_slalomdouble_path_template_pair",
-        "int32_t __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "void __thiscall initialize_slalomdouble_path_template_pair(Path* self, int32_t curve_segments, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture);",
     ),
     (
         "initialize_p_path_template_pair",
