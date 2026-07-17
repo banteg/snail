@@ -75,7 +75,12 @@ TRUSTED_DATA_DECLARATIONS = [
 # Header field-name changes need an explicit Hex-Rays refresh even when the
 # owning function prototype itself was already current.
 PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
+    0x408670,  # initialize_click_start_controller_runtime
+    0x408820,  # initialize_active_landscape_entry
     0x414820,  # update_golb_ai
+    0x418870,  # activate_landscape_entry
+    0x418A30,  # clear_active_landscape_entries
+    0x418AC0,  # update_active_landscape_entry
     0x420CB0,  # update_track_attachment_follow_state
     0x421770,  # initialize_path_follow_golb
     0x4217B0,  # calc_path_length_z
@@ -91,6 +96,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43B120,  # update_subgoldy
     0x43DF10,  # spawn_track_ring_or_special_effect
     0x4417D0,  # update_sub_lazer_projectile
+    0x442170,  # initialize_click_start
+    0x442290,  # update_click_start
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x4444B0,  # project_position_onto_track_attachment
@@ -563,6 +570,34 @@ TRUSTED_DECLARATIONS = [
     (
         "initialize_renderable_bod",
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);",
+    ),
+    (
+        "initialize_click_start_controller_runtime",
+        "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);",
+    ),
+    (
+        "initialize_click_start",
+        "void __thiscall initialize_click_start(ClickStart* click_start, Player* player);",
+    ),
+    (
+        "update_click_start",
+        "void __thiscall update_click_start(ClickStart* click_start);",
+    ),
+    (
+        "initialize_active_landscape_entry",
+        "ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(ActiveLandscapeEntry* active_entry);",
+    ),
+    (
+        "activate_landscape_entry",
+        "void __thiscall activate_landscape_entry(LandscapeManager* manager, int32_t script_index);",
+    ),
+    (
+        "clear_active_landscape_entries",
+        "void __thiscall clear_active_landscape_entries(LandscapeManager* manager);",
+    ),
+    (
+        "update_active_landscape_entry",
+        "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry* active_entry);",
     ),
     (
         "initialize_fringe_manager",
@@ -1267,10 +1302,6 @@ TRUSTED_DECLARATIONS = [
     (
         "update_banner",
         "void __thiscall update_banner(Banner* banner);",
-    ),
-    (
-        "clear_active_landscape_entries",
-        "void __thiscall clear_active_landscape_entries(LandscapeManager* manager);",
     ),
     (
         "initialize_track_speedup_runtime",

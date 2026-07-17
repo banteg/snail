@@ -914,13 +914,20 @@
       "name": "bn_update_click_start_replay_flag_word_owner",
       "artifact": "analysis/decompile/binja/functions/00442290-update_click_start.c",
       "required_substrings": [
+        "switch (click_start->state)",
+        "click_start->owner_player->startup_track_index",
+        "CLICK_START_STATE_WAITING_FOR_START",
+        "CLICK_START_STATE_TEARDOWN",
         "selected_level_record->run_records",
-        ".flags.b & 0x20",
+        ".flags & 0x20",
         "current_high_score_record.run_records[0].flags",
-        ".b |= 0x20",
+        "|= 0x20",
         "&= 0xfffe"
       ],
       "forbidden_substrings": [
+        "ClickStartController",
+        "ClickStartPlayer",
+        "controller->",
         "reserved_05",
         "__offset(",
         "uint8_t* flags"
@@ -930,13 +937,19 @@
       "name": "ida_update_click_start_replay_flag_word_owner",
       "artifact": "analysis/decompile/ida/functions/00442290-update_click_start.c",
       "required_substrings": [
-        "void __thiscall update_click_start(ClickStartController *controller)",
+        "void __thiscall update_click_start(ClickStart *click_start)",
+        "click_start->owner_player->startup_track_index",
+        "CLICK_START_STATE_WAITING_FOR_START",
+        "CLICK_START_STATE_TEARDOWN",
         "selected_level_record->run_records",
         ".flags & 0x20",
         "LOBYTE(g_game_base->subgame.current_high_score_record.run_records",
         ".flags &= ~1u"
       ],
       "forbidden_substrings": [
+        "ClickStartController",
+        "ClickStartPlayer",
+        "controller->",
         "reserved_05",
         "sub_442290",
         "*((_BYTE *)"
@@ -7928,11 +7941,14 @@
       "name": "ida_activate_landscape_entry_directx_owner",
       "artifact": "analysis/decompile/ida/functions/00418870-activate_landscape_entry.c",
       "required_substrings": [
+        "void __thiscall activate_landscape_entry(LandscapeManager *manager, int32_t script_index)",
+        "&manager->active_entries[0].bod.bod.bod.list_flags",
         "g_game_base->directx_loader.cached_x_mesh_slots",
-        "result = &g_game_base->fog_color",
         "g_game_base->fog_color ="
       ],
       "forbidden_substrings": [
+        "FrameColor4f *__thiscall activate_landscape_entry",
+        "void *arg1",
         "g_game_base->unknown_000000",
         "g_game_base->unknown_044100",
         "g_game_base + 298496"
@@ -7942,10 +7958,16 @@
       "name": "bn_activate_landscape_entry_fog_owner",
       "artifact": "analysis/decompile/binja/functions/00418870-activate_landscape_entry.c",
       "required_substrings": [
+        "manager + script_index * 0x124",
+        "&manager->active_entries[0].bod.bod.bod.list_flags",
+        "active_entries[0].repeat_z_span",
+        "active_entries[0].reference_bod",
         "&g_game_base->fog_color",
         "set_border_justify_centre(&g_game_base->border_manager"
       ],
       "forbidden_substrings": [
+        "arg1",
+        "arg2",
         "g_game_base->unknown_000000",
         "data_4df904 + 0x14",
         "FrameBorderManager",
@@ -9555,6 +9577,189 @@
         "void*** result",
         "result[1]",
         "result[0xe]"
+      ]
+    },
+    {
+      "name": "bn_logo_letter_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00408490-initialize_intro_logo_renderable.c",
+      "required_substrings": [
+        "initialize_renderable_bod(letter)",
+        "letter->renderable.bod.bod.vtable",
+        "return letter"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void*** result",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_speedup_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/004084b0-initialize_track_speedup_runtime.c",
+      "required_substrings": [
+        "initialize_renderable_bod(speedup)",
+        "speedup->vtable",
+        "return speedup"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void*** result",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_click_start_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00408670-initialize_click_start_controller_runtime.c",
+      "required_substrings": [
+        "initialize_renderable_bod(click_start)",
+        "click_start->bod.bod.bod.vtable",
+        "return click_start"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void*** result",
+        "ClickStartController",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_click_start_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408670-initialize_click_start_controller_runtime.c",
+      "required_substrings": [
+        "ClickStart *__thiscall initialize_click_start_controller_runtime(ClickStart *click_start)",
+        "initialize_renderable_bod(&click_start->bod)",
+        "click_start->bod.bod.bod.vtable",
+        "return click_start"
+      ],
+      "forbidden_substrings": [
+        "ClickStartController",
+        "_DWORD *__thiscall",
+        "sub_408670"
+      ]
+    },
+    {
+      "name": "bn_click_start_initializer_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00442170-initialize_click_start.c",
+      "required_substrings": [
+        "click_start->owner_player = player",
+        "struct Player* owner_player",
+        "click_start->state = CLICK_START_STATE_WAITING_FOR_START",
+        "&g_game_base->active_bod_list.first"
+      ],
+      "forbidden_substrings": [
+        "ClickStartController",
+        "ClickStartPlayer",
+        "controller->",
+        "arg_4"
+      ]
+    },
+    {
+      "name": "ida_click_start_initializer_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00442170-initialize_click_start.c",
+      "required_substrings": [
+        "void __thiscall initialize_click_start(ClickStart *click_start, Player *player)",
+        "click_start->owner_player = player",
+        "click_start->state = CLICK_START_STATE_WAITING_FOR_START",
+        "&g_game_base->active_bod_list.first"
+      ],
+      "forbidden_substrings": [
+        "ClickStartController",
+        "ClickStartPlayer",
+        "controller->",
+        "sub_442170"
+      ]
+    },
+    {
+      "name": "bn_active_landscape_constructor_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00408820-initialize_active_landscape_entry.c",
+      "required_substrings": [
+        "initialize_renderable_bod(active_entry)",
+        "active_entry->bod.bod.bod.vtable",
+        "return active_entry"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "void*** result",
+        "RenderableBod* slot",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_active_landscape_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408820-initialize_active_landscape_entry.c",
+      "required_substrings": [
+        "ActiveLandscapeEntry *__thiscall initialize_active_landscape_entry(ActiveLandscapeEntry *active_entry)",
+        "initialize_renderable_bod(&active_entry->bod)",
+        "active_entry->bod.bod.bod.vtable",
+        "return active_entry"
+      ],
+      "forbidden_substrings": [
+        "_DWORD *__thiscall",
+        "sub_408820",
+        "int this"
+      ]
+    },
+    {
+      "name": "bn_active_landscape_clear_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00418a30-clear_active_landscape_entries.c",
+      "required_substrings": [
+        "&manager->active_entries[0].bod.bod.bod.list_next",
+        "active_entries[0].state = 0",
+        "&g_game_base->active_bod_list"
+      ],
+      "forbidden_substrings": [
+        "void* entries",
+        "arg1",
+        "entries +"
+      ]
+    },
+    {
+      "name": "ida_active_landscape_clear_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00418a30-clear_active_landscape_entries.c",
+      "required_substrings": [
+        "void __thiscall clear_active_landscape_entries(LandscapeManager *manager)",
+        "&manager->active_entries[0].bod.bod.bod.list_next",
+        "&g_game_base->active_bod_list"
+      ],
+      "forbidden_substrings": [
+        "void *entries",
+        "int this",
+        "sub_418A30"
+      ]
+    },
+    {
+      "name": "bn_active_landscape_update_owner_graph",
+      "artifact": "analysis/decompile/binja/functions/00418ac0-update_active_landscape_entry.c",
+      "required_substrings": [
+        "active_entry->state",
+        "active_entry->repeat_z_span",
+        "active_entry->reference_bod",
+        "active_entry->bod.transform.position.z",
+        "object->bounds_max.z",
+        "object->bounds_min.z"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "struct GameRoot* game_base_1 = g_game_base",
+        "*(active_entry +"
+      ]
+    },
+    {
+      "name": "ida_active_landscape_update_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/00418ac0-update_active_landscape_entry.c",
+      "required_substrings": [
+        "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry *active_entry)",
+        "active_entry->state == 1",
+        "active_entry->repeat_z_span",
+        "active_entry->reference_bod",
+        "active_entry->bod.transform.position.z",
+        "object->bounds_max.z",
+        "object->bounds_min.z"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "sub_418AC0",
+        "this +"
       ]
     }
   ]

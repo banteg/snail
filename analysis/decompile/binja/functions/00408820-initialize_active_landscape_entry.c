@@ -3,7 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_active_landscape_entry @ 0x408820 */
 
-00408821        void*** result = arg1
-00408823        initialize_renderable_bod(arg1)
-00408828        *result = &data_497360
-00408831        return result
+00408823        initialize_renderable_bod(active_entry)
+00408828        active_entry->bod.bod.bod.vtable = &data_497360
+00408831        return active_entry

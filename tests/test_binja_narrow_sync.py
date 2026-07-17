@@ -2630,6 +2630,62 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
         assert f'"{function_name}"' in path_sync
 
 
+def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    click_matcher = (repo_root / "tools/match/include/click_start.h").read_text(
+        encoding="utf-8"
+    )
+    landscape_matcher = (
+        repo_root / "tools/match/include/active_landscape_entry.h"
+    ).read_text(encoding="utf-8")
+
+    assert '"ActiveLandscapeEntry",' in path_sync
+    assert "ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES" in path_sync
+    assert '("0x88", "repeat_z_span", "float")' in path_sync
+    assert '("0x8c", "reference_bod", "RenderableBod*")' in path_sync
+    assert '"ActiveLandscapeEntry",\n                    ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES' in path_sync
+
+    declarations = (
+        "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start)",
+        "void __thiscall initialize_click_start(ClickStart* click_start, Player* player)",
+        "void __thiscall update_click_start(ClickStart* click_start)",
+        "ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
+        "void __thiscall activate_landscape_entry(LandscapeManager* manager, int32_t script_index)",
+        "void __thiscall clear_active_landscape_entries(LandscapeManager* manager)",
+        "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
+    )
+    for declaration in declarations:
+        assert declaration in path_sync
+        assert declaration + ";" in ida_sync
+
+    for function_name in (
+        "initialize_click_start_controller_runtime",
+        "initialize_click_start",
+        "update_click_start",
+        "initialize_active_landscape_entry",
+        "activate_landscape_entry",
+        "clear_active_landscape_entries",
+        "update_active_landscape_entry",
+    ):
+        assert function_name in path_header
+
+    assert "class ClickStart : public RenderableBod" in click_matcher
+    assert "Player* owner_player" in click_matcher
+    assert "class ActiveLandscapeEntry : public RenderableBod" in landscape_matcher
+    assert "RenderableBod* reference_bod" in landscape_matcher
+    for address in ("0x408670", "0x408820", "0x418870", "0x418A30", "0x418AC0", "0x442170", "0x442290"):
+        assert address in ida_sync
+
+
 def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> None:
     repo_root = Path(__file__).parents[1]
     sync_source = (BINJA_DIR / "sync_object_render_types.py").read_text(

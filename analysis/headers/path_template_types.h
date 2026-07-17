@@ -2261,6 +2261,20 @@ void __thiscall update_pause_menu(SubPause* pause);
 int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
 BodBase* __thiscall initialize_bod_base(BodBase* bod);
 RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);
+ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);
+void __thiscall initialize_click_start(ClickStart* click_start, Player* player);
+void __thiscall update_click_start(ClickStart* click_start);
+ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(
+    ActiveLandscapeEntry* active_entry
+);
+void __thiscall activate_landscape_entry(
+    LandscapeManager* manager,
+    int32_t script_index
+);
+void __thiscall clear_active_landscape_entries(LandscapeManager* manager);
+void __thiscall update_active_landscape_entry(
+    ActiveLandscapeEntry* active_entry
+);
 Object* __thiscall apply_bod_position(
     BodBase* bod,
     TransformMatrix* matrix

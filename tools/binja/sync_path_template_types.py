@@ -124,6 +124,13 @@ RENDERABLE_BOD_FIELD_UPDATES = (
     ("0x7c", "unknown_7c", "uint8_t[0x4]"),
 )
 
+ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES = (
+    ("0x00", "bod", "RenderableBod"),
+    ("0x80", "state", "int32_t"),
+    ("0x88", "repeat_z_span", "float"),
+    ("0x8c", "reference_bod", "RenderableBod*"),
+)
+
 CUT_SCENE_FIELD_UPDATES = (
     ("0x00", "presentation", "Snail*"),
     ("0x04", "player", "Player*"),
@@ -212,6 +219,7 @@ REQUIRED_HEADER_STRUCTS = (
     "TwinkleManager",
     "InputOkState",
     "BarrierActor",
+    "ActiveLandscapeEntry",
     "LandscapeManager",
     "GUI",
     "Help",
@@ -1737,6 +1745,34 @@ PROTO_UPDATES = GOLB_PROTO_UPDATES + (
         "RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body)",
     ),
     (
+        "initialize_click_start_controller_runtime",
+        "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start)",
+    ),
+    (
+        "initialize_click_start",
+        "void __thiscall initialize_click_start(ClickStart* click_start, Player* player)",
+    ),
+    (
+        "update_click_start",
+        "void __thiscall update_click_start(ClickStart* click_start)",
+    ),
+    (
+        "initialize_active_landscape_entry",
+        "ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
+    ),
+    (
+        "activate_landscape_entry",
+        "void __thiscall activate_landscape_entry(LandscapeManager* manager, int32_t script_index)",
+    ),
+    (
+        "clear_active_landscape_entries",
+        "void __thiscall clear_active_landscape_entries(LandscapeManager* manager)",
+    ),
+    (
+        "update_active_landscape_entry",
+        "void __thiscall update_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
+    ),
+    (
         "initialize_fringe_manager",
         "void __thiscall initialize_fringe_manager(FringeManager* manager)",
     ),
@@ -2658,6 +2694,10 @@ def main() -> int:
                 ("ReplayRunRecord", REPLAY_RUN_RECORD_FIELD_UPDATES),
                 ("SubPause", SUB_PAUSE_FIELD_UPDATES),
                 ("RenderableBod", RENDERABLE_BOD_FIELD_UPDATES),
+                (
+                    "ActiveLandscapeEntry",
+                    ACTIVE_LANDSCAPE_ENTRY_FIELD_UPDATES,
+                ),
                 ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),

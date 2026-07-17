@@ -35,3 +35,10 @@ masks.
 directly, reads the canonical bounds members, and reaches the pause gate and
 fog-end plane through `GameRoot`. Retiring the duplicate bounds type preserves
 the exact 41/41 instructions and all four operands.
+
+2026-07-17 lifecycle ownership closure: Binary Ninja now carries the exact
+0x90-byte `ActiveLandscapeEntry` receiver through this method and the
+constructor/activate/clear siblings. The decompile exposes `state`,
+`repeat_z_span`, `reference_bod`, the inherited transform, and object bounds
+directly. The matcher remains exact at 41/41 with all four operands clean; no
+matching source or masks changed.

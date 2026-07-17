@@ -2,34 +2,26 @@
 /* function: update_active_landscape_entry @ 0x418ac0 */
 /* selector: update_active_landscape_entry */
 
-// Advances one active landscape-entry runtime by counting down its activation delay, shifting its lateral offset, and toggling its shared visibility bit as it moves into or out of the backdrop camera band.
-char __thiscall update_active_landscape_entry(int this)
+// Updates one active repeated landscape slice: state 1 wraps its inherited transform z offset by the recovered repeat span, then toggles the shared visibility bit against the reference BOD camera band.
+void __thiscall update_active_landscape_entry(ActiveLandscapeEntry *active_entry)
 {
-  int v1; // eax
-  int v2; // edx
-  int v3; // esi
+  Object *object; // edx
+  RenderableBod *reference_bod; // esi
+  uint32_t list_flags; // eax
 
-  LOBYTE(v1) = (_BYTE)MEMORY[0x4DF904];
-  if ( !*((_BYTE *)MEMORY[0x4DF904] + 476705) )
+  if ( !g_game_base->subgame.subgame_pause_gate && active_entry->state == 1 )
   {
-    v1 = *(_DWORD *)(this + 128);
-    if ( v1 )
-    {
-      if ( !--v1 )
-      {
-        v2 = *(_DWORD *)(this + 36);
-        v3 = *(_DWORD *)(this + 140);
-        if ( *(float *)(v3 + 112) - 10.0 > *(float *)(v2 + 184) + *(float *)(this + 112) )
-          *(float *)(this + 112) = *(float *)(this + 136) * 3.0 + *(float *)(this + 112);
-        v1 = *(_DWORD *)(this + 4);
-        if ( *((float *)MEMORY[0x4DF904] + 3) + *(float *)(v3 + 112) >= *(float *)(v2 + 172) + *(float *)(this + 112) )
-          LOBYTE(v1) = v1 | 0x20;
-        else
-          LOBYTE(v1) = v1 & 0xDF;
-        *(_DWORD *)(this + 4) = v1;
-      }
-    }
+    object = active_entry->bod.bod.object;
+    reference_bod = active_entry->reference_bod;
+    if ( reference_bod->transform.position.z - 10.0 > object->bounds_max.z + active_entry->bod.transform.position.z )
+      active_entry->bod.transform.position.z = active_entry->repeat_z_span * 3.0
+                                             + active_entry->bod.transform.position.z;
+    list_flags = active_entry->bod.bod.bod.list_flags;
+    if ( g_game_base->fog_end + reference_bod->transform.position.z >= object->bounds_min.z
+                                                                     + active_entry->bod.transform.position.z )
+      LOBYTE(list_flags) = list_flags | 0x20;
+    else
+      LOBYTE(list_flags) = list_flags & 0xDF;
+    active_entry->bod.bod.bod.list_flags = list_flags;
   }
-  return v1;
 }
-
