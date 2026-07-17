@@ -400,6 +400,7 @@ def _path_function_spec(
     calling_convention: str,
     parameters: tuple[tuple[str, str, str], ...] = (),
     stale_parameters: tuple[tuple[str, str], ...] | None = None,
+    stale_variable_annotations: tuple[tuple[int, str, str], ...] = (),
     missing_stale_variable_storages: tuple[int, ...] = (),
     discard_variables: tuple[dict[str, object], ...] = (),
 ) -> dict[str, object]:
@@ -468,6 +469,17 @@ def _path_function_spec(
         "declaration": render_declaration(expected_parameters),
         "parameter_count": len(expected_parameters),
         "stale_parameter_counts": (len(stale_parameters_with_owner),),
+        "stale_variable_annotations": tuple(
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": storage,
+                "name": variable_name,
+                "type": variable_type,
+                "user_defined": True,
+            }
+            for storage, variable_name, variable_type in stale_variable_annotations
+        ),
         "allowed_missing_stale_variable_keys": tuple(
             (
                 "VariableSourceType.StackVariableSourceType",
@@ -514,6 +526,75 @@ FUNCTION_SPECS.update(
                 },
             ),
         ),
+        "initialize_looptheloop_path_template_pair": _path_function_spec(
+            address=0x41B0F0,
+            name="initialize_looptheloop_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("curve_source", "float", "float"),
+                ("width_cells_", "int32_t", "int32_t"),
+                ("side_exit", "int32_t", "char*"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("cap_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "float"),
+                ("arg3", "int32_t"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+            stale_variable_annotations=((20, "arg5", "char*"),),
+            missing_stale_variable_storages=(24,),
+        ),
+        "initialize_looptheloopw_path_template_pair": _path_function_spec(
+            address=0x41BB40,
+            name="initialize_looptheloopw_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("curve_source", "float", "float"),
+                ("width_cells_", "int32_t", "int32_t"),
+                ("side_exit", "int32_t", "char*"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("cap_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "float"),
+                ("arg3", "int32_t"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+            stale_variable_annotations=((20, "arg5", "char*"),),
+            missing_stale_variable_storages=(24,),
+        ),
+        "initialize_loopout_path_template_pair": _path_function_spec(
+            address=0x41C5F0,
+            name="initialize_loopout_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(
+                ("curve_source", "float", "float"),
+                ("width_cells_", "int32_t", "int32_t"),
+                ("side_exit", "int32_t", "char*"),
+                ("texture_a", "char*", "char*"),
+                ("texture_b", "char*", "char*"),
+                ("cap_texture", "char*", "char*"),
+            ),
+            stale_parameters=(
+                ("arg2", "float"),
+                ("arg3", "int32_t"),
+                ("texture_a", "char*"),
+                ("texture_b", "char*"),
+            ),
+            stale_variable_annotations=((20, "arg5", "char*"),),
+            missing_stale_variable_storages=(24,),
+        ),
         "initialize_cage2_path_template_pair": _path_function_spec(
             address=0x42E720,
             name="initialize_cage2_path_template_pair",
@@ -550,6 +631,7 @@ FUNCTION_SPECS.update(
                 ("texture_a", "char*"),
                 ("texture_b", "char*"),
             ),
+            stale_variable_annotations=((16, "arg4", "char*"),),
         ),
         "mirror_path_template_pair_x": _path_function_spec(
             address=0x421DC0,
@@ -580,6 +662,7 @@ STALE_PARAMETER_COUNTS = set(
 )
 EXPECTED_VARIABLES = SPEC["variables"]
 DISCARD_VARIABLES = SPEC.get("discard_variables", ())
+STALE_VARIABLE_ANNOTATIONS = SPEC.get("stale_variable_annotations", ())
 ALLOWED_MISSING_STALE_VARIABLE_KEYS = {
     tuple(value)
     for value in SPEC.get("allowed_missing_stale_variable_keys", ())
@@ -813,6 +896,25 @@ else:
     ]
     if stale and invalid_discard_variables:
         conflicts.append("stale_discard_variable_changed")
+    annotation_by_key = {
+        variable_key(entry["expected"]): entry
+        for entry in before_annotations["variables"]
+    }
+    invalid_stale_variable_annotations = [
+        expected
+        for expected in STALE_VARIABLE_ANNOTATIONS
+        if (
+            (entry := annotation_by_key.get(variable_key(expected))) is None
+            or entry["candidate_count"] != 1
+            or entry["observed"] is None
+            or any(
+                entry["observed"][field] != expected[field]
+                for field in ("name", "type", "user_defined")
+            )
+        )
+    ]
+    if stale and invalid_stale_variable_annotations:
+        conflicts.append("stale_variable_annotation_changed")
     if not stale and any(
         (record["source_type"], record["index"], record["storage"])
         in discard_by_key

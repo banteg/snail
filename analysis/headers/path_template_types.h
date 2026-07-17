@@ -2397,20 +2397,24 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
 void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
-int32_t __thiscall initialize_looptheloop_path_template_pair(
+void __thiscall initialize_looptheloop_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
+    float curve_source,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
-int32_t __thiscall initialize_loopout_path_template_pair(
+void __thiscall initialize_loopout_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
+    float curve_source,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
 void __thiscall initialize_cage2_path_template_pair(
@@ -2446,12 +2450,14 @@ int32_t __thiscall initialize_hump_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_looptheloopw_path_template_pair(
+void __thiscall initialize_looptheloopw_path_template_pair(
     Path* self,
-    float arg2,
-    int32_t arg3,
+    float curve_source,
+    int32_t width_cells_,
+    int32_t side_exit,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
 int32_t __thiscall initialize_dump_path_template_pair(

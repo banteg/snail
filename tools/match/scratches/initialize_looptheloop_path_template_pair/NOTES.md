@@ -54,3 +54,24 @@ rejected because it removes control flow proven by both the target and sibling
 source-family evidence. Remaining differences are register allocation, x87
 operation order, and local lifetime scheduling; none justify artificial
 padding or volatile qualifiers.
+
+## 2026-07-17 live owner and ABI closure
+
+The restarted Binary Ninja database still carried the stale
+`int32_t __thiscall(PathTemplate*, float, int32_t, char*, char*)` view. Native
+`ret 0x18` cleanup and the refreshed `initialize_game_assets_and_world`
+callsites independently prove six stack arguments after `this`: `curve_source`,
+`width_cells_`, `side_exit`, `texture_a`, `texture_b`, and `cap_texture`.
+
+A guarded repair now records the exact stale four-parameter annotation set,
+the surviving stack-20 `arg5` annotation, and the absent stack-24 variable
+before recreating the function as
+`void __thiscall(Path*, float, int32_t, int32_t, char*, char*, char*)`.
+Readback confirms every stack slot and the ordinary terminal
+`finalize_path_template(self)` call. The two uniform API inputs are optimized
+out in this constructor, but the caller evidence and callee cleanup retain
+their ownership without inventing uses.
+
+The source is unchanged by the metadata repair. Focused Wibo remains 64.47%
+(706/721), with a 9-instruction exact prefix and 46 masked operands ok,
+0 unresolved, 0 mismatch.

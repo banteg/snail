@@ -55,3 +55,23 @@ conversion order and falls to 47.32%. Removing the semantic delta-loop guard
 changes VC6's whole-function allocation and falls to 41.64%. A `do`/`while`
 face-column loop was also rejected: unlike the two LoopTheLoop siblings, the
 LoopOut target retains the ordinary `for` control-flow shape.
+
+## 2026-07-17 live owner and ABI closure
+
+The database prototype was still the stale
+`int32_t __thiscall(PathTemplate*, float, int32_t, char*, char*)` form. Native
+`ret 0x18` cleanup and multiple literal world-initializer calls prove the full
+six stack inputs after `this`: curve source, width, side-exit selector, front
+and back textures, and the cap texture.
+
+The guarded migration fingerprints the four stale parameters, the exact
+stack-20 `arg5` annotation, and the missing stack-24 variable before recreating
+the function with its void `Path*` owner. Readback confirms the complete ABI
+and a non-returning `finalize_path_template(self)` tail. The uniform
+`side_exit` and `cap_texture` inputs are unused by this implementation, so the
+recovered declaration preserves the proven interface without fakematched
+dummy uses.
+
+The source is unchanged by the metadata repair. Focused Wibo remains 55.77%
+(702/718), with no exact prefix and 45 masked operands ok, 0 unresolved,
+0 mismatch.

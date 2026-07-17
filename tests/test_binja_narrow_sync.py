@@ -1320,6 +1320,9 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "Without this flag the tool" in repair_source
     assert '"is read-only. Function recreation' in repair_source
     for declaration in (
+        "void __thiscall initialize_looptheloop_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_looptheloopw_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
+        "void __thiscall initialize_loopout_path_template_pair(Path* self, float curve_source, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* cap_texture)",
         "void __fastcall allocate_path_template_samples(Path* self)",
         "void __fastcall finalize_path_template(Path* self)",
         "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
@@ -1331,6 +1334,9 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         assert "".join(f"{declaration};".split()) in compact_header
         assert "".join(f'"{declaration};"'.split()) in compact_ida_source
     for function_name in (
+        "initialize_looptheloop_path_template_pair",
+        "initialize_looptheloopw_path_template_pair",
+        "initialize_loopout_path_template_pair",
         "allocate_path_template_samples",
         "finalize_path_template",
         "initialize_worm_path_template_pair",
@@ -1345,10 +1351,14 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '"name": "arg2"' in repair_source
     assert "DISCARD_VARIABLES = SPEC.get(\"discard_variables\", ())" in repair_source
     assert "STALE_PARAMETER_COUNTS = set(" in repair_source
+    assert "STALE_VARIABLE_ANNOTATIONS = SPEC.get(" in repair_source
     assert "ALLOWED_MISSING_STALE_VARIABLE_KEYS = {" in repair_source
+    assert 'stale_variable_annotations=((20, "arg5", "char*"),)' in repair_source
     assert 'missing_stale_variable_storages=(16,)' in repair_source
+    assert 'missing_stale_variable_storages=(24,)' in repair_source
     assert 'before_annotations["parameter_count"] not in allowed_parameter_counts' in repair_source
     assert "stale_discard_variable_changed" in repair_source
+    assert "stale_variable_annotation_changed" in repair_source
     assert "discarded_variable_survived_repair" in repair_source
     assert "def _sync_subgame_receiver_lvar" in ida_source
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_source

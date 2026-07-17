@@ -57,3 +57,23 @@ ok, 0 unresolved, and 0 mismatch. The direct-texture simplification reached
 64.75%, but was rejected because it removes proven authored control flow. The
 remaining delta is compiler scheduling and register/local allocation; no
 volatile padding or other fakematching is warranted.
+
+## 2026-07-17 live owner and ABI closure
+
+Live Binary Ninja inspection found the same stale four-stack-argument
+`PathTemplate*` prototype as the non-W sibling. The native `ret 0x18` and
+refreshed world-initializer callsites prove the shared six-argument stack ABI:
+`curve_source`, `width_cells_`, `side_exit`, two surface textures, and the cap
+texture.
+
+The guarded repair accepts only the observed legacy parameters, the exact
+stack-20 `arg5` annotation, and the missing stack-24 slot, then recreates the
+function as a void `Path*` owner. Direct readback confirms all seven parameters
+including `this`, and decompilation now ends with an ordinary finalizer call.
+As in the sibling, `side_exit` and `cap_texture` are uniform constructor inputs
+that this body does not consume; their ownership is established by cleanup and
+callsites rather than fabricated source references.
+
+The source is unchanged by the metadata repair. Focused Wibo remains 63.27%
+(728/745), with a 10-instruction exact prefix and 51 masked operands ok,
+0 unresolved, 0 mismatch.
