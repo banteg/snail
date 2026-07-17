@@ -130,10 +130,10 @@ insertions. Attempts to force that allocation with typed overlays, earlier
 player-pointer declarations, `register`, and named flag locals did not improve
 code generation.
 
-The two compiler-generated jump tables are now content-audited. The later
-track dispatch table matches, while the first state dispatch table is a real
-masked-operand mismatch. The former completion-bonus `+0x4` operands are now
-resolved to `RuntimeConfig::default_challenge_speed_slider`.
+The two compiler-generated jump tables are now content-audited. The current
+masked-operand pass is clean; the ordinary instruction diff starts with label
+drift in the first state dispatch. The former completion-bonus `+0x4` operands
+are now resolved to `RuntimeConfig::default_challenge_speed_slider`.
 
 ## Rejected trials
 
@@ -178,9 +178,30 @@ the active-list tail.
   channel, and invincibility shell. These are intrusive list memberships, not
   transfers of ownership to the global BOD list.
 - All typed expressions fold back to the original absolute member offsets.
-  Focused Wibo is unchanged at `86.10%`, `560/555`, prefix `244/555`, with
-  `105 ok / 0 unresolved / 1` masked mismatch. Moving the `row_alpha`
-  declaration closer to its store was also codegen-neutral and was not kept.
+  At that point, focused Wibo remained `86.10%`, `560/555`, prefix `244/555`,
+  with `105 ok / 0 unresolved / 1` masked mismatch. Moving the `row_alpha`
+  declaration closer to its store was codegen-neutral and was not kept.
+
+## 2026-07-17 active-BOD ownership replay
+
+- `GameRoot + 0x5a8` is now the canonical root-owned `BodList`, with
+  `BodNode* first` and `BodNode* free_top`. The older `FrameBodList` analysis
+  view had the right size but obscured gameplay ownership behind
+  `FrameBodBase*`.
+- The seven inlined `BodList::add_bod` sites insert, in order, the jetpack
+  channel, three weapon channels, invincibility shell, presentation body, and
+  Player body. These are intrusive memberships of embedded objects; the root
+  list does not own or allocate any of them.
+- Exact BN register identities and IDA definition-address lvars now preserve
+  the shared list anchor plus its `list_prev`/`list_next` nodes. Native
+  instructions at `0x4383d2..0x43860a` are full-width dword loads/stores; the
+  remaining BN byte-lane expressions are a register-alias rendering limit, not
+  evidence for partial pointers.
+- No scratch source was changed for this pass. The current focused result is
+  the honest `77.67%`, `560/555`, prefix `177/555`, with
+  `101 ok / 0 unresolved / 0 mismatch` masked operands.
+  This current measurement supersedes the historical `86.10%` snapshots,
+  which predate later ownership-oriented source changes.
 
 ## 2026-07-11 slug voice threshold ownership
 

@@ -11,6 +11,8 @@ GAME_ROOT_CATALOG_OFFSET = 0x44100
 GAME_ROOT_FRONTEND_OFFSET = 0x4EC10
 GAME_ROOT_SUBGAME_OFFSET = 0x74618
 GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904
+GAME_ROOT_ACTIVE_BOD_LIST_OFFSET = 0x5A8
+GAME_ROOT_ACTIVE_BOD_LIST_SIZE = 0xC
 
 _TAIL_TYPE_SIZES = {
     "SubgameRuntime": 0x1272838,
@@ -119,6 +121,112 @@ def _readback(root: ida_typeinf.tinfo_t, start: int) -> dict[str, object]:
             }
             for member in snapshot
         ],
+    }
+
+
+def _sync_active_bod_list_member(
+    root: ida_typeinf.tinfo_t,
+    bod_list_type: ida_typeinf.tinfo_t | None,
+    *,
+    require: bool,
+) -> dict[str, object]:
+    if bod_list_type is None:
+        return {
+            "status": "failed" if require else "deferred",
+            "reason": "missing_named_type",
+            "type": "BodList",
+        }
+    if bod_list_type.get_size() != GAME_ROOT_ACTIVE_BOD_LIST_SIZE:
+        return {
+            "status": "failed",
+            "reason": "owner_size_mismatch",
+            "type": "BodList",
+            "observed": bod_list_type.get_size(),
+            "expected": GAME_ROOT_ACTIVE_BOD_LIST_SIZE,
+        }
+
+    snapshot = _member_snapshot(root)
+    candidates = (
+        []
+        if snapshot is None
+        else [
+            member
+            for member in snapshot
+            if int(member["offset"]) == GAME_ROOT_ACTIVE_BOD_LIST_OFFSET
+        ]
+    )
+    if len(candidates) != 1:
+        return {
+            "status": "failed" if require else "deferred",
+            "reason": "unexpected_active_bod_list_members",
+            "candidate_count": len(candidates),
+        }
+
+    member = candidates[0]
+    expected = {
+        "offset": GAME_ROOT_ACTIVE_BOD_LIST_OFFSET,
+        "size": GAME_ROOT_ACTIVE_BOD_LIST_SIZE,
+        "name": "active_bod_list",
+        "type": "BodList",
+    }
+    observed = {
+        "offset": int(member["offset"]),
+        "size": int(member["size"]),
+        "name": str(member["name"]),
+        "type": str(member["type"]),
+    }
+    if observed == expected:
+        return {"status": "unchanged", "member": observed}
+    if observed["name"] != expected["name"] or observed["size"] != expected["size"]:
+        return {
+            "status": "failed",
+            "reason": "unexpected_active_bod_list_layout",
+            "observed": observed,
+            "expected": expected,
+        }
+
+    code = root.set_udm_type(int(member["index"]), bod_list_type)
+    if code != ida_typeinf.TERR_OK:
+        return {
+            "status": "failed",
+            "reason": "set_active_bod_list_type_failed",
+            "error": _error_text(code),
+        }
+
+    verified_snapshot = _member_snapshot(root)
+    verified_candidates = (
+        []
+        if verified_snapshot is None
+        else [
+            candidate
+            for candidate in verified_snapshot
+            if int(candidate["offset"]) == GAME_ROOT_ACTIVE_BOD_LIST_OFFSET
+        ]
+    )
+    if len(verified_candidates) != 1:
+        return {
+            "status": "failed",
+            "reason": "active_bod_list_readback_failed",
+            "candidate_count": len(verified_candidates),
+        }
+    verified_member = verified_candidates[0]
+    verified = {
+        "offset": int(verified_member["offset"]),
+        "size": int(verified_member["size"]),
+        "name": str(verified_member["name"]),
+        "type": str(verified_member["type"]),
+    }
+    if verified != expected:
+        return {
+            "status": "failed",
+            "reason": "active_bod_list_verification_failed",
+            "observed": verified,
+            "expected": expected,
+        }
+    return {
+        "status": "applied",
+        "before": observed,
+        "member": verified,
     }
 
 
@@ -254,10 +362,15 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
         **_FRONTEND_TYPE_SIZES,
         **_CATALOG_LOADER_TYPE_SIZES,
     }
-    types = {name: _named_type(name) for name in ("GameRoot", *type_sizes)}
+    types = {
+        name: _named_type(name)
+        for name in ("GameRoot", "BodList", *type_sizes)
+    }
     missing_tail = [name for name in _TAIL_TYPE_SIZES if types[name] is None]
-    if types["GameRoot"] is None or missing_tail:
+    missing_active = ["BodList"] if require and types["BodList"] is None else []
+    if types["GameRoot"] is None or missing_tail or missing_active:
         missing = (["GameRoot"] if types["GameRoot"] is None else []) + missing_tail
+        missing.extend(missing_active)
         return {
             "status": "failed" if require else "deferred",
             "reason": "missing_named_types",
@@ -273,6 +386,14 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
             "observed": root.get_size(),
             "expected": GAME_ROOT_SIZE,
         }
+
+    active_bod_list = _sync_active_bod_list_member(
+        root,
+        types["BodList"],
+        require=require,
+    )
+    if active_bod_list["status"] == "failed":
+        return active_bod_list
 
     size_mismatches = {}
     for name, expected_size in _TAIL_TYPE_SIZES.items():
@@ -349,9 +470,15 @@ def sync_game_root_owner_graph(*, require: bool) -> dict[str, object]:
     root_global = _rebind_game_root_global()
     if root_global["status"] == "failed":
         return root_global
+    status = (
+        "applied"
+        if "applied" in {mutation["status"], active_bod_list["status"]}
+        else mutation["status"]
+    )
     return {
-        "status": mutation["status"],
+        "status": status,
         "owner_scope": owner_scope,
+        "active_bod_list": active_bod_list,
         "readback": mutation["readback"],
         "frontend_types": {
             "status": "ready" if frontend_ready else "deferred",

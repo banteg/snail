@@ -12,26 +12,25 @@ tools/match/match.sh \
 
 | Metric | Starter | Final scratch |
 |---|---:|---:|
-| Match | 0.36% | **86.10%** |
+| Match | 0.36% | **77.67%** |
 | Target instructions | 555 | 555 |
 | Candidate instructions | 1 | **560** |
-| Common prefix | 0 / 555 | **244 / 555** |
-| Masked operands OK | 0 | **105** |
+| Common prefix | 0 / 555 | **177 / 555** |
+| Masked operands OK | 0 | **101** |
 | Masked operands unresolved | 0 | **0** |
-| Masked operand mismatches | 0 | **1** |
+| Masked operand mismatches | 0 | **0** |
 
-This is an 85.74 percentage-point improvement over the starter skeleton. The
+This is a 77.31 percentage-point improvement over the starter skeleton. The
 first mismatch is:
 
 ```text
-target[244]    mov dword [esi+0x359098], ebx
-candidate[244] push ebp
+target[177]    jne L398
+candidate[177] jne L396
 ```
 
-The compiler-generated jump tables at target instructions 23 and 185 are now
-content-audited. The later track dispatch table matches; the first state
-dispatch table is a real masked-operand mismatch. The former unresolved
-completion-bonus `+0x4` operands are now resolved to the neighboring
+The compiler-generated jump tables are content-audited and the current masked
+operand pass is clean. The former unresolved completion-bonus `+0x4` operands
+are resolved to the neighboring
 `RuntimeConfig::default_challenge_speed_slider` field.
 
 ## Accepted source-shape changes
@@ -51,8 +50,8 @@ completion-bonus `+0x4` operands are now resolved to the neighboring
 - Added latch resets, mouse release, and Subgoldy initialization.
 - Reconstructed the repeated active-list tail, voice-node attachment, mode-zero
   HUD update, pointer resets, and final subgame-rate calculation.
-- Kept the masked-operand audit clean except for the known first state
-  jump-table mismatch.
+- Kept the masked-operand audit clean. The first state jump-table label drift
+  is an ordinary control-flow difference, not a masked relocation mismatch.
 
 ## Rejected trials
 
@@ -73,8 +72,9 @@ completion-bonus `+0x4` operands are now resolved to the neighboring
 
 ## Next region to attack
 
-First, investigate whether the delayed `push ebp` in the first row-controller
-setup can be recovered without artificial dead stores. Then focus on the
-active-list tail beginning near target instruction 305, where preserving the
-player pointer in EDI and carrying the `0x200` membership flag in EBP should
-unlock the repeated insertion regions.
+First, recover the two-instruction control-flow size drift that makes the first
+label mismatch appear at target instruction 177. Then revisit the delayed
+`push ebp` in the first row-controller setup and the active-list tail, where
+native preserves the Player pointer in EDI and the `0x200` membership flag in
+EBP. Avoid artificial dead stores or helper extraction: both have already
+regressed code generation.

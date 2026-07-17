@@ -82,6 +82,13 @@ typedef struct BodNode {
     struct BodNode* list_next;
 } BodNode;
 
+/* Root-owned intrusive list header shared by active and free BOD chains. */
+typedef struct BodList {
+    int32_t unknown_00;
+    BodNode* first;
+    BodNode* free_top;
+} BodList;
+
 typedef struct BodBase {
     BodNode bod;
     Vec3 position;

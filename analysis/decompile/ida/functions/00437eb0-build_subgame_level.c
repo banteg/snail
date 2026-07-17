@@ -20,33 +20,33 @@ void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
   double completion_row_start; // st7
   Player *p_player; // edi
   Weapon *p_jetpack_channel; // eax
-  FrameBodBase **p_first; // ecx
-  FrameBodBase *first; // edx
-  FrameBodBase *list_prev; // edx
+  BodNode **active_first_ref_jetpack; // ecx
+  BodNode *active_first_jetpack; // edx
+  BodNode *active_new_first_jetpack; // edx
   Weapon *weapon_channels; // ecx
-  FrameBodBase **v22; // eax
-  FrameBodBase *v23; // edx
-  FrameBodBase *v24; // edx
+  BodNode **active_first_ref_weapon_0; // eax
+  BodNode *active_first_weapon_0; // edx
+  BodNode *active_new_first_weapon_0; // edx
   Weapon *v25; // ecx
-  FrameBodBase **v26; // eax
-  FrameBodBase *v27; // edx
-  FrameBodBase *v28; // edx
+  BodNode **active_first_ref_weapon_1; // eax
+  BodNode *active_first_weapon_1; // edx
+  BodNode *active_new_first_weapon_1; // edx
   Weapon *v29; // ecx
-  FrameBodBase **v30; // eax
-  FrameBodBase *v31; // edx
-  FrameBodBase *v32; // edx
+  BodNode **active_first_ref_weapon_2; // eax
+  BodNode *active_first_weapon_2; // edx
+  BodNode *active_new_first_weapon_2; // edx
   Invincible *p_invincible_shell; // ecx
-  FrameBodBase **v34; // eax
-  FrameBodBase *v35; // edx
-  FrameBodBase *v36; // edx
+  BodNode **active_first_ref_invincible_shell; // eax
+  BodNode *active_first_invincible_shell; // edx
+  BodNode *active_new_first_invincible_shell; // edx
   uint32_t v37; // ecx
   Snail *p_presentation; // ecx
-  FrameBodBase **v39; // eax
-  FrameBodBase *v40; // edx
-  FrameBodBase *v41; // edx
-  FrameBodBase **v42; // eax
-  FrameBodBase *v43; // ecx
-  FrameBodBase *v44; // ecx
+  BodNode **active_first_ref_presentation; // eax
+  BodNode *active_first_presentation; // edx
+  BodNode *active_new_first_presentation; // edx
+  BodNode **active_first_ref_player; // eax
+  BodNode *active_first_player; // ecx
+  BodNode *active_new_first_player; // ecx
   BarrierActor *p_barrier; // eax
   struct BodNode *v46; // ecx
   int32_t v47; // eax
@@ -247,21 +247,21 @@ LABEL_24:
   }
   else
   {
-    p_first = &g_game_base->active_bod_list.first;
-    first = g_game_base->active_bod_list.first;
-    if ( first )
+    active_first_ref_jetpack = &g_game_base->active_bod_list.first;
+    active_first_jetpack = g_game_base->active_bod_list.first;
+    if ( active_first_jetpack )
     {
-      first->bod.list_prev = (FrameBodBase *)p_jetpack_channel;
-      (*p_first)->bod.list_prev->bod.list_next = *p_first;
-      list_prev = (*p_first)->bod.list_prev;
-      *p_first = list_prev;
-      list_prev->bod.list_prev = nullptr;
+      active_first_jetpack->list_prev = &p_jetpack_channel->body.bod.bod;
+      (*active_first_ref_jetpack)->list_prev->list_next = *active_first_ref_jetpack;
+      active_new_first_jetpack = (*active_first_ref_jetpack)->list_prev;
+      *active_first_ref_jetpack = active_new_first_jetpack;
+      active_new_first_jetpack->list_prev = nullptr;
     }
     else
     {
-      *p_first = (FrameBodBase *)p_jetpack_channel;
+      *active_first_ref_jetpack = &p_jetpack_channel->body.bod.bod;
       game->player.presentation.jetpack_channel.body.bod.bod.list_prev = nullptr;
-      (*p_first)->bod.list_next = nullptr;
+      (*active_first_ref_jetpack)->list_next = nullptr;
     }
     game->player.presentation.jetpack_channel.body.bod.bod.list_flags |= 0x200u;
   }
@@ -272,21 +272,21 @@ LABEL_24:
   }
   else
   {
-    v22 = &g_game_base->active_bod_list.first;
-    v23 = g_game_base->active_bod_list.first;
-    if ( v23 )
+    active_first_ref_weapon_0 = &g_game_base->active_bod_list.first;
+    active_first_weapon_0 = g_game_base->active_bod_list.first;
+    if ( active_first_weapon_0 )
     {
-      v23->bod.list_prev = (FrameBodBase *)weapon_channels;
-      (*v22)->bod.list_prev->bod.list_next = *v22;
-      v24 = (*v22)->bod.list_prev;
-      *v22 = v24;
-      v24->bod.list_prev = nullptr;
+      active_first_weapon_0->list_prev = &weapon_channels->body.bod.bod;
+      (*active_first_ref_weapon_0)->list_prev->list_next = *active_first_ref_weapon_0;
+      active_new_first_weapon_0 = (*active_first_ref_weapon_0)->list_prev;
+      *active_first_ref_weapon_0 = active_new_first_weapon_0;
+      active_new_first_weapon_0->list_prev = nullptr;
     }
     else
     {
-      *v22 = (FrameBodBase *)weapon_channels;
+      *active_first_ref_weapon_0 = &weapon_channels->body.bod.bod;
       game->player.presentation.weapon_channels[0].body.bod.bod.list_prev = nullptr;
-      (*v22)->bod.list_next = nullptr;
+      (*active_first_ref_weapon_0)->list_next = nullptr;
     }
     game->player.presentation.weapon_channels[0].body.bod.bod.list_flags |= 0x200u;
   }
@@ -297,21 +297,21 @@ LABEL_24:
   }
   else
   {
-    v26 = &g_game_base->active_bod_list.first;
-    v27 = g_game_base->active_bod_list.first;
-    if ( v27 )
+    active_first_ref_weapon_1 = &g_game_base->active_bod_list.first;
+    active_first_weapon_1 = g_game_base->active_bod_list.first;
+    if ( active_first_weapon_1 )
     {
-      v27->bod.list_prev = (FrameBodBase *)v25;
-      (*v26)->bod.list_prev->bod.list_next = *v26;
-      v28 = (*v26)->bod.list_prev;
-      *v26 = v28;
-      v28->bod.list_prev = nullptr;
+      active_first_weapon_1->list_prev = &v25->body.bod.bod;
+      (*active_first_ref_weapon_1)->list_prev->list_next = *active_first_ref_weapon_1;
+      active_new_first_weapon_1 = (*active_first_ref_weapon_1)->list_prev;
+      *active_first_ref_weapon_1 = active_new_first_weapon_1;
+      active_new_first_weapon_1->list_prev = nullptr;
     }
     else
     {
-      *v26 = (FrameBodBase *)v25;
+      *active_first_ref_weapon_1 = &v25->body.bod.bod;
       game->player.presentation.weapon_channels[1].body.bod.bod.list_prev = nullptr;
-      (*v26)->bod.list_next = nullptr;
+      (*active_first_ref_weapon_1)->list_next = nullptr;
     }
     game->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200u;
   }
@@ -322,21 +322,21 @@ LABEL_24:
   }
   else
   {
-    v30 = &g_game_base->active_bod_list.first;
-    v31 = g_game_base->active_bod_list.first;
-    if ( v31 )
+    active_first_ref_weapon_2 = &g_game_base->active_bod_list.first;
+    active_first_weapon_2 = g_game_base->active_bod_list.first;
+    if ( active_first_weapon_2 )
     {
-      v31->bod.list_prev = (FrameBodBase *)v29;
-      (*v30)->bod.list_prev->bod.list_next = *v30;
-      v32 = (*v30)->bod.list_prev;
-      *v30 = v32;
-      v32->bod.list_prev = nullptr;
+      active_first_weapon_2->list_prev = &v29->body.bod.bod;
+      (*active_first_ref_weapon_2)->list_prev->list_next = *active_first_ref_weapon_2;
+      active_new_first_weapon_2 = (*active_first_ref_weapon_2)->list_prev;
+      *active_first_ref_weapon_2 = active_new_first_weapon_2;
+      active_new_first_weapon_2->list_prev = nullptr;
     }
     else
     {
-      *v30 = (FrameBodBase *)v29;
+      *active_first_ref_weapon_2 = &v29->body.bod.bod;
       game->player.presentation.weapon_channels[2].body.bod.bod.list_prev = nullptr;
-      (*v30)->bod.list_next = nullptr;
+      (*active_first_ref_weapon_2)->list_next = nullptr;
     }
     game->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200u;
   }
@@ -347,21 +347,21 @@ LABEL_24:
   }
   else
   {
-    v34 = &g_game_base->active_bod_list.first;
-    v35 = g_game_base->active_bod_list.first;
-    if ( v35 )
+    active_first_ref_invincible_shell = &g_game_base->active_bod_list.first;
+    active_first_invincible_shell = g_game_base->active_bod_list.first;
+    if ( active_first_invincible_shell )
     {
-      v35->bod.list_prev = (FrameBodBase *)p_invincible_shell;
-      (*v34)->bod.list_prev->bod.list_next = *v34;
-      v36 = (*v34)->bod.list_prev;
-      *v34 = v36;
-      v36->bod.list_prev = nullptr;
+      active_first_invincible_shell->list_prev = &p_invincible_shell->body.bod.bod;
+      (*active_first_ref_invincible_shell)->list_prev->list_next = *active_first_ref_invincible_shell;
+      active_new_first_invincible_shell = (*active_first_ref_invincible_shell)->list_prev;
+      *active_first_ref_invincible_shell = active_new_first_invincible_shell;
+      active_new_first_invincible_shell->list_prev = nullptr;
     }
     else
     {
-      *v34 = (FrameBodBase *)p_invincible_shell;
+      *active_first_ref_invincible_shell = &p_invincible_shell->body.bod.bod;
       game->player.presentation.invincible_shell.body.bod.bod.list_prev = nullptr;
-      (*v34)->bod.list_next = nullptr;
+      (*active_first_ref_invincible_shell)->list_next = nullptr;
     }
     game->player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x200u;
   }
@@ -375,21 +375,21 @@ LABEL_24:
   }
   else
   {
-    v39 = &g_game_base->active_bod_list.first;
-    v40 = g_game_base->active_bod_list.first;
-    if ( v40 )
+    active_first_ref_presentation = &g_game_base->active_bod_list.first;
+    active_first_presentation = g_game_base->active_bod_list.first;
+    if ( active_first_presentation )
     {
-      v40->bod.list_prev = (FrameBodBase *)p_presentation;
-      (*v39)->bod.list_prev->bod.list_next = *v39;
-      v41 = (*v39)->bod.list_prev;
-      *v39 = v41;
-      v41->bod.list_prev = nullptr;
+      active_first_presentation->list_prev = &p_presentation->body.bod.bod;
+      (*active_first_ref_presentation)->list_prev->list_next = *active_first_ref_presentation;
+      active_new_first_presentation = (*active_first_ref_presentation)->list_prev;
+      *active_first_ref_presentation = active_new_first_presentation;
+      active_new_first_presentation->list_prev = nullptr;
     }
     else
     {
-      *v39 = (FrameBodBase *)p_presentation;
+      *active_first_ref_presentation = &p_presentation->body.bod.bod;
       game->player.presentation.body.bod.bod.list_prev = nullptr;
-      (*v39)->bod.list_next = nullptr;
+      (*active_first_ref_presentation)->list_next = nullptr;
     }
     game->player.presentation.body.bod.bod.list_flags |= 0x200u;
   }
@@ -399,21 +399,21 @@ LABEL_24:
   }
   else
   {
-    v42 = &g_game_base->active_bod_list.first;
-    v43 = g_game_base->active_bod_list.first;
-    if ( v43 )
+    active_first_ref_player = &g_game_base->active_bod_list.first;
+    active_first_player = g_game_base->active_bod_list.first;
+    if ( active_first_player )
     {
-      v43->bod.list_prev = (FrameBodBase *)p_player;
-      (*v42)->bod.list_prev->bod.list_next = *v42;
-      v44 = (*v42)->bod.list_prev;
-      *v42 = v44;
-      v44->bod.list_prev = nullptr;
+      active_first_player->list_prev = &p_player->body.bod.bod;
+      (*active_first_ref_player)->list_prev->list_next = *active_first_ref_player;
+      active_new_first_player = (*active_first_ref_player)->list_prev;
+      *active_first_ref_player = active_new_first_player;
+      active_new_first_player->list_prev = nullptr;
     }
     else
     {
-      *v42 = (FrameBodBase *)p_player;
+      *active_first_ref_player = &p_player->body.bod.bod;
       game->player.body.bod.bod.list_prev = nullptr;
-      (*v42)->bod.list_next = nullptr;
+      (*active_first_ref_player)->list_next = nullptr;
     }
     game->player.body.bod.bod.list_flags |= 0x200u;
   }

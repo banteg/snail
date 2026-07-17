@@ -4978,6 +4978,49 @@
       ]
     },
     {
+      "name": "analysis_path_active_bod_list_owner",
+      "artifact": "analysis/headers/path_template_types.h",
+      "required_substrings": [
+        "typedef struct BodList {",
+        "BodNode* first;",
+        "BodNode* free_top;"
+      ]
+    },
+    {
+      "name": "bn_build_subgame_active_bod_owners",
+      "artifact": "analysis/decompile/binja/functions/00437eb0-build_subgame_level.c",
+      "required_substrings": [
+        "struct BodNode** active_first_ref_jetpack = &g_game_base->active_bod_list.first",
+        "active_first_link_jetpack->list_prev->list_next = active_first_link_jetpack",
+        "struct BodNode** active_first_ref_weapon_0 = &g_game_base->active_bod_list.first",
+        "struct BodNode** active_first_ref_invincible_shell = &g_game_base->active_bod_list.first",
+        "initialized_player->body.bod.bod.list_flags",
+        "active_new_first_player->list_next"
+      ],
+      "forbidden_substrings": [
+        "struct FrameBodBase**",
+        "void** active_first_ref",
+        "(ecx_35 - 0x5ac)",
+        "runtime->player.__offset(0x2fd8)"
+      ]
+    },
+    {
+      "name": "ida_build_subgame_active_bod_owners",
+      "artifact": "analysis/decompile/ida/functions/00437eb0-build_subgame_level.c",
+      "required_substrings": [
+        "BodNode **active_first_ref_jetpack",
+        "(*active_first_ref_weapon_2)->list_prev->list_next",
+        "&p_invincible_shell->body.bod.bod",
+        "&p_presentation->body.bod.bod",
+        "&p_player->body.bod.bod",
+        "active_new_first_player->list_prev = nullptr"
+      ],
+      "forbidden_substrings": [
+        "FrameBodBase **",
+        "(FrameBodBase *)"
+      ]
+    },
+    {
       "name": "bn_complete_subgame_owner_graph",
       "artifact": "analysis/decompile/binja/functions/00438700-complete_subgame.c",
       "required_substrings": [

@@ -26,6 +26,8 @@ EXPECTED_OWNER_SIZES = {
     "GamePlayer": 0x1F8,
     "FrameBodBase": 0x38,
     "FrameBodList": 0xC,
+    "BodNode": 0x10,
+    "BodList": 0xC,
     "FrameRenderableBod": 0x80,
     "FrameRenderCamera": 0xC8,
     "FrameOverlay": 0x14C,

@@ -232,6 +232,7 @@ REQUIRED_HEADER_STRUCTS = (
     "TimeTrial",
     "SnailVisual",
     "BodNode",
+    "BodList",
     "BodBase",
     "Banner",
     "Vapour",
@@ -465,6 +466,136 @@ UPDATE_BANNER_USER_VAR_UPDATES = (
         66,
         "list_flags",
         "uint32_t",
+    ),
+)
+
+# build_subgame_level inlines BodList::add_bod for the presentation's jetpack,
+# three weapon channels, invincibility shell, Snail body, and Player body. The
+# active-list anchor is the same BodNode** owner at all seven sites, but BN
+# otherwise inherits FrameBodBase** at the first lifetime and void** after the
+# register changes. Preserve those exact anchor identities and only the native
+# jetpack/Player lifetimes where register reuse prevents the BodNode* type from
+# propagating through otherwise full-width pointer loads and stores.
+BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1261,
+        73,
+        "initialized_player",
+        "Player*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1308,
+        67,
+        "active_first_ref_jetpack",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1314,
+        68,
+        "active_first_jetpack",
+        "BodNode*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1325,
+        68,
+        "active_first_empty_jetpack",
+        "BodNode*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1335,
+        68,
+        "active_first_link_jetpack",
+        "BodNode*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1337,
+        71,
+        "active_previous_first_jetpack",
+        "BodNode*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1343,
+        68,
+        "active_first_reload_jetpack",
+        "BodNode*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1350,
+        68,
+        "active_new_first_jetpack",
+        "BodNode*",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1397,
+        66,
+        "active_first_ref_weapon_0",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1485,
+        66,
+        "active_first_ref_weapon_1",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1573,
+        66,
+        "active_first_ref_weapon_2",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1661,
+        66,
+        "active_first_ref_invincible_shell",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1764,
+        66,
+        "active_first_ref_presentation",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1841,
+        66,
+        "active_first_ref_player",
+        "BodNode**",
+    ),
+    (
+        "build_subgame_level",
+        "RegisterVariableSourceType",
+        1869,
+        68,
+        "active_new_first_player",
+        "BodNode*",
     ),
 )
 
@@ -820,10 +951,12 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
 )
 
-# The frame-renderer bootstrap intentionally leaves the post-subgame root tail
-# opaque until its exact child types exist.  This replay lane owns TipManager,
-# so promote the proved root member after importing the authoritative type.
+# The frame-renderer bootstrap uses a renderer-local list view at +0x5a8 and
+# leaves the post-subgame root tail opaque. Gameplay proves that the root list
+# stores BodNode links, and this replay lane owns TipManager, so promote both
+# canonical owners after importing their authoritative types.
 GAME_ROOT_FIELD_UPDATES = (
+    ("0x5a8", "active_bod_list", "BodList"),
     ("0x12e6f58", "tip_manager", "TipManager"),
 )
 
@@ -1945,6 +2078,7 @@ def main() -> int:
             updates=(
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
+                *BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES,
                 *POPULATE_RUNTIME_USER_VAR_UPDATES,
                 *MERGE_RUNTIME_USER_VAR_UPDATES,
                 *FRINGE_RUNTIME_USER_VAR_UPDATES,

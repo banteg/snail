@@ -113,6 +113,20 @@ typedef struct FrameBodList {
     FrameBodBase* free_top;
 } FrameBodList;
 
+/* Canonical gameplay view of the root intrusive BOD list. */
+typedef struct BodNode {
+    void* vtable;
+    uint32_t list_flags;
+    struct BodNode* list_prev;
+    struct BodNode* list_next;
+} BodNode;
+
+typedef struct BodList {
+    int32_t unknown_00;
+    BodNode* first;
+    BodNode* free_top;
+} BodList;
+
 struct FrameBodBase {
     FrameBodNode bod;
     FrameVec3 position;
@@ -320,7 +334,7 @@ typedef struct GameRoot {
     uint8_t unknown_000569[0x56c - 0x569];
     int32_t render_skip_count;
     FrameBodBase inactive_bod_sentinel;
-    FrameBodList active_bod_list;
+    BodList active_bod_list;
     FrameRenderCameraSlot render_camera_slots[5];
     FrameOverlay overlay_0;
     FrameOverlay overlay_1;

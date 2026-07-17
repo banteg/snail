@@ -123,8 +123,12 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '(0x12E6E50, 0xF4, "high_score", "HighScore")' in owner_sync
     assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in owner_sync
     assert "GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904" in owner_sync
+    assert "GAME_ROOT_ACTIVE_BOD_LIST_OFFSET = 0x5A8" in owner_sync
+    assert "def _sync_active_bod_list_member" in owner_sync
+    assert "root.set_udm_type" in owner_sync
     assert "idc.SetType(GAME_ROOT_GLOBAL_ADDRESS, declaration)" in owner_sync
     assert '"root_global": root_global' in owner_sync
+    assert '"active_bod_list": active_bod_list' in owner_sync
     assert "root.del_udm" in owner_sync
     assert "root.add_udm" in owner_sync
     assert 'owner_scope = "catalog_loader_frontend_and_tail"' in owner_sync
@@ -146,6 +150,10 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         assert f"sync_game_root_owner_graph(require={required})" in source
         assert '"game_root_owner_graph": game_root_owner_graph' in source
     for header in frame_headers:
+        assert "typedef struct BodList" in header
+        assert "BodNode* first;" in header
+        assert "BodList active_bod_list;" in header
+        assert "FrameBodList active_bod_list;" not in header
         assert "uint8_t unknown_12727d8[0x1272838 - 0x12727d8];" in header
         assert "uint8_t unknown_12e6e50[0x12e6ff4 - 0x12e6e50];" in header
         assert "uint8_t unknown_000000[0x24];" not in header
@@ -168,11 +176,14 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '("0x04", "fog_enabled", "uint8_t")',
         '("0x14", "fog_color", "FrameColor4f")',
         '("0x568", "frontend_link_latch", "uint8_t")',
+        '("0x5a8", "active_bod_list", "BodList")',
         '("0xa60", "root_noop_renderable", "FrameRenderableBod")',
     ):
         assert update in bn_frame_sync
     assert 'struct_name="Overlay"' in bn_frame_sync
     assert 'struct_name="RenderableBod"' in bn_frame_sync
+    assert '"BodNode": 0x10' in frame_sync
+    assert '"BodList": 0xC' in frame_sync
 
     bn_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -2881,6 +2892,71 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert f'"{name}"' in ida_path_sync
     for address in ("0x434BE0", "0x447090", "0x4470A0"):
         assert address in ida_path_sync
+
+    assert "BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
+    assert "typedef struct BodList" in analysis_path_header
+    assert "BodNode* first;" in analysis_path_header
+    assert '"BodList"' in binja_source
+    assert '("0x5a8", "active_bod_list", "BodList")' in binja_source
+    for identity in (
+        '"RegisterVariableSourceType",\n        1261,\n        73,',
+        '"RegisterVariableSourceType",\n        1308,\n        67,',
+        '"RegisterVariableSourceType",\n        1314,\n        68,',
+        '"RegisterVariableSourceType",\n        1325,\n        68,',
+        '"RegisterVariableSourceType",\n        1335,\n        68,',
+        '"RegisterVariableSourceType",\n        1337,\n        71,',
+        '"RegisterVariableSourceType",\n        1343,\n        68,',
+        '"RegisterVariableSourceType",\n        1350,\n        68,',
+        '"RegisterVariableSourceType",\n        1397,\n        66,',
+        '"RegisterVariableSourceType",\n        1485,\n        66,',
+        '"RegisterVariableSourceType",\n        1573,\n        66,',
+        '"RegisterVariableSourceType",\n        1661,\n        66,',
+        '"RegisterVariableSourceType",\n        1764,\n        66,',
+        '"RegisterVariableSourceType",\n        1841,\n        66,',
+        '"RegisterVariableSourceType",\n        1869,\n        68,',
+    ):
+        assert identity in binja_source
+    for owner in (
+        "jetpack",
+        "weapon_0",
+        "weapon_1",
+        "weapon_2",
+        "invincible_shell",
+        "presentation",
+        "player",
+    ):
+        assert f'"active_first_ref_{owner}"' in binja_source
+    assert '"BodNode**"' in binja_source
+    assert '"initialized_player"' in binja_source
+    assert '"Player*"' in binja_source
+    assert "*BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES" in binja_source
+
+    assert "BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS" in ida_path_sync
+    for definition_address in (
+        "0x4383CD",
+        "0x4383D3",
+        "0x4383F7",
+        "0x438426",
+        "0x43842B",
+        "0x43844F",
+        "0x43847E",
+        "0x438483",
+        "0x4384A7",
+        "0x4384D6",
+        "0x4384DB",
+        "0x4384FF",
+        "0x43852E",
+        "0x438533",
+        "0x438557",
+        "0x438595",
+        "0x43859A",
+        "0x4385BE",
+        "0x4385E2",
+        "0x4385E7",
+        "0x438606",
+    ):
+        assert definition_address in ida_path_sync
+    assert "_sync_build_subgame_active_bod_lvars" in ida_path_sync
 
     assert "_sync_segment_copy_entry_anchor_lvar" in ida_segment_sync
     assert "SEGMENT_COPY_ENTRY_ANCHOR_DEFEA = 0x447372" in ida_segment_sync

@@ -172,6 +172,135 @@ HARMONIZE_RUNTIME_LVAR_SPECS = (
     ),
 )
 
+BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
+    (
+        "active_first_ref_jetpack",
+        "BodNode **active_first_ref_jetpack;",
+        0x4383CD,
+        None,
+    ),
+    (
+        "active_first_jetpack",
+        "BodNode *active_first_jetpack;",
+        0x4383D3,
+        None,
+    ),
+    (
+        "active_new_first_jetpack",
+        "BodNode *active_new_first_jetpack;",
+        0x4383F7,
+        None,
+    ),
+    (
+        "active_first_ref_weapon_0",
+        "BodNode **active_first_ref_weapon_0;",
+        0x438426,
+        None,
+    ),
+    (
+        "active_first_weapon_0",
+        "BodNode *active_first_weapon_0;",
+        0x43842B,
+        None,
+    ),
+    (
+        "active_new_first_weapon_0",
+        "BodNode *active_new_first_weapon_0;",
+        0x43844F,
+        None,
+    ),
+    (
+        "active_first_ref_weapon_1",
+        "BodNode **active_first_ref_weapon_1;",
+        0x43847E,
+        None,
+    ),
+    (
+        "active_first_weapon_1",
+        "BodNode *active_first_weapon_1;",
+        0x438483,
+        None,
+    ),
+    (
+        "active_new_first_weapon_1",
+        "BodNode *active_new_first_weapon_1;",
+        0x4384A7,
+        None,
+    ),
+    (
+        "active_first_ref_weapon_2",
+        "BodNode **active_first_ref_weapon_2;",
+        0x4384D6,
+        None,
+    ),
+    (
+        "active_first_weapon_2",
+        "BodNode *active_first_weapon_2;",
+        0x4384DB,
+        None,
+    ),
+    (
+        "active_new_first_weapon_2",
+        "BodNode *active_new_first_weapon_2;",
+        0x4384FF,
+        None,
+    ),
+    (
+        "active_first_ref_invincible_shell",
+        "BodNode **active_first_ref_invincible_shell;",
+        0x43852E,
+        None,
+    ),
+    (
+        "active_first_invincible_shell",
+        "BodNode *active_first_invincible_shell;",
+        0x438533,
+        None,
+    ),
+    (
+        "active_new_first_invincible_shell",
+        "BodNode *active_new_first_invincible_shell;",
+        0x438557,
+        None,
+    ),
+    (
+        "active_first_ref_presentation",
+        "BodNode **active_first_ref_presentation;",
+        0x438595,
+        None,
+    ),
+    (
+        "active_first_presentation",
+        "BodNode *active_first_presentation;",
+        0x43859A,
+        None,
+    ),
+    (
+        "active_new_first_presentation",
+        "BodNode *active_new_first_presentation;",
+        0x4385BE,
+        None,
+    ),
+    (
+        "active_first_ref_player",
+        "BodNode **active_first_ref_player;",
+        0x4385E2,
+        None,
+    ),
+    (
+        "active_first_player",
+        "BodNode *active_first_player;",
+        0x4385E7,
+        None,
+    ),
+    (
+        "active_new_first_player",
+        "BodNode *active_new_first_player;",
+        0x438606,
+        None,
+    ),
+)
+
 # These displacement values are relocatable offsets into GameRoot, but several
 # of their numeric values also land on named code or historical offset-symbol
 # addresses. IDA then renders the individual instruction operand as an address
@@ -1499,6 +1628,13 @@ def _sync_harmonize_runtime_lvars() -> dict[str, object]:
     )
 
 
+def _sync_build_subgame_active_bod_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "build_subgame_level",
+        BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS,
+    )
+
+
 def _sync_subgame_receiver_lvar(
     selector: str,
     *,
@@ -1880,6 +2016,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "runtime_lvars": harmonize_runtime_lvars,
             }
         )
+    build_subgame_active_bod_lvars = _sync_build_subgame_active_bod_lvars()
+    if build_subgame_active_bod_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "build_subgame_level",
+                "active_bod_lvars": build_subgame_active_bod_lvars,
+            }
+        )
     subgame_receiver_lvar_specs = {
         "initialize_subgame": 1,
         "destroy_subgame": 1,
@@ -1936,6 +2080,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "merge_runtime_lvars": merge_runtime_lvars,
                 "fringe_runtime_lvars": fringe_runtime_lvars,
                 "harmonize_runtime_lvars": harmonize_runtime_lvars,
+                "build_subgame_active_bod_lvars": build_subgame_active_bod_lvars,
                 "subgame_receiver_lvars": subgame_receiver_lvars,
                 "dirty_functions": dirty_functions,
                 "missing": missing,
