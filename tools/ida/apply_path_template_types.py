@@ -1379,7 +1379,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_supertramp_path_template_pair",
-        "int32_t __thiscall initialize_supertramp_path_template_pair(Path* self, float arg2, int32_t arg3, char* texture_a, char* texture_b, char* texture_c);",
+        "void __thiscall initialize_supertramp_path_template_pair(Path* self, float length, int32_t width_cells_, int32_t side_exit, char* texture_a, char* texture_b, char* unused_texture, char* cap_texture);",
     ),
     (
         "initialize_halfpipe_path_template_pair",

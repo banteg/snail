@@ -996,3 +996,16 @@ Health checks pin all six public indices, full arity, and authored scalar
 profiles while rejecting nested-BOD receivers. This is analysis-only for the
 world initializer, which remains 80.50% (5392/5411) with 1639 clean operands
 and its existing 36 mismatches.
+
+## 2026-07-17 SuperTramp constructor ABI closure
+
+The refreshed initializer now shows complete eight-operand member calls for
+both the primary and independently built secondary SuperTramp paths at public
+slot `0x1f`. Each call carries length `6`, width `2`, side mode `1`, the
+front/back surfaces, the ABI-owned unused texture, and the terminal TrackWarn
+cap texture.
+
+Health checks pin the primary/secondary owners and full arity while rejecting
+nested-BOD receivers. This is analysis-only for the world initializer, which
+remains 80.50% (5392/5411) with 1639 clean operands and its existing 36
+mismatches.

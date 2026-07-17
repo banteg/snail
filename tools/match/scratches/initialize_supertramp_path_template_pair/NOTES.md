@@ -148,3 +148,19 @@ placing the flat lead-in Z conversion after the target-backed center-X reload
 reaches 51.62% (529/552), with the 15-instruction prefix and exact 0x2c frame
 preserved. This supersedes the pre-cascade secondary-scalar and center-X probe
 results above; all retained changes now agree with both current decompilers.
+
+## 2026-07-17 constructor ABI closure
+
+The native tail returns with `retn 0x1c`, and both world-initializer
+constructions visibly push the complete Windows contract: float length,
+integer width and side mode, front/back textures, an ABI-owned unused texture,
+and the terminal cap texture. Guarded Binary Ninja recreation and readback now
+recover that exact void `Path*` member ABI, including the two formerly hidden
+texture slots.
+
+iOS exposes a seven-argument `BuildSuperTramp(float, float, int, bool, char*,
+char*, char*)` sibling, but its scalar/texture split differs from Windows. The
+Windows pushes and callee dataflow therefore remain authoritative here rather
+than forcing the portable signature onto this build. This closure is
+analysis-only: focused Wibo remains 51.62% (529/552), with a 15-instruction
+prefix and 32 clean masked operands.
