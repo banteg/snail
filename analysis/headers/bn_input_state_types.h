@@ -209,4 +209,28 @@ extern float g_text_input_repeat_step;
 extern float g_text_input_repeat_accumulator;
 extern uint8_t g_text_input_last_repeat_code;
 
+extern int32_t g_input_region_top[2];
+extern int32_t g_input_region_bottom[2];
+extern int32_t g_input_region_left[2];
+extern int32_t g_input_region_right[2];
+
+void __cdecl update_input_controller_pointer_region(
+    int32_t slot,
+    int32_t left,
+    int32_t top,
+    int32_t right,
+    int32_t bottom,
+    int32_t x,
+    int32_t y,
+    int32_t pointer_value,
+    char button_a,
+    char button_b,
+    char button_c,
+    char capture_when_outside,
+    char force_clamp);
+void* __cdecl set_input_controller_pointer_authored_xy(
+    int32_t slot,
+    float authored_x,
+    float authored_y);
+
 #endif

@@ -83,3 +83,12 @@ function remains exact at 295/295 instructions with all 81 operands clean.
 The authored/live coordinate arrays and cursor-hide latch now come from the
 separate canonical two-slot mouse state bank. This keeps DirectInput interface
 lifetime distinct from pointer/window state and remains exact at 295/295.
+
+## 2026-07-18 pointer-region ABI closure
+
+The thirteen-parameter pointer-region declaration now lives in the shared
+input-controller header instead of this scratch. At the only native callsite,
+the instruction immediately after the call reloads the cursor-hide latch into
+`al`, proving the callee's incidental `eax` residue is not a return value. The
+centralized `void` prototype is byte-shape neutral here: the focused result
+remains exact at 295/295 with all 81 masked operands clean.

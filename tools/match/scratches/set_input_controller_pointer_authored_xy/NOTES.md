@@ -14,3 +14,11 @@ proved 0x38-byte stride. This avoids claiming either trailing stride gap or the
 intervening RShell repeat global as controller-owned. VC6 retains the exact
 40/40 instruction stream and all 11 operands resolve to the corresponding
 fields.
+
+2026-07-18 durable replay: both decompilers now receive the semantic
+`slot`, `authored_x`, and `authored_y` parameter names plus the four shared
+two-entry region sidecars. The analysis ABI deliberately keeps the authored
+coordinates as `float`, matching every caller and both decompilers; only the
+VC6 matcher scratch uses integer parameter spelling to reproduce the native
+raw-bit stores. The tracked BN and IDA artifacts now agree on the same owner
+graph, and the focused row remains exact at 40/40 with 11 clean operands.

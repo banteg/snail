@@ -12,7 +12,7 @@ from _narrow_sync import (
     apply_symbol_updates,
     apply_user_var_updates,
     emit_summary,
-    types_declare,
+    types_declare_if_changed,
 )
 
 
@@ -46,6 +46,25 @@ INPUT_CONTROLLER_INTERIOR_SYMBOL_REMOVALS = (
 INPUT_CONTROLLER_DATA_VAR_UPDATES = (
     ("0x50333c", "InputControllerSlot"),
     ("0x503374", "InputControllerSlot"),
+)
+
+INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES = (
+    ("0x4321c0", "update_input_controller_pointer_region"),
+    ("0x4323a0", "set_input_controller_pointer_authored_xy"),
+)
+
+INPUT_POINTER_REGION_DATA_SYMBOL_UPDATES = (
+    ("0x508890", "g_input_region_top"),
+    ("0x508898", "g_input_region_bottom"),
+    ("0x5088a0", "g_input_region_left"),
+    ("0x5088a8", "g_input_region_right"),
+)
+
+INPUT_POINTER_REGION_DATA_VAR_UPDATES = (
+    ("0x508890", "int32_t[2]"),
+    ("0x508898", "int32_t[2]"),
+    ("0x5088a0", "int32_t[2]"),
+    ("0x5088a8", "int32_t[2]"),
 )
 
 TEXT_INPUT_DATA_SYMBOL_UPDATES = (
@@ -156,7 +175,19 @@ GAME_INPUT_FIELDS = (
     ("0x38", "input", "InputState"),
 )
 
+INPUT_POINTER_REGION_PROTO_UPDATES = (
+    (
+        "update_input_controller_pointer_region",
+        "void __cdecl update_input_controller_pointer_region(int32_t slot, int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t x, int32_t y, int32_t pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp)",
+    ),
+    (
+        "set_input_controller_pointer_authored_xy",
+        "void* __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)",
+    ),
+)
+
 PROTO_UPDATES = (
+    *INPUT_POINTER_REGION_PROTO_UPDATES,
     (
         "0x432440",
         "char __cdecl read_pressed_text_input_key_code()",
@@ -219,7 +250,11 @@ CONTROLLER_USER_VAR_UPDATES = (
 
 def main() -> int:
     operations = [
-        types_declare(REPO_ROOT, target=TARGET, header_path=HEADER_PATH),
+        types_declare_if_changed(
+            REPO_ROOT,
+            target=TARGET,
+            header_path=HEADER_PATH,
+        ),
         *apply_struct_field_updates(
             REPO_ROOT,
             target=TARGET,
@@ -264,6 +299,23 @@ def main() -> int:
             REPO_ROOT,
             target=TARGET,
             updates=INPUT_CONTROLLER_DATA_VAR_UPDATES,
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES,
+            kind="function",
+        ),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=INPUT_POINTER_REGION_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=TARGET,
+            updates=INPUT_POINTER_REGION_DATA_VAR_UPDATES,
         ),
         *apply_symbol_updates(
             REPO_ROOT,

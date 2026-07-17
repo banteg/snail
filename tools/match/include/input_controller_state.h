@@ -50,4 +50,19 @@ extern int g_input_region_bottom[INPUT_CONTROLLER_SLOT_COUNT]; // data_508898
 extern int g_input_region_left[INPUT_CONTROLLER_SLOT_COUNT];   // data_5088a0
 extern int g_input_region_right[INPUT_CONTROLLER_SLOT_COUNT];  // data_5088a8
 
+void update_input_controller_pointer_region(
+    int slot,
+    int left,
+    int top,
+    int right,
+    int bottom,
+    int x,
+    int y,
+    int pointer_value,
+    char button_a,
+    char button_b,
+    char button_c,
+    char capture_when_outside,
+    char force_clamp); // @ 0x4321c0
+
 #endif

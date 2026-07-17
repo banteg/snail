@@ -2,6 +2,7 @@
 
 #include "direct_input_view.h"
 #include "game_root.h"
+#include "input_controller_state.h"
 #include "input_polling.h"
 #include "mouse_input_state.h"
 #include "mouse_window_state.h"
@@ -18,20 +19,6 @@ extern "C" __declspec(dllimport) int __stdcall SetCursor(int cursor);
 int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
 unsigned char read_left_mouse_button_state(int slot); // @ 0x407810
 unsigned char read_right_mouse_button_state(int slot); // @ 0x407830
-void update_input_controller_pointer_region(
-    int slot,
-    int left,
-    int top,
-    int right,
-    int bottom,
-    int screen_x,
-    int screen_y,
-    int pointer_value,
-    char button_a,
-    char button_b,
-    char button_c,
-    char capture_when_outside,
-    char force_clamp); // @ 0x4321c0
 
 int update_mouse(HWND hwnd)
 {

@@ -18,9 +18,15 @@ TRUSTED_NAMES = [
     (0x503374, "g_input_controller_slot1"),
     (0x432440, "read_pressed_text_input_key_code"),
     (0x4327E0, "read_repeating_text_input_key_code"),
+    (0x4321C0, "update_input_controller_pointer_region"),
+    (0x4323A0, "set_input_controller_pointer_authored_xy"),
     (0x50339C, "g_text_input_repeat_step"),
     (0x5108B8, "g_text_input_repeat_accumulator"),
     (0x53C7F5, "g_text_input_last_repeat_code"),
+    (0x508890, "g_input_region_top"),
+    (0x508898, "g_input_region_bottom"),
+    (0x5088A0, "g_input_region_left"),
+    (0x5088A8, "g_input_region_right"),
     (0x44BBB0, "initialize_mouse_authored_scale_from_clip_rect"),
     (0x44BBD0, "update_mouse_authored_scale"),
     (0x44BC20, "resolve_uncaptured_cursor_sensitivity_scale"),
@@ -52,6 +58,14 @@ TRUSTED_NAMES = [
 
 
 TRUSTED_DECLARATIONS = [
+    (
+        "update_input_controller_pointer_region",
+        "void __cdecl update_input_controller_pointer_region(int slot, int left, int top, int right, int bottom, int x, int y, int pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp);",
+    ),
+    (
+        "set_input_controller_pointer_authored_xy",
+        "void *__cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);",
+    ),
     (
         "read_pressed_text_input_key_code",
         "char __cdecl read_pressed_text_input_key_code();",
@@ -146,6 +160,10 @@ TRUSTED_DATA_DECLARATIONS = [
         "g_input_controller_slot1",
         "InputControllerSlot g_input_controller_slot1;",
     ),
+    (0x508890, "g_input_region_top", "int g_input_region_top[2];"),
+    (0x508898, "g_input_region_bottom", "int g_input_region_bottom[2];"),
+    (0x5088A0, "g_input_region_left", "int g_input_region_left[2];"),
+    (0x5088A8, "g_input_region_right", "int g_input_region_right[2];"),
     (0x50339C, "g_text_input_repeat_step", "float g_text_input_repeat_step;"),
     (
         0x5108B8,
@@ -181,6 +199,10 @@ TRUSTED_DATA_ITEMS = [
     (0x50339C, 4),
     (0x5108B8, 4),
     (0x53C7F5, 1),
+    (0x508890, 8),
+    (0x508898, 8),
+    (0x5088A0, 8),
+    (0x5088A8, 8),
     (0x777D58, 8),
     (0x777D60, 8),
     (0x777D68, 4),

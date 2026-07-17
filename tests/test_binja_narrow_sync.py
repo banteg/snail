@@ -2674,6 +2674,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     binja_source = (BINJA_DIR / "sync_input_state_types.py").read_text(
         encoding="utf-8"
     )
+    binja_pointer_region_source = (
+        BINJA_DIR / "sync_input_pointer_region_types.py"
+    ).read_text(encoding="utf-8")
     ida_source = (IDA_DIR / "apply_input_state_types.py").read_text(
         encoding="utf-8"
     )
@@ -2695,6 +2698,21 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     assert "g_input_controller_slot1" in matcher_controller_header
     assert "g_input_controller_slots[" not in matcher_controller_header
     assert "unknown_20" not in matcher_controller_header
+    assert "void update_input_controller_pointer_region(" in matcher_controller_header
+    assert "types_declare_if_changed" in binja_source
+    assert "types_declare(" not in binja_source
+    assert "types_declare" not in binja_pointer_region_source
+
+    for marker in (
+        "INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES",
+        "INPUT_POINTER_REGION_DATA_SYMBOL_UPDATES",
+        "INPUT_POINTER_REGION_DATA_VAR_UPDATES",
+        "INPUT_POINTER_REGION_PROTO_UPDATES",
+        "apply_symbol_updates",
+        "apply_data_var_updates",
+        "apply_proto_updates",
+    ):
+        assert marker in binja_pointer_region_source
 
     for header in (*headers, *frame_headers):
         assert "typedef enum InputButtonFlag {" in header
@@ -2715,6 +2733,12 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "extern float g_text_input_repeat_step;",
         "extern float g_text_input_repeat_accumulator;",
         "extern uint8_t g_text_input_last_repeat_code;",
+        "extern int32_t g_input_region_top[2];",
+        "extern int32_t g_input_region_bottom[2];",
+        "extern int32_t g_input_region_left[2];",
+        "extern int32_t g_input_region_right[2];",
+        "void __cdecl update_input_controller_pointer_region(",
+        "void* __cdecl set_input_controller_pointer_authored_xy(",
     ):
         assert all(declaration in header for header in headers)
 
@@ -2733,6 +2757,15 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __thiscall update_input(InputState* state)"',
         '"char __cdecl read_pressed_text_input_key_code()"',
         '"char __cdecl read_repeating_text_input_key_code()"',
+        "INPUT_POINTER_REGION_FUNCTION_SYMBOL_UPDATES",
+        "INPUT_POINTER_REGION_DATA_SYMBOL_UPDATES",
+        "INPUT_POINTER_REGION_DATA_VAR_UPDATES",
+        '("0x508890", "int32_t[2]")',
+        '("0x508898", "int32_t[2]")',
+        '("0x5088a0", "int32_t[2]")',
+        '("0x5088a8", "int32_t[2]")',
+        '"void __cdecl update_input_controller_pointer_region(int32_t slot, int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t x, int32_t y, int32_t pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp)"',
+        '"void* __cdecl set_input_controller_pointer_authored_xy(int32_t slot, float authored_x, float authored_y)"',
     ):
         assert marker in binja_source
 
@@ -2758,6 +2791,16 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"void __thiscall update_input(InputState *state);"',
         '"float g_text_input_repeat_step;"',
         '"unsigned char g_text_input_last_repeat_code;"',
+        '(0x508890, 8)',
+        '(0x508898, 8)',
+        '(0x5088A0, 8)',
+        '(0x5088A8, 8)',
+        '"int g_input_region_top[2];"',
+        '"int g_input_region_bottom[2];"',
+        '"int g_input_region_left[2];"',
+        '"int g_input_region_right[2];"',
+        '"void __cdecl update_input_controller_pointer_region(int slot, int left, int top, int right, int bottom, int x, int y, int pointer_value, char button_a, char button_b, char button_c, char capture_when_outside, char force_clamp);"',
+        '"void *__cdecl set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);"',
     ):
         assert marker in ida_source
 

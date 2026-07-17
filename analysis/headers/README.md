@@ -145,10 +145,13 @@ intentional.
 - `uv run python tools/binja/sync_object_render_types.py`
 - `bn_input_state_types.h`
 - `uv run python tools/binja/sync_input_state_types.py`
+- `uv run python tools/binja/sync_input_pointer_region_types.py`
   - Mirrors the same DirectInput controller owners and aggregate stack locals
     into Binary Ninja; the paired IDA replay above is deliberately kept narrow
     so both decompilers preserve the SDK layout without importing a full
-    platform header universe.
+    platform header universe. Use the focused pointer-region lane for routine
+    verification of the two helper ABIs and four two-slot bound arrays; it
+    avoids traversing the unrelated mouse, text-input, and joystick inventory.
 - `path_template_types.h`
 - `uv run python tools/binja/sync_path_template_types.py`
   - Owns the canonical `SubSolution` replay record and nested `Player` layout.

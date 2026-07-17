@@ -84,3 +84,19 @@ secondary input bits: `button_a` sets `INPUT_BUTTON_PRIMARY` (`0x4000`) and
 through `copy_active_input_controller_state` into `InputState` and consumed by
 front-end/gameplay update paths. The focused match remains 98.51%, 134/134,
 prefix 131/134, with all 30 masked operands clean.
+
+## 2026-07-18 durable sidecar and ABI replay
+
+The four region bounds are now replayed into both analysis databases as
+two-element `int32_t` sidecar arrays. Binary Ninja and IDA consequently render
+the same `g_input_region_{left,top,right,bottom}[slot]` ownership in this
+writer and in the exact authored-coordinate reader, with no raw `0x5088xx`
+aliases left in either tracked decompile.
+
+The replay also preserves all thirteen semantic parameter names and records
+the native return contract as `void`. The sole native caller at `0x44c023`
+immediately reloads `g_hide_system_cursor_flag` into `al`, overwriting the
+incidental comparison residue in `eax`; no caller consumes a result. Four
+strict BN/IDA health checks now guard the sidecar arrays, parameter ownership,
+and void ABI. Focused matching remains 98.51%, 134/134, prefix 131/134, with
+all 30 masked operands clean.
