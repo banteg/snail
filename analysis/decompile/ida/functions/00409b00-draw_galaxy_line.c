@@ -2,55 +2,60 @@
 /* function: draw_galaxy_line @ 0x409b00 */
 /* selector: draw_galaxy_line */
 
-char __stdcall sub_409B00(int a1, float a2, float a3, float a4, float a5, float a6, int *a7)
+int32_t __thiscall draw_galaxy_line(
+        Galaxy *galaxy,
+        int32_t texture_id,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
+        float width,
+        tColour *color)
 {
-  double v7; // st7
-  double v8; // st6
-  int v10; // [esp+0h] [ebp-54h]
-  int v11; // [esp+4h] [ebp-50h]
-  int v12; // [esp+8h] [ebp-4Ch]
-  int v13; // [esp+Ch] [ebp-48h]
-  int v14; // [esp+10h] [ebp-44h]
-  int v15; // [esp+14h] [ebp-40h]
-  int v16; // [esp+18h] [ebp-3Ch]
-  int v17; // [esp+1Ch] [ebp-38h]
-  float v18; // [esp+48h] [ebp-Ch] BYREF
-  float v19; // [esp+4Ch] [ebp-8h]
-  int v20; // [esp+50h] [ebp-4h]
+  double v8; // st7
+  double v9; // st6
+  float x0a; // [esp+0h] [ebp-54h]
+  float y0a; // [esp+4h] [ebp-50h]
+  float x1a; // [esp+8h] [ebp-4Ch]
+  float y1a; // [esp+Ch] [ebp-48h]
+  float x2; // [esp+10h] [ebp-44h]
+  float y2; // [esp+14h] [ebp-40h]
+  float x3; // [esp+18h] [ebp-3Ch]
+  float y3; // [esp+1Ch] [ebp-38h]
+  Vec3 vector; // [esp+48h] [ebp-Ch] BYREF
 
-  v20 = 0;
-  v18 = a4 - a2;
-  v19 = a5 - a3;
-  normalize_vector(&v18);
-  v7 = v19 * a6 * -0.5;
-  v8 = v18 * a6 * 0.5;
-  *(float *)&v17 = v8 + a3;
-  *(float *)&v16 = v7 + a2;
-  *(float *)&v15 = v8 + a5;
-  *(float *)&v14 = v7 + a4;
-  *(float *)&v13 = a5 - v8;
-  *(float *)&v12 = a4 - v7;
-  *(float *)&v11 = a3 - v8;
-  *(float *)&v10 = a2 - v7;
+  vector.z = 0.0;
+  vector.x = x1 - x0;
+  vector.y = y1 - y0;
+  normalize_vector(&vector);
+  v8 = vector.y * width * -0.5;
+  v9 = vector.x * width * 0.5;
+  y3 = v9 + y0;
+  x3 = v8 + x0;
+  y2 = v9 + y1;
+  x2 = v8 + x1;
+  y1a = y1 - v9;
+  x1a = x1 - v8;
+  y0a = y0 - v9;
+  x0a = x0 - v8;
   return queue_textured_quad_corners(
-           a1,
-           v10,
-           v11,
-           v12,
-           v13,
-           v14,
-           v15,
-           v16,
-           v17,
+           texture_id,
+           x0a,
+           y0a,
+           x1a,
+           y1a,
+           x2,
+           y2,
+           x3,
+           y3,
            0,
            0,
-           0x1000000,
-           a7,
-           0,
-           0,
-           1065353216,
-           1065353216,
+           0x1000000u,
+           color,
+           0.0,
+           0.0,
+           1.0,
+           1.0,
            15,
-           0);
+           0.0);
 }
-

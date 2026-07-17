@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,28 +17,36 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_textured_backdrop_quad",
-      "address": "0x41a0b0"
+      "name": "load_galaxy_layout",
+      "address": "0x4088e0"
     },
     {
-      "name": "raise_backdrop_quad_edge_pair",
-      "address": "0x41a170"
+      "name": "destroy_galaxy",
+      "address": "0x408c10"
     },
     {
-      "name": "initialize_backdrop_slice_quad",
-      "address": "0x41a1c0"
+      "name": "initialize_galaxy",
+      "address": "0x408cf0"
     },
     {
-      "name": "initialize_backdrop_corner_quad",
-      "address": "0x41a290"
+      "name": "update_galaxy",
+      "address": "0x4092f0"
     },
     {
-      "name": "initialize_backdrop_tile_quad",
-      "address": "0x41a4d0"
+      "name": "draw_galaxy_line",
+      "address": "0x409b00"
     },
     {
-      "name": "rotate_object_facequad_uv_pairs",
-      "address": "0x430a30"
+      "name": "close_galaxy_route",
+      "address": "0x409bf0"
+    },
+    {
+      "name": "open_galaxy_route",
+      "address": "0x409c50"
+    },
+    {
+      "name": "galaxy_border_bound",
+      "address": "0x40a0c0"
     }
   ],
   "health_check_count": 610,

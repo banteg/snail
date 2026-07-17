@@ -43,6 +43,9 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
+    ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
     matcher_header = (
         repo_root / "tools/match/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
@@ -63,6 +66,23 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "int32_t __thiscall update_galaxy(Galaxy* galaxy)" in runtime_sync
     assert "void __thiscall open_galaxy_route(" in runtime_sync
     assert "void __thiscall galaxy_border_bound(" in runtime_sync
+
+    for declaration in (
+        "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(",
+        "void __thiscall load_galaxy_layout(Galaxy* galaxy);",
+        "void __thiscall destroy_galaxy(Galaxy* galaxy);",
+        "void __thiscall initialize_galaxy(Galaxy* galaxy);",
+        "int32_t __thiscall update_galaxy(Galaxy* galaxy);",
+        "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy,",
+        "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot);",
+        "void __thiscall close_galaxy_route(Galaxy* galaxy);",
+        "void __thiscall open_galaxy_route(Galaxy* galaxy,",
+        "void __thiscall galaxy_border_bound(Galaxy* galaxy,",
+    ):
+        assert declaration in ida_runtime_sync
+    assert "GalaxyPoint g_galaxy_group_points[10];" in ida_runtime_sync
+    assert "GalaxyPoint g_galaxy_route_points[101];" in ida_runtime_sync
+    assert "TRUSTED_DATA_DECLARATIONS" in ida_runtime_sync
 
     for header in analysis_headers:
         assert "typedef struct GalaxyPoint" in header

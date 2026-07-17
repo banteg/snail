@@ -7284,6 +7284,24 @@
       ]
     },
     {
+      "name": "ida_galaxy_layout_point_bank_owner",
+      "artifact": "analysis/decompile/ida/functions/004088e0-load_galaxy_layout.c",
+      "required_substrings": [
+        "void __thiscall load_galaxy_layout(Galaxy *galaxy)",
+        "g_galaxy_group_points[0].y_bits",
+        "g_galaxy_route_points[0].x_bits",
+        "galaxy->level_progress_base",
+        "galaxy->route_names[0].color",
+        "galaxy->route_slots[galaxy->record_count].record.route_name_index"
+      ],
+      "forbidden_substrings": [
+        "sub_4088E0",
+        "_DWORD *this",
+        "unk_4A1C50",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_galaxy_lifecycle_owner",
       "artifact": "analysis/decompile/binja/functions/00408cf0-initialize_galaxy.c",
       "required_substrings": [
@@ -7297,6 +7315,24 @@
       "forbidden_substrings": [
         "arg1",
         "*(arg1 +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_galaxy_lifecycle_owner",
+      "artifact": "analysis/decompile/ida/functions/00408cf0-initialize_galaxy.c",
+      "required_substrings": [
+        "void __thiscall initialize_galaxy(Galaxy *galaxy)",
+        "galaxy->level_progress_base",
+        "galaxy->route_title_widget",
+        "galaxy->bounds_frame_widget",
+        "galaxy->selected_title_widget",
+        "galaxy->play_or_deliver_widget",
+        "open_galaxy_route(galaxy, galaxy->selected_index)"
+      ],
+      "forbidden_substrings": [
+        "sub_408CF0",
+        "int this",
         "unimplemented"
       ]
     },
@@ -7317,6 +7353,23 @@
       ]
     },
     {
+      "name": "ida_galaxy_update_owner",
+      "artifact": "analysis/decompile/ida/functions/004092f0-update_galaxy.c",
+      "required_substrings": [
+        "int32_t __thiscall update_galaxy(Galaxy *galaxy)",
+        "galaxy->level_progress_base",
+        "update_galaxy_route_record(route_slots)",
+        "draw_galaxy_line(galaxy",
+        "destroy_galaxy(galaxy)",
+        "open_galaxy_route(galaxy"
+      ],
+      "forbidden_substrings": [
+        "FrontendWidget ***this",
+        "sub_4092F0",
+        "unimplemented"
+      ]
+    },
+    {
       "name": "bn_galaxy_route_card_owner",
       "artifact": "analysis/decompile/binja/functions/00409c50-open_galaxy_route.c",
       "required_substrings": [
@@ -7329,6 +7382,22 @@
       "forbidden_substrings": [
         "arg1",
         "*(galaxy +",
+        "unimplemented"
+      ]
+    },
+    {
+      "name": "ida_galaxy_route_card_owner",
+      "artifact": "analysis/decompile/ida/functions/00409c50-open_galaxy_route.c",
+      "required_substrings": [
+        "void __thiscall open_galaxy_route(Galaxy *galaxy, int32_t selected_level_index)",
+        "galaxy->selected_title_widget",
+        "galaxy->route_names",
+        "galaxy_border_bound(galaxy",
+        "galaxy->bounds_frame_widget"
+      ],
+      "forbidden_substrings": [
+        "int this",
+        "sub_409C50",
         "unimplemented"
       ]
     },

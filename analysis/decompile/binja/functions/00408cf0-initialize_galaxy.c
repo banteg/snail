@@ -7,7 +7,7 @@
 00408d15        cache_music_file("music/mainmenu.ogg", 0, &g_blank_text)
 00408d2e        int32_t eax = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, "StarMap.txt")
 00408d3a        struct GameRoot* game_base_1 = g_game_base
-00408d4d        change_backdrop(&game_base_1->backdrop, &game_base_1->unknown_000000[eax * 0x124 + 0x106c7bc], 0)
+00408d4d        change_backdrop(&game_base_1->backdrop, &game_base_1->subgame.landscape_manager.scripts[eax], 0)
 00408d5e        set_border_justify_centre(&g_game_base->border_manager, 0f)
 00408d6f        capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)
 00408d7f        g_game_base->render_skip_count = 2
@@ -33,7 +33,7 @@
 00408e46        galaxy->route_title_widget->font_scale = 0.829999983f
 00408e7b        galaxy->route_icon_widget = allocate_border(&g_game_base->border_manager)
 00408e81        struct tColour* eax_6 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00408ea1        initialize_frontend_sprite_button(galaxy->route_icon_widget, 0x20400802, 0x8a, 370f, 10f, eax_6, 0f, 4)
+00408ea1        initialize_frontend_sprite_button(galaxy->route_icon_widget, 0x20400802, 0x8a, 0x43b90000, 0x41200000, eax_6, 0f, 4)
 00408eb8        galaxy->exit_or_back_widget = allocate_border(&g_game_base->border_manager)
 00408ed8        uint32_t widget_flags
 00408ed8        char* text

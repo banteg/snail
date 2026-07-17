@@ -2,35 +2,41 @@
 /* function: galaxy_border_bound @ 0x40a0c0 */
 /* selector: galaxy_border_bound */
 
-void __stdcall sub_40A0C0(float *a1, float *a2, float *a3, float *a4, int a5)
+// Exact Windows `Galaxy::galaxy_border_bound`, matching Android `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`.
+void __thiscall galaxy_border_bound(
+        Galaxy *galaxy,
+        float *min_x,
+        float *max_x,
+        float *min_y,
+        float *max_y,
+        FrontendWidget *widget)
 {
-  double v5; // st7
   double v6; // st7
   double v7; // st7
   double v8; // st7
+  double v9; // st7
 
-  if ( *(_DWORD *)(a5 + 604) == 2 )
+  if ( widget->text_alignment == 2 )
   {
-    v5 = *a2 - *a1;
-    if ( v5 < *(float *)(a5 + 584) )
+    v6 = *max_x - *min_x;
+    if ( v6 < widget->layout_width )
     {
-      v6 = *a1 - (*(float *)(a5 + 584) - v5) * 0.5;
-      *a1 = v6;
-      *a1 = (*(float *)(a5 + 584) - (*a2 - v6)) * 0.5 + v6;
+      v7 = *min_x - (widget->layout_width - v6) * 0.5;
+      *min_x = v7;
+      *min_x = (widget->layout_width - (*max_x - v7)) * 0.5 + v7;
     }
   }
   else
   {
-    if ( *(float *)(a5 + 568) < (double)*a1 )
-      *a1 = *(float *)(a5 + 568);
-    v8 = *(float *)(a5 + 584) + *(float *)(a5 + 568);
-    if ( v8 > *a2 )
-      *a2 = v8;
+    if ( widget->layout_left < (double)*min_x )
+      *min_x = widget->layout_left;
+    v9 = widget->layout_width + widget->layout_left;
+    if ( v9 > *max_x )
+      *max_x = v9;
   }
-  if ( *(float *)(a5 + 572) < (double)*a3 )
-    *a3 = *(float *)(a5 + 572);
-  v7 = *(float *)(a5 + 588) + *(float *)(a5 + 572);
-  if ( v7 > *a4 )
-    *a4 = v7;
+  if ( widget->layout_top < (double)*min_y )
+    *min_y = widget->layout_top;
+  v8 = widget->layout_height + widget->layout_top;
+  if ( v8 > *max_y )
+    *max_y = v8;
 }
-

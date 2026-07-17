@@ -17,6 +17,46 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 TRUSTED_DECLARATIONS = [
     (
+        "initialize_galaxy_route_name_record",
+        "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(GalaxyRouteNameRecord* record);",
+    ),
+    (
+        "load_galaxy_layout",
+        "void __thiscall load_galaxy_layout(Galaxy* galaxy);",
+    ),
+    (
+        "destroy_galaxy",
+        "void __thiscall destroy_galaxy(Galaxy* galaxy);",
+    ),
+    (
+        "initialize_galaxy",
+        "void __thiscall initialize_galaxy(Galaxy* galaxy);",
+    ),
+    (
+        "update_galaxy",
+        "int32_t __thiscall update_galaxy(Galaxy* galaxy);",
+    ),
+    (
+        "draw_galaxy_line",
+        "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color);",
+    ),
+    (
+        "update_galaxy_route_record",
+        "void __thiscall update_galaxy_route_record(GalaxyRouteSlot* slot);",
+    ),
+    (
+        "close_galaxy_route",
+        "void __thiscall close_galaxy_route(Galaxy* galaxy);",
+    ),
+    (
+        "open_galaxy_route",
+        "void __thiscall open_galaxy_route(Galaxy* galaxy, int32_t selected_level_index);",
+    ),
+    (
+        "galaxy_border_bound",
+        "void __thiscall galaxy_border_bound(Galaxy* galaxy, float* min_x, float* max_x, float* min_y, float* max_y, FrontendWidget* widget);",
+    ),
+    (
         "zero_timer_counters",
         "void __thiscall zero_timer_counters(Time* time);",
     ),
@@ -253,6 +293,20 @@ TRUSTED_DECLARATIONS = [
 ]
 
 
+TRUSTED_DATA_DECLARATIONS = [
+    (
+        0x4A1C4C,
+        "g_galaxy_group_points",
+        "GalaxyPoint g_galaxy_group_points[10];",
+    ),
+    (
+        0x4A1D14,
+        "g_galaxy_route_points",
+        "GalaxyPoint g_galaxy_route_points[101];",
+    ),
+]
+
+
 REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SegmentCache segment_cache;",
     "SubRingStar particles[10];",
@@ -279,6 +333,8 @@ def _normalize_type_text(value: str | None) -> str | None:
     normalized = re.sub(r"\s*\)\s*", ")", normalized)
     normalized = re.sub(r"\s*,\s*", ", ", normalized)
     normalized = re.sub(r"\s*\*\s*", " *", normalized)
+    normalized = re.sub(r"\s*\[\s*", "[", normalized)
+    normalized = re.sub(r"\s*\]\s*", "]", normalized)
     normalized = re.sub(r"\(\s*", "(", normalized)
     normalized = re.sub(r"\s*\)", ")", normalized)
     return normalized.strip()
@@ -286,6 +342,11 @@ def _normalize_type_text(value: str | None) -> str | None:
 
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
+    return _normalize_type_text(unnamed) or ""
+
+
+def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
+    unnamed = re.sub(rf"\b{re.escape(selector)}\b", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
 
 
@@ -371,6 +432,41 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "declaration": declaration,
                     "observed": observed,
                     "reason": "verification_failed",
+                }
+            )
+            continue
+
+        applied += 1
+
+    for address, selector, declaration in TRUSTED_DATA_DECLARATIONS:
+        expected_observed = _data_declaration_to_observed_type(selector, declaration)
+        normalized_current = _normalize_type_text(idc.get_type(address))
+
+        if normalized_current == expected_observed:
+            unchanged += 1
+            continue
+
+        if not idc.SetType(address, declaration):
+            failed.append(
+                {
+                    "selector": selector,
+                    "address": hex(address),
+                    "declaration": declaration,
+                    "reason": "set_data_type_failed",
+                }
+            )
+            continue
+
+        observed = idc.get_type(address)
+        normalized_observed = _normalize_type_text(observed)
+        if normalized_observed != expected_observed:
+            failed.append(
+                {
+                    "selector": selector,
+                    "address": hex(address),
+                    "declaration": declaration,
+                    "observed": observed,
+                    "reason": "data_verification_failed",
                 }
             )
             continue

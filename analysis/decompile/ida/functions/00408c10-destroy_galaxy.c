@@ -2,17 +2,16 @@
 /* function: destroy_galaxy @ 0x408c10 */
 /* selector: destroy_galaxy */
 
-// Tears down the active Star Map galaxy-screen widgets before replay launch, route handoff, or return to the owning front-end state. Cross-port Android symbols match this helper to `cRGalaxy::UnInit()`.
-void __thiscall sub_408C10(_DWORD **this)
+// Exact Windows `Galaxy::destroy_galaxy`: tears down the active Star Map widgets before replay launch, route handoff, or return. Android preserves `cRGalaxy::UnInit()`.
+void __thiscall destroy_galaxy(Galaxy *galaxy)
 {
-  kill_border(*(this + 17374));
-  kill_border(*(this + 17375));
-  kill_border(*(this + 17373));
-  kill_border(*(this + 17379));
-  kill_border(*(this + 17380));
-  kill_border(*(this + 17382));
-  kill_border(*(this + 17381));
-  kill_border(*(this + 17383));
-  kill_border(*(this + 17384));
+  kill_border(&galaxy->route_title_widget->list_kind);
+  kill_border(&galaxy->route_icon_widget->list_kind);
+  kill_border(&galaxy->exit_or_back_widget->list_kind);
+  kill_border(&galaxy->bounds_frame_widget->list_kind);
+  kill_border(&galaxy->selected_title_widget->list_kind);
+  kill_border(&galaxy->selected_description_widget->list_kind);
+  kill_border(&galaxy->selected_detail_widget->list_kind);
+  kill_border(&galaxy->play_or_deliver_widget->list_kind);
+  kill_border(&galaxy->replay_widget->list_kind);
 }
-

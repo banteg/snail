@@ -605,6 +605,8 @@ only as historical decompiler spelling in older evidence.
     `SubgameRuntime`, embedded `Player`, and SpriteManager sprite handle
 - `+0x1260020`: `galaxy`
   - exact `0x10fa8`-byte `Galaxy` controller ending at `+0x1270fc8`
+  - `load_galaxy_layout` borrows the external `GalaxyPoint[10]` group-anchor
+    bank at `0x4a1c4c` and `GalaxyPoint[101]` route bank at `0x4a1d14`
   - 101 `0x2a0` slots at controller `+0x10`; each slot owns a four-byte tick
     prefix and a `0x29c` route record
   - `load_level_definition_file` maps each `ArcadeN` definition to slot `N`,

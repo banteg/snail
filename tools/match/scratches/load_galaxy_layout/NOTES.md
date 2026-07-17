@@ -137,3 +137,16 @@ earlier failed manual prototype attempt: live readback and a focused export
 both preserve the Galaxy owner and named point banks. Moving their externs to
 the shared route header is source-shape neutral at 88.27%, 236/233
 candidate/target instructions, prefix 62, and 39 clean operands.
+
+## 2026-07-17 paired IDA lifecycle replay
+
+The parallel IDA subgame-runtime lane now applies the same ten Galaxy member
+contracts as Binary Ninja and types the external `GalaxyPoint[10]` group bank
+and `GalaxyPoint[101]` route bank. Live readback confirms the void loader and
+the typed constructor, destructor, updater, line renderer, route tick, route
+open/close, and bounds helper. Focused paired exports now retain `Galaxy*`,
+`GalaxyRouteSlot*`, both point-bank owners, and the borrowed
+`SubgameRuntime* level_progress_base` instead of IDA's former `_DWORD*` and
+integer receivers. Matching remains honestly unchanged at 88.27%, 236/233
+instructions, prefix 62, with 39 clean operands; this is a durable ownership
+replay correction, not a source-shape claim.
