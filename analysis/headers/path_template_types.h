@@ -2551,15 +2551,17 @@ void __thiscall initialize_slalomdouble_path_template_pair(
     char* cap_texture
 );
 
-int32_t __thiscall initialize_p_path_template_pair(
+void __thiscall initialize_p_path_template_pair(
     Path* self,
-    int32_t arg2,
-    uint32_t arg3,
-    float arg4,
-    float arg5,
-    int32_t arg6,
+    int32_t variant,
+    float scale_arg,
+    int32_t width_cells_,
+    float start_x,
+    float end_x,
+    int32_t curve_segments,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* cap_texture
 );
 
 void __thiscall initialize_start_path_template_pair(
@@ -2642,12 +2644,14 @@ void __thiscall initialize_twister2_path_template_pair(
     char* vertical_texture
 );
 
-int32_t __thiscall initialize_loopbow_path_template_pair(
+void __thiscall initialize_loopbow_path_template_pair(
     Path* self,
-    float arg2,
-    uint32_t arg3,
+    float curve_scale,
+    uint32_t width_cells_arg,
+    char mode,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 void __thiscall initialize_toad_path_template_pair(
@@ -2668,14 +2672,15 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_sbend_path_template_pair(
+void __thiscall initialize_sbend_path_template_pair(
     Path* self,
-    uint32_t arg2,
-    float arg3,
-    float arg4,
-    char arg5,
+    int32_t width_cells_,
+    float height,
+    float z_amplitude,
+    char centered,
     char* texture_a,
-    char* texture_b
+    char* texture_b,
+    char* vertical_texture
 );
 
 int32_t __cdecl parse_next_int32(char** cursor);

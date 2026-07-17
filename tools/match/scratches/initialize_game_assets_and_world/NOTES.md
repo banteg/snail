@@ -965,3 +965,20 @@ handedness values. The sibling callee checks separately pin kinds 43 and 44,
 sample counts 34 and 52, byte-handedness branches, and void finalizer flow.
 This is analysis-only: both focused frontiers remain 27.72% (593/677), each
 with 40 clean masked operands.
+
+## 2026-07-17 P, LoopBow, and S-bend constructor ABI closure
+
+The refreshed initializer now carries complete calls for all three P variants
+at path-pair slots `0x21` through `0x23`, LoopBow at slots `7` and `0x3a`,
+and S-bend at slot `0xe`. Their respective stack arities are nine, six, and
+seven arguments after the receiver, including each Windows-only final texture
+slot. Health checks pin the public indices, full arities, and only the two
+equivalent zero-offset primary-owner spellings while rejecting nested-BOD
+receivers.
+
+Reanalysis may surface byte constants such as LoopBow mode or Twister
+handedness through a reused local instead of printing the literal at the call.
+The callsite invariants therefore track owner and arity; native pushes and the
+callee byte branches remain the evidence for exact flag values. The world
+initializer stays at 80.50% (5392/5411), with 1639 clean operands and its
+existing 36 mismatches.

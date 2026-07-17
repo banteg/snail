@@ -121,3 +121,16 @@ produced the visible dword comparison but regressed Wibo from 40.81% to 40.71%
 and reintroduced one masked call mismatch. Explicit terminal/nonterminal vertex
 branches regressed to 40.74%. The x87 radius temporary and collapsed vertex
 selection remain until surrounding stack and mesh ownership moves again.
+
+## 2026-07-17 constructor ABI closure
+
+The Windows tail returns with `retn 0x24`, proving nine stack arguments after
+the `Path*` receiver. The three world-initializer calls independently expose
+variants 0/1/2, float scale, integer width, start/end X, curve segment count,
+two surface textures, and the Windows-only cap texture. The iOS `BuildP`
+symbol preserves the same portable prefix through the two surface textures.
+
+Guarded Binary Ninja recreation and readback now recover that exact void member
+ABI and the full owner flow (`kind = variant + 0x21`, width, samples, mesh, and
+finalizer). This is analysis-only: focused Wibo remains 44.05% (615/679), with
+33 clean operands and no unresolved or mismatched operands.

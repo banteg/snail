@@ -62,3 +62,17 @@ This pass also supersedes the earlier audit-led request-order note: raw calls at
 followed by `request_object_facequads @ 0x42f8c0`. Restoring that semantically
 correct order costs less than one point in isolation, remains audit-clean, and
 is retained instead of matching the old alignment artifact.
+
+## 2026-07-17 constructor ABI closure
+
+The Windows tail returns with `retn 0x1c`, proving seven stack arguments after
+the `Path*` receiver. The world initializer supplies integer width, float
+height and Z amplitude, a byte centered flag, two surface textures, and the
+Windows-only vertical texture. The iOS `BuildSBend` symbol independently
+preserves the portable prefix through the surface textures.
+
+Guarded Binary Ninja recreation and readback now recover that exact void member
+ABI and the centered branch on its real byte owner. Correcting the shared
+declaration and scratch from `int centered` to `char centered` is a genuine
+source improvement: focused Wibo rises from 40.61% to 40.79% (529/579), while
+all 36 masked operands remain clean.

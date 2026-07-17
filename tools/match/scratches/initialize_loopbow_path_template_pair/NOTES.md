@@ -157,3 +157,18 @@ pass the temporary matrix through the recovered const-reference
 honest partial remains byte-identical at 67.54%, 800/796 candidate/target
 instructions, prefix 10/796, with its existing two mismatches and 60 clean
 operands.
+
+## 2026-07-17 constructor ABI closure
+
+The native tail returns with `retn 0x18`, proving six stack arguments after the
+`Path*` receiver. Both world-initializer constructions expose float curve
+scale, integer width, a byte mode, two surface textures, and the Windows-only
+vertical texture; the iOS `BuildLoopBow` symbol independently preserves the
+portable first five types.
+
+Guarded Binary Ninja recreation and readback now recover the full void member
+ABI. The shared declaration and scratch also stop returning the finalizer's
+incidental EAX state: both are honestly `void`, matching the native caller and
+callee contracts. That source correction is byte-identical at 67.54%
+(800/796), with the existing 60 clean operands and two multiply-thunk symbol
+mismatches.

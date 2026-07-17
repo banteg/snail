@@ -15,16 +15,16 @@ static __inline Vector3 vector_subtract(const Vector3& lhs, const Vector3& rhs)
     return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 }
 
-// This caller tail-returns the finalizer's stale EAX flags value.
-int __fastcall finalize_path_template(Path* path);
+// The native caller ignores the incidental EAX state left by this finalizer.
+void __fastcall finalize_path_template(Path* path);
 
-int Path::initialize_loopbow_path_template_pair(
+void Path::initialize_loopbow_path_template_pair(
     float curve_scale,
     unsigned int width_cells_arg,
-    char unused_mode,
+    char mode,
     char* texture_a,
     char* texture_b,
-    char* unused_texture)
+    char* vertical_texture)
 {
     int cell_index = 0;
     Vector3 endpoint;
@@ -371,5 +371,5 @@ int Path::initialize_loopbow_path_template_pair(
         } while (segment < segment_count);
     }
 
-    return ::finalize_path_template(this);
+    ::finalize_path_template(this);
 }

@@ -88,13 +88,13 @@ struct Path : public BodBase {
         char* texture_a,
         char* texture_b,
         char* cap_texture);
-    int initialize_loopbow_path_template_pair(
+    void initialize_loopbow_path_template_pair(
         float curve_scale,
         unsigned int width_cells_arg,
-        char unused_mode,
+        char mode,
         char* texture_a,
         char* texture_b,
-        char* unused_texture);
+        char* vertical_texture);
     void initialize_invert_path_template_pair(
         float radius,
         int width_cells_,
@@ -185,7 +185,7 @@ struct Path : public BodBase {
         int width_cells_,
         float height,
         float z_amplitude,
-        int centered,
+        char centered,
         char* texture_a,
         char* texture_b,
         char* vertical_texture);
