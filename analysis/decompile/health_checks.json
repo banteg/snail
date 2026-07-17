@@ -4013,6 +4013,161 @@
       ]
     },
     {
+      "name": "bn_sound_and_voice_startup_global_owners",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_sound_bank(&g_sound_effect_manager, &g_sound_bank_entries)",
+        "initialize_voice_manager(&g_voice_manager)"
+      ],
+      "forbidden_substrings": [
+        "initialize_sound_bank(&data_4a2140)",
+        "initialize_voice_manager(0x751498)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sound_and_voice_startup_global_owners",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "initialize_sound_bank(&g_sound_effect_manager, g_sound_bank_entries);",
+        "initialize_voice_manager(&g_voice_manager);"
+      ],
+      "forbidden_substrings": [
+        "initialize_sound_bank(&g_sound_bank_entries)",
+        "initialize_voice_manager(g_voice_manager)",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sound_bank_entry_owner_and_void_init_abi",
+      "artifact": "analysis/decompile/binja/functions/0044dcb0-initialize_sound_bank.c",
+      "required_substrings": [
+        "struct SoundBankEntry* entries_1 = entries",
+        "entries_2->sample_id",
+        "entries_2->normalization_class",
+        "entries_1->path",
+        "0044dcdd        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return path",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sound_bank_entry_owner_and_void_init_abi",
+      "artifact": "analysis/decompile/ida/functions/0044dcb0-initialize_sound_bank.c",
+      "required_substrings": [
+        "void __thiscall initialize_sound_bank(SoundEffectManager *manager, SoundBankEntry *entries)",
+        "v4->sample_id = register_sound_sample(path, v4->normalization_class)",
+        "path = v2->path"
+      ],
+      "forbidden_substrings": [
+        "char *__stdcall sub_44DCB0",
+        "return path",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_positional_sound_source_and_listener_owners",
+      "artifact": "analysis/decompile/binja/functions/0044dce0-play_sound_effect_at_position.c",
+      "required_substrings": [
+        "position->x",
+        "position->y",
+        "position->z",
+        "game_base_1->players[0].camera.body.transform.position",
+        "play_sound_effect_backend(sound_id"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "arg2",
+        "data_4df904",
+        "return play_sound_effect_backend",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_positional_sound_source_and_listener_owners",
+      "artifact": "analysis/decompile/ida/functions/0044dce0-play_sound_effect_at_position.c",
+      "required_substrings": [
+        "void __thiscall play_sound_effect_at_position(SoundEffectManager *manager, int32_t sound_id, Vec3 *position)",
+        "position->x - g_game_base->players[0].camera.body.transform.position.x",
+        "position->y - g_game_base->players[0].camera.body.transform.position.y",
+        "position->z - g_game_base->players[0].camera.body.transform.position.z",
+        "play_sound_effect_backend(sound_id"
+      ],
+      "forbidden_substrings": [
+        "void __stdcall sub_44DCE0",
+        "float *a2",
+        "MEMORY[0x4DF904]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sound_effect_void_wrapper_owner",
+      "artifact": "analysis/decompile/binja/functions/0044dde0-play_sound_effect.c",
+      "required_substrings": [
+        "play_sound_effect_backend(sound_id, 1f, -1f, 0f)",
+        "0044ddf9        return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return play_sound_effect_backend",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sound_effect_void_wrapper_owner",
+      "artifact": "analysis/decompile/ida/functions/0044dde0-play_sound_effect.c",
+      "required_substrings": [
+        "void __thiscall play_sound_effect(SoundEffectManager *manager, int32_t sound_id)",
+        "play_sound_effect_backend(sound_id, 1.0, -1.0, 0.0);"
+      ],
+      "forbidden_substrings": [
+        "void __stdcall sub_44DDE0",
+        "int __thiscall play_sound_effect",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_warning_sound_manager_handle_flow",
+      "artifact": "analysis/decompile/binja/functions/00446f60-stop_warning_sample.c",
+      "required_substrings": [
+        "stop_warning_sample_handle(&g_sound_effect_manager, play_warning_sample_backend(&g_sound_effect_manager, 0x32))",
+        "00446f77        return"
+      ],
+      "forbidden_substrings": [
+        "play_warning_sample_backend(0x32)",
+        "return stop_warning_sample_handle",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_warning_sound_manager_handle_flow",
+      "artifact": "analysis/decompile/ida/functions/00446f60-stop_warning_sample.c",
+      "required_substrings": [
+        "v0 = play_warning_sample_backend(&g_sound_effect_manager, 50);",
+        "stop_warning_sample_handle(&g_sound_effect_manager, v0);"
+      ],
+      "forbidden_substrings": [
+        "play_warning_sample_backend(50)",
+        "return stop_warning_sample_handle",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
       "name": "bn_snail_skin_fields_intact",
       "artifact": "analysis/decompile/binja/functions/00445fd0-change_snail_skin.c",
       "required_substrings": [

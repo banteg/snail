@@ -12,7 +12,7 @@
 00441b30        origin_1.y = fconvert.s(float.t(i) * fconvert.t(-0.00999999978f) + fconvert.t(origin->y))
 00441b38        origin_1.z = origin->z
 00441b51        spawn_sub_lazer_projectile(&manager->slots[i], &origin_1, direction)
-00441b5e        play_sound_effect_at_position(0xf, origin)
+00441b5e        play_sound_effect_at_position(&g_sound_effect_manager, 0xf, origin)
 00441b67        return
 00441ae7        i += 1
 00441ae8        ecx = &ecx[0x2c]

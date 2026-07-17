@@ -30,3 +30,18 @@ terminating entry). Binary Ninja confirms the final 12-byte record begins at
 words are zero. The exact initializer deliberately remains sentinel-driven,
 so the derived storage capacity documents ownership without manufacturing a
 counted-loop contract that native does not have.
+
+## 2026-07-17 void ABI and paired owner replay
+
+- Windows leaves the sentinel path in EAX, while Android's retained
+  `cRSound::Init(cRSoundBank*)` leaves a record offset after also binding the
+  bank pointer into `gRSound`. Both startup callers discard the register, so
+  the authored contract is `void`; treating either residue as a return value
+  would be platform-specific fakematching.
+- Removing the synthetic pointer return keeps the Windows scratch exact at
+  `21/21` instructions with its single audited operand clean.
+- Binary Ninja and IDA now replay the one-byte Windows
+  `g_sound_effect_manager`, the `0x0c`-byte `SoundBankEntry`, all six manager
+  method ABIs, and `g_sound_bank_entries[52]`. Readback proves the complete
+  `0x270` data extent in both databases; the IDA replay explicitly repairs and
+  guards against a stale four-byte item head.

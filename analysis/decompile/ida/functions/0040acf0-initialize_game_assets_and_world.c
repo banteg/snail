@@ -299,10 +299,10 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   TextureRef *v293; // eax
   Object *v294; // eax
   void **v295; // eax
-  PathTemplateStripMesh **v296; // esi
+  Object **v296; // esi
   int k; // edi
   Object *v298; // eax
-  PathTemplateStripMesh *v299; // eax
+  Object *v299; // eax
   TextureRef *v300; // eax
   TextureRefFlags v301; // ecx
   InputState *p_input; // esi
@@ -328,10 +328,10 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   int v323; // [esp+14h] [ebp-128h]
   int v324; // [esp+14h] [ebp-128h]
   int v325; // [esp+14h] [ebp-128h]
-  int v326; // [esp+14h] [ebp-128h]
+  int32_t v326; // [esp+14h] [ebp-128h]
   char *v327; // [esp+14h] [ebp-128h]
   Color4f color; // [esp+18h] [ebp-124h] BYREF
-  int j; // [esp+28h] [ebp-114h]
+  int32_t j; // [esp+28h] [ebp-114h]
   TransformMatrix transform; // [esp+2Ch] [ebp-110h] BYREF
   char self[16]; // [esp+6Ch] [ebp-D0h] BYREF
   char ArgList[128]; // [esp+7Ch] [ebp-C0h] BYREF
@@ -410,11 +410,11 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
   bind_subgame_owner((SubgameOwnerLink *)&game->subgame.gui);
   bind_subgame_owner((SubgameOwnerLink *)&game->subgame.thanks_screen);
-  load_galaxy_layout((char *)&game->subgame.galaxy);
+  load_galaxy_layout(&game->subgame.galaxy);
   initialize_cameraman((Cameraman *)((char *)&loc_42FF7C + (_DWORD)game));
   open_logo(&game->logo);
-  initialize_sound_bank(&g_sound_bank_entries);
-  initialize_voice_manager(g_voice_manager);
+  initialize_sound_bank(&g_sound_effect_manager, g_sound_bank_entries);
+  initialize_voice_manager(&g_voice_manager);
   apply_audio_config_volumes(&game->options);
   load_level_definitions(&game->subgame.sm_tracks);
   load_landscape_script_by_name((char *)&g_game_base->subgame.landscape_manager, g_menu_background_script_path);
@@ -577,13 +577,13 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     v18 = (char *)game + 56 * (__int64)v307;
     v19 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v18 + 280464), v19);
-    initialize_backdrop_slice_quad(*((PathTemplateStripMesh **)v18 + 70125), aObjectsWorld00, v307);
+    initialize_backdrop_slice_quad(*((Object **)v18 + 70125), aObjectsWorld00, v307);
     v20 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v18 + 280912), v20);
-    initialize_backdrop_slice_quad(*((PathTemplateStripMesh **)v18 + 70237), aObjectsWorld00_0, v307);
+    initialize_backdrop_slice_quad(*((Object **)v18 + 70237), aObjectsWorld00_0, v307);
     v21 = add_object_to_list(&g_object_list);
     set_bod_object((BodBase *)(v18 + 281360), v21);
-    initialize_backdrop_slice_quad(*((PathTemplateStripMesh **)v18 + 70349), texture_a, v307);
+    initialize_backdrop_slice_quad(*((Object **)v18 + 70349), texture_a, v307);
     v22 = v307 + 1.0;
     v307 = v22;
   }
@@ -631,97 +631,64 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   apply_bod_position((BodBase *)&game->root_bod_catalog.pillars[7], &transform);
   v31 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)game->root_bod_catalog.ramp_edges, v31);
-  initialize_textured_backdrop_quad(
-    (PathTemplateStripMesh *)game->root_bod_catalog.ramp_edges[0].object,
-    aObjectsUnivers,
-    0.0);
-  raise_backdrop_quad_edge_pair(-1, (int)game->root_bod_catalog.ramp_edges[0].object);
+  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.ramp_edges[0].object, aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(-1, (Object *)game->root_bod_catalog.ramp_edges[0].object);
   v32 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.ramp_edges[1], v32);
-  initialize_textured_backdrop_quad(
-    (PathTemplateStripMesh *)game->root_bod_catalog.ramp_edges[1].object,
-    aObjectsUnivers,
-    0.0);
-  raise_backdrop_quad_edge_pair(0, (int)game->root_bod_catalog.ramp_edges[1].object);
+  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.ramp_edges[1].object, aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(0, (Object *)game->root_bod_catalog.ramp_edges[1].object);
   v33 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.ramp_edges[2], v33);
-  initialize_textured_backdrop_quad(
-    (PathTemplateStripMesh *)game->root_bod_catalog.ramp_edges[2].object,
-    aObjectsUnivers,
-    0.0);
-  raise_backdrop_quad_edge_pair(1, (int)game->root_bod_catalog.ramp_edges[2].object);
+  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.ramp_edges[2].object, aObjectsUnivers, 0.0);
+  raise_backdrop_quad_edge_pair(1, (Object *)game->root_bod_catalog.ramp_edges[2].object);
   v34 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners, v34);
-  initialize_backdrop_corner_quad(
-    0,
-    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[0].object,
-    aObjectsWorld00);
+  initialize_backdrop_corner_quad(0, (Object *)game->root_bod_catalog.floor_corners.storage[0].object, aObjectsWorld00);
   v35 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[1], v35);
-  initialize_backdrop_corner_quad(
-    1,
-    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[1].object,
-    aObjectsWorld00);
+  initialize_backdrop_corner_quad(1, (Object *)game->root_bod_catalog.floor_corners.storage[1].object, aObjectsWorld00);
   v36 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[3], v36);
-  initialize_backdrop_corner_quad(
-    2,
-    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[3].object,
-    aObjectsWorld00);
+  initialize_backdrop_corner_quad(2, (Object *)game->root_bod_catalog.floor_corners.storage[3].object, aObjectsWorld00);
   v37 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.floor_corners.storage[2], v37);
-  initialize_backdrop_corner_quad(
-    3,
-    (PathTemplateStripMesh *)game->root_bod_catalog.floor_corners.storage[2].object,
-    aObjectsWorld00);
+  initialize_backdrop_corner_quad(3, (Object *)game->root_bod_catalog.floor_corners.storage[2].object, aObjectsWorld00);
   v38 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners, v38);
   initialize_backdrop_corner_quad(
     0,
-    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[0].object,
+    (Object *)game->root_bod_catalog.warning_corners.storage[0].object,
     aObjectsWorld00_0);
   v39 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[1], v39);
   initialize_backdrop_corner_quad(
     1,
-    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[1].object,
+    (Object *)game->root_bod_catalog.warning_corners.storage[1].object,
     aObjectsWorld00_0);
   v40 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[3], v40);
   initialize_backdrop_corner_quad(
     2,
-    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[3].object,
+    (Object *)game->root_bod_catalog.warning_corners.storage[3].object,
     aObjectsWorld00_0);
   v41 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.warning_corners.storage[2], v41);
   initialize_backdrop_corner_quad(
     3,
-    (PathTemplateStripMesh *)game->root_bod_catalog.warning_corners.storage[2].object,
+    (Object *)game->root_bod_catalog.warning_corners.storage[2].object,
     aObjectsWorld00_0);
   v42 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners, v42);
-  initialize_backdrop_corner_quad(
-    0,
-    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[0].object,
-    texture_a);
+  initialize_backdrop_corner_quad(0, (Object *)game->root_bod_catalog.slide_corners.storage[0].object, texture_a);
   v43 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[1], v43);
-  initialize_backdrop_corner_quad(
-    1,
-    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[1].object,
-    texture_a);
+  initialize_backdrop_corner_quad(1, (Object *)game->root_bod_catalog.slide_corners.storage[1].object, texture_a);
   v44 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[3], v44);
-  initialize_backdrop_corner_quad(
-    2,
-    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[3].object,
-    texture_a);
+  initialize_backdrop_corner_quad(2, (Object *)game->root_bod_catalog.slide_corners.storage[3].object, texture_a);
   v45 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.slide_corners.storage[2], v45);
-  initialize_backdrop_corner_quad(
-    3,
-    (PathTemplateStripMesh *)game->root_bod_catalog.slide_corners.storage[2].object,
-    texture_a);
+  initialize_backdrop_corner_quad(3, (Object *)game->root_bod_catalog.slide_corners.storage[2].object, texture_a);
   v46 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog.trampoline, v46);
   load_x_mesh(&game->directx_loader, aTrampX, (Object *)game->root_bod_catalog.trampoline.object, 1);
@@ -730,10 +697,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   *v47 |= 0x400u;
   v48 = add_object_to_list(&g_object_list);
   set_bod_object((BodBase *)&game->root_bod_catalog, v48);
-  initialize_textured_backdrop_quad(
-    (PathTemplateStripMesh *)game->root_bod_catalog.universe_hole.object,
-    aObjectsUnivers_0,
-    0.0);
+  initialize_textured_backdrop_quad((Object *)game->root_bod_catalog.universe_hole.object, aObjectsUnivers_0, 0.0);
   *((_DWORD *)game->root_bod_catalog.universe_hole.object + 5) = 5;
   v49 = *(int **)(*((_DWORD *)game->root_bod_catalog.universe_hole.object + 23) + 12);
   v50 = *v49;
@@ -3103,7 +3067,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     for ( j = 0; j < 4; ++j )
     {
       v313 = 0;
-      v296 = (PathTemplateStripMesh **)v295;
+      v296 = (Object **)v295;
       do
       {
         for ( k = 0; k < 3; ++k )
@@ -3113,7 +3077,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
           initialize_backdrop_tile_quad(*v296, v326, j, v313 - 1, k - 1, aObjectsUnivers_1);
           v299 = *v296;
           v296 += 14;
-          *(_DWORD *)v299->_pad_14 = 5;
+          v299->blend_mode = 5;
         }
         ++v313;
       }

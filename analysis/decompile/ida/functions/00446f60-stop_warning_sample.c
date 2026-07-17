@@ -2,11 +2,11 @@
 /* function: stop_warning_sample @ 0x446f60 */
 /* selector: stop_warning_sample */
 
-int sub_446F60()
+// cRWarning::StopSample ownership recovered from Android and iOS. The Windows method stops the warning sample through the shared sound manager without reading its receiver; Android's port-specific body is a no-op.
+void stop_warning_sample()
 {
-  int v0; // eax
+  int32_t v0; // eax
 
-  v0 = play_warning_sample_backend(50);
-  return stop_warning_sample_handle(v0);
+  v0 = play_warning_sample_backend(&g_sound_effect_manager, 50);
+  stop_warning_sample_handle(&g_sound_effect_manager, v0);
 }
-

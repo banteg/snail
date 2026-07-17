@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 9,
+  "function_count": 10,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 9,
-  "ida_exported": 9,
+  "bn_exported": 10,
+  "ida_exported": 10,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -17,43 +17,47 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_voice_set",
-      "address": "0x448df0"
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     },
     {
-      "name": "shuffle_voice_set",
-      "address": "0x448e60"
+      "name": "shoot_subgoldy",
+      "address": "0x441ad0"
     },
     {
-      "name": "reset_voice_manager",
-      "address": "0x448ec0"
+      "name": "stop_warning_sample",
+      "address": "0x446f60"
     },
     {
-      "name": "initialize_voice_manager",
-      "address": "0x448ee0"
+      "name": "update_warning",
+      "address": "0x446f80"
     },
     {
-      "name": "update_voice_manager",
-      "address": "0x4492a0"
+      "name": "initialize_sound_bank",
+      "address": "0x44dcb0"
     },
     {
-      "name": "play_voice_manager",
-      "address": "0x4492d0"
+      "name": "play_sound_effect_at_position",
+      "address": "0x44dce0"
     },
     {
-      "name": "update_voice_set",
-      "address": "0x449360"
+      "name": "play_sound_effect",
+      "address": "0x44dde0"
     },
     {
-      "name": "play_voice_set",
-      "address": "0x449390"
+      "name": "play_sound_effect_scaled",
+      "address": "0x44de00"
     },
     {
-      "name": "is_voice_playing",
-      "address": "0x449410"
+      "name": "play_warning_sample_backend",
+      "address": "0x44de20"
+    },
+    {
+      "name": "stop_warning_sample_handle",
+      "address": "0x44de30"
     }
   ],
-  "health_check_count": 614,
+  "health_check_count": 625,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

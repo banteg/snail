@@ -900,6 +900,28 @@ then selects a bank and applies one of the three recovered policies: idle-only,
 global-cooldown, or interrupt. The checked-in matcher enums name those proved
 bank IDs and policies without strengthening the native integer formals.
 
+## Sound Effect Manager
+
+Windows uses `g_sound_effect_manager @ 0x78ff88` as an exact one-byte empty
+`cRSound` facade. Its six recovered methods never read receiver fields, but 36
+native ECX loads across startup, frontend, gameplay, cutscene, and warning
+callers prove the shared member owner. Android's later `gRSound` diverges by
+storing a borrowed sound-bank pointer; that platform-specific field is not
+projected back onto the empty Windows object.
+
+The shipped `g_sound_bank_entries @ 0x4a2140` is one exact `0x270`-byte table:
+51 live `0x0c`-byte `cRSoundBank` records followed by the empty-string sentinel.
+Each record owns a path pointer, the registered sample index written at `+0x04`,
+and its normalization class at `+0x08`. Both decompiler databases now claim the
+full 52-record extent rather than retaining a pointer-sized item at its head.
+
+`cRSound::Init(cRSoundBank*)` is `void`. Windows naturally leaves the sentinel
+path in EAX while Android leaves a record offset, and both startup callers
+discard it. The positional `Play(int, tVector&)` overload additionally recovers
+the borrowed source vector and the listener at
+`GameRoot::players[0].camera.body.transform.position`; its 25-unit attenuation
+and pan calculation remain exact in the matcher.
+
 ## Backdrop
 
 The Windows root owns one exact `0x6cc`-byte `cRBackdrop`-compatible object at

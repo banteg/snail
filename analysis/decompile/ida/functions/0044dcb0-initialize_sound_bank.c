@@ -2,27 +2,25 @@
 /* function: initialize_sound_bank @ 0x44dcb0 */
 /* selector: initialize_sound_bank */
 
-// Registers one null-terminated table of shipped SFX paths into the shared runtime sound table by repeatedly calling `register_sound_sample` with each path and its normalization class.
-char *__stdcall sub_44DCB0(char **a1)
+// Exact Windows `cRSound::Init(cRSoundBank*)` member: registers the 51 shipped `g_sound_bank_entries` records, stores each returned sample id at record `+0x04`, and stops at the 52nd record whose path points at an empty string. Android names the corresponding global `gSFXBank` and preserves the same 12-byte record layout.
+void __thiscall initialize_sound_bank(SoundEffectManager *manager, SoundBankEntry *entries)
 {
-  char **v1; // esi
-  char *result; // eax
-  char **v3; // edi
+  SoundBankEntry *v2; // esi
+  char *path; // eax
+  SoundBankEntry *v4; // edi
 
-  v1 = a1;
-  result = *a1;
-  if ( **a1 )
+  v2 = entries;
+  path = entries->path;
+  if ( *entries->path )
   {
-    v3 = a1;
+    v4 = entries;
     do
     {
-      v1 += 3;
-      v3[1] = (char *)register_sound_sample(result, (int)v3[2]);
-      v3 = v1;
-      result = *v1;
+      ++v2;
+      v4->sample_id = register_sound_sample(path, v4->normalization_class);
+      v4 = v2;
+      path = v2->path;
     }
-    while ( **v1 );
+    while ( *v2->path );
   }
-  return result;
 }
-

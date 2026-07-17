@@ -2,9 +2,8 @@
 /* function: play_warning_sample_backend @ 0x44de20 */
 /* selector: play_warning_sample_backend */
 
-// Warning-system wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle.
-int __stdcall sub_44DE20(int a1)
+// Exact SoundEffectManager warning wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle.
+int32_t __thiscall play_warning_sample_backend(SoundEffectManager *manager, int32_t sample_id)
 {
-  return sub_432DD0(a1);
+  return play_registered_warning_sample(sample_id);
 }
-

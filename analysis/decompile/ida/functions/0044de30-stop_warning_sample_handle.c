@@ -2,9 +2,8 @@
 /* function: stop_warning_sample_handle @ 0x44de30 */
 /* selector: stop_warning_sample_handle */
 
-// Warning-system wrapper that stops one live warning-sample handle through the shared registered-sample backend.
-int __stdcall sub_44DE30(int a1)
+// Exact SoundEffectManager warning wrapper that stops one live warning-sample handle through the shared registered-sample backend.
+void __thiscall stop_warning_sample_handle(SoundEffectManager *manager, int32_t handle)
 {
-  return sub_432DE0(a1);
+  stop_registered_warning_sample(handle);
 }
-

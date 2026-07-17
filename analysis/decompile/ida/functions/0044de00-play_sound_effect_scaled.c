@@ -2,9 +2,8 @@
 /* function: play_sound_effect_scaled @ 0x44de00 */
 /* selector: play_sound_effect_scaled */
 
-// Thin gameplay sound wrapper that forwards one effect id and explicit gain into the shared audio backend, leaving pitch and pan on their default lanes.
-void __stdcall sub_44DE00(int a1, float a2)
+// Exact Windows `cRSound::PlayVolume(int, float)` member: forwards one effect id and explicit gain into the shared audio backend, leaving pitch and pan on their default lanes.
+void __thiscall play_sound_effect_scaled(SoundEffectManager *manager, int32_t sound_id, float gain)
 {
-  play_sound_effect_backend(a1, a2, -1.0, 0.0);
+  play_sound_effect_backend(sound_id, gain, -1.0, 0.0);
 }
-

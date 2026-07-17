@@ -1025,3 +1025,14 @@ The semantic matcher keeps a `GolbShot*` cursor while native VC6 keeps the
 object-field cursor. No pointer arithmetic was introduced to imitate that
 schedule. Focused matching remains 80.50% (5392/5411) with 1639 clean operands
 and the existing 36 broad-alignment mismatches.
+
+## 2026-07-17 sound and voice startup owners
+
+The adjacent startup calls now expose both exact globals in the paired
+decompiles: `initialize_sound_bank(&g_sound_effect_manager,
+g_sound_bank_entries)` followed by
+`initialize_voice_manager(&g_voice_manager)`. The first call proves the hidden
+ECX receiver for the otherwise empty Windows `cRSound` facade and the complete
+52-record bank owner; the second captures the `0x188` inline voice-bank object
+recovered in the preceding slice. These are analysis propagation improvements
+only, with no matcher source-shape concession.

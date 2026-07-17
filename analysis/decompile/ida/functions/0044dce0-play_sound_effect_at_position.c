@@ -2,45 +2,39 @@
 /* function: play_sound_effect_at_position @ 0x44dce0 */
 /* selector: play_sound_effect_at_position */
 
-// Plays one effect id through the shared audio backend with distance attenuation and left-right pan derived from the supplied world position.
-void __stdcall sub_44DCE0(int a1, float *a2)
+// Windows cRSound positional overload: folds a one-listener minimum-distance loop over GamePlayer[0]'s owned camera transform position, then plays one effect id with 25-unit attenuation and left-right pan derived from the supplied Vector3 reference.
+void __thiscall play_sound_effect_at_position(SoundEffectManager *manager, int32_t sound_id, Vec3 *position)
 {
-  double v2; // st7
   double v3; // st7
-  float v4; // [esp+4h] [ebp-1Ch]
-  float v5; // [esp+4h] [ebp-1Ch]
-  float v6; // [esp+8h] [ebp-18h]
-  float v7; // [esp+Ch] [ebp-14h]
-  float v8; // [esp+10h] [ebp-10h]
-  float v9[3]; // [esp+14h] [ebp-Ch] BYREF
-  float v10; // [esp+28h] [ebp+8h]
+  double v4; // st7
+  float gain; // [esp+4h] [ebp-1Ch]
+  float gaina; // [esp+4h] [ebp-1Ch]
+  Vec3 vector; // [esp+14h] [ebp-Ch] BYREF
+  float pan; // [esp+28h] [ebp+8h]
+  Vec3 v9; // 0:^18.12
 
-  v4 = 1.0e10;
-  v6 = *a2 - *((float *)MEMORY[0x4DF904] + 139);
-  v7 = a2[1] - *((float *)MEMORY[0x4DF904] + 140);
-  v2 = a2[2] - *((float *)MEMORY[0x4DF904] + 141);
-  v9[1] = v7;
-  v9[0] = v6;
-  v8 = v2;
-  v9[2] = v8;
-  vector_magnitude(v9);
-  if ( v2 < 1.0e10 )
-    v4 = v2;
-  if ( v4 <= 25.0 )
+  gain = 1.0e10;
+  v9.x = position->x - g_game_base->players[0].camera.body.transform.position.x;
+  v9.y = position->y - g_game_base->players[0].camera.body.transform.position.y;
+  v9.z = position->z - g_game_base->players[0].camera.body.transform.position.z;
+  vector = v9;
+  v3 = vector_magnitude(&vector);
+  if ( v3 < 1.0e10 )
+    gain = v3;
+  if ( gain <= 25.0 )
   {
-    v5 = 1.0 - v4 * 0.039999999;
-    v3 = *a2 * -0.25 * 100.0;
-    v10 = v3;
-    if ( v3 >= -100.0 )
+    gaina = 1.0 - gain * 0.039999999;
+    v4 = position->x * -0.25 * 100.0;
+    pan = v4;
+    if ( v4 >= -100.0 )
     {
-      if ( v10 > 100.0 )
-        v10 = 100.0;
+      if ( pan > 100.0 )
+        pan = 100.0;
     }
     else
     {
-      v10 = -100.0;
+      pan = -100.0;
     }
-    play_sound_effect_backend(a1, v5, -1.0, v10);
+    play_sound_effect_backend(sound_id, gaina, -1.0, pan);
   }
 }
-

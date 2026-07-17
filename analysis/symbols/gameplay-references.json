@@ -2621,6 +2621,7 @@
         "off_4A2140",
         "data_4a2140"
       ],
+      "size": "0x270",
       "description": "52-record startup `cRSoundBank` table: 51 shipped SFX path/sample-id/normalization records followed by an empty-string sentinel. Android names the corresponding owner `gSFXBank`."
     },
     {
@@ -5256,7 +5257,8 @@
       "name": "g_sound_effect_manager",
       "kind": "global",
       "aliases": [],
-      "description": "Global sound-effect manager object used by gameplay feedback helpers."
+      "size": "0x1",
+      "description": "Exact one-byte empty Windows cRSound facade used as the SoundEffectManager receiver by startup and gameplay feedback helpers. Android expands the corresponding owner with a borrowed sound-bank pointer."
     },
     {
       "address": "0x78ff90",

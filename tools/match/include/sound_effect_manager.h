@@ -20,7 +20,7 @@ enum {
 
 class SoundEffectManager {
 public:
-    char* initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
+    void initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
     void play_sound_effect(int sound_id); // @ 0x44dde0
     void play_sound_effect_scaled(int sound_id, float gain); // @ 0x44de00
     void play_sound_effect_at_position(
@@ -35,5 +35,7 @@ extern SoundBankEntry
 
 typedef char SoundBankEntry_must_be_0x0c[
     (sizeof(SoundBankEntry) == 0x0c) ? 1 : -1];
+typedef char SoundEffectManager_must_be_0x01[
+    (sizeof(SoundEffectManager) == 0x01) ? 1 : -1];
 
 #endif

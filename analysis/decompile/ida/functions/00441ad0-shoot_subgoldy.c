@@ -23,5 +23,5 @@ void __thiscall shoot_subgoldy(SubLazerManager *manager, Vec3 *origin, const Vec
   v8.y = v6;
   v8.z = z;
   spawn_sub_lazer_projectile(&manager->slots[v4], &v8, direction);
-  play_sound_effect_at_position(15, &origin->x);
+  play_sound_effect_at_position(&g_sound_effect_manager, 15, origin);
 }

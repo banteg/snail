@@ -88,3 +88,12 @@ Rejected source-shape probes:
 - iOS independently names this overload `cRSound::Play(int, tVector&)`, so the
   Windows surface now takes a typed `Vector3&`. The exact `shoot_subgoldy`
   caller remains 48/48 after passing its unstaggered origin by reference.
+
+## 2026-07-17 paired owner replay
+
+The replayed thiscall ABI now carries the empty Windows `SoundEffectManager*`
+receiver and borrowed `Vec3*` position in both analysis lanes. Re-exporting the
+body recovers `position->{x,y,z}` and the listener at
+`g_game_base->players[0].camera.body.transform.position` without changing the
+exact `66/66` matcher result or introducing a receiver field that Windows never
+reads.

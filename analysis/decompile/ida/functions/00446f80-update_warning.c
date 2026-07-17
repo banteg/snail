@@ -2,12 +2,13 @@
 /* function: update_warning @ 0x446f80 */
 /* selector: update_warning */
 
-void __thiscall sub_446F80(float *this)
+// Advances Player's embedded cRWarning phase and warning-border alpha while gameplay is unpaused, alternating its solid and fade states and replaying the warning cue. Android and iOS retain the same owner role as cRWarning::AI().
+void __thiscall update_warning(float *this)
 {
   double v1; // st7
   double v2; // st7
 
-  if ( !*((_BYTE *)MEMORY[0x4DF904] + 476705) && *(_DWORD *)this )
+  if ( !g_game_base->subgame.subgame_pause_gate && *(_DWORD *)this )
   {
     if ( *(_DWORD *)this == 1 )
     {
@@ -32,9 +33,8 @@ void __thiscall sub_446F80(float *this)
       {
         *(this + 1) = 0.0;
         *(_DWORD *)this = 1;
-        play_sound_effect(50);
+        play_sound_effect(&g_sound_effect_manager, 50);
       }
     }
   }
 }
-

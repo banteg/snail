@@ -133,6 +133,51 @@ def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/voice_manager_types.h"' in ida_runner
 
 
+def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_sound_effect_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_sound_effect_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_sound_effect_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_header = (HEADER_DIR / "sound_effect_manager_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/sound_effect_manager.h"
+    ).read_text(encoding="utf-8")
+    references = (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+        encoding="utf-8"
+    )
+
+    for source in (binja_sync, ida_sync):
+        assert "void __thiscall initialize_sound_bank(SoundEffectManager* manager" in source
+        assert "void __thiscall play_sound_effect_at_position(SoundEffectManager* manager" in source
+        assert "void __thiscall play_sound_effect(SoundEffectManager* manager" in source
+        assert "void __thiscall play_sound_effect_scaled(SoundEffectManager* manager" in source
+        assert "int32_t __thiscall play_warning_sample_backend(SoundEffectManager* manager" in source
+        assert "void __thiscall stop_warning_sample_handle(SoundEffectManager* manager" in source
+
+    assert '("0x4a2140", "SoundBankEntry[52]")' in binja_sync
+    assert '("0x78ff88", "SoundEffectManager")' in binja_sync
+    assert "uint8_t empty_object;" in analysis_header
+    assert "extern SoundBankEntry g_sound_bank_entries[52];" in analysis_header
+    assert '(0x4A2140, 0x270, "g_sound_bank_entries", "SoundBankEntry[52]")' in ida_sync
+    assert "ida_bytes.get_item_size" in ida_sync
+    assert "void initialize_sound_bank(SoundBankEntry* entries);" in matcher_header
+    assert "SoundEffectManager_must_be_0x01" in matcher_header
+    assert '"size": "0x270"' in references
+    assert '"size": "0x1"' in references
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/sound_effect_manager_types.h"'
+        in ida_runner
+    )
+
+
 def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     high_score_sync = (BINJA_DIR / "sync_high_score_screen_types.py").read_text(
