@@ -5665,17 +5665,13 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     assert expected[0] in track_sync
     assert expected[1] in track_sync
     assert expected[2] in runtime_sync
-    assert "DEFERRED_PROTO_UPDATES = (" in track_sync
-    assert "report_deferred_prototypes" in track_sync
+    assert "DEFERRED_PROTO_UPDATES" not in track_sync
+    assert "report_deferred_prototypes" not in track_sync
     direct_track_prototypes = track_sync.split("\nPROTO_UPDATES = (", 1)[1].split(
-        "\n)\n\n\ndef report_deferred_prototypes", 1
+        "\n)\n\n\ndef parse_args", 1
     )[0]
-    deferred_track_prototypes = track_sync.split(
-        "DEFERRED_PROTO_UPDATES = (", 1
-    )[1].split("\n)\n\nPROTO_UPDATES", 1)[0]
     assert "initialize_track_render_cache_manager" in direct_track_prototypes
-    assert "build_track_render_caches" not in direct_track_prototypes
-    assert "build_track_render_caches" in deferred_track_prototypes
+    assert "build_track_render_caches" in direct_track_prototypes
     assert expected[0] + ";" in ida_path_sync
     assert expected[1] + ";" in ida_path_sync
     assert (

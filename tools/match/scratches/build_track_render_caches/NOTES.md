@@ -5,7 +5,7 @@ five render-cache families: Floor, Slide, Warn, Ramp, and Fringe. The retained
 scratch keeps the committed by-value member signature:
 
 ```cpp
-int SegmentCache::build_track_render_caches(tColour skirt_color);
+void SegmentCache::build_track_render_caches(tColour skirt_color);
 ```
 
 That signature agrees with the exact caller in
@@ -200,3 +200,13 @@ compares unrelated subgame state. Android has the same discarded final-callee
 pattern through `cRWorld::ReSet`. Removing the synthetic debug-report return
 keeps the honest cache builder byte-for-byte at 99.79%, 475/475 instructions,
 with 20 clean operands and only the equivalent runtime-cell SIB ordering.
+
+## 2026-07-17 Binary Ninja ABI closure
+
+The guarded live-database preview and readback now preserve the authored
+`void __thiscall` member ABI with the by-value `tColour` argument. Binary
+Ninja consequently emits a bare terminal return instead of inventing a
+synthetic `int32_t` result. The narrow replay script owns this prototype as a
+normal checked update rather than carrying it as deferred database debt. No
+source shaping was needed: the honest matcher result remains 99.79%, 475/475
+instructions, with 20 clean operands and the equivalent SIB ordering visible.

@@ -3580,11 +3580,13 @@
         "struct SubgameRuntime* owner_subgame",
         "struct tColourSmall color_2",
         "manager->skirt_color_bgra",
-        "owner_subgame->runtime_cells"
+        "owner_subgame->runtime_cells",
+        "00433818        return"
       ],
       "forbidden_substrings": [
         "TrackRenderGrid* owner_subgame",
         "struct ColorBGRA8 color_2",
+        "00433818        return 0",
         "__asm",
         "_ET1"
       ]

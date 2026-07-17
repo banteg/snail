@@ -2,7 +2,7 @@
 /* function: build_track_render_caches @ 0x433220 */
 /* selector: build_track_render_caches */
 
-// Builds the cRSegmentCache Floor, Slide, Warn, Ramp, and Fringe families from the owning SubgameRuntime’s fixed runtime-cell slab, using each embedded TrackRowCell anchor as the mesh-instance position.
+// Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime’s fixed runtime-cell slab and uses each embedded TrackRowCell anchor as the mesh-instance position. The final debug-report result is incidental call state.
 void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_color)
 {
   int32_t v3; // ecx
