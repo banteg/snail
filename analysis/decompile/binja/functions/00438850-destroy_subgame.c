@@ -19,7 +19,7 @@
 00438952        int32_t i
 004388df        uint32_t list_flags = (esi_1 - 0x356b0c)->sub_lazers.slots[0].body.bod.bod.list_flags
 004388e4        if ((0x200 & list_flags) != 0)
-004388ec        struct FrameBodList* ecx_7 = &g_game_base->active_bod_list
+004388ec        struct BodList* ecx_7 = &g_game_base->active_bod_list
 004388f4        if ((0x200 & list_flags) == 0)
 004388fb        report_errorf("List remove")
 00438907        if ((list_flags.b & 0x40) == 0)
@@ -49,7 +49,7 @@
 004389d2        int32_t i_1
 0043895f        uint32_t list_flags_2 = (esi_2 - 0x3578cc)->salt_hazards.slots[0].body.bod.bod.list_flags
 00438964        if ((0x200 & list_flags_2) != 0)
-0043896c        struct FrameBodList* ecx_9 = &g_game_base->active_bod_list
+0043896c        struct BodList* ecx_9 = &g_game_base->active_bod_list
 00438974        if ((0x200 & list_flags_2) == 0)
 0043897b        report_errorf("List remove")
 00438987        if ((list_flags_2.b & 0x40) == 0)
@@ -79,7 +79,7 @@
 00438a4f        int32_t i_2
 004389df        uint32_t list_flags_4 = (esi_3 - 0x35908c)->banners.slots[0].bod.bod.list_flags
 004389e4        if ((0x200 & list_flags_4) != 0)
-004389ec        struct FrameBodList* ecx_11 = &g_game_base->active_bod_list
+004389ec        struct BodList* ecx_11 = &g_game_base->active_bod_list
 004389f4        if ((0x200 & list_flags_4) == 0)
 004389fb        report_errorf("List remove")
 00438a07        if ((list_flags_4.b & 0x40) == 0)
@@ -105,7 +105,7 @@
 00438a4e        i_6 -= 1
 00438a4f        do while (i_2 != 1)
 00438a58        if ((game->barrier.bod.bod.list_flags & 0x200) != 0)
-00438a66        struct FrameBodList* edx_17 = &g_game_base->active_bod_list
+00438a66        struct BodList* edx_17 = &g_game_base->active_bod_list
 00438a6c        uint32_t list_flags_6 = game->barrier.bod.bod.list_flags
 00438a71        if ((0x200 & list_flags_6) == 0)
 00438a78        report_errorf("List remove")

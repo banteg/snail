@@ -8,26 +8,26 @@
 00439bdb        if (tile_id == 0x1d || tile_id == 0x1e)
 00439be1        struct GameRoot* game_base_1 = g_game_base
 00439bed        int32_t eax_1 = eax * 0x3d
-00439bfa        void* eax_2 = &game_base_1->unknown_000000[eax_1 << 2]
+00439bfa        void* eax_2 = game_base_1 + (eax_1 << 2)
 00439c08        if ((*(&game_base_1->subgame.runtime_rows + (eax_1 << 2)) & 8) != 0 && ((*(eax_2 + 0x641194)).w:1.b & 2) != 0)
 00439c0a        int16_t ecx_5 = (*(eax_2 + 0x641194)).w
 00439c1e        if ((ecx_5:1.b & 2) == 0)
 00439c25        report_errorf("List remove")
 00439c32        if ((ecx_5.b & 0x40) == 0)
-00439c43        struct FrameBodBase* list_next_1 = (eax_2 + 0x641190)->bod.list_next
+00439c43        struct BodNode* list_next_1 = (eax_2 + 0x641190)->list_next
 00439c48        if (list_next_1 != 0)
-00439c4d        list_next_1->bod.list_prev = (eax_2 + 0x641190)->bod.list_prev
-00439c50        struct FrameBodBase* list_prev_1 = (eax_2 + 0x641190)->bod.list_prev
+00439c4d        list_next_1->list_prev = (eax_2 + 0x641190)->list_prev
+00439c50        struct BodNode* list_prev_1 = (eax_2 + 0x641190)->list_prev
 00439c55        if (list_prev_1 == 0)
-00439c62        game_base_1->active_bod_list.first = (eax_2 + 0x641190)->bod.list_next
-00439c5a        list_prev_1->bod.list_next = (eax_2 + 0x641190)->bod.list_next
-00439c68        (eax_2 + 0x641190)->bod.list_next = game_base_1->active_bod_list.free_top
+00439c62        game_base_1->active_bod_list.first = (eax_2 + 0x641190)->list_next
+00439c5a        list_prev_1->list_next = (eax_2 + 0x641190)->list_next
+00439c68        (eax_2 + 0x641190)->list_next = game_base_1->active_bod_list.free_top
 00439c6b        game_base_1->active_bod_list.free_top = eax_2 + 0x641190
-00439c6e        (eax_2 + 0x641190)->bod.list_flags &= 0xfffffdff
+00439c6e        (eax_2 + 0x641190)->list_flags &= 0xfffffdff
 00439c39        report_errorf("List remove NEXTBOD")
 00439c71        uint16_t list_flags = (cell->bod.list_flags).w
 00439c77        if ((list_flags:1.b & 2) != 0)
-00439c81        struct FrameBodList* ecx_8 = &g_game_base->active_bod_list
+00439c81        struct BodList* ecx_8 = &g_game_base->active_bod_list
 00439c87        if ((list_flags.b & 0x40) == 0)
 00439c98        struct BodNode* list_next = cell->bod.list_next
 00439c9d        if (list_next != 0)
@@ -45,7 +45,7 @@
 00439d45        int32_t i
 00439cce        struct FringeObject* fringe_front = (esi_1 - 0x44)->fringe_front
 00439cda        if (fringe_front != 0 && ((fringe_front->bod.list_flags).w:1.b & 2) != 0)
-00439ce2        struct FrameBodList* edx_6 = &g_game_base->active_bod_list
+00439ce2        struct BodList* edx_6 = &g_game_base->active_bod_list
 00439ce8        uint16_t list_flags_1 = (fringe_front->bod.list_flags).w
 00439cee        if ((list_flags_1:1.b & 2) == 0)
 00439cf5        report_errorf("List remove")

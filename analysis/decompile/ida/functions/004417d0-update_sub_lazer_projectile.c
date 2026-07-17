@@ -6,7 +6,7 @@
 void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
 {
   uint32_t list_flags; // eax
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
   uint32_t v6; // eax
@@ -115,9 +115,9 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
         if ( list_prev )
           list_prev->list_next = sub_lazer->body.bod.bod.list_next;
         else
-          p_active_bod_list->first = (FrameBodBase *)sub_lazer->body.bod.bod.list_next;
-        sub_lazer->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
-        p_active_bod_list->free_top = (FrameBodBase *)sub_lazer;
+          p_active_bod_list->first = sub_lazer->body.bod.bod.list_next;
+        sub_lazer->body.bod.bod.list_next = p_active_bod_list->free_top;
+        p_active_bod_list->free_top = &sub_lazer->body.bod.bod;
         v6 = sub_lazer->body.bod.bod.list_flags;
         sub_lazer->state = 0;
         BYTE1(v6) &= ~2u;

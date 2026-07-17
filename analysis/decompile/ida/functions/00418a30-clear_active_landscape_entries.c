@@ -7,7 +7,7 @@ void __thiscall clear_active_landscape_entries(LandscapeManager *manager)
 {
   struct BodNode **p_list_next; // esi
   int v2; // ebp
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   int v4; // eax
   int v5; // eax
   struct BodNode *v6; // eax
@@ -35,9 +35,9 @@ void __thiscall clear_active_landscape_entries(LandscapeManager *manager)
           if ( v5 )
             *(_DWORD *)(v5 + 12) = *p_list_next;
           else
-            p_active_bod_list->first = (FrameBodBase *)*p_list_next;
-          *p_list_next = (struct BodNode *)p_active_bod_list->free_top;
-          p_active_bod_list->free_top = (FrameBodBase *)(p_list_next - 3);
+            p_active_bod_list->first = *p_list_next;
+          *p_list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (BodNode *)(p_list_next - 3);
           v6 = *(p_list_next - 2);
           BYTE1(v6) &= ~2u;
           *(p_list_next - 2) = v6;

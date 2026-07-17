@@ -37,24 +37,24 @@
 0043dd50        int16_t var_4_1 = (fconvert.s(x87_r7_3)).w
 0043dd58        *(esi + 0x356434) = var_4_1.b
 0043dd58        *(esi + 0x356435) = var_4_1:1.b
-0043dd61        struct FrameBodList* edx_5 = &g_game_base->active_bod_list
-0043dd71        if (((esi + 0x3563a0)->bod.list_flags:1.b & 2) == 0)
-0043dd82        (esi + 0x3563a0)->bod.list_next = &game->player
+0043dd61        struct BodList* edx_5 = &g_game_base->active_bod_list
+0043dd71        if (((esi + 0x3563a0)->list_flags:1.b & 2) == 0)
+0043dd82        (esi + 0x3563a0)->list_next = &game->player
 0043dd88        if (edx_5->first != &game->player)
-0043dd99        struct FrameBodBase* edx_6
+0043dd99        struct BodNode* edx_6
 0043dd99        edx_6.b = game->player.body.bod.bod.list_prev.b
 0043dd99        edx_6:1.b = game->player.body.bod.bod.list_prev:1.b
-0043dd9c        (esi + 0x3563a0)->bod.list_prev = edx_6
+0043dd9c        (esi + 0x3563a0)->list_prev = edx_6
 0043dd9f        game->player.body.bod.bod.list_prev.b = (esi + 0x3563a0).b
 0043dd9f        game->player.body.bod.bod.list_prev:1.b = (esi + 0x3563a0):1.b
-0043dda5        (esi + 0x3563a0)->bod.list_prev->bod.list_next = esi + 0x3563a0
+0043dda5        (esi + 0x3563a0)->list_prev->list_next = esi + 0x3563a0
 0043dd8a        game->player.body.bod.bod.list_prev.b = (esi + 0x3563a0).b
 0043dd8a        game->player.body.bod.bod.list_prev:1.b = (esi + 0x3563a0):1.b
 0043dd8d        edx_5->first = esi + 0x3563a0
-0043dd90        (esi + 0x3563a0)->bod.list_prev = nullptr
-0043dda8        uint32_t list_flags = (esi + 0x3563a0)->bod.list_flags
+0043dd90        (esi + 0x3563a0)->list_prev = nullptr
+0043dda8        uint32_t list_flags = (esi + 0x3563a0)->list_flags
 0043ddab        list_flags:1.b |= 2
-0043ddae        (esi + 0x3563a0)->bod.list_flags = list_flags
+0043ddae        (esi + 0x3563a0)->list_flags = list_flags
 0043dd78        report_errorf("List ADDbefore")
 0043ddc7        struct Sprite* eax_7 = allocate_sprite(&g_sprite_manager, owner_player->player_slot, 0x76, 0xffffffff, 0xffffffff)
 0043ddcc        *(esi + 0x35644c) = eax_7

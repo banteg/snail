@@ -8,7 +8,7 @@ void __thiscall destroy_intro_screen(Logo *logo)
   int32_t v2; // edi
   struct BodNode **p_list_next; // esi
   int v4; // eax
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   int v6; // eax
   struct BodNode *v7; // eax
 
@@ -39,9 +39,9 @@ void __thiscall destroy_intro_screen(Logo *logo)
           if ( v6 )
             *(_DWORD *)(v6 + 12) = *p_list_next;
           else
-            p_active_bod_list->first = (FrameBodBase *)*p_list_next;
-          *p_list_next = (struct BodNode *)p_active_bod_list->free_top;
-          p_active_bod_list->free_top = (FrameBodBase *)(p_list_next - 3);
+            p_active_bod_list->first = *p_list_next;
+          *p_list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (BodNode *)(p_list_next - 3);
           v7 = *(p_list_next - 2);
           BYTE1(v7) &= ~2u;
           *(p_list_next - 2) = v7;

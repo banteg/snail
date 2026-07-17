@@ -7,7 +7,7 @@ void __thiscall update_salt_hazard(Salt *salt)
 {
   SubgameRuntime *owner_game; // eax
   uint32_t v3; // ecx
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   uint32_t list_flags; // eax
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
@@ -56,9 +56,9 @@ void __thiscall update_salt_hazard(Salt *salt)
           if ( list_prev )
             list_prev->list_next = salt->body.bod.bod.list_next;
           else
-            p_active_bod_list->first = (FrameBodBase *)salt->body.bod.bod.list_next;
-          salt->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
-          p_active_bod_list->free_top = (FrameBodBase *)salt;
+            p_active_bod_list->first = salt->body.bod.bod.list_next;
+          salt->body.bod.bod.list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = &salt->body.bod.bod;
           v8 = salt->body.bod.bod.list_flags;
           salt->state = 0;
           BYTE1(v8) &= ~2u;

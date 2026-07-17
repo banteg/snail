@@ -9,20 +9,20 @@ void __thiscall remove_sub_loc(SubLoc *cell)
   uint8_t tile_id; // cl
   int v4; // eax
   char v5; // cl
-  char *v6; // eax
+  void **v6; // eax
   int v7; // ecx
-  FrameBodBase *v8; // eax
-  FrameBodList *p_active_bod_list; // edx
-  FrameBodBase *list_next; // ecx
-  FrameBodBase *list_prev; // ecx
+  BodNode *v8; // eax
+  BodList *p_active_bod_list; // edx
+  struct BodNode *list_next; // ecx
+  struct BodNode *list_prev; // ecx
   uint32_t list_flags; // eax
-  FrameBodList *v13; // ecx
+  BodList *v13; // ecx
   struct BodNode *v14; // eax
   struct BodNode *v15; // eax
   FringeObject **p_fringe_front; // esi
   int v17; // edi
   FringeObject *v18; // eax
-  FrameBodList *v19; // edx
+  BodList *v19; // edx
   uint32_t v20; // ecx
   struct BodNode *v21; // ecx
   struct BodNode *v22; // ecx
@@ -33,11 +33,11 @@ void __thiscall remove_sub_loc(SubLoc *cell)
   {
     v4 = 61 * track_cell_row_index;
     v5 = unk_6410E0[(_DWORD)g_game_base + 4 * v4];
-    v6 = (char *)g_game_base + 4 * v4;
+    v6 = &g_game_base->vtable + v4;
     if ( (v5 & 8) != 0 && (*(_DWORD *)((_BYTE *)&unk_641194 + (_DWORD)v6) & 0x200) != 0 )
     {
       v7 = *(_DWORD *)((char *)&unk_641194 + (_DWORD)v6);
-      v8 = (FrameBodBase *)((char *)&unk_641190 + (_DWORD)v6);
+      v8 = (BodNode *)((char *)&unk_641190 + (_DWORD)v6);
       p_active_bod_list = &g_game_base->active_bod_list;
       if ( (v7 & 0x200) != 0 )
       {
@@ -47,17 +47,17 @@ void __thiscall remove_sub_loc(SubLoc *cell)
         }
         else
         {
-          list_next = v8->bod.list_next;
+          list_next = v8->list_next;
           if ( list_next )
-            list_next->bod.list_prev = v8->bod.list_prev;
-          list_prev = v8->bod.list_prev;
+            list_next->list_prev = v8->list_prev;
+          list_prev = v8->list_prev;
           if ( list_prev )
-            list_prev->bod.list_next = v8->bod.list_next;
+            list_prev->list_next = v8->list_next;
           else
-            p_active_bod_list->first = v8->bod.list_next;
-          v8->bod.list_next = p_active_bod_list->free_top;
+            p_active_bod_list->first = v8->list_next;
+          v8->list_next = p_active_bod_list->free_top;
           p_active_bod_list->free_top = v8;
-          v8->bod.list_flags &= ~0x200u;
+          v8->list_flags &= ~0x200u;
         }
       }
       else
@@ -83,9 +83,9 @@ void __thiscall remove_sub_loc(SubLoc *cell)
       if ( v15 )
         v15->list_next = cell->bod.list_next;
       else
-        v13->first = (FrameBodBase *)cell->bod.list_next;
-      cell->bod.list_next = (struct BodNode *)v13->free_top;
-      v13->free_top = (FrameBodBase *)cell;
+        v13->first = cell->bod.list_next;
+      cell->bod.list_next = v13->free_top;
+      v13->free_top = &cell->bod;
       cell->bod.list_flags &= ~0x200u;
     }
   }
@@ -113,9 +113,9 @@ void __thiscall remove_sub_loc(SubLoc *cell)
           if ( v22 )
             v22->list_next = v18->bod.list_next;
           else
-            v19->first = (FrameBodBase *)v18->bod.list_next;
-          v18->bod.list_next = (struct BodNode *)v19->free_top;
-          v19->free_top = (FrameBodBase *)v18;
+            v19->first = v18->bod.list_next;
+          v18->bod.list_next = v19->free_top;
+          v19->free_top = &v18->bod;
           v18->bod.list_flags &= ~0x200u;
         }
       }

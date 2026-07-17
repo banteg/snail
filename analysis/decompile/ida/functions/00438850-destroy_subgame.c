@@ -8,22 +8,22 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
   struct BodNode **p_list_next; // esi
   int v3; // ebx
   int v4; // eax
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   int v6; // eax
   struct BodNode *v7; // eax
   struct BodNode **v8; // esi
   int v9; // ebx
   int v10; // eax
-  FrameBodList *v11; // ecx
+  BodList *v11; // ecx
   int v12; // eax
   struct BodNode *v13; // eax
   struct BodNode **v14; // esi
   int v15; // ebx
   int v16; // eax
-  FrameBodList *v17; // ecx
+  BodList *v17; // ecx
   int v18; // eax
   struct BodNode *v19; // eax
-  FrameBodList *v20; // edx
+  BodList *v20; // edx
   uint32_t list_flags; // ecx
   struct BodNode *list_next; // ecx
   struct BodNode *list_prev; // ecx
@@ -63,9 +63,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
           if ( v6 )
             *(_DWORD *)(v6 + 12) = *p_list_next;
           else
-            p_active_bod_list->first = (FrameBodBase *)*p_list_next;
-          *p_list_next = (struct BodNode *)p_active_bod_list->free_top;
-          p_active_bod_list->free_top = (FrameBodBase *)(p_list_next - 3);
+            p_active_bod_list->first = *p_list_next;
+          *p_list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = (BodNode *)(p_list_next - 3);
           v7 = *(p_list_next - 2);
           BYTE1(v7) &= ~2u;
           *(p_list_next - 2) = v7;
@@ -95,9 +95,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
           if ( v12 )
             *(_DWORD *)(v12 + 12) = *v8;
           else
-            v11->first = (FrameBodBase *)*v8;
-          *v8 = (struct BodNode *)v11->free_top;
-          v11->free_top = (FrameBodBase *)(v8 - 3);
+            v11->first = *v8;
+          *v8 = v11->free_top;
+          v11->free_top = (BodNode *)(v8 - 3);
           v13 = *(v8 - 2);
           BYTE1(v13) &= ~2u;
           *(v8 - 2) = v13;
@@ -127,9 +127,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
           if ( v18 )
             *(_DWORD *)(v18 + 12) = *v14;
           else
-            v17->first = (FrameBodBase *)*v14;
-          *v14 = (struct BodNode *)v17->free_top;
-          v17->free_top = (FrameBodBase *)(v14 - 3);
+            v17->first = *v14;
+          *v14 = v17->free_top;
+          v17->free_top = (BodNode *)(v14 - 3);
           v19 = *(v14 - 2);
           BYTE1(v19) &= ~2u;
           *(v14 - 2) = v19;
@@ -159,9 +159,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         if ( list_prev )
           list_prev->list_next = game->barrier.bod.bod.list_next;
         else
-          v20->first = (FrameBodBase *)game->barrier.bod.bod.list_next;
-        game->barrier.bod.bod.list_next = (struct BodNode *)v20->free_top;
-        v20->free_top = (FrameBodBase *)&game->barrier;
+          v20->first = game->barrier.bod.bod.list_next;
+        game->barrier.bod.bod.list_next = v20->free_top;
+        v20->free_top = &game->barrier.bod.bod;
         v24 = game->barrier.bod.bod.list_flags;
         BYTE1(v24) &= ~2u;
         game->barrier.bod.bod.list_flags = v24;

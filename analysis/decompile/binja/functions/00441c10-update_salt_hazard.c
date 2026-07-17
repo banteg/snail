@@ -27,7 +27,7 @@
 00441d2f        if ((((x87_r7_7 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp4_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp4_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00441d31        salt->state = 2
 00441c32        if (state == 2)
-00441c3d        struct FrameBodList* ecx_3 = &g_game_base->active_bod_list
+00441c3d        struct BodList* ecx_3 = &g_game_base->active_bod_list
 00441c43        uint16_t list_flags = (salt->body.bod.bod.list_flags).w
 00441c49        if ((list_flags:1.b & 2) == 0)
 00441c50        report_errorf("List remove")

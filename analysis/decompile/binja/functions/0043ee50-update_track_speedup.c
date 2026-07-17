@@ -8,7 +8,7 @@
 0043ee65        enum TrackPickupState state = speedup->state
 0043ee6d        if (state == TRACK_PICKUP_STATE_INACTIVE)
 0043ee6d        return
-0043ee74        struct FrameBodList* ecx_1
+0043ee74        struct BodList* ecx_1
 0043ee74        if (state == 1)
 0043eefa        long double x87_r7_1 = fconvert.t(speedup->world_position.z)
 0043eefd        long double temp2_1 = fconvert.t(speedup->owner->interaction_max_z)

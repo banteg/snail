@@ -51,7 +51,7 @@
 0044244e        label_44244e:
 0044244e        controller->transform.position.y = fconvert.s(fconvert.t(controller->teardown_progress) * fconvert.t(16f) + fconvert.t(controller->transform.position.y))
 0044245d        controller->teardown_progress = fconvert.s(fconvert.t(controller->teardown_progress_step) + fconvert.t(controller->teardown_progress))
-00442468        struct FrameBodList* ecx_9 = &g_game_base->active_bod_list
+00442468        struct BodList* ecx_9 = &g_game_base->active_bod_list
 0044246e        int16_t list_flags = (controller->list_flags).w
 00442474        if ((list_flags:1.b & 2) == 0)
 0044247b        report_errorf("List remove")

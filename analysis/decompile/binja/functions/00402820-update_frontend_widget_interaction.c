@@ -15,7 +15,7 @@
 004028f5        enum FrontendWidgetFlag widget_flags = widget->widget_flags
 004028fd        if (widget_flags == 0)
 00402909        uint16_t list_flags = (widget->list_flags).w
-0040290c        struct FrameBodList* ecx_1 = &g_game_base->active_bod_list
+0040290c        struct BodList* ecx_1 = &g_game_base->active_bod_list
 00402915        if ((list_flags:1.b & 2) != 0)
 00402938        if ((list_flags.b & 0x40) != 0)
 0040293f        report_errorf("List remove NEXTBOD")
@@ -38,7 +38,7 @@
 0040291c        report_errorf("List remove")
 0040292a        reset_tooltip(&widget->tooltip)
 00402935        return
-004029a2        struct FrameBodList* ecx_5
+004029a2        struct BodList* ecx_5
 004029a2        if ((widget_flags:1.b & 2) == 0)
 00402a18        if ((widget_flags:1.b & 4) == 0)
 00402ac9        if ((widget_flags:1.b & 0x10) != 0)

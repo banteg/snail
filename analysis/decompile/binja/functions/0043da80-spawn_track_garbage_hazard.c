@@ -28,7 +28,7 @@
 0043db59        *(esi + 0x3591b0) = var_8
 0043db64        *(esi + 0x3591b4) = z
 0043db69        int16_t x87control = project_position_onto_track_attachment(game, esi + 0x3591ac, esi + 0x3591e4)
-0043db81        struct FrameBodList* eax_5 = &g_game_base->active_bod_list
+0043db81        struct BodList* eax_5 = &g_game_base->active_bod_list
 0043db88        if ((0x200 & (esi + 0x359144)->list_flags) == 0)
 0043db9b        (esi + 0x359144)->list_next = &game->player
 0043dba3        if (eax_5->first != &game->player)

@@ -8,7 +8,7 @@ void __thiscall update_click_start(ClickStartController *controller)
   FrontendWidget *prompt; // ecx
   GameRoot *v3; // eax
   FrontendWidget *v4; // ecx
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   int32_t list_flags; // eax
   struct ClickStartController *list_next; // eax
   struct ClickStartController *list_prev; // eax
@@ -82,9 +82,9 @@ LABEL_17:
             if ( list_prev )
               list_prev->list_next = controller->list_next;
             else
-              p_active_bod_list->first = (FrameBodBase *)controller->list_next;
+              p_active_bod_list->first = (BodNode *)controller->list_next;
             controller->list_next = (struct ClickStartController *)p_active_bod_list->free_top;
-            p_active_bod_list->free_top = (FrameBodBase *)controller;
+            p_active_bod_list->free_top = (BodNode *)controller;
             v9 = controller->list_flags;
             controller->state = 0;
             BYTE1(v9) &= ~2u;

@@ -13,7 +13,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
   Vec3 *p_position; // eax
   Player *v8; // ecx
   uint32_t list_flags; // eax
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
   Player *v13; // ecx
@@ -262,10 +262,10 @@ LABEL_72:
                 v24->list_next = slug->body.bod.bod.list_next;
               else
 LABEL_77:
-                p_active_bod_list->first = (FrameBodBase *)slug->body.bod.bod.list_next;
+                p_active_bod_list->first = slug->body.bod.bod.list_next;
 LABEL_78:
-              slug->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
-              p_active_bod_list->free_top = (FrameBodBase *)slug;
+              slug->body.bod.bod.list_next = p_active_bod_list->free_top;
+              p_active_bod_list->free_top = &slug->body.bod.bod;
               v39 = slug->body.bod.bod.list_flags;
               v40 = slug->sprite;
               BYTE1(v39) &= ~2u;

@@ -4,14 +4,14 @@
 
 void __thiscall kill_golb(GolbShot *shot)
 {
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   uint32_t list_flags; // eax
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
   uint32_t v6; // eax
   int32_t kind; // eax
   int v8; // eax
-  FrameBodList *v9; // edx
+  BodList *v9; // edx
   uint32_t v10; // ecx
   struct BodNode *v11; // ecx
   struct BodNode *v12; // ecx
@@ -19,7 +19,7 @@ void __thiscall kill_golb(GolbShot *shot)
   ContactTargetObject *homing_target_object; // esi
   int32_t v15; // eax
   uint32_t v16; // ecx
-  FrameBodList *v17; // edx
+  BodList *v17; // edx
   struct BodNode *v18; // ecx
   struct BodNode *v19; // ecx
   uint32_t v20; // ecx
@@ -41,9 +41,9 @@ void __thiscall kill_golb(GolbShot *shot)
       if ( list_prev )
         list_prev->list_next = shot->primary_body.bod.bod.list_next;
       else
-        p_active_bod_list->first = (FrameBodBase *)shot->primary_body.bod.bod.list_next;
-      shot->primary_body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
-      p_active_bod_list->free_top = (FrameBodBase *)shot;
+        p_active_bod_list->first = shot->primary_body.bod.bod.list_next;
+      shot->primary_body.bod.bod.list_next = p_active_bod_list->free_top;
+      p_active_bod_list->free_top = &shot->primary_body.bod.bod;
       v6 = shot->primary_body.bod.bod.list_flags;
       BYTE1(v6) &= ~2u;
       shot->primary_body.bod.bod.list_flags = v6;
@@ -79,9 +79,9 @@ void __thiscall kill_golb(GolbShot *shot)
             if ( v12 )
               v12->list_next = shot->tertiary_body.bod.bod.list_next;
             else
-              v9->first = (FrameBodBase *)shot->tertiary_body.bod.bod.list_next;
-            shot->tertiary_body.bod.bod.list_next = (struct BodNode *)v9->free_top;
-            v9->free_top = (FrameBodBase *)&shot->_pad_114[4];
+              v9->first = shot->tertiary_body.bod.bod.list_next;
+            shot->tertiary_body.bod.bod.list_next = v9->free_top;
+            v9->free_top = &shot->tertiary_body.bod.bod;
             v13 = shot->tertiary_body.bod.bod.list_flags;
             BYTE1(v13) &= ~2u;
             shot->tertiary_body.bod.bod.list_flags = v13;
@@ -119,9 +119,9 @@ void __thiscall kill_golb(GolbShot *shot)
           if ( v19 )
             v19->list_next = shot->secondary_body.bod.bod.list_next;
           else
-            v17->first = (FrameBodBase *)shot->secondary_body.bod.bod.list_next;
-          shot->secondary_body.bod.bod.list_next = (struct BodNode *)v17->free_top;
-          v17->free_top = (FrameBodBase *)&shot->vapour;
+            v17->first = shot->secondary_body.bod.bod.list_next;
+          shot->secondary_body.bod.bod.list_next = v17->free_top;
+          v17->free_top = &shot->secondary_body.bod.bod;
           v20 = shot->secondary_body.bod.bod.list_flags;
           BYTE1(v20) &= ~2u;
           shot->secondary_body.bod.bod.list_flags = v20;

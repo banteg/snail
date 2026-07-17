@@ -6,7 +6,7 @@
 0043f943        if (slug->owner_game->subgame_pause_gate != 0)
 0043f943        return
 0043f949        int32_t state = slug->state
-0043f952        struct FrameBodList* ecx_16
+0043f952        struct BodList* ecx_16
 0043f952        if (state u> 4)
 0043fcd9        label_43fcd9:
 0043fcd9        slug->sprite->facing_angle = fconvert.s(fconvert.t(slug->owner_player->heading_roll) + fconvert.t(slug->attachment_facing_angle))

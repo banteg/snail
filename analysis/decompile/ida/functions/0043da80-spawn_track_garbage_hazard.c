@@ -11,7 +11,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
   struct BodNode *v7; // ebp
   float *p_radius; // ebx
   Player *p_player; // edi
-  FrameBodList *p_active_bod_list; // eax
+  BodList *p_active_bod_list; // eax
   __int64 v11; // rax
   _DWORD *sprite; // eax
   int v13; // edx
@@ -55,7 +55,7 @@ void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *c
     if ( (Player *)p_active_bod_list->first == p_player )
     {
       p_player->body.bod.bod.list_prev = v7;
-      p_active_bod_list->first = (FrameBodBase *)v7;
+      p_active_bod_list->first = v7;
       *((_DWORD *)v6 + 877651) = 0;
     }
     else

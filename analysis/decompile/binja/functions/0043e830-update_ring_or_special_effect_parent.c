@@ -42,7 +42,7 @@
 0043e91a        if ((((x87_r7_8 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp7_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043e920        uint16_t list_flags = (ring->bod.list_flags).w
 0043e923        ring->state = SUB_RING_STATE_INACTIVE
-0043e933        struct FrameBodList* ecx_5 = &g_game_base->active_bod_list
+0043e933        struct BodList* ecx_5 = &g_game_base->active_bod_list
 0043e93c        if ((list_flags:1.b & 2) == 0)
 0043e943        report_errorf("List remove")
 0043e94f        if ((list_flags.b & 0x40) == 0)
@@ -108,7 +108,7 @@
 0043eb70        return
 0043ea32        uint16_t list_flags_2 = (ring->bod.list_flags).w
 0043ea35        ring->state = SUB_RING_STATE_INACTIVE
-0043ea45        struct FrameBodList* ecx_10 = &g_game_base->active_bod_list
+0043ea45        struct BodList* ecx_10 = &g_game_base->active_bod_list
 0043ea4e        if ((list_flags_2:1.b & 2) == 0)
 0043ea55        report_errorf("List remove")
 0043ea61        if ((list_flags_2.b & 0x40) == 0)
@@ -155,7 +155,7 @@
 0043ebc7        if ((((x87_r7_26 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_26, temp6_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0043ebcd        uint16_t list_flags_4 = (ring->bod.list_flags).w
 0043ebd0        ring->state = SUB_RING_STATE_INACTIVE
-0043ebe3        struct FrameBodList* ecx_15 = &g_game_base->active_bod_list
+0043ebe3        struct BodList* ecx_15 = &g_game_base->active_bod_list
 0043ebe9        if ((list_flags_4:1.b & 2) == 0)
 0043ebf0        report_errorf("List remove")
 0043ebfc        if ((list_flags_4.b & 0x40) == 0)

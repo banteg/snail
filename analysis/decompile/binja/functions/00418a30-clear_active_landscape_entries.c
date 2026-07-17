@@ -8,7 +8,7 @@
 00418ab8        int32_t i
 00418a40        if (((esi[-2]).w:1.b & 2) != 0)
 00418a42        esi[0x1d] = 0
-00418a4e        struct FrameBodList* ecx = &g_game_base->active_bod_list
+00418a4e        struct BodList* ecx = &g_game_base->active_bod_list
 00418a54        int16_t eax_3 = (esi[-2]).w
 00418a5a        if ((eax_3:1.b & 2) == 0)
 00418a61        report_errorf("List remove")

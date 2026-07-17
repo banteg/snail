@@ -62,7 +62,7 @@
 00441ac3        deactivate_sub_lazer_projectile(sub_lazer)
 004417f8        if (state == 2)
 00441804        uint16_t list_flags = (sub_lazer->body.bod.bod.list_flags).w
-00441807        struct FrameBodList* ecx_2 = &g_game_base->active_bod_list
+00441807        struct BodList* ecx_2 = &g_game_base->active_bod_list
 00441810        if ((list_flags:1.b & 2) == 0)
 00441817        report_errorf("List remove")
 0044181f        sub_lazer->state = 0

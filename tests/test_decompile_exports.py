@@ -491,3 +491,15 @@ def test_ida_artifact_export_reports_partial_failures_without_process_abort(
     assert '"failed": failed' in source
     assert "ida_pro.qexit(0)" in source
     assert "ida_pro.qexit(1 if failed else 0)" not in source
+
+
+@pytest.mark.parametrize("lane", ("binja", "ida"))
+def test_tracked_decompiles_use_canonical_active_bod_list_owner(lane: str) -> None:
+    functions_dir = REPO_ROOT / "analysis/decompile" / lane / "functions"
+    offenders = [
+        artifact.relative_to(REPO_ROOT).as_posix()
+        for artifact in sorted(functions_dir.glob("*.c"))
+        if "FrameBodList" in artifact.read_text(encoding="utf-8")
+    ]
+
+    assert offenders == []

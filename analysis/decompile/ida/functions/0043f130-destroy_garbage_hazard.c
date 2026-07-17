@@ -5,7 +5,7 @@
 // Exact `SubGarbage` teardown: removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`.
 SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
 {
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   uint32_t list_flags; // eax
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
@@ -32,9 +32,9 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
       if ( list_prev )
         list_prev->list_next = sub_garbage->body.bod.bod.list_next;
       else
-        p_active_bod_list->first = (FrameBodBase *)sub_garbage->body.bod.bod.list_next;
-      sub_garbage->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
-      p_active_bod_list->free_top = (FrameBodBase *)sub_garbage;
+        p_active_bod_list->first = sub_garbage->body.bod.bod.list_next;
+      sub_garbage->body.bod.bod.list_next = p_active_bod_list->free_top;
+      p_active_bod_list->free_top = &sub_garbage->body.bod.bod;
       v6 = sub_garbage->body.bod.bod.list_flags;
       BYTE1(v6) &= ~2u;
       sub_garbage->body.bod.bod.list_flags = v6;

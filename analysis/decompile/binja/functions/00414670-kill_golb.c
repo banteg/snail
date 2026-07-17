@@ -3,24 +3,24 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: kill_golb @ 0x414670 */
 
-00414676        struct FrameBodBase* shot_1 = shot
-00414678        struct FrameBodList* ecx = &g_game_base->active_bod_list
-0041467e        uint16_t list_flags = (shot_1->bod.list_flags).w
+00414676        struct BodNode* shot_1 = shot
+00414678        struct BodList* ecx = &g_game_base->active_bod_list
+0041467e        uint16_t list_flags = (shot_1->list_flags).w
 00414684        if ((list_flags:1.b & 2) == 0)
 0041468b        report_errorf("List remove")
 00414697        if ((list_flags.b & 0x40) == 0)
-004146a8        struct FrameBodBase* list_next = shot_1->bod.list_next
+004146a8        struct BodNode* list_next = shot_1->list_next
 004146ad        if (list_next != 0)
-004146b2        list_next->bod.list_prev = shot_1->bod.list_prev
-004146b5        struct FrameBodBase* list_prev = shot_1->bod.list_prev
+004146b2        list_next->list_prev = shot_1->list_prev
+004146b5        struct BodNode* list_prev = shot_1->list_prev
 004146ba        if (list_prev == 0)
-004146c7        ecx->first = shot_1->bod.list_next
-004146bf        list_prev->bod.list_next = shot_1->bod.list_next
-004146cd        shot_1->bod.list_next = ecx->free_top
+004146c7        ecx->first = shot_1->list_next
+004146bf        list_prev->list_next = shot_1->list_next
+004146cd        shot_1->list_next = ecx->free_top
 004146d0        ecx->free_top = shot_1
-004146d3        uint32_t list_flags_1 = shot_1->bod.list_flags
+004146d3        uint32_t list_flags_1 = shot_1->list_flags
 004146d6        list_flags_1:1.b &= 0xfd
-004146d9        shot_1->bod.list_flags = list_flags_1
+004146d9        shot_1->list_flags = list_flags_1
 0041469e        report_errorf("List remove NEXTBOD")
 004146dc        int32_t eax_1 = shot_1->__offset(0x1c0).d
 004146e2        shot_1->__offset(0x244).d = 0
@@ -29,7 +29,7 @@
 0041480b        return
 004146f6        if (eax_1 == 1)
 00414795        int16_t ecx_8 = (shot_1->__offset(0x84).d).w
-004147a1        struct FrameBodList* edx_6 = &g_game_base->active_bod_list
+004147a1        struct BodList* edx_6 = &g_game_base->active_bod_list
 004147aa        if ((ecx_8:1.b & 2) == 0)
 004147b1        report_errorf("List remove")
 004147ba        return
@@ -44,14 +44,14 @@
 004147ee        edx_6->first = shot_1->__offset(0x8c).d
 004147e6        *(ecx_10 + 0xc) = shot_1->__offset(0x8c).d
 004147f5        shot_1->__offset(0x8c).d = edx_6->free_top
-004147f8        edx_6->free_top = shot_1 + 0x80
+004147f8        edx_6->free_top = &shot_1[8]
 004147fb        int32_t ecx_13 = shot_1->__offset(0x84).d
 004147fe        ecx_13:1.b &= 0xfd
 00414801        shot_1->__offset(0x84).d = ecx_13
 00414804        return
 004146fd        if (eax_1 != 2)
 004146fd        return
-0041470f        struct FrameBodList* edx_4 = &g_game_base->active_bod_list
+0041470f        struct BodList* edx_4 = &g_game_base->active_bod_list
 00414715        int16_t ecx_2 = (shot_1->__offset(0x11c).d).w
 0041471b        if ((ecx_2:1.b & 2) == 0)
 00414722        report_errorf("List remove")
@@ -64,7 +64,7 @@
 00414760        edx_4->first = shot_1->__offset(0x124).d
 00414758        *(ecx_4 + 0xc) = shot_1->__offset(0x124).d
 00414767        shot_1->__offset(0x124).d = edx_4->free_top
-0041476a        edx_4->free_top = &shot_1[5]
+0041476a        edx_4->free_top = shot_1 + 0x118
 0041476d        int32_t ecx_7 = shot_1->__offset(0x11c).d
 00414770        ecx_7:1.b &= 0xfd
 00414773        shot_1->__offset(0x11c).d = ecx_7

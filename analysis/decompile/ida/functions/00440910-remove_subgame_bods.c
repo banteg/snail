@@ -8,7 +8,7 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   TrackRowCell *v1; // edi
   char *v2; // esi
   int v3; // ebp
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   int v5; // eax
   int v6; // eax
   int v7; // eax
@@ -16,54 +16,54 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
   struct BodNode **p_list_next; // esi
   int v10; // edi
   int v11; // eax
-  FrameBodList *v12; // ecx
+  BodList *v12; // ecx
   int v13; // eax
   struct BodNode *v14; // eax
-  FrameBodList *v15; // edx
+  BodList *v15; // edx
   uint32_t list_flags; // ecx
   struct BodNode *list_next; // ecx
   struct BodNode *list_prev; // ecx
   uint32_t v19; // ecx
   uint32_t v20; // ecx
-  FrameBodList *v21; // edx
+  BodList *v21; // edx
   struct BodNode *v22; // ecx
   struct BodNode *v23; // ecx
   uint32_t v24; // ecx
   struct BodNode **v25; // esi
   int v26; // edi
   int v27; // eax
-  FrameBodList *v28; // ecx
+  BodList *v28; // ecx
   int v29; // eax
   struct BodNode *v30; // eax
   struct BodNode **v31; // esi
   int v32; // edi
   int v33; // eax
-  FrameBodList *v34; // ecx
+  BodList *v34; // ecx
   int v35; // eax
   struct BodNode *v36; // eax
   struct BodNode **v37; // esi
   int v38; // edi
   int v39; // eax
-  FrameBodList *v40; // ecx
+  BodList *v40; // ecx
   int v41; // eax
   struct BodNode *v42; // eax
   uint32_t v43; // eax
-  FrameBodList *v44; // ecx
+  BodList *v44; // ecx
   struct BodNode *v45; // eax
   struct BodNode *v46; // eax
   uint32_t v47; // eax
-  FrameBodList *v48; // edx
+  BodList *v48; // edx
   uint32_t v49; // ecx
   struct BodNode *v50; // ecx
   struct BodNode *v51; // ecx
   uint32_t v52; // ecx
   uint32_t v53; // ecx
-  FrameBodList *v54; // edx
+  BodList *v54; // edx
   struct BodNode *v55; // ecx
   struct BodNode *v56; // ecx
   uint32_t v57; // ecx
   uint32_t v58; // ecx
-  FrameBodList *v59; // edx
+  BodList *v59; // edx
   struct BodNode *v60; // ecx
   struct BodNode *v61; // ecx
   uint32_t v62; // ecx
@@ -93,9 +93,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
           if ( v6 )
             *(_DWORD *)(v6 + 12) = *(_DWORD *)v2;
           else
-            p_active_bod_list->first = *(FrameBodBase **)v2;
+            p_active_bod_list->first = *(BodNode **)v2;
           *(_DWORD *)v2 = p_active_bod_list->free_top;
-          p_active_bod_list->free_top = (FrameBodBase *)(v2 - 12);
+          p_active_bod_list->free_top = (BodNode *)(v2 - 12);
           v7 = *((_DWORD *)v2 - 2);
           BYTE1(v7) &= ~2u;
           *((_DWORD *)v2 - 2) = v7;
@@ -138,9 +138,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( v13 )
           *(_DWORD *)(v13 + 12) = *p_list_next;
         else
-          v12->first = (FrameBodBase *)*p_list_next;
-        *p_list_next = (struct BodNode *)v12->free_top;
-        v12->free_top = (FrameBodBase *)(p_list_next - 3);
+          v12->first = *p_list_next;
+        *p_list_next = v12->free_top;
+        v12->free_top = (BodNode *)(p_list_next - 3);
         v14 = *(p_list_next - 2);
         BYTE1(v14) &= ~2u;
         *(p_list_next - 2) = v14;
@@ -170,9 +170,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( list_prev )
           list_prev->list_next = game->speedup_pickup.body.bod.bod.list_next;
         else
-          v15->first = (FrameBodBase *)game->speedup_pickup.body.bod.bod.list_next;
-        game->speedup_pickup.body.bod.bod.list_next = (struct BodNode *)v15->free_top;
-        v15->free_top = (FrameBodBase *)&game->speedup_pickup;
+          v15->first = game->speedup_pickup.body.bod.bod.list_next;
+        game->speedup_pickup.body.bod.bod.list_next = v15->free_top;
+        v15->free_top = &game->speedup_pickup.body.bod.bod;
         v19 = game->speedup_pickup.body.bod.bod.list_flags;
         BYTE1(v19) &= ~2u;
         game->speedup_pickup.body.bod.bod.list_flags = v19;
@@ -203,9 +203,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( v23 )
           v23->list_next = game->jetpack_pickup.bod.list_next;
         else
-          v21->first = (FrameBodBase *)game->jetpack_pickup.bod.list_next;
-        game->jetpack_pickup.bod.list_next = (struct BodNode *)v21->free_top;
-        v21->free_top = (FrameBodBase *)&game->jetpack_pickup;
+          v21->first = game->jetpack_pickup.bod.list_next;
+        game->jetpack_pickup.bod.list_next = v21->free_top;
+        v21->free_top = &game->jetpack_pickup.bod;
         v24 = game->jetpack_pickup.bod.list_flags;
         BYTE1(v24) &= ~2u;
         game->jetpack_pickup.bod.list_flags = v24;
@@ -240,9 +240,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
           if ( v29 )
             *(_DWORD *)(v29 + 12) = *v25;
           else
-            v28->first = (FrameBodBase *)*v25;
-          *v25 = (struct BodNode *)v28->free_top;
-          v28->free_top = (FrameBodBase *)(v25 - 3);
+            v28->first = *v25;
+          *v25 = v28->free_top;
+          v28->free_top = (BodNode *)(v25 - 3);
           v30 = *(v25 - 2);
           BYTE1(v30) &= ~2u;
           *(v25 - 2) = v30;
@@ -280,9 +280,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
           if ( v35 )
             *(_DWORD *)(v35 + 12) = *v31;
           else
-            v34->first = (FrameBodBase *)*v31;
-          *v31 = (struct BodNode *)v34->free_top;
-          v34->free_top = (FrameBodBase *)(v31 - 3);
+            v34->first = *v31;
+          *v31 = v34->free_top;
+          v34->free_top = (BodNode *)(v31 - 3);
           v36 = *(v31 - 2);
           BYTE1(v36) &= ~2u;
           *(v31 - 2) = v36;
@@ -319,9 +319,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
           if ( v41 )
             *(_DWORD *)(v41 + 12) = *v37;
           else
-            v40->first = (FrameBodBase *)*v37;
-          *v37 = (struct BodNode *)v40->free_top;
-          v40->free_top = (FrameBodBase *)(v37 - 3);
+            v40->first = *v37;
+          *v37 = v40->free_top;
+          v40->free_top = (BodNode *)(v37 - 3);
           v42 = *(v37 - 2);
           BYTE1(v42) &= ~2u;
           *(v37 - 2) = v42;
@@ -356,9 +356,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( v46 )
           v46->list_next = game->player.body.bod.bod.list_next;
         else
-          v44->first = (FrameBodBase *)game->player.body.bod.bod.list_next;
-        game->player.body.bod.bod.list_next = (struct BodNode *)v44->free_top;
-        v44->free_top = (FrameBodBase *)&game->player;
+          v44->first = game->player.body.bod.bod.list_next;
+        game->player.body.bod.bod.list_next = v44->free_top;
+        v44->free_top = &game->player.body.bod.bod;
         v47 = game->player.body.bod.bod.list_flags;
         BYTE1(v47) &= ~2u;
         game->player.body.bod.bod.list_flags = v47;
@@ -385,9 +385,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( v51 )
           v51->list_next = game->player.presentation.body.bod.bod.list_next;
         else
-          v48->first = (FrameBodBase *)game->player.presentation.body.bod.bod.list_next;
-        game->player.presentation.body.bod.bod.list_next = (struct BodNode *)v48->free_top;
-        v48->free_top = (FrameBodBase *)&game->player.presentation;
+          v48->first = game->player.presentation.body.bod.bod.list_next;
+        game->player.presentation.body.bod.bod.list_next = v48->free_top;
+        v48->free_top = &game->player.presentation.body.bod.bod;
         v52 = game->player.presentation.body.bod.bod.list_flags;
         BYTE1(v52) &= ~2u;
         game->player.presentation.body.bod.bod.list_flags = v52;
@@ -414,9 +414,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( v56 )
           v56->list_next = game->player.presentation.jetpack_channel.body.bod.bod.list_next;
         else
-          v54->first = (FrameBodBase *)game->player.presentation.jetpack_channel.body.bod.bod.list_next;
-        game->player.presentation.jetpack_channel.body.bod.bod.list_next = (struct BodNode *)v54->free_top;
-        v54->free_top = (FrameBodBase *)&game->player.presentation.jetpack_channel;
+          v54->first = game->player.presentation.jetpack_channel.body.bod.bod.list_next;
+        game->player.presentation.jetpack_channel.body.bod.bod.list_next = v54->free_top;
+        v54->free_top = &game->player.presentation.jetpack_channel.body.bod.bod;
         v57 = game->player.presentation.jetpack_channel.body.bod.bod.list_flags;
         BYTE1(v57) &= ~2u;
         game->player.presentation.jetpack_channel.body.bod.bod.list_flags = v57;
@@ -443,9 +443,9 @@ void __thiscall remove_subgame_bods(SubgameRuntime *game)
         if ( v61 )
           v61->list_next = game->player.presentation.weapon_channels[0].body.bod.bod.list_next;
         else
-          v59->first = (FrameBodBase *)game->player.presentation.weapon_channels[0].body.bod.bod.list_next;
-        game->player.presentation.weapon_channels[0].body.bod.bod.list_next = (struct BodNode *)v59->free_top;
-        v59->free_top = (FrameBodBase *)game->player.presentation.weapon_channels;
+          v59->first = game->player.presentation.weapon_channels[0].body.bod.bod.list_next;
+        game->player.presentation.weapon_channels[0].body.bod.bod.list_next = v59->free_top;
+        v59->free_top = &game->player.presentation.weapon_channels[0].body.bod.bod;
         v62 = game->player.presentation.weapon_channels[0].body.bod.bod.list_flags;
         BYTE1(v62) &= ~2u;
         game->player.presentation.weapon_channels[0].body.bod.bod.list_flags = v62;

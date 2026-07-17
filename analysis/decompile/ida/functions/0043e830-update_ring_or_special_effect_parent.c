@@ -14,7 +14,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   SubRingStar *particles; // edi
   Player *owner_player; // ecx
   uint32_t list_flags; // eax
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
   uint32_t v15; // eax
@@ -24,7 +24,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   SubRingStar *v19; // edi
   double v20; // st7
   uint32_t v21; // eax
-  FrameBodList *v22; // ecx
+  BodList *v22; // ecx
   struct BodNode *v23; // eax
   struct BodNode *v24; // eax
   uint32_t v25; // eax
@@ -39,7 +39,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   SubRingStar *v34; // edi
   double v35; // st7
   uint32_t v36; // eax
-  FrameBodList *v37; // ecx
+  BodList *v37; // ecx
   struct BodNode *v38; // eax
   struct BodNode *v39; // eax
   uint32_t v40; // eax
@@ -115,9 +115,9 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
               if ( list_prev )
                 list_prev->list_next = ring->body.bod.bod.list_next;
               else
-                p_active_bod_list->first = (FrameBodBase *)ring->body.bod.bod.list_next;
-              ring->body.bod.bod.list_next = (struct BodNode *)p_active_bod_list->free_top;
-              p_active_bod_list->free_top = (FrameBodBase *)ring;
+                p_active_bod_list->first = ring->body.bod.bod.list_next;
+              ring->body.bod.bod.list_next = p_active_bod_list->free_top;
+              p_active_bod_list->free_top = &ring->body.bod.bod;
               v15 = ring->body.bod.bod.list_flags;
               BYTE1(v15) &= ~2u;
               ring->body.bod.bod.list_flags = v15;
@@ -204,9 +204,9 @@ LABEL_30:
               if ( v24 )
                 v24->list_next = ring->body.bod.bod.list_next;
               else
-                v22->first = (FrameBodBase *)ring->body.bod.bod.list_next;
-              ring->body.bod.bod.list_next = (struct BodNode *)v22->free_top;
-              v22->free_top = (FrameBodBase *)ring;
+                v22->first = ring->body.bod.bod.list_next;
+              ring->body.bod.bod.list_next = v22->free_top;
+              v22->free_top = &ring->body.bod.bod;
               v25 = ring->body.bod.bod.list_flags;
               BYTE1(v25) &= ~2u;
               ring->body.bod.bod.list_flags = v25;
@@ -282,9 +282,9 @@ LABEL_50:
               if ( v39 )
                 v39->list_next = ring->body.bod.bod.list_next;
               else
-                v37->first = (FrameBodBase *)ring->body.bod.bod.list_next;
-              ring->body.bod.bod.list_next = (struct BodNode *)v37->free_top;
-              v37->free_top = (FrameBodBase *)ring;
+                v37->first = ring->body.bod.bod.list_next;
+              ring->body.bod.bod.list_next = v37->free_top;
+              v37->free_top = &ring->body.bod.bod;
               v40 = ring->body.bod.bod.list_flags;
               BYTE1(v40) &= ~2u;
               ring->body.bod.bod.list_flags = v40;

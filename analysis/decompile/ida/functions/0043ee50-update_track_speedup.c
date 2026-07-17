@@ -2,89 +2,88 @@
 /* function: update_track_speedup @ 0x43ee50 */
 /* selector: update_track_speedup */
 
-// The entry gate reads owner_game +0x09, now named subgame_pause_gate; this is
-// distinct from the global/UI Game::pause_gate view at root +0x74621.
-void __thiscall update_track_speedup(int this)
+// Exact `SubSpeedUp` AI: skips while the owner subgame is paused and tears down states 1/2 through the inherited BOD list. The exact Windows constructor table at 0x497314 points directly here, while Android and iOS retain `cRSubSpeedUp::AI()`.
+void __thiscall update_track_speedup(SubSpeedUp *speedup)
 {
-  int v2; // eax
-  int v3; // eax
-  int v4; // eax
-  char *v5; // ecx
-  int v6; // eax
-  int v7; // eax
-  int v8; // eax
-  int v9; // eax
-  int v10; // eax
-  int v11; // eax
-  int v12; // ecx
+  TrackPickupState state; // eax
+  __int32 v3; // eax
+  uint32_t list_flags; // eax
+  BodList *p_active_bod_list; // ecx
+  struct BodNode *list_next; // eax
+  struct BodNode *list_prev; // eax
+  uint32_t v8; // eax
+  struct BodNode *v9; // eax
+  struct BodNode *v10; // eax
+  uint32_t v11; // eax
+  Sprite *sprite; // ecx
 
-  if ( !*(_BYTE *)(*(_DWORD *)(this + 140) + 9) )
+  if ( !speedup->owner_game->subgame_pause_gate )
   {
-    v2 = *(_DWORD *)(this + 128);
-    if ( v2 )
+    state = speedup->state;
+    if ( state )
     {
-      v3 = v2 - 1;
+      v3 = state - 1;
       if ( v3 )
       {
         if ( v3 != 1 )
           return;
-        v4 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 128) = 0;
-        v5 = (char *)MEMORY[0x4DF904] + 1448;
-        if ( (v4 & 0x200) == 0 )
+        list_flags = speedup->body.bod.bod.list_flags;
+        speedup->state = TRACK_PICKUP_STATE_INACTIVE;
+        p_active_bod_list = &g_game_base->active_bod_list;
+        if ( (list_flags & 0x200) == 0 )
           goto LABEL_6;
-        if ( (v4 & 0x40) != 0 )
+        if ( (list_flags & 0x40) != 0 )
         {
 LABEL_8:
           report_errorf(aListRemoveNext);
-          kill_sprite(*(_DWORD *)(this + 172));
+          kill_sprite((int)speedup->sprite);
           return;
         }
-        v6 = *(_DWORD *)(this + 12);
-        if ( v6 )
-          *(_DWORD *)(v6 + 8) = *(_DWORD *)(this + 8);
-        v7 = *(_DWORD *)(this + 8);
-        if ( v7 )
+        list_next = speedup->body.bod.bod.list_next;
+        if ( list_next )
+          list_next->list_prev = speedup->body.bod.bod.list_prev;
+        list_prev = speedup->body.bod.bod.list_prev;
+        if ( list_prev )
         {
-          *(_DWORD *)(v7 + 12) = *(_DWORD *)(this + 12);
+          list_prev->list_next = speedup->body.bod.bod.list_next;
 LABEL_21:
-          *(_DWORD *)(this + 12) = *((_DWORD *)v5 + 2);
-          *((_DWORD *)v5 + 2) = this;
-          v11 = *(_DWORD *)(this + 4);
-          v12 = *(_DWORD *)(this + 172);
+          speedup->body.bod.bod.list_next = p_active_bod_list->free_top;
+          p_active_bod_list->free_top = &speedup->body.bod.bod;
+          v11 = speedup->body.bod.bod.list_flags;
+          sprite = speedup->sprite;
           BYTE1(v11) &= ~2u;
-          *(_DWORD *)(this + 4) = v11;
-          kill_sprite(v12);
+          speedup->body.bod.bod.list_flags = v11;
+          kill_sprite((int)sprite);
           return;
         }
       }
       else
       {
-        if ( *(float *)(this + 112) >= (double)*(float *)(*(_DWORD *)(this + 132) + 10624) )
+        if ( speedup->body.transform.position.z >= (double)speedup->owner->interaction_max_z )
           return;
-        v8 = *(_DWORD *)(this + 4);
-        *(_DWORD *)(this + 128) = 0;
-        v5 = (char *)MEMORY[0x4DF904] + 1448;
+        v8 = speedup->body.bod.bod.list_flags;
+        speedup->state = TRACK_PICKUP_STATE_INACTIVE;
+        p_active_bod_list = &g_game_base->active_bod_list;
         if ( (v8 & 0x200) == 0 )
         {
 LABEL_6:
           report_errorf(aListRemove);
-          kill_sprite(*(_DWORD *)(this + 172));
+          kill_sprite((int)speedup->sprite);
           return;
         }
         if ( (v8 & 0x40) != 0 )
           goto LABEL_8;
-        v9 = *(_DWORD *)(this + 12);
+        v9 = speedup->body.bod.bod.list_next;
         if ( v9 )
-          *(_DWORD *)(v9 + 8) = *(_DWORD *)(this + 8);
-        v10 = *(_DWORD *)(this + 8);
+          v9->list_prev = speedup->body.bod.bod.list_prev;
+        v10 = speedup->body.bod.bod.list_prev;
         if ( v10 )
         {
-          *(_DWORD *)(v10 + 12) = *(_DWORD *)(this + 12);
+          v10->list_next = speedup->body.bod.bod.list_next;
           goto LABEL_21;
         }
       }
-      *((_DWORD *)v5 + 1) = *(_DWORD *)(this + 12);
+      p_active_bod_list->first = speedup->body.bod.bod.list_next;
       goto LABEL_21;
     }
   }

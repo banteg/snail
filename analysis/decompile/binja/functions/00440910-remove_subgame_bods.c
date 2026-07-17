@@ -9,7 +9,7 @@
 00440925        int32_t i_6 = 0xc80
 004409b3        int32_t i
 00440930        if ((((esi - 0x5ccad8)->runtime_rows[0].primary_body.bod.bod.list_flags).w:1.b & 2) != 0)
-00440937        struct FrameBodList* ecx = &g_game_base->active_bod_list
+00440937        struct BodList* ecx = &g_game_base->active_bod_list
 0044093d        uint16_t list_flags = ((esi - 0x5ccad8)->runtime_rows[0].primary_body.bod.bod.list_flags).w
 00440943        if ((list_flags:1.b & 2) == 0)
 0044094a        report_errorf("List remove")
@@ -48,7 +48,7 @@
 00440a47        int32_t i_1
 004409d2        uint16_t list_flags_2 = ((esi_1 - 0x35600c)->health_pickups[0].list_flags).w
 004409d8        if ((list_flags_2:1.b & 2) != 0)
-004409e0        struct FrameBodList* ecx_4 = &g_game_base->active_bod_list
+004409e0        struct BodList* ecx_4 = &g_game_base->active_bod_list
 004409e9        if ((list_flags_2:1.b & 2) == 0)
 004409f0        report_errorf("List remove")
 004409fc        if ((list_flags_2.b & 0x40) == 0)
@@ -75,7 +75,7 @@
 00440a46        i_7 -= 1
 00440a47        do while (i_1 != 1)
 00440a52        if (((game->speedup_pickup.list_flags).w:1.b & 2) != 0)
-00440a60        struct FrameBodList* edx_11 = &g_game_base->active_bod_list
+00440a60        struct BodList* edx_11 = &g_game_base->active_bod_list
 00440a66        uint16_t list_flags_12 = (game->speedup_pickup.list_flags).w
 00440a6c        if ((list_flags_12:1.b & 2) == 0)
 00440a73        report_errorf("List remove")
@@ -98,7 +98,7 @@
 00440ac5        game->speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE
 00440ad4        if (((game->jetpack_pickup.bod.list_flags).w:1.b & 2) != 0)
 00440adc        uint16_t list_flags_14 = (game->jetpack_pickup.bod.list_flags).w
-00440ae8        struct FrameBodList* edx_15 = &g_game_base->active_bod_list
+00440ae8        struct BodList* edx_15 = &g_game_base->active_bod_list
 00440af1        if ((list_flags_14:1.b & 2) == 0)
 00440af8        report_errorf("List remove")
 00440b05        if ((list_flags_14.b & 0x40) == 0)
@@ -124,7 +124,7 @@
 00440b61        if ((((esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_flags).w:1.b & 2) != 0)
 00440b63        (esi_4 - 0x359150)->garbage_hazards.slots[0].state = 0
 00440b6c        uint16_t list_flags_4 = ((esi_4 - 0x359150)->garbage_hazards.slots[0].body.bod.bod.list_flags).w
-00440b72        struct FrameBodList* ecx_10 = &g_game_base->active_bod_list
+00440b72        struct BodList* ecx_10 = &g_game_base->active_bod_list
 00440b78        if ((list_flags_4:1.b & 2) == 0)
 00440b7f        report_errorf("List remove")
 00440b8b        if ((list_flags_4.b & 0x40) == 0)
@@ -155,7 +155,7 @@
 00440be9        if ((((esi_5 - 0x3563ac)->slug_hazards.slots[0].body.bod.bod.list_flags).w:1.b & 2) != 0)
 00440beb        (esi_5 - 0x3563ac)->slug_hazards.slots[0].state = 0
 00440bf4        uint16_t list_flags_6 = ((esi_5 - 0x3563ac)->slug_hazards.slots[0].body.bod.bod.list_flags).w
-00440bf7        struct FrameBodList* ecx_12 = &g_game_base->active_bod_list
+00440bf7        struct BodList* ecx_12 = &g_game_base->active_bod_list
 00440c00        if ((list_flags_6:1.b & 2) == 0)
 00440c07        report_errorf("List remove")
 00440c13        if ((list_flags_6.b & 0x40) == 0)
@@ -185,7 +185,7 @@
 00440ce3        int32_t i_4
 00440c6e        if ((esi_6 - 0x35b798)->ring_effects.slots[0].state != SUB_RING_STATE_INACTIVE)
 00440c76        uint16_t list_flags_8 = ((esi_6 - 0x35b798)->ring_effects.slots[0].bod.list_flags).w
-00440c79        struct FrameBodList* ecx_14 = &g_game_base->active_bod_list
+00440c79        struct BodList* ecx_14 = &g_game_base->active_bod_list
 00440c82        if ((list_flags_8:1.b & 2) == 0)
 00440c89        report_errorf("List remove")
 00440c95        if ((list_flags_8.b & 0x40) == 0)
@@ -213,7 +213,7 @@
 00440ce3        do while (i_4 != 1)
 00440cee        if (((game->player.body.bod.bod.list_flags).w:1.b & 2) != 0)
 00440cfa        uint16_t list_flags_10 = (game->player.body.bod.bod.list_flags).w
-00440d06        struct FrameBodList* ecx_16 = &g_game_base->active_bod_list
+00440d06        struct BodList* ecx_16 = &g_game_base->active_bod_list
 00440d0f        if ((list_flags_10:1.b & 2) == 0)
 00440d16        report_errorf("List remove")
 00440d22        if ((list_flags_10.b & 0x40) == 0)
@@ -234,7 +234,7 @@
 00440d61        list_flags_11:1.b &= 0xfd
 00440d64        game->player.body.bod.bod.list_flags = list_flags_11
 00440d29        report_errorf("List remove NEXTBOD")
-00440d73        struct FrameBodList* edx_37 = &g_game_base->active_bod_list
+00440d73        struct BodList* edx_37 = &g_game_base->active_bod_list
 00440d79        uint16_t list_flags_16 = (game->player.presentation.body.bod.bod.list_flags).w
 00440d7f        if ((list_flags_16:1.b & 2) == 0)
 00440d86        report_errorf("List remove")
@@ -255,7 +255,7 @@
 00440dd5        game->player.presentation.body.bod.bod.list_flags = list_flags_17
 00440d9a        report_errorf("List remove NEXTBOD")
 00440dde        uint16_t list_flags_18 = (game->player.presentation.jetpack_channel.body.bod.bod.list_flags).w
-00440dea        struct FrameBodList* edx_39 = &g_game_base->active_bod_list
+00440dea        struct BodList* edx_39 = &g_game_base->active_bod_list
 00440df3        if ((list_flags_18:1.b & 2) == 0)
 00440dfa        report_errorf("List remove")
 00440e07        if ((list_flags_18.b & 0x40) == 0)
@@ -275,7 +275,7 @@
 00440e49        game->player.presentation.jetpack_channel.body.bod.bod.list_flags = list_flags_19
 00440e0e        report_errorf("List remove NEXTBOD")
 00440e52        uint16_t list_flags_20 = (game->player.presentation.weapon_channels[0].body.bod.bod.list_flags).w
-00440e5e        struct FrameBodList* edx_41 = &g_game_base->active_bod_list
+00440e5e        struct BodList* edx_41 = &g_game_base->active_bod_list
 00440e67        if ((list_flags_20:1.b & 2) == 0)
 00440e6e        report_errorf("List remove")
 00440e7b        if ((list_flags_20.b & 0x40) == 0)

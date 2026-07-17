@@ -10,9 +10,9 @@ int __thiscall spawn_slug_hazard(int this, int a2, int a3)
   int v6; // esi
   double v7; // st7
   double v8; // st7
-  FrameBodBase *v9; // eax
-  FrameBodList *p_active_bod_list; // edx
-  FrameBodBase *v11; // ecx
+  BodNode *v9; // eax
+  BodList *p_active_bod_list; // edx
+  BodNode *v11; // ecx
   int v12; // ecx
   _DWORD *sprite; // eax
   int v14; // ecx
@@ -42,11 +42,11 @@ int __thiscall spawn_slug_hazard(int this, int a2, int a3)
   v8 = *(float *)(this + 56) * -0.2;
   *(float *)(v6 + 3499052) = 0.0;
   *(float *)(v6 + 3499056) = 0.0;
-  v9 = (FrameBodBase *)(v6 + 3498912);
+  v9 = (BodNode *)(v6 + 3498912);
   v19 = v8;
   *(float *)(v6 + 3499060) = v19;
   p_active_bod_list = &g_game_base->active_bod_list;
-  v11 = (FrameBodBase *)(this + 3913572);
+  v11 = (BodNode *)(this + 3913572);
   if ( (*(_BYTE *)(v6 + 3498917) & 2) != 0 )
   {
     report_errorf(aListAddbefore);

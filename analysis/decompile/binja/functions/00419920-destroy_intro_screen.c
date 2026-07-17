@@ -13,7 +13,7 @@
 00419957        return
 0041995a        struct BodNode** esi_1 = &logo->letters[0].renderable.bod.bod.list_next
 00419963        uint16_t list_flags = ((esi_1 - 0x24)->letters[0].renderable.bod.bod.list_flags).w
-00419966        struct FrameBodList* ecx_1 = &g_game_base->active_bod_list
+00419966        struct BodList* ecx_1 = &g_game_base->active_bod_list
 0041996f        if ((list_flags:1.b & 2) == 0)
 00419976        report_errorf("List remove")
 00419982        if ((list_flags.b & 0x40) == 0)

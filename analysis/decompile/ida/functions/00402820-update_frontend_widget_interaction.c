@@ -8,11 +8,11 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
   FrontendWidgetFlag v2; // edx
   FrontendWidgetFlag widget_flags; // eax
   uint32_t list_flags; // eax
-  FrameBodList *p_active_bod_list; // ecx
+  BodList *p_active_bod_list; // ecx
   FrontendWidget *list_next; // eax
   FrontendWidget *list_prev; // eax
   uint32_t v8; // eax
-  FrameBodList *v9; // ecx
+  BodList *v9; // ecx
   uint32_t v10; // eax
   FrontendWidget *v11; // eax
   FrontendWidget *v12; // eax
@@ -96,9 +96,9 @@ void __thiscall update_frontend_widget_interaction(FrontendWidget *widget)
         if ( list_prev )
           list_prev->list_next = widget->list_next;
         else
-          p_active_bod_list->first = (FrameBodBase *)widget->list_next;
+          p_active_bod_list->first = (BodNode *)widget->list_next;
         widget->list_next = (FrontendWidget *)p_active_bod_list->free_top;
-        p_active_bod_list->free_top = (FrameBodBase *)widget;
+        p_active_bod_list->free_top = (BodNode *)widget;
         v8 = widget->list_flags;
         BYTE1(v8) &= ~2u;
         widget->list_flags = v8;
@@ -142,7 +142,7 @@ LABEL_18:
       v12->list_next = widget->list_next;
 LABEL_32:
       widget->list_next = (FrontendWidget *)v9->free_top;
-      v9->free_top = (FrameBodBase *)widget;
+      v9->free_top = (BodNode *)widget;
       v17 = widget->list_flags;
       BYTE1(v17) &= ~2u;
       widget->list_flags = v17;
@@ -281,7 +281,7 @@ LABEL_72:
       goto LABEL_32;
     }
 LABEL_31:
-    v9->first = (FrameBodBase *)widget->list_next;
+    v9->first = (BodNode *)widget->list_next;
     goto LABEL_32;
   }
 LABEL_83:

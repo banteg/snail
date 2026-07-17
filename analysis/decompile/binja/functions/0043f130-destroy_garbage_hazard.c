@@ -4,7 +4,7 @@
 /* function: destroy_garbage_hazard @ 0x43f130 */
 
 0043f133        sub_garbage->state = 0
-0043f142        struct FrameBodList* ecx = &g_game_base->active_bod_list
+0043f142        struct BodList* ecx = &g_game_base->active_bod_list
 0043f148        uint16_t list_flags = (sub_garbage->body.bod.bod.list_flags).w
 0043f14e        if ((list_flags:1.b & 2) == 0)
 0043f155        report_errorf("List remove")
