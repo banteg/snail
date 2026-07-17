@@ -9,7 +9,7 @@
 0041d054        self->side_exit_mode = 0
 0041d057        self->width_cells = arg4
 0041d05a        int16_t x87control
-0041d05a        int32_t secondary_samples_4 = __ftol(x87control, fconvert.t(arg2) * fconvert.t(4f))
+0041d05a        int32_t secondary_samples_4 = ftol(x87control, fconvert.t(arg2) * fconvert.t(4f))
 0041d05f        int32_t ebp = secondary_samples_4 + 7
 0041d068        self->width_or_scale = 1f
 0041d076        self->segment_count = ebp + 7
@@ -17,7 +17,7 @@
 0041d080        long double x87_r7_3 = float.t(secondary_samples_4)
 0041d08e        arg2 = fconvert.s(x87_r7_3 * fconvert.t(0.0954929665f))
 0041d092        allocate_path_template_samples(self)
-0041d097        self->special_runtime_flag_9c = 0
+0041d097        self->has_entry_mesh_transition = 0
 0041d09d        arg4 = 0
 0041d0a1        int32_t i = 0
 0041d15c        while (i s< 0x498)
@@ -143,14 +143,23 @@
 0041d620        edx_32[2] = 0x3f800000
 0041d632        int32_t var_10_3 = 0x3f800000
 0041d63e        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0041d654        int32_t* ecx_54 = &self->secondary_samples[self->segment_count] - 0x28
+0041d654        char* ecx_54 = &self->secondary_samples[self->segment_count] - 0x28
 0041d65c        *ecx_54 = 0
-0041d662        ecx_54[1] = 0
-0041d667        ecx_54[2] = 0x3f800000
+0041d65c        ecx_54[1] = 0
+0041d65c        ecx_54[2] = 0
+0041d65c        ecx_54[3] = 0
+0041d662        ecx_54[4] = 0
+0041d662        ecx_54[5] = 0
+0041d662        ecx_54[6] = 0
+0041d662        ecx_54[7] = 0
+0041d667        ecx_54[8] = 0
+0041d667        ecx_54[9] = 0
+0041d667        ecx_54[0xa] = 0x80
+0041d667        ecx_54[0xb] = 0x3f
 0041d67c        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0041d68f        request_object_vertices(self->strip_mesh, (self->width_cells + 1) * (self->segment_count + 1))
 0041d6a1        request_object_facequads(self->strip_mesh, (self->width_cells * self->segment_count) << 1)
-0041d6a6        struct PathTemplateStripMesh* strip_mesh = self->strip_mesh
+0041d6a6        struct Object* strip_mesh = self->strip_mesh
 0041d6a9        int32_t i_2 = 0
 0041d6ab        struct Vec3* vertices = strip_mesh->vertices
 0041d6ae        struct ObjectFaceQuad* facequads = strip_mesh->facequads
@@ -207,15 +216,15 @@
 0041d876        while (true)
 0041d876        int32_t eax_79 = ecx_69 + ((self->width_cells * i_3 + j) << 1)
 0041d879        if (ecx_69 != 0)
-0041d940        int16_t* ebp_4 = &facequads[eax_79]
+0041d935        struct ObjectFaceQuad* facequads_1 = facequads
+0041d940        int16_t* ebp_4 = &facequads_1[eax_79]
 0041d943        *ebp_4 = 0
 0041d949        ecx_69.w = self->width_cells.w
 0041d94d        ecx_69.w += 1
 0041d956        ebp_4[1] = ecx_69.w * i_3.w + j.w + 1
-0041d95a        struct ObjectFaceQuad* eax_87
-0041d95a        eax_87.w = self->width_cells.w
-0041d95e        eax_87.w += 1
-0041d965        ebp_4[2] = eax_87.w * i_3.w + j.w
+0041d95a        facequads_1.w = self->width_cells.w
+0041d95e        facequads_1.w += 1
+0041d965        ebp_4[2] = facequads_1.w * i_3.w + j.w
 0041d977        ebp_4[3] = (self->width_cells.w + 1) * (i_3.w + 1) + j.w
 0041d98f        ebp_4[4] = (self->width_cells.w + 1) * (i_3.w + 1) + j.w + 1
 0041d993        char* texture_path_1
@@ -232,12 +241,12 @@
 0041d9d2        *(ebp_4 + 0x24) = var_4c_1
 0041d9d7        *(ebp_4 + 0x28) = arg4
 0041d9da        *(ebp_4 + 0x2c) = var_4c_1
-0041d88d        int16_t* ebp_3 = &facequads[eax_79]
+0041d886        int32_t ecx_71 = eax_79 * 0x30
+0041d88d        int16_t* ebp_3 = ecx_71 + facequads
 0041d890        *ebp_3 = 0
 0041d896        eax_79.w = self->width_cells.w
 0041d89a        eax_79.w += 1
 0041d8a1        ebp_3[1] = eax_79.w * i_3.w + j.w
-0041d8a5        int32_t ecx_71
 0041d8a5        ecx_71.w = self->width_cells.w
 0041d8a9        ecx_71.w += 1
 0041d8b5        ebp_3[2] = ecx_71.w * i_3.w + j.w + 1

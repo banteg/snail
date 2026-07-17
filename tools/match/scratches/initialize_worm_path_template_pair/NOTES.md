@@ -6,8 +6,8 @@ strip mesh using the shared native `AttachmentSample`, `Path`, and
 
 Current focused result:
 
-- match: **72.28%**;
-- target/candidate instructions: **736 / 725**;
+- match: **72.32%**;
+- target/candidate instructions: **736 / 727**;
 - common prefix: **0 / 736**;
 - masked operands: **37 clean, 0 unresolved, 0 mismatched**;
 - native/candidate local frames: **0x80 / 0x68**.
@@ -140,3 +140,13 @@ match: 72.28%
 target: 736 insns, candidate: 725 insns
 masked operands: 37 ok, 0 unresolved, 0 mismatch
 ```
+
+## 2026-07-17 Path ABI closure
+
+The guarded analysis replay now uses `void __thiscall Path*`, consistent with
+the authored member, `cRPath::BuildWorm(char*)`, and the native `ret 4` calling
+shape. Recreating the stale Binary Ninja function also removes its exact
+user-defined stack-8 `arg2`: all native callers pass only `texture_path`, while
+the old variable was a pinned decompiler artifact. Focused matching remains
+72.32%, 727/736 instructions; no source-shape padding or synthetic argument
+was introduced.

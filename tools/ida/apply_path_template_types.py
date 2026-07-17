@@ -739,11 +739,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "finalize_path_template",
-        "int32_t __fastcall finalize_path_template(Path* self);",
+        "void __fastcall finalize_path_template(Path* self);",
     ),
     (
         "mirror_path_template_pair_x",
-        "int32_t __thiscall mirror_path_template_pair_x(Path* self, Path* source);",
+        "void __thiscall mirror_path_template_pair_x(Path* self, Path* source);",
     ),
     (
         "set_matrix_identity",
@@ -1415,7 +1415,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_worm_path_template_pair",
-        "int32_t __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path);",
+        "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path);",
     ),
     (
         "initialize_slalombig_path_template_pair",

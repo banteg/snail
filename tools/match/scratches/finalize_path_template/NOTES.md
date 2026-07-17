@@ -96,3 +96,12 @@ Both analysis replay lanes now update the field explicitly so the checked-in
 decompiles cannot fall back to a four-byte padding view. This is an ownership
 replay only; focused matching remains 81.78%, 112/113 instructions, prefix
 24/113, with nine clean operands.
+
+## 2026-07-17 Path ABI closure
+
+The live Binary Ninja function is now guarded as `void __fastcall Path*`,
+matching `cRPath::CalcLengthZ()`, the authored member surface, and every
+ordinary caller that discards the tail `EAX` state. The previous `int32_t
+PathTemplate*` declaration combined a partial owner with a decompiler-inferred
+return. Replay metadata now records the real owner and void contract without
+changing the focused source or its 81.78% result.

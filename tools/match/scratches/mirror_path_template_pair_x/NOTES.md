@@ -52,3 +52,12 @@ Separate UV temporary names are codegen-neutral; explicitly loading both sides
 produces the target x87 operation forms but regresses scheduling. The natural
 one-temporary swaps are retained rather than forcing instruction order with
 non-semantic clutter.
+
+## 2026-07-17 Path ABI closure
+
+The guarded Binary Ninja replay now gives both parameters the full `Path*`
+owner and records the method as void, matching `cRPath::Mirror(cRPath*)` and
+the Windows callers that discard tail register state. This removes the stale
+partial `PathTemplate*` identity without perturbing the accepted source:
+focused matching remains 97.45%, 314/314 instructions, with a 273-instruction
+exact prefix and all 15 masked operands clean.

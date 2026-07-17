@@ -47,27 +47,20 @@
 0042c6eb        eax_8 = (x87_r7_6 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_6, temp1_1) ? 1 : 0) << 0xa | (x87_r7_6 == temp1_1 ? 1 : 0) << 0xe
 0042c6f0        if ((eax_8:1.b & 0x41) == 0)
 0042c6f2        *(&primary_samples_2->lateral_source + edi_4) = 0
-0042c6f2        *(edi_4 + primary_samples_2 + 0xa5) = 0
-0042c6f2        *(edi_4 + primary_samples_2 + 0xa6) = 0
-0042c6f2        *(edi_4 + primary_samples_2 + 0xa7) = 0
 0042c6f8        struct PathTemplateSample* primary_samples = self->primary_samples
 0042c6fb        long double x87_r7_7 = fconvert.t(*(&primary_samples->lateral_source + edi_4))
 0042c702        long double temp2_1 = fconvert.t(-0.100000001f)
 0042c702        x87_r7_7 - temp2_1
 0042c714        if ((((x87_r7_7 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp2_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp2_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-0042c716        *(&primary_samples->lateral_source + edi_4) = 0xcd
-0042c716        *(edi_4 + primary_samples + 0xa5) = 0xcc
-0042c716        *(edi_4 + primary_samples + 0xa6) = 0xcc
-0042c716        *(edi_4 + primary_samples + 0xa7) = 0xbd
+0042c716        *(&primary_samples->lateral_source + edi_4) = 0xbdcccccd
 0042c71f        i_2 += 1
 0042c720        edi_4 += 0xa8
 0042c729        do while (i_2 s< self->segment_count - 1)
 0042c742        *(&self->primary_samples[self->segment_count] - 4) = 0
-0042c74a        struct Object* strip_mesh = self->strip_mesh
-0042c74d        enum ObjectFlag flags = strip_mesh->flags
+0042c74a        struct Object* object = self->bod.object
+0042c74d        enum ObjectFlag flags = object->flags
 0042c750        flags.b |= 0x80
-0042c753        strip_mesh->flags = flags
-0042c756        struct Object* strip_mesh_1 = self->strip_mesh
-0042c75c        enum ObjectFlag result = strip_mesh_1->flags & ~OBJECT_FLAG_DISABLE_CULLING
-0042c761        strip_mesh_1->flags = result
-0042c76a        return result
+0042c753        object->flags = flags
+0042c756        struct Object* object_1 = self->bod.object
+0042c761        object_1->flags &= ~OBJECT_FLAG_DISABLE_CULLING
+0042c76a        return

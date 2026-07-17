@@ -1173,19 +1173,25 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     repair_entrypoint = (BINJA_DIR / "repair_subgame_receiver_owner.py").read_text(
         encoding="utf-8"
     )
+    generic_repair_entrypoint = (
+        BINJA_DIR / "repair_deferred_owner_abi.py"
+    ).read_text(encoding="utf-8")
     ida_source = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
     header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
+    compact_header = "".join(header.split())
+    compact_ida_source = "".join(ida_source.split())
 
     assert "CORE_SUBGAME_PROTO_UPDATES" in source
     assert "DEFERRED_SUBGAME_OWNER_PROTO_UPDATES" in source
+    assert "DEFERRED_PATH_OWNER_PROTO_UPDATES" in source
     assert "proto_owner_deferred" in source
     assert "apply_struct_and_proto_updates" in source
     assert "apply_direct_proto_update" not in source
     assert "proto_owner_current" in source
-    assert "repair_subgame_receiver_owner.py" in source
-    assert 'f"--function {identifier} --apply"' in source
+    assert "repair_deferred_owner_abi.py" in source
+    assert 'f"--target {target} --function {identifier} --apply"' in source
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in source
     assert '"SubRow",' in source
     assert '"TrackAttachmentRuntimeRow",' not in source
@@ -1200,7 +1206,10 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     )[0]
     deferred_prototypes = source.split(
         "DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (", 1
-    )[1].split("\n)\n\n\ndef report_deferred", 1)[0]
+    )[1].split("\n)\n\n\nDEFERRED_PATH_OWNER_PROTO_UPDATES", 1)[0]
+    deferred_path_prototypes = source.split(
+        "DEFERRED_PATH_OWNER_PROTO_UPDATES = (", 1
+    )[1].split("\n)\n\n\ndef report_deferred_owner_prototypes", 1)[0]
     for function_name in ("reset_subgame", "complete_subgame"):
         assert f'"{function_name}"' in stable_prototypes
     for function_name in (
@@ -1273,6 +1282,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     ):
         assert f'"address": {address}' in repair_source
     assert "from repair_initialize_subgame_owner import main" in repair_entrypoint
+    assert "from repair_initialize_subgame_owner import main" in generic_repair_entrypoint
     assert '"legacy_prototypes": (' in repair_source
     assert '"struct SubRow* __thiscall("' in repair_source
     assert '"SubRow* __thiscall "' in repair_source
@@ -1309,6 +1319,29 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert '"--apply"' in repair_source
     assert "Without this flag the tool" in repair_source
     assert '"is read-only. Function recreation' in repair_source
+    for declaration in (
+        "void __fastcall allocate_path_template_samples(Path* self)",
+        "void __fastcall finalize_path_template(Path* self)",
+        "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
+        "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
+    ):
+        assert declaration in deferred_path_prototypes
+        assert "".join(f"{declaration};".split()) in compact_header
+        assert "".join(f'"{declaration};"'.split()) in compact_ida_source
+    for function_name in (
+        "allocate_path_template_samples",
+        "finalize_path_template",
+        "initialize_worm_path_template_pair",
+        "mirror_path_template_pair_x",
+    ):
+        assert f'"{function_name}": _path_function_spec(' in repair_source
+    assert '"owner_type": "Path"' in repair_source
+    assert '"owner_size": PATH_SIZE' in repair_source
+    assert '"storage": 8' in repair_source
+    assert '"name": "arg2"' in repair_source
+    assert "DISCARD_VARIABLES = SPEC.get(\"discard_variables\", ())" in repair_source
+    assert "stale_discard_variable_changed" in repair_source
+    assert "discarded_variable_survived_repair" in repair_source
     assert "def _sync_subgame_receiver_lvar" in ida_source
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_source
     for function_name in (

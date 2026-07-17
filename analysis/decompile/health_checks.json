@@ -5936,11 +5936,45 @@
         "self->segment_count",
         "self->row_span_count",
         "self->primary_samples",
-        "self->secondary_samples"
+        "self->secondary_samples",
+        "self->bod.object"
       ],
       "forbidden_substrings": [
         "self->__offset(0x48)",
-        "arg1->__offset"
+        "arg1->__offset",
+        "self->strip_mesh",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_worm_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00420170-initialize_worm_path_template_pair.c",
+      "required_substrings": [
+        "self->kind = PATH_TEMPLATE_KIND_WORM",
+        "allocate_path_template_samples(self)",
+        "self->bod.object",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "arg2",
+        "self->strip_mesh",
+        "return finalize_path_template"
+      ]
+    },
+    {
+      "name": "bn_mirrored_path_full_owner_abi",
+      "artifact": "analysis/decompile/binja/functions/00421dc0-mirror_path_template_pair_x.c",
+      "required_substrings": [
+        "struct Path* source_1 = source",
+        "self->bod.object",
+        "source_1->bod.object",
+        "finalize_path_template(self)"
+      ],
+      "forbidden_substrings": [
+        "struct PathTemplate*",
+        "self->strip_mesh",
+        "source_1->strip_mesh",
+        "return finalize_path_template"
       ]
     },
     {

@@ -12,7 +12,7 @@
 0041edd9        self->segment_count = arg2 + 8
 0041eddc        self->segment_count_f = fconvert.s(float.t(arg2 + 8))
 0041eddf        allocate_path_template_samples(self)
-0041ede4        self->special_runtime_flag_9c = 0
+0041ede4        self->has_entry_mesh_transition = 0
 0041edea        arg3 = 0
 0041edee        void* i = nullptr
 0041ee9e        while (i s< 0x1f8)
@@ -86,11 +86,20 @@
 0041f21a        transform = edi_4 + self->secondary_samples - 0xa8
 0041f221        set_matrix_rotation_identity(transform)
 0041f09e        float var_48_3 = fconvert.s(cosine(var_4c_1))
-0041f0a3        long double st0_5 = sine(var_4c_1)
-0041f0bd        float* ecx_25 = self->primary_samples + edi_4 - 0x98
-0041f0d3        *ecx_25 = fconvert.s(fneg(st0_5))
-0041f0d9        ecx_25[1] = var_48_3
-0041f0dc        ecx_25[2] = 0
+0041f0b1        float var_3c_1 = fconvert.s(fneg(sine(var_4c_1)))
+0041f0bd        char* ecx_25 = self->primary_samples + edi_4 - 0x98
+0041f0d3        *ecx_25 = var_3c_1.b
+0041f0d3        ecx_25[1] = var_3c_1:1.b
+0041f0d3        ecx_25[2] = var_3c_1:2.b
+0041f0d3        ecx_25[3] = var_3c_1:3.b
+0041f0d9        ecx_25[4] = var_48_3.b
+0041f0d9        ecx_25[5] = var_48_3:1.b
+0041f0d9        ecx_25[6] = var_48_3:2.b
+0041f0d9        ecx_25[7] = var_48_3:3.b
+0041f0dc        ecx_25[8] = 0
+0041f0dc        ecx_25[9] = 0
+0041f0dc        ecx_25[0xa] = 0
+0041f0dc        ecx_25[0xb] = 0
 0041f0e2        void* eax_26 = self->primary_samples + edi_4
 0041f100        float var_2c_1 = fconvert.s(fconvert.t(*(eax_26 + 0x34)) - fconvert.t(*(eax_26 - 0x74)))
 0041f10a        long double x87_r7_28 = fconvert.t(*(eax_26 + 0x38)) - fconvert.t(*(eax_26 - 0x70))
@@ -147,14 +156,23 @@
 0041f36b        edx_34[2] = 0x3f800000
 0041f37d        int32_t var_10_3 = 0x3f800000
 0041f389        *(&self->primary_samples[self->segment_count] - 0x1c) = 0x3f800000
-0041f39f        int32_t* ecx_53 = &self->secondary_samples[self->segment_count] - 0x28
+0041f39f        char* ecx_53 = &self->secondary_samples[self->segment_count] - 0x28
 0041f3a7        *ecx_53 = 0
-0041f3ad        ecx_53[1] = 0
-0041f3b2        ecx_53[2] = 0x3f800000
+0041f3a7        ecx_53[1] = 0
+0041f3a7        ecx_53[2] = 0
+0041f3a7        ecx_53[3] = 0
+0041f3ad        ecx_53[4] = 0
+0041f3ad        ecx_53[5] = 0
+0041f3ad        ecx_53[6] = 0
+0041f3ad        ecx_53[7] = 0
+0041f3b2        ecx_53[8] = 0
+0041f3b2        ecx_53[9] = 0
+0041f3b2        ecx_53[0xa] = 0x80
+0041f3b2        ecx_53[0xb] = 0x3f
 0041f3c7        *(&self->secondary_samples[self->segment_count] - 0x1c) = 0x3f800000
 0041f3da        request_object_vertices(self->strip_mesh, (self->width_cells + 1) * (self->segment_count + 1))
 0041f3ec        request_object_facequads(self->strip_mesh, (self->width_cells * self->segment_count) << 1)
-0041f3f1        struct PathTemplateStripMesh* strip_mesh = self->strip_mesh
+0041f3f1        struct Object* strip_mesh = self->strip_mesh
 0041f3f4        int32_t i_2 = 0
 0041f3f6        struct Vec3* vertices = strip_mesh->vertices
 0041f3f9        struct ObjectFaceQuad* facequads = strip_mesh->facequads
@@ -209,9 +227,9 @@
 0041f59f        arg2 = fconvert.s(float.t(arg2) * fconvert.t(0.125f))
 0041f5ad        float var_50_1 = fconvert.s(float.t(j + 1) * fconvert.t(0.125f))
 0041f5bf        while (true)
-0041f5ce        int16_t* edi_7 = &facequads[ecx_68 + ((self->width_cells * i_3 + j) << 1)]
+0041f5c9        int32_t edx_39 = (ecx_68 + ((self->width_cells * i_3 + j) << 1)) * 0x30
+0041f5ce        int16_t* edi_7 = edx_39 + facequads
 0041f5d1        *edi_7 = 0
-0041f5d6        int32_t edx_39
 0041f5d6        if (ecx_68 != 0)
 0041f67c        edx_39.w = self->width_cells.w
 0041f682        edx_39.w += 1

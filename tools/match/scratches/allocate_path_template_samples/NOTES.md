@@ -24,3 +24,11 @@ borrowed game-runtime-lifetime storage from the tracked allocator.
 `0xa8` receiver as `cRPath`. Windows owns 126 such receivers in 63 adjacent
 `PathPair` records; this exact 23/23 helper proves the per-owner allocation
 fields rather than a synthetic aggregate owner.
+
+## 2026-07-17 analysis owner closure
+
+The guarded Binary Ninja replay now replaces the stale `PathTemplate*`
+receiver identity with the full `Path*` owner. The shared header and both
+analysis lanes agree with the already exact matcher declaration. This is an
+analysis-only ownership repair; the focused source remains 100.00%, 23/23
+instructions.

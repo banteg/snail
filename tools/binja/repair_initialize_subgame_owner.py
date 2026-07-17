@@ -12,6 +12,7 @@ from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SUBGAME_RUNTIME_SIZE = 0x1272838
+PATH_SIZE = 0xA8
 
 FUNCTION_SPECS = {
     "initialize_subgame": {
@@ -390,6 +391,120 @@ FUNCTION_SPECS = {
 }
 
 
+def _path_function_spec(
+    *,
+    address: int,
+    name: str,
+    return_type: str,
+    stale_return_type: str,
+    calling_convention: str,
+    parameters: tuple[tuple[str, str, str], ...] = (),
+    discard_variables: tuple[dict[str, object], ...] = (),
+) -> dict[str, object]:
+    expected_parameters = (("self", "struct Path*"),) + tuple(
+        (parameter_name, expected_type)
+        for parameter_name, expected_type, _stale_type in parameters
+    )
+    stale_parameters = (("self", "struct PathTemplate*"),) + tuple(
+        (parameter_name, stale_type)
+        for parameter_name, _expected_type, stale_type in parameters
+    )
+
+    def render_prototype(result_type: str, values: tuple[tuple[str, str], ...]) -> str:
+        rendered = ", ".join(
+            f"{parameter_type} {parameter_name}"
+            for parameter_name, parameter_type in values
+        )
+        return f"{result_type} {calling_convention}({rendered})"
+
+    def render_declaration(values: tuple[tuple[str, str], ...]) -> str:
+        rendered = ", ".join(
+            f"{parameter_type} {parameter_name}"
+            for parameter_name, parameter_type in values
+        )
+        return f"{return_type} {calling_convention} {name}({rendered})"
+
+    variables: list[dict[str, object]] = [
+        {
+            "source_type": "VariableSourceType.RegisterVariableSourceType",
+            "index": 0,
+            "storage": 67,
+            "name": "self",
+            "type": "struct Path*",
+        }
+    ]
+    for stack_index, (parameter_name, expected_type, _stale_type) in enumerate(
+        parameters,
+        start=1,
+    ):
+        variables.append(
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": stack_index * 4,
+                "name": parameter_name,
+                "type": expected_type,
+            }
+        )
+
+    return {
+        "address": address,
+        "owner_type": "Path",
+        "owner_size": PATH_SIZE,
+        "expected_prototype": render_prototype(return_type, expected_parameters),
+        "stale_prototype": render_prototype(stale_return_type, stale_parameters),
+        "declaration": render_declaration(expected_parameters),
+        "parameter_count": len(expected_parameters),
+        "variables": tuple(variables),
+        "discard_variables": discard_variables,
+    }
+
+
+FUNCTION_SPECS.update(
+    {
+        "allocate_path_template_samples": _path_function_spec(
+            address=0x41B0A0,
+            name="allocate_path_template_samples",
+            return_type="void",
+            stale_return_type="void",
+            calling_convention="__fastcall",
+        ),
+        "finalize_path_template": _path_function_spec(
+            address=0x42C600,
+            name="finalize_path_template",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__fastcall",
+        ),
+        "initialize_worm_path_template_pair": _path_function_spec(
+            address=0x420170,
+            name="initialize_worm_path_template_pair",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(("texture_path", "char*", "char*"),),
+            discard_variables=(
+                {
+                    "source_type": "VariableSourceType.StackVariableSourceType",
+                    "index": 0,
+                    "storage": 8,
+                    "name": "arg2",
+                    "type": "char*",
+                },
+            ),
+        ),
+        "mirror_path_template_pair_x": _path_function_spec(
+            address=0x421DC0,
+            name="mirror_path_template_pair_x",
+            return_type="void",
+            stale_return_type="int32_t",
+            calling_convention="__thiscall",
+            parameters=(("source", "struct Path*", "struct PathTemplate*"),),
+        ),
+    }
+)
+
+
 def _repair_code(
     *, function_name: str, spec: dict[str, object], apply: bool
 ) -> str:
@@ -403,8 +518,10 @@ STALE_PROTOTYPES = {STALE_PROTOTYPE, *SPEC.get("legacy_prototypes", ())}
 DECLARATION = SPEC["declaration"]
 EXPECTED_PARAMETER_COUNT = SPEC["parameter_count"]
 EXPECTED_VARIABLES = SPEC["variables"]
+DISCARD_VARIABLES = SPEC.get("discard_variables", ())
 ALLOWED_AUTO_TAG_TYPES = set(SPEC.get("allowed_auto_tag_types", ()))
-SUBGAME_RUNTIME_SIZE = __SUBGAME_RUNTIME_SIZE__
+OWNER_TYPE_NAME = SPEC.get("owner_type", "SubgameRuntime")
+OWNER_SIZE = SPEC.get("owner_size", __SUBGAME_RUNTIME_SIZE__)
 APPLY = __APPLY__
 
 
@@ -548,7 +665,7 @@ if fn is None:
         "address": hex(ADDRESS),
     }
 else:
-    owner_type = bv.get_type_by_name("SubgameRuntime")
+    owner_type = bv.get_type_by_name(OWNER_TYPE_NAME)
     comments = {hex(int(address)): str(text) for address, text in fn.comments.items()}
     tag_entries = list(fn.tags)
     tags = [tag_record(fn, entry) for entry in tag_entries]
@@ -575,15 +692,15 @@ else:
         conflicts.append("function_start_changed")
     if str(fn.name) != NAME:
         conflicts.append("function_name_changed")
-    if owner_type is None or int(owner_type.width) != SUBGAME_RUNTIME_SIZE:
-        conflicts.append("SubgameRuntime_layout_changed")
+    if owner_type is None or int(owner_type.width) != OWNER_SIZE:
+        conflicts.append(f"{OWNER_TYPE_NAME}_layout_changed")
     if observed_prototype != EXPECTED_PROTOTYPE and observed_prototype not in STALE_PROTOTYPES:
         conflicts.append("unexpected_prototype")
 
     stale = observed_prototype in STALE_PROTOTYPES
     allowed_user_var_keys = {
         (record["source_type"], record["index"], record["storage"])
-        for record in EXPECTED_VARIABLES
+        for record in (*EXPECTED_VARIABLES, *DISCARD_VARIABLES)
     }
     unexpected_user_vars = [
         record
@@ -605,6 +722,34 @@ else:
             conflicts.append("function_has_tags")
     if stale and unexpected_user_vars:
         conflicts.append("function_has_unpreserved_user_vars")
+    discard_by_key = {
+        (record["source_type"], record["index"], record["storage"]): record
+        for record in DISCARD_VARIABLES
+    }
+    invalid_discard_variables = [
+        record
+        for record in user_vars
+        if (record["source_type"], record["index"], record["storage"])
+        in discard_by_key
+        and (
+            record["name"]
+            != discard_by_key[
+                (record["source_type"], record["index"], record["storage"])
+            ]["name"]
+            or record["type"]
+            != discard_by_key[
+                (record["source_type"], record["index"], record["storage"])
+            ]["type"]
+        )
+    ]
+    if stale and invalid_discard_variables:
+        conflicts.append("stale_discard_variable_changed")
+    if not stale and any(
+        (record["source_type"], record["index"], record["storage"])
+        in discard_by_key
+        for record in user_vars
+    ):
+        conflicts.append("discarded_variable_survived_repair")
     if before_annotations["parameter_count"] != EXPECTED_PARAMETER_COUNT:
         conflicts.append("unexpected_parameter_count")
     if any(
@@ -633,6 +778,7 @@ else:
             "observed": observed,
             "expected_prototype": EXPECTED_PROTOTYPE,
             "dry_run": True,
+            "discard_variables": list(DISCARD_VARIABLES) if stale else [],
         }
     elif observed_prototype == EXPECTED_PROTOTYPE:
         if annotations_are_current(before_annotations):
@@ -745,6 +891,7 @@ else:
             },
             "snapshot_saved": snapshot_saved,
             "dry_run": False,
+            "discarded_variables": list(DISCARD_VARIABLES),
         }
 '''
     embedded_spec = {
@@ -770,9 +917,8 @@ def _unwrap_result(payload: object) -> dict[str, object]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Inspect or narrowly repair a cataloged subgame function when a stale "
-            "Binary Ninja Game* named-type identity blocks its proven SubgameRuntime "
-            "receiver."
+            "Inspect or narrowly repair a cataloged function when a stale Binary "
+            "Ninja named-type identity blocks its proven owner and ABI."
         )
     )
     parser.add_argument(

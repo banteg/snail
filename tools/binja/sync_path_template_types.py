@@ -2301,16 +2301,39 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
 )
 
 
-def report_deferred_subgame_owner_prototypes(*, target: str) -> list[dict[str, object]]:
+DEFERRED_PATH_OWNER_PROTO_UPDATES = (
+    (
+        "allocate_path_template_samples",
+        "void __fastcall allocate_path_template_samples(Path* self)",
+    ),
+    (
+        "finalize_path_template",
+        "void __fastcall finalize_path_template(Path* self)",
+    ),
+    (
+        "initialize_worm_path_template_pair",
+        "void __thiscall initialize_worm_path_template_pair(Path* self, char* texture_path)",
+    ),
+    (
+        "mirror_path_template_pair_x",
+        "void __thiscall mirror_path_template_pair_x(Path* self, Path* source)",
+    ),
+)
+
+
+def report_deferred_owner_prototypes(
+    *,
+    target: str,
+    updates: tuple[tuple[str, str], ...],
+    stale_identity_reason: str,
+) -> list[dict[str, object]]:
     observed_prototypes = current_prototypes(
         REPO_ROOT,
         target=target,
-        identifiers=(
-            identifier for identifier, _prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
-        ),
+        identifiers=(identifier for identifier, _prototype in updates),
     )
     results = []
-    for identifier, prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES:
+    for identifier, prototype in updates:
         observed = observed_prototypes.get(identifier)
         current = observed is not None and normalize_prototype(
             observed,
@@ -2322,7 +2345,7 @@ def report_deferred_subgame_owner_prototypes(*, target: str) -> list[dict[str, o
             "reason": (
                 "already current"
                 if current
-                else "stale user-defined Game* identity requires guarded function recreation"
+                else stale_identity_reason
             ),
             "identifier": identifier,
             "desired_prototype": prototype,
@@ -2330,8 +2353,8 @@ def report_deferred_subgame_owner_prototypes(*, target: str) -> list[dict[str, o
         }
         if not current:
             result["repair_command"] = (
-                "uv run tools/binja/repair_subgame_receiver_owner.py "
-                f"--function {identifier} --apply"
+                "uv run tools/binja/repair_deferred_owner_abi.py "
+                f"--target {target} --function {identifier} --apply"
             )
         results.append(result)
     return results
@@ -2542,7 +2565,25 @@ def main() -> int:
             ),
         )
     )
-    operations.extend(report_deferred_subgame_owner_prototypes(target=args.target))
+    operations.extend(
+        report_deferred_owner_prototypes(
+            target=args.target,
+            updates=DEFERRED_SUBGAME_OWNER_PROTO_UPDATES,
+            stale_identity_reason=(
+                "stale user-defined Game* identity requires guarded function recreation"
+            ),
+        )
+    )
+    operations.extend(
+        report_deferred_owner_prototypes(
+            target=args.target,
+            updates=DEFERRED_PATH_OWNER_PROTO_UPDATES,
+            stale_identity_reason=(
+                "stale user-defined PathTemplate* identity or result ABI requires "
+                "guarded function recreation"
+            ),
+        )
+    )
     operations.extend(
         apply_data_var_updates(
             REPO_ROOT,

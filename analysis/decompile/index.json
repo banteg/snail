@@ -1,24 +1,112 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 23,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 23,
+  "ida_exported": 699,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "ida_refreshed": true,
+  "ida_refreshed": false,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_slug_hazard_ai",
-      "address": "0x43f930"
+      "name": "initialize_looptheloop_path_template_pair",
+      "address": "0x41b0f0"
+    },
+    {
+      "name": "initialize_loopout_path_template_pair",
+      "address": "0x41c5f0"
+    },
+    {
+      "name": "initialize_hump_path_template_pair",
+      "address": "0x41d030"
+    },
+    {
+      "name": "initialize_dump_path_template_pair",
+      "address": "0x41da30"
+    },
+    {
+      "name": "initialize_dip_path_template_pair",
+      "address": "0x41e440"
+    },
+    {
+      "name": "initialize_screw_path_template_pair",
+      "address": "0x41eda0"
+    },
+    {
+      "name": "initialize_slalombig_path_template_pair",
+      "address": "0x4221f0"
+    },
+    {
+      "name": "initialize_sweep_path_template_pair",
+      "address": "0x422c00"
+    },
+    {
+      "name": "initialize_snake_path_template_pair",
+      "address": "0x423580"
+    },
+    {
+      "name": "initialize_supertramp_path_template_pair",
+      "address": "0x423f10"
+    },
+    {
+      "name": "initialize_p_path_template_pair",
+      "address": "0x425a40"
+    },
+    {
+      "name": "initialize_start_path_template_pair",
+      "address": "0x426400"
+    },
+    {
+      "name": "initialize_turnover_path_template_pair",
+      "address": "0x426cb0"
+    },
+    {
+      "name": "initialize_turnoverdouble_path_template_pair",
+      "address": "0x427640"
+    },
+    {
+      "name": "initialize_turnunder_path_template_pair",
+      "address": "0x427fe0"
+    },
+    {
+      "name": "initialize_wibble_path_template_pair",
+      "address": "0x4289a0"
+    },
+    {
+      "name": "initialize_invert_path_template_pair",
+      "address": "0x429250"
+    },
+    {
+      "name": "initialize_halfpipe_path_template_pair",
+      "address": "0x429b20"
+    },
+    {
+      "name": "initialize_twister_path_template_pair",
+      "address": "0x42a540"
+    },
+    {
+      "name": "initialize_twister2_path_template_pair",
+      "address": "0x42af30"
+    },
+    {
+      "name": "initialize_loopbow_path_template_pair",
+      "address": "0x42ba80"
+    },
+    {
+      "name": "initialize_hill_valley_path_template_pair",
+      "address": "0x42d570"
+    },
+    {
+      "name": "initialize_sbend_path_template_pair",
+      "address": "0x42df00"
     }
   ],
   "health_check_count": 503,
